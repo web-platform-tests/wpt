@@ -16,7 +16,7 @@
       testData: [
         // multiple is false
         {conditions: {multiple: false, value: ""}, expected: false, name: "[target] The value is empty"},
-        {conditions: {multiple: false, value: "test@example.com"}, expected: false, name: "[target] The value is an valid email address"},
+        {conditions: {multiple: false, value: "test@example.com"}, expected: false, name: "[target] The value is a valid email address"},
         {conditions: {multiple: false, value: "\u000A\u000D\u0020\u0009 test@example.com \u000A\u000D\u0020\u0009"}, expected: false, name: "[target] The value is a valid email address with some white spaces."},
         {conditions: {multiple: false, value: "abc"}, expected: true, name: "[target] The value is not an email address"},
         {conditions: {multiple: false, value: "test1@example.com,test2@example.com"}, expected: true, name: "[target] The value contains multiple email addresses"},

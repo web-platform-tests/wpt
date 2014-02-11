@@ -16,10 +16,10 @@ var testElements = [
       testData: [
         {conditions: {multiple: false, value: ""}, expected: false, name: "[target] The multiple attribute is false and the value attribute is empty"},
         {conditions: {multiple: false, value: "test1@example.com"}, expected: false, name: "[target] The multiple attribute is false and the value attribute is a valid e-mail address"},
-        {conditions: {multiple: false, value: "123"}, expected: true, name: "[target] The multiple attribute is false and the value cannot be converted to punycode"},
+        {conditions: {multiple: false, value: "国际@example.com"}, expected: true, name: "[target] The multiple attribute is false and the value cannot be converted to punycode"},
         {conditions: {multiple: true, value: "test1@eample.com,test2@eample.com"}, expected: false, name: "[target] The multiple attribute is true and the value contains valid e-mail addresses"},
         {conditions: {multiple: true, value: "test,1@eample.com"}, expected: true, name: "[target] The multiple attribute is true and the value attribute contains a ','"},
-        {conditions: {multiple: true, value: "123"}, expected: true, name: "[target] The multiple attribute is true and the value cannot be converted to punycode"}
+        {conditions: {multiple: true, value: "国际@example.com"}, expected: true, name: "[target] The multiple attribute is true and the value cannot be converted to punycode"}
       ]
     },
     {
@@ -28,16 +28,7 @@ var testElements = [
       testData: [
         {conditions: {value: ""}, expected: false, name: "[target] The value attribute is empty"},
         {conditions: {value: "2000-01-01T12:00:00Z"}, expected: false, name: "[target] The value attribute is a valid date and time string"},
-        {conditions: {value: "abc"}, expected: false, name: "[target] The value attribute cannot convert to a valid normalized forced-UTC global date and time string"}
-      ]
-    },
-    {
-      tag: "input",
-      types: ["datetime-local"],
-      testData: [
-        {conditions: {value: ""}, expected: false, name: "[target] The value attribute is empty"},
-        {conditions: {value: "2000-01-01T12:00:00"}, expected: false, name: "[target] The value attribute is a valid date and time string"},
-        {conditions: {value: "abc"}, expected: false, name: "[target] The value attribute cannot convert to a valid normalized local date and time string"}
+        {conditions: {value: "abc"}, expected: true, name: "[target] The value attribute cannot convert to a valid normalized forced-UTC global date and time string"}
       ]
     },
     {
@@ -46,10 +37,10 @@ var testElements = [
       testData: [
         {conditions: {value: ""}, expected: false, name: "[target] The value attribute is empty"},
         {conditions: {value: "#000000"}, expected: false, name: "[target] The value attribute is a valid sample color"},
-        {conditions: {value: "abc"}, expected: false, name: "[target] The value attribute cannot convert to a valid sample color"}
+        {conditions: {value: "#FFFFFF"}, expected: false, name: "[target] The value attribute is not a valid lowercase sample color"},
+        {conditions: {value: "abc"}, expected: true, name: "[target] The value attribute cannot convert to a valid sample color"}
       ]
     },
-  ];
-
+  ]; 
   validator.run_test (testElements, "badInput");
 </script>

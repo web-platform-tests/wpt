@@ -30,11 +30,11 @@
       tag: "textarea",
       types: [],
       testData: [
-        {conditions: {maxLength: "", value: "abc"}, expected: false, name: "[target] Non-dirty value - maxlength is no set"},
+        {conditions: {maxLength: "", value: "abc"}, expected: false, name: "[target] Non-dirty value - maxlength is not set"},
         {conditions: {maxLength: "4", value: ""}, expected: false, name: "[target] Non-dirty value - value is empty string"},
         {conditions: {maxLength: "4", value: "abc"}, expected: false, name: "[target] Non-dirty value - length of value is less than maxlength"},
         {conditions: {maxLength: "4", value: "abcd"}, expected: false, name: "[target] Non-dirty value - length of value equals to maxlength"},
-        {conditions: {maxLength: "4", value: "abcde"}, expected: false, name: "[target] Non-dirty value - length of length of value is greater than maxlength"},
+        {conditions: {maxLength: "4", value: "abcde"}, expected: false, name: "[target] Non-dirty value - length of value is greater than maxlength"},
         //Dirty value
         {conditions: {maxLength: "4", value: "abc"}, expected: false, name: "[target] Dirty value - value is less than maxlength", dirty: true},
         {conditions: {maxLength: "4", value: "\u000D\u000A"}, expected: false, name: "[target] Dirty value - length of value(LF, CRLF) in unicode is less than maxlength", dirty: true},

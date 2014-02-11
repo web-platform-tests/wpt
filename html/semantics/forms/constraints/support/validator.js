@@ -13,7 +13,7 @@ var validator = {
         assert_false(ctl.validity.tooLong, "The validity.tooLong should be false.");
     }, data.name);
   },
-  
+
   test_tooShort: function(ctl, data) {
     var self = this;
     test(function () {
@@ -23,9 +23,9 @@ var validator = {
         self.set_dirty(ctl);
 
       if (data.expected)
-        assert_true(ctl.validity.tooLong, "The validity.tooShort should be true.");
+        assert_true(ctl.validity.tooShort, "The validity.tooShort should be true.");
       else
-        assert_false(ctl.validity.tooLong, "The validity.tooShort should be false.");
+        assert_false(ctl.validity.tooShort, "The validity.tooShort should be false.");
     }, data.name);
   },
 
@@ -71,7 +71,6 @@ var validator = {
     var self = this;
     test(function () {
       self.pre_check(ctl, "rangeOverflow");
-      assert_true("rangeOverflow" in ctl.validity, "The validity.rangeOverflow attribute should exist.");
       self.set_conditions(ctl, data.conditions);
 
       if (data.expected)
@@ -174,6 +173,7 @@ var validator = {
       self.set_conditions(ctl, data.conditions);
 
       on_event(ctl, "invalid", function(e){
+        assert_equals(e.type, "invalid", "The invalid event should be fired.");
         eventFired = true;
       });
 
@@ -195,6 +195,7 @@ var validator = {
       self.set_conditions(ctl, data.conditions);
 
       on_event(ctl, "invalid", function(e){
+        assert_equals(e.type, "invalid", "The invalid event should be fired.");
         eventFired = true;
       });
 
@@ -202,15 +203,12 @@ var validator = {
         assert_true(ctl.reportValidity(), "The reportValidity method should be true.");
         assert_false(eventFired, "The invalid event should not be fired.");
       } else {
-        on_event(ctl, "invalid", function(e){
-          assert_equals(e.type, "invalid1", "The invalid event should be fired.");
-          assert_true(eventFired, "The invalid event should be fired.");
-        });
+        assert_true(eventFired, "The invalid event should be fired.");
         assert_false(ctl.reportValidity(), "The reportValidity method should be false.");
       }
     }, data.name);
   },
-  
+
   test_support_type: function (ctl, typ, testName) {
     test(function () {
       assert_equals(ctl.type, typ, "The " + typ + " type should be supported.");
@@ -238,7 +236,7 @@ var validator = {
   pre_check: function(ctl, item) {
     switch (item) {
       case "willValidate":
-        assert_true(item in ctl, name + "The " + item + " attribute doesn't exist.");
+        assert_true(item in ctl, "The " + item + " attribute doesn't exist.");
         break;
       case "checkValidity":
       case "reportValidity":
@@ -269,14 +267,13 @@ var validator = {
   run_test: function (testee, method) {
     var testMethod = "test_" + method;
     if (typeof this[testMethod] !== "function") {
-      // console.error("The " + method + " test is not defined.");
       return false;
     }
 
     var ele = null,
         prefix = "";
 
-    for (var i = 0; i < testee.length; i++) { 
+    for (var i = 0; i < testee.length; i++) {
       if (testee[i].types.length > 0) {
         for (var typ in testee[i].types) {
           ele = document.createElement(testee[i].tag);
@@ -292,14 +289,14 @@ var validator = {
             this.test_support_type(
               ele,
               testee[i].types[typ],
-              prefix + "The " + testee[i].types[typ] + " type must be suppoorted."
+              prefix + "The " + testee[i].types[typ] + " type must be supported."
             );
             continue;
           }
 
           if (testee[i].checkPoints) {
             for (var j = 0; j < testee[i].checkPoints.length; j++) {
-              testee[i].testData[j].name = testee[i].testData[j].name.replace(/\[.*\]\s/g, prefix);
+              testee[i].testData[j].name = testee[i].testData[j].name.replace("[target]", prefix);
               this[testMethod](ele, testee[i].testData[j]);
             }
           } else {
@@ -311,7 +308,7 @@ var validator = {
         }
       } else {
         ele = document.createElement(testee[i].tag);
-        document.body.appendChild(ele); 
+        document.body.appendChild(ele);
         prefix = "[" + testee[i].tag + "] ";
 
         if (testElements[i].tag === "select") {
@@ -320,8 +317,7 @@ var validator = {
         }
 
         for (var item in testee[i].testData) {
-          prefix = "[" + testee[i].tag + "] ";
-          testee[i].testData[item].name = testee[i].testData[item].name.replace(/\[.*\]\s/g, prefix);
+          testee[i].testData[item].name = testee[i].testData[item].name.replace("[target]", prefix);
           this[testMethod](ele, testee[i].testData[item]);
         }
       }

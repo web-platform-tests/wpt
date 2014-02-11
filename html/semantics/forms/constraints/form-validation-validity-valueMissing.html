@@ -28,8 +28,8 @@
         {conditions: {required: true, value: "2000-12-10 12:00Z"}, expected: false, name: "[target] Valid global date and time string(2000-12-10 12:00Z)"},
         {conditions: {required: true, value: "1979-10-14T12:00:00.001-04:00"}, expected: false, name: "[target] Valid global date and time string(1979-10-14T12:00:00.001-04:00)"},
         {conditions: {required: true, value: "8592-01-01T02:09+02:09"}, expected: false, name: "[target] Valid global date and time string(8592-01-01T02:09+02:09)"},
-        {conditions: {required: true, value: 1234567}, expected: false, name: "[target] The value attribute is a number(1234567)"},
-        {conditions: {required: true, value: new Date()}, expected: false, name: "[target] The value attribute is a Date object"},
+        {conditions: {required: true, value: 1234567}, expected: true, name: "[target] The value attribute is a number(1234567)"},
+        {conditions: {required: true, value: new Date()}, expected: true, name: "[target] The value attribute is a Date object"},
         {conditions: {required: true, value: "1979-10-99 99:99Z"}, expected: true, name: "[target] Invalid global date and time string(1979-10-99 99:99Z)"},
         {conditions: {required: true, value: "1979-10-14 12:00:00"}, expected: true, name: "[target] Invalid global date and time string(1979-10-14 12:00:00)"},
         {conditions: {required: true, value: "2001-12-21  12:00Z"}, expected: true, name: "[target] Invalid global date and time string(2001-12-21  12:00Z)-two white space"},
@@ -44,8 +44,8 @@
         {conditions: {required: false, value: ""}, expected: false, name: "[target] The required attribute is not set"},
         {conditions: {required: true, value: "2000-12-10"}, expected: false, name: "[target] Valid date string(2000-12-10)"},
         {conditions: {required: true, value: "9999-01-01"}, expected: false, name: "[target] Valid date string(9999-01-01)"},
-        {conditions: {required: true, value: 1234567}, expected: false, name: "[target] The value attribute is a number(1234567)"},
-        {conditions: {required: true, value: new Date()}, expected: false, name: "[target] The value attribute is a Date object"},
+        {conditions: {required: true, value: 1234567}, expected: true, name: "[target] The value attribute is a number(1234567)"},
+        {conditions: {required: true, value: new Date()}, expected: true, name: "[target] The value attribute is a Date object"},
         {conditions: {required: true, value: "9999-99-99"}, expected: true, name: "[target] Invalid date string(9999-99-99)"},
         {conditions: {required: true, value: "37/01/01"}, expected: true, name: "[target] Invalid date string(37-01-01)"},
         {conditions: {required: true, value: "2000/01/01"}, expected: true, name: "[target] Invalid date string(2000/01/01)"},
@@ -59,8 +59,8 @@
         {conditions: {required: false, value: ""}, expected: false, name: "[target] The required attribute is not set"},
         {conditions: {required: true, value: "2000-12"}, expected: false, name: "[target] Valid month string(2000-12)"},
         {conditions: {required: true, value: "9999-01"}, expected: false, name: "[target] Valid month string(9999-01)"},
-        {conditions: {required: true, value: 1234567}, expected: false, name: "[target] The value attribute is a number(1234567)"},
-        {conditions: {required: true, value: new Date()}, expected: false, name: "[target] The value attribute is a Date object"},
+        {conditions: {required: true, value: 1234567}, expected: true, name: "[target] The value attribute is a number(1234567)"},
+        {conditions: {required: true, value: new Date()}, expected: true, name: "[target] The value attribute is a Date object"},
         {conditions: {required: true, value: "2000-99"}, expected: true, name: "[target] Invalid month string(2000-99)"},
         {conditions: {required: true, value: "37-01"}, expected: true, name: "[target] Invalid month string(37-01)"},
         {conditions: {required: true, value: "2000/01"}, expected: true, name: "[target] Invalid month string(2000/01)"},
@@ -74,8 +74,8 @@
         {conditions: {required: false, value: ""}, expected: false, name: "[target] The required attribute is not set"},
         {conditions: {required: true, value: "2000-W12"}, expected: false, name: "[target] Valid week string(2000-W12)"},
         {conditions: {required: true, value: "9999-W01"}, expected: false, name: "[target] Valid week string(9999-W01)"},
-        {conditions: {required: true, value: 1234567}, expected: false, name: "[target] The value attribute is a number(1234567)"},
-        {conditions: {required: true, value: new Date()}, expected: false, name: "[target] The value attribute is a Date object"},
+        {conditions: {required: true, value: 1234567}, expected: true, name: "[target] The value attribute is a number(1234567)"},
+        {conditions: {required: true, value: new Date()}, expected: true, name: "[target] The value attribute is a Date object"},
         {conditions: {required: true, value: "2000-W99"}, expected: true, name: "[target] Invalid week string(2000-W99)"},
         {conditions: {required: true, value: "2000-W00"}, expected: true, name: "[target] invalid week string(2000-W00)"},
         {conditions: {required: true, value: "2000-w01"}, expected: true, name: "[target] invalid week string(2000-w01)"},
@@ -92,28 +92,12 @@
         {conditions: {required: true, value: "12:00:00.001"}, expected: false, name: "[target] Valid time string(12:00:60.001)"},
         {conditions: {required: true, value: "12:00:00.01"}, expected: false, name: "[target] Valid time string(12:00:60.01)"},
         {conditions: {required: true, value: "12:00:00.1"}, expected: false, name: "[target] Valid time string(12:00:60.1)"},
-        {conditions: {required: true, value: 1234567}, expected: false, name: "[target] The value attribute is a number(1234567)"},
-        {conditions: {required: true, value: new Date()}, expected: false, name: "[target] The value attribute is a time object"},
+        {conditions: {required: true, value: 1234567}, expected: true, name: "[target] The value attribute is a number(1234567)"},
+        {conditions: {required: true, value: new Date()}, expected: true, name: "[target] The value attribute is a time object"},
         {conditions: {required: true, value: "25:00:00"}, expected: true, name: "[target] Invalid time string(25:00:00)"},
         {conditions: {required: true, value: "12:60:00"}, expected: true, name: "[target] Invalid time string(12:60:00)"},
         {conditions: {required: true, value: "12:00:60"}, expected: true, name: "[target] Invalid time string(12:00:60)"},
         {conditions: {required: true, value: "12:00:00:001"}, expected: true, name: "[target] Invalid time string(12:00:00:001)"},
-        {conditions: {required: true, value: ""}, expected: true, name: "[target] The value attribute is empty string"}
-      ]
-    },
-    {
-      tag: "input",
-      types: ["datetime-local"],
-      testData: [
-        {conditions: {required: false, value: ""}, expected: false, name: "[target] The required attribute is not set"},
-        {conditions: {required: true, value: "2000-12-10T12:00:00"}, expected: false, name: "[target] Valid local date and time string(2000-12-10T12:00:00)"},
-        {conditions: {required: true, value: "2000-12-10 12:00"}, expected: false, name: "[target] Valid local date and time string(2000-12-10 12:00)"},
-        {conditions: {required: true, value: "2000-12-10T12:00:00.001"}, expected: false, name: "[target] Valid local date and time string(2000-12-10T12:00:00.001)"},
-        {conditions: {required: true, value: "8592-01-01T02:09"}, expected: false, name: "[target] Valid local date and time string(8592-01-01T02:09)"},
-        {conditions: {required: true, value: 1234567}, expected: false, name: "[target] The value attribute is a number(1234567)"},
-        {conditions: {required: true, value: new Date()}, expected: false, name: "[target] The value attribute is a Date object"},
-        {conditions: {required: true, value: "1979-10-99 99:99"}, expected: true, name: "[target] Invalid local date and time string(1979-10-99 99:99)"},
-        {conditions: {required: true, value: "abc"}, expected: true, name: "[target] Invalid local date and time string(abc)"},
         {conditions: {required: true, value: ""}, expected: true, name: "[target] The value attribute is empty string"}
       ]
     },
@@ -127,7 +111,7 @@
         {conditions: {required: true, value: "123.01e-10"}, expected: false, name: "[target] Value is a number in scientific notation form(e is in lowercase)"},
         {conditions: {required: true, value: "123.01E+10"}, expected: false, name: "[target] Value is a number in scientific notation form(E is in uppercase)"},
         {conditions: {required: true, value: "-0"}, expected: false, name: "[target] Value is -0"},
-        {conditions: {required: true, value: " 123 "}, expected: false, name: "[target] Value is a number with some white spaces"},
+        {conditions: {required: true, value: " 123 "}, expected: true, name: "[target] Value is a number with some white spaces"},
         {conditions: {required: true, value: Math.pow(2, 1024)}, expected: true, name: "[target] Value is Math.pow(2, 1024)"},
         {conditions: {required: true, value: Math.pow(-2, 1024)}, expected: true, name: "[target] Value is Math.pow(-2, 1024)"},
         {conditions: {required: true, value: "abc"}, expected: true, name: "[target] Value is a string that can not be coverted to a number"},
@@ -140,7 +124,7 @@
       testData: [
         {conditions: {required: false, checked: false, name: "test1"}, expected: false, name: "[target] The required attribute is not set"},
         {conditions: {required: true, checked: true, name: "test1"}, expected: false, name: "[target] The checked attribute is true"},
-        {conditions: {required: true, checked: false, name: "test1"}, expected: true, name: "[target] The checked attribute is fasle"}
+        {conditions: {required: true, checked: false, name: "test1"}, expected: true, name: "[target] The checked attribute is false"}
       ]
     },
     {

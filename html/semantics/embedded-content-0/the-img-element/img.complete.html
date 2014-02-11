@@ -33,10 +33,6 @@
   var t = async_test("async src complete test");
 
   t.step(function(){
-    //build path to image file
-    var path = document.location.pathname;
-    var dir = path.substring(path.indexOf('/', 0)+1, path.lastIndexOf('/'));
-
     document.getElementById("imgTestTag3").src = '3.jpg?nocache=' + Math.random();
 
     //test if img.complete is set to false if src is changed
@@ -49,14 +45,15 @@
   });
 </script>
 <script>
+    imageInstance.src = 'image-1.jpg?pipe=trickle(d1)&nocache=' + Math.random(); // make sure the image isn't in cache
+</script>
+<script>
   // test: The final task that is queued by the networking task source once the resource has been fetched has been queued, but has not yet been run, and the img element is not in the broken state
   async_test(function(t) {
-    imageInstance.src = 'image-1.jpg?pipe=trickle(d1)&nocache=' + Math.random(); // make sure the image isn't in cache
-
     assert_false(imageInstance.complete, "imageInstance.complete should be false");
-    var startTime = Date.now(); 
-    while (true) { 
-      if (Date.now() - startTime > 5000) 
+    var startTime = Date.now();
+    while (true) {
+      if (Date.now() - startTime > 2000)
         assert_unreached('.complete didn\'t change to true');
       if (imageInstance.complete === true) break;
     }
@@ -71,10 +68,6 @@
 
   t2.step(
     function(){
-    //build path to image file
-    var path = document.location.pathname;
-    var dir = path.substring(path.indexOf('/', 0)+1, path.lastIndexOf('/'));
-
     img4.src = 'brokenimg.jpg';
 
     //test if img.complete is set to false if src is changed

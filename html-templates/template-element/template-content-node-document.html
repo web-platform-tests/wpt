@@ -18,36 +18,10 @@
 test(function() {
     var doc = newHTMLDocument();
     var template = doc.createElement('template');
-
-    // document have no browsing context, therefore it is the template contents owner
-    assert_equals(template.content.ownerDocument, doc,
-            'Wrong node document of the template content attribute');
-
-}, 'Node document of the template content attribute must be template contents owner. ' +
-    'Template element created by createElement');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-    doc.body.innerHTML = '<template></template>';
-    var template = doc.querySelector('template');
-
-    // document have no browsing context, therefore it is the template contents owner
-    assert_equals(template.content.ownerDocument, doc,
-            'Wrong node document of the template content attribute');
-
-}, 'Node document of the template content attribute must be template contents owner. ' +
-    'Template element created via innerHTML');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-    var template = doc.createElement('template');
     var nestedTemplate = doc.createElement('template');
     template.appendChild(nestedTemplate);
 
-    // document have no browsing context, therefore it is the template contents owner
-    assert_equals(nestedTemplate.content.ownerDocument, doc,
+    assert_equals(nestedTemplate.content.ownerDocument, template.content.ownerDocument,
             'Wrong node document of the template content attribute');
 
 }, 'Node document of the template content attribute must be template contents owner. ' +
@@ -60,8 +34,7 @@ test(function() {
     var template = doc.querySelector('template');
     var nestedTemplate = template.content.querySelector('template');
 
-    // document have no browsing context, therefore it is the template contents owner
-    assert_equals(nestedTemplate.content.ownerDocument, doc,
+    assert_equals(nestedTemplate.content.ownerDocument, template.content.ownerDocument,
             'Wrong node document of the template content attribute');
 
 }, 'Node document of the template content attribute must be template contents owner. ' +

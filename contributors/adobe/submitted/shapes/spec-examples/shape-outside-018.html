@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Test: Shape from box value - simple, content-box</title>
+    <title>CSS Test: shape-margin offset from a polygonal shape-outside</title>
     <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com"/>
     <link rel="help" href="http://www.w3.org/TR/css-shapes/#shapes-from-box-values"/>
     <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#shape-outside-property"/>
     <link rel="match" href="reference/shape-outside-018-ref.html"/>
     <meta name="flags" content="ahem"/>
-    <meta name="assert" content="This test verifies that TODO"/>
+    <meta name="assert" content="This test verifies that that content flows around the shape-margin
+                                 defined on a polygonal shape-outside."/>
     <!-- This test is derived from Example 10 in this version of the spec:
-         TODO -->
+         http://www.w3.org/TR/2014/WD-css-shapes-1-20140211/ -->
     <style type="text/css">
         .container {
             position: absolute;
@@ -26,8 +27,8 @@
             float: left;
             width: 200px;
             height: 200px;
-            -webkit-shape-outside: polygon(20px 40px, 160px 180px, 20px 180px);
-            -webkit-shape-margin: 20px;
+            shape-outside: polygon(20px 40px, 160px 180px, 20px 180px);
+            shape-margin: 20px;
         }
         img {
             position: absolute;

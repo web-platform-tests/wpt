@@ -6,8 +6,49 @@
   <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
   <link rel="help" href="http://www.w3.org/TR/html5/video.html#attr-media-autoplay" />
   <meta name="assert" content="Media plays automatically when 'autoplay' is true. (audio)" />
-  <script type="text/javascript" src="../../../../common/media.js"></script>
+  <script type="text/javascript" src="/common/media.js"></script>
   <script type="text/javascript">
+
+var result_timeout = 0;
+
+//
+// Clear the result timeout so that the test will not automatically pass/fail
+//
+function clearResultTimeout()
+{
+    if (result_timeout != 0)
+    {
+        window.clearTimeout(result_timeout);
+        result_timeout = 0;
+    }
+}
+
+//
+// Passes the test
+//
+function passTest()
+{
+    document.getElementById("test_0_result").innerHTML = "PASS";
+    clearResultTimeout();
+}
+
+//
+// Fails the test
+//
+function failTest()
+{
+    document.getElementById("test_0_result").innerHTML = "FAIL";
+    clearResultTimeout();
+}
+
+//
+// Set the test to automatically fail after a timeout is reached
+//
+function setFailTimeout(milliseconds)
+{
+    clearResultTimeout();
+    result_timeout = window.setTimeout("failTest();", milliseconds);
+}
 
 setFailTimeout(30000);
 

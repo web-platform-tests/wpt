@@ -18,7 +18,7 @@
         var media = document.getElementById("m");
         var name = document.getElementsByName("assert")[0].content;
         var t = async_test(name);
-        
+
         var looped = false;
 
         function startTest() {
@@ -29,7 +29,7 @@
                 t.done();
                 media.pause();
             }
-            
+
             looped = true;
         }
 

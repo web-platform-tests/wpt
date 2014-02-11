@@ -17,7 +17,7 @@ var removed_attr = false;
 var test_done = false;
 var v = document.getElementById("video");
 v.addEventListener("loadstart", function() {
-  if (!removed_attr) { 
+  if (!removed_attr) {
     window.setTimeout(function() {
      removed_attr = true;
      v.removeAttribute("src");

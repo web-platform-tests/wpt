@@ -25,11 +25,11 @@
             'NEGATIVE' : -480,
             'INVALID'  : 'INVALID'
         };
-        
+
         test(function() {
             assert_false(media.width < ULONG.MIN, "media.width initial negative");
         }, "Check if video.width intial value is a valid non-negative integer in the range 0 to 2147483647 inclusive");
-        
+
         [
             [ULONG.MIN,      ULONG.DEFAULT, "Check if video.width returns zero after the width attribute is set to zero"],
             [ULONG.MAX,      ULONG.MAX,     "Check if video.width returns maximum non-negative integer after the width attribute is set to the maximum non-negative integer"],

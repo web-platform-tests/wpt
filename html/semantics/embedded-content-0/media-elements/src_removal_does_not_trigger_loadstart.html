@@ -20,7 +20,7 @@ test(function() {
   var test_done = false;
   var v = document.getElementById("audio");
   v.addEventListener("loadstart", function() {
-    if (!removed_attr) { 
+    if (!removed_attr) {
       window.setTimeout(function() {
        removed_attr = true;
        v.removeAttribute("src");
@@ -46,7 +46,7 @@ test(function() {
   var test_done = false;
   var v = document.getElementById("video");
   v.addEventListener("loadstart", function() {
-    if (!removed_attr) { 
+    if (!removed_attr) {
       window.setTimeout(function() {
        removed_attr = true;
        v.removeAttribute("src");

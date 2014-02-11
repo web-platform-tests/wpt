@@ -19,7 +19,7 @@ test(function() {
   "",
   "audioElement.canPlayType('application/octet-stream; codecs=...') should always return the empty string");
 }, "audio.canPlayType() - can never play application/octet-stream with a codecs parameter");
-  
+
 test(function() {
  assert_equals(
   document.getElementById("v").canPlayType('application/octet-stream; codecs="theora, vorbis"'),

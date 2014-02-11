@@ -14,16 +14,16 @@
     <audio id="m" muted>The user agent doesn't support media element.</audio>
     <script type="text/javascript">
         var media = document.getElementById("m");
-        
+
         test(function() {
             assert_true(media.muted, "media.muted of value");
         }, "Check if audio.muted returns true when the muted attribute is present in the audio element");
-        
+
         test(function() {
             media.muted = false;
             assert_false(media.muted, "media.muted of value");
         }, "Check if audio.muted returns false after the muted attribute is set to false");
-        
+
         test(function() {
             media.muted = true;
             assert_true(media.muted, "media.muted of value");

@@ -8,19 +8,19 @@
   <meta name="assert" content="The 'video' element is inaudible when 'muted' is false or 'volume' is zero." />
   <script type="text/javascript" src="/common/media.js"></script>
   <script type="text/javascript">
-  
+
   function do_play()
   {
       var videoElement = document.getElementById("video0");
       videoElement.volume = 0.5;
       videoElement.muted = true;
   }
-  
+
   function fail()
   {
       document.getElementById("container").innerHTML = "FAIL";
   }
-  
+
   </script>
 </head>
 <body>
@@ -40,20 +40,20 @@ The 'video' element is inaudible when 'muted' is false or 'volume' is zero.
 
 http://www.w3.org/TR/html5/embedded-content-0.html#video
 
-When a video element is potentially playing, it represents the frame of 
-video at the continuously increasing "current" position. When the 
-current playback position changes such that the last frame rendered is 
-no longer the frame corresponding to the current playback position in 
-the video, the new frame must be rendered. Similarly, any audio 
-associated with the video must, if played, be played synchronized with 
-the current playback position, at the specified volume with the 
-specified mute state. 
+When a video element is potentially playing, it represents the frame of
+video at the continuously increasing "current" position. When the
+current playback position changes such that the last frame rendered is
+no longer the frame corresponding to the current playback position in
+the video, the new frame must be rendered. Similarly, any audio
+associated with the video must, if played, be played synchronized with
+the current playback position, at the specified volume with the
+specified mute state.
 
 </pre>
 <div id='testcontent'>
   <div id="container">
       <script type="text/javascript">
-      document.write( 
+      document.write(
          "<video id='video0' src='" + getVideoURI("/media/A4") + "'" +
          " autoplay='autoplay' onplay='do_play(event);'></video>"
          );

@@ -25,11 +25,11 @@
             'NEGATIVE' : -480,
             'INVALID'  : 'INVALID'
         };
-        
+
         test(function() {
             assert_false(media.height < ULONG.MIN, "media.height initial negative");
         }, "Check if video.height intial value is a valid non-negative integer in the range 0 to 2147483647 inclusive");
-        
+
         [
             [ULONG.MIN,      ULONG.DEFAULT, "Check if video.height returns zero after the height attribute is set to zero"],
             [ULONG.MAX,      ULONG.MAX,     "Check if video.height returns maximum non-negative integer after the height attribute is set to the maximum non-negative integer"],

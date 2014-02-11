@@ -79,12 +79,12 @@
         ].forEach(function(attr) {
             var type = attr[0];
             var name = attr[1];
-            
+
             // existence check
             test(function() {
                 assert_true(name in media, name + " attribute in video element");
             }, "Check if video." + name + " exists");
-            
+
             // type and/or default value check
             switch(type) {
             case "boolean":
@@ -95,19 +95,19 @@
                     assert_equals(media[name], attr[2], name + " attribute of value");
                 }, "Check if video." + name + " initial value is " + attr[2]);
                 break;
-            
+
             case "object":
                 test(function() {
                     assert_equals(typeof media[name], "object", name + " attribute of type");
                 }, "Check if video." + name + " is of type object");
                 break;
-            
+
             case "DOMString":
                 test(function() {
                     assert_equals(typeof media[name], "string", name + " attribute of type");
                 }, "Check if video." + name + " is of type string");
                 break;
-            
+
             case "const unsigned short":
                 test(function() {
                     assert_equals(typeof media[name], "number", name + " attribute of type");
@@ -116,7 +116,7 @@
                     assert_equals(media[name], attr[2], name + " attribute of value");
                 }, "Check if video." + name + " is of default value " + attr[2]);
                 break;
-            
+
             case "unsigned short":
                 test(function() {
                     assert_equals(typeof media[name], "number", name + " attribute of type");
@@ -126,19 +126,19 @@
                     assert_true(0 <= value && value <= 65535, "unsigned short " + value + " not in range [0, 65535]");
                 }, "Check if video." + name + " initial value is in range [0, 65535]");
                 break;
-            
+
             case "double":
                 test(function() {
                     assert_equals(typeof media[name], "number", name + " attribute of type");
                 }, "Check if video." + name + " is of type number");
                 break;
-            
+
             case "unrestricted double":
                 test(function() {
                     assert_equals(typeof media[name], "number", name + " attribute of type");
                 }, "Check if video." + name + " is of type number");
                 break;
-            
+
             case "unsigned long":
                 test(function() {
                     assert_equals(typeof media[name], "number", name + " attribute of type");
@@ -148,7 +148,7 @@
                     assert_true(0 <= value && value <= 4294967295, "unsigned long " + value + " not in range [0, 4294967295]");
                 }, "Check if video." + name + " initial value is in range [0, 4294967295]");
                 break;
-            
+
             default:
                 break;
             }

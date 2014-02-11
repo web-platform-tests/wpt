@@ -14,16 +14,16 @@
     <audio id="m" controls>The user agent doesn't support media element.</audio>
     <script type="text/javascript">
         var media = document.getElementById("m");
-        
+
         test(function() {
             assert_true(media.controls, "media.controls of value");
         }, "Check if audio.controls returns true when the controls attribute is present in the audio element");
-        
+
         test(function() {
             media.controls = false;
             assert_false(media.controls, "media.controls of value");
         }, "Check if audio.controls returns false after the controls attribute is set to false");
-        
+
         test(function() {
             media.controls = true;
             assert_true(media.controls, "media.controls of value");

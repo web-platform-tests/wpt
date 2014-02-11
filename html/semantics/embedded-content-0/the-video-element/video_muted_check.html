@@ -14,16 +14,16 @@
     <video id="m" muted>The user agent doesn't support media element.</video>
     <script type="text/javascript">
         var media = document.getElementById("m");
-        
+
         test(function() {
             assert_true(media.muted, "media.muted of value");
         }, "Check if video.muted returns true when the muted attribute is present in the video element");
-        
+
         test(function() {
             media.muted = false;
             assert_false(media.muted, "media.muted of value");
         }, "Check if video.muted returns false after the muted attribute is set to false");
-        
+
         test(function() {
             media.muted = true;
             assert_true(media.muted, "media.muted of value");

@@ -3,8 +3,8 @@
 	<head>
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<style>
-			.normal {
+		<style type="text/css">
+			.parent {
 				background: aqua;/*rgb(0,255,255);*/
 				width: 140px;
 				height: 140px;
@@ -12,17 +12,15 @@
 				position:relative;
 				z-index: 1;
 			}
-			.mixed {
+			.blended {
 				background: fuchsia;/*rgb(255,0,255);*/
 				margin-top: 20px;
 				margin-left: 20px;
 				width: 200px;
 				height: 200px;
-				-webkit-transform:rotateX(20deg);
-				-moz-transform:rotateX(20deg);
 				transform:rotateX(20deg);
 			}
-			.childOfMixed {
+			.childOfBlended {
 				background: yellow;/*rgb(255,255,0);*/
 				width: 120px;
 				height: 122px;
@@ -32,9 +30,9 @@
 	<body>
 		<p>You should see a fuchsia square overlapping an aqua square. <br>
 			The overlapping area should be yellow. </p>
-		<div class="normal">
-			<div class="mixed">
-				<div class="childOfMixed"></div>
+		<div class="parent">
+			<div class="blended">
+				<div class="childOfBlended"></div>
 			</div>
 		</div>
 	</body>

@@ -3,7 +3,7 @@
 	<head>
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<style>
+		<style type="text/css">
 			div {
 				height: 150px;
 				width: 150px;
@@ -14,21 +14,13 @@
 				background-color: lime;/*rgb(0,255,0);*/
 			}
 			.transformed {
-				/*-webkit-transform-style: preserve-3d;*/
-				/*-moz-transform-style: preserve-3d;*/
 				/*transform-style: preserve-3d;*/
-				-webkit-transform: rotateY(50deg);
-				-moz-transform: rotateY(50deg);
 				transform: rotateY(50deg);
 				background-color: blue;/*rgb(0,0,255);*/
 				/*mix-blend-mode: difference;*/
 			}
 			.child {
-				-webkit-transform-origin: top left;
-				-moz-transform-origin: top left;
 				transform-origin: top left;
-				-webkit-transform: rotateX(40deg);
-				-moz-transform: rotateX(40deg);
 				transform: rotateX(40deg);
 				background-color: yellow;/*rgb(255,255,0);*/
 			}

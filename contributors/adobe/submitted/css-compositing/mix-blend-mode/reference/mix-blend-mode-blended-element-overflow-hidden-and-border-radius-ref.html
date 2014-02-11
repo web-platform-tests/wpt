@@ -3,21 +3,21 @@
 	<head>
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<style>
-			.normal {
+		<style type="text/css">
+			.parent {
 				background: aqua;/*rgb(0,255,255);*/
 				width: 150px;
 				height: 150px;
 				position: relative;
 				z-index: 1;
 			}
-			.mixed {
+			.blended {
 				width: 150px;
 				height: 150px;
 				overflow: hidden;
 				border-radius: 2em 2em;
 			}
-			.childOfMixed {
+			.childOfBlended {
 				background: lime;/*rgb(0,255,0);*/
 				width: 150px;
 				height: 150px;
@@ -26,9 +26,9 @@
 	</head>
 	<body>
 		<p>The test passes if you see a lime rectangle with aqua rounded corners.</p>
-		<div class="normal">
-			<div class="mixed">
-				<div class="childOfMixed">
+		<div class="parent">
+			<div class="blended">
+				<div class="childOfBlended">
 				</div>
 			</div>
 		</div>

@@ -3,8 +3,8 @@
 	<head>
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<style>
-			.normal {
+		<style type="text/css">
+			.parent {
 				background: aqua;/*rgb(0,255,255);*/
 				width: 150px;
 				height: 150px;
@@ -13,7 +13,7 @@
 				overflow:scroll;
 			}
 
-			.mixed {
+			.blended {
 				background: blue;/*rgb(0,0,255);*/
 				width: 100px;
 				height: 100px;
@@ -30,8 +30,8 @@
 		<p>Test passes if you see a blue square inside a bigger aqua container. <br>
 		The aqua container should have scrollbars on the left and bottom. <br>
 		If you scroll, the blue square will not change its position.</p>
-		<div class="normal">
-			<div class="mixed"></div>
+		<div class="parent">
+			<div class="blended"></div>
 			<div class="scrollableContent"></div>
 		</div>
 	</body>

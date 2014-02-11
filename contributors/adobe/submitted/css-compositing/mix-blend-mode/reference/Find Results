@@ -1,0 +1,33 @@
+Searching 26 files for "normal" (case sensitive)
+
+/Users/rosca/code/csswg-test/contributors/adobe/submitted/css-compositing/test-plan-html-mapping.txt:
+    1  1. Test cases for mix-blend-mode
+    2: 	1.1 An element with mix-blend-mode other than normal creates a stacking context
+    3  		* Simple <div>: mix-blend-mode-simple.html
+    4  	1.2 An element with mix-blend-mode blends with the content within the current stacking context
+    .
+   11  		* Parent with transparent pixels
+   12  		* Parent with border-radius
+   13: 	1.4 An element with mix-blend-mode other than normal must cause a group to be isolated
+   14  		* Child of the blended element has opacity
+   15  		* Overflowed child of the blended element
+   ..
+   58  	3.3 background-blend-mode list values apply to the corresponding background layer
+   59  	3.4 background-blend-mode list values are repeated if the list is shorter than the background layer list
+   60: 	3.5 The default background-blend-mode value for the background shorthand is 'normal'
+   61  	3.6 background-blend-mode for an element with background-position
+   62  	3.7 background-blend-mode for an element with background-size
+
+3 matches in 1 file
+
+
+Searching 26 files for "mixed" (case sensitive)
+
+/Users/rosca/code/csswg-test/contributors/adobe/submitted/css-compositing/mix-blend-mode/reference/mix-blend-mode-intermediate-element-overflow-hidden-and-border-radius-ref.html:
+   45  				<div class="child"></div>
+   46  			</div>
+   47: 			<div class="mixed1">
+   48  				<div class="child1"></div>
+   49  			</div>
+
+1 match in 1 file

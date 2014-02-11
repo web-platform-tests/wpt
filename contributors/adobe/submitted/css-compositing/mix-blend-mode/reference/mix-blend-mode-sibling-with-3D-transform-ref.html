@@ -3,8 +3,8 @@
 	<head>
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<style>
-			.normal {
+		<style type="text/css">
+			.parent {
 				background: aqua;/*rgb(0,255,255);*/
 				width: 140px;
 				height: 140px;
@@ -12,23 +12,22 @@
 				position: relative;
 				z-index: 1;
 			}
-			.mixed {
+			.blended {
 				background: fuchsia;/*rgb(255,0,255);*/
 				margin-top: -200px;
 				margin-left: 20px;
 				width: 200px;
 				height: 200px;
 			}
-			.siblingOfMixed {
+			.siblingOfBlended {
 				background: blue;/*rgb(0,0,255);*/
 				margin-top: 20px;
 				margin-left: 20px;
 				width: 200px;
 				height: 200px;
-			    -webkit-transform: perspective(600px) translateZ(-200px);
-			    -moz-transform: perspective(600px) translateZ(-200px);
+			    transform: perspective(600px) translateZ(-200px);
 			}
-			.intersectionOfMixed {
+			.intersectionOfBlended {
 				background: yellow;/*rgb(255,255,0);*/
 				margin-top: -200px;
 				margin-left: 20px;
@@ -40,10 +39,10 @@
 	<body>
 		<p>You should see three overlapping squares, from back to front, having the following colors: aqua, fuchsia and blue. <br>
 		The intersection area between aqua and fuchsia squares, which is not overlapped by the blue square, should be yellow.</p>
-		<div class="normal">
-			<div class="siblingOfMixed"></div>
-			<div class="mixed"></div>
-			<div class="intersectionOfMixed"></div>
+		<div class="parent">
+			<div class="siblingOfBlended"></div>
+			<div class="blended"></div>
+			<div class="intersectionOfBlended"></div>
 		</div>
 	</body>
 </html>

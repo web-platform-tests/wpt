@@ -3,15 +3,15 @@
 	<head>
 		<title>CSS Reftest Reference</title>
 		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<style>
-			.normal {
+		<style type="text/css">
+			.parent {
 				width: 140px;
 				height: 140px;
 				position: relative;
 				z-index: 1;
 				overflow:scroll;
 			}
-			.mixed {
+			.blended {
 				background: black;/*rgb(0,0,0);*/
 				width: 200px;
 				height: 200px;
@@ -20,8 +20,8 @@
 	</head>
 	<body>
 		<p>Test passes if you see a scrollable black rectangle.</p>
-		<div class="normal">
-			<div class="mixed"></div>
+		<div class="parent">
+			<div class="blended"></div>
 		</div>
 	</body>
 </html>

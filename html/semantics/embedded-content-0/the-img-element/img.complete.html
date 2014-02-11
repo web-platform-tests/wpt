@@ -43,9 +43,10 @@
     assert_true(document.getElementById("imgTestTag3").complete);
     t.done();
   });
-</script>
-<script>
-    imageInstance.src = 'image-1.jpg?pipe=trickle(d1)&nocache=' + Math.random(); // make sure the image isn't in cache
+
+  // http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content-1.html#update-the-image-data
+  // says to "await a stable state" before fetching so we use a separate <script>
+  imageInstance.src = 'image-1.jpg?pipe=trickle(d1)&nocache=' + Math.random(); // make sure the image isn't in cache
 </script>
 <script>
   // test: The final task that is queued by the networking task source once the resource has been fetched has been queued, but has not yet been run, and the img element is not in the broken state
@@ -60,8 +61,7 @@
     t.done();
   },
   'IDL attribute complete returns true when image resource has been fetched but not run yet & image is not in broken state');
-</script>
-<script>
+
   // test if broken img does not pass
   var t2 = async_test("async src broken test");
   var img4 = document.getElementById("imgTestTag4");

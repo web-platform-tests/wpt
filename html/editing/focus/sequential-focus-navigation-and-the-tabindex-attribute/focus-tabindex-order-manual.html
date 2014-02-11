@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: foucs - the sequential focus navigation order</title>
+<title>HTML Test: focus - the sequential focus navigation order</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/editing.html#sequential-focus-navigation-and-the-tabindex-attribute">
 <meta assert="flag" content="interact">
@@ -28,15 +28,14 @@
 </form>
 <script>
 
+//This test can be automated once we have an uniform way to use webdriver.
 var i = 0,
     expectation = ["btn9", "btn6", "btn7", "btn8", "btn5", "btn0", "btn1", "btn2", "btn4"],
     results = [],
-    t = async_test("The element with a zero tabindex must be focused by press 'Tab' key"),
-    testEle;
+    t = async_test("The element with a zero tabindex must be focused by press 'Tab' key");
 
 setup(function () {
-  testEle = document.getElementById("test");
-  document.body.focus(); //Let document get the focus
+  document.body.focus();
 }, {timeout: 20000});
 
 document.forms.fm.addEventListener("focus", function (evt) {

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: foucs - positive tabindex</title>
+<title>HTML Test: focus - positive tabindex</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/editing.html#sequential-focus-navigation-and-the-tabindex-attribute">
 <meta assert="flag" content="interact">
-<meta assert="assert" content="Check if the tabindex attribute controls an element is supposed to be focusable">
+<meta assert="assert" content="Check if the tabindex attribute controls whether an element is supposed to be focusable">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <h2>Steps:</h2>
@@ -19,6 +19,7 @@
 </form>
 <script>
 
+//This test can be automated once we have an uniform way to use webdriver.
 var t = async_test("The element with a positive tabindex must be focused by press 'Tab' key");
 
 setup({timeout: 10000});

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: foucs - default value of tabindex</title>
+<title>HTML Test: focus - default value of tabindex</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/editing.html#sequential-focus-navigation-and-the-tabindex-attribute">
 <script src="/resources/testharness.js"></script>
@@ -15,7 +15,7 @@ test(function() {
 }, "The default value of tabIndex attribute must be 0 for elements that are focusable");
 
 test(function() {
-  assert_equals(document.getElementById("test2").tabIndex, -1, "The value of tabIndex attribute should be 0.");
+  assert_equals(document.getElementById("test2").tabIndex, -1, "The value of tabIndex attribute should be -1.");
 }, "The default value of tabIndex attribute must be -1 for elements that are not focusable");
 
 </script>

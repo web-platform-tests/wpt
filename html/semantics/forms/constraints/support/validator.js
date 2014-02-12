@@ -296,7 +296,7 @@ var validator = {
 
           if (testee[i].checkPoints) {
             for (var j = 0; j < testee[i].checkPoints.length; j++) {
-              testee[i].testData[j].name = testee[i].testData[j].name.replace("/\[.*\]\s/g", prefix);
+              testee[i].testData[j].name = testee[i].testData[j].name.replace(/\[.*\]\s/g, prefix);
               this[testMethod](ele, testee[i].testData[j]);
             }
           } else {

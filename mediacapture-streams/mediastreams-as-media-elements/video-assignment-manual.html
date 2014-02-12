@@ -31,7 +31,6 @@ t.step(function() {
        assert_equals(vid.played.end(0), vid.currentTime, "A MediaStream's timeline always consists of a single range");
        assert_equals(vid.readyState, vid.HAVE_ENOUGH_DATA, "Upon selecting a media stream, the UA sets readyState to HAVE_ENOUGH_DATA");
        var time = vid.currentTime;
-       // not as in spec yet, see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22249
        assert_throws("INVALID_STATE_ERR", function() {
           vid.currentTime = 0;
        });
@@ -48,16 +47,9 @@ t.step(function() {
     assert_equals(vid.seekable.length, 0, "A MediaStream is not seekable");
     assert_equals(vid.defaultPlaybackRate, 1, "playback rate is always 1");
     assert_equals(vid.playbackRate, 1, "playback rate is always 1");
-    // TODO re-enable after resolution of see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22247#c1 ?
-    // assert_equals(vid.preload, "none", "A MediaStream cannot be preloaded.");
-    // not as in spec, see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22246
     assert_equals(vid.buffered.length, 0, "A MediaStream cannot be preloaded.  Therefore, there is no buffered timeranges");
     assert_equals(vid.duration, Infinity, " A MediaStream does not have a pre-defined duration. ");
     assert_equals(vid.startDate, NaN, " A MediaStream does not specify a timeline offset");
-    assert_true(!vid.loop, "A MediaStream cannot be looped");
-    vid.loop = true;
-    // not sure about that one https://www.w3.org/Bugs/Public/show_bug.cgi?id=22247
-    //assert_true(!vid.loop, "Setting looped to true in a MediaStream is a no-op");
   }), function(error) {});
 });
 </script>

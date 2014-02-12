@@ -11,7 +11,7 @@
         <link rel="match" href="reference/mix-blend-mode-parent-element-overflow-hidden-and-border-radius-ref.html">
         <style type="text/css">
             .parent {
-                background: aqua;/*rgb(0,255,255);*/
+                background: red;
                 width: 140px;
                 height: 140px;
                 position: relative;
@@ -20,15 +20,15 @@
                 border-radius: 1em 5em;
             }
             .blended {
-                background: red;/*rgb(255,0,0);*/
+                background: yellow;
                 width: 200px;
                 height: 200px;
-                mix-blend-mode: multiply;
+                mix-blend-mode: difference;
             }
         </style>
     </head>
     <body>
-        <p> Test passes if you see a black square with rounded corners.</p>
+        <p> Test passes if you see a lime square with rounded corners.</p>
         <div class="parent">
             <div class="blended"></div>
         </div>

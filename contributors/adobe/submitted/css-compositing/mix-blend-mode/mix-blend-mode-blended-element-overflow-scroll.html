@@ -11,7 +11,7 @@
         <link rel="match" href="reference/mix-blend-mode-blended-element-overflow-scroll-ref.html">
         <style type="text/css">
             .parent {
-                background: aqua;/*rgb(0,255,255);*/
+                background: yellow;/*rgb(0,255,255);*/
                 width: 100px;
                 height: 100px;
                 position: relative;
@@ -23,7 +23,7 @@
                 width: 150px;
                 height: 150px;
                 overflow:scroll;
-                mix-blend-mode: multiply;
+                mix-blend-mode: difference;
             }
             .scrollingContent {
                 width: 200px;
@@ -32,7 +32,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if you see a black rectangle.</p>
+        <p>Test passes if you see a lime rectangle.</p>
         <div class="parent">
             <div class="blended">
                 <div class="scrollingContent"></div>

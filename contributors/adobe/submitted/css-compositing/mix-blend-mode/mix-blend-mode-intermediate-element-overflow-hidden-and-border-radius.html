@@ -18,11 +18,11 @@
                 z-index: 1;
             }
             .blended {
-                background: fuchsia;/*rgb(255,0,255);*/
+                background: fuchsia;
                 width: 150px;
                 height: 75px;
                 margin-top: -75px;
-                mix-blend-mode: multiply;
+                mix-blend-mode: difference;
             }
             .siblingOfBlended {
                 background: yellow;/*rgb(255,255,0);*/
@@ -34,7 +34,7 @@
         </style>
     </head>
     <body>
-        <p> This test passes if you can see a rectangle split in two pieces: the top half is yellow with aqua rounded borders and the bottom half is red with blue borders.</p>
+        <p> This test passes if you can see a rectangle split in two pieces: the top half is yellow with aqua rounded borders and the bottom half is aqua with yellow borders.</p>
         <div class="parent">
             <div class="siblingOfBlended"></div>
             <div class="blended">

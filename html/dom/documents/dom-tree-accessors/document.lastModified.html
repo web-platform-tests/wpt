@@ -2,7 +2,6 @@
 <title>document.lastModified</title>
 <link rel="author" title="kyo_ago" href="mailto:kyo.ago1983@gmail.com">
 <link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#dom-document-lastmodified">
-<link rel="stylesheet" href="/resources/testharness.css">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -14,62 +13,68 @@ test(function() {
   );
 }, 'Check format');
 
-test(function() {
+var lmHeaderTest = async_test("Equals Last-Modified header");
+lmHeaderTest.step(function () {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', location.href, false);
+  xhr.open('GET', location.href);
+  xhr.onreadystatechange = lmHeaderTest.step_func(function () {
+    if (xhr.readyState !== 4) {
+      return;
+    }
+    var lastModified = xhr.getResponseHeader("Last-Modified");
+
+    assert_equals(
+      formatDateTime(new Date(lastModified)),
+      formatDateTime(new Date(document.lastModified))
+    );
+    xhrTest.done();
+  })
   xhr.send();
-  var lastModified = xhr.getResponseHeader("Last-Modified");
+});
 
-  assert_equals(
-    formatDateTime(new Date(lastModified)),
-    formatDateTime(new Date(document.lastModified))
-  );
-}, 'Equals Last-Modified header');
+var iframe = document.createElement('iframe');
+iframe.src = URL.createObjectURL(new Blob([[
+  '<!DOCTYPE html>',
+  '<html>',
+  '<head><title><\/title><\/head>',
+  '<body><\/body>',
+  '<\/html>'
+].join('\n')], { 'type' : 'text/html' }));
+document.body.appendChild(iframe);
 
-(function () {
-  var lmNullTest = async_test("Testing null lastModified");
-  var lmCurrentTest = async_test("Testing count up lastModified");
+var lmNullTest = async_test("Testing null lastModified");
+iframe.addEventListener('load', lmNullTest.step_func(function () {
+  var lastModified = formatDateTime(new Date());
+  assert_equals(iframe.contentDocument.lastModified, lastModified);
+  lmNullTest.done();
+}));
 
-  var htmlUrl = URL.createObjectURL(new Blob([[
-    '<!DOCTYPE html>',
-    '<html>',
-    '<head><title><\/title><\/head>',
-    '<body><\/body>',
-    '<\/html>'
-  ].join('\n')], { 'type' : 'text/html' }));
-  var iframe = document.createElement('iframe');
-  iframe.src = htmlUrl;
-  document.body.appendChild(iframe);
-
-  iframe.addEventListener('load', lmNullTest.step_func(assertLastModifiedNull));
-  iframe.addEventListener('load', lmCurrentTest.step_func(assertLastModifiedCountUp));
-
-  function assertLastModifiedNull () {
+var lmCurrentTest = async_test("Testing count up lastModified");
+iframe.addEventListener('load', lmCurrentTest.step_func(function () {
+  setTimeout(lmCurrentTest.step_func(function () {
     var lastModified = formatDateTime(new Date());
     assert_equals(iframe.contentDocument.lastModified, lastModified);
-    lmNullTest.done();
-  }
-
-  function assertLastModifiedCountUp () {
-    setTimeout(lmCurrentTest.step_func(function () {
-      var lastModified = formatDateTime(new Date());
-      assert_equals(iframe.contentDocument.lastModified, lastModified);
-      lmNullTest.done();
-    }), 1100);
-  }
-})();
+    lmCurrentTest.done();
+  // Waiting to change the seconds.
+  }), 1100);
+}));
 
 function formatDateTime (now) {
   //Format MM/DD/YYYY hh:mm:ss
+  var pad = function (x) {
+    var str = String(x);
+    return (str.length === 1) ? ('0' + str) : str;
+  }
+
   var date = [
-    ('0' + (now.getMonth() + 1)).replace(/^0(\d\d)/, '$1'),
-    ('0' + now.getDate()).replace(/^0(\d\d)/, '$1'),
+    pad(now.getMonth() + 1),
+    pad(now.getDate()),
     now.getFullYear()
   ].join('/');
   var time = [
-    ('0' + now.getHours()).replace(/^0(\d\d)/, '$1'),
-    ('0' + now.getMinutes()).replace(/^0(\d\d)/, '$1'),
-    ('0' + now.getSeconds()).replace(/^0(\d\d)/, '$1')
+    pad(now.getHours()),
+    pad(now.getMinutes()),
+    pad(now.getSeconds())
   ].join(':');
 
   return date + ' ' + time;

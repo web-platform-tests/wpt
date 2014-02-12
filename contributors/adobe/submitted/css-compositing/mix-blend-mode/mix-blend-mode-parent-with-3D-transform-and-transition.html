@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>CSS Test: blending between an element having 3D transitions and its child</title>
-		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<link rel="author" title="Ion Roșca" href="mailto:rosca@adobe.com">
-		<link rel="reviewer" title="Mihai Țică" href="mailto:mitica@adobe.com">
-		<link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
-		<meta name="flags" content="">
-		<meta name="assert" content="Test checks that an element having mix-blend-mode blends with its parent element having 3D transform and transition">
-		<style type="text/css">
-			.parent {
-				background: aqua;/*rgb(0,255,255);*/
-				width: 140px;
-				height: 140px;
-				padding-top: 1px;
-				position:relative;
-				z-index: 1;
-				transition: transform 2s;
+    <head>
+        <title>CSS Test: blending between an element having 3D transitions and its child</title>
+        <link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+        <link rel="author" title="Ion Roșca" href="mailto:rosca@adobe.com">
+        <link rel="reviewer" title="Mihai Țică" href="mailto:mitica@adobe.com">
+        <link rel="help" href="http://dev.w3.org/fxtf/compositing-1/#mix-blend-mode">
+        <meta name="flags" content="">
+        <meta name="assert" content="Test checks that an element having mix-blend-mode blends with its parent element having 3D transform and transition">
+        <style type="text/css">
+            .parent {
+                background: aqua;/*rgb(0,255,255);*/
+                width: 140px;
+                height: 140px;
+                padding-top: 1px;
+                position:relative;
+                z-index: 1;
+                transition: transform 2s;
 
-			}
-			.parent:hover {
-				transform: rotateX(40deg);
-			}
-			.blended {
-				background: fuchsia;/*rgb(255,0,255);*/
-				margin-top: 20px;
-				margin-left: 20px;
-				width: 200px;
-				height: 200px;
-				mix-blend-mode: difference;
-				}
-		</style>
-	</head>
-	<body>
-		<p>You should see 2 partially overlapping squares having fuchsia and aqua colors.<br>
-			The intersection of these 2 squares should be yellow. <br>
-			When you hover over the squares, they will rotate, without colors being changed.
-		</p>
-		<div class="parent">
-			<div class="blended"></div>
-		</div>
-	</body>
+            }
+            .parent:hover {
+                transform: rotateX(40deg);
+            }
+            .blended {
+                background: fuchsia;/*rgb(255,0,255);*/
+                margin-top: 20px;
+                margin-left: 20px;
+                width: 200px;
+                height: 200px;
+                mix-blend-mode: difference;
+                }
+        </style>
+    </head>
+    <body>
+        <p>You should see 2 partially overlapping squares having fuchsia and aqua colors.<br>
+            The intersection of these 2 squares should be yellow. <br>
+            When you hover over the squares, they will rotate, without colors being changed.
+        </p>
+        <div class="parent">
+            <div class="blended"></div>
+        </div>
+    </body>
 </html>

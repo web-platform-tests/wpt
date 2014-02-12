@@ -14,33 +14,33 @@
         <td id="table-cell">Shady Grove</td>
         <td>Aeolian</td>
     </tr>
-    <tr id="parent">    
+    <tr id="parent">
         <td id="target">Over the river, Charlie</td>
         <td>Dorian</td>
     </tr>
     </tbody>
 </table>
-        
+
 <script>
-    setup({timeout:500});
-    var EVENT = "foo";    
+
+    var EVENT = "foo";
     var TARGET = document.getElementById("target");
-    var PARENT = document.getElementById("parent"); 
+    var PARENT = document.getElementById("parent");
     var TBODY = document.getElementById("table-body");
     var TABLE = document.getElementById("table");
     var BODY = document.body;
-    var HTML = document.documentElement;                
+    var HTML = document.documentElement;
     var CurrentTargets = [window, document, HTML, BODY, TABLE, TBODY, PARENT, TARGET];
-    var ExpectResult = [window, document, HTML, BODY, TABLE, TARGET, PARENT, TBODY, 
+    var ExpectResult = [window, document, HTML, BODY, TABLE, TARGET, PARENT, TBODY,
                         TABLE, BODY, HTML, document, window, TBODY, PARENT, TARGET];
     var ActualResult = [];
     var ExpectTypes = "foo,foo,foo,foo,foo,bar,bar,bar,bar,bar,bar,bar,bar,foo,foo,foo,";
     var ActualTypes = "";
-    
-    var description = "Test Description: " + 
-                      "Implementations of the DOM event model must be reentrant. Event listeners may perform actions that " + 
-                      "cause additional events to be dispatched. Such events are handled in a synchronous manner, the event " + 
-                      "propagation that causes the event listener to be triggered must resume only after the event dispatch " + 
+
+    var description = "Test Description: " +
+                      "Implementations of the DOM event model must be reentrant. Event listeners may perform actions that " +
+                      "cause additional events to be dispatched. Such events are handled in a synchronous manner, the event " +
+                      "propagation that causes the event listener to be triggered must resume only after the event dispatch " +
                       "of the new event is completed.";
 
     test(function()
@@ -50,27 +50,27 @@
             CurrentTargets[i].addEventListener(EVENT, TestEvent, true);
             CurrentTargets[i].addEventListener("bar", TestEvent, false);
         }
-       
+
         var evt = document.createEvent("Event");
-        evt.initEvent(EVENT, false, true);               
+        evt.initEvent(EVENT, false, true);
         TARGET.dispatchEvent(evt);
 
         assert_array_equals(ActualResult, ExpectResult, "ActualResult");
         assert_equals(ActualTypes, ExpectTypes, "ActualTypes");
-        
+
     }, description);
-         
+
     function TestEvent(evt)
     {
-        ActualResult.push(evt.currentTarget);         
+        ActualResult.push(evt.currentTarget);
         ActualTypes += evt.type + ",";
-        
+
         if (TABLE == evt.currentTarget && EVENT == evt.type)
         {
             var e = document.createEvent("Event");
             e.initEvent("bar", true, true);
             TARGET.dispatchEvent(e);
-        }                
+        }
     }
 </script>
 </body>

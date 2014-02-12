@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<meta charset=UTF-8>
+<title>HTMLMediaElement.currentTime: Seeking to a value less than the earliest possible position seeks to the earliest possible position.</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/">
+<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html/#dom-media-seek">
+<meta name="assert" content="Seeking to a value less than the earliest possible position seeks to the earliest possible position.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/media.js"></script>
+<script>
+var videotest = async_test("Seeking to a value less than the earliest possible position seeks to the earliest possible position.");
+
+function getTestVideoElement()
+{
+   return document.getElementById("video0");
+}
+
+function do_play(event)
+{
+  videotest.step(function() {
+    var vid = getTestVideoElement();
+    vid.pause();
+    vid.currentTime = -1;
+  });
+}
+
+function do_seeked(event)
+{
+  videotest.step(function() {
+    var vid = getTestVideoElement();
+    assert_equals(vid.currentTime, 0);
+  });
+  videotest.done();
+}
+
+</script>
+
+<div id='log'></div>
+
+<script>
+document.write(
+  "<video id='video0' src='" + getVideoURI("/media/movie_5") + "'" +
+  " onseeked='do_seeked(event);'" +
+  " onplay='do_play(event);'" +
+  " autoplay>" +
+  "Your browser does not support media elements." +
+  "<\/video>");
+</script>

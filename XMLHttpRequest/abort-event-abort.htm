@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-abort()-method" data-tested-assertations="following-sibling::ol/li[4]/ol/li[5]" />
@@ -35,7 +35,7 @@
                 });
             };
 
-            xhr.open("GET", "./resources/content.php", true); // This should cause a readystatechange event that calls abort()
+            xhr.open("GET", "./resources/content.py", true); // This should cause a readystatechange event that calls abort()
             assert_throws("InvalidStateError", function(){ xhr.send() })
             test.done()
         });

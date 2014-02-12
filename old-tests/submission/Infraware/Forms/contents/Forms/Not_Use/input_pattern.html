@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>input_pattern</h3>
+	</p>
+	
+	<li>When the inputbox control is a digit followed by three uppercase letters, you cannot submit this form.</li>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action="?x=1"
+		  name="input_form">
+	<p><input type='text' id='input_text' pattern="[0-9]"></p>
+	<p><input type='submit' id='input_submit'></p>
+	</form>
+
+	<script>
+		
+		var input_text = document.getElementById("input_text");
+		pattern1 = input_text.pattern;
+		input_text.pattern = "[0-9][A-Z]{3}";
+
+		if (typeof(input_text.pattern) == "string") {
+			if (input_text.pattern != "[0-9][A-Z]{3}" || pattern1 != "[0-9]") {
+				test(function() {
+					assert_unreached("pattern attribute is not correct.");
+				});
+			}
+		} else {
+			test(function() {
+				assert_unreached("pattern attribute is not exist.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

@@ -8,7 +8,7 @@
 <body>
 <div id=log></div>
 <script>
-    setup({timeout:500});
+    
     var DATA = "TestEventTarget";
     var FileName = './support/EventListener.js';
     var ExpectedResult = "ping"; 
@@ -38,22 +38,6 @@
         assert_equals(TestResult, ExpectedResult);
         t.done();
     }
-</script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html>
-<head>
-<title> Close: clear events queue </title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-</head>
-<body>
-<div id=log></div>
-<script>
-
-
 </script>
 </body>
 </html>

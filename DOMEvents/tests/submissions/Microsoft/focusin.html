@@ -7,7 +7,7 @@
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
@@ -15,14 +15,14 @@
 
             var EVENT = "focusin";
             var TARGET, PARENT;
-            
+
             window.onload = function()
             {
                 try
                 {
                     TARGET = document.getElementById("target");
                     PARENT = document.getElementById("parent");
-        
+
                     PARENT.addEventListener(EVENT, TestBubble, false);
                 }
                 catch(ex)
@@ -30,23 +30,23 @@
                     FailTest();
                 }
             }
-            
-            function TestBubble(evt) 
-            {                                     
+
+            function TestBubble(evt)
+            {
                 if ((evt.type == EVENT) && (evt.currentTarget == PARENT) && (evt.target == TARGET))
                 {
-                    PassTest();    
+                    PassTest();
                 }
                 else
                 {
                     FailTest();
                 }
             }
-        </script> 
+        </script>
     </head>
-    <body>      
+    <body>
         <h4>
-            Test Description: 
+            Test Description:
             focusin event fires when an event target is about to receive focus.
         </h4>
 
@@ -56,6 +56,6 @@
 
         <p>Test passes if the word "PASS" appears below after clicking the above textbox using mouse.</p>
        	<div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

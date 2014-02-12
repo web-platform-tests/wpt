@@ -34,9 +34,7 @@
     <script>
     (function() {
 
-      var t = 5*60*1000;
-      setup({ timeout: t });
-      countdown({ timeout: t });
+      setup({ explicit_timeout: true });
       
       var onchargingchange_test = async_test('When the device is unplugged in and its charging state is updated, must set the charging attribute\'s value to false and fire a chargingchange event.');
       navigator.battery.onchargingchange = onchargingchange_test.step_func(function (e) {

@@ -13,7 +13,7 @@
       function request(input, output) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("POST", "resources/content.php", false)
+          client.open("POST", "resources/content.py", false)
           client.send(input)
           assert_equals(client.responseText, output)
         }, document.title + " (" + output + ")")

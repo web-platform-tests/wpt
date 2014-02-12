@@ -8,32 +8,32 @@
 <body>
 <div id=log></div>
 
-<div id="parent" style="display: none">          
+<div id="parent" style="display: none">
     <input id="target" type="hidden" value=""/>
 </div>
-        
+
 <script>
-    setup({timeout:500});
+
     var EVENT = "foo";
     var TARGET = document.getElementById("target");
     var PARENT = document.getElementById("parent");
     var ExpectResult = [TARGET, PARENT, PARENT, document, window];
     var ActualResult = [];
-    
-    var description = "Test Description: " + 
+
+    var description = "Test Description: " +
                       "An event object may be properly dispatched multiple times while also allowing to prevent the event objects " +
                       "propagation prior to the event dispatch.";
 
     test(function()
-    {         
+    {
         var evt = document.createEvent("Event");
         evt.initEvent(EVENT, true, true);
-        
+
         TARGET.addEventListener(EVENT, TestEvent, false);
         PARENT.addEventListener(EVENT, TestEvent, false);
         document.addEventListener(EVENT, TestEvent, false);
         window.addEventListener(EVENT, TestEvent, false);
-        
+
         TARGET.dispatchEvent(evt);
         PARENT.dispatchEvent(evt);
         document.dispatchEvent(evt);
@@ -41,11 +41,11 @@
         assert_array_equals(ActualResult, ExpectResult);
 
     }, description);
-    
+
     function TestEvent(evt)
     {
         ActualResult.push(evt.currentTarget);
-        
+
         if (PARENT == evt.currentTarget)
         {
             evt.stopPropagation();

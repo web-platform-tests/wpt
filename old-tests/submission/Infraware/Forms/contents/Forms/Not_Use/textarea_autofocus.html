@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>textarea_autofocus</h3>
+	</p>
+	
+	<li>The textarea control be focused when the document was loaded.</li>
+	
+	<hr>
+
+	<div id="log"></div>
+	
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action=""
+		  id="input_form">
+	<p><textarea id='textarea_id'></textarea></p>
+	</form>
+
+	<script>
+		var textarea = document.getElementById("textarea_id");
+		textarea.autofocus = true;
+
+		if (typeof(textarea.autofocus) == "boolean") {
+			if (textarea.autofocus != true) {
+				test( function() {
+					assert_true(false, "autofocus attribute is not correct.");
+				});
+			}
+		} else {
+			test( function() {
+				assert_unreached("autofocus attribute is not exist.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

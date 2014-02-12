@@ -1,18 +1,18 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title id='desc'> MouseEvent.relatedTarget for mouseenter Event </title> 
+        <title id='desc'> MouseEvent.relatedTarget for mouseenter Event </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "mouseenter";
             var TARGET, PARENT;
 
@@ -29,10 +29,10 @@
                     FailTest();
                 }
             }
-            
-            function TestEvent(evt) 
+
+            function TestEvent(evt)
             {
-                if (evt.type == EVENT && evt.relatedTarget == PARENT) 
+                if (evt.type == EVENT && evt.relatedTarget == PARENT)
                 {
                     PassTest();
                 }
@@ -41,29 +41,29 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
-            Test Description: MouseEvent.relatedTarget for mouseenter event indicates 
+            Test Description: MouseEvent.relatedTarget for mouseenter event indicates
             the event target a pointing device is exiting, if any.
         </h4>
-        
+
         <pre>
             <div id="parent" style="border:solid 1px green; width:350px; height:100px;">
 
                 <button id="target">BUTTON</button>
-                
+
             </div>
-            
+
             Steps:
             1) Move the mouse pointer into the above green rectangle
             2) Then move the mouse pointer onto the button
         </pre>
-            
+
         <p>Test passes if the word "PASS" appears below after following the above steps.</p>
            <div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

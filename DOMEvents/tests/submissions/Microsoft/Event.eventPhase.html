@@ -7,12 +7,12 @@
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "dblclick";
             var TARGET, PARENT;
             var ActualResult = [];
@@ -24,15 +24,15 @@
                 {
                     TARGET = document.getElementById("target");
                     PARENT = document.getElementById("parent");
-        
+
                     ExpectResult = ["[1]" + PARENT, "[2]" + TARGET, "[3]" + document.body];
-        
+
                     PARENT.addEventListener(EVENT, TestEvent, true);
                     PARENT.addEventListener(EVENT, TestEvent, false);
                     TARGET.addEventListener(EVENT, TestEvent, true);
                     TARGET.addEventListener(EVENT, TestEvent, false);
                     document.body.addEventListener(EVENT, TestEvent, false);
-                    
+
                     PARENT.removeEventListener(EVENT, TestEvent, false);
                     TARGET.removeEventListener(EVENT, TestEvent, true);
                 }
@@ -41,16 +41,16 @@
                     FailTest();
                 }
             }
-        
-            function TestEvent(evt) 
+
+            function TestEvent(evt)
             {
                 ActualResult.push("[" + evt.eventPhase + "]" + evt.currentTarget);
-                
+
                 if ((evt.eventPhase == 3) && (evt.currentTarget == document.body))
                 {
                     if (ExpectResult.toString() == ActualResult.toString())
                     {
-                        PassTest();    
+                        PassTest();
                     }
                     else
                     {
@@ -58,11 +58,11 @@
                     }
                 }
             }
-        </script> 
+        </script>
     </head>
-    <body>      
+    <body>
         <h4>
-            Test Description: 
+            Test Description:
             eventPhase is used to indicate which phase of event flow is currently being accomplished.
         </h4>
 
@@ -72,6 +72,6 @@
 
         <p>Test passes if the word "PASS" appears below after double clicking the above textbox.</p>
        	<div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

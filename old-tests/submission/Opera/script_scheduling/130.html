@@ -18,7 +18,7 @@ t.step(function() {
   var frag = document.createDocumentFragment();
   var inner_script = document.createElement("script");
 
-  inner_script.src = "scripts/delay.php?time=1&url=include-1.js";
+  inner_script.src = "scripts/include-1.js?pipe=trickle(d1)";
   frag.appendChild(document.createTextNode("t.step(function() {log('inline script #2');\n"));
   frag.appendChild(inner_script);
   frag.appendChild(document.createTextNode("log('end inline script #2');})"));

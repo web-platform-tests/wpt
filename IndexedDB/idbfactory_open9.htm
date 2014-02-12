@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>IDBFactory.open() - errors in version argument</title>
+<script src="support.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  [-1, -0.5, 0, 0.5, 0.8, 0x20000000000000, NaN, Infinity, -Infinity, "foo", undefined, null, false,
+    { toString: function() { assert_unreached("toString should not be called for ToPrimitive [Number]"); },
+      valueOf: function() { return 0; } },
+    { toString: function() { return 0; },
+      valueOf: function() { return {}; } },
+    { toString: function() { return {}; },
+      valueOf: function() { return {}; } }
+  ].forEach(function(val) {
+    test(function() {
+      assert_throws(new TypeError(), function() {
+        window.indexedDB.open(databaseName, val);
+      });
+    }, "Calling open() with version argument " +
+       ((typeof val == "object" && val) ? "object" : format_value(val)) +
+       " should throw TypeError.");
+  });
+  [1.5].forEach(function(val) {
+    test(function() {
+      window.indexedDB.open(databaseName, val);
+    }, "Calling open() with version argument " +
+       ((typeof val == "object" && val) ? "object" : format_value(val)) +
+       " should not throw.");
+  });
+});
+</script>

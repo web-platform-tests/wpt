@@ -8,6 +8,7 @@
  <body>
   <div id=log></div>
   <script>
+    setup({allow_uncaught_exception:true});
     var t = async_test();
     var ran = false;
     // spec doesn't say to fire an event so this should do nothing

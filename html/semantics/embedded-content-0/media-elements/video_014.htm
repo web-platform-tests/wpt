@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>HTML5 Media Elements: 'duration' returns NaN when no media data is available.</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+    <link rel="help" href="http://www.w3.org/TR/html5/embedded-content-0.html#dom-media-duration" />
+    <meta name="assert" content="'duration' returns NaN when no media data is available." />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id=log></div>
+    <video id="video0">Your browser does not support media elements.</video>
+    <script type="text/javascript">
+      test(function() {assert_true(isNaN(document.getElementById("video0").duration))}, "'duration' returns NaN when no media data is available.");
+    </script>
+  </body>
+</html>

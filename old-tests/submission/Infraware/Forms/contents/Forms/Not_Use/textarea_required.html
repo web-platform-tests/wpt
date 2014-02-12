@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>textarea_required</h3>
+	</p>
+	
+	<li>When the textarea control is empty, you cannot submit this form.</li>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action="?x=1"
+		  name="input_form">
+		<p><textarea id='textarea_id'></textarea></p>
+		<p><input type='submit' id='input_submit'></p>
+	</form>
+
+	<script>
+		
+		var textarea = document.getElementById("textarea_id");
+		textarea.required = true;
+
+		if (typeof(textarea.required) == "boolean") {
+			if (textarea.required != true) {
+				test( function() {
+					assert_true(false, "required attribute is not correct.");
+				});
+			}
+		} else {
+			test( function() {
+				assert_unreached("required attribute is not exist.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

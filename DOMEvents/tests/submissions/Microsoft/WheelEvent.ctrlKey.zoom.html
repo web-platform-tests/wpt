@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> WheelEvent: wheel - MouseEvent.ctrlKey and Zooming </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             function DisableZooming()
             {
                 BEFORE = HELPER.getBoundingClientRect().width;
                 DisableZoom = true;
             }
-            
+
             function VerifyResult()
             {
                 AFTER = HELPER.getBoundingClientRect().width;
-                
+
                 if ((true == DisableZoom) && (true == TestResult) && (BEFORE == AFTER))
                 {
                     PassTest();
@@ -32,7 +32,7 @@
                     FailTest();
                 }
             }
-            
+
             function TestEvent(evt)
             {
                 if ((true == DisableZoom) && (true == evt.ctrlKey) && (EVENT == evt.type))
@@ -41,7 +41,7 @@
                     TestResult = evt.defaultPrevented;
                 }
             }
-            
+
             var EVENT = "wheel";
             var TARGET;
             var HELPER;
@@ -49,7 +49,7 @@
             var AFTER;
             var DisableZoom = false;
             var TestResult = false;
-            
+
             window.onload = function()
             {
                 try
@@ -63,7 +63,7 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
@@ -71,11 +71,11 @@
             Test Description: The typical default action of the wheel event type, in some cases,  is to
             zoom the document. If this event is canceled, the implementation must not zoom the document.
         </h4>
-        
+
         <div id="helper" style="width:100%"></div>
-        
+
         <p id="manualsteps">
-            Steps: 
+            Steps:
             <ol>
                 <li> Note: an input device with scroll wheel support (e.g., mouse wheel) is required
                 <li> Make sure the page can be zoomed in/out by holding down '{CTRL}' key + scrolling the mouse wheel on the page

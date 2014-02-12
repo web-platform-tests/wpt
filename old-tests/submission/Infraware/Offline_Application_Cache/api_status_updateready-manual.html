@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html manifest="manifest/clock.manifest">
+ <head>
+  <title>Offline Application Cache</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>API_status_UPDATEREADY</h3>
+	</p>
+	
+	<ol type="1">
+	<li>Modify the part of comment in manifest file of server.</li>
+	<li>Refresh the page.</li>
+	</ol>
+
+	<hr>
+
+	<div id="log"></div>
+		 
+	<script>
+
+		var t = async_test("updateready status test");
+
+		if (('applicationCache' in window) && window.applicationCache !== null){
+			var cache = window.applicationCache;
+
+			cache.addEventListener('updateready', function(){
+				if (cache.status == cache.UPDATEREADY && cache.status == 4) {
+					t.step(function() {
+					   assert_true(true);
+					  });
+					t.done();
+				} else {
+					test(function() {
+						assert_unreached("applicationCache status is not updateready.");
+					}, "updateready status test")
+				}
+
+				try {
+					cache.swapCache();
+				} catch (e) {
+					
+				}}, false);
+		}
+
+	</script>
+
+ </body>
+</html>

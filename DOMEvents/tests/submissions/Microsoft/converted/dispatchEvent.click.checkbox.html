@@ -14,24 +14,24 @@
 </div>
 
 <script>
-    setup({timeout:500, explicit_done:true});
+    setup({explicit_done:true});
     var EVENT = "click";
     var TARGET = document.getElementById("target");
     var BUTTON = document.getElementById("button");
     var state;
 
-    var description = "Test Description: " + 
+    var description = "Test Description: " +
                       "MouseEvent: Default action is performed when a synthetic click event is dispatched on a checkbox element";
-    
+
     BUTTON.addEventListener(EVENT, TestEvent, true);
     TARGET.addEventListener(EVENT, TestEvent, true);
-    
+
     window.onload = function()
     {
         state = TARGET.checked;
         BUTTON.click();
     }
-    
+
     function TestEvent(evt)
     {
         if (BUTTON == evt.target)
@@ -40,7 +40,7 @@
             test(function()
             {
                 BUTTON.removeEventListener(EVENT, TestEvent, true);
-                
+
                 e = document.createEvent("MouseEvent");
                 e.initMouseEvent(EVENT,  /* type */
                                  false,  /* bubbles */
@@ -57,11 +57,11 @@
                                  false,  /* metaKey */
                                  0,      /* button */
                                  null    /* relatedTarget */);
-                                 
+
                 assert_array_equals([TARGET.checked, e.type, e.bubbles], [state, EVENT, false]);
-                                   
+
             }, "Checkbox state is unchanged before the synthetic click event is dispatched");
-            
+
             TARGET.dispatchEvent(e);
         }
         else if (TARGET == evt.target)
@@ -69,9 +69,9 @@
             test(function()
             {
                 assert_array_equals([TARGET.checked, evt.type, evt.bubbles], [!state, EVENT, false]);
-                
+
             }, description);
-            
+
             done();
         }
     }

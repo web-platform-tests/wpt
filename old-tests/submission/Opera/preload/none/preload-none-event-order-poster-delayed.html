@@ -3,7 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <p id="log">FAIL (script didn't run)</p>
-<video preload="none" poster="../resources/range-request.php?rate=5000&fileloc=poster.png"></video>
+<video preload="none" poster="../resources/poster.png?pipe=trickle(5000:d1:r2)"></video>
 <script>
 var t = async_test("HTMLVideoElement.preload:none should delay window load for the poster to load", {timeout:3000});
 t.step(function() {

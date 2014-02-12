@@ -25,7 +25,7 @@
           assert_equals( client.responseXML.documentElement.firstChild.textContent,  'Hello World！' );
           test.done();
         };
-        client.open("GET", "resources/status.php?type="+encodeURIComponent('text/plain;charset=Shift-JIS')+'&content='+encodeURIComponent('<test><message>Hello World！</message></test>'));
+        client.open("GET", "resources/status.py?type="+encodeURIComponent('text/plain;charset=Shift-JIS')+'&content='+encodeURIComponent('<test><message>Hello World！</message></test>'));
         client.overrideMimeType('application/xml;charset=UTF-8');
         client.send();
       });

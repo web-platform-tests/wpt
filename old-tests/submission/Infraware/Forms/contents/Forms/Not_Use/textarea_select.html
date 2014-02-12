@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>textarea_select</h3>
+	</p>
+	
+	<li>Everything in the text field is selected.</li>
+
+	<hr>
+
+	<p>
+		input: <textarea id="textarea_id">textarea</textarea>
+	</p>
+
+	<script>
+
+		var textField = document.getElementById("textarea_id");
+		textField.select();
+
+	</script>
+
+ </body>
+</html>

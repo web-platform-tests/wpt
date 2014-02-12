@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Firing popstate after onload with pushed state</title>
+                <meta name=timeout content=long>
 		<script type="text/javascript" src="/resources/testharness.js"></script>
 		<script type="text/javascript" src="/resources/testharnessreport.js"></script>
 	</head>
@@ -13,7 +14,7 @@
 
 //spec (25 March 2011 draft) states that popstate must fire before onload if there is a pushed/replaced state that is navigated
 var popfired = false;
-setup({explicit_done:true,timeout:30000});
+setup({explicit_done:true});
 test(function () {
 	assert_equals( history.state, null );
 }, 'history.state should initially be null');

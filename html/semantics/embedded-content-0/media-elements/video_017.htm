@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>HTML5 Media Elements: 'ratechange' event fires when 'playbackRate' changes.</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+    <link rel="help" href="http://www.w3.org/TR/html5/embedded-content-0.html#event-mediacontroller-ratechange" />
+    <meta name="assert" content="'ratechange' event fires when 'playbackRate' changes." />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <video id='video0'>
+      Your browser does not support media elements.
+    </video>
+    <script type="text/javascript">
+      var t = async_test("'ratechange' event fires when 'playbackRate' changes.");
+
+      document.getElementById("video0").addEventListener('ratechange', function() {
+        t.done();
+      }, false);
+
+      document.getElementById("video0").playbackRate = 2.0;
+    </script>
+    <div id=log></div>
+  </body>
+</html>

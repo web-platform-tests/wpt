@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
-<title>idlharness test</title>
+<meta charset="utf-8">
+<title>Web Storage IDL tests</title>
 <link rel="author" title="W3C" href="http://www.w3.org/" />
 <link rel="help" href="http://www.w3.org/TR/webstorage/#storage"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/webidl2.js/lib/webidl2.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
 <script src="/resources/idlharness.js"></script>
 </head>
 <body>
-<h1>idlharness test</h1>
-<p>This test validates the WebIDL included in the Web Storage specification.</p>
+<h1>Web Storage IDL tests</h1>
+<div id="log"></div>
 
 <pre id='untested_idl' style='display:none'>
 interface Window {
@@ -76,8 +76,5 @@ dictionary StorageEventInit : EventInit {
 })();
 
 </script>
-
-<div id="log"></div>
-
 </body>
 </html>

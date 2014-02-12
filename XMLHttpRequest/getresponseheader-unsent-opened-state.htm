@@ -22,7 +22,7 @@
             }
           })
         }
-        client.open("GET", "resources/headers.php")
+        client.open("GET", "resources/headers.py")
         assert_equals(client.getResponseHeader("x-custom-header"), null)
         assert_equals(client.getResponseHeader("Date"), null)
         client.send(null)

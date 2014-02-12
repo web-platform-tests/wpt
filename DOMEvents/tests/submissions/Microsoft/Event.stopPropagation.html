@@ -7,12 +7,12 @@
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "mousedown";
             var TARGET, PARENT;
             var ActualResult = [];
@@ -24,9 +24,9 @@
                 {
                     TARGET = document.getElementById("target");
                     PARENT = document.getElementById("parent");
-                    
+
                     ExpectResult = [document.body, PARENT];
-                    
+
                     TARGET.addEventListener(EVENT, TestEvent, true);
                     TARGET.addEventListener(EVENT, TestEvent, false);
                     PARENT.addEventListener(EVENT, TestEvent, true);
@@ -39,10 +39,10 @@
                 }
             }
 
-            function TestEvent(evt) 
+            function TestEvent(evt)
             {
                 ActualResult.push(evt.currentTarget);
-                
+
                 if (evt.currentTarget == PARENT)
                 {
                     try
@@ -54,23 +54,23 @@
                     }
                 }
             }
-            
-            function VerifyTest() 
+
+            function VerifyTest()
             {
                 if (ActualResult.toString() == ExpectResult.toString())
                 {
-                    PassTest();    
+                    PassTest();
                 }
                 else
                 {
                     FailTest();
                 }
             }
-        </script> 
+        </script>
     </head>
-    <body>      
+    <body>
         <h4>
-            Test Description: 
+            Test Description:
             stopPropagation prevents other event listeners from being triggered.
         </h4>
 
@@ -80,6 +80,6 @@
 
         <p>Test passes if the word "PASS" appears below after clicking the above button using mouse.</p>
        	<div>Test result: </div>
-        <div id='testresult'>FAIL</div> 
+        <div id='testresult'>FAIL</div>
     </body>
 </html>

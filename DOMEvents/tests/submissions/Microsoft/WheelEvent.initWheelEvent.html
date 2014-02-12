@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> WheelEvent.initWheelEvent() and Event.trusted </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "foo";
             var TARGET;
-            
+
             window.onload = function()
             {
                 try
                 {
                     TARGET = document.getElementById("target");
                     TARGET.addEventListener(EVENT, TestEvent, true);
-                    
+
                     var evt = document.createEvent("WheelEvent");
                     evt.initWheelEvent(EVENT,  /* type */
                                        true,   /* bubbles */
@@ -46,10 +46,10 @@
                 {
                     FailTest();
                 }
-            
+
             }
-            
-            function TestEvent(evt) 
+
+            function TestEvent(evt)
             {
                 if ((EVENT == evt.type) && (false == evt.trusted))
                 {
@@ -60,7 +60,7 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>

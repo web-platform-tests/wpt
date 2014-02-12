@@ -1,13 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <meta charset=utf-8>
 <title>Writer starvation</title>
+<meta name=timeout content=long>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 
 <script src=../support.js></script>
 
 <script>
-    setup({timeout: 20000});
     var db, read_request_count = 0, read_success_count = 0;
     var write_request_count = 0, write_success_count = 0;
     var RQ_COUNT = 25;

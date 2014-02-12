@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> MutationEvent.relatedNode for DOMNodeInserted and DOMNodeRemoved </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT1 = "DOMNodeInserted";
             var EVENT2 = "DOMNodeRemoved";
             var TARGET;
@@ -20,7 +20,7 @@
             var NODE;
             var ActualResult = [];
             var ExpectResult = [];
-            
+
             window.onload = function()
             {
                 try
@@ -29,7 +29,7 @@
                     PARENT = document.getElementById("parent");
                     TARGET.addEventListener(EVENT1, TestEvent, true);
                     TARGET.addEventListener(EVENT2, TestEvent, true);
-                    
+
                     ExpectResult = [TARGET, PARENT];
 
                     NODE = document.createElement("INPUT");
@@ -41,8 +41,8 @@
                     FailTest();
                 }
             }
-            
-            function TestEvent(evt) 
+
+            function TestEvent(evt)
             {
                 ActualResult.push(evt.relatedNode);
 
@@ -50,13 +50,13 @@
                 {
                     PassTest();
                 }
-                
+
                 if (2 < ActualResult.length)
                 {
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
@@ -64,7 +64,7 @@
             Test Description: MutationEvent.relatedNode is the parent node of the node being removed for DOMNodeRemoved event;
             and, it is the parent node of the node that has been inserted for DOMNodeInserted event
         </h4>
-        
+
         <span id="parent">
             <div id="target" style="border:solid 1px green; width:200px; height:50px">
             </div>

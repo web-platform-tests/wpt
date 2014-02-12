@@ -79,12 +79,12 @@ test(function () {
     var template = doc.querySelector('#tmpl1');
     var copy = template.cloneNode();
 
-    assert_equals(copy.content.childNodes.length, 2,
+    assert_equals(copy.content.childNodes.length, 0,
             'Wrong number of template content\'s copy child nodes');
     checkOwnerDocument(copy.content, template.content.ownerDocument);
 
 }, 'ownerDocument of cloned template content is set to template content owner. '
-      + 'Test cloneNode() with no arguments (true by default)');
+      + 'Test cloneNode() with no arguments (false by default)');
 
 
 

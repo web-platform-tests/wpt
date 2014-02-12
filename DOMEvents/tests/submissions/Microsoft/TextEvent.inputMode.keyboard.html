@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> TextEvent: inputMode with DOM_INPUT_METHOD_KEYBOARD </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             var EVENT = "textInput";
             var TARGET;
-            
+
             function TestEvent(evt)
             {
                 TARGET.removeEventListener(EVENT, TestEvent, true);
-                
+
                 if ((0x01 == evt.inputMode) && ("a" == evt.data))
                 {
                     PassTest();
@@ -29,7 +29,7 @@
                     FailTest();
                 }
             }
-            
+
             window.onload = function()
             {
                 try
@@ -42,7 +42,7 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
@@ -50,7 +50,7 @@
             Test Description: TextEvent.inputMode is DOM_INPUT_METHOD_KEYBOARD (0x01)
             when the text string was input through a keyboard.
         </h4>
-        
+
         <span id="parent">
             <input id="target" type="text" />
         </span>

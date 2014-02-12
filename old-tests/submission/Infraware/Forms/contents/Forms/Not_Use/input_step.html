@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Forms</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+	<p>
+		<h3>input_step</h3>
+	</p>
+	
+	<li>The range control allows 2 step in that range.</li>
+	
+	<hr>
+
+	<div id="log"></div>
+
+	<form method="post"
+		  enctype="application/x-www-form-urlencoded"
+		  action=""
+		  name="input_form">
+	<p><input id='opacity' type='range' min='0' max='1' step='0.00392156863'></p>
+	
+	</form>
+
+	<script>
+		
+		var opacity = document.getElementById("opacity");
+		opacity.step = "0.5";
+
+		if (typeof(opacity.step) == "string") {
+			if (opacity.step != "0.5") {
+				test(function() {
+					assert_true(false, "step attribute is not correct.");
+				});
+			}
+		} else {
+			test(function() {
+				assert_unreached("step attribute is not exist.");
+			});
+		}
+
+	</script>
+
+ </body>
+</html>

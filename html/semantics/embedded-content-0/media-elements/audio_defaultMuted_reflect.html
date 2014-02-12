@@ -16,20 +16,20 @@
     <script type="text/javascript">
         var media = document.getElementById("m");
         var audio = document.getElementById("a");
-        
+
         test(function() {
             assert_true(media.defaultMuted, "media.defaultMuted of value");
         }, "Check if audio.defaultMuted returns true when the muted attribute is present in the audio element");
-        
+
         test(function() {
             media.muted = false;
             assert_true(media.defaultMuted, "media.defaultMuted of value");
         }, "Check if audio.defaultMuted returns true after the muted attribute is set to false when the muted attribute is present in the audio element");
-        
+
         test(function() {
             assert_false(audio.defaultMuted, "media.defaultMuted of value");
         }, "Check if audio.defaultMuted returns false when the muted attribute is absent in the audio element");
-        
+
         test(function() {
             audio.muted = true;
             assert_false(audio.defaultMuted, "media.defaultMuted of value");

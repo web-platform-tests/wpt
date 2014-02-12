@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>  
+    <title>IDBFactory.open() - no version opens current database</title>
+    <script type="text/javascript" src="support.js"></script>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script type="text/javascript">
+        var db = null;
+        var t = async_test(); 
+        
+        function RunTest() {
+            databaseVersion = parseInt(Math.random()*1000);
+            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
+            rqOpen.onupgradeneeded = t.step_func( function(event) {
+                event.target.result.close();
+            });
+            rqOpen.onsuccess = t.step_func( OpenCurrentDatabase );
+            rqOpen.onerror = t.step_func( assert_open_request_error );
+        }
+        
+        function OpenCurrentDatabase() {
+            var rqOpen = window.indexedDB.open(databaseName);
+            rqOpen.onsuccess = t.step_func( function(event) {
+                db = event.target.result;
+                assert_equals(db.name, databaseName, "db.name");
+                assert_equals(db.version, databaseVersion, "db.version")
+                t.done();
+            });
+            rqOpen.onerror = t.step_func( assert_open_request_error );
+        }
+        
+        add_completion_callback(function() { if(db) db.close(); });
+        
+        setup(function() {
+            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
+            rqDelete.onsuccess = t.step_func( RunTest );
+        });
+    </script>
+</head>
+<body>
+    <div id="log">
+    </div>
+</body>
+</html>

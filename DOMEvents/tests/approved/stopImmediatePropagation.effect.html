@@ -22,7 +22,6 @@
 </table>
         
 <script>
-    setup({timeout:500});
     var EVENT = "foo";    
     var TARGET = document.getElementById("target");
     var PARENT = document.getElementById("parent"); 
@@ -61,7 +60,7 @@
     function TestEvent(evt, i)
     {
         ActualResult.push(evt.currentTarget);         
-        ActualListeners.push(i);
+        ActualListeners.push(i);
         if ((1 == evt.eventPhase) && (TABLE == evt.currentTarget) && (0 == i))
         {
             evt.stopImmediatePropagation();

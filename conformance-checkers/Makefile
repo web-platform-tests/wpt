@@ -7,10 +7,13 @@ EXPAND=expand
 EXPANDFLAGS=
 GIT=git
 GITFLAGS=
+PYTHON=python
+PYTHONFLAGS=
 VNU_TEST_REPO=git@github.com:validator/tests.git
 ITS_REPO=git@github.com:w3c/its-2.0-testsuite-inputdata.git
+.PHONY: .FORCE
 
-all: README.md
+all: README.md messages.json
 
 README.md: index.html
 	$(HTML2MARKDOWN) $(HTML2MARKDOWNFLAGS) $< \
@@ -20,6 +23,10 @@ README.md: index.html
 	    | $(PERL) $(PERLFLAGS) -pe 'undef $$/; s/ +(\[[0-9]+\]:)\n +/\n   $$1 /g' \
 	    | $(EXPAND) $(EXPANDFLAGS) > $@
 
+messages.json: .FORCE
+	$(PYTHON) $(PYTHONFLAGS) -mjson.tool $@ > $@.tmp
+	mv $@.tmp $@
+
 push:
 	cd .. \
 	  && $(GIT) subtree push -P conformance-checkers/ $(VNU_TEST_REPO) master \
@@ -28,4 +35,9 @@ push:
 its-push:
 	cd ..\
 	  && $(GIT) subtree push -P conformance-checkers/html-its/ $(ITS_REPO) master \
+	  && cd -
+
+its-pull:
+	cd .. \
+	  && $(GIT) pull -s subtree $(ITS_REPO) master \
 	  && cd -

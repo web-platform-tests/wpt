@@ -5,7 +5,7 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=support.js></script>
+<script src=support.js?pipe=sub></script>
 
 <h1>Status after preflight</h1>
 
@@ -18,7 +18,7 @@ function statusAfterPreflight(method, code) {
 
     async_test(document.title + " on " + method + " " + code).step(function() {
         var client = new XMLHttpRequest()
-        client.open(method, CROSSDOMAIN + "resources/status.php?" + counter
+        client.open(method, CROSSDOMAIN + "resources/status.py?" + counter
             +"&code=" + code + '&headers=x-nonsimple&preflight=200', true)
 
         client.setRequestHeader('x-nonsimple', true)

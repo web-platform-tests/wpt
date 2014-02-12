@@ -41,6 +41,7 @@ var applicationState = (function() {
 var controls = (function($) {
     var self = {
         currentSpec: null,
+        selectedSpecs: null,
         update: update,
         getState: getState,
         setLevel: setLevel,
@@ -78,6 +79,9 @@ var controls = (function($) {
     
     function update(state) {
         self.currentSpec = state.spec;
+        if (state.specs) {
+            self.selectedSpecs = state.specs.split(',');
+        }
         setViewType(state.spec);
         [
           "rfc2119",
@@ -123,6 +127,10 @@ var controls = (function($) {
 
         if (self.currentSpec) {
             output.spec = self.currentSpec;
+        }
+        
+        if (self.selectedSpecs) {
+            output.specs = self.selectedSpecs ? self.selectedSpecs.join(',') : null;
         }
         return output;
     }
@@ -192,28 +200,24 @@ SpecModel.prototype.getCurrentSpec = function() {
     return this._specs[controls.currentSpec];
 };
 
-
-SpecModel.prototype.findIntersection = function() {
-    return this._intersection = this._intersection || this._specArray.filter(function(s) {
-        return s.publisher === "W3C" && !s.insufficientData && s.requiredBy && s.requiredBy.length == 2;
-    });
-};
-
-SpecModel.prototype.findSymDiff = function() {
-    return this._symDiff = this._symDiff || this._specArray.filter(function(s) {
-        return s.publisher === "W3C" && !s.insufficientData && s.requiredBy && s.requiredBy.length == 1;
+SpecModel.prototype.findAll = function() {
+    return this._all = this._all || this._specArray.filter(function(s) {
+        return s.publisher === "W3C" && !s.insufficientData &&
+            (!controls.selectedSpecs || controls.selectedSpecs.indexOf(s.id) > -1);
     });
 };
 
 SpecModel.prototype.findMissingData = function() {
     return this._missingData = this._missingData || this._specArray.filter(function(s) {
-        return s.insufficientData;
+        return s.insufficientData &&
+            (!controls.selectedSpecs || controls.selectedSpecs.indexOf(s.id) > -1);;
     });
 };
 
 SpecModel.prototype.findOutOfScope = function() {
     return this._outScope = this._outScope || this._specArray.filter(function(s) {
-        return s.publisher !== "W3C";
+        return s.publisher !== "W3C" &&
+            (!controls.selectedSpecs || controls.selectedSpecs.indexOf(s.id) > -1);;
     });
 };
 
@@ -258,7 +262,7 @@ SpecModel.prototype.findOutOfScope = function() {
         }
         
         Handlebars.registerHelper('formatTime', function(time) {
-            var H = 60, D = 8 * H, W = 5 * D, Y = 52 * W, M = Y / 12;
+            var H = 60, D = 5 * H, W = 5 * D, Y = 50 * W, M = Y / 12;
             if (time < H) {
                 return "1hr";
             }
@@ -469,32 +473,33 @@ SpecModel.prototype.findOutOfScope = function() {
     }
     
     function createOtherSpecList() {
-        var output = templates.otherSpecs({
-            title: "Specs Pending Estimate",
-            message: "These are specs we plan to test as part of this effort but we are currently lacking coverage info and reliable enough heuristics to enable a trustworthy estimate.",
-            children: specs.findMissingData()
-        });
-        
-        output += templates.otherSpecs({
-            title: "Specs which are Out of Scope",
-            message: "These specs  are part of the Coremob and/or TV profiles but aren't edited by W3C. We will not be authoring tests specifically for these at present. We might be running their test suites as part of this effort, license permitting.",
-            children: specs.findOutOfScope()
-        });
+        var output = '';
+        var specsMissingData = specs.findMissingData();
+        if (specsMissingData.length) {
+            output += templates.otherSpecs({
+                title: "Specs which are Missing Data",
+                message: "We are currently lacking coverage info and reliable enough heuristics to estimate coverage for this spec.",
+                children: specsMissingData
+            });
+        }
+
+        var outOfScopeSpecs = specs.findOutOfScope();
+        if (outOfScopeSpecs.length) {
+            output += templates.otherSpecs({
+                title: "Specs which are Out of Scope",
+                message: "These specs are of relevance to this effort but aren't edited by W3C. We will not be authoring tests specifically for these at present. We might be running their test suites as part of this effort, license permitting.",
+                children: outOfScopeSpecs
+            });
+        }
         return output;
     }
     
     function buildSummaryTable(getData) {
         var html = '';
-        makeViewFromSpecs(specs.findIntersection(), getData, function(view) {
-            view.phase = "Intersection";
+        makeViewFromSpecs(specs.findAll(), getData, function(view) {
             html += templates.summary(view);
-            makeViewFromSpecs(specs.findSymDiff(), getData, function(view) {
-                view.phase = "Symmetric Difference";
-                html += templates.summary(view);
-                html += createOtherSpecList();
-                
-                $target.html(html);
-            });
+            html += createOtherSpecList();
+            $target.html(html);
         });
     }
     

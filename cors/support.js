@@ -18,8 +18,8 @@ function dirname(path) {
 /* This subdomain should point to this same location */
 var SUBDOMAIN = 'www1'
 var SUBDOMAIN2 = 'www2'
-var PORT = '81'
-var PORTS = '83' // w3c actually has no 'alternate' https port
+var PORT = {{ports[http][1]}}
+var PORTS = {{ports[https][0]}} // w3c actually has no 'alternate' https port
 
 /* Changes http://example.com/abc/def/cool.htm to http://www1.example.com/abc/def/ */
 var CROSSDOMAIN     = dirname(location.href)

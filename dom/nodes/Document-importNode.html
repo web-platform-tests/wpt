@@ -16,8 +16,20 @@ test(function() {
   assert_equals(div.ownerDocument, doc);
   assert_equals(div.firstChild.ownerDocument, doc);
   assert_equals(newDiv.ownerDocument, document);
-  assert_equals(newDiv.firstChild.ownerDocument, document);
+  assert_equals(newDiv.firstChild, null);
 }, "No 'deep' argument.")
+test(function() {
+  var doc = document.implementation.createHTMLDocument("Title");
+  var div = doc.body.appendChild(doc.createElement("div"));
+  div.appendChild(doc.createElement("span"));
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+  var newDiv = document.importNode(div, undefined);
+  assert_equals(div.ownerDocument, doc);
+  assert_equals(div.firstChild.ownerDocument, doc);
+  assert_equals(newDiv.ownerDocument, document);
+  assert_equals(newDiv.firstChild, null);
+}, "Undefined 'deep' argument.")
 test(function() {
   var doc = document.implementation.createHTMLDocument("Title");
   var div = doc.body.appendChild(doc.createElement("div"));

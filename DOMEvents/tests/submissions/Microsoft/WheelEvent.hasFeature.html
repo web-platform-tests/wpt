@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
-    <head>  
+    <head>
         <title id='desc'> WheelEvent: feature detection with hasFeature() </title>
         <script type="text/javascript">
             var PassTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "PASS";
             }
-            
+
             var FailTest = function()
             {
                 document.getElementById("testresult").firstChild.data = "FAIL";
             }
-            
+
             window.onload = function()
             {
                 try
@@ -21,7 +21,7 @@
                     var versions = ["3.0", "", null];
                     var TestResult = true;
                     var HasFeature = false;
-                    
+
                     for (var i=0; i<features.length; i++)
                     {
                         for (var j=0; j<versions.length; j++)
@@ -30,7 +30,7 @@
                             TestResult = HasFeature && TestResult;
                         }
                     }
-                    
+
                     if (HasFeature && TestResult)
                     {
                         PassTest();
@@ -45,14 +45,14 @@
                     FailTest();
                 }
             }
-        </script>            
+        </script>
     </head>
     <body>
         <h3>DOM Events</h3>
         <h4>
             Test Description: WheelEvent - feature support detection using DOMImplementation.hasFeature() method
-        </h4> 
-        
+        </h4>
+
         <p>Test passes if the word "PASS" appears below.</p>
         <div>Test result: </div>
         <div id='testresult'>FAIL</div>

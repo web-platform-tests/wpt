@@ -12,7 +12,7 @@
       function request_throws(input) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("POST", "resources/content.php", false)
+          client.open("POST", "resources/content.py", false)
           assert_throws("InvalidStateError", function() { client.send(input) })
         })
       }

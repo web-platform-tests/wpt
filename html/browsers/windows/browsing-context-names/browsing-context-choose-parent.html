@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: Choose browsing context - the giving name is _parent</title>
+<title>HTML Test: Choose browsing context - the given name is _parent</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#browsing-context-names">
 <script src="/resources/testharness.js"></script>
@@ -9,12 +9,12 @@
 <iframe src="parent1.html" name="parentWin" style="display:none"></iframe>
 <script>
 
-var t = async_test("The parent browsing context must be chosen if the giving name is '_parent'");
+var t = async_test("The parent browsing context must be chosen if the given name is '_parent'");
 
 window.addEventListener("message", function (e) {
   t.step(function() {
     assert_equals(e.data.name, "parentWin", "The window context name should be 'parentWin'.");
-  }, "browsing_context_choose_parent_check");
+  });
   t.done();
 }, false);
 

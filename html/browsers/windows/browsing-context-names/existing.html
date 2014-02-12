@@ -4,7 +4,8 @@
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <script>
 
-var win = window.open("about:blank", "existWin");
-top.postMessage({name: win.name}, "*");
-  
+function do_test() {
+  window.open("message.html", "existWin");
+}
+
 </script>

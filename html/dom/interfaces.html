@@ -2975,6 +2975,8 @@ interface VTTRegion {
 <script>
 "use strict";
 var idlArray;
+var errorVideo; // used to get a MediaError object
+var iframe; // used to get a Document object (can't use `document` because some test clears the page)
 setup(function() {
 	idlArray = new IdlArray();
 	[].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
@@ -2984,6 +2986,14 @@ setup(function() {
 			idlArray.add_idls(node.textContent);
 		}
 	});
+	errorVideo = document.createElement('video');
+	errorVideo.src = 'data:,';
+	errorVideo.preload = 'auto';
+	iframe = document.createElement('iframe');
+	iframe.hidden = true;
+	document.body.appendChild(iframe);
+}, {explicit_done:true});
+window.onload = function() {
 	idlArray.add_objects({
 		HTMLAllCollection: ['document.all'],
 		HTMLFormControlsCollection: ['document.createElement("form").elements'],
@@ -2994,7 +3004,7 @@ setup(function() {
 		DOMStringMap: ['document.head.dataset'],
 		DOMElementMap: ['document.cssElementMap'],
 		Transferable: [],
-		Document: ['document'],
+		Document: ['iframe.contentDocument'],
 		XMLDocument: ['document.implementation.createDocument(null, "", null)'],
 		HTMLElement: [
 			'document.createElement("noscript")',
@@ -3101,7 +3111,7 @@ setup(function() {
 		HTMLSourceElement: ['document.createElement("source")'],
 		HTMLTrackElement: ['document.createElement("track")'],
 		HTMLMediaElement: [],
-		MediaError: [],
+		MediaError: ['videoError.error'],
 		AudioTrackList: [],
 		AudioTrack: [],
 		VideoTrackList: [],
@@ -3203,6 +3213,7 @@ setup(function() {
 		VTTRegion: ['new VTTRegion()']
 	});
 	idlArray.prevent_multiple_testing("HTMLElement");
-});
-idlArray.test();
+ idlArray.test();
+ done();
+};
 </script>

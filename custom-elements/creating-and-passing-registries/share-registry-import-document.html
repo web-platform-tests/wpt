@@ -15,9 +15,7 @@
 <script type="text/javascript">
 var test1 = async_test('Registry of the import should share master document registry');
 test1.step(function() {
-    var iframe = document.createElement('iframe');
-    iframe.src = '../resources/import-master.html';
-    document.body.appendChild(iframe);
+    var iframe = newIFrame('../resources/import-master.html');
     iframe.onload = test1.step_func(function() {
         var doc = iframe.contentDocument;
         var link = doc.querySelector('link[rel=import]');
@@ -42,9 +40,7 @@ test1.step(function() {
 
 var test2 = async_test('Registry of the master document should be shared with imported document\'s registry');
 test2.step(function() {
-    var iframe = document.createElement('iframe');
-    iframe.src = '../resources/import-master.html';
-    document.body.appendChild(iframe);
+    var iframe = newIFrame('../resources/import-master.html');
     iframe.onload = test2.step_func(function() {
         var doc = iframe.contentDocument;
         var link = doc.querySelector('link[rel=import]');

@@ -214,16 +214,23 @@ function newHTMLDocument() {
 }
 
 // Creates new iframe and loads given url into it.
+// Returns reference to created iframe.
+function newIFrame(url){
+    assert_not_equals(url, null, 'argument url should not be null');
+    var iframe = document.createElement('iframe');
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    return iframe;
+}
+
+// Creates new iframe and loads given url into it.
 // Function f is bound to the iframe's onload event.
 // Function f receives iframe's contentDocument as argument.
 // The iframe is disposed after function f is executed.
 function testInIFrame(url, f, testName, testProps) {
     var t = async_test(testName, testProps);
     t.step(function() {
-        assert_not_equals(url, null, 'argument url should not be null');
-        var iframe = document.createElement('iframe');
-        iframe.src = url;
-        document.body.appendChild(iframe);
+        var iframe = newIFrame(url);
         iframe.onload = t.step_func(function() {
             try {
                 f(iframe.contentDocument);

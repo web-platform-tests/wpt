@@ -1562,11 +1562,11 @@ interface CanvasPathMethods {
   void lineTo(unrestricted double x, unrestricted double y);
   void quadraticCurveTo(unrestricted double cpx, unrestricted double cpy, unrestricted double x, unrestricted double y);
   void bezierCurveTo(unrestricted double cp1x, unrestricted double cp1y, unrestricted double cp2x, unrestricted double cp2y, unrestricted double x, unrestricted double y);
-  void arcTo(unrestricted double x1, unrestricted double y1, unrestricted double x2, unrestricted double y2, unrestricted double radius); 
-  void arcTo(unrestricted double x1, unrestricted double y1, unrestricted double x2, unrestricted double y2, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation); 
+  void arcTo(unrestricted double x1, unrestricted double y1, unrestricted double x2, unrestricted double y2, unrestricted double radius);
+  void arcTo(unrestricted double x1, unrestricted double y1, unrestricted double x2, unrestricted double y2, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation);
   void rect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
-  void arc(unrestricted double x, unrestricted double y, unrestricted double radius, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false); 
-  void ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, boolean anticlockwise); 
+  void arc(unrestricted double x, unrestricted double y, unrestricted double radius, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
+  void ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, boolean anticlockwise);
 };
 
 interface CanvasGradient {
@@ -2077,7 +2077,7 @@ interface HTMLDialogElement : HTMLElement {
   [Unforgeable] readonly attribute WindowProxy window;
   [Replaceable] readonly attribute WindowProxy self;
   [Unforgeable] readonly attribute Document document;
-           attribute DOMString name; 
+           attribute DOMString name;
   [PutForwards=href, Unforgeable] readonly attribute Location location;
   readonly attribute History history;
   [Replaceable] readonly attribute BarProp locationbar;
@@ -2104,7 +2104,7 @@ interface HTMLDialogElement : HTMLElement {
   getter object (DOMString name);
 
   // the user agent
-  readonly attribute Navigator navigator; 
+  readonly attribute Navigator navigator;
   readonly attribute External external;
   readonly attribute ApplicationCache applicationCache;
 
@@ -2668,7 +2668,7 @@ interface HTMLAppletElement : HTMLElement {
            attribute DOMString height;
            attribute unsigned long hspace;
            attribute DOMString name;
-           attribute DOMString _object; // the underscore is not part of the identifier 
+           attribute DOMString _object; // the underscore is not part of the identifier
            attribute unsigned long vspace;
            attribute DOMString width;
 };
@@ -2771,7 +2771,7 @@ partial interface HTMLEmbedElement {
 interface HTMLFontElement : HTMLElement {
   [TreatNullAs=EmptyString] attribute DOMString color;
                             attribute DOMString face;
-                            attribute DOMString size; 
+                            attribute DOMString size;
 };
 
 partial interface HTMLHeadingElement {
@@ -2940,9 +2940,43 @@ partial interface Document {
   readonly attribute HTMLAllCollection all;
 };
 </script>
+<!-- WebVTT IDLs -->
+<script type=text/plain>
+enum AutoKeyword { "auto" };
+enum DirectionSetting { "" /* horizontal */, "rl", "lr" };
+enum AlignSetting { "start", "middle", "end", "left", "right" };
+[Constructor(double startTime, double endTime, DOMString text)]
+interface VTTCue : TextTrackCue {
+           attribute VTTRegion? region;
+           attribute DirectionSetting vertical;
+           attribute boolean snapToLines;
+           attribute (double or AutoKeyword) line;
+           attribute AlignSetting lineAlign;
+           attribute double position;
+           attribute AlignSetting positionAlign;
+           attribute double size;
+           attribute AlignSetting align;
+           attribute DOMString text;
+  DocumentFragment getCueAsHTML();
+};
+
+enum ScrollSetting { "" /* none */, "up" };
+[Constructor]
+interface VTTRegion {
+           attribute double width;
+           attribute long lines;
+           attribute double regionAnchorX;
+           attribute double regionAnchorY;
+           attribute double viewportAnchorX;
+           attribute double viewportAnchorY;
+           attribute ScrollSetting scroll;
+};
+</script>
 <script>
 "use strict";
 var idlArray;
+var errorVideo; // used to get a MediaError object
+var iframe; // used to get a Document object (can't use `document` because some test clears the page)
 setup(function() {
 	idlArray = new IdlArray();
 	[].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
@@ -2952,6 +2986,14 @@ setup(function() {
 			idlArray.add_idls(node.textContent);
 		}
 	});
+	errorVideo = document.createElement('video');
+	errorVideo.src = 'data:,';
+	errorVideo.preload = 'auto';
+	iframe = document.createElement('iframe');
+	iframe.hidden = true;
+	document.body.appendChild(iframe);
+}, {explicit_done:true});
+window.onload = function() {
 	idlArray.add_objects({
 		HTMLAllCollection: ['document.all'],
 		HTMLFormControlsCollection: ['document.createElement("form").elements'],
@@ -2962,7 +3004,7 @@ setup(function() {
 		DOMStringMap: ['document.head.dataset'],
 		DOMElementMap: ['document.cssElementMap'],
 		Transferable: [],
-		Document: ['document'],
+		Document: ['iframe.contentDocument'],
 		XMLDocument: ['document.implementation.createDocument(null, "", null)'],
 		HTMLElement: [
 			'document.createElement("noscript")',
@@ -3069,18 +3111,18 @@ setup(function() {
 		HTMLSourceElement: ['document.createElement("source")'],
 		HTMLTrackElement: ['document.createElement("track")'],
 		HTMLMediaElement: [],
-		MediaError: [],
+		MediaError: ['videoError.error'],
 		AudioTrackList: [],
 		AudioTrack: [],
 		VideoTrackList: [],
 		VideoTrack: [],
 		MediaController: ['new MediaController()'],
-		TextTrackList: [],
-		TextTrack: [],
-		TextTrackCueList: [],
+		TextTrackList: ['document.createElement("video").textTracks'],
+		TextTrack: ['document.createElement("track").track'],
+		TextTrackCueList: ['document.createElement("video").addTextTrack("subtitles").cues'],
 		TextTrackCue: [],
-		TimeRanges: [],
-		TrackEvent: [],
+		TimeRanges: ['document.createElement("video").buffered'],
+		TrackEvent: ['new TrackEvent("addtrack"; {track:document.createElement("track").track})'],
 		HTMLCanvasElement: ['document.createElement("canvas")'],
 		CanvasRenderingContext2D: ['document.createElement("canvas").getContext("2d")'],
 		CanvasGradient: [],
@@ -3166,8 +3208,12 @@ setup(function() {
 		HTMLFrameElement: ['document.createElement("frame")'],
 		HTMLDirectoryElement: ['document.createElement("dir")'],
 		HTMLFontElement: ['document.createElement("font")'],
+		// WebVTT
+		VTTCue: ['new VTTCue(0, 1, "foo")'],
+		VTTRegion: ['new VTTRegion()']
 	});
 	idlArray.prevent_multiple_testing("HTMLElement");
-});
-idlArray.test();
+	idlArray.test();
+	done();
+};
 </script>

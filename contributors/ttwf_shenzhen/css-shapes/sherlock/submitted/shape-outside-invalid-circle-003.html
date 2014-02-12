@@ -8,6 +8,8 @@
 	<link rel="author" title="Sherlock Zhong" href="mailto:sherlock.z0917@gmail.com">
 	<link rel="reviewer" title="Alan Stearns" href="mailto:stearns@adobe.com"> <!-- 11-09-2013 TestTWF Shenzhen -->
 	<link rel="help" href="http://www.w3.org/TR/css-shapes-1/#supported-basic-shapes">
+	<link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
+	<link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-circle">
 	<script src="/resources/testharness.js"></script>
 	<script src="/resources/testharnessreport.js"></script>
 	<link rel="stylesheet" href="/resources/testharness.css">
@@ -15,7 +17,7 @@
 #shape{
 	width: 300px;
 	height: 300px;
-	shape-outside: circle(50, 50%, 50%);
+	shape-outside: circle(50, 50%);
 }
 	</style>
 </head>
@@ -28,7 +30,7 @@
 	<script>
 	var obj = document.getElementById('shape');
 	var cx = getComputedStyle(obj).shapeOutside;
-	test(function() {assert_equals(cx, "auto", "declaration should be invalid")});
+	test(function() {assert_equals(cx, "none", "declaration should be invalid")});
 	</script>
 
 </body>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>All other callbacks must not be enqueued until after the created callback's invocation had started.</title>
+<title>All other callbacks must not be enqueued until after the created callback's invocation had started</title>
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="assert" content="All other callbacks must not be enqueued until after the created callback's invocation had started.">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
@@ -13,13 +13,11 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
-
 testInIFrame('../../resources/blank.html', function(doc) {
     var callbackLog = [];
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.createdCallback = function () {
+    proto.createdCallback = function() {
         callbackLog.push('created');
     }
     proto.attachedCallback = function() {
@@ -37,7 +35,7 @@ testInIFrame('../../resources/blank.html', function(doc) {
     var callbackLog = [];
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.createdCallback = function () {
+    proto.createdCallback = function() {
         callbackLog.push('created');
     }
     proto.attributeChangedCallback = function() {
@@ -58,7 +56,7 @@ test(function(){
     var callbackLog = [];
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.createdCallback = function () {
+    proto.createdCallback = function() {
         callbackLog.push('created');
     }
     proto.attributeChangedCallback = function() {
@@ -78,7 +76,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var callbackLog = [];
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.createdCallback = function () {
+    proto.createdCallback = function() {
         callbackLog.push('created');
     }
     proto.attributeChangedCallback = function() {
@@ -95,8 +93,6 @@ testInIFrame('../../resources/x-element.html', function(doc) {
 }, 'Test attachedCallback and attributeChangedCallback callbacks '+
     'are enqueued after created callback. '+
     'Document has browsing context');
-
-
 </script>
 </body>
 </html>

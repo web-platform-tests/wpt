@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Invoke CALLBACK with ELEMENT as callback this value and, if present, using string values in CALLBACK as arguments.</title>
+<title>Invoke CALLBACK with ELEMENT as callback this value and, if present, using string values in CALLBACK as arguments</title>
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="assert" content="Invoke CALLBACK with ELEMENT as callback this value and, if present, using string values in CALLBACK as arguments.">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
@@ -13,14 +13,12 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
-
 test(function(){
     var doc = newHTMLDocument();
     var callbackThis = null;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.createdCallback = function () {
+    proto.createdCallback = function() {
         callbackThis = this;
     }
     doc.registerElement('x-a-1', {prototype: proto});
@@ -35,7 +33,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var callbackThis = null;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.attachedCallback = function () {
+    proto.attachedCallback = function() {
         callbackThis = this;
     }
     doc.registerElement('x-element', {prototype: proto});
@@ -49,7 +47,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var callbackThis = null;
 
     var proto = Object.create(HTMLElement.prototype);
-    proto.detachedCallback = function () {
+    proto.detachedCallback = function() {
         callbackThis = this;
     }
     doc.registerElement('x-element', {prototype: proto});

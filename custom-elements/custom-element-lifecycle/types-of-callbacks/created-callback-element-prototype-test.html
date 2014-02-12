@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>The custom element prototype must be set just prior to invoking created callback.</title>
+<title>The custom element prototype must be set just prior to invoking created callback</title>
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="assert" content="The custom element prototype must be set just prior to invoking callback.">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
@@ -13,8 +13,6 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
-
 test(function() {
     var doc = newHTMLDocument();
     var callbackProto;
@@ -114,7 +112,6 @@ testInIFrame('../../resources/x-element.html', function(doc) {
 }, 'Test custom element prototype inside created callback '+
     'when custom element is created by UA parser before ' +
     'registration of a custom element');
-
 </script>
 </body>
 </html>

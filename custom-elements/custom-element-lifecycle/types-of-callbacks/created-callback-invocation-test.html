@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Created callback of a custom element should be is invoked after custom element instance is created and its definition is registered</title>
+<title>Created callback of a custom element should be invoked after custom element instance is created and its definition is registered</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <meta name="assert" content="CREATED callback is invoked after custom element instance is created and its definition is registered">
@@ -14,8 +14,6 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-
-
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
@@ -200,7 +198,6 @@ testInIFrame('../../resources/x-element.html', function(doc) {
 
 }, 'Test created callback. Create several custom elements using different ways. ' +
     'Document has browsing context');
-
 </script>
 </body>
 </html>

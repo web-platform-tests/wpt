@@ -25,17 +25,14 @@ setup({timeout: 10000});
 
 document.onkeydown = t1.step_func_done(function(evt){
   assert_equals(evt.target, document.body, "The keydown events must be targeted at the document's body.");
-  t1.done();
 });
 
 document.onkeypress = t2.step_func_done(function(evt){
   assert_equals(evt.target, document.body, "The keypress events must be targeted at the document's body.");
-  t2.done();
 });
 
 document.onkeyup = t3.step_func_done(function(evt){
   assert_equals(evt.target, document.body, "The keyup events must be targeted at the document's body.");
-  t3.done();
 });
 
 </script>

@@ -30,17 +30,14 @@ setup(function () {
 
 document.onkeydown = t1.step_func_done(function(evt){
   assert_equals(evt.target, testEle, "The keydown events must be targeted at the input element.");
-  t1.done();
 });
 
 document.onkeypress = t2.step_func_done(function(evt){
   assert_equals(evt.target, testEle, "The keypress events must be targeted at the input element.");
-  t2.done();
 });
 
 document.onkeyup = t3.step_func_done(function(evt){
   assert_equals(evt.target, testEle, "The keyup events must be targeted at the input element.");
-  t3.done();
 });
 
 </script>

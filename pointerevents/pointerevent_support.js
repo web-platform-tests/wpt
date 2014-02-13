@@ -1,4 +1,4 @@
-﻿var All_Pointer_Events = [
+var All_Pointer_Events = [
         "pointerdown",
         "pointerup",
         "pointercancel",

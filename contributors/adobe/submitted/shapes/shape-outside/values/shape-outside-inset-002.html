@@ -28,19 +28,9 @@
 
                 function serializedInset(lhsValues, rhsValues) {
                     if(!rhsValues)
-                        return 'inset(10px round ' + serialize(lhsValues.split(' ')) +')';
+                        return 'inset(10px round ' + lhsValues +')';
                     else
-                        return 'inset(10px round ' + serialize(lhsValues.split(' ')) + ' / '+ serialize(rhsValues.split(' ')) +')';
-                }
-
-                function serialize(values) {
-                    var serializedValues = new Array();
-                    if (values.length == 3) {
-                        serializedValues = values.concat([values[1]]);
-                    } else {
-                        serializedValues = values;
-                    }
-                    return serializedValues.join(' ');
+                        return 'inset(10px round ' + lhsValues +' / '+ rhsValues +')';
                 }
 
                 var results = [], left, lhs, right, rhs;

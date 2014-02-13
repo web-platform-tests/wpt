@@ -4,9 +4,7 @@
   <head>
     <title>HTML Test: Dynamic changes to base URLs</title>
     <link rel="author" title="Intel" href="http://www.intel.com/"/>
-    <link rel="help" title="2.5.3 Dynamic changes to base URLs"
-      href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#dynamic-changes-to-base-urls" />
-    <link rel="help" href="http://www.w3.org/TR/xhtml1/" />
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#dynamic-changes-to-base-urls" />
     <script src="/resources/testharness.js" id="s1"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
@@ -17,7 +15,6 @@
       <![CDATA[
       var div = document.getElementById("div"),
           html = document.getElementById("h"),
-          script = document.getElementById("s1"),
           url =  document.location.href;
 
       var testData = [
@@ -47,13 +44,14 @@
       }
 
       test(function () {
+        var s1 = document.getElementById("s1");
         var val1 = s1.src;
         var val2 = div.firstChild.href;
 
         div.setAttribute("xml:base", "http://www.example2.org/");
         assert_equals(s1.src, val1, "The outer element must not be effected.");
         assert_not_equals(div.firstChild.href, val2, "The inner element must be effected.");
-        assert_equals(div.firstChild.href, "http://www.example2.org/test.txt", "The base URL is not chnaged.");
+        assert_equals(div.firstChild.href, "http://www.example2.org/test.txt");
       }, "Change the base URL must effect the descendant elements only");
       ]]>
     </script>

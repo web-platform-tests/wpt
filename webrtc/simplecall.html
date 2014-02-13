@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>PeerConnection Connection Test</title>
+  <title>RTCPeerConnection Connection Test</title>
 
   <script src="/resources/testharness.js"></script>
 
@@ -12,7 +12,7 @@
   var gSecondConnection = null;
 
   function getUserMediaOkCallback(localStream) {
-    gFirstConnection = new webkitRTCPeerConnection(null, null);
+    gFirstConnection = new RTCPeerConnection(null, null);
     gFirstConnection.onicecandidate = onIceCandidateToFirst;
     gFirstConnection.addStream(localStream);
     gFirstConnection.createOffer(onOfferCreated);
@@ -30,7 +30,7 @@
   });
 
   function receiveCall(offerSdp) {
-    gSecondConnection = new webkitRTCPeerConnection(null, null);
+    gSecondConnection = new RTCPeerConnection(null, null);
     gSecondConnection.onicecandidate = onIceCandidateToSecond;
     gSecondConnection.onaddstream = onRemoteStream;
 
@@ -78,7 +78,7 @@
 
   var onRemoteStream = test.step_func(function(event) {
     var videoTag = document.getElementById('remote-view');
-    videoTag.src = webkitURL.createObjectURL(event.stream);
+    videoTag.srcObj = event.stream;
   });
 
   // Returns a suitable error callback.
@@ -90,7 +90,7 @@
 
   // This function starts the test.
   test.step(function() {
-    navigator.webkitGetUserMedia({ video: true, audio: true },
+    navigator.getUserMedia({ video: true, audio: true },
         getUserMediaOkCallback,
         failed('getUserMedia'));
   });

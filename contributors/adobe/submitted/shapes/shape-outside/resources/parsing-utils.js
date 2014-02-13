@@ -81,14 +81,14 @@ var serializedEllipsoids = [
 ["left 50px top 50%", "50px 50%"],
 ["left 50px top 50px", "50px 50px"],
 
-["top 50% center", "left 50% top 50%"],
-["top 50px center", "left 50% top 50px"],
-["center left 50%", "left 50% top 50%"],
-["center left 50px", "left 50px top 50%"],
-["top 50% left 50%", "left 50% top 50%"],
-["top 50px left 50%", "left 50% top 50px"],
-["top 50% left 50px", "left 50px top 50%"],
-["top 50px left 50px", "left 50px top 50px"]
+["top 50% center", "50% 50%"],
+["top 50px center", "50% 50px"],
+["center left 50%", "50% 50%"],
+["center left 50px", "50px 50%"],
+["top 50% left 50%", "50% 50%"],
+["top 50px left 50%", "50% 50px"],
+["top 50% left 50px", "50px 50%"],
+["top 50px left 50px", "50px 50px"]
 ];
 
 return {

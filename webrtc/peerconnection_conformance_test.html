@@ -1,21 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-
-<!--
-To quickly iterate when developing this test, make sure you select
-'Always allow this site to use this webcam' option in the dropdown menu of
-Chrome when it's requesting access to your webcam.
-Notice that this requires the site you're browsing to use HTTPS.
-
-Without that, the test might timeout before you have had the chance to accept
-access to the webcam.
--->
-
+<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>PeerConnection Connection Test</title>
 
-  <script src="https://w3c-test.org/resources/testharness.js"></script>
+  <script src="/resources/testharness.js"></script>
 
   <script type="text/javascript">
   var test = async_test('Can set up a basic WebRTC call.', {timeout: 5000});

@@ -246,5 +246,5 @@ test.txt  s:http h:www.example.com p:/test.txt
 ../test.txt  s:http h:www.example.com p:/test.txt
 ../aaa/test.txt  s:http h:www.example.com p:/aaa/test.txt
 ../../test.txt  s:http h:www.example.com p:/test.txt
-\u0061\u0061\u0061/test.txt  s:http h:www.example.com p:/aaa/test.txt
+\u4E2D/test.txt  s:http h:www.example.com p:/%E4%B8%AD/test.txt
 http://www.example2.com  s:http h:www.example2.com p:/

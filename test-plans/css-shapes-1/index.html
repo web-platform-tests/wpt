@@ -117,7 +117,7 @@
             <p class=note>
                 Note: For all of the tests below, where length parameters are tested, 
                       the supported <a class="production css-code" data-link-type=type href=http://www.w3.org/TR/css3-values/#lengths title="<length>">&lt;length&gt;</a>
-                      units defined in the CSS Values &amp; Units [[!CSS3VAL]] specification, but all permutations will not be
+                      units defined in the CSS Values &amp; Units [[!CSS3VAL]] specification, but not all permutations will not be
                       tested. Instead, a sampling of these units will be used across the parsing and layout tests.
             </p>
             <ul>
@@ -139,6 +139,7 @@
                                         <li>calc() lengths</li>
                                         <li>no unit or %</li>
                                         <li>commas / no commas</li>
+                                        <li>invalid arg values</li>
                                         <li><code>round</code> keyword
                                             <ul>
                                                 <li><code>&lt;border-radius&gt;</code>
@@ -152,6 +153,7 @@
                                                         <li>calc() lengths</li>
                                                         <li>no unit or %</li>
                                                         <li>commas / no commas</li>
+                                                        <li>invalid values</li>
                                                     </ul>
                                                 </li>
                                             </ul>
@@ -170,6 +172,7 @@
                                             <li>calc() lengths</li>
                                             <li>no unit or %</li>
                                             <li>commas / no commas</li>
+                                            <li>invalid arg values</li>
                                             <li><code>closest-side, farthest-side</code> keywords</li>
                                         </ul>
                                     </li>
@@ -185,6 +188,7 @@
                                                     <li>calc() lengths</li>
                                                     <li>no unit or %</li>
                                                     <li>commas / no commas</li>
+                                                    <li>invalid values</li>
                                                     <li><code>top, left, bottom, right</code> keywords</li>
                                                 </ul>
                                             </li>
@@ -214,12 +218,14 @@
                                         <li>calc() lengths</li>
                                         <li>no unit or %</li>
                                         <li>commas / no commas</li>
+                                        <li>invalid arg values</li>
                                     </ul>
                                     <li><code>&lt;fill-rule&gt;</code>
                                         <ul>
                                             <li><code>not specified (default: nonzero)</code></li>
                                             <li><code>nonzero</code></li>
                                             <li><code>evenodd</code></li>
+                                            <li>invalid values</li>
                                         </ul>
                                     </li>
                                 </li>
@@ -249,6 +255,7 @@
                         <li>decimal/non-decimal lengths</li>
                         <li>calc() lengths</li>
                         <li>no unit or %</li>
+                        <li>invalid values</li>
                     </ul>
                 </li>
                 <li><code>shape-image-threshold</code>
@@ -260,6 +267,7 @@
                         <li>decimal/non-decimal lengths</li>
                         <li>calc() lengths</li>
                         <li>+ / - signs</li>
+                        <li>invalid values</li>
                     </ul>
                 </li>
             </ul>
@@ -273,8 +281,8 @@
                         <li>omitting radii omits radii from serialization</li>
                     </ul>
                 </li>
-                <li><code>inset</code> shape-args serialize to the 4-value form</li>
-                <li><code>&lt;round&gt;</code> values in <code>inset</code> serialize to its 4-value / 4-value form</li>
+                <li><code>inset</code> serialized shape-args omit args when possible</li>
+                <li><code>&lt;round&gt;</code> values in <code>inset</code> serialize to as few as possible</li>
                 <li>unspecified <code>&lt;fill-rule&gt;</code> serializes <code>nonzero</code></li>
                 <li>0% is preferred over zero length</li>
                 <li>calc() is avoided</li>
@@ -361,6 +369,14 @@
                             <li>float left / right</li>
                             <li>shape-margin</li>
                             <li>shape-image-threshold</li>
+                        </ul>
+                    </li>
+                    <li>Float Tests
+                        <ul>
+                            <li>Float stacking</li>
+                            <li>Line boxes affected by both float right and float left shapes at the same time</li>
+                            <li>Empty float areas</li>
+                            <li>Shapes that extend past the margin box edge</li>
                         </ul>
                     </li>
                 </ul>

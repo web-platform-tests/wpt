@@ -165,3 +165,9 @@ public-html-testsuite@w3.org mailing list (low traffic) by
 [signing up to our mailing list](mailto:public-html-testsuite-request@w3.org?subject=subscribe).
 
 [contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md
+
+Documentation
+-------------
+
+* [How to write and review tests](http://testthewebforward.org/docs/)
+* [Documentation for the wptserve server](http://wptserve.readthedocs.org/en/latest/)

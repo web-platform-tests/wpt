@@ -27,16 +27,15 @@
                 }
 
                 function serializedInset(lhsValues, rhsValues) {
-                    return 'inset(10px 10px 10px 10px round ' + serialize(lhsValues.split(' ')) + ' / '+ serialize(rhsValues.split(' ')) +')';
+                    if(!rhsValues)
+                        return 'inset(10px round ' + serialize(lhsValues.split(' ')) +')';
+                    else
+                        return 'inset(10px round ' + serialize(lhsValues.split(' ')) + ' / '+ serialize(rhsValues.split(' ')) +')';
                 }
 
                 function serialize(values) {
                     var serializedValues = new Array();
-                    if(values.length == 1) {
-                        serializedValues = Array.apply(null, Array(4)).map(String.prototype.valueOf, values[0]);
-                    } else if (values.length == 2) {
-                        serializedValues = values.concat(values);
-                    } else if (values.length == 3) {
+                    if (values.length == 3) {
                         serializedValues = values.concat([values[1]]);
                     } else {
                         serializedValues = values;
@@ -47,10 +46,13 @@
                 var results = [], left, lhs, right, rhs;
                 for (left = 1; left <= 4; left++) {
                     lhs = sizes.slice(0, left).join(' ');
-                    results.push([insetWrap(lhs), insetWrap(lhs), serializedInset(lhs, lhs)]);
+                    results.push([insetWrap(lhs), insetWrap(lhs), serializedInset(lhs, null)]);
                     for (right = 1; right <= 4; right++) {
                         rhs = sizes.slice(0, right).join(' ');
-                        results.push([insetWrap(lhs + ' / ' + rhs), insetWrap(lhs + ' / ' + rhs), serializedInset(lhs, rhs)]);
+                        if(lhs == rhs)
+                            results.push([insetWrap(lhs + ' / ' + rhs), insetWrap(lhs + ' / ' + rhs), serializedInset(lhs, null)]);
+                        else
+                            results.push([insetWrap(lhs + ' / ' + rhs), insetWrap(lhs + ' / ' + rhs), serializedInset(lhs, rhs)]);
                     }
                 }
                 return results;

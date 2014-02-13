@@ -24,7 +24,7 @@ function valuesAsArrays(values, length) {
     return result;
 }
 
-function buildEllipsesTests(shape, pairs) {
+function buildEllipsoidTests(shape, pairs) {
     var result = [];
     pairs.forEach(function(pair) {
         var testInfo = new Array();
@@ -52,7 +52,7 @@ function buildInsetTests(pairs) {
 }
 
 
-var serializedEllipses = [
+var serializedEllipsoids = [
 ["left", "0% 50%"],
 ["center", "50% 50%"],
 ["right", "100% 50%"],
@@ -72,14 +72,14 @@ var serializedEllipses = [
 ["50px 50%", "50px 50%"],
 ["50px 50px", "50px 50px"],
 
-["center top 50%", "left 50% top 50%"],
-["center top 50px", "left 50% top 50px"],
-["left 50% center", "left 50% top 50%"],
-["left 50px center", "left 50px top 50%"],
-["left 50% top 50%", "left 50% top 50%"],
-["left 50% top 50px", "left 50% top 50px"],
-["left 50px top 50%", "left 50px top 50%"],
-["left 50px top 50px", "left 50px top 50px"],
+["center top 50%", "50% 50%"],
+["center top 50px", "50% 50px"],
+["left 50% center", "50% 50%"],
+["left 50px center", "50px 50%"],
+["left 50% top 50%", "50% 50%"],
+["left 50% top 50px", "50% 50px"],
+["left 50px top 50%", "50px 50%"],
+["left 50px top 50px", "50px 50px"],
 
 ["top 50% center", "left 50% top 50%"],
 ["top 50px center", "left 50% top 50px"],
@@ -94,9 +94,9 @@ var serializedEllipses = [
 return {
     testInlineStyle: testInlineStyle,
     testComputedStyle: testComputedStyle,
-    serializedEllipses: serializedEllipses,
+    serializedEllipsoids: serializedEllipsoids,
     valuesAsArrays: valuesAsArrays,
-    buildEllipsesTests: buildEllipsesTests,
+    buildEllipsoidTests: buildEllipsoidTests,
     buildInsetTests: buildInsetTests
 }
 })();

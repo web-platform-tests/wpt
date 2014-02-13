@@ -15,14 +15,14 @@
         <div id="log"></div>
         <script type="text/javascript">
             generate_tests(ParsingUtils.testInlineStyle, [
-                ["1 inset", "inset(10px)", "inset(10px 10px 10px 10px)"],
-                ["2 insets", "inset(10px 20px)", "inset(10px 20px 10px 20px)"],
+                ["1 inset", "inset(10px)", "inset(10px)"],
+                ["2 insets", "inset(10px 20px)", "inset(10px 20px)"],
                 ["3 insets", "inset(10px 20px 30px)", "inset(10px 20px 30px 20px)"],
                 ["4 insets", "inset(10px 20px 30px 40px)", "inset(10px 20px 30px 40px)"],
-                ["1 inset and round", "inset(10px round 20px)", "inset(10px 10px 10px 10px round 20px 20px 20px 20px / 20px 20px 20px 20px)"],
-                ["2 insets and round", "inset(10px 20px round 30px)", "inset(10px 20px 10px 20px round 30px 30px 30px 30px / 30px 30px 30px 30px)"],
-                ["3 insets and round", "inset(10px 20px 30px round 40px)", "inset(10px 20px 30px 20px round 40px 40px 40px 40px / 40px 40px 40px 40px)"],
-                ["4 insets and round", "inset(10px 20px 30px 40px round 50px)", "inset(10px 20px 30px 40px round 50px 50px 50px 50px / 50px 50px 50px 50px)"]
+                ["1 inset and round", "inset(10px round 20px)", "inset(10px round 20px)"],
+                ["2 insets and round", "inset(10px 20px round 30px)", "inset(10px 20px round 30px)"],
+                ["3 insets and round", "inset(10px 20px 30px round 40px)", "inset(10px 20px 30px 20px round 40px)"],
+                ["4 insets and round", "inset(10px 20px 30px 40px round 50px)", "inset(10px 20px 30px 40px round 50px)"]
             ]);
         </script>
     </body>

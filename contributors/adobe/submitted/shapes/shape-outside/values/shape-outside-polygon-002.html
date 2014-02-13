@@ -15,9 +15,9 @@
         <div id="log"></div>
         <script type="text/javascript">
             generate_tests(ParsingUtils.testInlineStyle, [
-                ["Lengths", "polygon(1px 2px, 3px 4px, 5px 6px)", "polygon(nonzero, 1px 2px, 3px 4px, 5px 6px)"],
-                ["Percentages", "polygon(1% 2%, 3% 4%, 5% 6%)", "polygon(nonzero, 1% 2%, 3% 4%, 5% 6%)"],
-                ["Mixed Lengths and Percentages", "polygon(1px 2px, 3px 4%, 5% 6px, 7% 8%)", "polygon(nonzero, 1px 2px, 3px 4%, 5% 6px, 7% 8%)"]
+                ["Lengths", "polygon(1px 2px, 3px 4px, 5px 6px)", "polygon(1px 2px, 3px 4px, 5px 6px)"],
+                ["Percentages", "polygon(1% 2%, 3% 4%, 5% 6%)", "polygon(1% 2%, 3% 4%, 5% 6%)"],
+                ["Mixed Lengths and Percentages", "polygon(1px 2px, 3px 4%, 5% 6px, 7% 8%)", "polygon(1px 2px, 3px 4%, 5% 6px, 7% 8%)"]
             ]);
         </script>
     </body>

@@ -2,7 +2,7 @@
 <!-- @{ -->
 <meta charset=utf-8>
 <title>HTML Editing APIs</title>
-<link rel=stylesheet href=http://www.whatwg.org/style/specification>
+<link rel=stylesheet href=https://www.whatwg.org/style/specification>
 <style>
 pre, code, xmp { font-family:monospace, sans-serif; }
 h2 code, h3 code, h3 code,
@@ -68,8 +68,8 @@ a code { text-decoration: underline }
 </style>
 <body class=draft>
 <div class=head id=head>
-<p><a href=http://www.w3.org/><img alt=W3C height=48
-src=http://www.w3.org/Icons/w3c_home width=72></a></p>
+<p><a href=https://www.w3.org/><img alt=W3C height=48
+src=https://www.w3.org/Icons/w3c_home width=72></a></p>
 <h1>HTML Editing APIs</h1>
 <h2 class="no-num no-toc">Work in Progress &mdash; Last Update [DATE: 01 Jan 1901]</h2>
 <dl>
@@ -77,18 +77,18 @@ src=http://www.w3.org/Icons/w3c_home width=72></a></p>
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>>
 
  <dt>Latest version
- <dd><a href=http://dvcs.w3.org/hg/editing/raw-file/tip/editing.html>W3C Mercurial</a>
+ <dd><a href=https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html>W3C Mercurial</a>
 
  <dt>Version history
  <dd><a href=https://dvcs.w3.org/hg/editing>W3C Mercurial</a>
  <dd><a href=https://github.com/ayg/editing>github mirror</a>
 
  <dt>Issue tracker
- <dd><a href=http://www.w3.org/Bugs/Public/buglist.cgi?component=HTML+Editing+APIs&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED>All open issues</a>
- <dd><a href=http://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&component=HTML+Editing+APIs>File an issue</a>
+ <dd><a href=https://www.w3.org/Bugs/Public/buglist.cgi?component=HTML+Editing+APIs&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED>All open issues</a>
+ <dd><a href=https://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&component=HTML+Editing+APIs>File an issue</a>
 
  <dt>Mailing list
- <dd><a href="mailto:public-webapps@w3.org?cc=ayg@aryeh.name&subject=%5Bediting%5D%20">public-webapps</a> (<a href=http://lists.w3.org/Archives/Public/public-webapps/>archive</a>;
+ <dd><a href="mailto:public-webapps@w3.org?cc=ayg@aryeh.name&subject=%5Bediting%5D%20">public-webapps</a> (<a href=https://lists.w3.org/Archives/Public/public-webapps/>archive</a>;
  include "[editing]" in the subject)
 
  <dt>IRC chat
@@ -102,10 +102,10 @@ src=http://www.w3.org/Icons/w3c_home width=72></a></p>
 <p>This document is a preliminary draft of a specification for HTML editing
 APIs, mainly defining [[selections]], <code>execCommand()</code> and related
 functionality.  It replaces a couple of old sections of the <a
-href=http://www.whatwg.org/html>HTML</a> specification, and the [[selection]]
+href=https://www.whatwg.org/html>HTML</a> specification, and the [[selection]]
 part of the old DOM Range specification.  Issues that don't necessarily need
 discussion should preferably be <a
-href=http://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&component=HTML+Editing+APIs>filed
+href=https://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&component=HTML+Editing+APIs>filed
 in the issue tracker</a>.  Feedback that needs discussion should preferably be
 sent to <a
 href=mailto:public-webapps@w3.org?cc=ayg@aryeh.name&subject=%5Bediting%5D%20>the
@@ -119,22 +119,22 @@ published by the <a href="https://www.w3.org/community/editing/">W3C Editing
 APIs Community Group</a> under the <a
 href="https://www.w3.org/community/about/agreements/cla/">W3C Community
 Contributor License Agreement (CLA)</a>. A human-readable <a
-href="http://www.w3.org/community/about/agreements/cla-deed/">summary</a> is
+href="https://www.w3.org/community/about/agreements/cla-deed/">summary</a> is
 available.
 
 <p>This specification, along with the accompanying JavaScript implementation
 and tests, may also be used under the terms of the <a
-href=http://creativecommons.org/publicdomain/zero/1.0/>CC0 1.0 Universal
+href=https://creativecommons.org/publicdomain/zero/1.0/>CC0 1.0 Universal
 License</a>.  Thus anyone may reuse, modify, and redistribute them without
 restriction.
 
 <p>This specification was published by the <a
-href=http://www.w3.org/community/editing/>W3C Editing APIs Community Group</a>.
+href=https://www.w3.org/community/editing/>W3C Editing APIs Community Group</a>.
 It is not a W3C Standard nor is it on the W3C Standards Track. Please note that
-under the <a href=http://www.w3.org/community/about/agreements/cla/>W3C
+under the <a href=https://www.w3.org/community/about/agreements/cla/>W3C
 Community Contributor License Agreement (CLA)</a> there is a limited opt-out
 and other conditions apply. Learn more about <a
-href=http://www.w3.org/community/>W3C Community and Business Groups</a>.
+href=https://www.w3.org/community/>W3C Community and Business Groups</a>.
 <!-- @} -->
 
 <h2 class=no-num>Table of contents</h2>
@@ -252,7 +252,7 @@ fully unified at the time of this writing.
 
 <p>Thus the selection tests live in their own directory, <a
 href=selecttest/>selecttest/</a>.  They use the standard <a
-href=http://dvcs.w3.org/hg/html/file/tip/tests/resources/testharness.js>testharness.js</a>
+href=https://github.com/w3c/testharness.js/blob/master/testharness.js>testharness.js</a>
 framework developed by James Graham.  They're entirely self-contained, sharing
 nothing with the command tests (except invoking the testharness.js library).
 At the time of this writing, they're not nearly as comprehensive as the command
@@ -277,7 +277,7 @@ anyone other than the spec's editor.
 
 <p>Conformance tests were added later.  They run the same tests as the
 development tests, but in an entirely non-interactive format, using the <a
-href=http://dvcs.w3.org/hg/html/file/tip/tests/resources/testharness.js>testharness.js</a>
+href=https://github.com/w3c/testharness.js/blob/master/testharness.js>testharness.js</a>
 framework like the selection tests.  They always run the same set of tests,
 don't vary behavior between browsers (hopefully), and are unforgiving of any
 deviation.  However, they're significantly more cumbersome to set up and use,
@@ -448,7 +448,7 @@ generated, they consist of a single page, <a
 href=conformancetest/runtest.html>conformancetest/runtest.html</a>, which runs
 all the tests and prints out a table of passes and fails.  Like many other
 recent web standards suites, they use the <a
-href=http://dvcs.w3.org/hg/html/file/tip/tests/resources/testharness.js>testharness.js</a>
+href=https://github.com/w3c/testharness.js/blob/master/testharness.js>testharness.js</a>
 framework, and browser implementers should be able to make them part of their
 automated regression test frameworks.
 
@@ -774,7 +774,7 @@ the caret is at the start of the [[selection]], the end of the [[selection]],
 or somewhere else.
 
 <p class=comments>This short-changes Mac users.  See <a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13909>bug 13909</a>.
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13909>bug 13909</a>.
 
 <p>Each [[selection]] has a <dfn title=concept-selection-dir>direction</dfn>,
 either <i title>forwards</i> or <i title>backwards</i>. If the user creates a
@@ -822,7 +822,7 @@ and its [[seldir]] is forwards, its <span>anchor</span> is the [[range]]'s
 };</pre>
 
 <p class=comments>See also <a
-href=http://lxr.mozilla.org/mozilla/source/content/base/public/nsISelection.idl>nsISelection.idl</a>
+href=https://mxr.mozilla.org/mozilla/source/content/base/public/nsISelection.idl>nsISelection.idl</a>
 from Gecko.  This spec doesn't have everything from there yet, in particular
 selectionLanguageChange() and containsNode() are missing. They are missing
 because I couldn't work out how to define them in terms of Ranges.
@@ -1178,7 +1178,7 @@ forwards.
 <p>The <dfn title=dom-Selection-stringifier>stringifier</dfn> must . . .
 
 <p class=XXX>Complicated.  The Selection stringifier is magical like innerText.
-See <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=10583>W3C bug
+See <a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=10583>W3C bug
 10583</a>.
 
 <p>This specification extends several interfaces to provide entry points to the
@@ -1206,7 +1206,7 @@ that).
 {{code|getSelection()}} on it?  IE9 seems to return a different Selection
 object.  Firefox 12.0a1 and Opera Next 12.00 alpha return the same object as
 for the current window.  Chrome 17 dev returns null.  See
-<a href=http://lists.w3.org/Archives/Public/public-webapps/2012JanMar/0159.html>discussion</a>.
+<a href=https://lists.w3.org/Archives/Public/public-webapps/2012JanMar/0159.html>discussion</a>.
 There's no meaningful selection associated with such a document, so we follow
 WebKit and require returning null.
 
@@ -2223,8 +2223,8 @@ title>&lt;b></code> element.
 
   <li>
   <p class=comments>See <a
-  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13811>bug 13811</a>, <a
-  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14231>bug 14231</a>.  If
+  href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13811>bug 13811</a>, <a
+  href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=14231>bug 14231</a>.  If
   there's a non-adjacent sibling that matches the sibling criteria and only
   invisible nodes intervene, we want to skip over the invisible nodes.  For
   instance, bolding {{code|<b>foo</b><!--bar-->[baz]}} should produce
@@ -2448,7 +2448,7 @@ few reasons:
 <p>I deliberately allow [[dt]] to contain headers and such, in violation of
 HTML.  If I didn't, then when the user tried to formatBlock a [[dt]] as a
 header, it would break apart the whole [[dl]], which seems worse.  See <a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13201>bug 13201</a>.
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13201>bug 13201</a>.
 </div>
 
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
@@ -2802,7 +2802,7 @@ properties.
     <li>
     <div class=comments>
     <p>What happens if everything's background is fully transparent?  See <a
-    href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14068>bug</a>.  If you
+    href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=14068>bug</a>.  If you
     do queryCommandValue() for backColor/hiliteColor when no backgrounds are
     set anywhere, so it goes up to the root element, no two engines agree.
     IE10PP2 just returns a random-looking number (16777215).  Firefox 8.0a2
@@ -2840,7 +2840,7 @@ properties.
       The spec originally followed Chrome 14 dev, mainly because WebKit itself
       will produce spans with vertical-align sub or super, and we want to
       handle them correctly.  However, Ryosuke <a
-      href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-August/032809.html>informs</a>
+      href=https://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-August/032809.html>informs</a>
       me that WebKit's behavior here is viewed as <a
       href=https://bugs.webkit.org/show_bug.cgi?id=11089>a bug</a>, so I
       changed it to match Gecko/Opera.
@@ -3338,7 +3338,7 @@ might still have a different value.
 
   <li>
   <p class=comments><a
-  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13996>Bug 13996</a>.
+  href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13996>Bug 13996</a>.
 
   <p>If <var>node</var> is <span>invisible</span>, abort this algorithm.
 
@@ -3936,7 +3936,7 @@ don't either.
 <p>IE10PP2, Firefox 7.0a2, Chrome 14 dev, and Opera 11.50 all do not support
 indeterminate, state, or value for createLink or unlink.  I previously defined
 indeterminate and value anyway because they make sense, but then <a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067>undefined them</a>.
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=14067>undefined them</a>.
 The nontrivial thing is what value to return if there's no link, since any
 string can occur as a link href, in principle.
 
@@ -4100,7 +4100,7 @@ legacy font values and don't let them use CSS.  This is undesirable, but to
 avoid it we'd really have to create a new command.  If nothing else, the value
 returned by {{code|queryCommandValue()}} has to be numeric, so authors can't
 really use the command sanely no matter what we do.  See <a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14251>bug 14251</a>.
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=14251>bug 14251</a>.
 
 <p>Note that 1 is the same size as x-small in browsers, not xx-small, contrary
 to the CSS Fonts spec.
@@ -4400,7 +4400,7 @@ sense; see the comment for backColor.
 
 <p>For color parsing, see the comment for foreColor.
 
-<p>See <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13829>bug
+<p>See <a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13829>bug
 13829</a>.
 </div>
 
@@ -4451,7 +4451,7 @@ selection's value</span> to "italic".  Either way, return true.
 <h3><dfn>The <code title>removeFormat</code> command</dfn></h3>
 <!-- @{ -->
 <div class=comments>
-<p>See <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13632>bug</a>, and
+<p>See <a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13632>bug</a>, and
 also <a href=https://bugs.webkit.org/show_bug.cgi?id=43017>research by Ryosuke
 for WebKit</a>.
 
@@ -4697,7 +4697,7 @@ problems or working around them can be put off for now.
   WebKit, so pushing them down creates thickness problems as well as color
   problems.  Working around this is a similar story to the previous, except we
   have no text-decoration-width property yet (see <a
-  href=http://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html>www-style
+  href=https://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html>www-style
   post</a>).
 
   <li>The preceding two points can't be avoided, because the only way to remove
@@ -4721,7 +4721,7 @@ problems or working around them can be put off for now.
   <li>Currently we don't treat non-underline text-decorations properly, because
   we have no way to set (or cancel) underlines independently of other
   text-decorations from within CSS.  I've sent <a
-  href=http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html>feedback</a>
+  href=https://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html>feedback</a>
   to www-style.
 </ul>
 </div>
@@ -4814,7 +4814,7 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 </ol>
 
 <p class=comments><a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14062>Bug 14062</a>.  See
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=14062>Bug 14062</a>.  See
 also <a href=https://bugzilla.mozilla.org/show_bug.cgi?id=590640>Mozilla bug
 590640</a>, specifically comments 48 and on.
 
@@ -4953,8 +4953,8 @@ have works okay, so I'll stick with it for now.
     <li>If <var>child</var> is an [[ol]] or [[ul]], or <var>new item</var> is
     null and <var>child</var> is a [[text]] node whose <code
     data-anolis-spec=domcore title=dom-CharacterData-data>data</code>
-    consists of zero of more <span data-anolis-spec=domcore title="space
-    character">space characters</span>:
+    consists of zero of more <span data-anolis-spec=encoding
+    title="ascii whitespace">space characters</span>:
 
     <ol>
       <li>Set <var>new item</var> to null.
@@ -5509,7 +5509,7 @@ algorithm returns true:
 
     <li>
     <p class=comments>This special case is needed because <a
-    href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14067>createLink has no
+    href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=14067>createLink has no
     value</a>.
 
     <p>Otherwise, if <var>override</var> is a string; and <var>command</var>
@@ -5810,7 +5810,7 @@ style from the old text.
 
     <li>
     <p class=comments>Do this before stripping wrappers: see <a
-    href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13831>bug 13831</a>.
+    href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13831>bug 13831</a>.
 
     <p>If the <span>block node of</span> <var>parent</var> has no
     <span>visible</span> [[children]], and <var>parent</var> is
@@ -6036,7 +6036,7 @@ foo[<p>]bar</p>
 
   <li class=note><p>We might have deleted the contents between two lists, in
   which case we should merge them.  See <a
-  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13976>bug 13976</a>.
+  href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13976>bug 13976</a>.
 
   <li>Let <var>ancestor</var> be <var>start block</var>.
 
@@ -6377,7 +6377,7 @@ space</var> that defaults to true:
 
   <li>
   <p class=comments>This tries to delete spaces at the beginning of a line (<a
-  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119>bug 14119</a>).
+  href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=14119>bug 14119</a>).
 
   <p>Let <var>collapse spaces</var> be true if <var>start offset</var> is zero
   and <var>start node</var> <span>follows a line break</span>, otherwise false.
@@ -6428,7 +6428,7 @@ space</var> that defaults to true:
   <li>
   <p class=comments>We've already stripped leading whitespace, and collapsed
   consecutive spaces.  Now we try to strip any collapsed trailing whitespace
-  (<a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=14119>bug 14119</a>
+  (<a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=14119>bug 14119</a>
   again).
 
   <p>If <var>fix collapsed space</var> is true, then while (<var>start
@@ -6613,7 +6613,7 @@ doing something like
 
     <p>in which case it's unclear what we should do if the user selects "foo" and
     indents.  I've filed <a
-    href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609>a bug</a> on
+    href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=12609>a bug</a> on
     HTML5.
     </div>
 
@@ -6816,7 +6816,7 @@ Consider removing it anyway.
     <li>
     <p class=comments>We can't turn it into a div if it's the child of an ol or
     ul, because that's not allowed: there's no way to group li's (see
-    <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128>HTML bug 13128</a>).
+    <a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13128>HTML bug 13128</a>).
 
     <p>If <var>node</var> has attributes, and its [[parent]] is not an [[ol]]
     or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
@@ -7762,7 +7762,7 @@ would be worth the added complexity.
 <h3>Automatic linking</h3>
 <!-- @{ -->
 <p class=comments><a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13807>Bug 13807</a>.
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13807>Bug 13807</a>.
 
 <p class=note>When the user inserts whitespace immediately following something
 that looks like a URL or e-mail address, we automatically run <span>the <code
@@ -7781,7 +7781,7 @@ title>createLink</code> command</span> on it.
   common one that makes sense to autolink.
 
   <p>Either a string matching the <var>scheme</var> pattern from <a
-  href=http://tools.ietf.org/html/rfc3986#section-3.1>RFC 3986 section 3.1</a>
+  href=https://tools.ietf.org/html/rfc3986#section-3.1>RFC 3986 section 3.1</a>
   followed by the literal string {{code|://}}, or the literal string
   {{code|mailto:}}; followed by
 
@@ -9498,7 +9498,7 @@ whatwg thread</a>.
 
   <li>
   <p class=comments><a
-  href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13841>Bug 13841</a>.
+  href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13841>Bug 13841</a>.
 
   <p>If <var>container</var> is an <span>editable</span> <span>single-line
   container</span> <span>in the same editing host</span> as <var>node</var>,
@@ -10385,7 +10385,7 @@ href=http://rniwa.com/editing/undomanager.html>UndoManager</a> specification.
 <!-- @{ -->
 <p class=XXX>This is totally broken: if executed inside an editing host, it has
 to select the editing host contents, not the whole document.  See <a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13840>bug</a>.
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13840>bug</a>.
 
 <div class=comments>
 <p>Tested using roughly <a href=http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1018>this</a>.
@@ -10559,7 +10559,7 @@ succession, this specification does not define whether it is treated as one
 insertion or several consecutive insertions.
 
 <p class=comments><a
-href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13938>Bug 13938</a>.
+href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=13938>Bug 13938</a>.
 
 <p>The user agent may allow the user to make other changes to editable content,
 such as causing Ctrl-B to call
@@ -10646,5 +10646,5 @@ document.body.onclick = function(e) {
 };
 <!-- @} -->
 </script>
-<script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
+<script src=https://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
 <!-- vim: set expandtab shiftwidth=2 tabstop=2 foldmarker=@{,@} foldmethod=marker indentexpr=: -->

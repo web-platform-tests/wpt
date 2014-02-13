@@ -104,7 +104,7 @@ replace = {
     'seldir': '<span title=concept-selection-dir>direction</span>',
     'selection': '<span title=concept-selection>selection</span>',
     'sibling': '<span data-anolis-spec=dom title=concept-tree-sibling>sibling</span>',
-    'spacecharacter': '<span data-anolis-spec=dom title="space character">space character</span>',
+    'spacecharacter': '<span data-anolis-spec=encoding title="ascii whitespace">space character</span>',
     'span': '<code data-anolis-spec=html title="the span element">span</code>',
     'startnode': '<span data-anolis-spec=dom title=concept-range-start-node>start node</span>',
     'startoffset': '<span data-anolis-spec=dom title=concept-range-start-offset>start offset</span>',

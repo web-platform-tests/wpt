@@ -1,57 +1,38 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>CSS Reftest Reference</title>
-		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<style>
-			.simple{
-				background: aqua;/*rgb(0,255,255);*/
-				width: 140px;
-				height: 140px;
-				display: inline-block;
-				position: fixed;
-
-			}
-			.mixed {
-				background: red;/*rgb(255,0,0);*/
-				margin-top: 20px;
-				margin-left: 20px;
-				width: 200px;
-				height: 200px;
-				overflow: hidden;
-				border-radius: 1em 5em;
-			}
-			.childOfMixed1 {
-				background: black;/*rgb(0,0,0);*/
-				width: 120px;
-				height: 120px;
-				display: block;
-			}
-			.childOfMixed21 {
-				background: lime;/*rgb(0,255,0);*/
-				width: 100px;
-				height: 100px;
-				position:fixed;
-			}
-			.childOfMixed2 {
-				background: yellow;/*rgb(255,255,0);*/
-				margin-top: -100px;
-				margin-left: 20px;
-				width: 200px;
-				height: 200px;
-			}
-		</style>
-	</head>
-	<body>
-		<p> </p>
-		<div class="simple">
-			<div class="mixed">
-				<div class="childOfMixed1">
-				</div>
-				<div class="childOfMixed2">
-					<div class="childOfMixed21"></div>
-				</div>
-			</div>
-		</div>
-	</body>
+    <head>
+        <title>CSS Reftest Reference</title>
+        <link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+        <link rel="author" title="Ion Roșca" href="mailto:rosca@adobe.com">
+        <link rel="reviewer" title="Mihai Țică" href="mailto:mitica@adobe.com">
+        <style type="text/css">
+            .parent {
+                background: aqua;/*rgb(0,255,255);*/
+                width: 150px;
+                height: 150px;
+                position: relative;
+                z-index: 1;
+            }
+            .blended {
+                width: 150px;
+                height: 150px;
+                overflow: hidden;
+                border-radius: 2em 2em;
+            }
+            .childOfBlended {
+                background: lime;/*rgb(0,255,0);*/
+                width: 150px;
+                height: 150px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>The test passes if you see a lime rectangle with aqua rounded corners.</p>
+        <div class="parent">
+            <div class="blended">
+                <div class="childOfBlended">
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

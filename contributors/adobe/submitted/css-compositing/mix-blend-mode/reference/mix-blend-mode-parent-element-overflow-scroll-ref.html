@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>CSS Reftest Reference</title>
-		<link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
-		<style>
-			.simple{
-				background: aqua;/*rgb(0,255,255);*/
-				width: 140px;
-				height: 140px;
-				display:inline-block;
-				position: fixed;
-				overflow:scroll;
-			}
-			.mixed {
-				background: black;/*rgb(0,0,0);*/
-				margin-top: 20px;
-				margin-left: 20px;
-				width: 200px;
-				height: 200px;
-				mix-blend-mode: multiply;
-				}
-		</style>
-	</head>
-	<body>
-		<p>Test passes if you see a black rectangle with large aqua borders on the top and left. <br>
-			Also, you should see scrollbars on the right and the bottom of the main div.
-		You should not see a red rectangle on the page. </p>
-		<div class="simple">
-			<div class="mixed"></div>
-		</div>
-	</body>
+    <head>
+        <title>CSS Reftest Reference</title>
+        <link rel="author" title="Mirela Budăeș" href="mailto:mbudaes@adobe.com">
+        <link rel="author" title="Ion Roșca" href="mailto:rosca@adobe.com">
+        <link rel="reviewer" title="Mihai Țică" href="mailto:mitica@adobe.com">
+        <style type="text/css">
+            .parent {
+                width: 140px;
+                height: 140px;
+                position: relative;
+                z-index: 1;
+                overflow:scroll;
+            }
+            .blended {
+                background: lime;
+                width: 200px;
+                height: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if you see a scrollable lime rectangle.</p>
+        <div class="parent">
+            <div class="blended"></div>
+        </div>
+    </body>
 </html>

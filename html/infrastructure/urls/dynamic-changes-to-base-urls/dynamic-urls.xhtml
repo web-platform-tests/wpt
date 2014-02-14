@@ -33,7 +33,7 @@
             var ele = document.createElement(item.elements[j]);
 
             ele.setAttribute(item.set, "test.txt");
-            document.getElementById("div").appendChild(ele);
+            div.appendChild(ele);
 
             html.setAttribute("xml:base", "");
             assert_equals(ele[item.get], url.substr(0, url.lastIndexOf("/")) +"/test.txt", "The '" + item.get + "' attribute is incorrect.");

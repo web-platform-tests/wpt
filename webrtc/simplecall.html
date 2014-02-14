@@ -18,7 +18,7 @@
     gFirstConnection.createOffer(onOfferCreated);
 
     var videoTag = document.getElementById('local-view');
-    videoTag.src = webkitURL.createObjectURL(localStream);
+    videoTag.srcObject = localStream;
   };
 
   var onOfferCreated = test.step_func(function(offer) {
@@ -78,7 +78,7 @@
 
   var onRemoteStream = test.step_func(function(event) {
     var videoTag = document.getElementById('remote-view');
-    videoTag.srcObj = event.stream;
+    videoTag.srcObject = event.stream;
   });
 
   // Returns a suitable error callback.

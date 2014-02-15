@@ -2,6 +2,7 @@
 <title>TextTrack.activeCues</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/common/media.js></script>
 <div id=log></div>
 <script>
 setup(function(){
@@ -98,6 +99,6 @@ test1.step(function(){
         video.play();
         test1.done();
     });
-    video.src = '/resources/media/sunflower.' + (video.canPlayType('video/webm') ? 'webm' : 'mp4');
+    video.src = getVideoURI("/media/movie_5");
 });
 </script>

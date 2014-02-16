@@ -1,5 +1,5 @@
 <!doctype html>
-<title>autoplaying fires play and playing events between canplay and canplaythrough</title>
+<title>autoplay</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/media.js"></script>
@@ -15,6 +15,8 @@ function autoplay_test(tagName, src) {
     var expected_events = ['canplay', 'play', 'playing', 'canplaythrough'];
     expected_events.forEach(function(type) {
       e.addEventListener(type, t.step_func(function() {
+        assert_equals(e.readyState, e.HAVE_ENOUGH_DATA);
+        assert_false(e.paused);
         actual_events.push(type);
         if (type == 'canplaythrough') {
           assert_array_equals(actual_events, expected_events);
@@ -22,8 +24,9 @@ function autoplay_test(tagName, src) {
         }
       }));
     });
-  }, document.title + ', ' + tagName);
+  }, tagName + '.autoplay');
 }
+
 autoplay_test('audio', getAudioURI('/media/sound_5'));
 autoplay_test('video', getVideoURI('/media/movie_5'));
 </script>

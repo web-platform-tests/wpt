@@ -1,7 +1,7 @@
 <!doctype html>
 
 <!--
-Tests that a create MediaElementSourceNode that is passed through 
+Tests that a create MediaElementSourceNode that is passed through
 a script processor passes the stream data.
 The the script processor saves the input buffers it gets to a temporary
 array, and after the playback has stopped, the contents are compared
@@ -24,128 +24,100 @@ Somewhat similiar to a test from Mozilla:
  <body class="a">
   <div id="log"></div>
   <script>
-var elementSourceTest = async_test("Element Source tests completed");
+ var elementSourceTest = async_test("Element Source tests completed");
 
-var src = '/webaudio/resources/sin_440Hz_-6dBFS_1s.wav';
-var BUFFER_SIZE = 2048;
-var context = null;
-var actualBufferArrayC0 = new Float32Array(0);
-var actualBufferArrayC1 = new Float32Array(0);
-var audio = null, source = null, processor = null
+ var src = '/webaudio/resources/sin_440Hz_-6dBFS_1s.wav';
+ var BUFFER_SIZE = 2048;
+ var context = null;
+ var actualBufferArrayC0 = new Float32Array(0);
+ var actualBufferArrayC1 = new Float32Array(0);
+ var audio = null, source = null, processor = null
 
+ function loadExpectedBuffer(event) {
+   bufferLoader = new BufferLoader(
+     context,
+     [src],
+     bufferLoadCompleted
+   );
+   bufferLoader.load();
+ };
 
+ function bufferLoadCompleted(buffer) {
+   runTests(buffer);
+ };
 
-function loadExpectedBuffer(event) {
-  bufferLoader = new BufferLoader(
-    context,
-    [src],
-    bufferLoadCompleted
-  );
-  bufferLoader.load();
-};
+ function concatTypedArray(arr1, arr2) {
+   var result = new Float32Array(arr1.length + arr2.length);
+   result.set(arr1);
+   result.set(arr2, arr1.length);
+   return result;
+ }
 
-function bufferLoadCompleted(buffer) {
-  runTests(buffer);
-};
+ // Create Audio context
+ context = new AudioContext();
 
-function concatTypedArray(arr1, arr2) {
-  var result = new Float32Array(arr1.length + arr2.length);
-  result.set(arr1);
-  result.set(arr2, arr1.length);
-  return result;
-}
+ // Create an audio element, and a media element source
+ audio = document.createElement('audio');
+ audio.src = src;
+ source = context.createMediaElementSource(audio);
 
-function processAudio(e) {
-  var inputBufferData = e.inputBuffer.getChannelData(0);
-  actualBufferArrayC0 = concatTypedArray(actualBufferArrayC0, e.inputBuffer.getChannelData(0));
-  actualBufferArrayC1 = concatTypedArray(actualBufferArrayC1, e.inputBuffer.getChannelData(1));      
-}
+ // Create a processor node to copy the input to the actual buffer
+ processor = context.createScriptProcessor(BUFFER_SIZE);
+ source.connect(processor);
+ processor.connect(context.destination);
+ processor.addEventListener('audioprocess',
+                            (function (e) {
+                              actualBufferArrayC0 = concatTypedArray(actualBufferArrayC0, e.inputBuffer.getChannelData(0));
+                              actualBufferArrayC1 = concatTypedArray(actualBufferArrayC1, e.inputBuffer.getChannelData(1));
+                            }));
 
-// Create Audio context
-context = new AudioContext();
+ // When media playback ended, save the begin to compare with expected buffer
+ audio.addEventListener("ended", function(e) {
+   // Setting a timeout since we need audioProcess event to run for all samples
+   window.setTimeout(loadExpectedBuffer, 50);
+ });
 
-// Create an audio element, and a media element source
-audio = document.createElement('audio');
-audio.src = src;
-source = context.createMediaElementSource(audio);
+ audio.play();
 
-// Create a processor node, and set its audio process
-// event to save the data
-processor = context.createScriptProcessor(BUFFER_SIZE);
-source.connect(processor);
-processor.connect(context.destination);
-processor.addEventListener('audioprocess', processAudio);
+ function runTests(expected) {
+   source.disconnect();
+   processor.disconnect();
 
+   // firefox seems to process events after disconnect
+   processor.removeEventListener('audioprocess')
 
-// Nothing to do with this event at the moment to control precisely
-// Saving the input
-audio.addEventListener("canplaythrough", function() {
-  //console.log("oncanplaythorough");
-});
+   var expectedBuffer = expected[0];
 
-// When media playback ended, save the begin to compare with expected buffer
-audio.addEventListener("ended", function(e) {
-  // Setting a timeout since we need audioProcess event to run for all samples
-  window.setTimeout(loadExpectedBuffer, 50);
-});
+   // Trim the actual elements because we don't have a fine-grained
+   // control over the start and end time of recording the data.
+   var actualTrimmedC0 = trimEmptyElements(actualBufferArrayC0);
+   var actualTrimmedC1 = trimEmptyElements(actualBufferArrayC1);
+   var expectedLength = trimEmptyElements(expectedBuffer.getChannelData(0)).length;
 
-audio.play();
+   // Test that there is some data.
+   test(function() {
+     assert_greater_than(actualTrimmedC0.length, 0,
+                         "processed data array (C0) length greater than 0");
+     assert_greater_than(actualTrimmedC1.length, 0,
+                         "processed data array (C1) length greater than 0");
+   }, "Channel 0 processed some data");
 
+   // Test the actual contents of the 1st and second channel.
+   test(function() {
+     assert_array_approx_equals(
+       actualTrimmedC0,
+       trimEmptyElements(expectedBuffer.getChannelData(0)),
+       1e-4,
+       "comparing expected and rendered buffers (channel 0)");
+     assert_array_approx_equals(
+       actualTrimmedC1,
+       trimEmptyElements(expectedBuffer.getChannelData(1)),
+       1e-4,
+       "comparing expected and rendered buffers (channel 1)");
+   }, "All data processed correctly");
 
-function runTests(expected) {
-
-  source.disconnect();
-  processor.disconnect();
-  // firefox seems to process events after disconnect
-  processor.removeEventListener('audioprocess', processAudio)
-
-  var expectedBuffer = expected[0];
-  window.expectedBuffer = expectedBuffer;
-  // Trim the actual elements because we don't have a fine-grained
-  // control over the start and end time of recording the data.
-  var actualTrimmedC0 = trimEmptyElements(actualBufferArrayC0);
-  var actualTrimmedC1 = trimEmptyElements(actualBufferArrayC1);
-  var expectedLength = trimEmptyElements(expectedBuffer.getChannelData(0)).length; 
-  
-
-  // Test that there is some data.
-  test(function() {
-    assert_greater_than(actualTrimmedC0.length, 0,
-      "processed data array (C0) length greater than 0");
-    assert_greater_than(actualTrimmedC1.length, 0,
-      "processed data array (C1) length greater than 0");    
-  }, "Channel 0 processed some data");  
-
-  // Test the actual contents of the 1st and second channel.
-  test(function() {
-    assert_array_approx_equals(
-      actualTrimmedC0,
-      trimEmptyElements(expectedBuffer.getChannelData(0)),
-      1e-4,
-     "comparing expected and rendered buffers (channel 0)");
-    assert_array_approx_equals(
-      actualTrimmedC1,
-      trimEmptyElements(expectedBuffer.getChannelData(1)),
-      1e-4,
-     "comparing expected and rendered buffers (channel 1)");
-  }, "All data processed correctly");
-
-  // Test the actual contents of the 1st and second channel.
-  test(function() {
-    assert_array_approx_equals(
-      actualTrimmedC0.subarray(0, expectedLength),
-      trimEmptyElements(expectedBuffer.getChannelData(0)),
-      1e-4,
-     "comparing expected and rendered buffers (channel 0)");
-    // assert_array_approx_equals(
-    //   actualTrimmedC1(0, expectedLength),
-    //   trimEmptyElements(expectedBuffer.getChannelData(1)),
-    //   1e-4,
-    //  "comparing expected and rendered buffers (channel 1)");
-  }, "Start of data processed correctly");  
-
-  elementSourceTest.done();
-};
+   elementSourceTest.done();
+ };
   </script>
  </body>
 </html>

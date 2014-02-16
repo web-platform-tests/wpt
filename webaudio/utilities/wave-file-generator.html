@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wave file generator</title>
+  <script src="wave-file-generator.js"></script>
+</head>
+<body>
+
+  <form id="generateForm">
+  <label for="seconds">Length in seconds</label>
+  <input  type="number" id="seconds" min="0" value="1">
+  <label for="channels">channels</label>
+  <input  type="number" id="channels" min="1" max="2" step="1" value="1">
+
+  <input type='button' id="generate" value="Generate" />
+  </form>
+  <div>
+    <audio controls="true" id="generated"></audio>
+    <a id='download'>Download</a>
+  </div>
+
+  <script>
+  document.getElementById('generate').addEventListener('click', generateWave);
+  </script>
+</body>
+</html>

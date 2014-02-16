@@ -1,0 +1,87 @@
+<!doctype html>
+
+<!--
+Tests a MediaElementSource node by creating it and passing it through an OfflineAudioContext.
+The rendered results are compared with an expected loaded buffer, based on the same file.
+
+
+NOTE: No known implementation 
+-->
+
+<html class="a">
+ <head>
+  <title>MediaElementAudioSource interface test (to OfflineContext)</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/webaudio/js/lodash.js"></script>
+  <script src="/webaudio/js/vendor-prefixes.js"></script>
+  <script src="/webaudio/js/helpers.js"></script>
+  <script src="/webaudio/js/buffer-loader.js"></script>
+ </head>
+ <body class="a">
+  <div id="log"></div>
+  <script>
+var elementSourceTest = async_test("Element Source tests completed");
+
+var src = '/webaudio/resources/noise_1sec_1channels.wav';
+var sampleRate = 44100.0;
+var lengthInSeconds = 3;
+
+var context = null, audio = null, source = null;
+var actualBuffer = null;
+
+
+function loadExpectedBuffer(event) {
+  actualBuffer = event.renderedBuffer;
+  bufferLoader = new BufferLoader(
+    context,
+    [src],
+    bufferLoadCompleted
+  );
+  bufferLoader.load();
+};
+
+function bufferLoadCompleted(buffer) {
+  runTests(buffer);
+};
+
+context = new OfflineAudioContext(1, sampleRate * lengthInSeconds, sampleRate);
+var audio = document.createElement('audio');
+audio.src = src;
+var source = context.createMediaElementSource(audio);
+source.connect(context.destination);
+
+audio.addEventListener("playing", function(e) {
+  console.log("play", e);
+  context.startRendering();
+});  
+
+context.oncomplete = loadExpectedBuffer;
+
+audio.play();
+
+
+function runTests(expected) {
+  expectedBuffer = expected[0];
+  
+  test(function() {
+    var actualTrimmed = trimEmptyElements(actualBuffer.getChannelData(0));
+    assert_greater_than(actualTrimmed.length, 0,
+      "processed data array (Channel 0) length greater than 0");
+  }, "The actual buffer contains some data");  
+
+
+  test(function() {
+    var length = expectedBuffer.getChannelData(0).length;
+    assert_array_approx_equals(
+      actualBuffer.getChannelData(0).subarray(0, length),
+      expectedBuffer.getChannelData(0),
+      1e-4,
+     "comparing expected and (the start of) rendered buffers (channel 0)");
+  }, "start of data is correct");  
+
+  elementSourceTest.done();
+};
+  </script>
+ </body>
+</html>

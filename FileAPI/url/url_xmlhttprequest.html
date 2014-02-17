@@ -18,7 +18,7 @@
         http.open("GET", "test.png", true);
         http.responseType = "blob";
 
-        http.loadend = this.step_func(function (evt) {
+        http.onloadend = this.step_func(function (evt) {
           var blobURI = window.URL.createObjectURL(http.response);
           test(function() {
             assert_true(http.response instanceof Blob, "XMLHttpRequest returns instanceof Blob");

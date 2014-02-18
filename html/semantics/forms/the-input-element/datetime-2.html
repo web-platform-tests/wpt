@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Form input type=datetime</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.whatwg.org/specs/web-apps/current-work/multipage/common-microsyntaxes.html#global-dates-and-times">
+<link rel=help href="http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#local-date-and-time-state-(type=datetime)">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  var datetime = [
+    // valid values
+    {value: "", expected: "", testname: "empty value"},
+    {value: "2014-01-01T11:11Z", expected: "2014-01-01T11:11Z", testname: "Valid value (LATIN CAPITAL LETTER T U+0054): normalized value should be 2014-01-01T11:11Z"},
+    {value: "2014-01-01 11:11Z", expected: "2014-01-01T11:11Z", testname: "Valid value (SPACE character U+0020): normalized value should be 2014-01-01T11:11Z"},
+    {value: "2014-01-01 11:11-04:00", expected: "2014-01-01T15:11Z", testname: "Valid value: normalized value should be 2014-01-01T15:11Z"},
+    {value: "2014-01-01 11:11-0400", expected: "2014-01-01T15:11Z", testname: "Valid value (timezone without :): normalized value should be 2014-01-01T15:11Z"},
+    {value: "2014-01-01 11:11:00.000-04:00", expected: "2014-01-01T15:11Z", testname: "Valid value: normalized value should be 2014-01-01T15:11Z (shortest possible string for the given time)"},
+    // invalid values
+    {value: "2014-01-01  11:11:00.000Z", expected: "", testname: "Invalid value: two spaces"},
+    {value: "2014-01-01 11:11:00.000", expected: "", testname: "Invalid value: no timezone"},
+    {value: "2014-01-01 11:11:00.000+", expected: "", testname: "Invalid value: invalid timezone"},
+    {value: "2014-01-01 11:11:00.000+24", expected: "", testname: "Invalid value: invalid timezone (hour > 23)"},
+    {value: "2014-01-01 11:11:00.000+2360", expected: "", testname: "Invalid value: invalid timezone (minute > 59)"},
+    {value: "2014-01-0 11:11:00.000+0400", expected: "", testname: "Invalid value: invalid date string"},
+    {value: "2014-01-01 11:1:00.000+0400", expected: "", testname: "Invalid value: invalid time string"},
+    // min/max
+    {value: "2014-01-01 11:11Z", attributes: { min: "2014-01-01T11:10Z" }, expected: "2014-01-01T11:11Z", testname: "Value >= min attribute"},
+    {value: "2014-01-01 11:10Z", attributes: { min: "2014-01-01T11:11Z" }, expected: "2014-01-01T11:11Z", testname: "Value < min attribute"},
+    {value: "2014-01-01 11:10Z", attributes: { max: "2014-01-01T11:11Z" }, expected: "2014-01-01T11:11Z", testname: "Value <= max attribute"},
+    {value: "2014-01-01 11:11Z", attributes: { max: "2014-01-01T11:10Z" }, expected: "2014-01-01T11:10Z", testname: "Value > max attribute"}
+  ];
+  for (var i = 0; i < datetime.length; i++) {
+    var w = datetime[i];
+    test(function() {
+      var input = document.createElement("input");
+      input.type = "datetime";
+      input.value = w.value;
+      for(var attr in w.attributes) {
+        input[attr] = w.attributes[attr];
+      }
+      assert_equals(input.value, w.expected);
+    }, w.testname);
+  }
+</script>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Detached callback of a custom element should  be called if document has browsing context</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="detached callback ... must be enqueued whenever custom element is removed from the document and this document has a browsing context.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.detachedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.registerElement('x-element', {prototype: proto});
+    var customElement = doc.querySelector('#xelement');
+    doc.body.removeChild(customElement);
+    assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
+        'if custom element is removed from the document with browsing context');
+}, 'Test detached callback is called if custom element is removed by method removeChild() '+
+    'from document with browsing context');
+
+
+testInIFrame('../../resources/blank.html', function(doc) {
+    var callbackCalledCounter = 0;
+
+    doc.body.innerHTML = '<div id="xa4-parent"><x-a-4 id="xa4"></x-a-4></div>';
+    var proto = Object.create(HTMLElement.prototype);
+    proto.detachedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.registerElement('x-a-4', {prototype: proto});
+
+    var div = doc.querySelector('#xa4-parent');
+    doc.body.removeChild(div);
+    assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
+        'if custom element is removed from the document with browsing context');
+}, 'Test detached callback is called if ancestor node of custom element '+
+    'is removed by method removeChild() from document with browsing context');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.detachedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.registerElement('x-element', {prototype: proto});
+    var customElement = doc.querySelector('#xelement');
+    var div = doc.createElement('div');
+    doc.body.replaceChild(div, customElement);
+    assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
+        'if custom element is removed from the document with browsing context');
+}, 'Test detached callback is called if custom element is removed by method replaceChild() '+
+    'from document with browsing context');
+
+
+testInIFrame('../../resources/blank.html', function(doc) {
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.detachedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.registerElement('x-a-6', {prototype: proto});
+    doc.body.innerHTML = '<div id="x-a-6-parent"><x-a-6 id="xelement"></x-a-6></div>';
+
+    var parent = doc.querySelector('#x-a-6-parent');
+    var replacement = doc.createElement('div');
+    doc.body.replaceChild(replacement, parent);
+    assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
+        'if custom element is removed from the document with browsing context');
+}, 'Test detached callback is called if ancestor node of custom element '+
+    'is removed by method replaceChild() from document with browsing context');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackCalledCounter = 0;
+
+    var proto = Object.create(HTMLElement.prototype);
+    proto.detachedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.registerElement('x-element', {prototype: proto});
+    var customElement = doc.querySelector('#xelement');
+    doc.body.innerHTML = '';
+    assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
+        'if custom element is removed from the document with browsing context');
+}, 'Test detached callback is called after changing custom element direct parent ' +
+    'innerHTML property in the document with browsing context');
+
+
+testInIFrame('../../resources/blank.html', function(doc) {
+    var callbackCalledCounter = 0;
+
+    doc.body.innerHTML = '<div id="xa4-parent"><x-a-5 id="xa5"></x-a-5></div>';
+    var proto = Object.create(HTMLElement.prototype);
+    proto.detachedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.registerElement('x-a-5', {prototype: proto});
+
+    var div = doc.querySelector('#xa5-parent');
+    doc.body.innerHTML = '';
+    assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
+        'if custom element is removed from the document with browsing context');
+
+}, 'Test detached callback is called after changing custom element ancestor ' +
+    'innerHTML property in the document with browsing context');
+</script>
+</body>
+</html>

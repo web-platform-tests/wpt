@@ -4,7 +4,7 @@
         <title>Shape Outside Ellipse Valid Positions</title>
         <link rel="author" title="Adobe" href="http://html.adobe.com/">
         <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
-        <link rel="help" href="http://dev.w3.org/csswg/css-shapes/#funcdef-ellipse">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
         <meta name="assert" content="A ellipse's position argument may be any of valid keyword/length/percentage combinations allowed by a <position> value">
         <meta name="flags" content="DOM">
         <script src="/resources/testharness.js"></script>
@@ -14,10 +14,8 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(function(value) {
-                value = "ellipse(at " + value + ")";
-                ParsingUtils.testInlineStyle(value, value);
-            }, ParsingUtils.valuesAsArrays(ParsingUtils.validPositions, 2));
+             generate_tests( ParsingUtils.testInlineStyle,
+                             ParsingUtils.buildEllipsoidTests("ellipse", ParsingUtils.serializedEllipsoids) );
         </script>
     </body>
 </html>

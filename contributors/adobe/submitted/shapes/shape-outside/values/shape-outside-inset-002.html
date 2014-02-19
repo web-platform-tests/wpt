@@ -4,7 +4,7 @@
         <title>Shape Outside Inset Valid Rounds</title>
         <link rel="author" title="Adobe" href="http://html.adobe.com/">
         <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
-        <link rel="help" href="http://dev.w3.org/csswg/css-shapes/#funcdef-inset">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-inset">
         <meta name="assert" content="An inset's radial component has 1 to 4 length/percentages, optionally followed by a '/' and an additional 1 to 4 length/percentages">
         <meta name="flags" content="DOM">
         <script src="/resources/testharness.js"></script>
@@ -26,14 +26,23 @@
                     return 'inset(10px round ' + value + ')';
                 }
 
+                function serializedInset(lhsValues, rhsValues) {
+                    if(!rhsValues)
+                        return 'inset(10px round ' + lhsValues +')';
+                    else
+                        return 'inset(10px round ' + lhsValues +' / '+ rhsValues +')';
+                }
 
                 var results = [], left, lhs, right, rhs;
                 for (left = 1; left <= 4; left++) {
                     lhs = sizes.slice(0, left).join(' ');
-                    results.push([units + ' ' + left + ' / 0 round', insetWrap(lhs)]);
+                    results.push([insetWrap(lhs), insetWrap(lhs), serializedInset(lhs, null)]);
                     for (right = 1; right <= 4; right++) {
                         rhs = sizes.slice(0, right).join(' ');
-                        results.push([units + ' ' + left + ' / ' + right + ' round', insetWrap(lhs + ' / ' + rhs)]);
+                        if(lhs == rhs)
+                            results.push([insetWrap(lhs + ' / ' + rhs), insetWrap(lhs + ' / ' + rhs), serializedInset(lhs, null)]);
+                        else
+                            results.push([insetWrap(lhs + ' / ' + rhs), insetWrap(lhs + ' / ' + rhs), serializedInset(lhs, rhs)]);
                     }
                 }
                 return results;

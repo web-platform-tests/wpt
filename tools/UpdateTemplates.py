@@ -83,16 +83,17 @@ class UpdateTemplates(object): # dump spec section data in legacy format for bui
             out.write('[% suites = {\n')
             for suite in suites:
                 suite = suites[suite]
-                spec = specs['_' + suite['specs'][0]]
-                owner = suite['owners'][0] if ('owners' in suite) else None
-                out.write("  '" + suite['name'] + "' => { ")
-                out.write("title => '" + self._str(suite['title']) + "', ")
-                out.write("spec => '" + self._str(spec['title']) + "', ")
-                out.write("specroot => '" + self._str(spec['base_uri']) + "', ")
-                out.write("owner => '" + self._user(owner) + "', ")
-                out.write("harness => '" + self._str(suite['name']) + "', ")
-                out.write("status => '" + self._str(suite['status']) + "' ")
-                out.write(" },\n")
+                if ('build' in suite):
+                    spec = specs['_' + suite['specs'][0]]
+                    owner = suite['owners'][0] if ('owners' in suite) else None
+                    out.write("  '" + suite['name'] + "' => { ")
+                    out.write("title => '" + self._str(suite['title']) + "', ")
+                    out.write("spec => '" + self._str(spec['title']) + "', ")
+                    out.write("specroot => '" + self._str(spec['base_uri']) + "', ")
+                    out.write("owner => '" + self._user(owner) + "', ")
+                    out.write("harness => '" + self._str(suite['name']) + "', ")
+                    out.write("status => '" + self._str(suite['status']) + "' ")
+                    out.write(" },\n")
             out.write('}\n%]')
             out.close()
         else:

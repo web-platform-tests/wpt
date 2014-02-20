@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>The output element</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-button-element.html#the-output-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<output id=output></output>
+<script>
+  var output = document.getElementById("output");
+
+  test(function(){
+    assert_equals(output.type, "output", "output.type must return the string 'output'");
+    assert_equals(output.textContent, "", "output.textContent is empty");
+    assert_equals(output.value, "", "output is empty: output.value should be empty");
+    assert_equals(output.defaultValue, "", "output is empty: output.defaultValue should be empty");
+
+    output.textContent="5";
+    assert_equals(output.value, "5", "output is 5: output.value should be 5");
+    assert_equals(output.textContent, "5", "output is 5: output.textContent should be 5");
+    assert_equals(output.defaultValue, "5", "output is 5: output.defaultValue should be 5");
+
+    output.value="20";  // set the value mode flag to "value": default value remains unchanged
+    assert_equals(output.value, "20", "output value set to 20");
+    assert_equals(output.textContent, "20", "output value set to 20: textContent should be 20");
+    assert_equals(output.defaultValue, "5", "output value set to 20: defaultValue should still be 5");
+  }, "output value and defaultValue");
+</script>

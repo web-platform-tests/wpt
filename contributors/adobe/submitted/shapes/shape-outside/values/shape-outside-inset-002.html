@@ -5,7 +5,8 @@
         <link rel="author" title="Adobe" href="http://html.adobe.com/">
         <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
         <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-inset">
-        <meta name="assert" content="An inset's radial component has 1 to 4 length/percentages, optionally followed by a '/' and an additional 1 to 4 length/percentages">
+        <meta name="assert" content="An inset's radial component has 1 to 4 length/percentages, optionally followed by a '/'
+                                     and an additional 1 to 4 length/percentages and lengths can be in any unit.">
         <meta name="flags" content="DOM">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
@@ -14,42 +15,8 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            function generateCases(units) {
-                var sizes = [
-                    '10' + units,
-                    '20' + units,
-                    '30' + units,
-                    '40' + units
-                ];
-
-                function insetWrap(value) {
-                    return 'inset(10px round ' + value + ')';
-                }
-
-                function serializedInset(lhsValues, rhsValues) {
-                    if(!rhsValues)
-                        return 'inset(10px round ' + lhsValues +')';
-                    else
-                        return 'inset(10px round ' + lhsValues +' / '+ rhsValues +')';
-                }
-
-                var results = [], left, lhs, right, rhs;
-                for (left = 1; left <= 4; left++) {
-                    lhs = sizes.slice(0, left).join(' ');
-                    results.push([insetWrap(lhs), insetWrap(lhs), serializedInset(lhs, null)]);
-                    for (right = 1; right <= 4; right++) {
-                        rhs = sizes.slice(0, right).join(' ');
-                        if(lhs == rhs)
-                            results.push([insetWrap(lhs + ' / ' + rhs), insetWrap(lhs + ' / ' + rhs), serializedInset(lhs, null)]);
-                        else
-                            results.push([insetWrap(lhs + ' / ' + rhs), insetWrap(lhs + ' / ' + rhs), serializedInset(lhs, rhs)]);
-                    }
-                }
-                return results;
-            }
-
-            generate_tests(ParsingUtils.testInlineStyle, generateCases('px'));
-            generate_tests(ParsingUtils.testInlineStyle, generateCases('%'));
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.generateInsetRoundCases('px'));
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.generateInsetRoundCases('%'));
         </script>
     </body>
 </html>

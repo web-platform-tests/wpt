@@ -14,12 +14,15 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, [
-                ["No arguments", "circle()"],
-                ["Radial argument", "circle(50px)"],
-                ["Position argument", "circle(at 50px 50px)"],
-                ["Radial and position argument", "circle(50px at 50px 50px)"]
-            ]);
+            generate_tests(
+                ParsingUtils.testInlineStyle,
+                ParsingUtils.buildTestCases([
+                    ["No arguments", "circle()"],
+                    ["Radial argument", "circle(50px)"],
+                    ["Position argument", "circle(at 50px 50px)"],
+                    ["Radial and position argument", "circle(50px at 50px 50px)"]
+                ], "valid", 1)
+            );
         </script>
     </body>
 </html>

@@ -15,15 +15,15 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testComputedStyle, [[
-                "inset", "inset(10% 20% 30% 40% round 10% 20% 30% 40% / 10% 20% 30% 40%)"
-            ], [
-                "circle", "circle(10% at 10% 20%)"
-            ], [
-                "ellipse", "ellipse(10% 20% at 10% 20%)"
-            ], [
-                "polygon", "polygon(nonzero, 10% 20%, 30% 40%, 50% 60%)"
-            ]]);
+            generate_tests(
+                ParsingUtils.testComputedStyle,
+                ParsingUtils.buildTestCases([
+                    ["inset", "inset(10% 20% 30% 40% round 10% 20% 30% 40% / 10% 20% 30% 40%)"],
+                    ["circle", "circle(10% at 10% 20%)"],
+                    ["ellipse", "ellipse(10% 20% at 10% 20%)"],
+                    ["polygon", "polygon(nonzero, 10% 20%, 30% 40%, 50% 60%)"]
+                ], "valid", 1)
+            );
         </script>
     </body>
 </html>

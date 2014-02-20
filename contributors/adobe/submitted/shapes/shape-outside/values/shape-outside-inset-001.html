@@ -5,7 +5,7 @@
         <link rel="author" title="Adobe" href="http://html.adobe.com/">
         <link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
         <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-inset">
-        <meta name="assert" content="An inset has 1 to 4 length or percentage insets">
+        <meta name="assert" content="An inset has 1 to 4 insets as percentages or length in any unit">
         <meta name="flags" content="DOM">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
@@ -14,39 +14,7 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            var cases = [
-                ["One arg - px", "10px", "10px"],
-                ["One arg - %", "10%", "10%"],
-                ["Two args - px px", "10px 20px", "10px 20px"],
-                ["Two args - px %", "10px 20%", "10px 20%"],
-                ["Two args - % px", "10% 20px", "10% 20px"],
-                ["Two args - % %", "10% 20%", "10% 20%"],
-                ["Three args - px px px", "10px 20px 30px", "10px 20px 30px 20px"],
-                ["Three args - px px %", "10px 20px 30%", "10px 20px 30% 20px"],
-                ["Three args - px % px", "10px 20% 30px", "10px 20% 30px 20%"],
-                ["Three args - px % % ", "10px 20% 30%", "10px 20% 30% 20%"],
-                ["Three args - % px px", "10% 20px 30px", "10% 20px 30px 20px"],
-                ["Three args - % px % ", "10% 20px 30%", "10% 20px 30% 20px"],
-                ["Three args - % % px ", "10% 20% 30px", "10% 20% 30px 20%"],
-                ["Three args - % % % ","10% 20% 30%", "10% 20% 30% 20%"],
-                ["Four args - px px px px", "10px 20px 30px 40px", "10px 20px 30px 40px"],
-                ["Four args - px px px %", "10px 20px 30px 40%", "10px 20px 30px 40%"],
-                ["Four args - px px % px", "10px 20px 30% 40px", "10px 20px 30% 40px"],
-                ["Four args - px px % %", "10px 20px 30% 40%", "10px 20px 30% 40%"],
-                ["Four args - px % px px", "10px 20% 30px 40px", "10px 20% 30px 40px"],
-                ["Four args - px % px %", "10px 20% 30px 40%", "10px 20% 30px 40%"],
-                ["Four args - px % % px", "10px 20% 30% 40px", "10px 20% 30% 40px"],
-                ["Four args - px % % %", "10px 20% 30% 40%", "10px 20% 30% 40%"],
-                ["Four args - % px px px", "10% 20px 30px 40px", "10% 20px 30px 40px"],
-                ["Four args - % px px p%", "10% 20px 30px 40%", "10% 20px 30px 40%"],
-                ["Four args - % px % px", "10% 20px 30% 40px", "10% 20px 30% 40px"],
-                ["Four args - % px % %", "10% 20px 30% 40%", "10% 20px 30% 40%"],
-                ["Four args - % % px px", "10% 20% 30px 40px", "10% 20% 30px 40px"],
-                ["Four args - % % px %", "10% 20% 30px 40%", "10% 20% 30px 40%"],
-                ["Four args - % % % px", "10% 20% 30% 40px", "10% 20% 30% 40px"],
-                ["Four args - % % % %", "10% 20% 30% 40%", "10% 20% 30% 40%"]
-            ]
-            generate_tests( ParsingUtils.testInlineStyle, ParsingUtils.buildInsetTests(cases) );
+            generate_tests( ParsingUtils.testInlineStyle, ParsingUtils.buildInsetTests(ParsingUtils.validUnits, "%") );
         </script>
     </body>
 </html>

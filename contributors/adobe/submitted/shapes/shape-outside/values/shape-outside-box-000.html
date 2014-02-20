@@ -15,12 +15,12 @@
         <div id="log"></div>
         <script type="text/javascript">
             generate_tests(
-                ParsingUtils.testInlineStyle
-                , ParsingUtils.valuesAsArrays([
-                "content-box",
-                "padding-box",
-                "border-box",
-                "margin-box" ], 2)
+                ParsingUtils.testInlineStyle,
+                ParsingUtils.buildTestCases([
+                    "content-box",
+                    "padding-box",
+                    "border-box",
+                    "margin-box" ], "valid")
             );
         </script>
     </body>

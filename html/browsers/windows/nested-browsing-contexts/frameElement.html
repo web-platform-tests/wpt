@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<title>HTML Test: frameElement</title>
+<link rel="author" title="Intel" href="http://www.intel.com/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="fr1" style="display:none"></iframe>
+<iframe src="http://127.0.0.1/test.html" style="display:none"></iframe>
+<script>
+
+test(function () {
+  assert_equals(window.frameElement, null,
+                "The frameElement attribute should be null.");
+}, "The window's frameElement attribute must return null if it is not a nested browsing context");
+
+test(function () {
+  assert_equals(frames[0].frameElement, document.getElementById("fr1"),
+                "The frameElement attribute should be the first iframe element.");
+}, "The window's frameElement attribute must return its container element if it is a nested browsing context");
+
+test(function () {
+  assert_throws("SecurityError", function () { frames[1].frameElement; },
+                "The SecurityError exception should be thrown out.");
+}, "The SecurityError must be thrown out if the container's document does not have the same effective script origin");
+
+</script>

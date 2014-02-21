@@ -1,0 +1,80 @@
+	<!doctype html>
+	<head>
+	<title>Release capture on pointercancel</title>
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
+	<script src="http://w3c-test.org/resources/testharness.js"></script>
+	<script src="pointerevent_support.js"></script>
+	</head>
+
+	<body>
+	<h2>capture</h2>
+	<h4>Test Description: This test checks if setCapture/releaseCapture functions works properly. Complete the folowing actions:
+	<ol>
+	<li> Press and hold left mouse button over "Set Capture" button
+	<li> Move your touch outside of the screen or try to scroll the page. "lostpointercapture" should be logged inside of the black rectangle immediately after "pointercancel"
+	</ol> </h4>
+	Test passes if the proper behavior of the events is observed.
+	<p>
+	<b>This test has large timeout value: <span id="timeoutVal"></span></b>
+	<p>		
+	<div id="target0" style="background:black; color:white"></div>
+	<br>
+	<input type="button" id="btnCapture" value="Set Capture">
+	<script type='text/javascript'>
+
+		var isPointerCapture = false;
+		var pointercancelGot = false;
+		var count=0;
+		
+		var target0 = document.getElementById('target0');
+		var captureButton = document.getElementById('btnCapture');
+		
+		setup({ explicit_done: true });
+		
+		//test timeout. set the value that will be enough in your opinion
+		var timeoutSettings = 10000;
+		setup({timeout: timeoutSettings});
+		
+	window.onload = function() {
+		document.getElementById('timeoutVal').innerHTML = timeoutSettings + " ms";
+		
+		on_event(captureButton, 'pointerdown', function(e) {
+			if(isPointerCapture == false) {
+				isPointerCapture = true;
+				captureButton.value = 'Release Capture';
+				sPointerCapture(e);
+				pointercancelGot = false;
+			}
+			else {
+				rPointerCapture(e);
+			}
+		});
+			
+		on_event(target0, 'gotpointercapture', function(e) {
+			log("gotpointercapture", document.getElementById('target0'));
+		});
+		
+		// If the setPointerCapture method has been invoked on the pointer specified by pointerId, and the releasePointerCapture method has not been invoked, a lostpointercapture event must be dispatched to the element on which the setPointerCapture method was invoked. Furthermore, subsequent events for the specified pointer must follow normal hit testing mechanisms for determining the event target. 
+		// TA: 4.4
+		on_event(target0, 'lostpointercapture', function(e) {
+			test(function() {
+					assert_true(pointercancelGot, "pointercancel was received before lostpointercapture")
+				}, "pointercancel was received before lostpointercapture");
+			log("lostpointercapture", document.getElementById('target0'));
+			captureButton.value = 'Set Capture';
+			isPointerCapture = false;
+		});
+		
+		on_event(document.body, 'pointercancel', function(e) {
+			log("pointercancel", target0);
+			pointercancelGot = true;
+		});
+	}
+	</script>
+
+	<h1>Pointer Events Capture Test</h1>
+	<div id="complete-notice">
+	</div>
+	<div id="log"></div>	
+	</body>

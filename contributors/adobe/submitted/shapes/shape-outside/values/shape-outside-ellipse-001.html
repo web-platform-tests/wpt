@@ -14,14 +14,7 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(
-                ParsingUtils.testInlineStyle,
-                ParsingUtils.buildTestCases([
-                "ellipse(closest-side closest-side)",
-                "ellipse(farthest-side farthest-side)",
-                "ellipse(50px 50px)",
-                "ellipse(50% 50%)" ])
-            );
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildRadiiTests('ellipse'));
         </script>
     </body>
 </html>

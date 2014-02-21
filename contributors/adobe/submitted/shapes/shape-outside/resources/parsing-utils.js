@@ -49,8 +49,8 @@ function buildPositionTests(shape, valid, units, type) {
     var results = new Array();
     if(Object.prototype.toString.call( units ) === '[object Array]') {
         units.forEach(function(unit) {
-            ellipsoidTests = buildPositionTests(shape, valid, unit, "lengthUnit");
-            results = results.concat(ellipsoidTests);
+            positionTests = buildPositionTests(shape, valid, unit, "lengthUnit");
+            results = results.concat(positionTests);
         });
     } else {
         if (valid) {
@@ -80,6 +80,36 @@ function buildPositionTests(shape, valid, units, type) {
                 results.push(testCase);
             });
         }
+    }
+    return unique(results);
+}
+
+function buildRadiiTests(shape, units, type) {
+    var results = new Array();
+    testUnits = typeof units == 'undefined' ? 'px': units
+    if(Object.prototype.toString.call( testUnits ) === '[object Array]') {
+           testUnits.forEach(function(unit) {
+               radiiTests = buildRadiiTests(shape, valid, unit, "lengthUnit");
+               results = results.concat(radiiTests);
+           });
+    } else {
+        validRadii.forEach(function(test) {
+            var testCase = [], testName, actual, expected;
+            if(shape == 'circle' && test.split(' ').length == 1 || shape == 'ellipse')
+            {
+                // skip if this isn't explicitly testing length units
+                if( !(type == 'lengthUnit' && test.indexOf("u1") == -1)) {
+                    testValue = shape + '(' + setUnit(test, testUnits) +')';
+                    if (type == "lengthUnit")
+                        testCase.push('test unit: ' + units +' - '+ testValue);
+                    else
+                        testCase.push(testValue + ' - is valid ');
+                    testCase.push(testValue);
+                    testCase.push(testValue); // expected should be the actual
+                    results.push(testCase);
+                }
+            }
+        });
     }
     return unique(results);
 }
@@ -471,6 +501,32 @@ var invalidPositions = [
     "right 80px right 85px"
 ];
 
+var validRadii = [
+    // circle + ellipse
+    '',
+    '50u1',
+    '50%',
+    'closest-side',
+    'farthest-side',
+    // ellipse only
+    '50u1 100u1',
+    '100u1 100px',
+    '25% 50%',
+    '50u1 25%',
+    '25% 50u1',
+    '25% closest-side',
+    '25u1 closest-side',
+    'closest-side 75%',
+    'closest-side 75u1',
+    '25% farthest-side',
+    '25u1 farthest-side',
+    'farthest-side 75%',
+    'farthest-side 75u1',
+    'closest-side closest-side',
+    'farthest-side farthest-side',
+    'closest-side farthest-side',
+    'farthest-side closest-side'
+]
 
  var validInsets = [
     ["One arg - u1", "10u1"],
@@ -509,6 +565,7 @@ return {
     testInlineStyle: testInlineStyle,
     testComputedStyle: testComputedStyle,
     buildTestCases: buildTestCases,
+    buildRadiiTests: buildRadiiTests,
     buildPositionTests: buildPositionTests,
     buildInsetTests: buildInsetTests,
     generateInsetRoundCases: generateInsetRoundCases,

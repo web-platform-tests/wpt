@@ -14,14 +14,7 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(
-                ParsingUtils.testInlineStyle,
-                ParsingUtils.buildTestCases([
-                    "circle(closest-side)",
-                    "circle(farthest-side)",
-                    "circle(50px)",
-                    "circle(50%)"] )
-            );
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildRadiiTests('circle'));
         </script>
     </body>
 </html>

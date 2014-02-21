@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fieldset disabled</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-button-element.html#the-fieldset-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form>
+  <fieldset id=fs name="clubfields" disabled>
+    <legend><input type=checkbox id=club></legend>
+    <p><label>Name on card: <input id=clubname required></label></p>
+    <p><label>Card number: <input id=clubnum required pattern="[-0-9]+"></label></p>
+  </fieldset>
+</form>
+<script>
+  test(function () {
+    assert_true(document.getElementById('fs').disabled, "The fieldset is disabled");
+    assert_false(document.getElementById('clubname').willValidate, "fieldset is disabled so is input 'clubname'");
+    assert_false(document.getElementById('clubnum').willValidate, "fieldset is disabled so is input 'clubnum'");
+    assert_true(document.getElementById('club').willValidate, "input 'club' is descendant of the first legend child of the fieldset. It should not be disabled");
+  }, "The disabled attribute, when specified, causes all the form control descendants of the fieldset element, excluding those that are descendants of the fieldset element's first legend element child, if any, to be disabled.");
+</script>

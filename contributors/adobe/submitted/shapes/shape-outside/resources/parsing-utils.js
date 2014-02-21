@@ -45,11 +45,11 @@ function buildTestCases(testCases, testValueIdx, invalid) {
     return results;
 }
 
-function buildEllipsoidTests(shape, valid, units, type) {
+function buildPositionTests(shape, valid, units, type) {
     var results = new Array();
     if(Object.prototype.toString.call( units ) === '[object Array]') {
         units.forEach(function(unit) {
-            ellipsoidTests = buildEllipsoidTests(shape, valid, unit, "lengthUnit");
+            ellipsoidTests = buildPositionTests(shape, valid, unit, "lengthUnit");
             results = results.concat(ellipsoidTests);
         });
     } else {
@@ -509,7 +509,7 @@ return {
     testInlineStyle: testInlineStyle,
     testComputedStyle: testComputedStyle,
     buildTestCases: buildTestCases,
-    buildEllipsoidTests: buildEllipsoidTests,
+    buildPositionTests: buildPositionTests,
     buildInsetTests: buildInsetTests,
     generateInsetRoundCases: generateInsetRoundCases,
     validUnits: validUnits

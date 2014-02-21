@@ -89,7 +89,7 @@ function buildRadiiTests(shape, units, type) {
     testUnits = typeof units == 'undefined' ? 'px': units
     if(Object.prototype.toString.call( testUnits ) === '[object Array]') {
            testUnits.forEach(function(unit) {
-               radiiTests = buildRadiiTests(shape, valid, unit, "lengthUnit");
+               radiiTests = buildRadiiTests(shape, unit, "lengthUnit");
                results = results.concat(radiiTests);
            });
     } else {

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Inset Radial Args - Invalid</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-inset">
+        <meta name="assert" content="These tests verify invalid radial component arguments don't parse.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            // no units
+            generate_tests(
+                ParsingUtils.testInlineStyle,
+                ParsingUtils.buildTestCases([
+                    'inset(10px round  10 20 30 40)',
+                    'inset(10px round  10px 20 30 40)',
+                    'inset(10px round  10px 20px 30 40)',
+                    'inset(10px round  10px 20px 30px 40)',
+                    'inset(10px round  10px 20px 30px 40px / 10 20 30 40)',
+                    'inset(10px round  10px 20px 30px 40px / 10px 20 30 40)',
+                    'inset(10px round  10px 20px 30px 40px / 10px 20px 30 40)',
+                    'inset(10px round  10px 20px 30px 40px / 10px 20px 30px 40)'], 0, true)
+            );
+            // commas
+            generate_tests(
+                ParsingUtils.testInlineStyle,
+                ParsingUtils.buildTestCases([
+                    'inset(10px round  10px, 20px, 30px, 40px)',
+                    'inset(10px round  10px, 20px, 30px 40px)',
+                    'inset(10px round  10px, 20px 30px 40px)',
+                    'inset(10px round  10px 20px, 30px, 40px)',
+                    'inset(10px round  10px 20px 30px, 40px)',
+                    'inset(10px round  10px, 20px, 30px, 40px / 10px, 20px, 30px, 40px)',
+                    'inset(10px round  10px 20px, 30px, 40px / 10px 20px, 30px, 40)',
+                    'inset(10px round  10px 20px 30px, 40px / 10px 20px 30px, 40)'], 0, true)
+            );
+             // commas
+             generate_tests(
+                 ParsingUtils.testInlineStyle,
+                 ParsingUtils.buildTestCases([
+                     'inset(10px round  foo, bar, boo, $$)',
+                     'inset(10px round  10px, xx, px pt)',
+                     'inset(10px round  word)'], 0, true)
+             );
+        </script>
+    </body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>The details element</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.whatwg.org/specs/web-apps/current-work/multipage/interactive-elements.html#the-details-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<details>
+  <summary>Lorem ipsum</summary>
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</details>
+<script>
+  var t = async_test("Adding or removing open from 'details' should fire a toggle event at the 'details' element");
+      details = document.getElementsByTagName('details')[0];
+
+  details.ontoggle = t.step_func_done(function() {
+    assert_true(details.open);
+  });
+
+  details.open = true;
+</script>

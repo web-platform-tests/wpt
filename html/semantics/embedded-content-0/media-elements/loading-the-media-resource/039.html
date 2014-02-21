@@ -27,6 +27,8 @@ function load_test(t, v) {
   });
 
   v.load();
+
+  assert_array_equals(actual_events, [], 'events should be fired in queued tasks');
 }
 
 async_test(function(t) {

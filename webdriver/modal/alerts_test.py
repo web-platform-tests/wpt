@@ -140,3 +140,6 @@ class AlertsTest(base_test.WebDriverBaseTest):
     def test_switch_to_missing_alert_fails(self):
     	with self.assertRaises(NoAlertPresentException):
             self.driver.switch_to_alert()
+
+if __name__ == '__main__':
+    unittest.main()

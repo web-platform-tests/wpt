@@ -16,7 +16,7 @@ function testComputedStyle(value, expected) {
     assert_equals(actual, typeof expected !== 'undefined' ? expected : value);
 }
 
-function buildTestCases(testCases, type, testValueIdx) {
+function buildTestCases(testCases, testValueIdx, invalid) {
     var results = [];
     testCases.forEach(function(test) {
         if(Object.prototype.toString.call( test ) === '[object Array]') {
@@ -24,7 +24,7 @@ function buildTestCases(testCases, type, testValueIdx) {
                 testValue = test[testValueIdx];
                 if(testValueIdx == 0)
                     // use the test case as the test name
-                    test.unshift(testValue);
+                    test.unshift(testValue += invalid ? ' is invalid': ' is valid');
                 else
                     // otherwise, assume the expected is the actual
                     test.push(testValue);
@@ -32,8 +32,8 @@ function buildTestCases(testCases, type, testValueIdx) {
             results.push(test);
         } else {
             var testCase = Array.apply(null, Array(2)).map(String.prototype.valueOf, test);
-            if(type == "invalid")
-                // Invalid expected result is null
+            testCase[0] += invalid ? ' is invalid': ' is valid';
+            if(invalid)
                 testCase.push(null);
             else
                 // Valid expected result is the value
@@ -84,7 +84,7 @@ function buildEllipsoidTests(shape, valid, units, type) {
     return unique(results);
 }
 
-function buildInsetTests(unit1, unit2) {
+function buildInsetTests(unit1, unit2, testName, invalid) {
     var results = new Array();
     if(Object.prototype.toString.call( unit1 ) === '[object Array]') {
         unit1.forEach(function(unit) {
@@ -95,7 +95,13 @@ function buildInsetTests(unit1, unit2) {
         validInsets.forEach(function(test) {
             var testValue = 'inset(' + setUnit(test[1], unit1, unit2) +')';
             testCase = Array.apply(null, Array(2)).map(String.prototype.valueOf, testValue);
-            testCase.unshift(setUnit(test[0], unit1, unit2));
+            if(testName == 0)
+                testCase.unshift(setUnit(test[0], unit1, unit2));
+            else
+                testCase.unshift(testValue += invalid ? ' is invalid': ' is valid');
+
+            if(invalid)
+                testCase[2] = null;
             results.push(testCase);
         });
     }

@@ -15,8 +15,26 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests( ParsingUtils.testInlineStyle, 
-                            ParsingUtils.buildInsetTests("", "", 1, true));
+            // no units
+            generate_tests( ParsingUtils.testInlineStyle, ParsingUtils.buildInsetTests('', '', 1, "invalid"));
+
+            // comma delimited args
+            generate_tests(ParsingUtils.testInlineStyle,
+                           ParsingUtils.buildTestCases(
+                           ['inset(10px, 20px, 30px, 40px)',
+                            'inset(10px, 20px, 30px 40px)',
+                            'inset(10px, 20px 30px 40px)',
+                            'inset(10px  20px, 30px, 40px)',
+                            'inset(10px  20px 30px, 40px)'], 0, true)
+            );
+            
+            // bunk args
+            generate_tests(ParsingUtils.testInlineStyle,
+                           ParsingUtils.buildTestCases(
+                           ['inset(foo bar blah woo)',
+                            'inset(10px roo 30px coo)',
+                            'inset(may 20px blah 40px)'], 0, true)
+            );
             
         </script>
     </body>

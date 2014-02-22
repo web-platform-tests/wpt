@@ -4,7 +4,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-var timeout;
 var v;
 function createSource(src) {
   var source = document.createElement('source');
@@ -14,7 +13,7 @@ function createSource(src) {
 var t = async_test(function(t) {
   v = document.createElement('video');
   v.appendChild(createSource('resources/delayed-broken-video.py')); // invokes resource selection
-  v.firstChild.addEventListener('error', t.step_func(function() { clearTimeout(timeout); t.done(); }), false);
+  v.firstChild.addEventListener('error', t.step_func(function() { t.done(); }), false);
 });
 </script>
 <!-- now resource selection algorithm will continue its sync section (the </script> tag below provides a stable state) -->
@@ -23,6 +22,5 @@ var t = async_test(function(t) {
 <script>
 t.step(function() {
   v.removeChild(v.firstChild); // tests that we fire 'error' on it despite being removed
-  timeout = setTimeout(t.step_func(function() { assert_unreached(); }), 1000);
 });
 </script>

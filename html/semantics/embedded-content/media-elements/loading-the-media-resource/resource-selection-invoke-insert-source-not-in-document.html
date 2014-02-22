@@ -6,7 +6,7 @@
 <script>
 async_test(function(t) {
   var v = document.createElement('video');
-  v.onloadstart = t.step_func(function() { window.onload = null; t.done(); });
+  v.onloadstart = t.step_func(function() { t.done(); });
   v.appendChild(document.createElement('source'));
   window.onload = t.step_func(function() { assert_unreached(); });
 });

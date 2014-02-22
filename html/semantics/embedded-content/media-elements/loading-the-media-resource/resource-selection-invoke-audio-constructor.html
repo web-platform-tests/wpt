@@ -6,7 +6,7 @@
 <script>
 async_test(function(t) {
   var a = new Audio('');
-  a.onloadstart = t.step_func(function() { window.onload = null; t.done(); });
+  a.onloadstart = t.step_func(function() { t.done(); });
   window.onload = t.step_func(function() { assert_unreached(); });
 });
 </script>

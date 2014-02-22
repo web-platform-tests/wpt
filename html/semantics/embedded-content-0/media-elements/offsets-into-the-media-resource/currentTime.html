@@ -22,6 +22,7 @@ test(function() {
   v.controller = new MediaController();
   assert_true(v.controller instanceof MediaController);
   assert_throws('InvalidStateError', function() { v.currentTime = 1; });
+  assert_false(v.seeking);
 }, 'setting currentTime with a media controller present throws');
 
 test(function() {
@@ -29,6 +30,7 @@ test(function() {
   assert_equals(v.readyState, v.HAVE_NOTHING);
   v.currentTime = Number.MAX_VALUE;
   assert_equals(v.currentTime, Number.MAX_VALUE);
+  assert_false(v.seeking);
 }, 'setting currentTime sets the default playback start position when readyState is HAVE_NOTHING');
 
 async_test(function(t) {

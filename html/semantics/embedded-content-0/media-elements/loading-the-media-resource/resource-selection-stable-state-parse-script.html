@@ -1,0 +1,19 @@
+<!doctype html>
+<title>stable state when parsing script end tag</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+var v;
+var t = async_test(function() {
+  v = document.createElement('video');
+  v.load();
+  assert_equals(v.networkState, v.NETWORK_NO_SOURCE);
+});
+</script>
+<script>
+t.step(function() {
+  assert_equals(v.networkState, v.NETWORK_EMPTY);
+  t.done();
+});
+</script>

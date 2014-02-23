@@ -1,0 +1,27 @@
+<!doctype html>
+<title>stable state after task</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(function(t) {
+  function queueTask(func) {
+    var a = new Audio();
+    a.volume = 0;
+    a.addEventListener('volumechange', t.step_func(func));
+  }
+
+  var v;
+
+  queueTask(function() {
+    v = document.createElement('video');
+    v.load();
+    assert_equals(v.networkState, v.NETWORK_NO_SOURCE);
+  });
+
+  queueTask(function() {
+    assert_equals(v.networkState, v.NETWORK_EMPTY);
+    t.done();
+  });
+});
+</script>

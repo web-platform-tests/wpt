@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Submitting element directionality: the dirname attribute</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.whatwg.org/html/#submitting-element-directionality:-the-dirname-attribute">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form action="dirname-ltr.html" method=get>
+  <p><label>Comment: <input type=text name="comment" dirname="comment.dir" required></label></p>
+  <p><button type=submit>Post Comment</button></p>
+</form>
+<script>
+  function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
+
+  test(function(){
+    if (getParameterByName("comment")) {
+      assert_equals(getParameterByName("comment.dir"), "ltr");
+    } else {
+      document.querySelector("input").value="foobar";
+      document.querySelector("button").click();
+    }
+  });
+</script>

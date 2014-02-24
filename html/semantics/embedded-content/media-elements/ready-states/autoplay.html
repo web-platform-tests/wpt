@@ -6,24 +6,65 @@
 <div id="log"></div>
 <script>
 function autoplay_test(tagName, src) {
+  function expect_events(t, e, expected_events) {
+    var actual_events = [];
+    var callback = t.step_func(function(ev) {
+      actual_events.push(ev.type);
+      assert_array_equals(actual_events,
+                          expected_events.slice(0, actual_events.length));
+      if (expected_events.length == actual_events.length) {
+        t.done();
+      }
+    });
+    ['canplay', 'canplaythrough',
+     'pause', 'play', 'playing'].forEach(function(type) {
+      e.addEventListener(type, callback);
+    });
+  }
+
   async_test(function(t) {
     var e = document.createElement(tagName);
     e.src = src;
     e.autoplay = true;
-    var actual_events = [];
-    var expected_events = ['canplay', 'play', 'playing', 'canplaythrough'];
-    expected_events.forEach(function(type) {
-      e.addEventListener(type, t.step_func(function() {
-        assert_equals(e.readyState, e.HAVE_ENOUGH_DATA);
-        assert_false(e.paused);
-        actual_events.push(type);
-        if (type == 'canplaythrough') {
-          assert_array_equals(actual_events, expected_events);
-          t.done();
-        }
-      }));
-    });
-  }, tagName + '.autoplay');
+    expect_events(t, e, ['canplay', 'play', 'playing', 'canplaythrough']);
+  }, tagName + ' autoplaying flag is initially true');
+
+  async_test(function(t) {
+    var e = document.createElement(tagName);
+    e.src = src;
+    e.autoplay = true;
+    e.pause(); // sets the autoplaying flag to false
+    e.load();
+    expect_events(t, e, ['canplay', 'play', 'playing', 'canplaythrough']);
+  }, tagName + '.load() sets the autoplaying flag to true');
+
+  async_test(function(t) {
+    var e = document.createElement(tagName);
+    e.src = src;
+    e.autoplay = true;
+    e.play();
+    // play() also sets the paused attribute to false; there is no way for the
+    // autoplaying flag to be true when the paused attribute is false.
+    assert_equals(e.paused, false);
+    expect_events(t, e, ['play', 'canplay', 'playing', 'canplaythrough']);
+  }, tagName + '.play() sets the autoplaying flag to false');
+
+  async_test(function(t) {
+    var e = document.createElement(tagName);
+    e.src = src;
+    e.autoplay = true;
+    e.pause();
+    expect_events(t, e, ['canplay', 'canplaythrough']);
+  }, tagName + '.pause() sets the autoplaying flag to false');
+
+  async_test(function(t) {
+    var e = document.createElement(tagName);
+    e.src = src;
+    e.autoplay = true;
+    document.body.appendChild(e);
+    document.body.removeChild(e); // runs internal pause steps at stable state
+    expect_events(t, e, ['canplay', 'canplaythrough']);
+  }, tagName + ' internal pause steps sets the autoplaying flag to false');
 }
 
 autoplay_test('audio', getAudioURI('/media/sound_5'));

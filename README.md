@@ -66,7 +66,7 @@ web-platform-tests root. To generate this navigate to the root
 directory and run
 
 ```
-python tools/scripts/manifest.py MANIFEST.json
+python tools/scripts/manifest.py
 ```
 
 Running the tests requires that the test environment be activated as

@@ -101,6 +101,10 @@ function type_codecs_test(type, codecs) {
     // that allows the codecs parameter if that parameter is not present.
     assert_equals(canPlayType(type), 'maybe', type);
 
+    // Bogus codecs must not be supported.
+    var typeBogus = mime(type, ['bogus']);
+    assert_equals(canPlayType(typeBogus), '', typeBogus);
+
     var supported = [];
     codecs.forEach(function(codec) {
       if (canPlayType(mime(type, [codec]))) {

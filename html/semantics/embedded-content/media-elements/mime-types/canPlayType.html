@@ -122,11 +122,11 @@ function type_codecs_test(type, codecs) {
 }
 
 type_codecs_test('audio/mp4', ['mp4a.40.2']);
-type_codecs_test('audio/ogg', ['speex', 'vorbis']);
-type_codecs_test('audio/webm', ['vorbis']);
+type_codecs_test('audio/ogg', ['opus', 'speex', 'vorbis']);
+type_codecs_test('audio/webm', ['opus', 'vorbis']);
 type_codecs_test('video/3gpp', ['mp4v.20.8', 'samr']);
 type_codecs_test('video/mp4', ['avc1.42E01E', 'avc1.4D401E', 'avc1.58A01E', 'avc1.64001E',
                                'mp4a.40.2', 'mp4v.20.8', 'mp4v.20.240']);
-type_codecs_test('video/ogg', ['dirac', 'flac', 'speex', 'theora', 'vorbis']);
-type_codecs_test('video/webm', ['vorbis', 'vp8']);
+type_codecs_test('video/ogg', ['dirac', 'flac', 'opus', 'speex', 'theora', 'vorbis']);
+type_codecs_test('video/webm', ['opus', 'vorbis', 'vp8']);
 </script>

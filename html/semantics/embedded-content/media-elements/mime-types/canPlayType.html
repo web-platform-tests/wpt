@@ -1,0 +1,127 @@
+<!doctype html>
+<title>canPlayType</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+function forEachPermutation(array, callback) {
+  if (array.length == 1) {
+    callback(array);
+  } else {
+    array.forEach(function(value, index) {
+      var rest = array.slice(0, index).concat(array.slice(index + 1));
+      forEachPermutation(rest, function(restPermutation) {
+        callback(restPermutation.concat(value));
+      });
+    });
+  }
+}
+
+function forEachSubset(array, callback) {
+  for (var begin = 0; begin < array.length; begin++) {
+    for (var end = array.length; end > begin; end--) {
+      callback(array.slice(begin, end));
+    }
+  }
+}
+
+function mime(type, codecs) {
+  if (codecs.length) {
+    return type + '; codecs="' + codecs.join(', ') + '"';
+  }
+  return type;
+}
+
+test(function() {
+  var codecs = ['daala', 'opus', 'theora', 'vorbis'];
+
+  var permutations = [];
+  forEachPermutation(codecs, function(permutation) {
+    assert_array_equals(permutation.slice().sort(), codecs);
+    permutations.forEach(function(previous) {
+      assert_not_equals(permutation.toString(), previous.toString());
+    });
+    permutations.push(permutation);
+  });
+  assert_equals(permutations.length, 4 * 3 * 2 * 1);
+
+  var subsets = [];
+  forEachSubset(codecs, function(subset) {
+    var begin = codecs.indexOf(subset[0]);
+    assert_array_equals(subset, codecs.slice(begin, begin + subset.length));
+    subsets.forEach(function(previous) {
+      assert_not_equals(subset.toString(), previous.toString());
+    });
+    subsets.push(subset);
+  });
+  assert_equals(subsets.length, 4 + 3 + 2 + 1);
+
+  assert_equals(mime('video/webm', []), 'video/webm');
+  assert_equals(mime('video/webm', ['vp8']), 'video/webm; codecs="vp8"');
+  assert_equals(mime('video/webm', ['vp8', 'vorbis']), 'video/webm; codecs="vp8, vorbis"');
+}, 'utility code');
+
+function canPlayType(type) {
+  var canPlay = document.createElement('audio').canPlayType(type);
+  assert_equals(canPlay, document.createElement('video').canPlayType(type),
+                'audio.canPlayType() and video.canPlayType() agree');
+  assert_in_array(canPlay, ['', 'maybe', 'probably'],
+                  'return value is one of "", "maybe" and "probably"');
+  return canPlay;
+}
+
+test(function() {
+  function t(type) {
+    assert_equals(canPlayType(type), '', type);
+  }
+  t('application/octet-stream');
+  t('application/octet-stream; codecs="vorbis"');
+  t('application/octet-stream; codecs="vp8, vorbis"');
+  t('application/octet-stream; codecs="mp4a.40.2"');
+  t('application/octet-stream; codecs="theora, vorbis"');
+  t('application/octet-stream; codecs="avc1.42E01E, mp4a.40.2"');
+}, 'application/octet-stream');
+
+test(function() {
+  var type = 'application/marks-fantasmagorical-format';
+  assert_equals(canPlayType(type), '', type);
+}, 'application/marks-fantasmagorical-format');
+
+function type_codecs_test(type, codecs) {
+  test(function() {
+    if (!canPlayType(type)) {
+      this.name += ' (not supported)';
+      return;
+    }
+
+    // Spec: Generally, a user agent should never return "probably" for a type
+    // that allows the codecs parameter if that parameter is not present.
+    assert_equals(canPlayType(type), 'maybe', type);
+
+    var supported = [];
+    codecs.forEach(function(codec) {
+      if (canPlayType(mime(type, [codec]))) {
+        supported.push(codec);
+      }
+    });
+
+    // At least one known codec must be supported if the container format is.
+    assert_greater_than(supported.length, 0, 'supported codecs');
+
+    // Any combination of supported codecs should also be supported.
+    forEachSubset(supported, function(subset) {
+      forEachPermutation(subset, function(permutation) {
+        var typePermutation = mime(type, permutation);
+        assert_equals(canPlayType(typePermutation), 'probably', typePermutation);
+      });
+    });
+  }, type);
+}
+
+type_codecs_test('audio/mp4', ['mp4a.40.2']);
+type_codecs_test('audio/ogg', ['vorbis']);
+type_codecs_test('audio/webm', ['vorbis']);
+type_codecs_test('video/mp4', ['avc1.42E01E', 'mp4a.40.2']);
+type_codecs_test('video/ogg', ['theora', 'vorbis']);
+type_codecs_test('video/webm', ['vorbis', 'vp8']);
+</script>

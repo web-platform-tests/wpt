@@ -113,7 +113,7 @@ class FileHandler(object):
                     for line in headers_file if line]
 
     def get_data(self, response, path, byte_ranges):
-        with open(path) as f:
+        with open(path , 'rb') as f:
             if byte_ranges is None:
                 return f.read()
             else:

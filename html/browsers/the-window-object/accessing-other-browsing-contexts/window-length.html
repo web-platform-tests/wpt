@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: Accessing other browsing contexts</title>
+<link rel="author" title="Intel" href="http://www.intel.com/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+
+var t1 = async_test("The window's length must return the number of child browsing contexts(in iframe)");
+function on_load1(fr) {
+  t1.step(function () {
+    assert_equals(frames[0].length, 3, "The window.length should be 3.");
+    assert_array_equals([frames[0][0].frameElement, frames[0][1].frameElement, frames[0][2].frameElement],
+                        [frames[0].document.getElementById("fr3"), frames[0].document.getElementById("fr4"), frames[0].document.getElementById("fr5")],
+                        "The child browsing contexts must be sorted in the tree order.");
+  });
+  t1.done();
+}
+
+var t2 = async_test("The window's length must return zero if it has no child browsing context");
+function on_load2() {
+  t2.step(function () {
+    assert_equals(frames[1].length, 0, "The window.length should be 0.");
+  });
+  t2.done();
+}
+
+</script>
+<iframe id="fr1" src="test1.html" style="display:none" onload="on_load1()"></iframe>
+<iframe id="fr2" src="test2.html" style="display:none" onload="on_load2()"></iframe>
+<script>
+
+test(function () {
+  assert_equals(window.length, 2, "The window.length should be 2.");
+  assert_array_equals([window[0].frameElement, window[1].frameElement], [document.getElementById("fr1"),document.getElementById("fr2")],
+                     "The child browsing contexts must be sorted in the tree order.");
+}, "The window's length must return the number of child browsing contexts");
+
+</script>

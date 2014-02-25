@@ -16,9 +16,9 @@
         <script type="text/javascript">
             generate_tests(ParsingUtils.testInlineStyle, [
                 ["Single point", "polygon(1px 2px)", "polygon(nonzero, 1px 2px)"],
-                ["Single point with fill-rule", "polygon(evenodd, 1px 2px)"],
+                ["Single point with fill-rule", "polygon(evenodd, 1px 2px)", "polygon(evenodd, 1px 2px)"],
                 ["Multiple points", "polygon(1px 2px, 3px 4px, 5px 6px)", "polygon(nonzero, 1px 2px, 3px 4px, 5px 6px)"],
-                ["Multiple points with fill-rule", "polygon(evenodd, 1px 2px, 3px 4px, 5px 6px)"]
+                ["Multiple points with fill-rule", "polygon(evenodd, 1px 2px, 3px 4px, 5px 6px)", "polygon(evenodd, 1px 2px, 3px 4px, 5px 6px)"]
             ]);
         </script>
     </body>

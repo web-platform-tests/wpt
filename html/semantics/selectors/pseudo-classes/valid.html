@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Selector: pseudo-classes (:valid)</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org" id=link1>
+<link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils"></script></script>
+<div id="log"></div>
+<input type=text id=text1 value="foobar" required>
+<input type=text id=text2 required>
+<form id=form1>
+  <input type=text id=text3 value="foobar" required>
+</form>
+<form id=form2>
+  <input type=text id=text4 required>
+</form>
+<fieldset id=fieldset1>
+  <input type=text id=text5 value="foobar" required>
+</fieldset>
+<fieldset id=fieldset2>
+  <input type=text id=text6 required>
+</fieldset>
+
+<script>
+  testSelector(":valid", getElementsByIds(["text1", "form1", "text3", "fieldset1", "text5"]), "':valid' matches elements that satisfy their constraints, form/fieldset with descendants that satisfy their constraints");
+</script>

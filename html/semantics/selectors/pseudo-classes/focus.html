@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Selector: pseudo-classes (:focus)</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org" id=link1>
+<link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils"></script></script>
+<div id="log"></div>
+<button id=button1 type=submit>button1</button>
+<input id=input1>
+<input id=input2 disabled>
+<textarea id=textarea1>textarea1</textarea>
+<input type=checkbox id=checkbox1 checked>
+<input type=radio id=radio1 checked>
+
+<script>
+  document.getElementById("input1").focus(); // set the focus on input1
+  testSelector(":focus", getElementsByIds(["input1"]), "input1 has the focus");
+</script>

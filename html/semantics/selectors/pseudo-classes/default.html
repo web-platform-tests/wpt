@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Selector: pseudo-classes (:default)</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org" id=link1>
+<link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils"></script></script>
+<div id="log"></div>
+<button id=button1>button1</button>
+<button id=button2 type=submit>button2</button>
+<form>
+  <input type=text id=input1>
+  <input type=text id=input2>
+</form>
+<form>
+  <input type=submit id=input3>
+  <input type=submit id=input4>
+</form>
+<form>
+  <input type=image id=input5>
+  <input type=image id=input6>
+</form>
+<input type=checkbox id=checkbox1 checked>
+<input type=checkbox id=checkbox2>
+<select id=select1>
+ <optgroup label="options" id=optgroup1>
+  <option value="option1" id=option1 selected>option1
+  <option value="option1" id=option1>option1
+</select>
+
+<script>
+  testSelector(":default", getElementsByIds(["button2", "input3", "input5", "checkbox1", "option1"]), "':default' matches buttons that are their form's default button, submit/image inputs that are their form's default button, checked inputs and selected options");
+</script>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Selector: pseudo-classes (:checked)</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org" id=link1>
+<link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils"></script></script>
+<div id="log"></div>
+<select id=select1>
+ <optgroup label="options" id=optgroup1>
+  <option value="option1" id=option1 selected>option1
+  <option value="option2" id=option2>option2
+</select>
+<input type=checkbox id=checkbox1 checked>
+<input type=checkbox id=checkbox2>
+<input type=radio id=radio1 checked>
+<input type=radio id=radio2>
+<form>
+  <p><input type=submit contextmenu=formmenu id="submitbutton"></p>
+  <menu type=popup id=formmenu>
+    <menuitem type=checkbox checked default id=menuitem1>
+    <menuitem type=checkbox id=menuitem2>
+    <menuitem type=radio checked id=menuitem3>
+    <menuitem type=radio id=menuitem4>
+  </menu>
+</form>
+
+<script>
+  testSelector(":checked", getElementsByIds(["option1", "checkbox1", "radio1", "menuitem1", "menuitem3"]), "':checked' matches checked input/menuitem checkboxes and radio buttons, selected option");
+</script>

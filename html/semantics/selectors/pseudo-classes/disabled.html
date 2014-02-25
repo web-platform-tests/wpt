@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Selector: pseudo-classes (:disabled)</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org" id=link1>
+<link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils"></script></script>
+<div id="log"></div>
+<button id=button1 type=submit>button1</button>
+<button id=button2 disabled>button2</button>
+<input id=input1>
+<input id=input2 disabled>
+<select id=select1>
+ <optgroup label="options" id=optgroup1>
+  <option value="option1" id=option1 selected>option1
+</select>
+<select disabled id=select2>
+ <optgroup label="options" disabled id=optgroup2>
+  <option value="option2" disabled id=option2>option2
+</select>
+<textarea id=textarea1>textarea1</textarea>
+<textarea disabled id=textarea2>textarea2</textarea>
+<fieldset id=fieldset1></fieldset>
+<fieldset disabled id=fieldset2></fieldset>
+
+<script>
+  testSelector(":disabled", getElementsByIds(["button2", "input2", "select2", "optgroup2", "option2", "textarea2", "fieldset2"]), "':disabled' should match only disabled elements");
+</script>

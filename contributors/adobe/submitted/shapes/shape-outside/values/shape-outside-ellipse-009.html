@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Ellipse Position Arguments - positive/negative, decimal/non-decimal</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
+        <meta name="assert" content="An ellipse's position arguments may be in signed positive/negative or
+                                     decimal/non-decimal format.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+         <script type="text/javascript">
+                generate_tests(ParsingUtils.testInlineStyle, 
+                               ParsingUtils.buildTestCases([
+                               ['ellipse(at +50px)', 'ellipse(at 50px 50%)'],
+                               ['ellipse(at -50px)', 'ellipse(at -50px 50%)'],
+                               ['ellipse(at +50%)', 'ellipse(at 50% 50%)'],
+                               ['ellipse(at -50%)', 'ellipse(at -50% 50%)'],
+                               ['ellipse(at left +50px)', 'ellipse(at 0% 50px)'],
+                               ['ellipse(at left +50%)', 'ellipse(at 0% 50%)'],
+                               ['ellipse(at right -50px)', 'ellipse(at 100% -50px)'],
+                               ['ellipse(at right -50%)', 'ellipse(at 100% -50%)'],
+                               ['ellipse(at +50px top)', 'ellipse(at 50px 0%)'],
+                               ['ellipse(at +50% top)', 'ellipse(at 50% 0%)'],
+                               ['ellipse(at -50px bottom)', 'ellipse(at -50px 100%)'],
+                               ['ellipse(at -50% bottom)', 'ellipse(at -50% 100%)'],
+                               ['ellipse(at +50px +50px)', 'ellipse(at 50px 50px)'],
+                               ['ellipse(at +50% +50%)', 'ellipse(at 50% 50%)'],
+                               ['ellipse(at -50px -50px)', 'ellipse(at -50px -50px)'],
+                               ['ellipse(at +50px -50px)', 'ellipse(at 50px -50px)'],
+                               ['ellipse(at -50px +50px)', 'ellipse(at -50px 50px)'],
+                               ['ellipse(at +50% -50%)', 'ellipse(at 50% -50%)'],
+                               ['ellipse(at -50% +50%)', 'ellipse(at -50% 50%)']
+                            ], 0)
+                );
+            </script>
+    </body>
+</html>

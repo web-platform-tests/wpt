@@ -3,7 +3,7 @@
 <head>
 <title>HTML Templates: The template contents owner document (no browsing context)</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<meta name="assert" content="If template's enclosing document has no browsing context, it must be template contents owner">
+<meta name="assert" content="Even if template's enclosing document has no browsing context, it gets its own template contents owner">
 <link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#definitions">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -21,7 +21,7 @@ test(function() {
 
     doc.body.appendChild(template);
 
-    assert_equals(template.content.ownerDocument, doc, 'Wrong template content owner');
+    assert_not_equals(template.content.ownerDocument, doc, 'Wrong template content owner');
 
 }, 'Test the template contents owner document when enclosing document has '
     + 'no browsing content. Template element is created by createElement()');
@@ -35,7 +35,7 @@ test(function() {
 
     var template = doc.querySelector('template');
 
-    assert_equals(template.content.ownerDocument, doc, 'Wrong template content owner');
+    assert_not_equals(template.content.ownerDocument, doc, 'Wrong template content owner');
 
 }, 'Test the template contents owner document when enclosing document has '
     + 'no browsing content. Template element is created by innerHTML');

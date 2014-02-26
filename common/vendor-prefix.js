@@ -14,7 +14,7 @@
 
 (function () {
     var aliases = {};
-    var doc = document.createElement('div');
+    var documentingPrefixUsage = document.createElement('div');
     var vendorPrefixes = ["moz", "ms", "o", "webkit", "Moz", "MS", "O", "Webkit", "op"];
 
     function getParentObject(ancestors) {
@@ -69,7 +69,7 @@
             try {
                 var prefixedObjects = JSON.parse(prefixObjectsData);
             } catch (e) {
-                console.log("couldn't parse data-prefixed-objects as JSON:" + e);
+                throw "couldn't parse data-prefixed-objects as JSON:" + e;
             }
             prefixedObjects.forEach(setAlias);
         }
@@ -78,7 +78,7 @@
             try {
                 var prefixedPrototypes = JSON.parse(prefixProtoData);
             } catch (e) {
-                console.log("couldn't parse data-prefixed-prototypes as JSON:" + e);
+                throw "couldn't parse data-prefixed-prototypes as JSON:" + e;
             }
             prefixedPrototypes.forEach(setPrototypeAlias);
         }
@@ -88,7 +88,7 @@
             li.appendChild(document.createTextNode(alias + " has been set to be an alias of vendor-prefixed " + aliases[alias]));
             ul.appendChild(li);
         });
-        doc.appendChild(ul);
+        documentingPrefixUsage.appendChild(ul);
     } else {
         // Document that the test can be run with prefixes enabled
 
@@ -101,14 +101,14 @@
         }
         a.setAttribute("href", link);
         a.appendChild(document.createTextNode("with vendor prefixes enabled"));
-        doc.appendChild(document.createTextNode("The feature(s) tested here are known to have been made available via vendor prefixes; you can run this test "));
-        doc.appendChild(a);
-        doc.appendChild(document.createTextNode("."));
+        documentingPrefixUsage.appendChild(document.createTextNode("The feature(s) tested here are known to have been made available via vendor prefixes; you can run this test "));
+        documentingPrefixUsage.appendChild(a);
+        documentingPrefixUsage.appendChild(document.createTextNode("."));
     }
     var log = document.getElementById('log');
     if (log) {
-        log.parentNode.insertBefore(doc, log);
+        log.parentNode.insertBefore(documentingPrefixUsage, log);
     } else {
-        body.appendChild(doc);
+        body.appendChild(documentingPrefixUsage);
     }
 })();

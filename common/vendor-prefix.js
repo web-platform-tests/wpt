@@ -1,15 +1,16 @@
-// Use this script when you want to test APIs that use vendor prefixes
-// and define which objects need to be checked for prefixed versions, à la
-// <script src="vendor-prefix.js"
-//   data-prefixed-objects='[{"ancestors":["navigator"], "name":"getUserMedia"}]'
-// data-prefixed-prototypes='[{"ancestors":["HTMLMediaElement"],"name":"srcObject"}]'></script>
-// data-prefixed-objects lets prefix objects in the global space
-// data-prefixed-prototypes adds prefixes to interfaces, for objects that
-// get created during the tests
+/* Use this script when you want to test APIs that use vendor prefixes
+   and define which objects need to be checked for prefixed versions, à la
+   <script src="vendor-prefix.js"
+     data-prefixed-objects='[{"ancestors":["navigator"], "name":"getUserMedia"}]'
+   data-prefixed-prototypes='[{"ancestors":["HTMLMediaElement"],"name":"srcObject"}]'></script>
+   data-prefixed-objects lets prefix objects in the global space
+   data-prefixed-prototypes adds prefixes to interfaces, for objects that
+   get created during the tests
 
-// NB: vendor prefixes are expected to go away in favor of putting
-// new features behind flag, so hopefully there will be only limited
-// need to use this
+   NB: vendor prefixes are expected to go away in favor of putting
+   new features behind flag, so hopefully there will be only limited
+   need to use this
+*/
 
 (function () {
     var aliases = {};

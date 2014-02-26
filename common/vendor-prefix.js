@@ -43,7 +43,7 @@
                 if (parent.prototype.hasOwnProperty(prependPrefix(prefix, obj.name))) {
                     Object.defineProperty(parent.prototype, obj.name,
                                           {get: function() {return this[prependPrefix(prefix, obj.name)];},
-                                           set: function(v) {console.log(this); this[prependPrefix(prefix, obj.name)] = v;}
+                                           set: function(v) {this[prependPrefix(prefix, obj.name)] = v;}
                                           });
                     aliases[obj.ancestors.join(".") + ".prototype." + obj.name] = obj.ancestors.join(".") + ".prototype." + prependPrefix(prefix, obj.name);
                     return;

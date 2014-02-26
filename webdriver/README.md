@@ -47,6 +47,7 @@ Be sure not to commit your _webdriver.cfg_ changes when your create or modify te
 1. Create a test file per section from the specification.
 2. For each test there needs to be one or more corresponding HTML
    files that will be used for testing.  HTML files are not to be
-   reused between tests.
+   reused between tests. HTML files and other support files
+   should be stored in a folder named 'res'.
 3. Test name should explain the intention of the test e.g. `def
    test_navigate_and_return_title(self):`

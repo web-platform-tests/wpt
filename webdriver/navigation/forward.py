@@ -13,8 +13,8 @@ class ForwardTest(base_test.WebDriverBaseTest):
     # Get a static page that must be the same upon refresh
     def test_forward(self):
         
-        self.driver.get(self.webserver.where_is('navigation/forwardStart.html'))
-        self.driver.get(self.webserver.where_is('navigation/forwardNext.html'))
+        self.driver.get(self.webserver.where_is('navigation/res/forwardStart.html'))
+        self.driver.get(self.webserver.where_is('navigation/res/forwardNext.html'))
         nextbody = self.driver.find_element_by_tag_name("body").text
         self.driver.back()
         currbody = self.driver.find_element_by_tag_name("body").text

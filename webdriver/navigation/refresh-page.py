@@ -13,14 +13,14 @@ class RefreshPageTest(base_test.WebDriverBaseTest):
     # Get a static page that must be the same upon refresh
     def test_refreshPage(self):
         
-        self.driver.get(self.webserver.where_is('navigation/refreshPageStatic.html'))
+        self.driver.get(self.webserver.where_is('navigation/res/refreshPageStatic.html'))
         body = self.driver.find_element_by_tag_name("body").text
         self.driver.execute_script("document.getElementById('body').innerHTML=''")
         self.driver.refresh()
         newbody = self.driver.find_element_by_tag_name("body").text
         self.assertEqual(body, newbody)
 
-        self.driver.get(self.webserver.where_is('navigation/refreshPageDynamic.html'))
+        self.driver.get(self.webserver.where_is('navigation/res/refreshPageDynamic.html'))
         body = self.driver.find_element_by_tag_name("body").text
         self.driver.refresh()
         newbody = self.driver.find_element_by_tag_name("body").text

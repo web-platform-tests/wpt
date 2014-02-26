@@ -6,13 +6,21 @@ function testInlineStyle(value, expected) {
     assert_equals(actual, expected);
 }
 
-function testComputedStyle(value, expected) {
+function testComputedStyle(value, expected, type) {
     var div = document.createElement('div');
     div.style.setProperty('shape-outside', value);
-    document.body.appendChild(div);
+
+    var parent;
+    if (this.properties.type == 'calc')
+        parent = document.getElementById('calc-test');
+    else
+        parent = document.body;
+
+    parent.appendChild(div);
     var style = getComputedStyle(div);
     var actual = style.getPropertyValue('shape-outside');
-    document.body.removeChild(div);
+
+    parent.removeChild(div);
     assert_equals(actual, typeof expected !== 'undefined' ? expected : value);
 }
 
@@ -150,6 +158,36 @@ function buildPolygonTests(unitSet) {
         });
     });
     return unique(results);
+}
+
+function buildCalcTests(testCases, type) {
+    var results = new Array();
+    testCases.forEach(function(test){
+        var testCase = [];
+        if(type == 'computed') {
+            testCase.push(test[0] + ' - computed value');
+            testCase.push(test[0]);
+            testCase.push(test[2]);
+        }
+        else {
+            testCase.push(test[0] + ' - property value');
+            testCase.push(test[0]);
+            testCase.push(test[1]);
+        }
+        testCase.push(type);
+        results.push(testCase)
+    });
+    return unique(results);
+}
+
+function setupCalcTest() {
+     var div = document.createElement('div');
+     div.id = 'calc-test';
+     div.style.setProperty('width', '400px');
+     div.style.setProperty('height', '400px');
+     div.style.setProperty('font-family', 'Ahem');
+     div.style.setProperty('font-size', '10px');
+     document.body.appendChild(div);
 }
 
 function unique(tests) {
@@ -600,6 +638,8 @@ return {
     buildInsetTests: buildInsetTests,
     buildPolygonTests: buildPolygonTests,
     generateInsetRoundCases: generateInsetRoundCases,
+    setupCalcTest: setupCalcTest,
+    buildCalcTests: buildCalcTests,
     validUnits: validUnits
 }
 })();

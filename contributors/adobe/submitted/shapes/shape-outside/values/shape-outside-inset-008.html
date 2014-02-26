@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Inset Args - calc() values</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-inset">
+        <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
+        <meta name="assert" content="An inset's arguments may be in calc() values.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            var defaultRound = 'round 0px 0px 0px 0px / 0px 0px 0px 0px';
+            // [test value,
+            //          expected property value,
+            //          expected computed style]
+            var inset_calc_tests = [
+                ['inset(calc(10ch))', 
+                        'inset(calc(10ch) calc(10ch) calc(10ch) calc(10ch))', 
+                        'inset(100px 100px 100px 100px ' + defaultRound +')'],
+                ['inset(calc(10ch) calc(20ch))',
+                        'inset(calc(10ch) calc(20ch) calc(10ch) calc(20ch))', 
+                        'inset(100px 200px 100px 200px ' + defaultRound +')'],
+                ['inset(calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch))',
+                        'inset(calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch))',
+                        'inset(100px 100px 100px 100px ' + defaultRound +')'],
+                ['inset(calc(50%))',
+                        'inset(calc(50%) calc(50%) calc(50%) calc(50%))',
+                        'inset(50% 50% 50% 50% ' + defaultRound +')'],
+                ['inset(calc(100%/2))',
+                        'inset(calc(50%) calc(50%) calc(50%) calc(50%))',
+                        'inset(50% 50% 50% 50% ' + defaultRound +')'],
+                ['inset(calc(25%*2))',
+                        'inset(calc(50%) calc(50%) calc(50%) calc(50%))',
+                        'inset(50% 50% 50% 50% ' + defaultRound +')'],
+                ['inset(calc(25%*2 - 10em))',
+                        'inset(calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) calc(50% - 10em))',
+                        'inset(100px 100px 100px 100px ' + defaultRound +')'],
+                ['inset(calc((12.5%*4 + 20em) / 4))',
+                        'inset(calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4))',
+                        'inset(100px 100px 100px 100px ' + defaultRound +')']
+            ];
+
+            setup(function() { ParsingUtils.setupCalcTest() });
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(inset_calc_tests, 'value'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(inset_calc_tests, 'computed'), {type: 'calc'});
+        </script>
+    </body>
+</html>

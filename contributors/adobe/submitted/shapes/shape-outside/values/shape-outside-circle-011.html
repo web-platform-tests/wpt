@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Circle position args - calc() values</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-circle">
+        <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
+        <meta name="assert" content="A circle's <position> arguments may be in calc() values.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            // [test value,
+            //          expected property value,
+            //          expected computed style]
+            var circle_position_calc_tests = [
+                ['circle(at calc(10ch))',
+                        'circle(at calc(10ch) 50%)',
+                        'circle(closest-side at 100px 50%)'],
+                ['circle(at calc(10ex + 20px))',
+                        'circle(at calc(10ex + 20px) 50%)',
+                        'circle(closest-side at 100px 50%)'],
+                ['circle(at calc(10ex + 20px) calc(10ch))',
+                        'circle(at calc(10ex + 20px) calc(10ch))',
+                        'circle(closest-side at 100px 100px)'],
+                ['circle(at calc(50%))',
+                        'circle(at calc(50%) 50%)',
+                        'circle(closest-side at 50% 50%)'],
+                ['circle(at calc(100%/2))',
+                        'circle(at calc(50%) 50%)',
+                        'circle(closest-side at 50% 50%)'],
+                ['circle(farthest-side at calc(100%/2))',
+                        'circle(farthest-side at calc(50%) 50%)',
+                        'circle(farthest-side at 50% 50%)'],
+                ['circle(at calc(25%*2))',
+                        'circle(at calc(50%) 50%)',
+                        'circle(closest-side at 50% 50%)'],
+                ['circle(100px at calc(25%*2))',
+                        'circle(100px at calc(50%) 50%)',
+                        'circle(100px at 50% 50%)'],
+                ['circle(at calc(25%*2 - 10em))',
+                        'circle(at calc(50% - 10em) 50%)',
+                        'circle(closest-side at 100px 50%)'],
+                ['circle(at calc((12.5%*4 + 20em) / 4))',
+                        'circle(at calc((50% + 20em) / 4) 50%)',
+                        'circle(closest-side at 100px 50%)']
+            ];
+
+            setup(function() { ParsingUtils.setupCalcTest() });
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(circle_position_calc_tests, 'value'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(circle_position_calc_tests, 'computed'), {type: 'calc'});
+        </script>
+    </body>
+</html>

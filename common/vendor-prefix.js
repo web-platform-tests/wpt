@@ -19,11 +19,13 @@
 
     function getParentObject(ancestors) {
         var parent = window;
+        var currentName = "";
         ancestors.forEach(function (p) {
-            parent = parent[p];
+            currentName = currentName ? currentName + "." + p : p;
             if (parent[p] === undefined) {
-                return;
+                throw currentName + " is undefined, cannot set prefix alias on child object";
             }
+            parent = parent[p];
         });
         return parent;
     }
@@ -35,9 +37,6 @@
 
     function setPrototypeAlias(obj) {
         var parent = getParentObject(obj.ancestors);
-        if (parent === undefined) {
-            return;
-        }
         if (!parent.prototype.hasOwnProperty(obj.name)) {
             vendorPrefixes.forEach(function (prefix) {
                 if (parent.prototype.hasOwnProperty(prependPrefix(prefix, obj.name))) {
@@ -53,11 +52,7 @@
     }
 
     function setAlias(obj) {
-
         var parent = getParentObject(obj.ancestors);
-        if (parent === undefined) {
-            return;
-        }
         if (parent[obj.name] === undefined) {
             vendorPrefixes.forEach(function (prefix) {
                 if (parent[prependPrefix(prefix, obj.name)] !== undefined) {

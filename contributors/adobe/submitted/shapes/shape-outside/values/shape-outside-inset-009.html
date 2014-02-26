@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Inset round args - calc() values</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-inset">
+        <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
+        <meta name="assert" content="An inset's radial component arguments may be in calc() values.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            var fullInset = '10px 10px 10px 10px'
+            // [test value,
+            //          expected property value,
+            //          expected computed style]
+            var inset_round_calc_tests = [
+                ['inset(10px round calc(10ch))',
+                        'inset('+ fullInset + ' round calc(10ch) calc(10ch) calc(10ch) calc(10ch) / calc(10ch) calc(10ch) calc(10ch) calc(10ch))',
+                        'inset('+ fullInset + ' round 100px 100px 100px 100px / 100px 100px 100px 100px)'],
+                ['inset(10px round calc(10ch) calc(20ch))',
+                        'inset('+ fullInset + ' round calc(10ch) calc(20ch) calc(10ch) calc(20ch) / calc(10ch) calc(20ch) calc(10ch) calc(20ch))',
+                        'inset('+ fullInset + ' round 100px 200px 100px 200px / 100px 200px 100px 200px)'],
+                ['inset(10px round calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch))',
+                        'inset('+ fullInset + ' round calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch))',
+                        'inset('+ fullInset + ' round 100px 100px 100px 100px / 100px 100px 100px 100px)'],
+                ['inset(10px round calc(50%))',
+                        'inset('+ fullInset + ' round calc(50%) calc(50%) calc(50%) calc(50%) / calc(50%) calc(50%) calc(50%) calc(50%))',
+                        'inset('+ fullInset + ' round 50% 50% 50% 50% / 50% 50% 50% 50%)'],
+                ['inset(10px round calc(100%/2))',
+                        'inset('+ fullInset + ' round calc(50%) calc(50%) calc(50%) calc(50%) / calc(50%) calc(50%) calc(50%) calc(50%))',
+                        'inset('+ fullInset + ' round 50% 50% 50% 50% / 50% 50% 50% 50%)'],
+                ['inset(10px round calc(25%*2))',
+                        'inset('+ fullInset + ' round calc(50%) calc(50%) calc(50%) calc(50%) / calc(50%) calc(50%) calc(50%) calc(50%))',
+                        'inset('+ fullInset + ' round 50% 50% 50% 50% / 50% 50% 50% 50%)'],
+                ['inset(10px calc(25%*2 - 10em))',
+                        'inset('+ fullInset + ' round calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) / calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) calc(50% - 10em))',
+                        'inset('+ fullInset + ' round 100px 100px 100px 100px / 100px 100px 100px 100px)'],
+                ['inset(10px round calc((12.5%*4 + 20em) / 4))',
+                        'inset(' + fullInset + ' round calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) / calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4))',
+                        'inset(' + fullInset + ' round 100px 100px 100px 100px / 100px 100px 100px 100px)']
+            ];
+
+            setup(function() { ParsingUtils.setupCalcTest() });
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'value'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'computed'), {type: 'calc'});
+        </script>
+    </body>
+</html>

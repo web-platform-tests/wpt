@@ -15,7 +15,7 @@
 (function () {
     var aliases = {};
     var documentingPrefixUsage = document.createElement('div');
-    var vendorPrefixes = ["moz", "ms", "o", "webkit", "Moz", "MS", "O", "Webkit", "op"];
+    var vendorPrefixes = ["moz", "ms", "o", "webkit", "Moz", "MS", "O", "WebKit", "op"];
 
     function getParentObject(ancestors) {
         var parent = window;

@@ -42,7 +42,7 @@ class CookieTest( base_test.WebDriverBaseTest ):
         invalid_name = 'foo;bar'
         value = 'foobar'
 
-        self.driver.get( self.webserver.where_is( "cookie/cookie_container.html" ))
+        self.driver.get( self.webserver.where_is( "cookie/res/cookie_container.html" ))
 
         try:
             self.driver.add_cookie({ 'name': invalid_name, 'value': value })
@@ -56,7 +56,7 @@ class CookieTest( base_test.WebDriverBaseTest ):
     def test_should_throw_an_exception_the_name_is_null(self):
         VAL = 'foobar'
 
-        self.driver.get( self.webserver.where_is( "cookie/cookie_container.html" ))
+        self.driver.get( self.webserver.where_is( "cookie/res/cookie_container.html" ))
 
         try:
             self.driver.add_cookie({ 'name': None, 'value': VAL })

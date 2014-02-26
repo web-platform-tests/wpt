@@ -11,7 +11,7 @@ function testComputedStyle(value, expected, type) {
     div.style.setProperty('shape-outside', value);
 
     var parent;
-    if (this.properties.type == 'calc')
+    if (this.properties && this.properties.type && this.properties.type == 'calc')
         parent = document.getElementById('calc-test');
     else
         parent = document.body;

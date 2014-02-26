@@ -8,6 +8,6 @@ async_test(function(t) {
   var a = new Audio();
   assert_equals(a.networkState, a.NETWORK_EMPTY);
   a.onloadstart = t.step_func(function() { assert_unreached(); });
-  window.onload = t.step_func(function() { a.onloadstart = null; t.done(); });
+  window.onload = t.step_func(function() { t.done(); });
 });
 </script>

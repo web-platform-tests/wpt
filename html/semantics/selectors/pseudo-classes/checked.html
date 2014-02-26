@@ -5,7 +5,7 @@
 <link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="utils"></script></script>
+<script src="utils.js"></script>
 <div id="log"></div>
 <select id=select1>
  <optgroup label="options" id=optgroup1>
@@ -27,5 +27,5 @@
 </form>
 
 <script>
-  testSelector(":checked", getElementsByIds(["option1", "checkbox1", "radio1", "menuitem1", "menuitem3"]), "':checked' matches checked input/menuitem checkboxes and radio buttons, selected option");
+  testSelector(":checked", getElementsByIds(["option1", "checkbox1", "radio1", "menuitem1", "menuitem3"]), "':checked' matches checked <input>/<menuitem> in checkbox and radio button states, selected <option>");
 </script>

@@ -5,7 +5,7 @@
 <link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="utils"></script>
+<script src="utils.js"></script>
 <div id="log"></div>
 <a id=link3></a>
 <area id=link4></area>
@@ -15,5 +15,5 @@
 <link href="http://www.w3.org" id=link8></link>
 
 <script>
-  testSelector(":link", getElementsByIds(["link1", "link2", "link6", "link7", "link8"]), "Only <a>s, <area>s and <link>s that have a href attribute match ':link'</a>");
+  testSelector(":link", getElementsByIds(["link1", "link2", "link6", "link7", "link8"]), "Only <a>s, <area>s and <link>s that have a href attribute match ':link'");
 </script>

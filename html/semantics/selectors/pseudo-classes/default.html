@@ -5,10 +5,12 @@
 <link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="utils"></script></script>
+<script src="utils.js"></script>
 <div id="log"></div>
-<button id=button1>button1</button>
-<button id=button2 type=submit>button2</button>
+<form>
+  <button id=button1 type=button>button1</button>
+  <button id=button2 type=submit>button2</button>
+</form>
 <form>
   <input type=text id=input1>
   <input type=text id=input2>
@@ -30,5 +32,5 @@
 </select>
 
 <script>
-  testSelector(":default", getElementsByIds(["button2", "input3", "input5", "checkbox1", "option1"]), "':default' matches buttons that are their form's default button, submit/image inputs that are their form's default button, checked inputs and selected options");
+  testSelector(":default", getElementsByIds(["button2", "input3", "input5", "checkbox1", "option1"]), "':default' matches <button>s that are their form's default button, <input>s of type submit/image that are their form's default button, checked <input>s and selected <option>s");
 </script>

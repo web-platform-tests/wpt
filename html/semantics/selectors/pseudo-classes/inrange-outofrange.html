@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Selector: pseudo-classes (:in-range, :out-of-range)</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org" id=link1>
+<link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+<input type=number value=0 min=0 max=10 id=number1>
+<input type=number value=0 min=0 max=10 id=number2 disabled>
+<input type=number value=0 min=1 max=10 id=number3>
+<input type=number value=11 min=0 max=10 id=number4>
+
+<script>
+  testSelector(":in-range", getElementsByIds(["number1"]), "':in-range' matches all elements that are candidates for constraint validation, have range limitations, and that are neither suffering from an underflow nor suffering from an overflow");
+  testSelector(":out-of-range", getElementsByIds(["number3","number4"]), "':invalid' matches all elements that are candidates for constraint validation, have range limitations, and that are either suffering from an underflow or suffering from an overflow");
+</script>

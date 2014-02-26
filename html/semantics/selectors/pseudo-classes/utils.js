@@ -7,7 +7,7 @@ function getElementsByIds(ids) {
 }
 
 function testSelector(selector, expected, testName) {
-  test(function(){                                                                                                                                                                                                               
+  test(function(){
     var elements = document.querySelectorAll(selector);
     assert_array_equals(elements, expected);
   }, testName);

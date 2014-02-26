@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Selector: pseudo-classes (:dir(ltr), dir(rtl))</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org" id=link1>
+<link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+<bdo dir="rtl" id=bdo1>HEBREW</bdo>
+<bdo dir="ltr" id=bdo2>WERBEH</bdo>
+<bdi id=bdi1>HEBREW</bdi>
+<bdi dir="rtl" id=bdi2>WERBEH</bdi>
+<bdi dir="ltr" id=bdi3>WERBEH</bdi>
+
+<script>
+  testSelector(":dir(rtl)", getElementsByIds(["bdo1", "bdi2"]), "':dir(rtl)' matches all elements whose directionality is 'rtl'.");
+  testSelector(":dir(ltr)", getElementsByIds(["bdo2", "bdi3"]), "':dir(ltr)' matches all elements whose directionality is 'ltr'.");
+</script>

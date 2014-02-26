@@ -5,7 +5,7 @@
 <link rel=help href="http://www.whatwg.org/html/#pseudo-classes" id=link2>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="utils"></script></script>
+<script src="utils.js"></script>
 <div id="log"></div>
 <input type=checkbox id=checkbox1>
 <input type=checkbox id=checkbox2>
@@ -13,9 +13,10 @@
 <input type=radio name=radiogroup id=radio2>
 <input type=radio name=radiogroup id=radio3>
 <progress id="progress1"></progress>
+<progress id="progress2" value=10></progress>
 
 <script>
+  testSelector(":indeterminate", getElementsByIds(["radio2", "radio3", "progress1"]), "':progress' matches <input>s radio buttons whose radio button group contains no checked input and <progress> elements without value attribute");
   document.getElementById("checkbox1").indeterminate = true; // set checkbox1 in the indeterminate state
-
-  testSelector(":indeterminate", getElementsByIds(["checkbox1", "radio2", "radio3", "progress1"]), "':progress' matches input checkboxes whose indeterminate IDL is set to true, radio buttons whose radio button group contains no checked input and progress elements without value attribute");
+  testSelector(":indeterminate", getElementsByIds(["checkbox1", "radio2", "radio3", "progress1"]), "':progress' also matches <input> checkbox whose indeterminate IDL is set to true");
 </script>

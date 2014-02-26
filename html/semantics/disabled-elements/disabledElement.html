@@ -18,17 +18,27 @@
  <input type=radio name=c value=0 checked>
  <input type=radio name=c value=1>
 </fieldset>
+<a href="http://www.w3.org/" disabled>w3</a>
+<span tabindex=0 disabled>foobar</span>
 
 <script>
   test(function(){
     assert_equals(document.activeElement, document.body);
   }, "The body element must be the active element if no element is focused");
 
-  ["button", "input", "select", "optgroup", "option", "textarea", "fieldset"].forEach(function(el) {
+  ["button", "input", "select", "optgroup", "option", "textarea", "input[type=radio]"].forEach(function(el) {
     test(function() {
       var element = document.querySelector(el);
       element.focus();
       assert_equals(document.activeElement, document.body, "activeElement after focus on a disabled " + el + "remains unchanged");
+    }, "A disabled " + el + " should not be focusable");
+  });
+
+  ["a", "span"].forEach(function(el) {
+    test(function() {
+      var element = document.querySelector(el);
+      element.focus();
+      assert_equals(document.activeElement, element, "activeElement after focus on a disabled " + el + "remains unchanged");
     }, "A disabled " + el + " should not be focusable");
   });
 </script>

@@ -16,7 +16,17 @@
 <progress id="progress2" value=10></progress>
 
 <script>
-  testSelector(":indeterminate", getElementsByIds(["radio2", "radio3", "progress1"]), "':progress' matches <input>s radio buttons whose radio button group contains no checked input and <progress> elements without value attribute");
+  testSelector(":indeterminate", ["radio2", "radio3", "progress1"], "':progress' matches <input>s radio buttons whose radio button group contains no checked input and <progress> elements without value attribute");
+
+  document.getElementById("radio2").setAttribute("checked", "checked");
+  testSelector(":indeterminate", ["progress1"], "dynamically check a radio input in a radio button group");
+
+  document.getElementById("progress1").setAttribute("value", "20");
+  testSelector(":indeterminate", [], "adding a value to progress1 should put it in a determinate state");
+
+  document.getElementById("progress2").removeAttribute("value");
+  testSelector(":indeterminate", ["progress2"], "removing progress2's value should put it in an indeterminate state");
+
   document.getElementById("checkbox1").indeterminate = true; // set checkbox1 in the indeterminate state
-  testSelector(":indeterminate", getElementsByIds(["checkbox1", "radio2", "radio3", "progress1"]), "':progress' also matches <input> checkbox whose indeterminate IDL is set to true");
+  testSelector(":indeterminate", ["checkbox1", "progress2"], "':progress' also matches <input> checkbox whose indeterminate IDL is set to true");
 </script>

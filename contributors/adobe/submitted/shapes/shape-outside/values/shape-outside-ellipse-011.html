@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Ellipse position args - calc() values</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
+        <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
+        <meta name="assert" content="An ellipse's <position> arguments may be in calc() values.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            // [test value,
+            //          expected property value,
+            //          expected computed style]
+            var ellipse_position_calc_tests = [
+                ['ellipse(at calc(10ch))',
+                        'ellipse(at calc(10ch) 50%)',
+                        'ellipse(closest-side closest-side at 100px 50%)'],
+                ['ellipse(farthest-side at calc(10ch))',
+                        'ellipse(farthest-side at calc(10ch) 50%)',
+                        'ellipse(farthest-side closest-side at 100px 50%)'],
+                ['ellipse(at calc(10ex + 20px))',
+                        'ellipse(at calc(10ex + 20px) 50%)',
+                        'ellipse(closest-side closest-side at 100px 50%)'],
+                ['ellipse(farthest-side at calc(10ex + 20px))',
+                        'ellipse(farthest-side at calc(10ex + 20px) 50%)',
+                        'ellipse(farthest-side closest-side at 100px 50%)'],
+                ['ellipse(farthest-side at calc(10ex + 20px) 50%)',
+                        'ellipse(farthest-side at calc(10ex + 20px) 50%)',
+                        'ellipse(farthest-side closest-side at 100px 50%)'],
+                ['ellipse(farthest-side closest-side at calc(30%))',
+                        'ellipse(farthest-side closest-side at calc(30%) 50%)',
+                        'ellipse(farthest-side closest-side at 30% 50%)'],
+                ['ellipse(at calc(30%))',
+                            'ellipse(at calc(30%) 50%)',
+                            'ellipse(closest-side closest-side at 30% 50%)'],
+                ['ellipse(at calc(100%/2))',
+                        'ellipse(at calc(50%) 50%)',
+                        'ellipse(closest-side closest-side at 50% 50%)'],
+                ['ellipse(at calc(25%*2))',
+                        'ellipse(at calc(50%) 50%)',
+                        'ellipse(closest-side closest-side at 50% 50%)'],
+                ['ellipse(at calc(25%*2 - 10em))',
+                        'ellipse(at calc(50% - 10em) 50%)',
+                        'ellipse(closest-side closest-side at 100px 50%)'],
+                ['ellipse(at calc((12.5%*4 + 20em) / 4))',
+                        'ellipse(at calc((50% + 20em) / 4) 50%)',
+                        'ellipse(closest-side closest-side at 100px 50%)']
+            ];
+
+            setup(function() { ParsingUtils.setupCalcTest() });
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(ellipse_position_calc_tests, 'value'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(ellipse_position_calc_tests, 'computed'), {type: 'calc'});
+        </script>
+    </body>
+</html>

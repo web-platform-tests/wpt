@@ -2,6 +2,7 @@
 import ConfigParser
 import json
 import os
+import socket
 import unittest
 
 from webserver import Httpd
@@ -36,7 +37,7 @@ class WebDriverBaseTest(unittest.TestCase):
                 cls.driver = cls.driver_class(desired_capabilities=capabilities)
             else:
                 cls.driver = cls.driver_class()
-        cls.webserver = Httpd()
+        cls.webserver = Httpd(host=socket.gethostbyname(socket.gethostname()))
         cls.webserver.start()
 
     @classmethod

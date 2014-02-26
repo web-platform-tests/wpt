@@ -21,7 +21,9 @@
         var parent = window;
         ancestors.forEach(function (p) {
             parent = parent[p];
-            if (parent[p] === undefined) return;
+            if (parent[p] === undefined) {
+                return;
+            }
         });
         return parent;
     }
@@ -33,7 +35,9 @@
 
     function setPrototypeAlias(obj) {
         var parent = getParentObject(obj.ancestors);
-        if (parent === undefined) return;
+        if (parent === undefined) {
+            return;
+        }
         if (!parent.prototype.hasOwnProperty(obj.name)) {
             vendorPrefixes.forEach(function (prefix) {
                 if (parent.prototype.hasOwnProperty(prependPrefix(prefix, obj.name))) {
@@ -51,7 +55,9 @@
     function setAlias(obj) {
 
         var parent = getParentObject(obj.ancestors);
-        if (parent === undefined) return;
+        if (parent === undefined) {
+            return;
+        }
         if (parent[obj.name] === undefined) {
             vendorPrefixes.forEach(function (prefix) {
                 if (parent[prependPrefix(prefix, obj.name)] !== undefined) {

@@ -1,4 +1,4 @@
-~// Use this script when you want to test APIs that use vendor prefixes
+// Use this script when you want to test APIs that use vendor prefixes
 // and define which objects need to be checked for prefixed versions, à la
 // <script src="vendor-prefix.js"
 //   data-prefixed-objects='[{"ancestors":["navigator"], "name":"getUserMedia"}]'
@@ -14,6 +14,7 @@
 (function () {
     var aliases = {};
     var doc = document.createElement('div');
+    var vendorPrefixes = ["moz", "ms", "o", "webkit", "Moz", "MS", "O", "Webkit", "op"];
 
     function getParentObject(ancestors) {
         var parent = window;
@@ -30,7 +31,6 @@
     }
 
     function setPrototypeAlias(obj) {
-        var vendorPrefixes = ["moz", "ms", "o", "webkit"];
         var parent = getParentObject(obj.ancestors);
         if (parent === undefined) return;
         if (!parent.prototype.hasOwnProperty(obj.name)) {
@@ -48,7 +48,7 @@
     }
 
     function setAlias(obj) {
-        var vendorPrefixes = ["moz", "ms", "o", "webkit", "Moz", "MS", "O", "Webkit", "op"];
+
         var parent = getParentObject(obj.ancestors);
         if (parent === undefined) return;
         if (parent[obj.name] === undefined) {

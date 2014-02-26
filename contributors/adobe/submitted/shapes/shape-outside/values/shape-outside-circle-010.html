@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Circle args - calc() values</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-circle">
+        <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
+        <meta name="assert" content="A circle's arguments may be in calc() values.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            var defaultPosition = ' at 50% 50%';
+            // [test value,
+            //          expected property value,
+            //          expected computed style]
+            var circle_calc_tests = [
+                ['circle(calc(10ch))',
+                        'circle(calc(10ch))',
+                        'circle(100px'+ defaultPosition +')'],
+                ['circle(calc(10ex + 20px))',
+                        'circle(calc(10ex + 20px))',
+                        'circle(100px'+ defaultPosition +')'],
+                ['circle(calc(50%))',
+                        'circle(calc(50%))',
+                        'circle(50%'+ defaultPosition +')'],
+                ['circle(calc(100%/2))',
+                        'circle(calc(50%))',
+                        'circle(50%'+ defaultPosition +')'],
+                ['circle(calc(25%*2))',
+                        'circle(calc(50%))',
+                        'circle(50%'+ defaultPosition +')'],
+                ['circle(calc(25%*2 - 10em))',
+                        'circle(calc(50% - 10em))',
+                        'circle(100px'+ defaultPosition +')'],
+                ['circle(calc((12.5%*4 + 20em) / 4))',
+                        'circle(calc((50% + 20em) / 4))',
+                        'circle(100px'+ defaultPosition +')']
+            ];
+
+            setup(function() { ParsingUtils.setupCalcTest() });
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(circle_calc_tests, 'value'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(circle_calc_tests, 'computed'), {type: 'calc'});
+        </script>
+    </body>
+</html>

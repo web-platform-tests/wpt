@@ -1,4 +1,3 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
 
 import ConfigParser
 import json
@@ -14,28 +13,29 @@ class WebDriverBaseTest(unittest.TestCase):
     def setUpClass(cls):
         config = ConfigParser.ConfigParser()
         config.read('webdriver.cfg')
-        section = os.environ.get("WD_BROWSER", 'Default')
+        section = os.environ.get("WD_BROWSER", 'firefox')
         cls.driver_class = getattr(webdriver, config.get(section, 'browser'))
         url = None
         if config.has_option(section, 'url'):
-          url = config.get(section, "url")
+            url = config.get(section, "url")
         capabilities = None
         if config.has_option(section, 'capabilities'):
-          try:
-            capabilities = json.loads(config.get(section, "capabilities"))
-          except:
-            pass
+            try:
+                capabilities = json.loads(config.get(section, "capabilities"))
+            except:
+              pass
 
         if url != None and url.strip() != '':
-          if capabilities != None and type(capabilities) is dict:
-            cls.driver = cls.driver_class(command_executor=url, desired_capabilities=capabilities)
-          else:
-            cls.driver = cls.driver_class(command_executor=url)
+            if capabilities != None and type(capabilities) is dict:
+                cls.driver = cls.driver_class(command_executor=url,
+                                              desired_capabilities=capabilities)
+            else:
+                cls.driver = cls.driver_class(command_executor=url)
         else:
-          if capabilities != None and type(capabilities) is dict:
-            cls.driver = cls.driver_class(desired_capabilities=capabilities)
-          else:
-            cls.driver = cls.driver_class()
+            if capabilities != None and type(capabilities) is dict:
+                cls.driver = cls.driver_class(desired_capabilities=capabilities)
+            else:
+                cls.driver = cls.driver_class()
         cls.webserver = Httpd()
         cls.webserver.start()
 

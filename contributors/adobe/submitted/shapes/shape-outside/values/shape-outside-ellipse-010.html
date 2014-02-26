@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Ellipse args - calc() values</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
+        <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
+        <meta name="assert" content="An ellipse's arguments may be in calc() values.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            var defaultPosition = ' at 50% 50%';
+            // [test value,
+            //          expected property value,
+            //          expected computed style]
+            var ellipse_calc_tests = [
+                ['ellipse(calc(10ch))',
+                        'ellipse(calc(10ch))',
+                        'ellipse(100px closest-side'+ defaultPosition +')'],
+                ['ellipse(closest-side calc(10ch))',
+                        'ellipse(closest-side calc(10ch))',
+                        'ellipse(closest-side 100px'+ defaultPosition +')'],
+                ['ellipse(calc(10ex + 20px))',
+                        'ellipse(calc(10ex + 20px))',
+                        'ellipse(100px closest-side'+ defaultPosition +')'],
+                ['ellipse(calc(10ex + 20px) farthest-side)',
+                        'ellipse(calc(10ex + 20px) farthest-side)',
+                        'ellipse(100px farthest-side'+ defaultPosition +')'],
+                ['ellipse(calc(50%))',
+                        'ellipse(calc(50%))',
+                        'ellipse(50% closest-side'+ defaultPosition +')'],
+                ['ellipse(calc(100%/2))',
+                        'ellipse(calc(50%))',
+                        'ellipse(50% closest-side'+ defaultPosition +')'],
+                ['ellipse(calc(25%*2))',
+                        'ellipse(calc(50%))',
+                        'ellipse(50% closest-side'+ defaultPosition +')'],
+                ['ellipse(calc(25%*2 - 10em))',
+                        'ellipse(calc(50% - 10em))',
+                        'ellipse(100px closest-side'+ defaultPosition +')'],
+                ['ellipse(calc((12.5%*4 + 20em) / 4))',
+                        'ellipse(calc((50% + 20em) / 4))',
+                        'ellipse(100px closest-side'+ defaultPosition +')']
+            ];
+
+            setup(function() { ParsingUtils.setupCalcTest() });
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(ellipse_calc_tests, 'value'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(ellipse_calc_tests, 'computed'), {type: 'calc'});
+        </script>
+    </body>
+</html>
+
+
+
+<!--
+
+font-size: 10px
+parent: 400px
+
+ellipse(calc(10ch)
+ellipse(calc(10ch) calc(20ch)' 
+ellipse(calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch)'
+ellipse(calc(50%)'
+ellipse(calc(100%/2)
+ellipse(calc(25%*2)
+ellipse(calc(25%*2 - 10em)'
+ellipse(calc((12.5%*4 + 20em) / 4))
+-->

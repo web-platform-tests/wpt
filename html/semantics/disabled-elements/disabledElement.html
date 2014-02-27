@@ -30,15 +30,15 @@
     test(function() {
       var element = document.querySelector(el);
       element.focus();
-      assert_equals(document.activeElement, document.body, "activeElement after focus on a disabled " + el + "remains unchanged");
-    }, "A disabled " + el + " should not be focusable");
+      assert_equals(document.activeElement, document.body, "activeElement after focus on a disabled <" + el + "> remains unchanged");
+    }, "A disabled <" + el + "> should not be focusable");
   });
 
   ["a", "span"].forEach(function(el) {
     test(function() {
       var element = document.querySelector(el);
       element.focus();
-      assert_equals(document.activeElement, element, "activeElement after focus on a disabled " + el + "remains unchanged");
-    }, "A disabled " + el + " should not be focusable");
+      assert_equals(document.activeElement, element, "focus on a <" + el + "> with a disabled attribute should make it the activeElement");
+    }, "A disabled <" + el + "> should be focusable");
   });
 </script>

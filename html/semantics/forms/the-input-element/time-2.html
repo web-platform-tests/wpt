@@ -15,7 +15,7 @@
     {value: "00:00:00.0", expected: "00:00:00.0", testname: "Valid value: value should be 00:00:00.0"},
     {value: "00:00:00.00", expected: "00:00:00.00", testname: "Valid value: value should be 00:00:00.00"},
     {value: "00:00:00.000", expected: "00:00:00.000", testname: "Valid value: value should be 00:00:00.000"},
-    {value: "00:00:00.0000", expected: "", testname: "Invalid value: hour should have one, two or three ASCII digits. Value should be empty"},
+    {value: "00:00:00.0000", expected: "", testname: "Invalid value: fraction should have one, two or three ASCII digits. Value should be empty"},
     {value: "0:00:00.000", expected: "", testname: "Invalid value: hour should have two ASCII digits. Value should be empty"},
     {value: "00:0:00.000", expected: "", testname: "Invalid value: minutes should have two ASCII digits. Value should be empty"},
     {value: "00:00:0.000", expected: "", testname: "Invalid value: seconds should have two ASCII digits. Value should be empty"},

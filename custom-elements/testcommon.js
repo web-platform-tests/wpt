@@ -208,14 +208,13 @@ function getCharCode(c) {
 
 var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 
-
 function newHTMLDocument() {
     return document.implementation.createHTMLDocument('Test Document');
 }
 
 // Creates new iframe and loads given url into it.
 // Returns reference to created iframe.
-function newIFrame(url){
+function newIFrame(url) {
     assert_not_equals(url, null, 'argument url should not be null');
     var iframe = document.createElement('iframe');
     iframe.src = url;

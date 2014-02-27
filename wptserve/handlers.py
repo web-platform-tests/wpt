@@ -88,8 +88,13 @@ class FileHandler(object):
             data = self.get_data(response, path, byte_ranges)
             response.content = data
             query = urlparse.parse_qs(request.url_parts.query)
+
+            pipeline = None
             if "pipe" in query:
                 pipeline = Pipeline(query["pipe"][-1])
+            elif os.path.splitext(path)[0].endswith(".sub"):
+                pipeline = Pipeline("sub")
+            if pipeline is not None:
                 response = pipeline(request, response)
 
             return response

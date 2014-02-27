@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8" />
+  <title>Delayed Element</title>
+  <script>
+    function createElement() {
+      var newDiv = document.createElement("div");
+      newDiv.id = "newDiv";
+      var newContent = document.createTextNode("I am a newly created div!");
+      newDiv.appendChild(newContent);
+      document.body.appendChild(newDiv);
+    }
+    window.setTimeout(createElement, 3000);
+  </script>
+</head>
+<body>
+</body>

@@ -21,7 +21,7 @@
     {value: 15, expectedValue: 15, min: 10, expectedMin: 10, max: 20, expectedMax: 20, expectedLow: 10, expectedHigh: 20, optimum: 9, expectedOptimum: 10, testname: "optimum < min"},
     {value: 15, expectedValue: 15, min: 10, expectedMin: 10, max: 20, expectedMax: 20, expectedLow: 10, expectedHigh: 20, optimum: 21, expectedOptimum: 20, testname: "optimum > max"}
   ];
-  for (var i = 0; i < meters.length; i++) { 
+  for (var i = 0; i < meters.length; i++) {
     var m = meters[i];
     test(function() {
       var meter = document.createElement("meter");

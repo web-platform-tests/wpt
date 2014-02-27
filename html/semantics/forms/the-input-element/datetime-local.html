@@ -10,12 +10,12 @@
 <script>
   var datetimeLocal = [
     {value: "", expected: "", testname: "empty value"},
-    {value: "2014-01-01T11:11:11.111", expected: "2014-01-01T11:11:11.111", testname: "Valid value: value should be 2014-01-01T11:11:11.111."},
-    {value: "2014-01-01 11:11:11.111", expected: "2014-01-01T11:11:11.111", testname: "Valid value: value should be 2014-01-01T11:11:11.111. The value sanitization algorithm set it to a valid normalized local date and time string representing the same date and time"},
-    {value: "2014-01-01 11:11", expected: "2014-01-01T11:11", testname: "Valid value: value should be 2014-01-01T11:11. The value sanitization algorithm set it to a valid normalized local date and time string representing the same date and time"},
-    {value: "2014-01-01 00:00:00.000", expected: "2014-01-01T00:00", testname: "Valid value: value should be 2014-01-01T00:00. The value sanitization algorithm set it to a valid normalized local date and time string representing the same date and time (shortest possible string for the given time)."},
-    {value: "2014-01-0 11:11", expected: "", testname: "Invalid value: the value doesn't contain a valid date string."},
-    {value: "2014-01-01 11:1", expected: "", testname: "Invalid value: the value doesn't contain a valid time string."},
+    {value: "2014-01-01T11:11:11.111", expected: "2014-01-01T11:11:11.111", testname: "Value is 2014-01-01T11:11:11.111"},
+    {value: "2014-01-01 11:11:11.111", expected: "2014-01-01T11:11:11.111", testname: "Value is 2014-01-01 11:11:11.111"},
+    {value: "2014-01-01 11:11", expected: "2014-01-01T11:11", testname: "Value is 2014-01-01 11:11"},
+    {value: "2014-01-01 00:00:00.000", expected: "2014-01-01T00:00", testname: "Value is 2014-01-01 00:00:00.000"},
+    {value: "2014-01-0 11:11", expected: "", testname: "Value is 2014-01-0 11:11"},
+    {value: "2014-01-01 11:1", expected: "", testname: "Value is 2014-01-01 11:1"},
     {value: "2014-01-01 11:12", attributes: { min: "2014-01-01 11:11" }, expected: "2014-01-01T11:12", testname: "Value >= min attribute"},
     {value: "2014-01-01 11:10", attributes: { min: "2014-01-01 11:11" }, expected: "2014-01-01T11:11", testname: "Value < min attribute"},
     {value: "2014-01-01 11:10", attributes: { max: "2014-01-01 11:11" }, expected: "2014-01-01T11:10", testname: "Value <= max attribute"},

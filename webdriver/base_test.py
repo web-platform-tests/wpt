@@ -37,7 +37,7 @@ class WebDriverBaseTest(unittest.TestCase):
                 cls.driver = cls.driver_class(desired_capabilities=capabilities)
             else:
                 cls.driver = cls.driver_class()
-        cls.webserver = Httpd(host=get_lan_ip()))
+        cls.webserver = Httpd(host=get_lan_ip())
         cls.webserver.start()
 
     @classmethod

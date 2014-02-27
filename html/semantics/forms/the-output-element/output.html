@@ -2,7 +2,7 @@
 <meta charset=utf-8>
 <title>The output element</title>
 <link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
-<link rel=help href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-button-element.html#the-output-element">
+<link rel=help href="http://www.whatwg.org/html/#the-output-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -17,13 +17,18 @@
     assert_equals(output.defaultValue, "", "output is empty: output.defaultValue should be empty");
 
     output.textContent="5";
-    assert_equals(output.value, "5", "output is 5: output.value should be 5");
-    assert_equals(output.textContent, "5", "output is 5: output.textContent should be 5");
-    assert_equals(output.defaultValue, "5", "output is 5: output.defaultValue should be 5");
+    assert_equals(output.value, "5", "output is 5: value should be 5");
+    assert_equals(output.textContent, "5", "output is 5: textContent should be 5");
+    assert_equals(output.defaultValue, "5", "output is 5: defaultValue should be 5");
 
     output.value="20";  // set the value mode flag to "value": default value remains unchanged
     assert_equals(output.value, "20", "output value set to 20");
     assert_equals(output.textContent, "20", "output value set to 20: textContent should be 20");
     assert_equals(output.defaultValue, "5", "output value set to 20: defaultValue should still be 5");
+
+    output.defaultValue="10";
+    assert_equals(output.value, "20", "output default value set to 10: value remains unchanged");
+    assert_equals(output.textContent, "20", "output default value set to 10: textContent remains unchanged");
+    assert_equals(output.defaultValue, "10", "output default value set to 10");
   }, "output value and defaultValue");
 </script>

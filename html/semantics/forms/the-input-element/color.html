@@ -13,6 +13,7 @@
     {expected: "#000000", testname: "Missing value should return #000000"},
     {value: "#ffffff", expected: "#ffffff", testname: "Valid simple color: should return #ffffff"},
     {value: "#FFFFFF", expected: "#ffffff", testname: "Valid simple color (containing LATIN CAPITAL LETTERS): should return #ffffff (converted to ASCII lowercase)"},
+    {value: "#0F0F0F", expected: "#0f0f0f", testname: "Zero-padding"},
     {value: "#fff", expected: "#000000", testname: "Invalid simple color: not 7 characters long"},
     {value: "fffffff", expected: "#000000", testname: "Invalid simple color: no starting # sign"},
     {value: "#gggggg", expected: "#000000", testname: "Invalid simple color: non ASCII hex digits"},

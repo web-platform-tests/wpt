@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
-  <title>HTML Test: Accessing other browsing contexts</title>
+  <title>HTML Test: the browsing contexts created by various container elements</title>
   <link rel="author" title="Intel" href="http://www.intel.com/" />
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -36,13 +36,15 @@
     t2.done();
 
     //The child browsing context will be removed if the data attribute of the associated object element is removed.
-    t3.step(function () {
-      document.getElementById("obj").removeAttribute("type");
-      assert_equals(window.length, 3, "The top browsing context should have 3 child browsing contexts.");
-      document.getElementById("obj").removeAttribute("data");
-      assert_equals(window.length, 2, "The top browsing context should have 2 child browsing contexts.");
-    });
-    t3.done();
+    setTimeout(function () {
+      t3.step(function () {
+        document.getElementById("obj").removeAttribute("type");
+        assert_equals(window.length, 3, "The top browsing context should have 3 child browsing contexts.");
+        document.getElementById("obj").removeAttribute("data");
+        assert_equals(window.length, 2, "The top browsing context should have 2 child browsing contexts.");
+      });
+      t3.done();
+    }, 0);
   }
 
   </script>

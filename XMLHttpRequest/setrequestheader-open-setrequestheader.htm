@@ -10,7 +10,7 @@ Test from https://bugzilla.mozilla.org/show_bug.cgi?id=819051
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-setrequestheader()-method" data-tested-assertations="following::OL[1]/LI[6] following::ol[1]/li[7]" />
 </head>
 <body>
-	<p id="log"></p>
+    <p id="log"></p>
 <script type="text/javascript">
 var test = async_test();
 
@@ -25,10 +25,10 @@ xhr.setRequestHeader("X-appended-to-this", "True");
 
 xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
-		test.step(function (){
-			assert_equals(xhr.responseText, "x-appended-to-this: True\n", "Set headers record should have been cleared by open.");
-			test_standard_header();
-		});
+        test.step(function (){
+            assert_equals(xhr.responseText, "x-appended-to-this: True\n", "Set headers record should have been cleared by open.");
+            test_standard_header();
+        });
     }
 }
 
@@ -36,7 +36,7 @@ xhr.send();
 
 function test_standard_header () {
     var header_tested = "Accept";
-	var xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
     xhr.open("GET", url+header_tested);
     xhr.setRequestHeader("Accept", "foo/bar");
     xhr.open("GET", url+header_tested);
@@ -44,10 +44,10 @@ function test_standard_header () {
 
     xhr.onreadystatechange = function() {
         if (this.readyState == 4) {
-			test.step(function (){
-	            assert_equals(xhr.responseText, "accept: bar/foo\n", "Set headers record should have been cleared by open.");
-	            test.done();
-			});
+            test.step(function (){
+                assert_equals(xhr.responseText, "accept: bar/foo\n", "Set headers record should have been cleared by open.");
+                test.done();
+            });
         }
     }
 

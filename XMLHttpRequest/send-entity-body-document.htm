@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" data-tested-assertations="/following::ol/li[4]" />  
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-document" data-tested-assertations="/following::dd" />  
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" data-tested-assertations="/following::ol/li[4]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-document" data-tested-assertations="/following::dd" />
   </head>
   <body>
     <div id="log"></div>
@@ -17,8 +17,8 @@
       { contentType: 'text/html;charset=UTF-8', responseText : '<body>\u30C6\u30b9\u30c8<\/body>' } /* correctly serialized Shift-JIS */,
       { contentType: 'text/html;charset=UTF-8', responseText: 'top' }, /* There's some markup included, but it's not really relevant for this test suite, so we do an indexOf() test */
       { contentType: 'text/html;charset=UTF-8' }
-     ] 
-      
+     ]
+
       function request(input, number) {
         test(function() {
           var client = new XMLHttpRequest()
@@ -38,7 +38,7 @@
         This test also tests how documents in various encodings are serialized.
         The below IFRAMEs contain:
           * one XML document parsed from a windows-1252 source - content is <ÿ/>
-          * one HTML-document parsed from an invalid UTF-8 source, will contain a basic HTML DOM 
+          * one HTML-document parsed from an invalid UTF-8 source, will contain a basic HTML DOM
              with a U+FFFD replacement character for the invalid char
           * one HTML document parsed from a valid Shift-JIS source
      -->

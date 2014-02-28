@@ -34,9 +34,10 @@
     };
     return fd;
   }
-
+  
   do_test("empty formdata", new FormData(), '\n');
   do_test("formdata with string", create_formdata(['key', 'value']), 'key=value,\n');
-  do_test("formdata with named string", create_formdata(['key', 'value', 'kv.txt']), 'key=value,\n');
-  do_test("formdata from form", new FormData(document.getElementById('form')), 'key=value,\n'); 
+  do_test("formdata with named string", create_formdata(['key', new Blob(['value'], {type: 'text/plain'}), 'kv.txt']), '\nkey=kv.txt:text/plain:5,');
+  do_test("formdata from form", new FormData(document.getElementById('form')), 'key=value,\n');
+
 </script>

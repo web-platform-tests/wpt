@@ -14,6 +14,7 @@
         test(function() {
           var client = new XMLHttpRequest()
           client.open("GET", "...")
+          // Per https://www.w3.org/Bugs/Public/show_bug.cgi?id=23346 TypeError is the right error for this test.
           assert_throws(new TypeError(), function() { client.setRequestHeader(name, 'x-value') })
         })
       }

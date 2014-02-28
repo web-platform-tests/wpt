@@ -2,11 +2,11 @@
 import ConfigParser
 import json
 import os
-import socket
 import unittest
 
 from webserver import Httpd
 from selenium import webdriver
+from network import get_lan_ip
 
 class WebDriverBaseTest(unittest.TestCase):
 
@@ -37,7 +37,7 @@ class WebDriverBaseTest(unittest.TestCase):
                 cls.driver = cls.driver_class(desired_capabilities=capabilities)
             else:
                 cls.driver = cls.driver_class()
-        cls.webserver = Httpd(host=socket.gethostbyname(socket.gethostname()))
+        cls.webserver = Httpd(host=get_lan_ip())
         cls.webserver.start()
 
     @classmethod

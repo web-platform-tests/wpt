@@ -6,24 +6,27 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<form action="dirname-ltr.html" method=get>
+<form action="dirname-ltr-iframe.html" method=get target="iframe">
   <p><label>Comment: <input type=text name="comment" dirname="comment.dir" required></label></p>
   <p><button type=submit>Post Comment</button></p>
 </form>
+<iframe name="iframe" id="iframe" src="dirname-ltr-iframe.html"></iframe>
 <script>
   function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
+    results = regex.exec(document.getElementById("iframe").contentWindow.location.search);
     return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
-  test(function(){
-    if (getParameterByName("comment")) {
+  var t = async_test("submit element directionality");
+  document.querySelector("input").value="foobar";
+  document.querySelector("button").click();
+
+  setTimeout(function(){
+    t.step(function(){
       assert_equals(getParameterByName("comment.dir"), "ltr");
-    } else {
-      document.querySelector("input").value="foobar";
-      document.querySelector("button").click();
-    }
-  });
+      t.done();
+    });
+  }, 1000);
 </script>

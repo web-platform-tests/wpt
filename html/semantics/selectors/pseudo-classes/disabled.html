@@ -32,7 +32,12 @@
   <p><label>Name on card: <input id=clubname required></label></p>
   <p><label>Card number: <input id=clubnum required pattern="[-0-9]+"></label></p>
 </fieldset>
-<span disabled>foobar</span>
+<label disabled></label>
+<object disabled></object>
+<output disabled></output>
+<img disabled/>
+<meter disabled></meter>
+<progress disabled></progress>
 
 <script>
   testSelector(":disabled", ["button2", "input2", "select2", "optgroup2", "option2", "textarea2", "fieldset2", "clubname", "clubnum"], "':disabled' should match only disabled elements");
@@ -45,4 +50,8 @@
 
   document.getElementById("input2").setAttribute("type", "submit"); // change input type to submit
   testSelector(":disabled", ["button1", "input2", "select2", "optgroup2", "option2", "textarea2", "fieldset2", "clubname", "clubnum"], "':disabled' should also match disabled elements whose type has changed");
+
+  var input = document.createElement("input");
+  input.setAttribute("disabled", "disabled");
+  testSelector(":disabled", ["button1", "input2", "select2", "optgroup2", "option2", "textarea2", "fieldset2", "clubname", "clubnum"], "':disabled' should not match elements not in the document");
 </script>

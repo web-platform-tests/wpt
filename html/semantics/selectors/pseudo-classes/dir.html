@@ -24,8 +24,13 @@
 <span dir="ltr" id=span6>HEBREW</span>
 <bdo dir="auto" id=bdo3>HEBREW</bdo>
 <bdo dir="auto" id=bdo4>إيان</bdo>
+<bdo dir="ltr" id=bdo5>עברית</bdo>
 
 <script>
   testSelector(":dir(rtl)", ["bdo1", "bdi2", "span1", "span2", "span4", "span5", "bdo4"], "':dir(rtl)' matches all elements whose directionality is 'rtl'.");
-  testSelector(":dir(ltr)", ["meta", "title", "link1", "link2", "script1", "script2", "script3", "stlyle", "log", "bdo2", "bdi3", "span3", "span6", "bdo3"], "':dir(ltr)' matches all elements whose directionality is 'ltr'.");
+  testSelector(":dir(ltr)", ["html", "head", "body", "meta", "title", "link1", "link2", "script1", "script2", "script3", "stlyle", "log", "bdo2", "bdi3", "span3", "span6", "bdo3", "bdo5"], "':dir(ltr)' matches all elements whose directionality is 'ltr'.");
+
+  var bdo = document.createElement("bdo");
+  bdo.setAttribute("dir", "ltr");
+  testSelector(":dir(ltr)", ["meta", "title", "link1", "link2", "script1", "script2", "script3", "stlyle", "log", "bdo2", "bdi3", "span3", "span6", "bdo3"], "':dir(ltr)' doesn't match elements not in the document.");
 </script>

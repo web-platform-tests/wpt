@@ -29,7 +29,7 @@
   t2 = async_test("Removing open from 'details' should fire a toggle event at the 'details' element"),
   t3 = async_test("Adding open to 'details' (display:none) should fire a toggle event at the 'details' element"),
   t4 = async_test("Adding open from 'details' (no children) should fire a toggle event at the 'details' element"),
-  t6 = async_test("If another task has been queued to run the details notification task steps for this details element, then abort these steps"),
+  t6 = async_test("Calling open twice on 'details' fires only one toggle event"),
   details1 = document.getElementById('details1'),
   details2 = document.getElementById('details2'),
   details3 = document.getElementById('details3'),
@@ -37,39 +37,34 @@
   details6 = document.getElementById('details6'),
   loop=false;
 
-  details1.ontoggle = t1.step_func_done(function(evt) {
-    assert_true(details1.open);
+  function testEvent(evt) {
     assert_true(evt.isTrusted, "event is trusted");
     assert_false(evt.bubbles, "event doesn't bubble");
     assert_false(evt.cancelable, "event is not cancelable");
-    assert_true(evt instanceof Event, "event is an instance of Event interface.");
+    assert_equals(Object.getPrototypeOf(evt), Event.prototype, "Prototype of toggle event is Event.prototype");
+  }
+  
+  details1.ontoggle = t1.step_func_done(function(evt) {
+    assert_true(details1.open);
+    testEvent(evt)
   });
   details1.open = true; // opens details1
 
   details2.ontoggle = t2.step_func_done(function(evt) {
     assert_false(details2.open);
-    assert_true(evt.isTrusted, "event is trusted");
-    assert_false(evt.bubbles, "event doesn't bubble");
-    assert_false(evt.cancelable, "event is not cancelable");
-    assert_true(evt instanceof Event, "event is an instance of Event interface.");
+    testEvent(evt);
   });
   details2.open = false; // closes details2
 
   details3.ontoggle = t3.step_func_done(function(evt) {
     assert_true(details3.open);
-    assert_true(evt.isTrusted, "event is trusted");
-    assert_false(evt.bubbles, "event doesn't bubble");
-    assert_false(evt.cancelable, "event is not cancelable");
-    assert_true(evt instanceof Event, "event is an instance of Event interface.");
+    testEvent(evt);
   });
   details3.open = true; // opens details3
 
   details4.ontoggle = t4.step_func_done(function(evt) {
     assert_true(details4.open);
-    assert_true(evt.isTrusted, "event is trusted");
-    assert_false(evt.bubbles, "event doesn't bubble");
-    assert_false(evt.cancelable, "event is not cancelable");
-    assert_true(evt instanceof Event, "event is an instance of Event interface.");
+    testEvent(evt);
   });
   details4.open = true; // opens details4
 
@@ -77,26 +72,22 @@
     var details5 = document.createElement("details");
     details5.ontoggle = t.step_func_done(function(evt) {
       assert_true(details5.open);
-      assert_true(evt.isTrusted, "event is trusted");
-      assert_false(evt.bubbles, "event doesn't bubble");
-      assert_false(evt.cancelable, "event is not cancelable");
-      assert_true(evt instanceof Event, "event is an instance of Event interface.");
+      testEvent(evt);
     })
     details5.open = true;
   }, "Adding open to 'details' (not in the document) should fire a toggle event at the 'details' element");
 
-
+  details6.open = true;
+  details6.open = false;
   details6.ontoggle = t6.step_func(function() {
     if (loop) {
       assert_unreached("toggle event fired twice");
     } else {
-      assert_true(true);
       loop = true;
     }
   });
   setTimeout(t6.step_func(function() {
-    if(loop) t6.done();
-  }), 3000);
-  details6.open = true;
-  details6.open = false;
+    assert_true(loop);
+    t6.done();
+  }), 0);
 </script>

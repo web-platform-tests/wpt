@@ -360,7 +360,7 @@ Context.prototype.clean = function () {
     this.iframes = [];
 }
 
-Context.prototype.addIFrame = function(iframe){
+Context.prototype.addIFrame = function(iframe) {
     this.iframes.push(iframe)
 }
 
@@ -425,7 +425,7 @@ function checkInvalidName(doc, name) {
 // Helper function to extract character code from given object
 // expected input: either charater code or one character long string.
 function getCharCode(c) {
-    if (typeof(c) === 'string'){
+    if (typeof(c) === 'string') {
         assert_equals(1, c.length, 'Error in test: input string should be one character long');
         c = c.charCodeAt(0);
     }
@@ -437,7 +437,7 @@ function getCharCode(c) {
 // the input array should contain either characters or character codes
 // (mixing is is allowed)
 function testCharCodeArray(doc, charCodeArray, nameFunction, checkFunction) {
-    for (var i = 0; i < charCodeArray.length; i++){
+    for (var i = 0; i < charCodeArray.length; i++) {
         var c = getCharCode(charCodeArray[i]);
         checkFunction(doc, nameFunction(c));
     }
@@ -447,10 +447,10 @@ function testCharCodeArray(doc, charCodeArray, nameFunction, checkFunction) {
 // the input array should contain either characters or character codes
 //(mixing is is allowed)
 function testCharCodeRangesArray(doc, charCodeRangesArray, nameFunction, checkFunction) {
-    for (var i = 0; i < charCodeRangesArray.length; i += 2){
+    for (var i = 0; i < charCodeRangesArray.length; i += 2) {
         var rangeStart = getCharCode(charCodeRangesArray[i]);
         var rangeEnd = getCharCode(charCodeRangesArray[i+1]);
-        for (var c = rangeStart; c <= rangeEnd; c++){
+        for (var c = rangeStart; c <= rangeEnd; c++) {
             checkFunction(doc, nameFunction(c));
         }
     }

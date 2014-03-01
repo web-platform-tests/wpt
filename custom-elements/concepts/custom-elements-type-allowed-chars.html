@@ -20,9 +20,9 @@ function composeName(c) {
 }
 
 // NCName definition from http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
-//        NCName ::= (Letter | '_') (NCNameChar)*
-//    NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
-//        Letter ::= BaseChar | Ideographic
+// NCName ::= (Letter | '_') (NCNameChar)*
+// NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
+// Letter ::= BaseChar | Ideographic
 
 test(function() {
     testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, composeName, checkValidName);

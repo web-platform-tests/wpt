@@ -17,8 +17,7 @@
 test(function() {
     var doc = newHTMLDocument();
     var validNames = ['x-frame', 'xx-frame', 'x--frame', '_-frame', 'x-', 'x--',
-                      'x-1', 'x-_', '_-_', '__-',  '_-1',  '_-..'
-                     ];
+                      'x-1', 'x-_', '_-_', '__-',  '_-1',  '_-..'];
     HTML5_ELEMENTS.forEach(function(value) {
         validNames.push('x-' + value);
         validNames.push('Y-' + value.toUpperCase());
@@ -36,10 +35,8 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var invalidNames = [
-                      'xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame', '1x-frame',
-                      '.-frame', '_frame', 'x-f!rame', 'x-:frame'
-                     ];
+    var invalidNames = ['xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame', '1x-frame',
+                      '.-frame', '_frame', 'x-f!rame', 'x-:frame'];
     invalidNames.forEach(function(value) {
         //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {
@@ -52,16 +49,14 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var forbiddenNames = [
-                        'annotation-xml',
+    var forbiddenNames = ['annotation-xml',
                         'color-profile',
                         'font-face',
                         'font-face-src',
                         'font-face-uri',
                         'font-face-format',
                         'font-face-name',
-                        'missing-glyph'
-                     ];
+                        'missing-glyph'];
     forbiddenNames.forEach(function(value) {
         //FIXME Should the type of the exception be specified here?
         assert_throws(null, function() {

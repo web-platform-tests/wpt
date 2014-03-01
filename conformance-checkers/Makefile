@@ -29,7 +29,7 @@ messages.json: .FORCE
 
 push:
 	cd .. \
-	  && git push $(VNU_TEST_REPO) `git subtree split -P conformance-checkers`:master --force
+	  && git push $(VNU_TEST_REPO) `git subtree split -P conformance-checkers`:master --force \
 	  && cd -
 
 its-push:

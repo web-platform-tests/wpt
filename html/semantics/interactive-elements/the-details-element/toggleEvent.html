@@ -43,7 +43,7 @@
     assert_false(evt.cancelable, "event is not cancelable");
     assert_equals(Object.getPrototypeOf(evt), Event.prototype, "Prototype of toggle event is Event.prototype");
   }
-  
+
   details1.ontoggle = t1.step_func_done(function(evt) {
     assert_true(details1.open);
     testEvent(evt)

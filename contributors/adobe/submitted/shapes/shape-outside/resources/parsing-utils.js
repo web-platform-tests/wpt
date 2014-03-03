@@ -138,6 +138,20 @@ function buildInsetTests(unit1, unit2, testName, invalid) {
     return unique(results);
 }
 
+function buildPolygonTests(unitSet) {
+    var results = new Array();
+    unitSet.forEach(function(set) {
+        validPolygons.forEach(function(test) {
+            var testCase = [];
+            testCase.push(setUnit(test[0], set[0], set[1], set[2]));
+            testCase.push('polygon(' + setUnit(test[1], set[0], set[1], set[2]) +')');
+            testCase.push('polygon(nonzero, ' + setUnit(test[1], set[0], set[1], set[2]) +')');
+            results.push(testCase);
+        });
+    });
+    return unique(results);
+}
+
 function unique(tests) {
     var list = tests.concat();
     for(var i = 0; i< list.length; ++i) {
@@ -149,11 +163,13 @@ function unique(tests) {
     return list;
 }
 
-function setUnit(str, unit1, unit2) {
+function setUnit(str, unit1, unit2, unit3) {
     if(arguments.length == 2)
         return str.replace(new RegExp("u1", 'g'), unit1);
-    else
+    else if(arguments.length == 3)
         return str.replace(new RegExp("u1", 'g'), unit1).replace(new RegExp("u2", 'g'), unit2);
+    else
+        return str.replace(new RegExp("u1", 'g'), unit1).replace(new RegExp("u2", 'g'), unit2).replace(new RegExp("u3", 'g'), unit3);
 }
 
 function generateInsetRoundCases(units) {
@@ -528,7 +544,7 @@ var validRadii = [
     'farthest-side closest-side'
 ]
 
- var validInsets = [
+var validInsets = [
     ["One arg - u1", "10u1"],
     ["One arg - u2", "10u2"],
     ["Two args - u1 u1", "10u1 20u1"],
@@ -561,6 +577,20 @@ var validRadii = [
     ["Four args - u2 u2 u2 u2", "10u2 20u2 30u2 40u2"]
 ]
 
+var validPolygons = [
+    ["One vertex - u1 u1", "10u1 20u1"],
+    ["One vertex - u1 u2", "10u1 20u2"],
+    ["Two vertices - u1 u1, u1 u1", "10u1 20u1, 30u1 40u1"],
+    ["Two vertices - u1 u1, u2 u2", "10u1 20u1, 30u2 40u2"],
+    ["Two vertices - u2 u2, u1 u1", "10u2 20u2, 30u1 40u1"],
+    ["Two vertices - u1 u2, u2 u1", "10u1 20u2, 30u2 40u1"],
+    ["Three vertices - u1 u1, u1 u1, u1 u1", "10u1 20u1, 30u1 40u1, 50u1 60u1"],
+    ["Three vertices - u2 u2, u2 u2, u2 u2", "10u2 20u2, 30u2 40u2, 50u2 60u2"],
+    ["Three vertices - u3 u3, u3 u3, u3 u3", "10u3 20u3, 30u3 40u3, 50u3 60u3"],
+    ["Three vertices - u1 u1, u2 u2, u3 u3", "10u1 20u1, 30u2 40u2, 50u3 60u3"],
+    ["Three vertices - u3 u3, u1, u1, u2 u2", "10u3 20u3, 30u1 40u1, 50u2 60u2"],
+]
+
 return {
     testInlineStyle: testInlineStyle,
     testComputedStyle: testComputedStyle,
@@ -568,6 +598,7 @@ return {
     buildRadiiTests: buildRadiiTests,
     buildPositionTests: buildPositionTests,
     buildInsetTests: buildInsetTests,
+    buildPolygonTests: buildPolygonTests,
     generateInsetRoundCases: generateInsetRoundCases,
     validUnits: validUnits
 }

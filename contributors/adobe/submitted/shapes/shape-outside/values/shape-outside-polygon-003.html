@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Polygon Invalid Points</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-polygon">
+        <meta name="assert" content="A polygonal basic shape's points may be either lengths or percentages">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            generate_tests(ParsingUtils.testInlineStyle, 
+                           ParsingUtils.buildTestCases(['polygon()',
+                                                        'polygon(evenodd)', 
+                                                        'polygon(nonzero)',
+                                                        'polygon(evenodd, foo bar)', 
+                                                        'polygon(nonzero, bar foo)',
+                                                        'polygon(foo, 1px 2px)',
+                                                        'polygon(evenodd 1px 2px)',
+                                                        'polygon(nonzero 1px 2px)',
+                                                        'polygon(1px)',
+                                                        'polygon(1px 2px 3px)',
+                                                        'polygon(1px 2px 3px 4px)',
+                                                        'polygon(1px, 2px)',
+                                                        'polygon(1px 2px evenodd)',
+                                                        'polygon(1px 2px nonzero)',
+                                                        'polygon(evenodd, 10 20)',
+                                                        'polygon(nonzero, 10 20)'                                                        
+                                                        ], 0, true)
+            );
+        </script>
+    </body>
+</html>

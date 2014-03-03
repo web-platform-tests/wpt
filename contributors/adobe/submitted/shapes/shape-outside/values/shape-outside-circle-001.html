@@ -15,12 +15,12 @@
         <div id="log"></div>
         <script type="text/javascript">
             generate_tests(
-                ParsingUtils.testInlineStyle
-                , ParsingUtils.valuesAsArrays([
-                "circle(closest-side)",
-                "circle(farthest-side)",
-                "circle(50px)",
-                "circle(50%)" ], 2)
+                ParsingUtils.testInlineStyle,
+                ParsingUtils.buildTestCases([
+                    "circle(closest-side)",
+                    "circle(farthest-side)",
+                    "circle(50px)",
+                    "circle(50%)"], "valid" )
             );
         </script>
     </body>

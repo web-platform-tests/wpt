@@ -14,10 +14,12 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, [
-                ["Nonzero", "polygon(nonzero, 1px 2px)"],
-                ["Evenodd", "polygon(evenodd, 1px 2px)"]
-            ]);
+            generate_tests(
+                ParsingUtils.testInlineStyle,
+                ParsingUtils.buildTestCases([
+                    ["Nonzero", "polygon(nonzero, 1px 2px)"],
+                    ["Evenodd", "polygon(evenodd, 1px 2px)"]], "valid", 1)
+            );
         </script>
     </body>
 </html>

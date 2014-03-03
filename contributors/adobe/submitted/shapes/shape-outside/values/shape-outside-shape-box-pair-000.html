@@ -16,16 +16,21 @@
         <script type="text/javascript">
             generate_tests(
                 ParsingUtils.testInlineStyle
-                , ParsingUtils.valuesAsArrays([
-                "content-box polygon(nonzero, 1px 1px)",
-                "padding-box polygon(nonzero, 1px 1px)",
-                "border-box polygon(nonzero, 1px 1px)",
-                "margin-box polygon(nonzero, 1px 1px)",
-                "polygon(nonzero, 1px 1px) content-box",
-                "polygon(nonzero, 1px 1px) padding-box",
-                "polygon(nonzero, 1px 1px) border-box",
-                "polygon(nonzero, 1px 1px) margin-box"
-                ], 2)
+                , ParsingUtils.buildTestCases([
+                    "polygon(nonzero, 1px 1px) content-box",
+                    "polygon(nonzero, 1px 1px) padding-box",
+                    "polygon(nonzero, 1px 1px) border-box",
+                    "polygon(nonzero, 1px 1px) margin-box"
+                ], "valid")
+            );
+            generate_tests(
+                ParsingUtils.testInlineStyle
+                , ParsingUtils.buildTestCases([
+                    ["content-box polygon(nonzero, 2px 2px)", "polygon(nonzero, 2px 2px) content-box"],
+                    ["padding-box polygon(nonzero, 2px 2px)", "polygon(nonzero, 2px 2px) padding-box"],
+                    ["border-box polygon(nonzero, 2px 2px)", "polygon(nonzero, 2px 2px) border-box"],
+                    ["margin-box polygon(nonzero, 2px 2px)", "polygon(nonzero, 2px 2px) margin-box"]
+                ], "valid", 0)
             );
         </script>
     </body>

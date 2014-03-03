@@ -107,28 +107,20 @@ enum ReadyState {
 </script>
 <script>
 "use strict";
+try {
 var idlArray = new IdlArray();
-var mediaSource = new MediaSource();
+var mediaSource;
 var sourceBuffer;
 var sourceBufferList;
 var video = document.createElement("video");
 var videoPlaybackQuality;
+test(function() {assert_true(typeof MediaSource != "undefined")},
+   'typeof MediaSource != "undefined"');
+mediaSource = new MediaSource();
 if ("getVideoPlaybackQuality" in HTMLVideoElement.prototype) {
   videoPlaybackQuality = video.getVideoPlaybackQuality();
 }
 video.src = URL.createObjectURL(mediaSource);
-function fetch(src, cb) {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", src, true);
-  xhr.responseType = "blob";
-  xhr.addEventListener("load", function (e) {
-    if (xhr.status != 200) {
-      return false;
-    }
-    cb(xhr.response);
-  });
-  xhr.send();
-};
 mediaSource.addEventListener("sourceopen", function () {
   var videoUri = "/resources/media/sunflower.webm"
   var defaultType ='video/webm;codecs="vp8,vorbis"';
@@ -145,8 +137,13 @@ mediaSource.addEventListener("sourceopen", function () {
     var r = new FileReader();
     r.addEventListener("load", function (e) {
       sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
-      mediaSource.endOfStream();
-      video.play();
+      sourceBuffer.addEventListener("updateend", function (e) {
+        try {
+          mediaSource.endOfStream();
+          video.play();
+        } catch(InvalidStateError) {
+        }
+      });
     });
     r.readAsArrayBuffer(blob);
   });
@@ -165,4 +162,19 @@ mediaSource.addEventListener("sourceopen", function () {
   });
   idlArray.test();
 });
+} catch(e) {
+  console.dir(e);
+}
+function fetch(src, cb) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", src, true);
+  xhr.responseType = "blob";
+  xhr.addEventListener("load", function (e) {
+    if (xhr.status != 200) {
+      return false;
+    }
+    cb(xhr.response);
+  });
+  xhr.send();
+};
 </script>

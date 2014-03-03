@@ -1,14 +1,14 @@
 ﻿<!doctype html>
 <html>
     <head>
-        <title>Pointer Event: Dispatch pointerLeave (touch). </title>
+        <title>Pointer Event: Dispatch pointerleave (touch). </title>
         <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/"/>
         <meta name="assert" content="When a pointing device that does not support hover (such as a finger) leaves the hit test boundaries as a result of a pointerup event, the pointerleave event must be dispatched. "/>
-		<link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
+        <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <!-- http://w3c-test.org/resources/testharness.js -->
-	    <script src="http://w3c-test.org/resources/testharness.js"></script>
-		<!-- Additional helper script for common checks across event types -->
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script type="text/javascript">
             var detected_pointertypes = {};
@@ -17,10 +17,10 @@
             // Requirements: the callbakc function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
-
+            
             function run() {
                 var target0 = document.getElementById("target0");
-
+            
                 on_event(target0, "pointerleave", function (event) {
                     check_PointerEvent(event);
                     test_pointerEvent.step(function () {

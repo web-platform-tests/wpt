@@ -7,10 +7,10 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/"/>
         <link rel="help" href="http://www.w3.org/wiki/PointerEvents/TestAssertions">
         <meta name="assert" content="When the releasePointerCapture method is invoked, if the provided pointerId value does not match any of the active pointers, a DOMException with the name InvalidPointerId must be thrown."/>
-		<link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
+        <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <!-- http://w3c-test.org/resources/testharness.js -->
-	    <script src="http://w3c-test.org/resources/testharness.js"></script>
-		<!-- Additional helper script for common checks across event types -->
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script type="text/javascript">
             var detected_pointertypes = {};
@@ -19,22 +19,22 @@
             // Requirements: the callbakc function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
-
+            
             var invalid_pointerId = 314159265358973923;
-
+            
             function run() {
-
+            
                 var target0 = document.getElementById("target0");
                 target0.style["touchAction"] = "none";
                 var listener = document.getElementById("complete-notice");
-
+            
                 // try to release pointer capture with an invalid id
                 on_event(listener, "pointermove", function (event) {
                     detected_pointertypes[event.pointerType] = true;
                     
                     try {
                         listener.releasePointerCapture(invalid_pointerId);
-
+            
                         test_pointerEvent.step(function () {
                             assert_true(false, "DOMException not thrown. Expected: InvalidPointerId should have been thrown");
                         });
@@ -45,7 +45,7 @@
                     }
                     test_pointerEvent.done(); // complete test
                 });
-
+            
                 // set pointer capture
                 on_event(target0, "pointerdown", function (event) {
                     detected_pointertypes[event.pointerType] = true;

@@ -5,9 +5,9 @@
         <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/"/>
         <meta name="assert" content="After invoking the releasePointerCapture method on an element, subsequent events for the specified pointer must follow normal hit testing mechanisms for determining the event target"/>
-		<link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
-	    <script src="http://w3c-test.org/resources/testharness.js"></script>
-		<!-- Additional helper script for common checks across event types -->
+        <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
+        <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script type="text/javascript">
             var detected_pointertypes = {};
@@ -16,13 +16,13 @@
             // Requirements: the callbakc function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
-
+            
             var captured_event;
             var f_gotPointerCapture = false;
             var f_lostPointerCapture = false;
-
+            
             function listenerEventHandler(event) {
-
+            
                 if (event.type == "gotpointercapture") {
                     f_gotPointerCapture = true;
                     check_PointerEvent(event);
@@ -32,7 +32,7 @@
                     f_gotPointerCapture = false;
                     check_PointerEvent(event);
                 }
-
+            
                 if (event.pointerId == captured_event.pointerId && event.type !== "lostpointercapture" && event.type !== "gotpointercapture") {
                     if (f_gotPointerCapture) {
                         // on first event received for capture, release capture
@@ -46,7 +46,7 @@
                     }
                 }
             }
-
+            
             function targetEventHandler(event) {
                 
                 if (event.type == "pointerdown") {
@@ -54,7 +54,7 @@
                     listener.setPointerCapture(event.pointerId);
                     captured_event = event;
                 }
-
+            
                 if (f_gotPointerCapture) {
                     if (event.type != "pointerout" && event.type != "pointerleave") {
                         test_pointerEvent.step(function () {
@@ -71,19 +71,19 @@
                     }
                 }
             }
-
+            
             function run() {
                 var listener = document.getElementById("listener");
                 var target0 = document.getElementById("target0");
                 target0.style["touchAction"] = "none";
-
+            
                 // target0 and listener - handle all events               
                 for (var i = 0; i < All_Pointer_Events.length; i++) {
                     on_event(target0, All_Pointer_Events[i], targetEventHandler);
                     on_event(listener, All_Pointer_Events[i], listenerEventHandler);
                 }
             }
-
+            
             function showPointerTypes() {
                 var complete_notice = document.getElementById("complete-notice");
                 var pointertype_log = document.getElementById("pointertype-log");
@@ -109,13 +109,11 @@
         <div id="target0">
             Use mouse, touch or pen to contact here and move around.
         </div>
-        
         <div id="complete-notice">
             <p>Test complete:  Scroll to Summary to view Pass/Fail Results.</p>
             <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
             <p>Refresh the page to run the tests again with a different pointer type.</p>
         </div>
-
         <div id="log"></div>
     </body>
 </html>

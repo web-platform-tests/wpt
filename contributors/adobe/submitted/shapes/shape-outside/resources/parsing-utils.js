@@ -212,7 +212,7 @@ var validPositions = [
     ["right 80u1", "100% 80u1"],
 
     ["70% bottom", "70% 100%"],
-    ["70u1 bottom", "70px 100%"],
+    ["70u1 bottom", "70u1 100%"],
 
     ["center 60%", "50% 60%"],
     ["center 60u1", "50% 60u1"],
@@ -235,7 +235,7 @@ var validPositions = [
     ["left bottom 70u1", "left 0% bottom 70u1"],
 
     ["top left 50%", "50% 0%"],
-    ["top left 50u1", "left 50u1 top 0%"],
+    ["top left 50u1", "50u1 0%"],
     ["top right 70%", "30% 0%"],
     ["top right 70u1", "right 70u1 top 0%"],
 
@@ -247,7 +247,7 @@ var validPositions = [
     ["right bottom 70%", "100% 30%"],
     ["right bottom 70u1", "left 100% bottom 70u1"],
     ["right top 50%", "100% 50%"],
-    ["right top 50u1", "left 100% top 50u1"],
+    ["right top 50u1", "100% 50u1"],
 
 ////// [ keyword percent | keyword], [ keyword length | keyword ] x 5 keywords
     ["left 50% center", "50% 50%"],
@@ -262,7 +262,7 @@ var validPositions = [
     ["top 50% left", "0% 50%"],
     ["top 50u1 left", "left 0% top 50u1"],
     ["top 50% right", "100% 50%"],
-    ["top 50u1 right", "left 100% top 50u1"],
+    ["top 50u1 right", "100% 50u1"],
 
     ["bottom 70% center", "50% 30%"],
     ["bottom 70u1 center", "left 50% bottom 70u1"],

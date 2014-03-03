@@ -107,46 +107,11 @@ enum ReadyState {
 </script>
 <script>
 "use strict";
-try {
-var idlArray = new IdlArray();
 var mediaSource;
 var sourceBuffer;
-var sourceBufferList;
 var video = document.createElement("video");
-var videoPlaybackQuality;
-test(function() {assert_true(typeof MediaSource != "undefined")},
-   'typeof MediaSource != "undefined"');
-mediaSource = new MediaSource();
-if ("getVideoPlaybackQuality" in HTMLVideoElement.prototype) {
-  videoPlaybackQuality = video.getVideoPlaybackQuality();
-}
-video.src = URL.createObjectURL(mediaSource);
-mediaSource.addEventListener("sourceopen", function () {
-  var videoUri = "/resources/media/sunflower.webm"
-  var defaultType ='video/webm;codecs="vp8,vorbis"';
-  var checkVideo = document.createElement("video");
-  if (checkVideo.canPlayType &&
-    checkVideo.canPlayType(defaultType)) {
-    sourceBuffer = mediaSource.addSourceBuffer(defaultType);
-  } else {
-    videoUri = "/media/A4.mp4"
-    sourceBuffer = mediaSource.addSourceBuffer('video/mp4');
-  }
-  sourceBufferList = mediaSource.sourceBuffers;
-  fetch(videoUri, function (blob) {
-    var r = new FileReader();
-    r.addEventListener("load", function (e) {
-      sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
-      sourceBuffer.addEventListener("updateend", function (e) {
-        try {
-          mediaSource.endOfStream();
-          video.play();
-        } catch(InvalidStateError) {
-        }
-      });
-    });
-    r.readAsArrayBuffer(blob);
-  });
+var idlCheck = function() {
+  var idlArray = new IdlArray();
   [].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
     if (node.className == "untested") {
       idlArray.add_untested_idls(node.textContent);
@@ -157,24 +122,25 @@ mediaSource.addEventListener("sourceopen", function () {
   idlArray.add_objects({
     MediaSource: ['mediaSource'],
     SourceBuffer: ['sourceBuffer'],
-    SourceBufferList: ['sourceBufferList'],
-    VideoPlaybackQuality: ['videoPlaybackQuality'],
+    SourceBufferList: ['mediaSource.sourceBuffers'],
+    VideoPlaybackQuality: ['video.getVideoPlaybackQuality()'],
   });
   idlArray.test();
-});
-} catch(e) {
-  console.dir(e);
 }
-function fetch(src, cb) {
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", src, true);
-  xhr.responseType = "blob";
-  xhr.addEventListener("load", function (e) {
-    if (xhr.status != 200) {
-      return false;
-    }
-    cb(xhr.response);
+mediaSource = new MediaSource();
+video.src = URL.createObjectURL(mediaSource);
+mediaSource.addEventListener("sourceopen", function () {
+  var defaultType ='video/webm;codecs="vp8,vorbis"';
+  if (video.canPlayType && video.canPlayType(defaultType)) {
+    sourceBuffer = mediaSource.addSourceBuffer(defaultType);
+  } else {
+    sourceBuffer = mediaSource.addSourceBuffer('video/mp4');
+  }
+  sourceBuffer.addEventListener("updateend", function (e) {
+    mediaSource.endOfStream();
+    video.play();
+    idlCheck();
   });
-  xhr.send();
-};
+  sourceBuffer.appendBuffer(new ArrayBuffer());
+});
 </script>

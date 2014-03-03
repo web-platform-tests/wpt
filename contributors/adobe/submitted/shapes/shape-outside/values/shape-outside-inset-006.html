@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Inset Radial Args - positive/negative, decimal/non-decimal</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-inset">
+        <meta name="assert" content="These tests verify that shape-outside inset() radial component can be numbers that are in 
+                                     signed positive and/or decimal/non-decimal form. Negative values are not allowed">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            generate_tests(
+                ParsingUtils.testInlineStyle,
+                ParsingUtils.buildTestCases([
+                   ['inset(10px round +10px +20px +30px +40px)', 'inset(10px round 10px 20px 30px 40px)'],
+                   ['inset(10px round 10.1200px 20.34px 30.56px 40.780px)', 'inset(10px round 10.12px 20.34px 30.56px 40.78px)'],
+                   ['inset(10px round 10.123px 20.00px 30.10px 40.5678px)', 'inset(10px round 10.123px 20px 30.1px 40.5678px)'],
+                   ['inset(10px round +10.1200px +20.340px +30.56px +40.780px)', 'inset(10px round 10.12px 20.34px 30.56px 40.78px)'],
+                   ['inset(10px round +10px +20px +30px +40px / +10px +20px +30px +40px )', 'inset(10px round 10px 20px 30px 40px / 10px 20px 30px 40px)'],
+                   ['inset(10px round 10.1200px 20.34px 30.56px 40.780px / 10.1200px 20.34px 30.56px 40.780px)', 'inset(10px round 10.12px 20.34px 30.56px 40.78px / 10.12px 20.34px 30.56px 40.78px)'],
+                   ['inset(10px round 10.123px 20.00px 30.10px 40.5678px / 10.123px 20.00px 30.10px 40.5678px)', 'inset(10px round 10.123px 20px 30.1px 40.5678px / 10.123px 20px 30.1px 40.5678px)'],
+                   ['inset(10px round +10.1200px +20.340px +30.56px +40.780px / +10.1200px +20.340px +30.56px +40.780px)', 'inset(10px round 10.12px 20.34px 30.56px 40.78px / 10.12px 20.34px 30.56px 40.78px)'],
+                   ['inset(10px round +10.123px +20.00px +30.10px +40.5678px / 10.123px +20.00px +30.10px +40.5678px)', 'inset(10px round 10.123px 20px 30.1px 40.5678px / 10.123px 20px 30.1px 40.5678px)']
+                ], 0)
+            );
+            // Invalid tests
+            generate_tests(
+                ParsingUtils.testInlineStyle,
+                ParsingUtils.buildTestCases([
+                    'inset(10px round -10px -20px -30px -40px)',
+                    'inset(10px round -10.1200px -20.340px -30.56px -40.780px)',
+                    'inset(10px round -10px -20px -30px -40px / -10px -20px -30px -40px )',
+                    'inset(10px round -10.123px -20.00px -30.10px -40.5678px / 10.123px -20.00px -30.10px -40.5678px)'], 0, true)
+            );
+        </script>
+    </body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Circle Radii - positive/negative, decimal/non-decimal</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-circle">
+        <meta name="assert" content="A circle's radius may be in signed positive or decimal/non-decimal format. Negative
+                                     radii are invalid.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            // valid
+            generate_tests(ParsingUtils.testInlineStyle, 
+                           ParsingUtils.buildTestCases([
+                           ['circle(+10px)', 'circle(10px)'],
+                           ['circle(+10.00px)', 'circle(10px)'],
+                           ['circle(+20.340px)', 'circle(20.34px)'],
+                           ['circle(+30.5px)', 'circle(30.5px)'],
+                           ['circle(+10%)', 'circle(10%)'],
+                           ['circle(+10.00%)', 'circle(10%)'],
+                           ['circle(+20.340%)', 'circle(20.34%)'],
+                           ['circle(+30.5%)', 'circle(30.5%)']
+                        ], 0)
+            );
+            // invalid
+            generate_tests(ParsingUtils.testInlineStyle, 
+                           ParsingUtils.buildTestCases(['circle(-20px)', 'circle(-20.340px)'], 0, true));
+
+        </script>
+    </body>
+</html>

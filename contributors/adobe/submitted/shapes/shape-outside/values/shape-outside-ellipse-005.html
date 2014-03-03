@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Shape Outside Ellipse - Position Length Units</title>
+        <title>Shape Outside Ellipse Valid Radii - length units</title>
         <link rel="author" title="Adobe" href="http://html.adobe.com/">
         <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
         <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
-        <link rel="help" href="http://www.w3.org/TR/css3-values/#lengths">
-        <meta name="assert" content="An ellipse's position arguments may in any valid <length> unit allowed by a <position> value.">
-        <meta name="flags" content="dom">
+        <meta name="assert" content="An ellipse's radii may be in any valid length unit.">
+        <meta name="flags" content="DOM">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="../resources/parsing-utils.js"></script>
@@ -15,7 +14,7 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests( ParsingUtils.testInlineStyle, ParsingUtils.buildPositionTests("ellipse", true, ParsingUtils.validUnits) );
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildRadiiTests('ellipse', ParsingUtils.validUnits));
         </script>
     </body>
 </html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Ellipse Radii - positive/negative, decimal/non-decimal</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
+        <meta name="assert" content="An ellipse's radii may be in signed positive or decimal/non-decimal format. Negative
+                                     radii are invalid.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            // valid
+            generate_tests(ParsingUtils.testInlineStyle, 
+                           ParsingUtils.buildTestCases([
+                           ['ellipse(+10px +20px)', 'ellipse(10px 20px)'],
+                           ['ellipse(+30px 40px)', 'ellipse(30px 40px)'],
+                           ['ellipse(50px +60px)', 'ellipse(50px 60px)'],
+                           ['ellipse(+10.00px +20.230px)', 'ellipse(10px 20.23px)'],
+                           ['ellipse(+30.00px 40.567px)', 'ellipse(30px 40.567px)'],
+                           ['ellipse(50.10px +60.7px)', 'ellipse(50.1px 60.7px)'],
+                           ['ellipse(+10% +20%)', 'ellipse(10% 20%)'],
+                           ['ellipse(+30% 40%)', 'ellipse(30% 40%)'],
+                           ['ellipse(50% +60%)', 'ellipse(50% 60%)'],
+                           ['ellipse(+10.00% +20.230%)', 'ellipse(10% 20.23%)'],
+                           ['ellipse(+30.00% 40.567%)', 'ellipse(30% 40.567%)'],
+                           ['ellipse(50.10% +60.7%)', 'ellipse(50.1% 60.7%)']
+                        ], 0)
+            );
+            // invalid
+            generate_tests(ParsingUtils.testInlineStyle, 
+                           ParsingUtils.buildTestCases(['ellipse(-10px -20px)',
+                                                        'ellipse(-30px 40px)', 
+                                                        'ellipse(50px -60px)'], 0, true)
+            );
+
+        </script>
+    </body>
+</html>

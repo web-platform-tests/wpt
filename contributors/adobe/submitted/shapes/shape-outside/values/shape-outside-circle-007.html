@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Circle Radii - invalid args</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-circle">
+        <meta name="assert" content="This test verifies that invalid shape-radius arguments on circle() don't parse.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            generate_tests(ParsingUtils.testInlineStyle, 
+                           ParsingUtils.buildTestCases([
+                           'circle(foo)',
+                           'circle(10)',
+                           'circle(20px 30px)',
+                           'circle(20% 30%)',
+                           'circle(20px, 30px)',
+                           'circle(20%, 30%)',
+                           'circle(20px closest-side)',
+                           'circle(20px farthest-side)',
+                           'circle(closest-side 20px)',
+                           'circle(farthest-side 20px)',
+                           'circle(20% closest-side)',
+                           'circle(20% farthest-side)',
+                           'circle(closest-side 20%)',
+                           'circle(farthest-side 20%)',
+                           'circle(closest-side farthest-side)',
+                           'circle(farthest-side closest-side)',
+                           'circle(farthest-side, closest-side)'
+                        ], 0, true)
+            );
+        </script>
+    </body>
+</html>

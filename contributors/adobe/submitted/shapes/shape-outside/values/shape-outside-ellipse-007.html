@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Ellipse Radii - invalid args</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
+        <meta name="assert" content="This test verifies that invalid shape-radius arguments on ellipse() don't parse.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+            generate_tests(ParsingUtils.testInlineStyle, 
+                           ParsingUtils.buildTestCases([
+                           'ellipse(foo)',
+                           'ellipse(10)',
+                           'ellipse(20px 30px 40px)',
+                           'ellipse(20% 30% 40%)',
+                           'ellipse(20px, 30px)',
+                           'ellipse(20%, 30%)',
+                           'ellipse(20px, 30px, 40px)',
+                           'ellipse(20%, 30%, 40%)',
+                           'ellipse(20px 30px closest-side)',
+                           'ellipse(20px 30px farthest-side)',
+                           'ellipse(closest-side 20px 30px)',
+                           'ellipse(farthest-side 20px 30px)',
+                           'ellipse(20% 30% closest-side)',
+                           'ellipse(20% 30% farthest-side)',
+                           'ellipse(closest-side 20% 30%)',
+                           'ellipse(farthest-side 20% 30%)',
+                           'ellipse(closest-side farthest-side 20px)',
+                           'ellipse(closest-side farthest-side 20%)',
+                           'ellipse(farthest-side closest-side closest-side)',
+                           'ellipse(farthest-side, closest-side, closest-side)'
+                        ], 0, true)
+            );
+        </script>
+    </body>
+</html>

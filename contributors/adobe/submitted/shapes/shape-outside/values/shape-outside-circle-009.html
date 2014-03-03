@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shape Outside Circle Position Arguments - positive/negative, decimal/non-decimal</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Rebecca Hauck" href="mailto:rhauck@adobe.com">
+        <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-circle">
+        <meta name="assert" content="A circle's position arguments may be in signed positive/negative or
+                                     decimal/non-decimal format.">
+        <meta name="flags" content="DOM">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="../resources/parsing-utils.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+         <script type="text/javascript">
+                generate_tests(ParsingUtils.testInlineStyle, 
+                               ParsingUtils.buildTestCases([
+                               ['circle(at +50px)', 'circle(at 50px 50%)'],
+                               ['circle(at -50px)', 'circle(at -50px 50%)'],
+                               ['circle(at +50%)', 'circle(at 50% 50%)'],
+                               ['circle(at -50%)', 'circle(at -50% 50%)'],
+                               ['circle(at left +50px)', 'circle(at 0% 50px)'],
+                               ['circle(at left +50%)', 'circle(at 0% 50%)'],
+                               ['circle(at right -50px)', 'circle(at 100% -50px)'],
+                               ['circle(at right -50%)', 'circle(at 100% -50%)'],
+                               ['circle(at +50px top)', 'circle(at 50px 0%)'],
+                               ['circle(at +50% top)', 'circle(at 50% 0%)'],
+                               ['circle(at -50px bottom)', 'circle(at -50px 100%)'],
+                               ['circle(at -50% bottom)', 'circle(at -50% 100%)'],
+                               ['circle(at +50px +50px)', 'circle(at 50px 50px)'],
+                               ['circle(at +50% +50%)', 'circle(at 50% 50%)'],
+                               ['circle(at -50px -50px)', 'circle(at -50px -50px)'],
+                               ['circle(at +50px -50px)', 'circle(at 50px -50px)'],
+                               ['circle(at -50px +50px)', 'circle(at -50px 50px)'],
+                               ['circle(at +50% -50%)', 'circle(at 50% -50%)'],
+                               ['circle(at -50% +50%)', 'circle(at -50% 50%)']
+                            ], 0)
+                );
+            </script>
+    </body>
+</html>

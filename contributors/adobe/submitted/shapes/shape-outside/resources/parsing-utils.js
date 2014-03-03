@@ -16,7 +16,7 @@ function testComputedStyle(value, expected) {
     assert_equals(actual, typeof expected !== 'undefined' ? expected : value);
 }
 
-function buildTestCases(testCases, type, testValueIdx) {
+function buildTestCases(testCases, testValueIdx, invalid) {
     var results = [];
     testCases.forEach(function(test) {
         if(Object.prototype.toString.call( test ) === '[object Array]') {
@@ -24,7 +24,7 @@ function buildTestCases(testCases, type, testValueIdx) {
                 testValue = test[testValueIdx];
                 if(testValueIdx == 0)
                     // use the test case as the test name
-                    test.unshift(testValue);
+                    test.unshift(testValue += invalid ? ' is invalid': ' is valid');
                 else
                     // otherwise, assume the expected is the actual
                     test.push(testValue);
@@ -32,8 +32,8 @@ function buildTestCases(testCases, type, testValueIdx) {
             results.push(test);
         } else {
             var testCase = Array.apply(null, Array(2)).map(String.prototype.valueOf, test);
-            if(type == "invalid")
-                // Invalid expected result is null
+            testCase[0] += invalid ? ' is invalid': ' is valid';
+            if(invalid)
                 testCase.push(null);
             else
                 // Valid expected result is the value
@@ -45,12 +45,12 @@ function buildTestCases(testCases, type, testValueIdx) {
     return results;
 }
 
-function buildEllipsoidTests(shape, valid, units, type) {
+function buildPositionTests(shape, valid, units, type) {
     var results = new Array();
     if(Object.prototype.toString.call( units ) === '[object Array]') {
         units.forEach(function(unit) {
-            ellipsoidTests = buildEllipsoidTests(shape, valid, unit, "lengthUnit");
-            results = results.concat(ellipsoidTests);
+            positionTests = buildPositionTests(shape, valid, unit, "lengthUnit");
+            results = results.concat(positionTests);
         });
     } else {
         if (valid) {
@@ -84,7 +84,37 @@ function buildEllipsoidTests(shape, valid, units, type) {
     return unique(results);
 }
 
-function buildInsetTests(unit1, unit2) {
+function buildRadiiTests(shape, units, type) {
+    var results = new Array();
+    testUnits = typeof units == 'undefined' ? 'px': units
+    if(Object.prototype.toString.call( testUnits ) === '[object Array]') {
+           testUnits.forEach(function(unit) {
+               radiiTests = buildRadiiTests(shape, unit, "lengthUnit");
+               results = results.concat(radiiTests);
+           });
+    } else {
+        validRadii.forEach(function(test) {
+            var testCase = [], testName, actual, expected;
+            if(shape == 'circle' && test.split(' ').length == 1 || shape == 'ellipse')
+            {
+                // skip if this isn't explicitly testing length units
+                if( !(type == 'lengthUnit' && test.indexOf("u1") == -1)) {
+                    testValue = shape + '(' + setUnit(test, testUnits) +')';
+                    if (type == "lengthUnit")
+                        testCase.push('test unit: ' + units +' - '+ testValue);
+                    else
+                        testCase.push(testValue + ' - is valid ');
+                    testCase.push(testValue);
+                    testCase.push(testValue); // expected should be the actual
+                    results.push(testCase);
+                }
+            }
+        });
+    }
+    return unique(results);
+}
+
+function buildInsetTests(unit1, unit2, testName, invalid) {
     var results = new Array();
     if(Object.prototype.toString.call( unit1 ) === '[object Array]') {
         unit1.forEach(function(unit) {
@@ -95,7 +125,13 @@ function buildInsetTests(unit1, unit2) {
         validInsets.forEach(function(test) {
             var testValue = 'inset(' + setUnit(test[1], unit1, unit2) +')';
             testCase = Array.apply(null, Array(2)).map(String.prototype.valueOf, testValue);
-            testCase.unshift(setUnit(test[0], unit1, unit2));
+            if(testName == 0)
+                testCase.unshift(setUnit(test[0], unit1, unit2));
+            else
+                testCase.unshift(testValue += invalid ? ' is invalid': ' is valid');
+
+            if(invalid)
+                testCase[2] = null;
             results.push(testCase);
         });
     }
@@ -465,6 +501,32 @@ var invalidPositions = [
     "right 80px right 85px"
 ];
 
+var validRadii = [
+    // circle + ellipse
+    '',
+    '50u1',
+    '50%',
+    'closest-side',
+    'farthest-side',
+    // ellipse only
+    '50u1 100u1',
+    '100u1 100px',
+    '25% 50%',
+    '50u1 25%',
+    '25% 50u1',
+    '25% closest-side',
+    '25u1 closest-side',
+    'closest-side 75%',
+    'closest-side 75u1',
+    '25% farthest-side',
+    '25u1 farthest-side',
+    'farthest-side 75%',
+    'farthest-side 75u1',
+    'closest-side closest-side',
+    'farthest-side farthest-side',
+    'closest-side farthest-side',
+    'farthest-side closest-side'
+]
 
  var validInsets = [
     ["One arg - u1", "10u1"],
@@ -503,7 +565,8 @@ return {
     testInlineStyle: testInlineStyle,
     testComputedStyle: testComputedStyle,
     buildTestCases: buildTestCases,
-    buildEllipsoidTests: buildEllipsoidTests,
+    buildRadiiTests: buildRadiiTests,
+    buildPositionTests: buildPositionTests,
     buildInsetTests: buildInsetTests,
     generateInsetRoundCases: generateInsetRoundCases,
     validUnits: validUnits

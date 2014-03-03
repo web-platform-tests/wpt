@@ -17,8 +17,11 @@ async_test(function(t) {
     var events = [];
     v.onseeking = v.ontimeupdate = v.onseeked = t.step_func(function(e) {
       events.push(e.type);
-      // reliable if https://www.w3.org/Bugs/Public/show_bug.cgi?id=24774 is fixed
-      assert_equals(v.seeking, e.type == 'seeking');
+      // v.seeking can be true or false in the seeking event, see
+      // https://www.w3.org/Bugs/Public/show_bug.cgi?id=24774
+      if (e.type != 'seeking') {
+        assert_equals(v.seeking, false);
+      }
       if (e.type == 'seeked') {
         assert_array_equals(events, ['seeking', 'timeupdate', 'seeked']);
         t.done();

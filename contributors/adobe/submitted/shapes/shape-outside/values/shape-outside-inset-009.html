@@ -7,7 +7,7 @@
         <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-inset">
         <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
         <meta name="assert" content="An inset's radial component arguments may be in calc() values.">
-        <meta name="flags" content="DOM">
+        <meta name="flags" content="DOM ahem">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="../resources/parsing-utils.js"></script>
@@ -40,10 +40,10 @@
                         'inset('+ fullInset + ' round 50% 50% 50% 50% / 50% 50% 50% 50%)'],
                 ['inset(10px calc(25%*2 - 10em))',
                         'inset('+ fullInset + ' round calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) / calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) calc(50% - 10em))',
-                        'inset('+ fullInset + ' round 100px 100px 100px 100px / 100px 100px 100px 100px)'],
+                        'inset('+ fullInset + ' round calc(50% - 100px) calc(50% -100px) calc(50% - 100px) calc(50% - 100px) / calc(50% - 100px) calc(50% -100px) calc(50% - 100px) calc(50% - 100px))'],
                 ['inset(10px round calc((12.5%*4 + 20em) / 4))',
                         'inset(' + fullInset + ' round calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) / calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4))',
-                        'inset(' + fullInset + ' round 100px 100px 100px 100px / 100px 100px 100px 100px)']
+                        'inset(' + fullInset + ' round calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4) / calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4))']
             ];
 
             setup(function() { ParsingUtils.setupCalcTest() });

@@ -7,7 +7,7 @@
         <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-circle">
         <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
         <meta name="assert" content="A circle's arguments may be in calc() values.">
-        <meta name="flags" content="DOM">
+        <meta name="flags" content="DOM ahem">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="../resources/parsing-utils.js"></script>
@@ -37,10 +37,10 @@
                         'circle(50%'+ defaultPosition +')'],
                 ['circle(calc(25%*2 - 10em))',
                         'circle(calc(50% - 10em))',
-                        'circle(100px'+ defaultPosition +')'],
+                        'circle(calc(50% - 100px)'+ defaultPosition +')'],
                 ['circle(calc((12.5%*4 + 20em) / 4))',
                         'circle(calc((50% + 20em) / 4))',
-                        'circle(100px'+ defaultPosition +')']
+                        'circle(calc((50% + 200px) / 4)'+ defaultPosition +')']
             ];
 
             setup(function() { ParsingUtils.setupCalcTest() });

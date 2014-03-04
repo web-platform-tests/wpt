@@ -7,7 +7,7 @@
         <link rel="help" href="http://www.w3.org/TR/css-shapes/#funcdef-ellipse">
         <link rel="help" href="http://www.w3.org/TR/css3-values/#calc">
         <meta name="assert" content="An ellipse's <position> arguments may be in calc() values.">
-        <meta name="flags" content="DOM">
+        <meta name="flags" content="DOM ahem">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="../resources/parsing-utils.js"></script>
@@ -48,10 +48,10 @@
                         'ellipse(closest-side closest-side at 60% 50%)'],
                 ['ellipse(at calc(25%*2 - 10em))',
                         'ellipse(at calc(50% - 10em) 50%)',
-                        'ellipse(closest-side closest-side at 100px 50%)'],
+                        'ellipse(closest-side closest-side at calc(50% - 100px) 50%)'],
                 ['ellipse(at calc((12.5%*4 + 20em) / 4))',
                         'ellipse(at calc((50% + 20em) / 4) 50%)',
-                        'ellipse(closest-side closest-side at 100px 50%)']
+                        'ellipse(closest-side closest-side at calc((50% + 200px) / 4) 50%)']
             ];
 
             setup(function() { ParsingUtils.setupCalcTest() });

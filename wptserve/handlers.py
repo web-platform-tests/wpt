@@ -109,13 +109,11 @@ class FileHandler(object):
         return rv
 
     def load_headers(self, path):
-        try:
-            headers_file = open(path + ".headers")
-        except IOError:
-            return []
-        else:
+        with open(path + ".headers") as headers_file:
             return [tuple(item.strip() for item in line.split(":", 1))
                     for line in headers_file if line]
+        except IOError:
+            return []
 
     def get_data(self, response, path, byte_ranges):
         with open(path) as f:

@@ -15,6 +15,7 @@ rmtree('dist/css3-shapes');
 
 ###############################################################################
 # Adobe
+push @dirs, 'contributors/adobe/submitted/shapes';
 #push @dirs, 'contributors/adobe/submitted/shapes/shape-outside';
 
 ###############################################################################
@@ -67,6 +68,12 @@ rmtree('dist/css3-shapes');
 
 ###############################################################################
 # Opera
+
+###############################################################################
+# TestTWF
+push @dirs, 'contributors/ttwf_shenzhen/css-shapes/biqing/submitted';
+push @dirs, 'contributors/ttwf_shenzhen/css-shapes/noonnightstorm/submitted';
+push @dirs, 'contributors/ttwf_shenzhen/css-shapes/sherlock/submitted';
 
 ###############################################################################
 

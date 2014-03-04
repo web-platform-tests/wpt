@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: Named access on the Window object</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#named-access-on-the-window-object">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<div style="display:none">
+  <p name="a" id="p1"></p>
+  <a name="a" id="a1" href="#"></a>
+  <applet name="a" id="app1"></applet>
+  <area name="a" id="area1"></area>
+  <embed name="a" id="embed1"></embed>
+  <form name="a" id="form1"></form>
+  <img name="a" id="img1">
+  <object name="a" id="obj1"></object>
+  <span name="a" id="span1"></span>
+
+  <b id="b"></b>
+  <iframe name="c" id="fm1"></iframe>
+  <iframe name="c" id="fm2" src="test.html" onload="on_load()"></iframe>
+  <input id="b"></input>
+  <span id="d"></span>
+</div>
+<script>
+
+test(function() {
+  assert_true(window['c'] instanceof Window);
+  assert_equals(window['c'], document.getElementById("fm1").contentWindow, "The iframe should be return.");
+}, "window['name'] must return the first nested browsing context");
+
+test(function() {
+  assert_equals(window['a'].length, 7, "The length should be 7.");
+  assert_true(window['a'] instanceof HTMLCollection);
+  assert_array_equals(window['item'],
+                      [
+                        document.getElementById('a1'), document.getElementById('app1'),
+                        document.getElementById('area1'), document.getElementById('embed1'),
+                        document.getElementById('form1'), document.getElementById('img1'),
+                        document.getElementById('obj1')
+                      ], "The elements are not in tree order.");
+}, "window['name'] contains all a, applet, area, embed, form, img, and object elements in tree oreder");
+
+var t = async_test("window['name'] must return the *frameset element if its name attribute matches the name");
+function on_load () {
+  t.step(function () {
+    console.log(document.getElementById('fm2').contentWindow['fs'])
+    console.log(document.getElementById('fm2').contentDocument.getElementById('fs1'));
+    assert_equals(document.getElementById('fm2').contentWindow['fs'],
+                  document.getElementById('fm2').contentDocument.getElementById('fs1'),
+                  "The frameset element should be return");
+  });
+  t.done();
+}
+
+//If the several elements have same value of their name attributes, Will the first element in tree order be chosen?
+//All of them?
+test(function() {
+  assert_true(window['b'] instanceof HTMLCollection);
+  assert_array_equals(window['b'], [document.getElementsByTagName('b')[0], document.getElementsByTagName('input')[0]]);
+}, "window['name'] must match named elements with the id 'b'");
+
+test(function() {
+  assert_true(window['d'] instanceof HTMLElement);
+  assert_equals(window['d'], document.getElementById('d'));
+}, "window['name'] must return the element if only one element's id attribute matches the name");
+
+</script>

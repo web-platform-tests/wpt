@@ -138,7 +138,6 @@ mediaSource.addEventListener("sourceopen", function () {
   }
   sourceBuffer.addEventListener("updateend", function (e) {
     mediaSource.endOfStream();
-    video.play();
     idlCheck();
   });
   sourceBuffer.appendBuffer(new ArrayBuffer());

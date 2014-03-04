@@ -1,22 +1,15 @@
 <!DOCTYPE html>
 <meta charset="utf-8"/>
-<title>HTML Test: window.frameElement (windows created by the object, iframe and embed elements)</title>
+<title>HTML Test: window.frameElement</title>
 <link rel="author" title="Intel" href="http://www.intel.com/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
-.hide {
-  /*The test results will be effected by below CSS statement.*/
-  /*display: none;*/
-}
-</style>
 <script>
 
 var t1 = async_test("The window's frameElement attribute must return its container element if it is a nested browsing context");
 var t2 = async_test("The SecurityError must be thrown if the container's document does not have the same effective script origin");
 
 function on_load() {
-  console.log(window["tt"])
   t1.step(function () {
     assert_equals(frames[0].frameElement, document.getElementById("fr1"),
                   "The frameElement attribute should be the first iframe element.");
@@ -24,6 +17,9 @@ function on_load() {
                   "The frameElement attribute should be the object element.");
     assert_equals(window["win3"].frameElement, document.getElementById("emb"),
                   "The frameElement attribute should be the embed element.");
+    assert_equals(document.getElementById("fr3").contentWindow[0].frameElement,
+                  document.getElementById("fr3").contentDocument.getElementById("f1"),
+                 "The frameElement attribute should be the frame element in 'test.html'.");
   });
   t1.done();
 
@@ -37,12 +33,12 @@ function on_load() {
 </script>
 <body onload="on_load()">
   <div id="log"></div>
-  <div class="hide">
-    <iframe id="fr1"></iframe>
-    <iframe id="fr2" src="http://www.example.com"></iframe>
-    <object id="obj" name="win2" type="text/html" data="about:blank"></object>
-    <embed id="emb" name="win3" type="image/svg+xml" src="/images/green.svg"></embed>
-  </div>
+  <iframe id="fr1"></iframe>
+  <iframe id="fr2" src=""></iframe>
+  <iframe id="fr3" src="" style="display:none"></iframe>
+  <object id="obj" name="win2" type="text/html" data="about:blank"></object>
+  <embed id="emb" name="win3" type="image/svg+xml" src="/images/green.svg"></embed>
+  <script src="replace.js?pipe=sub"></script>
   <script>
 
   test(function () {

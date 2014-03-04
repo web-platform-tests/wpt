@@ -12,13 +12,13 @@
     <script>
       test(function() {
         var client = new XMLHttpRequest();
-        assert_throws("SyntaxError", function() { client.overrideMimeType('text\\plain;charset=Shift-JIS'); });
-        assert_throws("SyntaxError", function() { client.overrideMimeType('text plain;charset=Shift-JIS'); });
-        assert_throws("SyntaxError", function() { client.overrideMimeType('text\nplain;charset=Shift-JIS'); });
-        assert_throws("SyntaxError", function() { client.overrideMimeType('cahrset=Shift-JIS'); });
-        assert_throws("SyntaxError", function() { client.overrideMimeType(null); });
-        assert_throws("SyntaxError", function() { client.overrideMimeType(50212); });
-        assert_throws("SyntaxError", function() { client.overrideMimeType( (new Array(1000)).join('a/b/c/') ); });
+        assert_throws(new TypeError(), function() { client.overrideMimeType('text\\plain;charset=Shift-JIS'); });
+        assert_throws(new TypeError(), function() { client.overrideMimeType('text plain;charset=Shift-JIS'); });
+        assert_throws(new TypeError(), function() { client.overrideMimeType('text\nplain;charset=Shift-JIS'); });
+        assert_throws(new TypeError(), function() { client.overrideMimeType('cahrset=Shift-JIS'); });
+        assert_throws(new TypeError(), function() { client.overrideMimeType(null); });
+        assert_throws(new TypeError(), function() { client.overrideMimeType(50212); });
+        assert_throws(new TypeError(), function() { client.overrideMimeType( (new Array(1000)).join('a/b/c/') ); });
       });
     </script>
   </body>

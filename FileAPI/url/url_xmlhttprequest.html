@@ -17,20 +17,17 @@
         var http = new XMLHttpRequest();
         http.open("GET", "test.png", true);
         http.responseType = "blob";
-
         http.onloadend = this.step_func(function (evt) {
           var blobURI = window.URL.createObjectURL(http.response);
-          test(function() {
-            assert_true(http.response instanceof Blob, "XMLHttpRequest returns instanceof Blob");
-            assert_equals(typeof blobURI, "string", "Blob URI is typeof string");
-            assert_equals(blobURI.indexOf("blob"), 0, "Blob URI starts with 'blob'");
-            assert_equals(http.status, 200, "The status is 200");
-            assert_equals(http.statusText, "OK", "The status text is OK when XMLHttpRequest returns correct blob");
-            assert_equals(http.getResponseHeader("Content-Type"), "image/png", "The content type is image/png when set the respnose blob");
-          }, "Check the respond content.");
+
+          assert_true(http.response instanceof Blob, "XMLHttpRequest returns instanceof Blob");
+          assert_equals(typeof blobURI, "string", "Blob URI is typeof string");
+          assert_equals(blobURI.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+          assert_equals(http.status, 200, "The status is 200");
+          assert_equals(http.statusText, "OK", "The status text is OK when XMLHttpRequest returns correct blob");
+          assert_equals(http.getResponseHeader("Content-Type"), "image/png", "The content type is image/png when set the respnose blob");
           this.done();
         });
-
         http.send();
       });
     </script>

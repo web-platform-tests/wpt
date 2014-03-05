@@ -32,20 +32,17 @@ test(function() {
     });
 }, 'Registering valid custom element types');
 
-
 test(function() {
     var doc = newHTMLDocument();
     var invalidNames = ['xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame', '1x-frame',
                       '.-frame', '_frame', 'x-f!rame', 'x-:frame'];
     invalidNames.forEach(function(value) {
-        //FIXME Should the type of the exception be specified here?
-        assert_throws(null, function() {
+        assert_throws('SyntaxError', function() {
             doc.registerElement(value);
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');
     });
 }, 'Registering invalid custom element types should fail');
-
 
 test(function() {
     var doc = newHTMLDocument();
@@ -58,8 +55,7 @@ test(function() {
                         'font-face-name',
                         'missing-glyph'];
     forbiddenNames.forEach(function(value) {
-        //FIXME Should the type of the exception be specified here?
-        assert_throws(null, function() {
+        assert_throws('SyntaxError', function() {
             doc.registerElement(value);
         }, 'Exception should be thrown in case of attempt to register element ' +
             'with the name \'' + value + '\'');

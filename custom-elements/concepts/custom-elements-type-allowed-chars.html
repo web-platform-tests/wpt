@@ -25,23 +25,15 @@ function composeName(c) {
 // Letter ::= BaseChar | Ideographic
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, composeName, checkValidName);
-}, 'Registering valid custom element types with single base chars');
+    BaseChars.testEach(newHTMLDocument(), composeName, checkValidName);
+}, 'Registering valid custom element types with base char');
 
 test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, composeName, checkValidName);
-}, 'Registering valid custom element types with base chars ranges');
+	IdeorgaphicChars.testEach(newHTMLDocument(), composeName, checkValidName);	
+}, 'Registering valid custom element types with ideographic char');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, composeName, checkValidName);
-}, 'Registering valid custom element types with single ideographic chars');
-
-test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, composeName, checkValidName);
-}, 'Registering valid custom element types with ideographic chars ranges');
-
-test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, composeName, checkValidName);
+	DigitChars.testEach(newHTMLDocument(), composeName, checkValidName);	
 }, 'Registering valid custom element types with digit chars');
 
 test(function() {
@@ -49,11 +41,11 @@ test(function() {
 }, 'Registering valid custom element types with characters \'.\', \'-\', \'_\'');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, composeName, checkValidName);
+    CombiningChars.testEach(newHTMLDocument(), composeName, checkValidName);
 }, 'Registering valid custom element types with combining char');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, composeName, checkValidName);
+    ExtenderChars.testEach(newHTMLDocument(), composeName, checkValidName);
 }, 'Registering valid custom element types with extender char');
 </script>
 </body>

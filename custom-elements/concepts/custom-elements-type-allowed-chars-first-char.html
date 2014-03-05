@@ -29,35 +29,27 @@ test(function() {
 }, 'Registering valid custom element name starting with \'_\' char');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, composeName, checkValidName);
-}, 'Registering valid custom element name starting with single base chars');
+    BaseChars.testEach(newHTMLDocument(), composeName, checkValidName);
+}, 'Registering valid custom element name starting with base char');
 
 test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, composeName, checkValidName);
-}, 'Registering valid custom element name starting with base chars ranges');
-
-test(function() {
-    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, composeName, checkValidName);
-}, 'Registering valid custom element name starting with single ideographic chars');
-
-test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, composeName, checkValidName);
-}, 'Registering valid custom element name starting with ideographic chars ranges');
+    IdeorgaphicChars.testEach(newHTMLDocument(), composeName, checkValidName);
+}, 'Registering valid custom element name starting with ideographic char');
 
 test(function() {
     testCharCodeArray(newHTMLDocument(), ['.', '-', ':', '+', '='], composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (general) should fail');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, composeName, checkInvalidName);
+    CombiningChars.testEach(newHTMLDocument(), composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (combining char) should fail');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, composeName, checkInvalidName);
+    ExtenderChars.testEach(newHTMLDocument(), composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (extender char) should fail');
 
 test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, composeName, checkInvalidName);
+    DigitChars.testEach(newHTMLDocument(), composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (digit char) should fail');
 </script>
 </body>

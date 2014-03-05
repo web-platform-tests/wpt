@@ -17,7 +17,7 @@
         <script type="text/javascript">
             var circle_calc_tests = [];
             ParsingUtils.calcTestValues.forEach(function(value) {
-                testCase = ['circle('+ value[0] +')', 'circle('+ value[1] +')', 'circle('+ value[2] + 'at 50% 50%)'];
+                testCase = ['circle('+ value[0] +')', 'circle('+ value[1] +')', 'circle('+ value[2] + ' at 50% 50%)'];
                 circle_calc_tests.push(testCase);
             });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(circle_calc_tests, 'value'));

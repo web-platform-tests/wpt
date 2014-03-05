@@ -23,9 +23,9 @@
                 polygon_calc_tests.push(testCase);
             });
             ParsingUtils.calcTestValues.forEach(function(value) {
-                testCase = ['polygon(evenodd, '+ value[0] +' '+ value[0] +' '+ value[0] +' '+ value[0] +')',
-                            'polygon(evenodd, '+ value[1] +' '+ value[1] +' '+ value[1] +' '+ value[1] +')',
-                            'polygon(evenodd, '+ value[2] +' '+ value[2] +' '+ value[2] +' '+ value[2] +')'];
+                testCase = ['polygon(evenodd, '+ value[0] +' '+ value[0] +', '+ value[0] +' '+ value[0] +')',
+                            'polygon(evenodd, '+ value[1] +' '+ value[1] +', '+ value[1] +' '+ value[1] +')',
+                            'polygon(evenodd, '+ value[2] +' '+ value[2] +', '+ value[2] +' '+ value[2] +')'];
                 polygon_calc_tests.push(testCase);
             });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(polygon_calc_tests, 'value'));

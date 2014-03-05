@@ -6,7 +6,7 @@ function testInlineStyle(value, expected) {
     assert_equals(actual, expected);
 }
 
-function testComputedStyle(value, expected) {
+function testComputedStyle(value, expected, type) {
     var div = document.createElement('div');
     div.style.setProperty('shape-outside', value);
     document.body.appendChild(div);
@@ -148,6 +148,26 @@ function buildPolygonTests(unitSet) {
             testCase.push('polygon(nonzero, ' + setUnit(test[1], set[0], set[1], set[2]) +')');
             results.push(testCase);
         });
+    });
+    return unique(results);
+}
+
+function buildCalcTests(testCases, type) {
+    var results = new Array();
+    testCases.forEach(function(test){
+        var testCase = [];
+        if(type == 'computed') {
+            testCase.push(test[0] + ' - computed style');
+            testCase.push(test[0]);
+            testCase.push(test[2]);
+        }
+        else {
+            testCase.push(test[0] + ' - property value');
+            testCase.push(test[0]);
+            testCase.push(test[1]);
+        }
+        testCase.push(type);
+        results.push(testCase)
     });
     return unique(results);
 }
@@ -591,6 +611,17 @@ var validPolygons = [
     ["Three vertices - u3 u3, u1, u1, u2 u2", "10u3 20u3, 30u1 40u1, 50u2 60u2"],
 ]
 
+// [test value, expected property value, expected computed style]
+var calcTestValues = [
+    ["calc(10in)", "calc(10in)", "960px"] ,
+    ["calc(10in + 20px)", "calc(980px)", "980px"],
+    ["calc(30%)", "calc(30%)", "30%"],
+    ["calc(100%/4)", "calc(25%)", "25%"],
+    ["calc(25%*3)", "calc(75%)", "75%"],
+    ["calc(25%*3 - 10in)", "calc(75% - 10in)", "calc(75% - 960px)"],
+    ["calc((12.5%*6 + 10in) / 4)", "calc((75% + 10in) / 4)", "calc((75% + 960px) / 4)"]
+]
+
 return {
     testInlineStyle: testInlineStyle,
     testComputedStyle: testComputedStyle,
@@ -600,6 +631,8 @@ return {
     buildInsetTests: buildInsetTests,
     buildPolygonTests: buildPolygonTests,
     generateInsetRoundCases: generateInsetRoundCases,
-    validUnits: validUnits
+    buildCalcTests: buildCalcTests,
+    validUnits: validUnits,
+    calcTestValues: calcTestValues
 }
 })();

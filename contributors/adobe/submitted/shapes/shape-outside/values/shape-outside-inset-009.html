@@ -15,40 +15,22 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            var fullInset = '10px 10px 10px 10px'
-            // [test value,
-            //          expected property value,
-            //          expected computed style]
-            var inset_round_calc_tests = [
-                ['inset(10px round calc(10ch))',
-                        'inset('+ fullInset + ' round calc(10ch) calc(10ch) calc(10ch) calc(10ch) / calc(10ch) calc(10ch) calc(10ch) calc(10ch))',
-                        'inset('+ fullInset + ' round 100px 100px 100px 100px / 100px 100px 100px 100px)'],
-                ['inset(10px round calc(10ch) calc(20ch))',
-                        'inset('+ fullInset + ' round calc(10ch) calc(20ch) calc(10ch) calc(20ch) / calc(10ch) calc(20ch) calc(10ch) calc(20ch))',
-                        'inset('+ fullInset + ' round 100px 200px 100px 200px / 100px 200px 100px 200px)'],
-                ['inset(10px round calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch))',
-                        'inset('+ fullInset + ' round calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch))',
-                        'inset('+ fullInset + ' round 100px 100px 100px 100px / 100px 100px 100px 100px)'],
-                ['inset(10px round calc(50%))',
-                        'inset('+ fullInset + ' round calc(50%) calc(50%) calc(50%) calc(50%) / calc(50%) calc(50%) calc(50%) calc(50%))',
-                        'inset('+ fullInset + ' round 50% 50% 50% 50% / 50% 50% 50% 50%)'],
-                ['inset(10px round calc(100%/2))',
-                        'inset('+ fullInset + ' round calc(50%) calc(50%) calc(50%) calc(50%) / calc(50%) calc(50%) calc(50%) calc(50%))',
-                        'inset('+ fullInset + ' round 50% 50% 50% 50% / 50% 50% 50% 50%)'],
-                ['inset(10px round calc(25%*2))',
-                        'inset('+ fullInset + ' round calc(50%) calc(50%) calc(50%) calc(50%) / calc(50%) calc(50%) calc(50%) calc(50%))',
-                        'inset('+ fullInset + ' round 50% 50% 50% 50% / 50% 50% 50% 50%)'],
-                ['inset(10px calc(25%*2 - 10em))',
-                        'inset('+ fullInset + ' round calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) / calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) calc(50% - 10em))',
-                        'inset('+ fullInset + ' round calc(50% - 100px) calc(50% -100px) calc(50% - 100px) calc(50% - 100px) / calc(50% - 100px) calc(50% -100px) calc(50% - 100px) calc(50% - 100px))'],
-                ['inset(10px round calc((12.5%*4 + 20em) / 4))',
-                        'inset(' + fullInset + ' round calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) / calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4))',
-                        'inset(' + fullInset + ' round calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4) / calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4))']
-            ];
-
-            setup(function() { ParsingUtils.setupCalcTest() });
+            var fullInset = '10px 10px 10px 10px';
+            var inset_round_calc_tests = [];
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['inset('+ fullInset +' round '+ value[0] +')',
+                            'inset('+ fullInset +' round '+ value[1] +' '+ value[1] +' '+ value[1]+' '+ value[1] +' / ' + value[1] +' '+ value[1] +' '+ value[1] +' '+ value[1]+')',
+                            'inset('+ fullInset +' round '+ value[2] +' '+ value[2] +' '+ value[2]+' '+ value[2] +' / ' + value[2] +' '+ value[2] +' '+ value[2] +' '+ value[2]+')'];
+                inset_round_calc_tests.push(testCase);
+            });
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['inset('+ fullInset +' round '+ value[0] +' '+  value[0] +')',
+                            'inset('+ fullInset +' round '+ value[1] +' '+ value[1] +' '+ value[1]+' '+ value[1] +' / ' + value[1] +' '+ value[1] +' '+ value[1] +' '+ value[1]+')',
+                            'inset('+ fullInset +' round '+ value[2] +' '+ value[2] +' '+ value[2]+' '+ value[2] +' / ' + value[2] +' '+ value[2] +' '+ value[2] +' '+ value[2]+')'];
+                inset_round_calc_tests.push(testCase);
+            });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'value'));
-            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'computed'), {type: 'calc'});
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'computed'));
         </script>
     </body>
 </html>

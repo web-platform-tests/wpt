@@ -15,40 +15,22 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            var defaultRound = 'round 0px 0px 0px 0px / 0px 0px 0px 0px';
-            // [test value,
-            //          expected property value,
-            //          expected computed style]
-            var inset_calc_tests = [
-                ['inset(calc(10ch))', 
-                        'inset(calc(10ch) calc(10ch) calc(10ch) calc(10ch))', 
-                        'inset(100px 100px 100px 100px ' + defaultRound +')'],
-                ['inset(calc(10ch) calc(20ch))',
-                        'inset(calc(10ch) calc(20ch) calc(10ch) calc(20ch))', 
-                        'inset(100px 200px 100px 200px ' + defaultRound +')'],
-                ['inset(calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch))',
-                        'inset(calc(10ex + 20px) calc(10ch) calc(10ex + 20px) calc(10ch))',
-                        'inset(100px 100px 100px 100px ' + defaultRound +')'],
-                ['inset(calc(50%))',
-                        'inset(calc(50%) calc(50%) calc(50%) calc(50%))',
-                        'inset(50% 50% 50% 50% ' + defaultRound +')'],
-                ['inset(calc(100%/2))',
-                        'inset(calc(50%) calc(50%) calc(50%) calc(50%))',
-                        'inset(50% 50% 50% 50% ' + defaultRound +')'],
-                ['inset(calc(25%*2))',
-                        'inset(calc(50%) calc(50%) calc(50%) calc(50%))',
-                        'inset(50% 50% 50% 50% ' + defaultRound +')'],
-                ['inset(calc(25%*2 - 10em))',
-                        'inset(calc(50% - 10em) calc(50% - 10em) calc(50% - 10em) calc(50% - 10em))',
-                        'inset(calc(50% - 100px) calc(50% -100px) calc(50% - 100px) calc(50% - 100px) ' + defaultRound +')'],
-                ['inset(calc((12.5%*4 + 20em) / 4))',
-                        'inset(calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4) calc((50% + 20em) / 4))',
-                        'inset(calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4) calc((50% + 200px) / 4) ' + defaultRound +')']
-            ];
-
-            setup(function() { ParsingUtils.setupCalcTest() });
+            var defaultRound = ' round 0px 0px 0px 0px / 0px 0px 0px 0px';
+            var inset_calc_tests = [];
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['inset('+ value[0] + defaultRound +')',
+                            'inset('+ value[1] +' '+ value[1] +' '+ value[1]+' '+ value[1] + defaultRound +')',
+                            'inset('+ value[2] +' '+ value[2] +' '+ value[2]+' '+ value[2] + defaultRound +')'];
+                inset_calc_tests.push(testCase);
+            });
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['inset('+ value[0] +' '+ value[0] + defaultRound +')',
+                            'inset('+ value[1] +' '+ value[1] +' '+ value[1]+' '+ value[1] + defaultRound +')',
+                            'inset('+ value[2] +' '+ value[2] +' '+ value[2]+' '+ value[2] + defaultRound +')'];
+                inset_calc_tests.push(testCase);
+            });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(inset_calc_tests, 'value'));
-            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(inset_calc_tests, 'computed'), {type: 'calc'});
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(inset_calc_tests, 'computed'));
         </script>
     </body>
 </html>

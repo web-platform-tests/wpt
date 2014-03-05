@@ -15,37 +15,13 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            var defaultPosition = ' at 50% 50%';
-            // [test value,
-            //          expected property value,
-            //          expected computed style]
-            var circle_calc_tests = [
-                ['circle(calc(10ch))',
-                        'circle(calc(10ch))',
-                        'circle(100px'+ defaultPosition +')'],
-                ['circle(calc(10ex + 20px))',
-                        'circle(calc(10ex + 20px))',
-                        'circle(100px'+ defaultPosition +')'],
-                ['circle(calc(50%))',
-                        'circle(calc(50%))',
-                        'circle(50%'+ defaultPosition +')'],
-                ['circle(calc(100%/2))',
-                        'circle(calc(50%))',
-                        'circle(50%'+ defaultPosition +')'],
-                ['circle(calc(25%*2))',
-                        'circle(calc(50%))',
-                        'circle(50%'+ defaultPosition +')'],
-                ['circle(calc(25%*2 - 10em))',
-                        'circle(calc(50% - 10em))',
-                        'circle(calc(50% - 100px)'+ defaultPosition +')'],
-                ['circle(calc((12.5%*4 + 20em) / 4))',
-                        'circle(calc((50% + 20em) / 4))',
-                        'circle(calc((50% + 200px) / 4)'+ defaultPosition +')']
-            ];
-
-            setup(function() { ParsingUtils.setupCalcTest() });
+            var circle_calc_tests = [];
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['circle('+ value[0] +')', 'circle('+ value[1] +')', 'circle('+ value[2] + 'at 50% 50%)'];
+                circle_calc_tests.push(testCase);
+            });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(circle_calc_tests, 'value'));
-            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(circle_calc_tests, 'computed'), {type: 'calc'});
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(circle_calc_tests, 'computed'));
         </script>
     </body>
 </html>

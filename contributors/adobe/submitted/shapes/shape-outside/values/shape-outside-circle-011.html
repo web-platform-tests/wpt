@@ -15,45 +15,15 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            // [test value,
-            //          expected property value,
-            //          expected computed style]
-            var circle_position_calc_tests = [
-                ['circle(at calc(10ch))',
-                        'circle(at calc(10ch) 50%)',
-                        'circle(closest-side at 100px 50%)'],
-                ['circle(at calc(10ex + 20px))',
-                        'circle(at calc(10ex + 20px) 50%)',
-                        'circle(closest-side at 100px 50%)'],
-                ['circle(at calc(10ex + 20px) calc(10ch))',
-                        'circle(at calc(10ex + 20px) calc(10ch))',
-                        'circle(closest-side at 100px 100px)'],
-                ['circle(at calc(30%))',
-                        'circle(at calc(30%) 50%)',
-                        'circle(closest-side at 30% 50%)'],
-                ['circle(at calc(60%/2))',
-                        'circle(at calc(30%) 50%)',
-                        'circle(closest-side at 30% 50%)'],
-                ['circle(farthest-side at calc(60%/2))',
-                        'circle(farthest-side at calc(30%) 50%)',
-                        'circle(farthest-side at 30% 50%)'],
-                ['circle(at calc(30%*2))',
-                        'circle(at calc(60%) 50%)',
-                        'circle(closest-side at 60% 50%)'],
-                ['circle(100px at calc(30%*2))',
-                        'circle(100px at calc(60%) 50%)',
-                        'circle(100px at 60% 50%)'],
-                ['circle(at calc(25%*2 - 10em))',
-                        'circle(at calc(50% - 10em) 50%)',
-                        'circle(closest-side at calc(50% - 100px) 50%)'],
-                ['circle(at calc((12.5%*4 + 20em) / 4))',
-                        'circle(at calc((50% + 20em) / 4) 50%)',
-                        'circle(closest-side at calc((50% + 200px) / 4) 50%)']
-            ];
-
-            setup(function() { ParsingUtils.setupCalcTest() });
+            var circle_position_calc_tests = [];
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['circle(at '+ value[0] +')', 
+                            'circle(at '+ value[1] +' 50%)', 
+                            'circle(closest-side at '+ value[2] +' 50%)'];
+                circle_position_calc_tests.push(testCase);
+            });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(circle_position_calc_tests, 'value'));
-            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(circle_position_calc_tests, 'computed'), {type: 'calc'});
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(circle_position_calc_tests, 'computed'));
         </script>
     </body>
 </html>

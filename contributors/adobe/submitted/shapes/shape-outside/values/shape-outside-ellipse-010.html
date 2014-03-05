@@ -15,43 +15,28 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
+            var ellipse_calc_tests = [];
             var defaultPosition = ' at 50% 50%';
-            // [test value,
-            //          expected property value,
-            //          expected computed style]
-            var ellipse_calc_tests = [
-                ['ellipse(calc(10ch))',
-                        'ellipse(calc(10ch))',
-                        'ellipse(100px closest-side'+ defaultPosition +')'],
-                ['ellipse(closest-side calc(10ch))',
-                        'ellipse(closest-side calc(10ch))',
-                        'ellipse(closest-side 100px'+ defaultPosition +')'],
-                ['ellipse(calc(10ex + 20px))',
-                        'ellipse(calc(10ex + 20px))',
-                        'ellipse(100px closest-side'+ defaultPosition +')'],
-                ['ellipse(calc(10ex + 20px) farthest-side)',
-                        'ellipse(calc(10ex + 20px) farthest-side)',
-                        'ellipse(100px farthest-side'+ defaultPosition +')'],
-                ['ellipse(calc(50%))',
-                        'ellipse(calc(50%))',
-                        'ellipse(50% closest-side'+ defaultPosition +')'],
-                ['ellipse(calc(100%/2))',
-                        'ellipse(calc(50%))',
-                        'ellipse(50% closest-side'+ defaultPosition +')'],
-                ['ellipse(calc(25%*2))',
-                        'ellipse(calc(50%))',
-                        'ellipse(50% closest-side'+ defaultPosition +')'],
-                ['ellipse(calc(25%*2 - 10em))',
-                        'ellipse(calc(50% - 10em))',
-                        'ellipse(calc(50% - 100px) closest-side'+ defaultPosition +')'],
-                ['ellipse(calc((12.5%*4 + 20em) / 4))',
-                        'ellipse(calc((50% + 20em) / 4))',
-                        'ellipse(calc((50% + 200px) / 4) closest-side'+ defaultPosition +')']
-            ];
-
-            setup(function() { ParsingUtils.setupCalcTest() });
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['ellipse('+ value[0] +')', 
+                            'ellipse('+ value[1] +')', 
+                            'ellipse('+ value[2]  +' closest-side' + defaultPosition +')'];
+                ellipse_calc_tests.push(testCase);
+            });
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['ellipse(farthest-side '+ value[0] +')', 
+                            'ellipse(farthest-side '+ value[1] +')', 
+                            'ellipse(farthest-side '+ value[2]  + defaultPosition +')'];
+                ellipse_calc_tests.push(testCase);
+            });
+            ParsingUtils.calcTestValues.forEach(function(value) {
+                testCase = ['ellipse('+ value[0] +' '+ value[0] +')', 
+                            'ellipse('+ value[1] +' '+ value[1] +')', 
+                            'ellipse('+ value[2] +' '+ value[2]  + defaultPosition +')'];
+                ellipse_calc_tests.push(testCase);
+            });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(ellipse_calc_tests, 'value'));
-            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(ellipse_calc_tests, 'computed'), {type: 'calc'});
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(ellipse_calc_tests, 'computed'));
         </script>
     </body>
 </html>

@@ -8,14 +8,7 @@
 test(function() {
   var v = document.createElement('video');
   assert_equals(v.currentTime, 0);
-}, 'currentTime is initially zero');
-
-// Negative test for the specified behavior prior to HTML r6580.
-test(function() {
-  var v = document.createElement('video');
-  assert_equals(v.readyState, v.HAVE_NOTHING);
-  v.currentTime = 1;
-}, 'setting currentTime when readyState is HAVE_NOTHING does not throw');
+}, 'currentTime initial value');
 
 test(function() {
   var v = document.createElement('video');
@@ -23,7 +16,7 @@ test(function() {
   assert_true(v.controller instanceof MediaController);
   assert_throws('InvalidStateError', function() { v.currentTime = 1; });
   assert_false(v.seeking);
-}, 'setting currentTime with a media controller present throws');
+}, 'setting currentTime with a media controller present');
 
 test(function() {
   var v = document.createElement('video');
@@ -31,7 +24,7 @@ test(function() {
   v.currentTime = Number.MAX_VALUE;
   assert_equals(v.currentTime, Number.MAX_VALUE);
   assert_false(v.seeking);
-}, 'setting currentTime sets the default playback start position when readyState is HAVE_NOTHING');
+}, 'setting currentTime when readyState is HAVE_NOTHING');
 
 async_test(function(t) {
   var v = document.createElement('video');
@@ -43,5 +36,5 @@ async_test(function(t) {
     assert_true(v.seeking);
     t.done();
   });
-}, 'setting currentTime seeks when readyState is not HAVE_NOTHING');
+}, 'setting currentTime when readyState is greater than HAVE_NOTHING');
 </script>

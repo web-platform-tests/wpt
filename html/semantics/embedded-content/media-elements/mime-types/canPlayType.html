@@ -4,27 +4,6 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-function forEachPermutation(array, callback) {
-  if (array.length == 1) {
-    callback(array);
-  } else {
-    array.forEach(function(value, index) {
-      var rest = array.slice(0, index).concat(array.slice(index + 1));
-      forEachPermutation(rest, function(restPermutation) {
-        callback(restPermutation.concat(value));
-      });
-    });
-  }
-}
-
-function forEachSubset(array, callback) {
-  for (var begin = 0; begin < array.length; begin++) {
-    for (var end = array.length; end > begin; end--) {
-      callback(array.slice(begin, end));
-    }
-  }
-}
-
 function mime(type, codecs) {
   if (codecs.length) {
     return type + '; codecs="' + codecs.join(', ') + '"';
@@ -33,29 +12,6 @@ function mime(type, codecs) {
 }
 
 test(function() {
-  var codecs = ['daala', 'opus', 'theora', 'vorbis'];
-
-  var permutations = [];
-  forEachPermutation(codecs, function(permutation) {
-    assert_array_equals(permutation.slice().sort(), codecs);
-    permutations.forEach(function(previous) {
-      assert_not_equals(permutation.toString(), previous.toString());
-    });
-    permutations.push(permutation);
-  });
-  assert_equals(permutations.length, 4 * 3 * 2 * 1);
-
-  var subsets = [];
-  forEachSubset(codecs, function(subset) {
-    var begin = codecs.indexOf(subset[0]);
-    assert_array_equals(subset, codecs.slice(begin, begin + subset.length));
-    subsets.forEach(function(previous) {
-      assert_not_equals(subset.toString(), previous.toString());
-    });
-    subsets.push(subset);
-  });
-  assert_equals(subsets.length, 4 + 3 + 2 + 1);
-
   assert_equals(mime('video/webm', []), 'video/webm');
   assert_equals(mime('video/webm', ['vp8']), 'video/webm; codecs="vp8"');
   assert_equals(mime('video/webm', ['vp8', 'vorbis']), 'video/webm; codecs="vp8, vorbis"');
@@ -90,47 +46,70 @@ test(function() {
   t('video/x-new-fictional-format;codecs="kittens,bunnies"');
 }, 'video/x-new-fictional-format');
 
-function type_codecs_test(type, codecs) {
-  test(function() {
-    if (!canPlayType(type)) {
-      this.name += ' (not supported)';
-      return;
-    }
+function type_codecs_test(type, audioCodecs, videoCodecs) {
+  function t(type, expected) {
+    assert_equals(canPlayType(type), expected, type);
+  }
 
+  var typeSupported = false;
+  var codecSupported = false;
+
+  test(function() {
     // Spec: Generally, a user agent should never return "probably" for a type
     // that allows the codecs parameter if that parameter is not present.
-    assert_equals(canPlayType(type), 'maybe', type);
+    t(type, 'maybe');
+    typeSupported = true;
+  }, type + ' (optional)');
 
-    // Bogus codecs must not be supported.
-    var typeBogus = mime(type, ['bogus']);
-    assert_equals(canPlayType(typeBogus), '', typeBogus);
+  function test_codec(codec) {
+    var typeWithCodec = mime(type, [codec]);
+    test(function() {
+      t(typeWithCodec, 'probably');
+      codecSupported = true;
+    }, typeWithCodec + ' (optional)');
+  }
 
-    var supported = [];
-    codecs.forEach(function(codec) {
-      if (canPlayType(mime(type, [codec]))) {
-        supported.push(codec);
-      }
-    });
+  audioCodecs.forEach(test_codec);
+  videoCodecs.forEach(test_codec);
 
-    // At least one known codec must be supported if the container format is.
-    assert_greater_than(supported.length, 0, 'supported codecs');
-
-    // Any combination of supported codecs should also be supported.
-    forEachSubset(supported, function(subset) {
-      forEachPermutation(subset, function(permutation) {
-        var typePermutation = mime(type, permutation);
-        assert_equals(canPlayType(typePermutation), 'probably', typePermutation);
+  if (audioCodecs.length > 0 && videoCodecs.length > 0) {
+    test(function() {
+      audioCodecs.forEach(function(ac) {
+        videoCodecs.forEach(function(vc) {
+          var canPlayBoth = canPlayType(mime(type, [ac, vc]));
+          if (canPlayBoth) {
+            t(mime(type, [ac]), canPlayBoth);
+            t(mime(type, [vc]), canPlayBoth);
+          }
+        });
       });
-    });
-  }, type);
+    }, type + ' codecs subset');
+
+    test(function() {
+      audioCodecs.forEach(function(ac) {
+        videoCodecs.forEach(function(vc) {
+          assert_equals(canPlayType(mime(type, [ac, vc])),
+                        canPlayType(mime(type, [vc, ac])));
+        });
+      });
+    }, type + ' codecs order');
+ }
+
+  test(function() {
+    t(mime(type, ['bogus']), '');
+  }, type + ' with bogus codec');
+
+  test(function() {
+    // At least one known codec must be supported if the container format is.
+    assert_equals(typeSupported, codecSupported);
+  }, type + ' with and without codecs');
 }
 
-type_codecs_test('audio/mp4', ['mp4a.40.2']);
-type_codecs_test('audio/ogg', ['opus', 'speex', 'vorbis']);
-type_codecs_test('audio/webm', ['opus', 'vorbis']);
-type_codecs_test('video/3gpp', ['mp4v.20.8', 'samr']);
-type_codecs_test('video/mp4', ['avc1.42E01E', 'avc1.4D401E', 'avc1.58A01E', 'avc1.64001E',
-                               'mp4a.40.2', 'mp4v.20.8', 'mp4v.20.240']);
-type_codecs_test('video/ogg', ['dirac', 'flac', 'opus', 'speex', 'theora', 'vorbis']);
-type_codecs_test('video/webm', ['opus', 'vorbis', 'vp8']);
+type_codecs_test('audio/mp4', ['mp4a.40.2'], []);
+type_codecs_test('audio/ogg', ['opus', 'speex', 'vorbis'], []);
+type_codecs_test('audio/webm', ['opus', 'vorbis'], []);
+type_codecs_test('video/3gpp', ['samr'], ['mp4v.20.8']);
+type_codecs_test('video/mp4', ['mp4a.40.2'], ['avc1.42E01E', 'avc1.4D401E', 'avc1.58A01E', 'avc1.64001E', 'mp4v.20.8', 'mp4v.20.240']);
+type_codecs_test('video/ogg', ['flac', 'opus', 'speex', 'vorbis'], ['dirac', 'theora']);
+type_codecs_test('video/webm', ['opus', 'vorbis'], ['vp8']);
 </script>

@@ -10,7 +10,17 @@ import base_test
 
 class EcmasScriptTest(base_test.WebDriverBaseTest):
 
+    @classmethod
+    def setUpClass(cls):
+        super(EcmasScriptTest, cls).setUpClass()
+        if cls.driver.capabilities['javascriptEnabled']:
+            cls.javascriptEnabled = True
+        else:
+            cls.javascriptEnabled = False
+
     def test_that_ecmascript_returns_document_title(self):
+        if not self.javascriptEnabled:
+            return
         self.driver.get(self.webserver.where_is("ecmascript/res/ecmascript_test.html"))
 
         result = self.driver.execute_script("return document.title;");

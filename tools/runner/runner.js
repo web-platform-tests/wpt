@@ -324,7 +324,11 @@ TestControl.prototype = {
         this.start_button.onclick = (function() {
             var path = this.get_path();
             var test_types = this.get_test_types();
-            this.runner.start(path, test_types);
+            var run_mode = "window";
+            if (this.elem.querySelector("input[name=runMode]").checked) {
+                run_mode = "iframe";
+            }
+            this.runner.start(path, test_types, run_mode);
             this.set_stop();
             this.set_pause();
         }).bind(this);
@@ -423,7 +427,9 @@ function Runner(manifest_path, options) {
     this.test_types = null;
     this.manifest_iterator = null;
 
-    this.test_window = null
+    this.test_window = null;
+    this.test_frame = document.getElementById('testFrame');
+    this.run_mode = null;
 
     this.current_test = null;
     this.timeout = null;
@@ -459,13 +465,16 @@ Runner.prototype = {
         }
     },
 
-    start: function(path, test_types) {
+    start: function(path, test_types, run_mode) {
         this.pause_flag = false;
         this.path = path;
         this.test_types = test_types;
         this.manifest_iterator = new ManifestIterator(this.manifest, this.path, this.test_types);
         this.num_tests = null;
-
+        this.run_mode = run_mode;
+        if (run_mode === "iframe") {
+            this.test_frame.style.display = "block";
+        }
         if (this.manifest.data === null) {
             this.start_after_manifest_load = true;
         } else {
@@ -474,7 +483,9 @@ Runner.prototype = {
     },
 
     do_start: function() {
-        this.open_test_window();
+        if (this.run_mode ==="window") {
+            this.open_test_window();
+        }
         this.start_callbacks.forEach(function(callback) {
             callback();
         });
@@ -504,7 +515,12 @@ Runner.prototype = {
     },
 
     done: function() {
-        this.test_window.close();
+        if (this.run_mode === "window") {
+            this.test_window.close();
+        } else {
+            this.test_frame.src = "";
+            this.test_frame.style.display = "none";
+        }
         this.done_callbacks.forEach(function(callback) {
             callback();
         });
@@ -534,10 +550,14 @@ Runner.prototype = {
     },
 
     load: function(path) {
-        if (this.test_window.location === null) {
-            this.open_test_window();
-        }
-        this.test_window.location.href = this.server + path;
+        if (this.run_mode === "window") {
+            if (this.test_window.location === null) {
+                this.open_test_window();
+            }
+            this.test_window.location.href = this.server + path;
+        } else {
+            this.test_frame.src = this.server + path;
+        };
     },
 
     progress: function() {

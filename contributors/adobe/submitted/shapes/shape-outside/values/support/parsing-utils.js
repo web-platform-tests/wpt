@@ -330,15 +330,15 @@ var validPositions = [
     ["left 50u1 bottom", "50u1 100%"],
 
     ["top 50% center", "50% 50%"],
-    ["top 50u1 center", "left 50% top 50u1"],
+    ["top 50u1 center", "50% 50u1"],
     ["top 50% left", "0% 50%"],
-    ["top 50u1 left", "left 0% top 50u1"],
+    ["top 50u1 left", "0% 50u1"],
     ["top 50% right", "100% 50%"],
     ["top 50u1 right", "100% 50u1"],
 
     ["bottom 70% center", "50% 30%"],
     ["bottom 70u1 center", "left 50% bottom 70u1"],
-    ["bottom 70% left", "0%, 30%"],
+    ["bottom 70% left", "0% 30%"],
     ["bottom 70u1 left", "left 0% bottom 70u1"],
     ["bottom 70% right", "100% 30%"],
     ["bottom 70u1 right", "left 100% bottom 70u1"],
@@ -613,7 +613,7 @@ var validPolygons = [
 
 // [test value, expected property value, expected computed style]
 var calcTestValues = [
-    ["calc(10in)", "calc(10in)", "960px"] ,
+    ["calc(10in)", "calc(10in)", "960px"],
     ["calc(10in + 20px)", "calc(980px)", "980px"],
     ["calc(30%)", "calc(30%)", "30%"],
     ["calc(100%/4)", "calc(25%)", "25%"],

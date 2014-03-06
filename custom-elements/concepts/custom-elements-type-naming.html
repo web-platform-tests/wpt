@@ -34,8 +34,8 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var invalidNames = ['xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame', '1x-frame',
-                      '.-frame', '_frame', 'x-f!rame', 'x-:frame'];
+    var invalidNames = ['xframe', 'x_frame', 'x.frame', 'x1frame', '-xframe', '1-frame',
+                        '1x-frame',	'.-frame', '_frame', 'x-f!rame', 'x-:frame'];
     invalidNames.forEach(function(value) {
         assert_throws('SyntaxError', function() {
             doc.registerElement(value);

@@ -7,7 +7,7 @@
 test(function() {
   var v = document.createElement('video');
   assert_equals(v.playbackRate, 1);
-}, 'playbackRate is initially 1');
+}, 'playbackRate initial value');
 
 async_test(function(t) {
   var v = document.createElement('video');
@@ -15,5 +15,5 @@ async_test(function(t) {
   v.addEventListener('ratechange', t.step_func(function() {
     t.done();
   }));
-}, 'setting playbackRate queues task to fire a ratechange event');
+}, 'setting playbackRate');
 </script>

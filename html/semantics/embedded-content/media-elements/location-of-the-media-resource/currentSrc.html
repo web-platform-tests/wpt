@@ -7,6 +7,6 @@
 ['audio', 'video'].forEach(function(tagName) {
   test(function() {
     assert_equals(document.createElement(tagName).currentSrc, '');
-  }, tagName + '.currentSrc is initially the empty string');
+  }, tagName + '.currentSrc initial value');
 });
 </script>

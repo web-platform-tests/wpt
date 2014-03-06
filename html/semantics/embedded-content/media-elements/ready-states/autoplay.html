@@ -27,44 +27,45 @@ function autoplay_test(tagName, src) {
     e.src = src;
     e.autoplay = true;
     expect_events(t, e, ['canplay', 'play', 'playing', 'canplaythrough']);
-  }, tagName + ' autoplaying flag is initially true');
+  }, tagName + '.autoplay');
 
   async_test(function(t) {
     var e = document.createElement(tagName);
     e.src = src;
     e.autoplay = true;
     e.pause(); // sets the autoplaying flag to false
-    e.load();
+    e.load(); // sets the autoplaying flag to true
     expect_events(t, e, ['canplay', 'play', 'playing', 'canplaythrough']);
-  }, tagName + '.load() sets the autoplaying flag to true');
+  }, tagName + '.autoplay and load()');
 
   async_test(function(t) {
     var e = document.createElement(tagName);
     e.src = src;
     e.autoplay = true;
-    e.play();
+    e.play(); // sets the autoplaying flag to false
     // play() also sets the paused attribute to false; there is no way for the
     // autoplaying flag to be true when the paused attribute is false.
     assert_equals(e.paused, false);
     expect_events(t, e, ['play', 'canplay', 'playing', 'canplaythrough']);
-  }, tagName + '.play() sets the autoplaying flag to false');
+  }, tagName + '.autoplay and play()');
 
   async_test(function(t) {
     var e = document.createElement(tagName);
     e.src = src;
     e.autoplay = true;
-    e.pause();
+    e.pause(); // sets the autoplaying flag to false
     expect_events(t, e, ['canplay', 'canplaythrough']);
-  }, tagName + '.pause() sets the autoplaying flag to false');
+  }, tagName + '.autoplay and pause()');
 
   async_test(function(t) {
     var e = document.createElement(tagName);
     e.src = src;
     e.autoplay = true;
     document.body.appendChild(e);
-    document.body.removeChild(e); // runs internal pause steps at stable state
+    document.body.removeChild(e);
+    // in stable state, internal pause steps sets the autoplaying flag to false
     expect_events(t, e, ['canplay', 'canplaythrough']);
-  }, tagName + ' internal pause steps sets the autoplaying flag to false');
+  }, tagName + '.autoplay and internal pause steps');
 }
 
 autoplay_test('audio', getAudioURI('/media/sound_5'));

@@ -21,14 +21,14 @@
             var inset_round_calc_tests = [];
             ParsingUtils.calcTestValues.forEach(function(value) {
                 testCase = ['inset('+ fullInset +' round '+ value[0] +')',
-                            'inset('+ fullInset +' round '+ value[1] +' '+ value[1] +' '+ value[1]+' '+ value[1] +' / ' + value[1] +' '+ value[1] +' '+ value[1] +' '+ value[1]+')',
-                            'inset('+ fullInset +' round '+ value[2] +' '+ value[2] +' '+ value[2]+' '+ value[2] +' / ' + value[2] +' '+ value[2] +' '+ value[2] +' '+ value[2]+')'];
+                            'inset('+ fullInset +' round '+ value[1] +')',
+                            'inset('+ fullInset +' round '+ value[2] +')'];
                 inset_round_calc_tests.push(testCase);
             });
             ParsingUtils.calcTestValues.forEach(function(value) {
                 testCase = ['inset('+ fullInset +' round '+ value[0] +' '+  value[0] +')',
-                            'inset('+ fullInset +' round '+ value[1] +' '+ value[1] +' '+ value[1]+' '+ value[1] +' / ' + value[1] +' '+ value[1] +' '+ value[1] +' '+ value[1]+')',
-                            'inset('+ fullInset +' round '+ value[2] +' '+ value[2] +' '+ value[2]+' '+ value[2] +' / ' + value[2] +' '+ value[2] +' '+ value[2] +' '+ value[2]+')'];
+                            'inset('+ fullInset +' round '+ value[1] +' '+ value[1] +')',
+                            'inset('+ fullInset +' round '+ value[2] +' '+ value[2] +')'];
                 inset_round_calc_tests.push(testCase);
             });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'value'));

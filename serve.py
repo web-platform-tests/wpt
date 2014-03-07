@@ -153,10 +153,10 @@ def start_http_server(config, paths, port):
                                  doc_root=paths["doc_root"],
                                  routes=routes,
                                  rewrites=rewrites,
+                                 bind_hostname=bind_hostname,
                                  config=config,
                                  use_ssl=False,
-                                 certificate=None,
-                                 bind_hostname=bind_hostname)
+                                 certificate=None)
 
 def start_https_server(config, paths, port):
     return

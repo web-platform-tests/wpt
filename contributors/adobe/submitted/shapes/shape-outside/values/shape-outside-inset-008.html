@@ -17,18 +17,17 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            var defaultRound = ' round 0px 0px 0px 0px / 0px 0px 0px 0px';
             var inset_calc_tests = [];
             ParsingUtils.calcTestValues.forEach(function(value) {
-                testCase = ['inset('+ value[0] + defaultRound +')',
-                            'inset('+ value[1] +' '+ value[1] +' '+ value[1]+' '+ value[1] + defaultRound +')',
-                            'inset('+ value[2] +' '+ value[2] +' '+ value[2]+' '+ value[2] + defaultRound +')'];
+                testCase = ['inset('+ value[0] +')',
+                            'inset('+ value[1] +')',
+                            'inset('+ value[2] +')'];
                 inset_calc_tests.push(testCase);
             });
             ParsingUtils.calcTestValues.forEach(function(value) {
-                testCase = ['inset('+ value[0] +' '+ value[0] + defaultRound +')',
-                            'inset('+ value[1] +' '+ value[1] +' '+ value[1]+' '+ value[1] + defaultRound +')',
-                            'inset('+ value[2] +' '+ value[2] +' '+ value[2]+' '+ value[2] + defaultRound +')'];
+                testCase = ['inset('+ value[0] +' '+ value[0] +')',
+                            'inset('+ value[1] +' '+ value[1] +')',
+                            'inset('+ value[2] +' '+ value[2] +')'];
                 inset_calc_tests.push(testCase);
             });
             generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(inset_calc_tests, 'value'));

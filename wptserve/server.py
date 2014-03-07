@@ -103,8 +103,8 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
     allow_reuse_address = True
     acceptable_errors = (errno.EPIPE, errno.ECONNABORTED)
 
-    def __init__(self, server_address, RequestHandlerClass, router, rewriter, config=None,
-                 use_ssl=False, certificate=None, bind_hostname=True, **kwargs):
+    def __init__(self, server_address, RequestHandlerClass, router, rewriter, bind_hostname, config=None,
+                 use_ssl=False, certificate=None, **kwargs):
         """Server for HTTP(s) Requests
 
         :param server_address: tuple of (server_name, port)
@@ -267,8 +267,8 @@ class WebTestHttpd(object):
                  server_cls=None, handler_cls=WebTestRequestHandler,
                  use_ssl=False, certificate=None, router_cls=Router,
                  doc_root=os.curdir, routes=routes.routes,
-                 rewriter_cls=RequestRewriter, rewrites=None,
-                 config=None, bind_hostname=True):
+                 rewriter_cls=RequestRewriter, bind_hostname=True, rewrites=None,
+                 config=None):
 
         self.host = host
 
@@ -288,6 +288,7 @@ class WebTestHttpd(object):
                                 self.router,
                                 self.rewriter,
                                 config=config,
+                                bind_hostname=bind_hostname,
                                 use_ssl=use_ssl,
                                 certificate=certificate)
         self.started = False

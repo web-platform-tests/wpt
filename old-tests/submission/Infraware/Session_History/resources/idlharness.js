@@ -14,7 +14,7 @@ policies and contribution forms [3].
  *
  *   <script src=/resources/testharness.js></script>
  *   <script src=/resources/testharnessreport.js></script>
- *   <script src=/resources/WebIDLParser.js></script>
+ *   <script src=/resources/webidl2/lib/webidl2.js></script>
  *   <script src=/resources/idlharness.js></script>
  *
  * Then you'll need some type of IDLs.  Here's some script that can be run on a
@@ -143,9 +143,9 @@ policies and contribution forms [3].
  * "thing we want to run tests on", and an IdlArray is an array of IdlObjects
  * with some additional data thrown in.
  *
- * The object model is based on what WebIDLParser.js produces, which is in turn
+ * The object model is based on what webidl2.js produces, which is in turn
  * based on its pegjs grammar.  If you want to figure out what properties an
- * object will have from WebIDLParser.js, the best way is to look at the
+ * object will have from webidl2.js, the best way is to look at the
  * grammar:
  *
  *   https://github.com/darobin/webidl.js/blob/master/lib/grammar.peg
@@ -164,7 +164,7 @@ policies and contribution forms [3].
  * After each grammatical production is a JavaScript function in curly braces
  * that gets called with suitable arguments and returns some JavaScript value.
  *
- * (Note that the version of WebIDLParser.js we use might sometimes be
+ * (Note that the version of webidl2.js we use might sometimes be
  * out-of-date or forked.)
  *
  * The members and methods of the classes defined by this file are all at least
@@ -202,7 +202,7 @@ window.IdlArray = function()
      * on a later one.  Save these up and handle them right before we run
      * tests.
      *
-     * .partials is simply an array of objects from WebIDLParser.js'
+     * .partials is simply an array of objects from webidl2.js'
      * "partialinterface" production.  .implements maps strings to arrays of
      * strings, such that
      *
@@ -250,7 +250,7 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
 {
     /**
      * Internal helper called by add_idls() and add_untested_idls().
-     * parsed_idls is an array of objects that come from WebIDLParser.js's
+     * parsed_idls is an array of objects that come from webidl2.js's
      * "definitions" production.  The add_untested_idls() entry point
      * additionally sets an .untested property on each object (and its
      * .members) so that they'll be skipped by test() -- they'll only be
@@ -434,7 +434,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
     /**
      * Helper function that tests that value is an instance of type according
      * to the rules of WebIDL.  value is any JavaScript value, and type is an
-     * object produced by WebIDLParser.js' "type" production.  That production
+     * object produced by webidl2.js' "type" production.  That production
      * is fairly elaborate due to the complexity of WebIDL's types, so it's
      * best to look at the grammar to figure out what properties it might have.
      */
@@ -604,7 +604,7 @@ function IdlDictionary(obj)
 //@{
 {
     /**
-     * obj is an object produced by the WebIDLParser.js "dictionary"
+     * obj is an object produced by the webidl2.js "dictionary"
      * production.
      */
 
@@ -633,7 +633,7 @@ function IdlExceptionOrInterface(obj)
 //@{
 {
     /**
-     * obj is an object produced by the WebIDLParser.js "exception" or
+     * obj is an object produced by the webidl2.js "exception" or
      * "interface" production, as appropriate.
      */
 
@@ -1668,7 +1668,7 @@ function IdlInterfaceMember(obj)
 //@{
 {
     /**
-     * obj is an object produced by the WebIDLParser.js "ifMember" production.
+     * obj is an object produced by the webidl2.js "ifMember" production.
      * We just forward all properties to this object without modification,
      * except for special extAttrs handling.
      */
@@ -1690,7 +1690,7 @@ function create_suitable_object(type)
 //@{
 {
     /**
-     * type is an object produced by the WebIDLParser.js "type" production.  We
+     * type is an object produced by the webidl2.js "type" production.  We
      * return a JavaScript value that matches the type, if we can figure out
      * how.
      */

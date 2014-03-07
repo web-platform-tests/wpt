@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../resources/testharness.js"></script>
+        <script src="../resources/testharnessreport.js"></script>
+        <script src="mediasource-util.js"></script>
+        <link rel='stylesheet' href='../resources/testharness.css'>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script>
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          {
+              var previousQuality = mediaElement.getVideoPlaybackQuality();
+              var timeUpdateCount = 0;
+              mediaElement.addEventListener("timeupdate", test.step_func(function (e)
+              {
+                  var videoElement = e.target;
+                  var newQuality = videoElement.getVideoPlaybackQuality();
+
+                  assert_not_equals(previousQuality, newQuality, "Verify new object");
+                  assert_greater_than(newQuality.creationTime, previousQuality.creationTime, "creationTime");
+
+                  assert_greater_than_equal(newQuality.totalVideoFrames, 0, "totalVideoFrames >= 0");
+                  assert_greater_than_equal(newQuality.totalVideoFrames, previousQuality.totalVideoFrames, "totalVideoFrames");
+
+                  assert_greater_than_equal(newQuality.droppedVideoFrames, 0, "droppedVideoFrames >= 0");
+                  assert_greater_than_equal(newQuality.droppedVideoFrames, previousQuality.droppedVideoFrames, "droppedVideoFrames");
+
+                  assert_greater_than_equal(newQuality.corruptedVideoFrames, 0, "corruptedVideoFrames >= 0");
+                  assert_greater_than_equal(newQuality.corruptedVideoFrames, previousQuality.corruptedVideoFrames, "corruptedVideoFrames");
+                  previousQuality = newQuality;
+                  timeUpdateCount++;
+              }));
+
+              mediaElement.addEventListener("ended", test.step_func(function(e)
+              {
+                  assert_greater_than(timeUpdateCount, 2, "timeUpdateCount");
+                  test.done();
+              }));
+
+              test.failOnEvent(mediaElement, 'error');
+
+               sourceBuffer.addEventListener('updateend', test.step_func(function()
+               {
+                   mediaSource.duration = 1;
+                   mediaSource.endOfStream();
+                   mediaElement.play();
+               }));
+               sourceBuffer.appendBuffer(mediaData);
+          }, "Test HTMLVideoElement.getVideoPlaybackQuality() with MediaSource API", {timeout: 5000});
+        </script>
+    </body>
+</html>

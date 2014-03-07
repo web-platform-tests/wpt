@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../resources/testharness.js"></script>
+        <script src="../resources/testharnessreport.js"></script>
+        <script src="mediasource-util.js"></script>
+        <link rel='stylesheet' href='../resources/testharness.css'>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script>
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          {
+              test.failOnEvent(mediaElement, 'error');
+              test.endOnEvent(mediaElement, 'ended');
+
+              sourceBuffer.addEventListener('updateend', test.step_func(function()
+              {
+                  mediaSource.duration = 1;
+                  mediaSource.endOfStream();
+                  mediaElement.play();
+              }));
+
+              sourceBuffer.appendBuffer(mediaData);
+          }, "Test normal playback case with MediaSource API", {timeout: 5000});
+        </script>
+    </body>
+</html>

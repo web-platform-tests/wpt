@@ -104,7 +104,7 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
     acceptable_errors = (errno.EPIPE, errno.ECONNABORTED)
 
     def __init__(self, server_address, RequestHandlerClass, router, rewriter, config=None,
-                 use_ssl=False, certificate=None, **kwargs):
+                 use_ssl=False, certificate=None, bind_hostname=True, **kwargs):
         """Server for HTTP(s) Requests
 
         :param server_address: tuple of (server_name, port)
@@ -123,15 +123,25 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
 
         :param use_ssl: Boolean indicating whether the server should use SSL
 
-        :certificate: Certificate to use if SSL is enabled.
+        :param certificate: Certificate to use if SSL is enabled.
+
+        :param bind_hostname True to bind the server to both the hostname and
+                             port specified in the server_address parameter.
+                             False to bind the server only to the port in the
+                             server_address parameter, but not to the hostname.
         """
         self.router = router
         self.rewriter = rewriter
 
         self.scheme = "https" if use_ssl else "http"
 
+        if bind_hostname:
+            hostname_port = server_address
+        else:
+            hostname_port = ("",server_address[1])
+
         #super doesn't work here because BaseHTTPServer.HTTPServer is old-style
-        BaseHTTPServer.HTTPServer.__init__(self, server_address, RequestHandlerClass, **kwargs)
+        BaseHTTPServer.HTTPServer.__init__(self, hostname_port, RequestHandlerClass, **kwargs)
 
         if config is not None:
             Server.config = config
@@ -246,6 +256,7 @@ class WebTestHttpd(object):
     :param rewrites: List of rewrites with which to initialize the rewriter_cls
     :param config: Dictionary holding environment configuration settings for
                    handlers to read, or None to use the default values.
+    :param bind_hostname Boolean indicating whether to bind server to hostname.
 
     HTTP server designed for testing scenarios.
 
@@ -257,7 +268,7 @@ class WebTestHttpd(object):
                  use_ssl=False, certificate=None, router_cls=Router,
                  doc_root=os.curdir, routes=routes.routes,
                  rewriter_cls=RequestRewriter, rewrites=None,
-                 config=None):
+                 config=None, bind_hostname=True):
 
         self.host = host
 

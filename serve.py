@@ -28,7 +28,7 @@ routes = [("GET", "/tools/runner/*", handlers.file_handler),
           ("GET", "*", handlers.file_handler),
           ]
 
-rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
+rewrites = []
 
 subdomains = [u"www",
               u"www1",

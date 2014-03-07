@@ -155,7 +155,8 @@ def start_http_server(config, paths, port):
                                  rewrites=rewrites,
                                  config=config,
                                  use_ssl=False,
-                                 certificate=None)
+                                 certificate=None,
+                                 bind_hostname=bind_hostname)
 
 def start_https_server(config, paths, port):
     return
@@ -306,11 +307,13 @@ def load_config(default_path, override_path=None):
 
 def main():
     global logger
+    global bind_hostname
 
     config = load_config("config.default.json",
                          "config.json")
 
     logger = default_logger(config["log_level"])
+    bind_hostname = config["bind_hostname"]
 
     config_, servers = start(config)
 

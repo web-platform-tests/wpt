@@ -4,4 +4,5 @@
           "ws":["auto"]},
  "external_domain":"w3c-test.org",
  "check_subdomains": true,
- "log_level":"debug"}
+ "log_level":"debug",
+ "bind_hostname": true}

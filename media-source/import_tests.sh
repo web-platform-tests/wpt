@@ -22,7 +22,7 @@ then
   exit -1
 fi
 
-rm -rf *.html *.js webm mp4 manifest.txt
+#rm -rf *.html *.js webm mp4 manifest.txt
 
 cp $HTTP_MEDIA_TEST_DIR/media-source/mediasource-*.html $HTTP_MEDIA_TEST_DIR/media-source/mediasource-*.js .
 cp -r $HTTP_MEDIA_TEST_DIR/resources/media-source/webm .
@@ -31,7 +31,7 @@ cp -r $HTTP_MEDIA_TEST_DIR/resources/media-source/mp4 .
 # Remove Blink-specific files
 rm mediasource-gc-after-decode-error-crash.html
 
-sed -i 's/\/w3c\/resources\//..\/resources\//g' *.html
+sed -i 's/\/w3c\/resources\//\/resources\//g' *.html
 sed -i 's/\/media\/resources\/media-source\///g' *.html
 sed -i 's/\/media\/resources\/media-source\///g' *.js
 sed -i 's/\/media\/resources\/media-source\///g' webm/*

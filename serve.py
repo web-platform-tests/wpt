@@ -65,14 +65,14 @@ class ServerProc(object):
         self.daemon = None
         self.stop = Event()
 
-    def start(self, init_func, config, paths, port):
-        self.proc = Process(target=self.create_daemon, args=(init_func, config, paths, port))
+    def start(self, init_func, config, paths, port, bind_hostname):
+        self.proc = Process(target=self.create_daemon, args=(init_func, config, paths, port, bind_hostname))
         self.proc.daemon = True
         self.proc.start()
 
-    def create_daemon(self, init_func, config, paths, port):
+    def create_daemon(self, init_func, config, paths, port, bind_hostname):
         try:
-            self.daemon = init_func(config, paths, port)
+            self.daemon = init_func(config, paths, port, bind_hostname)
         except socket.error:
             logger.error("Socket error on port %s" % port)
             raise
@@ -93,10 +93,10 @@ class ServerProc(object):
         self.proc.terminate()
         self.proc.join()
 
-def check_subdomains(config, paths, subdomains):
+def check_subdomains(config, paths, subdomains, bind_hostname):
     port = get_port()
     wrapper = ServerProc()
-    wrapper.start(start_http_server, config, paths, port)
+    wrapper.start(start_http_server, config, paths, port, bind_hostname)
 
     rv = {}
 
@@ -125,7 +125,7 @@ def get_subdomains(config):
     return {subdomain: (subdomain.encode("idna"), host)
             for subdomain in subdomains}
 
-def start_servers(config, paths, ports):
+def start_servers(config, paths, ports, bind_hostname):
     servers = defaultdict(list)
 
     host = config["host"]
@@ -140,14 +140,14 @@ def start_servers(config, paths, ports):
                          "wss":start_wss_server}[scheme]
 
             server_proc = ServerProc()
-            server_proc.start(init_func, config, paths, port)
+            server_proc.start(init_func, config, paths, port, bind_hostname)
 
             logger.info("Started server at %s://%s:%s" % (scheme, config["host"], port))
             servers[scheme].append((port, server_proc))
 
     return servers
 
-def start_http_server(config, paths, port):
+def start_http_server(config, paths, port, bind_hostname):
     return wptserve.WebTestHttpd(host=config["host"],
                                  port=port,
                                  doc_root=paths["doc_root"],
@@ -158,7 +158,7 @@ def start_http_server(config, paths, port):
                                  use_ssl=False,
                                  certificate=None)
 
-def start_https_server(config, paths, port):
+def start_https_server(config, paths, port, bind_hostname):
     return
 
 class WebSocketDaemon(object):
@@ -206,14 +206,14 @@ class WebSocketDaemon(object):
             self.started = False
         self.server = None
 
-def start_ws_server(config, paths, port):
+def start_ws_server(config, paths, port, bind_hostname):
     return WebSocketDaemon(config["host"],
                            str(port),
                            repo_root,
                            paths["ws_doc_root"],
                            "debug")
 
-def start_wss_server(config, paths, port):
+def start_wss_server(config, paths, port, bind_hostname):
     return
 
 def get_ports(config):
@@ -242,16 +242,17 @@ def normalise_config(config, domains, ports):
 def start(config):
     ports = get_ports(config)
     domains = get_subdomains(config)
+    bind_hostname = config["bind_hostname"]
 
     paths = {"doc_root": config["doc_root"],
              "ws_doc_root": config["ws_doc_root"]}
 
     if config["check_subdomains"]:
-        domains = check_subdomains(config, paths, domains)
+        domains = check_subdomains(config, paths, domains, bind_hostname)
 
     config_ = normalise_config(config, domains, ports)
 
-    servers = start_servers(config_, paths, ports)
+    servers = start_servers(config_, paths, ports, bind_hostname)
 
     return config_, servers
 
@@ -307,13 +308,11 @@ def load_config(default_path, override_path=None):
 
 def main():
     global logger
-    global bind_hostname
 
     config = load_config("config.default.json",
                          "config.json")
 
     logger = default_logger(config["log_level"])
-    bind_hostname = config["bind_hostname"]
 
     config_, servers = start(config)
 

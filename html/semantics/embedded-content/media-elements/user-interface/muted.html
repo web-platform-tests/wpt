@@ -21,8 +21,36 @@ function test_setting(e, muted, hasAttribute) {
 }
 </script>
 
-<!-- These tests are inside <video> so that the steps for updating the
-     muted IDL attribute cannot be delayed until </video>. -->
+<!-- These tests are inside <audio>/<video> so that the steps for updating the
+     muted IDL attribute cannot be delayed until the end tag is parsed. -->
+
+<audio id=a1>
+<script>
+var a1 = document.getElementById('a1');
+
+test(function() {
+  assert_false(a1.muted);
+}, 'getting audio.muted (parser-created)');
+
+test(function() {
+  test_setting(a1, false, false);
+}, 'setting audio.muted (parser-created)');
+</script>
+</audio>
+
+<audio id=a2 muted>
+<script>
+var a2 = document.getElementById('a2');
+
+test(function() {
+  assert_true(a2.muted);
+}, 'getting audio.muted with muted="" (parser-created)');
+
+test(function() {
+  test_setting(a2, true, true);
+}, 'setting audio.muted with muted="" (parser-created)');
+</script>
+</audio>
 
 <video id=v1>
 <script>
@@ -70,41 +98,43 @@ async_test(function(t) {
 </script>
 
 <script>
-test(function() {
-  var v = document.createElement('video');
-  assert_false(v.muted);
-}, 'getting video.muted (script-created)');
+['audio', 'video'].forEach(function(tagName) {
+  test(function() {
+    var m = document.createElement(tagName);
+    assert_false(m.muted);
+  }, 'getting ' + tagName + '.muted (script-created)');
 
-test(function() {
-  var v = document.createElement('video');
-  test_setting(v, false, false);
-}, 'setting video.muted (script-created)');
+  test(function() {
+    var m = document.createElement(tagName);
+    test_setting(m, false, false);
+  }, 'setting ' + tagName + '.muted (script-created)');
 
-test(function() {
-  var v = document.createElement('video');
-  v.setAttribute('muted', '');
-  assert_false(v.muted);
-}, 'getting video.muted with muted="" (script-created)');
+  test(function() {
+    var m = document.createElement(tagName);
+    m.setAttribute('muted', '');
+    assert_false(m.muted);
+  }, 'getting ' + tagName + '.muted with muted="" (script-created)');
 
-test(function() {
-  var v = document.createElement('video');
-  v.setAttribute('muted', '');
-  test_setting(v, false, true);
-}, 'setting video.muted with muted="" (script-created)');
+  test(function() {
+    var m = document.createElement(tagName);
+    m.setAttribute('muted', '');
+    test_setting(m, false, true);
+  }, 'setting ' + tagName + '.muted with muted="" (script-created)');
 
-test(function() {
-  var v = document.createElement('video');
-  v.setAttribute('muted', '');
-  v = v.cloneNode(false);
-  assert_true(v.hasAttribute('muted'));
-  assert_false(v.muted);
-}, 'getting video.muted with muted="" (cloneNode-created)');
+  test(function() {
+    var m = document.createElement(tagName);
+    m.setAttribute('muted', '');
+    m = m.cloneNode(false);
+    assert_true(m.hasAttribute('muted'));
+    assert_false(m.muted);
+  }, 'getting ' + tagName + '.muted with muted="" (cloneNode-created)');
 
-test(function() {
-  var e = document.createElement('div');
-  e.innerHTML = '<video muted>';
-  v = e.firstChild;
-  assert_true(v.hasAttribute('muted'));
-  assert_true(v.muted);
-}, 'getting video.muted with muted="" (innerHTML-created)');
+  test(function() {
+    var div = document.createElement('div');
+    div.innerHTML = '<' + tagName + ' muted>';
+    m = div.firstChild;
+    assert_true(m.hasAttribute('muted'));
+    assert_true(m.muted);
+  }, 'getting ' + tagName + '.muted with muted="" (innerHTML-created)');
+});
 </script>

@@ -11,19 +11,41 @@
 
 <video id=v1>
 <script>
+var v1 = document.getElementById('v1');
+
 test(function() {
-  var v = document.getElementById('v1');
-  assert_false(v.muted);
-}, 'muted for parser-created video');
+  assert_false(v1.muted);
+}, 'getting video.muted (parser-created)');
+
+test(function() {
+  v1.muted = true;
+  assert_true(v1.muted);
+  assert_false(v1.hasAttribute('muted'));
+
+  v1.muted = false;
+  assert_false(v1.muted);
+  assert_false(v1.hasAttribute('muted'));
+}, 'setting video.muted (parser-created)');
 </script>
 </video>
 
 <video id=v2 muted>
 <script>
+var v2 = document.getElementById('v2');
+
 test(function() {
-  var v = document.getElementById('v2');
-  assert_true(v.muted);
-}, 'muted for parser-created video with muted attribute');
+  assert_true(v2.muted);
+}, 'getting video.muted with muted="" (parser-created)');
+
+test(function() {
+  v2.muted = false;
+  assert_false(v2.muted);
+  assert_true(v2.hasAttribute('muted'));
+
+  v2.muted = true;
+  assert_true(v2.muted);
+  assert_true(v2.hasAttribute('muted'));
+}, 'setting video.muted with muted="" (parser-created)');
 </script>
 </video>
 
@@ -41,7 +63,7 @@ async_test(function(t) {
     assert_false(v.muted);
     t.done();
   }));
-}, 'muted for parser-created video with muted attribute after load');
+}, 'getting video.muted with muted="" after load (parser-created)');
 </script>
 
 <!-- Negative tests for script-created elements, where the muted content
@@ -51,11 +73,11 @@ async_test(function(t) {
 test(function() {
   var v = document.createElement('video');
   assert_false(v.muted);
-}, 'muted for script-created video');
+}, 'getting video.muted (script-created)');
 
 test(function() {
   var v = document.createElement('video');
   v.setAttribute('muted', '');
   assert_false(v.muted);
-}, 'muted for script-created video with muted attribute');
+}, 'getting video.muted with muted="" (script-created)');
 </script>

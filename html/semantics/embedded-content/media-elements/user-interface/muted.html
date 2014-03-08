@@ -6,6 +6,21 @@
 <style>video { display: none; }</style>
 <div id=log></div>
 
+<script>
+function test_setting(e, muted, hasAttribute) {
+  assert_equals(e.muted, muted);
+  assert_equals(e.hasAttribute('muted'), hasAttribute);
+
+  e.muted = !e.muted;
+  assert_equals(e.muted, !muted);
+  assert_equals(e.hasAttribute('muted'), hasAttribute);
+
+  e.muted = !e.muted;
+  assert_equals(e.muted, muted);
+  assert_equals(e.hasAttribute('muted'), hasAttribute);
+}
+</script>
+
 <!-- These tests are inside <video> so that the steps for updating the
      muted IDL attribute cannot be delayed until </video>. -->
 
@@ -18,13 +33,7 @@ test(function() {
 }, 'getting video.muted (parser-created)');
 
 test(function() {
-  v1.muted = true;
-  assert_true(v1.muted);
-  assert_false(v1.hasAttribute('muted'));
-
-  v1.muted = false;
-  assert_false(v1.muted);
-  assert_false(v1.hasAttribute('muted'));
+  test_setting(v1, false, false);
 }, 'setting video.muted (parser-created)');
 </script>
 </video>
@@ -38,13 +47,7 @@ test(function() {
 }, 'getting video.muted with muted="" (parser-created)');
 
 test(function() {
-  v2.muted = false;
-  assert_false(v2.muted);
-  assert_true(v2.hasAttribute('muted'));
-
-  v2.muted = true;
-  assert_true(v2.muted);
-  assert_true(v2.hasAttribute('muted'));
+  test_setting(v2, true, true);
 }, 'setting video.muted with muted="" (parser-created)');
 </script>
 </video>
@@ -74,9 +77,20 @@ test(function() {
 
 test(function() {
   var v = document.createElement('video');
+  test_setting(v, false, false);
+}, 'setting video.muted (script-created)');
+
+test(function() {
+  var v = document.createElement('video');
   v.setAttribute('muted', '');
   assert_false(v.muted);
 }, 'getting video.muted with muted="" (script-created)');
+
+test(function() {
+  var v = document.createElement('video');
+  v.setAttribute('muted', '');
+  test_setting(v, false, true);
+}, 'setting video.muted with muted="" (script-created)');
 
 test(function() {
   var v = document.createElement('video');

@@ -66,9 +66,6 @@ async_test(function(t) {
 }, 'getting video.muted with muted="" after load (parser-created)');
 </script>
 
-<!-- Negative tests for script-created elements, where the muted content
-     attribute should have no effect. -->
-
 <script>
 test(function() {
   var v = document.createElement('video');
@@ -80,4 +77,20 @@ test(function() {
   v.setAttribute('muted', '');
   assert_false(v.muted);
 }, 'getting video.muted with muted="" (script-created)');
+
+test(function() {
+  var v = document.createElement('video');
+  v.setAttribute('muted', '');
+  v = v.cloneNode(false);
+  assert_true(v.hasAttribute('muted'));
+  assert_false(v.muted);
+}, 'getting video.muted with muted="" (cloneNode-created)');
+
+test(function() {
+  var e = document.createElement('div');
+  e.innerHTML = '<video muted>';
+  v = e.firstChild;
+  assert_true(v.hasAttribute('muted'));
+  assert_true(v.muted);
+}, 'getting video.muted with muted="" (innerHTML-created)');
 </script>

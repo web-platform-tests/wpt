@@ -5,9 +5,9 @@
     <title>Vibration API: cancel ongoing vibrate() with a new call to vibrate</title>
     <link rel='author' title='Robin Berjon' href='mailto:robin@berjon.com'/>
     <link rel='help' href='http://www.w3.org/TR/vibration/#methods'/>
-    <meta name='flags' content='vendor-prefix, dom, interact'/>
+    <meta name='flags' content='dom, interact'/>
     <meta name='assert' content='Cancel the pre-existing instance of the processing vibration patterns algorithm, if any.'/>
-    <!-- 
+    <!--
       When you review this test, please add
       <link rel='reviewer' title='Your Name' href='mailto:your-email-address'/>
     -->
@@ -24,11 +24,10 @@
     <button id='vib'>Vibrate!</button>
     <div id='log'></div>
     <script src='/resources/testharness.js'></script>
-    <!-- When this test gets approved, remove a "../" below -->
-    <script src='support/feature-detection.js'></script>
-    <script src='support/helpers.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <script src='/common/vendor-prefix.js' data-prefixed-objects='[{"ancestors":["navigator"], "name":"vibrate"}]'></script>
     <script>
-      if (supportsVibration()) {
+      if (undefined !== navigator.vibrate) {
           document.getElementById("vib").onclick = function () {
               navigator.vibrate(5000);
               setTimeout(function () {

@@ -4,10 +4,12 @@
 function getVideoURI(base)
 {
     var v = document.createElement("video");
-    if (v.canPlayType("video/webm"))
+    if (v.canPlayType("video/webm")) {
         return base + '.webm';
-    if (v.canPlayType("video/ogg"))
+    }
+    if (v.canPlayType("video/ogg")) {
         return base + '.ogv';
+    }
     return base + '.m4v';
 }
 
@@ -17,7 +19,8 @@ function getVideoURI(base)
 function getAudioURI(base)
 {
     var a = document.createElement("audio");
-    if (a.canPlayType('audio/ogg'))
+    if (a.canPlayType('audio/ogg')) {
         return base + '.oga';
+    }
     return base + '.mp3';
 }

@@ -21,7 +21,7 @@ test(function() {
    "maybe",
    "audioElement.canPlayType() should return 'maybe' on supported format w/o codecs parameter");
  }
-}, "audio.canPlayType() - supported format w/o codecs parameter");
+}, "audio.canPlayType() - supported format (OGG) w/o codecs parameter");
 
 test(function() {
  var v = document.getElementById("v");
@@ -31,7 +31,17 @@ test(function() {
     "maybe",
     "videoElement.canPlayType() should return 'maybe' on supported format w/o codecs parameter");
  }
-}, "video.canPlayType() - supported format w/o codecs parameter");
+}, "video.canPlayType() - supported format (WebM) w/o codecs parameter");
+
+test(function() {
+ var v = document.getElementById("v");
+ if (v.canPlayType('video/mp4; codecs="avc1.42E01E"') != "") {
+   assert_equals(
+    v.canPlayType("video/mp4"),
+    "maybe",
+    "videoElement.canPlayType() should return 'maybe' on supported format w/o codecs parameter");
+ }
+}, "video.canPlayType() - supported format (MP4) w/o codecs parameter");
   </script>
  </body>
 </html>

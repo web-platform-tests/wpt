@@ -14,9 +14,13 @@
 test(function() {
  var v = document.getElementById("v");
   assert_equals(
+   v.canPlayType('video/webm;codecs="vp8,vorbis"'),
+   v.canPlayType('video/webm;codecs="vorbis,vp8"'),
+   "order of codecs parameters should have no effect (WebM)");
+  assert_equals(
    v.canPlayType('video/ogg; codecs="theora, vorbis"'),
    v.canPlayType('video/ogg; codecs="vorbis, theora"'),
-   "order of codecs parameters should have no effect");
+   "order of codecs parameters should have no effect (OGG)");
 });
   </script>
  </body>

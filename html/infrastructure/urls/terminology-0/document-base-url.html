@@ -15,7 +15,8 @@
 
   var t1 = async_test("The document base URL must be the value of href attribute of the base element"),
       t2 = async_test("The document base URL must be document base URL of the container's"),
-      t3 = async_test("The document base URL must be the base URL of the creator's");
+      t3 = async_test("The document base URL must be the base URL of the creator's"),
+      t4 = async_test("The document base URL of an iframe srcdoc must be the document base URL of the container's");
 
   function on_load() {
     t1.step(function () {
@@ -42,7 +43,14 @@
       assert_equals(fr.contentDocument.baseURI, document.baseURI, "The baseURI should equal to the creator's base URL.");
     });
     t3.done();
-  }
 
+    t4.step(function () {
+      var fr = document.createElement("iframe");
+      fr.setAttribute("srcdoc", "<p>foobar</p>");
+      document.body.appendChild(fr);
+      assert_equals(fr.contentDocument.baseURI, document.baseURI, "The baseURI should be the container's document base URL.");
+    });
+    t4.done();
+  }
   </script>
 </body>

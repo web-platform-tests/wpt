@@ -16,15 +16,8 @@ function getVideoURI(base)
 //
 function getAudioURI(base)
 {
-    var extension = '.mp3';
-
-    var audiotag = document.createElement("audio");
-
-    if ( audiotag.canPlayType &&
-         audiotag.canPlayType('audio/ogg') )
-    {
-        extension = '.oga';
-    }
-
-    return base + extension;
+    var a = document.createElement("audio");
+    if (a.canPlayType('audio/ogg'))
+        return base + '.oga';
+    return base + '.mp3';
 }

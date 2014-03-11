@@ -22,9 +22,6 @@ policies and contribution forms [3].
 <body>
 <div id="log"></div>
 <script>
-// TODO rename ^^ (cat) to /shadow-deep/
-// TODO: this is currently based on assumptions about crbug.com/337616
-
 var SD_SHADOW_DEEP_QUERYSELECTOR_T1 = async_test('SD_SHADOW_DEEP_QUERYSELECTOR_T1');
 
 SD_SHADOW_DEEP_QUERYSELECTOR_T1.step(unit(function (ctx) {
@@ -65,11 +62,11 @@ SD_SHADOW_DEEP_QUERYSELECTOR_T1.step(unit(function (ctx) {
     d.body.appendChild(outerhost);
 
 
-    assert_equals(d.querySelectorAll('#foo-host ^^ span').length, 4, 'Point 1: match only direct children of the outer shadow tree');
-    assert_equals(d.querySelectorAll('#foo-host ^^ span')[0], span1, 'Point 2: incorrect match');
-    assert_equals(d.querySelectorAll('#foo-host ^^ span')[1], span2, 'Point 3: incorrect match');
-    assert_equals(d.querySelectorAll('#foo-host ^^ span')[2], span3, 'Point 4: incorrect match');
-    assert_equals(d.querySelectorAll('#foo-host ^^ span')[3], span4, 'Point 5: incorrect match');
+    assert_equals(d.querySelectorAll('#foo-host /shadow-deep/ span').length, 4, 'Point 1: match only direct children of the outer shadow tree');
+    assert_equals(d.querySelectorAll('#foo-host /shadow-deep/ span')[0], span1, 'Point 2: incorrect match');
+    assert_equals(d.querySelectorAll('#foo-host /shadow-deep/ span')[1], span2, 'Point 3: incorrect match');
+    assert_equals(d.querySelectorAll('#foo-host /shadow-deep/ span')[2], span3, 'Point 4: incorrect match');
+    assert_equals(d.querySelectorAll('#foo-host /shadow-deep/ span')[3], span4, 'Point 5: incorrect match');
 
     SD_SHADOW_DEEP_QUERYSELECTOR_T1.done();
  }));
@@ -115,11 +112,10 @@ SD_SHADOW_DEEP_QUERYSELECTOR_T2.step(unit(function (ctx) {
     d.body.appendChild(outerhost);
 
 
-    assert_equals(s1.querySelectorAll('* ^^ span').length, 4, 'Point 1: match only in the inner shadow tree');
-    assert_equals(s1.querySelectorAll('* ^^ span')[0], span1, 'Point 2: incorrect match');
-    assert_equals(s1.querySelectorAll('* ^^ span')[1], span2, 'Point 3: incorrect match');
-    assert_equals(s1.querySelectorAll('* ^^ span')[2], span4, 'Point 4: incorrect match');
-    assert_equals(s1.querySelectorAll('* ^^ span')[3], span3, 'Point 5: incorrect match');
+    assert_equals(s1.querySelectorAll('* /shadow-deep/ span').length, 3, 'Point 1: match only in the inner shadow tree');
+    assert_equals(s1.querySelectorAll('* /shadow-deep/ span')[0], span1, 'Point 2: incorrect match');
+    assert_equals(s1.querySelectorAll('* /shadow-deep/ span')[1], span4, 'Point 4: incorrect match');
+    assert_equals(s1.querySelectorAll('* /shadow-deep/ span')[2], span3, 'Point 5: incorrect match');
 
 
     SD_SHADOW_DEEP_QUERYSELECTOR_T2.done();
@@ -166,9 +162,7 @@ SD_SHADOW_DEEP_QUERYSELECTOR_T3.step(unit(function (ctx) {
     d.body.appendChild(outerhost);
 
 
-    assert_equals(s2.querySelectorAll('* ^^ span').length, 1, 'Point 1: one match');
-    assert_equals(s2.querySelectorAll('* ^^ span')[0], span4, 'Point 2: incorrect match');
-
+    assert_equals(s2.querySelectorAll('* /shadow-deep/ span').length, 0, 'Point 1: no match');
 
 
     SD_SHADOW_DEEP_QUERYSELECTOR_T3.done();

@@ -13,7 +13,7 @@ policies and contribution forms [3].
 <title>Shadow DOM Test: /shadow-all/ combinator</title>
 <link rel="author" title="Kenji Baheux" href="mailto:kenjibaheux@google.com">
 <link rel="help" href="http://dev.w3.org/csswg/shadow-styling/#shadow-all-combinator">
-<meta name="assert" content="/shadow-all/ should select all elements in a Shadow tree">
+<meta name="assert" content="/shadow/ should select all elements in a Shadow tree">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -22,9 +22,6 @@ policies and contribution forms [3].
 <body>
 <div id="log"></div>
 <script>
-// TODO rename ^ (hat) to /shadow-all/
-// TODO: this is currently based on assumptions about crbug.com/337616
-
 var SD_SHADOW_ALL_QUERYSELECTOR_T1 = async_test('SD_SHADOW_ALL_QUERYSELECTOR_T1');
 
 SD_SHADOW_ALL_QUERYSELECTOR_T1.step(unit(function (ctx) {
@@ -65,10 +62,10 @@ SD_SHADOW_ALL_QUERYSELECTOR_T1.step(unit(function (ctx) {
     d.body.appendChild(outerhost);
 
 
-    assert_equals(d.querySelectorAll('#foo-host ^ span').length, 3, 'Point 1: match only direct children of the outer shadow tree');
-    assert_equals(d.querySelectorAll('#foo-host ^ span')[0], span1, 'Point 2: incorrect match');
-    assert_equals(d.querySelectorAll('#foo-host ^ span')[1], span2, 'Point 3: incorrect match');
-    assert_equals(d.querySelectorAll('#foo-host ^ span')[2], span3, 'Point 4: incorrect match');
+    assert_equals(d.querySelectorAll('#foo-host /shadow/ span').length, 3, 'Point 1: match only direct children of the outer shadow tree');
+    assert_equals(d.querySelectorAll('#foo-host /shadow/ span')[0], span1, 'Point 2: incorrect match');
+    assert_equals(d.querySelectorAll('#foo-host /shadow/ span')[1], span2, 'Point 3: incorrect match');
+    assert_equals(d.querySelectorAll('#foo-host /shadow/ span')[2], span3, 'Point 4: incorrect match');
 
     SD_SHADOW_ALL_QUERYSELECTOR_T1.done();
  }));
@@ -114,11 +111,8 @@ SD_SHADOW_ALL_QUERYSELECTOR_T2.step(unit(function (ctx) {
     d.body.appendChild(outerhost);
 
 
-    assert_equals(s1.querySelectorAll('* ^ span').length, 4, 'Point 1: match only in the inner shadow tree');
-    assert_equals(s1.querySelectorAll('* ^ span')[0], span1, 'Point 2: incorrect match');
-    assert_equals(s1.querySelectorAll('* ^ span')[1], span2, 'Point 3: incorrect match');
-    assert_equals(s1.querySelectorAll('* ^ span')[2], span4, 'Point 4: incorrect match');
-    assert_equals(s1.querySelectorAll('* ^ span')[3], span4, 'Point 5: incorrect match');
+    assert_equals(s1.querySelectorAll('* /shadow/ span').length, 1, 'Point 1: match only in the inner shadow tree');
+    assert_equals(s1.querySelectorAll('* /shadow/ span')[0], span4, 'Point 4: incorrect match');
 
 
 
@@ -166,10 +160,7 @@ SD_SHADOW_ALL_QUERYSELECTOR_T3.step(unit(function (ctx) {
     d.body.appendChild(outerhost);
 
 
-    assert_equals(s2.querySelectorAll('* ^ span').length, 1, 'Point 1: no match');
-    assert_equals(s2.querySelectorAll('* ^ span')[0], span4, 'Point 2: incorrect match');
-
-
+    assert_equals(s2.querySelectorAll('* /shadow/ span').length, 0, 'Point 1: no match');
 
     SD_SHADOW_ALL_QUERYSELECTOR_T3.done();
  }));

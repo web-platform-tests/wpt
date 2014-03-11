@@ -163,6 +163,8 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
 class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """RequestHandler for WebTestHttpd"""
 
+    protocol_version = "HTTP/1.1"
+
     def handle_one_request(self):
         response = None
         try:

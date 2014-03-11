@@ -47,8 +47,9 @@ test(unit(function (ctx) {
 }), 'A_06_00_03_T02');
 
 test(unit(function (ctx) {
-	var d = newRenderedHTMLDocument(ctx);
-	var host = d.createElement('div');
+    var d = newRenderedHTMLDocument(ctx);
+    var host = d.createElement('div');
+    d.body.appendChild(host);
 
 	//Shadow root to play with
 	var s = createSR(host);

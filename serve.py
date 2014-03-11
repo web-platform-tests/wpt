@@ -170,7 +170,7 @@ class WebSocketDaemon(object):
                     "--log-level", log_level]
         if (bind_hostname):
             cmd_args = ["-H", host] + cmd_args
-        opts, cmd_args = pywebsocket._parse_args_and_config(cmd_args)
+        opts, args = pywebsocket._parse_args_and_config(cmd_args)
         opts.cgi_directories = []
         opts.is_executable_method = None
         self.server = pywebsocket.WebSocketServer(opts)

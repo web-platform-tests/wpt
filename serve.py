@@ -164,17 +164,13 @@ def start_https_server(config, paths, port, bind_hostname):
 class WebSocketDaemon(object):
     def __init__(self, host, port, doc_root, handlers_root, log_level, bind_hostname):
         self.host = host
+        cmd_args = ["-p", port,
+                    "-d", doc_root,
+                    "-w", handlers_root,
+                    "--log-level", log_level]
         if (bind_hostname):
-          opts, args  = pywebsocket._parse_args_and_config(["-H", host,
-                                                            "-p", port,
-                                                            "-d", doc_root,
-                                                            "-w", handlers_root,
-                                                            "--log-level", log_level])
-        else:
-          opts, args  = pywebsocket._parse_args_and_config(["-p", port,
-                                                            "-d", doc_root,
-                                                            "-w", handlers_root,
-                                                            "--log-level", log_level])
+            cmd_args = ["-H", host] + cmd_args
+        opts, cmd_args = pywebsocket._parse_args_and_config(cmd_args)
         opts.cgi_directories = []
         opts.is_executable_method = None
         self.server = pywebsocket.WebSocketServer(opts)

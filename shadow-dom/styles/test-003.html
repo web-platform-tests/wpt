@@ -55,6 +55,7 @@ test(unit(function (ctx) {
 test(unit(function (ctx) {
 	var d = newRenderedHTMLDocument(ctx);
 	var host = d.createElement('div');
+        d.body.appendChild(host);
 
 	//Shadow root to play with
 	var s = createSR(host);
@@ -66,25 +67,6 @@ test(unit(function (ctx) {
 	assert_equals(s.styleSheets.length, 1, 'Style sheet is not accessible via styleSheets');
 }), 'A_06_00_03_T03');
 
-
-
-//TODO Now this tests produces an error because addStyleSheet method
-//is not implemented. See https://bugs.webkit.org/show_bug.cgi?id=103395
-test(unit(function (ctx) {
-    var d = newRenderedHTMLDocument(ctx);
-    var host = d.createElement('div');
-    host.setAttribute('style', 'width:100px');
-    d.body.appendChild(host);
-
-	//Shadow root to play with
-	var s = createSR(host);
-
-    // create StyleSheet
-    var style = d.createElement('style');
-    s.addStyleSheet(style);
-
-    assert_equals(s.styleSheets.length, 1, 'Style sheet is not accessible via styleSheets');
-}), 'A_06_00_03_T04');
 </script>
 </body>
 </html>

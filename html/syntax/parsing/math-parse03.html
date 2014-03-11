@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>math in html: parsing</title>
-<script src="/resources/testharness.js"></script>
+<script src="../../../resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
@@ -117,39 +117,19 @@ assert_equals(document.getElementById("d3p-mrow").firstChild.firstChild.childNod
 },"html P in mrow terminates the math: mrow empty");
 
 test(function() {
-assert_equals(
-function(x) {
-var s="";
-for(var i=0;i<x.length;i++){
-s+= " {" + x[i].namespaceURI +"}" +x[i].nodeName;
-}
-return s;
-} (document.getElementById("d3p-mrow").childNodes),
-" {http://www.w3.org/1998/Math/MathML}math {http://www.w3.org/1999/xhtml}P {http://www.w3.org/1999/xhtml}MI")
+assert_equals(document.getElementById("d3p-mrow").childNodes[0].nodeName,"math");
+assert_equals(document.getElementById("d3p-mrow").childNodes[1].nodeName,"P");
+assert_equals(document.getElementById("d3p-mrow").childNodes[2].nodeName,"MI");
 },"html P in mrow terminates the math: math,P,MI children of div");
 
 test(function() {
-assert_equals(
-function(x) {
-var s="";
-for(var i=0;i<x.length;i++){
-s+= " {" + x[i].namespaceURI +"}" +x[i].nodeName;
-}
-return s;
-}(document.getElementById("m4").firstChild.childNodes),
-" {http://www.w3.org/1999/xhtml}UNDEFINEDELEMENT")
-},"Undefinedelement in mtext produces Undefinedelement nodename in XHTML namespace");
+assert_equals(document.getElementById("m4").firstChild.firstChild.nodeName,"UNDEFINEDELEMENT");
+assert_equals(document.getElementById("m4").firstChild.firstChild.namespaceURI,"http://www.w3.org/1999/xhtml")
+},"Undefinedelement in mtext produces UNDEFINEDELEMENT nodename in XHTML namespace");
 
 test(function() {
-assert_equals(
-function(x) {
-var s="";
-for(var i=0;i<x.length;i++){
-s+= " {" + x[i].namespaceURI +"}" +x[i].nodeName;
-}
-return s;
-}(document.getElementById("m5").firstChild.childNodes),
-" {http://www.w3.org/1999/xhtml}MI")
+assert_equals(document.getElementById("m5").firstChild.firstChild.nodeName,"MI");
+assert_equals(document.getElementById("m5").firstChild.firstChild.namespaceURI,"http://www.w3.org/1999/xhtml")
 },"mi in mtext produces MI nodename in XHTML namespace");
 
 test(function() {

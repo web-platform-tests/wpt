@@ -39,70 +39,46 @@
            </semantics></math></div>
 </div>
 <script>
-
 test(function() {
 assert_equals(document.getElementById("m1"),document.getElementsByTagName("math")[0]);
 },"MATH element name should be lowercased");
 
 test(function() {
-assert_equals(document.getElementById("d1").firstChild.firstChild.nodeName,"mi")
-},"MI element name should be lowercased");
-
-test(function() {
-assert_true(document.getElementById("d1").firstChild.firstChild.hasAttribute("mathvariant"))
-},"MATHVARIANT attribute name should be lowercased");
-
-test(function() {
+assert_equals(document.getElementById("d1").firstChild.firstChild.nodeName,"mi");
+assert_equals(document.getElementById("d1").firstChild.firstChild.namespaceURI, "http://www.w3.org/1998/Math/MathML");
+assert_true(document.getElementById("d1").firstChild.firstChild.hasAttribute("mathvariant"));
 assert_equals(document.getElementById("d1").firstChild.firstChild.getAttribute("mathvariant"),"BOLD")
-},"MATHVARIANT attribute value should not be lowercased (even when invalid)");
+},"MI element name and mathvariant attribute name should be lowercased, attribute value unchanged");
 
 test(function() {
-assert_true(document.getElementById("d2").firstChild.firstChild.hasAttribute("definitionURL"))
-},"DEFINITIONurl attribute markup should produce a definitionURL attribute");
-
-test(function() {
+assert_true(document.getElementById("d2").firstChild.firstChild.hasAttribute("definitionURL"));
 assert_equals(document.getElementById("d2").firstChild.firstChild.getAttribute("definitionURL"),"www.example.org/FOO")
-},"definitionURL attribute value should not be lowercased");
+},"DEFINITIONurl attribute markup should produce a definitionURL attribute, attribute value unchanged");
 
 test(function() {
-assert_equals(document.getElementById("m3span-mtext").firstChild.firstChild.nodeName,"SPAN")
-},"html Span in mtext produces SPAN nodename");
-
-test(function() {
+assert_equals(document.getElementById("m3span-mtext").firstChild.firstChild.nodeName,"SPAN");
 assert_equals(document.getElementById("m3span-mtext").firstChild.firstChild.namespaceURI,"http://www.w3.org/1999/xhtml")
-},"html Span in mtext produces element with XHTML namespace");
+},"html Span in mtext produces SPAN nodename in XHTML namespace");
 
 test(function() {
-assert_equals(document.getElementById("m3span-mi").firstChild.firstChild.nodeName,"SPAN")
-},"html Span in mi produces SPAN nodename");
-
-test(function() {
+assert_equals(document.getElementById("m3span-mi").firstChild.firstChild.nodeName,"SPAN");
 assert_equals(document.getElementById("m3span-mi").firstChild.firstChild.namespaceURI,"http://www.w3.org/1999/xhtml")
-},"html Span in mi produces element with XHTML namespace");
+},"html Span in mi produces SPAN nodename in XHTML namespace");
 
 test(function() {
-assert_equals(document.getElementById("m3span-mrow").firstChild.firstChild.nodeName,"SPAN")
-},"html Span in mrow produces SPAN nodename");
-
-test(function() {
+assert_equals(document.getElementById("m3span-mrow").firstChild.firstChild.nodeName,"SPAN");
 assert_equals(document.getElementById("m3span-mrow").firstChild.firstChild.namespaceURI,"http://www.w3.org/1999/xhtml")
-},"html Span in mrow produces element with XHTML namespace");
+},"html Span in mrow produces SPAN nodename in XHTML namespace");
 
 test(function() {
-assert_equals(document.getElementById("m3p-mtext").firstChild.firstChild.nodeName,"P")
-},"html P in mtext produces P nodename");
-
-test(function() {
+assert_equals(document.getElementById("m3p-mtext").firstChild.firstChild.nodeName,"P");
 assert_equals(document.getElementById("m3p-mtext").firstChild.firstChild.namespaceURI,"http://www.w3.org/1999/xhtml")
-},"html P in mtext produces element with XHTML namespace");
+},"html P in mtext produces P nodename in XHTML namespace");
 
 test(function() {
-assert_equals(document.getElementById("m3p-mi").firstChild.firstChild.nodeName,"P")
-},"html P in mi produces P nodename");
-
-test(function() {
+assert_equals(document.getElementById("m3p-mi").firstChild.firstChild.nodeName,"P");
 assert_equals(document.getElementById("m3p-mi").firstChild.firstChild.namespaceURI,"http://www.w3.org/1999/xhtml")
-},"html P in mi produces element with XHTML namespace");
+},"html P in mi produces P nodename in XHTML namespace");
 
 test(function() {
 assert_equals(document.getElementById("d3p-mrow").childNodes.length ,3)

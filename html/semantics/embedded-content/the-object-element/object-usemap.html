@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: object-usemap-effect</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+var t1 = async_test("usemap attribute");
+function on_load() {
+  t1.step(function () {
+    assert_true(frames[1].location.href.indexOf("white.html") > 0, "A white area should be displayed.");
+    assert_true(frames[2].location.href.indexOf("red.html") > 0, "A red area should be displayed.");
+    assert_true(frames[3].location.href.indexOf("green.html") > 0, "A green area should be displayed.");
+    assert_true(frames[4].location.href.indexOf("blue.html") > 0, "A blue area should be displayed.");
+    assert_true(frames[5].location.href.indexOf("yellow.html") > 0, "A yellow area should be displayed.");
+  })
+  t1.done();
+}
+
+</script>
+<body onload="on_load()">
+  <div id="log"></div>
+  <iframe src="test2.html"></iframe>
+  <iframe src="" name="frame1"></iframe>
+  <iframe src="" name="frame2"></iframe>
+  <iframe src="" name="frame3"></iframe>
+  <iframe src="" name="frame4"></iframe>
+  <iframe src="" name="frame5"></iframe>
+</body>

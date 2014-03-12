@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: object - handler</title>
+<link rel="author" title="Intel" href="http://www.intel.com" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<object id="test" data="test0.html" type="text/html"></object>
+<div id="result" style="display:none"></div>
+<script>
+
+var result;
+var t1 = async_test("The nested browsing context must be navigated to the resource specified by the data attribute.");
+var t2 = async_test("The object.data must not be updated if the browsing context gets further navigated.");
+var testEle;
+
+setup(function() {
+  testEle = document.getElementById("test");
+  result = document.getElementById("result");
+  window.addEventListener("message", callback, false);
+});
+
+function callback(e) {
+  if (e.data == "test0 loaded") {
+    t1.step(function() {
+      assert_true(testEle.data.indexOf("test0.html") != -1, "The value of attribute data should not be updated.");
+      assert_equals(result.innerHTML, "1", "The soruce specified by data attribute of object element is not loaded.");
+    });
+    t1.done();
+  } else if (e.data == "test1 loaded") {
+    t2.step(function() {
+      assert_true(testEle.contentDocument.location.href.indexOf("test1.html") != -1, "The bowser context should be navigated to test1.html.");
+      assert_true(testEle.data.indexOf("test0.html") != -1, "The value of attribute data should not be updated.");
+    });
+    t2.done();
+  }
+}
+
+</script>

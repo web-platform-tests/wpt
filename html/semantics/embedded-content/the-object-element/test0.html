@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script>
+
+parent.document.getElementById("result").innerHTML = "1";
+parent.postMessage("test0 loaded", "*");
+document.location.href = "test1.html";
+
+</script>

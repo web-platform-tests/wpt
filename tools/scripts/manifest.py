@@ -158,11 +158,14 @@ class Manifest(object):
         raise KeyError
 
     def to_json(self):
+        items = defaultdict(list)
+        for test_path, tests in self.itertypes(*self.item_types):
+            for test in tests:
+                items[test.item_type].append(test.to_json())
+
         rv = {"rev":self.rev,
               "local_changes":self.local_changes.to_json(),
-              "items":{},
-              "items": {item_type:[item.to_json() for item in self.itertype(item_type)]
-                        for item_type in self.item_types}}
+              "items":items}
         return rv
 
     @classmethod

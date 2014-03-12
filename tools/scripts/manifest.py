@@ -141,10 +141,10 @@ class Manifest(object):
             if path in self._data[item_type]:
                 del self._data[item_type][path]
 
-    def itertype(self, item_type):
-        values_by_type = reduce(lambda x,y:x|y, self._data[item_type].values(), set())
-        for item in sorted(values_by_type, key=lambda x:x.url):
-            yield item
+    def itertypes(self, *types):
+        for item_type in types:
+            for item in sorted(self._data[item_type].items()):
+                yield item
 
     def __iter__(self):
         for item_type in self.item_types:

@@ -24,3 +24,6 @@ class AlertsQuitTest(base_test.WebDriverBaseTest):
         with self.assertRaises(Exception):
         	alert.accept()
         AlertsQuitTest.driver = None
+
+if __name__ == '__main__':
+    unittest.main()

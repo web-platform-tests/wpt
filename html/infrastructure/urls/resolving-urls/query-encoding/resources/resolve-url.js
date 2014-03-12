@@ -300,8 +300,6 @@ onload = function() {
       var video_ext = '';
       if (elm.canPlayType('video/webm;codecs="vp8,vorbis"')) {
         video_ext = 'webm';
-      } else if (elm.canPlayType('video/ogg; codecs="theora,vorbis"')) {
-        video_ext = 'ogv';
       } else if (elm.canPlayType('video/mp4; codecs="avc1.42E01E,mp4a.40.2"')) {
         video_ext = 'm4v';
       }

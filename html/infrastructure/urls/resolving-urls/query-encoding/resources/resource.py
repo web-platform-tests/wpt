@@ -124,8 +124,6 @@ def main(request, response):
         else:
             video = 'movie_300' # duration: 300
         rv = open(os.path.join(request.doc_root, "media", "%s.%s" % (video, ext))).read()
-        if ext == 'ogv':
-            ext = 'ogg'
         return [("Content-Type", "video/%s" % ext)], rv
     elif type == 'webvtt':
         return [("Content-Type", "text/vtt")], "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\n%s" % q

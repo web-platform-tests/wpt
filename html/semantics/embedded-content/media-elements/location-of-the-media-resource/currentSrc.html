@@ -1,0 +1,12 @@
+<!doctype html>
+<title>currentSrc</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+['audio', 'video'].forEach(function(tagName) {
+  test(function() {
+    assert_equals(document.createElement(tagName).currentSrc, '');
+  }, tagName + '.currentSrc initial value');
+});
+</script>

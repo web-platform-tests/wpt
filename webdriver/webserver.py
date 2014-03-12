@@ -99,7 +99,7 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if not self._try_handler('GET'):
             if self.path == '/navigation/redirect':
                 self.send_response(301)
-                self.send_header('Location', '/navigation/empty.html')
+                self.send_header('Location', '/navigation/res/empty.html')
                 self.end_headers()
             elif self.docroot:
                 # don't include query string and fragment, and prepend

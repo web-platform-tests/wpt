@@ -13,7 +13,7 @@ import argparse
 manifest_name = "MANIFEST.json"
 exclude_php_hack = True
 ref_suffixes = ["_ref", "-ref"]
-blacklist = ["/", "/tools/", "/resources/", "/common/"]
+blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/"]
 
 logging.basicConfig()
 logger = logging.getLogger("Web platform tests")
@@ -141,10 +141,10 @@ class Manifest(object):
             if path in self._data[item_type]:
                 del self._data[item_type][path]
 
-    def itertype(self, item_type):
-        values_by_type = reduce(lambda x,y:x|y, self._data[item_type].values(), set())
-        for item in sorted(values_by_type, key=lambda x:x.url):
-            yield item
+    def itertypes(self, *types):
+        for item_type in types:
+            for item in sorted(self._data[item_type].items()):
+                yield item
 
     def __iter__(self):
         for item_type in self.item_types:
@@ -158,11 +158,14 @@ class Manifest(object):
         raise KeyError
 
     def to_json(self):
+        items = defaultdict(list)
+        for test_path, tests in self.itertypes(*self.item_types):
+            for test in tests:
+                items[test.item_type].append(test.to_json())
+
         rv = {"rev":self.rev,
               "local_changes":self.local_changes.to_json(),
-              "items":{},
-              "items": {item_type:[item.to_json() for item in self.itertype(item_type)]
-                        for item_type in self.item_types}}
+              "items":items}
         return rv
 
     @classmethod

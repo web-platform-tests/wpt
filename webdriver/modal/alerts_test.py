@@ -15,7 +15,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
 
     def setUp(self):
         self.wait = WebDriverWait(self.driver, 5, ignored_exceptions = [NoAlertPresentException])
-        self.driver.get(self.webserver.where_is('modal/alerts.html'))
+        self.driver.get(self.webserver.where_is('modal/res/alerts.html'))
 
     # Alerts
     def test_should_allow_user_to_accept_an_alert(self):

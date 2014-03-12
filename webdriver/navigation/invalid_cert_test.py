@@ -18,11 +18,11 @@ class InvalidCertTest(base_test.WebDriverBaseTest):
     def testCanNavigateToSiteWithSelfSignedCert(self):
         self.webserver.httpd.socket = ssl.wrap_socket(
             self.webserver.httpd.socket,
-            certfile=os.path.join(_THIS_DIR, 'self-signed.key'),
+            certfile=os.path.join(_THIS_DIR, 'res/self-signed.key'),
             server_side=True)
 
         self.driver.get(
-            self.webserver.where_is('navigation/empty.html').replace('http:', 'https:', 1))
+            self.webserver.where_is('navigation/res/empty.html').replace('http:', 'https:', 1))
 
         self.assertEquals('Cheese', self.driver.title)
 

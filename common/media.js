@@ -7,9 +7,6 @@ function getVideoURI(base)
     if (v.canPlayType("video/webm")) {
         return base + '.webm';
     }
-    if (v.canPlayType("video/ogg")) {
-        return base + '.ogv';
-    }
     return base + '.m4v';
 }
 

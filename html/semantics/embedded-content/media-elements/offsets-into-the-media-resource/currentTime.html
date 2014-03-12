@@ -35,7 +35,7 @@ test(function() {
 
 async_test(function(t) {
   var v = document.createElement('video');
-  v.src = getVideoURI('/media/movie_5');
+  v.src = getVideoURI('/media/white');
   v.onloadedmetadata = t.step_func(function() {
     assert_greater_than(v.readyState, v.HAVE_NOTHING);
     assert_false(v.seeking);

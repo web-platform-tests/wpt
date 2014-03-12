@@ -13,7 +13,7 @@
             var detected_pointertypes = {};
             var test_pointerEvent = async_test("lostpointercapture: subsequent events to target.");  // set up test harness
             // showPointerTypes is defined in pointerevent_support.js
-            // Requirements: the callbakc function will reference the test_pointerEvent object and
+            // Requirements: the callback function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
             
@@ -33,7 +33,7 @@
                     check_PointerEvent(event);
                 }
             
-                if (event.pointerId == captured_event.pointerId && event.type !== "lostpointercapture" && event.type !== "gotpointercapture") {
+                if (event.type !== "lostpointercapture" && event.type !== "gotpointercapture" && event.pointerId == captured_event.pointerId) {
                     if (f_gotPointerCapture) {
                         // on first event received for capture, release capture
                         listener.releasePointerCapture(event.pointerId);
@@ -49,19 +49,20 @@
             
             function targetEventHandler(event) {
                 
-                if (event.type == "pointerdown") {
-                    // pointerdown event received will be used to capture events.
-                    listener.setPointerCapture(event.pointerId);
-                    captured_event = event;
-                }
-            
-                if (f_gotPointerCapture) {
+				if (f_gotPointerCapture) {
                     if (event.type != "pointerout" && event.type != "pointerleave") {
                         test_pointerEvent.step(function () {
                             assert_true(false, "The Target element should not have received any events while capture is active. Event recieved:" + event.type + ".  ");
                         });
                     }
                 }
+                
+                if (event.type == "pointerdown") {
+                    // pointerdown event received will be used to capture events.
+                    listener.setPointerCapture(event.pointerId);
+                    captured_event = event;
+                }
+                
                 if (f_lostPointerCapture) {
                     test_pointerEvent.step(function () {
                         assert_equals(event.pointerId, captured_event.pointerId, "pointerID is same for event captured and after release");

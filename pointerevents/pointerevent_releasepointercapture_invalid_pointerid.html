@@ -26,7 +26,7 @@
             
                 var target0 = document.getElementById("target0");
                 target0.style["touchAction"] = "none";
-                var listener = document.getElementById("complete-notice");
+                var listener = document.getElementById("listener");
             
                 // try to release pointer capture with an invalid id
                 on_event(listener, "pointermove", function (event) {
@@ -55,6 +55,7 @@
         </script>
     </head>
     <body onload="run()">
+        <div id="listener"></div>
         <h1> Pointer Event: releasePointerCapture() DOMException - InvalidPointerId</h1>
         <h4> 
             Test Description: 

@@ -16,7 +16,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         page = self.webserver.where_is('navigation/res/empty.html')
         self.driver.get(page)
 
-        url = self.driver.current_url
+        url = self.driver.get_current_url()
         self.assertEquals(page, url)
 
 
@@ -25,7 +25,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         self.driver.get(page)
 
         expected = self.webserver.where_is('navigation/res/empty.html')
-        url = self.driver.current_url
+        url = self.driver.get_current_url()
         self.assertEquals(expected, url)
 
 
@@ -34,7 +34,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         self.driver.get(page)
 
         expected = self.webserver.where_is('navigation/res/empty.html')
-        url = self.driver.current_url
+        url = self.driver.get_current_url()
         self.assertEquals(expected, url)
 
 
@@ -43,7 +43,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         self.driver.get(page)
 
         expected = self.webserver.where_is('navigation/res/empty.html')
-        url = self.driver.current_url
+        url = self.driver.get_current_url()
         self.assertEquals(expected, url)
 
 
@@ -51,7 +51,7 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         page = self.webserver.where_is('navigation/res/60s-meta-redirect.html')
         self.driver.get(page)
 
-        url = self.driver.current_url
+        url = self.driver.get_current_url()
         self.assertEquals(page, url)
 
 

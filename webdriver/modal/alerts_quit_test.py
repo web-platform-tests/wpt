@@ -7,14 +7,14 @@ import unittest
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 import base_test
 
-from selenium.common.exceptions import NoAlertPresentException
-from selenium.webdriver.support.wait import WebDriverWait
+from client.exceptions import NoSuchAlertException
+from client.wait import WebDriverWait
 
 
 class AlertsQuitTest(base_test.WebDriverBaseTest):
 
     def setUp(self):
-        self.wait = WebDriverWait(self.driver, 5, ignored_exceptions = [NoAlertPresentException])
+        self.wait = WebDriverWait(self.driver, 5, ignored_exceptions = [NoSuchAlertException])
         self.driver.get(self.webserver.where_is('modal/res/alerts.html'))
 
     def test_can_quit_when_an_alert_is_present(self):
@@ -22,7 +22,7 @@ class AlertsQuitTest(base_test.WebDriverBaseTest):
         alert = self.wait.until(lambda x: x.switch_to_alert())
         self.driver.quit()
         with self.assertRaises(Exception):
-        	alert.accept()
+            alert.accept()
         AlertsQuitTest.driver = None
 
 if __name__ == '__main__':

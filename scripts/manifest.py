@@ -13,7 +13,7 @@ import argparse
 manifest_name = "MANIFEST.json"
 exclude_php_hack = True
 ref_suffixes = ["_ref", "-ref"]
-blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/", "webdriver"]
+blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/", "/webdriver/"]
 
 logging.basicConfig()
 logger = logging.getLogger("Web platform tests")

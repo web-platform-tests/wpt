@@ -6,7 +6,7 @@ http://user:pass@foo:21/bar;par?b#c  s:http u:user pass:pass h:foo port:21 p:/ba
 http:foo.com  s:http h:example.org p:/foo/foo.com
 \t\s\s\s:foo.com\s\s\s\n  s:http h:example.org p:/foo/:foo.com
 \sfoo.com\s\s  s:http h:example.org p:/foo/foo.com
-a:\t\sfoo.com  s:a p:%20foo.com
+a:\t\sfoo.com  s:a p:\sfoo.com
 http://f:21/\sb\s?\sd\s#\se\s  s:http h:f port:21 p:/%20b%20 q:?%20d%20 f:#\se
 http://f:/c  s:http h:f p:/c
 http://f:0/c  s:http h:f port:0 p:/c

@@ -155,7 +155,7 @@ http://example.com/\u202E/foo/\u202D/bar  s:http h:example.com p:/%E2%80%AE/foo/
 
 # Based on http://trac.webkit.org/browser/trunk/LayoutTests/fast/url/script-tests/relative.js
 http://www.google.com/foo?bar=baz# about:blank s:http h:www.google.com p:/foo q:?bar=baz f:#
-http://www.google.com/foo?bar=baz#\s\u00BB  s:http h:www.google.com p:/foo q:?bar=baz f:#\s\u00BB
+http://www.google.com/foo?bar=baz#\s\u00BB  s:http h:www.google.com p:/foo q:?bar=baz f:#\s%C2%BB
 http://[www.google.com]/
 http://www.google.com  s:http h:www.google.com p:/
 http://192.0x00A80001  s:http h:192.0x00a80001 p:/

@@ -14,9 +14,9 @@ class ForwardToNothingTest(base_test.WebDriverBaseTest):
     def test_forwardToNothing(self):
         
         self.driver.get(self.webserver.where_is('navigation/forwardStart.html'))
-        body = self.driver.find_element_by_tag_name("body").text
-        self.driver.forward()
-        currbody = self.driver.find_element_by_tag_name("body").text
+        body = self.driver.find_element_by_css("body").get_text()
+        self.driver.go_forward()
+        currbody = self.driver.find_element_by_css("body").get_text()
         self.assertEqual(body, currbody)
 
 if __name__ == '__main__':

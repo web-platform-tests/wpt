@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>test</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org"/>
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/#loading-xml-documents"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  test(function(){
+    var doc = (new DOMParser()).parseFromString("<x>text</x>", "application/xml");
+    assert_equals(doc.childNodes.length, 1);
+    assert_equals(doc.childNodes[0].textContent, "text");
+    assert_true(doc.load("resources/001.xml"));
+    assert_equals(doc.childNodes.length, 0);
+    doc.onload = function(){
+      assert_equals(doc.childNodes.length, 2);
+      assert_equals(doc.childNodes[0].textContent, "Hello");
+      assert_equals(doc.childNodes[1].textContent, "World");
+    }
+  }, "load well-formed xml document");
+
+  test(function(){
+    var doc = (new DOMParser()).parseFromString("<x>text</x>", "application/xml");
+    assert_equals(doc.childNodes.length, 1);
+    assert_equals(doc.childNodes[0].textContent, "text");
+    assert_true(doc.load("resources/002.xml"));
+    assert_equals(doc.childNodes.length, 0);
+    doc.onload = function(){
+      assert_equals(doc.childNodes.length, 0);
+    }
+  }, "load non well-formed xml document");
+
+  test(function(){
+    var doc = (new DOMParser()).parseFromString("<x>text</x>", "application/xml");
+
+    assert_throws("SYNTAX_ERR", function() {
+      doc.load("\\foobar");
+    });
+  }, "cannot resolve url");
+
+  test(function(){
+    var doc = (new DOMParser()).parseFromString("<x>text</x>", "application/xml");
+    assert_throws("SECURITY_ERR", function() {
+      doc.load("http://example.org/");
+    });
+  }, "the origin is not the same as the document");
+</script>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>text field selection</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#textFieldSelection">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  var types = ["hidden", "email", "datetime", "date", "month", "week", "time", "number", "range", "color", "checkbox", "radio", "file", "submit", "image", "reset", "button"]; //types for which the API doesn't apply
+  var types2 = ["text", "search", "tel", "url", "password"]; //types for which the API applies
+
+  types.forEach(function(type){
+    test(function(){
+      var el = document.createElement("input");
+      el.type = type;
+      assert_throws("INVALID_STATE_ERR", function(){
+        el.selectionStart;
+      });
+      assert_throws("INVALID_STATE_ERR", function(){
+        el.selectionStart = 1;
+      });
+    }, "text field selection doesn't apply for input type " + type);
+  });
+
+  types2.forEach(function(type) {
+    test(function() {
+      var el = document.createElement("input");
+      el.type = type;
+      try {
+        assert_equals(el.selectionStart, 0);
+        el.selectionStart = 1;
+      } catch (e) {
+        assert_unreached("get/set selectionStart on input type " + type + " throw an exception");
+      }
+    }, "text field selection applies for input type " + type);
+  });
+</script>

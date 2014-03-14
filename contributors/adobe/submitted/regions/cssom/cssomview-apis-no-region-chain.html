@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSSOM pre-existing APIs with no region chain</title>
+        <link rel="author" title="Adobe" href="http://html.adobe.com/">
+        <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com">
+        <link rel="reviewer" title="" href="">
+        <link rel="help" href="http://www.w3.org/TR/css3-regions/#cssomview-and-regions">
+        <meta name="assert" content="CSSOM View attributes give 'no layout box' result for named flows with no region chain">
+        <meta name="flags" content="dom">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script type="text/javascript">
+
+        function testZeroAttribute(tag_name, attribute_name) {
+            var element = document.createElement(tag_name);
+            /*if (tag_name == "img") {
+                element.src = "../support/1x1-red.png";
+            }*/
+            document.body.appendChild(element);
+            element.style.setProperty("position", "relative");
+            element.style.setProperty("left", "10px");
+            element.style.setProperty("top", "10px");
+            element.style.setProperty("width", "100px");
+            element.style.setProperty("height", "100px");
+            element.style.setProperty("-webkit-flow-into", "named-flow");
+            var valueInNamedFlow = element[attribute_name];
+            document.body.removeChild(element);
+            return valueInNamedFlow;
+        }
+
+        var zeroAttributes = [
+            ["div", "offsetTop"], 
+            ["div", "offsetLeft"],
+            ["div", "offsetWidth"],
+            ["div", "offsetHeight"],
+            ["img", "offsetTop"], 
+            ["img", "offsetLeft"],
+            ["img", "offsetWidth"],
+            ["img", "offsetHeight"],
+            ["img", "x"],
+            ["img", "y"],
+        ];
+
+        zeroAttributes.forEach(function(name) {
+            test (function() { assert_equals(testZeroAttribute(name[0], name[1]), 0)}, 
+                "test " + name[1] + " for " + name[0]) 
+            }
+        );
+        </script>
+    </body>
+</html>

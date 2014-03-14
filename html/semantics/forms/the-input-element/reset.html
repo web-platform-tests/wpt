@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>input type reset</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#reset-button-state-(type=reset)">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form>
+  <input type=text id=input1 value="foobar">
+  <input type=text id=input2>
+  <input type=reset id=reset>
+</form>
+
+<input type=text id=input3 value="barfoo">
+
+<script>
+  var input1 = document.getElementById('input1'),
+      input2 = document.getElementById('input2'),
+      input3 = document.getElementById('input3'),
+      reset = document.getElementById('reset')
+
+  test(function(){
+    assert_equals(input1.value, "foobar");
+    assert_equals(input2.value, "");
+    assert_equals(input3.value, "barfoo");
+    input1.value = "foobar1";
+    input2.value = "notempty";
+    input3.value = "barfoo1";
+    assert_equals(input1.value, "foobar1");
+    assert_equals(input2.value, "notempty");
+    assert_equals(input3.value, "barfoo1");
+    reset.click();
+    assert_equals(input1.value, "foobar");
+    assert_equals(input2.value, "");
+    assert_equals(input3.value, "barfoo1");
+  }, "reset button only resets the form owner");
+
+  test(function(){
+    assert_false(reset.willValidate);
+  }, "the element is barred from constraint validation");
+
+  test(function(){
+    assert_equals(input1.value, "foobar");
+    assert_equals(input2.value, "");
+    assert_equals(input3.value, "barfoo1");
+    reset.disabled = true;
+    reset.click();
+    assert_equals(input1.value, "foobar");
+    assert_equals(input2.value, "");
+    assert_equals(input3.value, "barfoo1");
+  }, "clicking on a disabled reset does nothing");
+</script>

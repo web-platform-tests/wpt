@@ -23,7 +23,7 @@
             element.style.setProperty("top", "10px");
             element.style.setProperty("width", "100px");
             element.style.setProperty("height", "100px");
-            element.style.setProperty("-webkit-flow-into", "named-flow");
+            element.style.setProperty("flow-into", "named-flow");
             var valueInNamedFlow = element[attribute_name];
             document.body.removeChild(element);
             return valueInNamedFlow;
@@ -45,7 +45,7 @@
         function testOffsetParent() {
             var element = document.createElement("div");
             document.body.appendChild(element);
-            element.style.setProperty("-webkit-flow-into", "named-flow");
+            element.style.setProperty("flow-into", "named-flow");
             var offsetParentInNamedFlow = element.offsetParent;
             document.body.removeChild(element);
             return offsetParentInNamedFlow;
@@ -54,7 +54,7 @@
         function testGetClientRects() {
             var element = document.createElement("div");
             document.body.appendChild(element);
-            element.style.setProperty("-webkit-flow-into", "named-flow");
+            element.style.setProperty("flow-into", "named-flow");
             var clientRectList = element.getClientRects();
             document.body.removeChild(element);
             return clientRectList;            
@@ -63,7 +63,7 @@
         function testGetBoundingClientRect() {
             var element = document.createElement("div");
             document.body.appendChild(element);
-            element.style.setProperty("-webkit-flow-into", "named-flow");
+            element.style.setProperty("flow-into", "named-flow");
             element.style.setProperty("width", "100px");
             element.style.setProperty("height", "100px");
             var domRect = element.getBoundingClientRect();

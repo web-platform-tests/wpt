@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>dialog element: showModal()</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#the-dialog-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<dialog id="d1">
+  <p>foobar</p>
+  <button>OK</button>
+</dialog>
+<dialog id="d2" open>
+  <p>foobar</p>
+  <button>OK</button>
+</dialog>
+<script>
+  var d1 = document.getElementById('d1'),
+      d2 = document.getElementById('d2');
+
+  test(function(){
+    try {
+      assert_false(d1.open);
+      d1.showModal();
+      assert_equals(d1.open, "");
+      assert_equals(document.activeElement, d1.firstChild);
+    } catch(e) {
+      assert_unreached("An exception has been thrown");
+    }
+  });
+
+  test(function(){
+    assert_throws("INVALID_STATE_ERR", function() {
+      d2.showModal();
+    });
+  }, "showModal() on a <dialog> that already has an open attribute throws an InvalidStateError exception");
+
+  test(function(){
+    var d = document.createElement("dialog");
+    assert_throws("INVALID_STATE_ERR", function() {
+      d.showModal();
+    });
+  }, "showModal() on a <dialog> not in a Document throws an InvalidStateError exception");
+</script>

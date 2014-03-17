@@ -127,18 +127,13 @@ for key in warnings.keys():
   del_file.write(template_del)
   del_file.close()
 
+ins_file = open("elements/ins/datetime-isvalid.html", 'wb')
+del_file = open("elements/del/datetime-isvalid.html", 'wb')
+ins_file.write(template + '<title>valid datetime</title>\n')
+del_file.write(template + '<title>valid datetime</title>\n')
 for key in non_errors.keys():
   non_error = non_errors[key]
-  template_ins = template
-  template_del = template
-  template_ins += '<title>%s</title>\n' % key
-  template_del += '<title>%s</title>\n' % key
-  template_ins += '<ins datetime="%s"></ins>' % non_errors[key]
-  template_del += '<del datetime="%s"></del>' % non_errors[key]
-  ins_file = open("elements/ins/%s-isvalid.html" % key, 'wb')
-  ins_file.write(template_ins)
-  ins_file.close()
-  del_file = open("elements/del/%s-isvalid.html" % key, 'wb')
-  del_file.write(template_del)
-  del_file.close()
-
+  ins_file.write('<ins datetime="%s"></ins>\n' % non_errors[key])
+  del_file.write('<del datetime="%s"></del>\n' % non_errors[key])
+ins_file.close()
+del_file.close()

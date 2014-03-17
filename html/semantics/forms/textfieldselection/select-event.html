@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>text field selection</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#textFieldSelection">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<input value="foobar">
+<textarea>foobar</textarea>
+<script>
+  var t1 = async_test("select() on input fires select event"),
+      t2 = async_test("select() on textarea fires select event"),
+      testEvt = function(e) {
+        assert_true(e.isTrusted, "event is trusted");
+        assert_true(e.bubbles, "event bubbles");
+        assert_false(e.cancelable, "event is not cancelable");
+      };
+  document.querySelector("input").onselect = t1.step_func_done(testEvt);
+  document.querySelector("textarea").onselect = t2.step_func_done(testEvt);
+
+  document.querySelector("input").select();
+  document.querySelector("textarea").select();
+</script>

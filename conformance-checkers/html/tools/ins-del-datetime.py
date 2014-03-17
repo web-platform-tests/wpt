@@ -133,7 +133,7 @@ ins_file.write(template + '<title>valid datetime</title>\n')
 del_file.write(template + '<title>valid datetime</title>\n')
 for key in non_errors.keys():
   non_error = non_errors[key]
-  ins_file.write('<ins datetime="%s"></ins>\n' % non_errors[key])
-  del_file.write('<del datetime="%s"></del>\n' % non_errors[key])
+  ins_file.write('<ins datetime="%s"></ins> <!-- %s -->\n' % (non_errors[key], key))
+  del_file.write('<del datetime="%s"></del> <!-- %s -->\n' % (non_errors[key], key))
 ins_file.close()
 del_file.close()

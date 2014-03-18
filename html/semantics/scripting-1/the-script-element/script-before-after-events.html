@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>script beforescriptexecute/afterscriptexecute events</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#the-script-element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  var before = function(e) {
+    test(function(){
+      assert_true(e.isTrusted);
+      assert_true(e.bubbles);
+      assert_true(e.cancelable);
+    }, "'before' event is trusted, bubbles and is cancelable");
+  };
+
+  var after = function(e) {
+    test(function(){
+      assert_true(e.isTrusted);
+      assert_true(e.bubbles);
+      assert_false(e.cancelable);
+    }, "'after' event is trusted, bubbles and doesn't cancelable");
+  };
+</script>
+<script onbeforescriptexecute=before(event) onafterscriptexecute=after(event)>
+  document.querySelector("script");
+</script>

@@ -4,6 +4,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
+function t(type, expected) {
+  assert_equals(canPlayType(type), expected, type);
+}
+
 function mime(type, codecs) {
   if (codecs.length) {
     return type + '; codecs="' + codecs.join(', ') + '"';
@@ -27,30 +31,20 @@ function canPlayType(type) {
 }
 
 test(function() {
-  function t(type) {
-    assert_equals(canPlayType(type), '', type);
-  }
-  t('application/octet-stream');
-  t('application/octet-stream; codecs="vorbis"');
-  t('application/octet-stream; codecs="vp8, vorbis"');
-  t('application/octet-stream; codecs="mp4a.40.2"');
-  t('application/octet-stream; codecs="theora, vorbis"');
-  t('application/octet-stream; codecs="avc1.42E01E, mp4a.40.2"');
+  t('application/octet-stream', '');
+  t('application/octet-stream; codecs="vorbis"', '');
+  t('application/octet-stream; codecs="vp8, vorbis"', '');
+  t('application/octet-stream; codecs="mp4a.40.2"', '');
+  t('application/octet-stream; codecs="theora, vorbis"', '');
+  t('application/octet-stream; codecs="avc1.42E01E, mp4a.40.2"', '');
 }, 'application/octet-stream');
 
 test(function() {
-  function t(type) {
-    assert_equals(canPlayType(type), '', type);
-  }
-  t('video/x-new-fictional-format');
-  t('video/x-new-fictional-format;codecs="kittens,bunnies"');
-}, 'video/x-new-fictional-format');
+  t('video/x-new-fictional-format', '');
+  t('video/x-new-fictional-format;codecs="kittens,bunnies"', '');
+}, 'video/x-new-fictional-format', '');
 
 function type_codecs_test(type, audioCodecs, videoCodecs) {
-  function t(type, expected) {
-    assert_equals(canPlayType(type), expected, type);
-  }
-
   var typeSupported = false;
   var codecSupported = false;
 

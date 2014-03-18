@@ -598,7 +598,7 @@ window.completion_callback = function(tests, status) {
             return {name: test.name,
                     status: subtest_status_map[test.status],
                     message: test.message}
-        });
+        })
     ));
 
     runner.on_result(harness_status_map[status.status],

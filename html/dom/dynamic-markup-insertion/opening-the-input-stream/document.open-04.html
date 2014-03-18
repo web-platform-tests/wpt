@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>document.open()</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#opening-the-input-stream">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  document.open("text/html", "");
+  document.writeln('<!DOCTYPE html>');
+  document.writeln('<title>document.open()</title>');
+  document.writeln('<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#opening-the-input-stream">');
+  document.writeln('<script src="/resources/testharness.js"><\/script>');
+  document.writeln('<script src="/resources/testharnessreport.js"><\/script>');
+  document.writeln('<div id="log"></div>');
+  document.writeln('<script>');
+  document.writeln('test(function(){');
+  document.writeln('  assert_equals(document.readyState, "loading");');
+  document.writeln('}, "readiness of the document is loading");');
+  document.writeln('<\/script>');
+  document.close();
+</script>

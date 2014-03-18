@@ -3,17 +3,11 @@
 //
 function getVideoURI(base)
 {
-    var extension = '.mp4';
-
-    var videotag = document.createElement("video");
-
-    if ( videotag.canPlayType  &&
-         videotag.canPlayType('video/ogg; codecs="theora, vorbis"') )
-    {
-        extension = '.ogv';
+    var v = document.createElement("video");
+    if (v.canPlayType("video/webm")) {
+        return base + '.webm';
     }
-
-    return base + extension;
+    return base + '.m4v';
 }
 
 //
@@ -21,15 +15,9 @@ function getVideoURI(base)
 //
 function getAudioURI(base)
 {
-    var extension = '.mp3';
-
-    var audiotag = document.createElement("audio");
-
-    if ( audiotag.canPlayType &&
-         audiotag.canPlayType('audio/ogg') )
-    {
-        extension = '.oga';
+    var a = document.createElement("audio");
+    if (a.canPlayType('audio/ogg')) {
+        return base + '.oga';
     }
-
-    return base + extension;
+    return base + '.mp3';
 }

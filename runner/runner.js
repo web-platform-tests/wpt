@@ -591,11 +591,15 @@ window.completion_callback = function(tests, status) {
     var harness_status_map = {0:"OK", 1:"ERROR", 2:"TIMEOUT"}
     var subtest_status_map = {0:"PASS", 1:"FAIL", 2:"TIMEOUT", 3:"NOTRUN"}
 
-    var subtest_results = tests.map(function (test) {
-        return {name: test.name,
-                status: subtest_status_map[test.status],
-                message: test.message}
-    });
+    // this ugly hack is because IE really insists on holding on to the objects it creates in
+    // other windows, and on losing track of them when the window gets closed
+    var subtest_results = JSON.parse(JSON.stringify(
+        tests.map(function (test) {
+            return {name: test.name,
+                    status: subtest_status_map[test.status],
+                    message: test.message}
+        });
+    ));
 
     runner.on_result(harness_status_map[status.status],
                      status.message,

@@ -7,3 +7,4 @@
 [submodule "tools/pywebsocket"]
 	path = tools/pywebsocket
 	url = https://github.com/w3c/pywebsocket.git
+	ignore = dirty

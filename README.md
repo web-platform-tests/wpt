@@ -82,10 +82,10 @@ in the default configuration.
 Publication
 ===========
 
-The master branch is automatically synced to `http://w3c-test.org/`.
+The master branch is automatically synced to http://w3c-test.org/.
 
 Pull requests that have been checked are automatically mirrored to
-`http://w3c-test.org/submissions/`.
+http://w3c-test.org/submissions/.
 
 Finding Things
 ==============

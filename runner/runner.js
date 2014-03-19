@@ -196,7 +196,7 @@ VisualOutput.prototype = {
         a.href = window.URL.createObjectURL(blob);
         a.download = "runner-results.json";
         a.textContent = "Download JSON results";
-        if (!a.download) a.textContent += " (right-click and save as to download)";
+        if (!a.getAttribute("download")) a.textContent += " (right-click and save as to download)";
     },
 
     test_name_node: function(test) {

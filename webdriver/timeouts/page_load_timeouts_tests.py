@@ -17,11 +17,8 @@ class PageLoadTimeoutTest(base_test.WebDriverBaseTest):
 
     def test_should_not_timeout_on_page_load(self):
         self.driver.set_page_load_timeout(30)
-        try:
-            self.load_page()
-            pass
-        except TimeoutException as e:
-            self.fail("Expected no timeout on page load")
+        self.load_page()
+        pass
 
     def load_page(self):
         self.driver.get(self.webserver.where_is('timeouts/res/page_load_timeouts_tests.html'))

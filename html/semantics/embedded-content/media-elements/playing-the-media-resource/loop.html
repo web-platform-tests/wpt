@@ -1,0 +1,57 @@
+<!doctype html>
+<title>loop</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/media.js"></script>
+<div id="log"></div>
+<script>
+// Test the interaction of the seek algorithm's "Set the current playback
+// position to the given new playback position" with the loop step in "When the
+// current playback position reaches the end of the media resource when the
+// direction of playback is forwards". When the seek algorithm sets the current
+// playback position, that triggers the loop step which in turn triggers a new
+// seek. That seek aborts the first seek, which means that its timeupdate and
+// seeked events are never fired.
+function await_seeked(a, callback) {
+  var events = [];
+  a.onseeking = a.ontimeupdate = a.onseeked = function(e) {
+    events.push(e.type);
+    if (e.type == 'seeked') {
+      callback(events);
+    }
+  };
+}
+
+async_test(function(t) {
+  var a = new Audio(getAudioURI('/media/sound_5'));
+  a.loop = true;
+  a.onloadedmetadata = t.step_func(function() {
+    a.currentTime = a.duration;
+    await_seeked(a, t.step_func(function(events) {
+      assert_equals(a.currentTime, 0);
+      assert_array_equals(events, ['seeking', 'seeking', 'timeupdate', 'seeked']);
+      t.done();
+    }));
+  });
+}, 'seek to end while paused');
+
+async_test(function(t) {
+  var a = new Audio(getAudioURI('/media/sound_5'));
+  a.loop = true;
+  a.play();
+  a.onplaying = t.step_func(function() {
+    assert_greater_than(a.duration, 1);
+    a.currentTime = a.duration;
+    await_seeked(a, t.step_func(function(events) {
+      assert_less_than(a.currentTime, 1);
+      // Ignore potential timeupdate events fired prior to seek.
+      while (events[0] == 'timeupdate') {
+        events.shift();
+      }
+      assert_array_equals(events, ['seeking', 'seeking', 'timeupdate', 'seeked']);
+      // Wait for extra events in case the first seek wasn't aborted.
+      t.step_timeout(t.step_func_done(), 0);
+    }));
+  });
+}, 'seek to end while playing');
+</script>

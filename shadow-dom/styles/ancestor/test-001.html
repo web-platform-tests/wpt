@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--
+Distributed under both the W3C Test Suite License [1] and the W3C
+3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
+policies and contribution forms [3].
+
+[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
+[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
+[3] http://www.w3.org/2004/10/27-testcases
+-->
+<html>
+<head>
+<title>Shadow DOM Test: A_06_02_00_01</title>
+<link rel="author" title="Rune Lillesveen" href="mailto:rune@opera.com">
+<link rel="help" href="http://dev.w3.org/csswg/shadow-styling/#ancestor-selector">
+<meta name="assert" content=":ancestor matching the shadow host element">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script>
+test(unit(function (ctx) {
+    var d = newRenderedHTMLDocument(ctx);
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+    var sr = createSR(host);
+    sr.innerHTML = '<style>:ancestor(div) { border-style: dotted }</style>';
+
+    assert_equals(getComputedStyle(host, null).borderStyle, 'dotted', ':ancestor selecting host element adds style to host element');
+
+}), 'A_06_02_00_01_T01');
+
+test(unit(function (ctx) {
+    var d = newRenderedHTMLDocument(ctx);
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+    var sr = createSR(host);
+    sr.innerHTML = '<style>:ancestor(div) #inner { border-style: dotted }</style><div id="inner"></div>';
+    var inner = sr.getElementById('inner')
+
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'dotted', ':ancestor matching host element when selecting element in shadow tree');
+
+}), 'A_06_02_00_01_T02');
+</script>
+</body>
+</html>

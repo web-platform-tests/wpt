@@ -10,7 +10,7 @@ import base_test
 
 class PageLoadTimeoutTest(base_test.WebDriverBaseTest):
 
-    def testShouldTimeoutOnPageLoadTakingTooLong(self):
+    def test_should_timeout_on_page_load_taking_too_long(self):
         self.driver.set_page_load_timeout(0.01)
         try:
             self._loadPage()
@@ -18,16 +18,7 @@ class PageLoadTimeoutTest(base_test.WebDriverBaseTest):
         except TimeoutException as e:
             pass
 
-    def testClickShouldTimeout(self):
-        self._loadPage()
-        self.driver.set_page_load_timeout(0.01)
-        try:
-            self.driver.find_element_by_id("multilinelink").click()
-            self.fail("Expected a timeout on page load after clicking")
-        except TimeoutException as e:
-            pass
-
-    def testShouldNotTimeoutOnPageLoad(self):
+    def test_should_not_timeout_on_page_load(self):
         self.driver.set_page_load_timeout(30)
         try:
             self._loadPage()

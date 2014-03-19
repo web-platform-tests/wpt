@@ -136,5 +136,14 @@ async_test(function(t) {
     assert_true(m.hasAttribute('muted'));
     assert_true(m.muted);
   }, 'getting ' + tagName + '.muted with muted="" (innerHTML-created)');
+
+  test(function() {
+    var id = tagName;
+    assert_equals(document.getElementById(id), null);
+    document.write('<' + tagName + ' id=' + id + ' muted>');
+    m = document.getElementById(id);
+    assert_true(m.hasAttribute('muted'));
+    assert_true(m.muted);
+  }, 'getting ' + tagName + '.muted with muted="" (document.write-created)');
 });
 </script>

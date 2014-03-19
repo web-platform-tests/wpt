@@ -1,6 +1,6 @@
 # Tests for absolutely-positioned children of a flex container
-== flexbox-abpos-child-1a.html flexbox-abpos-child-1-ref.html
-== flexbox-abpos-child-1b.html flexbox-abpos-child-1-ref.html
+== flexbox-abspos-child-1a.html flexbox-abspos-child-1-ref.html
+== flexbox-abspos-child-1b.html flexbox-abspos-child-1-ref.html
 
 # Tests for handling anonymous flex items
 == flexbox-anonymous-items-1.html flexbox-anonymous-items-1-ref.html
@@ -139,6 +139,10 @@
 # Tests for the order in which we paint flex items
 == flexbox-paint-ordering-1.xhtml flexbox-paint-ordering-1-ref.xhtml
 == flexbox-paint-ordering-2.xhtml flexbox-paint-ordering-2-ref.xhtml
+
+# Tests for "display:flex" on root node
+== flexbox-root-node-1a.html flexbox-root-node-1-ref.html
+== flexbox-root-node-1b.html flexbox-root-node-1-ref.html
 
 # Tests for sizing of flex containers, e.g. under min/max size constraints
 == flexbox-sizing-horiz-1.xhtml flexbox-sizing-horiz-1-ref.xhtml

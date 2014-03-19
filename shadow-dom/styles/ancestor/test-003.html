@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--
+Distributed under both the W3C Test Suite License [1] and the W3C
+3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
+policies and contribution forms [3].
+
+[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
+[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
+[3] http://www.w3.org/2004/10/27-testcases
+-->
+<html>
+<head>
+<title>Shadow DOM Test: A_06_02_00_03</title>
+<link rel="author" title="Rune Lillesveen" href="mailto:rune@opera.com">
+<link rel="help" href="http://dev.w3.org/csswg/shadow-styling/#ancestor-selector">
+<meta name="assert" content="DOM mutations and state changes affecting :ancestor matching">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script>
+test(unit(function (ctx) {
+    var d = newRenderedHTMLDocument(ctx);
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+    var sr = createSR(host);
+    sr.innerHTML = '<style>:ancestor(.b) div { border-style: dotted }</style><div id="inner"></div>';
+    var inner = sr.getElementById('inner');
+
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'none', 'Computed style before class change on body');
+
+    d.body.className = 'b';
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'dotted', 'Class change on body affecting :ancestor selector');
+
+}), 'A_06_02_00_03_T01');
+
+test(unit(function (ctx) {
+    var d = newRenderedHTMLDocument(ctx);
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+    var sr = createSR(host);
+    sr.innerHTML = '<style>:ancestor(#b) div { border-style: dotted }</style><div id="inner"></div>';
+    var inner = sr.getElementById('inner');
+
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'none', 'Computed style before id change on body');
+
+    d.body.id = 'b';
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'dotted', 'Id change on body affecting :ancestor selector');
+
+}), 'A_06_02_00_03_T02');
+
+test(unit(function (ctx) {
+    var d = newRenderedHTMLDocument(ctx);
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+    d.body.tabIndex = 1;
+    var sr = createSR(host);
+    sr.innerHTML = '<style>:ancestor(:focus) div { border-style: dotted }</style><div id="inner"></div>';
+    var inner = sr.getElementById('inner');
+
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'none', 'Computed style before focus change on body');
+
+    d.body.focus();
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'dotted', 'Focus change on body affecting :ancestor selector');
+
+}), 'A_06_02_00_03_T03');
+
+
+test(unit(function (ctx) {
+    var d = newRenderedHTMLDocument(ctx);
+    var host = d.createElement('div');
+    var firstChild = d.body.appendChild(d.createElement('div'));
+    firstChild.appendChild(host);
+    firstChild.id = "x";
+    var sr = createSR(host);
+    sr.innerHTML = '<style>:ancestor(#x:first-child) div { border-style: dotted }</style><div id="inner"></div>';
+    var inner = sr.getElementById('inner');
+
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'dotted', 'Computed style before adding node before :first-child');
+
+    d.body.insertBefore(d.createElement('div'), d.body.firstChild);
+    assert_equals(getComputedStyle(inner, null).borderStyle, 'none', 'Added node affecting :ancestor(:first-child) selector');
+
+}), 'A_06_02_00_03_T04');
+
+</script>
+</body>
+</html>

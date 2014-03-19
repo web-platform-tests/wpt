@@ -42,7 +42,7 @@ test(function() {
 test(function() {
   t('video/x-new-fictional-format', '');
   t('video/x-new-fictional-format;codecs="kittens,bunnies"', '');
-}, 'video/x-new-fictional-format', '');
+}, 'video/x-new-fictional-format');
 
 function type_codecs_test(type, audioCodecs, videoCodecs) {
   var typeSupported = false;

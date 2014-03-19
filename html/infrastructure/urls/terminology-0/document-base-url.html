@@ -34,14 +34,12 @@
     }, "The fallback base URL of a document containing no base element is the document's address.");
 
     async_test(function () {
-      var fr = document.createElement("iframe"),
-          iframe_doc;
-      fr.setAttribute("src", "about:blank");
-      document.body.appendChild(fr);
-      iframe = document.getElementsByTagName("iframe")[1];
+      var iframe = document.createElement("iframe");
       iframe.onload = this.step_func_done(function () {
         assert_equals(iframe.contentDocument.baseURI, document.baseURI, "The document base URL should be the creator document's base URL.");
       });
+      iframe.setAttribute("src", "about:blank");
+      document.body.appendChild(iframe);
     }, "The fallback base URL of a document whose address is about:blank is the document base URL of the creator document.");
 
     async_test(function () {

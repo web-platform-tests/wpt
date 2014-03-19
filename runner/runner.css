@@ -39,3 +39,26 @@ html.done section + section { border-top: none; }
 body > p { text-align: center; }
 body > p > textarea { width: 90%; height: 20em; }
 
+body {
+    padding-top:    70px;
+}
+
+.container {
+    max-width:  800px;
+}
+
+.navbar-inverse .navbar-brand {
+    color:  #fff;
+}
+
+.horizontal-form .form-group {
+    padding-bottom: 15px;
+}
+
+header.navbar-inverse {
+    background: linear-gradient(to bottom, rgb(7, 62, 128) 0px, rgb(0, 45, 80) 100%)
+}
+
+ul.error, ul.warning {
+    padding:    0;
+}

@@ -194,8 +194,9 @@ VisualOutput.prototype = {
         var a = this.elem.querySelector(".jsonResults");
         var blob = new Blob([this.runner.results.to_json()], { type: "application/json" });
         a.href = window.URL.createObjectURL(blob);
-        a.download = "foo.json";
+        a.download = "runner-results.json";
         a.textContent = "Download JSON results";
+        if (!a.download) a.textContent += " (right-click and save as to download)";
     },
 
     test_name_node: function(test) {

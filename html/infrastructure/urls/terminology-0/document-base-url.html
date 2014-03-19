@@ -23,14 +23,12 @@
     }
 
     async_test(function() {
-      var fr = document.createElement("iframe"),
-          iframe_doc;
-      fr.setAttribute("src", "/common/blank.html");
-      document.body.appendChild(fr);
-      iframe = document.getElementsByTagName("iframe")[0];
+      var iframe = document.createElement("iframe");
       iframe.onload = this.step_func_done(function () {
         assert_equals(iframe.contentDocument.baseURI, iframe.contentDocument.location.href, "The document base URL should be the document's address.");
       });
+      iframe.setAttribute("src", "/common/blank.html");
+      document.body.appendChild(iframe);
     }, "The fallback base URL of a document containing no base element is the document's address.");
 
     async_test(function () {
@@ -43,14 +41,12 @@
     }, "The fallback base URL of a document whose address is about:blank is the document base URL of the creator document.");
 
     async_test(function () {
-      var fr = document.createElement("iframe"),
-          iframe;
-      fr.setAttribute("srcdoc", "<p>foobar</p>");
-      document.body.appendChild(fr);
-      iframe = document.getElementsByTagName("iframe")[2];
+      var iframe = document.createElement("iframe");
       iframe.onload = this.step_func_done(function () {
         assert_equals(iframe.contentDocument.baseURI, document.baseURI, "The document base URL should be the containing document's base URL.");
       });
+      iframe.setAttribute("srcdoc", "<p>foobar</p>");
+      document.body.appendChild(iframe);
     }, "The fallback base URL of an iframe srcdoc document is the document base URL of the document's browsing context's browsing context container's document.");
   </script>
 </body>

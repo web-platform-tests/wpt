@@ -15,37 +15,39 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-function composeName(c) {
-    return 'x-' + String.fromCharCode(c) + '-x' + c.toString(16);
+function composeName(charCode) {
+    return 'x-' + String.fromCharCode(charCode) + '-x' + charCode.toString(16);
 }
 
 // NCName definition from http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
-// NCName ::= (Letter | '_') (NCNameChar)*
+// NCName     ::= (Letter | '_') (NCNameChar)*
 // NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
-// Letter ::= BaseChar | Ideographic
+// Letter     ::= BaseChar | Ideographic
 
 test(function() {
-    BaseChars.testEach(newHTMLDocument(), composeName, checkValidName);
+    baseCharsSingle.testEach(composeName, checkValidName);
+    baseCharsRanges.testEach(composeName, checkValidName);
 }, 'Registering valid custom element types with base char');
 
 test(function() {
-	IdeorgaphicChars.testEach(newHTMLDocument(), composeName, checkValidName);	
+    ideographicCharsSingle.testEach(composeName, checkValidName);
+    ideographicCharsRanges.testEach(composeName, checkValidName);
 }, 'Registering valid custom element types with ideographic char');
 
 test(function() {
-	DigitChars.testEach(newHTMLDocument(), composeName, checkValidName);	
+    digitCharsRanges.testEach(composeName, checkValidName);
 }, 'Registering valid custom element types with digit chars');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), ['.', '-', '_'], composeName, checkValidName);
+    (new CharsArray(['.', '-', '_'])).testEach(composeName, checkValidName)
 }, 'Registering valid custom element types with characters \'.\', \'-\', \'_\'');
 
 test(function() {
-    CombiningChars.testEach(newHTMLDocument(), composeName, checkValidName);
+    combiningChars.testEach(composeName, checkValidName);
 }, 'Registering valid custom element types with combining char');
 
 test(function() {
-    ExtenderChars.testEach(newHTMLDocument(), composeName, checkValidName);
+    extenderChars.testEach(composeName, checkValidName);
 }, 'Registering valid custom element types with extender char');
 </script>
 </body>

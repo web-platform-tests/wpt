@@ -15,41 +15,43 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-function composeName(c) {
-    return String.fromCharCode(c) + '-x' + c.toString(16);
+function composeName(charCode) {
+    return String.fromCharCode(charCode) + '-x' + charCode.toString(16);
 }
 
 // NCName definition from http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
-// NCName ::= (Letter | '_') (NCNameChar)*
+// NCName     ::= (Letter | '_') (NCNameChar)*
 // NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
-// Letter ::= BaseChar | Ideographic
+// Letter     ::= BaseChar | Ideographic
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), ['_'], composeName, checkValidName);
+    testCharCode(getCharCode('_'), composeName, checkValidName);
 }, 'Registering valid custom element name starting with \'_\' char');
 
 test(function() {
-    BaseChars.testEach(newHTMLDocument(), composeName, checkValidName);
+    baseCharsSingle.testEach(composeName, checkValidName);
+    baseCharsRanges.testEach(composeName, checkValidName);
 }, 'Registering valid custom element name starting with base char');
 
 test(function() {
-    IdeorgaphicChars.testEach(newHTMLDocument(), composeName, checkValidName);
+    ideographicCharsSingle.testEach(composeName, checkValidName);
+    ideographicCharsRanges.testEach(composeName, checkValidName);
 }, 'Registering valid custom element name starting with ideographic char');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), ['.', '-', ':', '+', '='], composeName, checkInvalidName);
+    (new CharsArray(['.', '-', ':', '+', '='])).testEach(composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (general) should fail');
 
 test(function() {
-    CombiningChars.testEach(newHTMLDocument(), composeName, checkInvalidName);
+    combiningChars.testEach(composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (combining char) should fail');
 
 test(function() {
-    ExtenderChars.testEach(newHTMLDocument(), composeName, checkInvalidName);
+    extenderChars.testEach(composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (extender char) should fail');
 
 test(function() {
-    DigitChars.testEach(newHTMLDocument(), composeName, checkInvalidName);
+    digitCharsRanges.testEach(composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (digit char) should fail');
 </script>
 </body>

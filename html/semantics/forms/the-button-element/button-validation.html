@@ -16,10 +16,7 @@
   function willValid(element, expectedType, willValidate, desc) {
     test(function(){
       assert_equals(element.type, expectedType);
-      if(willValidate)
-        assert_true(element.willValidate);
-      else
-        assert_false(element.willValidate);
+      assert_equals(element.willValidate, willValidate);
     }, desc);
   }
 

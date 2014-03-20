@@ -15,45 +15,39 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-function composeName(c) {
-    return 'x-' + String.fromCharCode(c) + '-x' + c.toString(16);
+function composeName(charCode) {
+    return 'x-' + String.fromCharCode(charCode) + '-x' + charCode.toString(16);
 }
 
 // NCName definition from http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
-//        NCName ::= (Letter | '_') (NCNameChar)*
-//    NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
-//        Letter ::= BaseChar | Ideographic
+// NCName     ::= (Letter | '_') (NCNameChar)*
+// NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
+// Letter     ::= BaseChar | Ideographic
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, composeName, checkValidName);
-}, 'Registering valid custom element types with single base chars');
+    baseCharsSingle.testEach(composeName, checkValidName);
+    baseCharsRanges.testEach(composeName, checkValidName);
+}, 'Registering valid custom element types with base char');
 
 test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, composeName, checkValidName);
-}, 'Registering valid custom element types with base chars ranges');
+    ideographicCharsSingle.testEach(composeName, checkValidName);
+    ideographicCharsRanges.testEach(composeName, checkValidName);
+}, 'Registering valid custom element types with ideographic char');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, composeName, checkValidName);
-}, 'Registering valid custom element types with single ideographic chars');
-
-test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, composeName, checkValidName);
-}, 'Registering valid custom element types with ideographic chars ranges');
-
-test(function() {
-    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, composeName, checkValidName);
+    digitCharsRanges.testEach(composeName, checkValidName);
 }, 'Registering valid custom element types with digit chars');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), ['.', '-', '_'], composeName, checkValidName);
+    (new CharsArray(['.', '-', '_'])).testEach(composeName, checkValidName)
 }, 'Registering valid custom element types with characters \'.\', \'-\', \'_\'');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, composeName, checkValidName);
+    combiningChars.testEach(composeName, checkValidName);
 }, 'Registering valid custom element types with combining char');
 
 test(function() {
-    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, composeName, checkValidName);
+    extenderChars.testEach(composeName, checkValidName);
 }, 'Registering valid custom element types with extender char');
 </script>
 </body>

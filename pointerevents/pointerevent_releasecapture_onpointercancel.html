@@ -42,7 +42,7 @@
             
             on_event(captureButton, 'pointerdown', function(e) {
 				test(function() {
-					assert_true((e.pointerType == "pen"),
+					assert_true((e.pointerType == "touch"),
 					"Test should be run using a touch as input");
 				}, "Test should be run using a touch as input");
 				

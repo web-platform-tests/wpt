@@ -17,7 +17,6 @@
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -32,7 +31,6 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -47,7 +45,6 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -62,7 +59,6 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -77,7 +73,6 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -93,7 +88,6 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-
     doc.body.innerHTML = '<x-a-5 id="xa"></x-a-5>';
     var customElement = doc.querySelector('#xa');
     var proto = Object.create(HTMLElement.prototype);
@@ -108,7 +102,6 @@ test(function() {
 
 testInIFrame('../../resources/x-element.html', function(doc) {
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -129,7 +122,6 @@ testInIFrame('../../resources/register-and-create-custom-element.html', function
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -142,10 +134,9 @@ test(function() {
     'before registration of a custom element');
 
 
-test(function() {
+test(function(){
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -157,21 +148,17 @@ test(function() {
     var customElement2 = doc.createElement('x-a-8');
     assert_equals(callbackCalledCounter, 2, 'Callback created should be called after ' +
         'element instance was created');
-
     doc.body.innerHTML = '<x-a-8></x-a-8>';
     assert_equals(callbackCalledCounter, 3, 'Callback created should be called after ' +
         'element instance was created');
-
     doc.body.innerHTML = '<div><x-a-8></x-a-8></div>';
     assert_equals(callbackCalledCounter, 4, 'Callback created should be called after ' +
         'element instance was created');
-
 }, 'Test created callback. Create several custom elements using different ways');
 
 
 testInIFrame('../../resources/x-element.html', function(doc) {
     var callbackCalledCounter = 0;
-
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
@@ -179,23 +166,18 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var GeneratedConstructor = doc.registerElement('x-element', {prototype: proto});
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called ' +
         'for custom element in loaded document');
-
     var customElement2 = new GeneratedConstructor();
     assert_equals(callbackCalledCounter, 2, 'Callback created should be called after ' +
         'element instance was created');
-
     var customElement3 = doc.createElement('x-element');
     assert_equals(callbackCalledCounter, 3, 'Callback created should be called after ' +
         'element instance was created');
-
     doc.body.innerHTML = '<x-element></x-element>';
     assert_equals(callbackCalledCounter, 4, 'Callback created should be called after ' +
         'element instance was created');
-
     doc.body.innerHTML = '<div><x-element></x-element></div>';
     assert_equals(callbackCalledCounter, 5, 'Callback created should be called after ' +
         'element instance was created');
-
 }, 'Test created callback. Create several custom elements using different ways. ' +
     'Document has browsing context');
 </script>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test attribute removing to check attributeChanged callback of a custom element</title>
+<meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<meta name="assert" content="attributeChanged callback must be enqueued whenever custom element's attribute is removed">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback  = function() {
+        callbackCalledCounter++;
+    }
+    var GeneratedConstructor = doc.registerElement('x-a-1', {prototype: proto});
+    var customElement = new GeneratedConstructor();
+    //attributeChangedCallback should be called the first time here
+    customElement.setAttribute('class', 'someClass');
+    //attributeChangedCallback should be called the second time here
+    customElement.removeAttribute('class');
+    assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged should be called ' +
+        'after setAttribute() and removeAttribute() calls');
+}, 'Test attributeChanged callback if attribute is removed. ' +
+    'The custom element created via constructor');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(element) {
+        var callbackCalledCounter = 0;
+        var obj = doc.createElement(element);
+        var proto = Object.create(obj.constructor.prototype);
+        proto.attributeChangedCallback  = function() {
+            callbackCalledCounter++;
+        }
+        var GeneratedConstructor = doc.registerElement('x-' + element + '-' + element + '-1', {
+            prototype: proto,
+            extends: element
+        });
+        var customElement = new GeneratedConstructor();
+        //attributeChangedCallback should be called the first time here
+        customElement.setAttribute('class', 'someClass');
+        //attributeChangedCallback should be called the second time here
+        customElement.removeAttribute('class');
+        assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged should be called ' +
+            'after setAttribute() and removeAttribute() calls for "' + element + '"');
+    });
+}, 'Test attributeChanged callback if attribute is removed. ' +
+    'The custom element created via constructor and extends HTML element');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.registerElement('x-a-2', {prototype: proto});
+    doc.body.innerHTML = '<x-a-2 id="xa2" class="theClass"></x-a-2>';
+    var customElement = doc.querySelector('#xa2');
+    customElement.removeAttribute('class');
+    assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged should be called ' +
+        'after removeAttribute() call');
+}, 'Test attributeChanged callback if attribute is removed. ' +
+    'The custom element created via innerHTML property');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackArgs = null;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        callbackArgs = [arg1, arg2, arg3];
+    }
+    doc.registerElement('x-a-3', {prototype: proto});
+    doc.body.innerHTML = '<x-a-3 id="xa3" class="theClass"></x-a-3>';
+    var customElement = doc.querySelector('#xa3');
+    customElement.removeAttribute('class');
+    assert_array_equals(callbackArgs, ['class', 'theClass', null],
+        'Unexpected attributeChanged callback arguments');
+}, 'Test attributeChanged callback arguments if attribute is removed. ' +
+    'The custom element created via innerHTML property');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackCalledCounter = 0;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.body.innerHTML = '<x-a-4 id="xa4" class="theClass"></x-a-4>';
+    var customElement = doc.querySelector('#xa4');
+    // this should not call or enquee attributeChangedCallback
+    customElement.setAttribute('class', 'someClass');
+    // this one should not too
+    customElement.removeAttribute('class');
+    assert_equals(callbackCalledCounter, 0, 'Callback attributeChanged should not be called');
+    doc.registerElement('x-a-4', {prototype: proto});
+    // this call invokes attributeChangedCallback
+    customElement.setAttribute('name', 'someName');
+    // and this one
+    customElement.removeAttribute('name');
+    assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged should be called ' +
+        'after setAttribute() and removeAttribute() calls');
+}, 'Test attributeChanged callback arguments if attribute is removed. ' +
+    'The custom element created via innerHTML property and unresolved at first');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackCalledCounter = 0;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    doc.registerElement('x-element', {prototype: proto});
+    var customElement = doc.querySelector('#xelement');
+    customElement.setAttribute('class', 'someClass');
+    customElement.removeAttribute('class');
+    assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged should be called ' +
+        'after setAttribute() and removeAttribute() calls');
+}, 'Test attributeChanged callback arguments if attribute is removed. ' +
+    'The custom element created via constructor and the document has browsing context');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackArgs = null;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        callbackArgs = [arg1, arg2, arg3];
+    }
+    doc.registerElement('x-element', {prototype: proto});
+    doc.body.innerHTML = '<x-element id="xelement" class="theClass"></x-element>';
+    var customElement = doc.querySelector('#xelement');
+    customElement.removeAttribute('class');
+    assert_array_equals(callbackArgs, ['class', 'theClass', null],
+        'Unexpected attributeChanged callback arguments');
+}, 'Test attributeChanged callback arguments if attribute is removed. ' +
+    'The custom element created via innerHTML property and the document has browsing context');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackCalledCounter = 0;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackCalledCounter++;
+    }
+    var customElement = doc.querySelector('#xelement');
+    // this should not call or enquee attributeChangedCallback
+    customElement.setAttribute('name', 'someName');
+    // this one too
+    customElement.removeAttribute('name');
+    assert_equals(callbackCalledCounter, 0, 'Callback attributeChanged should not be called');
+    doc.registerElement('x-element', {prototype: proto});
+    // this call invokes attributeChangedCallback
+    customElement.setAttribute('class', 'someClass');
+    // this call invokes attributeChangedCallback at second time
+    customElement.removeAttribute('class');
+    assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged should be called ' +
+        'after setAttribute() and removeAttribute() calls');
+}, 'Test attributeChanged callback arguments if attribute is removed. ' +
+    'The custom element created via innerHTML property and unresolved at first. ' +
+    'The document has browsing context');
+</script>
+</body>
+</html>

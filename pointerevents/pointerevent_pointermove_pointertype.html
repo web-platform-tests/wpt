@@ -45,11 +45,14 @@
             	});
             	
             	on_event(target0, "pointermove", function (event) {
-            		if(pointerTypeGot == true) {
-            			test(function() {
-            					assert_true(event.pointerType == pointerType, "pointerType is dispatched properly")
-            				}, "pointerType is dispatched properly");
-            			}
+					if(pointerTypeGot == true) {
+						if(!eventTested) {
+							test(function() {
+									assert_true(event.pointerType == pointerType, "pointerType is dispatched properly")
+								}, "pointerType is dispatched properly");
+						}
+						eventTested = true;
+					}
             	});		
             }
         </script>

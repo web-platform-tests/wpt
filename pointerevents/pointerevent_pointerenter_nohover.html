@@ -37,6 +37,7 @@
                 on_event(target0, "pointerenter", function (event) {
                     check_PointerEvent(event);
                     test_pointerEvent.step(function () {
+						assert_not_equals(event.pointerType, "mouse", "Test should be run using a pen or touch as input");
                         assert_equals(event.type, "pointerenter", "pointer event received" + event.type);
                     });
                     f_pointerenter_rcvd = true;

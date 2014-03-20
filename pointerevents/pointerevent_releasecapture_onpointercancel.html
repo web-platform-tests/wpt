@@ -12,7 +12,7 @@
         <h4>
             Test Description: This test checks if setCapture/releaseCapture functions works properly. Complete the folowing actions:
             <ol>
-                <li> Press and hold left mouse button over "Set Capture" button
+                <li> Touch "Set Capture" button and do not release your touch
                 <li> Move your touch outside of the screen or try to scroll the page. "lostpointercapture" should be logged inside of the black rectangle immediately after "pointercancel"
             </ol>
         </h4>
@@ -41,6 +41,11 @@
             document.getElementById('timeoutVal').innerHTML = timeoutSettings + " ms";
             
             on_event(captureButton, 'pointerdown', function(e) {
+				test(function() {
+					assert_true((e.pointerType == "pen"),
+					"Test should be run using a touch as input");
+				}, "Test should be run using a touch as input");
+				
             	if(isPointerCapture == false) {
             		isPointerCapture = true;
             		captureButton.value = 'Release Capture';

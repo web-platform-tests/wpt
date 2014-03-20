@@ -13,6 +13,7 @@
         <script type="text/javascript">
             var detected_pointertypes = {};
             var test_pointerEvent = async_test("pointer event have pointerType as mouse");  // set up test harness
+			var eventTested = false;
             
             // showPointerTypes is defined in pointerevent_support.js
             // Requirements: the callbakc function will reference the test_pointerEvent object and
@@ -20,12 +21,15 @@
             add_completion_callback(showPointerTypes);
             
             function eventHandler(event) {
-                check_PointerEvent(event);
-                test_pointerEvent.step(function () {
-                    assert_equals(event.pointerType, "mouse", "Verify event.pointerType is 'mouse'.");
-                });
-                detected_pointertypes[event.pointerType] = true;
-            
+				if(!eventTested) {
+					check_PointerEvent(event);
+					test_pointerEvent.step(function () {
+						assert_equals(event.pointerType, "mouse", "Verify event.pointerType is 'mouse'.");
+					});
+					detected_pointertypes[event.pointerType] = true;
+					
+					eventTested = true;
+				}
                 if (event.type == "pointerup") {
                     test_pointerEvent.done(); // complete test
                 }

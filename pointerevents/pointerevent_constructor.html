@@ -11,6 +11,7 @@
     <body onload="run()">
         <h1>PointerEvent: Dispatch custom event</h1>
         <h4>Test Description: This test checks if PointerEvent constructor works properly. This test is based on pointerover and pointerout events. Avoid real pointerover and pointerout for getting of the proper results.</h4>
+        <div id="target0"></div>
         <script>
             var eventTested = false;
             var detected_pointertypes = {};
@@ -61,8 +62,8 @@
             		else {
             			test_custom_constructor.step(function() {
             				assert_true(false,
-            				"some of the values from constructor were not handled properly");
-            			}, "some of the values from constructor were not handled properly");
+            				"All values from constructor were handled properly");
+            			}, "All values from constructor were handled properly");
             		}
             	});
             	
@@ -80,8 +81,8 @@
             		else {
             			test_custom_constructor.step(function() {
             				assert_true(false,
-            				"some of the default values were not handled properly");
-            			}, "some of the default values were not handled properly");
+            				"All values from constructor were handled properly");
+            			}, "All values from constructor were handled properly");
             		}
             	});
             	

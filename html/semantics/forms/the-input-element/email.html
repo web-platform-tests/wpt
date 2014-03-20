@@ -19,16 +19,11 @@
   }, "single_email doesn't have the multiple attribute");
 
   test(function(){
-    single.value = '';
-    assert_equals(single.value, '');
-  }, 'User agents should allow the user to set the value to the empty string');
-
-  test(function(){
     single.value = 'user2@example.com\u000A';
     assert_equals(single.value, 'user2@example.com');
     single.value = 'user3@example.com\u000D';
     assert_equals(single.value, 'user3@example.com');
-  }, 'User agents must not allow users to insert "LF" (U+000A) and "CR" (U+000D) characters into the value');
+  }, 'value should be sanitized: strip line breaks');
 
   test(function(){
     single.value = 'user4@example.com';
@@ -37,7 +32,7 @@
     single.value = 'example.com';
     assert_false(validEmailRegexp.test(single.value));
     assert_false(single.validity.valid);
-  }, 'The value attribute, if specified and not empty, must have a value that is a single valid e-mail address');
+  }, 'a valid email address should match ' + validEmailRegexp);
 
   test(function(){
     single.setAttribute('multiple', true);
@@ -52,11 +47,6 @@
   }, "multiple_email has the multiple attribute");
 
   test(function(){
-    var values = mult.value;
-    assert_equals(mult.value, "user1@example.com,user2@test.com");
-  }, "The element's value is the result of splitting on commas the element's value.");
-
-  test(function(){
     mult.value = '  user1@example.com  , user2@test.com, user3@test.com  ';
     assert_equals(mult.value, 'user1@example.com,user2@test.com,user3@test.com');
   }, "run the value sanitization algorithm after setting a new value");
@@ -64,7 +54,7 @@
   test(function(){
     mult.value = 'user1@example.com,user2@test.com,user3@test.com';
     var values = mult.value.split(',');
-    values.forEach(function(e) { 
+    values.forEach(function(e) {
       assert_true(validEmailRegexp.test(e));
     });
     assert_true(mult.validity.valid);

@@ -17,7 +17,7 @@
       assert_true(e.isTrusted);
       assert_true(e.bubbles);
       assert_true(e.cancelable);
-    }, "'before' event is trusted, bubbles and is cancelable");
+    }, "'beforescriptexecute' event is trusted, bubbles and is cancelable");
   };
 
   var after = function(e) {
@@ -26,7 +26,7 @@
       assert_true(e.isTrusted);
       assert_true(e.bubbles);
       assert_false(e.cancelable);
-    }, "'after' event is trusted, bubbles and doesn't cancelable");
+    }, "'afterscriptexecute' event is trusted, bubbles and isn't cancelable");
   };
 
   document.body.onload = t1.step_func_done(function(){

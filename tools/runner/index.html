@@ -86,24 +86,56 @@
   </div>
 
   <div id="output">
-    <div class="summary">
-      <dl>
-        <dt>Progress</dt>
-        <dd class="progress"></dd>
-        <dt>Passed</dt>
-        <dd class="PASS">0</dd>
-        <dt>Failed</dt>
-        <dd class="FAIL">0</dd>
-        <dt>Timeout</dt>
-        <dd class="TIMEOUT">0</dd>
-        <dt>Error</dt>
-        <dd class="ERROR">0</dd>
-      </dl>
-      <a class="jsonResults"></a>
+    <div class="summary clearfix">
+      <h4>Progress</h4>
+      <!-- XXX we need to handle this with a progress bar -->
+      <div class='progress'></div>
+      <table class='table'>
+        <thead>
+          <tr>
+            <th>Passed
+            <th>Failed
+            <th>Timeouts
+            <th>Errors
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class='PASS'>0
+            <td class='FAIL'>0
+            <td class='TIMEOUT'>0
+            <td class='ERROR'>0
+          </tr>
+        </tbody>
+      </table>
+      <a class="jsonResults btn btn-primary pull-right">Download JSON results</a>
     </div>
 
     <div class="results">
-      <table>
+      <div id="manualUI">
+        <h4>Manual Testing</h4>
+        <p>
+          The current test requires manual result marking.
+        </p>
+        <div class="reftestUI">
+          <p>
+            Test and ref should compare <strong class="refType"></strong>
+          </p>
+          <p>
+            <button class="btn btn-info test">Show Test</button>
+            <button class="btn btn-info ref">Show Reference</button>
+          </p>
+        </div>
+        <p>
+          Test has:
+          <button class="btn btn-success pass">Passed</button>
+          <button class="btn btn-danger fail">Failed</button>
+        </p>
+      </div>
+
+      <hr>
+      <h4>Details</h4>
+      <table class='table'>
         <thead>
           <tr>
             <th>Test
@@ -113,22 +145,8 @@
           </tr>
         </thead>
         <tbody></tbody>
+      </table>
     </div>
   </div>
 
-  <div id="manualUI">
-    <p>
-      The current test requires manual result marking.
-    <div class="reftestUI">
-      <p>
-        Test and ref should compare <strong class="refType"></strong>
-      <p>
-        <button class="test">Show Test</button>
-        <button class="ref">Show Reference</button>
-    </div>
-    <p>
-      Test has:
-      <button class="pass">Passed</button>
-      <button class="fail">Failed</button>
-  </div>
 </div>

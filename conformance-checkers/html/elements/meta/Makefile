@@ -5,10 +5,10 @@ PYTHON=python
 PYTHONFLAGS=
 .PHONY: .FORCE
 
-all: meta-extensions registered-names-isvalid.html
+all: meta-extensions names-registered-isvalid.html
 
 meta-extensions: .FORCE
 	$(CURL) $(CURLFLAGS) $(META_EXTENSIONS) > $@
 
-registered-names-isvalid.html: .FORCE
-	$(PYTHON) $(PYTHONFLAGS) registered-names-generate.py
+names-registered-isvalid.html: .FORCE
+	$(PYTHON) $(PYTHONFLAGS) names-generate.py

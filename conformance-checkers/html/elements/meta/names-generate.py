@@ -16,7 +16,7 @@ for line in f:
       mixed += c
     odd = not odd
   template += '<meta name="%s" content>\n' % mixed
-o = open("registered-names-isvalid.html", 'wb')
+o = open("names-registered-isvalid.html", 'wb')
 o.write(template)
 o.close()
 

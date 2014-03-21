@@ -506,7 +506,7 @@ Runner.prototype = {
     },
 
     done: function() {
-        this.test_window.close();
+        if (this.test_window) this.test_window.close();
         this.done_callbacks.forEach(function(callback) {
             callback();
         });

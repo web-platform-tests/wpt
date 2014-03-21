@@ -1,17 +1,18 @@
+/*jshint nonew: false */
 (function() {
 "use strict";
 var runner;
 
 function Manifest(path) {
     this.data = null;
-    this.path = path
+    this.path = path;
     this.num_tests = null;
 }
 
 Manifest.prototype = {
     load: function(loaded_callback) {
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = (function() {
+        xhr.onreadystatechange = function() {
             if (xhr.readyState !== 4) {
                 return;
             }
@@ -20,7 +21,7 @@ Manifest.prototype = {
             }
             this.data = JSON.parse(xhr.responseText);
             loaded_callback();
-        }).bind(this);
+        }.bind(this);
         xhr.open("GET", this.path);
         xhr.send(null);
     },
@@ -32,7 +33,7 @@ Manifest.prototype = {
             return [];
         }
     }
-}
+};
 
 function ManifestIterator(manifest, path, test_types) {
     this.manifest = manifest;
@@ -64,11 +65,11 @@ ManifestIterator.prototype = {
         if (!manifest_item) {
             return null;
         }
-        return this.to_test(manifest_item)
+        return this.to_test(manifest_item);
     },
 
     matches: function(manifest_item) {
-        return manifest_item.url.indexOf(this.path) == 0;
+        return manifest_item.url.indexOf(this.path) === 0;
     },
 
     to_test: function(manifest_item) {
@@ -84,14 +85,14 @@ ManifestIterator.prototype = {
     },
 
     count: function() {
-        return this.test_types.reduce((function(prev, current) {
-            var matches = this.manifest.by_type(current).filter((function(x) {
+        return this.test_types.reduce(function(prev, current) {
+            var matches = this.manifest.by_type(current).filter(function(x) {
                 return this.matches(x);
-            }).bind(this));
+            }.bind(this));
             return prev + matches.length;
-        }).bind(this), 0);
+        }.bind(this), 0);
     }
-}
+};
 
 function VisualOutput(elem, runner) {
     this.elem = elem;
@@ -115,7 +116,7 @@ VisualOutput.prototype = {
         this.result_count = {"PASS":0,
                              "FAIL":0,
                              "ERROR":0,
-                             "TIMEOUT":0}
+                             "TIMEOUT":0};
         for (var p in this.result_count) {
             if (this.result_count.hasOwnProperty(p)) {
                 this.elem.querySelector("td." + p).textContent = 0;
@@ -143,18 +144,18 @@ VisualOutput.prototype = {
         var test_status;
         if (subtest_pass_count === subtests_count &&
             (status == "OK" || status == "PASS")) {
-            test_status = "PASS"
+            test_status = "PASS";
         } else if (subtests_count > 0 && status === "OK") {
             test_status = "FAIL";
         } else {
             test_status = status;
         }
 
-        subtests.forEach((function(subtest) {
+        subtests.forEach(function(subtest) {
             if (this.result_count.hasOwnProperty(subtest.status)) {
                 this.result_count[subtest.status] += 1;
             }
-        }).bind(this));
+        }.bind(this));
         if (this.result_count.hasOwnProperty(status)) {
             this.result_count[status] += 1;
         }
@@ -173,7 +174,7 @@ VisualOutput.prototype = {
         if (subtests_count) {
             subtests_node.textContent = subtest_pass_count + "/" + subtests_count;
         } else {
-            subtests_node.textContent = "1/1"
+            subtests_node.textContent = "1/1";
         }
 
         this.elem.querySelector("td." + test_status).textContent = this.result_count[test_status];
@@ -222,7 +223,7 @@ VisualOutput.prototype = {
         this.meter.textContent = this.meter.style.width = (progress * 100).toFixed(1) + "%";
     }
 
-}
+};
 
 function ManualUI(elem, runner) {
     this.elem = elem;
@@ -239,15 +240,15 @@ function ManualUI(elem, runner) {
     this.runner.test_start_callbacks.push(this.on_test_start.bind(this));
     this.runner.done_callbacks.push(this.on_done.bind(this));
 
-    this.pass_button.onclick = (function() {
+    this.pass_button.onclick = function() {
         this.runner.on_result("PASS", "", []);
         this.disable_buttons();
         setTimeout(this.enable_buttons.bind(this), 200);
-    }).bind(this);
+    }.bind(this);
 
-    this.fail_button.onclick = (function() {
+    this.fail_button.onclick = function() {
         this.runner.on_result("FAIL", "", []);
-    }).bind(this);
+    }.bind(this);
 }
 
 ManualUI.prototype = {
@@ -261,12 +262,12 @@ ManualUI.prototype = {
 
     show_ref: function() {
         this.ref_buttons.style.display = "block";
-        this.test_button.onclick = (function() {
+        this.test_button.onclick = function() {
             this.runner.load(this.runner.current_test.url);
-        }).bind(this);
-        this.ref_button.onclick = (function() {
+        }.bind(this);
+        this.ref_button.onclick = function() {
             this.runner.load(this.runner.current_test.ref_url);
-        }).bind(this);
+        }.bind(this);
     },
 
     hide_ref: function() {
@@ -300,7 +301,7 @@ ManualUI.prototype = {
     on_done: function() {
         this.hide();
     }
-}
+};
 
 function TestControl(elem, runner) {
     this.elem = elem;
@@ -322,13 +323,13 @@ TestControl.prototype = {
         this.type_checkboxes.forEach(function(elem) {
             elem.disabled = false;
         });
-        this.start_button.onclick = (function() {
+        this.start_button.onclick = function() {
             var path = this.get_path();
             var test_types = this.get_test_types();
             this.runner.start(path, test_types);
             this.set_stop();
             this.set_pause();
-        }).bind(this);
+        }.bind(this);
     },
 
     set_stop: function() {
@@ -339,25 +340,25 @@ TestControl.prototype = {
         this.type_checkboxes.forEach(function(elem) {
             elem.disabled = true;
         });
-        this.start_button.onclick = (function() {
+        this.start_button.onclick = function() {
             this.runner.done();
-        }).bind(this);
+        }.bind(this);
     },
 
     set_pause: function() {
         this.pause_button.textContent = "Pause";
-        this.pause_button.onclick = (function() {
+        this.pause_button.onclick = function() {
             this.runner.pause();
             this.set_resume();
-        }).bind(this);
+        }.bind(this);
     },
 
     set_resume: function() {
         this.pause_button.textContent = "Resume";
-        this.pause_button.onclick = (function() {
+        this.pause_button.onclick = function() {
             this.runner.unpause();
             this.set_pause();
-        }).bind(this);
+        }.bind(this);
 
     },
 
@@ -410,22 +411,22 @@ Results.prototype = {
                                   result.test.url),
                           "subtests":result.subtests,
                           "status":result.status,
-                          "message":result.message}
+                          "message":result.message};
                 return rv;
             })
-        }
+        };
         return JSON.stringify(data, null, 2);
     }
-}
+};
 
-function Runner(manifest_path, options) {
+function Runner(manifest_path) {
     this.server = location.protocol + "//" + location.host;
     this.manifest = new Manifest(manifest_path);
     this.path = null;
     this.test_types = null;
     this.manifest_iterator = null;
 
-    this.test_window = null
+    this.test_window = null;
 
     this.current_test = null;
     this.timeout = null;
@@ -441,7 +442,7 @@ function Runner(manifest_path, options) {
 
     this.start_after_manifest_load = false;
     this.manifest.load(this.manifest_loaded.bind(this));
-};
+}
 
 Runner.prototype = {
     test_timeout: 20000, //ms
@@ -495,9 +496,9 @@ Runner.prototype = {
     on_result: function(status, message, subtests) {
         clearTimeout(this.timeout);
         this.results.set(this.current_test, status, message, subtests);
-        this.result_callbacks.forEach((function(callback) {
+        this.result_callbacks.forEach(function(callback) {
             callback(this.current_test, status, message, subtests);
-        }).bind(this));
+        }.bind(this));
         this.run_next_test();
     },
 
@@ -530,9 +531,9 @@ Runner.prototype = {
         }
         this.load(this.current_test.url);
 
-        this.test_start_callbacks.forEach((function(callback) {
+        this.test_start_callbacks.forEach(function(callback) {
             callback(this.current_test);
-        }).bind(this));
+        }.bind(this));
     },
 
     load: function(path) {
@@ -558,7 +559,7 @@ Runner.prototype = {
 
 function parseOptions() {
     var options = {
-        test_types: ["testharness", "reftest", "manual"],
+        test_types: ["testharness", "reftest", "manual"]
     };
 
     var optionstrings = location.search.substring(1).split("&");
@@ -580,18 +581,18 @@ function setup() {
 
     runner = new Runner("/MANIFEST.json", options);
     var test_control = new TestControl(document.getElementById("testControl"), runner);
-    var manual_ui = new ManualUI(document.getElementById("manualUI"), runner);
-    var visual_output = new VisualOutput(document.getElementById("output"), runner);
+    new ManualUI(document.getElementById("manualUI"), runner);
+    new VisualOutput(document.getElementById("output"), runner);
 
-    if (options["autorun"] === "1") {
+    if (options.autorun === "1") {
         runner.start(test_control.get_path(), test_control.get_test_types());
         return;
     }
 }
 
 window.completion_callback = function(tests, status) {
-    var harness_status_map = {0:"OK", 1:"ERROR", 2:"TIMEOUT"}
-    var subtest_status_map = {0:"PASS", 1:"FAIL", 2:"TIMEOUT", 3:"NOTRUN"}
+    var harness_status_map = {0:"OK", 1:"ERROR", 2:"TIMEOUT"};
+    var subtest_status_map = {0:"PASS", 1:"FAIL", 2:"TIMEOUT", 3:"NOTRUN"};
 
     // this ugly hack is because IE really insists on holding on to the objects it creates in
     // other windows, and on losing track of them when the window gets closed
@@ -599,14 +600,14 @@ window.completion_callback = function(tests, status) {
         tests.map(function (test) {
             return {name: test.name,
                     status: subtest_status_map[test.status],
-                    message: test.message}
+                    message: test.message};
         })
     ));
 
     runner.on_result(harness_status_map[status.status],
                      status.message,
-                     subtest_results)
-}
+                     subtest_results);
+};
 
 window.addEventListener("DOMContentLoaded", setup, false);
 })();

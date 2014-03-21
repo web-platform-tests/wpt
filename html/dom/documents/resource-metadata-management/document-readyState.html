@@ -7,20 +7,28 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-  var t = async_test("readyState equals 'complete' when the document has loaded");
-  var t2 = async_test("readystatechange event is fired each time document.readyState changes");
+  var t1 = async_test("readyState equals 'complete' when the document has loaded"),
+      t2 = async_test("readyState equals 'interactive' when the document is finished parsing"),
+      t3 = async_test("readystatechange event is fired each time document.readyState changes");
 
-  window.onload = t.step_func_done(function(){
+  window.onload = t1.step_func_done(function(){
     assert_equals(document.readyState, "complete");
   });
 
-  var states = ["loading"],
-      loop = true;
-  document.onreadystatechange = t2.step_func(function(){
+  document.addEventListener("DOMContentLoaded", function(event) {
+    t2.step(function() {
+      assert_equals(document.readyState, "interactive")
+    });
+    t2.done();
+  });
+
+  var states = [document.readyState],
+  loop = true;
+  document.onreadystatechange = t3.step_func(function(){
     states.push(document.readyState);
     if (document.readyState === "complete") {
       assert_array_equals(states, ["loading", "interactive", "complete"]);
-      t2.done();
+      t3.done();
     }
   })
 </script>

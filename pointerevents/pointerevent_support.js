@@ -93,22 +93,53 @@ function check_PointerEvent(event) {
             assert_true(event.isPrimary, event.type + ".isPrimary is true for mouse");
         }, event.type + " properties for pointerType = mouse");
         // Check properties for pointers other than mouse
-    } 
+    }
 }
 
-function showPointerTypes(resultBool) {
-    try{
-        var complete_notice = document.getElementById("complete-notice");
-        var pointertype_log = document.getElementById("pointertype-log");
-        var pointertypes = Object.keys(detected_pointertypes);
-        pointertype_log.innerHTML = pointertypes.length ? pointertypes.join(",") : "(none)";
-        if (test_pointerEvent.status == test_pointerEvent.NOTRUN
-                    || test_pointerEvent.status == test_pointerEvent.TIMEOUT) {
-            complete_notice.innerHTML = "Test FAIL due to time out.  This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
-            complete_notice.style.background = "red";
-        }
-        complete_notice.style.display = "block";
-    } catch (e) {
-        alert(e.message);
+function showPointerTypes() {
+	var complete_notice = document.getElementById("complete-notice");
+	var pointertype_log = document.getElementById("pointertype-log");
+	var pointertypes = Object.keys(detected_pointertypes);
+	pointertype_log.innerHTML = pointertypes.length ?
+		pointertypes.join(",") : "(none)";
+	complete_notice.style.display = "block";
+}
+
+function log(msg, el) {
+    if (++count > 10){
+      count = 0;
+      el.innerHTML = ' ';
     }
+    el.innerHTML = msg + '; ' + el.innerHTML;
+}
+
+ function failOnScroll() {
+	assert_true(false,
+	"scroll received while shouldn't");
+}
+
+function updateDescriptionNextStep() {
+	document.getElementById('desc').innerHTML = "Test Description: Try to scroll text RIGHT.";
+}
+
+function updateDescriptionComplete() {
+	document.getElementById('desc').innerHTML = "Test Description: Test complete";
+}
+
+function sPointerCapture(e) {
+	try {
+		target0.setPointerCapture(e.pointerId);
+	}
+	catch(e) {
+	}
+}
+
+function rPointerCapture(e) {
+	try {
+		captureButton.value = 'Set Capture';
+		isPointerCapture = false;
+		target0.releasePointerCapture(e.pointerId);
+	}
+	catch(e) {
+	}
 }

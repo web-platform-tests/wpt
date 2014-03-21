@@ -8,31 +8,50 @@
 <div id="log"></div>
 <script>
   var types = ["hidden", "email", "datetime", "date", "month", "week", "time", "number", "range", "color", "checkbox", "radio", "file", "submit", "image", "reset", "button"]; //types for which the API doesn't apply
-  var types2 = ["text", "search", "tel", "url", "password"]; //types for which the API applies
+  var types2 = ["text", "search", "tel", "url", "password", "textarea"]; //types for which the API applies
 
   types.forEach(function(type){
     test(function(){
       var el = document.createElement("input");
       el.type = type;
-      assert_throws("INVALID_STATE_ERR", function(){
+      assert_throws("InvalidStateError", function(){
         el.selectionStart;
       });
-      assert_throws("INVALID_STATE_ERR", function(){
-        el.selectionStart = 1;
+      assert_throws("InvalidStateError", function(){
+        el.selectionEnd;
       });
-    }, "text field selection doesn't apply for input type " + type);
+      assert_throws("InvalidStateError", function(){
+        el.selectionDirection;
+      });
+      assert_throws("InvalidStateError", function(){
+        el.setRangeText("foobar");
+      });
+      assert_throws("InvalidStateError", function(){
+        el.setSelectionRange(0, 1);
+      });
+    }, "text field selection for the input " + type);
   });
 
   types2.forEach(function(type) {
     test(function() {
-      var el = document.createElement("input");
-      el.type = type;
+      var el;
+      if (type === "textarea") {
+        el = document.createElement("textarea");
+      } else {
+        el = document.createElement("input");
+        el.type = type;
+      }
       try {
         assert_equals(el.selectionStart, 0);
+        assert_equals(el.selectionEnd, 0);
         el.selectionStart = 1;
+        el.selectionEnd = 1;
+        el.selectionDirection = "forward";
+        el.setRangeText("foobar");
+        el.setSelectionRange(0, 1);
       } catch (e) {
-        assert_unreached("get/set selectionStart on input type " + type + " throw an exception");
+        assert_unreached("get/set selectionStart on input type " + type + " threw an exception");
       }
-    }, "text field selection applies for input type " + type);
+    }, "text field selection for the input " + type);
   });
 </script>

@@ -117,24 +117,26 @@
 
     <div class="results">
       <div id="manualUI">
-        <h4>Manual Testing</h4>
-        <p>
-          The current test requires manual result marking.
-        </p>
-        <div class="reftestUI">
-          <p>
-            Test and ref should compare <strong class="refType"></strong>
-          </p>
-          <p>
-            <button class="btn btn-info test">Show Test</button>
-            <button class="btn btn-info ref">Show Reference</button>
-          </p>
+        <div class='panel panel-primary'>
+          <div class='panel-heading'>
+            <h4 class='panel-title'>Manual Testing</h4>
+          </div>
+          <div class="panel-body reftestUI">
+            <p>
+              The current test requires manual result marking.
+              Test and ref should compare <strong class="refType text-primary"></strong>
+            </p>
+            <p>
+              <button class="btn btn-info test">Show Test</button>
+              <button class="btn btn-info ref">Show Reference</button>
+            </p>
+          </div>
+          <div class="panel-footer">
+            The test has:
+            <button class="btn btn-success pass">Passed</button>
+            <button class="btn btn-danger fail">Failed</button>
+          </div>
         </div>
-        <p>
-          Test has:
-          <button class="btn btn-success pass">Passed</button>
-          <button class="btn btn-danger fail">Failed</button>
-        </p>
       </div>
 
       <hr>

@@ -1,7 +1,7 @@
-@charset "UTF-8";
+
 html { margin: 0 8px; }
 body { margin: 0; }
-html.done { border: 2px solid limegreen; margin: 3px; padding: 3px; }
+html.done { border: 2px solid #32cd32; margin: 3px; padding: 3px; }
 
 html:not(.done) { height: 100%; }
 html:not(.done) body { height: 100%; }
@@ -27,13 +27,19 @@ html:not(.done) section { border-top: none; }
 html.done section + section { border-top: none; }
 
 #manualUI {
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
+    position:   fixed;
+    top:    100px;
+    left:   0;
+    right:  0;
     display: block;
-    background-color:yellow;
-    padding:0 5em 0 5em;
+    padding:    40px;
+    background: rgba(255, 200, 0, 0.5);
+}
+
+#manualUI .panel {
+    max-width:  800px;
+    margin: auto;
+    box-shadow: 2px 2px 10px #666;
 }
 
 body > p { text-align: center; }

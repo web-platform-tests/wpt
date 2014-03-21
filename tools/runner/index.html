@@ -27,7 +27,12 @@ Include test types:<br>
 <label><input type=checkbox checked value="reftest">Reftests</label><br>
 <label><input type=checkbox checked value="manual">Manual tests</label>
 <p><label>Run tests under path <input value="/" class="path"><button class="togglePause" disabled>Pause</button><button class="toggleStart">Start</button></label>
-</header>
+
+<p>Run tests in: <label><input name="runMode" type=checkbox value="iframe">iframe</label>
+</div>
+
+<div id="runMode">
+<iframe id="testFrame"></iframe>
 </div>
 
 <div id="output">

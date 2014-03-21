@@ -38,4 +38,5 @@ html.done section + section { border-top: none; }
 
 body > p { text-align: center; }
 body > p > textarea { width: 90%; height: 20em; }
+iframe {width: 100%; height: 400px; frameborder: no; border: 0; marginwidth: 0; marginheight: 0; }
 

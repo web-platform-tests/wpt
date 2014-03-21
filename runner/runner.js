@@ -121,10 +121,10 @@ VisualOutput.prototype = {
         }
         for (var p in this.result_count) {
             if (this.result_count.hasOwnProperty(p)) {
-                this.elem.querySelector("dd." + p).textContent = 0;
+                this.elem.querySelector("td." + p).textContent = 0;
             }
         }
-        this.elem.querySelector(".jsonResults").textContent = "";
+        this.elem.querySelector(".jsonResults").style.display = "none";
         this.results_table.removeChild(this.results_table.tBodies[0]);
         this.results_table.appendChild(document.createElement("tbody"));
     },
@@ -180,7 +180,7 @@ VisualOutput.prototype = {
             subtests_node.textContent = "1/1"
         }
 
-        this.elem.querySelector("dd." + test_status).textContent = this.result_count[test_status];
+        this.elem.querySelector("td." + test_status).textContent = this.result_count[test_status];
 
         this.results_table.tBodies[0].appendChild(row);
         this.update_meter(this.runner.progress());
@@ -197,6 +197,7 @@ VisualOutput.prototype = {
         a.download = "runner-results.json";
         a.textContent = "Download JSON results";
         if (!a.getAttribute("download")) a.textContent += " (right-click and save as to download)";
+        a.style.display = "inline";
     },
 
     test_name_node: function(test) {

@@ -332,6 +332,7 @@ TestControl.prototype = {
     },
 
     set_stop: function() {
+        clearTimeout(this.runner.timeout);
         this.pause_button.disabled = false;
         this.start_button.textContent = "Stop";
         this.path_input.disabled = true;

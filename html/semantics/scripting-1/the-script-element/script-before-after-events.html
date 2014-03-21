@@ -7,7 +7,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
+  var t1 = async_test("'beforescriptexecute'/'afterscriptexecute' events have been fired"),
+      a = false,
+      b = false;
+
   var before = function(e) {
+    b = true;
     test(function(){
       assert_true(e.isTrusted);
       assert_true(e.bubbles);
@@ -16,12 +21,17 @@
   };
 
   var after = function(e) {
+    a = true;
     test(function(){
       assert_true(e.isTrusted);
       assert_true(e.bubbles);
       assert_false(e.cancelable);
     }, "'after' event is trusted, bubbles and doesn't cancelable");
   };
+
+  document.body.onload = t1.step_func_done(function(){
+    assert_true(a && b);
+  });
 </script>
 <script onbeforescriptexecute=before(event) onafterscriptexecute=after(event)>
   document.querySelector("script");

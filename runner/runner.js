@@ -317,6 +317,7 @@ function TestControl(elem, runner) {
 
 TestControl.prototype = {
     set_start: function() {
+        this.start_button.disabled = false;
         this.pause_button.disabled = true;
         this.start_button.textContent = "Start";
         this.path_input.disabled = false;

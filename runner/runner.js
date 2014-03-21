@@ -96,12 +96,12 @@ ManifestIterator.prototype = {
 function VisualOutput(elem, runner) {
     this.elem = elem;
     this.runner = runner;
-    this.meter = null;
     this.results_table = null;
     this.section_wrapper = null;
     this.results_table = this.elem.querySelector(".results > table");
     this.section = null;
     this.progress = this.elem.querySelector(".summary .progress");
+    this.meter = this.progress.querySelector(".progress-bar");
     this.result_count = null;
 
     this.elem.style.display = "none";
@@ -116,9 +116,6 @@ VisualOutput.prototype = {
                              "FAIL":0,
                              "ERROR":0,
                              "TIMEOUT":0}
-        while (this.progress.childNodes.length) {
-            this.progress.removeChild(this.progress.childNodes[0]);
-        }
         for (var p in this.result_count) {
             if (this.result_count.hasOwnProperty(p)) {
                 this.elem.querySelector("td." + p).textContent = 0;
@@ -131,9 +128,8 @@ VisualOutput.prototype = {
 
     on_start: function() {
         this.clear();
-        this.meter = document.createElement("meter");
-        this.progress.appendChild(this.meter);
         this.elem.style.display = "block";
+        this.meter.classList.add("progress-striped", "active");
     },
 
     on_result: function(test, status, message, subtests) {
@@ -183,13 +179,14 @@ VisualOutput.prototype = {
         this.elem.querySelector("td." + test_status).textContent = this.result_count[test_status];
 
         this.results_table.tBodies[0].appendChild(row);
-        this.update_meter(this.runner.progress());
+        this.update_meter(this.runner.progress(), this.runner.results.count(), this.runner.test_count());
     },
 
     on_done: function() {
-        this.meter.parentNode.removeChild(this.meter);
-        this.meter = null;
-        this.progress.textContent = "Done";
+        this.meter.setAttribute("aria-valuenow", this.meter.getAttribute("aria-valuemax"));
+        this.meter.style.width = "100%";
+        this.meter.textContent = "Done!";
+        this.meter.classList.remove("progress-striped", "active");
         //add the json serialization of the results
         var a = this.elem.querySelector(".jsonResults");
         var blob = new Blob([this.runner.results.to_json()], { type: "application/json" });
@@ -219,9 +216,10 @@ VisualOutput.prototype = {
         return link;
     },
 
-    update_meter: function(progress) {
-        this.meter.value = progress;
-        this.meter.title = (progress * 100).toFixed(1) + "%";
+    update_meter: function(progress, count, total) {
+        this.meter.setAttribute("aria-valuenow", count);
+        this.meter.setAttribute("aria-valuemax", total);
+        this.meter.textContent = this.meter.style.width = (progress * 100).toFixed(1) + "%";
     }
 
 }

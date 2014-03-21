@@ -88,8 +88,12 @@
   <div id="output">
     <div class="summary clearfix">
       <h4>Progress</h4>
-      <!-- XXX we need to handle this with a progress bar -->
-      <div class='progress'></div>
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" 
+             aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0">
+          0%
+        </div>
+      </div>
       <table class='table'>
         <thead>
           <tr>

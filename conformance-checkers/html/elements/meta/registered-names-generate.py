@@ -1,8 +1,7 @@
 #!/usr/bin/python
 template = """<!DOCTYPE html>
 <meta charset=utf-8>
-<title>Registered extensions to the predefined set of metadata names must be
-considered valid and must be compared in an ASCII case-insensitive manner</title>
+<title>Registered extensions to the predefined set of metadata names</title>
 """
 f = open("meta-extensions", 'r')
 for line in f:

@@ -12,8 +12,8 @@
         <h4>
             Test Description: This test checks if setCapture/releaseCapture functions works properly. Complete the folowing actions:
             <ol>
-                <li> Touch "Set Capture" button and do not release your touch
-                <li> Move your touch outside of the screen or try to scroll the page. "lostpointercapture" should be logged inside of the black rectangle immediately after "pointercancel"
+                <li> Touch black rectangle and do not release your touch
+                <li> Move your touch to scroll the page. "lostpointercapture" should be logged inside of the black rectangle immediately after "pointercancel"
             </ol>
         </h4>
         Test passes if the proper behavior of the events is observed.
@@ -21,15 +21,12 @@
             <b>This test has large timeout value: <span id="timeoutVal"></span></b>
         <p>		
         <div id="target0" style="background:black; color:white"></div>
-        <br>
-        <input type="button" id="btnCapture" value="Set Capture">
+
         <script type='text/javascript'>
-            var isPointerCapture = false;
             var pointercancelGot = false;
             var count=0;
             
             var target0 = document.getElementById('target0');
-            var captureButton = document.getElementById('btnCapture');
             
             setup({ explicit_done: true });
             
@@ -40,21 +37,14 @@
             window.onload = function() {
             document.getElementById('timeoutVal').innerHTML = timeoutSettings + " ms";
             
-            on_event(captureButton, 'pointerdown', function(e) {
+            on_event(target0, 'pointerdown', function(e) {
 				test(function() {
 					assert_true((e.pointerType == "touch"),
 					"Test should be run using a touch as input");
 				}, "Test should be run using a touch as input");
-				
-            	if(isPointerCapture == false) {
-            		isPointerCapture = true;
-            		captureButton.value = 'Release Capture';
-            		sPointerCapture(e);
-            		pointercancelGot = false;
-            	}
-            	else {
-            		rPointerCapture(e);
-            	}
+
+            	sPointerCapture(e);
+            	pointercancelGot = false;
             });
             	
             on_event(target0, 'gotpointercapture', function(e) {
@@ -68,8 +58,6 @@
             			assert_true(pointercancelGot, "pointercancel was received before lostpointercapture")
             		}, "pointercancel was received before lostpointercapture");
             	log("lostpointercapture", document.getElementById('target0'));
-            	captureButton.value = 'Set Capture';
-            	isPointerCapture = false;
             });
             
             on_event(document.body, 'pointercancel', function(e) {

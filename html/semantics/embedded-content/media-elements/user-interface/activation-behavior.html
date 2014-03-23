@@ -1,208 +1,189 @@
 <!doctype html>
 <title>activation behavior</title>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="media-file.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/media.js"></script>
 <div id="log"></div>
 <script>
-function activation_behavior_test(tagName, src)
-{
-    async_test(function(t)
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        e.src = src;
-        e.preload = 'auto';
-        e.oncanplay = t.step_func(function()
-        {
-            assert_greater_than(e.readyState, e.HAVE_CURRENT_DATA, 'element readyState');
-            e.controller = new MediaController();
-            assert_false(e.controller.paused, 'controller paused state before click');
-            assert_true(e.paused, 'element paused state before click');
-            e.click();
-            assert_false(e.controller.paused, 'controller paused state after click');
-            assert_false(e.paused, 'element paused state after click');
-            t.done();
-        });
-    }, tagName + ' activation behavior for restrained media controller');
+function activation_behavior_test(tagName, src) {
+  async_test(function(t) {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    e.src = src;
+    e.preload = 'auto';
+    e.oncanplay = t.step_func(function() {
+      assert_greater_than(e.readyState, e.HAVE_CURRENT_DATA, 'element readyState');
+      e.controller = new MediaController();
+      assert_false(e.controller.paused, 'controller paused state before click');
+      assert_true(e.paused, 'element paused state before click');
+      e.click();
+      assert_false(e.controller.paused, 'controller paused state after click');
+      assert_false(e.paused, 'element paused state after click');
+      t.done();
+    });
+  }, tagName + ' activation behavior for restrained media controller');
 
-    async_test(function(t)
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        e.src = src;
-        e.preload = 'auto';
-        e.oncanplay = t.step_func(function()
-        {
-            e.pause(); // clears autoplaying flag
-            assert_greater_than(e.readyState, e.HAVE_CURRENT_DATA, 'element readyState');
-            e.controller = new MediaController();
-            assert_false(e.controller.paused, 'controller paused state before click');
-            assert_true(e.paused, 'element paused state before click');
-            e.click();
-            assert_false(e.controller.paused, 'controller paused state after click');
-            assert_false(e.paused, 'element paused state after click');
-            t.done();
-        });
-    }, tagName + ' activation behavior for restrained media controller (with non-autoplaying paused slave)');
+  async_test(function(t) {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    e.src = src;
+    e.preload = 'auto';
+    e.oncanplay = t.step_func(function() {
+      e.pause(); // clears autoplaying flag
+      assert_greater_than(e.readyState, e.HAVE_CURRENT_DATA, 'element readyState');
+      e.controller = new MediaController();
+      assert_false(e.controller.paused, 'controller paused state before click');
+      assert_true(e.paused, 'element paused state before click');
+      e.click();
+      assert_false(e.controller.paused, 'controller paused state after click');
+      assert_false(e.paused, 'element paused state after click');
+      t.done();
+    });
+  }, tagName + ' activation behavior for restrained media controller (with non-autoplaying paused slave)');
 
-    async_test(function(t)
-    {
-        var e1 = document.createElement(tagName);
-        var e2 = document.createElement(tagName);
-        e1.controls = true;
-        e1.src = e2.src = src;
-        e1.preload = e2.preload = 'auto';
-        var canplaycount = 0;
-        e1.oncanplay = e2.oncanplay = t.step_func(function()
-        {
-            if (++canplaycount != 2) {
-                return;
-            }
-            e1.play();
-            assert_greater_than(e1.readyState, e1.HAVE_CURRENT_DATA, 'element 1 readyState');
-            assert_greater_than(e2.readyState, e2.HAVE_CURRENT_DATA, 'element 2 readyState');
-            e1.controller = new MediaController();
-            e2.controller = e1.controller;
-            assert_false(e1.controller.paused, 'controller paused state before click');
-            assert_false(e1.paused, 'element 1 paused state before click');
-            assert_true(e2.paused, 'element 2 paused state before click');
-            e1.click();
-            assert_false(e1.controller.paused, 'controller paused state after click');
-            assert_false(e1.paused, 'element 1 paused state after click');
-            assert_false(e2.paused, 'element 2 paused state after click');
-            t.done();
-        });
-    }, tagName + ' activation behavior for restrained media controller (with non-blocked playing and autoplaying-and-paused slaves)');
+  async_test(function(t) {
+    var e1 = document.createElement(tagName);
+    var e2 = document.createElement(tagName);
+    e1.controls = true;
+    e1.src = e2.src = src;
+    e1.preload = e2.preload = 'auto';
+    var canplaycount = 0;
+    e1.oncanplay = e2.oncanplay = t.step_func(function() {
+      if (++canplaycount != 2) {
+        return;
+      }
+      e1.play();
+      assert_greater_than(e1.readyState, e1.HAVE_CURRENT_DATA, 'element 1 readyState');
+      assert_greater_than(e2.readyState, e2.HAVE_CURRENT_DATA, 'element 2 readyState');
+      e1.controller = new MediaController();
+      e2.controller = e1.controller;
+      assert_false(e1.controller.paused, 'controller paused state before click');
+      assert_false(e1.paused, 'element 1 paused state before click');
+      assert_true(e2.paused, 'element 2 paused state before click');
+      e1.click();
+      assert_false(e1.controller.paused, 'controller paused state after click');
+      assert_false(e1.paused, 'element 1 paused state after click');
+      assert_false(e2.paused, 'element 2 paused state after click');
+      t.done();
+    });
+  }, tagName + ' activation behavior for restrained media controller (with non-blocked playing and autoplaying-and-paused slaves)');
 
-    test(function()
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        e.controller = new MediaController();
-        e.controller.pause();
-        assert_true(e.controller.paused, 'controller paused state before click');
-        assert_true(e.paused, 'element paused state before click');
-        e.click();
-        assert_false(e.controller.paused, 'controller paused state after click');
-        assert_true(e.paused, 'element paused state after click');
-    }, tagName + ' activation behavior for paused media controller');
+  test(function() {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    e.controller = new MediaController();
+    e.controller.pause();
+    assert_true(e.controller.paused, 'controller paused state before click');
+    assert_true(e.paused, 'element paused state before click');
+    e.click();
+    assert_false(e.controller.paused, 'controller paused state after click');
+    assert_true(e.paused, 'element paused state after click');
+  }, tagName + ' activation behavior for paused media controller');
 
-    async_test(function(t)
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        e.src = src;
-        e.preload = 'auto';
-        e.oncanplay = t.step_func(function()
-        {
-            assert_greater_than(e.readyState, e.HAVE_CURRENT_DATA, 'element readyState');
-            e.controller = new MediaController();
-            e.controller.pause();
-            assert_true(e.controller.paused, 'controller paused state before click');
-            assert_true(e.paused, 'element paused state before click');
-            e.click();
-            assert_false(e.controller.paused, 'controller paused state after click');
-            assert_true(e.paused, 'element paused state after click');
-            t.done();
-        });
-    }, tagName + ' activation behavior for paused media controller (with non-blocked paused slave)');
+  async_test(function(t) {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    e.src = src;
+    e.preload = 'auto';
+    e.oncanplay = t.step_func(function() {
+      assert_greater_than(e.readyState, e.HAVE_CURRENT_DATA, 'element readyState');
+      e.controller = new MediaController();
+      e.controller.pause();
+      assert_true(e.controller.paused, 'controller paused state before click');
+      assert_true(e.paused, 'element paused state before click');
+      e.click();
+      assert_false(e.controller.paused, 'controller paused state after click');
+      assert_true(e.paused, 'element paused state after click');
+      t.done();
+    });
+  }, tagName + ' activation behavior for paused media controller (with non-blocked paused slave)');
 
-    test(function()
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        e.controller = new MediaController();
-        e.controller.play();
-        assert_false(e.controller.paused, 'controller paused state before click');
-        assert_false(e.paused, 'element paused state before click');
-        e.click();
-        assert_true(e.controller.paused, 'controller paused state after click');
-        assert_false(e.paused, 'element paused state after click');
-    }, tagName + ' activation behavior for playing media controller');
+  test(function() {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    e.controller = new MediaController();
+    e.controller.play();
+    assert_false(e.controller.paused, 'controller paused state before click');
+    assert_false(e.paused, 'element paused state before click');
+    e.click();
+    assert_true(e.controller.paused, 'controller paused state after click');
+    assert_false(e.paused, 'element paused state after click');
+  }, tagName + ' activation behavior for playing media controller');
 
-    async_test(function(t)
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        e.src = src;
-        e.preload = 'auto';
-        e.oncanplay = t.step_func(function()
-        {
-            e.play();
-            assert_greater_than(e.readyState, e.HAVE_CURRENT_DATA, 'element readyState');
-            e.controller = new MediaController();
-            assert_false(e.controller.paused, 'controller paused state before click');
-            assert_false(e.paused, 'element paused state before click');
-            e.click();
-            assert_true(e.controller.paused, 'controller paused state after click');
-            assert_false(e.paused, 'element paused state after click');
-            t.done();
-        });
-    }, tagName + ' activation behavior for playing media controller (with non-blocked playing slave)');
+  async_test(function(t) {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    e.src = src;
+    e.preload = 'auto';
+    e.oncanplay = t.step_func(function() {
+      e.play();
+      assert_greater_than(e.readyState, e.HAVE_CURRENT_DATA, 'element readyState');
+      e.controller = new MediaController();
+      assert_false(e.controller.paused, 'controller paused state before click');
+      assert_false(e.paused, 'element paused state before click');
+      e.click();
+      assert_true(e.controller.paused, 'controller paused state after click');
+      assert_false(e.paused, 'element paused state after click');
+      t.done();
+    });
+  }, tagName + ' activation behavior for playing media controller (with non-blocked playing slave)');
 
-    async_test(function(t)
-    {
-        var e1 = document.createElement(tagName);
-        var e2 = document.createElement(tagName);
-        e1.controls = true;
-        e1.src = src;
-        e1.preload = 'auto';
-        e1.oncanplay = t.step_func(function()
-        {
-            assert_greater_than(e1.readyState, e1.HAVE_CURRENT_DATA, 'element 1 readyState');
-            assert_equals(e2.readyState, e2.HAVE_NOTHING, 'element 2 readyState');
-            e1.controller = new MediaController();
-            e2.controller = e1.controller;
-            assert_false(e1.controller.paused, 'controller paused state before click');
-            assert_true(e1.paused, 'element 1 paused state before click');
-            assert_true(e2.paused, 'element 2 paused state before click');
-            e1.click();
-            assert_true(e1.controller.paused, 'controller paused state after click');
-            assert_true(e1.paused, 'element 1 paused state after click');
-            assert_true(e2.paused, 'element 2 paused state after click');
-            t.done();
-        });
-    }, tagName + ' activation behavior for playing media controller (with non-blocked autoplaying-and-paused and blocked paused slaves)');
+  async_test(function(t) {
+    var e1 = document.createElement(tagName);
+    var e2 = document.createElement(tagName);
+    e1.controls = true;
+    e1.src = src;
+    e1.preload = 'auto';
+    e1.oncanplay = t.step_func(function() {
+      assert_greater_than(e1.readyState, e1.HAVE_CURRENT_DATA, 'element 1 readyState');
+      assert_equals(e2.readyState, e2.HAVE_NOTHING, 'element 2 readyState');
+      e1.controller = new MediaController();
+      e2.controller = e1.controller;
+      assert_false(e1.controller.paused, 'controller paused state before click');
+      assert_true(e1.paused, 'element 1 paused state before click');
+      assert_true(e2.paused, 'element 2 paused state before click');
+      e1.click();
+      assert_true(e1.controller.paused, 'controller paused state after click');
+      assert_true(e1.paused, 'element 1 paused state after click');
+      assert_true(e2.paused, 'element 2 paused state after click');
+      t.done();
+    });
+  }, tagName + ' activation behavior for playing media controller (with non-blocked autoplaying-and-paused and blocked paused slaves)');
 
-    test(function()
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        assert_true(e.paused, 'paused state before click()');
-        e.click();
-        assert_false(e.paused, 'paused state after click()');
-    }, tagName + ' activation behavior for paused media element');
+  test(function() {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    assert_true(e.paused, 'paused state before click()');
+    e.click();
+    assert_false(e.paused, 'paused state after click()');
+  }, tagName + ' activation behavior for paused media element');
 
-    test(function()
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        e.play();
-        assert_false(e.paused, 'paused state before click()');
-        e.click();
-        assert_true(e.paused, 'paused state after click()');
-    }, tagName + ' activation behavior for playing media element');
+  test(function() {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    e.play();
+    assert_false(e.paused, 'paused state before click()');
+    e.click();
+    assert_true(e.paused, 'paused state after click()');
+  }, tagName + ' activation behavior for playing media element');
 
-    test(function()
-    {
-        var e = document.createElement(tagName);
-        e.controls = true;
-        e.onclick = function(ev) { ev.preventDefault(); };
-        assert_true(e.paused, 'paused state before click()');
-        e.click();
-        assert_true(e.paused, 'paused state after click()');
-    }, tagName + ' activation behavior for canceled event');
+  test(function() {
+    var e = document.createElement(tagName);
+    e.controls = true;
+    e.onclick = function(ev) { ev.preventDefault(); };
+    assert_true(e.paused, 'paused state before click()');
+    e.click();
+    assert_true(e.paused, 'paused state after click()');
+  }, tagName + ' activation behavior for canceled event');
 
-    test(function()
-    {
-        var e = document.createElement(tagName);
-        assert_true(e.paused, 'paused state before click()');
-        e.click();
-        assert_true(e.paused, 'paused state after click()');
-    }, tagName + ' activation behavior without controls');
+  test(function() {
+    var e = document.createElement(tagName);
+    assert_true(e.paused, 'paused state before click()');
+    e.click();
+    assert_true(e.paused, 'paused state after click()');
+  }, tagName + ' activation behavior without controls');
 }
 
-activation_behavior_test('audio', findMediaFile('audio', 'content/test'));
-activation_behavior_test('video', findMediaFile('video', 'content/test'));
+activation_behavior_test('audio', getAudioURI('/media/sound_5'));
+activation_behavior_test('video', getVideoURI('/media/movie_5'));
 </script>

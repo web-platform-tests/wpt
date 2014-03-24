@@ -5,25 +5,39 @@
 <link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#textFieldSelection">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<style>
+  #display_none {display:none;}
+</style>
 <div id="log"></div>
-<input value="foobar">
-<textarea>foobar</textarea>
+<input type=text id=text value="foobar">
+<input type=search id=search value="foobar">
+<input type=tel id=tel value="foobar">
+<input type=url id=url value="foobar">
+<input type=password id=password value="foobar">
+<input id=display_none value="foobar">
+<textarea id=textarea>foobar</textarea>
 <script>
-  var input = document.querySelector("input"),
-      textarea = document.querySelector("textarea");
+  var input = document.createElement("input");
+  input.id = "input_not_in_doc";
+  input.value = "foobar";
 
-  ["input", "textarea"].forEach(function(el) {
-    var element = document.querySelector(el),
-        t = async_test(el + ".setRangeText fires a select event");
+  var elements = [
+    document.getElementById("text"),
+    document.getElementById("search"),
+    document.getElementById("tel"),
+    document.getElementById("url"),
+    document.getElementById("password"),
+    document.getElementById("display_none"),
+    document.getElementById("textarea"),
+    input,
+  ]
 
-    element.onselect = t.step_func_done(function(e) {
-        assert_true(e.isTrusted, "event is trusted");
-        assert_false(e.bubbles, "event bubbles");
-        assert_false(e.cancelable, "event is not cancelable");
-    });
+  elements.forEach(function(element) {
+    var t = async_test(element.id + " setRangeText fires a select event"),
+        q = false;
 
     test(function() {
-      assert_equals(element.value, "foobar");
+      element.value = "foobar";
       element.selectionStart = 0;
       element.selectionEnd = 3;
       assert_equals(element.selectionStart, 0);
@@ -34,7 +48,7 @@
       assert_equals(element.selectionEnd, 7);
       element.setRangeText("foobar3", 7, 10);
       assert_equals(element.value, "foobar2foobar3");
-    }, el + ".setRangeText with only one argument replaces the value between selectionStart and selectionEnd, otherwise replaces the value between 2nd and 3rd arguments");
+    }, element.id + " setRangeText with only one argument replaces the value between selectionStart and selectionEnd, otherwise replaces the value between 2nd and 3rd arguments");
 
     test(function(){
       element.value = "foobar";
@@ -45,40 +59,62 @@
       assert_equals(element.value, "foobar2bar");
       assert_equals(element.selectionStart, 0);
       assert_equals(element.selectionEnd, 0);
-    }, el + " selectionMode missing");
+    }, element.id + " selectionMode missing");
 
     test(function(){
-      element.setRangeText("foo", 1, 7, "select");
-      assert_equals(element.value, "ffoobar");
-      assert_equals(element.selectionStart, 1);
-      assert_equals(element.selectionEnd, 4);
-    }, el + " selectionMode 'select'");
+      element.value = "foobar"
+      element.setRangeText("foo", 3, 6, "select");
+      assert_equals(element.value, "foofoo");
+      assert_equals(element.selectionStart, 3);
+      assert_equals(element.selectionEnd, 6);
+    }, element.id + " selectionMode 'select'");
 
     test(function(){
-      element.setRangeText("oo", 1, 4, "start");
-      assert_equals(element.value, "foobar");
-      assert_equals(element.selectionStart, 1);
-      assert_equals(element.selectionEnd, 1);
-    }, el + " selectionMode 'start'");
+      element.value = "foobar"
+      element.setRangeText("foo", 3, 6, "start");
+      assert_equals(element.value, "foofoo");
+      assert_equals(element.selectionStart, 3);
+      assert_equals(element.selectionEnd, 3);
+    }, element.id + " selectionMode 'start'");
 
     test(function(){
+      element.value = "foobar"
       element.setRangeText("foobar", 3, 6, "end");
       assert_equals(element.value, "foofoobar");
       assert_equals(element.selectionStart, 9);
       assert_equals(element.selectionEnd, 9);
-    }, el + " selectionMode 'end'");
+    }, element.id + " selectionMode 'end'");
 
     test(function(){
+      element.value = "foobar"
+      element.selectionStart = 0;
+      element.selectionEnd = 5;
+      assert_equals(element.selectionStart, 0);
       element.setRangeText("", 3, 6, "preserve");
-      assert_equals(element.value, "foobar");
-      assert_equals(element.selectionStart, 6);
-      assert_equals(element.selectionEnd, 6);
-    }, el + " selectionMode 'preserve'");
+      assert_equals(element.value, "foo");
+      assert_equals(element.selectionStart, 0);
+      assert_equals(element.selectionEnd, 3);
+    }, element.id + " selectionMode 'preserve'");
 
     test(function(){
       assert_throws("INDEX_SIZE_ERR", function() {
         element.setRangeText("barfoo", 2, 1);
       });
-    }, el + ".setRangeText with 3rd argument greater than 2nd argument throws an IndexSizeError exception");
+    }, element.id + " setRangeText with 3rd argument greater than 2nd argument throws an IndexSizeError exception");
+
+    test(function(){
+      assert_throws(new TypeError(), function() {
+        element.setRangeText();
+      });
+    }, element.id + " setRangeText without argument throws a type error");
+
+    element.onselect = t.step_func_done(function(e) {
+        assert_true(q, "event should be queued");
+        assert_true(e.isTrusted, "event is trusted");
+        assert_false(e.bubbles, "event bubbles");
+        assert_false(e.cancelable, "event is not cancelable");
+    });
+    element.setRangeText("foobar2", 0, 6);
+    q=true;
   })
 </script>

@@ -19,8 +19,9 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
+    };
     doc.registerElement('x-element', {prototype: proto});
+
     var customElement = doc.querySelector('#xelement');
     doc.body.removeChild(customElement);
     assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
@@ -31,13 +32,14 @@ testInIFrame('../../resources/x-element.html', function(doc) {
 
 testInIFrame('../../resources/blank.html', function(doc) {
     var callbackCalledCounter = 0;
-    doc.body.innerHTML = '<div id="xa4-parent"><x-a-4 id="xa4"></x-a-4></div>';
+    doc.body.innerHTML = '<div id="x-a-parent"><x-a id="xa"></x-a></div>';
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-4', {prototype: proto});
-    var div = doc.querySelector('#xa4-parent');
+    };
+    doc.registerElement('x-a', {prototype: proto});
+
+    var div = doc.querySelector('#x-a-parent');
     doc.body.removeChild(div);
     assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
         'if custom element is removed from the document with browsing context');
@@ -50,8 +52,9 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
+    };
     doc.registerElement('x-element', {prototype: proto});
+
     var customElement = doc.querySelector('#xelement');
     var div = doc.createElement('div');
     doc.body.replaceChild(div, customElement);
@@ -66,10 +69,11 @@ testInIFrame('../../resources/blank.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-6', {prototype: proto});
-    doc.body.innerHTML = '<div id="x-a-6-parent"><x-a-6 id="xelement"></x-a-6></div>';
-    var parent = doc.querySelector('#x-a-6-parent');
+    };
+    doc.registerElement('x-b', {prototype: proto});
+
+    doc.body.innerHTML = '<div id="x-b-parent"><x-b id="x-b"></x-b></div>';
+    var parent = doc.querySelector('#x-b-parent');
     var replacement = doc.createElement('div');
     doc.body.replaceChild(replacement, parent);
     assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
@@ -83,8 +87,9 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
+    };
     doc.registerElement('x-element', {prototype: proto});
+
     var customElement = doc.querySelector('#xelement');
     doc.body.innerHTML = '';
     assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
@@ -95,13 +100,14 @@ testInIFrame('../../resources/x-element.html', function(doc) {
 
 testInIFrame('../../resources/blank.html', function(doc) {
     var callbackCalledCounter = 0;
-    doc.body.innerHTML = '<div id="xa4-parent"><x-a-5 id="xa5"></x-a-5></div>';
+    doc.body.innerHTML = '<div id="x-c-parent"><x-c id="x-c"></x-c></div>';
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-5', {prototype: proto});
-    var div = doc.querySelector('#xa5-parent');
+    };
+    doc.registerElement('x-c', {prototype: proto});
+
+    var div = doc.querySelector('#x-c-parent');
     doc.body.innerHTML = '';
     assert_equals(callbackCalledCounter, 1, 'Callback detached should be called ' +
         'if custom element is removed from the document with browsing context');

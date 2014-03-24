@@ -20,10 +20,11 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-1', {prototype: proto});
-    doc.body.innerHTML = '<x-a-1 id="xa1"></x-a-1>';
-    var xa1 = doc.querySelector('#xa1');
+    };
+    doc.registerElement('x-a', {prototype: proto});
+
+    doc.body.innerHTML = '<x-a id="x-a"></x-a>';
+    var xa1 = doc.querySelector('#x-a');
     doc.body.removeChild(xa1);
     assert_equals(callbackCalledCounter, 0, 'Callback detached should not be called ' +
         'if the document has no browsing context');
@@ -37,10 +38,11 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.body.innerHTML = '<x-a-2 id="xa2"></x-a-2>';
-    doc.registerElement('x-a-2', {prototype: proto});
-    var customElement = doc.querySelector('#xa2');
+    };
+    doc.body.innerHTML = '<x-b id="x-b"></x-b>';
+    doc.registerElement('x-b', {prototype: proto});
+
+    var customElement = doc.querySelector('#x-b');
     doc.body.removeChild(customElement);
     assert_equals(callbackCalledCounter, 0, 'Callback detached should not be called ' +
         'if the document has no browsing context');
@@ -51,12 +53,12 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-    doc.body.innerHTML = '<x-a-3 id="xa3"></x-a-3>';
-    var customElement = doc.querySelector('#xa3');
+    doc.body.innerHTML = '<x-c id="x-c"></x-c>';
+    var customElement = doc.querySelector('#x-c');
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalled = true;
-    }
+    };
     customElement.constructor.prototype = proto;
     doc.body.removeChild(customElement);
     assert_equals(callbackCalledCounter, 0, 'Callback detached should not be called ' +
@@ -71,9 +73,10 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-4', {prototype: proto});
-    doc.body.innerHTML = '<x-a-4 id="xa4"></x-a-4>';
+    };
+    doc.registerElement('x-d', {prototype: proto});
+
+    doc.body.innerHTML = '<x-d id="x-d"></x-d>';
     doc.body.innerHTML = '';
     assert_equals(callbackCalledCounter, 0, 'Callback detached should not be called ' +
         'if the document has no browsing context');
@@ -87,9 +90,10 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-5', {prototype: proto});
-    doc.body.innerHTML = '<div id="customParent"><x-a-5 id="xa5"></x-a-5></div>';
+    };
+    doc.registerElement('x-e', {prototype: proto});
+
+    doc.body.innerHTML = '<div id="customParent"><x-e id="x-e"></x-e></div>';
     var parent = doc.querySelector('#customParent');
     doc.body.removeChild(parent);
     assert_equals(callbackCalledCounter, 0, 'Callback detached should not be called ' +
@@ -104,9 +108,10 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.detachedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-6', {prototype: proto});
-    doc.body.innerHTML = '<div><x-a-6 id="xa6"></x-a-6></div>';
+    };
+    doc.registerElement('x-f', {prototype: proto});
+
+    doc.body.innerHTML = '<div><x-f id="x-f"></x-f></div>';
     doc.body.innerHTML = '';
     assert_equals(callbackCalledCounter, 0, 'Callback detached should not be called ' +
         'if the document has no browsing context');
@@ -127,6 +132,7 @@ loseBrowsingContextTest.step(function() {
             loseBrowsingContextTest.callbackCalledCounter++;
         };
         doc.registerElement('x-element', {prototype: proto});
+
         var customElement = doc.querySelector('#xelement');
         iframe.parentNode.removeChild(iframe); // lose browsing context
         customElement.parentNode.removeChild(customElement);

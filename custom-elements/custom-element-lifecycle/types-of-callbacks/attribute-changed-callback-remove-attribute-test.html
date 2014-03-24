@@ -19,8 +19,9 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback  = function() {
         callbackCalledCounter++;
-    }
-    var GeneratedConstructor = doc.registerElement('x-a-1', {prototype: proto});
+    };
+    var GeneratedConstructor = doc.registerElement('x-a', {prototype: proto});
+
     var customElement = new GeneratedConstructor();
     //attributeChangedCallback should be called the first time here
     customElement.setAttribute('class', 'someClass');
@@ -40,11 +41,12 @@ test(function() {
         var proto = Object.create(obj.constructor.prototype);
         proto.attributeChangedCallback  = function() {
             callbackCalledCounter++;
-        }
+        };
         var GeneratedConstructor = doc.registerElement('x-' + element + '-' + element + '-1', {
             prototype: proto,
             extends: element
         });
+
         var customElement = new GeneratedConstructor();
         //attributeChangedCallback should be called the first time here
         customElement.setAttribute('class', 'someClass');
@@ -63,10 +65,11 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-2', {prototype: proto});
-    doc.body.innerHTML = '<x-a-2 id="xa2" class="theClass"></x-a-2>';
-    var customElement = doc.querySelector('#xa2');
+    };
+    doc.registerElement('x-b', {prototype: proto});
+
+    doc.body.innerHTML = '<x-b id="x-b" class="theClass"></x-b>';
+    var customElement = doc.querySelector('#x-b');
     customElement.removeAttribute('class');
     assert_equals(callbackCalledCounter, 1, 'Callback attributeChanged should be called ' +
         'after removeAttribute() call');
@@ -80,10 +83,11 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function(arg1, arg2, arg3) {
         callbackArgs = [arg1, arg2, arg3];
-    }
-    doc.registerElement('x-a-3', {prototype: proto});
-    doc.body.innerHTML = '<x-a-3 id="xa3" class="theClass"></x-a-3>';
-    var customElement = doc.querySelector('#xa3');
+    };
+    doc.registerElement('x-c', {prototype: proto});
+
+    doc.body.innerHTML = '<x-c id="x-c" class="theClass"></x-c>';
+    var customElement = doc.querySelector('#x-c');
     customElement.removeAttribute('class');
     assert_array_equals(callbackArgs, ['class', 'theClass', null],
         'Unexpected attributeChanged callback arguments');
@@ -97,15 +101,17 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.body.innerHTML = '<x-a-4 id="xa4" class="theClass"></x-a-4>';
-    var customElement = doc.querySelector('#xa4');
+    };
+
+    doc.body.innerHTML = '<x-d id="x-d" class="theClass"></x-d>';
+    var customElement = doc.querySelector('#x-d');
     // this should not call or enquee attributeChangedCallback
     customElement.setAttribute('class', 'someClass');
     // this one should not too
     customElement.removeAttribute('class');
     assert_equals(callbackCalledCounter, 0, 'Callback attributeChanged should not be called');
-    doc.registerElement('x-a-4', {prototype: proto});
+
+    doc.registerElement('x-d', {prototype: proto});
     // this call invokes attributeChangedCallback
     customElement.setAttribute('name', 'someName');
     // and this one
@@ -121,8 +127,9 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
-    }
+    };
     doc.registerElement('x-element', {prototype: proto});
+
     var customElement = doc.querySelector('#xelement');
     customElement.setAttribute('class', 'someClass');
     customElement.removeAttribute('class');
@@ -137,8 +144,9 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function(arg1, arg2, arg3) {
         callbackArgs = [arg1, arg2, arg3];
-    }
+    };
     doc.registerElement('x-element', {prototype: proto});
+
     doc.body.innerHTML = '<x-element id="xelement" class="theClass"></x-element>';
     var customElement = doc.querySelector('#xelement');
     customElement.removeAttribute('class');
@@ -153,13 +161,15 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.attributeChangedCallback = function() {
         callbackCalledCounter++;
-    }
+    };
+
     var customElement = doc.querySelector('#xelement');
     // this should not call or enquee attributeChangedCallback
     customElement.setAttribute('name', 'someName');
     // this one too
     customElement.removeAttribute('name');
     assert_equals(callbackCalledCounter, 0, 'Callback attributeChanged should not be called');
+
     doc.registerElement('x-element', {prototype: proto});
     // this call invokes attributeChangedCallback
     customElement.setAttribute('class', 'someClass');

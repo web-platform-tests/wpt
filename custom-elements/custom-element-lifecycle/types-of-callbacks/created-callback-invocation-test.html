@@ -20,8 +20,9 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
+    };
     var GeneratedConstructor = doc.registerElement('x-a', {prototype: proto});
+
     var customElement = new GeneratedConstructor();
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called after ' +
         'element instance was created');
@@ -34,9 +35,10 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-2', {prototype: proto});
-    doc.body.innerHTML = '<x-a-2></x-a-2>';
+    };
+    doc.registerElement('x-b', {prototype: proto});
+
+    doc.body.innerHTML = '<x-b></x-b>';
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called after ' +
         'element instance was created');
 }, 'Test created callback when custom element is created in HTML');
@@ -48,9 +50,10 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-7', {prototype: proto});
-    doc.body.innerHTML = '<div><x-a-7></x-a-7></div>';
+    };
+    doc.registerElement('x-c', {prototype: proto});
+
+    doc.body.innerHTML = '<div><x-c></x-c></div>';
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called after ' +
         'element instance was created');
 }, 'Test created callback when custom element is created in HTML as descendant of another element');
@@ -62,9 +65,10 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.registerElement('x-a-3', {prototype: proto});
-    var customElement = doc.createElement('x-a-3');
+    };
+    doc.registerElement('x-d', {prototype: proto});
+
+    var customElement = doc.createElement('x-d');
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called after ' +
         'element instance was created');
 }, 'Test created callback when custom element is created by createElement');
@@ -76,9 +80,9 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
-    doc.body.innerHTML = '<x-a-4></x-a-4>';
-    doc.registerElement('x-a-4', {prototype: proto});
+    };
+    doc.body.innerHTML = '<x-e></x-e>';
+    doc.registerElement('x-e', {prototype: proto});
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called after ' +
         'element instance was created');
 }, 'Test created callback when custom element is created in HTML before ' +
@@ -88,12 +92,14 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     var callbackCalledCounter = 0;
-    doc.body.innerHTML = '<x-a-5 id="xa"></x-a-5>';
-    var customElement = doc.querySelector('#xa');
+
+    doc.body.innerHTML = '<x-f id="x-f"></x-f>';
+    var customElement = doc.querySelector('#x-f');
+
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
+    };
     customElement.constructor.prototype = proto;
     assert_equals(callbackCalledCounter, 0,
         'Callback created should not be called if custom element is unresolved');
@@ -105,7 +111,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
+    };
     doc.registerElement('x-element', {prototype: proto});
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called');
 }, 'Test created callback. Create custom element, then register. ' +
@@ -125,9 +131,10 @@ test(function() {
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
-    var customElement = doc.createElement('x-a-6');
-    doc.registerElement('x-a-6', {prototype: proto});
+    };
+
+    var customElement = doc.createElement('x-g');
+    doc.registerElement('x-g', {prototype: proto});
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called after ' +
         'registration of custom element');
 }, 'Test created callback when custom element is created by createElement '+
@@ -140,18 +147,21 @@ test(function(){
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
-    var GeneratedConstructor = doc.registerElement('x-a-8', {prototype: proto});
+    };
+    var GeneratedConstructor = doc.registerElement('x-h', {prototype: proto});
+
     var customElement1 = new GeneratedConstructor();
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called');
 
-    var customElement2 = doc.createElement('x-a-8');
+    var customElement2 = doc.createElement('x-h');
     assert_equals(callbackCalledCounter, 2, 'Callback created should be called after ' +
         'element instance was created');
-    doc.body.innerHTML = '<x-a-8></x-a-8>';
+
+    doc.body.innerHTML = '<x-h></x-h>';
     assert_equals(callbackCalledCounter, 3, 'Callback created should be called after ' +
         'element instance was created');
-    doc.body.innerHTML = '<div><x-a-8></x-a-8></div>';
+
+    doc.body.innerHTML = '<div><x-h></x-h></div>';
     assert_equals(callbackCalledCounter, 4, 'Callback created should be called after ' +
         'element instance was created');
 }, 'Test created callback. Create several custom elements using different ways');
@@ -162,19 +172,24 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = Object.create(HTMLElement.prototype);
     proto.createdCallback = function() {
         callbackCalledCounter++;
-    }
+    };
+
     var GeneratedConstructor = doc.registerElement('x-element', {prototype: proto});
     assert_equals(callbackCalledCounter, 1, 'Callback created should be called ' +
         'for custom element in loaded document');
+
     var customElement2 = new GeneratedConstructor();
     assert_equals(callbackCalledCounter, 2, 'Callback created should be called after ' +
         'element instance was created');
+
     var customElement3 = doc.createElement('x-element');
     assert_equals(callbackCalledCounter, 3, 'Callback created should be called after ' +
         'element instance was created');
+
     doc.body.innerHTML = '<x-element></x-element>';
     assert_equals(callbackCalledCounter, 4, 'Callback created should be called after ' +
         'element instance was created');
+
     doc.body.innerHTML = '<div><x-element></x-element></div>';
     assert_equals(callbackCalledCounter, 5, 'Callback created should be called after ' +
         'element instance was created');

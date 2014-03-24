@@ -7,7 +7,7 @@ import json
 import urlparse
 import webelement
 
-class CommandExecutor:
+class CommandExecutor(object):
     """Dispatches requests to remote WebDriver endpoint."""
 
     _HEADERS = {
@@ -29,7 +29,20 @@ class CommandExecutor:
                 name,
                 parameters=None,
                 object_hook=None):
-        """Execute a command against the WebDriver endpoint."""
+        """Execute a command against the WebDriver endpoint.
+
+        Arguments:
+        method -- one of GET, POST, DELETE
+        path -- the path of the url endpoint (needs to include 
+          session/<sessionId> if needed)
+        session_id -- the sessionId to include in the JSON body
+        name -- name of the command that is being executed to include in 
+          the JSON body
+        parameters -- the JSON body to send with the command. Only used if
+          method is POST
+        object_hook -- function used by json.loads to properly deserialize
+          objects in the request
+        """
         if self._mode == 'strict':
             return self._execute_strict(
                 method, path, session_id, name, parameters, object_hook)

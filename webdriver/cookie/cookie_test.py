@@ -12,7 +12,7 @@ from client.exceptions import InvalidCookieDomainException, UnableToSetCookieExc
 class CookieTest( base_test.WebDriverBaseTest ):
 
     def setUp(self):
-        self.driver.get( self.webserver.where_is("cookie/res/cookie_container.html"))
+        self.driver.get(self.webserver.where_is("cookie/res/cookie_container.html"))
 
     def test_can_create_a_well_formed_cookie( self ):
         name = 'foo'

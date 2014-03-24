@@ -4,7 +4,6 @@ class Capability:
     """Standard capability names."""
     BROWSER_NAME = 'browserName'
     BROWSER_VERSION = 'browserVersion'
-    JAVASCRIPT_ENABLED = 'javascriptEnabled'
     PAGE_LOADING_STRATEGY = 'pageLoadingStrategy'
     PLATFORM_NAME = 'platformName'
     PLATFORM_VERSION = 'platformVersion'
@@ -15,13 +14,13 @@ class Capability:
 
 class Platform:
     """Standard OS names."""
-    ANY = 'ANY'
-    ANDROID = 'ANDROID'
-    IOs = 'IOS'
-    LINUX = 'LINUX'
-    MAC = 'MAC'
-    UNIX = 'UNIX'
-    WINDOW = 'WINDOWS'
+    ANY = 'any'
+    ANDROID = 'android'
+    IOs = 'ios'
+    LINUX = 'linux'
+    MAC = 'mac'
+    UNIX = 'unix'
+    WINDOW = 'windows'
 
 class PageLoadingStrategy:
     """Standard page loading strategies."""

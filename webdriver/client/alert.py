@@ -1,12 +1,12 @@
 """WebDriver alert handling."""
 
-class Alert:
+class Alert(object):
     """Class that provides access to the WebDriver alert handling functions."""
 
     def __init__(self, driver):
         self._driver = driver
 
-    def _execute(self, method, path, name, body = None):
+    def _execute(self, method, path, name, body=None):
         return self._driver.execute(method, path, name, body)
 
     def dismiss(self):

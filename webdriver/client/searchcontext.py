@@ -1,6 +1,6 @@
 """WebDriver element location functionality."""
 
-class SearchContext:
+class SearchContext(object):
     """Abstract class that provides the core element location functionality."""
 
     def find_element_by_css(self, selector):
@@ -57,6 +57,6 @@ class SearchContext:
 
     def _get_locator(self, strategy, value):
         if self.mode == 'strict':
-            return { 'strategy': strategy, 'value': value }
+            return {'strategy': strategy, 'value': value}
         elif self.mode == 'compatibility':
-            return { 'using': strategy, 'value': value }
+            return {'using': strategy, 'value': value}

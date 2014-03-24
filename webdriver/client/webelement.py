@@ -6,14 +6,15 @@ class WebElement(searchcontext.SearchContext):
     """Corresponds to a DOM element in the current page."""
 
     def __init__(self, driver, id):
-        self.driver = driver
-        self.id = id
+        self._driver = driver
+        self._id = id
+        # Set value of mode used by SearchContext
         self.mode = driver.mode
 
-    def execute(self, method, path, name, body = None):
+    def execute(self, method, path, name, body=None):
         """Execute a command against this WebElement."""
-        return self.driver.execute(
-            method, '/element/' + self.id + path, name, body)
+        return self._driver.execute(
+            method, '/element/%s%s' % (self._id, path), name, body)
 
     def is_displayed(self):
         """Is this element displayed?"""
@@ -25,7 +26,7 @@ class WebElement(searchcontext.SearchContext):
 
     def get_attribute(self, name):
         """Get the value of an element property or attribute."""
-        return self.execute('GET', '/attribute/' + name, 'getElementAttribute')
+        return self.execute('GET', '/attribute/%s' % name, 'getElementAttribute')
 
     def get_text(self):
         """Get the visible text for this element."""
@@ -42,8 +43,8 @@ class WebElement(searchcontext.SearchContext):
     def send_keys(self, keys):
         """Send keys to this text input or body element."""
         if isinstance(keys, str):
-            keys = [ keys ]
-        self.execute('POST', '/value', 'sendKeys', { 'value': keys })
+            keys = [keys]
+        self.execute('POST', '/value', 'sendKeys', {'value': keys})
 
     def to_json(self):
-        return { 'ELEMENT': self.id }
+        return {'ELEMENT': self.id}

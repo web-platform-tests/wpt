@@ -16,7 +16,7 @@ class Platform:
     """Standard OS names."""
     ANY = 'any'
     ANDROID = 'android'
-    IOs = 'ios'
+    IOS = 'ios'
     LINUX = 'linux'
     MAC = 'mac'
     UNIX = 'unix'

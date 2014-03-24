@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title></title>
+<title>accesskey attribute</title>
 <link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
-<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -13,27 +12,17 @@
 <input accesskey="0 3 2 1" id=i5>
 <script>
   test(function(){
-    assert_equals(document.getElementById('i1').accessKey, "");
-    assert_equals(document.getElementById('i1').accessKeyLabel, "");
-  }, "missing accesskey attribute");
-
-  test(function(){
     assert_equals(document.getElementById('i2').accessKey, "a b");
-    assert_true(document.getElementById('i2').accessKeyLabel.contains("a b"));
+    assert_true(document.getElementById('i2').accessKeyLabel.indexOf("a b") > -1);
   }, "accesskey attribute with single character separated by a whitespace");
 
   test(function(){
     assert_equals(document.getElementById('i3').accessKey, "c dd e fff gg i");
-    assert_true(document.getElementById('i3').accessKeyLabel.contains("c e i"));
+    assert_true(document.getElementById('i3').accessKeyLabel.indexOf("c e i") > -1);
   }, "accesskey attribute with double and triple characters token");
 
   test(function(){
-    assert_equals(document.getElementById('i4').accessKey, "j k ☠ l");
-    assert_true(document.getElementById('i4').accessKeyLabel.contains("j k l"));
-  }, "accesskey containing UTF-8");
-
-  test(function(){
     assert_equals(document.getElementById('i5').accessKey, "0 3 2 1");
-    assert_true(document.getElementById('i5').accessKeyLabel.contains("0 3 2 1"));
+    assert_true(document.getElementById('i5').accessKeyLabel.indexOf("0 3 2 1") > -1);
   }, "accesskey with digits");
 </script>

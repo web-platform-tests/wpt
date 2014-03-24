@@ -5,18 +5,22 @@
 <link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/common-dom-interfaces.html#htmlformcontrolscollection">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
-  form, fieldset { display: none; }
-</style>
 <div id="log"></div>
 <form id="f1">
   <input type="radio" id="r1">
+  <keygen id="kg" name="key"></keygen>
 </form>
 <form id="f2">
-  <input type="checkbox" id="cb">
-  <input type="checkbox" name="cb">
-  <button id="btn"></button>
-  <button name="btn"></button>
+  <table>
+    <tr>
+      <td>
+        <input type="checkbox" id="cb">
+        <input type="checkbox" name="cb">
+      </td>
+    </tr>
+    <button id="btn"></button>
+    <button name="btn"></button>
+  </table>
 </form>
 
 <script>
@@ -31,7 +35,7 @@ setup(function () {
 
 //length
 test(function () {
-  assert_equals(coll1.length, 1, "The length attribute is incorrect.");
+  assert_equals(coll1.length, 2, "The length attribute is incorrect.");
   assert_equals(coll2.length, 4, "The length attribute is incorrect.");
 }, "The length attribute must return the number of elements in the form");
 
@@ -75,20 +79,34 @@ test(function () {
 }, "The namedItem(name) must return null if there is no matched element");
 
 test(function () {
+  assert_equals(coll1.namedItem("kg"), document.getElementById("kg"), "Controls can be named by 'id' attribute.");
+  assert_equals(coll1.namedItem("key"), document.getElementById("kg"), "Controls can be named by 'name' attribute.");
+}, "Controls can be indexed by id or name attribute");
+
+test(function () {
   assert_equals(coll2.namedItem("btn").length, 2, "The length attribute should be 2.");
-}, "The nameItem(name) must return the items with id or name attribute");
+}, "The namedItem(name) must return the items with id or name attribute");
 
 //various controls in fieldset and form
-var ctlArr = [["form", "fieldset"], ["button", "fieldset", "input", "keygen", "object", "output", "select", "textarea"]];
-for (var m = 0; m < ctlArr[0].length; m++) {
+var containers = ["form", "fieldset"],
+    controls = ["button", "fieldset", "input", "keygen", "object", "output", "select", "textarea"];
+for (var m = 0; m < containers.length; m++) {
   test(function () {
-    var container = document.createElement(ctlArr[0][m]);
-    var len = ctlArr[1].length;
+    var container = document.createElement(containers[m]);
+    var len = controls.length;
     for (var n = 0; n < len; n++)
-      container.appendChild(document.createElement(ctlArr[1][n]));
+      container.appendChild(document.createElement(controls[n]));
     document.body.appendChild(container);
     assert_equals(container.elements.length, len, "The length should be " + len + ".");
-  }, "The HTMLFormControlsCollection interface is used for collections of listed elements in " + ctlArr[0][m] + " element");
+  }, "The HTMLFormControlsCollection interface is used for collections of listed elements in " + containers[m] + " element");
 }
+
+//Check the controls' order
+test(function () {
+  var opt = document.forms[1].insertBefore(document.createElement("output"), document.forms[1].firstChild);
+  assert_array_equals(document.forms[1].elements,
+                      [opt, document.getElementsByTagName("button")[0], document.getElementsByTagName("button")[1],
+                      document.getElementsByTagName("input")[1], document.getElementsByTagName("input")[2]]);
+}, "The controls in the form element must be sorted in tree order");
 
 </script>

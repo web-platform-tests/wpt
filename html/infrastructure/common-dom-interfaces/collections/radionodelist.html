@@ -35,27 +35,27 @@ test(function () {
 
   document.getElementById("r1").value = 1;
   assert_equals(rdoList.value, "1", "The value attribute should be 1.");
-}, "The RadioNodeList.value must be empty string if the element has no value attribute");
+}, "Check the RadioNodeList.value on getting");
 
 //on setting
 test(function () {
   assert_equals(rdoList.value, document.getElementById("r1").value,
-                "The value attribute should be equal to the first input element's value.");
+                "The value attribute should be equal to the first checked radio input element's value.");
   assert_false(document.getElementById("r2").checked,
-               "The second input element should not be checked.");
+               "The second radio input element should not be checked.");
 
   rdoList.value = "2";
   assert_equals(rdoList.value, document.getElementById("r2").value,
-                "The value attribute should be equal to the second input element's value.");
+                "The value attribute should be equal to the second radio input element's value.");
   assert_true(document.getElementById("r2").checked,
-              "The second input element should be checked.");
+              "The second radio input element should be checked.");
 
   //Do nothing if no element's value is equal to new value.
   rdoList.value = "3";
   assert_equals(rdoList.value, document.getElementById("r2").value,
-                "The value attribute should be the second input element's value.");
+                "The value attribute should be the second radio input element's value.");
   assert_true(document.getElementById("r2").checked,
-              "The second input element should be checked.");
-}, "If RadioNodeList.vlaue is set to a new value, the element whose value content attribute is equal to the new value must be checked");
+              "The second radio input element should be checked.");
+}, "Check the RadioNodeList.value on setting");
 
 </script>

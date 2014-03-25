@@ -89,6 +89,8 @@ test(function() {
     doc.body.innerHTML = '<x-c id="x-c" class="theClass"></x-c>';
     var customElement = doc.querySelector('#x-c');
     customElement.removeAttribute('class');
+    assert_equals(callbackArgs[2], null, 'Removing an attribute should invoke ' +
+        'the attributeChanged callback with a null new value');
     assert_array_equals(callbackArgs, ['class', 'theClass', null],
         'Unexpected attributeChanged callback arguments');
 }, 'Test attributeChanged callback arguments if attribute is removed. ' +
@@ -105,7 +107,7 @@ test(function() {
 
     doc.body.innerHTML = '<x-d id="x-d" class="theClass"></x-d>';
     var customElement = doc.querySelector('#x-d');
-    // this should not call or enquee attributeChangedCallback
+    // this should not call or enqueue attributeChangedCallback
     customElement.setAttribute('class', 'someClass');
     // this one should not too
     customElement.removeAttribute('class');
@@ -118,7 +120,7 @@ test(function() {
     customElement.removeAttribute('name');
     assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged should be called ' +
         'after setAttribute() and removeAttribute() calls');
-}, 'Test attributeChanged callback arguments if attribute is removed. ' +
+}, 'Test attributeChanged callback is not called if attribute is removed. ' +
     'The custom element created via innerHTML property and unresolved at first');
 
 
@@ -135,7 +137,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     customElement.removeAttribute('class');
     assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged should be called ' +
         'after setAttribute() and removeAttribute() calls');
-}, 'Test attributeChanged callback arguments if attribute is removed. ' +
+}, 'Test attributeChanged callback is called if attribute is removed. ' +
     'The custom element created via constructor and the document has browsing context');
 
 
@@ -150,6 +152,8 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     doc.body.innerHTML = '<x-element id="xelement" class="theClass"></x-element>';
     var customElement = doc.querySelector('#xelement');
     customElement.removeAttribute('class');
+    assert_equals(callbackArgs[2], null, 'Removing an attribute should invoke ' +
+        'the attributeChanged callback with a null new value');
     assert_array_equals(callbackArgs, ['class', 'theClass', null],
         'Unexpected attributeChanged callback arguments');
 }, 'Test attributeChanged callback arguments if attribute is removed. ' +
@@ -164,7 +168,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     };
 
     var customElement = doc.querySelector('#xelement');
-    // this should not call or enquee attributeChangedCallback
+    // this should not call or enqueue attributeChangedCallback
     customElement.setAttribute('name', 'someName');
     // this one too
     customElement.removeAttribute('name');
@@ -177,7 +181,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     customElement.removeAttribute('class');
     assert_equals(callbackCalledCounter, 2, 'Callback attributeChanged should be called ' +
         'after setAttribute() and removeAttribute() calls');
-}, 'Test attributeChanged callback arguments if attribute is removed. ' +
+}, 'Test attributeChanged callback if attribute is removed. ' +
     'The custom element created via innerHTML property and unresolved at first. ' +
     'The document has browsing context');
 </script>

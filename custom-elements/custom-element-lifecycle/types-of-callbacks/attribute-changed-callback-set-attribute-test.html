@@ -206,7 +206,7 @@ test(function() {
 
     doc.body.innerHTML = '<x-l id="xl"></x-l>';
     var customElement = doc.querySelector('#xl');
-    // this call shouldn't invoke or enquee the callback
+    // this call shouldn't invoke or enqueue the callback
     customElement.setAttribute('class', 'someClass');
     assert_equals(callbackCalledCounter, 0, 'Callback attributeChanged should not be called');
 
@@ -355,7 +355,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     };
 
     var customElement = doc.querySelector('#xelement');
-    // this call shouldn't invoke or enquee the callback
+    // this call shouldn't invoke or enqueue the callback
     customElement.setAttribute('name', 'someName');
     assert_equals(callbackCalledCounter, 0, 'Callback attributeChanged should not be called');
 

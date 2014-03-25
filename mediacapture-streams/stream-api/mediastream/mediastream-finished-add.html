@@ -15,8 +15,7 @@
 <div id='log'></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../../featuredetection.js></script>
-<script src=prefix.js></script>
+<script src="/common/vendor-prefix.js" data-prefixed-objects='[{"ancestors":["navigator"], "name":"getUserMedia"}]'></script>
 <script>
 var t = async_test("Tests that an addition to a finished MediaStream raises an exception", {timeout:20000});
 t.step(function () {

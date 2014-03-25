@@ -14,12 +14,19 @@
   <p>foobar</p>
   <button>OK</button>
 </dialog>
+<dialog id="d3" open>
+  <p>foobar</p>
+  <button>OK</button>
+</dialog>
 <script>
   var d1 = document.getElementById('d1'),
       d2 = document.getElementById('d2'),
-      t = async_test("close() throws a close event");
+      d3 = document.getElementById('d3'),
+      t = async_test("close() fires a close event"),
+      was_queued = false;
 
   d2.onclose = t.step_func_done(function(e) {
+    assert_true(was_queued, "close event should be queued");
     assert_true(e.isTrusted, "close event is trusted");
     assert_false(e.bubbles, "close event doesn't bubble");
     assert_false(e.cancelable, "close event is not cancelable");
@@ -32,14 +39,19 @@
   }, "close() on a <dialog> that doesn't have an open attribute throws an InvalidStateError exception");
 
   test(function(){
-    try {
-      assert_true(d2.open);
-      assert_equals(d2.returnValue, "");
-      d2.close("closedialog");
-      assert_false(d2.hasAttribute("open"));
-      assert_equals(d2.returnValue, "closedialog");
-    } catch(e) {
-      assert_unreached("An exception has been thrown");
-    }
+    assert_true(d2.open);
+    assert_equals(d2.returnValue, "");
+    d2.close("closedialog");
+    was_queued = true;
+    assert_false(d2.hasAttribute("open"));
+    assert_equals(d2.returnValue, "closedialog");
   }, "close() removes the open attribute and set the returnValue to the first argument");
+
+  test(function(){
+    assert_true(d3.open);
+    assert_equals(d3.returnValue, "");
+    d3.close();
+    assert_false(d3.hasAttribute("open"));
+    assert_equals(d3.returnValue, "");
+  }, "close() without argument removes the open attribute and there's no returnValue");
 </script>

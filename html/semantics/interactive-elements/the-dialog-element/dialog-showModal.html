@@ -8,25 +8,54 @@
 <div id="log"></div>
 <dialog id="d1">
   <p>foobar</p>
-  <button>OK</button>
+  <button id="b1">OK</button>
 </dialog>
 <dialog id="d2" open>
   <p>foobar</p>
   <button>OK</button>
 </dialog>
+<dialog id="d3">
+  <p>foobar</p>
+  <button id="b3">OK</button>
+</dialog>
+<dialog id="d4">
+  <p>foobar</p>
+  <button id="b4">OK</button>
+</dialog>
+<dialog id="d5">
+  <p>foobar</p>
+  <button id="b5">OK</button>
+</dialog>
+<dialog id="d6"></dialog>
+<dialog id="d7">
+  <input id="i71" value="foobar">
+  <input id="i72" value="foobar">
+  <button id="b7">OK</button>
+</dialog>
+<dialog id="d8">
+  <input id="i81" value="foobar">
+  <input id="i82" value="foobar" autofocus>
+  <button id="b8">OK</button>
+</dialog>
 <script>
   var d1 = document.getElementById('d1'),
-      d2 = document.getElementById('d2');
+      d2 = document.getElementById('d2'),
+      d3 = document.getElementById('d3'),
+      d4 = document.getElementById('d4'),
+      d5 = document.getElementById('d5'),
+      d6 = document.getElementById('d6'),
+      d7 = document.getElementById('d7'),
+      d8 = document.getElementById('d8'),
+      b1 = document.getElementById('b1');
 
   test(function(){
-    try {
-      assert_false(d1.open);
-      d1.showModal();
-      assert_equals(d1.open, "");
-      assert_equals(document.activeElement, d1.firstChild);
-    } catch(e) {
-      assert_unreached("An exception has been thrown");
-    }
+    assert_false(d1.open);
+    assert_true(b1.commandDisabled);
+    d1.showModal();
+    assert_true(d1.open);
+    assert_false(b1.commandDisabled);
+    assert_equals(d1, document.elementFromPoint(window.innerWidth/2, window.innerHeight/2));
+    assert_equals(document.activeElement, d1.firstChild);
   });
 
   test(function(){
@@ -41,4 +70,43 @@
       d.showModal();
     });
   }, "showModal() on a <dialog> not in a Document throws an InvalidStateError exception");
+
+  test(function(){
+    assert_false(d3.open);
+    assert_true(b3.commandDisabled);
+    assert_false(d4.open);
+    assert_true(b4.commandDisabled);
+    assert_false(d5.open);
+    assert_true(b5.commandDisabled);
+    d3.showModal();
+    d4.showModal();
+    d5.showModal();
+    assert_true(d3.open);
+    assert_true(b3.commandDisabled);
+    assert_true(d4.open);
+    assert_true(b4.commandDisabled);
+    assert_true(d5.open);
+    assert_false(b5.commandDisabled);
+  }, "when opening multiple dialogs, only the newest one is non-inert");
+
+  test(function(){
+    assert_false(d6.open);
+    d6.showModal();
+    assert_true(d6.open);
+    assert_equals(document.activeElement, d6);
+  }, "opening dialog without focusable children");
+
+  test(function(){
+    assert_false(d7.open);
+    d7.showModal();
+    assert_true(d7.open);
+    assert_equals(document.activeElement, d7.firstChild);
+  }, "opening dialog with multiple focusable children");
+
+  test(function(){
+    assert_false(d8.open);
+    d8.showModal();
+    assert_true(d8.open);
+    assert_equals(document.activeElement, document.getElementById("i82"));
+  }, "opening dialog with multiple focusable children, one having the autofocus attribute");
 </script>

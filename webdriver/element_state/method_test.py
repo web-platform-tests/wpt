@@ -11,14 +11,14 @@ import base_test
 class GetElementAttributeTest(base_test.WebDriverBaseTest):
     def test_get_element_attribute(self):
         self.driver.get(self.webserver.where_is("element_state/res/element-with-id-attribute.html"))
-        el = self.driver.find_element_by_tag_name("div")
+        el = self.driver.find_element_by_css("div")
         self.assertEqual("myId", el.get_attribute("id"))
 
     def test_style_attribute(self):
         self.driver.get(self.webserver.where_is("element_state/res/element-with-style-attribute.html"))
         el = self.driver.find_element_by_tag_name("div")
         expected_style = """
-                         font-family: \"Gill Sans Extrabold\",Helvetica,sans-serif; 
+                         font-family: \"Gill Sans Extrabold\",Helvetica,sans-serif;
                          line-height: 1.2; font-weight: bold;
                          """
         self.assertEqual(expected_style, el.get_attribute("style"))

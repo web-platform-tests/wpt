@@ -8,8 +8,8 @@ import ConfigParser
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 from webserver import Httpd
-from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
+from client.exceptions import TimeoutException
+import base_test
 
 class WebDriverAuthTest(unittest.TestCase):
 
@@ -17,10 +17,7 @@ class WebDriverAuthTest(unittest.TestCase):
     # test URLs with various 401 responses
     @classmethod
     def setUpClass(cls):
-        config = ConfigParser.ConfigParser()
-        config.read('webdriver.cfg')
-        cls.driver_class = getattr(webdriver, config.get("Default", 'browser'))
-        cls.driver = cls.driver_class()
+        cls.driver = base_test.create_driver()
 
         def basic_response_func( request, *args ):
             return (401, {"WWW-Authenticate" : "Basic"}, None)

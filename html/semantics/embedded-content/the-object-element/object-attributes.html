@@ -8,7 +8,7 @@
 <div id="log"></div>
 <form>
   <object id="obj1" data="blue.html" name="o" height="50" width="100"></object>
-  <object id="obj2" data="/images/blue.png" name="p" type="image/png"></object>
+  <object id="obj2" name="p" type="image/png"></object>
 </form>
 <script>
   var obj1;
@@ -37,7 +37,7 @@
     t1.done()
 
     t2.step(function() {
-      assert_equals(obj1.form, document.forms[0], "The form attribute is incorrect.");
+      assert_equals(obj1.form, document.forms[0], "Missing form attribute returns the nearest ancestor form element.");
     });
     t2.done();
 

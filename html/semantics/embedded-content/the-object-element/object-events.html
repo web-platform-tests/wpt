@@ -7,45 +7,43 @@
 <div id="log"></div>
 <script>
 
-var t1 = async_test("error event");
-var t2 = async_test("load event");
-var t3 = async_test("load event of about:blank");
-
-setup(function () {
+async_test(function(t1) {
   var obj1 = document.createElement("object");
-  var obj2 = document.createElement("object");
-  var obj3 = document.createElement("object");
-  obj1.data = "test.html";
-  obj2.data = "/images/blue.png";
-  obj3.data = "about:blank";
-
-  obj1.onerror = t1.step_func_done(function (e) {
+  obj1.onerror = t1.step_func_done(function(e){
     assert_true(e.isTrusted, "The error event should be a truested event.");
     assert_false(e.cancelable, "The error event should not be a cancelable event.");
     assert_false(e.bubbles, "The error event should not be a bubble event.");
     assert_equals(e.target, obj1, "The error event target should be the corresponding object element.");
-    assert_true(e instanceof Event, "The load event should be an instance of Event interface.");
+    assert_true(e instanceof Event, "The error event should be an instance of Event interface.");
   });
+  obj1.data = "test.html";
+  document.body.appendChild(obj1);
+}, "eroor event");
 
-  obj2.onload = t2.step_func_done(function (e) {
+async_test(function(t2) {
+  var obj2 = document.createElement("object");
+  obj2.onload = t2.step_func_done(function(e){
     assert_true(e.isTrusted, "The load event should be a truested event.");
     assert_false(e.cancelable, "The load event should not be a cancelable event.");
     assert_false(e.bubbles, "The load event should not be a bubble event.");
     assert_equals(e.target, obj2, "The load event target should be the corresponding object element.");
     assert_true(e instanceof Event, "The load event should be an instance of Event interface.");
   });
+  obj2.data = "/images/blue.png";
+  document.body.appendChild(obj2);
+}, "load event");
 
-  obj3.onload = t3.step_func_done(function (e) {
+async_test(function(t3) {
+  var obj3 = document.createElement("object");
+  obj3.onload = t3.step_func_done(function(e){
     assert_true(e.isTrusted, "The laod event should be a truested event.");
     assert_false(e.cancelable, "The load event should not be a cancelable event.");
     assert_false(e.bubbles, "The load event should not be a bubble event.");
     assert_equals(e.target, obj3, "The load event target should be the corresponding object element.");
     assert_true(e instanceof Event, "The load event should be an instance of Event interface.");
   });
-
-  document.body.appendChild(obj1);
-  document.body.appendChild(obj2);
+  obj3.data = "about:blank";
   document.body.appendChild(obj3);
-});
+}, "load event of about:blank");
 
 </script>

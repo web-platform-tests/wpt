@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: display fallback content</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="match" content="object-fallback-ref.html" >
+<meta name="assert" content="The object element will not display when its type
+attribute does not match the source specified by the data attribute">
+<p>Test passes if there is <strong>no blue</strong>, and 'PASS' is displayed.</p>
+<object data="/images/blue.png" type="text/plain" typemustmatch>
+<p>PASS</p>
+</object>

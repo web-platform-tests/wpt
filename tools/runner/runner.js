@@ -192,7 +192,9 @@ VisualOutput.prototype = {
         var a = this.elem.querySelector(".jsonResults");
         var json = this.runner.results.to_json();
         var ta = this.elem.querySelector("textarea");
-        if (ta) ta.parentNode.removeChild(ta);
+        if (ta) {
+            ta.parentNode.removeChild(ta);
+        }
         if (document.getElementById("dumpit").checked) {
             ta = document.createElement("textarea");
             ta.style.width = "100%";

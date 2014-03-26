@@ -3,14 +3,16 @@
 import os
 import sys
 import unittest
-from selenium.common.exceptions import UnableToSetCookieException
-from selenium.common.exceptions import InvalidCookieDomainException
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 import base_test
+from client.exceptions import InvalidCookieDomainException, UnableToSetCookieException
 
 class CookieTest( base_test.WebDriverBaseTest ):
+
+    def setUp(self):
+        self.driver.get(self.webserver.where_is("cookie/res/cookie_container.html"))
 
     def test_can_create_a_well_formed_cookie( self ):
         name = 'foo'
@@ -27,7 +29,7 @@ class CookieTest( base_test.WebDriverBaseTest ):
                                  'value': value,
                                  'path': '/',
                                  'secure': secure})
-        self.assertTrue(self.driver.get_cookie(name)['secure'])
+        self.assertTrue(self.driver.get_cookie(name)[0]['secure'])
 
     def test_secure_defaults_to_false( self ):
         name = 'foo'
@@ -36,13 +38,11 @@ class CookieTest( base_test.WebDriverBaseTest ):
         self.driver.add_cookie({ 'name': name,
                                  'value': value})
 
-        self.assertFalse( self.driver.get_cookie( name )[ 'secure' ] )
+        self.assertFalse(self.driver.get_cookie(name)[0]['secure'])
 
     def test_should_throw_an_exception_when_semicolon_exists_in_the_cookie_attribute(self):
         invalid_name = 'foo;bar'
         value = 'foobar'
-
-        self.driver.get( self.webserver.where_is( "cookie/res/cookie_container.html" ))
 
         try:
             self.driver.add_cookie({ 'name': invalid_name, 'value': value })
@@ -54,12 +54,10 @@ class CookieTest( base_test.WebDriverBaseTest ):
             pass
 
     def test_should_throw_an_exception_the_name_is_null(self):
-        VAL = 'foobar'
-
-        self.driver.get( self.webserver.where_is( "cookie/res/cookie_container.html" ))
+        val = 'foobar'
 
         try:
-            self.driver.add_cookie({ 'name': None, 'value': VAL })
+            self.driver.add_cookie({ 'name': None, 'value': val })
             self.fail( 'should have thrown exceptions.' )
 
         except UnableToSetCookieException:

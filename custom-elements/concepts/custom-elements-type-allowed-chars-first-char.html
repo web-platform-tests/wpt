@@ -15,49 +15,43 @@
 <body>
 <div id="log"></div>
 <script type="text/javascript">
-function composeName(c) {
-    return String.fromCharCode(c) + '-x' + c.toString(16);
+function composeName(charCode) {
+    return String.fromCharCode(charCode) + '-x' + charCode.toString(16);
 }
 
 // NCName definition from http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
-//        NCName ::= (Letter | '_') (NCNameChar)*
-//    NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
-//        Letter ::= BaseChar | Ideographic
+// NCName     ::= (Letter | '_') (NCNameChar)*
+// NCNameChar ::= Letter | Digit | '.' | '-' | '_' | CombiningChar | Extender
+// Letter     ::= BaseChar | Ideographic
 
-test(function(){
-    testCharCodeArray(newHTMLDocument(), ['_'], composeName, checkValidName);
+test(function() {
+    testCharCode(getCharCode('_'), composeName, checkValidName);
 }, 'Registering valid custom element name starting with \'_\' char');
 
-test(function(){
-    testCharCodeArray(newHTMLDocument(), BASE_CHARS_SINGLE, composeName, checkValidName);
-}, 'Registering valid custom element name starting with single base chars');
+test(function() {
+    baseCharsSingle.testEach(composeName, checkValidName);
+    baseCharsRanges.testEach(composeName, checkValidName);
+}, 'Registering valid custom element name starting with base char');
 
-test(function(){
-    testCharCodeRangesArray(newHTMLDocument(), BASE_CHARS_RANGES, composeName, checkValidName);
-}, 'Registering valid custom element name starting with base chars ranges');
+test(function() {
+    ideographicCharsSingle.testEach(composeName, checkValidName);
+    ideographicCharsRanges.testEach(composeName, checkValidName);
+}, 'Registering valid custom element name starting with ideographic char');
 
-test(function(){
-    testCharCodeArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_SINGLE, composeName, checkValidName);
-}, 'Registering valid custom element name starting with single ideographic chars');
-
-test(function(){
-    testCharCodeRangesArray(newHTMLDocument(), IDEOGRAPHIC_CHARS_RANGES, composeName, checkValidName);
-}, 'Registering valid custom element name starting with ideographic chars ranges');
-
-test(function(){
-    testCharCodeArray(newHTMLDocument(), ['.', '-', ':', '+', '='], composeName, checkInvalidName);
+test(function() {
+    (new CharsArray(['.', '-', ':', '+', '='])).testEach(composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (general) should fail');
 
-test(function(){
-    testCharCodeArray(newHTMLDocument(), COMBINING_CHARS, composeName, checkInvalidName);
+test(function() {
+    combiningChars.testEach(composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (combining char) should fail');
 
-test(function(){
-    testCharCodeArray(newHTMLDocument(), EXTENDER_CHARS, composeName, checkInvalidName);
+test(function() {
+    extenderChars.testEach(composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (extender char) should fail');
 
-test(function(){
-    testCharCodeRangesArray(newHTMLDocument(), DIGIT_CHARS_RANGES, composeName, checkInvalidName);
+test(function() {
+    digitCharsRanges.testEach(composeName, checkInvalidName);
 }, 'Registering custom element starting with invalid character (digit char) should fail');
 </script>
 </body>

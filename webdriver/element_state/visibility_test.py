@@ -13,17 +13,17 @@ import base_test
 class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
     def test_0x0_pixel_element_is_not_visible(self):
         self.driver.get(self.webserver.where_is("element_state/res/0x0-pixels.html"))
-        el = self.driver.find_element_by_tag_name("div")
+        el = self.driver.find_element_by_css("div")
         self.assertFalse(el.is_displayed())
 
     def test_0x0_pixel_text_node_is_visible(self):
         self.driver.get(self.webserver.where_is("element_state/res/0x0-pixels-text-node.html"))
-        el = self.driver.find_element_by_tag_name("p")
+        el = self.driver.find_element_by_css("p")
         self.assertTrue(el.is_displayed())
 
     def test_1x1_pixel_element(self):
         self.driver.get(self.webserver.where_is("element_state/res/1x1-pixels.html"))
-        el = self.driver.find_element_by_tag_name("p")
+        el = self.driver.find_element_by_css("p")
         self.assertTrue(el.is_displayed())
 
     def test_zero_sized_element_is_shown_if_decendant_has_size(self):
@@ -36,12 +36,12 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 
     def test_input_type_hidden_is_never_visible(self):
         self.driver.get(self.webserver.where_is("element_state/res/input-type-hidden.html"))
-        input = self.driver.find_element_by_tag_name("input")
+        input = self.driver.find_element_by_css("input")
         self.assertFalse(input.is_displayed())
 
     def test_input_morphs_into_hidden(self):
         self.driver.get(self.webserver.where_is("element_state/res/input-morphs-into-hidden.html"))
-        input = self.driver.find_element_by_tag_name("input")
+        input = self.driver.find_element_by_css("input")
         self.assertFalse(input.is_displayed())
 
     def test_parent_node_visible_when_all_children_are_absolutely_positioned_and_overflow_is_hidden(self):
@@ -54,10 +54,10 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 
         self.driver.get(self.webserver.where_is("element_state/res/absolute-children-ancestor-hidden-overflow.html"))
 
-        ancestor = self.driver.find_element_by_tag_name("body")
+        ancestor = self.driver.find_element_by_css("body")
         assert not ancestor.is_displayed()
 
-        children = self.driver.find_elements_by_class("child")
+        children = self.driver.find_elements_by_class(".child")
         assert all(child.is_displayed() for child in children)
 
         parent = self.driver.find_element_by_id("parent")
@@ -110,12 +110,12 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 
     def test_element_outside_viewport(self):
         self.driver.get(self.webserver.where_is("element_state/res/element-outside-viewport.html"))
-        hidden = self.driver.find_element_by_tag_name("div")
+        hidden = self.driver.find_element_by_css("div")
         self.assertFalse(hidden.is_displayed())
 
     def test_element_dynamically_moved_outside_viewport(self):
         self.driver.get(self.webserver.where_is("element_state/res/element-dynamically-moved-outside-viewport.html"))
-        hidden = self.driver.find_element_by_tag_name("div")
+        hidden = self.driver.find_element_by_css("div")
         self.assertFalse(hidden.is_displayed())
 
     def test_element_hidden_by_other_element(self):
@@ -141,7 +141,7 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 
     def test_element_moved_outside_viewport_by_transform(self):
         self.driver.get(self.webserver.where_is("element_state/res/element-moved-outside-viewport-by-transform.html"))
-        el = self.driver.find_element_by_tag_name("div")
+        el = self.driver.find_element_by_css("div")
         self.assertFalse(el.is_displayed())
 
     def test_element_moved_behind_other_element_by_transform(self):
@@ -154,22 +154,22 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 
     def test_text_with_same_color_as_background(self):
         self.driver.get(self.webserver.where_is("element_state/res/text-with-same-color-as-background.html"))
-        p = self.driver.find_element_by_tag_name("p")
+        p = self.driver.find_element_by_css("p")
         self.assertFalse(p.is_displayed())
 
     def test_text_with_same_color_as_parent_background(self):
         self.driver.get(self.webserver.where_is("element_state/res/text-with-same-color-as-parent-background.html"))
-        p = self.driver.find_element_by_tag_name("p")
+        p = self.driver.find_element_by_css("p")
         self.assertFalse(p.is_displayed())
 
     def test_text_with_matching_color_and_background(self):
         self.driver.get(self.webserver.where_is("element_state/res/text-with-matching-color-and-background.html"))
-        p = self.driver.find_element_by_tag_name("p")
+        p = self.driver.find_element_by_css("p")
         self.assertTrue(p.is_displayed())
 
     def test_element_with_same_color_as_background(self):
         self.driver.get(self.webserver.where_is("element_state/res/element-with-same-color-as-background.html"))
-        el = self.driver.find_element_by_tag_name("div")
+        el = self.driver.find_element_by_css("div")
         self.assertFalse(el.is_displayed())
 
     def test_element_with_same_color_as_parent_background(self):
@@ -181,12 +181,12 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 class DisplayTest(base_test.WebDriverBaseTest):
     def test_display_block(self):
         self.driver.get(self.webserver.where_is("element_state/res/display-block.html"))
-        el = self.driver.find_element_by_tag_name("p")
+        el = self.driver.find_element_by_css("p")
         self.assertTrue(el.is_displayed())
 
     def test_display_none(self):
         self.driver.get(self.webserver.where_is("element_state/res/display-none.html"))
-        el = self.driver.find_element_by_tag_name("p")
+        el = self.driver.find_element_by_css("p")
         self.assertFalse(el.is_displayed())
 
     def test_display_none_hides_child_node(self):
@@ -226,12 +226,12 @@ class DisplayTest(base_test.WebDriverBaseTest):
 class VisibilityTest(base_test.WebDriverBaseTest):
     def test_element_state_hidden(self):
         self.driver.get(self.webserver.where_is("element_state/res/visibility-hidden.html"))
-        el = self.driver.find_element_by_tag_name("p")
+        el = self.driver.find_element_by_css("p")
         self.assertFalse(el.is_displayed())
 
     def test_element_state_visible(self):
         self.driver.get(self.webserver.where_is("element_state/res/visibility-visible.html"))
-        el = self.driver.find_element_by_tag_name("p")
+        el = self.driver.find_element_by_css("p")
         self.assertTrue(el.is_displayed())
 
     def test_visibility_hidden_hides_child_node(self):
@@ -283,21 +283,21 @@ class VisibilityTest(base_test.WebDriverBaseTest):
 class VisibilityInteractionTest(base_test.WebDriverBaseTest):
     def test_input_hidden_is_unclickable(self):
         self.driver.get(self.webserver.where_is("element_state/res/input-type-hidden-unclickable.html"))
-        input = self.driver.find_element_by_tag_name("input")
+        input = self.driver.find_element_by_css("input")
 
         with self.assertRaises(ElementNotVisibleException):
             input.click()
 
     def test_hidden_input_checkbox_is_untogglable(self):
         self.driver.get(self.webserver.where_is("element_state/res/hidden-input-type-checkbox-untogglable.html"))
-        checkbox = self.driver.find_element_by_tag_name("input")
+        checkbox = self.driver.find_element_by_css("input")
 
         with self.assertRaises(ElementNotVisibleException):
             checkbox.click()
 
     def test_typing_in_hidden_input_is_impossible(self):
         self.driver.get(self.webserver.where_is("element_state/res/hidden-input-type-text-writing.html"))
-        textfield = self.driver.find_element_by_tag_name("input")
+        textfield = self.driver.find_element_by_css("input")
 
         with self.assertRaises(ElementNotVisibleException):
             textfield.send_keys("Koha is a popular Indian cheese")

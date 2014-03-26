@@ -121,6 +121,8 @@ async_test(function(t) {
     test_setting(m, false, true);
   }, 'setting ' + tagName + '.muted with muted="" (script-created)');
 
+  // Spec bug: https://www.w3.org/Bugs/Public/show_bug.cgi?id=25153
+  /*
   test(function() {
     var m = document.createElement(tagName);
     m.setAttribute('muted', '');
@@ -128,6 +130,7 @@ async_test(function(t) {
     assert_true(m.hasAttribute('muted'));
     assert_false(m.muted);
   }, 'getting ' + tagName + '.muted with muted="" (cloneNode-created)');
+  */
 
   test(function() {
     var div = document.createElement('div');

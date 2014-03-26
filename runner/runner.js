@@ -190,7 +190,17 @@ VisualOutput.prototype = {
         this.meter.classList.remove("progress-striped", "active");
         //add the json serialization of the results
         var a = this.elem.querySelector(".jsonResults");
-        var blob = new Blob([this.runner.results.to_json()], { type: "application/json" });
+        var json = this.runner.results.to_json();
+        var ta = this.elem.querySelector("textarea");
+        if (ta) ta.parentNode.removeChild(ta);
+        if (document.getElementById("dumpit").checked) {
+            ta = document.createElement("textarea");
+            ta.style.width = "100%";
+            ta.setAttribute("rows", "50");
+            this.elem.appendChild(ta);
+            ta.textContent = json;
+        }
+        var blob = new Blob([json], { type: "application/json" });
         a.href = window.URL.createObjectURL(blob);
         a.download = "runner-results.json";
         a.textContent = "Download JSON results";
@@ -309,7 +319,7 @@ function TestControl(elem, runner) {
     this.pause_button = this.elem.querySelector("button.togglePause");
     this.start_button = this.elem.querySelector("button.toggleStart");
     this.type_checkboxes = Array.prototype.slice.call(
-        this.elem.querySelectorAll("input[type=checkbox]"));
+        this.elem.querySelectorAll("input[type=checkbox].test-type"));
     this.runner = runner;
     this.runner.done_callbacks.push(this.on_done.bind(this));
     this.set_start();

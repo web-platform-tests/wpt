@@ -1412,7 +1412,9 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.timeout = function() {
-        this.status.status = this.status.TIMEOUT;
+        if (this.status.status == this.status.OK) {
+            this.status.status = this.status.TIMEOUT;
+        }
         this.complete();
     };
 

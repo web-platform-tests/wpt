@@ -1580,7 +1580,6 @@ policies and contribution forms [3].
         if (!tests.allow_uncaught_exception) {
             tests.status.status = tests.status.ERROR;
             tests.status.message = msg;
-            tests.complete();
         }
     }
 

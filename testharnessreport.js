@@ -2,8 +2,8 @@
  * This file is intended for vendors to implement
  * code needed to integrate testharness.js tests with their own test systems.
  *
- * The default implementation extracts metadata from the tests and validates 
- * it against the cached version that should be present in the test source 
+ * The default implementation extracts metadata from the tests and validates
+ * it against the cached version that should be present in the test source
  * file. If the cache is not found or is out of sync, source code suitable for
  * caching the metadata is optionally generated.
  *
@@ -15,7 +15,7 @@
  *
  * Typically test system integration will attach callbacks when each test has
  * run, using add_result_callback(callback(test)), or when the whole test file
- * has completed, using 
+ * has completed, using
  * add_completion_callback(callback(tests, harness_status)).
  *
  * For more documentation about the callback functions and the
@@ -29,12 +29,12 @@ var metadata_generator = {
     currentMetadata: {},
     cachedMetadata: false,
     metadataProperties: ['help', 'assert', 'author'],
-    
+
     error: function(message) {
         var messageElement = document.createElement('p');
         messageElement.setAttribute('class', 'error');
         this.appendText(messageElement, message);
-        
+
         var summary = document.getElementById('summary');
         if (summary) {
             summary.parentNode.insertBefore(messageElement, summary);
@@ -57,7 +57,7 @@ var metadata_generator = {
             if (! re.test(value)) {
                 re = /(\S+)(\s+)(http[s]?:\/\/)(.*)/
                 if (! re.test(value)) {
-                    this.error('Metadata property "' + propertyName + 
+                    this.error('Metadata property "' + propertyName +
                         '" for test: "' + test.name +
                         '" must have name and contact information ' +
                         '("name <email>" or "name http(s)://")');
@@ -67,7 +67,7 @@ var metadata_generator = {
         }
         return result;
     },
-    
+
     /**
      * Extract metadata from test object
      */
@@ -86,7 +86,7 @@ var metadata_generator = {
         }
         return testMetadata;
     },
-    
+
     /**
      * Compare cached metadata to extracted metadata
      */
@@ -98,22 +98,22 @@ var metadata_generator = {
             var testMetadata = this.currentMetadata[testName];
             var cachedTestMetadata = this.cachedMetadata[testName];
             delete this.cachedMetadata[testName];
-            
+
             for (var metaIndex = 0; metaIndex < this.metadataProperties.length;
                  metaIndex++) {
                 var meta = this.metadataProperties[metaIndex];
-                if (cachedTestMetadata.hasOwnProperty(meta) && 
+                if (cachedTestMetadata.hasOwnProperty(meta) &&
                     testMetadata.hasOwnProperty(meta)) {
                     if (Array.isArray(cachedTestMetadata[meta])) {
                       if (! Array.isArray(testMetadata[meta])) {
                           return false;
                       }
-                      if (cachedTestMetadata[meta].length == 
+                      if (cachedTestMetadata[meta].length ==
                           testMetadata[meta].length) {
-                          for (var index = 0; 
-                               index < cachedTestMetadata[meta].length; 
+                          for (var index = 0;
+                               index < cachedTestMetadata[meta].length;
                                index++) {
-                              if (cachedTestMetadata[meta][index] != 
+                              if (cachedTestMetadata[meta][index] !=
                                   testMetadata[meta][index]) {
                                   return false;
                               }
@@ -132,7 +132,7 @@ var metadata_generator = {
                       }
                     }
                 }
-                else if (cachedTestMetadata.hasOwnProperty(meta) || 
+                else if (cachedTestMetadata.hasOwnProperty(meta) ||
                          testMetadata.hasOwnProperty(meta)) {
                     return false;
                 }
@@ -143,11 +143,11 @@ var metadata_generator = {
         }
         return true;
     },
-  
+
     appendText: function(elemement, text) {
         elemement.appendChild(document.createTextNode(text));
     },
-  
+
     jsonifyArray: function(arrayValue, indent) {
         var output = '[';
 
@@ -165,14 +165,14 @@ var metadata_generator = {
         output += ']';
         return output;
     },
-    
+
     jsonifyObject: function(objectValue, indent) {
         var output = '{';
-        
+
         var count = 0;
         for (var property in objectValue) {
             ++count;
-            if (Array.isArray(objectValue[property]) || 
+            if (Array.isArray(objectValue[property]) ||
                 ('object' == typeof(value))) {
                 ++count;
             }
@@ -194,7 +194,7 @@ var metadata_generator = {
                 output += '\n  ' + indent + '"' + property + '": ';
                 var value = objectValue[property];
                 if (Array.isArray(value)) {
-                    output += this.jsonifyArray(value, indent + 
+                    output += this.jsonifyArray(value, indent +
                         '                '.substr(0, 5 + property.length));
                 }
                 else if ('object' == typeof(value)) {
@@ -211,19 +211,19 @@ var metadata_generator = {
         output += '}';
         return output;
     },
-  
+
     /**
      * Generate javascript source code for captured metadata
      * Metadata is in pretty-printed JSON format
      */
     generateSource: function() {
-        var source = 
-            '<script id="metadata_cache">/*\n' + 
-            this.jsonifyObject(this.currentMetadata, '') + '\n' + 
+        var source =
+            '<script id="metadata_cache">/*\n' +
+            this.jsonifyObject(this.currentMetadata, '') + '\n' +
             '*/</script>\n';
         return source;
     },
-    
+
     /**
      * Add element containing metadata source code
      */
@@ -233,37 +233,37 @@ var metadata_generator = {
 
         var instructions = document.createElement('p');
         if (this.cachedMetadata) {
-            this.appendText(instructions, 
-                'Replace the existing <script id="metadata_cache"> element ' + 
+            this.appendText(instructions,
+                'Replace the existing <script id="metadata_cache"> element ' +
                 'in the test\'s <head> with the following:');
         }
         else {
-            this.appendText(instructions, 
+            this.appendText(instructions,
                 'Copy the following into the <head> element of the test ' +
                 'or the test\'s metadata sidecar file:');
         }
         sourceWrapper.appendChild(instructions);
-        
+
         var sourceElement = document.createElement('pre');
         this.appendText(sourceElement, this.generateSource());
 
         sourceWrapper.appendChild(sourceElement);
-        
+
         var messageElement = document.getElementById('metadata_issue');
-        messageElement.parentNode.insertBefore(sourceWrapper, 
+        messageElement.parentNode.insertBefore(sourceWrapper,
                                                messageElement.nextSibling);
         messageElement.parentNode.removeChild(messageElement);
 
-        (event.preventDefault) ? event.preventDefault() : 
+        (event.preventDefault) ? event.preventDefault() :
                                  event.returnValue = false;
     },
-    
+
     /**
      * Extract the metadata cache from the cache element if present
      */
     getCachedMetadata: function() {
         var cacheElement = document.getElementById('metadata_cache');
-        
+
         if (cacheElement) {
             var cacheText = cacheElement.firstChild.nodeValue;
             var openBrace = cacheText.indexOf('{');
@@ -282,7 +282,7 @@ var metadata_generator = {
             }
         }
     },
-    
+
     /**
      * Main entry point, extract metadata from tests, compare to cached version
      * if present.
@@ -300,11 +300,11 @@ var metadata_generator = {
         }
 
         this.getCachedMetadata();
-        
+
         var message = null;
         var messageClass = 'warning';
         var showSource = false;
-        
+
         if (0 == tests.length) {
             if (this.cachedMetadata) {
                 message = 'Cached metadata present but no tests. ';
@@ -339,22 +339,22 @@ var metadata_generator = {
                 }
             }
         }
-        
+
         if (message) {
             var messageElement = document.createElement('p');
             messageElement.setAttribute('id', 'metadata_issue');
             messageElement.setAttribute('class', messageClass);
             this.appendText(messageElement, message);
-            
+
             if (showSource) {
                 var link = document.createElement('a');
                 this.appendText(link, 'Click for source code.');
                 link.setAttribute('href', '#');
-                link.setAttribute('onclick', 
+                link.setAttribute('onclick',
                                   'metadata_generator.addSourceElement(event)');
                 messageElement.appendChild(link);
             }
-            
+
             var summary = document.getElementById('summary');
             if (summary) {
                 summary.parentNode.insertBefore(messageElement, summary);
@@ -370,7 +370,7 @@ var metadata_generator = {
 
     setup: function() {
         add_completion_callback(
-            function (tests, harness_status) { 
+            function (tests, harness_status) {
                 metadata_generator.process(tests, harness_status)
             });
     }

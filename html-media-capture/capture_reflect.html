@@ -30,8 +30,8 @@
 
     <script>
       test(function() {
-        var inputs = document.querySelector('input');
-        for (var obj in inputs) {
+        var inputs = document.querySelectorAll('input');
+        for (var i=0, obj; i<inputs.length, obj=inputs[i]; i++) {
           assert_own_property(obj, 'capture');
           assert_equals(typeof obj.capture, 'boolean');
         }

@@ -7,12 +7,11 @@
 <script src="support.js"></script>
 
 <script>
-    var db;
     var open_rq = createdb(async_test(), undefined, 9);
 
     open_rq.onupgradeneeded = function(e) {};
     open_rq.onsuccess = function(e) {
-        db = e.target.result;
+        var db = e.target.result;
         db.close();
 
         var delete_rq = window.indexedDB.deleteDatabase(db.name);

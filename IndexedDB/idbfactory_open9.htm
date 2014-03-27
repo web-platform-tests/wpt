@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <title>IDBFactory.open() - errors in version argument</title>
-<script src="support.js"></script>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=support.js></script>
+
 <script>
 test(function() {
   [-1, -0.5, 0, 0.5, 0.8, 0x20000000000000, NaN, Infinity, -Infinity, "foo", undefined, null, false,
@@ -31,3 +31,5 @@ test(function() {
   });
 });
 </script>
+
+<div id=log></div>

@@ -24,38 +24,6 @@ if (!window.indexedDB)
     }
 }
 
-function assert_open_request_error(event) {
-    assert_unreached("Open request error: " + event.target.error.name); 
-}
-
-function assert_deleteDatabase_request_error(event) {
-    assert_unreached("Delete database request error: " + event.target.error.name); 
-}
-
-function assert_database_error(event) {
-    assert_unreached("Database error: " + event.target.error.name);
-}
-
-function assert_unexpected_success() {
-    assert_unreached("Unexpected success event fired.");
-}
-
-function assert_unexpected_upgradeneeded() {
-    assert_unreached("Unexpected upgradeneeded event fired.");
-}
-
-function assert_expected_exception() {
-    assert_unreached("Expected exception did not throw.");
-}
-
-function assert_cursor_exists(cursor) {
-    assert_not_equals(cursor, null, "Cursor does not exist.");
-}
-
-function assert_unexpected_complete() {
-    assert_unreached("Unexpected complete event fired.");
-}
-
 /* Delete created databases
  *
  * Go through each finished test, see if it has an associated database. Close
@@ -201,7 +169,7 @@ function createdb_for_multiple_tests(dbname, version) {
             auto_fail("success", test);
             auto_fail("blocked", test);
             auto_fail("error", test);
-            
+
             return this;
         }
     });

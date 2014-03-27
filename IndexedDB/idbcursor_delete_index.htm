@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <title>IDBCursor.delete() - index - remove a record from the object store</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -35,7 +35,7 @@
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result;
 
-            assert_true(cursor != null, "cursor exist");
+            assert_true(cursor instanceof IDBCursor, "cursor exist");
             cursor.delete();
         });
 
@@ -49,7 +49,6 @@
                           .openCursor();
 
         cursor_rq.onsuccess = t.step_func(function(e) {
-            console.log(e);
             var cursor = e.target.result;
 
             if (!cursor) {

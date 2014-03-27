@@ -23,7 +23,7 @@
 
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result;
-            assert_true(cursor != null, "cursor exist");
+            assert_true(cursor instanceof IDBCursor, "cursor exist");
             window.cursor = cursor;
             window.record = cursor.value;
         });

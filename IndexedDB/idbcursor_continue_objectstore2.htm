@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <title>IDBCursor.continue() - object store - attempt to pass a key parameter is not a valid key </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -27,7 +27,7 @@
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result;
 
-            assert_true(cursor != null, "cursor exist");
+            assert_true(cursor instanceof IDBCursor, "cursor exists");
             assert_throws("DataError",
                 function() { cursor.continue(document); });
 

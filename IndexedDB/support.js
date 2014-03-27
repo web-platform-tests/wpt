@@ -40,54 +40,6 @@ add_completion_callback(function(tests)
     }
 });
 
-function createdb(test, dbname, version)
-{
-    var rq_open,
-      fake_open = {},
-      dbname = (dbname ? dbname : "testdb-" + new Date().getTime() + Math.random() );
-
-    if (version)
-        rq_open = window.indexedDB.open(dbname, version);
-    else
-        rq_open = window.indexedDB.open(dbname);
-
-    function auto_fail(evt) {
-        /* Fail handlers, if we haven't set on/whatever/, don't
-         * expect to get event whatever. */
-        rq_open.manually_handled = {}
-
-        rq_open.addEventListener(evt,
-            test.step_func(function(e) {
-                if (!rq_open.manually_handled[evt])
-                    assert_unreached("unexpected open." + evt + " event")
-
-                if (e.target.result + "" == "[object IDBDatabase]" && !this.db)
-                {
-                    this.db = e.target.result;
-
-                    this.db.onerror = fail(test, "unexpected db.error");
-                    this.db.onabort = fail(test, "unexpected db.abort");
-                    this.db.onversionchange = fail(test, "unexpected db.versionchange");
-                }
-            })
-        )
-        rq_open.__defineSetter__("on" + evt, function(h) {
-            rq_open.manually_handled[evt] = true
-            if (!h)
-                rq_open.addEventListener(evt, function() {})
-            else
-                rq_open.addEventListener(evt, test.step_func(h))
-        })
-    }
-
-    auto_fail("upgradeneeded")
-    auto_fail("success")
-    auto_fail("blocked")
-    auto_fail("error")
-
-    return rq_open
-}
-
 function fail(test, desc) {
     return test.step_func(function(e) {
         console.log(desc, e);
@@ -103,11 +55,12 @@ function fail(test, desc) {
     });
 }
 
-// modified version of support.js’ createdb function,
-// the returned DB object has a `setTest(t)` method which
-// change the 'test' object used for fails reports, and return
-// the DB object (for chained calls)
-// Author: Baptiste Fontaine (batifon@yahoo.fr, bfn on IRC)
+function createdb(test, dbname, version)
+{
+    var rq_open = createdb_for_multiple_tests(dbname, version);
+    return rq_open.setTest(test);
+}
+
 function createdb_for_multiple_tests(dbname, version) {
     var rq_open,
         fake_open = {},
@@ -124,45 +77,38 @@ function createdb_for_multiple_tests(dbname, version) {
          * expect to get event whatever. */
         rq_open.manually_handled = {}
 
-        rq_open.addEventListener(evt,
-
-            function(e) {
-
-                if (current_test !== test) {
-                    return;
-                }
-
-                test.step(function() {
-                    if (!rq_open.manually_handled[evt]) {
-                        assert_unreached("unexpected open." + evt + " event");
-                    }
-
-                    if (e.target.result + "" == "[object IDBDatabase]" && !this.db) {
-                        this.db = e.target.result;
-
-                        this.db.onerror = fail(test, "unexpected db.error");
-                        this.db.onabort = fail(test, "unexpected db.abort");
-                        this.db.onversionchange = fail(test, "unexpected db.versionchange");
-                    }
-                });
-
+        rq_open.addEventListener(evt, function(e) {
+            if (current_test !== test) {
+                return;
             }
 
-        )
+            test.step(function() {
+                if (!rq_open.manually_handled[evt]) {
+                    assert_unreached("unexpected open." + evt + " event");
+                }
+
+                if (e.target.result + "" == "[object IDBDatabase]" && !this.db) {
+                    this.db = e.target.result;
+
+                    this.db.onerror = fail(test, "unexpected db.error");
+                    this.db.onabort = fail(test, "unexpected db.abort");
+                    this.db.onversionchange = fail(test, "unexpected db.versionchange");
+                }
+            })
+        })
         rq_open.__defineSetter__("on" + evt, function(h) {
-            rq_open.manually_handled[evt] = true
+            rq_open.manually_handled[evt] = true;
             if (!h)
-                rq_open.addEventListener(evt, function() {})
+                rq_open.addEventListener(evt, function() {});
             else
-                rq_open.addEventListener(evt, test.step_func(h))
+                rq_open.addEventListener(evt, test.step_func(h));
         })
     }
 
     // add a .setTest method to the DB object
     Object.defineProperty(rq_open, 'setTest', {
-        enumerable : false,
-        value      : function(t) {
-
+        enumerable: false,
+        value: function(t) {
             test = t;
 
             auto_fail("upgradeneeded", test);
@@ -174,5 +120,5 @@ function createdb_for_multiple_tests(dbname, version) {
         }
     });
 
-    return rq_open
+    return rq_open;
 }

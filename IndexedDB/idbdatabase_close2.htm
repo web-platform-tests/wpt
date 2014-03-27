@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>  
+<head>
     <title>IDBDatabase.close() - unblock the delete database request</title>
     <script type="text/javascript" src="support.js"></script>
     <script src="/resources/testharness.js"></script>
@@ -8,8 +8,8 @@
     <script type="text/javascript">
         var db = null;
         var bBlockEventFired = false;
-        var t = async_test(); 
-        
+        var t = async_test();
+
         function RunTest() {
             var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
             rqOpen.onsuccess = t.step_func( function(event)
@@ -22,13 +22,13 @@
                 });
                 rqDeleteDB.onerror = t.step_func( assert_deleteDatabase_request_error );
                 rqDeleteDB.onsuccess = t.step_func( function (event) {
-                    assert_true(bBlockEventFired, "delete database request not unblocked when existing database connection is closed") 
+                    assert_true(bBlockEventFired, "delete database request not unblocked when existing database connection is closed")
                     t.done();
                     return;
                 });
             });
         }
-        
+
         add_completion_callback(function() { if(db) db.close(); });
 
         setup( function() {

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>  
+<head>
     <title>IDBDatabase.close() - unblock the version change transaction created by an open database request</title>
     <script type="text/javascript" src="support.js"></script>
     <script src="/resources/testharness.js"></script>
@@ -10,7 +10,7 @@
         var bBlockEventFired = false;
         var bUpgradeNeededEventFired = false;
         var t = async_test();
-        
+
         function RunTest() {
             var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
             rqOpen.onsuccess = t.step_func( function(event) {
@@ -31,9 +31,9 @@
                 });
             });
         }
-        
+
         add_completion_callback(function() { if(db) db.close(); });
-    
+
         setup(function() {
             var rqDelete = window.indexedDB.deleteDatabase(databaseName);
             rqDelete.onsuccess = t.step_func( RunTest );

@@ -6,7 +6,10 @@ def main(request, response):
 
     removeContentType = request.GET.first("removeContentType", None)
     if removeContentType:
-        del response.headers["Content-Type"]
+        try:
+            del response.headers["Content-Type"]
+        except KeyError:
+            pass
 
     content = ''
     mimeHead = request.GET.first("mime", None);

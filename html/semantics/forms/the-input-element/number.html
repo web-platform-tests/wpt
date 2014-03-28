@@ -22,7 +22,21 @@
     {value: "11", attributes: { min: "10" }, expected: "11", testname: "Value >= min attribute"},
     {value: "9", attributes: { min: "10" }, expected: "9", testname: "Value < min attribute"},
     {value: "19", attributes: { max: "20" }, expected: "19", testname: "Value <= max attribute"},
-    {value: "21", attributes: { max: "20" }, expected: "21", testname: "Value > max attribute"}
+    {value: "21", attributes: { max: "20" }, expected: "21", testname: "Value > max attribute"},
+    {value: ".1", expected: ".1", testname: "value with a leading '.'"},
+    {value: "1.", expected: "", testname: "value ending with '.'"},
+    {value: "-0", expected: "-0", testname: "value = -0"},
+    {value: "Infinity", expected: "", testname: " value = Infinity"},
+    {value: "-Infinity", expected: "", testname: "value = -Infinity"},
+    {value: "NaN", expected: "", testname: "value = NaN"},
+    {value: "9007199254740993", expected: "9007199254740992", testname: "value = 2^53+1"},
+    {value: "2e308", expected: "", testname: "value >= Number.MAX_VALUE"},
+    {value: "1e", expected: "", testname: "value = 1e"},
+    {value: "+1", expected: "", testname: "value = +1"},
+    {value: "+", expected: "", testname: "value = '+'"},
+    {value: "-", expected: "", testname: "value = '-'"},
+    {value: " 1", expected: "", testname: "value with a leading whitespace"},
+    {value: "1trailing junk", expected: "", testname: "value = 1trailing junk"}
   ];
   for (var i = 0; i < numbers.length; i++) {
     var w = numbers[i];

@@ -12,7 +12,6 @@
 <script type="text/javascript">
   var single = document.getElementById('single_email'),
       mult = document.getElementById('multiple_email'),
-      validEmailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;  // from spec
 
   test(function(){
     assert_false(single.multiple);
@@ -27,12 +26,10 @@
 
   test(function(){
     single.value = 'user4@example.com';
-    assert_true(validEmailRegexp.test(single.value));
     assert_true(single.validity.valid);
     single.value = 'example.com';
-    assert_false(validEmailRegexp.test(single.value));
     assert_false(single.validity.valid);
-  }, 'a valid email address should match ' + validEmailRegexp);
+  }, 'Email address validity');
 
   test(function(){
     single.setAttribute('multiple', true);
@@ -53,15 +50,9 @@
 
   test(function(){
     mult.value = 'user1@example.com,user2@test.com,user3@test.com';
-    var values = mult.value.split(',');
-    values.forEach(function(e) {
-      assert_true(validEmailRegexp.test(e));
-    });
     assert_true(mult.validity.valid);
 
     mult.value = 'u,ser1@example.com,user2@test.com,user3@test.com';
     assert_false(mult.validity.valid);
-    var values = mult.value.split(',');
-    assert_false(validEmailRegexp.test(values[0]));
   }, "valid value is a set of valid email addresses separated by a single ','");
 </script>

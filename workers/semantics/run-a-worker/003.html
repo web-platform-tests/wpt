@@ -21,7 +21,6 @@ async_test(function() {
   shared.onerror = this.step_func(function(e) { assert_unreached(); }, shared, 'error');
   setTimeout(this.step_func(function() { this.done(); }), 500);
 }, 'shared');
-
 </script>
 <!--
 */

@@ -6,8 +6,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-//Needed to prevent a race condition if a worker throws an exception that may or may
-//not propogate to the window before the tests finish
+// Needed to prevent a race condition if a worker throws an exception that may or may
+// not propogate to the window before the tests finish
 setup({allow_uncaught_exception: true});
 
 test(function() {
@@ -48,5 +48,4 @@ test(function() {
 test(function() {
   assert_throws("SecurityError", function() { new Worker('javascript:""'); });
 }, "javascript_url");
-
 </script>

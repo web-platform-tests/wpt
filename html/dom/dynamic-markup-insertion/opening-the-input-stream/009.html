@@ -12,7 +12,6 @@ steps = ["window", "location", "history", "navigator", "applicationCache", "sess
 function(x) {
   var t = async_test(document.title + " " + x);
   var handle = iframe.contentWindow[x];
-  console.log(x + " " + handle);
   handle.test_state = 1;
   return t.step_func(
       function() {

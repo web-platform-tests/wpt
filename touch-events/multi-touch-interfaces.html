@@ -1,14 +1,17 @@
 <!DOCTYPE HTML>
 <html>
-<!-- 
+<!--
      Test cases for Touch Events v1 Candiate Recommendation
      http://www.w3.org/TR/2011/CR-touch-events-20111215/
 
-     These tests are based on Mozilla-Nokia-Google's single-touch tests and to some extent Olli Pettay's multi-touch tests. 
+     These tests are based on Mozilla-Nokia-Google's single-touch
+     tests and to some extent Olli Pettay's multi-touch tests.
+
 	 http://w3c-test.org/webevents/tests/touch-events-v1/submissions/Moz-Nok-Goog/single-touch.html
      http://w3c-test.org/webevents/tests/touch-events-v1/submissions/Mozilla/multi-touch.html
 
-	 The primary purpose of the tests in this document is checking that the various interfaces of the Touch Events APIs are correctly implemented.
+	 The primary purpose of the tests in this document is checking that the
+     various interfaces of the Touch Events APIs are correctly implemented.
 	 Other interactions are covered in other test files.
 
      This document references Test Assertions (abbrev TA below) written by Cathy Chan
@@ -62,7 +65,7 @@
             default:
                 break;
             }
-       }); 
+       });
     }
 
     // Check a TouchList object's attributes and methods for existence and proper type
@@ -99,7 +102,7 @@
             default:
                 break;
             }
-       }); 
+       });
        // Each member of tl should be a proper Touch object
        for (var i=0; i < tl.length; i++) {
            check_Touch_object(tl.item(i));
@@ -147,15 +150,15 @@
             default:
                 break;
             }
-       }); 
+       });
     }
-    
+
     function is_touch_over_element(touch, element) {
       var bounds = element.getBoundingClientRect();
       return touch.pageX >= bounds.left && touch.pageX <= bounds.right &&
           touch.pageY >= bounds.top && touch.pageY <= bounds.bottom;
     }
-    
+
     function check_touch_clientXY(touch) {
       assert_equals(touch.clientX, touch.pageX - window.pageXOffset, "touch.clientX is touch.pageX - window.pageXOffset.");
       assert_equals(touch.clientY, touch.pageY - window.pageYOffset, "touch.clientY is touch.pageY - window.pageYOffset.");
@@ -187,7 +190,7 @@
 				test_touchstart.done();
 				test_mousedown.done(); // If we got here, then the mouse event test is not needed.
 			}
-			
+
 			if(++touchstart_received <= 2)
 				check_TouchEvent(ev);
 		});

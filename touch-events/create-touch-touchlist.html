@@ -1,13 +1,14 @@
 <!DOCTYPE HTML>
 <html>
-<!-- 
+<!--
     Test cases for Touch Events v1 Candiate Recommendation
     http://www.w3.org/TR/2011/CR-touch-events-20111215/
 
-	These tests are based on Mozilla-Nokia-Google's single-touch tests. 
+	These tests are based on Mozilla-Nokia-Google's single-touch tests.
 	http://w3c-test.org/webevents/tests/touch-events-v1/submissions/Moz-Nok-Goog/single-touch.html
 
-	The primary purpose of the tests in this document is checking that the createTouch and createTouchList interfaces of the Touch Events APIs are correctly implemented.
+	The primary purpose of the tests in this document is checking that the createTouch and
+	createTouchList interfaces of the Touch Events APIs are correctly implemented.
 	Other interactions are covered in other test files.
 
     This document references Test Assertions (abbrev TA below) written by Cathy Chan
@@ -61,7 +62,7 @@
 			default:
 				break;
 			}
-		}); 
+		});
 	}
 
 	// Check a TouchList object's attributes and methods for existence and proper type
@@ -98,7 +99,7 @@
 			default:
 				break;
 			}
-		}); 
+		});
 		// Each member of tl should be a proper Touch object
 		for (var i=0; i < tl.length; i++) {
 			check_Touch_object(tl.item(i));
@@ -133,7 +134,7 @@
 		touch2 = document.createTouch(window, target0, 44, 25, 30, 45, 50);
 
 		var touchList;
-		
+
 		test(function() {
 			touchList = document.createTouchList();
 			assert_equals(touchList.length, 0, "touchList.length is 0");
@@ -150,7 +151,7 @@
 
 		if (touchList)
 			check_TouchList_object(touchList);
-			
+
 		test(function() {
 			touchList = document.createTouchList(touch1, touch2);
 			assert_equals(touchList.length, 2, "touchList.length is 2");

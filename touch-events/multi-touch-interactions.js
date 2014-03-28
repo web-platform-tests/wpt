@@ -33,7 +33,7 @@ function check_list_subset_of_two_targetlists(list, list_name, targetlist1, targ
 			for(j=0; j<targetlist2.length; j++)
 				if(list.item(i).identifier==targetlist2.item(j).identifier)
 					exist_in_targetlists=true;
-					
+
 		assert_true(exist_in_targetlists, list_name + ".item("+i+") exists in " + targetlist1_name + " or " + targetlist2_name);
 	}
 
@@ -80,17 +80,17 @@ function run() {
 	var touchmove_received = 0;
 	var touchend_received = 0;
 	var touchstart_identifier;
-	
+
 	// last received touch lists for comparison
 	var last_touches;
 	var last_targetTouches={};
 	var last_changedTouches={};
 
-	on_event(window, "touchstart", function onTouchStart(ev) {		 
+	on_event(window, "touchstart", function onTouchStart(ev) {
 		// process event only if it's targeted at target0 or target1
 		if(ev.target != target0 && ev.target != target1 )
-			return;		
-		
+			return;
+
 		ev.preventDefault();
 
 		if(!touchstart_received) {
@@ -103,7 +103,7 @@ function run() {
 			test_mousedown.done(); // If we got here, then the mouse event test is not needed.
 		}
 		touchstart_received++;
-	
+
 		// TA: 1.3.2.2, 1.3.2.4
 		test(function() {
 			assert_true(ev.changedTouches.length >= 1, "changedTouches.length is at least 1");
@@ -122,19 +122,19 @@ function run() {
 		test(function() {
 			check_targets(ev.targetTouches, ev.target);
 		}, "touchstart #" + touchstart_received + ": targets of targetTouches are correct");
-		
+
 		// TA: 1.3.4.2
 		test(function() {
 			assert_true(ev.touches.length >= 1, "touches.length is at least 1");
 		}, "touchstart #" + touchstart_received + ": touches.length is valid");
-		
+
 		if(touchstart_received == 1) {
 			// TA: 1.3.3.5, 1.3.3.7
 			test(function() {
 				assert_true(ev.targetTouches.length <= ev.changedTouches.length, "targetTouches.length is smaller than changedTouches.length");
 				check_list_subset_of_targetlist(ev.targetTouches, "targetTouches", ev.changedTouches, "changedTouches");
 			}, "touchstart #" + touchstart_received + ": targetTouches is a subset of changedTouches");
-			
+
 			// TA: 1.3.4.3
 			test(function() {
 				assert_true(ev.touches.length==ev.changedTouches.length, "touches and changedTouches have the same length");
@@ -146,30 +146,30 @@ function run() {
 				assert_true(diff_in_targetTouches > 0, "targetTouches.length is larger than last received targetTouches.length");
 				assert_true(diff_in_targetTouches <= ev.changedTouches.length, "change in targetTouches.length is smaller than changedTouches.length");
 			}, "touchstart #" + touchstart_received + ": change in targetTouches.length is valid");
-		
+
 			// TA: 1.3.3.8
 			test(function() {
 				assert_true(is_at_least_one_item_in_targetlist(ev.targetTouches, ev.changedTouches), "at least one item of targetTouches is in changedTouches");
 			}, "touchstart #" + touchstart_received + ": at least one targetTouches item in changedTouches");
-			
+
 			// TA: 1.3.4.4
-			test(function() {				
+			test(function() {
 				var diff_in_touches = ev.touches.length - last_touches.length;
 				assert_true(diff_in_touches > 0, "touches.length is larger than last received touches.length");
 				assert_true(diff_in_touches == ev.changedTouches.length, "change in touches.length equals changedTouches.length");
 			}, "touchstart #" + touchstart_received + ": change in touches.length is valid");
-			
+
 			// TA: 1.3.4.5
 			test(function() {
 				check_list_subset_of_two_targetlists(ev.touches, "touches", ev.changedTouches, "changedTouches", last_touches, "last touches");
 			}, "touchstart #" + touchstart_received + ": touches is subset of {changedTouches, last received touches}");
 		}
-		
+
 		// save starting element of each new touch point
 		for (i=0; i<ev.changedTouches.length; i++) {
 			starting_elements[ev.changedTouches.item(i).identifier] = ev.changedTouches.item(i).target;
 		}
-		
+
 		last_touches = ev.touches;
 		last_targetTouches[ev.target.id] = ev.targetTouches;
 		last_changedTouches = {};	// changedTouches are only saved for touchend events
@@ -178,7 +178,7 @@ function run() {
 	on_event(window, "touchmove", function onTouchMove(ev) {
 		// process event only if it's targeted at target0 or target1
 		if(ev.target != target0 && ev.target != target1 )
-			return;		
+			return;
 
 		ev.preventDefault();
 
@@ -206,7 +206,7 @@ function run() {
 				assert_true(ev.targetTouches.length <= ev.touches.length, "targetTouches.length is smaller than touches.length");
 				check_list_subset_of_targetlist(ev.targetTouches, "targetTouches", ev.touches, "touches");
 			}, "touchmove #" + touchmove_received + ": targetTouches is a subset of touches");
-			
+
 			// TA: 1.4.3.6
 			test(function() {
 				assert_true(is_at_least_one_item_in_targetlist(ev.targetTouches, ev.changedTouches), "at least one item of targetTouches is in changedTouches");
@@ -216,7 +216,7 @@ function run() {
 			test(function() {
 				check_targets(ev.targetTouches, ev.target);
 			}, "touchmove #" + touchmove_received + ": targets of targetTouches are correct");
-			
+
 			// TA: 1.4.4.2
 			test(function() {
 				assert_true(ev.touches.length==last_touches.length, "length of touches is same as length of last received touches");
@@ -226,16 +226,16 @@ function run() {
 			// TA: 1.6.3
 			check_starting_element(ev.changedTouches);
 		}
-		
+
 		last_touches = ev.touches;
-		last_targetTouches[ev.target.id] = ev.targetTouches;		
+		last_targetTouches[ev.target.id] = ev.targetTouches;
 		last_changedTouches = {};	// changedTouches are only saved for touchend events
 	});
 
 	on_event(window, "touchend", function onTouchEnd(ev) {
 		// process event only if it's targeted at target0 or target1
 		if(ev.target != target0 && ev.target != target1 )
-			return;		
+			return;
 
 		test_touchend.step(function() {
 			assert_true(touchstart_received>0, "touchend follows touchstart");
@@ -243,19 +243,19 @@ function run() {
 		test_touchend.done();
 
 		touchend_received++;
-		
+
 		debug_print("touchend #" + touchend_received + ":<br>");
 		debug_print("changedTouches.length=" + ev.changedTouches.length + "<br>");
 		debug_print("targetTouches.length=" + ev.targetTouches.length + "<br>");
 		debug_print("touches.length=" + ev.touches.length + "<br>");
 		for(i=0; i<ev.changedTouches.length; i++)
 			debug_print("changedTouches.item(" + i + ").target=" + ev.changedTouches.item(i).target.id + "<br>");
-		
+
 		// TA: 1.5.2.2
 		test(function() {
 			assert_true(ev.changedTouches.length >= 1, "changedTouches.length is at least 1");
 		}, "touchend #" + touchend_received + ": length of changedTouches is valid");
-		
+
 		// TA: 1.5.2.3
 		test(function() {
 			check_list_subset_of_targetlist(ev.changedTouches, "changedTouches", last_touches, "last received touches");
@@ -266,7 +266,7 @@ function run() {
 			check_no_item_in_targetlist(ev.changedTouches, "changedTouches", ev.touches, "touches");
 			check_no_item_in_targetlist(ev.changedTouches, "changedTouches", ev.targetTouches, "targetTouches");
 		}, "touchend #" + touchend_received + ": no item in changedTouches are in touches or targetTouches");
-		
+
 		// TA: 1.5.2.6
 		test(function() {
 			var found=false;
@@ -275,14 +275,14 @@ function run() {
 					found=true;
 			assert_true(found, "at least one item in changedTouches has matching target");
 		}, "touchend #" + touchend_received + ": at least one item in changedTouches targeted at this element");
-		
+
 		// TA: 1.5.3.2, 1.5.3.3
 		test(function() {
 			assert_true(ev.targetTouches.length >= 0, "targetTouches.length is non-negative");
 			assert_true(ev.targetTouches.length <= ev.touches.length, "targetTouches.length is smaller than touches.length");
 			check_list_subset_of_targetlist(ev.targetTouches, "targetTouches", ev.touches, "touches");
 		}, "touchend #" + touchend_received + ": targetTouches is a subset of touches");
-		
+
 		// TA: 1.5.3.5 (new)
 		test(function() {
 			check_targets(ev.targetTouches, ev.target);
@@ -297,7 +297,7 @@ function run() {
 			same_event_as_last = true; // assume true until proven otherwise
 			for (i=0; i<last_changedTouches.length; i++) {
 				var match = false;
-				for (j=0; j<ev.changedTouches.length; j++) 
+				for (j=0; j<ev.changedTouches.length; j++)
 					if (last_changedTouches.item(i) == ev.changedTouches.item(j)) {
 						match = true;
 						break;
@@ -306,7 +306,7 @@ function run() {
 					same_event_as_last = false;
 			}
 		}
-			
+
 		if (!same_event_as_last) {
 			// TA: 1.5.3.4
 			// Getting semi-random failures on this and 1.5.4.2.
@@ -318,7 +318,7 @@ function run() {
 				assert_true(diff_in_targetTouches > 0, "targetTouches.length is smaller than last received targetTouches.length");
 				assert_true(diff_in_targetTouches <= ev.changedTouches.length, "change in targetTouches.length is smaller than changedTouches.length");
 			}, "touchend #" + touchend_received + ": change in targetTouches.length is valid");
-			
+
 			// TA: 1.5.4.2
 			// Getting semi-random failures on this and 1.5.3.4.
 			// It looks like if fingers are lifted simultaneously, the "same" touchend event can be dispatched to two target elements
@@ -333,7 +333,7 @@ function run() {
 				assert_equals(diff_in_touches, ev.changedTouches.length, "change in touches.length equals changedTouches.length");
 			}, "touchend #" + touchend_received + ": change in touches.length is valid");
 		}
-		
+
 		// TA: 1.6.4
 		debug_print("touchend #" + touchend_received + ": TA 1.6.4<br>");
 		test(function() {
@@ -341,11 +341,11 @@ function run() {
 		}, "touchend #" + touchend_received + ": event dispatched to correct element<br>");
 
 		debug_print("touchend #" + touchend_received + ": saving touch lists<br>");
-		
+
 		last_touches = ev.touches;
 		last_targetTouches[ev.target.id] = ev.targetTouches;
 		last_changedTouches = ev.changedTouches;
-		
+
 		debug_print("touchend #" + touchend_received + ": done<br>");
 		if(ev.touches.length==0)
 			done();

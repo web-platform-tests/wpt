@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <html>
-<!-- 
+<!--
      Test cases for Touch Events v1 Candiate Recommendation
      http://www.w3.org/TR/2011/CR-touch-events-20111215/
 
-     These tests are based on Matt Bruebeck's single-touch tests. 
+     These tests are based on Matt Bruebeck's single-touch tests.
      There are NO multi-touch tests in this document.
      http://w3c-test.org/webevents/tests/touch-events-v1/submissions/Mozilla/single-touch.html
 
@@ -59,7 +59,7 @@
             default:
                 break;
             }
-       }); 
+       });
     }
 
     // Check a TouchList object's attributes and methods for existence and proper type
@@ -96,7 +96,7 @@
             default:
                 break;
             }
-       }); 
+       });
        // Each member of tl should be a proper Touch object
        for (var i=0; i < tl.length; i++) {
            check_Touch_object(tl.item(i));
@@ -144,15 +144,15 @@
             default:
                 break;
             }
-       }); 
+       });
     }
-    
+
     function is_touch_over_element(touch, element) {
       var bounds = element.getBoundingClientRect();
       return touch.pageX >= bounds.left && touch.pageX <= bounds.right &&
           touch.pageY >= bounds.top && touch.pageY <= bounds.bottom;
     }
-    
+
     function check_touch_clientXY(touch) {
       assert_equals(touch.clientX, touch.pageX - window.pageXOffset, "touch.clientX is touch.pageX - window.pageXOffset.");
       assert_equals(touch.clientY, touch.pageY - window.pageYOffset, "touch.clientY is touch.pageY - window.pageYOffset.");
@@ -172,7 +172,7 @@
       var touchend_received = false;
       var invalid_touchmove_received = false;
       var touchstart_identifier;
-      
+
       on_event(target0, "touchstart", function onTouchStart(ev) {
         ev.preventDefault();
 
@@ -200,7 +200,7 @@
         var t = ev.touches[0];
         var ct = ev.changedTouches[0];
         var tt = ev.targetTouches[0];
-        
+
         touchstart_identifier = t.identifier;
         // TA: 1.3.3.3, 1.3.2.3, 1.3.3.4 (indirect (transitive))
         test(function() {
@@ -217,8 +217,8 @@
         test(function() {
           assert_true(is_touch_over_element(t, target0), "touch.pageX/pageY is over target0.");
         }, "touchstart: touch pageX/pageY inside of target element");
-        test(function() { 
-          check_touch_clientXY(t); 
+        test(function() {
+          check_touch_clientXY(t);
         }, "touchstart: touch clientX/clientY is consistent with pageX/pageY");
         // Note we don't bother testing screenX/screenY values - there's no reliable way to
         // verify they are consistent with clientX/clientY (due to unknown amount of window
@@ -265,8 +265,8 @@
           assert_true(is_touch_over_element(tt, target0) || is_touch_over_element(tt, target1),
             "touch.pageX/pageY is over one of the targets.");
         }, "touchmove: touch pageX/pageY inside of one of the target elements");
-        test(function() { 
-          check_touch_clientXY(tt); 
+        test(function() {
+          check_touch_clientXY(tt);
         }, "touchmove: touch clientX/clientY is consistent with pageX/pageY");
 
       });
@@ -307,8 +307,8 @@
           assert_true(is_touch_over_element(t, target1),
             "touch.pageX/pageY is over target1.");
         }, "touchend: touch pageX/pageY inside expected element");
-        test(function() { 
-          check_touch_clientXY(t); 
+        test(function() {
+          check_touch_clientXY(t);
         }, "touchend: touch clientX/clientY is consistent with pageX/pageY");
 
         done();

@@ -52,9 +52,10 @@
   test(function(){
     assert_true(d3.open);
     assert_equals(d3.returnValue, "");
+    d3.returnValue = "foobar";
     d3.close();
     assert_false(d3.hasAttribute("open"));
-    assert_equals(d3.returnValue, "");
+    assert_equals(d3.returnValue, "foobar");
   }, "close() without argument removes the open attribute and there's no returnValue");
 
   d4.onclose = t.step_func_done(function(e) {
@@ -63,8 +64,11 @@
     assert_false(e.bubbles, "close event doesn't bubble");
     assert_false(e.cancelable, "close event is not cancelable");
   });
-  d4.close();
-  was_queued = true;
+
+  t.step(function() {
+    d4.close();
+    was_queued = true;
+  })
 
   test(function(){
     Object.defineProperty(HTMLDialogElement.prototype, 'returnValue', { set: function(v) { assert_unreached('JS-defined setter returnValue on the prototype was invoked'); }, configurable:true });

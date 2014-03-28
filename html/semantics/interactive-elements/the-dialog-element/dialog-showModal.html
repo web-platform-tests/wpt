@@ -59,7 +59,6 @@
     this.add_cleanup(function() { d1.close(); });
     assert_true(d1.open);
     assert_true(b0.commandDisabled);
-    assert_equals(d1, document.elementFromPoint(window.innerWidth/2, window.innerHeight/2));
     assert_equals(document.activeElement, d1.firstChild);
   });
 
@@ -112,7 +111,7 @@
     d7.showModal();
     this.add_cleanup(function() { d7.close(); });
     assert_true(d7.open);
-    assert_equals(document.activeElement, d7.firstChild);
+    assert_equals(document.activeElement, document.getElementById("i71"));
   }, "opening dialog with multiple focusable children");
 
   test(function(){

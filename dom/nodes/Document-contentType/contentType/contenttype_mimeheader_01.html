@@ -10,6 +10,6 @@ async_test(function() {
   iframe.addEventListener('load', this.step_func_done(function() {
     assert_equals(iframe.contentDocument.contentType, "text/xml");
   }), false);
-  iframe.src = "../resources/contenttype_setter.py?type=text&subtype=xml";
+  iframe.src = "../support/contenttype_setter.py?type=text&subtype=xml";
 });
 </script>

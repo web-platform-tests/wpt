@@ -298,10 +298,10 @@ onload = function() {
     async_test(function() {
       var elm = document.createElement(tag);
       var video_ext = '';
-      if (elm.canPlayType('video/ogg; codecs="theora,vorbis"')) {
-        video_ext = 'ogv';
+      if (elm.canPlayType('video/webm;codecs="vp8,vorbis"')) {
+        video_ext = 'webm';
       } else if (elm.canPlayType('video/mp4; codecs="avc1.42E01E,mp4a.40.2"')) {
-        video_ext = 'mp4';
+        video_ext = 'm4v';
       }
       assert_not_equals(video_ext, '', 'no supported video format');
       var source;

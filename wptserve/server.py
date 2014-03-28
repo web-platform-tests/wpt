@@ -214,8 +214,8 @@ class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                     else:
                         err = traceback.format_exc()
                     response.set_error(500, err)
-            logger.info("%i %s %s %i" % (response.status[0], request.method,
-                                         request.request_path, request.raw_input.length))
+            logger.info("%i %s %s (%s) %i" % (response.status[0], request.method,
+                                         request.request_path, request.headers.get('Referer'), request.raw_input.length))
             if not response.writer.content_written:
                 response.write()
 

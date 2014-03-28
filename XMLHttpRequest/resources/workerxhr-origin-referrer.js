@@ -6,7 +6,7 @@ xhr.onreadystatechange = function(){
 		self.postMessage(obj)
 	}
 }
-xhr.open('GET', 'inspect-headers.php?filter_name=referer', true)
+xhr.open('GET', 'inspect-headers.py?filter_name=referer', true)
 xhr.send()
 
 // This simply posts a message to the owner page with the contents of the Origin header
@@ -17,11 +17,11 @@ xhr2.onreadystatechange = function(){
 		self.postMessage(obj)
 	}
 }
-xhr2.open('GET', location.protocol + '//www2.'+location.hostname+(location.pathname.replace(/[^/]*$/, ''))+'inspect-headers.php?filter_name=origin&cors', true)
+xhr2.open('GET', location.protocol + '//www2.'+location.hostname+(location.pathname.replace(/[^/]*$/, ''))+'inspect-headers.py?filter_name=origin&cors', true)
 xhr2.send()
 
 // If "origin" / base URL is the origin of this JS file, we can load files 
-// from the server it originates from.. and requri.php will be able to tell us
+// from the server it originates from.. and requri.py will be able to tell us
 // what the requested URL was
 var xhr3=new XMLHttpRequest()
 xhr3.onreadystatechange = function(){
@@ -30,5 +30,5 @@ xhr3.onreadystatechange = function(){
 		self.postMessage(obj)
 	}
 }
-xhr3.open('GET', 'requri.php?full', true)
+xhr3.open('GET', 'requri.py?full', true)
 xhr3.send()

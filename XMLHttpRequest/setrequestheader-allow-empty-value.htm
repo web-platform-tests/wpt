@@ -12,7 +12,7 @@
       function request(value) {
         test(function() {
           var client = new XMLHttpRequest()
-          client.open("POST", "resources/inspect-headers.php?filter_name=X-Empty", false)
+          client.open("POST", "resources/inspect-headers.py?filter_name=X-Empty", false)
           client.setRequestHeader('X-Empty', value)
           client.send(null)
           assert_equals(client.responseText, 'x-empty: '+ String(value).toLowerCase()+'\n' )

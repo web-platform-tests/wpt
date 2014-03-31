@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>insertAdjacentHTML</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div>
+    <video id='v' controls autoplay width='320' height='240'></video>
+</div>
+<div id="log"></div>
+
+<script>
+var FILE = 'test.webm';
+var video = document.querySelector('video');
+var mime = 'video/webm; codecs="vorbis,vp8"';
+async_test(function(t) {
+    var mediaSource = new MediaSource();
+    mediaSource.addEventListener('sourceopen', function(e){
+        var sourceBuffer = null;
+        t.step(function() {
+            assert_throws(
+                {name : 'QuotaExceededError'},
+                function() {
+                    for(var i = 0; i < 10000; i++) {//create lots of new buffers
+                        sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+                    }I
+                },
+                'Create lots of sourceBuffers'
+            );
+        });
+        t.done();
+    }, false);
+    video.src = window.URL.createObjectURL(mediaSource);
+}, "MediaSource#addSourceBuffer : 3. If the user agent can't handle any more SourceBuffer objects then throw a QUOTA_EXCEEDED_ERR exception and abort these steps");
+</script>
+</body>
+</html>

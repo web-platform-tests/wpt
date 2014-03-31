@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>insertAdjacentHTML</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div>
+    <video id='v' controls autoplay width='320' height='240'></video>
+</div>
+<div id="log"></div>
+
+<script>
+var FILE = 'test.webm';
+var video = document.querySelector('video');
+var mime = 'video/webm; codecs="vorbis,vp8"';
+
+async_test(function(t) {
+    var mediaSource1 = new MediaSource();
+    mediaSource1.addEventListener('sourceopen', function(e){
+        //playback 1st chunk
+        var sourceBuffer1 = mediaSource1.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+        var mediaSource2 = new MediaSource();
+        mediaSource2.addEventListener('sourceopen', function(e){
+            //playback 1st chunk
+            var sourceBuffer2 = mediaSource2.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+            t.step(function() {
+                assert_throws({name : 'NotFoundError'},
+                              function() {
+                                  mediaSource2.removeSourceBuffer(sourceBuffer1);
+                              },
+                              'Set invalid MIME');
+            });
+            t.done();
+        });
+        var video2 = document.createElement('video');
+        video2.src = window.URL.createObjectURL(mediaSource2);
+    }, false);
+    video.src = window.URL.createObjectURL(mediaSource1);
+}, 'MediaSource#removeSouceBuffer : 2. If sourceBuffer specifies an object that is not in sourceBuffers then throw a NOT_FOUND_ERR exception and abort these steps.');
+
+</script>
+</body>
+</html>

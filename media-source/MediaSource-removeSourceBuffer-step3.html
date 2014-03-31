@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>insertAdjacentHTML</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div>
+    <video id='v' controls autoplay width='320' height='240'></video>
+</div>
+
+<div id="log"></div>
+
+<script>
+var FILE = 'test.webm';
+var video = document.querySelector('video');
+var mime = 'video/webm; codecs="vorbis,vp8"';
+function GET(url, processBody) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.send();
+    xhr.onload = function(e) {
+        if (xhr.status != 200) {
+            alert("Unexpected status code " + xhr.status + " for " + url);
+            return false;
+        }        
+        processBody(new Uint8Array(xhr.response));
+    };
+}
+async_test(function(t) {
+    GET(FILE, function(uInt8Array) {
+        var data = new Blob([uInt8Array], {type: 'video/webm'});
+        var chunkNum = 5;
+        var chunkSize = Math.ceil(data.size / chunkNum);
+        var chunkIdx = 0;
+        var mediaSource = new MediaSource();
+        var events = [];
+
+        mediaSource.addEventListener('sourceopen', function(e){
+            //playback 1st chunk
+            var sourceBuffer = this.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+            var startByte = chunkSize * chunkIdx;
+            var chunk = data.slice(startByte, startByte + chunkSize);
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var data = new Uint8Array(e.target.result);
+                sourceBuffer.appendBuffer(data);
+                chunkIdx++;
+            };
+            reader.readAsArrayBuffer(chunk);
+
+            sourceBuffer.addEventListener('updatestart', function(e) {                
+                events.push('updatestart');
+                t.step(function() {
+                    mediaSource.removeSourceBuffer(sourceBuffer);
+                    assert_equals(sourceBuffer.updating, false);
+                });
+            });
+            sourceBuffer.addEventListener('updateend', function(e) {
+                events.push('updateend');
+                t.step(function() {
+                    assert_equals(events.length, 3);
+                    generate_tests(assert_equals, [
+                        [ "", events[0], 'updatestart'],
+                        [ "", events[1], 'abort'],
+                        [ "", events[2], 'updateend']
+                    ]);
+                });
+                t.done();
+            });
+            sourceBuffer.addEventListener('abort', function(e) {
+                events.push('abort');
+            });
+        }, false);
+        video.src = window.URL.createObjectURL(mediaSource);
+    });
+}, "MediaSource#removeSourceBuffer : 3. If the sourceBuffer.updating attribute equals true, then run the following steps:" + 
+     "1. Abort the buffer append and stream append loop algorithms if they are running." +
+     "2. Set the sourceBuffer.updating attribute to false." + 
+     "3. Queue a task to fire a simple event named abort at sourceBuffer." + 
+     "4. Queue a task to fire a simple event named updateend at sourceBuffer.");
+
+</script>
+</body>
+</html>

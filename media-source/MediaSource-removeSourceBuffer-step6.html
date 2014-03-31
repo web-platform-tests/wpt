@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>insertAdjacentHTML</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div>
+    <video id='v' controls autoplay width='320' height='240'></video>
+</div>
+<div id="log"></div>
+
+<script>
+var FILE = 'test.webm';
+var video = document.querySelector('video');
+var mime = 'video/webm; codecs="vorbis,vp8"';
+
+async_test(function(t) {
+    var mediaSource = new MediaSource();
+    mediaSource.addEventListener('sourceopen', function(e){
+        var sourceBuffer = this.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+        t.step(function() {
+            assert_not_equals(sourceBuffer.videoTracks, undefined,
+                              'videoTracks should be returned');
+        });
+        t.done();
+    }, false);
+    video.src = window.URL.createObjectURL(mediaSource);
+}, "MediaSource#removeSouceBuffer : 6. Let SourceBuffer videoTracks list equal the VideoTrackList object returned by sourceBuffer.videoTracks.");
+
+</script>
+</body>
+</html>

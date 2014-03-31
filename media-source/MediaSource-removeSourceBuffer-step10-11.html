@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>insertAdjacentHTML</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div>
+    <video id='v' controls autoplay width='320' height='240'></video>
+</div>
+
+<div id="log"></div>
+
+<script>
+var FILE = 'test.webm';
+var video = document.querySelector('video');
+var mime = 'video/webm; codecs="vorbis,vp8"';
+
+async_test(function(t) {
+    var mediaSource = new MediaSource();
+    var events = [];
+    
+    mediaSource.addEventListener('sourceopen', function(e){
+        events.push('sourceopen');
+        var sourceBuffer = this.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+        this.removeSourceBuffer(sourceBuffer);
+    });
+    mediaSource.activeSourceBuffers.addEventListener('removesourcebuffer', function(e){
+        events.push('removesourcebuffer by activeSourceBuffers');
+    });
+    mediaSource.sourceBuffers.addEventListener('removesourcebuffer', function(e){
+        events.push('removesourcebuffer by sourceBuffers');
+        assert_equals(events.length, 3);
+        t.step(function() {
+            generate_tests(assert_equals, [
+                [ "", events[0], 'sourceopen'],
+                [ "", events[1], 'removesourcebuffer by activeSourceBuffers'],
+                [ "", events[2], 'removesourcebuffer by sourceBuffers']
+            ]);
+        });
+        t.done();
+    });
+    video.src = window.URL.createObjectURL(mediaSource);
+}, "MediaSource#removeSouceBuffer : " + 
+     "10. If sourceBuffer is in activeSourceBuffers, then remove sourceBuffer from activeSourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by activeSourceBuffers." + 
+     "11. Remove sourceBuffer from sourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by sourceBuffers.");
+
+</script>
+</body>
+</html>

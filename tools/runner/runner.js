@@ -3,7 +3,7 @@
 "use strict";
 var runner;
 var testharness_properties = {output:false,
-                              timeout_multiplier:1}
+                              timeout_multiplier:1};
 
 function Manifest(path) {
     this.data = null;

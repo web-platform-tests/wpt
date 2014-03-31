@@ -105,8 +105,8 @@ for (var m = 0; m < containers.length; m++) {
 test(function () {
   var opt = document.forms[1].insertBefore(document.createElement("output"), document.forms[1].firstChild);
   assert_array_equals(document.forms[1].elements,
-                      [opt, document.getElementsByTagName("button")[0], document.getElementsByTagName("button")[1],
-                      document.getElementsByTagName("input")[1], document.getElementsByTagName("input")[2]]);
+                      [opt, document.getElementsByTagName("input")[1], document.getElementsByTagName("input")[2],
+                      document.getElementsByTagName("button")[0], document.getElementsByTagName("button")[1]]);
 }, "The controls in the form element must be sorted in tree order");
 
 </script>

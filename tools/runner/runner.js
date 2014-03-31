@@ -2,6 +2,8 @@
 (function() {
 "use strict";
 var runner;
+var testharness_properties = {output:false,
+                              timeout_multiplier:1};
 
 function Manifest(path) {
     this.data = null;
@@ -322,6 +324,8 @@ function TestControl(elem, runner) {
     this.start_button = this.elem.querySelector("button.toggleStart");
     this.type_checkboxes = Array.prototype.slice.call(
         this.elem.querySelectorAll("input[type=checkbox].test-type"));
+    this.timeout_input = this.elem.querySelector(".timeout_multiplier");
+    this.render_checkbox = this.elem.querySelector(".render");
     this.runner = runner;
     this.runner.done_callbacks.push(this.on_done.bind(this));
     this.set_start();
@@ -339,7 +343,8 @@ TestControl.prototype = {
         this.start_button.onclick = function() {
             var path = this.get_path();
             var test_types = this.get_test_types();
-            this.runner.start(path, test_types);
+            var settings = this.get_testharness_settings();
+            this.runner.start(path, test_types, settings);
             this.set_stop();
             this.set_pause();
         }.bind(this);
@@ -385,6 +390,11 @@ TestControl.prototype = {
         }).map(function(elem) {
             return elem.value;
         });
+    },
+
+    get_testharness_settings: function() {
+        return {timeout_multiplier: parseFloat(this.timeout_input.value),
+                output: this.render_checkbox.checked};
     },
 
     on_done: function() {
@@ -475,10 +485,11 @@ Runner.prototype = {
         }
     },
 
-    start: function(path, test_types) {
+    start: function(path, test_types, testharness_settings) {
         this.pause_flag = false;
         this.path = path;
         this.test_types = test_types;
+        window.testharness_properties = testharness_settings;
         this.manifest_iterator = new ManifestIterator(this.manifest, this.path, this.test_types);
         this.num_tests = null;
 
@@ -542,7 +553,7 @@ Runner.prototype = {
 
         if (next_test.type === "testharness") {
             this.timeout = setTimeout(this.on_timeout.bind(this),
-                                      this.test_timeout);
+                                      this.test_timeout * window.testharness_properties.timeout_multiplier);
         }
         this.load(this.current_test.url);
 
@@ -600,7 +611,9 @@ function setup() {
     new VisualOutput(document.getElementById("output"), runner);
 
     if (options.autorun === "1") {
-        runner.start(test_control.get_path(), test_control.get_test_types());
+        runner.start(test_control.get_path(),
+                     test_control.get_test_types(),
+                     test_control.get_testharness_settings());
         return;
     }
 }

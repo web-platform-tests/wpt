@@ -377,4 +377,13 @@ var metadata_generator = {
 }
 
 metadata_generator.setup();
+
+/* If the parent window has a testharness_properties object,
+ * we use this to provide the test settings. This is used by the
+ * default in-browser runner to configure the timeout and the
+ * rendering of results
+ */
+if (window.opener && "testharness_properties" in window.opener) {
+    setup(window.opener.testharness_properties);
+}
 // vim: set expandtab shiftwidth=4 tabstop=4:

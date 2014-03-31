@@ -125,6 +125,10 @@ body {
     color: #fff;
 }
 
+.form-group {
+    clear:both;
+}
+
 .horizontal-form .form-group {
     padding-bottom: 15px;
 }

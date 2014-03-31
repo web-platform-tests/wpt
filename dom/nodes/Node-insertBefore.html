@@ -16,7 +16,6 @@ function testLeafNode(nodeName, createNodeFunction) {
   }, "Calling insertBefore with a non-Node first argument on a leaf node " + nodeName + " must throw TypeError.")
   test(function() {
     var node = createNodeFunction();
-    
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(document.createTextNode("fail"), null) })
     // Would be step 2.
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(node, null) })

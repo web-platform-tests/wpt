@@ -14,12 +14,12 @@ Test from https://bugzilla.mozilla.org/show_bug.cgi?id=819051
 <script type="text/javascript">
 var test = async_test();
 
-var url = "resources/inspect-headers.py?filter_name=x-appended-to-this";
+var url = "resources/inspect-headers.py";
 
 var xhr = new XMLHttpRequest();
-xhr.open("GET", url);
+xhr.open("GET", url + "?filter_name=x-appended-to-this");
 xhr.setRequestHeader("X-appended-to-this", "False");
-xhr.open("GET", url);
+xhr.open("GET", url + "?filter_name=x-appended-to-this");
 xhr.setRequestHeader("X-appended-to-this", "True");
 
 xhr.onreadystatechange = function() {
@@ -36,9 +36,9 @@ xhr.send();
 function test_standard_header () {
     var header_tested = "Accept";
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
+    xhr.open("GET", url + "?filter_name=accept");
     xhr.setRequestHeader("Accept", "foo/bar");
-    xhr.open("GET", url);
+    xhr.open("GET", url + "?filter_name=accept");
     xhr.setRequestHeader("Accept", "bar/foo");
 
     xhr.onreadystatechange = function() {

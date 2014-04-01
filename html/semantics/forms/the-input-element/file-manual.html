@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>input type file</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#file-upload-state-(type=file)">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<p>Manual test: clicking on the input should open a prompt allowing you to select a file. Select a file within 10 seconds.</p>
+<input type=file id=file>
+<script>
+  var t1 = async_test("selecting files should fire the input event at the input element", 10000),
+      t2 = async_test("selecting files should fire the change event at the input element", 10000);
+
+  document.getElementById('file').oninput = t1.step_func_done(function(e) {
+    assert_true(e.bubbles, "input event bubbles");
+  })
+
+  document.getElementById('file').onchange = t2.step_func_done(function(e) {
+    assert_true(e.bubbles, "change event bubbles");
+  })
+</script>

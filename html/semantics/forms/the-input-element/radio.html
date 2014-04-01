@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>input type radio</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#radio-button-state-(type=radio)">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<input type=radio name=group1 id=radio1>
+<input type=radio name=group1 id=radio2>
+
+<input type=radio name=group2 id=radio3>
+<input type=radio name=GROUP2 id=radio4>
+
+<input type=radio id=radio5>
+<input type=radio id=radio6 disabled>
+
+<script>
+  var radio1 = document.getElementById('radio1'),
+      radio2 = document.getElementById('radio2'),
+      radio3 = document.getElementById('radio3'),
+      radio4 = document.getElementById('radio4'),
+      radio5 = document.getElementById('radio5'),
+      radio6 = document.getElementById('radio6'),
+      t1 = async_test("click on mutable radio fires the input event"),
+      t2 = async_test("click on mutable radio fires the change event"),
+      t3 = async_test("click on non-mutable radio doesn't fire the input event"),
+      t4 = async_test("click on non-mutable radio doesn't fire the change event");
+
+  test(function(){
+    assert_false(radio1.checked);
+    assert_false(radio2.checked);
+    radio1.checked = true;
+    assert_true(radio1.checked);
+    assert_false(radio2.checked);
+    radio2.checked = true;
+    assert_false(radio1.checked);
+    assert_true(radio2.checked);
+  }, "only one control of a radio button group can have its checkedness set to true");
+
+  test(function(){
+    assert_false(radio3.checked);
+    assert_false(radio4.checked);
+    radio3.checked = true;
+    assert_true(radio3.checked);
+    assert_false(radio4.checked);
+    radio4.checked = true;
+    assert_false(radio3.checked);
+    assert_true(radio4.checked);
+  }, "radio inputs names that are compatibility caseless matches belong to the same radio button group");
+
+  test(function(){
+    assert_false(radio1.checked);
+    assert_true(radio2.checked);
+    assert_false(radio3.checked);
+    assert_true(radio4.checked);
+    radio1.name="group2";
+    assert_false(radio1.checked);
+    assert_true(radio2.checked);
+    assert_false(radio3.checked);
+    assert_false(radio4.checked);
+  }, "changing the name of a radio input element makes all the other elements' checkedness in the same radio button group be set to false");
+
+  radio5.oninput= t1.step_func_done(function(e) {
+    assert_true(e.bubbles, "event should bubble")
+  });
+
+  radio5.onchange = t2.step_func_done(function(e) {
+    assert_true(e.bubbles, "event should bubble")
+  });
+
+  radio6.oninput= t3.step_func_done(function(e) {
+    assert_unreached("event input fired");
+  });
+
+  radio6.onchange = t4.step_func_done(function(e) {
+    assert_unreached("event change fired");
+  });
+
+  radio5.click();
+  radio6.click();
+
+  setTimeout(function() {
+    t3.done();
+    t4.done();
+  }, 1);
+</script>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>input type checkbox</title>
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/forms.html#checkbox-state-(type=checkbox)">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<input type=checkbox id=checkbox>
+<input type=checkbox id=checkbox2 disabled>
+<script>
+  var checkbox = document.getElementById('checkbox'),
+      checkbox2 = document.getElementById('checkbox2'),
+      t1 = async_test("click on mutable checkbox fires the input event"),
+      t2 = async_test("click on mutable checkbox fires the change event"),
+      t3 = async_test("click on non-mutable checkbox doesn't fire the input event"),
+      t4 = async_test("click on non-mutable checkbox doesn't fire the change event");
+
+  checkbox.oninput= t1.step_func_done(function(e) {
+    assert_true(e.bubbles, "event should bubble")
+  });
+
+  checkbox.onchange = t2.step_func_done(function(e) {
+    assert_true(e.bubbles, "event should bubble")
+  });
+
+  checkbox2.oninput= t3.step_func_done(function(e) {
+    assert_unreached("event input fired");
+  });
+
+  checkbox2.onchange = t4.step_func_done(function(e) {
+    assert_unreached("event change fired");
+  });
+
+  checkbox.click();
+  checkbox2.click();
+
+  setTimeout(function() {
+    t3.done();
+    t4.done();
+  }, 1);
+</script>

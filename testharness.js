@@ -1685,11 +1685,11 @@ policies and contribution forms [3].
         this.done_count++;
         if (this.output_node) {
             if (this.done_count < 100 ||
-               (this.done_count < 1000 && this.done_count % 100 === 0) ||
-               this.done_count % 1000 === 0) {
+                (this.done_count < 1000 && this.done_count % 100 === 0) ||
+                this.done_count % 1000 === 0) {
                 this.output_node.textContent = "Running, " +
-                      this.done_count + " complete, " +
-                      tests.num_pending + " remain";
+                    this.done_count + " complete, " +
+                    tests.num_pending + " remain";
             }
         }
     };
@@ -1855,21 +1855,21 @@ policies and contribution forms [3].
         log.appendChild(document.createElementNS(xhtml_ns, "section"));
         var assertions = has_assertions();
         var html = "<h2>Details</h2><table id='results' " + (assertions ? "class='assertions'" : "" ) + ">" +
-              "<thead><tr><th>Result</th><th>Test Name</th>" +
-              (assertions ? "<th>Assertion</th>" : "") +
-              "<th>Message</th></tr></thead>" +
-              "<tbody>";
+            "<thead><tr><th>Result</th><th>Test Name</th>" +
+            (assertions ? "<th>Assertion</th>" : "") +
+            "<th>Message</th></tr></thead>" +
+            "<tbody>";
         for (var i = 0; i < tests.length; i++) {
             html += '<tr class="' +
-                  escape_html(status_class(status_text[tests[i].status])) +
-                  '"><td>' +
-                  escape_html(status_text[tests[i].status]) +
-                  "</td><td>" +
-                  escape_html(tests[i].name) +
-                  "</td><td>" +
-                  (assertions ? escape_html(get_assertion(tests[i])) + "</td><td>" : "") +
-                  escape_html(tests[i].message ? tests[i].message : " ") +
-                  "</td></tr>";
+                escape_html(status_class(status_text[tests[i].status])) +
+                '"><td>' +
+                escape_html(status_text[tests[i].status]) +
+                "</td><td>" +
+                escape_html(tests[i].name) +
+                "</td><td>" +
+                (assertions ? escape_html(get_assertion(tests[i])) + "</td><td>" : "") +
+                escape_html(tests[i].message ? tests[i].message : " ") +
+                "</td></tr>";
         }
         html += "</tbody></table>";
         try {

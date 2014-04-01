@@ -182,8 +182,8 @@ var metadata_generator = {
         if (1 == count) {
             for (var property in objectValue) {
                 output += ' "' + property + '": ' +
-                          JSON.stringify(objectValue[property]) +
-                          ' ';
+                    JSON.stringify(objectValue[property]) +
+                    ' ';
             }
         }
         else {

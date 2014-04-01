@@ -1,3 +1,4 @@
+/*global self*/
 /*jshint latedef: nofunc*/
 /*
 Distributed under both the W3C Test Suite License [1] and the W3C
@@ -1465,7 +1466,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w) && w !== window.self) {
+                    if (supports_post_message(w) && w !== self) {
                         w.postMessage({
                             type: "start",
                             properties: this_obj.properties
@@ -1505,7 +1506,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w) && w !== window.self) {
+                    if (supports_post_message(w) && w !== self) {
                         w.postMessage({
                             type: "result",
                             test: test.structured_clone()
@@ -1567,7 +1568,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w) && w !== window.self) {
+                    if (supports_post_message(w) && w !== self) {
                         w.postMessage({
                             type: "complete",
                             tests: tests,
@@ -2155,8 +2156,8 @@ policies and contribution forms [3].
         // current window.
         var cache = forEach_windows.result_cache;
         if (!cache) {
-            cache = [[window.self, true]];
-            var w = window.self;
+            cache = [[self, true]];
+            var w = self;
             var i = 0;
             var so;
             var origins = location.ancestorOrigins;

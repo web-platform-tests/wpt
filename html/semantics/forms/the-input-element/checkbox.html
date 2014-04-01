@@ -20,7 +20,6 @@
       checkbox5 = document.getElementById('checkbox5'),
       checkbox6 = document.getElementById('checkbox6'),
       c1_input_fired = false, c1_change_fired = false,
-      c2_input_fired = false, c2_change_fired = false,
       t1 = async_test("click on mutable checkbox fires the input and change events"),
       t2 = async_test("click on non-mutable checkbox doesn't fire the input or change event"),
       t3 = async_test("pre-activation steps on unchecked checkbox"),
@@ -47,12 +46,10 @@
   });
 
   checkbox2.oninput= t2.step_func(function(e) {
-    c2_input_fired = true;
     assert_unreached("event input fired");
   });
 
   checkbox2.onchange = t2.step_func(function(e) {
-    c2_change_fired = true;
     assert_unreached("event change fired");
   });
 
@@ -65,8 +62,6 @@
 
   t2.step(function() {
     checkbox2.click();
-    assert_false(c2_input_fired);
-    assert_false(c2_change_fired);
     t2.done();
   });
 
@@ -98,7 +93,7 @@
     assert_false(checkbox5.indeterminate);
     checkbox5.click();
   });
- 
+
   checkbox6.onclick = t6.step_func(function(e) {
     checkbox6.indeterminate = true;
     e.preventDefault();

@@ -623,11 +623,11 @@ policies and contribution forms [3].
             if (is_node(val)) {
                 switch (val.nodeType) {
                 case Node.ELEMENT_NODE:
-                    var ret = "<" + val.tagName.toLowerCase();
+                    var ret = "<" + val.localName;
                     for (var i = 0; i < val.attributes.length; i++) {
                         ret += " " + val.attributes[i].name + '="' + val.attributes[i].value + '"';
                     }
-                    ret += ">" + val.innerHTML + "</" + val.tagName.toLowerCase() + ">";
+                    ret += ">" + val.innerHTML + "</" + val.localName + ">";
                     return "Element node " + truncate(ret, 60);
                 case Node.TEXT_NODE:
                     return 'Text node "' + truncate(val.data, 60) + '"';

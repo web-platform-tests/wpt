@@ -488,6 +488,9 @@ policies and contribution forms [3].
     }
 
     function done() {
+        if (tests.file_is_test) {
+            tests.tests[0].done();
+        }
         tests.end_wait();
     }
 
@@ -1090,6 +1093,9 @@ policies and contribution forms [3].
 
     function Test(name, properties)
     {
+        if (tests.file_is_test && tests.tests.length) {
+            throw new Error("Tried to create a test with file_is_test");
+        }
         this.name = name;
 
         this.phases = {
@@ -1333,6 +1339,8 @@ policies and contribution forms [3].
 
         this.allow_uncaught_exception = false;
 
+        this.file_is_test = false;
+
         this.timeout_multiplier = 1;
         this.timeout_length = this.get_timeout();
         this.timeout_id = null;
@@ -1370,10 +1378,22 @@ policies and contribution forms [3].
 
         this.properties = properties;
 
+        if ("file_is_test" in properties) {
+            if ("allow_uncaught_exception" in properties ||
+                "explict_done" in properties) {
+                throw new Error("Invalid properties set in combination with file_is_test");
+            }
+            properties.explicit_done = true;
+        }
+
         for (var p in properties) {
             if (properties.hasOwnProperty(p)) {
                 var value = properties[p];
-                if (p == "allow_uncaught_exception") {
+                if (p == "file_is_test") {
+                    //TODO: check there are no existing tests
+                    this.file_is_test = true;
+                    async_test();
+                } else if (p == "allow_uncaught_exception") {
                     this.allow_uncaught_exception = value;
                 } else if (p == "explicit_done" && value) {
                     this.wait_for_finish = true;
@@ -1592,12 +1612,24 @@ policies and contribution forms [3].
 
     var tests = new Tests();
 
-    window.onerror = function(msg) {
-        if (!tests.allow_uncaught_exception) {
+    addEventListener("error", function(e) {
+        //TODO: Remove duplication
+        if (tests.file_is_test) {
+            var test = tests.tests[0];
+            if (test.phase >= test.phases.HAS_RESULT) {
+                return;
+            }
+            //TODO: fix error message
+            var message = e.message;
+            test.set_status(test.FAIL, message);
+            test.phase = test.phases.HAS_RESULT;
+            test.done();
+            done();
+        } else if (!tests.allow_uncaught_exception) {
             tests.status.status = tests.status.ERROR;
             tests.status.message = msg;
         }
-    };
+    });
 
     function timeout() {
         if (tests.timeout_length === null) {

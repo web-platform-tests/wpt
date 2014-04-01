@@ -6,17 +6,26 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<p>Manual test: clicking on the input should open a prompt allowing you to select a file. Select a file within 10 seconds.</p>
+<p>Manual test: clicking on the input should open a prompt allowing you to select a file.</p>
 <input type=file id=file>
 <script>
-  var t1 = async_test("selecting files should fire the input event at the input element", 10000),
-      t2 = async_test("selecting files should fire the change event at the input element", 10000);
+  setup({explicit_timeout:true});
+
+  var input = document.getElementById('file'),
+      t1 = async_test("selecting files should fire the input event at the input element"),
+      t2 = async_test("selecting files should fire the change event at the input element");
 
   document.getElementById('file').oninput = t1.step_func_done(function(e) {
     assert_true(e.bubbles, "input event bubbles");
+    assert_true(e.isTrusted, "input event should be trusted");
+    assert_false(e.cancelable, "input event shoud not be cancelable");
   })
-
   document.getElementById('file').onchange = t2.step_func_done(function(e) {
     assert_true(e.bubbles, "change event bubbles");
+    assert_true(e.isTrusted, "change event should be trusted");
+    assert_false(e.cancelable, "change event shoud not be cancelable");
+    assert_true(input.files instanceof FileList);
+    var name = (input.files.length > 0) ? input.files[0].name : "";
+    assert_equals(input.value, "C:\\fakepath\\" + name);
   })
 </script>

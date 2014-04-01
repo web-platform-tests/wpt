@@ -25,7 +25,6 @@
     assert_true(e.isTrusted, "change event should be trusted");
     assert_false(e.cancelable, "change event shoud not be cancelable");
     assert_true(input.files instanceof FileList);
-    var name = (input.files.length > 0) ? input.files[0].name : "";
-    assert_equals(input.value, "C:\\fakepath\\" + name);
+    assert_equals(input.value, "C:\\fakepath\\" + input.files[0].name);
   })
 </script>

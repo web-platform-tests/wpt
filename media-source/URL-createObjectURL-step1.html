@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>insertAdjacentHTML</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div>
+    <video id='v' controls autoplay width='320' height='240'></video>
+</div>
+<div id="log"></div>
+
+<script>
+test(function() {
+    var url = window.URL.createObjectURL(null);
+    assert_equals(url, null);
+}, "URL.createObjectURL : 1. If mediaSource is NULL the return null.");
+</script>
+</body>
+</html>

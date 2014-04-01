@@ -1,3 +1,4 @@
+/*jshint latedef: nofunc*/
 /*
 Distributed under both the W3C Test Suite License [1] and the W3C
 3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
@@ -405,11 +406,12 @@ policies and contribution forms [3].
     {
         var scripts = document.getElementsByTagName("script");
         for (var i = 0; i < scripts.length; i++) {
+            var src;
             if (scripts[i].src) {
-                var src = scripts[i].src;
+                src = scripts[i].src;
             } else if (scripts[i].href) {
                 //SVG case
-                var src = scripts[i].href.baseVal;
+                src = scripts[i].href.baseVal;
             }
 
             if (src && src.slice(src.length - "testharness.js".length) === "testharness.js") {
@@ -527,10 +529,10 @@ policies and contribution forms [3].
         // instanceof doesn't work if the node is from another window (like an
         // iframe's contentWindow):
         // http://www.w3.org/Bugs/Public/show_bug.cgi?id=12295
-        if ("nodeType" in object
-        && "nodeName" in object
-        && "nodeValue" in object
-        && "childNodes" in object) {
+        if ("nodeType" in object &&
+            "nodeName" in object &&
+            "nodeValue" in object &&
+            "childNodes" in object) {
             try {
                 object.nodeType;
             } catch (e) {
@@ -558,7 +560,7 @@ policies and contribution forms [3].
             seen.push(val);
         }
         if (Array.isArray(val)) {
-            return "[" + val.map(function(x) {return format_value(x, seen)}).join(", ") + "]";
+            return "[" + val.map(function(x) {return format_value(x, seen);}).join(", ") + "]";
         }
 
         switch (typeof val) {
@@ -646,7 +648,7 @@ policies and contribution forms [3].
                 }
             }
 
-            // Fall through to default
+        /* falls through */
         default:
             return typeof val + ' "' + truncate(String(val), 60) + '"';
         }
@@ -661,14 +663,14 @@ policies and contribution forms [3].
     {
         assert(actual === true, "assert_true", description,
                                 "expected true got ${actual}", {actual:actual});
-    };
+    }
     expose(assert_true, "assert_true");
 
     function assert_false(actual, description)
     {
         assert(actual === false, "assert_false", description,
                                  "expected false got ${actual}", {actual:actual});
-    };
+    }
     expose(assert_false, "assert_false");
 
     function same_value(x, y) {
@@ -698,7 +700,7 @@ policies and contribution forms [3].
         assert(same_value(actual, expected), "assert_equals", description,
                                              "expected ${expected} but got ${actual}",
                                              {expected:expected, actual:actual});
-    };
+    }
     expose(assert_equals, "assert_equals");
 
     function assert_not_equals(actual, expected, description)
@@ -710,7 +712,7 @@ policies and contribution forms [3].
         assert(!same_value(actual, expected), "assert_not_equals", description,
                                               "got disallowed value ${actual}",
                                               {actual:actual});
-    };
+    }
     expose(assert_not_equals, "assert_not_equals");
 
     function assert_in_array(actual, expected, description)
@@ -751,7 +753,7 @@ policies and contribution forms [3].
              stack.pop();
          }
          check_equal(actual, expected, []);
-    };
+    }
     expose(assert_object_equals, "assert_object_equals");
 
     function assert_array_equals(actual, expected, description)
@@ -789,7 +791,7 @@ policies and contribution forms [3].
                "assert_approx_equals", description,
                "expected ${expected} +/- ${epsilon} but got ${actual}",
                {expected:expected, actual:actual, epsilon:epsilon});
-    };
+    }
     expose(assert_approx_equals, "assert_approx_equals");
 
     function assert_less_than(actual, expected, description)
@@ -806,7 +808,7 @@ policies and contribution forms [3].
                "assert_less_than", description,
                "expected a number less than ${expected} but got ${actual}",
                {expected:expected, actual:actual});
-    };
+    }
     expose(assert_less_than, "assert_less_than");
 
     function assert_greater_than(actual, expected, description)
@@ -823,7 +825,7 @@ policies and contribution forms [3].
                "assert_greater_than", description,
                "expected a number greater than ${expected} but got ${actual}",
                {expected:expected, actual:actual});
-    };
+    }
     expose(assert_greater_than, "assert_greater_than");
 
     function assert_less_than_equal(actual, expected, description)
@@ -840,7 +842,7 @@ policies and contribution forms [3].
                "assert_less_than", description,
                "expected a number less than or equal to ${expected} but got ${actual}",
                {expected:expected, actual:actual});
-    };
+    }
     expose(assert_less_than_equal, "assert_less_than_equal");
 
     function assert_greater_than_equal(actual, expected, description)
@@ -857,7 +859,7 @@ policies and contribution forms [3].
                "assert_greater_than_equal", description,
                "expected a number greater than or equal to ${expected} but got ${actual}",
                {expected:expected, actual:actual});
-    };
+    }
     expose(assert_greater_than_equal, "assert_greater_than_equal");
 
     function assert_regexp_match(actual, expected, description) {
@@ -894,7 +896,7 @@ policies and contribution forms [3].
         assert(!object.hasOwnProperty(property_name),
                "assert_not_exists", description,
                "unexpected property ${p} found", {p:property_name});
-    };
+    }
     expose(assert_not_exists, "assert_not_exists");
 
     function _assert_inherits(name) {
@@ -936,7 +938,7 @@ policies and contribution forms [3].
          } finally {
              object[property_name] = initial_value;
          }
-    };
+    }
     expose(assert_readonly, "assert_readonly");
 
     function assert_throws(code, func, description)
@@ -1025,8 +1027,8 @@ policies and contribution forms [3].
 
             var required_props = { code: name_code_map[name] };
 
-            if (required_props.code === 0
-            || ("name" in e && e.name !== e.name.toUpperCase() && e.name !== "DOMException")) {
+            if (required_props.code === 0 ||
+               ("name" in e && e.name !== e.name.toUpperCase() && e.name !== "DOMException")) {
                 // New style exception: also test the name property.
                 required_props.name = name;
             }
@@ -1059,14 +1061,14 @@ policies and contribution forms [3].
 
     function assert_any(assert_func, actual, expected_array)
     {
-        var args = [].slice.call(arguments, 3)
-        var errors = []
+        var args = [].slice.call(arguments, 3);
+        var errors = [];
         var passed = false;
         forEach(expected_array,
                 function(expected)
                 {
                     try {
-                        assert_func.apply(this, [actual, expected].concat(args))
+                        assert_func.apply(this, [actual, expected].concat(args));
                         passed = true;
                     } catch (e) {
                         errors.push(e.message);
@@ -1094,7 +1096,7 @@ policies and contribution forms [3].
         this.timeout_id = null;
 
         this.properties = properties;
-        var timeout = properties.timeout ? properties.timeout : settings.test_timeout
+        var timeout = properties.timeout ? properties.timeout : settings.test_timeout;
         if (timeout != null) {
             this.timeout_length = timeout * tests.timeout_multiplier;
         } else {
@@ -1103,7 +1105,6 @@ policies and contribution forms [3].
 
         this.message = null;
 
-        var this_obj = this;
         this.steps = [];
 
         this.cleanup_callbacks = [];
@@ -1206,11 +1207,11 @@ policies and contribution forms [3].
             }
             test_this.done();
         };
-    }
+    };
 
     Test.prototype.add_cleanup = function(callback) {
         this.cleanup_callbacks.push(callback);
-    }
+    };
 
     Test.prototype.set_timeout = function()
     {
@@ -1221,18 +1222,18 @@ policies and contribution forms [3].
                                              this_obj.timeout();
                                          }, this.timeout_length);
         }
-    }
+    };
 
     Test.prototype.set_status = function(status, message)
     {
         this.status = status;
         this.message = message;
-    }
+    };
 
     Test.prototype.timeout = function()
     {
         this.timeout_id = null;
-        this.set_status(this.TIMEOUT, "Test timed out")
+        this.set_status(this.TIMEOUT, "Test timed out");
         this.phase = this.phases.HAS_RESULT;
         this.done();
     };
@@ -1261,9 +1262,9 @@ policies and contribution forms [3].
     Test.prototype.cleanup = function() {
         forEach(this.cleanup_callbacks,
                 function(cleanup_callback) {
-                    cleanup_callback()
+                    cleanup_callback();
                 });
-    }
+    };
 
     /*
      * Harness
@@ -1358,7 +1359,7 @@ policies and contribution forms [3].
 
         for (var p in properties) {
             if (properties.hasOwnProperty(p)) {
-                var value = properties[p]
+                var value = properties[p];
                 if (p == "allow_uncaught_exception") {
                     this.allow_uncaught_exception = value;
                 } else if (p == "explicit_done" && value) {
@@ -1381,7 +1382,7 @@ policies and contribution forms [3].
             } catch (e) {
                 this.status.status = this.status.ERROR;
                 this.status.message = String(e);
-            };
+            }
         }
         this.set_timeout();
     };
@@ -1398,7 +1399,7 @@ policies and contribution forms [3].
             }
         }
         return settings.harness_timeout.normal;
-    }
+    };
 
     Tests.prototype.set_timeout = function()
     {
@@ -1464,7 +1465,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w) && w !== self) {
+                    if (supports_post_message(w) && w !== window.self) {
                         w.postMessage({
                             type: "start",
                             properties: this_obj.properties
@@ -1504,7 +1505,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w) && w !== self) {
+                    if (supports_post_message(w) && w !== window.self) {
                         w.postMessage({
                             type: "result",
                             test: test.structured_clone()
@@ -1566,7 +1567,7 @@ policies and contribution forms [3].
                             }
                         }
                     }
-                    if (supports_post_message(w) && w !== self) {
+                    if (supports_post_message(w) && w !== window.self) {
                         w.postMessage({
                             type: "complete",
                             tests: tests,
@@ -1583,7 +1584,7 @@ policies and contribution forms [3].
             tests.status.status = tests.status.ERROR;
             tests.status.message = msg;
         }
-    }
+    };
 
     function timeout() {
         if (tests.timeout_length === null) {
@@ -1669,7 +1670,7 @@ policies and contribution forms [3].
         }
     };
 
-    Output.prototype.show_status = function(test)
+    Output.prototype.show_status = function()
     {
         if (this.phase < this.STARTED) {
             this.init();
@@ -1683,12 +1684,12 @@ policies and contribution forms [3].
         }
         this.done_count++;
         if (this.output_node) {
-            if (this.done_count < 100
-            || (this.done_count < 1000 && this.done_count % 100 == 0)
-            || this.done_count % 1000 == 0) {
-                this.output_node.textContent = "Running, "
-                    + this.done_count + " complete, "
-                    + tests.num_pending + " remain";
+            if (this.done_count < 100 ||
+               (this.done_count < 1000 && this.done_count % 100 === 0) ||
+               this.done_count % 1000 === 0) {
+                this.output_node.textContent = "Running, " +
+                      this.done_count + " complete, " +
+                      tests.num_pending + " remain";
             }
         }
     };
@@ -1755,7 +1756,7 @@ policies and contribution forms [3].
 
         var summary_template = ["section", {"id":"summary"},
                                 ["h2", {}, "Summary"],
-                                function(vars)
+                                function()
                                 {
                                     if (harness_status.status === harness_status.OK) {
                                         return null;
@@ -1776,7 +1777,7 @@ policies and contribution forms [3].
                                     return rv;
                                 },
                                 ["p", {}, "Found ${num_tests} tests"],
-                                function(vars) {
+                                function() {
                                     var rv = [["div", {}]];
                                     var i = 0;
                                     while (status_text.hasOwnProperty(i)) {
@@ -1853,22 +1854,22 @@ policies and contribution forms [3].
 
         log.appendChild(document.createElementNS(xhtml_ns, "section"));
         var assertions = has_assertions();
-        var html = "<h2>Details</h2><table id='results' " + (assertions ? "class='assertions'" : "" ) + ">"
-            + "<thead><tr><th>Result</th><th>Test Name</th>"
-            + (assertions ? "<th>Assertion</th>" : "")
-            + "<th>Message</th></tr></thead>"
-            + "<tbody>";
+        var html = "<h2>Details</h2><table id='results' " + (assertions ? "class='assertions'" : "" ) + ">" +
+              "<thead><tr><th>Result</th><th>Test Name</th>" +
+              (assertions ? "<th>Assertion</th>" : "") +
+              "<th>Message</th></tr></thead>" +
+              "<tbody>";
         for (var i = 0; i < tests.length; i++) {
-            html += '<tr class="'
-                + escape_html(status_class(status_text[tests[i].status]))
-                + '"><td>'
-                + escape_html(status_text[tests[i].status])
-                + "</td><td>"
-                + escape_html(tests[i].name)
-                + "</td><td>"
-                + (assertions ? escape_html(get_assertion(tests[i])) + "</td><td>" : "")
-                + escape_html(tests[i].message ? tests[i].message : " ")
-                + "</td></tr>";
+            html += '<tr class="' +
+                  escape_html(status_class(status_text[tests[i].status])) +
+                  '"><td>' +
+                  escape_html(status_text[tests[i].status]) +
+                  "</td><td>" +
+                  escape_html(tests[i].name) +
+                  "</td><td>" +
+                  (assertions ? escape_html(get_assertion(tests[i])) + "</td><td>" : "") +
+                  escape_html(tests[i].message ? tests[i].message : " ") +
+                  "</td></tr>";
         }
         html += "</tbody></table>";
         try {
@@ -1883,7 +1884,7 @@ policies and contribution forms [3].
 
     var output = new Output();
     add_start_callback(function (properties) {output.init(properties);});
-    add_result_callback(function (test) {output.show_status(tests);});
+    add_result_callback(function () {output.show_status();});
     add_completion_callback(function (tests, harness_status) {output.show_results(tests, harness_status);});
 
     /*
@@ -1946,7 +1947,7 @@ policies and contribution forms [3].
 
     function substitute_single(template, substitutions)
     {
-        var substitution_re = /\${([^ }]*)}/g;
+        var substitution_re = /\$\{([^ }]*)\}/g;
 
         function do_substitution(input) {
             var components = input.split(substitution_re);
@@ -1960,16 +1961,6 @@ policies and contribution forms [3].
             return rv;
         }
 
-        var rv = [];
-        rv.push(do_substitution(String(template[0])).join(""));
-
-        if (template[0] === "{text}") {
-            substitute_children(template.slice(1), rv);
-        } else {
-            substitute_attrs(template[1], rv);
-            substitute_children(template.slice(2), rv);
-        }
-
         function substitute_attrs(attrs, rv)
         {
             rv[1] = {};
@@ -1978,7 +1969,7 @@ policies and contribution forms [3].
                     var new_name = do_substitution(name).join("");
                     var new_value = do_substitution(attrs[name]).join("");
                     rv[1][new_name] = new_value;
-                };
+                }
             }
         }
 
@@ -2001,19 +1992,30 @@ policies and contribution forms [3].
             return rv;
         }
 
+        var rv = [];
+        rv.push(do_substitution(String(template[0])).join(""));
+
+        if (template[0] === "{text}") {
+            substitute_children(template.slice(1), rv);
+        } else {
+            substitute_attrs(template[1], rv);
+            substitute_children(template.slice(2), rv);
+        }
+
         return rv;
     }
 
     function make_dom_single(template, doc)
     {
         var output_document = doc || document;
+        var element;
         if (template[0] === "{text}") {
-            var element = output_document.createTextNode("");
+            element = output_document.createTextNode("");
             for (var i = 1; i < template.length; i++) {
                 element.data += template[i];
             }
         } else {
-            var element = output_document.createElementNS(xhtml_ns, template[0]);
+            element = output_document.createElementNS(xhtml_ns, template[0]);
             for (var name in template[1]) {
                 if (template[1].hasOwnProperty(name)) {
                     element.setAttribute(name, template[1][name]);
@@ -2153,8 +2155,8 @@ policies and contribution forms [3].
         // current window.
         var cache = forEach_windows.result_cache;
         if (!cache) {
-            cache = [[self, true]];
-            var w = self;
+            cache = [[window.self, true]];
+            var w = window.self;
             var i = 0;
             var so;
             var origins = location.ancestorOrigins;

@@ -1,3 +1,4 @@
+/*global add_completion_callback, setup */
 /*
  * This file is intended for vendors to implement
  * code needed to integrate testharness.js tests with their own test systems.
@@ -55,7 +56,7 @@ var metadata_generator = {
             value = values[index];
             var re = /(\S+)(\s*)<(.*)>(.*)/;
             if (! re.test(value)) {
-                re = /(\S+)(\s+)(http[s]?:\/\/)(.*)/
+                re = /(\S+)(\s+)(http[s]?:\/\/)(.*)/;
                 if (! re.test(value)) {
                     this.error('Metadata property "' + propertyName +
                         '" for test: "' + test.name +
@@ -168,6 +169,7 @@ var metadata_generator = {
 
     jsonifyObject: function(objectValue, indent) {
         var output = '{';
+        var value;
 
         var count = 0;
         for (var property in objectValue) {
@@ -179,9 +181,9 @@ var metadata_generator = {
         }
         if (1 == count) {
             for (var property in objectValue) {
-                output += ' "' + property + '": '
-                          + JSON.stringify(objectValue[property])
-                          + ' ';
+                output += ' "' + property + '": ' +
+                          JSON.stringify(objectValue[property]) +
+                          ' ';
             }
         }
         else {
@@ -192,7 +194,7 @@ var metadata_generator = {
                 }
                 first = false;
                 output += '\n  ' + indent + '"' + property + '": ';
-                var value = objectValue[property];
+                value = objectValue[property];
                 if (Array.isArray(value)) {
                     output += this.jsonifyArray(value, indent +
                         '                '.substr(0, 5 + property.length));
@@ -288,7 +290,7 @@ var metadata_generator = {
      * if present.
      * If cache not present or differs from extrated metadata, generate an error
      */
-    process: function(tests, harness_status) {
+    process: function(tests) {
         for (var index = 0; index < tests.length; index++) {
             var test = tests[index];
             if (this.currentMetadata.hasOwnProperty(test.name)) {
@@ -305,24 +307,23 @@ var metadata_generator = {
         var messageClass = 'warning';
         var showSource = false;
 
-        if (0 == tests.length) {
+        if (0 === tests.length) {
             if (this.cachedMetadata) {
                 message = 'Cached metadata present but no tests. ';
             }
         }
-        else if (1 == tests.length) {
+        else if (1 === tests.length) {
             if (this.cachedMetadata) {
                 message = 'Single test files should not have cached metadata. ';
             }
             else {
                 var testMetadata = this.currentMetadata[tests[0].name];
-                var hasMetadata = false;
                 for (var meta in testMetadata) {
-                    hasMetadata |= testMetadata.hasOwnProperty(meta);
-                }
-                if (hasMetadata) {
-                    message = 'Single tests should not have metadata. ' +
-                              'Move metadata to <head>. ';
+                    if (testMetadata.hasOwnProperty(meta)) {
+                        message = 'Single tests should not have metadata. ' +
+                                  'Move metadata to <head>. ';
+                        break;
+                    }
                 }
             }
         }
@@ -371,10 +372,10 @@ var metadata_generator = {
     setup: function() {
         add_completion_callback(
             function (tests, harness_status) {
-                metadata_generator.process(tests, harness_status)
+                metadata_generator.process(tests, harness_status);
             });
     }
-}
+};
 
 metadata_generator.setup();
 

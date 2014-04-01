@@ -13,14 +13,13 @@
 <div id='log'></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../../featuredetection.js></script>
-<script src=prefix.js></script>
+<script src="/common/vendor-prefix.js" data-prefixed-objects='[{"ancestors":["navigator"], "name":"getUserMedia"}]'></script>
 <script>
 var t = async_test("Tests that getUserMedia raises a NOT_SUPPORTED_ERR exception when used with an empty options parameter");
 t.step( function () {
   // TODO This is no longer what's in the spec, see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22211
-  assert_throws("NOT_SUPPORTED_ERR", 
-    function () { 
+  assert_throws("NOT_SUPPORTED_ERR",
+    function () {
       navigator.getUserMedia({}, t.step_func(function (stream) {
         assert_unreached("This should never be triggered since the constraints parameter is empty");
         t.done();

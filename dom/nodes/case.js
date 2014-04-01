@@ -18,8 +18,11 @@ setup(function() {
                               tests.push(["createElement " + x, test_create_element, [x]]);
                               tests.push(["setAttribute " +x, test_set_attribute, [x]]);
                               tests.push(["getAttribute " +x, test_get_attribute, [x]]);
-                              tests.push(["getElementsByTagName " +x, test_get_elements_tag_name,
+                              tests.push(["getElementsByTagName a:" +x, test_get_elements_tag_name,
                                           [outer_product(namespaces, ["a"], name_inputs),
+                                           x]]);
+                              tests.push(["getElementsByTagName " +x, test_get_elements_tag_name,
+                                          [outer_product(namespaces, [null], name_inputs),
                                            x]]);
                             });
         outer_product(namespaces, name_inputs, name_inputs).forEach(function(x) {
@@ -130,16 +133,14 @@ function test_get_elements_tag_name(elements_to_create, search_string) {
   var expected = Array.prototype.filter.call(container.childNodes,
                                             function(node) {
                                               if (is_html && node.namespaceURI === "http://www.w3.org/1999/xhtml") {
-                                                return expected_case(node.localName) === expected_case(search_string);
-                                              } else {
                                                 return node.localName === expected_case(search_string);
+                                              } else {
+                                                return node.localName === search_string;
                                               }
                                             });
   document.documentElement.appendChild(container);
   try {
     assert_array_equals(document.getElementsByTagName(search_string), expected);
-  } catch(e) {
-    throw e;
   } finally {
     document.documentElement.removeChild(container);
   }

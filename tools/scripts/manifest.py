@@ -354,7 +354,7 @@ def has_local_changes():
 
 def get_local_changes():
     #This doesn't account for whole directories that have been added
-    data  = git("status", "--porcelain", "--ignore-submodules=untracked")
+    data  = git("status", "--porcelain", "--ignore-submodules=all")
     rv = LocalChanges()
     for line in data.split("\n"):
         line = line.strip()

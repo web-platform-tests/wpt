@@ -146,61 +146,50 @@ testInIFrame('../../resources/blank.html', function(doc) {
 var moveTest =  async_test('Test attached callback if moving custom element from ' +
     'document with browsing context to document with browsing context');
 
-moveTest.attachedCallback1 = function() {
-    moveTest.callbackCalledCounter1++;
-};
+moveTest.step(function(){
+    var iframe1 = newIFrame('../../resources/blank.html');
+    iframe1.onload = moveTest.step_func(function(){
+        var doc1 = iframe1.contentDocument;
 
-moveTest.attachedCallback2 = function() {
-    moveTest.callbackCalledCounter2++;
-};
+        // register custom element type
+        var callbackCalledCounter1 = 0;
+        var proto1 = Object.create(HTMLElement.prototype);
+        proto1.attachedCallback = function(){
+            callbackCalledCounter1++;
+        };
+        doc1.registerElement('x-f', {prototype: proto1});
 
-moveTest.registerCustomElement = function(doc, callback) {
-    var proto = Object.create(HTMLElement.prototype);
-    proto.attachedCallback = callback;
-    doc.registerElement('x-f', {prototype: proto});
-};
+        // create custom element
+        var customElement = doc1.createElement('x-f');
+        doc1.body.appendChild(customElement);
+        assert_equals(callbackCalledCounter1, 1,
+            'Callback attached should be called in documents with browsing context');
 
-moveTest.createCustomElement = function(doc) {
-    moveTest.customElement = doc.createElement('x-f');
-    doc.body.appendChild(moveTest.customElement);
-    assert_equals(moveTest.callbackCalledCounter1, 1,
-        'Callback attached should be called in documents with browsing context');
-    assert_equals(moveTest.callbackCalledCounter2, 0,
-        'Unexpected initial value of moveTest.callbackCalledCounter2');
-    // set test's next step
-    moveTest.testFunction = moveTest.moveCustomElement;
-};
+        // create second iframe
+        var iframe2 = newIFrame('../../resources/x-element.html');
+        iframe2.onload = moveTest.step_func(function(){
+            var doc2 = iframe2.contentDocument;
 
-moveTest.moveCustomElement = function(doc) {
-    doc.body.appendChild(moveTest.customElement);
-    assert_equals(moveTest.callbackCalledCounter1, 2,
-        'Callback attached should be called in documents with browsing context');
-    assert_equals(moveTest.callbackCalledCounter2, 0,
-        'Callback attached, defined in receiving document, should not be called');
-    // test clean up
-    moveTest.done();
-    moveTest.iframe1.parentNode.removeChild(moveTest.iframe1);
-    moveTest.iframe2.parentNode.removeChild(moveTest.iframe2);
-};
+            // register custom element type
+            var callbackCalledCounter2 = 0;
+            var proto2 = Object.create(HTMLElement.prototype);
+            proto2.attachedCallback = function(){
+                callbackCalledCounter2++;
+            };
+            doc2.registerElement('x-f', {prototype: proto2});
 
-moveTest.step(function() {
-    moveTest.callbackCalledCounter1 = 0;
-    moveTest.callbackCalledCounter2 = 0;
+            // move element
+            doc2.body.appendChild(customElement);
+            assert_equals(callbackCalledCounter1, 2,
+                'Callback attached should be called in documents with browsing context');
+            assert_equals(callbackCalledCounter2, 0,
+                'Callback attached, defined in receiving document, should not be called');
 
-    moveTest.callback = moveTest.attachedCallback1;
-    moveTest.testFunction = moveTest.createCustomElement;
-
-    moveTest.iframe1 = newIFrame('../../resources/blank.html');
-    moveTest.iframe1.onload = moveTest.step_func(function() {
-        moveTest.registerCustomElement(moveTest.iframe1.contentDocument, moveTest.callback);
-        moveTest.callback = moveTest.attachedCallback2;
-        moveTest.testFunction(moveTest.iframe1.contentDocument);
-    });
-    moveTest.iframe2 = newIFrame('../../resources/x-element.html');
-    moveTest.iframe2.onload = moveTest.step_func(function() {
-        moveTest.registerCustomElement(moveTest.iframe2.contentDocument, moveTest.callback);
-        moveTest.callback = moveTest.attachedCallback2;
-        moveTest.testFunction(moveTest.iframe2.contentDocument);
+            // test clean up
+            iframe1.parentNode.removeChild(iframe1);
+            iframe2.parentNode.removeChild(iframe2);
+            moveTest.done();
+        });
     });
 });
 </script>

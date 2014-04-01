@@ -23,7 +23,7 @@ t.step(function () {
     assert_equals(vidTrack.readyState, "live", "The video track object is in live state");
     var audTrack = stream.getAudioTracks()[0];
     assert_equals(audTrack.readyState, "live", "The audio track object is in live state");
-    vidTrack.onended = t.step_func(function () { 
+    vidTrack.onended = t.step_func(function () {
         assert_equals(vidTrack.readyState, "ended", "Video track has been ended as expected");
         assert_equals(audTrack.readyState, "ended", "Audio track has been ended as expected");
         assert_true(stream.ended, "MediaStream has been ended as expected");

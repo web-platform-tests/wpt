@@ -17,8 +17,8 @@
 <script>
 test(function () {
     // TODO This is no longer what's in the spec, see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22211
-  assert_throws("NOT_SUPPORTED_ERR", 
-    function () { 
+  assert_throws("NOT_SUPPORTED_ERR",
+    function () {
       navigator.getUserMedia({doesnotexist:true}, t.step_func(function (stream) {assert_unreached("This should never be triggered since the constraints parameter is unrecognized");}), t.step_func(function (error) {assert_unreached("This should never be triggered since the constraints parameter is unrecognized");});
     }
   )

@@ -21,7 +21,7 @@
 var vid = document.getElementById("vid");
 var t = async_test("Tests that a MediaStream can be assigned to a video element with srcObject", {timeout: 10000});
 t.step(function() {
-  navigator.getUserMedia({video: true}, t.step_func(function (stream) {    
+  navigator.getUserMedia({video: true}, t.step_func(function (stream) {
     var testOncePlaying = function() {
        assert_equals(vid.played.length, 1, "A MediaStream's timeline always consists of a single range");
        assert_equals(vid.played.start(0), 0, "A MediaStream's timeline always consists of a single range");
@@ -32,10 +32,10 @@ t.step(function() {
           vid.currentTime = 0;
        });
        assert_equals(vid.currentTime, time, "The UA MUST ignore attempts to set the currentTime attribute");
-       // TODO add test that duration must be set to currentTime 
+       // TODO add test that duration must be set to currentTime
        // when mediastream is destroyed
        vid.removeEventListener("timeupdate", testOncePlaying, false);
-       t.done();       
+       t.done();
     }
     vid.addEventListener("timeupdate", t.step_func(testOncePlaying), false);
     vid.srcObject = stream;

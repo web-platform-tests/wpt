@@ -25,9 +25,9 @@ t.step(function() {
     var streamSource = ctx.createMediaStreamSource(stream);
     var silenceDetector = ctx.createScriptProcessor(1024);
     var count = 10;
-    silenceDetector.onaudioprocess = t.step_func(function (e) { 
-       var buffer1 = e.inputBuffer.getChannelData(0);   
-       var buffer2 = e.inputBuffer.getChannelData(1);  
+    silenceDetector.onaudioprocess = t.step_func(function (e) {
+       var buffer1 = e.inputBuffer.getChannelData(0);
+       var buffer2 = e.inputBuffer.getChannelData(1);
        var out = e.outputBuffer.getChannelData(0);
        out = new Float32Array(buffer1);
        for (var i = 0; i < buffer1.length; i++) {

@@ -25,7 +25,7 @@ t.step(function() {
   }),
   t.step_func(function (error) {
     assert_equals(error.name, "PermissionDenied", "Permission denied error returned"); // see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22216
-    assert_equals(error.constraintName, null, "constraintName attribute not set for permission denied");    
+    assert_equals(error.constraintName, null, "constraintName attribute not set for permission denied");
     t.done();
   }));
 });

@@ -21,7 +21,7 @@ var t = async_test("Tests that a removal from a MediaStream works as expected", 
 t.step(function () {
   var audio;
   navigator.getUserMedia({audio:true}, gotAudio, function() {});
-  function gotAudio(stream) { 
+  function gotAudio(stream) {
      audio = stream;
      navigator.getUserMedia({video:true}, gotVideo, function() {});
   }

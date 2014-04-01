@@ -36,7 +36,7 @@ t.step(function() {
     assert_equals(stream4.getTrackById(audioTrack1.id), audioTrack1, "a non-ended track gets added via the MediaStream constructor");
 
     var audioTrack2 = audioTrack1.clone();
-    audioTrack2.addEventListener("ended", t.step_func(function () {      
+    audioTrack2.addEventListener("ended", t.step_func(function () {
       var stream3 = new MediaStream([audioTrack2, videoTrack]);
       assert_equals(stream3.getTrackById(audioTrack2.id), null, "an ended track doesn't get added via the MediaStream constructor");
       assert_equals(stream3.getTrackById(videoTrack.id), videoTrack, "a non-ended track gets added via the MediaStream constructor even if the previous track was ended");

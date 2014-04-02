@@ -238,17 +238,24 @@ class Request(object):
 
         scheme = request_handler.server.scheme
         host = request_handler.headers.get("Host")
+        port = request_handler.server.server_address[1]
+        
         if host is None:
-            host = "%s:%s" % (request_handler.server.server_address[0],
-                              request_handler.server.server_address[1])
-
+            host = request_handler.server.server_address[0]
+        else:
+            if ":" in host:
+                host_header = host.split(":") 
+                host = host_header[0]
+                port = host_header[1]
+        
         self.request_path = request_handler.path
 
         if self.request_path.startswith(scheme + "://"):
             self.url = request_handler.path
         else:
-            self.url = "%s://%s%s" % (scheme,
+            self.url = "%s://%s:%s%s" % (scheme,
                                       host,
+                                      port,
                                       self.request_path)
         self.url_parts = urlparse.urlsplit(self.url)
 

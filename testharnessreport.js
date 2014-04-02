@@ -387,6 +387,6 @@ try {
     if (window.opener && "testharness_properties" in window.opener) {
         setup(window.opener.testharness_properties);
     }
+} catch (e) {
 }
-catch (e) {}
 // vim: set expandtab shiftwidth=4 tabstop=4:

@@ -488,6 +488,9 @@ policies and contribution forms [3].
     }
 
     function done() {
+        if (tests.tests.length === 0) {
+            tests.set_file_is_test();
+        }
         if (tests.file_is_test) {
             tests.tests[0].done();
         }
@@ -1378,22 +1381,10 @@ policies and contribution forms [3].
 
         this.properties = properties;
 
-        if ("file_is_test" in properties) {
-            if ("allow_uncaught_exception" in properties ||
-                "explict_done" in properties) {
-                throw new Error("Invalid properties set in combination with file_is_test");
-            }
-            properties.explicit_done = true;
-        }
-
         for (var p in properties) {
             if (properties.hasOwnProperty(p)) {
-                var value = properties[p];
-                if (p == "file_is_test") {
-                    //TODO: check there are no existing tests
-                    this.file_is_test = true;
-                    async_test();
-                } else if (p == "allow_uncaught_exception") {
+                var value = properties[p]
+                if (p == "allow_uncaught_exception") {
                     this.allow_uncaught_exception = value;
                 } else if (p == "explicit_done" && value) {
                     this.wait_for_finish = true;
@@ -1420,8 +1411,17 @@ policies and contribution forms [3].
         this.set_timeout();
     };
 
-    Tests.prototype.get_timeout = function()
-    {
+    Tests.prototype.set_file_is_test = function() {
+        if (this.tests.length > 0) {
+            throw new Error("Tried to set file as test after creating a test");
+        }
+        this.wait_for_finish = true;
+        this.file_is_test = true;
+        // Create the test, which will add it to the list of tests
+        async_test();
+    }
+
+    Tests.prototype.get_timeout = function() {
         var metas = document.getElementsByTagName("meta");
         for (var i = 0; i < metas.length; i++) {
             if (metas[i].name == "timeout") {
@@ -1434,8 +1434,7 @@ policies and contribution forms [3].
         return settings.harness_timeout.normal;
     };
 
-    Tests.prototype.set_timeout = function()
-    {
+    Tests.prototype.set_timeout = function() {
         var this_obj = this;
         clearTimeout(this.timeout_id);
         if (this.timeout_length !== null) {
@@ -1470,7 +1469,7 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.all_done = function() {
-        return (this.all_loaded && this.num_pending === 0 &&
+        return (this.tests.length > 0 && this.all_loaded && this.num_pending === 0 &&
                 !this.wait_for_finish && !this.processing_callbacks);
     };
 
@@ -1709,10 +1708,12 @@ policies and contribution forms [3].
             return;
         }
         var node = output_document.getElementById("log");
-        if (node) {
-            this.output_document = output_document;
-            this.output_node = node;
+        if (!node) {
+            node = output_document.createElement("div");
+            output_document.body.appendChild(node);
         }
+        this.output_document = output_document;
+        this.output_node = node;
     };
 
     Output.prototype.show_status = function()
@@ -2103,9 +2104,17 @@ policies and contribution forms [3].
      */
     function assert(expected_true, function_name, description, error, substitutions)
     {
+        if (tests.tests.length === 0) {
+            tests.set_file_is_test();
+        }
         if (expected_true !== true) {
-            throw new AssertionError(make_message(function_name, description,
-                                                  error, substitutions));
+            var msg = make_message(function_name, description,
+                                   error, substitutions)
+            if (!tests.file_is_test) {
+                throw new AssertionError(msg);
+            } else {
+                throw msg;
+            }
         }
     }
 

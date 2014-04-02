@@ -6,6 +6,10 @@
 
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/vendor-prefix.js"
+          data-prefixed-objects=   '[{"ancestors":["navigator"], "name":"getUserMedia"},
+                                     {"ancestors":["window"], "name":"RTCPeerConnection"}]'
+          data-prefixed-prototypes='[{"ancestors":["HTMLMediaElement"],"name":"srcObject"}]'></script>
   <script type="text/javascript">
   var test = async_test('Can set up a basic WebRTC call.', {timeout: 5000});
   var gFirstConnection = null;

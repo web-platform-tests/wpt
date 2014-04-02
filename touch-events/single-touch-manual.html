@@ -213,7 +213,6 @@
           assert_equals(tt.target, ev.target, "event target same as targetTouches target.");
         }, "touchstart: event target same as targetTouches target");
 
-        // TA: @TBD
         test(function() {
           assert_true(is_touch_over_element(t, target0), "touch.pageX/pageY is over target0.");
         }, "touchstart: touch pageX/pageY inside of target element");
@@ -260,7 +259,6 @@
           assert_equals(tt.target, ev.target, "event target same as targetTouches target.");
         }, "touchmove: event target same as targetTouches target");
 
-        // TA: @TBD
         test(function() {
           assert_true(is_touch_over_element(tt, target0) || is_touch_over_element(tt, target1),
             "touch.pageX/pageY is over one of the targets.");
@@ -302,7 +300,6 @@
           assert_equals(t.identifier, touchstart_identifier, "changedTouches identifier matches.");
         }, "touchend: touches identifier matches changedTouches identifier");
 
-        // TA: @TBD
         test(function() {
           assert_true(is_touch_over_element(t, target1),
             "touch.pageX/pageY is over target1.");

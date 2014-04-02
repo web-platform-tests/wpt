@@ -4,6 +4,15 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>RTCPeerConnection Connection Test</title>
 
+</head>
+
+<body>
+
+<div>
+  <video width="320" height="240" id="remote-view" autoplay="autoplay"></video>
+  <video width="320" height="240" id="local-view" autoplay="autoplay"></video>
+</div>
+<div id="log"></div>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/vendor-prefix.js"
@@ -99,14 +108,5 @@
         failed('getUserMedia'));
   });
 </script>
-</head>
-
-<body>
-
-<div>
-  <video width="320" height="240" id="remote-view" autoplay="autoplay"></video>
-  <video width="320" height="240" id="local-view" autoplay="autoplay"></video>
-</div>
-<div id="log"></div>
 </body>
 </html>

@@ -16,17 +16,19 @@
     var input = document.createElement("input"),
         t = async_test("select() on input type " + type + " queues select event"),
         q = false;
-    input.type = type;
-    input.value = "foobar";
-    document.body.appendChild(input);
-    input.onselect = t.step_func_done(function(e) {
-      assert_true(q, "event should be queued");
-      assert_true(e.isTrusted, "event is trusted");
-      assert_true(e.bubbles, "event bubbles");
-      assert_false(e.cancelable, "event is not cancelable");
+    t.step(function() {
+      input.type = type;
+      input.value = "foobar";
+      document.body.appendChild(input);
+      input.onselect = t.step_func_done(function(e) {
+        assert_true(q, "event should be queued");
+        assert_true(e.isTrusted, "event is trusted");
+        assert_true(e.bubbles, "event bubbles");
+        assert_false(e.cancelable, "event is not cancelable");
+      });
+      input.select();
+      q=true;
     });
-    input.select();
-    q=true;
   });
 
   document.querySelector("textarea").onselect = t1.step_func_done(function(e) {
@@ -36,6 +38,8 @@
     assert_false(e.cancelable, "event is not cancelable");
   });
 
-  document.querySelector("textarea").select();
-  q1=true;
+  t1.step(function() {
+    document.querySelector("textarea").select();
+    q1=true;
+  });
 </script>

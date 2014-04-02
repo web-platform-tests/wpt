@@ -240,7 +240,7 @@ class Request(object):
         host = request_handler.headers.get("Host")
         if host is None:
             host = "%s:%s" % (request_handler.server.server_address[0],
-                request_handler.server.server_address[1])
+                              request_handler.server.server_address[1])
 
         self.request_path = request_handler.path
 

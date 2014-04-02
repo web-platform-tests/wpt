@@ -247,7 +247,7 @@ class Request(object):
                 host_header = host.split(":")
                 host = host_header[0]
                 port = host_header[1]
-        
+
         self.request_path = request_handler.path
 
         if self.request_path.startswith(scheme + "://"):

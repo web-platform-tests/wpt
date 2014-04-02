@@ -172,15 +172,15 @@ interface EventTarget { };
 <script>
 "use strict";
 setup(function() {
-	var idlArray = new IdlArray();
+  var idlArray = new IdlArray();
 
-	[].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
-		if (node.className == "untested") {
-			idlArray.add_untested_idls(node.textContent);
-		} else {
-			idlArray.add_idls(node.textContent);
-		}
-	});
+  [].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
+    if (node.className == "untested") {
+       idlArray.add_untested_idls(node.textContent);
+    } else {
+       idlArray.add_idls(node.textContent);
+    }
+  });
 
   idlArray.add_objects({
     IDBKeyRange: [],

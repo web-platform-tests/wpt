@@ -239,12 +239,12 @@ class Request(object):
         scheme = request_handler.server.scheme
         host = request_handler.headers.get("Host")
         port = request_handler.server.server_address[1]
-        
+
         if host is None:
             host = request_handler.server.server_address[0]
         else:
             if ":" in host:
-                host_header = host.split(":") 
+                host_header = host.split(":")
                 host = host_header[0]
                 port = host_header[1]
         

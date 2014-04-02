@@ -244,9 +244,7 @@ class Request(object):
             host = request_handler.server.server_address[0]
         else:
             if ":" in host:
-                host_header = host.split(":")
-                host = host_header[0]
-                port = host_header[1]
+                host, port = host.split(":", 1)
 
         self.request_path = request_handler.path
 

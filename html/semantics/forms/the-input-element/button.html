@@ -36,7 +36,7 @@
     assert_false(b1.willValidate);
   }, "the element is barred from constraint validation");
 
-  document.getElementById('f1').onsubmit = t.step_func(function() {
+  document.getElementById('f1').onsubmit = t.step_func(function(e) {
     e.preventDefault();
     assert_unreached("form has been submitted");
   });

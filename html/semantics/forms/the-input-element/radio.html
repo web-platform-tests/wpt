@@ -47,7 +47,7 @@
     radio4.checked = true;
     assert_false(radio3.checked);
     assert_true(radio4.checked);
-  }, "radio inputs names that are compatibility caseless matches belong to the same radio button group");
+  }, "radio inputs with name attributes group2 and GROUP2 belong to the same radio button group");
 
   test(function(){
     assert_false(radio1.checked);
@@ -63,10 +63,14 @@
 
   radio5.oninput= t1.step_func_done(function(e) {
     assert_true(e.bubbles, "event should bubble")
+    assert_true(e.isTrusted, "event should be trusted");
+    assert_false(e.cancelable, "event shoud not be cancelable");
   });
 
   radio5.onchange = t2.step_func_done(function(e) {
     assert_true(e.bubbles, "event should bubble")
+    assert_true(e.isTrusted, "event should be trusted");
+    assert_false(e.cancelable, "event shoud not be cancelable");
   });
 
   radio6.oninput= t3.step_func_done(function(e) {
@@ -80,8 +84,6 @@
   radio5.click();
   radio6.click();
 
-  setTimeout(function() {
-    t3.done();
-    t4.done();
-  }, 1);
+  t3.done();
+  t4.done();
 </script>

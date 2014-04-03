@@ -15,6 +15,9 @@
 <input type=radio id=radio5>
 <input type=radio id=radio6 disabled>
 
+<input type=radio id=radio7>
+
+
 <script>
   var radio1 = document.getElementById('radio1'),
       radio2 = document.getElementById('radio2'),
@@ -22,10 +25,12 @@
       radio4 = document.getElementById('radio4'),
       radio5 = document.getElementById('radio5'),
       radio6 = document.getElementById('radio6'),
+      radio7 = document.getElementById('radio7'),
       t1 = async_test("click on mutable radio fires the input event"),
       t2 = async_test("click on mutable radio fires the change event"),
       t3 = async_test("click on non-mutable radio doesn't fire the input event"),
-      t4 = async_test("click on non-mutable radio doesn't fire the change event");
+      t4 = async_test("click on non-mutable radio doesn't fire the change event"),
+      t5 = async_test("canceled activation steps on unchecked radio");
 
   test(function(){
     assert_false(radio1.checked);
@@ -86,4 +91,11 @@
 
   t3.done();
   t4.done();
+
+  radio7.onclick = t5.step_func_done(function(e){
+    e.preventDefault();
+    assert_false(radio7.checked)
+  });
+
+  radio7.click();
 </script>

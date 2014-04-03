@@ -27,7 +27,7 @@
             color: green;
         }
         #test-float-left {
-          shape-outside: polygon(50px 0px, 100px 100px, 0px 100px);
+          -webkit-shape-outside: polygon(50px 0px, 100px 100px, 0px 100px);
           float: left;
           width: 100px;
           height: 100px;
@@ -39,23 +39,25 @@
             position: absolute;
             top: 70px;
         }
-        .bar {
+        .fail {
             position: absolute;
-            width: 140px;
             height: 20px;
             background-color: red;
         }
-        #line-1 {
+        #bar-1 {
             top: 11px;
             left: 66px;
+            width: 160px;
         }
-        #line-2 {
+        #bar-2 {
             top: 41px;
             left: 81px;
+            width: 140px;
         }
-        #line-3 {
+        #bar-3 {
             top: 71px;
             left: 96px;
+            width: 120px;
         }
         #triangle {
             position: absolute;
@@ -63,7 +65,7 @@
             width: 100px;
             height: 100px;
             background-color: lightblue;
-            clip-path: polygon(50px 0px, 100px 100px, 0px 100px);
+            -webkit-clip-path: polygon(50px 0px, 100px 100px, 0px 100px);
         }
         
     </style>
@@ -76,7 +78,7 @@
     </p>
     <div id="test" class="container">
         <div id="test-float-left"></div>
-        XXXXXXX XXXXXXX XXXXXXX
+        XXXXXXXX XXXXXXX XXXXXX
     </div>
     <div id="failure-container">
         <div id="bar-1" class="fail"></div>

@@ -42,8 +42,6 @@ add_completion_callback(function(tests)
 
 function fail(test, desc) {
     return test.step_func(function(e) {
-        console.log(desc, e);
-
         if (e && e.message && e.target.error)
             assert_unreached(desc + " (" + e.target.error.name + ": " + e.message + ")");
         else if (e && e.message)

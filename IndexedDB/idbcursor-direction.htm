@@ -13,14 +13,12 @@
           expected = dir ? dir : IDBCursor.NEXT;
 
         var open_rq = createdb(t);
-        console.log("wat-tf?");
+
         open_rq.onupgradeneeded = function(e) {
-            console.log("onupgr needed");
             db = e.target.result;
             var objStore = db.createObjectStore("test");
 
             objStore.add("data", "key");
-            console.log("added data");
         };
 
         open_rq.onsuccess = t.step_func(function(e) {
@@ -32,9 +30,7 @@
             else
                 cursor_rq = os.openCursor();
 
-            console.log("succ");
             cursor_rq.onsuccess = t.step_func(function(e) {
-                console.log("rq");
                 var cursor = e.target.result;
 
                 assert_equals(cursor.direction, constant, 'direction constant');
@@ -51,7 +47,6 @@
                               .openCursor(undefined, constant);
 
             cursor_rq2.onsuccess = t.step_func(function(e) {
-                console.log("rq2");
                 var cursor = e.target.result;
 
                 assert_equals(cursor.direction, constant, 'direction constant (second try)');
@@ -64,7 +59,6 @@
             });
 
         });
-        console.log("wat-tf?2");
     }
 
     cursor_direction("next");

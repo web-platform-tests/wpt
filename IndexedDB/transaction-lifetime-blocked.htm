@@ -18,7 +18,6 @@
         // 1
         openrq.onupgradeneeded = t.step_func(function(e) {
             events.push("open." + e.type);
-            console.log("onupgrd 1 " + events);
             e.target.result.createObjectStore('store');
         });
 
@@ -27,12 +26,11 @@
             db = e.target.result;
 
             events.push("open." + e.type);
-            console.log("succ " + events);
 
             // 3
             db.onversionchange = t.step_func(function(e) {
                 events.push("db." + e.type);
-                console.log("versionchange " + events);
+
                 assert_equals(e.oldVersion, 3, "old version");
                 assert_equals(e.newVersion, 4, "new version");
                 // Do not close db here (as we should)
@@ -56,7 +54,6 @@
         assert_equals(db + "", "[object IDBDatabase]");
         assert_array_equals(db.objectStoreNames, [ "store" ]);
 
-        console.log("opensecond " + events);
         var openrq2 = indexedDB.open('db', 4);
 
         // 4
@@ -71,7 +68,6 @@
             db2 = e.target.result;
 
             events.push("open2." + e.type);
-            console.log("onupgrd 2 " + events);
 
             assert_equals(db2 + "", "[object IDBDatabase]");
 
@@ -84,7 +80,6 @@
         // 6
         openrq2.onsuccess = t.step_func(function(e) {
             events.push("open2." + e.type);
-            console.log("success 2 " + events);
 
             assert_array_equals(events,
                 [ "open.upgradeneeded",
@@ -107,7 +102,6 @@
     add_completion_callback(function(tests) {
         if (db2) db2.close();
         indexedDB.deleteDatabase('db');
-        console.log("delete... " + events);
     })
 
 </script>

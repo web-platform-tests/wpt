@@ -51,8 +51,7 @@
                 if (read_success_count >= RQ_COUNT && write_request_count == 0)
                 {
                     write_request_count++;
-                    console.info("Generating 1 readwrite request with "
-                                  + read_success_count + " previous readonly requests");
+
                     db.transaction("s", "readwrite")
                       .objectStore("s")
                       .add("written", read_request_count)

@@ -28,7 +28,7 @@
         var cursor_rq = db.transaction("test")
                           .objectStore("test")
                           .index("index")
-                          .openCursor(undefined, IDBCursor.NEXT);
+                          .openCursor(undefined, "next");
 
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result;

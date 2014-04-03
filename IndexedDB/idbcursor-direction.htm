@@ -10,7 +10,7 @@
     {
         var db,
           t = async_test(document.title + " - " + dir),
-          expected = dir ? dir : IDBCursor.NEXT;
+          expected = dir ? dir : "next";
 
         var open_rq = createdb(t);
 
@@ -62,10 +62,10 @@
     }
 
     cursor_direction("next");
-    cursor_direction("next",       IDBCursor.NEXT);
-    cursor_direction("prev",       IDBCursor.PREV);
-    cursor_direction("nextunique", IDBCursor.NEXT_NO_DUPLICATE);
-    cursor_direction("prevunique", IDBCursor.PREV_NO_DUPLICATE);
+    cursor_direction("next",       "next");
+    cursor_direction("prev",       "prev");
+    cursor_direction("nextunique", "nextunique");
+    cursor_direction("prevunique", "prevunique");
 
 </script>
 

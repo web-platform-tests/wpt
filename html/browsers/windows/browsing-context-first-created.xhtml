@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>HTML Test: Browsing context is first created</title>
@@ -11,6 +10,7 @@
     <div id="log"></div>
     <script>
     <![CDATA[
+
     var doc, iframe;
 
     setup(function () {
@@ -21,14 +21,14 @@
 
     test(function () {
       assert_equals(iframe.contentWindow.history.length, 1, "The history.length should be 1.");
-    }, "The document must be the single document in its browsing context session history");
+    }, "Check the history.length of the first created browsing context");
 
     test(function () {
       assert_equals(doc.documentURI, "about:blank", "The document's address should be 'about:blank'.");
       assert_equals(doc.URL, "about:blank", "The document's address should be 'about:blank'.");
       assert_equals(doc.contentType, "text/html", "The document should be an HTML document.");
       assert_equals(doc.doctype, null, "The docType of a document without a document type declaration should be null.");
-      assert_equals(doc.compatMode, "BackCompat", "The compatMode of a document without a document type declaration should be 'BackCompat'.")
+      assert_equals(doc.compatMode, "BackCompat", "The compatMode of a document without a document type declaration should be 'BackCompat'.");
       assert_equals(doc.characterSet, "UTF-8", "The document's encoding should be 'UTF-8'.");
       assert_equals(iframe.contentWindow.parent.document, document);
       assert_equals(doc.referrer, document.URL, "The document's referrer should be its creator document's address.");
@@ -52,3 +52,4 @@
     </script>
   </body>
 </html>
+

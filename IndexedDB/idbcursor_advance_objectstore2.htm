@@ -24,19 +24,22 @@
 
     open_rq.onsuccess = function (event) {
         var txn = db.transaction("store", "readwrite");
-        var objStore = txn.objectStore("store");
-        var rqCursor = objStore.openCursor();
-        rqCursor.onsuccess = t.step_func(function(event) {
+        var rq = txn.objectStore("store").openCursor();
+        rq.onsuccess = t.step_func(function(event) {
             var cursor = event.target.result;
-            assert_cursor_exists(cursor);
+            assert_true(cursor instanceof IDBCursor);
 
-            assert_throws(new TypeError(), function() {
-                cursor.advance(0);
+            test(function(){
+                assert_throws(new TypeError(), function() {
+                    cursor.advance(0);
+                });
             }, "Calling advance() with count argument 0 should throw TypeError.");
 
-            assert_throws("InvalidStateError", function() {
-                cursor.advance(1);
-                cursor.advance(1);
+            test(function(){
+                assert_throws("InvalidStateError", function() {
+                    cursor.advance(1);
+                    cursor.advance(1);
+                });
             }, "Calling advance() twice should throw DOMException when the cursor is currently being iterated.");
 
             t.done();

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBCursor.advance() - index - throw TransactionInactiveError</title>
+<title>IDBCursor.advance() - index - errors in count argument</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-advance-void-unsigned-long-count">
 <script src="/resources/testharness.js"></script>
@@ -21,20 +21,26 @@
         for (var i = 0; i < records.length; i++) {
             objStore.add(records[i]);
         }
-        var index = objStore.index("index");
-        var rqCursor = index.openCursor();
-        rqCursor.onsuccess = t.step_func(function(event) {
+        var rq = objStore.index("index").openCursor();
+        rq.onsuccess = t.step_func(function(event) {
             var cursor = event.target.result;
-            assert_cursor_exists(cursor);
+            assert_true(cursor instanceof IDBCursor);
 
-            event.target.transaction.abort();
-            assert_throws("TransactionInactiveError", function() {
-                cursor.advance(1);
-            }, "Calling advance() should throws an exception TransactionInactiveError when the transaction is not active.");
+            test(function(){
+                assert_throws(new TypeError(), function() {
+                    cursor.advance(0);
+                });
+            }, "Calling advance() with count argument 0 should throw TypeError.");
+
+            test(function(){
+                assert_throws("InvalidStateError", function() {
+                    cursor.advance(1);
+                    cursor.advance(1);
+                });
+            }, "Calling advance() twice should throw DOMException when the cursor is currently being iterated.");
 
             t.done();
         });
     }
-
 </script>
 

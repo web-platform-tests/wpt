@@ -12,12 +12,11 @@
     function keypath(keypath, objects, expected_keys, desc) {
         var db,
             t = async_test(document.title + " - " + (desc ? desc : keypath), { timeout: 10000 }),
-            store_name = "store-" + (Date.now()) + Math.random(),
             open_rq = createdb(t);
 
         open_rq.onupgradeneeded = function(e) {
             db = e.target.result;
-            var objStore = db.createObjectStore(store_name, { keyPath: keypath });
+            var objStore = db.createObjectStore("store", { keyPath: keypath });
 
             for (var i = 0; i < objects.length; i++)
                 objStore.add(objects[i]);
@@ -29,8 +28,8 @@
 
         open_rq.onsuccess = function(e) {
             var actual_keys = [],
-                rq = db.transaction(store_name)
-                       .objectStore(store_name)
+                rq = db.transaction("store")
+                       .objectStore("store")
                        .openCursor();
 
             rq.onsuccess = t.step_func(function(e) {
@@ -64,3 +63,4 @@
 </script>
 
 <div id=log></log>
+

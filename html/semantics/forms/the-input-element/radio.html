@@ -42,8 +42,8 @@
       t3 = async_test("click on non-mutable radio doesn't fire the input event"),
       t4 = async_test("click on non-mutable radio doesn't fire the change event"),
       t5 = async_test("canceled activation steps on unchecked radio"),
-      input_queued = false,
-      change_queued = false;
+      input_fired = false,
+      change_fired = false;
 
   test(function(){
     assert_false(radio1.checked);
@@ -81,14 +81,14 @@
   }, "changing the name of a radio input element and setting its checkedness to true makes all the other elements' checkedness in the same radio button group be set to false");
 
   radio5.oninput= t1.step_func_done(function(e) {
-    assert_false(input_queued);
+    input_fired = true;
     assert_true(e.bubbles, "event should bubble")
     assert_true(e.isTrusted, "event should be trusted");
     assert_false(e.cancelable, "event shoud not be cancelable");
   });
 
   radio5.onchange = t2.step_func_done(function(e) {
-    assert_false(change_queued);
+    change_fired = true;
     assert_true(e.bubbles, "event should bubble")
     assert_true(e.isTrusted, "event should be trusted");
     assert_false(e.cancelable, "event shoud not be cancelable");
@@ -104,8 +104,8 @@
 
   t1.step(function() {
     radio5.click();
-    input_queued = true;
-    change_queued = true;
+    assert_true(input_fired);
+    assert_true(change_fired);
   });
 
   t3.step(function(){

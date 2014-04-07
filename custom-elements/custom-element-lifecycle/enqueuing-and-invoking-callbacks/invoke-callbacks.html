@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Invoke CALLBACK with ELEMENT as callback this value and, if present, using string values in CALLBACK as arguments</title>
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="Invoke CALLBACK with ELEMENT as callback this value and, if present, using string values in CALLBACK as arguments.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#enqueuing-and-invoking-callbacks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackThis = null;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackThis = this;
+    };
+    doc.registerElement('x-a', {prototype: proto});
+
+    doc.body.innerHTML = '<x-a id="x-a"></x-a>';
+    assert_equals(doc.querySelector('#x-a'), callbackThis, '\'this\' value' +
+        ' of the created callback should be the custom element');
+}, 'Test \'this\' value inside created callback.');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackThis = null;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attachedCallback = function() {
+        callbackThis = this;
+    };
+    doc.registerElement('x-element', {prototype: proto});
+    assert_equals(doc.querySelector('#xelement'), callbackThis, '\'this\' value ' +
+        'of the attached callback should be the custom element');
+}, 'Test \'this\' value inside attached callback.');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackThis = null;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.detachedCallback = function() {
+        callbackThis = this;
+    };
+    doc.registerElement('x-element', {prototype: proto});
+
+    var customElement = doc.querySelector('#xelement');
+    doc.body.removeChild(customElement);
+    assert_equals(customElement, callbackThis, '\'this\' value ' +
+        'of the detached callback should be the custom element');
+}, 'Test \'this\' value inside detached callback.');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackThis = null;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function() {
+        callbackThis = this;
+    };
+    var GeneratedConstructor = doc.registerElement('x-b', {prototype: proto});
+
+    var customElement = new GeneratedConstructor();
+    customElement.setAttribute('class', 'someClass');
+    assert_equals(customElement, callbackThis, '\'this\' value ' +
+        'of the attributeChanged callback should be the custom element');
+}, 'Test \'this\' value inside attributeChanged callback.');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackArgs = null;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        callbackArgs = [arg1, arg2, arg3];
+    };
+    var GeneratedConstructor = doc.registerElement('x-c', {prototype: proto});
+
+    var customElement = new GeneratedConstructor();
+    customElement.setAttribute('class', 'someClass');
+    assert_array_equals(['class', null, 'someClass'],
+                        callbackArgs,
+                        'Wrong arguments passed to attributeChanged callback');
+}, 'Test attributeChanged callback\'s arguments.');
+</script>
+</body>
+</html>

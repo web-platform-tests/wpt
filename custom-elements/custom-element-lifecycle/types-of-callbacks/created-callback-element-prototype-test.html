@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The custom element prototype must be set just prior to invoking created callback</title>
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="The custom element prototype must be set just prior to invoking callback.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackProto;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackProto = this.constructor.prototype;
+    };
+    doc.body.innerHTML = '<x-a id="x-a"></x-a>';
+    doc.registerElement('x-a', {prototype: proto});
+    assert_equals(callbackProto, proto, 'The custom element prototype ' +
+        'is incorrect inside created callback');
+}, 'Test custom element prototype inside created callback ' +
+    'when custom element is created in HTML before ' +
+    'registration of a custom element');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackProto;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackProto = this.constructor.prototype;
+    };
+    doc.registerElement('x-b', {prototype: proto});
+
+    doc.body.innerHTML = '<x-b id="x-b"></x-b>';
+    assert_equals(callbackProto, proto, 'The custom element prototype ' +
+        'is incorrect inside created callback');
+}, 'Test custom element prototype inside created callback ' +
+    'when custom element is created in HTML after ' +
+    'registration of a custom element');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackProto;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackProto = this.constructor.prototype;
+    };
+
+    var customElement = doc.createElement('x-c');
+    doc.body.appendChild(customElement);
+    doc.registerElement('x-c', {prototype: proto});
+    assert_equals(callbackProto, proto, 'The custom element prototype ' +
+        'is incorrect inside created callback');
+}, 'Test custom element prototype inside created callback ' +
+    'when custom element is created via document.createElement() before ' +
+    'registration of a custom element');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackProto;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackProto = this.constructor.prototype;
+    };
+    doc.registerElement('x-d', {prototype: proto});
+
+    var customElement = doc.createElement('x-d');
+    doc.body.appendChild(customElement);
+    assert_equals(callbackProto, proto, 'The custom element prototype ' +
+        'is incorrect inside created callback');
+}, 'Test custom element prototype inside created callback ' +
+    'when custom element is created via document.createElement() after ' +
+    'registration of a custom element');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var callbackProto;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackProto = this.constructor.prototype;
+    };
+    var GeneratedConstructor = doc.registerElement('x-e', {prototype: proto});
+
+    var customElement = new GeneratedConstructor();
+    assert_equals(callbackProto, proto, 'The custom element prototype ' +
+        'is incorrect inside created callback');
+}, 'Test custom element prototype inside created callback ' +
+    'when custom element is created via constructor returned by method register');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackProto;
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackProto = this.constructor.prototype;
+    };
+    doc.registerElement('x-element', {prototype: proto});
+    assert_equals(callbackProto, proto, 'The custom element prototype ' +
+        'is incorrect inside created callback');
+}, 'Test custom element prototype inside created callback ' +
+    'when custom element is created by UA parser before ' +
+    'registration of a custom element');
+</script>
+</body>
+</html>

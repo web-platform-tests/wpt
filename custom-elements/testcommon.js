@@ -172,10 +172,6 @@ var ideographicCharsSingle = new CharsArray(IDEOGRAPHIC_CHARS_SINGLE);
 var ideographicCharsRanges = new CharRangesArray(IDEOGRAPHIC_CHARS_RANGES);
 var digitCharsRanges = new CharRangesArray(DIGIT_CHARS_RANGES);
 
-function newHTMLDocument() {
-    return document.implementation.createHTMLDocument('Test Document');
-}
-
 // Helper function, which verifies that given custom element name is valid
 function checkValidName(name) {
     var doc = newHTMLDocument();
@@ -240,3 +236,4 @@ function testInIFrame(url, f, testName, testProps) {
         });
     });
 }
+

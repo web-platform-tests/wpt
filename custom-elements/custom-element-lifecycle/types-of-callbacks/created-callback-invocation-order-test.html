@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>All other callbacks must not be enqueued until after the created callback's invocation had started</title>
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="All other callbacks must not be enqueued until after the created callback's invocation had started.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#types-of-callbacks">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+testInIFrame('../../resources/blank.html', function(doc) {
+    var callbackLog = [];
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackLog.push('created');
+    };
+    proto.attachedCallback = function() {
+        callbackLog.push('attachedCallback');
+    };
+    doc.registerElement('x-a', {prototype: proto});
+
+    doc.body.innerHTML = '<x-a id="x-a"></x-a>';
+    assert_equals('created', callbackLog[0], 'The callback ' +
+        callbackLog[0] + ' should be enqueued after created callback');
+}, 'Test attached callback is enqueued after created callback');
+
+
+testInIFrame('../../resources/blank.html', function(doc) {
+    var callbackLog = [];
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackLog.push('created');
+    };
+    proto.attributeChangedCallback = function() {
+        callbackLog.push('attributeChangedCallback');
+    };
+    doc.registerElement('x-b', {prototype: proto});
+
+    doc.body.innerHTML = '<x-b id="x-b"></x-b>';
+    assert_equals('created', callbackLog[0], 'The callback ' +
+        callbackLog[0] + ' should not be enqueued before created callback');
+}, 'Test attributeChangedCallback callback is enqueued after created callback. ' +
+    'Document has browsing context');
+
+
+test(function(){
+    var doc = newHTMLDocument();
+    var callbackLog = [];
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackLog.push('created');
+    };
+    proto.attributeChangedCallback = function() {
+        callbackLog.push('attributeChangedCallback');
+    };
+    doc.registerElement('x-c', {prototype: proto});
+
+    doc.body.innerHTML = '<x-c id="x-c"></x-c>';
+    assert_equals('created', callbackLog[0], 'The callback ' +
+        callbackLog[0] + ' should not be enqueued before created callback');
+}, 'Test attributeChangedCallback callback is enqueued after created callback. ' +
+    'Document has no browsing context');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var callbackLog = [];
+    var proto = Object.create(HTMLElement.prototype);
+    proto.createdCallback = function() {
+        callbackLog.push('created');
+    };
+    proto.attributeChangedCallback = function() {
+        callbackLog.push('attributeChangedCallback');
+    };
+    proto.attachedCallback = function() {
+        callbackLog.push('attachedCallback');
+    };
+    doc.registerElement('x-element', {prototype: proto});
+
+    assert_equals('created', callbackLog[0], 'The callback ' +
+        callbackLog[0] + ' should not be enqueued before created callback');
+}, 'Test attachedCallback and attributeChangedCallback callbacks ' +
+    'are enqueued after created callback. ' +
+    'Document has browsing context');
+</script>
+</body>
+</html>

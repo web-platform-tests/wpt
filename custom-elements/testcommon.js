@@ -172,10 +172,6 @@ var ideographicCharsSingle = new CharsArray(IDEOGRAPHIC_CHARS_SINGLE);
 var ideographicCharsRanges = new CharRangesArray(IDEOGRAPHIC_CHARS_RANGES);
 var digitCharsRanges = new CharRangesArray(DIGIT_CHARS_RANGES);
 
-function newHTMLDocument() {
-    return document.implementation.createHTMLDocument('Test Document');
-}
-
 // Helper function, which verifies that given custom element name is valid
 function checkValidName(name) {
     var doc = newHTMLDocument();
@@ -239,4 +235,47 @@ function testInIFrame(url, f, testName, testProps) {
             }
         });
     });
+}
+
+// Helper function to create a prototype for custom element
+// with predefined callbacks
+function newHTMLElementPrototype() {
+    return newCustomElementPrototype(HTMLElement.prototype);
+}
+
+// Helper function to create a prototype for custom element
+// with predefined callbacks
+function newCustomElementPrototype(parent) {
+    var proto = Object.create(parent);
+    proto.createdCallbackThis = null;
+    proto.createdCallbackCalledCounter = 0;
+
+    proto.attachedCallbackThis = null;
+    proto.attachedCallbackCalledCounter = 0;
+
+    proto.detachedCallbackThis = null;
+    proto.detachedCallbackCalledCounter = 0;
+
+    proto.attributeChangedCallbackThis = null;
+    proto.attributeChangedCallbackCalledCounter = 0;
+    proto.attributeChangedCallbackArgs = null;
+
+    proto.createdCallback = function() {
+        proto.createdCallbackThis = this;
+        proto.createdCallbackCalledCounter++;
+    };
+    proto.attachedCallback = function() {
+        proto.attachedCallbackThis = this;
+        proto.attachedCallbackCalledCounter++;
+    };
+    proto.detachedCallback = function() {
+        proto.detachedCallbackThis = this;
+        proto.detachedCallbackCalledCounter++;
+    };
+    proto.attributeChangedCallback = function(arg1, arg2, arg3) {
+        proto.attributeChangedCallbackThis = this;
+        proto.attributeChangedCallbackCalledCounter++;
+        proto.attributeChangedCallbackArgs = [arg1, arg2, arg3];
+    };
+    return proto;
 }

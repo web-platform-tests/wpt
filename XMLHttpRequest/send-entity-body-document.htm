@@ -10,7 +10,7 @@
   <body>
     <div id="log"></div>
     <script>
-      function request(input, isHTML) {
+      function request(input, isHTML, title) {
         test(function() {
           var client = new XMLHttpRequest()
           client.open("POST", "resources/content.py", false)
@@ -20,11 +20,11 @@
           else
             assert_true(client.responseText.indexOf("<\uFFFD\/>") != -1)
           assert_equals(client.responseXML, null)
-        })
+        }, title)
       }
-      function init(fr, isHTML) { request(fr.contentDocument, isHTML) }
+      function init(fr, isHTML, title) { request(fr.contentDocument, isHTML, title) }
     </script>
-    <iframe src='data:text/xml;charset=windows-1252,<%FF/>' onload="init(this, false)"></iframe>
-    <iframe src='data:text/html;charset=windows-1252,%FF' onload="init(this, true)"></iframe>
+    <iframe src='data:text/xml;charset=windows-1252,<%FF/>' onload="init(this, false, 'Send XML Document')"></iframe>
+    <iframe src='data:text/html;charset=windows-1252,%FF' onload="init(this, true, 'Send HTML Document')"></iframe>
   </body>
 </html>

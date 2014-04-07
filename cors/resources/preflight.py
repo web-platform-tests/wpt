@@ -3,13 +3,14 @@ def main(request, response):
 
     if "check" in request.GET:
         token = request.GET.first("token")
-        try:
-            value = request.server.stash.take(token)
+        value = request.server.stash.take(token)
+        if value == None:
+            body = "0"
+        else:
             if request.GET.first("check", None) == "keep":
                 request.server.stash.put(token, value)
             body = "1"
-        except KeyError:
-            body = "0"
+
         return headers, body
 
     if request.method == "OPTIONS":

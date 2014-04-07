@@ -15,129 +15,100 @@
 <script type="text/javascript">
 test(function() {
     var doc = newHTMLDocument();
-    var callbackCalledCounter = 0;
-    var proto = Object.create(HTMLElement.prototype);
-    proto.attachedCallback = function() {
-        callbackCalledCounter++;
-    };
+    var proto = newHTMLElementPrototype();
     doc.registerElement('x-a', {prototype: proto});
-
     var customElement = doc.createElement('x-a');
+
     doc.body.appendChild(customElement);
-    assert_equals(callbackCalledCounter, 0, 'Callback attached should not be called ' +
-        'in documents that do not have a browsing context');
+    assert_equals(proto.attachedCallbackCalledCounter, 0, 'Callback attached ' +
+        'should not be called in documents that do not have a browsing context');
 
     var divElement = doc.createElement('div');
     doc.body.appendChild(divElement);
     divElement.appendChild(customElement);
-    assert_equals(callbackCalledCounter, 0, 'Callback attached should not be called ' +
-        'in documents that do not have a browsing context');
+    assert_equals(proto.attachedCallbackCalledCounter, 0, 'Callback attached ' +
+        'should not be called in documents that do not have a browsing context');
 }, 'Test attached callback if moving custom element inside document ' +
     'without browsing context');
 
 
 testInIFrame('../../resources/blank.html', function(docWithBrowsingContext) {
     var docNoBrowsingContext = newHTMLDocument();
-    var callbackCalledCounter1 = 0;
-    var callbackCalledCounter2 = 0;
-    var proto1 = Object.create(HTMLElement.prototype);
-    proto1.attachedCallback = function() {
-        callbackCalledCounter1++;
-    };
+    var proto1 = newHTMLElementPrototype();
     docNoBrowsingContext.registerElement('x-b', {prototype: proto1});
 
     var customElement = docNoBrowsingContext.createElement('x-b');
     docNoBrowsingContext.body.appendChild(customElement);
-    assert_equals(callbackCalledCounter1, 0, 'Callback attached should not be called ' +
+    assert_equals(proto1.attachedCallbackCalledCounter, 0,
+        'Callback attached should not be called ' +
         'in documents that do not have a browsing context');
 
-    var proto2 = Object.create(HTMLElement.prototype);
-    proto2.attachedCallback = function() {
-        callbackCalledCounter2++;
-    };
+    var proto2 = newHTMLElementPrototype();
     docWithBrowsingContext.registerElement('x-b', {prototype: proto2});
     docWithBrowsingContext.body.appendChild(customElement);
-    assert_equals(callbackCalledCounter1, 1, 'Callback attached should be called ' +
-        'in documents with browsing context');
-    assert_equals(callbackCalledCounter2, 0,
+    assert_equals(proto1.attachedCallbackCalledCounter, 1,
+        'Callback attached should be called in documents with browsing context');
+    assert_equals(proto2.attachedCallbackCalledCounter, 0,
         'Callback attached, defined in receiving document, should not be called');
 }, 'Test attached callback if moving custom element from ' +
     'document without browsing context to document with browsing context');
 
 
 testInIFrame('../../resources/blank.html', function(docWithBrowsingContext) {
-    var callbackCalledCounter1 = 0;
-    var callbackCalledCounter2 = 0;
-    var proto1 = Object.create(HTMLElement.prototype);
-    proto1.attachedCallback = function() {
-        callbackCalledCounter1++;
-    };
+    var proto1 = newHTMLElementPrototype();
     docWithBrowsingContext.registerElement('x-c', {prototype: proto1});
 
     var customElement = docWithBrowsingContext.createElement('x-c');
     docWithBrowsingContext.body.appendChild(customElement);
-    assert_equals(callbackCalledCounter1, 1,
+    assert_equals(proto1.attachedCallbackCalledCounter, 1,
         'Callback attached should be called in documents with browsing context');
 
     var docNoBrowsingContext = newHTMLDocument();
-    var proto2 = Object.create(HTMLElement.prototype);
-    proto2.attachedCallback = function() {
-        callbackCalledCounter2++;
-    };
+    var proto2 = newHTMLElementPrototype();
     docNoBrowsingContext.registerElement('x-c', {prototype: proto2});
     docNoBrowsingContext.body.appendChild(customElement);
-    assert_equals(callbackCalledCounter1, 1, 'Callback attached should not be called ' +
+    assert_equals(proto1.attachedCallbackCalledCounter, 1, 'Callback attached should not be called ' +
         'in documents that do not have a browsing context');
-    assert_equals(callbackCalledCounter2, 0,
+    assert_equals(proto2.attachedCallbackCalledCounter, 0,
         'Callback attached, defined in receiving document, should not be called');
 }, 'Test attached callback if moving custom element from ' +
     'document with browsing context to document without browsing context');
 
 
 testInIFrame('../../resources/blank.html', function(doc) {
-    var callbackCalledCounter = 0;
-
-    var proto = Object.create(HTMLElement.prototype);
-    proto.attachedCallback = function() {
-        callbackCalledCounter++;
-    };
+    var proto = newHTMLElementPrototype();
     doc.registerElement('x-d', {prototype: proto});
 
     var customElement = doc.createElement('x-d');
     doc.body.appendChild(customElement);
-    assert_equals(callbackCalledCounter, 1,
+    assert_equals(proto.attachedCallbackCalledCounter, 1,
         'Callback attached should be called in documents with browsing context');
 
     var divElement = doc.createElement('div');
     doc.body.appendChild(divElement);
     divElement.appendChild(customElement);
-    assert_equals(callbackCalledCounter, 2,
+    assert_equals(proto.attachedCallbackCalledCounter, 2,
         'Callback attached should be called in documents with browsing context');
 }, 'Test attached callback if moving custom element inside document ' +
     'with browsing context');
 
 
 testInIFrame('../../resources/blank.html', function(doc) {
-    var callbackCalledCounter = 0;
-
-    var proto = Object.create(HTMLElement.prototype);
-    proto.attachedCallback = function() {
-        callbackCalledCounter++;
-    };
+    var proto = newHTMLElementPrototype();
     doc.registerElement('x-e', {prototype: proto});
 
     var customElement = doc.createElement('x-e');
     doc.body.appendChild(customElement);
-    assert_equals(callbackCalledCounter, 1,
+    assert_equals(proto.attachedCallbackCalledCounter, 1,
         'Callback attached should be called in documents with browsing context');
 
     var divElement = doc.createElement('div');
     divElement.appendChild(customElement);
-    assert_equals(callbackCalledCounter, 1,
+    assert_equals(proto.attachedCallbackCalledCounter, 1,
         'Callback attached should not be called if element is not appended to the document');
 
     doc.body.appendChild(divElement);
-    assert_equals(callbackCalledCounter, 2,
+    assert_equals(proto.attachedCallbackCalledCounter, 2,
         'Callback attached should be called in documents with browsing context');
 }, 'Test attached callback if indirectly moving custom element inside document ' +
     'with browsing context');
@@ -146,43 +117,35 @@ testInIFrame('../../resources/blank.html', function(doc) {
 var moveTest =  async_test('Test attached callback if moving custom element from ' +
     'document with browsing context to document with browsing context');
 
-moveTest.step(function(){
+moveTest.step(function() {
     var iframe1 = newIFrame('../../resources/blank.html');
-    iframe1.onload = moveTest.step_func(function(){
+    iframe1.onload = moveTest.step_func(function() {
         var doc1 = iframe1.contentDocument;
 
         // register custom element type
-        var callbackCalledCounter1 = 0;
-        var proto1 = Object.create(HTMLElement.prototype);
-        proto1.attachedCallback = function(){
-            callbackCalledCounter1++;
-        };
+        var proto1 = newHTMLElementPrototype();
         doc1.registerElement('x-f', {prototype: proto1});
 
         // create custom element
         var customElement = doc1.createElement('x-f');
         doc1.body.appendChild(customElement);
-        assert_equals(callbackCalledCounter1, 1,
+        assert_equals(proto1.attachedCallbackCalledCounter, 1,
             'Callback attached should be called in documents with browsing context');
 
         // create second iframe
         var iframe2 = newIFrame('../../resources/x-element.html');
-        iframe2.onload = moveTest.step_func(function(){
+        iframe2.onload = moveTest.step_func(function() {
             var doc2 = iframe2.contentDocument;
-
+            
             // register custom element type
-            var callbackCalledCounter2 = 0;
-            var proto2 = Object.create(HTMLElement.prototype);
-            proto2.attachedCallback = function(){
-                callbackCalledCounter2++;
-            };
+            var proto2 = newHTMLElementPrototype();
             doc2.registerElement('x-f', {prototype: proto2});
 
             // move element
             doc2.body.appendChild(customElement);
-            assert_equals(callbackCalledCounter1, 2,
+            assert_equals(proto1.attachedCallbackCalledCounter, 2,
                 'Callback attached should be called in documents with browsing context');
-            assert_equals(callbackCalledCounter2, 0,
+            assert_equals(proto2.attachedCallbackCalledCounter, 0,
                 'Callback attached, defined in receiving document, should not be called');
 
             // test clean up

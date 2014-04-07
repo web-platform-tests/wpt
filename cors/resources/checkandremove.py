@@ -1,7 +1,6 @@
 def main(request, response):
     token = request.GET.first("token")
-    try:
-        request.server.stash.remove(token)
+    if request.server.stash.remove(token) is not None:
         return "1"
-    except KeyError:
+    else:
         return "0"

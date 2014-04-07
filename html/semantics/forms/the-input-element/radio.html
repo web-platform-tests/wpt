@@ -80,14 +80,14 @@
     assert_false(radio11.checked);
   }, "changing the name of a radio input element and setting its checkedness to true makes all the other elements' checkedness in the same radio button group be set to false");
 
-  radio5.oninput= t1.step_func_done(function(e) {
+  radio5.oninput= t1.step_func(function(e) {
     input_fired = true;
     assert_true(e.bubbles, "event should bubble")
     assert_true(e.isTrusted, "event should be trusted");
     assert_false(e.cancelable, "event shoud not be cancelable");
   });
 
-  radio5.onchange = t2.step_func_done(function(e) {
+  radio5.onchange = t2.step_func(function(e) {
     change_fired = true;
     assert_true(e.bubbles, "event should bubble")
     assert_true(e.isTrusted, "event should be trusted");
@@ -105,8 +105,13 @@
   t1.step(function() {
     radio5.click();
     assert_true(input_fired);
-    assert_true(change_fired);
+    t1.done();
   });
+
+  t2.step(function() {
+    assert_true(change_fired);
+    t2.done();
+  })
 
   t3.step(function(){
     radio6.click();

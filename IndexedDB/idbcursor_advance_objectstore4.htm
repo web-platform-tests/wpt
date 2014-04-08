@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBCursor.advance() - object store - throw TypeError</title>
+<title>IDBCursor.advance() - object store - throw InvalidStateError</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-advance-void-unsigned-long-count">
 <script src="/resources/testharness.js"></script>
@@ -29,9 +29,10 @@
             var cursor = event.target.result;
             assert_true(cursor instanceof IDBCursor);
 
-            assert_throws(new TypeError(), function() {
-                cursor.advance(0);
-            }, "Calling advance() with count argument 0 should throw TypeError.");
+            assert_throws("InvalidStateError", function() {
+                cursor.advance(1);
+                cursor.advance(1);
+            }, "Calling advance() should throw DOMException when the cursor is currently being iterated.");
 
             t.done();
         });

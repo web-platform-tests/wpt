@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBCursor.advance() - index - errors in count argument</title>
+<title>IDBCursor.advance() - index - throw TypeError</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBCursor-advance-void-unsigned-long-count">
 <script src="/resources/testharness.js"></script>
@@ -26,18 +26,9 @@
             var cursor = event.target.result;
             assert_true(cursor instanceof IDBCursor);
 
-            test(function(){
-                assert_throws(new TypeError(), function() {
-                    cursor.advance(0);
-                });
+            assert_throws(new TypeError(), function() {
+                cursor.advance(0);
             }, "Calling advance() with count argument 0 should throw TypeError.");
-
-            test(function(){
-                assert_throws("InvalidStateError", function() {
-                    cursor.advance(1);
-                    cursor.advance(1);
-                });
-            }, "Calling advance() twice should throw DOMException when the cursor is currently being iterated.");
 
             t.done();
         });

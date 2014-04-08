@@ -38,6 +38,23 @@ onload = function() {
     test_obj.add_cleanup(run_next_in_sequence);
   }
 
+  function poll_for_stash(test_obj, uuid, expected) {
+      var poll = test_obj.step_func(function poll() {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', stash_take + uuid);
+          xhr.onload = test_obj.step_func(function(e) {
+              if (xhr.status == 204) {
+                  setTimeout(poll, 200);
+              } else {
+                  assert_equals(xhr.response, expected);
+                  test_obj.done();
+              }
+          });
+          xhr.send();
+      })
+      setTimeout(poll, 200);
+  }
+
   // background attribute, check with getComputedStyle
   function test_background(tag) {
     var spec_url = 'http://www.whatwg.org/specs/web-apps/current-work/multipage/rendering.html';
@@ -134,12 +151,7 @@ onload = function() {
         elm.click();
         // check that navigation succeeded by ...??? XXX
         // check that the right URL was requested for the ping
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', stash_take + uuid);
-        xhr.onload = this.step_func_done(function(e) {
-          assert_equals(xhr.response, expected_current);
-        });
-        xhr.send();
+        poll_for_stash(test_obj, uuid, expected_current);
       });
     }, 'hyperlink auditing <'+tag+' ping>',
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#hyperlink-auditing'});
@@ -653,12 +665,7 @@ onload = function() {
         this.add_cleanup(function() {
           document.body.removeChild(svg);
         });
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', stash_take + uuid);
-        xhr.onload = this.step_func_done(function(e) {
-          assert_equals(xhr.response, expected_current);
-        });
-        xhr.send();
+        poll_for_stash(this, uuid, expected_current);
       });
     }, 'SVG <' + tag + '>',
     {help:'https://www.w3.org/Bugs/Public/show_bug.cgi?id=24148'});
@@ -778,12 +785,7 @@ onload = function() {
         this.add_cleanup(function() {
           document.body.removeChild(iframe);
         });
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', stash_take + uuid);
-        xhr.onload = this.step_func_done(function(e) {
-          assert_equals(xhr.response, expected_utf8);
-        });
-        xhr.send();
+        poll_for_stash(this, uuid, expected_utf8);
       });
     }, 'Parsing cache manifest (' + mode + ')',
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html#parse-a-manifest'});
@@ -821,12 +823,7 @@ onload = function() {
           document.head.removeChild(link);
           document.body.removeChild(div);
         });
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', stash_take + uuid);
-        xhr.onload = this.step_func_done(function(e) {
-          assert_equals(xhr.response, expected_utf8);
-        });
-        xhr.send();
+        poll_for_stash(this, uuid, expected_utf8);
       });
     }, desc,
     {help:'https://www.w3.org/Bugs/Public/show_bug.cgi?id=23968'});

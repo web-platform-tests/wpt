@@ -13,4 +13,4 @@ def main(request, response):
         q = request.server.stash.take(key)
         if q != None:
             return [("Content-Type", "text/html")], q
-        return 204, [], ""
+        return [], ""

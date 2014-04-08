@@ -43,7 +43,7 @@ onload = function() {
           var xhr = new XMLHttpRequest();
           xhr.open('GET', stash_take + uuid);
           xhr.onload = test_obj.step_func(function(e) {
-              if (xhr.status == 204) {
+              if (xhr.response == "") {
                   setTimeout(poll, 200);
               } else {
                   assert_equals(xhr.response, expected);

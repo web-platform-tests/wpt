@@ -91,6 +91,8 @@ warnings = {
   "global-date-and-time-timezone-plus-1500": "2011-11-12T00:00:00+1500",
   "global-date-and-time-timezone-minus-1300": "2011-11-12T00:00:00-1300",
   "global-date-and-time-timezone-minutes-15": "2011-11-12T00:00:00+08:15",
+  "date-0214-09-29": "0214-09-29",
+  "date-20014-09-29": "20014-09-29",
 }
 
 non_errors = {

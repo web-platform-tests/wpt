@@ -476,7 +476,6 @@ Runner.prototype = {
 
     open_test_window: function() {
         this.test_window = window.open("about:blank", 800, 600);
-        window.focus();
     },
 
     manifest_loaded: function() {

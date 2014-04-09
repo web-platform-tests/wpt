@@ -22,8 +22,8 @@ test(function() {
     doc.registerElement('x-a', {prototype: proto});
     assert_equals(proto.createdCallbackThis.constructor.prototype, proto,
         'The custom element prototype is incorrect inside created callback');
-}, 'Test custom element prototype inside created callback ' +
-    'when custom element is created in HTML before registration of a custom element');
+}, 'Test custom element prototype inside created callback when custom element is created ' +
+    'in HTML before registration of a custom element');
 
 
 test(function() {
@@ -34,8 +34,8 @@ test(function() {
     doc.body.innerHTML = '<x-b></x-b>';
     assert_equals(proto.createdCallbackThis.constructor.prototype, proto,
         'The custom element prototype is incorrect inside created callback');
-}, 'Test custom element prototype inside created callback ' +
-    'when custom element is created in HTML after registration of a custom element');
+}, 'Test custom element prototype inside created callback when custom element is created ' +
+    'in HTML after registration of a custom element');
 
 
 test(function() {
@@ -47,9 +47,8 @@ test(function() {
     doc.registerElement('x-c', {prototype: proto});
     assert_equals(proto.createdCallbackThis.constructor.prototype, proto,
         'The custom element prototype is incorrect inside created callback');
-}, 'Test custom element prototype inside created callback ' +
-    'when custom element is created via document.createElement() before ' +
-    'registration of a custom element');
+}, 'Test custom element prototype inside created callback when custom element is created ' +
+    'via document.createElement() before registration of a custom element');
 
 
 test(function() {
@@ -61,9 +60,8 @@ test(function() {
     doc.body.appendChild(customElement);
     assert_equals(proto.createdCallbackThis.constructor.prototype, proto,
         'The custom element prototype is incorrect inside created callback');
-}, 'Test custom element prototype inside created callback ' +
-    'when custom element is created via document.createElement() after ' +
-    'registration of a custom element');
+}, 'Test custom element prototype inside created callback when custom element is created ' +
+    'via document.createElement() after registration of a custom element');
 
 
 test(function() {
@@ -74,8 +72,8 @@ test(function() {
 
     assert_equals(proto.createdCallbackThis.constructor.prototype, proto,
         'The custom element prototype is incorrect inside created callback');
-}, 'Test custom element prototype inside created callback ' +
-    'when custom element is created via constructor returned by method register');
+}, 'Test custom element prototype inside created callback when custom element is created ' +
+    'via constructor returned by method registerElement');
 
 
 testInIFrame('../../resources/x-element.html', function(doc) {
@@ -83,9 +81,8 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     doc.registerElement('x-element', {prototype: proto});
     assert_equals(proto.createdCallbackThis.constructor.prototype, proto,
         'The custom element prototype is incorrect inside created callback');
-}, 'Test custom element prototype inside created callback ' +
-    'when custom element is created by UA parser before ' +
-    'registration of a custom element');
+}, 'Test custom element prototype inside created callback when custom element is created ' +
+    'by UA parser before registration of a custom element');
 </script>
 </body>
 </html>

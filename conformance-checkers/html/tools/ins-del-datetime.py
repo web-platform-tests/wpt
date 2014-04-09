@@ -93,13 +93,14 @@ warnings = {
   "global-date-and-time-timezone-minutes-15": "2011-11-12T00:00:00+08:15",
   "date-0214-09-29": "0214-09-29",
   "date-20014-09-29": "20014-09-29",
+  "date-0004-02-29": "0004-02-29",
+  "date-year-five-digits": "12014-09-29",
 }
 
 non_errors = {
   "date": "2002-09-29",
   "date-2000-02-29": "2000-02-29",
   "date-2400-02-29": "2400-02-29",
-  "date-0004-02-29": "0004-02-29",
   "date-1968-02-29": "1968-02-29",
   "date-1900-02-28": "1900-02-28",
   "date-2100-02-28": "2100-02-28",
@@ -117,7 +118,6 @@ non_errors = {
   "date-day-06-30": "2002-06-30",
   "date-day-09-30": "2002-09-30",
   "date-day-11-30": "2002-11-30",
-  "date-year-five-digits": "12014-09-29",
   "global-date-and-time-no-seconds": "2011-11-12T14:54Z",
   "global-date-and-time-with-seconds": "2011-11-12T14:54:39+0000",
   "global-date-and-time-with-one-digit-fraction": "2011-11-12T06:54:39.9-08:00",

@@ -59,11 +59,9 @@ test(function() {
   var el = document.createElement("foo")
   var tests = ["xmlns", "xmlns:a", "xmlnsx", "xmlns0"]
   for (var i = 0; i < tests.length; i++) {
-    assert_throws("NAMESPACE_ERR",
-                  function() { el.setAttribute(tests[i], "fail") },
-                  "Expected exception for " + tests[i] + ".")
+    el.setAttribute(tests[i], "success");
   }
-}, "setAttribute should throw a NAMESPACE_ERR when qualifiedName starts with 'xmlns'")
+}, "setAttribute should not throw even when qualifiedName starts with 'xmlns'")
 
 // Step 4
 test(function() {

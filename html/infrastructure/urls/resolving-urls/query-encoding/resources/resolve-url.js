@@ -128,18 +128,18 @@ onload = function() {
   // follow hyperlink with ping attribute
   function test_follow_link_ping(tag) {
     async_test(function() {
-        var uuid = token();
-        var elm = document.createElement(tag);
-        // check if ping is supported
-        assert_true('ping' in elm, 'ping not supported');
-        elm.setAttribute('ping', stash_put + uuid);
-        var iframe = document.createElement('iframe');
-        setup_navigation(elm, iframe, 'test_follow_link_ping_'+tag, this);
-        // follow the hyperlink
-        elm.click();
-        // check that navigation succeeded by ...??? XXX
-        // check that the right URL was requested for the ping
-        poll_for_stash(this, uuid, expected_current);
+      var uuid = token();
+      var elm = document.createElement(tag);
+      // check if ping is supported
+      assert_true('ping' in elm, 'ping not supported');
+      elm.setAttribute('ping', stash_put + uuid);
+      var iframe = document.createElement('iframe');
+      setup_navigation(elm, iframe, 'test_follow_link_ping_'+tag, this);
+      // follow the hyperlink
+      elm.click();
+      // check that navigation succeeded by ...??? XXX
+      // check that the right URL was requested for the ping
+      poll_for_stash(this, uuid, expected_current);
     }, 'hyperlink auditing <'+tag+' ping>',
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#hyperlink-auditing'});
   }
@@ -640,18 +640,18 @@ onload = function() {
   // feImage, image, use
   function test_svg(func, tag) {
     async_test(function() {
-        var uuid = token();
-        var id = 'test_svg_'+tag;
-        var svg = document.createElementNS(ns.svg, 'svg');
-        var parent = func(svg, id);
-        var elm = document.createElementNS(ns.svg, tag);
-        elm.setAttributeNS(ns.xlink, 'xlink:href', stash_put + uuid + '#foo');
-        parent.appendChild(elm);
-        document.body.appendChild(svg);
-        this.add_cleanup(function() {
-          document.body.removeChild(svg);
-        });
-        poll_for_stash(this, uuid, expected_current);
+      var uuid = token();
+      var id = 'test_svg_'+tag;
+      var svg = document.createElementNS(ns.svg, 'svg');
+      var parent = func(svg, id);
+      var elm = document.createElementNS(ns.svg, tag);
+      elm.setAttributeNS(ns.xlink, 'xlink:href', stash_put + uuid + '#foo');
+      parent.appendChild(elm);
+      document.body.appendChild(svg);
+      this.add_cleanup(function() {
+        document.body.removeChild(svg);
+      });
+      poll_for_stash(this, uuid, expected_current);
     }, 'SVG <' + tag + '>',
     {help:'https://www.w3.org/Bugs/Public/show_bug.cgi?id=24148'});
   }
@@ -762,14 +762,14 @@ onload = function() {
   // Parsing cache manifest
   function test_cache_manifest(mode) {
     async_test(function() {
-        var iframe = document.createElement('iframe');
-        var uuid = token();
-        iframe.src = 'resources/page-using-manifest.py?id='+uuid+'&encoding='+encoding+'&mode='+mode;
-        document.body.appendChild(iframe);
-        this.add_cleanup(function() {
-          document.body.removeChild(iframe);
-        });
-        poll_for_stash(this, uuid, expected_utf8);
+      var iframe = document.createElement('iframe');
+      var uuid = token();
+      iframe.src = 'resources/page-using-manifest.py?id='+uuid+'&encoding='+encoding+'&mode='+mode;
+      document.body.appendChild(iframe);
+      this.add_cleanup(function() {
+        document.body.removeChild(iframe);
+      });
+      poll_for_stash(this, uuid, expected_utf8);
     }, 'Parsing cache manifest (' + mode + ')',
     {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html#parse-a-manifest'});
   }
@@ -782,30 +782,30 @@ onload = function() {
   function test_css(tmpl, expected_cssom, encoding, use_style_element) {
     var desc = ['CSS', (use_style_element ? '<style>' : '<link> (' + encoding + ')'),  tmpl].join(' ');
     async_test(function(){
-        css_is_supported(tmpl, expected_cssom, this);
-        var uuid = token();
-        var id = 'test_css_' + uuid;
-        var url = 'url(stash.py?q=%s&action=put&id=' + uuid + ')';
-        tmpl = tmpl.replace(/<id>/g, id).replace(/<url>/g, url);
-        var link;
-        if (use_style_element) {
-          link = document.createElement('style');
-          link.textContent = tmpl.replace(/%s/g, '\u00E5').replace(/stash\.py/g, 'resources/stash.py');
-        } else {
-          link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = 'resources/css-tmpl.py?encoding='+encoding+'&tmpl='+encodeURIComponent(tmpl);
-        }
-        var div = document.createElement('div');
-        div.id = id;
-        div.textContent='x';
-        document.head.appendChild(link);
-        document.body.appendChild(div);
-        this.add_cleanup(function() {
-          document.head.removeChild(link);
-          document.body.removeChild(div);
-        });
-        poll_for_stash(this, uuid, expected_utf8);
+      css_is_supported(tmpl, expected_cssom, this);
+      var uuid = token();
+      var id = 'test_css_' + uuid;
+      var url = 'url(stash.py?q=%s&action=put&id=' + uuid + ')';
+      tmpl = tmpl.replace(/<id>/g, id).replace(/<url>/g, url);
+      var link;
+      if (use_style_element) {
+        link = document.createElement('style');
+        link.textContent = tmpl.replace(/%s/g, '\u00E5').replace(/stash\.py/g, 'resources/stash.py');
+      } else {
+        link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'resources/css-tmpl.py?encoding='+encoding+'&tmpl='+encodeURIComponent(tmpl);
+      }
+      var div = document.createElement('div');
+      div.id = id;
+      div.textContent='x';
+      document.head.appendChild(link);
+      document.body.appendChild(div);
+      this.add_cleanup(function() {
+        document.head.removeChild(link);
+        document.body.removeChild(div);
+      });
+      poll_for_stash(this, uuid, expected_utf8);
     }, desc,
     {help:'https://www.w3.org/Bugs/Public/show_bug.cgi?id=23968'});
   }

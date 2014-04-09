@@ -57,24 +57,13 @@ test(function() {
 // Step 3
 test(function() {
   var el = document.createElement("foo")
-  var tests = ["xmlns", "xmlns:a", "xmlnsx", "xmlns0"]
-  for (var i = 0; i < tests.length; i++) {
-    assert_throws("NAMESPACE_ERR",
-                  function() { el.setAttribute(tests[i], "fail") },
-                  "Expected exception for " + tests[i] + ".")
-  }
-}, "setAttribute should throw a NAMESPACE_ERR when qualifiedName starts with 'xmlns'")
-
-// Step 4
-test(function() {
-  var el = document.createElement("foo")
   for (var i = 0; i < valid_names.length; i++) {
     el.setAttribute(valid_names[i], "test")
     assert_equals(el.getAttribute(valid_names[i]), "test")
   }
 }, "Basic functionality should be intact.")
 
-// Step 5
+// Step 4
 test(function() {
   var el = document.createElement("foo")
   el.setAttribute("a", "1")

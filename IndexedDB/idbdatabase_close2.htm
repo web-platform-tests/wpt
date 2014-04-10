@@ -15,7 +15,7 @@ open_rq.onupgradeneeded = function() {}
 open_rq.onsuccess = function(e) {
     db = e.target.result;
 
-    var rq = window.indexedDB.deleteDatabase(databaseName);
+    var rq = window.indexedDB.deleteDatabase(db.name);
     rq.onblocked = t.step_func(function (e) {
         blocked_fired = true;
         db.close();

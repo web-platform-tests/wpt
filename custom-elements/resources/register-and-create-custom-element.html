@@ -11,7 +11,7 @@
         var proto = Object.create(HTMLElement.prototype);
         proto.createdCallback = function() {
             document.querySelector('#log').innerText = 'Created callback was called';
-        }
+        };
         document.registerElement('x-element', {prototype: proto});
     </script>
     <x-element id="x-element"></x-element>

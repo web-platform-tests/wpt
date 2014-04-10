@@ -161,7 +161,7 @@ testInIFrame('../../resources/blank.html', function(docWithBrowsingContext) {
 
     assert_array_equals(proto2.callbackLog, ['created'],
         'attached callback should not be enqueued before created callback had started');
-}, "Test attached callback is not enqueued before created callback had started");
+}, 'Test attached callback is not enqueued before created callback had started');
 
 
 testInIFrame('../../resources/blank.html', function(docWithBrowsingContext) {
@@ -177,7 +177,7 @@ testInIFrame('../../resources/blank.html', function(docWithBrowsingContext) {
     docNoBrowsingContext.body.innerHTML = '<x-l></x-l>';
     assert_array_equals(proto.callbackLog, ['created', 'attached'],
         'attached callback should be enqueued after created callback had started');
-}, "Test attached callback is enqueued after created callback had started");
+}, 'Test attached callback is enqueued after created callback had started');
 
 
 testInIFrame('../../resources/blank.html', function(doc) {
@@ -196,7 +196,7 @@ testInIFrame('../../resources/blank.html', function(doc) {
     doc.body.innerHTML = '<x-m><x-n id="x-n"></x-n></x-m>';
     assert_array_equals(proto2.callbackLog, ['created'],
         'detached callback should not be enqueued before created callback had started');
-}, "Test detached callback is not enqueued before created callback had started");
+}, 'Test detached callback is not enqueued before created callback had started');
 
 
 testInIFrame('../../resources/blank.html', function(doc) {
@@ -211,7 +211,15 @@ testInIFrame('../../resources/blank.html', function(doc) {
 
     assert_array_equals(proto.callbackLog, ['created', 'attached', 'detached'],
         'detached callback should be enqueued after created callback had started');
-}, "Test detached callback is enqueued after created callback had started");
+}, 'Test detached callback is enqueued after created callback had started');
+
+
+testInIFrame('../../resources/x-element.html', function(doc) {
+    var proto = newPrototypeWithCallbackLog();
+    doc.registerElement('x-element', {prototype: proto});
+    assert_array_equals(proto.callbackLog, ['created'],
+        'attached callback should not be enqueued before created callback had started');
+}, 'Test attached callback is not enqueued before element is registered');
 </script>
 </body>
 </html>

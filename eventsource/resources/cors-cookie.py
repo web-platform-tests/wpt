@@ -19,7 +19,7 @@ def main(request, response):
         data = "id: 1\nretry: 200\ndata: first %s\n\n" % cookie
     elif last_event_id == '1':
         headers.append(("Content-Type", "text/event-stream"))
-        response.set_cookie(ident, "COOKIE", expires="Fri, 27 Jul 2001 02:47:11 UTC")
+        response.set_cookie(ident, "COOKIE")
         data = "id: 2\ndata: second %s\n\n" % cookie
     else:
         headers.append(("Content-Type", "stop"))

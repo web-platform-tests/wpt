@@ -10,7 +10,7 @@
         var t = async_test(document.title + " - " + desc);
 
         createdb(t).onupgradeneeded = function(e) {
-            assert_throws('InvalidAccessError', function() {
+            assert_throws(null, function() {
                 e.target.result.createObjectStore("store", params);
             });
 
@@ -26,5 +26,3 @@
 </script>
 
 <div id=log></div>
-
-<p>XXX: Ordering is not defined for all of these, so it should be updated when <a href=https://www.w3.org/Bugs/Public/show_bug.cgi?id=17681>bug 17681</a> is resolved.

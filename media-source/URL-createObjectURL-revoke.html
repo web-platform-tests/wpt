@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>insertAdjacentHTML</title>
+  <title>Revoking a created URL with URL.revokeObjectURL(url)</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -20,7 +20,7 @@ test(function() {
     window.URL.revokeObjectURL(url);
     video.src = url;
     assert_equals(mediaSource.readyState, 'closed');
-}, "URL.createObjectURL : 4. Revoke the MediaSource object URL by calling revokeObjectURL() on it.");
+}, "Check revoking behavior of URL.revokeObjectURL(url).");
 </script>
 </body>
 </html>

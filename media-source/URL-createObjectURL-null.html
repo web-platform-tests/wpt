@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>insertAdjacentHTML</title>
+  <title>URL.createObjectURL(null)</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -16,7 +16,7 @@
 test(function() {
     var url = window.URL.createObjectURL(null);
     assert_equals(url, null);
-}, "URL.createObjectURL : 1. If mediaSource is NULL the return null.");
+}, "URL.createObjectURL(null)");
 </script>
 </body>
 </html>

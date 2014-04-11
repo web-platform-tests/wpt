@@ -159,9 +159,15 @@ testInIFrame('../../resources/blank.html', function(docWithBrowsingContext) {
     docNoBrowsingContext.registerElement('x-k', {prototype: proto2});
     docNoBrowsingContext.body.innerHTML = '<x-i><x-k id="x-k"></x-k></x-i>';
 
-    assert_array_equals(proto2.callbackLog, ['created'],
-        'attached callback should not be enqueued before created callback had started');
-}, 'Test attached callback is not enqueued before created callback had started');
+    // Though at the moment of inserting <x-k> into docWithBrowsingContext
+    // created callback is not called for <x-k> yet, attached calback is enqueued
+    // anyway. Because specification for setting custom element prototype algorithm reads:
+    //  ....
+    //   3. If ELEMENT is in a document and this document has a browsing context:
+    //       1. Enqueue attached callback for ELEMENT
+    assert_array_equals(proto2.callbackLog, ['created', 'attached'],
+        'attached callback should be enqueued when custom element prototype is set');
+}, 'Test attached callback is enqueued after created callback, but before created callback had started');
 
 
 testInIFrame('../../resources/blank.html', function(docWithBrowsingContext) {
@@ -217,9 +223,17 @@ testInIFrame('../../resources/blank.html', function(doc) {
 testInIFrame('../../resources/x-element.html', function(doc) {
     var proto = newPrototypeWithCallbackLog();
     doc.registerElement('x-element', {prototype: proto});
-    assert_array_equals(proto.callbackLog, ['created'],
-        'attached callback should not be enqueued before created callback had started');
-}, 'Test attached callback is not enqueued before element is registered');
+
+    // Though at the moment of inserting <x-element> into the document
+    // created callback is not called for <x-element> yet, attached calback is enqueued
+    // anyway. Because specification for setting custom element prototype algorithm reads:
+    //  ....
+    //   3. If ELEMENT is in a document and this document has a browsing context:
+    //       1. Enqueue attached callback for ELEMENT
+    assert_array_equals(proto.callbackLog, ['created', 'attached'],
+        'attached callback should be enqueued when custom element prototype is set');
+}, 'Test attached callback is enqueued after created callback after registration ' +
+    'of custom element type');
 </script>
 </body>
 </html>

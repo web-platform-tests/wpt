@@ -35,15 +35,29 @@ async_test(function(t) {
         var mediaSource = new MediaSource();
         mediaSource.addEventListener('sourceopen', function(e){
             var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            t.step(function() {
-                sourceBuffer.appendBuffer(data);
-                assert_equals(sourceBuffer.updating, true);
+            var updatings = [];
+            sourceBuffer.addEventListener('updatestart', function(e) {
+                updatings.push(sourceBuffer.updating);
             });
-            t.done();
+            sourceBuffer.addEventListener('update', function(e) {
+                updatings.push(sourceBuffer.updating);
+            });
+            sourceBuffer.addEventListener('updateend', function(e) {
+                updatings.push(sourceBuffer.updating);
+                t.step(function() {
+                    assert_array_equals(updatings, 
+                                        [false, true, true, false, false],
+                                        'Check the transition of the updating attribute');
+                });
+                t.done();
+            });
+            updatings.push(sourceBuffer.updating);
+            sourceBuffer.appendBuffer(data);
+            updatings.push(sourceBuffer.updating);
         });
         video.src = window.URL.createObjectURL(mediaSource);
     });
-}, 'SourceBuffer#appendBuffer(data) : Set the updating attribute to true.');
+}, 'SourceBuffer#appendBuffer(data) : Check the transition of updating attribute.');
 
 </script>
 </body>

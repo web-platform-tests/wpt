@@ -46,7 +46,7 @@ function fail(test, desc) {
             assert_unreached(desc + " (" + e.target.error.name + ": " + e.message + ")");
         else if (e && e.message)
             assert_unreached(desc + " (" + e.message + ")");
-        else if (e && e.target.error)
+        else if (e && e.target.readyState === 'done' && e.target.error)
             assert_unreached(desc + " (" + e.target.error.name + ")");
         else
             assert_unreached(desc);

@@ -1,8 +1,20 @@
 PYTHON=python
 PYTHONFLAGS=
-.PHONY: ins-del-datetime
+META_EXTENSIONS=http://help.whatwg.org/extensions/meta-name/
+CURL=curl
+CURLFLAGS=
+PYTHON=python
+PYTHONFLAGS=
 
-all: ins-del-datetime
+.PHONY: ins-del-datetime .FORCE
+
+all: ins-del-datetime meta-extensions elements/meta/names-registered-isvalid.html
 
 ins-del-datetime: tools/ins-del-datetime.py
 	$(PYTHON) $(PYTHONFLAGS) $<
+
+meta-extensions: .FORCE
+	$(CURL) $(CURLFLAGS) $(META_EXTENSIONS) > $@
+
+elements/meta/names-registered-isvalid.html: .FORCE
+	$(PYTHON) $(PYTHONFLAGS) tools/meta-name.py

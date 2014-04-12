@@ -166,7 +166,10 @@ var currentScriptTest = async_test(
     'owner document\'s "currentScript" attribute, even if it is running.'
 );
 
-currentScriptTest.step(function () {
+// This test is fail.
+// It is possible to refer to the script of its own in document.currentScript from shadowRoot.
+// There is no entry corresponding to this test in the specification.
+currentScriptTese.step(function () {
     var div = document.createElement('div');
     div.style.display = 'none';
     document.body.appendChild(div);

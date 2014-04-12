@@ -20,11 +20,11 @@ test(function() {
 	} );
 	var customButton = document.createElement( 'button', 'custom-button' );
 
-	assert_true( customButton instanceof CustomButton );
+	assert_true( customButton instanceof CustomButton, 'A custom element is of custom element type after the instantiation' );
 	customButton.setAttribute( 'is', 'dirty' );
-	assert_equals( 'dirty', customButton.getAttribute( 'is' ) );
+	assert_equals( 'dirty', customButton.getAttribute( 'is' ), 'An attribute must be changed by method "setAttribute"' );
 
-	assert_true( customButton instanceof CustomButton );
+	assert_true( customButton instanceof CustomButton, 'A custom element is of origin custom elemen type regardless of changing \'is\' attribute' );
 
 }, 'After a custom element is instantiated, changing the value of the is attribute must not affect this element\'s custom element type.');
 </script>

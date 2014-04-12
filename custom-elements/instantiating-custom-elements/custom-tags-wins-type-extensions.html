@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>A custom tag prior to a type extension</title>
+<meta name="author" title="Bon-Yong Lee" href="mailto:bylee78@gmail.com">
+<meta name="assert" content="If both types of custom element types are provided at the time of element's instantiation, the custom tag must win over the type extension.">
+<link rel="help" href="http://w3c.github.io/webcomponents/spec/custom/#instantiating-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script type="text/javascript">
+test(function() {
+  var Tag = document.registerElement('custom-tags');
+  var Extension = document.registerElement('type-extensions', {
+    prototype: Object.create(HTMLButtonElement.prototype),
+    extends: 'button'
+  });
+  var instance = document.createElement('custom-tags', 'type-extensions');
+  assert_true(instance instanceof Tag, 'A custom-tags wins a type-extensions');
+}, 'If both types of custom element types are provided at the time of element\'s instantiation, the custom tag must win over the type extension.');
+</script>

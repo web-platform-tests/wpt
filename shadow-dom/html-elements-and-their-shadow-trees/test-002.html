@@ -31,12 +31,9 @@ test(unit(function (ctx) {
     var el = d.createElement('img');
     d.body.appendChild(el);
 
-    var s = createSR(el);
-
-    s.innerHTML = '<content id="cont" select="#shadow"></content>';
-
-    assert_true(s.querySelector('#cont') != null, 'img should allow one insertion point ' +
-    		'that matches nothing');
+    assert_throws('HierarchyRequestError',
+                  function () { createSR(el); },
+                  "XXX: The Error is really throws");
 
 }), 'A_09_00_02_T01');
 

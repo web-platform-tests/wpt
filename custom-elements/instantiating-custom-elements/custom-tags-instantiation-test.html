@@ -19,7 +19,7 @@ test(function() {
 	document.body.appendChild( instance );
 	var element = document.querySelector( 'custom-tags' );
 
-	assert_true( instance instanceof Tag, 'A instance created using local name is of a custom tag type' )
+	assert_true( element instanceof Tag, 'A instance created using local name is of a custom tag type' )
 
 }, 'As the local name of the custom element. These types of custom element types are called custom tags. ');
 </script>

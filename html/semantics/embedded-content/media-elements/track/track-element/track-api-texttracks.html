@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Track element - text tracks API test</title>
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/embedded-content-0.html#text-track-api">
+<link rel="author" title="Hyunjin Cho">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<h1>Track element and API Test</h1>
+<div style="display:none">
+	<video id="tracktest" src="brave.webm">
+		<track kind=subtitles src=brave.en.vtt srclang=en label="English">
+		<track kind=captions src=brave.en.vtt srclang=en label="English for the Hard of Hearing">
+		<track id="french" kind=subtitles src=brave.fr.vtt srclang=fr label="Français">
+		<track kind=subtitles src=brave.de.vtt srclang=de label="Deutsch">
+	</video>
+</div>
+<div id="log"></div>
+<script>
+test(function() {
+	var t1 = document.getElementById('tracktest').textTracks;
+	assert_not_equals(t1, undefined, "textTracks member should not be undefined");
+}, "Check the track elements");
+test(function() {
+	var t2 = document.getElementById('tracktest').textTracks.getTrackById("french");
+	assert_not_equals(t2, undefined, "textTracks member should not be undefined");
+}, "Check getTrackById method");
+</script>
+</body>
+</html>

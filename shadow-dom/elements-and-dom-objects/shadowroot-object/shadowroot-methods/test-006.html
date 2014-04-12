@@ -48,11 +48,10 @@ test(function () {
     var s = createSR(el);
     d.body.appendChild(el);
 
-    try {
-    	s.elementFromPoint(1, 1);
-    } catch(e) {
-    	assert_true(false, 'Shadowroot doesn\'t have elementFromPoint() method.' );
+    if (typeof(s) == 'undefined' || typeof (s.elementFromPoint(1, 1)) != 'object') {
+        assert_true(false, 'Shadowroot doesn\'t have elementFromPoint() method.' );
     }
+
 }, 'A_10_01_02_06_01_T02');
 </script>
 </body>

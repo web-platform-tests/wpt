@@ -1,0 +1,40 @@
+<!DOCTYPE html>.
+<html>
+<head>  
+<title>HTML Imports Sub-imports</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="author" title="Sangsoo Nam" href="mailto:sangsoo.ted@google.com">
+<link rel="help" href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/imports/index.html#loading-imports">
+<link id="link_a" rel="import" href="resources/a.html">
+</head>
+<body>
+<div id="log">Running test...</div>
+<script>
+
+test(function() {
+  var parent = document.getElementById("link_a");
+  var child_a = parent.import;
+  var child_a_b1 = child_a.querySelector('link[rel=import]#link_b1').import;
+  var child_a_b2 = child_a.querySelector('link[rel=import]#link_b2').import;
+  var child_a_b1_c1 = child_a_b1.querySelector('link[rel=import]#link_c1').import;
+
+  assert_not_equals(child_a.import, null, "child_a.import wasn't null");
+  assert_not_equals(child_a_b1.import, null, "child_a_b1.import wasn't null");
+  assert_not_equals(child_a_b1_c1.import, null, "child_a_b1_c1.import wasn't null");
+  assert_not_equals(child_a_b2.import, null, "child_a_b2.import wasn't null");
+  
+  var docs = document.querySelectorAll('div.doc');
+  assert_equals(4, docs.length);
+  assert_equals("a", docs[0].id);
+  assert_equals("b1", docs[1].id);
+  assert_equals("c1", docs[2].id);
+  assert_equals("b2", docs[3].id);
+
+}, 
+"Check on sub-imports. Sub-imports should follow the tree order(depth-first)"
+);
+
+</script>
+</body>
+</html>

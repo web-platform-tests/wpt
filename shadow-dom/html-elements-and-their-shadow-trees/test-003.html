@@ -35,11 +35,9 @@ test(unit(function (ctx) {
     	'<span id="shadow">This is a node that should be distributed</span>' +
     	'<span id="flbk">This is a fallback content</span>';
 
-    var s = createSR(el);
-    s.innerHTML = '<content select="#shadow"></content>';
-
-    assert_true(d.querySelector('#shadow').offsetTop > 0, 'fieldset should allow at least one insertion point');
-    assert_equals(d.querySelector('#flbk').offsetTop, 0, 'Fallback content shouldn\'t be rendered');
+    assert_throws('HierarchyRequestError',
+                  function () { createSR(el); },
+                  "XXX: The Error is really throws");
 
 }), 'A_09_00_03_T01');
 
@@ -60,12 +58,9 @@ test(unit(function (ctx) {
     	'</legend>' +
     	'<span id="flbk">Unlucky content</span>';
 
-    var s = createSR(el);
-    s.innerHTML = '<content select="legend:first-of-type"></content>';
-
-    assert_true(d.querySelector('#shadow').offsetTop > 0, 'fieldset should allow insertion point ' +
-    		'with legend:first-of-type matching criteria');
-    assert_equals(d.querySelector('#flbk').offsetTop, 0, 'Fallback content shouldn\'t be rendered');
+    assert_throws('HierarchyRequestError',
+                  function () { createSR(el); },
+                  "XXX: The Error is really throws");
 
 }), 'A_09_00_03_T02');
 </script>

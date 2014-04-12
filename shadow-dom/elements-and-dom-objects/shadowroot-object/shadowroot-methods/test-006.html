@@ -27,6 +27,7 @@ test(function () {
 	var d = newHTMLDocument();
 
     var el = d.createElement('div');
+
     d.body.appendChild(el);
 
     try {
@@ -37,6 +38,23 @@ test(function () {
     }
 
 }, 'A_10_01_02_06_01_T01');
+
+// Added test for checking if elementFromPoint() method is existing on Shadowroot.
+test(function () {
+
+	var d = newHTMLDocument();
+
+    var el = d.createElement('div');
+
+    var s = createSR(el);
+    d.body.appendChild(el);
+
+    try {
+    	s.elementFromPoint(1, 1);
+    } catch(e) {
+    	assert_true(false, 'Shadowroot doesn\'t have elementFromPoint() method.' );
+    }
+}, 'A_10_01_02_06_01_T02');
 </script>
 </body>
 </html>

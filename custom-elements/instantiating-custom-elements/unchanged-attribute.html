@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>When an HTML Document is loaded in a browsing context, a new registry must be created and associated with this document</title>
+<meta name="author" title="Bon-Yong Lee" href="mailto:bylee78@gmail.com">
+<meta name="assert" content="After a custom element is instantiated, changing the value of the is attribute must not affect this element's custom element type.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+test(function() {
+	var CustomButton = document.registerElement( 'custom-button', {
+		prototype: Object.create( HTMLButtonElement.prototype ),
+		extends: 'button'
+	} );
+	var customButton = document.createElement( 'button', 'custom-button' );
+
+	assert_true( customButton instanceof CustomButton );
+	customButton.setAttribute( 'is', 'dirty' );
+	assert_equals( 'dirty', customButton.getAttribute( 'is' ) );
+
+	assert_true( customButton instanceof CustomButton );
+
+}, 'After a custom element is instantiated, changing the value of the is attribute must not affect this element\'s custom element type.');
+</script>
+</body>
+</html>

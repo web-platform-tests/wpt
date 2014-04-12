@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>[Browsing Context] : [APIs for creating browsing_contexts by name]</title>
+<link rel="author" title="Duhyeong Kim" href="mailto:dduskim@gmail.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#apis-for-creating-and-navigating-browsing-contexts-by-name">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+var test1 = async_test(function() {
+  var currentUrl = 'http://' + window.location.host + '/';
+  var win1 = window.open(currentUrl, '', 'height=1,width=1');
+  win1.onload = this.step_func_done(function () {
+    assert_equals(win1.location.href, currentUrl, 'should be equal to result url');
+    win1.close();
+  });
+}, 'creating browsing context first argument test 1');
+
+test(function() {
+  var win2 = window.open('', '', 'height=1,width=1');
+  assert_equals(win2.window.location.href, 'about:blank', 'should be equal to "about:blank"');
+  win2.close();
+}, 'creating browsing context first argument test 2');
+
+test(function () {
+  var win3 = window.open('', 'testWindow', 'height=1,width=1');
+  win3.close();
+  assert_equals(win3.name, 'testWindow', 'should have a browser context name');
+}, 'creating browsing context second argument test 3');
+
+test(function () {
+  var win4 = window.open('', '', 'height=1,width=1');
+  assert_equals(win4.name, '', 'window should have a name');
+  win4.name = 'testWindow';
+  assert_equals(win4.name, 'testWindow', 'should be equal to ""');
+  win4.close();
+}, 'creating browsing context second argument test 4');
+</script>

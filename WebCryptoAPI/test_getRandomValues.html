@@ -17,19 +17,22 @@
   	<script src='/common/vendor-prefix.js' data-prefixed-objects='[{"ancestors":["window"], "name":"crypto"}]'></script>
   	
     <script>
-    test(function() {
-
-        	assert_equals(window.crypto.getRandomValues(new Int8Array(8)).constructor
+        test(function() {
+        	   assert_equals(window.crypto.getRandomValues(new Int8Array(8)).constructor
             		, Int8Array, "crypto.getRandomValues(new Int8Array(8))")
             assert_equals(window.crypto.getRandomValues(new Uint8Array(8)).constructor
             		, Uint8Array, "crypto.getRandomValues(new Uint8Array(8))")
+            		
             assert_equals(window.crypto.getRandomValues(new Int16Array(8)).constructor
-            		, Int16Array, "crypto.getRandomValues(new Uint8Array(8))")
+            		, Int16Array, "crypto.getRandomValues(new Int16Array(8))")
+            assert_equals(window.crypto.getRandomValues(new Uint16Array(8)).constructor
+            		, Uint16Array, "crypto.getRandomValues(new Uint16Array(8))")
+            		
             assert_equals(window.crypto.getRandomValues(new Int32Array(8)).constructor
-            		, Int32Array, "crypto.getRandomValues(new Uint8Array(8))")
+            		, Int32Array, "crypto.getRandomValues(new Int32Array(8))")
             assert_equals(window.crypto.getRandomValues(new Uint32Array(8)).constructor
-            		, Uint32Array, "crypto.getRandomValues(new Uint8Array(8))")
-
+            		, Uint32Array, "crypto.getRandomValues(new Uint32Array(8))")
+            		
             assert_throws({ name: "QuotaExceededError"},
             			function () { window.crypto.getRandomValues(new Int8Array(65537))},
             			"crypto.getRandomValues length over 65536")

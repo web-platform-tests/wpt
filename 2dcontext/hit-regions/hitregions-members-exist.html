@@ -9,12 +9,21 @@
 <canvas></canvas>
 <div id="log"></div>
 <script>
-test(function () {
-  var canvas = document.querySelector('canvas');
-  var ctx = canvas.getContext('2d');
+var canvas = document.querySelector('canvas');
+var ctx = canvas.getContext('2d');
 
-  assert_equals(typeof ctx.addHitRegion, 'function', 'context.addHitRegion Exists');
-  assert_equals(typeof ctx.removeHitRegion, 'function', 'context.removeHitRegion Exists');
-  assert_equals(typeof ctx.clearHitRegions, 'function', 'context.clearHitRegions Exists');
-});
+test(function () {
+  assert_equals(typeof ctx.addHitRegion, 'function');
+}, 'context.addHitRegion Exists');
+
+test(function () {
+  assert_equals(typeof ctx.removeHitRegion, 'function');
+}, 'context.removeHitRegion Exists');
+
+test(function () {
+  assert_equals(typeof ctx.clearHitRegions, 'function');
+}, 'context.clearHitRegions Exists');
+
 </script>
+</body>
+</html>

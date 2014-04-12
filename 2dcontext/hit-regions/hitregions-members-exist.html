@@ -9,18 +9,18 @@
 <canvas></canvas>
 <div id="log"></div>
 <script>
-var canvas = document.querySelector('canvas');
-var ctx = canvas.getContext('2d');
-
 test(function () {
+  var ctx = document.createElement('canvas').getContext('2d');
   assert_equals(typeof ctx.addHitRegion, 'function');
 }, 'context.addHitRegion Exists');
 
 test(function () {
+  var ctx = document.createElement('canvas').getContext('2d');
   assert_equals(typeof ctx.removeHitRegion, 'function');
 }, 'context.removeHitRegion Exists');
 
 test(function () {
+  var ctx = document.createElement('canvas').getContext('2d');
   assert_equals(typeof ctx.clearHitRegions, 'function');
 }, 'context.clearHitRegions Exists');
 

@@ -3,7 +3,7 @@
 <head>
 <title>Video and Audio text tracks API test</title>
 <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/embedded-content-0.html#text-track-api">
-<link rel="author" title="Hyunjin Cho">
+<link rel="author" title="Yongsoo An">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -20,8 +20,8 @@ function checkTracks(Object) {
 }
 
 test(function() {
-	assert_not_equals(sfx.addTextTrack , undefined, "support addTextTrak Method");
-}, "support addTextTrak Method");
+	assert_not_equals(sfx.addTextTrack , undefined, "support addTextTrack Method");
+}, "support addTextTrack Method");
 test(function(){
 	sounds = sfx.addTextTrack('metadata');
 	assert_not_equals(sounds , undefined, "Test for textTrack addTextTrack API");

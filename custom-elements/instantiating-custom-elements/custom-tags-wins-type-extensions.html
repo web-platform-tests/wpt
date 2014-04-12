@@ -19,8 +19,8 @@ test(function() {
 		prototype: Object.create( HTMLButtonElement.prototype ),
 		extends: 'button'
 	} );
-	var instance = document.createElement( 'custom-tags', 'custom-button' );
-	assert_true( instance instanceof Tag );
+	var instance = document.createElement( 'custom-tags', 'type-extensions' );
+	assert_true( instance instanceof Tag, 'A custom-tags wins a type-extensions' );
 
 }, 'If both types of custom element types are provided at the time of element\'s instantiation, the custom tag must win over the type extension. ');
 </script>

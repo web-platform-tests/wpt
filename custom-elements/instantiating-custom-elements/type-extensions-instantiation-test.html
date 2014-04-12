@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>When an HTML Document is loaded in a browsing context, a new registry must be created and associated with this document</title>
+<title>As the value of the is attribute of the custom element. custom element types given this way are called type extensions.</title>
 <meta name="author" title="Bon-Yong Lee" href="mailto:bylee78@gmail.com">
 <meta name="assert" content="As the value of the is attribute of the custom element. custom element types given this way are called type extensions.">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
@@ -23,7 +23,7 @@ test(function() {
 	document.body.appendChild( instance );
 	var element = document.querySelector( 'button' );
 
-	assert_true( instance instanceof Extension, 'A instance created using local name is of a custom tag type' )
+	assert_true( element instanceof Extension, 'A instance created using local name is of a custom tag type' )
 
 }, 'As the value of the is attribute of the custom element. custom element types given this way are called type extensions.');
 </script>

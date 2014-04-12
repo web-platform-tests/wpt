@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>2dcontext image smoothing test</title>
+    <title>CanvasRenderingContext2D imageSmoothingEnabled test</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <link rel="stylesheet" href="/resources/testharness.css" media="all">
@@ -10,38 +10,37 @@
   </head>
   <body>
     <div id="log"></div>
-    <canvas id="test_canvas"></canvas>
+    <canvas id="test_canvas_1"></canvas>
+    <canvas id="test_canvas_2"></canvas>
+    <canvas id="test_canvas_3"></canvas>
 
     <script>    
     (function() {
       test(function() {
-        var canvas = document.getElementById('test_canvas');
+        var canvas = document.getElementById('test_canvas_1');
         var ctx = canvas.getContext('2d');
 
-        //console.log("1:" +  ctx.imageSmoothingEnabled);
-        assert_true(ctx.imageSmoothingEnabled);
+        assert_true(ctx.imageSmoothingEnabled);        
+      }, "When the CanvasRenderingContext2D object is created, the attribute must be set to true.");  
 
-        test(function() {
-        var canvas = document.getElementById('test_canvas');
+      test(function() {
+        var canvas = document.getElementById('test_canvas_2');
         var ctx = canvas.getContext('2d');
 
-        ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingEnabled = false;
-        ctx.imageSmoothingEnabled = true;
-        //console.log("2:" + ctx.imageSmoothingEnabled);
-        assert_true(ctx.imageSmoothingEnabled);
+        assert_false(ctx.imageSmoothingEnabled);
         }, "On getting the imageSmoothingEnabled attribute, the user agent must return the last value it was set to.");
 
         test(function() {
-          var canvas = document.getElementById('test_canvas');
+          var canvas = document.getElementById('test_canvas_3');
           var ctx = canvas.getContext('2d');
 
           ctx.imageSmoothingEnabled = false;
-          //console.log("3:" + ctx.imageSmoothingEnabled);
-          assert_false(ctx.imageSmoothingEnabled); 
+          assert_equals(ctx.imageSmoothingEnabled, false); 
         }, "On setting the imageSmoothingEnabled attribute, it must be set to the new value.");
-      }, "When the CanvasRenderingContext2D object is created, the attribute must be set to true.");      
     })();
+
+
     </script>
   </body>
 </html>

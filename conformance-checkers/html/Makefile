@@ -8,12 +8,12 @@ PYTHONFLAGS=
 
 .PHONY: ins-del-datetime .FORCE
 
-all: ins-del-datetime meta-extensions elements/meta/names-registered-isvalid.html
+all: ins-del-datetime tools/meta-extensions elements/meta/names-registered-isvalid.html
 
 ins-del-datetime: tools/ins-del-datetime.py
 	$(PYTHON) $(PYTHONFLAGS) $<
 
-meta-extensions: .FORCE
+tools/meta-extensions: .FORCE
 	$(CURL) $(CURLFLAGS) $(META_EXTENSIONS) > $@
 
 elements/meta/names-registered-isvalid.html: .FORCE

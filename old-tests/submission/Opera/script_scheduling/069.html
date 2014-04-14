@@ -11,7 +11,7 @@
 </head>
 <body>
 	<script>
-		testlib.addScript('', {src:'scripts/find-foo.js'}, document.getElementsByTagName('head')[0], true);
+		testlib.addScript('', {src:'scripts/find-foo.js?pipe=trickle(d1)'}, document.getElementsByTagName('head')[0], true);
 	</script>
 	<div id="log">FAILED (This TC requires JavaScript enabled)</div>
         <p><span id="foo"></span></p>
@@ -19,7 +19,7 @@
 	<script type="text/javascript">
 	var t = async_test()
 
-        //XXX This test is racy, need to make scipts load slowly
+        //XXX This test is racy, need to make scripts load slowly
 	function test() {
 		if(!(window.findFooLoaded && window.findBodyLoaded)) {
                     return setTimeout(test,200);

@@ -13,7 +13,10 @@ class CommandExecutor(object):
     _HEADERS = {
         "User-Agent": "Python WebDriver Local End",
         "Content-Type": "application/json;charset=\"UTF-8\"",
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Accept-Charset": "utf-8",
+        "Accept-Encoding": "identity",
+        "Connection": "close",
         }
 
     def __init__(self, url, mode='strict'):
@@ -62,10 +65,12 @@ class CommandExecutor(object):
         body = {'sessionId': session_id, 'name': name }
         if parameters:
             body.update(parameters)
+
         self._conn.request(
             method,
             self._parsed_url.path + path,
-            json.dumps(parameters, default = self._json_encode).encode('utf-8'))
+            json.dumps(body, default = self._json_encode).encode('utf-8'),
+            self._HEADERS)
         resp = self._conn.getresponse()
         data = resp.read().decode('utf-8')
         if data:
@@ -92,7 +97,8 @@ class CommandExecutor(object):
         self._conn.request(
             method,
             self._parsed_url.path + path,
-            json.dumps(body, default = self._json_encode).encode('utf-8'))
+            json.dumps(body, default = self._json_encode).encode('utf-8'),
+            self._HEADERS)
         resp = self._conn.getresponse()
         data = json.loads(
             resp.read().decode('utf-8'), object_hook = object_hook)

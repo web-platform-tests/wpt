@@ -7,34 +7,50 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="utils.js"></script>
 <div id="log"></div>
-<input type=text id=text1 value="foobar" required>
-<input type=text id=text2 required>
-<form id=form1>
-  <input type=text id=text3 value="foobar" required>
-</form>
-<form id=form2>
-  <input type=text id=text4 required>
-</form>
-<fieldset id=fieldset1>
-  <input type=text id=text5 value="foobar" required>
-</fieldset>
-<fieldset id=fieldset2>
-  <input type=text id=text6 required>
-</fieldset>
-<input type=text id=text7 value="AAA" pattern="[0-9][A-Z]{3}">
-<input type=text id=text8 value="0AAA" pattern="[0-9][A-Z]{3}">
-<input type=number id=number1 value=0 min=1>
-<input type=number id=number2 value=1 min=1>
+<div id='simpleTextConstraints'>
+  <input type=text id=text1 value="foobar" required>
+  <input type=text id=text2 required>
+  <form id=form1>
+    <input type=text id=text3 value="foobar" required>
+  </form>
+  <form id=form2>
+    <input type=text id=text4 required>
+  </form>
+  <fieldset id=fieldset1>
+    <input type=text id=text5 value="foobar" required>
+  </fieldset>
+  <fieldset id=fieldset2>
+    <input type=text id=text6 required>
+  </fieldset>
+</div>
+<div id='patternConstraints'>
+  <input type=text id=text7 value="AAA" pattern="[0-9][A-Z]{3}">
+  <input type=text id=text8 value="0AAA" pattern="[0-9][A-Z]{3}">
+</div>
+<div id='numberConstraints'>
+  <input type=number id=number1 value=0 min=1>
+  <input type=number id=number2 value=1 min=1>
+</div>
 
 <script>
-  testSelector(":valid", ["text1", "form1", "text3", "fieldset1", "text5", "text8", "number2"], "':valid' matches elements that satisfy their constraints, <form>s/<fieldset>s with descendants that satisfy their constraints");
-  testSelector(":invalid", ["text2", "form2", "text4", "fieldset2", "text6", "text7", "number1"], "':invalid' matches elements that do not satisfy their constraints, <form>s/<fieldset>s with descendants that do not satisfy their constraints");
+  testSelector("#simpleTextConstraints :valid", ["text1", "form1", "text3", "fieldset1", "text5"], "':valid' matches elements that satisfy their simple text constraints, <form>s/<fieldset>s with descendants that satisfy their constraints");
+
+  testSelector("#patternConstraints :valid", [ "text8" ], "':valid' matches elements that satisfy their pattern constraints, <form>s/<fieldset>s with descendants that satisfy their constraints");
+
+  testSelector("#numberConstraints :valid", [ "number2" ], "':valid' matches elements that satisfy their number constraints, <form>s/<fieldset>s with descendants that satisfy their constraints");
+
+
+  testSelector("#simpleTextConstraints :invalid", ["text2", "form2", "text4", "fieldset2", "text6"], "':invalid' matches elements that do not satisfy their simple text  constraints, <form>s/<fieldset>s with descendants that do not satisfy their constraints");
+
+  testSelector("#patternConstraints :invalid", ["text7"], "':invalid' matches elements that do not satisfy their pattern constraints, <form>s/<fieldset>s with descendants that do not satisfy their constraints");
+
+  testSelector("#numberConstraints :invalid", ["number1"], "':invalid' matches elements that do not satisfy their number constraints, <form>s/<fieldset>s with descendants that do not satisfy their constraints");
 
   document.getElementById("text7").value="0BBB";
-  testSelector(":valid", ["text1", "form1", "text3", "fieldset1", "text5", "text7", "text8", "number2"], "':valid' matches new elements that satisfy their constraints");
-  testSelector(":invalid", ["text2", "form2", "text4", "fieldset2", "text6", "number1"], "':invalid' doesn't match new elements that satisfy their constraints");
+  testSelector("#patternConstraints :valid", [ "text7", "text8" ], "':valid' matches new elements that satisfy their constraints");
+  testSelector("#patternConstraints :invalid", [], "':invalid' doesn't match new elements that satisfy their constraints");
 
   document.getElementById("text8").value="BBB";
-  testSelector(":valid", ["text1", "form1", "text3", "fieldset1", "text5", "text7", "number2"], "':valid' doesn't match new elements that do not satisfy their constraints");
-  testSelector(":invalid", ["text2", "form2", "text4", "fieldset2", "text6", "text8", "number1"], "':invalid' matches new elements that do not satisfy their constraints");
+  testSelector("#patternConstraints :valid", ["text7"], "':valid' doesn't match new elements that do not satisfy their constraints");
+  testSelector("#patternConstraints :invalid", ["text8"], "':invalid' matches new elements that do not satisfy their constraints");
 </script>

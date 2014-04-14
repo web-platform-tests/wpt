@@ -31,7 +31,7 @@ test(function() {
     var proto = newHTMLElementPrototype();
     doc.registerElement('x-b', {prototype: proto});
     assert_equals(proto.createdCallbackCalledCounter, 0,
-        'Callback created should not be called before element instance was created');       
+        'Callback created should not be called before element instance was created');
     doc.body.innerHTML = '<x-b></x-b>';
     assert_equals(proto.createdCallbackCalledCounter, 1,
         'Callback created should be called after element instance was created');
@@ -77,13 +77,16 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    doc.body.innerHTML = '<x-f id="x-f"></x-f>';
-    var customElement = doc.querySelector('#x-f');
-
     var proto = newHTMLElementPrototype();
-    customElement.constructor.prototype = proto;
+    doc.registerElement('x-f', {prototype: proto});
+    doc.body.innerHTML = '<x-f-unresolved id="x-f-unresolved"></x-f-unresolved>';
     assert_equals(proto.createdCallbackCalledCounter, 0,
         'Callback created should not be called if custom element is unresolved');
+
+    var customElement = doc.querySelector('#x-f-unresolved');
+    customElement.constructor.prototype = proto;
+    assert_equals(proto.createdCallbackCalledCounter, 0,
+        'Created callback should not be called if custom element is unresolved');
 }, 'Test created callback if custom element is unresolved.');
 
 

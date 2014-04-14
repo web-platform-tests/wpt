@@ -165,6 +165,8 @@ testInIFrame('../../resources/blank.html', function(docWithBrowsingContext) {
     //  ....
     //   3. If ELEMENT is in a document and this document has a browsing context:
     //       1. Enqueue attached callback for ELEMENT
+    //
+    // Changes in the specification will follow, to reflect this exceptional case.
     assert_array_equals(proto2.callbackLog, ['created', 'attached'],
         'attached callback should be enqueued when custom element prototype is set');
 }, 'Test attached callback is enqueued after created callback, but before created callback had started');
@@ -209,7 +211,7 @@ testInIFrame('../../resources/blank.html', function(doc) {
     var proto = newPrototypeWithCallbackLog();
     proto.createdCallback = function() {
         proto.callbackLog.push('created');
-        this.parentNode.removeChild(this);
+        this.remove();
     };
 
     doc.registerElement('x-o', {prototype: proto});
@@ -230,6 +232,8 @@ testInIFrame('../../resources/x-element.html', function(doc) {
     //  ....
     //   3. If ELEMENT is in a document and this document has a browsing context:
     //       1. Enqueue attached callback for ELEMENT
+    //
+    // Changes in the specification will follow, to reflect this exceptional case.
     assert_array_equals(proto.callbackLog, ['created', 'attached'],
         'attached callback should be enqueued when custom element prototype is set');
 }, 'Test attached callback is enqueued after created callback after registration ' +

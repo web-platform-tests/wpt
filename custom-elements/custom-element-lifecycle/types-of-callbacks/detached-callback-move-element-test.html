@@ -119,8 +119,8 @@ moveTest.step(function() {
                 'Callback detached, defined in receiving document, should not be called');
 
             // test clean up
-            iframe1.parentNode.removeChild(iframe1);
-            iframe2.parentNode.removeChild(iframe2);
+            iframe1.remove();
+            iframe2.remove();
             moveTest.done();
         });
 

@@ -111,8 +111,8 @@ loseBrowsingContextTest.step(function() {
         doc.registerElement('x-element', {prototype: proto});
 
         var customElement = doc.querySelector('#x-element');
-        iframe.parentNode.removeChild(iframe);
-        customElement.parentNode.removeChild(customElement);
+        iframe.remove();
+        customElement.remove();
 
         assert_equals(proto.detachedCallbackCalledCounter, 0,
             'Callback detached should not be called if the document has no browsing context');
@@ -133,12 +133,12 @@ navigateTest.step(function() {
         customElement = doc.querySelector('#x-element');
 
         iframe.onload = navigateTest.step_func(function() {
-            customElement.parentNode.removeChild(customElement);
+            customElement.remove();
             assert_equals(proto.detachedCallbackCalledCounter, 0,
                 'Callback detached should not be called ' +
                 'if the document has no browsing context');
             navigateTest.done();
-            iframe.parentNode.removeChild(iframe);
+            iframe.remove();
         });
         iframe.src = '../../resources/blank.html';
     });

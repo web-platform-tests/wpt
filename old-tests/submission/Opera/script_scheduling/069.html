@@ -22,7 +22,7 @@
         //XXX This test is racy, need to make scripts load slowly
 	function test() {
 		if(!(window.findFooLoaded && window.findBodyLoaded)) {
-                    return setTimeout(test,200);
+                    return setTimeout(t.step_func(test),200);
                 }
 		assert_array_equals(eventOrder, ['document.body: <BODY>', 'found #foo element: YES']);
 		t.done();

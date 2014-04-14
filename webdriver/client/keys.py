@@ -30,7 +30,7 @@ class Keys:
     RIGHT = '\uE014'
     ARROW_RIGHT = '\uE014'
     DOWN = '\uE015'
-    ARROW_DOWN = '\uE015
+    ARROW_DOWN = '\uE015'
     INSERT = '\uE016'
     DELETE = '\uE017'
     SEMICOLON = '\uE018'

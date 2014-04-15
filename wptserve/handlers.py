@@ -220,6 +220,7 @@ def as_is_handler(request, response):
     try:
         with open(path) as f:
             response.writer.write_content(f.read())
+        response.close_connection = True
     except IOError:
         raise HTTPException(404)
 

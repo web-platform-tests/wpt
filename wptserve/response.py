@@ -68,6 +68,7 @@ class Response(object):
         self.add_required_headers = True
         self.send_body_for_head_request = False
         self.explicit_flush = False
+        self.close_connection = False
 
         self.writer = ResponseWriter(handler, self)
 
@@ -401,6 +402,8 @@ class ResponseWriter(object):
             self.write_default_headers()
 
         self.write("\r\n")
+        if not "content-length" in self._headers_seen:
+            self._response.close_connection = True
         if not self._response.explicit_flush:
             self.flush()
         self._headers_complete = True

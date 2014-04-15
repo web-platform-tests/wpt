@@ -15,7 +15,7 @@ There are several built-in pipe functions, and it is possible to add
 more using the `@pipe` decorator on a function, if required.
 
 .. note::
-   Because of the way pipes compose using some pipe functions prevents the
+   Because of the way pipes compose, using some pipe functions prevents the
    content-length of the response from being known in advance. In these cases
    the server will close the connection to indicate the end of the response,
    preventing the use of HTTP 1.1 keepalive.

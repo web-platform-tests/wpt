@@ -23,7 +23,7 @@
 }
 	onload = t.step_func(function(){
 		script.src='scripts/include-1.js';
-		setTimeout( test, 100);
+		setTimeout(t.step_func(test), 100);
 	})
 	</script>
 

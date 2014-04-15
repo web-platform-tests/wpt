@@ -14,6 +14,12 @@ code 404.
 There are several built-in pipe functions, and it is possible to add
 more using the `@pipe` decorator on a function, if required.
 
+.. note::
+   Because of the way pipes compose, using some pipe functions prevents the
+   content-length of the response from being known in advance. In these cases
+   the server will close the connection to indicate the end of the response,
+   preventing the use of HTTP 1.1 keepalive.
+
 Built-In Pipes
 --------------
 
@@ -108,6 +114,9 @@ Would send the first 20 bytes of example.txt.
 
 trickle
 ~~~~~~~
+
+.. note::
+   Using this function will force a connection close.
 
 Used to send the body of a response in chunks with delays. Takes a
 single argument that is a microsyntax consisting of colon-separated

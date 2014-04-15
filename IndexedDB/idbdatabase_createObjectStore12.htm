@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>IDBDatabase.createObjectStore() - object store 'name' set to null/undefined </title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBDatabase-createObjectStore-IDBObjectStore-DOMString-name-IDBObjectStoreParameters-optionalParameters">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+<div id="log"></div>
+<script>
+var t = async_test(),
+    open_rq = createdb(t);
+
+open_rq.onupgradeneeded = function(e) {
+    var db = e.target.result;
+
+    objStore = db.createObjectStore(null);
+    assert_equals(objStore.name, 'null', "object store name");
+
+    objStore = db.createObjectStore(undefined);
+    assert_equals(objStore.name, 'undefined', "object store name");
+
+    t.done();
+}
+</script>
+

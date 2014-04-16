@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>insertAdjacentHTML</title>
+  <title>MediaSource#duration</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -26,7 +26,7 @@ function GET(url, processBody) {
         if (xhr.status != 200) {
             alert("Unexpected status code " + xhr.status + " for " + url);
             return false;
-        }        
+        }
         processBody(new Uint8Array(xhr.response));
     };
 }
@@ -49,34 +49,23 @@ test(function() {
 }, 'MediaSource#duration : initial state');
 
 async_test(function(t) {
-    GET(FILE, function(uInt8Array) {
-        var data = new Blob([uInt8Array], {type: 'video/webm'});
-        var chunkNum = 5;
-        var chunkSize = Math.ceil(data.size / chunkNum);
-        var chunkIdx = 0;
+    GET(FILE, function(data) {
         var mediaSource = new MediaSource();
-        
-        mediaSource.addEventListener('sourceopen', function(e){
-            //playback 1st chunk
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            var startByte = chunkSize * chunkIdx;
-            var chunk = data.slice(startByte, startByte + chunkSize);
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var data = new Uint8Array(e.target.result);
-                sourceBuffer.appendBuffer(data);
-                chunkIdx++;
-            };
-            reader.readAsArrayBuffer(chunk);
 
-            sourceBuffer.addEventListener('update', function(e) {                
+        mediaSource.addEventListener('sourceopen', function(e){
+            var sourceBuffer = mediaSource.addSourceBuffer(mime);
+            
+            sourceBuffer.addEventListener('updatestart', function(e) {
+                console.log(this.updating);
                 t.step(function() {
-                    assert_throws({name : 'InvalidStateErrors'},
-                                  function() { mediaSource.duration = 1; },
-                                  'Set invalid duration');
+                    assert_throws(
+                        {name : 'InvalidStateErrors'},
+                        function() { mediaSource.duration = 1; }
+                    );
                 });
                 t.done();
             });
+            sourceBuffer.appendBuffer(data);
         }, false);
         video.src = window.URL.createObjectURL(mediaSource);
     });
@@ -85,4 +74,3 @@ async_test(function(t) {
 </script>
 </body>
 </html>
-

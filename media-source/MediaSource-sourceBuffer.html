@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>insertAdjacentHTML</title>
+  <title>Initial state of MediaSource#sourceBuffers</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -14,10 +14,6 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
-var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
-
 test(function() {
     var mediaSource = new MediaSource();
     assert_equals(mediaSource.sourceBuffers.length, 0);

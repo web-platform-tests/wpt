@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>insertAdjacentHTML</title>
+  <title>MediaSource#addSourceBuffer(not_supported_MIME)</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -16,19 +16,23 @@
 var FILE = 'test.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
-
 async_test(function(t) {
     var mediaSource = new MediaSource();
     mediaSource.addEventListener('sourceopen', function(e){
-        var sourceBuffer = this.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+        var sourceBuffer = null;
         t.step(function() {
-            assert_not_equals(sourceBuffer.textTracks, undefined,
-                              'textTracks should be returned');
+            assert_throws(
+                {name : 'NotSupportedError'},
+                function() {
+                    sourceBuffer = mediaSource.addSourceBuffer('text/html');
+                },
+                'Set invalid MIME'
+            );
         });
         t.done();
     }, false);
     video.src = window.URL.createObjectURL(mediaSource);
-}, "MediaSource#removeSouceBuffer : 8. Let SourceBuffer textTracks list equal the TextTrackList object returned by sourceBuffer.textTracks.");
+}, 'MediaSource#addSourceBuffer : If type contains a MIME type that is not supported or contains a MIME type that is not supported with the types specified for the other SourceBuffer objects in sourceBuffers, then throw a NOT_SUPPORTED_ERR exception and abort these steps.');
 
 </script>
 </body>

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>insertAdjacentHTML</title>
+  <title>MediaSource#addSourceBuffer(null) and MediaSource#addSourceBuffer("")</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -25,22 +25,22 @@ async_test(function(t) {
         t.step(function() {
             assert_throws({name : 'InvalidAccessError'},
                           function() {
-                              sourceBuffer = mediaSource.addSourceBuffer(null)
+                              sourceBuffer = mediaSource.addSourceBuffer(null);
                           },
-                          'Set invalid MIME');
+                          'Set null');
         });
         t.step(function() {
             assert_throws({name : 'InvalidAccessError'},
                           function() {
-                              sourceBuffer = mediaSource.addSourceBuffer(''); 
+                              sourceBuffer = mediaSource.addSourceBuffer('');
                           },
-                          'Set invalid MIME');
+                          'Set a empty string');
         });
         t.done();
         mediaSource.endOfStream();
     }, false);
     video.src = window.URL.createObjectURL(mediaSource);
-}, 'MediaSource#addSourceBuffer : 1. If type is null or an empty string then throw an INVALID_ACCESS_ERR exception and abort these steps.');
+}, 'MediaSource#addSourceBuffer : If type is null or an empty string then throw an INVALID_ACCESS_ERR exception and abort these steps.');
 
 </script>
 </body>

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>insertAdjacentHTML</title>
+  <title>Removing sourceBuffer with unrelated mediaSource</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -20,18 +20,17 @@ var mime = 'video/webm; codecs="vorbis,vp8"';
 async_test(function(t) {
     var mediaSource1 = new MediaSource();
     mediaSource1.addEventListener('sourceopen', function(e){
-        //playback 1st chunk
-        var sourceBuffer1 = mediaSource1.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+        var sourceBuffer1 = mediaSource1.addSourceBuffer(mime);
         var mediaSource2 = new MediaSource();
         mediaSource2.addEventListener('sourceopen', function(e){
-            //playback 1st chunk
-            var sourceBuffer2 = mediaSource2.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+            var sourceBuffer2 = mediaSource2.addSourceBuffer(mime);
             t.step(function() {
-                assert_throws({name : 'NotFoundError'},
-                              function() {
-                                  mediaSource2.removeSourceBuffer(sourceBuffer1);
-                              },
-                              'Set invalid MIME');
+                assert_throws(
+                    {name : 'NotFoundError'},
+                    function() {
+                        mediaSource2.removeSourceBuffer(sourceBuffer1);
+                    },
+                    'Remove sourceBuffer which is created by mediaSource2');
             });
             t.done();
         });
@@ -39,7 +38,7 @@ async_test(function(t) {
         video2.src = window.URL.createObjectURL(mediaSource2);
     }, false);
     video.src = window.URL.createObjectURL(mediaSource1);
-}, 'MediaSource#removeSouceBuffer : 2. If sourceBuffer specifies an object that is not in sourceBuffers then throw a NOT_FOUND_ERR exception and abort these steps.');
+}, 'MediaSource#removeSouceBuffer : If sourceBuffer specifies an object that is not in sourceBuffers then throw a NOT_FOUND_ERR exception and abort these steps.');
 
 </script>
 </body>

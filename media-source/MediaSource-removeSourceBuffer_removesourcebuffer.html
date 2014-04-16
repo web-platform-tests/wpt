@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>insertAdjacentHTML</title>
+  <title>removesourcebuffer event</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -44,8 +44,8 @@ async_test(function(t) {
     });
     video.src = window.URL.createObjectURL(mediaSource);
 }, "MediaSource#removeSouceBuffer : " + 
-     "10. If sourceBuffer is in activeSourceBuffers, then remove sourceBuffer from activeSourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by activeSourceBuffers." + 
-     "11. Remove sourceBuffer from sourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by sourceBuffers.");
+     "If sourceBuffer is in activeSourceBuffers, then remove sourceBuffer from activeSourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by activeSourceBuffers." + 
+     "Remove sourceBuffer from sourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by sourceBuffers.");
 
 </script>
 </body>

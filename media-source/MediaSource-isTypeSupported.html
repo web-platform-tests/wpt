@@ -2,10 +2,12 @@
 <html>
 <head>
   <meta charset='utf-8'>
+  <title>MediaSource.isTypeSupported()</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
+<div id="log"></div>
 <script>
 var mime = 'video/webm; codecs="vorbis,vp8"';
 test(function() {
@@ -13,28 +15,29 @@ test(function() {
     
     //failure test
     assert_equals(MediaSource.isTypeSupported(''), false,
-                  '1. If type is an empty string, then return false');
-
+                  'If type is an empty string, then return false');
+    
     assert_equals(MediaSource.isTypeSupported('XXX; codecs="vorbis,vp8"'), false,
-                  '2. If type does not contain a valid MIME type string, then return false');
-
+                  'If type does not contain a valid MIME type string, then return false');
+    
     assert_equals(MediaSource.isTypeSupported('text/html'), false,
-                  '3. If type contains a media type or media subtype that the MediaSource does not support, then return false');
+                  'If type contains a media type or media subtype that the MediaSource does not support, then return false');
     assert_equals(MediaSource.isTypeSupported('image/jpeg'), false,
-                  '3. If type contains a media type or media subtype that the MediaSource does not support, then return false');
-
+                  'If type contains a media type or media subtype that the MediaSource does not support, then return false');
+    
     assert_equals(MediaSource.isTypeSupported('video/webm; codecs="XXX,vp8"'), false,
-                  '4. If type contains a codec that the MediaSource does not support, then return false.');
+                  'If type contains a codec that the MediaSource does not support, then return false.');
     assert_equals(MediaSource.isTypeSupported('video/webm; codecs="vorbis,XXX"'), false,
-                  '4. If type contains a codec that the MediaSource does not support, then return false.');
+                  'If type contains a codec that the MediaSource does not support, then return false.');
     assert_equals(MediaSource.isTypeSupported('video/webm; codecs="XXX"'), false,
-                  '4. If type contains a codec that the MediaSource does not support, then return false.');
-
+                  'If type contains a codec that the MediaSource does not support, then return false.');
+    
     assert_equals(MediaSource.isTypeSupported('video/webm; codecs="base64"'), false,
-                  '5. If the MediaSource does not support the specified combination of media type, media subtype, and codecs then return false');
+                  'If the MediaSource does not support the specified combination of media type, media subtype, and codecs then return false');
     assert_equals(MediaSource.isTypeSupported('image/jpeg; codecs="vorbis,vp8"'), false,
-                  '5. If the MediaSource does not support the specified combination of media type, media subtype, and codecs then return false');    
+                  'If the MediaSource does not support the specified combination of media type, media subtype, and codecs then return false');    
 }, 'MediaSource.isTypeSupported()');
 </script>
 </body>
 </html>
+

@@ -13,52 +13,35 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 
-function GET(url, processBody) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'arraybuffer';
-    xhr.send();
-    xhr.onload = function(e) {
-        if (xhr.status != 200) {
-            alert("Unexpected status code " + xhr.status + " for " + url);
-            return false;
-        }
-        processBody(new Uint8Array(xhr.response));
-    };
-}
 async_test(function(t) {
-    GET(FILE, function(data) {
-        var mediaSource = new MediaSource();
-        mediaSource.addEventListener('sourceopen', function(e){
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            t.step(function() {
-                assert_throws({name: 'InvalidAccessError'},
-                              function() {
-                                  sourceBuffer.appendWindowEnd = Number.NaN;
-                              },
-                              'The new value is NaN');
-                assert_throws({name: 'InvalidAccessError'},
-                              function() {
-                                  sourceBuffer.appendWindowStart = 1;
-                                  sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart - 1;
-                              },
-                              'The new value is less than appendWindowStart');
-                assert_throws({name: 'InvalidAccessError'},
-                              function() {
-                                  
-                                  sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart;
-                              },
-                              'The new value is equal to appendWindowStart');
-            });
-            t.done();
-            sourceBuffer.appendBuffer(data);
+    var mediaSource = new MediaSource();
+    mediaSource.addEventListener('sourceopen', function(e){
+        var sourceBuffer = mediaSource.addSourceBuffer(mime);
+        t.step(function() {
+            assert_throws({name: 'InvalidAccessError'},
+                          function() {
+                              sourceBuffer.appendWindowEnd = Number.NaN;
+                          },
+                          'The new value is NaN');
+            assert_throws({name: 'InvalidAccessError'},
+                          function() {
+                              sourceBuffer.appendWindowStart = 1;
+                              sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart - 1;
+                          },
+                          'The new value is less than appendWindowStart');
+            assert_throws({name: 'InvalidAccessError'},
+                          function() {
+                              
+                              sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart;
+                          },
+                          'The new value is equal to appendWindowStart');
         });
-        video.src = window.URL.createObjectURL(mediaSource);
+        t.done();
     });
+    video.src = window.URL.createObjectURL(mediaSource);
 },
 'SourceBuffer#appendWindowEnd : If the new value equals NaN, INVALID_ACCESS_ERR exception should be thrown.' +
 'If the new value is less than or equal to appendWindowStart, INVALID_ACCESS_ERR exception should be thrown.'

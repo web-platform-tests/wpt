@@ -35,28 +35,26 @@ async_test(function(t) {
         var mediaSource = new MediaSource();
         mediaSource.addEventListener('sourceopen', function(e){
             var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            sourceBuffer.addEventListener('updateend', function(e) {
-                t.step(function() {
-                    assert_throws({name: 'InvalidAccessError'},
-                                  function() {
-                                      sourceBuffer.appendWindowEnd = Number.NaN;
-                                  },
-                                  'The new value is NaN');
-                    assert_throws({name: 'InvalidAccessError'},
-                                  function() {
-                                      sourceBuffer.appendWindowStart = 1;
-                                      sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart - 1;
-                                  },
-                                  'The new value is less than appendWindowStart');
-                    assert_throws({name: 'InvalidAccessError'},
-                                  function() {
-                                      
-                                      sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart;
-                                  },
-                                  'The new value is equal to appendWindowStart');
-                });
-                t.done();
+            t.step(function() {
+                assert_throws({name: 'InvalidAccessError'},
+                              function() {
+                                  sourceBuffer.appendWindowEnd = Number.NaN;
+                              },
+                              'The new value is NaN');
+                assert_throws({name: 'InvalidAccessError'},
+                              function() {
+                                  sourceBuffer.appendWindowStart = 1;
+                                  sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart - 1;
+                              },
+                              'The new value is less than appendWindowStart');
+                assert_throws({name: 'InvalidAccessError'},
+                              function() {
+                                  
+                                  sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart;
+                              },
+                              'The new value is equal to appendWindowStart');
             });
+            t.done();
             sourceBuffer.appendBuffer(data);
         });
         video.src = window.URL.createObjectURL(mediaSource);

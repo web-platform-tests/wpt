@@ -30,9 +30,10 @@ policies and contribution forms [3].
  * Within each test one may have a number of asserts. The test fails at the
  * first failing assert, and the remainder of the test is (typically) not run.
  *
- * If the file containing the tests is a HTML file with an element of id "log"
- * this will be populated with a table containing the test results after all
- * the tests have run.
+ * If the file containing the tests is a HTML file, a table containing the test
+ * results will be added to the document after all tests have run. By default this
+ * will be added to a div element with id=log if it exists, or a new div element
+ * appended to document.body if it does not.
  *
  * NOTE: By default tests must be created before the load event fires. For ways
  *       to create tests after the load event, see "Determining when all tests
@@ -118,6 +119,30 @@ policies and contribution forms [3].
  *
  * object.some_event = t.step_func(function(e) {assert_true(e.a)});
  *
+ * == Single Page Tests ==
+ *
+ * Sometimes, particularly when dealing with asynchronous behaviour,
+ * having exactly one test per page is desirable, and the overhead of
+ * wrapping everything in functions for isolation becomes
+ * burdensome. For these cases testharness.js support "single page
+ * tests".
+ *
+ * In order for a test to be interpreted as a "single page" test, the
+ * it must simply not call test() or async_test() anywhere on the page, and
+ * must call the done() function to indicate that the test is complete. All
+ * the assert_* functions are avaliable as normal, but are called without
+ * the normal step function wrapper. For example:
+ *
+ * <!doctype html>
+ * <title>Example single-page test</title>
+ * <body>
+ *   <script>
+ *     assert_equals(document.body, document.getElementsByTagName("body")[0])
+ *     done()
+ *  </script>
+ *
+ * The test title for sinple page tests is always taken from document.title.
+ *
  * == Making assertions ==
  *
  * Functions for making assertions start assert_
@@ -184,7 +209,8 @@ policies and contribution forms [3].
  *
  *
  * explicit_done - Wait for an explicit call to done() before declaring all
- *                 tests complete (see below)
+ *                 tests complete (see below; implicitly true for single page
+ *                 tests)
  *
  * output_document - The document to which results should be logged. By default
  *                   this is the current document but could be an ancestor

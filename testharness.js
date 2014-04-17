@@ -1409,7 +1409,7 @@ policies and contribution forms [3].
 
         for (var p in properties) {
             if (properties.hasOwnProperty(p)) {
-                var value = properties[p]
+                var value = properties[p];
                 if (p == "allow_uncaught_exception") {
                     this.allow_uncaught_exception = value;
                 } else if (p == "explicit_done" && value) {
@@ -1445,7 +1445,7 @@ policies and contribution forms [3].
         this.file_is_test = true;
         // Create the test, which will add it to the list of tests
         async_test();
-    }
+    };
 
     Tests.prototype.get_timeout = function() {
         var metas = document.getElementsByTagName("meta");
@@ -1638,13 +1638,11 @@ policies and contribution forms [3].
     var tests = new Tests();
 
     addEventListener("error", function(e) {
-        //TODO: Remove duplication
         if (tests.file_is_test) {
             var test = tests.tests[0];
             if (test.phase >= test.phases.HAS_RESULT) {
                 return;
             }
-            //TODO: fix error message
             var message = e.message;
             test.set_status(test.FAIL, message);
             test.phase = test.phases.HAS_RESULT;
@@ -1709,8 +1707,7 @@ policies and contribution forms [3].
                                         properties.output : settings.output);
     };
 
-    Output.prototype.init = function(properties)
-    {
+    Output.prototype.init = function(properties) {
         if (this.phase >= this.STARTED) {
             return;
         }
@@ -1722,8 +1719,7 @@ policies and contribution forms [3].
         this.phase = this.STARTED;
     };
 
-    Output.prototype.resolve_log = function()
-    {
+    Output.prototype.resolve_log = function() {
         var output_document;
         if (typeof this.output_document === "function") {
             output_document = this.output_document.apply(undefined);
@@ -1735,6 +1731,9 @@ policies and contribution forms [3].
         }
         var node = output_document.getElementById("log");
         if (!node) {
+            if (!document.body) {
+                return;
+            }
             node = output_document.createElement("div");
             output_document.body.appendChild(node);
         }
@@ -1742,8 +1741,7 @@ policies and contribution forms [3].
         this.output_node = node;
     };
 
-    Output.prototype.show_status = function()
-    {
+    Output.prototype.show_status = function() {
         if (this.phase < this.STARTED) {
             this.init();
         }
@@ -1766,8 +1764,7 @@ policies and contribution forms [3].
         }
     };
 
-    Output.prototype.show_results = function (tests, harness_status)
-    {
+    Output.prototype.show_results = function (tests, harness_status) {
         if (this.phase >= this.COMPLETE) {
             return;
         }
@@ -2135,12 +2132,8 @@ policies and contribution forms [3].
         }
         if (expected_true !== true) {
             var msg = make_message(function_name, description,
-                                   error, substitutions)
-            if (!tests.file_is_test) {
-                throw new AssertionError(msg);
-            } else {
-                throw msg;
-            }
+                                   error, substitutions);
+            throw new AssertionError(msg);
         }
     }
 
@@ -2148,6 +2141,10 @@ policies and contribution forms [3].
     {
         this.message = message;
     }
+
+    AssertionError.prototype.toString = function() {
+        return this.message;
+    };
 
     function make_message(function_name, description, error, substitutions)
     {

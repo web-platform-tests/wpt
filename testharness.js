@@ -162,6 +162,13 @@ policies and contribution forms [3].
  * to the longer test timeout, the test must specify a meta element:
  * <meta name="timeout" content="long">
  *
+ * Occasionally tests may have a race between the harness timing out and
+ * a particular test failing; typically when the test waits for some event
+ * that never occurs. In this case it is possible to use test.force_timeout()
+ * in place of assert_unreached(), to immediately fail the test but with a
+ * status of "timeout". This should only be used as a last resort when it is
+ * not possible to make the test reliable in some other way.
+ *
  * == Setup ==
  *
  * Sometimes tests require non-trivial setup that may fail. For this purpose
@@ -1213,6 +1220,11 @@ policies and contribution forms [3].
     Test.prototype.add_cleanup = function(callback) {
         this.cleanup_callbacks.push(callback);
     };
+
+    Test.prototype.force_timeout = function() {
+        this.set_status(this.TIMEOUT);
+        this.phase = this.phases.HAS_RESULT;
+    }
 
     Test.prototype.set_timeout = function()
     {

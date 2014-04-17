@@ -119,6 +119,11 @@ policies and contribution forms [3].
  *
  * object.some_event = t.step_func(function(e) {assert_true(e.a)});
  *
+ * For asynchronous callbacks that should never execute, unreached_func can
+ * be used. For example:
+ *
+ * object.some_event = t.unreached_func("some_event should not fire");
+ *
  * == Single Page Tests ==
  *
  * Sometimes, particularly when dealing with asynchronous behaviour,
@@ -1231,7 +1236,7 @@ policies and contribution forms [3].
 
         return function()
         {
-            test_this.step.apply(test_this, [func, this_obj].concat(
+            return test_this.step.apply(test_this, [func, this_obj].concat(
                 Array.prototype.slice.call(arguments)));
         };
     };
@@ -1252,6 +1257,29 @@ policies and contribution forms [3].
             }
             test_this.done();
         };
+    };
+
+    Test.prototype.unreached_func = function(description, this_obj)
+    {
+        var test_this = this;
+
+        if (arguments.length === 1) {
+            this_obj = test_this;
+        }
+
+        return function()
+        {
+            test_this.step.call(test_this, function() {
+                assert_unreached(description);
+            });
+        };
+    };
+
+    Test.prototype.unreached_func = function(description)
+    {
+        return this.step_func(function() {
+            assert_unreached(description);
+        });
     };
 
     Test.prototype.add_cleanup = function(callback) {

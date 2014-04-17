@@ -17,7 +17,7 @@ function run(){
       t.done();
     });
   });
-  ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
+  ws.onerror = ws.onmessage = ws.onclose = t.step_func(function(e) {assert_unreached("Got unexpected event " + e.type)});
 }
 </script>
 <iframe src='data:text/html,foo' onload='if (hasRun) return; hasRun = true; t.step(run)'></iframe>

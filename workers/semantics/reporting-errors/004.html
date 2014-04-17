@@ -17,7 +17,7 @@ onconnect = function (e) {
 setup({allow_uncaught_exception:true});
 var t = async_test(function() {
   window.onerror = this.step_func(function(a) {
-    assert_unreached('(outer) window.onerror invoked: '+a);
+    assert_unreached('(outer) window.onerror invoked: ' + a);
   });
   var worker = new SharedWorker('#', '');
   worker.addEventListener('error', this.step_func(function(e) {

@@ -135,6 +135,8 @@ policies and contribution forms [3].
  *
  * <!doctype html>
  * <title>Example single-page test</title>
+ * <script src="/resources/testharness.js"></script>
+ * <script src="/resources/testharnessreport.js"></script>
  * <body>
  *   <script>
  *     assert_equals(document.body, document.getElementsByTagName("body")[0])

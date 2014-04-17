@@ -17,6 +17,17 @@ var FILE = 'test.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {    
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test.");
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -31,6 +42,9 @@ function GET(url, processBody) {
     };
 }
 async_test(function(t) {
+    if(!canPlayType.bind(t)(mime)) {
+        return;
+    }
     GET(FILE, function(data) {
         var mediaSource = new MediaSource();
         var events = [];

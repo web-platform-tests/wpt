@@ -1259,22 +1259,6 @@ policies and contribution forms [3].
         };
     };
 
-    Test.prototype.unreached_func = function(description, this_obj)
-    {
-        var test_this = this;
-
-        if (arguments.length === 1) {
-            this_obj = test_this;
-        }
-
-        return function()
-        {
-            test_this.step.call(test_this, function() {
-                assert_unreached(description);
-            });
-        };
-    };
-
     Test.prototype.unreached_func = function(description)
     {
         return this.step_func(function() {

@@ -30,9 +30,10 @@ policies and contribution forms [3].
  * Within each test one may have a number of asserts. The test fails at the
  * first failing assert, and the remainder of the test is (typically) not run.
  *
- * If the file containing the tests is a HTML file with an element of id "log"
- * this will be populated with a table containing the test results after all
- * the tests have run.
+ * If the file containing the tests is a HTML file, a table containing the test
+ * results will be added to the document after all tests have run. By default this
+ * will be added to a div element with id=log if it exists, or a new div element
+ * appended to document.body if it does not.
  *
  * NOTE: By default tests must be created before the load event fires. For ways
  *       to create tests after the load event, see "Determining when all tests
@@ -118,6 +119,32 @@ policies and contribution forms [3].
  *
  * object.some_event = t.step_func(function(e) {assert_true(e.a)});
  *
+ * == Single Page Tests ==
+ *
+ * Sometimes, particularly when dealing with asynchronous behaviour,
+ * having exactly one test per page is desirable, and the overhead of
+ * wrapping everything in functions for isolation becomes
+ * burdensome. For these cases testharness.js support "single page
+ * tests".
+ *
+ * In order for a test to be interpreted as a "single page" test, the
+ * it must simply not call test() or async_test() anywhere on the page, and
+ * must call the done() function to indicate that the test is complete. All
+ * the assert_* functions are avaliable as normal, but are called without
+ * the normal step function wrapper. For example:
+ *
+ * <!doctype html>
+ * <title>Example single-page test</title>
+ * <script src="/resources/testharness.js"></script>
+ * <script src="/resources/testharnessreport.js"></script>
+ * <body>
+ *   <script>
+ *     assert_equals(document.body, document.getElementsByTagName("body")[0])
+ *     done()
+ *  </script>
+ *
+ * The test title for sinple page tests is always taken from document.title.
+ *
  * == Making assertions ==
  *
  * Functions for making assertions start assert_
@@ -184,7 +211,8 @@ policies and contribution forms [3].
  *
  *
  * explicit_done - Wait for an explicit call to done() before declaring all
- *                 tests complete (see below)
+ *                 tests complete (see below; implicitly true for single page
+ *                 tests)
  *
  * output_document - The document to which results should be logged. By default
  *                   this is the current document but could be an ancestor
@@ -488,6 +516,12 @@ policies and contribution forms [3].
     }
 
     function done() {
+        if (tests.tests.length === 0) {
+            tests.set_file_is_test();
+        }
+        if (tests.file_is_test) {
+            tests.tests[0].done();
+        }
         tests.end_wait();
     }
 
@@ -1090,6 +1124,9 @@ policies and contribution forms [3].
 
     function Test(name, properties)
     {
+        if (tests.file_is_test && tests.tests.length) {
+            throw new Error("Tried to create a test with file_is_test");
+        }
         this.name = name;
 
         this.phases = {
@@ -1333,6 +1370,8 @@ policies and contribution forms [3].
 
         this.allow_uncaught_exception = false;
 
+        this.file_is_test = false;
+
         this.timeout_multiplier = 1;
         this.timeout_length = this.get_timeout();
         this.timeout_id = null;
@@ -1400,8 +1439,17 @@ policies and contribution forms [3].
         this.set_timeout();
     };
 
-    Tests.prototype.get_timeout = function()
-    {
+    Tests.prototype.set_file_is_test = function() {
+        if (this.tests.length > 0) {
+            throw new Error("Tried to set file as test after creating a test");
+        }
+        this.wait_for_finish = true;
+        this.file_is_test = true;
+        // Create the test, which will add it to the list of tests
+        async_test();
+    };
+
+    Tests.prototype.get_timeout = function() {
         var metas = document.getElementsByTagName("meta");
         for (var i = 0; i < metas.length; i++) {
             if (metas[i].name == "timeout") {
@@ -1414,8 +1462,7 @@ policies and contribution forms [3].
         return settings.harness_timeout.normal;
     };
 
-    Tests.prototype.set_timeout = function()
-    {
+    Tests.prototype.set_timeout = function() {
         var this_obj = this;
         clearTimeout(this.timeout_id);
         if (this.timeout_length !== null) {
@@ -1450,7 +1497,7 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.all_done = function() {
-        return (this.all_loaded && this.num_pending === 0 &&
+        return (this.tests.length > 0 && this.all_loaded && this.num_pending === 0 &&
                 !this.wait_for_finish && !this.processing_callbacks);
     };
 
@@ -1592,12 +1639,22 @@ policies and contribution forms [3].
 
     var tests = new Tests();
 
-    window.onerror = function(msg) {
-        if (!tests.allow_uncaught_exception) {
+    addEventListener("error", function(e) {
+        if (tests.file_is_test) {
+            var test = tests.tests[0];
+            if (test.phase >= test.phases.HAS_RESULT) {
+                return;
+            }
+            var message = e.message;
+            test.set_status(test.FAIL, message);
+            test.phase = test.phases.HAS_RESULT;
+            test.done();
+            done();
+        } else if (!tests.allow_uncaught_exception) {
             tests.status.status = tests.status.ERROR;
             tests.status.message = msg;
         }
-    };
+    });
 
     function timeout() {
         if (tests.timeout_length === null) {
@@ -1652,8 +1709,7 @@ policies and contribution forms [3].
                                         properties.output : settings.output);
     };
 
-    Output.prototype.init = function(properties)
-    {
+    Output.prototype.init = function(properties) {
         if (this.phase >= this.STARTED) {
             return;
         }
@@ -1665,8 +1721,7 @@ policies and contribution forms [3].
         this.phase = this.STARTED;
     };
 
-    Output.prototype.resolve_log = function()
-    {
+    Output.prototype.resolve_log = function() {
         var output_document;
         if (typeof this.output_document === "function") {
             output_document = this.output_document.apply(undefined);
@@ -1677,14 +1732,18 @@ policies and contribution forms [3].
             return;
         }
         var node = output_document.getElementById("log");
-        if (node) {
-            this.output_document = output_document;
-            this.output_node = node;
+        if (!node) {
+            if (!document.body) {
+                return;
+            }
+            node = output_document.createElement("div");
+            output_document.body.appendChild(node);
         }
+        this.output_document = output_document;
+        this.output_node = node;
     };
 
-    Output.prototype.show_status = function()
-    {
+    Output.prototype.show_status = function() {
         if (this.phase < this.STARTED) {
             this.init();
         }
@@ -1707,8 +1766,7 @@ policies and contribution forms [3].
         }
     };
 
-    Output.prototype.show_results = function (tests, harness_status)
-    {
+    Output.prototype.show_results = function (tests, harness_status) {
         if (this.phase >= this.COMPLETE) {
             return;
         }
@@ -2071,9 +2129,13 @@ policies and contribution forms [3].
      */
     function assert(expected_true, function_name, description, error, substitutions)
     {
+        if (tests.tests.length === 0) {
+            tests.set_file_is_test();
+        }
         if (expected_true !== true) {
-            throw new AssertionError(make_message(function_name, description,
-                                                  error, substitutions));
+            var msg = make_message(function_name, description,
+                                   error, substitutions);
+            throw new AssertionError(msg);
         }
     }
 
@@ -2081,6 +2143,10 @@ policies and contribution forms [3].
     {
         this.message = message;
     }
+
+    AssertionError.prototype.toString = function() {
+        return this.message;
+    };
 
     function make_message(function_name, description, error, substitutions)
     {

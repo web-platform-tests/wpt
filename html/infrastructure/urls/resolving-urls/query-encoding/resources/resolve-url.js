@@ -33,8 +33,7 @@ onload = function() {
                   if (new Date() - start > 10000) {
                       // If we set the status to TIMEOUT here we avoid a race between the
                       // page and the test timing out
-                      test_obj.set_status(test_obj.TIMEOUT);
-                      test_obj.phase = test_obj.phases.HAS_RESULT;
+                      test_obj.force_timeout();
                   }
                   setTimeout(poll, 200);
               } else {

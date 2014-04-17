@@ -1652,7 +1652,7 @@ policies and contribution forms [3].
             done();
         } else if (!tests.allow_uncaught_exception) {
             tests.status.status = tests.status.ERROR;
-            tests.status.message = msg;
+            tests.status.message = e.message;
         }
     });
 

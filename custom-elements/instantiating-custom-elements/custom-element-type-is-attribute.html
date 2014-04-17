@@ -14,53 +14,55 @@
 <div id="log"></div>
 <script type="text/javascript">
 test(function() {
-    HTML5_ELEMENTS.forEach(function(element) {
-        var doc = newHTMLDocument();
-        if (HTML5_DOCUMENT_ELEMENTS.indexOf(element) === -1) {
-            var obj = doc.createElement(element);
-            var name = 'x-a-' + element;
-            var proto = Object.create(obj.constructor.prototype);
-            doc.registerElement(name, {prototype: proto, extends: element});
-
-            if (HTML5_TABLE_ELEMENTS.indexOf(element) !== -1) {
-                doc.body.innerHTML =
-                    '<table>' +
-                    '<' + element + ' id="custom-element" is="' + name + '"></' + element + '>' +
-                    '</table>';
-            } else {
-                doc.body.innerHTML =
-                    '<' + element + ' id="custom-element" is="' + name + '"></' + element + '>';
-            }
-            var customElement = doc.querySelector('#custom-element');
-            assert_equals(customElement.constructor.prototype.constructor.name, name,
-                'Custom element type should be value of the IS attribute');
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(tagName) !== -1) {
+            return;
         }
+        var obj = doc.createElement(tagName);
+        var name = 'x-a-' + tagName;
+        var proto = Object.create(obj.constructor.prototype);
+        doc.registerElement(name, {prototype: proto, extends: tagName});
+
+        if (HTML5_TABLE_ELEMENTS.indexOf(tagName) !== -1) {
+            doc.body.innerHTML =
+                '<table>' +
+                '<' + tagName + ' id="custom-element" is="' + name + '"></' + tagName + '>' +
+                '</table>';
+        } else {
+            doc.body.innerHTML =
+                '<' + tagName + ' id="custom-element" is="' + name + '"></' + tagName + '>';
+        }
+        var customElement = doc.querySelector('#custom-element');
+        assert_equals(customElement.constructor.prototype.constructor.name, name,
+            'Custom element type should be value of the IS attribute');
     });
 }, 'Custom element type is the value of the IS attribute of the custom element');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    HTML5_ELEMENTS.forEach(function(element) {
-        if (HTML5_DOCUMENT_ELEMENTS.indexOf(element) === -1) {
-            var obj = doc.createElement(element);
-            var name = 'x-b-' + element;
-            if (HTML5_TABLE_ELEMENTS.indexOf(element) !== -1) {
-                doc.body.innerHTML =
-                    '<table>' +
-                    '<' + element + ' id="custom-element" is="' + name + '"></' + element + '>' +
-                    '</table>';
-            } else {
-                doc.body.innerHTML =
-                    '<' + element + ' id="custom-element" is="' + name + '"></' + element + '>';
-            }
-            var proto = Object.create(obj.constructor.prototype);
-            doc.registerElement(name, {prototype: proto, extends: element});
-            var customElement = doc.querySelector('#custom-element');
-
-            assert_equals(customElement.constructor.prototype.constructor.name, name,
-                'Custom element type should be value of the IS attribute');
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(tagName) !== -1) {
+            return;
         }
+        var obj = doc.createElement(tagName);
+        var name = 'x-b-' + tagName;
+        if (HTML5_TABLE_ELEMENTS.indexOf(tagName) !== -1) {
+            doc.body.innerHTML =
+                '<table>' +
+                '<' + tagName + ' id="custom-element" is="' + name + '"></' + tagName + '>' +
+                '</table>';
+        } else {
+            doc.body.innerHTML =
+                '<' + tagName + ' id="custom-element" is="' + name + '"></' + tagName + '>';
+        }
+        var proto = Object.create(obj.constructor.prototype);
+        doc.registerElement(name, {prototype: proto, extends: tagName});
+        var customElement = doc.querySelector('#custom-element');
+
+        assert_equals(customElement.constructor.prototype.constructor.name, name,
+            'Custom element type should be value of the IS attribute');
     });
 }, 'Custom element type is the value of the IS attribute of the custom element. ' +
     'Custom element is unresolved at first');

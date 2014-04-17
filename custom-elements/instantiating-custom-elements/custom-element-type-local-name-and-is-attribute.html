@@ -30,8 +30,8 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     doc.registerElement('x-d');
-    doc.body.innerHTML = '<x-c id="x-a" is="x-d"></x-c>';
-    var customElement = doc.querySelector('#x-a');
+    doc.body.innerHTML = '<x-c id="x-c" is="x-d"></x-c>';
+    var customElement = doc.querySelector('#x-c');
     assert_equals(customElement.constructor.prototype.constructor.name, 'HTMLElement',
         'Custom element type should be HTMLElement');
 
@@ -48,12 +48,12 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     doc.registerElement('x-element');
-    HTML5_ELEMENTS.forEach(function(value) {
-        var obj = doc.createElement(value);
-        var name = 'x-d-' + value;
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var obj = doc.createElement(tagName);
+        var name = 'x-d-' + tagName;
         doc.registerElement(name, {
             prototype: Object.create(obj.constructor.prototype),
-            extends: value
+            extends: tagName
         });
         doc.body.innerHTML = '<x-element id="x-element" is="' + name + '"></x-element>';
         var customElement = doc.querySelector('#x-element');
@@ -69,19 +69,19 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    doc.registerElement('x-element-2');
+    doc.registerElement('y-element');
 
-    HTML5_ELEMENTS.forEach(function(value) {
-        var obj = doc.createElement(value);
-        var name = 'x-e-' + value;
-        var id = 'x-e-' + value;
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var obj = doc.createElement(tagName);
+        var name = 'x-e-' + tagName;
+        var id = 'x-e-' + tagName;
         doc.registerElement(name, {
             prototype: Object.create(obj.constructor.prototype),
-            extends: value
+            extends: tagName
         });
-        doc.body.innerHTML = '<' + name + ' id="' + id + '" is="x-element-2"></' + name + '>';
+        doc.body.innerHTML = '<' + name + ' id="' + id + '" is="y-element"></' + name + '>';
         var customElement = doc.querySelector('#' + id);
-        // We have <x-e-a is='x-element-2'>. Custom element type for this will be
+        // We have <x-e-a is='y-element'>. Custom element type for this will be
         // HTMLElement, not x-e-a (for x-e-a there should be <a is='x-e-a'>...)
         assert_equals(customElement.constructor.name, 'HTMLElement',
             'Custom element type should be HTMLElement');

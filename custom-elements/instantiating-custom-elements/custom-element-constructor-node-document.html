@@ -24,13 +24,13 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    HTML5_ELEMENTS.forEach(function(element) {
-        var obj = doc.createElement(element);
-        var name = 'x-b-' + element;
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var obj = doc.createElement(tagName);
+        var name = 'x-b-' + tagName;
         var proto = Object.create(obj.constructor.prototype);
         var GeneratedConstructor = doc.registerElement(name, {
             prototype: proto,
-            extends: element
+            extends: tagName
         });
         var customElement = new GeneratedConstructor();
 
@@ -41,31 +41,53 @@ test(function() {
     'Test constructor of extended HTML element');
 
 
-testInIFrame('../resources/blank.html', function(doc) {
-    var GeneratedConstructor = doc.registerElement('x-c');
+test(function() {
+    var doc = newHTMLDocument();
+    var sharedRegistryDocument = doc.implementation.createHTMLDocument('Document 2');
+
+    var name = 'x-c';
+    var GeneratedConstructor = doc.registerElement(name);
     var customElement = new GeneratedConstructor();
     assert_equals(customElement.ownerDocument, doc,
         'Custom element node document should be the document, where custom element type is registered');
-}, 'Custom element local name should be the name from custom element definition. ' +
-    'Document has browsing context');
+
+    var name2 = 'x-d';
+    var GeneratedConstructor2 = sharedRegistryDocument.registerElement(name2);
+    var customElement2 = new GeneratedConstructor2();
+    assert_equals(customElement2.ownerDocument, sharedRegistryDocument,
+        'Custom element node document should be the document, where custom element type is registered');
+}, 'Custom element node document should be the document, where custom element type is registered. ' +
+    'Test different documents with shared registry');
 
 
-testInIFrame('../resources/blank.html', function(doc) {
-    HTML5_ELEMENTS.forEach(function(element) {
-        var obj = doc.createElement(element);
-        var name = 'x-d-' + element;
+test(function() {
+    var doc = newHTMLDocument();
+    var sharedRegistryDocument = doc.implementation.createHTMLDocument('Document 2');
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var obj = doc.createElement(tagName);
+        var name = 'x-e-' + tagName;
         var proto = Object.create(obj.constructor.prototype);
         var GeneratedConstructor = doc.registerElement(name, {
             prototype: proto,
-            extends: element
+            extends: tagName
         });
         var customElement = new GeneratedConstructor();
-
         assert_equals(customElement.ownerDocument, doc,
+            'Custom element node document should be the document, where custom element type is registered');
+
+        var obj2 = sharedRegistryDocument.createElement(tagName);
+        var name2 = 'x-f-' + tagName;
+        var proto2 = Object.create(obj2.constructor.prototype);
+        var GeneratedConstructor2 = sharedRegistryDocument.registerElement(name2, {
+            prototype: proto2,
+            extends: tagName
+        });
+        var customElement2 = new GeneratedConstructor2();
+        assert_equals(customElement2.ownerDocument, sharedRegistryDocument,
             'Custom element node document should be the document, where custom element type is registered');
     });
 }, 'Custom element node document should be the document, where custom element type is registered. ' +
-    'Test constructor of extended HTML element. Document has browsing context');
+    'Test constructor of extended HTML element for different documents with shared registry');
 </script>
 </body>
 </html>

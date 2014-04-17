@@ -24,13 +24,13 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    HTML5_ELEMENTS.forEach(function(element) {
-        var obj = doc.createElement(element);
-        var name = 'x-b-' + element;
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var obj = doc.createElement(tagName);
+        var name = 'x-b-' + tagName;
         var proto = Object.create(obj.constructor.prototype);
         var GeneratedConstructor = doc.registerElement(name, {
             prototype: proto,
-            extends: element
+            extends: tagName
         });
         var customElement = new GeneratedConstructor();
 
@@ -39,33 +39,6 @@ test(function() {
     });
 }, 'Custom element namespace should be the namespace in custom element definition. ' +
     'Test constructor of extended HTML element');
-
-
-testInIFrame('../resources/blank.html', function(doc) {
-    var GeneratedConstructor = doc.registerElement('x-c');
-    var customElement = new GeneratedConstructor();
-    assert_equals(customElement.namespaceURI, HTML_NAMESPACE,
-        'Custom element namespace should be the namespace in custom element definition');
-}, 'Custom element namespace should be the namespace in custom element definition. ' +
-    'Document has browsing context');
-
-
-testInIFrame('../resources/blank.html', function(doc) {
-    HTML5_ELEMENTS.forEach(function(element) {
-        var obj = doc.createElement(element);
-        var name = 'x-d-' + element;
-        var proto = Object.create(obj.constructor.prototype);
-        var GeneratedConstructor = doc.registerElement(name, {
-            prototype: proto,
-            extends: element
-        });
-        var customElement = new GeneratedConstructor();
-
-        assert_equals(customElement.namespaceURI, HTML_NAMESPACE,
-            'Custom element namespace should be namespace in custom element definition');
-    });
-}, 'Custom element namespace should be the namespace in custom element definition. ' +
-    'Test constructor of extended HTML element. Document has browsing context');
 </script>
 </body>
 </html>

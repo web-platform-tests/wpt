@@ -15,34 +15,54 @@
 <script type="text/javascript">
 test(function() {
     var doc = newHTMLDocument();
-    HTML5_ELEMENTS.forEach(function(element) {
-        if (HTML5_DOCUMENT_ELEMENTS.indexOf(element) === -1) {
-            var name = 'x-' + element;
-            doc.registerElement(name);
-            if (HTML5_TABLE_ELEMENTS.indexOf(element) !== -1) {
-                doc.body.innerHTML =
-                    '<table>' +
-                    '<' + element + ' id="custom-element" is="' + name + '"></' + element + '>' +
-                    '</table>';
-            } else {
-                doc.body.innerHTML =
-                    '<' + element + ' id="custom-element" is="' + name + '"></' + element + '>';
-            }
-            var customElement = doc.querySelector('#custom-element');
-            var obj = doc.createElement(element);
-            assert_class_string(customElement, obj.constructor.name,
-                'Custom element must be a ' + obj.constructor.name);
-            HTML5_ELEMENTS.forEach(function(value) {
-                var name2 = 'x-' + element + '-' + value;
-                doc.registerElement(name2);
-                customElement.setAttribute('is', name2);
-                assert_class_string(customElement, obj.constructor.name,
-                    'Custom element must not be changed and should be a ' +
-                    obj.constructor.name);
-            });
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        if (HTML5_DOCUMENT_ELEMENTS.indexOf(tagName) !== -1) {
+            return;
         }
+        var name = 'x-' + tagName;
+        doc.registerElement(name);
+        if (HTML5_TABLE_ELEMENTS.indexOf(tagName) !== -1) {
+            doc.body.innerHTML =
+                '<table>' +
+                '<' + tagName + ' id="custom-element" is="' + name + '"></' + tagName + '>' +
+                '</table>';
+        } else {
+            doc.body.innerHTML =
+                '<' + tagName + ' id="custom-element" is="' + name + '"></' + tagName + '>';
+        }
+        var customElement = doc.querySelector('#custom-element');
+        var obj = doc.createElement(tagName);
+        assert_class_string(customElement, obj.constructor.name,
+            'Custom element must be ' + obj.constructor.name);
+
+        var name2 = 'x-a-' + tagName;
+        doc.registerElement(name2);
+        customElement.setAttribute('is', name2);
+        assert_class_string(customElement, obj.constructor.name,
+            'Custom element must not be changed and should be ' + obj.constructor.name);
     });
 }, 'Changing IS attribute of the custom element after element is instatiated');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var localName = 'x-b-a';
+    doc.registerElement(localName);
+    doc.body.innerHTML = '<a id="custom-element" is="' + localName + '"></a>';
+    var customElement = doc.querySelector('#custom-element');
+    var obj = doc.createElement('a');
+
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var name = 'x-c-' + tagName;
+        var htmlElement = doc.createElement(tagName);
+        var proto = Object.create(htmlElement.constructor.prototype);
+        doc.registerElement(name, {prototype: proto, extends: tagName});
+        customElement.setAttribute('is', name);
+        assert_class_string(customElement, obj.constructor.name,
+            'Custom element must not be changed and should be ' + obj.constructor.name);
+    });
+}, 'Changing IS attribute of the custom element after element is instatiated. Test all possible values ' +
+    'of extensions of html elements as new IS value');
 </script>
 </body>
 </html>

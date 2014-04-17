@@ -24,48 +24,21 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    HTML5_ELEMENTS.forEach(function(element) {
-        var obj = doc.createElement(element);
-        var name = 'x-b-' + element;
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var obj = doc.createElement(tagName);
+        var name = 'x-b-' + tagName;
         var proto = Object.create(obj.constructor.prototype);
         var GeneratedConstructor = doc.registerElement(name, {
             prototype: proto,
-            extends: element
+            extends: tagName
         });
         var customElement = new GeneratedConstructor();
 
-        assert_equals(customElement.localName, element,
+        assert_equals(customElement.localName, tagName,
             'Custom element local name should be the name from custom element definition');
     });
 }, 'Custom element local name should be the name from custom element definition. ' +
     'Test constructor of extended HTML element');
-
-
-testInIFrame('../resources/blank.html', function(doc) {
-    var GeneratedConstructor = doc.registerElement('x-c');
-    var customElement = new GeneratedConstructor();
-    assert_equals(customElement.localName, 'x-c',
-        'Custom element local name should be the name from custom element definition');
-}, 'Custom element local name should be the name from custom element definition. ' +
-    'Document has browsing context');
-
-
-testInIFrame('../resources/blank.html', function(doc) {
-    HTML5_ELEMENTS.forEach(function(element) {
-        var obj = doc.createElement(element);
-        var name = 'x-d-' + element;
-        var proto = Object.create(obj.constructor.prototype);
-        var GeneratedConstructor = doc.registerElement(name, {
-            prototype: proto,
-            extends: element
-        });
-        var customElement = new GeneratedConstructor();
-
-        assert_equals(customElement.localName, element,
-            'Custom element local name should be the name from custom element definition');
-    });
-}, 'Custom element local name should be the name from custom element definition. ' +
-    'Test constructor of extended HTML element. Document has browsing context');
 </script>
 </body>
 </html>

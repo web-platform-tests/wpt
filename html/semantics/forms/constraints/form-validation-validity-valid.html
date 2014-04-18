@@ -13,7 +13,6 @@
     {
       tag: "input",
       types: ["text", "search", "tel", "password"],
-      checkPoints: ["tooLong", "patternMismatch", "valueMissing"],
       testData: [
         {conditions: {maxLength: "4", value: "abcdef"}, expected: false, name: "[target] validity.valid must be false if validity.tooLong is true", dirty: true},
         {conditions: {pattern: "[A-Z]", value: "abc"}, expected: false, name: "[target] validity.valid must be false if validity.patternMismatch is true"},
@@ -23,7 +22,6 @@
     {
       tag: "input",
       types: ["url"],
-      checkPoints: ["tooLong", "patternMismatch", "typeMismatch", "valueMissing"],
       testData: [
         {conditions: {maxLength: "20", value: "http://www.example.com"}, expected: false, name: "[target] validity.valid must be false if validity.tooLong is true", dirty: true},
         {conditions: {pattern: "http://www.example.com", value: "http://www.example.net"}, expected: false, name: "[target] validity.valid must be false if validity.patternMismatch is true"},
@@ -34,7 +32,6 @@
     {
       tag: "input",
       types: ["email"],
-      checkPoints: ["tooLong", "patternMismatch", "typeMismatch", "valueMissing"],
       testData: [
         {conditions: {maxLength: "10", value: "test@example.com"}, expected: false, name: "[target] validity.valid must be false if validity.tooLong is true", dirty: true},
         {conditions: {pattern: "test@example.com", value: "test@example.net"}, expected: false, name: "[target] validity.valid must be false if validity.patternMismatch is true"},
@@ -45,7 +42,6 @@
     {
       tag: "input",
       types: ["datetime"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {conditions: {max: "2000-01-01T12:00:00Z", value: "2001-01-01T12:00:00Z"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
         {conditions: {min: "2001-01-01T12:00:00Z", value: "2000-01-01T12:00:00Z"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
@@ -56,18 +52,16 @@
     {
       tag: "input",
       types: ["date"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {conditions: {max: "2000-01-01", value: "2001-01-01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
         {conditions: {min: "2001-01-01", value: "2000-01-01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
-        {conditions: {step: 2 * 1 * 86400000, value: "2001-01-03"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
+        {conditions: {step: 2 * 1 * 86400000, value: "2000-01-03"}, expected: false, name: "[target] validity.valid must be false if validity.stepMismatch is true"},
         {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
     },
     {
       tag: "input",
       types: ["month"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {conditions: {max: "2000-01", value: "2001-01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
         {conditions: {min: "2001-01", value: "2000-01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
@@ -78,7 +72,6 @@
     {
       tag: "input",
       types: ["week"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {conditions: {max: "2000-W01", value: "2001-W01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
         {conditions: {min: "2001-W01", value: "2000-W01"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
@@ -89,7 +82,6 @@
     {
       tag: "input",
       types: ["time"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {conditions: {max: "12:00:00", value: "13:00:00"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
         {conditions: {min: "12:00:00", value: "11:00:00"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
@@ -100,7 +92,6 @@
     {
       tag: "input",
       types: ["number"],
-      checkPoints: ["rangeOverflow", "rangeUnderflow", "stepMismatch", "valueMissing"],
       testData: [
         {conditions: {max: "5", value: "6"}, expected: false, name: "[target] validity.valid must be false if validity.rangeOverflow is true"},
         {conditions: {min: "5", value: "4"}, expected: false, name: "[target] validity.valid must be false if validity.rangeUnderflow is true"},
@@ -111,7 +102,6 @@
     {
       tag: "input",
       types: ["checkbox", "radio"],
-      checkPoints: ["valueMissing"],
       testData: [
         {conditions: {required: true, checked: false, name: "test1"}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
@@ -119,7 +109,6 @@
     {
       tag: "input",
       types: ["file"],
-      checkPoints: ["valueMissing"],
       testData: [
         {conditions: {required: true, files: null}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
@@ -127,7 +116,6 @@
     {
       tag: "select",
       types: [],
-      checkPoints: ["valueMissing"],
       testData: [
         {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]
@@ -135,7 +123,6 @@
     {
       tag: "textarea",
       types: [],
-      checkPoints: ["valueMissing"],
       testData: [
         {conditions: {required: true, value: ""}, expected: false, name: "[target] validity.valid must be false if validity.valueMissing is true"}
       ]

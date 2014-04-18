@@ -71,49 +71,52 @@
   });
 
   test(function(){
-    assert_false(fm1.checkValidity(), "The checkValidity method should be false");
+    assert_false(fm1.checkValidity(), "The checkValidity method should be false.");
   }, "If there is any invalid submittable element whose form owner is the form, the form.checkValidity must be false");
 
   test(function(){
-    assert_false(fm1.reportValidity(), "The reportValidity method should be false");
+    assert_true("reportValidity" in fm1, "The reportValidity method is not supported");
+    assert_false(fm1.reportValidity(), "The reportValidity method should be false.");
   }, "If there is any invalid submittable element whose form owner is the form, the form.reportValidity must be false");
 
   test(function(){
-    assert_true(fm2.checkValidity(), "The checkValidity method should be true");
+    assert_true(fm2.checkValidity(), "The checkValidity method should be true.");
   }, "If all of the submittable elements whose form owner is the form are valid, the form.checkValidity must be true");
 
   test(function(){
-    assert_true(fm2.reportValidity(), "The reportValidity method should be true");
+    assert_true("reportValidity" in fm2, "The reportValidity method is not supported.");
+    assert_true(fm2.reportValidity(), "The reportValidity method should be true.");
   }, "If all of the submittable elements whose form owner is the form are valid, the form.reportValidity must be true");
 
   test(function(){
-    assert_false(fm3.checkValidity(), "The checkValidity method should be false");
+    assert_false(fm3.checkValidity(), "The checkValidity method should be false.");
     document.getElementById("fs").disabled = true;
-    assert_true(fm3.checkValidity(), "The checkValidity method should be true");
+    assert_true(fm3.checkValidity(), "The checkValidity method should be true.");
 
     document.getElementById("inp1").value = "aaa";
     document.getElementById("inp1").type = "url";
-    assert_false(fm3.checkValidity(), "The checkValidity method should be false");
+    assert_false(fm3.checkValidity(), "The checkValidity method should be false.");
   }, "Check the checkValidity method of the form element when it has a fieldset child");
 
   test(function(){
-    assert_false(fm3.reportValidity(), "The reportValidity method should be false");
+    assert_true("reportValidity" in fm3, "The reportValidity method is not supported.");
+    assert_false(fm3.reportValidity(), "The reportValidity method should be false.");
     document.getElementById("fs").disabled = true;
-    assert_true(fm3.reportValidity(), "The reportValidity method should be true");
+    assert_true(fm3.reportValidity(), "The reportValidity method should be true.");
 
     document.getElementById("inp1").value = "aaa";
     document.getElementById("inp1").type = "url";
-    assert_false(fm3.reportValidity(), "The reportValidity method should be false");
+    assert_false(fm3.reportValidity(), "The reportValidity method should be false.");
   }, "Check the reportValidity method of the form element when it has a fieldset child");
 
   test(function () {
-    assert_equals(times1, 4, "The invalid event will be fired if the checkValidity or reportValidity method are called");
+    assert_equals(times1, 4, "The invalid event will be fired if the checkValidity or reportValidity method are called.");
     assert_array_equals(invalidList1, [test1, test2, test1, test2], "The invalid event must be fired at the invalid control");
-    assert_true(cancelable, "The invalid event is cancelable");
+    assert_true(cancelable, "The invalid event is cancelable.");
   }, "The invalid event must be fired at the invalid controls");
 
   test(function () {
-    assert_equals(times2, 0,  "The invalid event should not be fired, times should be 0");
+    assert_equals(times2, 0,  "The invalid event should not be fired, times should be 0.");
     assert_array_equals(invalidList2, [], "The invalid event should not be fired, invalid list should be empty");
   }, "The invalid event must not be fired at the invalid controls");
 </script>

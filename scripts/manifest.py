@@ -311,7 +311,9 @@ def get_manifest_items(rel_path):
             for item in match_links + mismatch_links:
                 ref_url = "/%s/%s" % (os.path.dirname(rel_path), item.attrib["href"])
                 ref_type = "==" if item.attrib["rel"] == "match" else "!="
-                ref_list.append(RefTest(rel_path, url, ref_url, ref_type, timeout=timeout))
+                reftest = RefTest(rel_path, url, ref_url, ref_type, timeout=timeout)
+                if reftest not in ref_list:
+                    ref_list.append(reftest)
             return ref_list
 
     return [Helper(rel_path, url)]

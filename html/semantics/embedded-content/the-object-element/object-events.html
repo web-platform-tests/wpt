@@ -10,7 +10,6 @@
 async_test(function(t) {
   var obj = document.createElement("object");
   obj.onerror = t.step_func_done(function(e){
-    assert_equals(obj.contentDocument.location.href, "about:blank");
     assert_equals(Object.getPrototypeOf(e).constructor, Event, "The error event should use the Event interface.");
     assert_true(e.isTrusted, "The error event should be a trusted event.");
     assert_false(e.cancelable, "The error event should not be a cancelable event.");
@@ -22,14 +21,13 @@ async_test(function(t) {
     assert_unreached("The load event should not be fired.");
   });
 
-  obj.data = "test.html";
+  obj.data = "file:\\http://nonexistent.html";
   document.body.appendChild(obj);
 }, "error event");
 
 async_test(function(t) {
   var obj = document.createElement("object");
   obj.onload = t.step_func_done(function(e){
-    assert_false(obj.contentWindow instanceof Window, "The image in the object element is not a nested browsing context.");
     assert_equals(Object.getPrototypeOf(e).constructor, Event, "The load event should use the Event interface.");
     assert_true(e.isTrusted, "The load event should be a trusted event.");
     assert_false(e.cancelable, "The load event should not be a cancelable event.");

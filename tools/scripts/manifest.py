@@ -306,10 +306,10 @@ def get_manifest_items(rel_path):
         if root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharness.js']"):
             return [TestharnessTest(rel_path, url, timeout=timeout)]
         else:
-            match_links = root.findall(".//{http://www.w3.org/1999/xhtml}link[rel='match']")
-            mismatch_links = root.findall(".//{http://www.w3.org/1999/xhtml}link[rel='mismatch']")
+            match_links = root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='match']")
+            mismatch_links = root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='mismatch']")
             for item in match_links + mismatch_links:
-                ref_url = item.attrib["href"]
+                ref_url = "/%s/%s" % (os.path.dirname(rel_path), item.attrib["href"])
                 ref_type = "==" if item.attrib["rel"] == "match" else "!="
                 ref_list.append(RefTest(rel_path, url, ref_url, ref_type, timeout=timeout))
             return ref_list

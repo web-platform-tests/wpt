@@ -171,6 +171,8 @@ var validator = {
       var eventFired = false;
       self.pre_check(ctl, "checkValidity");
       self.set_conditions(ctl, data.conditions);
+      if (data.dirty)
+        self.set_dirty(ctl);
 
       on_event(ctl, "invalid", function(e){
         assert_equals(e.type, "invalid", "The invalid event should be fired.");
@@ -185,14 +187,37 @@ var validator = {
         assert_true(eventFired, "The invalid event should be fired.");
       }
     }, data.name);
+
+    test(function () {
+      var fm = document.createElement("form");
+      var ctl2 = ctl.cloneNode(true);
+
+      self.pre_check(ctl, "checkValidity");
+      self.set_conditions(ctl2, data.conditions);
+      fm.appendChild(ctl2);
+      document.body.appendChild(fm);
+      if (data.dirty)
+        self.set_dirty(ctl2);
+
+      var result = fm.checkValidity();      
+      document.body.removeChild(fm);
+
+      if (data.expected)
+        assert_true(result, "The checkValidity method of the element's form owner should return true.");
+      else
+        assert_false(result, "The checkValidity method of the element's form owner should return false.");
+    }, data.name + " (in a form)");
   },
 
   test_reportValidity: function (ctl, data) {
     var self = this;
     test(function () {
       var eventFired = false;
+
       self.pre_check(ctl, "reportValidity");
       self.set_conditions(ctl, data.conditions);
+      if (data.dirty)
+        self.set_dirty(ctl);
 
       on_event(ctl, "invalid", function(e){
         assert_equals(e.type, "invalid", "The invalid event should be fired.");
@@ -207,6 +232,26 @@ var validator = {
         assert_false(ctl.reportValidity(), "The reportValidity method should be false.");
       }
     }, data.name);
+
+    test(function () {
+      var fm = document.createElement("form");
+      var ctl2 = ctl.cloneNode(true);
+
+      self.pre_check(ctl, "reportValidity");
+      self.set_conditions(ctl2, data.conditions);
+      fm.appendChild(ctl2);
+      document.body.appendChild(fm);
+      if (data.dirty)
+        self.set_dirty(ctl2);
+
+      var result = fm.reportValidity();
+      document.body.removeChild(fm);
+
+      if (data.expected)
+        assert_true(result, "The reportValidity method of the element's form owner should return true.");
+      else
+        assert_false(result, "The reportValidity method of the element's form owner should return false.");
+    }, data.name + " (in a form)");
   },
 
   test_support_type: function (ctl, typ, testName) {
@@ -216,13 +261,13 @@ var validator = {
   },
 
   set_conditions: function (ctl, obj) {
+    ["required", "pattern", "step", "max", "min", "maxlength",
+     "value", "multiple", "checked", "selected"].forEach(function(item) {
+      ctl.removeAttribute(item);
+    });
     for (var attr in obj) {
-      ctl[attr] = null;
-      ctl.removeAttribute(attr);
-      ctl[attr] = obj[attr];
-      if ((attr === "pattern" || attr === "multiple") && ( !obj[attr] )) {
-        ctl.removeAttribute(attr);
-      }
+      if (obj[attr] || obj[attr] === "") 
+        ctl[attr] = obj[attr];
     }
   },
 
@@ -294,16 +339,9 @@ var validator = {
             continue;
           }
 
-          if (testee[i].checkPoints) {
-            for (var j = 0; j < testee[i].checkPoints.length; j++) {
-              testee[i].testData[j].name = testee[i].testData[j].name.replace(/\[.*\]\s/g, prefix);
-              this[testMethod](ele, testee[i].testData[j]);
-            }
-          } else {
-            for (var item in testee[i].testData) {
-              testee[i].testData[item].name = testee[i].testData[item].name.replace(/\[.*\]\s/g, prefix);
-              this[testMethod](ele, testee[i].testData[item]);
-            }
+          for (var j = 0; j < testee[i].testData.length; j++) {
+            testee[i].testData[j].name = testee[i].testData[j].name.replace(/\[.*\]\s/g, prefix);
+            this[testMethod](ele, testee[i].testData[j]);
           }
         }
       } else {

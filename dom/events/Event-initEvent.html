@@ -5,6 +5,30 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
+var booleans = [true, false];
+booleans.forEach(function(bubbles) {
+  booleans.forEach(function(cancelable) {
+    test(function() {
+      var e = document.createEvent("Event")
+      e.initEvent("type", bubbles, cancelable)
+
+      // Step 3.
+      // Can't test the stop propagation flag and stop immediate propagation flag.
+      assert_equals(e.defaultPrevented, false, "defaultPrevented")
+      // Step 4.
+      assert_equals(e.isTrusted, false, "isTrusted")
+      // Step 5.
+      assert_equals(e.target, null, "target")
+      // Step 6.
+      assert_equals(e.type, "type", "type")
+      // Step 7.
+      assert_equals(e.bubbles, bubbles, "bubbles")
+      // Step 8.
+      assert_equals(e.cancelable, cancelable, "cancelable")
+    }, "Properties of initEvent(type, " + bubbles + ", " + cancelable + ")")
+  })
+})
+
 // Step 2.
 async_test(function() {
   // https://www.w3.org/Bugs/Public/show_bug.cgi?id=17715

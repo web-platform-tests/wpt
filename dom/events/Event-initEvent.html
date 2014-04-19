@@ -51,4 +51,29 @@ async_test(function() {
 
   this.done()
 }, "Calling initEvent must not have an effect during dispatching.")
+
+async_test(function() {
+  var e = document.createEvent("Event")
+  e.initEvent("type", false, false)
+  e.stopPropagation()
+
+  var target = document.createElement("div")
+  target.addEventListener("type", this.step_func(function() {
+    assert_unreached("")
+  }), false)
+  assert_equals(target.dispatchEvent(e), true, "dispatchEvent must return true")
+  assert_equals(target.dispatchEvent(e), true, "dispatchEvent must return true")
+
+  e.initEvent("type", false, false)
+  var called = false
+  var target = document.createElement("div")
+  target.addEventListener("type", this.step_func(function() {
+    called = true
+  }), false)
+  assert_false(called)
+  assert_equals(target.dispatchEvent(e), true, "dispatchEvent must return true")
+  assert_true(called)
+
+  this.done()
+}, "Calling initEvent must unset the stop propagation flag.")
 </script>

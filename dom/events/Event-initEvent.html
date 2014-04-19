@@ -5,8 +5,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-var t = async_test("Calling initEvent must not have an effect during dispatching.")
-t.step(function() {
+// Step 2.
+async_test(function() {
   // https://www.w3.org/Bugs/Public/show_bug.cgi?id=17715
 
   var e = document.createEvent("Event")
@@ -16,7 +16,7 @@ t.step(function() {
   assert_equals(e.cancelable, false, "cancelable (first init)")
 
   var target = document.createElement("div")
-  target.addEventListener("type", t.step_func(function() {
+  target.addEventListener("type", this.step_func(function() {
     e.initEvent("fail", true, true)
     assert_equals(e.type, "type", "type (second init)")
     assert_equals(e.bubbles, false, "bubbles (second init)")
@@ -25,6 +25,6 @@ t.step(function() {
 
   assert_equals(target.dispatchEvent(e), true, "dispatchEvent must return true")
 
-  t.done()
-})
+  this.done()
+}, "Calling initEvent must not have an effect during dispatching.")
 </script>

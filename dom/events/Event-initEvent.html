@@ -29,6 +29,32 @@ booleans.forEach(function(bubbles) {
   })
 })
 
+test(function() {
+  var e = document.createEvent("Event")
+  e.initEvent("type 1", true, false)
+  assert_equals(e.type, "type 1", "type (first init)")
+  assert_equals(e.bubbles, true, "bubbles (first init)")
+  assert_equals(e.cancelable, false, "cancelable (first init)")
+
+  e.initEvent("type 2", false, true)
+  assert_equals(e.type, "type 2", "type (second init)")
+  assert_equals(e.bubbles, false, "bubbles (second init)")
+  assert_equals(e.cancelable, true, "cancelable (second init)")
+}, "Calling initEvent multiple times (getting type).")
+
+test(function() {
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=998809
+  var e = document.createEvent("Event")
+  e.initEvent("type 1", true, false)
+  assert_equals(e.bubbles, true, "bubbles (first init)")
+  assert_equals(e.cancelable, false, "cancelable (first init)")
+
+  e.initEvent("type 2", false, true)
+  assert_equals(e.type, "type 2", "type (second init)")
+  assert_equals(e.bubbles, false, "bubbles (second init)")
+  assert_equals(e.cancelable, true, "cancelable (second init)")
+}, "Calling initEvent multiple times (not getting type).")
+
 // Step 2.
 async_test(function() {
   // https://www.w3.org/Bugs/Public/show_bug.cgi?id=17715

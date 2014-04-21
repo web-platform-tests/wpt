@@ -204,15 +204,15 @@ def expand_test_code(code):
             code)
 
     code = re.sub(r'@assert throws (\S+_ERR) (.*);',
-            r'assert_throws("\1", function() { \2; });',
+            r'_assert_throws("\1", function() { \2; });',
             code)
 
     code = re.sub(r'@assert throws (\S+Error) (.*);',
-            r'assert_throws(new \1(), function() { \2; });',
+            r'_assert_throws(new \1(), function() { \2; });',
             code)
 
     code = re.sub(r'@assert throws (.*);',
-            r'assert_throws(null, function() { \1; });',
+            r'_assert_throws(null, function() { \1; });',
             code)
 
     code = re.sub(r'@assert (.*) === (.*);',

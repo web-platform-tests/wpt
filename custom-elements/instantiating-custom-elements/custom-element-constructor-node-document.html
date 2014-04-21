@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Custom element node document should be the document, where custom element type is registered</title>
+<title>Custom element owner document should be the document, where custom element type is registered</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <meta name="assert" content="When custom element constructor is called then custom element's node document should be set to owner document of the custom element">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
@@ -18,8 +18,8 @@ test(function() {
     var GeneratedConstructor = doc.registerElement('x-a');
     var customElement = new GeneratedConstructor();
     assert_equals(customElement.ownerDocument, doc,
-        'Custom element node document should be the document, where custom element type is registered');
-}, 'Custom element node document should be the document, where custom element type is registered');
+        'Custom element owner document should be the document, where custom element type is registered');
+}, 'Custom element owner document should be the document, where custom element type is registered');
 
 
 test(function() {
@@ -35,9 +35,9 @@ test(function() {
         var customElement = new GeneratedConstructor();
 
         assert_equals(customElement.ownerDocument, doc,
-            'Custom element node document should be the document, where custom element type is registered');
+            'Custom element owner document should be the document, where custom element type is registered');
     });
-}, 'Custom element node document should be the document, where custom element type is registered. ' +
+}, 'Custom element owner document should be the document, where custom element type is registered. ' +
     'Test constructor of extended HTML element');
 
 
@@ -49,14 +49,14 @@ test(function() {
     var GeneratedConstructor = doc.registerElement(name);
     var customElement = new GeneratedConstructor();
     assert_equals(customElement.ownerDocument, doc,
-        'Custom element node document should be the document, where custom element type is registered');
+        'Custom element owner document should be the document, where custom element type is registered');
 
     var name2 = 'x-d';
     var GeneratedConstructor2 = sharedRegistryDocument.registerElement(name2);
     var customElement2 = new GeneratedConstructor2();
     assert_equals(customElement2.ownerDocument, sharedRegistryDocument,
-        'Custom element node document should be the document, where custom element type is registered');
-}, 'Custom element node document should be the document, where custom element type is registered. ' +
+        'Custom element owner document should be the document, where custom element type is registered');
+}, 'Custom element owner document should be the document, where custom element type is registered. ' +
     'Test different documents with shared registry');
 
 
@@ -73,7 +73,7 @@ test(function() {
         });
         var customElement = new GeneratedConstructor();
         assert_equals(customElement.ownerDocument, doc,
-            'Custom element node document should be the document, where custom element type is registered');
+            'Custom element owner document should be the document, where custom element type is registered');
 
         var obj2 = sharedRegistryDocument.createElement(tagName);
         var name2 = 'x-f-' + tagName;
@@ -84,9 +84,9 @@ test(function() {
         });
         var customElement2 = new GeneratedConstructor2();
         assert_equals(customElement2.ownerDocument, sharedRegistryDocument,
-            'Custom element node document should be the document, where custom element type is registered');
+            'Custom element owner document should be the document, where custom element type is registered');
     });
-}, 'Custom element node document should be the document, where custom element type is registered. ' +
+}, 'Custom element owner document should be the document, where custom element type is registered. ' +
     'Test constructor of extended HTML element for different documents with shared registry');
 </script>
 </body>

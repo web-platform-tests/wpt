@@ -228,7 +228,7 @@ class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 self.close_connection = True
 
             if not self.close_connection:
-                # Ensure that the whole response has been read from the socket
+                # Ensure that the whole request has been read from the socket
                 request.raw_input.read()
 
         except socket.timeout, e:

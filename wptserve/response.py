@@ -5,6 +5,7 @@ import json
 import logging
 import types
 import uuid
+import socket
 
 from constants import response_codes
 
@@ -418,7 +419,11 @@ class ResponseWriter(object):
         """Write directly to the response, converting unicode to bytes
         according to response.encoding. Does not flush."""
         self.content_written = True
-        self._wfile.write(self.encode(data))
+        try:
+            self._wfile.write(self.encode(data))
+        except socket.error:
+            # This can happen if the socket got closed by the remote end
+            pass
 
     def encode(self, data):
         """Convert unicode to bytes according to response.encoding."""
@@ -431,4 +436,8 @@ class ResponseWriter(object):
 
     def flush(self):
         """Flush the output."""
-        self._wfile.flush()
+        try:
+            self._wfile.flush()
+        except socket.error:
+            # This can happen if the socket got closed by the remote end
+            pass

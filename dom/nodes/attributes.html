@@ -59,11 +59,9 @@ test(function() {
   var el = document.createElement("foo")
   var tests = ["xmlns", "xmlns:a", "xmlnsx", "xmlns0"]
   for (var i = 0; i < tests.length; i++) {
-    assert_throws("NAMESPACE_ERR",
-                  function() { el.setAttribute(tests[i], "fail") },
-                  "Expected exception for " + tests[i] + ".")
+    el.setAttribute(tests[i], "success");
   }
-}, "setAttribute should throw a NAMESPACE_ERR when qualifiedName starts with 'xmlns'")
+}, "setAttribute should not throw even when qualifiedName starts with 'xmlns'")
 
 // Step 4
 test(function() {
@@ -257,12 +255,12 @@ test(function() {
   assert_equals(el.hasAttribute("attr"), true)
   assert_equals(el.hasAttributeNS("ab", "attr"), true)
   assert_equals(el.hasAttributeNS("kl", "attr"), true)
-  assert_equals(el.getAttribute("attr"), "t2")
+  assert_equals(el.getAttribute("attr"), "t1")
   assert_equals(el.getAttributeNS("ab", "attr"), "t1")
   assert_equals(el.getAttributeNS("kl", "attr"), "t2")
   assert_equals(el.getAttributeNS(null, "attr"), null)
   assert_equals(el.getAttributeNS("", "attr"), null)
-}, "First set attribute is returned by setAttribute")
+}, "First set attribute is returned by getAttribute")
 test(function() {
   var el = document.createElement("div")
   el.setAttribute("style", "color:#fff;")

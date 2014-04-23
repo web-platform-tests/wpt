@@ -51,14 +51,15 @@ cors("Cross domain different port",
         "http://" + SUBDOMAIN + "." + location.hostname + ":"
         + PORT + dirname(location.pathname));
 
-/* These require HTTPS setup, so will often fail locally */
+/* Disable HTTPS tests until this is better supported
+
+XXX HTTPS
+
 cors("Same domain different protocol",
         'https://' + location.host + dirname(location.pathname));
 
 cors("Cross domain different protocol",
         CROSSDOMAIN.replace("http:", "https:"));
-
-/* W3C has no "alternative" port for HTTPS. So turn these tests off.
 
 cors("Same domain different protocol different port",
         "https://" + location.hostname + ":" + PORTS + dirname(location.pathname));

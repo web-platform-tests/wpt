@@ -10,14 +10,7 @@ def main(request, response):
         request.server.stash.put(key, q)
         return [("Content-Type", "text/html")], 'Put %s' % q
     else:
-        i = 0
-        while 1:
-            q = request.server.stash.take(key)
-            if q != None:
-                break
-            i += 1
-            if i == 500:
-                q = 'TIMEOUT'
-                break
-            time.sleep(0.01)
-        return [("Content-Type", "text/html")], q
+        q = request.server.stash.take(key)
+        if q != None:
+            return [("Content-Type", "text/html")], q
+        return [], ""

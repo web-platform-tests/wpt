@@ -44,7 +44,7 @@ class SearchContext(object):
         return self._find_elements('xpath', xpath)
 
     def _find_element(self, strategy, value):
-        return self.execute('POST', '
+        return self.execute('POST',
                             '/element',
                             'findElement',
                             self._get_locator(strategy, value))

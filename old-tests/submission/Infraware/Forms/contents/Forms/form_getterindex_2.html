@@ -6,45 +6,45 @@
   <script src="../../resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>Form_getterindex[]</h3>
-	</p>
-	
-	<hr>
+  <p>
+    <h3>Form_getterindex[]</h3>
+  </p>
+  
+  <hr>
 
-	<div id="log"></div>
+  <div id="log"></div>
 
-	<form method="post"
-		  enctype="application/x-www-form-urlencoded"
-		  action=""
-		  id="input_form">
-	<p><input type=hidden name="custname"></p>
-	<p><input type=hidden name="custtel"></p>
-	<p><input type=hidden name="custemail"></p>
+  <form method="post"
+      enctype="application/x-www-form-urlencoded"
+      action=""
+      id="input_form">
+  <p><input type=hidden name="custname"></p>
+  <p><input type=hidden name="custtel"></p>
+  <p><input type=hidden name="custemail"></p>
  
-	</form>
-	<script>
+  </form>
+  <script>
 
-		var form = document.getElementById("input_form");
-		var ele;
+    var form = document.getElementById("input_form");
+    var ele;
 
-		try
-		{
-			ele = form[1];
-			
-			test(function() {
-				assert_equals(ele.name, "custtel", "getter[index] attribute is not correct.");
-			});
-		}
-		catch (e)
-		{
-			test(function() {
-				assert_unreached("getter[index] is not supported.");
-			});
-		}
+    try
+    {
+      ele = form[1];
+      
+      test(function() {
+        assert_equals(ele.name, "custtel", "getter[index] attribute is not correct.");
+      });
+    }
+    catch (e)
+    {
+      test(function() {
+        assert_unreached("getter[index] is not supported.");
+      });
+    }
 
 
-	</script>
+  </script>
 
  </body>
 </html>

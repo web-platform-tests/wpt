@@ -20,7 +20,7 @@
 var t = async_test("arc() with negative radius throws INDEX_SIZE_ERR");
 _addTest(function(canvas, ctx) {
 
-assert_throws("INDEX_SIZE_ERR", function() { ctx.arc(0, 0, -1, 0, 0, true); });
+_assert_throws("INDEX_SIZE_ERR", function() { ctx.arc(0, 0, -1, 0, 0, true); });
 
 
 });

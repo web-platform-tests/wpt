@@ -19,7 +19,8 @@
       { contentType: 'text/html;charset=UTF-8' }
      ]
 
-      function request(input, number) {
+
+      function request(input, isHTML, title) {
         test(function() {
           var client = new XMLHttpRequest()
           client.open("POST", "resources/content.py?response_charset_label=UTF-8", false)
@@ -32,9 +33,9 @@
             assert_true(client.responseText.indexOf(exp.responseText) != -1);
           }
           assert_equals(client.responseXML, null)
-        })
+        }, title)
       }
-      function init(fr, number) { request(fr.contentDocument, number) }
+      function init(fr, number, title) { request(fr.contentDocument, number) }
     </script>
     <!--
         This test also tests how documents in various encodings are serialized.
@@ -44,10 +45,11 @@
              with a U+FFFD replacement character for the invalid char
           * one HTML document parsed from a valid Shift-JIS source
      -->
-    <iframe src='resources/win-1252-xml.py' onload="init(this, 0)"></iframe>
-    <iframe src='resources/invalid-utf8-html.py' onload="init(this, 1)"></iframe>
-    <iframe src='resources/shift-jis-html.py' onload="init(this, 2)"></iframe>
-    <iframe src='folder.txt' onload="init(this, 3)"></iframe>
-    <iframe src='resources/image.gif' onload="init(this, 4)"></iframe>
+    <iframe src='resources/win-1252-xml.py' onload="init(this, 0, 'XML document, windows-1252')"></iframe>
+    <iframe src='resources/invalid-utf8-html.py' onload="init(this, 1, 'HTML document, invalid UTF-8')"></iframe>
+    <iframe src='resources/shift-jis-html.py' onload="init(this, 2, 'HTML document, shift-jis')"></iframe>
+    <iframe src='folder.txt' onload="init(this, 3, 'plain text file')"></iframe>
+    <iframe src='resources/image.gif' onload="init(this, 4, 'image file')"></iframe>
+
   </body>
 </html>

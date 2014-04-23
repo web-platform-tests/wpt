@@ -27,7 +27,6 @@
 
         openrq.onupgradeneeded = function(e) {
             var db = e.target.result;
-            console.log("got upgrade on " + db.name);
             assert_throws('SyntaxError', function() {
                     db.createObjectStore(store_name, { keyPath: keypath })
                 }, "createObjectStore with keyPath");

@@ -386,7 +386,11 @@ metadata_generator.setup();
  */
 try {
     if (window.opener && "testharness_properties" in window.opener) {
-        setup(window.opener.testharness_properties);
+        /* If we pass the testharness_properties object as-is here without
+         * JSON stringifying and reparsing it, IE fails & emits the message
+         * "Could not complete the operation due to error 80700019".
+         */
+        setup(JSON.parse(JSON.stringify(window.opener.testharness_properties)));
     }
 } catch (e) {
 }

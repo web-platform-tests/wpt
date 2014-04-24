@@ -24,16 +24,32 @@ test(function() {
   author: 'Brian Birtles'
 });
 
-test(function() {
+async_test(function(t) {
   assert_equals(typeof document.timeline.currentTime, 'number',
     'document.timeline.currentTime returns a number');
   assert_true(document.timeline.currentTime > 0,
     'document.timeline.currentTime is positive');
-  if (typeof window.performance.now === 'function') {
-    assert_approx_equals(document.timeline.currentTime,
-      window.performance.now(), 10000, // 10 seconds drift
-      'document.timeline.currentTime is measured from navigationStart');
-  }
+  // document.timeline.currentTime should be set even before document
+  // load fires. We expect this code to be run before document load and hence
+  // the above assertion is sufficient.
+  // If the following assertion fails, this test needs to be redesigned.
+  assert_true(document.readyState !== 'complete',
+    'Test is running prior to document load');
+
+  // Test that the document timeline's current time is measured from
+  // navigationStart.
+  //
+  // We can't just compare document.timeline.currentTime to
+  // window.performance.now() because currentTime is only updated on a sample
+  // so we use requestAnimationFrame instead.
+  window.requestAnimationFrame(function(rafTime) {
+    t.step(function() {
+      assert_equals(document.timeline.currentTime, rafTime,
+                    'document.timeline.currentTime matches' +
+                    ' requestAnimationFrame time');
+      t.done();
+    });
+  });
 },
 'document.timeline.currentTime value tests',
 {
@@ -43,10 +59,11 @@ test(function() {
   ],
   assert: [
     'The global clock is a source of monotonically increasing time values',
-    'The time values of the document timeline are calculated as a fixed ' +
-    'offset from the global clock',
+    'The time values of the document timeline are calculated as a fixed' +
+    ' offset from the global clock',
     'the zero time corresponds to the navigationStart moment',
-    'The time values produced by the global clock represent wall-clock seconds'
+    'The time values produced by the global clock represent wall-clock' +
+    ' microseconds'
   ],
   author: 'Brian Birtles'
 });
@@ -66,7 +83,8 @@ async_test(function(t) {
 'document.timeline.currentTime liveness tests',
 {
   help: 'http://dev.w3.org/fxtf/web-animations/#script-execution-and-live-updates-to-the-model',
-  assert: [ 'The value returned by the currentTime attribute of a document timeline will not change within a script block' ],
+  assert: [ 'The value returned by the currentTime attribute of a' +
+            ' document timeline will not change within a script block' ],
   author: 'Brian Birtles'
 });
 

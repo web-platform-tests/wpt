@@ -2,9 +2,9 @@
 <meta charset="utf-8">
 <title>document base URL: multiple base elements</title>
 <base target="_blank" >
-<base href="http://www.w3c-test.org/">
-<base href="http://www.example.org/">
-<base href="http://www.example.com/">
+<base href="http://{{domains[www]}}:{{ports[http][0]}}/">
+<base href="http://{{domains[www1]}}:{{ports[http][0]}}/">
+<base href="http://{{domains[www2]}}:{{ports[http][0]}}/">
 <link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>

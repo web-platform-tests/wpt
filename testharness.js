@@ -22,9 +22,12 @@ policies and contribution forms [3].
  *
  * To use this file, import the script and the testharnessreport script into
  * the test document:
- * <script src="/resources/testharness.js"></script>
- * <script src="/resources/testharnessreport.js"></script>
- *
+
+<!doctype html>
+<title></title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
  * Within each file one may define one or more tests. Each test is atomic
  * in the sense that a single test has a single result (pass/fail/timeout).
  * Within each test one may have a number of asserts. The test fails at the

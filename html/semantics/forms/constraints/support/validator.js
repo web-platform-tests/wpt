@@ -229,8 +229,6 @@ var validator = {
   set_dirty: function(ctl) {
     ctl.focus();
     ctl.value += "a";
-    ctl.setSelectionRange(ctl.value.length, ctl.value.length);
-    document.execCommand("Delete");
   },
 
   pre_check: function(ctl, item) {

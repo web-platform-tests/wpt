@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Custom element type is the value of the is attribute of the custom element</title>
+<title>Instantiation of custom element: custom element type is given as the value of the is attribute</title>
 <meta name="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<meta name="assert" content="The custom element type can be given to a custom element at the time of its instantation as the value of the is attribute of the custom element">
+<meta name="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<meta name="assert" content="The custom element type is given to a custom element at the time of its instantation in one of the two ways: ... 2. As the value of the is attribute of the custom element.">
 <link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -22,7 +23,7 @@ test(function() {
         var obj = doc.createElement(tagName);
         var name = 'x-a-' + tagName;
         var proto = Object.create(obj.constructor.prototype);
-        doc.registerElement(name, {prototype: proto, extends: tagName});
+        var GeneratedConstructor = doc.registerElement(name, {prototype: proto, extends: tagName});
 
         if (HTML5_TABLE_ELEMENTS.indexOf(tagName) !== -1) {
             doc.body.innerHTML =
@@ -34,10 +35,11 @@ test(function() {
                 '<' + tagName + ' id="custom-element" is="' + name + '"></' + tagName + '>';
         }
         var customElement = doc.querySelector('#custom-element');
-        assert_equals(customElement.constructor.prototype.constructor.name, name,
-            'Custom element type should be value of the IS attribute');
+        assert_equals(Object.getPrototypeOf(customElement), GeneratedConstructor.prototype,
+            'Custom element type should be the type, specified as value of IS attribute');
     });
-}, 'Custom element type is the value of the IS attribute of the custom element');
+}, 'Instantiation of custom element: custom element type is given as the value of ' +
+    'the is attribute');
 
 
 test(function() {
@@ -58,14 +60,15 @@ test(function() {
                 '<' + tagName + ' id="custom-element" is="' + name + '"></' + tagName + '>';
         }
         var proto = Object.create(obj.constructor.prototype);
-        doc.registerElement(name, {prototype: proto, extends: tagName});
+        var GeneratedConstructor = doc.registerElement(name, {prototype: proto, extends: tagName});
+
         var customElement = doc.querySelector('#custom-element');
 
-        assert_equals(customElement.constructor.prototype.constructor.name, name,
-            'Custom element type should be value of the IS attribute');
+        assert_equals(Object.getPrototypeOf(customElement), GeneratedConstructor.prototype,
+            'Custom element type should be the type, specified as value of IS attribute');
     });
-}, 'Custom element type is the value of the IS attribute of the custom element. ' +
-    'Custom element is unresolved at first');
+}, 'Instantiation of custom element: custom element type is given as the value ' +
+    'of the is attribute. Custom element is unresolved at first');
 </script>
 </body>
 </html>

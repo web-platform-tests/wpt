@@ -21,8 +21,7 @@ test(function() {
         assert_throws('NotSupportedError', function() {
             doc.registerElement(name, {prototype: obj.constructor.prototype});
         }, 'Exception should be thrown in case of attempt to register element ' +
-            'if prototype is already an interface prototype object (' +
-            obj.constructor.prototype.name + ')');
+            'if prototype is already an interface prototype object (' + name + ')');
     });
 }, 'Test Document.registerElement() throws NotSupportedError ' +
     'if prototype is already an interface prototype object');

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title> postMessage with Date object </title>
+<title> postMessage with nested objects </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -9,17 +9,17 @@
 <div id=log></div>
 
 <div style="display:none">
-    <iframe width="70%" onload="PostMessageTest()" src="http://www1.w3c-test.org/webapps/WebMessaging/tests/submissions/Microsoft/support/ChildWindowPostMessage.htm"></iframe>
+    <iframe width="70%" onload="PostMessageTest()" src="http://{{domains[www]}}:{{ports[http][0]}}/webmessaging/support/ChildWindowPostMessage.htm"></iframe>
 </div>
 
 <script>
 
     
-    var description = "Test Description: Messages can contain JavaScript values (e.g., Dates).";
+    var description = "Test Description: Messages can be structured objects, e.g., nested objects.";
     
     var t = async_test(description);
     
-    var DATA = new Date();
+    var DATA = {foo: {bar: "wow"}};
     var TYPE = "object";
     var TARGET = document.querySelector("iframe");
                 
@@ -31,8 +31,8 @@
     window.onmessage = t.step_func(function(e)
     {
         assert_equals(typeof(e.data), TYPE);
-        assert_equals(e.data.valueOf(), DATA.valueOf());
-        assert_not_equals(e.data, DATA, "Object is cloned");
+        assert_equals(typeof(e.data.foo), TYPE);
+        assert_object_equals(e.data, DATA);
         t.done();
     });
 </script>

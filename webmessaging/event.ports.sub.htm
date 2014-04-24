@@ -9,34 +9,34 @@
 <div id=log></div>
 
 <div style="display:none">
-    <iframe width="70%" onload="PostMessageTest()" src="http://www1.w3c-test.org/webapps/WebMessaging/tests/submissions/Microsoft/support/ChildWindowPostMessage.htm"></iframe>
+    <iframe width="70%" onload="PostMessageTest()" src="http://{{domains[www1]}}:{{ports[http][0]}}/webmessaging/support/ChildWindowPostMessage.htm"></iframe>
 </div>
 
 <script>
 
-    
+
     var description = "Test Description: event.ports returns the MessagePort array sent with the message.";
-    
+
     var t = async_test(description);
-                
+
     var DATA = {test: "e.source.postMessage(e.ports.toString(), '*', e.ports)"};
     var TARGET = document.querySelector("iframe");
     var ExpectedResult = "";
-                
+
     function PostMessageTest()
     {
         test(function()
         {
             assert_own_property(window, "MessageChannel", "window");
-            
+
             var channel = new MessageChannel();
             var ports = [channel.port1, channel.port2];
             ExpectedResult = ports.toString();
             TARGET.contentWindow.postMessage(DATA, "*", ports);
-            
+
         }, "MessageChannel is supported.");
     }
-    
+
     window.onmessage = t.step_func(function(e)
     {
         assert_equals(e.data, ExpectedResult, "e.data");

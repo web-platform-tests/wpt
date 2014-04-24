@@ -109,28 +109,18 @@ def check_subdomains(config, paths, subdomains, bind_hostname):
             time.sleep(1)
 
     if not connected:
-        print "Failed to connect to test server on http://%s:%s" % (config["host"], port)
+        logger.critical("Failed to connect to test server on http://%s:%s You may need to edit /etc/hosts or similar" % (config["host"], port))
         sys.exit(1)
-    rv = {}
 
     for subdomain, (punycode, host) in subdomains.iteritems():
         domain = "%s.%s" % (punycode, host)
         try:
             urllib2.urlopen("http://%s:%d/" % (domain, port))
         except Exception as e:
-            if config["external_domain"]:
-                external = "%s.%s" % (punycode, config["external_domain"])
-                logger.warning("Using external server %s for subdomain %s" % (external, subdomain))
-                rv[subdomain] = external
-            else:
-                logger.critical("Failed probing domain %s and no external fallback configured. You may need to edit /etc/hosts or similar." % domain)
-                sys.exit(1)
-        else:
-            rv[subdomain] = "%s.%s" % (punycode, host)
+            logger.critical("Failed probing domain %s. You may need to edit /etc/hosts or similar." % domain)
+            sys.exit(1)
 
     wrapper.wait()
-
-    return rv
 
 def get_subdomains(config):
     #This assumes that the tld is ascii-only or already in punycode
@@ -264,7 +254,7 @@ def start(config):
              "ws_doc_root": config["ws_doc_root"]}
 
     if config["check_subdomains"]:
-        domains = check_subdomains(config, paths, domains, bind_hostname)
+        check_subdomains(config, paths, domains, bind_hostname)
 
     config_ = normalise_config(config, domains, ports)
 

@@ -11,6 +11,7 @@ from collections import defaultdict
 import urllib2
 import uuid
 import argparse
+import time
 
 repo_root = os.path.abspath(os.path.split(__file__)[0])
 
@@ -98,6 +99,18 @@ def check_subdomains(config, paths, subdomains, bind_hostname):
     wrapper = ServerProc()
     wrapper.start(start_http_server, config, paths, port, bind_hostname)
 
+    connected = False
+    for i in range(10):
+        try:
+            urllib2.urlopen("http://%s:%d/" % (config["host"], port))
+            connected = True
+            break
+        except urllib2.URLError:
+            time.sleep(1)
+
+    if not connected:
+        print "Failed to connect to test server on http://%s:%s" % (config["host"], port)
+        sys.exit(1)
     rv = {}
 
     for subdomain, (punycode, host) in subdomains.iteritems():

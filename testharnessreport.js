@@ -386,7 +386,7 @@ metadata_generator.setup();
  */
 try {
     if (window.opener && "testharness_properties" in window.opener) {
-        setup(window.opener.testharness_properties);
+        setup(JSON.parse(JSON.stringify(window.opener.testharness_properties)));
     }
 } catch (e) {
 }

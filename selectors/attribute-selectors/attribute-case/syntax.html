@@ -41,6 +41,7 @@ var invalid = [
   "[foo='bar' \u0130]",
   "[foo='bar' \u0131]",
   "[foo='bar' ii]",
+  "[foo='bar' ij]",
   "[foo='bar' j]",
   "[foo='bar' \\\\i]",
   "[foo='bar' \\\\69]",
@@ -61,6 +62,8 @@ var invalid = [
   "[foo='bar' ,i]",
   "[foo='bar' i,]",
   "[foo='bar']i",
+  "[foo i]",
+  "[foo/**/i]",
 ];
 var mode = "standards mode";
 onload = function() {

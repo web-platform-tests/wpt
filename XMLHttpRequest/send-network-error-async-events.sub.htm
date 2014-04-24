@@ -49,7 +49,7 @@
                 });
             };
 
-            xhr.open("POST", "http://nonexistent-origin.w3c-test.org", true);
+            xhr.open("POST", "http://nonexistent-origin.{{host}}", true);
             xhr.send("Test Message");
         });
     </script>

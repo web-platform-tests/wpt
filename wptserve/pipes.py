@@ -288,7 +288,7 @@ class ReplacementTokenizer(object):
         try:
             token = int(token)
         except:
-            token = unicode(token)
+            token = unicode(token, "utf8")
         return ("index", token)
 
     def tokenize(self, string):

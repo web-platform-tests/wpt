@@ -29,8 +29,8 @@
             var cursor = event.target.result;
             assert_true(cursor instanceof IDBCursor);
 
+            cursor.advance(1);
             assert_throws("InvalidStateError", function() {
-                cursor.advance(1);
                 cursor.advance(1);
             }, "Calling advance() should throw DOMException when the cursor is currently being iterated.");
 

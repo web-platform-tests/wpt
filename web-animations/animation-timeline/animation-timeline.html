@@ -70,15 +70,15 @@ async_test(function(t) {
 
 async_test(function(t) {
   var valueAtStart = document.timeline.currentTime;
+  var timeAtStart = window.performance.now();
+  while (window.performance.now() - timeAtStart < 100); // Wait 100ms
   assert_equals(document.timeline.currentTime, valueAtStart,
     'document.timeline.currentTime does not change within a script block');
-  window.requestAnimationFrame(function() {
-    t.step(function() {
-      assert_true(document.timeline.currentTime > valueAtStart,
-        'document.timeline.currentTime increases between script blocks');
-      t.done();
-    });
-  });
+  window.requestAnimationFrame(t.step_func(function() {
+    assert_true(document.timeline.currentTime > valueAtStart,
+      'document.timeline.currentTime increases between script blocks');
+    t.done();
+  }));
 },
 'document.timeline.currentTime liveness tests',
 {

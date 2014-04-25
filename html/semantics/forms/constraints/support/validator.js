@@ -228,7 +228,9 @@ var validator = {
 
   set_dirty: function(ctl) {
     ctl.focus();
-    ctl.value += "a";
+    var old_value = ctl.value;
+    ctl.value = "a";
+    ctl.value = old_value;
   },
 
   pre_check: function(ctl, item) {

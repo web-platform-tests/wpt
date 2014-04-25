@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title> Cross-origin: Origin of the target window doesn't match the given origin </title>
+<title> Same-origin: Origin of the target window doesn't match the given origin </title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -9,40 +9,40 @@
 <div id=log></div>
 
 <div style="display:none">
-    <iframe width="70%" onload="PostMessageTest()" src="http://www1.w3c-test.org/webapps/WebMessaging/tests/submissions/Microsoft/support/ChildWindowPostMessage.htm"></iframe>
+    <iframe width="70%" onload="PostMessageTest()" src="./support/ChildWindowPostMessage.htm"></iframe>
 </div>
 
 <script>
 
-    
+
     var description = "Test Description: " +
-                      "Cross-origin: If the origin of the target window doesn't match the given origin, " + 
+                      "Same-origin: If the origin of the target window doesn't match the given origin, " +
                       "the message is discarded.";
-    
+
     var t = async_test(description);
-    
+
     var TARGET = document.querySelector("iframe");
-    var XORIGIN = "http://www1.w3c-test.org";
+    var XORIGIN = "http://{{domains[www1]}}:{{ports[http][0]}}";
     var SORIGIN = "http://" + location.hostname;
-    var ExpectedResult = ["#0", XORIGIN, "#3", XORIGIN];
+    var ExpectedResult = ["#0", SORIGIN, "#3", SORIGIN];
     var ActualResult = [];
-                
+
     function PostMessageTest()
     {
-        TARGET.contentWindow.postMessage("#0", XORIGIN);
+        TARGET.contentWindow.postMessage("#0", SORIGIN);
         TARGET.contentWindow.postMessage("#1", "http://www.invalid-domain.com");
-        TARGET.contentWindow.postMessage("#2", SORIGIN);
+        TARGET.contentWindow.postMessage("#2", XORIGIN);
         TARGET.contentWindow.postMessage("#3", "*");
     }
-    
+
     window.onmessage = t.step_func(function(e)
     {
         ActualResult.push(e.data, e.origin);
-        
+
         if (ActualResult.length >= ExpectedResult.length)
         {
             assert_array_equals(ActualResult, ExpectedResult, "ActualResult");
-            t.done(); 
+            t.done();
         }
     });
 </script>

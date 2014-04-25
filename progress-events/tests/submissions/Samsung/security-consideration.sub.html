@@ -40,7 +40,7 @@
         xhr.onloadend = function(pe) {
           test.done();
         }
-        xhr.open("GET", "http://www.w3c-test.org:81/webapps/ProgressEvents/tests/submissions/Samsung/resources/img.jpg", true);
+        xhr.open("GET", "http://{{host}}:{{ports[http][1]}}/progress-events/tests/submissions/Samsung/resources/img.jpg", true);
         xhr.send(null);
       })
     </script>

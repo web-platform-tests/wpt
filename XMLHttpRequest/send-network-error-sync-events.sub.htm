@@ -15,9 +15,9 @@
         test(function()
         {
             var xhr = new XMLHttpRequest();
-            
-            xhr.open("POST", "http://nonexistent-origin.w3c-test.org", false);
-            
+
+            xhr.open("POST", "http://nonexistent-origin.{{host}}}:{{ports[http][0]}}", false);
+
             assert_throws("NetworkError", function()
             {
                 xhr.send("Test Message");

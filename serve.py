@@ -239,6 +239,10 @@ def normalise_config(config, domains, ports):
         ports_[scheme] = ports_used
 
     domains_ = domains.copy()
+
+    for key, value in domains_.iteritems():
+        domains_[key] = ".".join(value)
+
     domains_[""] = config["host"]
 
     return {"host":config["host"],

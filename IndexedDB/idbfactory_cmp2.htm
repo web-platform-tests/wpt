@@ -9,7 +9,7 @@
 <div id=log></div>
 <script>
     test( function() {
-        assert_throws({name: 'TypeError'}, function() {
+        assert_throws(new TypeError(), function() {
             indexedDB.cmp();
         });
     }, "IDBFactory.cmp() - no argument.");

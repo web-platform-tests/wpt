@@ -37,7 +37,7 @@
 
 
     function test() {
-      if( !window.include6Loaded )return setTimeout(test,200); //  try checking again if external script didn't run yet
+      if( !window.include6Loaded )return setTimeout(t.step_func(test),200); //  try checking again if external script didn't run yet
       assert_array_equals(eventOrder, ['calling document.write',
           'inline script #1',
           'calling document.close',

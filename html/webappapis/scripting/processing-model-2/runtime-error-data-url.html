@@ -16,9 +16,9 @@
     window.onerror = t.step_func(function(a, b, c, d){
         ran = true;
         col_value = d;
-        assert_equals(a, 'Script error.', 'first arg');
-        assert_equals(b, '', 'second arg');
-        assert_equals(c, 0, 'third arg');
+        assert_equals(typeof a, 'string', 'first arg');
+        assert_equals(b, 'data:text/javascript,undefined_variable;', 'second arg');
+        assert_equals(typeof c, 'number', 'third arg');
     });
   </script>
   <script src="data:text/javascript,undefined_variable;"></script>
@@ -28,7 +28,7 @@
         t.done();
     });
     t_col.step(function(){
-        assert_equals(col_value, 0, 'fourth arg');
+        assert_equals(typeof col_value, number, 'fourth arg');
         t_col.done();
     });
   </script>

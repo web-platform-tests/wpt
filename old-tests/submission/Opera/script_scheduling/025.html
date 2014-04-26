@@ -23,7 +23,7 @@
 		t.done();
 }
 	onload = t.step_func(function(){
-		setTimeout( test, 100);
+		setTimeout(t.step_func(test), 100);
 	})
 	</script>
 

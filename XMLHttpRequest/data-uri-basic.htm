@@ -47,6 +47,6 @@
     assert_equals(client.responseText, null);
   });
   do_test("POST status", 'POST', "data:text/plain,Hello, World!", function (client) {
-    assert_equals(client.status, 501);
+    assert_equals(client.status, 0);
   });
 </script>

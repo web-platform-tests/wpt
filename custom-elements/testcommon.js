@@ -231,7 +231,7 @@ function testInIFrame(url, f, testName, testProps) {
                 f(iframe.contentDocument);
                 t.done();
             } finally {
-                iframe.parentNode.removeChild(iframe);
+                iframe.remove();
             }
         });
     });

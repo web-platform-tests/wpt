@@ -68,6 +68,11 @@ directory and run
 ```
 python tools/scripts/manifest.py
 ```
+This `tools/scripts/manifest.py` needs python `html5lib` package.
+If you have not installed it yet, run:
+```
+pip install html5lib
+```
 
 Running the tests requires that the test environment be activated as
 described above. The runner can be found at `/tools/runner/index.html`

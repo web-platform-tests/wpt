@@ -31,7 +31,9 @@ onload = function() {
           xhr.onload = test_obj.step_func(function(e) {
               if (xhr.response == "") {
                   if (new Date() - start > 10000) {
-                      assert_unreached("Reached poll timeout");
+                      // If we set the status to TIMEOUT here we avoid a race between the
+                      // page and the test timing out
+                      test_obj.force_timeout();
                   }
                   setTimeout(poll, 200);
               } else {

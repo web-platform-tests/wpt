@@ -30,7 +30,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	assert_equals(s.styleSheets.length, 0, 'There should be no style sheets');
 }), 'A_06_00_03_T01');
@@ -45,7 +45,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	assert_equals(s.styleSheets.length, 0, 'There should be no style sheets');
 }), 'A_06_00_03_T02');
@@ -57,7 +57,7 @@ test(unit(function (ctx) {
 	var host = d.createElement('div');
 
 	//Shadow root to play with
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var style = d.createElement('style');
 	style.innerHTML = 'div {witht: 50%;}';
@@ -77,7 +77,7 @@ test(unit(function (ctx) {
     d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
     // create StyleSheet
     var style = d.createElement('style');

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
+<html>
 <title>WebVTT rendering, repositioning (up) when 2 cues overlap completely</title>
 <style>
 html { overflow:hidden }
@@ -9,7 +9,7 @@ body { margin:0 }
     color: green
 }
 </style>
-<script src="/common/reftest-wait.js"></script>
+<script src="support/refTestWait.js"></script>
 <video width="1280" height="720" autoplay onplaying="this.onplaying = null; this.pause(); this.currentTime = 2;" onseeked="this.onseeked = null; takeScreenshot();">
     <source src="/media/white.webm" type="video/webm">
     <source src="/media/white.mp4" type="video/mp4">

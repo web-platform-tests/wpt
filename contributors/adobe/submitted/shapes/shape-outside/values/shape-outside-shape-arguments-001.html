@@ -18,10 +18,24 @@
         <div id="log"></div>
         <script type="text/javascript">
             // number forms: d, +d, -d, .d, +.d, -.d, d.d, +d.d, -d.d
-            generate_tests(ParsingUtils.testInlineStyle, [
-                ["Positive number variations" , "polygon(nonzero, 1px +2px, .3px +.4px, 5.5px +6.6px)", "polygon(nonzero, 1px 2px, 0.3px 0.4px, 5.5px 6.6px)"],
-                ["Negative number variations", "polygon(nonzero, -1px -.2px, -1.1px 0px)", "polygon(nonzero, -1px -0.2px, -1.1px 0px)"]
-            ]);
+            var shape_number_values_tests = [
+                {
+                  "name": "Positive number variations",
+                  "actual": "polygon(nonzero, 1px +2px, .3px +.4px, 5.5px +6.6px)",
+                  "expected_inline": "polygon(1px 2px, 0.3px 0.4px, 5.5px 6.6px)",
+                  "expected_computed": "polygon(1px 2px, 0.3px 0.4px, 5.5px 6.6px)"
+                },
+                {
+                  "name": "Negative number variations",
+                  "actual": "polygon(nonzero, -1px -.2px, -1.1px 0px)",
+                  "expected_inline": "polygon(-1px -0.2px, -1.1px 0px)",
+                  "expected_computed": "polygon(-1px -0.2px, -1.1px 0px)"
+                }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(shape_number_values_tests, "inline") );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(shape_number_values_tests, "computed") );
         </script>
     </body>
 </html>

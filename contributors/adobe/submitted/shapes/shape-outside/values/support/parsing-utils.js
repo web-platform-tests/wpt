@@ -14,6 +14,10 @@ function testComputedStyle(value, expected) {
     var actual = style.getPropertyValue('shape-outside');
     actual = roundResultStr(actual);
     document.body.removeChild(div);
+
+    // Some of the tests in this suite have either/or expected results
+    // so this check allows for testing that at least one of them passes.
+    // Description of the 2 expecteds is below near calcTestValues.
     if(Object.prototype.toString.call( expected ) === '[object Array]' && expected.length == 2) {
         assert_true(expected[0] == actual || expected[1] == actual)
     } else {

@@ -37,9 +37,9 @@
                 var usedLength = resolveds[unit] + 'px';
 
                 var input = 'polygon(nonzero, ' + fillArray('10' + unit, 2).join(' ') + ')';
-                var output = 'polygon(nonzero, ' + fillArray(resolveds[unit] + 'px', 2).join(' ') + ')';
+                var output = 'polygon(' + fillArray(resolveds[unit] + 'px', 2).join(' ') + ')';
 
-                ParsingUtils.testComputedStyle(input, output);
+                ParsingUtils.testComputedStyle(input, ParsingUtils.roundResultStr(output));
             }
 
             var tests = units.map(function(unit) {

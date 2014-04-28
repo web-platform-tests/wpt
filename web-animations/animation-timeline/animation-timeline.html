@@ -2,15 +2,31 @@
 <title>Web Animations API: AnimationTimeline tests</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
 <div id="log"></div>
 <iframe src="data:text/html;charset=utf-8,%3Chtml%3E%3C%2Fhtml%3E" width="10" height="10" id="iframe"></iframe>
+<script type="text/plain" id="AnimationTimeline-IDL">
+interface AnimationTimeline {
+  readonly attribute double? currentTime;
+};
+</script>
 <script>
 
 test(function() {
-  assert_equals(typeof document.timeline, 'object',
-    'document.timeline is not undefined');
-  assert_not_equals(document.timeline, null,
-    'document.timeline is not null');
+  var idlArray = new IdlArray();
+  idlArray.add_idls(
+    document.getElementById("AnimationTimeline-IDL").textContent);
+  idlArray.add_objects( { AnimationTimeline: ["document.timeline"] } );
+  idlArray.test();
+},
+'document.timeline IDL tests',
+{
+  help:   'http://dev.w3.org/fxtf/web-animations/#idl-def-AnimationTimeline',
+  author: 'Brian Birtles'
+});
+
+test(function() {
   assert_equals(document.timeline, document.timeline,
     'document.timeline returns the same object every time');
   var iframe = document.getElementById('iframe');

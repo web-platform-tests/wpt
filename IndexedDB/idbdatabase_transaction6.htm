@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>IDBDatabase.transaction() - attempt to open a transaction with no argument </title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBDatabase-transaction-IDBTransaction-DOMString-sequence-DOMString--storeNames-IDBTransactionMode-mode">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+<div id="log"></div>
+<script>
+    var db,
+        t = async_test(),
+        open_rq = createdb(t);
+
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result;
+        db.createObjectStore('test');
+    };
+
+    open_rq.onsuccess = function(e) {
+        assert_throws(new TypeError(),
+            function() { db.transaction(); });
+
+        t.done();
+    };
+</script>
+

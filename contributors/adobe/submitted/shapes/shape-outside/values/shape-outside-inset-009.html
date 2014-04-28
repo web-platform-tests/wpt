@@ -18,20 +18,37 @@
         <div id="log"></div>
         <script type="text/javascript">
             var fullInset = '10px 10px 10px 10px';
+            var serializedInset = "10px";
+
             var inset_round_calc_tests = [];
             ParsingUtils.calcTestValues.forEach(function(value) {
                 testCase = ['inset('+ fullInset +' round '+ value[0] +')',
-                            'inset('+ fullInset +' round '+ value[1] +')',
-                            'inset('+ fullInset +' round '+ value[2] +')'];
+                            'inset('+ serializedInset +' round '+ value[1] +')'];
+                // array check
+                if(Object.prototype.toString.call( value[2] ) === '[object Array]' && value[2].length == 2) {
+                    testCase.push([
+                                    'inset('+ serializedInset +' round '+ value[2][0] +')',
+                                    'inset('+ serializedInset +' round '+ value[2][1] +')'
+                                 ]);
+                } else {
+                    testCase.push('inset('+ serializedInset +' round '+ value[2] +')');
+                }
                 inset_round_calc_tests.push(testCase);
             });
             ParsingUtils.calcTestValues.forEach(function(value) {
                 testCase = ['inset('+ fullInset +' round '+ value[0] +' '+  value[0] +')',
-                            'inset('+ fullInset +' round '+ value[1] +' '+ value[1] +')',
-                            'inset('+ fullInset +' round '+ value[2] +' '+ value[2] +')'];
+                            'inset('+ serializedInset +' round '+ value[1] +')'];
+                if(Object.prototype.toString.call( value[2] ) === '[object Array]' && value[2].length == 2) {
+                    testCase.push([
+                                    'inset('+ serializedInset +' round '+ value[2][0] +')',
+                                    'inset('+ serializedInset +' round '+ value[2][1] +')'
+                                 ]);
+                } else {
+                    testCase.push('inset('+ serializedInset +' round '+ value[2] +')');
+                }
                 inset_round_calc_tests.push(testCase);
             });
-            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'value'));
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'inline'));
             generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildCalcTests(inset_round_calc_tests, 'computed'));
         </script>
     </body>

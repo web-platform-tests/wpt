@@ -17,17 +17,42 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(
-                ParsingUtils.testInlineStyle,
-                ParsingUtils.buildTestCases([
-                   ['inset(+10px -20px +30px -40px)', 'inset(10px -20px 30px -40px)'],
-                   ['inset(-10px +20px -30px +40px)', 'inset(-10px 20px -30px 40px)'],
-                   ['inset(10.1200px 20.34px 30.56px 40.780px)', 'inset(10.12px 20.34px 30.56px 40.78px)'],
-                   ['inset(10.123px 20.00px 30.10px 40.5678px)', 'inset(10.123px 20px 30.1px 40.5678px)'],
-                   ['inset(+10.1200px -20.340px +30.56px -40.780px)', 'inset(10.12px -20.34px 30.56px -40.78px)'],
-                   ['inset(-10.123px +20.00px -30.10px +40.5678px)', 'inset(-10.123px 20px -30.1px 40.5678px)']
-                ], 0)
-            );
+             var valid_inset_args_tests = [
+                    {
+                      "actual": "inset(+10px -20px +30px -40px)",
+                      "expected_inline": "inset(10px -20px 30px -40px)",
+                      "expected_computed": "inset(10px -20px 30px -40px)"
+                    },
+                    {
+                      "actual": "inset(-10px +20px -30px +40px)",
+                      "expected_inline": "inset(-10px 20px -30px 40px)",
+                      "expected_computed": "inset(-10px 20px -30px 40px)"
+                    },
+                    {
+                      "actual": "inset(10.1200px 20.34px 30.56px 40.780px)",
+                      "expected_inline": "inset(10.12px 20.34px 30.56px 40.78px)",
+                      "expected_computed": "inset(10.12px 20.34px 30.56px 40.78px)"
+                    },
+                    {
+                      "actual": "inset(10.123px 20.00px 30.10px 40.5678px)",
+                      "expected_inline": "inset(10.123px 20px 30.1px 40.5678px)",
+                      "expected_computed": "inset(10.123px 20px 30.1px 40.5678px)"
+                    },
+                    {
+                      "actual": "inset(+10.1200px -20.340px +30.56px -40.780px)",
+                      "expected_inline": "inset(10.12px -20.34px 30.56px -40.78px)",
+                      "expected_computed": "inset(10.12px -20.34px 30.56px -40.78px)"
+                    },
+                    {
+                      "actual": "inset(-10.123px +20.00px -30.10px +40.5678px)",
+                      "expected_inline": "inset(-10.123px 20px -30.1px 40.5678px)",
+                      "expected_computed": "inset(-10.123px 20px -30.1px 40.5678px)"
+                    }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(valid_inset_args_tests, "inline") );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(valid_inset_args_tests, "computed") );
         </script>
     </body>
 </html>

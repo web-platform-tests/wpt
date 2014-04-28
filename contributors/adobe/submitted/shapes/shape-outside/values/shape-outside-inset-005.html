@@ -16,27 +16,26 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            // no units
-            generate_tests( ParsingUtils.testInlineStyle, ParsingUtils.buildInsetTests('', '', 1, "invalid"));
-
-            // comma delimited args
+             var invalid_inset_args_tests = [
+                    // no units
+                    {"name": "inset(10 20px 30px 40px)"},
+                    {"name": "inset(10px 20 30px 40px)"},
+                    {"name": "inset(10px, 20px 30 40px)"},
+                    {"name": "inset(10px  20px 30px 40)"},
+                    {"name": "inset(10 20 30 40)"},
+                    // comma delimited args
+                    {"name": "inset(10px, 20px, 30px, 40px)"},
+                    {"name": "inset(10px, 20px, 30px 40px)"},
+                    {"name": "inset(10px, 20px 30px 40px)"},
+                    {"name": "inset(10px  20px, 30px, 40px)"},
+                    {"name": "inset(10px  20px 30px, 40px)"},
+                    // bogus args
+                    {"name": "inset(foo bar blah woo)"},
+                    {"name": "inset(10px roo 30px coo)"},
+                    {"name": "inset(may 20px blah 40px)"}
+                ];
             generate_tests(ParsingUtils.testInlineStyle,
-                           ParsingUtils.buildTestCases(
-                           ['inset(10px, 20px, 30px, 40px)',
-                            'inset(10px, 20px, 30px 40px)',
-                            'inset(10px, 20px 30px 40px)',
-                            'inset(10px  20px, 30px, 40px)',
-                            'inset(10px  20px 30px, 40px)'], 0, true)
-            );
-            
-            // bunk args
-            generate_tests(ParsingUtils.testInlineStyle,
-                           ParsingUtils.buildTestCases(
-                           ['inset(foo bar blah woo)',
-                            'inset(10px roo 30px coo)',
-                            'inset(may 20px blah 40px)'], 0, true)
-            );
-            
+                           ParsingUtils.buildTestCases(invalid_inset_args_tests) );
         </script>
     </body>
 </html>

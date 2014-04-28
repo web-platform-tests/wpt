@@ -16,16 +16,42 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, 
-                           ParsingUtils.buildTestCases([ 
-                               ["polygon(+1px +2px, +3px +4px, +5px +6px)", "polygon(nonzero, 1px 2px, 3px 4px, 5px 6px)"],
-                               ["polygon(-1px -2px, -3px -4px, -5px -6px)", "polygon(nonzero, -1px -2px, -3px -4px, -5px -6px)"],
-                               ["polygon(+1px +2px, -3px -4px, +5px +6px)", "polygon(nonzero, 1px 2px, -3px -4px, 5px 6px)"],
-                               ["polygon(-1px -2px, +3px +4px, -5px -6px)", "polygon(nonzero, -1px -2px, 3px 4px, -5px -6px)"],
-                               ["polygon(1.0px 2.22px, 3.40px 4.555px, 5.607px 6.99px)", "polygon(nonzero, 1px 2.22px, 3.4px 4.555px, 5.607px 6.99px)"],
-                               ["polygon(+1.0px -2.22px, +3.40px -4.550px, 5.67px -6.99px)", "polygon(nonzero, 1px -2.22px, 3.4px -4.55px, 5.67px -6.99px)"]
-                           ], 0)
-            );
+            var valid_polygon_points_tests = [
+                {
+                  "actual": "polygon(+1px +2px, +3px +4px, +5px +6px)",
+                  "expected_inline": "polygon(1px 2px, 3px 4px, 5px 6px)",
+                  "expected_computed": "polygon(1px 2px, 3px 4px, 5px 6px)"
+                },
+                {
+                  "actual": "polygon(-1px -2px, -3px -4px, -5px -6px)",
+                  "expected_inline": "polygon(-1px -2px, -3px -4px, -5px -6px)",
+                  "expected_computed": "polygon(-1px -2px, -3px -4px, -5px -6px)"
+                },
+                {
+                  "actual": "polygon(+1px +2px, -3px -4px, +5px +6px)",
+                  "expected_inline": "polygon(1px 2px, -3px -4px, 5px 6px)",
+                  "expected_computed": "polygon(1px 2px, -3px -4px, 5px 6px)"
+                },
+                {
+                  "actual": "polygon(-1px -2px, +3px +4px, -5px -6px)",
+                  "expected_inline": "polygon(-1px -2px, 3px 4px, -5px -6px)",
+                  "expected_computed": "polygon(-1px -2px, 3px 4px, -5px -6px)"
+                },
+                {
+                  "actual": "polygon(1.0px 2.22px, 3.40px 4.555px, 5.607px 6.99px)",
+                  "expected_inline": "polygon(1px 2.22px, 3.4px 4.555px, 5.607px 6.99px)",
+                  "expected_computed": "polygon(1px 2.22px, 3.4px 4.555px, 5.607px 6.99px)"
+                },
+                {
+                  "actual": "polygon(+1.0px -2.22px, +3.40px -4.550px, 5.67px -6.99px)",
+                  "expected_inline": "polygon(1px -2.22px, 3.4px -4.55px, 5.67px -6.99px)",
+                  "expected_computed": "polygon(1px -2.22px, 3.4px -4.55px, 5.67px -6.99px)"
+                }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(valid_polygon_points_tests, "inline") );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(valid_polygon_points_tests, "computed") );
         </script>
     </body>
 </html>

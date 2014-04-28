@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBIndex.get() - throw InvalidStateError </title>
+<title>IDBIndex.get() - throw InvalidStateError when the index is deleted</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBIndex-get-IDBRequest-any-key">
 <script src=/resources/testharness.js></script>
@@ -18,9 +18,9 @@
         var index = store.createIndex("index", "indexedProperty");
         var req = store.add({ key: 1, indexedProperty: "data" });
 
+        store.deleteIndex("index");
         req.transaction.oncomplete = function () {
             assert_throws("InvalidStateError", function(){
-                db.transaction("store").objectStore("store").deleteIndex("index");
                 index.get("data");
             });
             t.done();

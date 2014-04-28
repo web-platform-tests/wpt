@@ -762,6 +762,11 @@ var calcTestValues = [
     ["calc(30%)", "calc(30%)", "30%"],
     ["calc(100%/4)", "calc(25%)", "25%"],
     ["calc(25%*3)", "calc(75%)", "75%"],
+    // These following two test cases represent an either/or situation in the spec
+    // computed value is always supposed to be, at most, a tuple of a length and a percentage.
+    // the computed value of a ‘calc()’ expression can be represented as either a number or a tuple
+    // of a dimension and a percentage.
+    // http://www.w3.org/TR/css3-values/#calc-notation
     ["calc(25%*3 - 10in)", "calc(75% - 10in)", ["calc(75% - 960px)", "calc(-960px + 75%)"]],
     ["calc((12.5%*6 + 10in) / 4)", "calc((75% + 10in) / 4)", ["calc((75% + 960px) / 4)", "calc(240px + 18.75%)"]]
 ]

@@ -24,17 +24,17 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    HTML5_ELEMENTS.forEach(function(element) {
-        var obj = doc.createElement(element);
-        var name = 'x-a-' + element;
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var obj = doc.createElement(tagName);
+        var name = 'x-a-' + tagName;
         var proto = Object.create(obj.constructor.prototype);
         var GeneratedConstructor = doc.registerElement(name, {
             prototype: proto,
-            extends: element.toUpperCase()
+            extends: tagName.toUpperCase()
         });
         var customElement = new GeneratedConstructor();
 
-        assert_equals(customElement.localName, element, 'Local name should be lowercased');
+        assert_equals(customElement.localName, tagName, 'Local name should be lowercased');
     });
 }, 'Custom element type should be lowercased. Test constructor of extended HTML element');
 </script>

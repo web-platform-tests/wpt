@@ -16,8 +16,7 @@
 <script type="text/javascript">
 test(function() {
     var doc = newHTMLDocument();
-    var svg = doc.createElementNS(SVG_NAMESPACE, 'xsvg');
-    var proto = Object.create(svg.constructor.prototype);
+    var proto = Object.create(SVGElement.prototype);
     assert_throws('NotSupportedError', function() {
         doc.registerElement('x-svg-a', {prototype: proto});
     }, 'Exception should be thrown in case of attempt to register ' +
@@ -27,8 +26,7 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var svg = doc.createElementNS(SVG_NAMESPACE, 'xsvg');
-    var proto = Object.create(svg.constructor.prototype);
+    var proto = Object.create(SVGElement.prototype);
     assert_throws('NotSupportedError', function() {
         doc.registerElement('x-svg-b', {prototype: proto, extends: null});
     }, 'Exception should be thrown in case of attempt to register ' +

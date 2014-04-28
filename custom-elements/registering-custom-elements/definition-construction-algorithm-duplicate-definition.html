@@ -27,10 +27,10 @@ test(function() {
     var doc = newHTMLDocument();
     var name = 'x-b';
     doc.registerElement(name);
-    HTML5_ELEMENTS.forEach(function(element) {
+    HTML5_ELEMENTS.forEach(function(tagName) {
         assert_throws('NotSupportedError', function() {
             doc.registerElement(name, {
-                extends: element
+                extends: tagName
             });
         }, 'Exception should be thrown if definition with the same type already exists');
     });
@@ -44,10 +44,10 @@ test(function() {
         prototype: Object.create(HTMLAnchorElement.prototype),
         extends: 'a'
     });
-    HTML5_ELEMENTS.forEach(function(element) {
+    HTML5_ELEMENTS.forEach(function(tagName) {
         assert_throws('NotSupportedError', function() {
             doc.registerElement(name, {
-                extends: element
+                extends: tagName
             });
         }, 'Exception should be thrown if definition with the same type already exists');
     });

@@ -16,31 +16,25 @@
 <script type="text/javascript">
 test(function() {
     var doc = newHTMLDocument();
-    HTML5_ELEMENTS.forEach(function(value) {
-        var name = 'x-a-' + value;
-        var element = doc.createElement(value);
-        element.removeAttribute('localName');
-        var proto = Object.create(element.constructor.prototype);
-        var GeneratedConstructor = doc.registerElement(name, {prototype: proto});
-        var customElement = new GeneratedConstructor();
-        assert_equals(customElement.localName, name, 'LocalName should be a type in case of ' +
-            'attempt to register a custom element if name is null');
-    });
+    var name = 'x-a';
+    var proto = Object.create(HTMLElement.prototype);
+    var GeneratedConstructor = doc.registerElement(name, {prototype: proto});
+    var customElement = new GeneratedConstructor();
+
+    assert_equals(customElement.localName, name, 'LocalName should be a type in case of ' +
+        'attempt to register a custom element and local name is not provided');
 }, 'If NAME is not specified then localName must be set to TYPE');
 
 
 test(function() {
     var doc = newHTMLDocument();
-    HTML5_ELEMENTS.forEach(function(value) {
-        var name = 'x-b-' + value;
-        var element = doc.createElement(value);
-        element.removeAttribute('localName');
-        var proto = Object.create(element.constructor.prototype);
-        var GeneratedConstructor = doc.registerElement(name, {prototype: proto, extends: null});
-        var customElement = new GeneratedConstructor();
-        assert_equals(customElement.localName, name, 'LocalName should be a type in case of ' +
-            'attempt to register a custom element if name is null');
-    });
+    var name = 'x-b';
+    var proto = Object.create(HTMLElement.prototype);
+    var GeneratedConstructor = doc.registerElement(name, {prototype: proto, extends: null});
+    var customElement = new GeneratedConstructor();
+
+    assert_equals(customElement.localName, name, 'LocalName should be a type in case of ' +
+        'attempt to register a custom element and name is null');
 }, 'If NAME is null then localName must be set to TYPE');
 </script>
 </body>

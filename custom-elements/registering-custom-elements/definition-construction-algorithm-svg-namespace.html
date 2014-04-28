@@ -15,9 +15,8 @@
 <script type="text/javascript">
 test(function() {
     var doc = newHTMLDocument();
-    var svg = doc.createElementNS(SVG_NAMESPACE, 'x-a');
-    var proto = Object.create(svg.constructor.prototype);
-    var GeneratedConstructor = doc.registerElement('x-b', {prototype: proto, extends: 'a'});
+    var proto = Object.create(SVGElement.prototype);
+    var GeneratedConstructor = doc.registerElement('x-a', {prototype: proto, extends: 'a'});
     var customElement = new GeneratedConstructor();
 
     assert_equals(customElement.namespaceURI, SVG_NAMESPACE,

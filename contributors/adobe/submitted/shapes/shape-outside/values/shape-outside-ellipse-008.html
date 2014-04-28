@@ -16,34 +16,34 @@
     <body>
         <div id="log"></div>
          <script type="text/javascript">
-                generate_tests(ParsingUtils.testInlineStyle, 
-                               ParsingUtils.buildTestCases([
-                               'ellipse(at foo)',
-                               'ellipse(at 50)',
-                               'ellipse(at 10px 20px 30px)',
-                               'ellipse(at 20% 30% 40%)',
-                               'ellipse(at 20px, 30px)',
-                               'ellipse(at 20%, 30%)',
-                               'ellipse(at 20px, 30px, 40px)',
-                               'ellipse(at 20%, 30%, 40%)',
-                               'ellipse(at closest-side)',
-                               'ellipse(at farthest-side)',
-                               'ellipse(at 20px 30px closest-side)',
-                               'ellipse(at 20px 30px farthest-side)',
-                               'ellipse(at 20px 30px foo)',
-                               'ellipse(at closest-side 20px 30px)',
-                               'ellipse(at farthest-side 20px 30px)',
-                               'ellipse(at 20% 30% closest-side)',
-                               'ellipse(at 20% 30% farthest-side)',
-                               'ellipse(at closest-side 20% 30%)',
-                               'ellipse(at farthest-side 20% 30%)',
-                               'ellipse(at closest-side farthest-side 20px)',
-                               'ellipse(at closest-side farthest-side 20%)',
-                               'ellipse(at farthest-side closest-side closest-side)',
-                               'ellipse(at farthest-side, closest-side, closest-side)',
-                               'ellipse(at left 50x top 50px bottom)',
-                            ], 0, true)
-                );
-            </script>
+            var invalid_ellipse_position_tests = [
+                {"name": "ellipse(at foo)"},
+                {"name": "ellipse(at 50)"},
+                {"name": "ellipse(at 10px 20px 30px)"},
+                {"name": "ellipse(at 20% 30% 40%)"},
+                {"name": "ellipse(at 20px, 30px)"},
+                {"name": "ellipse(at 20%, 30%)"},
+                {"name": "ellipse(at 20px, 30px, 40px)"},
+                {"name": "ellipse(at 20%, 30%, 40%)"},
+                {"name": "ellipse(at closest-side)"},
+                {"name": "ellipse(at farthest-side)"},
+                {"name": "ellipse(at 20px 30px closest-side)"},
+                {"name": "ellipse(at 20px 30px farthest-side)"},
+                {"name": "ellipse(at 20px 30px foo)"},
+                {"name": "ellipse(at closest-side 20px 30px)"},
+                {"name": "ellipse(at farthest-side 20px 30px)"},
+                {"name": "ellipse(at 20% 30% closest-side)"},
+                {"name": "ellipse(at 20% 30% farthest-side)"},
+                {"name": "ellipse(at closest-side 20% 30%)"},
+                {"name": "ellipse(at farthest-side 20% 30%)"},
+                {"name": "ellipse(at closest-side farthest-side 20px)"},
+                {"name": "ellipse(at closest-side farthest-side 20%)"},
+                {"name": "ellipse(at farthest-side closest-side closest-side)"},
+                {"name": "ellipse(at farthest-side, closest-side, closest-side)"},
+                {"name": "ellipse(at left 50x top 50px bottom)"}
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(invalid_ellipse_position_tests) );
+        </script>
     </body>
 </html>

@@ -16,30 +16,28 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, 
-                           ParsingUtils.buildTestCases([
-                           'ellipse(foo)',
-                           'ellipse(10)',
-                           'ellipse(20px 30px 40px)',
-                           'ellipse(20% 30% 40%)',
-                           'ellipse(20px, 30px)',
-                           'ellipse(20%, 30%)',
-                           'ellipse(20px, 30px, 40px)',
-                           'ellipse(20%, 30%, 40%)',
-                           'ellipse(20px 30px closest-side)',
-                           'ellipse(20px 30px farthest-side)',
-                           'ellipse(closest-side 20px 30px)',
-                           'ellipse(farthest-side 20px 30px)',
-                           'ellipse(20% 30% closest-side)',
-                           'ellipse(20% 30% farthest-side)',
-                           'ellipse(closest-side 20% 30%)',
-                           'ellipse(farthest-side 20% 30%)',
-                           'ellipse(closest-side farthest-side 20px)',
-                           'ellipse(closest-side farthest-side 20%)',
-                           'ellipse(farthest-side closest-side closest-side)',
-                           'ellipse(farthest-side, closest-side, closest-side)'
-                        ], 0, true)
-            );
+            var invalid_ellipse_radiii_tests = [
+                {"name": "ellipse(foo)"},
+                {"name": "ellipse(10)"},
+                {"name": "ellipse(20px 30px 40px)"},
+                {"name": "ellipse(20% 30% 40%)"},
+                {"name": "ellipse(20px, 30px, 40px)"},
+                {"name": "ellipse(20%, 30%, 40%)"},
+                {"name": "ellipse(20px 30px closest-side)"},
+                {"name": "ellipse(20px 30px farthest-side)"},
+                {"name": "ellipse(closest-side 20px 30px)"},
+                {"name": "ellipse(farthest-side 20px 30px)"},
+                {"name": "ellipse(20% 30% closest-side)"},
+                {"name": "ellipse(20% 30% farthest-side)"},
+                {"name": "ellipse(closest-side 20% 30%)"},
+                {"name": "ellipse(farthest-side 20% 30%)"},
+                {"name": "ellipse(closest-side farthest-side 20px)"},
+                {"name": "ellipse(closest-side farthest-side 20%)"},
+                {"name": "ellipse(farthest-side closest-side closest-side)"},
+                {"name": "ellipse(farthest-side, closest-side, closest-side)"}
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(invalid_ellipse_radiii_tests) );
         </script>
     </body>
 </html>

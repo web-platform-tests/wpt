@@ -16,7 +16,8 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildRadiiTests('ellipse'));
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildRadiiTests('ellipse', 'inline'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildRadiiTests('ellipse', 'computed'));
         </script>
     </body>
 </html>

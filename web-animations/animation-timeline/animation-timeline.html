@@ -41,8 +41,6 @@ test(function() {
 });
 
 async_test(function(t) {
-  assert_equals(typeof document.timeline.currentTime, 'number',
-    'document.timeline.currentTime returns a number');
   assert_true(document.timeline.currentTime > 0,
     'document.timeline.currentTime is positive');
   // document.timeline.currentTime should be set even before document
@@ -78,8 +76,8 @@ async_test(function(t) {
     'The time values of the document timeline are calculated as a fixed' +
     ' offset from the global clock',
     'the zero time corresponds to the navigationStart moment',
-    'The time values produced by the global clock represent wall-clock' +
-    ' microseconds'
+    'the time value of each document timeline must be equal to the time ' +
+    'passed to animation frame request callbacks for that browsing context'
   ],
   author: 'Brian Birtles'
 });

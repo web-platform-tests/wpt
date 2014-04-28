@@ -29,6 +29,8 @@ var valid = [
   "[foo~='bar' i]",
   "[foo^='bar' i]",
   "[foo$='bar' i]",
+  "[|foo='bar' i]",
+  "[*|foo='bar' i]",
 ];
 var invalid = [
   "[foo /* sanity check (invalid) */",
@@ -62,6 +64,12 @@ var invalid = [
   "[foo='bar' ,i]",
   "[foo='bar' i,]",
   "[foo='bar']i",
+  "[foo='bar' |i]",
+  "[foo='bar' \\|i]",
+  "[foo='bar' *|i]",
+  "[foo='bar' \\*|i]",
+  "[foo='bar' *]",
+  "[foo='bar' \\*]",
   "[foo i]",
   "[foo/**/i]",
 ];

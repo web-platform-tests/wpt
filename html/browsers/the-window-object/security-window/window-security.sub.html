@@ -22,7 +22,7 @@ function fr_load() {
   fr = document.getElementById("fr");
 
   t.step(function () {
-    //SecurityError should be thrown out
+    //SecurityError should be thrown
     [
       //attributes
       {name: "applicationCache"},
@@ -151,10 +151,10 @@ function fr_load() {
           else
             fr.contentWindow[item.name];
         }, "The SecurityError exception is not thrown.");
-      }, "The SecurityError exception must be thrown out when window." + item.name + " are accessed from a different origin");
+      }, "A SecurityError exception must be thrown when window." + item.name + " are accessed from a different origin");
     });
 
-    //SecurityError should not be thrown out
+    //SecurityError should not be thrown
     [
       //attributes
       {name: "closed"},
@@ -185,7 +185,7 @@ function fr_load() {
         } catch (e) {
           assert_unreached("Unexpected exception is thrown.");
         }
-      }, "The SecurityError exception must not be thrown out when window." + item.name + " is accessed from a different origin");
+      }, "A SecurityError exception should not be thrown when window." + item.name + " is accessed from a different origin");
     });
   });
   t.done();

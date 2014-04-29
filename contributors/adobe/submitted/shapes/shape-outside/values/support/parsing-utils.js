@@ -34,12 +34,20 @@ function testShapeMarginInlineStyle(value, expected) {
 }
 
 function testShapeMarginComputedStyle(value, expected) {
-    var div = document.createElement('div');
-    div.style.setProperty('shape-outside', "border-box inset(10px)");
-    div.style.setProperty('shape-margin', value);
-    document.body.appendChild(div);
-    var style = getComputedStyle(div);
+
+    var outerDiv = document.createElement('div');
+    outerDiv.style.setProperty('width', '100px');
+
+    var innerDiv = document.createElement('div');
+    innerDiv.style.setProperty('shape-outside', "border-box inset(10px)");
+    innerDiv.style.setProperty('shape-margin', value);
+
+    outerDiv.appendChild(innerDiv);
+    document.body.appendChild(outerDiv);
+
+    var style = getComputedStyle(innerDiv);
     var actual = style.getPropertyValue('shape-margin');
+
     assert_not_equals(actual, null);
     if(actual.indexOf('calc') == -1 )
         actual = roundResultStr(actual);

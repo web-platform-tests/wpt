@@ -16,15 +16,14 @@
         db = e.target.result;
         var store = db.createObjectStore("store", { keyPath: "key" });
         var index = store.createIndex("index", "indexedProperty");
-        var req = store.add({ key: 1, indexedProperty: "data" });
 
+        store.add({ key: 1, indexedProperty: "data" });
         store.deleteIndex("index");
-        req.transaction.oncomplete = function () {
-            assert_throws("InvalidStateError", function(){
-                index.get("data");
-            });
-            t.done();
-        }
+
+        assert_throws("InvalidStateError", function(){
+            index.get("data");
+        });
+        t.done();
     }
 </script>
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBIndex.count() - throw DataError </title>
+<title>IDBIndex.count() - throw DataError when using invalid key</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBIndex-count-IDBRequest-any-key">
 <script src="/resources/testharness.js"></script>
@@ -23,12 +23,12 @@
     }
 
     open_rq.onsuccess = function(e) {
+        var index = db.transaction("store")
+                      .objectStore("store")
+                      .index("index");
 
         assert_throws("DataError", function() {
-            db.transaction("store")
-                .objectStore("store")
-                .index("index")
-                .count(NaN);
+            index.count(NaN);
         });
 
         t.done();

@@ -151,7 +151,7 @@ function fr_load() {
           else
             fr.contentWindow[item.name];
         }, "A SecurityError exception should be thrown.");
-      }, "A SecurityError exception must be thrown when window." + item.name + " are accessed from a different origin");
+      }, "A SecurityError exception must be thrown when window." + item.name + " is accessed from a different origin.");
     });
 
     //SecurityError should not be thrown
@@ -183,9 +183,9 @@ function fr_load() {
           else
             fr.contentWindow[item.name];
         } catch (e) {
-          assert_unreached("Unexpected exception is thrown.");
+          assert_unreached("An unexpected exception was thrown.");
         }
-      }, "A SecurityError exception should not be thrown when window." + item.name + " is accessed from a different origin");
+      }, "A SecurityError exception should not be thrown when window." + item.name + " is accessed from a different origin.");
     });
   });
   t.done();

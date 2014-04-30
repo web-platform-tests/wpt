@@ -2858,6 +2858,12 @@
   code: |
     @assert throws SYNTAX_ERR ctx.createPattern(canvas, "invalid");
 
+- name: 2d.pattern.repeat.unrecognisednull
+  testing:
+    - 2d.pattern.unrecognised
+  code: |
+    @assert throws SYNTAX_ERR ctx.createPattern(canvas, "null");
+
 - name: 2d.pattern.repeat.case
   testing:
     - 2d.pattern.exact

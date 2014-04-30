@@ -2844,7 +2844,7 @@
   testing:
     - 2d.pattern.unrecognised
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(canvas, null); @moz-todo
+    @assert ctx.createPattern(canvas, null) != null;
 
 - name: 2d.pattern.repeat.undefined
   testing:

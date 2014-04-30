@@ -2889,7 +2889,7 @@
         @assert pixel 1,48 == 0,255,0,255;
         @assert pixel 98,48 == 0,255,0,255;
     });
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
   expected: green
 
 - name: 2d.pattern.modify.image2
@@ -2915,7 +2915,7 @@
         @assert pixel 1,48 == 0,255,0,255;
         @assert pixel 98,48 == 0,255,0,255;
     });
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
   expected: green
 
 - name: 2d.pattern.modify.canvas1

@@ -34,7 +34,7 @@
                 win[id] = win.document.getElementById(id);
             });
         });
-        
+
         var tests = [
         {input:"123", q:"#123"},
         {input:"023", q:"#023"},
@@ -355,7 +355,7 @@
         {input:"rgb(119, 255, 255) 123", q:"#7ff #123", shorthand:true},
         {input:"123 rgb(119, 255, 255)", q:"#123 #7ff", shorthand:true},
         ];
-        
+
         var props = [
         {prop:'background-color', check:'background-color'},
         {prop:'border-color', check:'border-top-color', check_also:['border-right-color', 'border-bottom-color', 'border-left-color']},
@@ -367,7 +367,7 @@
         ];
         var style_template = '#test{{prop}:{test};}' +
                              '#ref{{prop}:{ref};}';
-        
+
         tests.forEach(function(t) {
             var test_q = async_test(t.input + ' (quirks)');
             var test_a = async_test(t.input + ' (almost standards)');
@@ -433,7 +433,7 @@
             test_s.done();
             test_svg.done();
         });
-        
+
         var other_tests = [
         {input:'background:abc', prop:'background-color'},
         {input:'border-top:1px solid abc', prop:'border-top-color'},
@@ -444,9 +444,9 @@
         {input:'outline-color:abc', prop:'outline-color'},
         {input:'outline:1px solid abc', prop:'outline-color'}
         ];
-        
+
         var other_template = "#test{{test};}"
-        
+
         other_tests.forEach(function(t) {
             test(function() {
                 q.style.textContent = other_template.replace('{test}', t.input);
@@ -455,7 +455,7 @@
                               'quirk was supported');
             }, document.title+', excluded property '+t.input);
         });
-        
+
         done();
     }
   </script>

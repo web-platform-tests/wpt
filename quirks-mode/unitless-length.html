@@ -34,7 +34,7 @@
                 win[id] = win.document.getElementById(id);
             });
         });
-        
+
         var tests = [
         {input:"1", q:"1px"},
         {input:"+1", q:"1px"},
@@ -97,6 +97,7 @@
         {prop:'border-bottom-width', check:'border-bottom-width'},
         {prop:'border-left-width', check:'border-left-width'},
         {prop:'border-width', check:'border-top-width', check_also:['border-right-width', 'border-bottom-width', 'border-left-width']},
+        {prop:'bottom', check:'bottom'},
         {prop:'clip', check:'clip'},
         {prop:'font-size', check:'font-size'},
         {prop:'height', check:'height'},
@@ -119,7 +120,7 @@
         ];
         var style_template = '#test{border-style:solid;position:relative;{prop}:{test};}' +
                              '#ref{border-style:solid;position:relative;{prop}:{ref};}';
-        
+
         tests.forEach(function(t) {
             var test_q = async_test(t.input + ' (quirks)');
             var test_a = async_test(t.input + ' (almost standards)');
@@ -195,7 +196,6 @@
         {input:'border-bottom:red solid 1', prop:'border-bottom-width'},
         {input:'border-left:red solid 1', prop:'border-left-width'},
         {input:'border:red solid 1', prop:'border-top-width'},
-        {input:'bottom:1', prop:'bottom'},
         {input:'font:normal normal normal 40 sans-serif', prop:'font-size'},
         {input:'max-height:1', prop:'max-height'},
         {input:'max-width:1', prop:'max-width'},
@@ -207,7 +207,7 @@
         ];
 
         var other_template = "#test{position:relative;{test}}";
-        
+
         other_tests.forEach(function(t) {
             test(function() {
                 q.style.textContent = other_template.replace('{test}', t.input);

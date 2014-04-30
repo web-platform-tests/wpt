@@ -25,6 +25,11 @@ var HTML5_ELEMENTS = [ 'a', 'abbr', 'address', 'area', 'article', 'aside',
         'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul',
         'var', 'video', 'wbr' ];
 
+var HTML5_DOCUMENT_ELEMENTS = [ 'html', 'head', 'body' ];
+
+var HTML5_TABLE_ELEMENTS = [ 'caption', 'col', 'colgroup', 'tbody', 'td',
+        'tfoot', 'th', 'thead', 'tr' ];
+
 var EXTENDER_CHARS = [ 0x00B7, 0x02D0, 0x02D1, 0x0387, 0x0640, 0x0E46, 0x0EC6,
         0x3005, 0x3031, 0x3032, 0x3033, 0x3034, 0x3035, 0x309D, 0x309E, 0x30FC,
         0x30FD, 0x30FE ];

@@ -35,7 +35,7 @@
                 win.__proto__.__defineGetter__(id, function() { return win.document.getElementById(id); });
             });
         });
-        
+
         var tests = [
         {style:'#test { height:100% }', body:'<div id=test></div>', q:184, s:0},
         {style:'#test { height:50% }', body:'<div id=test></div>', q:92, s:0},
@@ -88,7 +88,7 @@
                 q.document.body.innerHTML = body;
                 a.document.body.innerHTML = body;
                 s.document.body.innerHTML = body;
-                
+
                 assert_equals(q.getComputedStyle(q.test).height,
                               t.q + 'px',
                               'quirks mode');
@@ -100,7 +100,7 @@
                               'standards mode');
             }, document.title+', '+t.style+t.body);
         });
-        
+
         var xml_tests = [
         {input:'<html xmlns="{html}"><head><style>#test { height:100% }</style></head><body><div id="test"/></body></html>', q:184, s:0},
         {input:'<html xmlns="{html}"><head><style>#test { height:100% }</style></head><body/><div id="test"/></html>', q:200, s:0},
@@ -112,9 +112,9 @@
         {input:'<HTML xmlns="{html}"><head><style>#test { height:100% }</style></head><body><div id="test"/></body></HTML>', q:200, s:0},
         {input:'<html xmlns="{html}"><head><style>#test { height:100% }</style></head><BODY><div id="test"/></BODY></html>', q:200, s:0},
         ];
-        
+
         var parser = new DOMParser();
-        
+
         xml_tests.forEach(function(t) {
             test(function() {
                 var input = t.input.replace(/\{html\}/g, 'http://www.w3.org/1999/xhtml')

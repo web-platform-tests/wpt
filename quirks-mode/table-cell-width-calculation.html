@@ -40,7 +40,7 @@
         q.title = 'quirks mode';
         a.title = 'almost standards mode';
         s.title = 'standards mode';
-        
+
         var tests = [
         {desc:"baseline",
         style:'table { width:8px }', // cell content width should be 2px (2px cell-spacing, 1px padding)
@@ -53,13 +53,13 @@
         test:'<img src="{png}"><img src="{png}"><img src="{png}">',
         ref:'<nobr><img src="{png}"><img src="{png}"><img src="{png}"></nobr>',
         s_ref:'<nobr><img src="{png}"><img src="{png}"><br><img src="{png}"></nobr>'},
-        
+
         {desc:"inline-block",
         style:'table { width:8px } img { display:inline-block }',
         test:'<img src="{png}"><img src="{png}"><img src="{png}">',
         ref:'<nobr><img src="{png}"><img src="{png}"><img src="{png}"></nobr>',
         s_ref:'<nobr><img src="{png}"><img src="{png}"><br><img src="{png}"></nobr>'},
-        
+
         {desc:"img in span",
         style:'table { width:8px }',
         test:'<span><img src="{png}"><img src="{png}"><img src="{png}"></span>',
@@ -71,7 +71,7 @@
         test:'<img src="{png}"><wbr><img src="{png}"><img src="{png}"><img src="{png}">',
         ref:'<nobr><img src="{png}"><img src="{png}"><img src="{png}"><br><img src="{png}"></nobr>',
         s_ref:'<nobr><img src="{png}"><img src="{png}"><br><img src="{png}"><img src="{png}"></nobr>'},
-        
+
         {desc:"the quirk only applies when the cell is the containing block",
         style:'table { width:8px }',
         test:'<div><img src="{png}"><img src="{png}"><img src="{png}"></div>',

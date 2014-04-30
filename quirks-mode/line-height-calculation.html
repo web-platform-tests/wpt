@@ -37,7 +37,7 @@
                 win.__proto__.__defineGetter__(id, function() { return win.document.getElementById(id); });
             });
         });
-        
+
         var tests = [
         {style:'', body:'<div id=test><img src="{png}"></div><img id=ref src="{png}"><div id=s_ref>x</div>'},
         {style:'', body:'<div id=test><img src="{png}"> <img src="{png}"></div><div id=ref>x</div><div id=s_ref>x</div>'},
@@ -74,7 +74,7 @@
                 q.document.body.innerHTML = body;
                 a.document.body.innerHTML = body;
                 s.document.body.innerHTML = body;
-                
+
                 assert_equals(q.getComputedStyle(q.test).height,
                               q.getComputedStyle(q.ref).height,
                               'quirks mode');

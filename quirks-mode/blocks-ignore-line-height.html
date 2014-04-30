@@ -34,23 +34,23 @@
                 win.__proto__.__defineGetter__(id, function() { return win.document.getElementById(id); });
             });
         });
-        
+
         var tests = [
         {style:'#ref { display:block }', body:
         '<div id=test><font size=1>x</font></div>'+
         '<font id=ref size=1>x</font>'+
         '<div id=s_ref>x</div>'},
-        
+
         {style:'#ref { display:block }', body:
         '<div id=test><font size=1>x</font><br><font size=1>x</font></div>'+
         '<font id=ref size=1>x<br>x</font>'+
         '<div id=s_ref>x<br>x</div>'},
-        
+
         {style:'#ref { display:block }', body:
         '<div id=test><font size=1>foo</font><br><font size=1>foo</font><div>x</div></div>'+
         '<font id=ref size=1>foo<br>foo<br><font size=3>x</font></font>'+
         '<div id=s_ref>x<br>x<br>x</div>'},
-        
+
         {style:'#ref { display:block } div, #ref { line-height:2 } span { font-size:50% }', body:
         '<div id=test><span>x</span></div>'+
         '<span id=ref>x</span>'+
@@ -65,7 +65,7 @@
                 q.document.body.innerHTML = t.body;
                 a.document.body.innerHTML = t.body;
                 s.document.body.innerHTML = t.body;
-                
+
                 assert_equals(q.getComputedStyle(q.test).height,
                               q.getComputedStyle(q.ref).height,
                               'quirks mode');

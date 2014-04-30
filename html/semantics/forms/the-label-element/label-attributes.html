@@ -5,22 +5,28 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<form id="fm" style="display:none">
+<form id="fm">
   <label id="lbl0" for="test0"></label>
   <b id="test0"></b>
 
   <label id="lbl1" for="test1"></label>
-  <input id="test1" class="test1"></input>
+  <input id="test1" class="test1">
   <label id="lbl2" for="test1"></label>
 
   <label id="lbl3">
-    <a></a>
+    <a id="test2"></a>
     <div><input id="input1" class="textbox"></div>
     <input id="input2">
   </label>
 </form>
 
 <label id="lbl4"></label>
+
+<label id="lbl5" for="input4">
+  <b id="test2"></b>
+  <div><input id="input3"></div>
+</label>
+<input id="input4">
 
 <script>
 
@@ -33,9 +39,17 @@
 
   test(function () {
     var labels = document.querySelector(".test1").labels;
-    assert_true(labels instanceof NodeList, "A form control's 'labels' property should be an instance of a NodeList.");
-    assert_equals(labels.length, 2, "The number of labels associated with a form control should be the number of label elements for which it is a labeled control.");
+    assert_true(labels instanceof NodeList,
+                "A form control's 'labels' property should be an instance of a NodeList.");
+    assert_equals(labels.length, 2,
+                  "The number of labels associated with a form control should be the number of label elements for which it is a labeled control.");
     assert_array_equals(labels, [document.getElementById("lbl1"), document.getElementById("lbl2")],
+                        "The labels for a form control should be returned in tree order.");
+
+    var newLabel = document.createElement("label");
+    newLabel.htmlFor = "test1";
+    document.getElementById("fm").insertBefore(newLabel, document.getElementById("lbl0"));
+    assert_array_equals(document.querySelector(".test1").labels, [newLabel, document.getElementById("lbl1"), document.getElementById("lbl2")],
                         "The labels for a form control should be returned in tree order.");
   }, "A form control can have multiple labels.");
 
@@ -43,7 +57,28 @@
     var labels = document.getElementById("input2").labels;
     assert_true(labels instanceof NodeList, "A form control's 'labels' property should be an instance of a NodeList.");
     assert_equals(labels.length, 0, "The number of labels should be 0 if the associated form control isn't referenced by any <label>.");
-  }, "A form control has no label");
+  }, "A form control has no label 1");
+
+  test(function () {
+    assert_equals(document.getElementById("lbl5").control, document.getElementById("input4"),
+                  "The labeled cotrol should be associated with the control whose ID is equal to the value of the 'for' attribute.");
+    assert_equals(document.getElementById("input3").labels.length, 0,
+                  "The number of labels should be 0 if the form control has an ancestor label elment that the for attribute points to another control.");
+
+    document.getElementById("input3").setAttribute("for", "");
+    assert_equals(document.getElementById("input3").labels.length, 0,
+                  "The number of labels should be 0 if the form control has an ancestor label elment that the for attribute is an empty string.");
+  }, "A form control has no label 2");
+
+  test(function () {
+    document.getElementById("lbl5").setAttribute("for", "test2");
+    assert_equals(document.getElementById("lbl5").control, null,
+                  "The label's 'control' property should return null if its 'for' attribute doesn't point to a labelable element.");
+
+    document.getElementById("lbl5").setAttribute("for", "test3");;
+    assert_equals(document.getElementById("lbl5").control, null,
+                  "The label's 'control' property should return null if its 'for' attribute points to an inexistent element.");
+  }, "A form control has no label 3");
 
   test(function () {
     assert_equals(document.getElementById("lbl3").control, document.querySelector(".textbox"),

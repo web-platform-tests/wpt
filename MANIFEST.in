@@ -1,0 +1,11 @@
+exclude MANIFEST.in
+include requirements.txt
+include wptrunner/device_setup/*
+include wptrunner/prefs/*.js
+include config.ini
+include wptrunner/gecko_runner.html
+include wptrunner/testharnessreport.js
+include wptrunner/testharness.js
+include wptrunner/reftest.js
+include wptrunner/config.json
+include wptrunner/server-locations.txt

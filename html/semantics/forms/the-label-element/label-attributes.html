@@ -44,7 +44,7 @@
     assert_true(labels instanceof NodeList, "A form control's 'labels' property should be an instance of a NodeList.");
     assert_equals(labels.length, 0, "The number of labels should be 0 if the associated form control isn't referenced by any <label>.");
   }, "A form control has no label");
-  
+
   test(function () {
     assert_equals(document.getElementById("lbl3").control, document.querySelector(".textbox"),
                   "The first labelable descendant of a label element should be its labeled control.");
@@ -58,6 +58,6 @@
   test(function () {
     assert_equals(document.getElementById("lbl4").form, null,
                   "The 'form' property for a label without a form owner should return null.");
-  }, "A form control's form attribute should return null if it has no form owner.");
+  }, "Check that the labels property of a form control with no label returns a zero-length NodeList.");
 
 </script>

@@ -203,6 +203,7 @@ function getCharCode(c) {
 }
 
 var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 function newHTMLDocument() {
     return document.implementation.createHTMLDocument('Test Document');

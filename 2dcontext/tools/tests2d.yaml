@@ -2842,9 +2842,22 @@
 
 - name: 2d.pattern.repeat.null
   testing:
-    - 2d.pattern.unrecognised
+    - 2d.pattern.missing
+  images:
+    - green-1x1.png
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(canvas, null); @moz-todo
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('green-1x1.png');
+    var pattern = ctx.createPattern(img, null);
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, 200, 50);
+
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+  expected: green
 
 - name: 2d.pattern.repeat.undefined
   testing:

@@ -141,7 +141,7 @@ function fr_load() {
       {name: "stop", isMethod: true},
     ].forEach(function (item) {
       test(function () {
-        assert_true(item.name in window, "window." + item.name + " is not existing.");
+        assert_true(item.name in window, "window." + item.name + " should exist.");
         assert_throws("SecurityError", function () {
           if (item.isMethod)
             if (item.args)
@@ -150,7 +150,7 @@ function fr_load() {
               fr.contentWindow[item.name]();
           else
             fr.contentWindow[item.name];
-        }, "The SecurityError exception is not thrown.");
+        }, "A SecurityError exception should be thrown.");
       }, "A SecurityError exception must be thrown when window." + item.name + " are accessed from a different origin");
     });
 
@@ -173,7 +173,7 @@ function fr_load() {
       {name: "postMessage", isMethod: true, args: [{msg: 'foo'}, "*"]}
     ].forEach(function (item) {
       test(function () {
-        assert_true(item.name in window, "window." + item.name + " is not existing.");
+        assert_true(item.name in window, "window." + item.name + " should exist.");
         try {
           if (item.isMethod)
             if (item.args)

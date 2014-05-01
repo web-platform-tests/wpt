@@ -182,18 +182,20 @@ class B2GBrowser(Browser):
     def setup(self):
         self.backup_path = tempfile.mkdtemp()
 
+        self.logger.debug(self.backup_path)
+
         self.backup_dirs = [("/data/local", os.path.join(self.backup_path, "local")),
-                            ("/data/b2g/mozilla", os.path.join(self.backup_path, "profile"))]
+                            ("/data/b2g/mozilla", os.path.join(self.backup_path, "profile")),
+                            ("/system/etc", os.path.join(self.backup_path, "etc")),
+                        ]
 
         for remote, local in self.backup_dirs:
             self.device.getDirectory(remote, local)
 
-    def start(self):
-        locations = ServerLocations(filename=os.path.join(here, "server-locations.txt"))
+        self.setup_hosts()
 
-#        preferences = self.load_prefs()
-        profile = FirefoxProfile(locations=locations, proxy={"remote": moznetwork.get_ip()})#,
-                                 #preferences=preferences)
+    def start(self):
+        profile = FirefoxProfile()
 
         profile.set_preferences({"dom.disable_open_during_load": False,
                                  # "dom.mozBrowserFramesEnabled": True,
@@ -205,6 +207,38 @@ class B2GBrowser(Browser):
 
         self.runner = B2GRunner(profile, self.device, marionette_port=self.marionette_port)
         self.runner.start()
+
+    def setup_hosts(self):
+        hosts = ["web-platform.test", "www.web-platform.test", "www1.web-platform.test", "www2.web-platform.test",
+                 "xn--n8j6ds53lwwkrqhv28a.web-platform.test", "xn--lve-6lad.web-platform.test"]
+
+        host_ip = moznetwork.get_ip()
+
+        temp_dir = tempfile.mkdtemp()
+        hosts_path = os.path.join(temp_dir, "hosts")
+        try:
+            self.device.getFile("/etc/hosts", hosts_path)
+
+            with open(hosts_path, "a+") as f:
+                hosts_present = set()
+                for line in f:
+                    ip, host = line.split()
+                    hosts_present.add(host)
+
+                    if host in hosts and ip != host_ip:
+                        raise Exception("Existing hosts file has an ip for %s" % host)
+
+                f.seek(f.tell() - 1)
+                if f.read() != "\n":
+                    f.write("\n")
+
+                for host in hosts:
+                    f.write("%s%s%s\n" % (host_ip, " " * (28 - len(host_ip)), host))
+
+            self.device.pushFile(hosts_path, "/etc/hosts")
+        finally:
+            os.unlink(hosts_path)
+            os.rmdir(temp_dir)
 
     def load_prefs(self):
         prefs_path = os.path.join(self.prefs_root, "prefs_general.js")

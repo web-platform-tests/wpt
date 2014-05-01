@@ -391,9 +391,12 @@ def get_browser(product, binary, prefs_root):
     return browser_cls, browser_kwargs
 
 def get_options(product):
-    return {"firefox": {"host": "localhost"},
-            "servo": {"host": "localhost"},
-            "b2g": {"host": moznetwork.get_ip()}}[product]
+    return {"firefox": {"host": "localhost",
+                        "bind_hostname": "true"},
+            "servo": {"host": "localhost",
+                      "bind_hostname": "true"},
+            "b2g": {"host": "web-platform.test",
+                    "bind_hostname": "false"}}[product]
 
 def get_executor(product, test_type, http_server_url, timeout_multiplier):
     executor_classes = {"firefox": {"reftest": MarionetteReftestExecutor,

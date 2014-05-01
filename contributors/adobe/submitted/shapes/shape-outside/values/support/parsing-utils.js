@@ -51,7 +51,7 @@ function testShapeMarginComputedStyle(value, expected) {
     assert_not_equals(actual, null);
     if(actual.indexOf('calc') == -1 )
         actual = roundResultStr(actual);
-    document.body.removeChild(div);
+    document.body.removeChild(outerDiv);
 
     // See comment above about multiple expected results
     if(Object.prototype.toString.call( expected ) === '[object Array]' && expected.length == 2) {

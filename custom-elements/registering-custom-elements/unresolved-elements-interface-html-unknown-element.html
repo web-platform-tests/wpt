@@ -25,10 +25,9 @@ test(function() {
 
     assert_not_equals(xa, null, 'Unregistered custom element should not be null');
 
-    // Accroding https://code.google.com/p/chromium/issues/detail?id=336377
+    // According https://code.google.com/p/chromium/issues/detail?id=336377
     // expected class string is Element
-    assert_class_string(xa, 'Element',
-        'Unresolved custom element must be a Element');
+    assert_class_string(xa, 'Element', 'Unresolved custom element must be an Element');
 }, 'Test interface of unresolved element with MathML namespace, created via innerHTML property');
 
 

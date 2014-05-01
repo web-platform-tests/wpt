@@ -25,9 +25,10 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    doc.body.innerHTML = '<svg xmlns=' + SVG_NAMESPACE + ' version="1.1">' +
-                    '<x-svg-a id="x-svg"></x-svg-a>' +
-                    '</svg>';
+    doc.body.innerHTML =
+        '<svg xmlns=' + SVG_NAMESPACE + ' version="1.1">' +
+            '<x-svg-a id="x-svg"></x-svg-a>' +
+        '</svg>';
     var xsvg = doc.querySelector('#x-svg');
 
     assert_class_string(xsvg, 'SVGElement', 'Unresolved custom element must be a SVG element');

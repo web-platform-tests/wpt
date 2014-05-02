@@ -61,6 +61,37 @@ function testShapeMarginComputedStyle(value, expected) {
     }
 }
 
+function testShapeThresholdInlineStyle(value, expected) {
+    var div = document.createElement('div');
+    div.style.setProperty('shape-outside', 'url(someimage.png)');
+    div.style.setProperty('shape-image-threshold', value);
+    var actual = div.style.getPropertyValue('shape-image-threshold');
+    assert_equals(actual, expected);
+}
+
+function testShapeThresholdComputedStyle(value, expected) {
+
+    var div = document.createElement('div');
+    div.style.setProperty('shape-outside', 'url(someimage.png)');
+    div.style.setProperty('shape-image-threshold', value);
+    document.body.appendChild(div);
+
+    var style = getComputedStyle(div);
+    var actual = style.getPropertyValue('shape-image-threshold');
+
+    assert_not_equals(actual, null);
+    if(actual.indexOf('calc') == -1 )
+        actual = roundResultStr(actual);
+    document.body.removeChild(div);
+
+    // See comment above about multiple expected results
+    if(Object.prototype.toString.call( expected ) === '[object Array]' && expected.length == 2) {
+        assert_true(expected[0] == actual || expected[1] == actual)
+    } else {
+        assert_equals(actual, !expected ? '0' : expected);
+    }
+}
+
 // Builds an array of test cases to send to testharness.js where one test case is: [name, actual, expected]
 // These test cases will verify results from testInlineStyle() or testComputedStyle()
 function buildTestCases(testCases, testType) {
@@ -819,6 +850,8 @@ return {
     testComputedStyle: testComputedStyle,
     testShapeMarginInlineStyle: testShapeMarginInlineStyle,
     testShapeMarginComputedStyle: testShapeMarginComputedStyle,
+    testShapeThresholdInlineStyle: testShapeThresholdInlineStyle,
+    testShapeThresholdComputedStyle: testShapeThresholdComputedStyle,
     buildTestCases: buildTestCases,
     buildRadiiTests: buildRadiiTests,
     buildPositionTests: buildPositionTests,

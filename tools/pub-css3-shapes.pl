@@ -16,7 +16,15 @@ rmtree('dist/css3-shapes');
 ###############################################################################
 # Adobe
 push @dirs, 'contributors/adobe/submitted/shapes';
+push @dirs, 'contributors/adobe/submitted/shapes/shape-outside';
 push @dirs, 'contributors/adobe/submitted/shapes/shape-outside/values';
+push @dirs, 'contributors/adobe/submitted/shapes/shape-outside/supported-shapes';
+push @dirs, 'contributors/adobe/submitted/shapes/shape-outside/supported-shapes/circle';
+push @dirs, 'contributors/adobe/submitted/shapes/shape-outside/supported-shapes/ellipse';
+push @dirs, 'contributors/adobe/submitted/shapes/shape-outside/supported-shapes/inset';
+push @dirs, 'contributors/adobe/submitted/shapes/shape-outside/supported-shapes/polygon';
+push @dirs, 'contributors/adobe/submitted/shapes/shape-outside/shape-image';
+push @dirs, 'contributors/adobe/submitted/shapes/shape-outside/shape-image/gradients';
 
 ###############################################################################
 # Apple - No CSS2.1 tests

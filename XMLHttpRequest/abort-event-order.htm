@@ -50,8 +50,12 @@
                 test.step(function()
                 {
                     assert_array_equals(actual, expect);
-                    assert_equals(xhr.readyState, 0, 'state should be UNSENT');
-                    test.done();
+                    setTimeout(function() {
+                      test.step(function() {
+                        assert_equals(xhr.readyState, 0, 'state should be UNSENT');
+                        test.done();
+                      });
+                    });
                 });
             };
 

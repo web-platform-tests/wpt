@@ -10,7 +10,6 @@
 <div>
     <video id='v' controls autoplay width='320' height='240'></video>
 </div>
-
 <div id="log"></div>
 
 <script>
@@ -49,23 +48,30 @@ async_test(function(t) {
     GET(FILE, function(data) {
         var mediaSource = new MediaSource();
         video.controller = new MediaController();
-
+        var controller_duration = 0;
+        var mediaSource_duration = 0;
+        var durationchangeNum = 0;
         mediaSource.addEventListener('sourceopen', function(e){
             var sourceBuffer = mediaSource.addSourceBuffer(mime);
             sourceBuffer.addEventListener('updateend', function(e) {
-                mediaSource.duration = 3;//change the duration
-                mediaSource.endOfStream();
+                mediaSource.duration = 5;//change the duration
             });
             sourceBuffer.appendBuffer(data);
         });
         video.addEventListener('durationchange', function(e) {
-            t.step(function() {
-                assert_equals(video.controller.duration, 3);
-                assert_equals(mediaSource.duration, 3);
-            });
-        });
-        mediaSource.addEventListener('sourceended', function(e){
-            t.done();
+            console.log('durationchange');
+            durationchangeNum++;
+            controller_duration = video.controller.duration;
+            mediaSource_duration = mediaSource.duration;
+
+            if(durationchangeNum > 1) {
+                t.step(function() {
+                    assert_equals(durationchangeNum, 2, 'One of two is fired by video element, another one is fired by MediaSource.');
+                    assert_equals(controller_duration, 5);
+                    assert_equals(mediaSource_duration, 5);
+                });
+                t.done();
+            }
         });
         video.src = window.URL.createObjectURL(mediaSource);
     });

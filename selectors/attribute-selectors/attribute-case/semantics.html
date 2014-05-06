@@ -134,7 +134,7 @@ onload = function() {
         assert_equals(style.sheet.cssRules.length, (ns_decl ? 2 : 1), 'rule didn\'t parse into CSSOM');
         assert_equals(global.getComputedStyle(elm).visibility, 'visible', 'selector matched');
       }, s + ' <div ' + format_attrs(attrs) + '> in ' + global.mode);
-      if (ns_decl) {
+      if (!ns_decl) {
         test(function() {
           assert_equals(global.document.querySelector(s), null, 'selector matched');
         }, s + ' <div ' + format_attrs(attrs) + '> with querySelector in ' + global.mode);

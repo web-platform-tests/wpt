@@ -106,7 +106,7 @@ def unexpected_changes(change_data, files_changed):
 
 # For each testrun
 # Load all files and scan for the suite_start entry
-# Build a hash of filename: properties
+# Build a hash of {filename: properties}
 # For each different set of properties, gather all chunks
 # For each chunk in the set of chunks, go through all tests
 # for each test, make a map of {conditionals: [(platform, new_value)]}

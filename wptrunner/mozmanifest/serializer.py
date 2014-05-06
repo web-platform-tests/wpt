@@ -14,7 +14,10 @@ class ManifestSerializer(NodeVisitor):
 
     def serialize(self, root):
         self.indent = 2
-        return "\n".join(self.visit(root))
+        rv = "\n".join(self.visit(root))
+        if rv[-1] != "\n":
+            rv = rv + "\n"
+        return rv
 
     def visit_DataNode(self, node):
         rv = []
@@ -87,7 +90,7 @@ class ManifestSerializer(NodeVisitor):
             child = node.children[child_index]
             child_str = self.visit(child)[0]
             if (isinstance(child, BinaryExpressionNode) and
-                precedence(node.children[0]) <= precedence(child.children[0])):
+                precedence(node.children[0]) < precedence(child.children[0])):
                 child_str = "(%s)" % child_str
             children.append(child_str)
         return [" ".join(children)]

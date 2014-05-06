@@ -114,3 +114,9 @@ class TokenizerTest(unittest.TestCase):
   other_key: other_value
 """
 )
+
+    def test_10(self):
+        self.compare("""key:
+  if not a and b and c and d: true
+"""
+)

@@ -38,6 +38,12 @@ class Node(object):
                 return False
         return True
 
+    def copy(self):
+        new = self.__class__(self.data)
+        for item in self.children:
+            new.append(item.copy())
+        return new
+
 class DataNode(Node):
     def append(self, other):
         # Append that retains the invariant that child data nodes
@@ -85,6 +91,11 @@ class UnaryExpressionNode(Node):
         Node.append(self, other)
         assert len(self.children) <= 2
 
+    def copy(self):
+        new = self.__class__(self.children[0].copy(),
+                             self.children[1].copy())
+        return new
+
 class BinaryExpressionNode(Node):
     def __init__(self, operator, operand_0, operand_1):
         Node.__init__(self)
@@ -95,6 +106,12 @@ class BinaryExpressionNode(Node):
     def append(self, other):
         Node.append(self, other)
         assert len(self.children) <= 3
+
+    def copy(self):
+        new = self.__class__(self.children[0].copy(),
+                             self.children[1].copy(),
+                             self.children[2].copy())
+        return new
 
 class UnaryOperatorNode(Node):
     def append(self, other):

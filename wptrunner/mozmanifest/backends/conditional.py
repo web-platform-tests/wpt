@@ -1,7 +1,7 @@
 import operator
 from functools import partial
 
-from ..node import NodeVisitor, ConditionalNode, KeyValueNode, ValueNode
+from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ValueNode, StringNode
 from ..parser import parse
 
 class ConditionalValue(object):
@@ -36,25 +36,39 @@ class ConditionalValue(object):
 
 class Compiler(NodeVisitor):
     def compile(self, tree, data_cls_getter=None, **kwargs):
-        self._kwargs = kwargs
-
         if data_cls_getter is None:
             self.data_cls_getter = lambda x, y:ManifestItem
         else:
             self.data_cls_getter = data_cls_getter
 
         self.tree = tree
-        self.output_node = None
+        self.output_node = self._initial_output_node(tree, **kwargs)
         self.visit(tree)
+        assert self.output_node is not None
         return self.output_node
 
+    def compile_condition(self, condition):
+        """Compile a ConditionalNode into a ConditionalValue.
+
+        condition: A ConditionalNode"""
+        data_node = DataNode()
+        key_value_node = KeyValueNode()
+        key_value_node.append(condition.copy())
+        data_node.append(key_value_node)
+        manifest_item = self.compile(data_node)
+        return manifest_item._data[None][0]
+
+    def _initial_output_node(self, node, **kwargs):
+        return self.data_cls_getter(None, None)(node, **kwargs)
+
     def visit_DataNode(self, node):
-        output_parent = self.output_node
-        if self.output_node is None:
-            assert node.parent is None
-            self.output_node = self.data_cls_getter(None, None)(node, **self._kwargs)
-        else:
+        if node != self.tree:
+            output_parent = self.output_node
             self.output_node = self.data_cls_getter(self.output_node, node)(node)
+        else:
+            output_parent = None
+
+        assert self.output_node is not None
 
         for child in node.children:
             self.visit(child)
@@ -63,6 +77,8 @@ class Compiler(NodeVisitor):
             # Append to the parent *after* processing all the node data
             output_parent.append(self.output_node)
             self.output_node = self.output_node.parent
+
+        assert self.output_node is not None
 
     def visit_KeyValueNode(self, node):
         key_name = node.data
@@ -82,11 +98,11 @@ class Compiler(NodeVisitor):
     def visit_StringNode(self, node):
         indexes = [self.visit(child) for child in node.children]
         def value(x):
-            rv = data
+            rv = node.data
             for index in indexes:
                 rv = rv[index(x)]
             return rv
-        return lambda x: node.data
+        return value
 
     def visit_NumberNode(self, node):
         if "." in node.data:
@@ -216,12 +232,10 @@ class ManifestItem(object):
             conditional_node.append(condition)
             conditional_node.append(value_node)
             node.append(conditional_node)
-            func = Compiler().compile(condition)
+            cond_value = Compiler().compile_condition(conditional_node)
         else:
             node.append(value_node)
-            func = lambda x: True
-
-        cond_value = ConditionalValue(value_node, func)
+            cond_value = ConditionalValue(value_node, lambda x: True)
 
         # Update the cache of child values. This is pretty annoying and maybe
         # it should just work directly on the tree
@@ -271,10 +285,6 @@ class ManifestItem(object):
 
     def iterkeys(self):
         for item in self._flatten().iterkeys():
-            yield item
-
-    def itervalues(self):
-        for item in self._flatten().itervalues():
             yield item
 
     def remove_value(self, key, value):

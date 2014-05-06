@@ -3,7 +3,7 @@ from collections import namedtuple, defaultdict
 
 from mozmanifest.node import DataNode, ConditionalNode, BinaryExpressionNode, BinaryOperatorNode, VariableNode, StringNode, NumberNode, UnaryExpressionNode, UnaryOperatorNode, KeyValueNode, ValueNode
 from mozmanifest.backends import conditional
-from mozmanifest.backends.conditional import ManifestItem, ConditionalValue
+from mozmanifest.backends.conditional import ManifestItem
 
 import expected
 

@@ -373,7 +373,7 @@ def sub(request, response):
     return response
 
 @pipe()
-def gzip(request, response):
+def gz(request, response):
     """ gzip response data
     """
     content = resolve_content(response)
@@ -383,5 +383,7 @@ def gzip(request, response):
     with gzip.GzipFile(fileobj=out, mode="w") as f:
       f.write(content)
     response.content = out.getvalue()
+    
+    response.headers.set("Content-Length", len(response.content)) 
 
     return response

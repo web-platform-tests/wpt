@@ -13,12 +13,12 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
+var FILE = '/media/white.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 
 //check the browser supports the MIME used in this test
-function canPlayType(mime) {    
+function canPlayType(mime) {
     if(video.canPlayType(mime) != 'probably') {
         this.step(function() {
             assert_unreached("Browser doesn't support the MIME used in this test.");

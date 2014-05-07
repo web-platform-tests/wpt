@@ -33,13 +33,14 @@
                     if (readyState == 1)
                     {
                         xhr.abort();
+                        VerifyResult();
                     }else{
                         assert_unreached('Loadstart event should not fire in readyState '+readyState);
                     }
                 });
             };
 
-            xhr.onloadend          = function(e){ actual.push(e.type); VerifyResult(); };
+            xhr.onloadend          = function(e){ actual.push(e.type); };
             xhr.onabort            = function(e){ actual.push(e.type); };
 
             xhr.upload.onloadend   = function(e){ actual.push("upload." + e.type); };
@@ -50,12 +51,8 @@
                 test.step(function()
                 {
                     assert_array_equals(actual, expect);
-                    setTimeout(function() {
-                      test.step(function() {
-                        assert_equals(xhr.readyState, 0, 'state should be UNSENT');
-                        test.done();
-                      });
-                    });
+                    assert_equals(xhr.readyState, 0, 'state should be UNSENT');
+                    test.done();
                 });
             };
 

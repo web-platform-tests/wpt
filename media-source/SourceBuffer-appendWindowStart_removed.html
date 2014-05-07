@@ -13,7 +13,7 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
+var FILE = '/media/white.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 
@@ -42,7 +42,6 @@ async_test(function(t) {
                                   function() {
                                       sourceBuffer.appendWindowStart = 1;
                                   });
-                    
                 });
                 t.done();
             });
@@ -51,7 +50,7 @@ async_test(function(t) {
         video.src = window.URL.createObjectURL(mediaSource);
     });
 },
-'SourceBuffer#appendWindowStart : After this object is removed from the' + 
+'SourceBuffer#appendWindowStart : After this object is removed from the' +
 'sourceBuffers attribute of the parent media source, INVALID_STATE_ERR exception should be thrown.');
 </script>
 </body>

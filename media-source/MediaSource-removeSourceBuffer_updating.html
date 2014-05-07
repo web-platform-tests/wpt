@@ -14,7 +14,7 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
+var FILE = '/media/white.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 function GET(url, processBody) {
@@ -64,10 +64,10 @@ async_test(function(t) {
         }, false);
         video.src = window.URL.createObjectURL(mediaSource);
     });
-}, "MediaSource#removeSourceBuffer : If the sourceBuffer.updating attribute equals true, then run the following steps:" + 
+}, "MediaSource#removeSourceBuffer : If the sourceBuffer.updating attribute equals true, then run the following steps:" +
      "1. Abort the buffer append and stream append loop algorithms if they are running." +
-     "2. Set the sourceBuffer.updating attribute to false." + 
-     "3. Queue a task to fire a simple event named abort at sourceBuffer." + 
+     "2. Set the sourceBuffer.updating attribute to false." +
+     "3. Queue a task to fire a simple event named abort at sourceBuffer." +
      "4. Queue a task to fire a simple event named updateend at sourceBuffer.");
 </script>
 </body>

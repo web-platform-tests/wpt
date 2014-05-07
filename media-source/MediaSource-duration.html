@@ -14,7 +14,7 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
+var FILE = '/media/white.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 function GET(url, processBody) {
@@ -54,7 +54,7 @@ async_test(function(t) {
 
         mediaSource.addEventListener('sourceopen', function(e){
             var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            
+
             sourceBuffer.addEventListener('updatestart', function(e) {
                 console.log(this.updating);
                 t.step(function() {

@@ -14,14 +14,14 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
+var FILE = '/media/white.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 
 async_test(function(t) {
     var mediaSource = new MediaSource();
     var events = [];
-    
+
     mediaSource.addEventListener('sourceopen', function(e){
         events.push('sourceopen');
         var sourceBuffer = this.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
@@ -43,8 +43,8 @@ async_test(function(t) {
         t.done();
     });
     video.src = window.URL.createObjectURL(mediaSource);
-}, "MediaSource#removeSouceBuffer : " + 
-     "If sourceBuffer is in activeSourceBuffers, then remove sourceBuffer from activeSourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by activeSourceBuffers." + 
+}, "MediaSource#removeSouceBuffer : " +
+     "If sourceBuffer is in activeSourceBuffers, then remove sourceBuffer from activeSourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by activeSourceBuffers." +
      "Remove sourceBuffer from sourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by sourceBuffers.");
 
 </script>

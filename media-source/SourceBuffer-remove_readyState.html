@@ -13,7 +13,7 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
+var FILE = '/media/white.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 
@@ -41,12 +41,12 @@ async_test(function(t) {
             if(num_sourceopen > 1) {
                 mediaSource.endOfStream();
                 return;
-            }            
+            }
             var sourceBuffer = mediaSource.addSourceBuffer(mime);
             sourceBuffer.addEventListener('updateend', function(e) {
                 if(mediaSource.readyState != 'ended') {
                     mediaSource.endOfStream();//make mediaSource.readyState 'ended'
-                    
+
                     sourceBuffer.remove(1,2);
                     t.step(function() {
                         assert_equals(mediaSource.readyState, 'open');
@@ -70,7 +70,7 @@ async_test(function(t) {
     });
 },
 'SourceBuffer#remove(start, end) :  If the readyState attribute of the parent media source is in the "ended" state then run the following steps:' +
-'1. Set the readyState attribute of the parent media source to "open"' + 
+'1. Set the readyState attribute of the parent media source to "open"' +
 '2. Queue a task to fire a simple event named sourceopen at the parent media source .');
 </script>
 </body>

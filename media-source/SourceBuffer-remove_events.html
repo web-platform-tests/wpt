@@ -13,7 +13,7 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
+var FILE = '/media/white.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 
@@ -49,7 +49,7 @@ async_test(function(t) {
             sourceBuffer.addEventListener('updateend', function(e) {
                 events.push('updateend');
                 if(!num_updateend) {
-                    this.remove(1,2);                    
+                    this.remove(1,2);
                 } else {
                     mediaSource.endOfStream();
                 }

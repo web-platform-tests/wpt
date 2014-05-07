@@ -23,20 +23,6 @@ test(function() {
         'if its type is registered without prototype');
 }, 'Custom element should have HTMLElement prototype, ' +
     'if its type is registered without prototype');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-    var GeneratedConstructor = doc.registerElement('x-b', {
-        prototype: Object.create(HTMLParagraphElement.prototype),
-        extends: 'p'
-    });
-    var customElement = new GeneratedConstructor();
-
-    assert_class_string(customElement, 'HTMLParagraphElement',
-        'Custom element must be a HTMLParagraphElement');
-}, 'If custom element type is registered with prototype, '+
-   'the custom element should have the specified prototype');
 </script>
 </body>
 </html>

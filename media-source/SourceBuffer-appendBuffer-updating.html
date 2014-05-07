@@ -13,7 +13,7 @@
 <div id="log"></div>
 
 <script>
-var FILE = 'test.webm';
+var FILE = '/media/white.webm';
 var video = document.querySelector('video');
 var mime = 'video/webm; codecs="vorbis,vp8"';
 
@@ -45,7 +45,7 @@ async_test(function(t) {
             sourceBuffer.addEventListener('updateend', function(e) {
                 updatings.push(sourceBuffer.updating);
                 t.step(function() {
-                    assert_array_equals(updatings, 
+                    assert_array_equals(updatings,
                                         [false, true, true, false, false],
                                         'Check the transition of the updating attribute');
                 });

@@ -22,6 +22,10 @@
 To reduce this testsuite to show only a single desired test,
 simply remove all test(...) blocks before and after it. */
 
+var urls = {"base":"http://" + location.host + "/",
+            "www":"http://www." + location.host + "/",
+            "www1":"http://www1." + location.host + "/"}
+
 function makeEl(eltype,props,contents) {
         var elem = document.createElement(eltype);
         for( var i in props ) {
@@ -512,8 +516,8 @@ test(function () {
 /* itemProp property tests (properties collection tests are done later) */
 test(function () {
         assert_equals(makeEl('div',{}).itemProp.toString(),'','no attribute');
-        assert_equals(makeEl('div',{itemprop:' http://example.com/foo#bar  test '}).itemProp.toString(),' http://example.com/foo#bar  test ','with URL and simple tokens');
-        var testEl = makeEl('div',{itemprop:'http://example.com/foo#bar'});
+        assert_equals(makeEl('div',{itemprop:' ' + urls.www1 + 'foo#bar  test '}).itemProp.toString(),' ' + urls.www1 + 'foo#bar  test ','with URL and simple tokens');
+        var testEl = makeEl('div',{itemprop:urls.www1 + 'foo#bar'});
         testEl.removeAttribute('itemprop');
         assert_equals(testEl.itemProp.toString(),'','removed attribute');
 }, 'the itemprop attribute must be reflected by the .itemProp property');
@@ -796,25 +800,25 @@ test(function () {
 
 /* itemId property tests */
 test(function () {
-        assert_equals( makeEl('div',{itemid:'http://example.com/foo'}).itemId, 'http://example.com/foo' );
-        assert_equals( makeEl('div',{itemid:'http://example.com/FOO'}).itemId, 'http://example.com/FOO', 'case-sensitive' );
-        assert_equals( makeEl('div',{itemid:' http://example.com/foo '}).itemId, 'http://example.com/foo', 'whitespace' );
+        assert_equals( makeEl('div',{itemid:urls.www1 + 'foo'}).itemId, urls.www1 + 'foo' );
+        assert_equals( makeEl('div',{itemid:urls.www1 + 'FOO'}).itemId, urls.www1 + 'FOO', 'case-sensitive' );
+        assert_equals( makeEl('div',{itemid:' ' + urls.www1 + 'foo '}).itemId, urls.www1 + 'foo', 'whitespace' );
         assert_equals( makeEl('div',{itemid:'data:text/plain,'}).itemId, 'data:text/plain,' );
         assert_equals( makeEl('div',{itemid:'madeup:onthespot'}).itemId, 'madeup:onthespot' );
         assert_equals( makeEl('div',{}).itemId, '' );
 }, 'the itemid attribute must be reflected by the .itemId property');
 test(function () {
         var testEl = makeEl('div',{});
-        testEl.itemId = 'http://example.com/foo';
-        assert_equals(testEl.itemId,'http://example.com/foo','writing a URL');
+        testEl.itemId = urls.www1 + 'foo';
+        assert_equals(testEl.itemId,urls.www1 + 'foo','writing a URL');
         testEl.itemId = '';
         assert_equals(testEl.itemId,location.href,'writing an empty string');
 }, 'the itemId property must be read/write');
 test(function () {
         var testEl = makeEl('div',{});
-        testEl.itemId = 'http://example.com/foo';
+        testEl.itemId = urls.www1 + 'foo';
         assert_true(testEl.hasAttribute('itemid'),'writing a URL');
-        assert_equals(testEl.getAttribute('itemid'),'http://example.com/foo','writing a URL');
+        assert_equals(testEl.getAttribute('itemid'),urls.www1 + 'foo','writing a URL');
         testEl = makeEl('div',{})
         testEl.itemId = '';
         assert_true(testEl.hasAttribute('itemid'),'writing an empty string');
@@ -1212,126 +1216,126 @@ test(function () {
         assert_equals( testEl.textContent, '', 'writing (checking textContent)' );
 }, 'itemValue must reflect the content attribute on meta elements');
 test(function () {
-        var testEl = makeEl('audio',{itemprop:'foo',src:'http://example.org/'},'contained text');
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.src = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.src, 'http://example.com/', 'writing (checking src)' );
+        var testEl = makeEl('audio',{itemprop:'foo',src:urls.base},'contained text');
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.src = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.src, urls.www1, 'writing (checking src)' );
         assert_equals( testEl.textContent, 'contained text', 'writing (checking textContent)' );
         assert_equals( makeEl('audio',{itemprop:'foo'},'contained text').itemValue, '', 'reading with missing attribute' );
         testEl.src = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on audio elements');
 test(function () {
-        var testEl = makeEl('embed',{itemprop:'foo',src:'http://example.org/'});
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.src = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.src, 'http://example.com/', 'writing (checking src)' );
+        var testEl = makeEl('embed',{itemprop:'foo',src:urls.base});
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.src = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.src, urls.www1, 'writing (checking src)' );
         assert_equals( testEl.textContent, '', 'writing (checking textContent)' );
         testEl.src = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on embed elements');
 test(function () {
-        var testEl = makeEl('iframe',{itemprop:'foo',src:'http://example.org/'},'contained text');
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.src = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.src, 'http://example.com/', 'writing (checking src)' );
+        var testEl = makeEl('iframe',{itemprop:'foo',src:urls.base},'contained text');
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.src = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.src, urls.www1, 'writing (checking src)' );
         assert_equals( testEl.textContent, 'contained text', 'writing (checking textContent)' );
         assert_equals( makeEl('iframe',{itemprop:'foo'},'contained text').itemValue, '', 'reading with missing attribute' );
         testEl.src = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on iframe elements');
 test(function () {
-        var testEl = makeEl('img',{itemprop:'foo',src:'http://example.org/'});
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.src = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.src, 'http://example.com/', 'writing (checking src)' );
+        var testEl = makeEl('img',{itemprop:'foo',src:urls.base});
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.src = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.src, urls.www1, 'writing (checking src)' );
         assert_equals( testEl.textContent, '', 'writing (checking textContent)' );
         testEl.src = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on img elements');
 test(function () {
-        var testEl = makeEl('source',{itemprop:'foo',src:'http://example.org/'});
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.src = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.src, 'http://example.com/', 'writing (checking src)' );
+        var testEl = makeEl('source',{itemprop:'foo',src:urls.base});
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.src = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.src, urls.www1, 'writing (checking src)' );
         assert_equals( testEl.textContent, '', 'writing (checking textContent)' );
         testEl.src = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on source elements');
 test(function () {
-        var testEl = makeEl('track',{itemprop:'foo',src:'http://example.org/'});
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.src = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.src, 'http://example.com/', 'writing (checking src)' );
+        var testEl = makeEl('track',{itemprop:'foo',src:urls.base});
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.src = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.src, urls.www1, 'writing (checking src)' );
         assert_equals( testEl.textContent, '', 'writing (checking textContent)' );
         testEl.src = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on track elements');
 test(function () {
-        var testEl = makeEl('video',{itemprop:'foo',src:'http://example.org/'},'contained text');
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.src = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.src, 'http://example.com/', 'writing (checking src)' );
+        var testEl = makeEl('video',{itemprop:'foo',src:urls.base},'contained text');
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.src = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.src, urls.www1, 'writing (checking src)' );
         assert_equals( testEl.textContent, 'contained text', 'writing (checking textContent)' );
         assert_equals( makeEl('video',{itemprop:'foo'},'contained text').itemValue, '', 'reading with missing attribute' );
         testEl.src = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on video elements');
 test(function () {
-        var testEl = makeEl('a',{itemprop:'foo',href:'http://example.org/'},'contained text');
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.href = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.href, 'http://example.com/', 'writing (checking href)' );
+        var testEl = makeEl('a',{itemprop:'foo',href:urls.base},'contained text');
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.href = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.href, urls.www1, 'writing (checking href)' );
         assert_equals( testEl.textContent, 'contained text', 'writing (checking textContent)' );
         assert_equals( makeEl('a',{itemprop:'foo'},'contained text').itemValue, '', 'reading with missing attribute' );
         testEl.href = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on anchor elements');
 test(function () {
-        var testEl = makeEl('area',{itemprop:'foo',href:'http://example.org/'});
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.href = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.href, 'http://example.com/', 'writing (checking href)' );
+        var testEl = makeEl('area',{itemprop:'foo',href:urls.base});
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.href = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.href, urls.www1, 'writing (checking href)' );
         assert_equals( testEl.textContent, '', 'writing (checking textContent)' );
         testEl.href = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on area elements');
 test(function () {
-        var testEl = makeEl('link',{itemprop:'foo',href:'http://example.org/'});
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.href = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.href, 'http://example.com/', 'writing (checking href)' );
+        var testEl = makeEl('link',{itemprop:'foo',href:urls.base});
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.href = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.href, urls.www1, 'writing (checking href)' );
         assert_equals( testEl.textContent, '', 'writing (checking textContent)' );
         testEl.href = 'bar';
         assert_equals( testEl.itemValue, location.href.replace(/\/[^\/]*$/,'/bar'), 'resolving URLs' );
 }, 'itemValue must reflect the src attribute on link elements');
 test(function () {
-        var testEl = makeEl('object',{itemprop:'foo',data:'http://example.org/'},'contained text');
-        assert_equals( testEl.itemValue, 'http://example.org/', 'reading' );
-        testEl.data = 'http://example.net/';
-        assert_equals( testEl.itemValue, 'http://example.net/', 'reading after change' );
-        testEl.itemValue = 'http://example.com/';
-        assert_equals( testEl.data, 'http://example.com/', 'writing (checking data)' );
+        var testEl = makeEl('object',{itemprop:'foo',data:urls.base},'contained text');
+        assert_equals( testEl.itemValue, urls.base, 'reading' );
+        testEl.data = urls.www;
+        assert_equals( testEl.itemValue, urls.www, 'reading after change' );
+        testEl.itemValue = urls.www1;
+        assert_equals( testEl.data, urls.www1, 'writing (checking data)' );
         assert_equals( testEl.textContent, 'contained text', 'writing (checking textContent)' );
         assert_equals( makeEl('object',{itemprop:'foo'},'contained text').itemValue, '', 'reading with missing attribute' );
         testEl.data = 'bar';
@@ -2389,17 +2393,17 @@ test(function () {
         var testEl = makeEl('div',{itemscope:'itemscope',itemref:'id1 id2'});
         parEl.appendChild(testEl);
         testEl.appendChild(makeEl('meta',{itemprop:'foo',content:'test'}));
-        testEl.appendChild(makeEl('audio',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('embed',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('iframe',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('img',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('source',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('track',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('video',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('a',{itemprop:'foo',href:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('area',{itemprop:'foo',href:'http://example.org/'}));
-        testEl.appendChild(makeEl('link',{itemprop:'foo',href:'http://example.org/'}));
-        testEl.appendChild(makeEl('object',{itemprop:'foo',data:'http://example.org/'},'contained text'));
+        testEl.appendChild(makeEl('audio',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('embed',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('iframe',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('img',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('source',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('track',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('video',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('a',{itemprop:'foo',href:urls.base},'contained text'));
+        testEl.appendChild(makeEl('area',{itemprop:'foo',href:urls.base}));
+        testEl.appendChild(makeEl('link',{itemprop:'foo',href:urls.base}));
+        testEl.appendChild(makeEl('object',{itemprop:'foo',data:urls.base},'contained text'));
         parEl.appendChild(makeEl('time',{itemprop:'foo',id:'id2'},'te <span itemprop="foo" itemscope>st</span> ing'));
         testEl.appendChild(makeEl('time',{itemprop:'foo',datetime:'test'},'te <span itemprop="foo" itemscope>st</span> ing'));
         parEl.firstChild.appendChild(makeEl('div',{itemprop:'foo'},'te <span itemprop="foo" itemscope>st</span> ing'));
@@ -2416,17 +2420,17 @@ test(function () {
         var testEl = makeEl('div',{itemscope:'itemscope',itemref:'id1 id2'});
         parEl.appendChild(testEl);
         testEl.appendChild(makeEl('meta',{itemprop:'foo',content:'test'}));
-        testEl.appendChild(makeEl('audio',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('embed',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('iframe',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('img',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('source',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('track',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('video',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('a',{itemprop:'foo',href:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('area',{itemprop:'foo',href:'http://example.org/'}));
-        testEl.appendChild(makeEl('link',{itemprop:'foo',href:'http://example.org/'}));
-        testEl.appendChild(makeEl('object',{itemprop:'foo',data:'http://example.org/'},'contained text'));
+        testEl.appendChild(makeEl('audio',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('embed',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('iframe',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('img',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('source',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('track',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('video',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('a',{itemprop:'foo',href:urls.base},'contained text'));
+        testEl.appendChild(makeEl('area',{itemprop:'foo',href:urls.base}));
+        testEl.appendChild(makeEl('link',{itemprop:'foo',href:urls.base}));
+        testEl.appendChild(makeEl('object',{itemprop:'foo',data:urls.base},'contained text'));
         parEl.appendChild(makeEl('time',{itemprop:'foo',id:'id2'},'te <span itemprop="foo" itemscope>st</span> ing'));
         testEl.appendChild(makeEl('time',{itemprop:'foo',datetime:'test'},'te <span itemprop="foo" itemscope>st</span> ing'));
         parEl.firstChild.appendChild(makeEl('div',{itemprop:'foo'},'te <span itemprop="foo" itemscope>st</span> ing'));
@@ -2891,17 +2895,17 @@ test(function () {
         var testEl = makeEl('div',{itemscope:'itemscope',itemref:'id1 id2'});
         parEl.appendChild(testEl);
         testEl.appendChild(makeEl('meta',{itemprop:'foo',content:'test'}));
-        testEl.appendChild(makeEl('audio',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('embed',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('iframe',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('img',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('source',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('track',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('video',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('a',{itemprop:'foo',href:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('area',{itemprop:'foo',href:'http://example.org/'}));
-        testEl.appendChild(makeEl('link',{itemprop:'foo',href:'http://example.org/'}));
-        testEl.appendChild(makeEl('object',{itemprop:'foo',data:'http://example.org/'},'contained text'));
+        testEl.appendChild(makeEl('audio',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('embed',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('iframe',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('img',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('source',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('track',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('video',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('a',{itemprop:'foo',href:urls.base},'contained text'));
+        testEl.appendChild(makeEl('area',{itemprop:'foo',href:urls.base}));
+        testEl.appendChild(makeEl('link',{itemprop:'foo',href:urls.base}));
+        testEl.appendChild(makeEl('object',{itemprop:'foo',data:urls.base},'contained text'));
         parEl.appendChild(makeEl('time',{itemprop:'bar',id:'id2'},'te <span itemprop="foo" itemscope>st</span> ing'));
         testEl.appendChild(makeEl('time',{itemprop:'foo',datetime:'test'},'te <span itemprop="foo" itemscope>st</span> ing'));
         parEl.firstChild.appendChild(makeEl('div',{itemprop:'baz'},'te <span itemprop="foo" itemscope>st</span> ing'));
@@ -2941,17 +2945,17 @@ test(function () {
 test(function () {
         var testEl = makeEl('div',{itemscope:'itemscope'});
         testEl.appendChild(makeEl('meta',{itemprop:'foo',content:'test'}));
-        testEl.appendChild(makeEl('audio',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('embed',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('iframe',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('img',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('source',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('track',{itemprop:'foo',src:'http://example.org/'}));
-        testEl.appendChild(makeEl('video',{itemprop:'foo',src:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('a',{itemprop:'foo',href:'http://example.org/'},'contained text'));
-        testEl.appendChild(makeEl('area',{itemprop:'foo',href:'http://example.org/'}));
-        testEl.appendChild(makeEl('link',{itemprop:'foo',href:'http://example.org/'}));
-        testEl.appendChild(makeEl('object',{itemprop:'foo',data:'http://example.org/'},'contained text'));
+        testEl.appendChild(makeEl('audio',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('embed',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('iframe',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('img',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('source',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('track',{itemprop:'foo',src:urls.base}));
+        testEl.appendChild(makeEl('video',{itemprop:'foo',src:urls.base},'contained text'));
+        testEl.appendChild(makeEl('a',{itemprop:'foo',href:urls.base},'contained text'));
+        testEl.appendChild(makeEl('area',{itemprop:'foo',href:urls.base}));
+        testEl.appendChild(makeEl('link',{itemprop:'foo',href:urls.base}));
+        testEl.appendChild(makeEl('object',{itemprop:'foo',data:urls.base},'contained text'));
         testEl.appendChild(makeEl('time',{itemprop:'bar',id:'id2'},'te <span itemprop="foo" itemscope>st</span> ing'));
         testEl.appendChild(makeEl('time',{itemprop:'foo',datetime:'test'},'te <span itemprop="foo" itemscope>st</span> ing'));
         testEl.appendChild(makeEl('div',{itemprop:'baz'},'te <span itemprop="foo" itemscope>st</span> ing'));

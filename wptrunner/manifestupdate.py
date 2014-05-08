@@ -1,9 +1,9 @@
 import os
 from collections import namedtuple, defaultdict
 
-from mozmanifest.node import DataNode, ConditionalNode, BinaryExpressionNode, BinaryOperatorNode, VariableNode, StringNode, NumberNode, UnaryExpressionNode, UnaryOperatorNode, KeyValueNode, ValueNode
-from mozmanifest.backends import conditional
-from mozmanifest.backends.conditional import ManifestItem
+from wptmanifest.node import DataNode, ConditionalNode, BinaryExpressionNode, BinaryOperatorNode, VariableNode, StringNode, NumberNode, UnaryExpressionNode, UnaryOperatorNode, KeyValueNode, ValueNode
+from wptmanifest.backends import conditional
+from wptmanifest.backends.conditional import ManifestItem
 
 import expected
 
@@ -300,12 +300,15 @@ def make_expr(prop_set, status):
 
     return root
 
+def compile(manifest_file, test_path):
+    return conditional.compile(manifest_file,
+                               data_cls_getter=data_cls_getter,
+                               test_path=test_path)
+
 def get_manifest(metadata_root, test_path):
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
         with open(manifest_path) as f:
-            return conditional.compile(f,
-                                       data_cls_getter=data_cls_getter,
-                                       test_path=test_path)
+            return self.compile(f, test_path)
     except IOError:
         return None

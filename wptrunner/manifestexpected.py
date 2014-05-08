@@ -1,8 +1,8 @@
 import os
 
-from mozmanifest.node import DataNode
-from mozmanifest.backends import static
-from mozmanifest.backends.static import ManifestItem
+from wptmanifest.node import DataNode
+from wptmanifest.backends import static
+from wptmanifest.backends.static import ManifestItem
 
 import expected
 

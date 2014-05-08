@@ -1,8 +1,7 @@
 import unittest
 import sys
-sys.path.insert(0, "..")
 
-import wptrunner
+from .. import wptrunner
 
 class MockTest(object):
     def __init__(self, id, timeout=10):

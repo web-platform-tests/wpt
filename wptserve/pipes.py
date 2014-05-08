@@ -3,7 +3,7 @@ import logging
 import re
 import time
 import types
-import gzip
+import gzip as gzip_module
 import StringIO
 
 
@@ -373,17 +373,21 @@ def sub(request, response):
     return response
 
 @pipe()
-def gz(request, response):
-    """ gzip response data
+def gzip(request, response):
+    """This pipe gzip-encodes response data.
+
+    It sets (or overwrites) these HTTP headers:
+    Content-Encoding is set to gzip
+    Content-Length is set to the length of the compressed content
     """
     content = resolve_content(response)
-    response.headers.set("Content-Encoding", "gzip") # Or Transfer-Encoding?
+    response.headers.set("Content-Encoding", "gzip")
 
     out = StringIO.StringIO()
-    with gzip.GzipFile(fileobj=out, mode="w") as f:
+    with gzip_module.GzipFile(fileobj=out, mode="w") as f:
       f.write(content)
     response.content = out.getvalue()
-    
-    response.headers.set("Content-Length", len(response.content)) 
+
+    response.headers.set("Content-Length", len(response.content))
 
     return response

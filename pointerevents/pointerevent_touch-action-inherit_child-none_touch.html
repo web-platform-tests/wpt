@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <script src="pointerevent_support.js"></script>
         <style>
             .scroller > div {
@@ -19,9 +20,9 @@
         <div class="scroller" id="target0">
             <div>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem 
-                    nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat. 
-                    Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit 
+                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem
+                    nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat.
+                    Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit
                     lobortis nisl ut aliquip ex ea commodo consequat.
                 </p>
                 <p>Lorem ipsum dolor sit amet...</p>
@@ -32,9 +33,9 @@
                 <p>Lorem ipsum dolor sit amet...</p>
                 <p>Lorem ipsum dolor sit amet...</p>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem 
-                    nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat. 
-                    Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit 
+                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem
+                    nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat.
+                    Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit
                     lobortis nisl ut aliquip ex ea commodo consequat.
                 </p>
                 <p>Lorem ipsum dolor sit amet...</p>
@@ -45,9 +46,9 @@
                 <p>Lorem ipsum dolor sit amet...</p>
                 <p>Lorem ipsum dolor sit amet...</p>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem 
-                    nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat. 
-                    Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit 
+                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem
+                    nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat.
+                    Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit
                     lobortis nisl ut aliquip ex ea commodo consequat.
                 </p>
                 <p>Lorem ipsum dolor sit amet...</p>
@@ -58,9 +59,9 @@
                 <p>Lorem ipsum dolor sit amet...</p>
                 <p>Lorem ipsum dolor sit amet...</p>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem 
-                    nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat. 
-                    Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit 
+                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem
+                    nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat.
+                    Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit
                     lobortis nisl ut aliquip ex ea commodo consequat.
                 </p>
                 <p>Lorem ipsum dolor sit amet...</p>
@@ -74,39 +75,48 @@
         </div>
         <script type='text/javascript'>
             var detected_pointertypes = {};
-            
+
             var moveCount = 0;
-            var countToPass = 50;
+            var countToPass = 100;
+			var moveDelta = 10;
             var isFirstScroll = true;
-            
-            setup({ explicit_done: true });
+            // these variables are necessary to use checkDirection() function below
+            var previousPointerX, previousPointerY, currentPointerX, currentPointerY;
+
             add_completion_callback(showPointerTypes);
-            
+
             var test_touchaction = async_test("touch-action attribute test");
-            
+
             function run() {
-            	 var target0 = document.getElementById("target0");
-            	
-            	// Check if touch-action attribute works properly for embedded divs
-            	// 
-            	// TA: 15.
-            	on_event(target0, 'pointermove', function(event) {
-            		detected_pointertypes[event.pointerType] = true;
-            		moveCount++;
-            		if(moveCount >= countToPass) {
-            			updateDescriptionNextStep();
-            			if(!isFirstScroll) {
-            				test_touchaction.done();
-            				updateDescriptionComplete();
-            			}
-            			moveCount = 0;
-            			isFirstScroll = false;
-            		}
-            	});
-            	
-            	on_event(target0, 'scroll', function(event) {
-            		test_touchaction.step(failOnScroll, "scroll received while touch-action is none");
-            	});
+                var target0 = document.getElementById("target0");
+
+                // Check if touch-action attribute works properly for embedded divs
+                //
+                // TA: 15.
+                on_event(target0, 'pointermove', function(event) {
+                    checkDirection(test_touchaction, isFirstScroll, moveCount, countToPass, moveDelta);
+
+                    moveCount++;
+                    if(moveCount >= countToPass) {
+                        updateDescriptionNextStep();
+                        if(!isFirstScroll) {
+                            test_touchaction.done();
+                            updateDescriptionComplete();
+                        }
+                        moveCount = 0;
+                        isFirstScroll = false;
+                    }
+                });
+
+                on_event(target0, 'pointerdown', function(event) {
+                    detected_pointertypes[event.pointerType] = true;
+                    previousPointerX = event.clientX;
+                    previousPointerY = event.clientY;
+                });
+
+                on_event(target0, 'scroll', function(event) {
+                    test_touchaction.step(failOnScroll, "scroll received while touch-action is none");
+                });
             }
         </script>
         <h1>behaviour: none</h1>

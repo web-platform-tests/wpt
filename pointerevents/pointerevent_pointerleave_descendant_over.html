@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <script src="pointerevent_support.js"></script>
     </head>
     <body onload="run()">
@@ -26,29 +27,28 @@
             var eventTested = false;
             var pointerleaveReceived = false;
             var detected_pointertypes = {};
-            
-            setup({ explicit_done: true });
+
             add_completion_callback(showPointerTypes);
-            
+
             function run() {
                 var target0 = document.getElementById("target0");
-            
-            	// The pointerleave event must not be dispatched when the pointer enters a child element without leaving the hit test boundaries of the parent. (as distinct from pointerout)
-            	// TA: 9.2
-            	on_event(target1, "pointerdown", function(event) {
-            		detected_pointertypes[event.pointerType] = true;
-            		
-            		test(function() {
-            				assert_true(!pointerleaveReceived, "pointerleave shouldn't be received on descendant's pointerover")
-            			}, "pointerleave shouldn't be received on descendant's pointerover");			
-            	});
-            
-            	on_event(target0, "pointerleave", function (event) {
-            	    if (eventTested == false) {
-            			pointerleaveReceived = true;
-            			eventTested = true;
-            	    }
-            	});
+
+                // The pointerleave event must not be dispatched when the pointer enters a child element without leaving the hit test boundaries of the parent. (as distinct from pointerout)
+                // TA: 9.2
+                on_event(target1, "pointerdown", function(event) {
+                    detected_pointertypes[event.pointerType] = true;
+
+                    test(function() {
+                        assert_true(!pointerleaveReceived, "pointerleave shouldn't be received on descendant's pointerover")
+                    }, "pointerleave shouldn't be received on descendant's pointerover");
+                });
+
+                on_event(target0, "pointerleave", function (event) {
+                    if (eventTested == false) {
+                        pointerleaveReceived = true;
+                        eventTested = true;
+                    }
+                });
             }
         </script>
         <h1>Pointer Events pointerleave tests</h1>

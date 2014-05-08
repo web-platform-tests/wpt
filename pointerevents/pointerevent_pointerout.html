@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
     </head>
@@ -18,23 +19,22 @@
             // Requirements: the callbakc function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
-            
+
             var eventTested = false;
             var detected_pointertypes = {};
-            
+
             function run() {
-            	var target0 = document.getElementById("target0");
-            
-            	on_event(target0, "pointerout", function (event) {
-            		if (eventTested == false) {
-            			detected_pointertypes[event.pointerType] = true;
-            			eventTested = true;
-            			check_PointerEvent(event);
-            			test_pointerEvent.done();
-            		}
-            	});
+                var target0 = document.getElementById("target0");
+
+                on_event(target0, "pointerout", function (event) {
+                    if (eventTested == false) {
+                        detected_pointertypes[event.pointerType] = true;
+                        eventTested = true;
+                        check_PointerEvent(event);
+                        test_pointerEvent.done();
+                    }
+                });
             }
-            
         </script>
         <h1>Pointer Events pointerout tests</h1>
         <div id="complete-notice">

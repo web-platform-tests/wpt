@@ -1019,7 +1019,7 @@ test(function () {
         var elem = makeEl('div',{itemref:'  token1  token2  token3  '});
         elem.itemRef.remove('token2');
         assert_equals( elem.itemRef.toString(), 'token1 token3' );
-}, 'itemRef.remove must remove useless whitespace when removing tokens');
+}, 'itemRef.remove must remove useless whitespace when removing tokens (2)');
 test(function () {
         var elem = makeEl('div',{itemref:'  token1  token2  token3  '});
         elem.itemRef.remove('token1', 'token3');

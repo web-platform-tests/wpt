@@ -3,6 +3,8 @@ import logging
 import re
 import time
 import types
+import gzip as gzip_module
+from cStringIO import StringIO
 
 
 logger = logging.getLogger("wptserve")
@@ -368,4 +370,24 @@ def sub(request, response):
     new_content, count = template_regexp.subn(config_replacement, content)
 
     response.content = new_content
+    return response
+
+@pipe()
+def gzip(request, response):
+    """This pipe gzip-encodes response data.
+
+    It sets (or overwrites) these HTTP headers:
+    Content-Encoding is set to gzip
+    Content-Length is set to the length of the compressed content
+    """
+    content = resolve_content(response)
+    response.headers.set("Content-Encoding", "gzip")
+
+    out = StringIO.StringIO()
+    with gzip_module.GzipFile(fileobj=out, mode="w") as f:
+      f.write(content)
+    response.content = out.getvalue()
+
+    response.headers.set("Content-Length", len(response.content))
+
     return response

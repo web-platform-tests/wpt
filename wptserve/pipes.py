@@ -4,7 +4,7 @@ import re
 import time
 import types
 import gzip as gzip_module
-import StringIO
+from cStringIO import StringIO
 
 
 logger = logging.getLogger("wptserve")

@@ -75,7 +75,7 @@ def whitelist_errors(path, errors):
         _whitelist_fn = parse_whitelist_file(os.path.join(here, "lint.whitelist"))
     return _whitelist_fn(path, errors)
 
-trailing_whitespace_regexp = re.compile("\s$")
+trailing_whitespace_regexp = re.compile("[ \t\f\v]$")
 tabs_regexp = re.compile("^\t")
 cr_regexp = re.compile("\r$")
 def check_whitespace(path, f):
@@ -84,7 +84,7 @@ def check_whitespace(path, f):
         for regexp, error in [(trailing_whitespace_regexp, "TRAILING WHITESPACE"),
                               (tabs_regexp, "INDENT TABS"),
                               (cr_regexp, "CR AT EOL")]:
-            if regexp.match(line):
+            if regexp.search(line):
                 errors.append((error, "%s line %i" % (path, i+1), i+1))
 
     return errors

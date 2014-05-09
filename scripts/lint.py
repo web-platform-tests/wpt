@@ -54,12 +54,6 @@ def parse_whitelist_file(filename):
             data[file_match][error_type].add(line_number)
 
     def inner(path, errors):
-        test_path = "webaudio/the-audio-api/the-gainnode-interface/gain-expected.wav"
-        rv = []
-        # if path == test_path:
-        #     import pdb
-        #     pdb.set_trace()
-
         whitelisted = [False for item in xrange(len(errors))]
 
         for file_match, whitelist_errors in data.iteritems():

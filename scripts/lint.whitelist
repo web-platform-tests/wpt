@@ -1,0 +1,11 @@
+# File containing whiteslist for lint errors
+# Format is:
+# ERROR TYPE:file/name/pattern[:line number]
+# e.g.
+# TRAILING WHITESPACE:example/file.html:128
+# to allow trailing whitespace on example/file.html line 128
+INDENT TABS:*
+TRAILING WHITESPACE:*
+CR AT EOL:cors/resources/cors-headers.asis
+CR AT EOL:webaudio/the-audio-api/the-gainnode-interface/gain-expected.wav
+CR AT EOL:webvtt/webvtt-file-format-parsing/webvtt-file-parsing/support/newlines.vtt

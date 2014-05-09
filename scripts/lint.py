@@ -72,7 +72,7 @@ def whitelist_errors(path, errors):
     global _whitelist_fn
 
     if _whitelist_fn is None:
-        _whitelist_fn = parse_whitelist_file("lint.whitelist")
+        _whitelist_fn = parse_whitelist_file(os.path.join(here, "lint.whitelist"))
     return _whitelist_fn(path, errors)
 
 trailing_whitespace_regexp = re.compile("\s$")

@@ -1,0 +1,10 @@
+dist
+dist_last
+*.xcodeproj
+*.DS_Store
+*.pyc
+*.svn
+*.directory
+*~
+*.orig
+*Thumbs.db

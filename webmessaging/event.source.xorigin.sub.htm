@@ -21,7 +21,7 @@
                 
     var DATA = "foo";
     var TARGET = document.querySelector("iframe");
-    var XORIGIN = "http://www1.w3c-test.org";
+    var XORIGIN = "http://{{domains[www1]}}:{{ports[http][0]}}";
     var ExpectedResult = [XORIGIN, "AccessCookieDenied"];
     var ActualResult = [];
                 

@@ -94,9 +94,15 @@ def output_errors(errors):
         print "%s: %s" % (error_type, error)
 
 def output_error_count(error_count):
+    if not error_count:
+        return
+
     by_type = " ".join("%s: %d" % item for item in error_count.iteritems())
     count = sum(error_count.values())
-    print "There were %d errors (%s)" % (count, by_type)
+    if count == 1:
+        print "There was 1 error (%s)" % (by_type,)
+    else:
+        print "There were %d errors (%s)" % (count, by_type)
 
 def main():
     error_count = defaultdict(int)
@@ -118,7 +124,7 @@ def main():
                     run_lint(path, file_fn, f)
 
     output_error_count(error_count)
-    return error_count
+    return sum(error_count.itervalues())
 
 path_lints = [check_path_length]
 file_lints = [check_whitespace]

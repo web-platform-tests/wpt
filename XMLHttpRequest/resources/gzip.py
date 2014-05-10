@@ -9,7 +9,7 @@ def main(request, response):
     output = zlib.compress(output, 9)
 
     headers = [("Content-type", "text/plain"),
-               ("Content-Encoding", "gzip"),
+               ("Content-Encoding", "deflate"),
                ("X-Request-Method", request.method),
                ("X-Request-Query", request.url_parts.query if request.url_parts.query else "NO"),
                ("X-Request-Content-Length", request.headers.get("Content-Length", "NO")),

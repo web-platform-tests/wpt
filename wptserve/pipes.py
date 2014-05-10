@@ -383,7 +383,7 @@ def gzip(request, response):
     content = resolve_content(response)
     response.headers.set("Content-Encoding", "gzip")
 
-    out = StringIO.StringIO()
+    out = StringIO()
     with gzip_module.GzipFile(fileobj=out, mode="w") as f:
       f.write(content)
     response.content = out.getvalue()

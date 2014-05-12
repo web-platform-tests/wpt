@@ -22,7 +22,7 @@ test(function() {
     assert_not_equals(customElement, null,
         'Unresolved custom element should be accessible by :unresolved');
     assert_equals(customElement.localName, 'x-a',
-         'Custom element returned by Document.querySelector(\':unresolved\') should be x-a');
+        'Custom element returned by Document.querySelector(\':unresolved\') should be x-a');
 }, 'Test that unresolved custom element is accessible by Document.querySelector(\':unresolved\')');
 
 
@@ -118,7 +118,7 @@ testInIFrame('../../resources/x-element.html', function(doc) {
         'Unresolved custom element should be accessible by :unresolved');
     assert_equals(customElement.localName, 'x-element',
         'Custom element returned by Document.querySelector(\':unresolved\') should be x-element');
-}, 'Document.querySelector(): Unresolved custom element should be accessible by :unresolved '+
+}, 'Document.querySelector(): Unresolved custom element should be accessible by :unresolved ' +
     'in loaded document');
 
 

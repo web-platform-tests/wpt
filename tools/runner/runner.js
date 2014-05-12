@@ -179,7 +179,7 @@ VisualOutput.prototype = {
             subtests_node.textContent = "1/1";
         }
 
-        var status_arr = new Array("PASS", "FAIL", "ERROR", "TIMEOUT");
+        var status_arr = ["PASS", "FAIL", "ERROR", "TIMEOUT"];
         for (var i = 0; i < status_arr.length; i++) {
             this.elem.querySelector("td." + status_arr[i]).textContent = this.result_count[status_arr[i]];
         }

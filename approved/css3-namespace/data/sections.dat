@@ -1,8 +1,0 @@
-http://www.w3.org/TR/css3-namespace/#intro	1	Introduction
-http://www.w3.org/TR/css3-namespace/#conformance	2	Conformance
-http://www.w3.org/TR/css3-namespace/#terminology	2.1	Terminology
-http://www.w3.org/TR/css3-namespace/#declaration	3	Declaring namespaces: the @namespace rule
-http://www.w3.org/TR/css3-namespace/#syntax	3.1	Syntax
-http://www.w3.org/TR/css3-namespace/#scope	3.2	Scope
-http://www.w3.org/TR/css3-namespace/#prefixes	3.3	Declaring Prefixes
-http://www.w3.org/TR/css3-namespace/#css-qnames	4	CSS Qualified Names

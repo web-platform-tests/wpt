@@ -1,1 +1,2 @@
 tools/w3ctestlib = http://hg.csswg.org/dev/w3ctestlib
+tools/apiclient = http://hg.csswg.org/dev/apiclient

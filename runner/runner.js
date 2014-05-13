@@ -48,26 +48,30 @@ function ManifestIterator(manifest, path, test_types) {
 
 ManifestIterator.prototype = {
     next: function() {
+        var manifest_item = null;
+
         if (this.test_types.length === 0) {
             return null;
         }
 
-        while (this.test_list === null || this.test_index === this.test_list.length) {
-            this.test_types_index++;
-            if (this.test_types_index >= this.test_types.length) {
-                return null;
+        while (!manifest_item) {
+            while (this.test_list === null || this.test_index >= this.test_list.length) {
+                this.test_types_index++;
+                if (this.test_types_index >= this.test_types.length) {
+                    return null;
+                }
+                this.test_index = 0;
+                this.test_list = this.manifest.by_type(this.test_types[this.test_types_index]);
             }
-            this.test_index = 0;
-            this.test_list = this.manifest.by_type(this.test_types[this.test_types_index]);
-        }
-        var manifest_item = this.test_list[this.test_index++];
-        while (manifest_item && !this.matches(manifest_item)) {
+
             manifest_item = this.test_list[this.test_index++];
+            while (manifest_item && !this.matches(manifest_item)) {
+                manifest_item = this.test_list[this.test_index++];
+            }
+            if (manifest_item) {
+                return this.to_test(manifest_item);
+            }
         }
-        if (!manifest_item) {
-            return null;
-        }
-        return this.to_test(manifest_item);
     },
 
     matches: function(manifest_item) {

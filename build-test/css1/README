@@ -1,5 +1,0 @@
-These are the raw test files without <link rel="help"> lines or the
-proper filenames. In each directory here there is a FILENAMES file
-which is then used to annotate the files with the appropriate names,
-etc. The files are then moved to the ../tests/ directory where another
-script takes them and creates the final versions in ../dist/.

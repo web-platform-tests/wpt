@@ -1,1 +1,0 @@
-The tools directory houses scripts to be called during the build proces.  Tools in the common directory are available to all versions.  Version specific tools live in {VERSION_NAME} directories (e.g. css2_1)

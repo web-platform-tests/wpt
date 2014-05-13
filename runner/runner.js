@@ -259,12 +259,12 @@ function ManualUI(elem, runner) {
     this.runner.done_callbacks.push(this.on_done.bind(this));
 
     this.pass_button.onclick = function() {
-        this.runner.on_result("PASS", "", []);
         this.disable_buttons();
-        setTimeout(this.enable_buttons.bind(this), 200);
+        this.runner.on_result("PASS", "", []);
     }.bind(this);
 
     this.fail_button.onclick = function() {
+        this.disable_buttons();
         this.runner.on_result("FAIL", "", []);
     }.bind(this);
 }
@@ -272,6 +272,7 @@ function ManualUI(elem, runner) {
 ManualUI.prototype = {
     show: function() {
         this.elem.style.display = "block";
+        setTimeout(this.enable_buttons.bind(this), 200);
     },
 
     hide: function() {

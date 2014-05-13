@@ -1,5 +1,5 @@
 <!doctype html>
-<title>provide a stable state in dialogs</title>
+<title>stable state in dialogs</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
@@ -7,11 +7,12 @@
 ['alert', 'confirm', 'prompt'].forEach(function(dialog) {
   test(function() {
     v = document.createElement('video');
-    assert_equals(v.networkState, v.NETWORK_EMPTY, 'networkState before load()');
-    v.load();
-    assert_equals(v.networkState, v.NETWORK_NO_SOURCE, 'networkState after load()');
+    v.src = 'data:,';
+    assert_equals(v.networkState, v.NETWORK_NO_SOURCE, 'networkState before dialog');
+    assert_equals(v.currentSrc, '', 'currentSrc before dialog');
     window[dialog]('dismiss this dialog');
-    assert_equals(v.networkState, v.NETWORK_EMPTY, 'networkState after alert()');
+    assert_equals(v.networkState, v.NETWORK_NO_SOURCE, 'networkState after dialog');
+    assert_equals(v.currentSrc, '', 'currentSrc after dialog');
   }, dialog + '() should provide a stable state');
 });
 </script>

@@ -344,9 +344,9 @@ TestControl.prototype = {
             var path = this.get_path();
             var test_types = this.get_test_types();
             var settings = this.get_testharness_settings();
-            this.runner.start(path, test_types, settings);
             this.set_stop();
             this.set_pause();
+            this.runner.start(path, test_types, settings);
         }.bind(this);
     },
 

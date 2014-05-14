@@ -199,7 +199,7 @@ var validator = {
       if (data.dirty)
         self.set_dirty(ctl2);
 
-      var result = fm.checkValidity();      
+      var result = fm.checkValidity();
       document.body.removeChild(fm);
 
       if (data.expected)
@@ -266,7 +266,7 @@ var validator = {
       ctl.removeAttribute(item);
     });
     for (var attr in obj) {
-      if (obj[attr] || obj[attr] === "") 
+      if (obj[attr] || obj[attr] === "")
         ctl[attr] = obj[attr];
     }
   },

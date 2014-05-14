@@ -26,6 +26,12 @@ write a similar response but with more explicit control as follows::
       time.sleep(1)
       response.writer.write("example content")
 
+Note that when writing the response directly like this it is always
+necessary to either set the Content-Length header or set
+`response.close_connection = True`. Without one of these, the client
+will not be able to determine where the response body ends and will
+continue to load indefinitely.
+
 .. _response.Interface:
 
 :mod:`Interface <response>`

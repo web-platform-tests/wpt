@@ -14,9 +14,7 @@
         test(function() {
           var client = new XMLHttpRequest()
           client.open("GET", "...")
-          // Per https://www.w3.org/Bugs/Public/show_bug.cgi?id=23346 TypeError is the right error for this test.
-          // However, the literature currently specifies that SyntaxError is thrown
-          assert_throws(new SyntaxError(), function() { client.setRequestHeader(name, 'x-value') })
+          assert_throws("SyntaxError", function() { client.setRequestHeader(name, 'x-value') })
         })
       }
       try_name("")

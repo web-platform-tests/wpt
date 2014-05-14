@@ -487,6 +487,15 @@ onload = function() {
   }, 'EventSource constructor',
   {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#dom-eventsource'});
 
+  // EventSource#url
+  test(function() {
+    var source = new EventSource(input_url_eventstream);
+    source.close();
+    var got = source.url;
+    assert_true(source.url.indexOf(expected_current) > -1, msg(expected_current, got));
+  }, 'EventSource#url',
+  {help:'http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#dom-eventsource'});
+
   // XMLDocument#load()
   async_test(function() {
     var doc = document.implementation.createDocument(null, "x");

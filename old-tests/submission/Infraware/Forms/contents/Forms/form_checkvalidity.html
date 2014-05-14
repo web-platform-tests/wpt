@@ -6,42 +6,42 @@
   <script src="../../resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>Form_checkValidity</h3>
-	</p>
-	
-	<hr>
+  <p>
+    <h3>Form_checkValidity</h3>
+  </p>
+  
+  <hr>
 
-	<div id="log"></div>
+  <div id="log"></div>
 
-	<form method="post"
-		  enctype="application/x-www-form-urlencoded"
-		  action=""
-		  id="input_form">
-	<p><input type=hidden name="custname"></p>
-	<p><input type=hidden name="custtel"></p>
-	<p><input type=hidden name="custemail"></p>
+  <form method="post"
+      enctype="application/x-www-form-urlencoded"
+      action=""
+      id="input_form">
+  <p><input type=hidden name="custname"></p>
+  <p><input type=hidden name="custtel"></p>
+  <p><input type=hidden name="custemail"></p>
  
-	</form>
-	<script>
+  </form>
+  <script>
 
-		var form = document.getElementById("input_form");
+    var form = document.getElementById("input_form");
 
-		try
-		{
-			var ret = form.checkValidity();
+    try
+    {
+      var ret = form.checkValidity();
 
-			test(function() {
-				assert_equals(ret, true, "calling of checkValidity method is failed.");
-			});
-		}
-		catch (e) {
-			test(function() {
-				assert_unreached("Error is raised.");
-			});
-		}
+      test(function() {
+        assert_equals(ret, true, "calling of checkValidity method is failed.");
+      });
+    }
+    catch (e) {
+      test(function() {
+        assert_unreached("Error is raised.");
+      });
+    }
 
-	</script>
+  </script>
 
  </body>
 </html>

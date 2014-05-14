@@ -6,7 +6,7 @@ var t = opener.t;
 var assert_unreached = opener.assert_unreached;
 var hasRun = false;
 function run(){
-  var ws = new WebSocket(SCHEME_AND_DOMAIN+'/echo');
+  var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
   ws.onopen = t.step_func(function(e) {
     setTimeout(t.step_func(function() {
       ws.send('test');

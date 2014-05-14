@@ -13,6 +13,9 @@ function testPropagationFlag(ev, expected, desc) {
 		var callback = function() { called = true };
 		document.head.addEventListener("foo", callback);
 		document.head.dispatchEvent(ev);
+		// Gecko resets the flags after dispatching; it will happily dispatch
+		// the event the second time around.
+		document.head.dispatchEvent(ev);
 		assert_equals(called, expected, "Propagation flag");
 		document.head.removeEventListener("foo", callback);
 	}, desc);

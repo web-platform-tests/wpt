@@ -31,8 +31,21 @@ test(function() {
 test(function() {
     var doc = newHTMLDocument();
     HTML5_ELEMENTS.forEach(function(tagName) {
-        var obj = doc.createElement(tagName);
         var name = 'x-b-' + tagName;
+        var customElement = doc.createElement(tagName, name);
+        assert_equals(customElement.getAttribute('is'), name,
+            'Value of the IS attribute should be set to type by Document.createElement()');
+    });
+}, 'Test Document.createElement() sets the element\'s IS attribute value to type, ' +
+    'if type is not the same as localName and an element definition with matching ' +
+    'localName, namespace, and type is not registered');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var obj = doc.createElement(tagName);
+        var name = 'x-c-' + tagName;
         var proto = Object.create(obj.constructor.prototype);
         doc.registerElement(name, {prototype: proto, extends: tagName});
         var customElement = doc.createElementNS(HTML_NAMESPACE, tagName, name);
@@ -41,6 +54,19 @@ test(function() {
     });
 }, 'Test Document.createElementNS() sets the element\'s IS attribute value to type, ' +
     'if type is not the same as localName');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    HTML5_ELEMENTS.forEach(function(tagName) {
+        var name = 'x-d-' + tagName;
+        var customElement = doc.createElementNS(HTML_NAMESPACE, tagName, name);
+        assert_equals(customElement.getAttribute('is'), name,
+            'Value of the IS attribute should be set to type by Document.createElementNS()');
+    });
+}, 'Test Document.createElementNS() sets the element\'s IS attribute value to type, ' +
+    'if type is not the same as localNameand and an element definition with matching ' +
+    'localName, namespace, and type is not registered ');
 </script>
 </body>
 </html>

@@ -18,6 +18,7 @@ write a similar response but with more explicit control as follows::
 
   def handler(request, response):
       response.add_required_headers = False # Don't implicitly add HTTP headers
+      response.writer.write_status(200)
       response.writer.write_header("Content-Type", "text/plain")
       response.writer.end_headers()
       response.writer.write("Some ")

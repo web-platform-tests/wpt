@@ -309,6 +309,6 @@ def get_manifest(metadata_root, test_path):
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
         with open(manifest_path) as f:
-            return self.compile(f, test_path)
+            return compile(f, test_path)
     except IOError:
         return None

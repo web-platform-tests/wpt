@@ -87,6 +87,8 @@ def create_parser_update(allow_mandatory=True):
     parser.add_argument("--rev", action="store", help="Revision to sync to")
     parser.add_argument("--no-check-clean", action="store_true", default=False,
                         help="Don't check the working directory is clean before updating")
+    parser.add_argument("--no-commit", action="store_true", default=False,
+                        help="Don't commit the results of the import")
     parser.add_argument("--no-sync", dest="sync", action="store_false", default=True,
                         help="Don't resync the tests, just update the expected results")
     parser.add_argument("--update-expected-type", action="store", dest="run_type",

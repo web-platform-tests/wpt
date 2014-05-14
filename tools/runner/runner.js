@@ -48,26 +48,30 @@ function ManifestIterator(manifest, path, test_types) {
 
 ManifestIterator.prototype = {
     next: function() {
+        var manifest_item = null;
+
         if (this.test_types.length === 0) {
             return null;
         }
 
-        while (this.test_list === null || this.test_index === this.test_list.length) {
-            this.test_types_index++;
-            if (this.test_types_index >= this.test_types.length) {
-                return null;
+        while (!manifest_item) {
+            while (this.test_list === null || this.test_index >= this.test_list.length) {
+                this.test_types_index++;
+                if (this.test_types_index >= this.test_types.length) {
+                    return null;
+                }
+                this.test_index = 0;
+                this.test_list = this.manifest.by_type(this.test_types[this.test_types_index]);
             }
-            this.test_index = 0;
-            this.test_list = this.manifest.by_type(this.test_types[this.test_types_index]);
-        }
-        var manifest_item = this.test_list[this.test_index++];
-        while (manifest_item && !this.matches(manifest_item)) {
+
             manifest_item = this.test_list[this.test_index++];
+            while (manifest_item && !this.matches(manifest_item)) {
+                manifest_item = this.test_list[this.test_index++];
+            }
+            if (manifest_item) {
+                return this.to_test(manifest_item);
+            }
         }
-        if (!manifest_item) {
-            return null;
-        }
-        return this.to_test(manifest_item);
     },
 
     matches: function(manifest_item) {
@@ -258,12 +262,12 @@ function ManualUI(elem, runner) {
     this.runner.done_callbacks.push(this.on_done.bind(this));
 
     this.pass_button.onclick = function() {
-        this.runner.on_result("PASS", "", []);
         this.disable_buttons();
-        setTimeout(this.enable_buttons.bind(this), 200);
+        this.runner.on_result("PASS", "", []);
     }.bind(this);
 
     this.fail_button.onclick = function() {
+        this.disable_buttons();
         this.runner.on_result("FAIL", "", []);
     }.bind(this);
 }
@@ -271,6 +275,7 @@ function ManualUI(elem, runner) {
 ManualUI.prototype = {
     show: function() {
         this.elem.style.display = "block";
+        setTimeout(this.enable_buttons.bind(this), 200);
     },
 
     hide: function() {
@@ -347,9 +352,9 @@ TestControl.prototype = {
             var path = this.get_path();
             var test_types = this.get_test_types();
             var settings = this.get_testharness_settings();
-            this.runner.start(path, test_types, settings);
             this.set_stop();
             this.set_pause();
+            this.runner.start(path, test_types, settings);
         }.bind(this);
     },
 

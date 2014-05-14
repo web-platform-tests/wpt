@@ -1,11 +1,12 @@
 <!doctype html>
+<meta charset=utf-8>
 <title>Web Animations API: AnimationTimeline tests</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
 <script src="/resources/idlharness.js"></script>
 <div id="log"></div>
-<iframe src="data:text/html;charset=utf-8,%3Chtml%3E%3C%2Fhtml%3E" width="10" height="10" id="iframe"></iframe>
+<iframe src="data:text/html;charset=utf-8," width="10" height="10" id="iframe"></iframe>
 <script type="text/plain" id="AnimationTimeline-IDL">
 interface AnimationTimeline {
   readonly attribute double? currentTime;
@@ -14,18 +15,14 @@ interface AnimationTimeline {
 <script>
 'use strict';
 
+var idlArray;
 test(function() {
-  var idlArray = new IdlArray();
+  idlArray = new IdlArray();
   idlArray.add_idls(
     document.getElementById('AnimationTimeline-IDL').textContent);
   idlArray.add_objects( { AnimationTimeline: ['document.timeline'] } );
-  idlArray.test();
-},
-'document.timeline IDL tests',
-{
-  help:   'http://dev.w3.org/fxtf/web-animations/#idl-def-AnimationTimeline',
-  author: 'Brian Birtles'
 });
+idlArray.test();
 
 test(function() {
   assert_equals(document.timeline, document.timeline,
@@ -33,6 +30,8 @@ test(function() {
   var iframe = document.getElementById('iframe');
   assert_not_equals(document.timeline, iframe.contentDocument.timeline,
     'document.timeline returns a different object for each document');
+  assert_not_equals(iframe.contentDocument.timeline, null,
+    'document.timeline on an iframe is not null');
 },
 'document.timeline identity tests',
 {

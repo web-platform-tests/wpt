@@ -76,8 +76,8 @@
   }, "A non-control follows by a control with same ID.");
 
   test(function () {
-    assert_not_equals(document.getElementById("lbl4").control, document.querySelector(".class2"),
-                  "A labelable element with an empty 'id' attribute should not be labeled by a label element with an empty 'for' attribute");
+    assert_equals(document.getElementById("lbl4").control, null,
+                  "A label element with an empty 'for' attribute should not associate with anything.");
   }, "The 'for' attribute is an empty string.");
 
   //labels attribute

@@ -114,7 +114,7 @@ class WebPlatformTests(object):
                     os.makedirs(dest_dir)
                 shutil.copy2(source_path, dest_path)
 
-        for source, destination in [("gecko_runner.html", ""),
+        for source, destination in [("testharness_runner.html", ""),
                                     ("testharnessreport.js", "resources/")]:
             source_path = os.path.join(base_path, source)
             dest_path = os.path.join(dest, destination, os.path.split(source)[1])
@@ -341,9 +341,8 @@ def sync_tests(config, paths, local_tree, wpt, bug):
                                   "Bug %i - Update web-platform-tests to revision %s" % (
                                       bug.id if bug else 0, wpt.rev
                                   ))
-        if not config["command_args"]["no_commit"]:
-            local_tree.add_new(os.path.relpath(paths["test"], local_tree.root))
-            local_tree.update_patch(include=[paths["test"], paths["metadata"]])
+        local_tree.add_new(os.path.relpath(paths["test"], local_tree.root))
+        local_tree.update_patch(include=[paths["test"], paths["metadata"]])
     except Exception as e:
         #bug.comment("Update failed with error:\n %s" % traceback.format_exc())
         sys.stderr.write(traceback.format_exc())
@@ -373,8 +372,8 @@ def update_metadata(config, paths, local_tree, wpt, initial_rev, bug):
                                                    paths["metadata"],
                                                    log_files,
                                                    rev_old=initial_rev)
-            if not local_tree.is_clean() and not not config["command_args"]["no_commit"]:
-                local_tree.add_new(os.path.relpath(paths["metadata"], local_tree.root)):
+            if not local_tree.is_clean():
+                local_tree.add_new(os.path.relpath(paths["metadata"], local_tree.root))
                 local_tree.update_patch(include=[paths["metadata"]])
     except Exception as e:
         #bug.comment("Update failed with error:\n %s" % traceback.format_exc())

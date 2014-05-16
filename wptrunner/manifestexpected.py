@@ -1,8 +1,8 @@
 import os
 
-from wptmanifest.node import DataNode
-from wptmanifest.backends import static
-from wptmanifest.backends.static import ManifestItem
+from mozmanifest.node import DataNode
+from mozmanifest.backends import static
+from mozmanifest.backends.static import ManifestItem
 
 import expected
 
@@ -35,7 +35,8 @@ class ExpectedManifest(ManifestItem):
         assert len(self.child_map) == len(self.children)
 
     def get_test(self, test_id):
-        return self.child_map[test_id]
+        if test_id in self.child_map:
+            return self.child_map[test_id]
 
 class TestNode(ManifestItem):
     def __init__(self, name):
@@ -63,7 +64,7 @@ class TestNode(ManifestItem):
 
     @property
     def id(self):
-        components = self.parent.test_path.split(os.path.sep)[:-1]
+        components = self.parent.test_path.split("/")[:-1]
         components.append(self.name)
         url = "/" + "/".join(components)
         if self.test_type == "reftest":

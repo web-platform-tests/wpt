@@ -16,20 +16,19 @@ import logging
 import traceback
 from StringIO import StringIO
 
-from mozlog.structured import structuredlog, commandline
+from mozlog.structured import structuredlog, commandline, stdadapter
 from mozlog.structured.handlers import StreamHandler
 from mozlog.structured.formatters import JSONFormatter
 from mozprocess import ProcessHandler
 import moznetwork
 
-from testrunner import TestRunner, ManagerGroup
-from executor import MarionetteTestharnessExecutor, MarionetteReftestExecutor, ServoTestharnessExecutor, B2GMarionetteTestharnessExecutor
-import browser
+from testrunner import ManagerGroup
 import metadata
 import manifestexpected
 import wpttest
 import wptcommandline
 import manifestinclude
+import products
 
 here = os.path.split(__file__)[0]
 
@@ -74,7 +73,7 @@ def setup_logging(args, defaults):
 
 def setup_stdlib_logger():
     logging.root.handlers = []
-    logging.root = structuredlog.std_logging_adapter(logging.root)
+    logging.root = stdadapter.std_logging_adapter(logging.root)
 
 
 def do_test_relative_imports(test_root):
@@ -376,43 +375,6 @@ class LoggingWrapper(StringIO):
     def flush(self):
         pass
 
-
-def get_browser(product, binary, prefs_root):
-    browser_classes = {"firefox": browser.FirefoxBrowser,
-                       "servo": browser.ServoBrowser,
-                       "b2g": browser.B2GBrowser}
-
-    browser_cls = browser_classes[product]
-
-    browser_kwargs = {"binary": binary} if product in ("firefox", "servo") else {}
-    if product in ("firefox", "b2g"):
-        browser_kwargs["prefs_root"] = prefs_root
-
-    return browser_cls, browser_kwargs
-
-def get_options(product):
-    return {"firefox": {"host": "localhost",
-                        "bind_hostname": "true"},
-            "servo": {"host": "localhost",
-                      "bind_hostname": "true"},
-            "b2g": {"host": "web-platform.test",
-                    "bind_hostname": "false"}}[product]
-
-def get_executor(product, test_type, http_server_url, timeout_multiplier):
-    executor_classes = {"firefox": {"reftest": MarionetteReftestExecutor,
-                                    "testharness": MarionetteTestharnessExecutor},
-                        "servo": {"testharness": ServoTestharnessExecutor},
-                        "b2g": {"testharness": B2GMarionetteTestharnessExecutor}}
-
-    executor_cls = executor_classes[product].get(test_type)
-    if not executor_cls:
-        return None, None
-
-    executor_kwargs = {"http_server_url": http_server_url,
-                       "timeout_multiplier":timeout_multiplier}
-
-    return executor_cls, executor_kwargs
-
 def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
     run_info = wpttest.get_run_info(product, debug=False)
     test_loader = TestLoader(tests_root, metadata_root, TestFilter(), run_info)
@@ -444,8 +406,11 @@ def run_tests(tests_root, metadata_root, prefs_root, test_types, binary=None,
 
         logger.info("Using %i client processes" % processes)
 
-        browser_cls, browser_kwargs = get_browser(product, binary, prefs_root)
-        env_options = get_options(product)
+        (browser_cls, get_browser_kwargs,
+         executor_classes, get_executor_kwargs,
+         env_options) = products.load_product(product)
+
+        browser_kwargs = get_browser_kwargs(product, binary, prefs_root)
 
         unexpected_total = 0
 
@@ -468,8 +433,8 @@ def run_tests(tests_root, metadata_root, prefs_root, test_types, binary=None,
                 for test_type in test_types:
                     tests_queue = test_queues[test_type]
 
-                    executor_cls, executor_kwargs = get_executor(product, test_type, base_server,
-                                                                 timeout_multiplier)
+                    executor_cls = executor_classes.get(test_type)
+                    executor_kwargs = get_executor_kwargs(base_server, timeout_multiplier)
 
                     if executor_cls is None:
                         logger.error("Unsupported test type %s for product %s" % (test_type, product))

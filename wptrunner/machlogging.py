@@ -10,7 +10,7 @@ import time
 import logging
 from mach import logging as mach_logging
 
-from mozlog.structured import structuredlog
+from mozlog.structured import structuredlog, stdadapter
 from mozlog.structured.handlers import StreamHandler, LogLevelFilter
 from mozlog.structured.formatters import JSONFormatter, machformatter
 
@@ -22,7 +22,7 @@ class StructuredLoggingManager(mach_logging.LoggingManager):
 
         root_logger = logging.getLogger()
         if not hasattr(root_logger, "add_handler"):
-            root_logger = structuredlog.std_logging_adapter(root_logger)
+            root_logger = stdadapter.std_logging_adapter(root_logger)
 
         self.structured_loggers = []
 

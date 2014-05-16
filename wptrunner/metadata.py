@@ -20,7 +20,7 @@ import expected
 from vcs import git
 import manifestupdate
 import expected
-import wptmanifest
+import mozmanifest
 manifest = None # Module that will be imported relative to test_root
 
 logger = structuredlog.StructuredLogger("web-platform-tests")
@@ -106,7 +106,7 @@ def unexpected_changes(change_data, files_changed):
 
 # For each testrun
 # Load all files and scan for the suite_start entry
-# Build a hash of {filename: properties}
+# Build a hash of filename: properties
 # For each different set of properties, gather all chunks
 # For each chunk in the set of chunks, go through all tests
 # for each test, make a map of {conditionals: [(platform, new_value)]}
@@ -124,16 +124,14 @@ def update_from_logs(metadata_path, manifest, *log_filenames):
         with open(log_filename) as f:
             updater.update_from_log(f)
 
-    coalesce_results(expected_map.itervalues())
-
-    return expected_map
-
-def coalesce_results(manifests):
-    for tree in manifests:
+    for tree in expected_map.itervalues():
         for test in tree.iterchildren():
             for subtest in test.iterchildren():
                 subtest.coalesce_expected()
             test.coalesce_expected()
+
+    return expected_map
+
 
 def write_changes(metadata_path, expected_map):
     #First write the new manifest files to a temporary directory
@@ -153,7 +151,7 @@ def write_new_expected(metadata_path, expected_map):
     #Serialize the data back to a file
     for tree in expected_map.itervalues():
         if not tree.is_empty:
-            manifest_str = wptmanifest.serialize(tree.node, skip_empty_data=True)
+            manifest_str = mozmanifest.serialize(tree.node, skip_empty_data=True)
             assert manifest_str != ""
             path = expected.expected_path(metadata_path, tree.test_path)
             dir = os.path.split(path)[0]
@@ -164,11 +162,6 @@ def write_new_expected(metadata_path, expected_map):
 
 class ExpectedUpdater(object):
     def __init__(self, expected_tree, id_path_map):
-        """Object for updating the manifest files from a testrun's results.
-
-        expected_tree - map from test_path to Manifest containing the expected
-                        data
-        id_path_map - map from test_id to test path"""
         self.expected_tree = expected_tree
         self.id_path_map = id_path_map
         self.run_info = None
@@ -181,12 +174,6 @@ class ExpectedUpdater(object):
         self.test_cache = {}
 
     def update_from_log(self, log_file):
-        """Given a log file, update the manifests in self.expected_tree
-        to match the results in that log file
-
-        log_file - A File object containing structured logging data from a
-                   test run.
-        """
         self.run_info = None
         log_reader = reader.read(log_file)
         reader.each_log(log_reader, self.action_map)

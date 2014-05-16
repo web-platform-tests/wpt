@@ -123,8 +123,11 @@ class TestRunner(object):
 
 
 def start_runner(test_queue, runner_command_queue, runner_result_queue,
-                 browser, executor_cls, executor_kwargs, stop_flag):
+                 executor_cls, executor_kwargs,
+                 executor_browser_cls, executor_browser_kwargs,
+                 stop_flag):
     try:
+        browser = executor_browser_cls(**executor_browser_kwargs)
         executor = executor_cls(browser, **executor_kwargs)
         with TestRunner(test_queue, runner_command_queue, runner_result_queue, executor) as runner:
             try:
@@ -133,6 +136,7 @@ def start_runner(test_queue, runner_command_queue, runner_result_queue,
                 stop_flag.set()
     except Exception as e:
         runner_result_queue.put(("log", ("critical", traceback.format_exc())))
+        print >> sys.stderr, traceback.format_exc()
         stop_flag.set()
     finally:
         runner_command_queue = None
@@ -293,6 +297,7 @@ class TestRunnerManager(threading.Thread):
             if self.command_queue:
                 self.command_queue.put(("init_failed", ()))
             else:
+                self.logger.debug("Setting child stop flag in init_failed")
                 self.child_stop_flag.set()
 
 
@@ -334,14 +339,17 @@ class TestRunnerManager(threading.Thread):
     def start_test_runner(self):
         assert self.command_queue is not None
         assert self.remote_queue is not None
+        executor_browser_cls, executor_browser_kwargs = self.browser.executor_browser()
+        args=(self.tests_queue,
+              self.remote_queue,
+              self.command_queue,
+              self.executor_cls,
+              self.executor_kwargs,
+              executor_browser_cls,
+              executor_browser_kwargs,
+              self.child_stop_flag)
         self.test_runner_proc = Process(target=start_runner,
-                                        args=(self.tests_queue,
-                                              self.remote_queue,
-                                              self.command_queue,
-                                              self.browser,
-                                              self.executor_cls,
-                                              self.executor_kwargs,
-                                              self.child_stop_flag),
+                                        args=args,
                                         name="Thread-TestRunner-%i" % self.manager_number)
         self.test_runner_proc.start()
         self.logger.debug("Test runner started")

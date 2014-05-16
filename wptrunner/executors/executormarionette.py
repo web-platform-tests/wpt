@@ -1,5 +1,4 @@
 import socket
-import sys
 import os
 import uuid
 from collections import defaultdict
@@ -8,65 +7,21 @@ import urlparse
 import threading
 import hashlib
 import traceback
-import json
 
-import marionette
-from mozprocess import ProcessHandler
+marionette = None
 
-import testrunner
+here = os.path.join(os.path.split(__file__)[0])
 
-here = os.path.split(__file__)[0]
+from .base import TestExecutor, testharness_result_converter, reftest_result_converter
+from ..testrunner import Stop
 
-Stop = testrunner.Stop
-
-class TestharnessResultConverter(object):
-    harness_codes = {0: "OK",
-                     1: "ERROR",
-                     2: "TIMEOUT"}
-
-    test_codes = {0: "PASS",
-                  1: "FAIL",
-                  2: "TIMEOUT",
-                  3: "NOTRUN"}
-
-    def __call__(self, test, result):
-        """Convert a JSON result into a (TestResult, [SubtestResult]) tuple"""
-        assert result["test"] == test.url, ("Got results from %s, expected %s" %
-                                            (result["test"], test.url))
-        harness_result = test.result_cls(self.harness_codes[result["status"]], result["message"])
-        return (harness_result,
-                [test.subtest_result_cls(subtest["name"], self.test_codes[subtest["status"]],
-                                         subtest["message"]) for subtest in result["tests"]])
-testharness_result_converter = TestharnessResultConverter()
-
-def reftest_result_converter(self, test, result):
-    return (test.result_cls(result, None), [])
-
-class TestExecutor(object):
-    convert_result = None
-
-    def __init__(self, browser, http_server_url, timeout_multiplier=1):
-        self.runner = None
-        self.browser = browser
-        self.http_server_url = http_server_url
-        self.timeout_multiplier = timeout_multiplier
-
-    @property
-    def logger(self):
-        if self.runner is not None:
-            return self.runner.logger
-
-    def setup(self, runner):
-        raise NotImplementedError
-
-    def teardown(self):
-        pass
-
-    def run_test(self):
-        raise NotImplementedError
+def do_delayed_imports():
+    global marionette
+    import marionette
 
 class MarionetteTestExecutor(TestExecutor):
     def __init__(self, browser, http_server_url, timeout_multiplier=1):
+        do_delayed_imports()
         TestExecutor.__init__(self, browser, http_server_url, timeout_multiplier)
         self.marionette_port = browser.marionette_port
         self.marionette = None
@@ -104,7 +59,7 @@ class MarionetteTestExecutor(TestExecutor):
         else:
             try:
                 self.after_connect()
-            except Exception as e:
+            except Exception:
                 self.logger.warning("Post-connection steps failed")
                 self.logger.error(traceback.format_exc())
                 self.runner.send_message("init_failed")
@@ -127,8 +82,8 @@ class MarionetteTestExecutor(TestExecutor):
         return True
 
     def after_connect(self):
-        self.logger.debug(urlparse.urljoin(self.http_server_url, "/gecko_runner.html"))
-        self.marionette.navigate(urlparse.urljoin(self.http_server_url, "/gecko_runner.html"))
+        self.logger.debug(urlparse.urljoin(self.http_server_url, "/testharness_runner.html"))
+        self.marionette.navigate(urlparse.urljoin(self.http_server_url, "/testharness_runner.html"))
         self.marionette.execute_script("document.title = '%s'" % threading.current_thread().name)
 
     def run_test(self, test):
@@ -186,7 +141,7 @@ class MarionetteTestExecutor(TestExecutor):
             #     else:
             #         break
             # Now need to check if the browser is still responsive and restart it if not
-        except (socket.timeout, marionette.errors.InvalidResponseException, IOError) as e:
+        except (socket.timeout, marionette.errors.InvalidResponseException, IOError):
             # This can happen on a crash
             # Also, should check after the test if the firefox process is still running
             # and otherwise ignore any other result and set it to crash
@@ -207,7 +162,7 @@ class MarionetteTestharnessExecutor(MarionetteTestExecutor):
 
     def __init__(self, *args, **kwargs):
         MarionetteTestExecutor.__init__(self, *args, **kwargs)
-        self.script = open(os.path.join(here, "testharness.js")).read()
+        self.script = open(os.path.join(here, "testharness_marionette.js")).read()
 
     def do_test(self, test, timeout):
         assert len(self.marionette.window_handles) == 1
@@ -217,11 +172,6 @@ class MarionetteTestharnessExecutor(MarionetteTestExecutor):
                            "window_id": self.window_id,
                            "timeout_multiplier": self.timeout_multiplier,
                            "timeout": timeout * 1000}, new_sandbox=False)
-
-class B2GMarionetteTestharnessExecutor(MarionetteTestharnessExecutor):
-    def after_connect(self):
-        self.browser.after_connect(self)
-        MarionetteTestharnessExecutor.after_connect(self)
 
 
 class MarionetteReftestExecutor(MarionetteTestExecutor):
@@ -278,63 +228,3 @@ class MarionetteReftestExecutor(MarionetteTestExecutor):
                                  (len(urls), "\n  ".join(urls)))
                 count += len(urls) - 1
         MarionetteTestExecutor.teardown(self)
-
-
-class ProcessTestExecutor(TestExecutor):
-    def __init__(self, *args, **kwargs):
-        TestExecutor.__init__(self, *args, **kwargs)
-        self.binary = self.browser.binary
-
-    def setup(self, runner):
-        self.runner = runner
-        self.runner.send_message("init_succeeded")
-        return True
-
-    def is_alive(self):
-        return True
-
-    def run_test(self, test):
-        raise NotImplementedError
-
-
-class ServoTestharnessExecutor(ProcessTestExecutor):
-    convert_result = testharness_result_converter
-
-    def __init__(self, *args, **kwargs):
-        ProcessTestExecutor.__init__(self, *args, **kwargs)
-        self.result_data = None
-        self.result_flag = None
-
-    def run_test(self, test):
-        self.result_data = None
-        self.result_flag = threading.Event()
-
-        proc = ProcessHandler([self.binary,
-                               urlparse.urljoin(self.http_server_url, test.url)],
-                              processOutputLine=[self.on_output])
-        proc.run()
-
-        timeout = test.timeout * self.timeout_multiplier
-
-        #Now wait to get the output we expect, or until we reach the timeout
-        self.result_flag.wait(timeout + 5)
-
-        if self.result_flag.is_set():
-            assert self.result_data is not None
-            self.result_data["test"] = test.url
-            result = self.convert_result(test, self.result_data)
-            proc.kill()
-        else:
-            if proc.pid is None:
-                result = (test.result_cls("CRASH", None), [])
-            else:
-                proc.kill()
-                result = (test.result_cls("TIMEOUT", None), [])
-        self.runner.send_message("test_ended", test, result)
-
-    def on_output(self, line):
-        prefix = "ALERT: RESULT: "
-        line = line.decode("utf8")
-        if line.startswith(prefix):
-            self.result_data = json.loads(line[len(prefix):])
-            self.result_flag.set()

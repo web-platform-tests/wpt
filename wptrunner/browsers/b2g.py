@@ -1,165 +1,32 @@
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 import os
-import socket
-import sys
 import time
 import tempfile
 import shutil
 import subprocess
 
-import mozprocess
 from mozprofile import FirefoxProfile, Preferences
-from mozprofile.permissions import ServerLocations
-from mozrunner import FirefoxRunner, B2GRunner
+from mozrunner import B2GRunner
 import mozdevice
 import moznetwork
 
+from .base import get_free_port, BrowserError, Browser, ExecutorBrowser
+from ..executors import get_executor_kwargs
+from ..executors.executormarionette import MarionetteTestharnessExecutor
+
 here = os.path.split(__file__)[0]
 
-def get_free_port(start_port, exclude=None):
-    port = start_port
-    while True:
-        if exclude and port in exclude:
-            port += 1
-            continue
-        s = socket.socket()
-        try:
-            s.bind(("127.0.0.1", port))
-        except socket.error:
-            port += 1
-        else:
-            return port
-        finally:
-            s.close()
+__wptrunner__ = {"product": "b2g",
+                 "browser": "B2GBrowser",
+                 "executor": {"testharness": "B2GMarionetteTestharnessExecutor"},
+                 "browser_kwargs": "browser_kwargs",
+                 "executor_kwargs": "get_executor_kwargs",
+                 "env_options": "env_options"}
 
-class BrowserError(Exception):
-    pass
+def browser_kwargs(product, binary, prefs_root):
+    return {"prefs_root": prefs_root}
 
-class ProcessHandler(mozprocess.ProcessHandlerMixin):
-    pass
-
-class Browser(object):
-    process_cls = None
-    init_timeout = 30
-
-    def __init__(self, logger):
-        self.logger = logger
-
-    def __enter__(self):
-        self.setup()
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        self.cleanup()
-
-    def setup(self):
-        pass
-
-    def start(self):
-        raise NotImplementedError
-
-    def stop():
-        raise NotImplementedError
-
-    def on_output(self, line):
-        raise NotImplementedError
-
-    def is_alive(self):
-        raise NotImplementedError
-
-    def cleanup(self):
-        pass
-
-class NullBrowser(Browser):
-    """No-op browser to use in scenarios where the TestManager shouldn't
-    actually own the browser process (e.g. servo where we start one browser
-    per test)"""
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
-
-    def is_alive(self):
-        return True
-
-class ServoBrowser(NullBrowser):
-    def __init__(self, logger, binary):
-        Browser.__init__(self, logger)
-        self.binary = binary
-
-class FirefoxBrowser(Browser):
-    used_ports = set()
-
-    def __init__(self, logger, binary, prefs_root):
-        Browser.__init__(self, logger)
-        self.binary = binary
-        self.prefs_root = prefs_root
-        self.marionette_port = get_free_port(2828, exclude=self.used_ports)
-        self.used_ports.add(self.marionette_port)
-        self.runner = None
-
-    def start(self):
-        env = os.environ.copy()
-        env['MOZ_CRASHREPORTER_NO_REPORT'] = '1'
-
-        locations = ServerLocations(filename=os.path.join(here, "server-locations.txt"))
-
-        preferences = self.load_prefs()
-
-        profile = FirefoxProfile(locations=locations, proxy=True, preferences=preferences)
-        profile.set_preferences({"marionette.defaultPrefs.enabled": True,
-                                 "marionette.defaultPrefs.port": self.marionette_port})
-
-        self.runner = FirefoxRunner(profile,
-                                    self.binary,
-                                    cmdargs=["--marionette", "about:blank"],
-                                    env=env,
-                                    kp_kwargs={"processOutputLine": [self.on_output]},
-                                    process_class=ProcessHandler)
-
-        self.logger.debug("Starting Firefox")
-        self.runner.start()
-        self.logger.debug("Firefox Started")
-
-    def load_prefs(self):
-        prefs_path = os.path.join(self.prefs_root, "prefs_general.js")
-        if os.path.exists(prefs_path):
-            preferences = Preferences.read_prefs(prefs_path)
-        else:
-            self.logger.warning("Failed to find base prefs file in %s" % prefs_path)
-            preferences = []
-
-        return preferences
-
-    def stop(self):
-        self.logger.debug("Stopping browser")
-        if self.runner is not None:
-            self.runner.stop()
-
-    def pid(self):
-        if self.runner.process_handler is not None:
-            try:
-                pid = self.runner.process_handler.pid
-            except AttributeError:
-                pid = None
-        else:
-            pid = None
-
-    def on_output(self, line):
-        """Write a line of output from the firefox process to the log"""
-        self.logger.process_output(self.pid(),
-                                   line.decode("utf8"),
-                                   command=" ".join(self.runner.command))
-
-    def is_alive(self):
-        return self.runner.is_running()
-
-    def cleanup(self):
-        self.stop()
+def env_options():
+    return {"host": moznetwork.get_ip()}
 
 class B2GBrowser(Browser):
     used_ports = set()
@@ -290,7 +157,14 @@ class B2GBrowser(Browser):
     def is_alive(self):
         return True
 
+    def executor_browser(self):
+        return B2GExecutorBrowser, {"marionette_port": self.marionette_port}
+
+class B2GExecutorBrowser(ExecutorBrowser):
     # The following methods are called from a different process
+    def __init__(self, *args, **kwargs):
+        ExecutorBrowser.__init__(self, *args, **kwargs)
+        self.device = mozdevice.DeviceManagerADB()
 
     def after_connect(self, executor):
         executor.logger.debug("Running browser.after_connect steps")
@@ -304,11 +178,11 @@ class B2GBrowser(Browser):
             executor.logger.info("certtest_app is already installed")
             return
         executor.logger.info("Copying certtest_app")
-        self.device.pushFile(os.path.join(here, "device_setup", "certtest_app.zip"),
+        self.device.pushFile(os.path.join(here, "b2g_setup", "certtest_app.zip"),
                              "/data/local/certtest_app.zip")
 
         executor.logger.info("Installing certtest_app")
-        with open(os.path.join(here, "device_setup", "app_install.js"), "r") as f:
+        with open(os.path.join(here, "b2g_setup", "app_install.js"), "r") as f:
             script = f.read()
 
         marionette.set_context("chrome")
@@ -326,7 +200,7 @@ class B2GBrowser(Browser):
         marionette.switch_to_frame()
 
         # TODO: replace this with pkg_resources if we know that we'll be installing this as a package
-        marionette.import_script(os.path.join(here, "device_setup", "app_management.js"))
+        marionette.import_script(os.path.join(here, "b2g_setup", "app_management.js"))
         script = "GaiaApps.launchWithName('CertTest App');"
 
         # NOTE: if the app is already launched, this doesn't launch a new app, it will return
@@ -335,6 +209,23 @@ class B2GBrowser(Browser):
         if not self.cert_test_app:
             raise Exception("Launching CertTest App failed")
         marionette.switch_to_frame(self.cert_test_app["frame"])
+
+    def wait_for_net(self):
+        # TODO: limit how long we wait before we fail
+        # consider the possibility that wlan0 is not the right interface
+
+        def has_connection():
+            try:
+                return self.device.getIP(["wlan0"]) is not None
+            except mozdevice.DMError:
+                return False
+
+        t0 = time.time()
+        timeout = 60
+        while not has_connection():
+            if time.time() - t0 > timeout:
+                raise BrowserError("Waiting for net timed out")
+            time.sleep(1)
 
     def wait_for_homescreen(self, marionette):
         marionette.set_context(marionette.CONTEXT_CONTENT)
@@ -357,3 +248,8 @@ if (app) {
     }
   });
 }""", script_timeout=30000)
+
+class B2GMarionetteTestharnessExecutor(MarionetteTestharnessExecutor):
+    def after_connect(self):
+        self.browser.after_connect(self)
+        MarionetteTestharnessExecutor.after_connect(self)

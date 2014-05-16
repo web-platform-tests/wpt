@@ -1,0 +1,27 @@
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# See /build/pgo/server-locations.txt for documentation on the format
+
+http://localhost:8000    primary
+http://www.localhost:8000
+http://www1.localhost:8000
+http://www2.localhost:8000
+http://xn--n8j6ds53lwwkrqhv28a.localhost:8000
+http://xn--lve-6lad.localhost:8000
+
+http://localhost:8001
+http://www.localhost:8001
+http://www1.localhost:8001
+http://www2.localhost:8001
+http://xn--n8j6ds53lwwkrqhv28a.localhost:8001
+http://xn--lve-6lad.localhost:8001
+
+ws://localhost:8888
+ws://www.localhost:8888
+ws://www1.localhost:8888
+ws://www2.localhost:8888
+ws://xn--n8j6ds53lwwkrqhv28a.localhost:8888
+ws://xn--lve-6lad.localhost:8888

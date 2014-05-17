@@ -42,6 +42,15 @@ class Browser(object):
     init_timeout = 30
 
     def __init__(self, logger):
+        """Abstract class serving as the basis for Browser implementations.
+
+        The Browser is used in the TestRunnerManager to start and stop the browser
+        process, and to check the state of that process. This class also acts as a
+        context manager, enabling it to do browser-specific setup at the start of
+        the testrun and cleanup after the run is complete.
+
+        :param logger: Structured logger to use for output.
+        """
         self.logger = logger
 
     def __enter__(self):
@@ -52,31 +61,39 @@ class Browser(object):
         self.cleanup()
 
     def setup(self):
+        """Used for browser-specific setup that happens at the start of a test run"""
         pass
 
     def start(self):
+        """Launch the browser object and get it into a state where is is ready to run tests"""
         raise NotImplementedError
 
     def stop():
+        """Stop the running browser process."""
         raise NotImplementedError
 
     def on_output(self, line):
+        """Callback function used with ProcessHandler to handle output from the browser process."""
         raise NotImplementedError
 
     def is_alive(self):
+        """Boolean indicating whether the browser process is still running"""
         raise NotImplementedError
 
     def cleanup(self):
+        """Browser-specific cleanup that is run after the testrun is finished"""
         pass
 
     def executor_browser(self):
+        """Returns the ExecutorBrowser subclass for this Browser subclass and the keyword arguments
+        with which it should be instantiated"""
         return ExecutorBrowser, {}
 
 class NullBrowser(Browser):
-    """No-op browser to use in scenarios where the TestManager shouldn't
-    actually own the browser process (e.g. Servo where we start one browser
-    per test)"""
     def start(self):
+        """No-op browser to use in scenarios where the TestRunnerManager shouldn't
+        actually own the browser process (e.g. Servo where we start one browser
+        per test)"""
         pass
 
     def stop(self):

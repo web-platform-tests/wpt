@@ -47,6 +47,17 @@ class TestExecutor(object):
     convert_result = None
 
     def __init__(self, browser, http_server_url, timeout_multiplier=1):
+        """Abstract Base class for object that actually executes the tests in a
+        specific browser. Typically there will be a different TestExecutor
+        subclass for each test type and method of executing tests.
+
+        :param browser: ExecutorBrowser instance providing properties of the
+                        browser that will be tested.
+        :param http_server_url: Base url of the http server on which the tests
+                                are running.
+        :param timeout_multiplier: Multiplier relative to base timeout to use
+                                   when setting test timeout.
+        """
         self.runner = None
         self.browser = browser
         self.http_server_url = http_server_url

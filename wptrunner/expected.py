@@ -4,6 +4,7 @@
 
 import os
 
+
 def expected_path(metadata_path, test_path):
     args = list(test_path.split("/"))
     args[-1] += ".ini"

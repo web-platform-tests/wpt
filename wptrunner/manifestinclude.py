@@ -1,8 +1,7 @@
-import os
-
 from mozmanifest.node import DataNode
 from mozmanifest.backends import conditional
 from mozmanifest.backends.conditional import ManifestItem
+
 
 class IncludeManifest(ManifestItem):
     def __init__(self, node):
@@ -32,7 +31,7 @@ class IncludeManifest(ManifestItem):
         node = self
         while node:
             try:
-                skip_value = self.get("skip", {"test_type":test.item_type}).lower()
+                skip_value = self.get("skip", {"test_type": test.item_type}).lower()
                 assert skip_value in ("true", "false")
                 return False if skip_value == "true" else True
             except KeyError:
@@ -72,4 +71,4 @@ class IncludeManifest(ManifestItem):
 
 def get_manifest(manifest_path):
     with open(manifest_path) as f:
-        return conditional.compile(f, data_cls_getter=lambda x, y:IncludeManifest)
+        return conditional.compile(f, data_cls_getter=lambda x, y: IncludeManifest)

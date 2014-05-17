@@ -1,10 +1,8 @@
-import os
-
-from mozmanifest.node import DataNode
 from mozmanifest.backends import static
 from mozmanifest.backends.static import ManifestItem
 
 import expected
+
 
 def data_cls_getter(output_node, visited_node):
     if output_node is None:
@@ -15,6 +13,7 @@ def data_cls_getter(output_node, visited_node):
         return SubtestNode
     else:
         raise ValueError
+
 
 class ExpectedManifest(ManifestItem):
     def __init__(self, name, test_path=None):
@@ -38,6 +37,7 @@ class ExpectedManifest(ManifestItem):
         if test_id in self.child_map:
             return self.child_map[test_id]
 
+
 class TestNode(ManifestItem):
     def __init__(self, name):
         assert name is not None
@@ -50,7 +50,6 @@ class TestNode(ManifestItem):
 
     @property
     def is_empty(self):
-        data_keys = set(self._data.keys())
         required_keys = set(["type"])
         if self.test_type == "reftest":
             required_keys |= set(["reftype", "refurl"])
@@ -89,6 +88,7 @@ class TestNode(ManifestItem):
             return self.subtests[name]
         return None
 
+
 class SubtestNode(TestNode):
     def __init__(self, name):
         TestNode.__init__(self, name)
@@ -98,6 +98,7 @@ class SubtestNode(TestNode):
         if self._data:
             return False
         return True
+
 
 def get_manifest(metadata_root, test_path, run_info):
     manifest_path = expected.expected_path(metadata_root, test_path)

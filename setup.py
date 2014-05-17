@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sys
-import os
-import shutil
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'wptrunner'
@@ -24,20 +21,19 @@ setup(name=PACKAGE_NAME,
       author_email='tools@lists.mozilla.org',
       license='MPL 1.1/GPL 2.0/LGPL 2.1',
       packages=find_packages(exclude=["tests", "metadata", "prefs"]),
-      entry_points = {
+      entry_points={
           'console_scripts': [
               'wptrunner = wptrunner.wptrunner:main',
               'wptupdate = wptrunner.update:main',
           ]
       },
       zip_safe=False,
-      platforms =['Any'],
+      platforms=['Any'],
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
-                   'Operating System :: OS Independent',
-                  ],
+                   'Operating System :: OS Independent'],
       package_data={"wptrunner": ["testharness.js",
                                   "reftest.js",
                                   "testharnessreport.js",

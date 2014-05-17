@@ -1,13 +1,16 @@
 import os
 from collections import namedtuple, defaultdict
 
-from mozmanifest.node import DataNode, ConditionalNode, BinaryExpressionNode, BinaryOperatorNode, VariableNode, StringNode, NumberNode, UnaryExpressionNode, UnaryOperatorNode, KeyValueNode, ValueNode
+from mozmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
+                              BinaryOperatorNode, VariableNode, StringNode, NumberNode,
+                              UnaryExpressionNode, UnaryOperatorNode, KeyValueNode)
 from mozmanifest.backends import conditional
-from mozmanifest.backends.conditional import ManifestItem, ConditionalValue
+from mozmanifest.backends.conditional import ManifestItem
 
 import expected
 
 Result = namedtuple("Result", ["run_info", "status"])
+
 
 def data_cls_getter(output_node, visited_node):
     if output_node is None:
@@ -18,6 +21,7 @@ def data_cls_getter(output_node, visited_node):
         return SubtestNode
     else:
         raise ValueError
+
 
 class ExpectedManifest(ManifestItem):
     def __init__(self, node, test_path=None):
@@ -43,6 +47,7 @@ class ExpectedManifest(ManifestItem):
 
     def has_test(self, test_id):
         return test_id in self.child_map
+
 
 class TestNode(ManifestItem):
     def __init__(self, node):
@@ -72,7 +77,6 @@ class TestNode(ManifestItem):
 
     @property
     def is_empty(self):
-        data_keys = set(self._data.keys())
         required_keys = set(["type"])
         if self.test_type == "reftest":
             required_keys |= set(["reftype", "refurl"])
@@ -105,10 +109,10 @@ class TestNode(ManifestItem):
         else:
             self.default_status = result.default_expected
 
-        for (conditional, values) in self.updated_expected:
-            if conditional(run_info):
+        for (cond, values) in self.updated_expected:
+            if cond(run_info):
                 values.append(Result(run_info, result.status))
-                if result.status != conditional.value:
+                if result.status != cond.value:
                     self.root.modified = True
                 found = True
                 break
@@ -200,6 +204,7 @@ class TestNode(ManifestItem):
             self.append(subtest)
             return subtest
 
+
 class SubtestNode(TestNode):
     def __init__(self, node):
         assert isinstance(node, DataNode)
@@ -216,6 +221,7 @@ class SubtestNode(TestNode):
         if self._data:
             return False
         return True
+
 
 def group_conditionals(values):
     by_property = defaultdict(set)
@@ -253,6 +259,7 @@ def group_conditionals(values):
 
     return conditions.values()
 
+
 def make_expr(prop_set, status):
     """Create an AST that returns the value ``status`` given all the
     properties in prop_set match."""
@@ -274,7 +281,7 @@ def make_expr(prop_set, status):
                     BinaryOperatorNode("=="),
                     VariableNode(prop),
                     value_cls(unicode(value))
-            ))
+                ))
         else:
             if value:
                 expressions.append(VariableNode(prop))
@@ -299,6 +306,7 @@ def make_expr(prop_set, status):
     root.append(StringNode(status))
 
     return root
+
 
 def get_manifest(metadata_root, test_path):
     manifest_path = expected.expected_path(metadata_root, test_path)

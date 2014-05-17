@@ -10,11 +10,12 @@ import time
 import logging
 from mach import logging as mach_logging
 
-from mozlog.structured import structuredlog, stdadapter
+from mozlog.structured import stdadapter
 from mozlog.structured.handlers import StreamHandler, LogLevelFilter
 from mozlog.structured.formatters import JSONFormatter, machformatter
 
 format_seconds = mach_logging.format_seconds
+
 
 class StructuredLoggingManager(mach_logging.LoggingManager):
     def __init__(self):
@@ -29,7 +30,7 @@ class StructuredLoggingManager(mach_logging.LoggingManager):
         self._terminal = None
 
     def add_json_handler(self, fh):
-        handler = StreamHandler(stream=fh, formatter=JSONformatter)
+        handler = StreamHandler(stream=fh, formatter=JSONFormatter)
 
         for logger in self.structured_loggers:
             logger.add_handler(handler)

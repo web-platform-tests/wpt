@@ -20,10 +20,12 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         self.result_data = None
         self.result_flag = threading.Event()
 
-        proc = ProcessHandler([self.binary,
-                               urlparse.urljoin(self.http_server_url, test.url)],
-                              processOutputLine=[self.on_output])
-        proc.run()
+        self.command = [self.binary,
+                        urlparse.urljoin(self.http_server_url, test.url)]
+
+        self.proc = ProcessHandler(self.command,
+                                   processOutputLine=[self.on_output])
+        self.proc.run()
 
         timeout = test.timeout * self.timeout_multiplier
 
@@ -34,12 +36,12 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             assert self.result_data is not None
             self.result_data["test"] = test.url
             result = self.convert_result(test, self.result_data)
-            proc.kill()
+            self.proc.kill()
         else:
-            if proc.pid is None:
+            if self.proc.pid is None:
                 result = (test.result_cls("CRASH", None), [])
             else:
-                proc.kill()
+                self.proc.kill()
                 result = (test.result_cls("TIMEOUT", None), [])
         self.runner.send_message("test_ended", test, result)
 
@@ -49,3 +51,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         if line.startswith(prefix):
             self.result_data = json.loads(line[len(prefix):])
             self.result_flag.set()
+        else:
+            self.logger.process_output(self.proc.pid,
+                                       line,
+                                       " ".join(self.command))

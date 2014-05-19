@@ -126,6 +126,7 @@ def start_runner(test_queue, runner_command_queue, runner_result_queue,
                  executor_cls, executor_kwargs,
                  executor_browser_cls, executor_browser_kwargs,
                  stop_flag):
+    """Launch a TestRunner in a new process"""
     try:
         browser = executor_browser_cls(**executor_browser_kwargs)
         executor = executor_cls(browser, **executor_kwargs)
@@ -280,7 +281,7 @@ class TestRunnerManager(threading.Thread):
         return self.child_stop_flag.is_set() or self.parent_stop_flag.is_set()
 
     def init(self):
-        """Create the Firefox process that is being tested,
+        """Launch the browser that is being tested,
         and the TestRunner process that will run the tests."""
         #It seems that this lock is helpful to prevent some race that otherwise
         #sometimes stops the spawned processes initalising correctly, and
@@ -304,7 +305,6 @@ class TestRunnerManager(threading.Thread):
         with self.init_lock:
             #To guard against cases where we fail to connect with marionette for
             #whatever reason
-            #TODO: make this timeout configurable
             self.init_timer = threading.Timer(self.browser.init_timeout, init_failed)
             try:
                 self.init_timer.start()

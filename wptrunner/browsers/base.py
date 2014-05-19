@@ -16,6 +16,11 @@ import moznetwork
 here = os.path.split(__file__)[0]
 
 def get_free_port(start_port, exclude=None):
+    """Get the first port number after start_port (inclusive) that is
+    not currently bound.
+
+    :param start_port: Integer port number at which to start testing.
+    :param exclude: Set of port numbers to skip"""
     port = start_port
     while True:
         if exclude and port in exclude:

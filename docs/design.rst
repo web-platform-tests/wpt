@@ -1,7 +1,7 @@
-`wptrunner` Design
+``wptrunner`` Design
 ==================
 
-The design of `wptrunner` is intended to meet the following
+The design of ``wptrunner`` is intended to meet the following
 requirements:
 
  * Possible to run tests from W3C web-platform-tests.
@@ -12,7 +12,7 @@ requirements:
  * As far as possible, the tests should run in a "normal" browser and
    browsing context. In particular many tests assume that they are
    running in a top-level browsing context, so we must avoid the use
-   of an `iframe` test container.
+   of an ``iframe`` test container.
 
  * It must be possible to deal with all kinds of behaviour of the
    browser runder test, for example, crashing, hanging, etc.
@@ -28,7 +28,7 @@ requirements:
 General Design
 --------------
 
-In order to meet the above requirements, `wptrunner` is designed to
+In order to meet the above requirements, ``wptrunner`` is designed to
 push as much of the test scheduling as possible into the harness. This
 allows the harness to monitor the state of the browser and perform
 appropriate action if it gets into an unwanted state e.g. kill the
@@ -39,62 +39,62 @@ control protocol such as WebDriver. However for browsers where no such
 protocol is supported, other implementation strategies are possible,
 typically at the expense of speed.
 
-The overall design of `wptrunner` is shown in the diagram below:
+The overall design of ``wptrunner`` is shown in the diagram below:
 
 .. image:: architecture.svg
 
-The main entry point to the code is `run_tests` in
-`wptrunner.py`. This is responsible for setting up the test
+The main entry point to the code is ``run_tests`` in
+``wptrunner.py``. This is responsible for setting up the test
 environment, loading the list of tests to be executed, and invoking
 the remainder of the code to actually execute some tests.
 
-The test environment is encapsulated in the `TestEnvironment`
-class. This defers to code in `web-platform-tests` which actually
+The test environment is encapsulated in the ``TestEnvironment``
+class. This defers to code in ``web-platform-tests`` which actually
 starts the required servers to run the tests.
 
-The set of tests to run is defined by the `TestLoader`. This is
-constructed with a `TestFilter` (not shown), which takes any filter
+The set of tests to run is defined by the ``TestLoader``. This is
+constructed with a ``TestFilter`` (not shown), which takes any filter
 arguments from the command line to restrict the set of tests that will
-be run. The `TestLoader` reads both the `web-platforms-test` JSON
+be run. The ``TestLoader`` reads both the ``web-platforms-test`` JSON
 manifest and the expectation data stored in ini files and produces a
-`multiprocessing.Queue` of tests to run, and their expected results.
+``multiprocessing.Queue`` of tests to run, and their expected results.
 
-Actually running the tests happens through the `ManagerGroup`
-object. This takes the `Queue` of tests to be run and starts a
-`TestRunnerManager` for each instance of the browser under test that
-will be started. These `TestRunnerManager` instances are each started
+Actually running the tests happens through the ``ManagerGroup``
+object. This takes the ``Queue`` of tests to be run and starts a
+``TestRunnerManager`` for each instance of the browser under test that
+will be started. These ``TestRunnerManager`` instances are each started
 in their own thread.
 
-A `TestRunnerManager` coordinates starting the product under test, and
+A ``TestRunnerManager`` coordinates starting the product under test, and
 outputting results from the test. In the case that the test has timed
 out or the browser has crashed, it has to restart the browser to
 ensure the test run can continue. The functionality for initalising
 the browser under test, and probing its state (e.g. whether the
-process is still alive) is implemented through a `Browser`
+process is still alive) is implemented through a ``Browser``
 object. An implementation of this class must be provided for each
 product that is supported.
 
 The functionality for actually running the tests is provided by a
-`TestRunner` object. In order that this may be stopped and started at
+``TestRunner`` object. In order that this may be stopped and started at
 will, and in particular may be restarted at the same time as the
 browser it is controlling, it is implemented in a seperate process,
-using the primitives provided by the `multiprocessing`
-module. Communication between the `TestRunnerManager` and the
-`TestRunner` is provided by a pair of queues, one for sending messages
+using the primitives provided by the ``multiprocessing``
+module. Communication between the ``TestRunnerManager`` and the
+``TestRunner`` is provided by a pair of queues, one for sending messages
 in each direction. In particular test results are sent from the
-`TestRunner` to the `TestRunnerManager` using one of these queues.
+``TestRunner`` to the ``TestRunnerManager`` using one of these queues.
 
-The `TestRunner` object is generic in that the same `TestRunner` is
+The ``TestRunner`` object is generic in that the same ``TestRunner`` is
 used regardless of the product under test. However the details of how
 to run the test may vary greatly with the product since different
 products support different remote control protocols (or none at
-all). These protocol-specific parts are placed in the `Executor`
-object. There is typically a different `Executor` class for each
-combination of control protocol and test type. The `TestRunner` is
-responsible for pulling each test off the `Queue` of tests and passing
-it down to the `Executor`.
+all). These protocol-specific parts are placed in the ``Executor``
+object. There is typically a different ``Executor`` class for each
+combination of control protocol and test type. The ``TestRunner`` is
+responsible for pulling each test off the ``Queue`` of tests and passing
+it down to the ``Executor``.
 
 The executor often requires access to details of the particular
 browser instance that it is testing so that it knows e.g. which port
 to connect to to send commands to the browser. These details are
-encapsulated in the `ExecutorBrowser` class.
+encapsulated in the ``ExecutorBrowser`` class.

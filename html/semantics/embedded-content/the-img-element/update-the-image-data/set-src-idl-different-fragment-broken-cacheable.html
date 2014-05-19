@@ -1,0 +1,39 @@
+<!doctype html>
+<title>img set .src IDL attribute to different fragment (broken, cacheable)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/common.js"></script>
+<div id=log></div>
+<script>
+var url_settings = {
+  cached: "yes",
+  animated: "no",
+  delay: "no",
+  broken: "yes",
+};
+var expected_requests = '1';
+var expected_props = {
+  width: 0,
+  height: 0,
+  complete: true,
+};
+
+async_test(function() {
+  var img = new Image();
+  var url = make_url(url_settings);
+  var url_put = url + 'put';
+  var url_take = url + 'take';
+  img.onerror = this.step_func(function() {
+    check_props(img, expected_props);
+    img.onerror = this.step_func(function() {
+      check_props(img, expected_props);
+      this.step(check_requests(url_take, expected_requests));
+      img.onerror = this.unreached_func("got thir error event");
+    });
+    img.src = url_put + '#';
+  });
+  img.onload = this.unreached_func("got load event");
+  img.src = url_put;
+});
+</script>

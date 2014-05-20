@@ -1,0 +1,122 @@
+[
+    {
+        "algorithmicSteps": 0,
+        "end_id": "terminology",
+        "id": "conformance",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 3,
+        "original_id": "conformance",
+        "propdef": 0,
+        "wordCount": 71,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#conformance"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "interface-progressevent",
+        "id": "terminology",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "terminology",
+        "propdef": 0,
+        "wordCount": 15,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#terminology"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "references",
+        "id": "interface-progressevent",
+        "idlComplexity": 11,
+        "level": 1,
+        "normativeStatements": 4,
+        "original_id": "interface-progressevent",
+        "propdef": 0,
+        "wordCount": 227,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#interface-progressevent"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "firing-events-using-the-progressevent-interface-for-other-contexts",
+        "id": "firing-events-using-the-progressevent-interface-for-http",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "firing-events-using-the-progressevent-interface-for-http",
+        "propdef": 0,
+        "wordCount": 77,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#firing-events-using-the-progressevent-interface-for-http"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "security-considerations",
+        "id": "firing-events-using-the-progressevent-interface-for-other-contexts",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "firing-events-using-the-progressevent-interface-for-other-contexts",
+        "propdef": 0,
+        "wordCount": 51,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#firing-events-using-the-progressevent-interface-for-other-contexts"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "references",
+        "id": "security-considerations",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "security-considerations",
+        "propdef": 0,
+        "wordCount": 40,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#security-considerations"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "acknowledgments",
+        "id": "references",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "references",
+        "propdef": 0,
+        "wordCount": 72,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#references"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "informative-references",
+        "id": "normative-references",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "normative-references",
+        "propdef": 0,
+        "wordCount": 48,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#normative-references"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "acknowledgments",
+        "id": "informative-references",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "informative-references",
+        "propdef": 0,
+        "wordCount": 24,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#informative-references"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "",
+        "id": "acknowledgments",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "acknowledgments",
+        "propdef": 0,
+        "wordCount": 137,
+        "url": "http://www.w3.org/TR/2011/CR-progress-events-20110922#acknowledgments"
+    }
+]

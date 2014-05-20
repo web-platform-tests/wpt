@@ -1,0 +1,122 @@
+[
+    {
+        "algorithmicSteps": 0,
+        "end_id": "conformance",
+        "id": "introduction",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "introduction",
+        "propdef": 0,
+        "wordCount": 79,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#introduction"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "terminology",
+        "id": "conformance",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 6,
+        "original_id": "conformance",
+        "propdef": 0,
+        "wordCount": 112,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#conformance"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "security",
+        "id": "terminology",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "terminology",
+        "propdef": 0,
+        "wordCount": 76,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#terminology"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "the-capture-attribute",
+        "id": "security",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 1,
+        "original_id": "security",
+        "propdef": 0,
+        "wordCount": 97,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#security"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "examples",
+        "id": "the-capture-attribute",
+        "idlComplexity": 3,
+        "level": 1,
+        "normativeStatements": 1,
+        "original_id": "the-capture-attribute",
+        "propdef": 0,
+        "wordCount": 202,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#the-capture-attribute"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "examples",
+        "id": "attributes",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 1,
+        "original_id": "attributes",
+        "propdef": 0,
+        "wordCount": 175,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#attributes"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "references",
+        "id": "examples",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 2,
+        "original_id": "examples",
+        "propdef": 0,
+        "wordCount": 78,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#examples"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "",
+        "id": "references",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "references",
+        "propdef": 0,
+        "wordCount": 75,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#references"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "informative-references",
+        "id": "normative-references",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "normative-references",
+        "propdef": 0,
+        "wordCount": 70,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#normative-references"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "",
+        "id": "informative-references",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "informative-references",
+        "propdef": 0,
+        "wordCount": 5,
+        "url": "http://www.w3.org/TR/2012/WD-html-media-capture-20120529/#informative-references"
+    }
+]

@@ -14,21 +14,22 @@
 
 <script>
 
+    
     var description = "Test Description: Corss-origin: event.source returns the WindowProxy of the source window.";
-
+    
     var t = async_test(description);
-
+                
     var DATA = "foo";
     var TARGET = document.querySelector("iframe");
-    var XORIGIN = "http://{{domains[www1]}}:{{ports[http][0]}}";
+    var XORIGIN = "http://www1.w3c-test.org";
     var ExpectedResult = [XORIGIN, "AccessCookieDenied"];
     var ActualResult = [];
-
+                
     function PostMessageTest()
     {
         TARGET.contentWindow.postMessage(DATA, XORIGIN);
     }
-
+    
     window.onmessage = t.step_func(function(e)
     {
         try
@@ -40,7 +41,7 @@
         {
             ActualResult.push(e.origin, "AccessCookieDenied");
         }
-
+        
         assert_true(e.source.parent === window);
         assert_array_equals(ActualResult, ExpectedResult, "ActualResult");
         t.done();

@@ -75,7 +75,7 @@ class ServerProc(object):
         try:
             self.daemon = init_func(config, paths, port, bind_hostname)
         except socket.error:
-            print >> sys.stderr, "Socket error on port %s" % port
+            logger.error("Socket error on port %s" % port)
             raise
 
         if self.daemon:
@@ -144,6 +144,8 @@ def start_servers(config, paths, ports, bind_hostname):
 
             server_proc = ServerProc()
             server_proc.start(init_func, config, paths, port, bind_hostname)
+
+            logger.info("Started server at %s://%s:%s" % (scheme, config["host"], port))
             servers[scheme].append((port, server_proc))
 
     return servers
@@ -182,6 +184,7 @@ class WebSocketDaemon(object):
         self.server_thread = None
 
     def start(self, block=False):
+        logger.info("Starting websockets server on %s:%s" % (self.host, self.port))
         self.started = True
         if block:
             self.server.serve_forever()
@@ -202,6 +205,7 @@ class WebSocketDaemon(object):
                 self.server.server_close()
                 self.server_thread.join()
                 self.server_thread = None
+                logger.info("Stopped websockets server on %s:%s" % (self.host, self.port))
             except AttributeError:
                 pass
             self.started = False

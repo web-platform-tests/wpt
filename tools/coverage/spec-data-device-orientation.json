@@ -1,0 +1,122 @@
+[
+    {
+        "algorithmicSteps": 0,
+        "end_id": "description",
+        "id": "conformance-requirements",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 7,
+        "original_id": "conformance-requirements",
+        "propdef": 0,
+        "wordCount": 250,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#conformance-requirements"
+    },
+    {
+        "algorithmicSteps": 3,
+        "end_id": "use-cases-and-requirements",
+        "id": "description",
+        "idlComplexity": 41,
+        "level": 1,
+        "normativeStatements": 49,
+        "original_id": "description",
+        "propdef": 0,
+        "wordCount": 1256,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#description"
+    },
+    {
+        "algorithmicSteps": 3,
+        "end_id": "compassneedscalibration",
+        "id": "deviceorientation",
+        "idlComplexity": 14,
+        "level": 2,
+        "normativeStatements": 20,
+        "original_id": "deviceorientation",
+        "propdef": 0,
+        "wordCount": 767,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#deviceorientation"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "devicemotion",
+        "id": "compassneedscalibration",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 9,
+        "original_id": "compassneedscalibration",
+        "propdef": 0,
+        "wordCount": 171,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#compassneedscalibration"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "use-cases-and-requirements",
+        "id": "devicemotion",
+        "idlComplexity": 28,
+        "level": 2,
+        "normativeStatements": 20,
+        "original_id": "devicemotion",
+        "propdef": 0,
+        "wordCount": 318,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#devicemotion"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "acknowledgments",
+        "id": "use-cases-and-requirements",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 5,
+        "original_id": "use-cases-and-requirements",
+        "propdef": 0,
+        "wordCount": 156,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#use-cases-and-requirements"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "requirements",
+        "id": "use-cases",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 0,
+        "original_id": "use-cases",
+        "propdef": 0,
+        "wordCount": 79,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#use-cases"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "acknowledgments",
+        "id": "requirements",
+        "idlComplexity": 0,
+        "level": 2,
+        "normativeStatements": 5,
+        "original_id": "requirements",
+        "propdef": 0,
+        "wordCount": 74,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#requirements"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "references",
+        "id": "acknowledgments",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "acknowledgments",
+        "propdef": 0,
+        "wordCount": 15,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#acknowledgments"
+    },
+    {
+        "algorithmicSteps": 0,
+        "end_id": "",
+        "id": "references",
+        "idlComplexity": 0,
+        "level": 1,
+        "normativeStatements": 0,
+        "original_id": "references",
+        "propdef": 0,
+        "wordCount": 76,
+        "url": "http://www.w3.org/TR/2011/WD-orientation-event-20111201#references"
+    }
+]

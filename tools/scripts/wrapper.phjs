@@ -1,0 +1,116 @@
+/*
+
+    wrapper.phjs: $distribution_URI
+
+    Copyright © 2012 World Wide Web Consortium, (Massachusetts
+    Institute of Technology, European Research Consortium for
+    Informatics and Mathematics, Keio University). All Rights
+    Reserved. This work is distributed under the W3C® Software License
+    [1] in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE.
+
+    [1] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
+
+    This program is intended to be executed using phantomjs [2].
+ 
+    syntax: phantomjs wrapper.phjs <Your_Script.js> <URL>
+
+    Your_script.js defines a function __result_handler, which returns one of:
+     - "WRAPPER:TRY_AGAIN"
+       the return value is not yet available and the wrapper should retry
+     - "WRAPPER:EXIT"
+       the return value cannot be found and the wrapper should give up
+     - a value
+       a simple object, i.e. no function or closure.       
+
+    [2] http://phantomjs.org/
+
+*/
+
+var system = require('system');
+var fs     = require('fs');
+
+if (system.args[1] === undefined
+    || system.args[2] === undefined) {
+    console.error('[error] phantomjs : wrapper.phjs: Missing arguments: use phantomjs wrapper.phjs <file.js> <URL>');    
+    phantom.exit(1);
+}
+
+var wrapperjs = system.args[1];
+var html      = system.args[2];
+
+if (fs.isDirectory(html)) {
+    phantom.exit(2);    
+}
+
+var page   = require('webpage').create();
+
+
+function result_handler() {
+    var results;
+    try {
+	results = page.evaluate(function () {
+		return __result_handler(); 
+	    });
+    } catch(e) {
+    	console.error('[error] wrapper.phjs: we crashed in flames with ' + html);
+	phantom.exit(3);
+    }
+    if (results === "WRAPPER:TRY_AGAIN") {
+        window.setTimeout(function() { result_handler(); }, 100);	
+    } else if (results === "WRAPPER:EXIT") {
+    	console.error('[error] phantomjs: wrapper.phjs: giving up on ' + html);
+        phantom.exit(4);
+    } else {
+	try {
+	    switch (typeof results) {
+	    case "string":
+		// TODO: character escaping...
+		console.log('"' + results.replace('"', '\"') + '"');
+	        break;
+	    case "boolean":
+	    case "number":
+	    case "undefined":
+		console.log(results);
+	        break;
+	    case "object":
+		console.log(JSON.stringify(results, undefined, 2));
+		break;
+	    default:
+		console.log(results);
+		break;
+	    }
+	} catch(e) {
+	    console.error('[error] phantomjs: got results but crashed anyway ' + html);
+	    phantom.exit(3);
+	}
+	phantom.exit(0);
+    }
+}
+
+var page_success = false;
+
+function give_up() {
+    if (!page_success) {
+	console.error('[error] wrapper.phjs: unable to load ' + html);
+	phantom.exit(1);
+    }
+}
+window.setTimeout(function() { give_up(); }, 1800000);
+
+page.open(html, function (status) {
+	page_success = true;
+	if (status !== 'success') {
+	    console.error('[error] wrapper.phjs: unable to open ' + html);
+	    phantom.exit(1);
+	} else {
+	    var inject = page.injectJs(wrapperjs);
+	    if (inject) {
+		result_handler();	    
+	    } else {
+		console.error('[error] wrapper.phjs: unable to inject in ' + html);
+		phantom.exit(2);
+	    }
+	}
+    });

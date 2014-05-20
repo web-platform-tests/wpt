@@ -1,0 +1,26 @@
+/*global phantom*/
+
+var page = require("webpage").create()
+,   system = require("system")
+,   url
+;
+
+if (system.args.length === 1) {
+    console.log("[ERROR] URL argument required.");
+    phantom.exit();
+}
+else {
+    url = system.args[1];
+}
+
+page.onCallback = function (data) {
+    console.log(JSON.stringify(data));
+    phantom.exit();
+};
+
+page.open(url, function (status) {
+    if (status !== "success") {
+        console.log("[ERROR] Failed to load page");
+        phantom.exit();
+    }
+});

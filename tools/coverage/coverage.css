@@ -1,0 +1,101 @@
+body {
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+table {
+    border-collapse:collapse;
+}
+
+th {
+    text-align: left;
+}
+
+td {
+	padding: 3px 10px;
+    text-align: right;
+}
+
+td:nth-child(1) {
+    text-align: left;
+}
+
+tr.level-2 td:nth-child(1) {
+    padding-left:   2em;
+}
+tr.level-3 td:nth-child(1) {
+    padding-left:   4em;
+}
+
+tr:hover {
+    background-color: #eee;
+}
+
+#color-coding li {
+	width: 80px;
+	line-height: 1;
+	margin-bottom: 10px;
+	padding: 5px;
+	text-align: center;
+	list-style: none;
+	float: right;
+}
+
+#color-coding {
+	float: left;
+}
+
+.hide-no-reqs .no-req {
+	display:none;
+}
+
+.hide-details tr .detailed-data {
+    display: none;
+}
+
+.detailed-data {
+	color: #666;
+	font-size: 0.8em;
+}
+
+.progress-bar-container {
+	border: 1px solid black;
+	background-color: #fff;
+}
+
+.progress-bar {
+	height: 10px;
+	width: 0px;
+	margin: 1px;
+	background-color: #666;
+}
+
+.progress-bar-review {
+	height: 10px;
+	width: 10px;
+	margin: 1px;
+	float: left;
+	background-color: #ccc;
+}
+
+
+.hide-level-2 tr.level-2,
+.hide-level-3 tr.level-3 {
+    display: none;
+}
+
+.spec-view #spec-controls,
+.summary-view #summary-controls {
+    display: block;
+}
+
+.spec-view #summary-controls,
+.summary-view #spec-controls {
+    display: none;
+}
+
+.rec, .pr, .high { background-color: #7f7 }
+.cr, .lcwd, .med-high { background-color: #cf7 }
+.wd, .med { background-color: #ff7 }
+.fpwd, .med-low { background-color: #fc7 }
+.ed, .low { background-color: #f77 }
+

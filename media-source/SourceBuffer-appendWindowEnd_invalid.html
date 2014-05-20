@@ -18,7 +18,7 @@ var mime = 'video/webm; codecs="vorbis,vp8"';
 
 async_test(function(t) {
     var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
+    mediaSource.addEventListener('sourceopen', function(e) {
         var sourceBuffer = mediaSource.addSourceBuffer(mime);
         t.step(function() {
             assert_throws({name: 'InvalidAccessError'},

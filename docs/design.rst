@@ -1,7 +1,7 @@
-``wptrunner`` Design
-==================
+wptrunner Design
+================
 
-The design of ``wptrunner`` is intended to meet the following
+The design of wptrunner is intended to meet the following
 requirements:
 
  * Possible to run tests from W3C web-platform-tests.
@@ -25,10 +25,10 @@ requirements:
 
  * Test output must be in a machine readable form.
 
-General Design
---------------
+Architecture
+------------
 
-In order to meet the above requirements, ``wptrunner`` is designed to
+In order to meet the above requirements, wptrunner is designed to
 push as much of the test scheduling as possible into the harness. This
 allows the harness to monitor the state of the browser and perform
 appropriate action if it gets into an unwanted state e.g. kill the
@@ -39,7 +39,7 @@ control protocol such as WebDriver. However for browsers where no such
 protocol is supported, other implementation strategies are possible,
 typically at the expense of speed.
 
-The overall design of ``wptrunner`` is shown in the diagram below:
+The overall architecture of wptrunner is shown in the diagram below:
 
 .. image:: architecture.svg
 

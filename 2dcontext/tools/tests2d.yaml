@@ -2819,7 +2819,7 @@
     - broken.png
   code: |
     var img = document.getElementById('broken.png');
-    @assert ctx.createPattern(img, 'repeat') === null; @moz-todo
+    @assert throws INVALID_STATE_ERR ctx.createPattern(img, 'repeat');
 
 - name: 2d.pattern.repeat.empty
   testing:
@@ -2844,7 +2844,7 @@
   testing:
     - 2d.pattern.unrecognised
   code: |
-    @assert throws SYNTAX_ERR ctx.createPattern(canvas, null); @moz-todo
+    @assert ctx.createPattern(canvas, null) != null;
 
 - name: 2d.pattern.repeat.undefined
   testing:
@@ -2857,6 +2857,12 @@
     - 2d.pattern.unrecognised
   code: |
     @assert throws SYNTAX_ERR ctx.createPattern(canvas, "invalid");
+
+- name: 2d.pattern.repeat.unrecognisednull
+  testing:
+    - 2d.pattern.unrecognised
+  code: |
+    @assert throws SYNTAX_ERR ctx.createPattern(canvas, "null");
 
 - name: 2d.pattern.repeat.case
   testing:
@@ -2889,7 +2895,7 @@
         @assert pixel 1,48 == 0,255,0,255;
         @assert pixel 98,48 == 0,255,0,255;
     });
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
   expected: green
 
 - name: 2d.pattern.modify.image2
@@ -2915,7 +2921,7 @@
         @assert pixel 1,48 == 0,255,0,255;
         @assert pixel 98,48 == 0,255,0,255;
     });
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
   expected: green
 
 - name: 2d.pattern.modify.canvas1

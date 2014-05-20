@@ -8,10 +8,10 @@
   <body>
     <div id="log"></div>
     <script>
-      var test = async_test(document.title, {timeout: 2500});
+      var test = async_test(document.title);
       test.step(function() {
-        var timeoutms = 2000,
-            timeoutstr = "02000", // 1024 in octal, but should be 2000
+        var timeoutms = 3000,
+            timeoutstr = "03000", // 1536 in octal, but should be 3000
             source = new EventSource("resources/message.py?message=retry%3A" + timeoutstr + "%0Adata%3Ax"),
             opened = 0
         source.onopen = function() {
@@ -20,7 +20,7 @@
               opened = new Date().getTime()
             else {
               var diff = (new Date().getTime()) - opened
-              assert_true(Math.abs(1 - diff / timeoutms) < 0.1) // allow 10% difference
+              assert_true(Math.abs(1 - diff / timeoutms) < 0.25) // allow 25% difference
               this.close();
               test.done()
             }

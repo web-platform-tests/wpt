@@ -65,6 +65,10 @@
         assert_throws("InvalidStateError", function() { el.stepUp(); }, "");
       }, "stepUp does not apply for hidden");
 
+    test(function(){
+      var el = document.getElementById("hidden");
+      assert_false(el.willValidate);
+    }, "input type=hidden is barred from constraint validation");
   </script>
   </body>
 </html>

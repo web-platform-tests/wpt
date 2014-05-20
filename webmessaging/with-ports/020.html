@@ -23,7 +23,7 @@ onload = t.step_func(function() {
     assert_equals(e.data[0], i);
     assert_equals(e.data[1], location.protocol + '//' + location.host);
   });
-  setTimeout(t.step_func(function() { assert_equals(i, 2); t.done(); }), 50);
+  setTimeout(t.step_func(function() { assert_equals(i, 2); t.done(); }), 1000);
 });
 </script>
 

@@ -33,6 +33,7 @@
                     if (readyState == 1)
                     {
                         xhr.abort();
+                        VerifyResult();
                     }else{
                         assert_unreached('Loadstart event should not fire in readyState '+readyState);
                     }
@@ -42,7 +43,7 @@
             xhr.onloadend          = function(e){ actual.push(e.type); };
             xhr.onabort            = function(e){ actual.push(e.type); };
 
-            xhr.upload.onloadend   = function(e){ actual.push("upload." + e.type); VerifyResult() };
+            xhr.upload.onloadend   = function(e){ actual.push("upload." + e.type); };
             xhr.upload.onabort     = function(e){ actual.push("upload." + e.type); };
 
             function VerifyResult()

@@ -34,7 +34,6 @@ async_test(function(t) {
                           'The new value is less than appendWindowStart');
             assert_throws({name: 'InvalidAccessError'},
                           function() {
-                              
                               sourceBuffer.appendWindowEnd = sourceBuffer.appendWindowStart;
                           },
                           'The new value is equal to appendWindowStart');
@@ -44,8 +43,7 @@ async_test(function(t) {
     video.src = window.URL.createObjectURL(mediaSource);
 },
 'SourceBuffer#appendWindowEnd : If the new value equals NaN, INVALID_ACCESS_ERR exception should be thrown.' +
-'If the new value is less than or equal to appendWindowStart, INVALID_ACCESS_ERR exception should be thrown.'
-);
+'If the new value is less than or equal to appendWindowStart, INVALID_ACCESS_ERR exception should be thrown.');
 </script>
 </body>
 </html>

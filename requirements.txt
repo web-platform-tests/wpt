@@ -4,6 +4,6 @@ mozrunner >= 5.36
 mozdevice >= 0.22
 moznetwork >= 0.21
 mozprofile >= 0.7
-mozlog >= 0.16
+mozlog >= 1.8
 html5lib >= 0.99
 marionette_client >= 0.7.6

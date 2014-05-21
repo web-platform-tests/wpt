@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'wptrunner'
-PACKAGE_VERSION = '0.2.6'
+PACKAGE_VERSION = '0.3-rc1'
 
 # dependencies
 with open('requirements.txt') as f:
@@ -16,7 +16,7 @@ dest_exists = False
 
 setup(name=PACKAGE_NAME,
       version=PACKAGE_VERSION,
-      description="Harness for running the W3C web-platform-tests against various Mozilla products",
+      description="Harness for running the W3C web-platform-tests against various products",
       author='Mozilla Automation and Testing Team',
       author_email='tools@lists.mozilla.org',
       license='MPL 1.1/GPL 2.0/LGPL 2.1',

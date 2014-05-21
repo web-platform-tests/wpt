@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Tests for overwritten window.opener (popup - helper window)</title>
+</head>
+<body>
+<p>window.opener test helper window</p>
+
+<script type="text/javascript">
+    var _opener = window.opener;
+    /*
+        Page is opened with query string ?0 then with ?1 etc to make sure the tests do not interfere with each other.
+    */
+    var someObj = {};
+    var tests = [
+        {value: someObj, value_str: 'someObj', useVar:true, name:"object with var"},
+        {value: someObj, value_str: 'someObj', useVar:false, name:"object without var"},
+        {value: window, value_str: 'window', useVar:true, name:"window with var"},
+        {value: window, value_str: 'window', useVar:false, name:"window without var"},
+        {value: null, value_str: 'null', useVar:true, name:"null with var"},
+        {value: null, value_str: 'null', useVar:false, name:"null without var"},
+        {value: undefined, value_str: 'undefined', useVar:true, name:"undefined with var"},
+        {value: undefined, value_str: 'undefined', useVar:false, name:"undefined without var"},
+        {value: '', value_str: '""', useVar:true, name:"empty string with var"},
+        {value: '', value_str: '""', useVar:false, name:"empty string without var"},
+        {value: 5, value_str: '5', useVar:true, name:"number with var"},
+        {value: 5, value_str: '5', useVar:false, name:"number without var"}
+    ];
+
+    var testidx = location.search.substr(1);
+
+    if(tests[testidx]){
+        document.getElementsByTagName('p')[0].firstChild.data+=' - test '+testidx+', '+tests[testidx].name;
+        var setting_throws = 'not tested', setting_succeeds = 'not tested', unexpected_err = false, code = 'try{';
+        try{
+            if(tests[testidx].useVar){
+                code +='var ';
+            }
+            code += 'opener = ' + tests[testidx].value_str;
+            code += ';\nsetting_throws = false;}catch(e){setting_throws = true;}';
+            code += '\nsetting_succeeds = opener === '+ tests[testidx].value_str
+            console.log(code);
+            document.open();
+            document.write('<script>'+code+'<\/script>');
+            document.close();
+            //setting_succeeds = window.opener === tests[testidx].value;
+        }catch(e){
+            unexpected_err = true;
+        }
+        _opener.postMessage(JSON.stringify({idx:testidx, setting_throws:setting_throws, setting_succeeds: setting_succeeds, unexpected_err: unexpected_err, name: tests[testidx].name}), '*');
+    }else{
+        _opener.postMessage('DONE', '*');
+    }
+    // if opener is set to null, the opening window is not allowed to close the popup in Chrome..
+    setTimeout(function(){self.close()}, 20);
+</script>
+
+</body></html>

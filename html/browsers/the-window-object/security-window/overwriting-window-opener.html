@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Tests for overwritten window.opener</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <script type="text/javascript">
+    /*
+        This test intends to test the following:
+        * What values can window.opener be set to? 
+        {}, null, window, "", 5, undefined
+        
+        * Is there a difference if it's set with and without var keyword?
+
+        * In which cases can window.opener be read cross-domain?
+        
+        A new popup window is opened for each subtest.
+    */
+
+    var expectations = { /* as we see, there's a nice consistency here.. */
+        "object with var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "object without var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "window with var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "window without var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "null with var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "null without var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "undefined with var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "undefined without var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "empty string with var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "empty string without var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "number with var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        },
+        "number without var": {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": true
+        }
+    }
+
+
+    var test = async_test("overwriting window.opener", {timeout:8000});
+    var idx = 0, win;
+    var testURL = location.pathname.replace('overwriting-window-opener.html', 'support/window-opener-popup.html');
+    testURL = location.protocol + '//' + 'www1.' + location.host + testURL + '?';
+
+    window.addEventListener('message', test.step_func(function (e) {
+        if(e.data === 'DONE'){ 
+            win.close();
+            test.done();
+            return;
+        }
+        var data = JSON.parse(e.data);
+        var reading_throws = false, opener_is_this_window = false;
+        try{
+            var the_opener = win.opener;
+            opener_is_this_window = the_opener === self;
+        }catch(err){
+            reading_throws = true;
+        }
+        win.close();
+        assert_equals(data.setting_throws, expectations[data.name].setting_throws, 'opener set to '+data.name+' - setting throws?');
+        assert_equals(data.setting_succeeds, expectations[data.name].setting_succeeds, 'opener set to '+data.name+' - setting succeeds?');
+        assert_equals(reading_throws, expectations[data.name].reading_throws, 'opener set to '+ data.name+' - reading throws? ');
+        assert_false(opener_is_this_window, 'Opener no longer refers to this window when it\'s been set');
+        win = window.open(testURL + (parseInt(data.idx)+1));
+    }), false);
+
+    win = window.open(testURL + '0');
+
+
+    </script>
+    <p>Note: popups must be enabled for this test.</p>
+</body></html>

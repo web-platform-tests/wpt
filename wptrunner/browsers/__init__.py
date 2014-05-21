@@ -8,9 +8,10 @@ a dictionary with the fields
 "executor": Dictionary with keys as supported test types and values as the name
             of the Executor implemantation that will be used to run that test
             type.
-"browser_kwargs": String naming function that takes product, binary and
-                  prefs_root as arguments and returns a dictionary of kwargs
-                  to use when creating the Browser class.
+"browser_kwargs": String naming function that takes product, binary,
+                  prefs_root and the wptrunner.run_tests kwargs dict as arguments
+                  and returns a dictionary of kwargs to use when creating the
+                  Browser class.
 "executor_kwargs": String naming a function that takes http server url and
                    timeout multiplier and returns kwargs to use when creating
                    the executor class.

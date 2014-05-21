@@ -38,7 +38,7 @@
             code += 'opener = ' + tests[testidx].value_str;
             code += ';\nsetting_throws = false;}catch(e){setting_throws = true;}';
             code += '\nsetting_succeeds = opener === '+ tests[testidx].value_str
-            console.log(code);
+            //console.log(code);
             document.open();
             document.write('<script>'+code+'<\/script>');
             document.close();

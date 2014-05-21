@@ -10,11 +10,17 @@
 <body>
 <div id="log"></div>
 <script>
-test(function() {
-    var doc = newHTMLDocument();
+function newAnimationPlayer(doc) {
     var animationTarget = doc.createElement('div');
     doc.body.appendChild(animationTarget);
-    var player = doc.timeline.play(animationTarget.animate(null));
+    var animation = new Animation(animationTarget, [], 5);
+    return doc.timeline.play(animation);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
 
     assert_not_equals(player, null, 'Player created by AnimationTimeline.play() method ' +
         'cannot be null');
@@ -23,9 +29,7 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
-    var player = doc.timeline.play(animationTarget.animate(null));
+    var player = newAnimationPlayer(doc);
 
     assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
         'AnimationTimeline.play() method should be AnimationPlayer object instance');

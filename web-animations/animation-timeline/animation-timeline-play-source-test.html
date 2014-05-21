@@ -14,7 +14,7 @@ test(function() {
     var doc = newHTMLDocument();
     var animationTarget = doc.createElement('div');
     doc.body.appendChild(animationTarget);
-    var animation = animationTarget.animate(null);
+    var animation = new Animation(animationTarget, [], 2000);
     var player = doc.timeline.play(animation);
 
     assert_equals(player.source, animation, 'The source attribute of the created ' +

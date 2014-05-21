@@ -10,6 +10,14 @@
 <body>
 <div id="log"></div>
 <script>
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [], 5);
+    return doc.timeline.play(animation);
+}
+
+
 test(function() {
     var doc = newHTMLDocument();
 
@@ -24,9 +32,7 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
-    doc.timeline.play(animationTarget.animate(null));
+    newAnimationPlayer(doc);
 
     assert_not_equals(doc.timeline.getAnimationPlayers(), null,
         'AnimationTimeline.getAnimationPlayers() method should not return null');
@@ -39,10 +45,8 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
-    var player1 = doc.timeline.play(animationTarget.animate(null));
-    var player2 = doc.timeline.play(animationTarget.animate(null));;
+    var player1 = newAnimationPlayer(doc);
+    var player2 = newAnimationPlayer(doc);
 
     assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
         'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
@@ -53,10 +57,8 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
-    var player1 = doc.timeline.play(animationTarget.animate(null));
-    var player2 = doc.timeline.play(animationTarget.animate(null));;
+    var player1 = newAnimationPlayer(doc);
+    var player2 = newAnimationPlayer(doc);
     var players = doc.timeline.getAnimationPlayers();
 
     players.forEach(function (player) {

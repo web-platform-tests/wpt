@@ -24,7 +24,7 @@ __wptrunner__ = {"product": "chrome",
                  "executor_kwargs": "executor_kwargs",
                  "env_options": "env_options"}
 
-def browser_kwargs(product, binary, prefs_root):
+def browser_kwargs(product, binary, prefs_root, **kwargs):
     return {"binary": binary}
 
 def executor_kwargs(http_server_url, timeout_multiplier):

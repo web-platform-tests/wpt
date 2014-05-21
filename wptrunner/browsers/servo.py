@@ -18,7 +18,7 @@ __wptrunner__ = {"product": "servo",
                  "executor_kwargs": "get_executor_kwargs",
                  "env_options": "env_options"}
 
-def browser_kwargs(product, binary, prefs_root):
+def browser_kwargs(product, binary, prefs_root, **kwargs):
     return {"binary": binary}
 
 def env_options():

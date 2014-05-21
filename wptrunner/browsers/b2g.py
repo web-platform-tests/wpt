@@ -22,8 +22,9 @@ __wptrunner__ = {"product": "b2g",
                  "executor_kwargs": "get_executor_kwargs",
                  "env_options": "env_options"}
 
-def browser_kwargs(product, binary, prefs_root):
-    return {"prefs_root": prefs_root}
+def browser_kwargs(product, binary, prefs_root, **kwargs):
+    return {"prefs_root": prefs_root,
+            "no_backup": kwargs.get("b2g_no_backup", False)}
 
 def env_options():
     return {"host": moznetwork.get_ip()}
@@ -32,7 +33,7 @@ class B2GBrowser(Browser):
     used_ports = set()
     init_timeout = 180
 
-    def __init__(self, logger, prefs_root):
+    def __init__(self, logger, prefs_root, no_backup=False):
         Browser.__init__(self, logger)
         logger.info("Waiting for device")
         subprocess.call(["adb", "wait-for-device"])
@@ -43,6 +44,7 @@ class B2GBrowser(Browser):
         self.runner = None
         self.prefs_root = prefs_root
 
+        self.no_backup = no_backup
         self.backup_path = None
         self.backup_dirs = []
 
@@ -51,10 +53,11 @@ class B2GBrowser(Browser):
 
         self.logger.debug(self.backup_path)
 
-        self.backup_dirs = [("/data/local", os.path.join(self.backup_path, "local")),
-                            ("/data/b2g/mozilla", os.path.join(self.backup_path, "profile")),
-                            ("/system/etc", os.path.join(self.backup_path, "etc")),
-                        ]
+        if not self.no_backup:
+            self.backup_dirs = [("/data/local", os.path.join(self.backup_path, "local")),
+                                ("/data/b2g/mozilla", os.path.join(self.backup_path, "profile")),
+                                ("/system/etc", os.path.join(self.backup_path, "etc")),
+                            ]
 
         for remote, local in self.backup_dirs:
             self.device.getDirectory(remote, local)

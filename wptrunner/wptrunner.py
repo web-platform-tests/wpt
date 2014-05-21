@@ -410,7 +410,7 @@ def run_tests(tests_root, metadata_root, prefs_root, test_types, binary=None,
          executor_classes, get_executor_kwargs,
          env_options) = products.load_product(product)
 
-        browser_kwargs = get_browser_kwargs(product, binary, prefs_root)
+        browser_kwargs = get_browser_kwargs(product, binary, prefs_root, **kwargs)
 
         unexpected_total = 0
 

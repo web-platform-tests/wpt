@@ -70,6 +70,10 @@ def create_parser(allow_mandatory=True):
 
     parser.add_argument("--product", action="store", choices=[item[0] for item in products.iter_products()],
                         default="firefox")
+
+    parser.add_argument("--b2g-no-backup", action="store_true", default=False,
+                        help="Don't backup device before testrun with --product=b2g")
+
     commandline.add_logging_group(parser)
     return parser
 

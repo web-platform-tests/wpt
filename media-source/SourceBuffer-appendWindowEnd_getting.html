@@ -14,22 +14,40 @@
 
 <script>
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
-async_test(function(t) {
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e) {
-        var sourceBuffer = mediaSource.addSourceBuffer(mime);
-        t.step(function() {
-            assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY, 'Check initial value');
-            sourceBuffer.appendWindowEnd = 1;
-            assert_equals(sourceBuffer.appendWindowEnd, 1);
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
         });
-        t.done();
-    });
-    video.src = window.URL.createObjectURL(mediaSource);
-},
-'SourceBuffer#appendWindowEnd : Should return the initial value with positive infinity or the last value that was successfully set');
+        this.done();
+        return false;
+    }
+    return true;
+}
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            var sourceBuffer = mediaSource.addSourceBuffer(mime);
+            t.step(function() {
+                assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY, 'Check initial value');
+                sourceBuffer.appendWindowEnd = 1;
+                assert_equals(sourceBuffer.appendWindowEnd, 1);
+            });
+            t.done();
+        });
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'SourceBuffer#appendWindowEnd (' + mime + ') : Should return the initial value with positive infinity or the last value that was successfully set');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

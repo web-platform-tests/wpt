@@ -27,8 +27,8 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    function test(mime, done) {
+function test(mime) {
+    async_test(function(t) {
         if(!canPlayType.bind(t)(mime)) {
             return;
         }
@@ -42,19 +42,15 @@ async_test(function(t) {
                                   sourceBuffer.appendWindowEnd = 1;
                               });
             });
-            if(done) {
-                t.done();
-            }
+            t.done();
         });
         video.src = window.URL.createObjectURL(mediaSource);
-    }
-    //execute this test for videos and corresponding MIME types
-    mimes.forEach(function(mime, i) {
-        test(mimes[i], i == mimes.length - 1);
-    });
-},
-'SourceBuffer#appendWindowEnd : After this object is removed from the' +
-'sourceBuffers attribute of the parent media source, INVALID_STATE_ERR exception should be thrown.');
+    }, 'SourceBuffer#appendWindowEnd, (' + mime + ') : After this object is removed from the' +
+       'sourceBuffers attribute of the parent media source, INVALID_STATE_ERR exception should be thrown.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

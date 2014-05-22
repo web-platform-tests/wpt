@@ -36,11 +36,10 @@ def get_free_port(start_port, exclude=None):
         finally:
             s.close()
 
+
 class BrowserError(Exception):
     pass
 
-class ProcessHandler(mozprocess.ProcessHandlerMixin):
-    pass
 
 class Browser(object):
     process_cls = None

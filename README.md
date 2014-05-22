@@ -1,4 +1,4 @@
-Description
+Description [![Build Status](https://api.travis-ci.org/w3c/web-platform-tests.svg?branch=master)](https://travis-ci.org/w3c/web-platform-tests)
 ===========
 
 This is the test suites from a number of W3C Working Groups, including the HTML

@@ -15,7 +15,7 @@
 <script>
 var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
 //check the browser supports the MIME used in this test
 function canPlayType(mime) {
@@ -28,22 +28,27 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
-        t.step(function() {
-            assert_equals(mediaSource.sourceBuffers.length, 0);
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            assert_equals(mediaSource.sourceBuffers.length, 1);
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            t.step(function() {
+                assert_equals(mediaSource.sourceBuffers.length, 0);
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                assert_equals(mediaSource.sourceBuffers.length, 1);
+            });
+            t.done();
         });
-        t.done();
-    });
-    video.src = window.URL.createObjectURL(mediaSource);
-},
-'SourceBufferList#length : Check the number of created SourceBuffer objects in the list.');
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'SourceBufferList#length (' + mime + ') : ' +
+       'Check the number of created SourceBuffer objects in the list.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

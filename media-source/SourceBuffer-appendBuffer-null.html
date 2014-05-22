@@ -14,24 +14,43 @@
 
 <script>
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
-async_test(function(t) {
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
-        var sourceBuffer = mediaSource.addSourceBuffer(mime);
-        t.step(function() {
-            assert_throws({name: 'InvalidAccessError'},
-                          function() {
-                              sourceBuffer.appendBuffer(null);
-                          },
-                          'SourceBuffer#appendBuffer(null)');
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
         });
-        t.done();
-    });
-    video.src = window.URL.createObjectURL(mediaSource);
-}, 'SourceBuffer#appendBuffer(null) : If data is null then throw an INVALID_ACCESS_ERR exception and abort these steps.');
-
+        this.done();
+        return false;
+    }
+    return true;
+}
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            var sourceBuffer = mediaSource.addSourceBuffer(mime);
+            t.step(function() {
+                assert_throws({name: 'InvalidAccessError'},
+                              function() {
+                                  sourceBuffer.appendBuffer(null);
+                              },
+                              'SourceBuffer#appendBuffer(null)');
+            });
+            t.done();
+        });
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'SourceBuffer#appendBuffer(null) (' + mime + ') : ' +
+       'If data is null then throw an INVALID_ACCESS_ERR exception and abort these steps.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

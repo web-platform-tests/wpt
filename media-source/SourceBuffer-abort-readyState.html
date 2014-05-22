@@ -13,9 +13,9 @@
 <div id="log"></div>
 
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var contents = {'/media/white.webm': 'video/webm; codecs="vorbis,vp8"',
+                '/media/white.mp4' : 'video/mp4'};
 
 //check the browser supports the MIME used in this test
 function canPlayType(mime) {
@@ -41,37 +41,41 @@ function GET(url, processBody) {
         processBody(new Uint8Array(xhr.response));
     };
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    GET(FILE, function(data) {
-        var mediaSource = new MediaSource();
-        var events = [];
-        mediaSource.addEventListener('sourceopen', function(e){
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            sourceBuffer.addEventListener('updatestart', function(e){
-                sourceBuffer.abort();
-                t.step(function() {
-                    assert_equals(sourceBuffer.updating, false);
+function test(file, mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            var events = [];
+            mediaSource.addEventListener('sourceopen', function(e) {
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                sourceBuffer.addEventListener('updatestart', function(e) {
+                    sourceBuffer.abort();
+                    t.step(function() {
+                        assert_equals(sourceBuffer.updating, false);
+                    });
                 });
-            });
-            sourceBuffer.addEventListener('abort', function(e){
-                events.push('abort');
-            });
-            sourceBuffer.addEventListener('updateend', function(e){
-                events.push('updateend');
-                t.step(function() {
-                    assert_array_equals(events, ['abort', 'updateend']);
+                sourceBuffer.addEventListener('abort', function(e) {
+                    events.push('abort');
                 });
-                t.done();
+                sourceBuffer.addEventListener('updateend', function(e) {
+                    events.push('updateend');
+                    t.step(function() {
+                        assert_array_equals(events, ['abort', 'updateend']);
+                    });
+                    t.done();
+                });
+                sourceBuffer.appendBuffer(data);
             });
-            sourceBuffer.appendBuffer(data);
+            video.src = window.URL.createObjectURL(mediaSource);
         });
-        video.src = window.URL.createObjectURL(mediaSource);
-    });
-}, 'SourceBuffer#abort() : in case the updating attribute equals true');
-
+    }, 'SourceBuffer#abort() (' + mime + ') : in case the updating attribute equals true');
+}
+for(var file in contents) {
+    test(file, contents[file]);
+}
 </script>
 </body>
 </html>

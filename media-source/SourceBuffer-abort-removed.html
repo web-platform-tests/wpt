@@ -14,10 +14,10 @@
 
 <script>
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
 //check the browser supports the MIME used in this test
-function canPlayType(mime) {    
+function canPlayType(mime) {
     if(video.canPlayType(mime) != 'probably') {
         this.step(function() {
             assert_unreached("Browser doesn't support the MIME used in this test.");
@@ -27,26 +27,32 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
-        var sourceBuffer = mediaSource.addSourceBuffer(mime);
-        mediaSource.removeSourceBuffer(sourceBuffer);
-        t.step(function() {
-            assert_throws({name: 'InvalidStateError'},
-                          function() {
-                              sourceBuffer.abort();
-                          },
-                          'SourceBuffer#abort() after removing the SourceBuffer object');
-        });
-        t.done();
-    }, false);
-    video.src = window.URL.createObjectURL(mediaSource);
-}, 'SourceBuffer#abort : if this object has been removed from the sourceBuffers attribute of the parent media source then throw an INVALID_STATE_ERR exception and abort these steps.');
-
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            var sourceBuffer = mediaSource.addSourceBuffer(mime);
+            mediaSource.removeSourceBuffer(sourceBuffer);
+            t.step(function() {
+                assert_throws({name: 'InvalidStateError'},
+                              function() {
+                                  sourceBuffer.abort();
+                              },
+                              'SourceBuffer#abort() after removing the SourceBuffer object');
+            });
+            t.done();
+        }, false);
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'SourceBuffer#abort (' + mime + ') : ' +
+       'if this object has been removed from the sourceBuffers attribute of the parent media source, ' +
+       'then throw an INVALID_STATE_ERR exception and abort these steps.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

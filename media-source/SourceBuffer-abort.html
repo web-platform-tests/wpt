@@ -14,7 +14,7 @@
 
 <script>
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
 //check the browser supports the MIME used in this test
 function canPlayType(mime) {
@@ -27,23 +27,27 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
-        var sourceBuffer = mediaSource.addSourceBuffer(mime);
-        sourceBuffer.abort();
-        t.step(function() {
-            assert_equals(sourceBuffer.appendWindowStart, 0);
-            assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY);
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            var sourceBuffer = mediaSource.addSourceBuffer(mime);
+            sourceBuffer.abort();
+            t.step(function() {
+                assert_equals(sourceBuffer.appendWindowStart, 0);
+                assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY);
+            });
+            t.done();
         });
-        t.done();
-    });
-    video.src = window.URL.createObjectURL(mediaSource);
-}, 'SourceBuffer#abort() : Check the values of appendWindowStart and appendWindowEnd.');
-
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'SourceBuffer#abort() (' + mime + '): Check the values of appendWindowStart and appendWindowEnd.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

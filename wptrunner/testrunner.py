@@ -24,12 +24,15 @@ class MessageLogger(object):
     def __init__(self, message_func):
         self.send_message = message_func
 
-    def _log_data(self, level, message):
-        self.send_message("log", level, message)
+    def _log_data(self, action, **kwargs):
+        self.send_message("log", action, kwargs)
+
+    def process_output(self, process, data, command):
+        self._log_data("process_output", process=process, data=data, command=command)
 
 def _log_func(level_name):
     def log(self, message):
-        self._log_data(level_name.lower(), message)
+        self._log_data(level_name.lower(), message=message)
     log.__doc__ = """Log a message with level %s
 
 :param message: The string message to log
@@ -479,8 +482,8 @@ class TestRunnerManager(threading.Thread):
         self.stop_runner()
         self.init()
 
-    def log(self, level, message):
-        getattr(self.logger, level)(message)
+    def log(self, action, kwargs):
+        getattr(self.logger, action)(**kwargs)
 
     def error(self, message):
         self.logger.error(message)

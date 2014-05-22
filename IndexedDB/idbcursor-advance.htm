@@ -65,6 +65,43 @@
             rq.onerror = fail(this, "unexpected error")
         });
 
+        async_test(document.title + " - advances backwards").step(function(e) {
+            var count = 0;
+            var rq = db.transaction("test").objectStore("test").index("index").openCursor(null, "prev");
+
+            rq.onsuccess = this.step_func(function(e) {
+                if (!e.target.result) {
+                    assert_equals(count, 3, "count");
+                    this.done();
+                    return;
+                }
+                var cursor = e.target.result;
+
+                switch(count) {
+                    case 0:
+                        assert_equals(cursor.value, "taco");
+                        assert_equals(cursor.primaryKey, 2);
+                        break;
+
+                    case 1:
+                        assert_equals(cursor.value, "pie");
+                        assert_equals(cursor.primaryKey, 1);
+                        break;
+
+                    case 2:
+                        assert_equals(cursor.value, "cupcake");
+                        assert_equals(cursor.primaryKey, 5);
+                        break;
+
+                    default:
+                        assert_unreached("Unexpected count: " + count);
+                }
+
+                count++;
+                cursor.advance(2);
+            });
+            rq.onerror = fail(this, "unexpected error")
+        });
 
         async_test(document.title + " - skip far forward").step(function(e) {
             var count = 0;

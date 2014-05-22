@@ -5,6 +5,7 @@
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <meta name="viewport" content="width=device-width">
         <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <script src="pointerevent_support.js"></script>
     </head>
     <body onload="run()">
@@ -19,33 +20,33 @@
         <p>
         <div id="target0" style="background:black; color:white;"></div>
         <script>
-            var eventTested = false;
             var detected_pointertypes = {};
-            
+
             var captureGot = false;
-            
+
             setup({ explicit_done: true });
             add_completion_callback(showPointerTypes);
-            
+
             function run() {
                 var target0 = document.getElementById("target0");
-            
+
                 on_event(target0, "pointerover", function (event) {
-            		detected_pointertypes[event.pointerType] = true;
-            		target0.setPointerCapture(event.pointerId);
+                    detected_pointertypes[event.pointerType] = true;
+                    target0.setPointerCapture(event.pointerId);
                 });
-            	
-            	// When the setPointerCapture method is invoked, if the specified pointer is not in active button state, then the method must have no effect on subsequent pointer events. 
-            	// TA: 13.2
+
+                 // When the setPointerCapture method is invoked, if the specified pointer is not in active button state, then the method must have no effect on subsequent pointer events.
+                 // TA: 13.2
                 on_event(target0, "pointerout", function (event) {
-            		test(function() {
-            				assert_true(captureGot == false, "pointer capture is not set while button state is inactive")
-            			}, "pointer capture is not set while button state is inactive");
+                    test(function() {
+                        assert_false(captureGot, "pointer capture is not set while button state is inactive")
+                    }, "pointer capture is not set while button state is inactive");
+                    done();
                 });
-            
-            	on_event(target0, 'gotpointercapture', function(e) {
-            		captureGot = true;
-            	});
+
+                on_event(target0, 'gotpointercapture', function(e) {
+                    captureGot = true;
+                });
             }
         </script>
         <h1>Pointer Events setPointerCapture Tests</h1>

@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <script src="pointerevent_support.js"></script>
         <style>
             .scroller > div {
@@ -12,7 +13,7 @@
             }
             .scroller > div div {
             touch-action: pan-x;
-            }		
+            }
         </style>
     </head>
     <body onload="run()">
@@ -23,9 +24,9 @@
             <div>
                 <div>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem 
-                        nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat. 
-                        Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit 
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem
+                        nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat.
+                        Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit
                         lobortis nisl ut aliquip ex ea commodo consequat.
                     </p>
                     <p>Lorem ipsum dolor sit amet...</p>
@@ -36,9 +37,9 @@
                     <p>Lorem ipsum dolor sit amet...</p>
                     <p>Lorem ipsum dolor sit amet...</p>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem 
-                        nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat. 
-                        Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit 
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem
+                        nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat.
+                        Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit
                         lobortis nisl ut aliquip ex ea commodo consequat.
                     </p>
                     <p>Lorem ipsum dolor sit amet...</p>
@@ -49,9 +50,9 @@
                     <p>Lorem ipsum dolor sit amet...</p>
                     <p>Lorem ipsum dolor sit amet...</p>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem 
-                        nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat. 
-                        Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit 
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem
+                        nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat.
+                        Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit
                         lobortis nisl ut aliquip ex ea commodo consequat.
                     </p>
                     <p>Lorem ipsum dolor sit amet...</p>
@@ -62,9 +63,9 @@
                     <p>Lorem ipsum dolor sit amet...</p>
                     <p>Lorem ipsum dolor sit amet...</p>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem 
-                        nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat. 
-                        Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit 
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diem
+                        nonummy nibh euismod tincidunt ut lacreet dolore magna aliguam erat volutpat.
+                        Ut wisis enim ad minim veniam, quis nostrud exerci tution ullamcorper suscipit
                         lobortis nisl ut aliquip ex ea commodo consequat.
                     </p>
                     <p>Lorem ipsum dolor sit amet...</p>
@@ -79,55 +80,63 @@
         </div>
         <script type='text/javascript'>
             var detected_pointertypes = {};
-            
+
             var xCount = 0;
             var moveCount = 0;
-            var countToPass = 50;
+            var countToPass = 100;
+            var moveDelta = 10;
             var xScr0, yScr0, xScr1, yScr1;
-            
-            setup({ explicit_done: true });
+            var yMoveReceived = false;
+            // these variables are necessary to use checkDirection() function below
+            var previousPointerX, previousPointerY, currentPointerX, currentPointerY;
+
             add_completion_callback(showPointerTypes);
-            
+
             function run() {
-            	var target0 = document.getElementById("target0");
-            	
-            	var test_touchaction = async_test("touch-action attribute test");
-            	
-            	xScr0 = target0.scrollLeft;
-            	yScr0 = target0.scrollTop;
-            	
-            	on_event(target0, 'pointerdown', function(event) {
-            		detected_pointertypes[event.pointerType] = true;
-            	});
-            	
-            	on_event(target0, 'pointermove', function(event) {
-            		moveCount++;
-            		if(moveCount >= countToPass) {
-            			updateDescriptionNextStep();
-            		}
-            	});
-            	
-            	// Check if touch-action attribute works properly for embedded divs
-            	// 
-            	// TA: 15.
-            	on_event(target0, 'scroll', function(event) {
-            		xScr1 = target0.scrollLeft;
-            		yScr1 = target0.scrollTop;
-            		
-            		if(xScr1 != xScr0) {
-            			xCount++;
-            			xScr0 = xScr1;
-            		}
-            		
-            		if(yScr1 != yScr0) {
-            			test_touchaction.step(failOnScroll, "y-scroll received while pan-x is set");
-            		}
-            			
-            		if(xCount >= countToPass) {
-            			test_touchaction.done();
-            			updateDescriptionComplete();
-            		}
-            	});
+                var target0 = document.getElementById("target0");
+
+                var test_touchaction = async_test("touch-action attribute test");
+
+                xScr0 = target0.scrollLeft;
+                yScr0 = target0.scrollTop;
+
+                on_event(target0, 'pointerdown', function(event) {
+                    detected_pointertypes[event.pointerType] = true;
+                    previousPointerX = event.clientX;
+                    previousPointerY = event.clientY;
+                });
+
+                on_event(target0, 'pointermove', function(event) {
+                    checkDirection(test_touchaction, true, moveCount, countToPass, moveDelta);
+
+                    moveCount++;
+                    if(moveCount >= countToPass) {
+                        updateDescriptionNextStep();
+                        yMoveReceived = true;
+                    }
+                });
+
+                // Check if touch-action attribute works properly for embedded divs
+                //
+                // TA: 15.
+                on_event(target0, 'scroll', function(event) {
+                    xScr1 = target0.scrollLeft;
+                    yScr1 = target0.scrollTop;
+
+                    if(xScr1 != xScr0) {
+                        xCount++;
+                        xScr0 = xScr1;
+                    }
+
+                    if(yScr1 != yScr0) {
+                        test_touchaction.step(failOnScroll, "y-scroll received while pan-x is set");
+                    }
+
+                    if(xCount >= countToPass && yMoveReceived) {
+                        test_touchaction.done();
+                        updateDescriptionComplete();
+                    }
+                });
             }
         </script>
         <h1>behaviour: pan-x</h1>

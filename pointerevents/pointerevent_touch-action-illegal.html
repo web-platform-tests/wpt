@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <script src="pointerevent_support.js"></script>
         <style>
             #target0 {
@@ -15,15 +16,13 @@
             #target1 {
             width: 700px;
             height: 50px;
-            touch-action: none;
             background: black;
             margin-top: 5px;
             touch-action: pan-y none;
-            }	
+            }
             #target2 {
             width: 700px;
             height: 50px;
-            touch-action: none;
             background: black;
             margin-top: 5px;
             touch-action: auto none;
@@ -38,25 +37,25 @@
         <div id="target2"></div>
         <script type='text/javascript'>
             var detected_pointertypes = {};
-            
+
             setup({ explicit_done: true });
             add_completion_callback(showPointerTypes);
-            
+
             function run() {
-            	var target0 = document.getElementById('target0');
-            	var target1 = document.getElementById('target1');
-            	var target2 = document.getElementById('target2');
-            	
-            	test(function() {
-            			assert_true(getComputedStyle(target0).touchAction == 'auto', "'pan-x none' is corrected properly");
-            		}, "'pan-x none' is corrected properly");
-            	test(function() {
-            			assert_true(getComputedStyle(target1).touchAction == 'auto', "'pan-y none' is corrected properly");
-            		}, "'pan-y none' is corrected properly");
-            	test(function() {
-            		assert_true(getComputedStyle(target2).touchAction == 'auto', "'auto none' is corrected properly");
-            		}, "'auto none' is corrected properly");
-            	done();
+                var target0 = document.getElementById('target0');
+                var target1 = document.getElementById('target1');
+                var target2 = document.getElementById('target2');
+
+                test(function() {
+                    assert_true(getComputedStyle(target0).touchAction == 'auto', "'pan-x none' is corrected properly");
+                }, "'pan-x none' is corrected properly");
+                test(function() {
+                    assert_true(getComputedStyle(target1).touchAction == 'auto', "'pan-y none' is corrected properly");
+                }, "'pan-y none' is corrected properly");
+                test(function() {
+                    assert_true(getComputedStyle(target2).touchAction == 'auto', "'auto none' is corrected properly");
+                }, "'auto none' is corrected properly");
+                done();
             }
         </script>
         <h1>touch-action: none</h1>

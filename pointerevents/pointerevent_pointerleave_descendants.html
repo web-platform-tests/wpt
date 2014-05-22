@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <script src="pointerevent_support.js"></script>
     </head>
     <body onload="run()">
@@ -20,28 +21,27 @@
         <script>
             var eventTested = false;
             var detected_pointertypes = {};
-            
-            setup({ explicit_done: true });
+
             add_completion_callback(showPointerTypes);
-            
+
             function run() {
                 var target0 = document.getElementById("target0");
                 var test_pointerleave = async_test("pointerleave event received");
-            
-            	on_event(target0, "pointerover", function(event) {
-            		detected_pointertypes[ event.pointerType ] = true;
-            	});
-            
-            	// When a pointing device is moved off of the hit test boundaries of an element and all of its descendants, the pointerleave event must be dispatched. 
-            	// TA: 9.1
-            	on_event(target0, "pointerleave", function (event) {
-            	    if (eventTested == false) {
-            	        detected_pointertypes[event.pointerType] = true;
-            
-            	        test_pointerleave.done();
-            	        eventTested = true;
-            	    }
-            	});
+
+                on_event(target0, "pointerover", function(event) {
+                    detected_pointertypes[ event.pointerType ] = true;
+                });
+
+                // When a pointing device is moved off of the hit test boundaries of an element and all of its descendants, the pointerleave event must be dispatched.
+                // TA: 9.1
+                on_event(target0, "pointerleave", function (event) {
+                    if (eventTested == false) {
+                        detected_pointertypes[event.pointerType] = true;
+
+                        test_pointerleave.done();
+                        eventTested = true;
+                    }
+                });
             }
         </script>
         <h1>Pointer Events pointerleave tests</h1>

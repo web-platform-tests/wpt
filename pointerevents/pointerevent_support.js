@@ -97,16 +97,16 @@ function check_PointerEvent(event) {
 }
 
 function showPointerTypes() {
-	var complete_notice = document.getElementById("complete-notice");
-	var pointertype_log = document.getElementById("pointertype-log");
-	var pointertypes = Object.keys(detected_pointertypes);
-	pointertype_log.innerHTML = pointertypes.length ?
-		pointertypes.join(",") : "(none)";
-	complete_notice.style.display = "block";
+    var complete_notice = document.getElementById("complete-notice");
+    var pointertype_log = document.getElementById("pointertype-log");
+    var pointertypes = Object.keys(detected_pointertypes);
+    pointertype_log.innerHTML = pointertypes.length ?
+    pointertypes.join(",") : "(none)";
+    complete_notice.style.display = "block";
 }
 
 function log(msg, el) {
-    if (++count > 10){
+    if (++count > 16){
       count = 0;
       el.innerHTML = ' ';
     }
@@ -114,32 +114,53 @@ function log(msg, el) {
 }
 
  function failOnScroll() {
-	assert_true(false,
-	"scroll received while shouldn't");
+    assert_true(false,
+    "scroll received while shouldn't");
 }
 
 function updateDescriptionNextStep() {
-	document.getElementById('desc').innerHTML = "Test Description: Try to scroll text RIGHT.";
+    document.getElementById('desc').innerHTML = "Test Description: Try to scroll text RIGHT.";
 }
 
 function updateDescriptionComplete() {
-	document.getElementById('desc').innerHTML = "Test Description: Test complete";
+    document.getElementById('desc').innerHTML = "Test Description: Test complete";
 }
 
 function sPointerCapture(e) {
-	try {
-		target0.setPointerCapture(e.pointerId);
-	}
-	catch(e) {
-	}
+    try {
+        isPointerCapture = true;
+        target0.setPointerCapture(e.pointerId);
+    }
+    catch(e) {
+    }
 }
 
 function rPointerCapture(e) {
-	try {
-		captureButton.value = 'Set Capture';
-		isPointerCapture = false;
-		target0.releasePointerCapture(e.pointerId);
-	}
-	catch(e) {
-	}
+    try {
+        isPointerCapture = false;
+        target0.releasePointerCapture(e.pointerId);
+    }
+    catch(e) {
+    }
+}
+
+// declare the follwoing variables to use this function: previousPointerX, previousPointerY, currentPointerX, currentPointerY;
+// init previousPointerX, previousPointerY before calling of the function; in "pointerdown" event handler for example
+function checkDirection(testToStep, isVertical, currentMoveCount, moveCountToPass, delta) {
+    if(!isVertical) {
+        if(currentMoveCount > moveCountToPass / 2) { // avoid immediate triggering while vertical scroll is still performed
+                testToStep.step( function() {
+                currentPointerY = event.clientY;
+                assert_approx_equals(previousPointerY, currentPointerY, delta, "scroll move was along horisontal line: ");
+                previousPointerY = currentPointerY;
+            });
+        }
+    }
+    else {
+        testToStep.step( function() {
+            currentPointerX = event.clientX;
+            assert_approx_equals(previousPointerX, currentPointerX, delta, "scroll move was along vertical line: ");
+            previousPointerX = currentPointerX;
+        });
+    }
 }

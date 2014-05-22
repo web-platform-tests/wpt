@@ -13,9 +13,9 @@
 <div id="log"></div>
 
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var contents  = {'/media/white.webm' : 'video/webm; codecs="vorbis,vp8"',
+                 '/media/white.mp4'  : 'video/mp4'};
 
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
@@ -41,46 +41,52 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    GET(FILE, function(data) {
-        var mediaSource = new MediaSource();
-        var num_sourceopen = 0;
-        var events = [];
-        mediaSource.addEventListener('sourceopen', function(e) {
-            events.push('sourceopen');
-            num_sourceopen++;
-            if(num_sourceopen > 1) {
-                t.step(function() {
-                    assert_array_equals(events,
-                                        ['sourceopen','updateend',
-                                         'sourceended','sourceopen']);
+function test(file, mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            console.log(file + ' ' + mime);
+            var mediaSource = new MediaSource();
+            var num_sourceopen = 0;
+            var events = [];
+            mediaSource.addEventListener('sourceopen', function(e) {
+                events.push('sourceopen');
+                num_sourceopen++;
+                if(num_sourceopen > 1) {
+                    t.step(function() {
+                        assert_array_equals(events,
+                                            ['sourceopen','updateend',
+                                             'sourceended','sourceopen']);
+                    });
+                    t.done();
+                    return;
+                }
+                this.sourceBuffer = mediaSource.addSourceBuffer(mime);
+                this.sourceBuffer.addEventListener('updateend', function(e) {
+                    events.push('updateend');
+                    mediaSource.endOfStream();
                 });
-                t.done();
-                return;
-            }
-            this.sourceBuffer = mediaSource.addSourceBuffer(mime);
-            this.sourceBuffer.addEventListener('updateend', function(e) {
-                events.push('updateend');
-                mediaSource.endOfStream();
+                this.sourceBuffer.appendBuffer(data);
             });
-            this.sourceBuffer.appendBuffer(data);
-        });
-        mediaSource.addEventListener('sourceended', function(e) {
-            events.push('sourceended');
-            this.sourceBuffer.timestampOffset = 1;
-            t.step(function() {
-                assert_equals(mediaSource.readyState, 'open');
+            mediaSource.addEventListener('sourceended', function(e) {
+                events.push('sourceended');
+                this.sourceBuffer.timestampOffset = 1;
+                t.step(function() {
+                    assert_equals(mediaSource.readyState, 'open');
+                });
             });
+            video.src = window.URL.createObjectURL(mediaSource);
         });
-        video.src = window.URL.createObjectURL(mediaSource);
-    });
-},
-'Setting SourceBuffer#timestampOffset : If the readyState attribute of the parent media source is in the "ended" state then run the following steps:' +
-'1. Set the readyState attribute of the parent media source to "open".' +
-'2. Queue a task to fire a simple event named sourceopen at the parent media source.');
+    }, 'Setting SourceBuffer#timestampOffset ('+ mime + '): ' +
+       'If the readyState attribute of the parent media source is in the "ended" state then run the following steps:' +
+       '1. Set the readyState attribute of the parent media source to "open".' +
+       '2. Queue a task to fire a simple event named sourceopen at the parent media source.');
+}
+for(var file in contents) {
+    test(file, contents[file]);
+}
 </script>
 </body>
 </html>

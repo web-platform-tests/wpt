@@ -13,9 +13,9 @@
 <div id="log"></div>
 
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var contents  = {'/media/white.webm' : 'video/webm; codecs="vorbis,vp8"',
+                 '/media/white.mp4'  : 'video/mp4'};
 
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
@@ -41,29 +41,34 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    GET(FILE, function(data) {
-        var mediaSource = new MediaSource();
-        mediaSource.addEventListener('sourceopen', function(e) {
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            sourceBuffer.addEventListener('updatestart', function(e) {
-                t.step(function() {
-                    assert_throws({name: 'InvalidStateError'},
-                                  function() {
-                                      sourceBuffer.timestampOffset = 1;
-                                  });
+function test(file, mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            mediaSource.addEventListener('sourceopen', function(e) {
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                sourceBuffer.addEventListener('updatestart', function(e) {
+                    t.step(function() {
+                        assert_throws({name: 'InvalidStateError'},
+                                      function() {
+                                          sourceBuffer.timestampOffset = 1;
+                                      });
+                    });
+                    t.done();
                 });
-                t.done();
+                sourceBuffer.appendBuffer(data);
             });
-            sourceBuffer.appendBuffer(data);
+            video.src = window.URL.createObjectURL(mediaSource);
         });
-        video.src = window.URL.createObjectURL(mediaSource);
-    });
-},
-'Setting SourceBuffer#timestampOffset : If the updating attribute equals true, INVALID_STATE_ERR exception should be thrown.');
+    }, 'Setting SourceBuffer#timestampOffset (' + mime + '): ' +
+       'If the updating attribute equals true, INVALID_STATE_ERR exception should be thrown.');
+}
+for(var file in contents) {
+    test(file, contents[file]);
+}
 </script>
 </body>
 </html>

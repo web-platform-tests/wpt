@@ -22,7 +22,8 @@ def browser_kwargs(product, binary, prefs_root, **kwargs):
     return {"binary": binary}
 
 def env_options():
-    return {"host": "localhost"}
+    return {"host": "localhost",
+            "bind_hostname": "true"}
 
 class ServoBrowser(NullBrowser):
     def __init__(self, logger, binary):

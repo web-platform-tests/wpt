@@ -27,7 +27,8 @@ def browser_kwargs(product, binary, prefs_root, **kwargs):
             "no_backup": kwargs.get("b2g_no_backup", False)}
 
 def env_options():
-    return {"host": moznetwork.get_ip()}
+    return {"host": "web-platform.test",
+            "bind_hostname": "false"}
 
 class B2GBrowser(Browser):
     used_ports = set()
@@ -49,6 +50,7 @@ class B2GBrowser(Browser):
         self.backup_dirs = []
 
     def setup(self):
+        self.logger.info("Running B2G setup")
         self.backup_path = tempfile.mkdtemp()
 
         self.logger.debug(self.backup_path)
@@ -86,12 +88,16 @@ class B2GBrowser(Browser):
 
         temp_dir = tempfile.mkdtemp()
         hosts_path = os.path.join(temp_dir, "hosts")
+        remote_path = "/system/etc/hosts"
         try:
             self.device.getFile("/etc/hosts", hosts_path)
 
             with open(hosts_path, "a+") as f:
                 hosts_present = set()
                 for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
                     ip, host = line.split()
                     hosts_present.add(host)
 
@@ -105,7 +111,11 @@ class B2GBrowser(Browser):
                 for host in hosts:
                     f.write("%s%s%s\n" % (host_ip, " " * (28 - len(host_ip)), host))
 
-            self.device.pushFile(hosts_path, "/etc/hosts")
+            self.logger.info("Installing hosts file")
+
+            self.device.remount()
+            self.device.removeFile(remote_path)
+            self.device.pushFile(hosts_path, remote_path)
         finally:
             os.unlink(hosts_path)
             os.rmdir(temp_dir)
@@ -145,8 +155,6 @@ class B2GBrowser(Browser):
 
     def cleanup(self):
         self.logger.debug("Running browser cleanup steps")
-        if self.runner is not None:
-            self.runner.cleanup()
 
         for remote, local in self.backup_dirs:
             self.device.removeDir(remote)

@@ -34,7 +34,8 @@ def executor_kwargs(http_server_url, timeout_multiplier):
             "capabilities": webdriver.DesiredCapabilities.CHROME}
 
 def env_options():
-    return {"host": "localhost"}
+    return {"host": "localhost",
+            "bind_hostname": "true"}
 
 class ChromeBrowser(Browser):
     used_ports = set()

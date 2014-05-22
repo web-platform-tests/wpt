@@ -28,7 +28,8 @@ def browser_kwargs(product, binary, prefs_root, **kwargs):
             "prefs_root": prefs_root}
 
 def env_options():
-    return {"host": "localhost"}
+    return {"host": "localhost",
+            "bind_hostname": "true"}
 
 class FirefoxBrowser(Browser):
     used_ports = set()

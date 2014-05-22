@@ -83,7 +83,11 @@ class MarionetteTestExecutor(TestExecutor):
 
     def after_connect(self):
         self.logger.debug(urlparse.urljoin(self.http_server_url, "/testharness_runner.html"))
-        self.marionette.navigate(urlparse.urljoin(self.http_server_url, "/testharness_runner.html"))
+        try:
+            self.marionette.navigate(urlparse.urljoin(self.http_server_url, "/testharness_runner.html"))
+        except:
+            self.logger.critical("Loading initial page %s failed. Ensure that the there are no other programs bound to this port and that your firewall rules or network setup does not prevent access.")
+            raise
         self.marionette.execute_script("document.title = '%s'" % threading.current_thread().name)
 
     def run_test(self, test):

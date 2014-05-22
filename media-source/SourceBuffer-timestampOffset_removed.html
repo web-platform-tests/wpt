@@ -49,18 +49,15 @@ async_test(function(t) {
         var mediaSource = new MediaSource();
         mediaSource.addEventListener('sourceopen', function(e){
             var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            sourceBuffer.addEventListener('updateend', function(e) {
-                mediaSource.removeSourceBuffer(sourceBuffer);
-                t.step(function() {
-                    assert_throws({name: 'InvalidStateError'},
-                                  function() {
-                                      sourceBuffer.timestampOffset = 1;
-                                  },
-                                  'Check for setting timestampOffset of removed sourceBuffer object.');
-                });
-                t.done();
+            mediaSource.removeSourceBuffer(sourceBuffer);
+            t.step(function() {
+                assert_throws({name: 'InvalidStateError'},
+                              function() {
+                                  sourceBuffer.timestampOffset = 1;
+                              },
+                              'Check for setting timestampOffset of removed sourceBuffer object.');
             });
-            sourceBuffer.appendBuffer(data);
+            t.done();
         });
         video.src = window.URL.createObjectURL(mediaSource);
     });

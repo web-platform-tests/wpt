@@ -32,7 +32,7 @@ async_test(function(t) {
         return;
     }
     var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
+    mediaSource.addEventListener('sourceopen', function(e) {
         var sourceBuffer = mediaSource.addSourceBuffer(mime);
         t.step(function() {
             assert_equals(sourceBuffer.timestampOffset, 0);

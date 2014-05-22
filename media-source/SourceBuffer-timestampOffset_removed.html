@@ -47,7 +47,7 @@ async_test(function(t) {
     }
     GET(FILE, function(data) {
         var mediaSource = new MediaSource();
-        mediaSource.addEventListener('sourceopen', function(e){
+        mediaSource.addEventListener('sourceopen', function(e) {
             var sourceBuffer = mediaSource.addSourceBuffer(mime);
             mediaSource.removeSourceBuffer(sourceBuffer);
             t.step(function() {

@@ -49,7 +49,7 @@ async_test(function(t) {
         var mediaSource = new MediaSource();
         var num_sourceopen = 0;
         var events = [];
-        mediaSource.addEventListener('sourceopen', function(e){
+        mediaSource.addEventListener('sourceopen', function(e) {
             events.push('sourceopen');
             num_sourceopen++;
             if(num_sourceopen > 1) {
@@ -68,7 +68,7 @@ async_test(function(t) {
             });
             this.sourceBuffer.appendBuffer(data);
         });
-        mediaSource.addEventListener('sourceended', function(e){
+        mediaSource.addEventListener('sourceended', function(e) {
             events.push('sourceended');
             this.sourceBuffer.timestampOffset = 1;
             t.step(function() {

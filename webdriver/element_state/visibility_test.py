@@ -54,10 +54,7 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
 
         self.driver.get(self.webserver.where_is("element_state/res/absolute-children-ancestor-hidden-overflow.html"))
 
-        ancestor = self.driver.find_element_by_css("body")
-        assert not ancestor.is_displayed()
-
-        children = self.driver.find_elements_by_class(".child")
+        children = self.driver.find_elements_by_css(".child")
         assert all(child.is_displayed() for child in children)
 
         parent = self.driver.find_element_by_id("parent")
@@ -176,6 +173,25 @@ class NaturalNonVisibleElementsTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("element_state/res/element-with-same-color-as-parent-background.html"))
         hidden = self.driver.find_element_by_id("hidden")
         self.assertFalse(hidden.is_displayed())
+
+
+class BodyElementIsAlwaysDisplayedTest(base_test.WebDriverBaseTest):
+    def assert_body_is_displayed_on(self, page):
+        self.driver.get(self.webserver.where_is(page))
+        body = self.driver.find_element_by_css("body")
+        assert body.is_displayed()
+
+    def test_implicit(self):
+        self.assert_body_is_displayed_on("element_state/res/body_implicit.html")
+
+    def test_empty(self):
+        self.assert_body_is_displayed_on("element_state/res/body_empty.html")
+
+    def test_visibility_hidden(self):
+        self.assert_body_is_displayed_on("element_state/res/body_visibility_hidden.html")
+
+    def test_overflow_hidden(self):
+        self.assert_body_is_displayed_on("element_state/res/body_overflow_hidden.html")
 
 
 class DisplayTest(base_test.WebDriverBaseTest):

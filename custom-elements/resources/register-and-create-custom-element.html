@@ -7,7 +7,7 @@
 </head>
 <body>
     <div id="log"></div>
-    <script type="text/javascript">
+    <script>
         var proto = Object.create(HTMLElement.prototype);
         proto.createdCallback = function() {
             document.querySelector('#log').innerText = 'Created callback was called';

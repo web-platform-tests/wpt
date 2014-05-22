@@ -24,6 +24,8 @@ partial interface Window {
   long requestAnimationFrame(FrameRequestCallback callback);
   void cancelAnimationFrame(long handle);
 };
+
+callback FrameRequestCallback = void (DOMHighResTimeStamp time);
 </pre>
 
 <script>

@@ -14,7 +14,7 @@
 
 <script>
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
 //check the browser supports the MIME used in this test
 function canPlayType(mime) {
@@ -27,23 +27,28 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
-        var sourceBuffer = mediaSource.addSourceBuffer(mime);
-        t.step(function() {
-            assert_equals(sourceBuffer.mode, 'segments');
-            sourceBuffer.mode = 'sequence';
-            assert_equals(sourceBuffer.mode, 'sequence');
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            var sourceBuffer = mediaSource.addSourceBuffer(mime);
+            t.step(function() {
+                assert_equals(sourceBuffer.mode, 'segments');
+                sourceBuffer.mode = 'sequence';
+                assert_equals(sourceBuffer.mode, 'sequence');
+            });
+            t.done();
         });
-        t.done();
-    });
-    video.src = window.URL.createObjectURL(mediaSource);
-},
-'Getting SourceBuffer#mode attribute : Should return the initial value or the last value that was successfully set.');
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'Getting SourceBuffer#mode attribute (' + mime + '): ' +
+       'Should return the initial value or the last value that was successfully set.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

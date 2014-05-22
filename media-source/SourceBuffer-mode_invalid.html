@@ -14,7 +14,7 @@
 
 <script>
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
 //check the browser supports the MIME used in this test
 function canPlayType(mime) {
@@ -27,25 +27,30 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
-        var sourceBuffer = mediaSource.addSourceBuffer(mime);
-        t.step(function() {
-            assert_throws({name: 'InvalidAccessError'},
-                         function() {
-                             sourceBuffer.mode = 'INVALID-MODE';
-                         },
-                         'Checks for setting invalid mode');
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            var sourceBuffer = mediaSource.addSourceBuffer(mime);
+            t.step(function() {
+                assert_throws({name: 'InvalidAccessError'},
+                              function() {
+                                  sourceBuffer.mode = 'INVALID-MODE';
+                              },
+                              'Checks for setting invalid mode');
+            });
+            t.done();
         });
-        t.done();
-    });
-    video.src = window.URL.createObjectURL(mediaSource);
-},
-'Setting SourceBuffer#mode attribute : If new mode does not equal "segments" or "sequence", INVALID_ACCESS_ERR exception should be thrown.');
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'Setting SourceBuffer#mode (' + mime + ') : ' +
+       'If new mode does not equal "segments" or "sequence", INVALID_ACCESS_ERR exception should be thrown.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

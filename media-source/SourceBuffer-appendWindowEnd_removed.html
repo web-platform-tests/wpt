@@ -13,41 +13,44 @@
 <div id="log"></div>
 
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
-function GET(url, processBody) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'arraybuffer';
-    xhr.send();
-    xhr.onload = function(e) {
-        if (xhr.status != 200) {
-            alert("Unexpected status code " + xhr.status + " for " + url);
-            return false;
-        }
-        processBody(new Uint8Array(xhr.response));
-    };
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
 }
 async_test(function(t) {
-    GET(FILE, function(data) {
+    function test(mime, done) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
         var mediaSource = new MediaSource();
         mediaSource.addEventListener('sourceopen', function(e) {
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            sourceBuffer.addEventListener('updateend', function(e) {
-                mediaSource.removeSourceBuffer(sourceBuffer);
-                t.step(function() {
-                    assert_throws({name: 'InvalidStateError'},
-                                  function() {
-                                      sourceBuffer.appendWindowEnd = 1;
-                                  });
-                });
-                t.done();
+            var sourceBuffer = this.addSourceBuffer(mime);
+            this.removeSourceBuffer(sourceBuffer);
+            t.step(function() {
+                assert_throws({name: 'InvalidStateError'},
+                              function() {
+                                  sourceBuffer.appendWindowEnd = 1;
+                              });
             });
-            sourceBuffer.appendBuffer(data);
+            if(done) {
+                t.done();
+            }
         });
         video.src = window.URL.createObjectURL(mediaSource);
+    }
+    //execute this test for videos and corresponding MIME types
+    mimes.forEach(function(mime, i) {
+        test(mimes[i], i == mimes.length - 1);
     });
 },
 'SourceBuffer#appendWindowEnd : After this object is removed from the' +

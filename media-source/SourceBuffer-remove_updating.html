@@ -13,10 +13,21 @@
 <div id="log"></div>
 
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var contents = {'/media/white.webm' : 'video/webm; codecs="vorbis,vp8"',
+                '/media/white.mp4'  : 'video/mp4'};
 
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -30,29 +41,35 @@ function GET(url, processBody) {
         processBody(new Uint8Array(xhr.response));
     };
 }
-async_test(function(t) {
-    GET(FILE, function(data) {
-        var mediaSource = new MediaSource();
-        var num_sourceopen = 0;
-        var events = [];
-        mediaSource.addEventListener('sourceopen', function(e){
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            sourceBuffer.addEventListener('updateend', function(e) {
-                t.step(function() {
-                    assert_equals(sourceBuffer.updating, false);
+function test(file, mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            var num_sourceopen = 0;
+            var events = [];
+            mediaSource.addEventListener('sourceopen', function(e) {
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                sourceBuffer.addEventListener('updateend', function(e) {
+                    t.step(function() {
+                        assert_equals(sourceBuffer.updating, false);
+                        sourceBuffer.remove(1,2);
+                        assert_equals(sourceBuffer.updating, true);
+                    });
+                    t.done();
                 });
-                this.remove(1,2);
-                t.step(function() {
-                    assert_equals(sourceBuffer.updating, true);
-                });
-                t.done();
+                sourceBuffer.appendBuffer(data);
             });
-            sourceBuffer.appendBuffer(data);
+            video.src = window.URL.createObjectURL(mediaSource);
         });
-        video.src = window.URL.createObjectURL(mediaSource);
-    });
-},
-'SourceBuffer#remove(start, end) : After removing the range of buffer, sourceBuffer.updating attribute should be changed to true');
+    }, 'SourceBuffer#remove(start, end) (' + mime + ') : ' +
+       'After removing the range of buffer, sourceBuffer.updating attribute should be changed to true');
+}
+for(var file in contents) {
+    test(file, contents[file]);
+}
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
-from mozmanifest.backends import static
-from mozmanifest.backends.static import ManifestItem
+from wptmanifest.backends import static
+from wptmanifest.backends.static import ManifestItem
 
 import expected
 

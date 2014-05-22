@@ -20,7 +20,7 @@ import expected
 from vcs import git
 import manifestupdate
 import expected
-import mozmanifest
+import wptmanifest
 manifest = None # Module that will be imported relative to test_root
 
 logger = structuredlog.StructuredLogger("web-platform-tests")
@@ -151,7 +151,7 @@ def write_new_expected(metadata_path, expected_map):
     #Serialize the data back to a file
     for tree in expected_map.itervalues():
         if not tree.is_empty:
-            manifest_str = mozmanifest.serialize(tree.node, skip_empty_data=True)
+            manifest_str = wptmanifest.serialize(tree.node, skip_empty_data=True)
             assert manifest_str != ""
             path = expected.expected_path(metadata_path, tree.test_path)
             dir = os.path.split(path)[0]

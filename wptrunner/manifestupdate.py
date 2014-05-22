@@ -1,11 +1,11 @@
 import os
 from collections import namedtuple, defaultdict
 
-from mozmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
+from wptmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
                               BinaryOperatorNode, VariableNode, StringNode, NumberNode,
                               UnaryExpressionNode, UnaryOperatorNode, KeyValueNode)
-from mozmanifest.backends import conditional
-from mozmanifest.backends.conditional import ManifestItem
+from wptmanifest.backends import conditional
+from wptmanifest.backends.conditional import ManifestItem
 
 import expected
 

@@ -1,6 +1,6 @@
-from mozmanifest.node import DataNode
-from mozmanifest.backends import conditional
-from mozmanifest.backends.conditional import ManifestItem
+from wptmanifest.node import DataNode
+from wptmanifest.backends import conditional
+from wptmanifest.backends.conditional import ManifestItem
 
 
 class IncludeManifest(ManifestItem):

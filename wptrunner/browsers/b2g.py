@@ -47,6 +47,7 @@ class B2GBrowser(Browser):
 
         self.no_backup = no_backup
         self.backup_path = None
+        self.backup_paths = []
         self.backup_dirs = []
 
     def setup(self):
@@ -57,12 +58,15 @@ class B2GBrowser(Browser):
 
         if not self.no_backup:
             self.backup_dirs = [("/data/local", os.path.join(self.backup_path, "local")),
-                                ("/data/b2g/mozilla", os.path.join(self.backup_path, "profile")),
-                                ("/system/etc", os.path.join(self.backup_path, "etc")),
-                            ]
+                                ("/data/b2g/mozilla", os.path.join(self.backup_path, "profile"))]
 
-        for remote, local in self.backup_dirs:
-            self.device.getDirectory(remote, local)
+            self.backup_paths = [("/system/etc/hosts", os.path.join(self.backup_path, "etc/hosts"))]
+
+            for remote, local in self.backup_dirs:
+                self.device.getDirectory(remote, local)
+
+            for remote, local in self.backup_paths:
+                self.device.getFile(remote, local)
 
         self.setup_hosts()
 
@@ -159,6 +163,11 @@ class B2GBrowser(Browser):
         for remote, local in self.backup_dirs:
             self.device.removeDir(remote)
             self.device.pushDir(local, remote)
+
+        for remote, local in self.backup_paths:
+            self.device.removeFile(remote)
+            self.device.pushFile(local, remote)
+
         shutil.rmtree(self.backup_path)
         self.device.reboot(wait=True)
 

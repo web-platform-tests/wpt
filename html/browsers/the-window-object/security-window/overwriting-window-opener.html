@@ -95,17 +95,18 @@
             return;
         }
         var data = JSON.parse(e.data);
-        var reading_throws = false, opener_is_this_window = false;
+        var reading_throws = false, opener_is_this_window = false, stringified_opener = '';
         try{
             var the_opener = win.opener;
             opener_is_this_window = the_opener === self;
+            stringified_opener = '' + win.opener;
         }catch(err){
             reading_throws = true;
         }
         win.close();
-        assert_equals(data.setting_throws, expectations[data.name].setting_throws, 'opener set to '+data.name+' - setting throws?');
-        assert_equals(data.setting_succeeds, expectations[data.name].setting_succeeds, 'opener set to '+data.name+' - setting succeeds?');
-        assert_equals(reading_throws, expectations[data.name].reading_throws, 'opener set to '+ data.name+' - reading throws? ');
+        assert_equals(data.setting_throws, expectations[data.name].setting_throws, 'opener set to '+data.name+' - setting should not throw');
+        assert_equals(data.setting_succeeds, expectations[data.name].setting_succeeds, 'opener set to '+data.name+' - setting should succeed');
+        assert_equals(reading_throws, expectations[data.name].reading_throws, 'opener set to '+ data.name+' - reading should throw ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
         assert_false(opener_is_this_window, 'Opener no longer refers to this window when it\'s been set');
         win = window.open(testURL + (parseInt(data.idx)+1));
     }), false);

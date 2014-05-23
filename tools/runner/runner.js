@@ -180,7 +180,11 @@ VisualOutput.prototype = {
         if (subtests_count) {
             subtests_node.textContent = subtest_pass_count + "/" + subtests_count;
         } else {
-            subtests_node.textContent = "1/1";
+            if (test_status == "PASS") {
+                subtests_node.textContent = "1/1";
+            } else {
+                subtests_node.textContent = "0/1";
+            }
         }
 
         var status_arr = ["PASS", "FAIL", "ERROR", "TIMEOUT"];

@@ -1,11 +1,5 @@
 (function(window) {
-    // Set the testharness.js timeout to 120 seconds so that it is higher than
-    // the LayoutTest timeout. This prevents testharness.js from prematurely
-    // terminating tests and allows the LayoutTest runner to control when to
-    // timeout the test.
-    // FIXME: Change this to use explicit_timeout instead once /resources/testharness.js
-    //        is updated to a more recent version.
-    setup({ timeout: 120000 });
+    setup({ timeout: 12000 });
 
     var SEGMENT_INFO_LIST = [
         {
@@ -234,7 +228,7 @@
 
     var audioOnlyTypes = ['audio/webm;codecs="vorbis"', 'audio/mp4;codecs="mp4a.40.2"'];
     var videoOnlyTypes = ['video/webm;codecs="vp8"', 'video/mp4;codecs="avc1.4D4001"'];
-    var audioVideoTypes = ['video/webm;codecs="vp8,vorbis"', 'video/mp4;codecs="mp4a.40.2"'];
+    var audioVideoTypes = ['video/webm;codecs="vp8,vorbis"', 'video/mp4;codecs="avc1.4D4001,mp4a.40.2"'];
     MediaSourceUtil.AUDIO_ONLY_TYPE = getFirstSupportedType(audioOnlyTypes);
     MediaSourceUtil.VIDEO_ONLY_TYPE = getFirstSupportedType(videoOnlyTypes);
     MediaSourceUtil.AUDIO_VIDEO_TYPE = getFirstSupportedType(audioVideoTypes);
@@ -260,9 +254,6 @@
 
         return mimetype.substr(start);
     };
-
-    // TODO: Add wrapper object to MediaSourceUtil that binds loaded mediaData to its
-    // associated segmentInfo.
 
     function addExtraTestMethods(test)
     {

@@ -4,7 +4,6 @@
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="mediasource-util.js"></script>
-        <link rel='stylesheet' href='/resources/testharness.css'>
     </head>
     <body>
         <div id="log"></div>
@@ -124,8 +123,8 @@
               sourceBuffer.appendBuffer(mediaData);
 
               assert_true(sourceBuffer.updating, "updating attribute is true");
+              assert_equals(mediaSource.activeSourceBuffers.length, 0, "activeSourceBuffers.length");
 
-              test.expectEvent(mediaSource.activeSourceBuffers, "removesourcebuffer", "activeSourceBuffers");
               test.expectEvent(mediaSource.sourceBuffers, "removesourcebuffer", "sourceBuffers");
               mediaSource.removeSourceBuffer(sourceBuffer);
 

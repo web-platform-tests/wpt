@@ -4,7 +4,6 @@
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="mediasource-util.js"></script>
-        <link rel="stylesheet" href="/resources/testharness.css">
     </head>
     <body>
         <div id="log"></div>
@@ -24,8 +23,6 @@
                 {
                     var bufferedRanges = mediaElement.buffered;
 
-                    // TODO: Add coverage by varying which of the two seek times have buffered data, including neither, and by
-                    // varying seek redundancy, like 1+1, 1+3+3+1, 3+1+1, 3+3+1, or large number of 1+3+1+3+...
                     assert_greater_than_equal(mediaElement.duration, 4.0, 'Duration is >= 4.0s');
                     assert_equals(bufferedRanges.length, 1, 'Just one buffered range');
                     assert_less_than_equal(bufferedRanges.start(0), 1.0, 'Buffered range starts <= 1.0s');

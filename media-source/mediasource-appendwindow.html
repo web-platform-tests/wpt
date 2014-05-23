@@ -4,7 +4,6 @@
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="mediasource-util.js"></script>
-        <link rel='stylesheet' href='/resources/testharness.css'>
     </head>
     <body>
         <div id="log"></div>
@@ -32,15 +31,15 @@
               assert_true(sourceBuffer != null, "New SourceBuffer returned");
               sourceBuffer.appendWindowEnd = 500.0;
 
-              assert_throws("TypeMismatchError",
+              assert_throws(new TypeError(),
                   function() { sourceBuffer.appendWindowStart = Number.NEGATIVE_INFINITY; },
                   "set appendWindowStart throws an exception for Number.NEGATIVE_INFINITY.");
 
-              assert_throws("TypeMismatchError",
+              assert_throws(new TypeError(),
                   function() { sourceBuffer.appendWindowStart = Number.POSITIVE_INFINITY; },
                   "set appendWindowStart throws an exception for Number.POSITIVE_INFINITY.");
 
-              assert_throws("TypeMismatchError",
+              assert_throws(new TypeError(),
                   function() { sourceBuffer.appendWindowStart = Number.NaN; },
                   "set appendWindowStart throws an exception for Number.NaN.");
 

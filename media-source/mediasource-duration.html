@@ -4,7 +4,6 @@
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="mediasource-util.js"></script>
-        <link rel='stylesheet' href='/resources/testharness.css'>
     </head>
     <body>
         <div id="log"></div>
@@ -46,7 +45,16 @@
                       assert_false(mediaElement.seeking, 'mediaElement.seeking after seeked to seekTo');
 
                       test.expectEvent(mediaElement, 'seeking', 'Seeking to truncated duration');
+
+                      assert_false(sourceBuffer.updating, 'sourceBuffer.updating');
+
                       mediaSource.duration = truncatedDuration;
+
+                      assert_true(sourceBuffer.updating, 'sourceBuffer.updating');
+                      test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
+                      test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
+                      test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
+
                       assert_true(mediaElement.seeking, 'Seeking after setting truncatedDuration');
                   });
 
@@ -59,8 +67,6 @@
                                     'mediaElement truncatedDuration during seek to it');
                       assert_equals(mediaSource.duration, truncatedDuration,
                                     'mediaSource truncatedDuration during seek to it');
-
-                      // FIXME: Confirm 'waiting' and then 'stalled' fire here. See http://crbug.com/266592.
 
                       testFunction(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData,
                                    truncatedDuration);
@@ -82,8 +88,6 @@
               // The duration has been truncated at this point, and there is an
               // outstanding seek pending.
               test.expectEvent(sourceBuffer, 'updateend', 'updateend after appending more data');
-
-              // FIXME: Confirm 'playing' fires here. See http://crbug.com/266592.
 
               test.expectEvent(mediaElement, 'timeupdate', 'timeupdate while finishing seek to truncatedDuration');
               test.expectEvent(mediaElement, 'seeked', 'seeked to truncatedDuration');
@@ -114,8 +118,6 @@
               // outstanding seek pending.
               test.expectEvent(mediaSource, 'sourceended', 'endOfStream acknowledged');
 
-              // FIXME: Investigate if 'playing' should fire here. See http://crbug.com/266592.
-
               test.expectEvent(mediaElement, 'timeupdate', 'timeupdate while finishing seek to truncatedDuration');
               test.expectEvent(mediaElement, 'seeked', 'seeked to truncatedDuration');
 
@@ -143,6 +145,15 @@
               var fullDuration = segmentInfo.duration;
               var newDuration = 0.5;
 
+              var expectedDurationChangeEventCount = 1;
+              var durationchangeEventCounter = 0;
+              var durationchangeEventHandler = test.step_func(function(event)
+              {
+                  assert_equals(mediaElement.duration, newDuration, 'mediaElement newDuration');
+                  assert_equals(mediaSource.duration, newDuration, 'mediaSource newDuration');
+                  durationchangeEventCounter++;
+              });
+
               mediaElement.play();
 
               // Append all the segments
@@ -156,21 +167,23 @@
                   assert_equals(mediaSource.duration, fullDuration, 'mediaSource fullDuration');
                   assert_less_than(mediaElement.currentTime, newDuration / 2, 'mediaElement currentTime');
 
-                  var durationchangeEventCounter = 0;
-                  var expectedDurationChangeEventCount = 1;
-                  var durationchangeEventHandler = test.step_func(function(event)
-                  {
-                      assert_equals(mediaSource.readyState, 'ended', 'mediaSource ended');
-                      assert_equals(mediaElement.duration, newDuration, 'mediaElement newDuration');
-                      assert_equals(mediaSource.duration, newDuration, 'mediaSource newDuration');
-                      durationchangeEventCounter++;
-                  });
-
                   // Media load also fires 'durationchange' event, so only start counting them now.
                   mediaElement.addEventListener('durationchange', durationchangeEventHandler);
 
+                  assert_false(sourceBuffer.updating, "updating");
+
                   // Truncate duration. This should result in one 'durationchange' fired.
                   mediaSource.duration = newDuration;
+
+                  assert_true(sourceBuffer.updating, "updating");
+                  test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
+                  test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
+                  test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
+              });
+
+              test.waitForExpectedEvents(function()
+              {
+                  assert_false(sourceBuffer.updating, "updating");
 
                   // Set duration again to make sure it does not trigger another 'durationchange' event.
                   mediaSource.duration = newDuration;

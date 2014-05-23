@@ -4,7 +4,6 @@
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="mediasource-util.js"></script>
-        <link rel='stylesheet' href='/resources/testharness.css'>
     </head>
     <body>
         <div id="log"></div>
@@ -33,21 +32,38 @@
                   timeUpdateCount++;
               }));
 
-              mediaElement.addEventListener("ended", test.step_func(function(e)
+              test.failOnEvent(mediaElement, 'error');
+
+              test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
+              test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
+              test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
+              sourceBuffer.appendBuffer(mediaData);
+
+              test.waitForExpectedEvents(function()
+              {
+                  assert_false(sourceBuffer.updating, "updating");
+                  assert_greater_than(mediaSource.duration, 1, "duration");
+
+                  mediaSource.duration = 1;
+
+                  assert_true(sourceBuffer.updating, "updating");
+                  test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
+                  test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
+                  test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
+              });
+
+              test.waitForExpectedEvents(function()
+              {
+                  mediaSource.endOfStream();
+                  mediaElement.play();
+                  test.expectEvent(mediaElement, 'ended', 'mediaElement');
+              });
+
+              test.waitForExpectedEvents(function()
               {
                   assert_greater_than(timeUpdateCount, 2, "timeUpdateCount");
                   test.done();
-              }));
-
-              test.failOnEvent(mediaElement, 'error');
-
-               sourceBuffer.addEventListener('updateend', test.step_func(function()
-               {
-                   mediaSource.duration = 1;
-                   mediaSource.endOfStream();
-                   mediaElement.play();
-               }));
-               sourceBuffer.appendBuffer(mediaData);
+              });
           }, "Test HTMLVideoElement.getVideoPlaybackQuality() with MediaSource API", {timeout: 5000});
         </script>
     </body>

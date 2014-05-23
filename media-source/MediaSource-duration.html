@@ -10,13 +10,23 @@
 <div>
     <video id='v' controls autoplay width='320' height='240'></video>
 </div>
-
 <div id="log"></div>
-
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var contents = {'/media/white.webm': 'video/webm; codecs="vorbis,vp8"',
+                '/media/white.mp4' : 'video/mp4'};
+
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -47,30 +57,31 @@ test(function() {
                       mediaSource.duration = 1;
                   }, 'Not opened yet');
 }, 'MediaSource#duration : initial state');
-
-async_test(function(t) {
-    GET(FILE, function(data) {
-        var mediaSource = new MediaSource();
-
-        mediaSource.addEventListener('sourceopen', function(e){
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-
-            sourceBuffer.addEventListener('updatestart', function(e) {
-                console.log(this.updating);
-                t.step(function() {
-                    assert_throws(
-                        {name : 'InvalidStateErrors'},
-                        function() { mediaSource.duration = 1; }
-                    );
+function testDuration(file, mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            mediaSource.addEventListener('sourceopen', function(e) {
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                sourceBuffer.addEventListener('updatestart', function(e) {
+                    t.step(function() {
+                        assert_throws({name : 'InvalidStateError'},
+                                      function() { mediaSource.duration = 1; });
+                    });
+                    t.done();
                 });
-                t.done();
+                sourceBuffer.appendBuffer(data);
             });
-            sourceBuffer.appendBuffer(data);
-        }, false);
-        video.src = window.URL.createObjectURL(mediaSource);
-    });
-}, 'MediaSource#duration : update during SourceBuffer#updating is true');
-
+            video.src = window.URL.createObjectURL(mediaSource);
+        });
+    }, 'MediaSource#duration (' + mime + '): update during SourceBuffer#updating is true');
+}
+for(var file in contents) {
+    testDuration(file, contents[file]);
+}
 </script>
 </body>
 </html>

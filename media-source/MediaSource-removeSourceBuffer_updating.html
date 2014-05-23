@@ -10,13 +10,23 @@
 <div>
     <video id='v' controls autoplay width='320' height='240'></video>
 </div>
-
 <div id="log"></div>
-
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var contents = {'/media/white.webm': 'video/webm; codecs="vorbis,vp8"',
+                '/media/white.mp4' : 'video/mp4'};
+
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
+        });
+        this.done();
+        return false;
+    }
+    return true;
+}
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -30,45 +40,49 @@ function GET(url, processBody) {
         processBody(new Uint8Array(xhr.response));
     };
 }
-async_test(function(t) {
-    GET(FILE, function(data) {
-        var mediaSource = new MediaSource();
-        var events = [];
-
-        mediaSource.addEventListener('sourceopen', function(e){
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-
-            sourceBuffer.addEventListener('updatestart', function(e) {
-                events.push('updatestart');
-                t.step(function() {
-                    mediaSource.removeSourceBuffer(sourceBuffer);
-                    assert_equals(sourceBuffer.updating, false);
+function test(file, mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            var events = [];
+            mediaSource.addEventListener('sourceopen', function(e) {
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                sourceBuffer.addEventListener('updatestart', function(e) {
+                    events.push('updatestart');
+                    t.step(function() {
+                        mediaSource.removeSourceBuffer(sourceBuffer);
+                        assert_equals(sourceBuffer.updating, false);
+                    });
                 });
-            });
-            sourceBuffer.addEventListener('updateend', function(e) {
-                events.push('updateend');
-                t.step(function() {
-                    assert_equals(events.length, 3);
-                    generate_tests(assert_equals, [
-                        [ "", events[0], 'updatestart'],
-                        [ "", events[1], 'abort'],
-                        [ "", events[2], 'updateend']
-                    ]);
+                sourceBuffer.addEventListener('updateend', function(e) {
+                    events.push('updateend');
+                    t.step(function() {
+                        assert_array_equals(events, ['updatestart',
+                                                     'abort',
+                                                     'updateend']);
+                    });
+                    t.done();
                 });
-                t.done();
+                sourceBuffer.addEventListener('abort', function(e) {
+                    events.push('abort');
+                });
+                sourceBuffer.appendBuffer(data);
             });
-            sourceBuffer.addEventListener('abort', function(e) {
-                events.push('abort');
-            });
-            sourceBuffer.appendBuffer(data);
-        }, false);
-        video.src = window.URL.createObjectURL(mediaSource);
-    });
-}, "MediaSource#removeSourceBuffer : If the sourceBuffer.updating attribute equals true, then run the following steps:" +
-     "1. Abort the buffer append and stream append loop algorithms if they are running." +
-     "2. Set the sourceBuffer.updating attribute to false." +
-     "3. Queue a task to fire a simple event named abort at sourceBuffer." +
-     "4. Queue a task to fire a simple event named updateend at sourceBuffer.");
+            video.src = window.URL.createObjectURL(mediaSource);
+        });
+    }, 'MediaSource#removeSourceBuffer (' + mime + ') : ' +
+       'If the sourceBuffer.updating attribute equals true, then run the following steps:' +
+       '1. Abort the buffer append and stream append loop algorithms if they are running.' +
+       '2. Set the sourceBuffer.updating attribute to false.' +
+       '3. Queue a task to fire a simple event named abort at sourceBuffer.' +
+       '4. Queue a task to fire a simple event named updateend at sourceBuffer.');
+}
+for(var file in contents) {
+    test(file, contents[file]);
+}
 </script>
 </body>
 </html>

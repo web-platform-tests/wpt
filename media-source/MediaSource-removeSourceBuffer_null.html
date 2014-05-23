@@ -11,12 +11,8 @@
     <video id='v' controls autoplay width='320' height='240'></video>
 </div>
 <div id="log"></div>
-
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
-
 async_test(function(t) {
     var mediaSource = new MediaSource();
     t.step(function() {
@@ -28,7 +24,6 @@ async_test(function(t) {
     });
     t.done();
 }, 'MediaSource#removeSouceBuffer : If sourceBuffer is null then throw an INVALID_ACCESS_ERR exception and abort these steps.');
-
 </script>
 </body>
 </html>

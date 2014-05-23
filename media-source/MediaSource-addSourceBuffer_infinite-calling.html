@@ -13,28 +13,46 @@
 <div id="log"></div>
 
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
-async_test(function(t) {
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', function(e){
-        var sourceBuffer = null;
-        t.step(function() {
-            assert_throws(
-                {name : 'QuotaExceededError'},
-                function() {
-                    while(true) {
-                        sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
-                    }I
-                },
-                'Create infinite sourceBuffers'
-            );
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
+
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
         });
-        t.done();
-    }, false);
-    video.src = window.URL.createObjectURL(mediaSource);
-}, "MediaSource#addSourceBuffer : If the user agent can't handle any more SourceBuffer objects then throw a QUOTA_EXCEEDED_ERR exception and abort these steps");
+        this.done();
+        return false;
+    }
+    return true;
+}
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        mediaSource.addEventListener('sourceopen', function(e) {
+            var sourceBuffer = null;
+            t.step(function() {
+                assert_throws({name : 'QuotaExceededError'},
+                              function() {
+                                  while(true) {
+                                      sourceBuffer = mediaSource.addSourceBuffer(mime);
+                                  }I
+                              },
+                              'Create infinite sourceBuffers');
+            });
+            t.done();
+        }, false);
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'MediaSource#addSourceBuffer (' + mime + ') : ' +
+       'If the user agent can\'t handle any more SourceBuffer objects then throw a QUOTA_EXCEEDED_ERR exception and abort these steps');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

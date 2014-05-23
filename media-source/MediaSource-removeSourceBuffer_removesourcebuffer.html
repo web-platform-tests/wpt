@@ -10,43 +10,57 @@
 <div>
     <video id='v' controls autoplay width='320' height='240'></video>
 </div>
-
 <div id="log"></div>
-
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vorbis,vp8"';
+var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
-async_test(function(t) {
-    var mediaSource = new MediaSource();
-    var events = [];
-
-    mediaSource.addEventListener('sourceopen', function(e){
-        events.push('sourceopen');
-        var sourceBuffer = this.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
-        this.removeSourceBuffer(sourceBuffer);
-    });
-    mediaSource.activeSourceBuffers.addEventListener('removesourcebuffer', function(e){
-        events.push('removesourcebuffer by activeSourceBuffers');
-    });
-    mediaSource.sourceBuffers.addEventListener('removesourcebuffer', function(e){
-        events.push('removesourcebuffer by sourceBuffers');
-        assert_equals(events.length, 3);
-        t.step(function() {
-            generate_tests(assert_equals, [
-                [ "", events[0], 'sourceopen'],
-                [ "", events[1], 'removesourcebuffer by activeSourceBuffers'],
-                [ "", events[2], 'removesourcebuffer by sourceBuffers']
-            ]);
+//check the browser supports the MIME used in this test
+function canPlayType(mime) {
+    if(video.canPlayType(mime) != 'probably') {
+        this.step(function() {
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
         });
-        t.done();
-    });
-    video.src = window.URL.createObjectURL(mediaSource);
-}, "MediaSource#removeSouceBuffer : " +
-     "If sourceBuffer is in activeSourceBuffers, then remove sourceBuffer from activeSourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by activeSourceBuffers." +
-     "Remove sourceBuffer from sourceBuffers and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList returned by sourceBuffers.");
-
+        this.done();
+        return false;
+    }
+    return true;
+}
+function test(mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        var mediaSource = new MediaSource();
+        var events = [];
+        mediaSource.addEventListener('sourceopen', function(e) {
+            events.push('sourceopen');
+            var sourceBuffer = this.addSourceBuffer(mime);
+            this.removeSourceBuffer(sourceBuffer);
+        });
+        mediaSource.activeSourceBuffers.addEventListener('removesourcebuffer', function(e) {
+            events.push('removesourcebuffer by activeSourceBuffers');
+        });
+        mediaSource.sourceBuffers.addEventListener('removesourcebuffer', function(e) {
+            events.push('removesourcebuffer by sourceBuffers');
+            assert_equals(events.length, 3);
+            t.step(function() {
+                assert_array_equals(events, ['sourceopen',
+                                             'removesourcebuffer by activeSourceBuffers',
+                                             'removesourcebuffer by sourceBuffers']);
+            });
+            t.done();
+        });
+        video.src = window.URL.createObjectURL(mediaSource);
+    }, 'MediaSource#removeSouceBuffer (' + mime + ') : ' +
+       'If sourceBuffer is in activeSourceBuffers, then remove sourceBuffer from activeSourceBuffers ' +
+       'and queue a task to fire a simple event named removesourcebuffer at the SourceBufferList ' +
+       'returned by activeSourceBuffers. Remove sourceBuffer from sourceBuffers and queue a task to ' +
+       'fire a simple event named removesourcebuffer at the SourceBufferList returned by sourceBuffers.');
+}
+mimes.forEach(function(mime) {
+    test(mime);
+});
 </script>
 </body>
 </html>

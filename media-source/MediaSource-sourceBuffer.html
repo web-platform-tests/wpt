@@ -10,15 +10,12 @@
 <div>
     <video id='v' controls autoplay width='320' height='240'></video>
 </div>
-
 <div id="log"></div>
-
 <script>
 test(function() {
     var mediaSource = new MediaSource();
     assert_equals(mediaSource.sourceBuffers.length, 0);
 }, 'MediaSource#sourceBuffers : Initial state');
-
 </script>
 </body>
 </html>

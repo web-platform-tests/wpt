@@ -35,6 +35,7 @@ class DirectoryHandler(object):
 
         response.headers = [("Content-Type", "text/html")]
         response.content = """<!doctype html>
+<meta name="viewport" content="width=device-width">
 <title>Directory listing for %(path)s</title>
 <h1>Directory listing for %(path)s</h1>
 <ul>
@@ -117,7 +118,7 @@ class FileHandler(object):
             return []
 
     def get_data(self, response, path, byte_ranges):
-        with open(path , 'rb') as f:
+        with open(path, 'rb') as f:
             if byte_ranges is None:
                 return f.read()
             else:

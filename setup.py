@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'wptrunner'
-PACKAGE_VERSION = '0.3.2'
+PACKAGE_VERSION = '0.3.3'
 
 # dependencies
 with open('requirements.txt') as f:
@@ -34,13 +34,15 @@ setup(name=PACKAGE_NAME,
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
                    'Operating System :: OS Independent'],
-      package_data={"wptrunner": ["testharness.js",
-                                  "reftest.js",
+      package_data={"wptrunner": ["executors/testharness_marionette.js",
+                                  "executors/testharness_webdriver.js",
+                                  "executors/reftest.js",
+                                  "executors/reftest-wait.js",
                                   "testharnessreport.js",
-                                  "gecko_runner.html",
+                                  "testharness_runner.html",
                                   "config.json",
-                                  "server-locations.txt",
-                                  "device_setup/*",
+                                  "browsers/server-locations.txt",
+                                  "browsers/b2g_setup/*",
                                   "prefs/*"]},
       include_package_data=True,
       data_files=[("config", ["config.ini"])],

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head><title>popup (helper file)</title>
+<script>
+    window.name = 'this_is_the_popup';
+    opener.postMessage(JSON.stringify({name: 'opener set correctly before navigation', pass: opener.name === 'this_is_the_opener'}), '*');
+    setTimeout(function(){window.location.href = location.search.substr(1)}, 10);
+</script>
+</head>
+<body><p>Popup (before navigation)</p></body></html>

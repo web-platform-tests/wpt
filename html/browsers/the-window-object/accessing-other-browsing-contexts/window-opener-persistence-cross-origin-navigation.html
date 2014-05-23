@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>window.opener persists across navigation (other-origin)</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+  window.name = 'this_is_the_opener';
+  var t1 = async_test(document.title);
+  var countdown = 2; // test expects two results, one before and one after navigation
+  window.addEventListener('message', t1.step_func(function(e){
+    var data = JSON.parse(e.data);
+    assert_true(data.pass, data.name);
+    countdown--;
+    if(countdown === 0)t1.done();
+  }), false);
+  window.open('support/popup-navigate.html?http://www1.' + location.host + location.pathname.replace( /window-opener-persistence.*/, 'support/popup-navigate-2.html'));
+  </script>
+</head>
+<body>
+  <div id="log"></div>
+  <p>Note: popups must be enabled for this test</p>
+</body>

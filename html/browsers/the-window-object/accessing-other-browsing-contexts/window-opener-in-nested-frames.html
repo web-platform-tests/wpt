@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>window.opener is null inside frames and IFRAMEs</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script>
+  window.name = 'this_is_the_opener';
+  var t1 = async_test(document.title);
+
+  window.addEventListener('message', t1.step_func(function(e){
+    var data = JSON.parse(e.data);
+    assert_equals(data.length, 3, 'frame should report 3 results');
+    for(var i=0; i<data.length; i++){
+      assert_true(data[i].pass, 'window.opener set correctly in '+data[i].name);
+    }
+    t1.done();
+  }), false);
+  window.open('support/popup-with-frames.html');
+  </script>
+</head>
+<body>
+  <div id="log"></div>
+  <p>Note: popups must be enabled for this test</p>
+</body>

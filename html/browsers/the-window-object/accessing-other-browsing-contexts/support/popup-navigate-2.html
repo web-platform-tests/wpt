@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>popup (helper file)</title>
+<script>
+    /*
+        If opener is set correctly, the test will post message back to the opener and the test hence passes
+        Otherwise, the test will timeout. It's a bit complicated to write a reliable fail condition and communicate
+        this back to the test - exactly because if it fails, you can't communicate anything back to the test. A timeout
+        will have to do.
+    */
+    opener.postMessage(JSON.stringify({name: 'opener set correctly after navigation', pass: true}), '*');
+    setTimeout(function(){window.close()}, 10);
+</script>
+</head>
+<body><p>Popup (after navigation)</p></body></html>

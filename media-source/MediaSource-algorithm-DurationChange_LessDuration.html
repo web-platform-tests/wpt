@@ -13,9 +13,9 @@
 <div id="log"></div>
 
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vp8"';
+var contents = {'/media/white.webm': 'video/webm; codecs="vp8"',
+                '/media/white.mp4' : 'video/mp4'};
 
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
@@ -41,40 +41,44 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    GET(FILE, function(data) {
-        var mediaSource = new MediaSource();
-        video.controller = new MediaController();
-        var durationchangeNum = 0;
+function test(file, mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            video.controller = new MediaController();
+            var durationchangeNum = 0;
 
-        mediaSource.addEventListener('sourceopen', function(e){
-            mediaSource.duration = 5;
+            mediaSource.addEventListener('sourceopen', function(e) {
+                mediaSource.duration = 5;
 
-            var sourceBuffer = mediaSource.addSourceBuffer(mime);
-            sourceBuffer.addEventListener('updateend', function(e) {
-                mediaSource.duration = 4;//set new duration whose value is less than old duration
-            });
-            sourceBuffer.appendBuffer(data);
-        });
-        video.addEventListener('durationchange', function(e) {
-            durationchangeNum++;
-
-            if(durationchangeNum > 2) {
-                t.step(function() {
-                    assert_equals(durationchangeNum, 3, 'One of two is fired by video element, remains are fired by MediaSource.');
-                    assert_equals(video.controller.duration, 4);
-                    assert_equals(mediaSource.duration, 4);
+                var sourceBuffer = mediaSource.addSourceBuffer(mime);
+                sourceBuffer.addEventListener('updateend', function(e) {
+                    mediaSource.duration = 4;//set new duration whose value is less than old duration
                 });
-                t.done();
-            }
-        });
-        video.src = window.URL.createObjectURL(mediaSource);
-    });
-}, 'Check "duration change" algorithm of MediaSource Object in case new duration is less than old duration.');
+                sourceBuffer.appendBuffer(data);
+            });
+            video.addEventListener('durationchange', function(e) {
+                durationchangeNum++;
 
+                if(durationchangeNum > 2) {
+                    t.step(function() {
+                        assert_equals(durationchangeNum, 3, 'One of two is fired by video element, remains are fired by MediaSource.');
+                        assert_equals(video.controller.duration, 4);
+                        assert_equals(mediaSource.duration, 4);
+                    });
+                    t.done();
+                }
+            });
+            video.src = window.URL.createObjectURL(mediaSource);
+        });
+    }, 'Check "duration change" algorithm of MediaSource Object in case new duration is less than old duration for (' + mime +').');
+}
+for(var file in contents) {
+    test(file, contents[file]);
+}
 </script>
 </body>
 </html>

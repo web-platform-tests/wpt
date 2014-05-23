@@ -13,14 +13,14 @@
 <div id="log"></div>
 
 <script>
-var FILE = '/media/white.webm';
 var video = document.querySelector('video');
-var mime = 'video/webm; codecs="vp8"';
+var contents = {'/media/white.webm': 'video/webm; codecs="vorbis,vp8"',
+                '/media/white.mp4' : 'video/mp4'};
 
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
-    xhr.responseType = 'stream';
+    xhr.responseType = 'arraybuffer';
     xhr.send();
     xhr.onload = function(e) {
         if (xhr.status != 200) {
@@ -41,56 +41,60 @@ function canPlayType(mime) {
     }
     return true;
 }
-async_test(function(t) {
-    if(!canPlayType.bind(t)(mime)) {
-        return;
-    }
-    GET(FILE, function(stream) {
-        var mediaSource = new MediaSource();
-        var events = [];
-        mediaSource.addEventListener('sourceopen', function(e){
-            this.sourceBuffer = mediaSource.addSourceBuffer(mime);
-            this.sourceBuffer.addEventListener('updateend', function() {
-                mediaSource.endOfStream();
+function test(file, mime) {
+    async_test(function(t) {
+        if(!canPlayType.bind(t)(mime)) {
+            return;
+        }
+        GET(file, function(data) {
+            var mediaSource = new MediaSource();
+            var events = [];
+            mediaSource.addEventListener('sourceopen', function(e) {
+                this.sourceBuffer = mediaSource.addSourceBuffer(mime);
+                this.sourceBuffer.addEventListener('updateend', function() {
+                    mediaSource.endOfStream();
+                });
+                this.sourceBuffer.appendBuffer(data);
             });
-            this.sourceBuffer.appendStream(stream);
-        });
-        mediaSource.addEventListener('sourceended', function(e){
-            t.step(function() {
-                assert_equals(this.readyState, 'ended');
-                video.src = null;//transition to 'sourceclose'
-                assert_equals(this.readyState, 'closed');
-                assert_equals(this.duration, NaN);
-            }.bind(this));
-        });
-        mediaSource.activeSourceBuffers.addEventListener('removesourcebuffer', function(e){
-            events.push('removesourcebuffer at activeSourceBuffers');
-            t.step(function() {
-                assert_equals(mediaSource.activeSourceBuffers.length, 0);
+            mediaSource.addEventListener('sourceended', function(e) {
+                t.step(function() {
+                    assert_equals(this.readyState, 'ended');
+                    video.src = null;//transition to 'sourceclose'
+                    assert_equals(this.readyState, 'closed');
+                    assert_equals(this.duration, NaN);
+                }.bind(this));
             });
-        });
-        mediaSource.sourceBuffers.addEventListener('removesourcebuffer', function(e){
-            events.push('removesourcebuffer at sourceBuffers');
-            t.step(function() {
-                assert_equals(mediaSource.sourceBuffers.length, 0);
+            mediaSource.activeSourceBuffers.addEventListener('removesourcebuffer', function(e) {
+                events.push('removesourcebuffer at activeSourceBuffers');
+                t.step(function() {
+                    assert_equals(mediaSource.activeSourceBuffers.length, 0);
+                });
             });
-        });
-        mediaSource.addEventListener('sourceclose', function(e){
-            events.push('sourceclose');
-        });
-        video.addEventListener('emptied', function(e) {
-            t.step(function() {
-                assert_array_equals(events,
-                                    ['removesourcebuffer at activeSourceBuffers',
-                                     'removesourcebuffer at sourceBuffers',
-                                     'sourceclose']);
+            mediaSource.sourceBuffers.addEventListener('removesourcebuffer', function(e) {
+                events.push('removesourcebuffer at sourceBuffers');
+                t.step(function() {
+                    assert_equals(mediaSource.sourceBuffers.length, 0);
+                });
             });
-            t.done();
+            mediaSource.addEventListener('sourceclose', function(e) {
+                events.push('sourceclose');
+            });
+            video.addEventListener('emptied', function(e) {
+                t.step(function() {
+                    assert_array_equals(events,
+                                        ['removesourcebuffer at activeSourceBuffers',
+                                         'removesourcebuffer at sourceBuffers',
+                                         'sourceclose']);
+                });
+                t.done();
+            });
+            video.src = window.URL.createObjectURL(mediaSource);
         });
-        video.src = window.URL.createObjectURL(mediaSource);
-    });
-},
-'SourceBuffer : Check "Detaching from a media element" algorithm');
+    }, 'SourceBuffer (' + mime + ') : Check "Detaching from a media element" algorithm');
+}
+for(var file in contents) {
+    test(file, contents[file]);
+}
 </script>
 </body>
 </html>

@@ -35,7 +35,7 @@ class DirectoryHandler(object):
 
         response.headers = [("Content-Type", "text/html")]
         response.content = """<!doctype html>
-<meta name="viewport" content="width=device-width"></meta>
+<meta name="viewport" content="width=device-width">
 <title>Directory listing for %(path)s</title>
 <h1>Directory listing for %(path)s</h1>
 <ul>

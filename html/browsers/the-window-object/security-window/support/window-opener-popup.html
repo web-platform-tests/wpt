@@ -26,7 +26,7 @@
         {value: 5, value_str: '5', useVar:false, name:"number without var"}
     ];
 
-    var testidx = location.search.substr(1);
+    var testidx = location.search.match(/idx=(\d+)/)[1];
 
     if(tests[testidx]){
         document.getElementsByTagName('p')[0].firstChild.data+=' - test '+testidx+', '+tests[testidx].name;
@@ -38,20 +38,20 @@
             code += 'opener = ' + tests[testidx].value_str;
             code += ';\nsetting_throws = false;}catch(e){setting_throws = true;}';
             code += '\nsetting_succeeds = opener === '+ tests[testidx].value_str
-            //console.log(code);
             document.open();
             document.write('<script>'+code+'<\/script>');
             document.close();
-            //setting_succeeds = window.opener === tests[testidx].value;
         }catch(e){
             unexpected_err = true;
         }
-        _opener.postMessage(JSON.stringify({idx:testidx, setting_throws:setting_throws, setting_succeeds: setting_succeeds, unexpected_err: unexpected_err, name: tests[testidx].name}), '*');
+        _opener.postMessage({idx:testidx, setting_throws:setting_throws, setting_succeeds: setting_succeeds, unexpected_err: unexpected_err, name: tests[testidx].name, step:'pre-nav'}, '*');
+        // navigation / persistance test - same origin navigation
+        location.href = 'popup-second-page.html?name=' + encodeURIComponent(tests[testidx].name) + '&idx=' + testidx;
     }else{
         _opener.postMessage('DONE', '*');
+        setTimeout(function(){window.close();}, 50);
     }
-    // if opener is set to null, the opening window is not allowed to close the popup in Chrome..
-    setTimeout(function(){self.close()}, 20);
+
 </script>
 
 </body></html>

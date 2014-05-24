@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Tests for overwritten window.opener (popup - helper window)</title>
+</head>
+<body>
+<p>window.opener test helper window - post navigation</p>
+<script>
+window.addEventListener('message', function (e) { console.log(e.source);
+    if(e.data === 'poll for results'){
+        var testidx = location.search.match(/idx=(\d+)/)[1];
+        var name = decodeURIComponent(location.search.match(/name=([^&]+)/)[1]);
+        var stringifying_throws = false, stringified_opener = 'not tested';
+        try{
+            stringified_opener = '' + window.opener;
+        }catch(err){
+            stringifying_throws = true;
+        }
+        e.source.postMessage({name:name + ' - after navigation', stringifying_throws:stringifying_throws, stringified_opener:stringified_opener, step:'post-nav', idx:testidx}, '*')
+    }
+    setTimeout(function(){window.close();}, 50);
+}, false);
+</script>
+</body></html>

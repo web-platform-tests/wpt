@@ -7,7 +7,7 @@
     function report(pass, name){
         statuses.push({name:name,pass:pass});
         if(statuses.length === 3){
-            opener.postMessage(JSON.stringify(statuses), '*');
+            opener.postMessage(statuses, '*');
             setTimeout(function(){window.close()}, 100);
         }
     }

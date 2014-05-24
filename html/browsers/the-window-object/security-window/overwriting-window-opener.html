@@ -9,92 +9,38 @@
     <script type="text/javascript">
     /*
         This test intends to test the following:
-        * What values can window.opener be set to? 
+        * What values can window.opener be set to?
         {}, null, window, "", 5, undefined
-        
+        See support/window-opener-popup.html for the list of tests
+
         * Is there a difference if it's set with and without var keyword?
 
         * In which cases can window.opener be read cross-domain?
-        
+
         A new popup window is opened for each subtest.
     */
 
-    var expectations = { /* as we see, there's a nice consistency here.. */
-        "object with var": {
+    var expectations = {
             "setting_succeeds": true,
             "setting_throws": false,
-            "reading_throws": true
-        },
-        "object without var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "window with var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "window without var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "null with var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "null without var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "undefined with var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "undefined without var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "empty string with var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "empty string without var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "number with var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        },
-        "number without var": {
-            "setting_succeeds": true,
-            "setting_throws": false,
-            "reading_throws": true
-        }
+            "reading_throws": true,
+            "null with var - after navigation": {stringified_opener:'null'},
+            "null without var - after navigation": {stringified_opener:'null'}
     }
 
-
-    var test = async_test("overwriting window.opener", {timeout:8000});
+    var test = async_test("overwriting window.opener", {timeout:240000});
+    var sub_props = {timeout: 10000};
     var idx = 0, win;
     var testURL = location.pathname.replace('overwriting-window-opener.html', 'support/window-opener-popup.html');
     testURL = location.protocol + '//' + 'www1.' + location.host + testURL + '?';
 
     window.addEventListener('message', test.step_func(function (e) {
-        if(e.data === 'DONE'){ 
-            win.close();
+        if(e.data === 'DONE'){
+            // this test is just an empty wrapper for the sub-tests, it doesn't assert anything
             test.done();
             return;
         }
-        var data = JSON.parse(e.data);
+        var data = e.data, t2;
         var reading_throws = false, opener_is_this_window = false, stringified_opener = '';
         try{
             var the_opener = win.opener;
@@ -103,16 +49,60 @@
         }catch(err){
             reading_throws = true;
         }
-        win.close();
-        assert_equals(data.setting_throws, expectations[data.name].setting_throws, 'opener set to '+data.name+' - setting should not throw');
-        assert_equals(data.setting_succeeds, expectations[data.name].setting_succeeds, 'opener set to '+data.name+' - setting should succeed');
-        assert_equals(reading_throws, expectations[data.name].reading_throws, 'opener set to '+ data.name+' - reading should throw ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
-        assert_false(opener_is_this_window, 'Opener no longer refers to this window when it\'s been set');
-        win = window.open(testURL + (parseInt(data.idx)+1));
+        if(data.step === 'pre-nav'){ // First part of test, before navigation
+            t2 = async_test(data.name +' - setting should not throw', sub_props);
+            t2.step( function(){
+                assert_equals(data.setting_throws, expectations.setting_throws);
+            });
+            t2.done();
+            t2 = async_test(data.name +' setting succeeds', sub_props);
+            t2.step( function(){
+                assert_equals(data.setting_succeeds, expectations.setting_succeeds);
+            });
+            t2.done();
+            t2 = async_test('"'+data.name+'"' +' getting redefined property (from opener, different origin) throws', sub_props);
+            t2.step( function(){
+                assert_equals(reading_throws, expectations.reading_throws, 'opener set to '+ data.name+' - reading should throw ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
+                assert_false(opener_is_this_window, 'Opener no longer refers to this window when it\'s been set');
+            });
+            t2.done();
+        }else if(data.step === 'post-nav'){
+            if(expectations[data.name]){ // this is a special case..
+                t2 = async_test(data.name + ', stringifying throws?', sub_props);
+                t2.step(function(){
+                    assert_false(data.stringifying_throws);
+                    assert_equals(data.stringified_opener, expectations[data.name].stringified_opener);
+                });
+                t2.done();
+                t2 = async_test(data.name + ', win.opener read from opener is null', sub_props);
+                t2.step(function(){
+                    assert_equals(win.opener, null);
+                    assert_false(opener_is_this_window, 'is win.opener self?');
+                });
+                t2.done();
+            }else{
+                t2 = async_test(data.name + ', stringifying throws', sub_props);
+                t2.step(function(){
+                    assert_true(data.stringifying_throws);
+                    assert_equals(data.stringified_opener, 'not tested');
+                });
+                t2.done();
+                t2 = async_test(data.name + ', win.opener read from opener is self', sub_props);
+                t2.step(function(){
+                    assert_true(opener_is_this_window);
+                });
+                t2.done();
+            }
+
+            win = window.open(testURL + 'idx=' + (parseInt(data.idx)+1));
+        }
     }), false);
 
-    win = window.open(testURL + '0');
+    win = window.open(testURL + 'idx=' + '0');
 
+    // Ideally, the popup would just post all results back to us. However, some of these tests involve "disowning" the opener
+    // then navigating. In that case we need to poll the popup window.. The popup will post results back to the source of this message
+    setInterval(function(){win.postMessage('poll for results', '*')}, 200);
 
     </script>
     <p>Note: popups must be enabled for this test.</p>

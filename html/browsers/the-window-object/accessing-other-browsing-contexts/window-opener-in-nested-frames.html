@@ -9,7 +9,7 @@
   var t1 = async_test(document.title);
 
   window.addEventListener('message', t1.step_func(function(e){
-    var data = JSON.parse(e.data);
+    var data = e.data;
     assert_equals(data.length, 3, 'frame should report 3 results');
     for(var i=0; i<data.length; i++){
       assert_true(data[i].pass, 'window.opener set correctly in '+data[i].name);

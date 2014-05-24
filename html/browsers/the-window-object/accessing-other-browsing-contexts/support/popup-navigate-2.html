@@ -8,7 +8,7 @@
         this back to the test - exactly because if it fails, you can't communicate anything back to the test. A timeout
         will have to do.
     */
-    opener.postMessage(JSON.stringify({name: 'opener set correctly after navigation', pass: true}), '*');
+    opener.postMessage({name: 'opener set correctly after navigation', pass: true}, '*');
     setTimeout(function(){window.close()}, 10);
 </script>
 </head>

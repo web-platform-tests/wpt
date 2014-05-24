@@ -5,7 +5,7 @@
 <body>
 <p>window.opener test helper window - post navigation</p>
 <script>
-window.addEventListener('message', function (e) { console.log(e.source);
+window.addEventListener('message', function (e) {
     if(e.data === 'poll for results'){
         var testidx = location.search.match(/idx=(\d+)/)[1];
         var name = decodeURIComponent(location.search.match(/name=([^&]+)/)[1]);

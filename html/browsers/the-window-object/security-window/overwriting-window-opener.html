@@ -60,7 +60,7 @@
                 assert_equals(data.setting_succeeds, expectations.setting_succeeds);
             });
             t2.done();
-            t2 = async_test('"'+data.name+'"' +' getting redefined property (from opener, different origin) throws', sub_props);
+            t2 = async_test(data.name +' getting redefined property (from opener, different origin) throws', sub_props);
             t2.step( function(){
                 assert_equals(reading_throws, expectations.reading_throws, 'opener set to '+ data.name+' - reading should throw ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
                 assert_false(opener_is_this_window, 'Opener no longer refers to this window when it\'s been set');
@@ -90,6 +90,15 @@
                 t2 = async_test(data.name + ', win.opener read from opener is self', sub_props);
                 t2.step(function(){
                     assert_true(opener_is_this_window);
+                });
+                t2.done();
+            }
+            if(data.name.indexOf('window')>-1){
+                // special case: opener was set to 'window' (i.e. the popup's window object) before navigating
+                // maybe this is persistent in some UAs?
+                t2 = async_test(data.name + ', window.opener read from popup is not self');
+                t2.step(function(){
+                    assert_false(data.is_self);
                 });
                 t2.done();
             }

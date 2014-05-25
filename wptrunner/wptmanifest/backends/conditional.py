@@ -32,6 +32,8 @@ class ConditionalValue(object):
         self.value = value
 
     def remove(self):
+        if len(self.node.parent.children) == 1:
+            self.node.parent.remove()
         self.node.remove()
 
 class Compiler(NodeVisitor):
@@ -289,9 +291,9 @@ class ManifestItem(object):
 
     def remove_value(self, key, value):
         self._data[key].remove(value)
-        value.remove()
         if not self._data[key]:
             del self._data[key]
+        value.remove()
 
 def compile_ast(ast, data_cls_getter=None, **kwargs):
     return Compiler().compile(ast, data_cls_getter=data_cls_getter, **kwargs)

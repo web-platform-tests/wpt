@@ -200,7 +200,12 @@ class MarionetteReftestExecutor(MarionetteTestExecutor):
             if hashes[url_type] is None:
                 #Would like to do this in a new tab each time, but that isn't
                 #easy with the current state of marionette
-                self.marionette.navigate(urlparse.urljoin(self.http_server_url, url))
+                full_url = urlparse.urljoin(self.http_server_url, url)
+                try:
+                    self.marionette.navigate(full_url)
+                except marionette.errors.MarionetteException:
+                    return {"status":"ERROR",
+                            "message":"Failed to load url %s" % (full_url,)}
                 if url_type == "test":
                     self.wait()
                 screenshot = self.marionette.screenshot()
@@ -219,7 +224,8 @@ class MarionetteReftestExecutor(MarionetteTestExecutor):
         else:
             raise ValueError
 
-        return "PASS" if passed else "FAIL"
+        return {"status":"PASS" if passed else "FAIL",
+                "message": None}
 
     def wait(self):
         self.marionette.execute_async_script(self.wait_script)

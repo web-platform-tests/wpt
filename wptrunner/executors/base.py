@@ -41,7 +41,7 @@ class TestharnessResultConverter(object):
 testharness_result_converter = TestharnessResultConverter()
 
 def reftest_result_converter(self, test, result):
-    return (test.result_cls(result, None), [])
+    return (test.result_cls(result["status"], result["message"]), [])
 
 class TestExecutor(object):
     convert_result = None

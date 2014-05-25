@@ -34,7 +34,7 @@ class TestharnessResult(Result):
 
 class ReftestResult(Result):
     default_expected = "PASS"
-    statuses = set(["PASS", "FAIL", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH"])
+    statuses = set(["PASS", "FAIL", "ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH"])
 
 
 class TestharnessSubtestResult(SubtestResult):

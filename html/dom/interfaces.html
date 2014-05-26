@@ -10,42 +10,10 @@
 <h1>HTML IDL tests</h1>
 <div id=log></div>
 
-<!-- URL IDLs -->
+<!-- URLUtils* stubs -->
 <script type=text/plain class=untested>
-[Constructor(DOMString url, optional (URL or DOMString) base = "about:blank")]
-interface URL {
-};
-URL implements URLUtils;
-
-[NoInterfaceObject]
-interface URLUtils {
-  stringifier attribute DOMString href;
-  readonly attribute DOMString origin;
-
-           attribute DOMString protocol;
-           attribute DOMString username;
-           attribute DOMString password;
-           attribute DOMString host;
-           attribute DOMString hostname;
-           attribute DOMString port;
-           attribute DOMString pathname;
-           attribute DOMString search;
-           attribute URLQuery? query;
-           attribute DOMString hash;
-};
-
-[NoInterfaceObject]
-interface URLUtilsReadOnly {
-  stringifier readonly attribute DOMString href;
-
-  readonly attribute DOMString protocol;
-  readonly attribute DOMString host;
-  readonly attribute DOMString hostname;
-  readonly attribute DOMString port;
-  readonly attribute DOMString pathname;
-  readonly attribute DOMString search;
-  readonly attribute DOMString hash;
-};
+interface URLUtils {};
+interface URLUtilsReadOnly {};
 </script>
 <!-- DOM IDLs -->
 <script type=text/plain class=untested>

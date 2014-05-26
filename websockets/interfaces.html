@@ -51,6 +51,10 @@ dictionary CloseEventInit : EventInit {
   unsigned short code;
   DOMString reason;
 };
+
+[TreatNonCallableAsNull]
+callback EventHandlerNonNull = any (Event event);
+typedef EventHandlerNonNull? EventHandler;
 </script>
 <script>
 "use strict";

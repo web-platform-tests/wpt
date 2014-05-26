@@ -104,8 +104,8 @@ setup(function() {
 }, {explicit_done:true});
 window.onload = function() {
 	idlArray.add_objects({
-		Worker: ['new Worker("http://foo")'],
-		SharedWorker: ['new SharedWorker("http://foo")'],
+		Worker: ['new Worker("/workers/workers.js")'],
+		SharedWorker: ['new SharedWorker("/workers/workers.js")'],
 	});
 	idlArray.test();
 	done();

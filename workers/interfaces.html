@@ -1,0 +1,109 @@
+<!doctype html>
+<title>Web Workers IDL tests</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+
+<h1>Web Workers IDL tests</h1>
+<div id=log></div>
+
+<!-- HTML IDLs -->
+<script type=text/plain class=untested>
+interface ImageBitmapFactories {};
+interface WindowTimers {};
+interface WindowBase64 {};
+interface NavigatorID {};
+interface NavigatorLanguage {};
+interface NavigatorOnLine {};
+interface URLUtilsReadOnly {};
+</script>
+<script type=text/plain>
+[Exposed=Worker]
+interface WorkerGlobalScope : EventTarget {
+  readonly attribute WorkerGlobalScope self;
+  readonly attribute WorkerLocation location;
+
+  void close();
+           attribute OnErrorEventHandler onerror;
+           attribute EventHandler onlanguagechange;
+           attribute EventHandler onoffline;
+           attribute EventHandler ononline;
+
+  // also has additional members in a partial interface
+};
+
+[Global=Worker,DedicatedWorker]
+/*sealed*/ interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
+  void postMessage(any message, optional sequence<Transferable> transfer);
+           attribute EventHandler onmessage;
+};
+
+[Global=Worker,SharedWorker]
+/*sealed*/ interface SharedWorkerGlobalScope : WorkerGlobalScope {
+  readonly attribute DOMString name;
+  readonly attribute ApplicationCache applicationCache;
+           attribute EventHandler onconnect;
+};
+
+[NoInterfaceObject, Exposed=Window,Worker]
+interface AbstractWorker {
+           attribute EventHandler onerror;
+};
+
+[Constructor(DOMString scriptURL), Exposed=Window,Worker]
+interface Worker : EventTarget {
+  void terminate();
+
+  void postMessage(any message, optional sequence<Transferable> transfer);
+           attribute EventHandler onmessage;
+};
+Worker implements AbstractWorker;
+
+[Constructor(DOMString scriptURL, optional DOMString name), Exposed=Window,Worker]
+interface SharedWorker : EventTarget {
+  readonly attribute MessagePort port;
+};
+SharedWorker implements AbstractWorker;
+
+[Exposed=Worker]
+partial interface WorkerGlobalScope {
+  void importScripts(DOMString... urls);
+  readonly attribute WorkerNavigator navigator;
+};
+WorkerGlobalScope implements WindowTimers;
+WorkerGlobalScope implements WindowBase64;
+
+[Exposed=Worker]
+interface WorkerNavigator {};
+WorkerNavigator implements NavigatorID;
+WorkerNavigator implements NavigatorLanguage;
+WorkerNavigator implements NavigatorOnLine;
+
+[Exposed=Worker]
+interface WorkerLocation { };
+WorkerLocation implements URLUtilsReadOnly;
+
+</script>
+<script>
+"use strict";
+var idlArray;
+setup(function() {
+	idlArray = new IdlArray();
+	[].forEach.call(document.querySelectorAll("script[type=text\\/plain]"), function(node) {
+		if (node.className == "untested") {
+			idlArray.add_untested_idls(node.textContent);
+		} else {
+			idlArray.add_idls(node.textContent);
+		}
+	});
+}, {explicit_done:true});
+window.onload = function() {
+	idlArray.add_objects({
+		Worker: ['new Worker("http://foo")'],
+		SharedWorker: ['new SharedWorker("http://foo")'],
+	});
+	idlArray.test();
+	done();
+};
+</script>

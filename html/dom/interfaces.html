@@ -2940,38 +2940,6 @@ partial interface Document {
   readonly attribute HTMLAllCollection all;
 };
 </script>
-<!-- WebVTT IDLs -->
-<script type=text/plain>
-enum AutoKeyword { "auto" };
-enum DirectionSetting { "" /* horizontal */, "rl", "lr" };
-enum AlignSetting { "start", "middle", "end", "left", "right" };
-[Constructor(double startTime, double endTime, DOMString text)]
-interface VTTCue : TextTrackCue {
-           attribute VTTRegion? region;
-           attribute DirectionSetting vertical;
-           attribute boolean snapToLines;
-           attribute (double or AutoKeyword) line;
-           attribute AlignSetting lineAlign;
-           attribute double position;
-           attribute AlignSetting positionAlign;
-           attribute double size;
-           attribute AlignSetting align;
-           attribute DOMString text;
-  DocumentFragment getCueAsHTML();
-};
-
-enum ScrollSetting { "" /* none */, "up" };
-[Constructor]
-interface VTTRegion {
-           attribute double width;
-           attribute long lines;
-           attribute double regionAnchorX;
-           attribute double regionAnchorY;
-           attribute double viewportAnchorX;
-           attribute double viewportAnchorY;
-           attribute ScrollSetting scroll;
-};
-</script>
 <script>
 "use strict";
 var idlArray;
@@ -3208,9 +3176,6 @@ window.onload = function() {
 		HTMLFrameElement: ['document.createElement("frame")'],
 		HTMLDirectoryElement: ['document.createElement("dir")'],
 		HTMLFontElement: ['document.createElement("font")'],
-		// WebVTT
-		VTTCue: ['new VTTCue(0, 1, "foo")'],
-		VTTRegion: ['new VTTRegion()']
 	});
 	idlArray.prevent_multiple_testing("HTMLElement");
 	idlArray.test();

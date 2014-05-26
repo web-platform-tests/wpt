@@ -84,6 +84,9 @@ WorkerNavigator implements NavigatorOnLine;
 interface WorkerLocation { };
 WorkerLocation implements URLUtilsReadOnly;
 
+[TreatNonCallableAsNull]
+callback EventHandlerNonNull = any (Event event);
+typedef EventHandlerNonNull? EventHandler;
 </script>
 <script>
 "use strict";

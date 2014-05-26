@@ -463,6 +463,7 @@ function Runner(manifest_path) {
     this.timeout = null;
     this.num_tests = null;
     this.pause_flag = false;
+    this.done_flag = false;
 
     this.start_callbacks = [];
     this.test_start_callbacks = [];
@@ -494,6 +495,7 @@ Runner.prototype = {
 
     start: function(path, test_types, testharness_settings) {
         this.pause_flag = false;
+        this.done_flag = false;
         this.path = path;
         this.test_types = test_types;
         window.testharness_properties = testharness_settings;
@@ -538,6 +540,7 @@ Runner.prototype = {
     },
 
     done: function() {
+        this.done_flag = true;
         if (this.test_window) {
             this.test_window.close();
         }
@@ -551,7 +554,7 @@ Runner.prototype = {
             return;
         }
         var next_test = this.manifest_iterator.next();
-        if (next_test === null) {
+        if (next_test === null||this.done_flag) {
             this.done();
             return;
         }

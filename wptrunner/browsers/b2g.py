@@ -16,14 +16,18 @@ from ..executors.executormarionette import MarionetteTestharnessExecutor
 here = os.path.split(__file__)[0]
 
 __wptrunner__ = {"product": "b2g",
+                 "check_args": "check_args",
                  "browser": "B2GBrowser",
                  "executor": {"testharness": "B2GMarionetteTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "get_executor_kwargs",
                  "env_options": "env_options"}
 
-def browser_kwargs(product, binary, prefs_root, **kwargs):
-    return {"prefs_root": prefs_root,
+def check_args(**kwargs):
+    pass
+
+def browser_kwargs(**kwargs):
+    return {"prefs_root": kwargs["prefs_root"],
             "no_backup": kwargs.get("b2g_no_backup", False)}
 
 def env_options():

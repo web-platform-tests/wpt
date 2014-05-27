@@ -68,6 +68,9 @@ def create_parser(allow_mandatory=True):
     parser.add_argument("--repeat", action="store", type=int, default=1,
                         help="Number of times to run the tests")
 
+    parser.add_argument("--no-capture-stdio", action="store_true", default=False,
+                        help="Don't capture stdio and write to logging")
+
     parser.add_argument("--product", action="store", choices=[item[0] for item in products.iter_products()],
                         default="firefox")
 

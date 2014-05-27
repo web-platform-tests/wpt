@@ -5,21 +5,25 @@ from mozprofile import FirefoxProfile, Preferences
 from mozprofile.permissions import ServerLocations
 from mozrunner import FirefoxRunner
 
-from .base import get_free_port, NullBrowser, ExecutorBrowser
+from .base import get_free_port, NullBrowser, ExecutorBrowser, require_arg
 from ..executors import get_executor_kwargs
 from ..executors.executorservo import ServoTestharnessExecutor
 
 here = os.path.join(os.path.split(__file__)[0])
 
 __wptrunner__ = {"product": "servo",
+                 "check_args": "check_args",
                  "browser": "ServoBrowser",
                  "executor": {"testharness": "ServoTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "get_executor_kwargs",
                  "env_options": "env_options"}
 
-def browser_kwargs(product, binary, prefs_root, **kwargs):
-    return {"binary": binary}
+def check_args(**kwargs):
+    require_arg(kwargs, "binary")
+
+def browser_kwargs(**kwargs):
+    return {"binary": kwargs["binary"]}
 
 def env_options():
     return {"host": "localhost",

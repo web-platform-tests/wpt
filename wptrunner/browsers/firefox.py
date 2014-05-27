@@ -9,13 +9,14 @@ from mozprofile import FirefoxProfile, Preferences
 from mozprofile.permissions import ServerLocations
 from mozrunner import FirefoxRunner
 
-from .base import get_free_port, Browser, ExecutorBrowser
+from .base import get_free_port, Browser, ExecutorBrowser, require_arg
 from ..executors import get_executor_kwargs
 from ..executors.executormarionette import MarionetteTestharnessExecutor, MarionetteReftestExecutor
 
 here = os.path.join(os.path.split(__file__)[0])
 
 __wptrunner__ = {"product": "firefox",
+                 "check_args": "check_args",
                  "browser": "FirefoxBrowser",
                  "executor": {"testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteReftestExecutor"},
@@ -23,9 +24,12 @@ __wptrunner__ = {"product": "firefox",
                  "executor_kwargs": "get_executor_kwargs",
                  "env_options": "env_options"}
 
-def browser_kwargs(product, binary, prefs_root, **kwargs):
-    return {"binary": binary,
-            "prefs_root": prefs_root}
+def check_args(**kwargs):
+    require_arg(kwargs, "binary")
+
+def browser_kwargs(**kwargs):
+    return {"binary": kwargs["binary"],
+            "prefs_root": kwargs["prefs_root"]}
 
 def env_options():
     return {"host": "localhost",

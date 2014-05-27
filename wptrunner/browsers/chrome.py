@@ -12,25 +12,29 @@ from mozprofile import FirefoxProfile, Preferences
 from mozprofile.permissions import ServerLocations
 from mozrunner import FirefoxRunner
 
-from .base import get_free_port, Browser, ExecutorBrowser
+from .base import get_free_port, Browser, ExecutorBrowser, require_arg
 from ..executors.executorwebdriver import WebdriverTestharnessExecutor
 
 here = os.path.split(__file__)[0]
 
 __wptrunner__ = {"product": "chrome",
+                 "check_args": "check_args",
                  "browser": "ChromeBrowser",
                  "executor": {"testharness": "WebdriverTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_options": "env_options"}
 
-def browser_kwargs(product, binary, prefs_root, **kwargs):
-    return {"binary": binary}
+def check_args(**kwargs):
+    require_arg(kwargs, "binary")
 
-def executor_kwargs(http_server_url, timeout_multiplier):
+def browser_kwargs(**kwargs):
+    return {"binary": kwargs["binary"]}
+
+def executor_kwargs(http_server_url, **kwargs):
     from selenium import webdriver
     return {"http_server_url": http_server_url,
-            "timeout_multiplier":timeout_multiplier,
+            "timeout_multiplier":kwargs["timeout_multiplier"],
             "capabilities": webdriver.DesiredCapabilities.CHROME}
 
 def env_options():

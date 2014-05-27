@@ -1,10 +1,10 @@
 import os
-import socket
-import sys
-import time
-import tempfile
 import shutil
+import socket
 import subprocess
+import sys
+import tempfile
+import time
 
 import mozprocess
 from mozprofile import FirefoxProfile, Preferences
@@ -14,6 +14,11 @@ import mozdevice
 import moznetwork
 
 here = os.path.split(__file__)[0]
+
+def require_arg(kwargs, name):
+    if not name in kwargs or kwargs[name] is None:
+        print >> sys.stderr, "Missing required argument %s" % name
+        sys.exit(1)
 
 def get_free_port(start_port, exclude=None):
     """Get the first port number after start_port (inclusive) that is

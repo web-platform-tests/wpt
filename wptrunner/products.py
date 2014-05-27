@@ -23,6 +23,7 @@ def load_product(product):
         if name == product:
             data = mod.__wptrunner__
 
+            check_args = getattr(mod, data["check_args"])
             browser_cls = getattr(mod, data["browser"])
             browser_kwargs = getattr(mod, data["browser_kwargs"])
             executor_kwargs = getattr(mod, data["executor_kwargs"])
@@ -38,4 +39,4 @@ def load_product(product):
     if browser_cls is None:
         raise ValueError("Unknown product %s" % product)
 
-    return browser_cls, browser_kwargs, executor_classes, executor_kwargs, env_options
+    return check_args, browser_cls, browser_kwargs, executor_classes, executor_kwargs, env_options

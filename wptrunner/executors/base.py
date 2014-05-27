@@ -15,9 +15,9 @@ from mozprocess import ProcessHandler
 
 here = os.path.split(__file__)[0]
 
-def get_executor_kwargs(http_server_url, timeout_multiplier):
+def get_executor_kwargs(http_server_url, **kwargs):
     executor_kwargs = {"http_server_url": http_server_url,
-                       "timeout_multiplier":timeout_multiplier}
+                       "timeout_multiplier":kwargs["timeout_multiplier"]}
     return executor_kwargs
 
 class TestharnessResultConverter(object):

@@ -430,18 +430,14 @@ def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
     for item in sorted(test_loader.get_groups(test_types)):
         print item
 
-def run_tests(tests_root, metadata_root, prefs_root, test_types, binary=None,
-              processes=1, include=None, exclude=None, include_manifest=None,
-              capture_stdio=True, product="firefox", chunk_type="none",
-              total_chunks=1, this_chunk=1, timeout_multiplier=1,
-              repeat=1, **kwargs):
+def run_tests(tests_root, metadata_root, product, **kwargs):
     logging_queue = None
     logging_thread = None
     original_stdio = (sys.stdout, sys.stderr)
     test_queues = None
 
     try:
-        if capture_stdio:
+        if not kwargs["no_capture_stdio"]:
             logging_queue = Queue()
             logging_thread = LogThread(logging_queue, logger, "info")
             sys.stdout = LoggingWrapper(logging_queue, prefix="STDOUT")
@@ -452,22 +448,25 @@ def run_tests(tests_root, metadata_root, prefs_root, test_types, binary=None,
 
         run_info = wpttest.get_run_info(product, debug=False)
 
-        logger.info("Using %i client processes" % processes)
-
-        (browser_cls, get_browser_kwargs,
+        (check_args,
+         browser_cls, get_browser_kwargs,
          executor_classes, get_executor_kwargs,
          env_options) = products.load_product(product)
 
-        browser_kwargs = get_browser_kwargs(product, binary, prefs_root, **kwargs)
+        check_args(**kwargs)
+
+        browser_kwargs = get_browser_kwargs(**kwargs)
 
         unexpected_total = 0
 
         if "test_loader" in kwargs:
             test_loader = kwargs["test_loader"]
         else:
-            test_filter = TestFilter(include=include, exclude=exclude,
-                                     manifest_path=include_manifest)
+            test_filter = TestFilter(include=kwargs["include"], exclude=kwargs["exclude"],
+                                     manifest_path=kwargs["include_manifest"])
             test_loader = TestLoader(tests_root, metadata_root, test_filter, run_info)
+
+        logger.info("Using %i client processes" % kwargs["processes"])
 
         with TestEnvironment(tests_root, env_options) as test_environment:
             try:
@@ -478,24 +477,30 @@ def run_tests(tests_root, metadata_root, prefs_root, test_types, binary=None,
 
             base_server = "http://%s:%i" % (test_environment.config["host"],
                                             test_environment.config["ports"]["http"][0])
+            repeat = kwargs["repeat"]
             for repeat_count in xrange(repeat):
                 if repeat > 1:
                     logger.info("Repetition %i / %i" % (repeat_count + 1, repeat))
-                test_ids, test_queues = test_loader.queue_tests(test_types, chunk_type, total_chunks, this_chunk)
+
+                test_ids, test_queues = test_loader.queue_tests(kwargs["test_types"],
+                                                                kwargs["chunk_type"],
+                                                                kwargs["total_chunks"],
+                                                                kwargs["this_chunk"])
                 unexpected_count = 0
                 logger.suite_start(test_ids, run_info)
-                for test_type in test_types:
+                for test_type in kwargs["test_types"]:
                     tests_queue = test_queues[test_type]
 
                     executor_cls = executor_classes.get(test_type)
-                    executor_kwargs = get_executor_kwargs(base_server, timeout_multiplier)
+                    executor_kwargs = get_executor_kwargs(base_server,
+                                                          **kwargs)
 
                     if executor_cls is None:
                         logger.error("Unsupported test type %s for product %s" % (test_type, product))
                         continue
 
                     with ManagerGroup("web-platform-tests",
-                                      processes,
+                                      kwargs["processes"],
                                       browser_cls,
                                       browser_kwargs,
                                       executor_cls,
@@ -521,7 +526,7 @@ def run_tests(tests_root, metadata_root, prefs_root, test_types, binary=None,
             for queue in test_queues.itervalues():
                 queue.close()
         sys.stdout, sys.stderr = original_stdio
-        if capture_stdio and logging_queue is not None:
+        if not kwargs["no_capture_stdio"] and logging_queue is not None:
             logger.info("Closing logging queue")
             logging_queue.put(None)
             if logging_thread is not None:

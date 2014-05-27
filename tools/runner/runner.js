@@ -203,6 +203,7 @@ VisualOutput.prototype = {
         this.meter.style.width = "100%";
         this.meter.textContent = "Done!";
         this.meter.classList.remove("progress-striped", "active");
+        this.runner.test_div.textContent = "";
         //add the json serialization of the results
         var a = this.elem.querySelector(".jsonResults");
         var json = this.runner.results.to_json();
@@ -464,7 +465,7 @@ function Runner(manifest_path) {
     this.manifest_iterator = null;
 
     this.test_window = null;
-
+    this.test_div = document.getElementById('test_url');
     this.current_test = null;
     this.timeout = null;
     this.num_tests = null;
@@ -571,6 +572,7 @@ Runner.prototype = {
             this.timeout = setTimeout(this.on_timeout.bind(this),
                                       this.test_timeout * window.testharness_properties.timeout_multiplier);
         }
+        this.test_div.textContent = this.current_test.url;
         this.load(this.current_test.url);
 
         this.test_start_callbacks.forEach(function(callback) {

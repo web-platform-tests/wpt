@@ -266,6 +266,7 @@ function ManualUI(elem, runner) {
     this.hide();
 
     this.runner.test_start_callbacks.push(this.on_test_start.bind(this));
+    this.runner.test_pause_callbacks.push(this.hide.bind(this));
     this.runner.done_callbacks.push(this.on_done.bind(this));
 
     this.pass_button.onclick = function() {
@@ -474,6 +475,7 @@ function Runner(manifest_path) {
 
     this.start_callbacks = [];
     this.test_start_callbacks = [];
+    this.test_pause_callbacks = [];
     this.result_callbacks = [];
     this.done_callbacks = [];
 
@@ -526,6 +528,9 @@ Runner.prototype = {
 
     pause: function() {
         this.pause_flag = true;
+        this.test_pause_callbacks.forEach(function(callback) {
+            callback(this.current_test);
+        }.bind(this));
     },
 
     unpause: function() {

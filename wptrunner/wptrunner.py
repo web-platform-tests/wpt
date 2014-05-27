@@ -4,31 +4,34 @@
 
 from __future__ import unicode_literals
 
-import sys
-import os
-import urlparse
-import json
-import threading
-from multiprocessing import Queue
 import hashlib
-from collections import defaultdict, OrderedDict
+import json
 import logging
+import os
+import shutil
+import socket
+import sys
+import threading
+import time
 import traceback
+import urlparse
 from StringIO import StringIO
+from collections import defaultdict, OrderedDict
+from multiprocessing import Queue
 
-from mozlog.structured import structuredlog, commandline, stdadapter
-from mozlog.structured.handlers import StreamHandler
-from mozlog.structured.formatters import JSONFormatter
-from mozprocess import ProcessHandler
 import moznetwork
+from mozlog.structured import structuredlog, commandline, stdadapter
+from mozlog.structured.formatters import JSONFormatter
+from mozlog.structured.handlers import StreamHandler
+from mozprocess import ProcessHandler
 
-from testrunner import ManagerGroup
-import metadata
 import manifestexpected
-import wpttest
-import wptcommandline
 import manifestinclude
+import metadata
 import products
+import wptcommandline
+import wpttest
+from testrunner import ManagerGroup
 
 here = os.path.split(__file__)[0]
 
@@ -84,6 +87,10 @@ def do_test_relative_imports(test_root):
     import serve
 
 
+class TestEnvironmentError(Exception):
+    pass
+
+
 class TestEnvironment(object):
     def __init__(self, test_path, options):
         """Context manager that owns the test environment i.e. the http and
@@ -92,12 +99,27 @@ class TestEnvironment(object):
         self.server = None
         self.config = None
         self.options = options if options is not None else {}
+        self.files_to_restore = []
 
     def __enter__(self):
+        self.copy_required_files()
+
+        config = self.load_config()
+        serve.set_computed_defaults(config)
+
+        serve.logger = serve.default_logger("info")
+        self.config, self.servers = serve.start(config)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.restore_files()
+        for scheme, servers in self.servers.iteritems():
+            for port, server in servers:
+                server.kill()
+
+    def load_config(self):
         default_config_path = os.path.join(self.test_path, "config.default.json")
         local_config_path = os.path.join(here, "config.json")
-
-        # TODO Move this into serve.py
 
         with open(default_config_path) as f:
             default_config = json.load(f)
@@ -106,17 +128,43 @@ class TestEnvironment(object):
             data = f.read()
             local_config = json.loads(data % self.options)
 
-        config = serve.merge_json(default_config, local_config)
-        serve.set_computed_defaults(config)
+        return serve.merge_json(default_config, local_config)
 
-        serve.logger = serve.default_logger("info")
-        self.config, self.servers = serve.start(config)
-        return self
+    def copy_required_files(self):
+        logger.info("Placing required files in server environment.")
+        for source, destination, copy_if_exists in [("testharness_runner.html", "", False),
+                                                    ("testharnessreport.js", "resources/", True)]:
+            source_path = os.path.join(here, source)
+            dest_path = os.path.join(self.test_path, destination, os.path.split(source)[1])
+            if os.path.exists(dest_path):
+                if copy_if_exists:
+                    self.files_to_restore.append(dest_path)
+                    shutil.copy2(dest_path, dest_path + ".orig")
+                else:
+                    continue
+            shutil.copy2(source_path, dest_path)
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def ensure_started(self):
+        time.sleep(2)
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
-                server.kill()
+                s = socket.socket()
+                try:
+                    s.connect((self.config["host"], port))
+                except socket.error:
+                    raise EnvironmentError("%s server on port %d failed to start" % (scheme, port))
+                finally:
+                    s.close()
+
+                if not server.is_alive():
+                    raise EnvironmentError("%s server on port %d failed to start" % (scheme, port))
+
+    def restore_files(self):
+        for path in self.files_to_restore:
+            if os.path.exists(path + ".orig"):
+                os.rename(path + ".orig", path)
+            else:
+                os.unlink(path)
 
 class TestChunker(object):
     def __init__(self, total_chunks, chunk_number):
@@ -422,6 +470,12 @@ def run_tests(tests_root, metadata_root, prefs_root, test_types, binary=None,
             test_loader = TestLoader(tests_root, metadata_root, test_filter, run_info)
 
         with TestEnvironment(tests_root, env_options) as test_environment:
+            try:
+                test_environment.ensure_started()
+            except TestEnvironmentError as e:
+                logger.critical("Error starting test environment: %s" % e.message)
+                raise
+
             base_server = "http://%s:%i" % (test_environment.config["host"],
                                             test_environment.config["ports"]["http"][0])
             for repeat_count in xrange(repeat):

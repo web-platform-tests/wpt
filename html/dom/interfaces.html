@@ -2531,28 +2531,6 @@ dictionary MessageEventInit : EventInit {
   MessagePort[]? ports;
 };
 
-[Constructor(DOMString url, optional EventSourceInit eventSourceInitDict)]
-interface EventSource : EventTarget {
-  readonly attribute DOMString url;
-  readonly attribute boolean withCredentials;
-
-  // ready state
-  const unsigned short CONNECTING = 0;
-  const unsigned short OPEN = 1;
-  const unsigned short CLOSED = 2;
-  readonly attribute unsigned short readyState;
-
-  // networking
-           attribute EventHandler onopen;
-           attribute EventHandler onmessage;
-           attribute EventHandler onerror;
-  void close();
-};
-
-dictionary EventSourceInit {
-  boolean withCredentials = false;
-};
-
 enum BinaryType { "blob", "arraybuffer" };
 [Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)]
 interface WebSocket : EventTarget {
@@ -3161,7 +3139,6 @@ window.onload = function() {
 		Worker: [],
 		SharedWorker: [],
 		MessageEvent: [],
-		EventSource: [],
 		WebSocket: [],
 		CloseEvent: [],
 		MessageChannel: [],

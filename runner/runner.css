@@ -157,3 +157,6 @@ td.ERROR {
     color: #da4453;
     font-weight: bold;
 }
+.stopped {
+    background-image: linear-gradient(to bottom, #fc0000 0, #770000 100%);
+}

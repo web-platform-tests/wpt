@@ -136,6 +136,7 @@ VisualOutput.prototype = {
     on_start: function() {
         this.clear();
         this.elem.style.display = "block";
+        this.meter.classList.remove("stopped");
         this.meter.classList.add("progress-striped", "active");
     },
 
@@ -195,7 +196,12 @@ VisualOutput.prototype = {
     on_done: function() {
         this.meter.setAttribute("aria-valuenow", this.meter.getAttribute("aria-valuemax"));
         this.meter.style.width = "100%";
-        this.meter.textContent = "Done!";
+        if (this.runner.stop_flag) {
+            this.meter.textContent = "Stopped";
+            this.meter.classList.add("stopped");
+        } else {
+            this.meter.textContent = "Done!";
+        }
         this.meter.classList.remove("progress-striped", "active");
         //add the json serialization of the results
         var a = this.elem.querySelector(".jsonResults");
@@ -367,6 +373,7 @@ TestControl.prototype = {
             elem.disabled = true;
         });
         this.start_button.onclick = function() {
+            this.runner.stop_flag = true;
             this.runner.done();
         }.bind(this);
     },
@@ -463,6 +470,7 @@ function Runner(manifest_path) {
     this.timeout = null;
     this.num_tests = null;
     this.pause_flag = false;
+    this.stop_flag = false;
     this.done_flag = false;
 
     this.start_callbacks = [];
@@ -495,6 +503,7 @@ Runner.prototype = {
 
     start: function(path, test_types, testharness_settings) {
         this.pause_flag = false;
+        this.stop_flag = false;
         this.done_flag = false;
         this.path = path;
         this.test_types = test_types;

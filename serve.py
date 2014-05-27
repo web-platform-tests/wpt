@@ -95,7 +95,7 @@ class ServerProc(object):
         self.proc.join()
 
     def is_alive(self):
-        return self.proc.is_alive
+        return self.proc.is_alive()
 
 def check_subdomains(config, paths, subdomains, bind_hostname):
     port = get_port()

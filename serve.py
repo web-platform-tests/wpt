@@ -1,17 +1,17 @@
  # -*- coding: utf-8 -*-
-import sys
-import os
-import logging
+import argparse
 import json
-import socket
+import logging
+import os
 import signal
+import socket
+import sys
 import threading
-from multiprocessing import Process, Event
-from collections import defaultdict
+import time
 import urllib2
 import uuid
-import argparse
-import time
+from collections import defaultdict
+from multiprocessing import Process, Event
 
 repo_root = os.path.abspath(os.path.split(__file__)[0])
 
@@ -93,6 +93,9 @@ class ServerProc(object):
         self.stop.set()
         self.proc.terminate()
         self.proc.join()
+
+    def is_alive(self):
+        return self.proc.is_alive()
 
 def check_subdomains(config, paths, subdomains, bind_hostname):
     port = get_port()

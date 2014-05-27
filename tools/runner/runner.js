@@ -136,6 +136,8 @@ VisualOutput.prototype = {
         if (this.json_results_area) {
             this.json_results_area.parentNode.removeChild(this.json_results_area);
         }
+        this.meter.style.width = '0px';
+        this.meter.textContent = '0%';
         this.elem.querySelector(".jsonResults").style.display = "none";
         this.results_table.removeChild(this.results_table.tBodies[0]);
         this.results_table.appendChild(document.createElement("tbody"));

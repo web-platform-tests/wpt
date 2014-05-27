@@ -2599,44 +2599,6 @@ MessagePort implements Transferable;
 
 callback PortCollectionCallback = void (MessagePort port);
 
-interface Storage {
-  readonly attribute unsigned long length;
-  DOMString? key(unsigned long index);
-  getter DOMString? getItem(DOMString key);
-  setter creator void setItem(DOMString key, DOMString value);
-  deleter void removeItem(DOMString key);
-  void clear();
-};
-
-[NoInterfaceObject]
-interface WindowSessionStorage {
-  readonly attribute Storage sessionStorage;
-};
-Window implements WindowSessionStorage;
-
-[NoInterfaceObject]
-interface WindowLocalStorage {
-  readonly attribute Storage localStorage;
-};
-Window implements WindowLocalStorage;
-
-[Constructor(DOMString type, optional StorageEventInit eventInitDict)]
-interface StorageEvent : Event {
-  readonly attribute DOMString? key;
-  readonly attribute DOMString? oldValue;
-  readonly attribute DOMString? newValue;
-  readonly attribute DOMString url;
-  readonly attribute Storage? storageArea;
-};
-
-dictionary StorageEventInit : EventInit {
-  DOMString? key;
-  DOMString? oldValue;
-  DOMString? newValue;
-  DOMString url;
-  Storage? storageArea;
-};
-
 interface HTMLAppletElement : HTMLElement {
            attribute DOMString align;
            attribute DOMString alt;
@@ -3143,10 +3105,6 @@ window.onload = function() {
 		CloseEvent: [],
 		MessageChannel: [],
 		MessagePort: [],
-		Storage: [],
-		WindowSessionStorage: ['window.sessionStorage'],
-		WindowLocalStorage: ['window.localStorage'],
-		StorageEvent: [],
 		HTMLAppletElement: ['document.createElement("applet")'],
 		HTMLMarqueeElement: ['document.createElement("marquee")'],
 		HTMLFrameSetElement: ['document.createElement("frameset")'],

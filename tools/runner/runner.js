@@ -128,6 +128,8 @@ VisualOutput.prototype = {
                 this.elem.querySelector("td." + p).textContent = 0;
             }
         }
+        this.meter.style.width = '0px';
+        this.meter.textContent = '0%';
         this.elem.querySelector(".jsonResults").style.display = "none";
         this.results_table.removeChild(this.results_table.tBodies[0]);
         this.results_table.appendChild(document.createElement("tbody"));

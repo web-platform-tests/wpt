@@ -66,8 +66,8 @@ interface UserProximityEvent : Event {
 
   idl_array.add_objects({
     Window: ['window'],
-    DeviceLightEvent: ['new DeviceProximityEvent("foo")'],
-    LightLevelEvent: ['new UserProximityEvent("foo")']
+    DeviceProximityEvent: ['new DeviceProximityEvent("foo")'],
+    UserProximityEvent: ['new UserProximityEvent("foo")']
   });
 
   idl_array.test();

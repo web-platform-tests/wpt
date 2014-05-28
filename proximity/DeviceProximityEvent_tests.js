@@ -204,13 +204,6 @@
 
     test(function() {
         var event = new DeviceProximityEvent('test', {
-            value: -1
-        });
-        assert_equals(event.value, -1);
-    }, 'value set to -1');
-
-    test(function() {
-        var event = new DeviceProximityEvent('test', {
             value: 0.5
         });
         assert_equals(event.value, 0.5);

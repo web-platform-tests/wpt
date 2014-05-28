@@ -110,7 +110,7 @@ function VisualOutput(elem, runner) {
     this.progress = this.elem.querySelector(".summary .progress");
     this.meter = this.progress.querySelector(".progress-bar");
     this.result_count = null;
-    this.json_re_area = this.elem.querySelector("textarea");
+    this.json_results_area = this.elem.querySelector("textarea");
 
     this.elem.style.display = "none";
     this.runner.start_callbacks.push(this.on_start.bind(this));
@@ -129,8 +129,8 @@ VisualOutput.prototype = {
                 this.elem.querySelector("td." + p).textContent = 0;
             }
         }
-        if (this.json_re_area) {
-            this.json_re_area.parentNode.removeChild(this.json_re_area);
+        if (this.json_results_area) {
+            this.json_results_area.parentNode.removeChild(this.json_results_area);
         }
         this.elem.querySelector(".jsonResults").style.display = "none";
         this.results_table.removeChild(this.results_table.tBodies[0]);
@@ -206,11 +206,11 @@ VisualOutput.prototype = {
         var json = this.runner.results.to_json();
 
         if (document.getElementById("dumpit").checked) {
-            this.json_re_area = document.createElement("textarea");
-            this.json_re_area.style.width = "100%";
-            this.json_re_area.setAttribute("rows", "50");
-            this.elem.appendChild(this.json_re_area);
-            this.json_re_area.textContent = json;
+            this.json_results_area = document.createElement("textarea");
+            this.json_results_area.style.width = "100%";
+            this.json_results_area.setAttribute("rows", "50");
+            this.elem.appendChild(this.json_results_area);
+            this.json_results_area.textContent = json;
         }
         var blob = new Blob([json], { type: "application/json" });
         a.href = window.URL.createObjectURL(blob);

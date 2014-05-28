@@ -20,20 +20,10 @@ t.step(function () {
 
   peer = new window.RTCPeerConnection({"iceServers": [{"url": "stun:stun.l.google.com:19302"}]});
   peer.onicecandidate = onIceCandidate;
-  connection = new WebSocket('ws://127.0.0.1:8080/');
 
   function onIceCandidate(event) {
     t.step(function () {
        assert_own_property(event, "candidate", "a new candidate is created");
-       config = {
-        type: 'candidate',
-        label: event.candidate.sdpMLineIndex,
-        id: event.candidate.sdpMid,
-        candidate: event.candidate.candidate
-       };
-       connection.send(config);
-    });
-    t.step(function () {
        t.done();
     });
   }

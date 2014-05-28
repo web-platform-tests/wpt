@@ -129,10 +129,6 @@ VisualOutput.prototype = {
                 this.elem.querySelector("td." + p).textContent = 0;
             }
         }
-        this.meter.style.width = '0px';
-        this.meter.textContent = '0%';
-        if (this.json_re_area) {
-            this.json_re_area.parentNode.removeChild(this.json_re_area);
         if (this.json_results_area) {
             this.json_results_area.parentNode.removeChild(this.json_results_area);
         }

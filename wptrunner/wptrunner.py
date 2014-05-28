@@ -332,6 +332,25 @@ class TestLoader(object):
     def load_expected_manifest(self, test_path):
         return manifestexpected.get_manifest(self.metadata_root, test_path, self.run_info)
 
+    def iter_tests(self, test_types, chunker=None):
+        manifest_items = self.test_filter(self.manifest.itertypes(*test_types))
+
+        for test_path, tests in manifest_items:
+            expected_file = self.load_expected_manifest(test_path)
+            for manifest_test in tests:
+                test = self.get_test(manifest_test, expected_file)
+                test_type = manifest_test.item_type
+                yield test_path, test_type, test
+
+    def get_disabled(self, test_types):
+        rv = defaultdict(list)
+
+        for test_path, test_type, test in self.iter_tests(test_types):
+            if test.disabled():
+                rv[test_type].append(test)
+
+        return rv
+
     def load_tests(self, test_types, chunk_type, total_chunks, chunk_number):
         """Read in the tests from the manifest file and add them to a queue"""
         rv = defaultdict(list)
@@ -343,13 +362,9 @@ class TestLoader(object):
                    "equal_time": EqualTimeChunker}[chunk_type](total_chunks,
                                                                chunk_number)
 
-        for test_path, tests in chunker(manifest_items):
-            expected_file = self.load_expected_manifest(test_path)
-            for manifest_test in tests:
-                test = self.get_test(manifest_test, expected_file)
-                test_type = manifest_test.item_type
-                if not test.disabled():
-                    rv[test_type].append(test)
+        for test_path, test_type, test in self.iter_tests(test_types, chunker):
+            if not test.disabled():
+                rv[test_type].append(test)
 
         return rv
 
@@ -429,6 +444,16 @@ def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
 
     for item in sorted(test_loader.get_groups(test_types)):
         print item
+
+def list_disabled(tests_root, metadata_root, test_types, product, **kwargs):
+    rv = []
+    run_info = wpttest.get_run_info(product, debug=False)
+    test_loader = TestLoader(tests_root, metadata_root, TestFilter(), run_info)
+
+    for test_type, tests in test_loader.get_disabled(test_types).iteritems():
+        for test in tests:
+            rv.append({"test": test.id, "reason": test.disabled()})
+    print json.dumps(rv, indent=2)
 
 def run_tests(tests_root, metadata_root, product, **kwargs):
     logging_queue = None
@@ -564,5 +589,7 @@ def main():
 
     if args.list_test_groups:
         list_test_groups(**kwargs)
+    elif args.list_disabled:
+        list_disabled(**kwargs)
     else:
         return run_tests(**kwargs)

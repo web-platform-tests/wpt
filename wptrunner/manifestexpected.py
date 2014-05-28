@@ -73,11 +73,9 @@ class TestNode(ManifestItem):
 
     def disabled(self):
         try:
-            self.get("disabled")
+            return self.get("disabled")
         except KeyError:
             return False
-        else:
-            return True
 
     def append(self, node):
         child = ManifestItem.append(self, node)

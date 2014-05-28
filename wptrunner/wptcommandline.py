@@ -62,6 +62,9 @@ def create_parser(allow_mandatory=True):
     parser.add_argument("--list-test-groups", action="store_true",
                         default=False,
                         help="List the top level directories containing tests that will run.")
+    parser.add_argument("--list-disabled", action="store_true",
+                        default=False,
+                        help="List the tests that are disabled on the current platform")
 
     parser.add_argument("--timeout-multiplier", action="store", type=float, default=1,
                         help="Multiplier relative to standard test timeout to use")

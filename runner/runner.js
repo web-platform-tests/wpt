@@ -353,7 +353,7 @@ TestControl.prototype = {
             var test_types = this.get_test_types();
             var settings = this.get_testharness_settings();
             this.runner.start(path, test_types, settings);
-            if (this.runner.manifest_iterator.count() > 0){
+            if (this.runner.manifest_iterator.count() > 0) {
                 this.set_stop();
                 this.set_pause();
             }
@@ -516,8 +516,8 @@ Runner.prototype = {
                 callback();
             });
             this.run_next_test();
-        }else{
-            alert('No test case found to run ...');
+        } else {
+            alert('No tests found.');
         }
     },
 

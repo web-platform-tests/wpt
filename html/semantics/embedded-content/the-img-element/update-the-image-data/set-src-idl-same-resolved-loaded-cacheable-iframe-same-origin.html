@@ -1,0 +1,49 @@
+<!doctype html>
+<title>img set .src IDL attribute to same resolved value (loaded, cacheable) in iframe, same-origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/common.js"></script>
+<div id=log></div>
+<script>
+var url_settings = {
+  cached: "yes",
+  animated: "no",
+  delay: "no",
+  broken: "no",
+};
+var expected_requests = '1';
+var expected_props = {
+  width: 1,
+  height: 1,
+  complete: true,
+};
+
+async_test(function() {
+  var img = new Image();
+  var url = make_url(url_settings);
+  var url_put = url + 'put';
+  var url_take = url + 'take';
+  img.onload = this.step_func(function() {
+    check_props(img, expected_props);
+    img.onload = this.unreached_func("got second load event");
+    var iframe = document.createElement('iframe');
+    iframe.src = 'resources/blank.html';
+    document.body.appendChild(iframe);
+    iframe.onload = this.step_func(function() {
+      var doc = iframe.contentDocument;
+      var img2 = doc.createElement('img');
+      img2.onload = this.step_func(function() {
+        check_props(img2, expected_props);
+        this.step(check_requests(url_take, expected_requests));
+        img2.onload = this.unreached_func("got second load event in iframe");
+      });
+      img2.onerror = this.unreached_func("got error event in iframe")
+      doc.body.appendChild(img2);
+      img2.src = url_put.replace('resources/', '');
+    });
+  });
+  img.onerror = this.unreached_func("got error event");
+  img.src = url_put;
+});
+</script>

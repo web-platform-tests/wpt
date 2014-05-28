@@ -31,7 +31,7 @@ async_test(function() {
       this.step(check_requests(url_take, expected_requests));
       img.onload = this.unreached_func("got third load event");
     });
-    img.src = url_put '#';
+    img.src = url_put + '#';
   });
   img.onerror = this.unreached_func("got error event");
   img.src = url_put;

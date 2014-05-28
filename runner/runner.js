@@ -366,9 +366,11 @@ TestControl.prototype = {
             var path = this.get_path();
             var test_types = this.get_test_types();
             var settings = this.get_testharness_settings();
-            this.set_stop();
-            this.set_pause();
             this.runner.start(path, test_types, settings);
+            if (this.runner.manifest_iterator.count() > 0) {
+                this.set_stop();
+                this.set_pause();
+            }
         }.bind(this);
     },
 
@@ -528,11 +530,15 @@ Runner.prototype = {
     },
 
     do_start: function() {
-        this.open_test_window();
-        this.start_callbacks.forEach(function(callback) {
-            callback();
-        });
-        this.run_next_test();
+        if (this.manifest_iterator.count() > 0) {
+            this.open_test_window();
+            this.start_callbacks.forEach(function(callback) {
+                callback();
+            });
+            this.run_next_test();
+        } else {
+            alert('No tests found.');
+        }
     },
 
     pause: function() {

@@ -80,11 +80,11 @@ def setup_stdlib_logger():
 
 
 def do_test_relative_imports(test_root):
-    global serve
+    global serve, manifest
 
     sys.path.insert(0, os.path.join(test_root))
     sys.path.insert(0, os.path.join(test_root, "tools", "scripts"))
-    import serve
+    import serve, manifest
 
 
 class TestEnvironmentError(Exception):
@@ -161,10 +161,9 @@ class TestEnvironment(object):
 
     def restore_files(self):
         for path in self.files_to_restore:
+            os.unlink(path)
             if os.path.exists(path + ".orig"):
                 os.rename(path + ".orig", path)
-            else:
-                os.unlink(path)
 
 class TestChunker(object):
     def __init__(self, total_chunks, chunk_number):
@@ -315,12 +314,21 @@ class TestLoader(object):
         self.metadata_root = metadata_root
         self.test_filter = test_filter
         self.run_info = run_info
+        self.manifest_path = os.path.join(self.metadata_root, "MANIFEST.json")
         self.manifest = self.load_manifest()
         self.tests = None
 
+    def create_manifest(self):
+        logger.info("Creating test manifest")
+        manifest.setup_git(self.test_path)
+        manifest_file = manifest.Manifest(None)
+        manifest.update(manifest_file)
+        manifest.write(manifest_file, self.manifest_path)
+
     def load_manifest(self):
-        metadata.do_test_relative_imports(self.tests_root)
-        return metadata.manifest.load(os.path.join(self.metadata_root, "MANIFEST.json"))
+        if not os.path.exists(self.manifest_path):
+            self.create_manifest()
+        return manifest.load(self.manifest_path)
 
     def get_test(self, manifest_test, expected_file):
         if expected_file is not None:
@@ -514,6 +522,7 @@ def run_tests(tests_root, metadata_root, product, **kwargs):
                 unexpected_count = 0
                 logger.suite_start(test_ids, run_info)
                 for test_type in kwargs["test_types"]:
+                    logger.info("Running %s tests" % test_type)
                     tests_queue = test_queues[test_type]
 
                     executor_cls = executor_classes.get(test_type)

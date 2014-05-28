@@ -12,7 +12,7 @@ from mozprofile import FirefoxProfile, Preferences
 from mozprofile.permissions import ServerLocations
 from mozrunner import FirefoxRunner
 
-from .base import get_free_port, Browser, ExecutorBrowser, require_arg
+from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
 from ..executors.executorwebdriver import WebdriverTestharnessExecutor
 
 here = os.path.split(__file__)[0]
@@ -53,7 +53,9 @@ class ChromeBrowser(Browser):
         self.cmd = None
 
     def start(self):
-        self.cmd = [self.binary, "--port=%i" % self.webdriver_port, "--url-base=wd/url"]
+        self.cmd = [self.binary,
+                    cmd_arg("port", str(self.webdriver_port)),
+                    cmd_arg("url-base", "wd/url")]
         self.proc = mozprocess.ProcessHandler(self.cmd, processOutputLine=self.on_output)
         self.logger.debug("Starting chromedriver")
         self.proc.run()

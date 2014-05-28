@@ -1,4 +1,5 @@
 import os
+import platform
 import shutil
 import socket
 import subprocess
@@ -19,6 +20,13 @@ def require_arg(kwargs, name):
     if not name in kwargs or kwargs[name] is None:
         print >> sys.stderr, "Missing required argument %s" % name
         sys.exit(1)
+
+def cmd_arg(name, value=None):
+    prefix = "-" if platform.system() == "Windows" else "--"
+    rv = prefix + name
+    if value is not None:
+        rv += "=" + value
+    return rv
 
 def get_free_port(start_port, exclude=None):
     """Get the first port number after start_port (inclusive) that is

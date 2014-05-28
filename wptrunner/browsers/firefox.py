@@ -9,7 +9,7 @@ from mozprofile import FirefoxProfile, Preferences
 from mozprofile.permissions import ServerLocations
 from mozrunner import FirefoxRunner
 
-from .base import get_free_port, Browser, ExecutorBrowser, require_arg
+from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
 from ..executors import get_executor_kwargs
 from ..executors.executormarionette import MarionetteTestharnessExecutor, MarionetteReftestExecutor
 
@@ -61,7 +61,7 @@ class FirefoxBrowser(Browser):
 
         self.runner = FirefoxRunner(profile,
                                     self.binary,
-                                    cmdargs=["--marionette", "about:blank"],
+                                    cmdargs=[cmd_arg("marionette"), "about:blank"],
                                     env=env,
                                     kp_kwargs={"processOutputLine": [self.on_output]},
                                     process_class=ProcessHandler)

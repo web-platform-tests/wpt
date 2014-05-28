@@ -102,7 +102,7 @@
   }, 'type argument is complex object, with toString method');
 
   test(function() {
-    assert_throws(null, function() {
+    assert_throws(new TypeError(), function() {
       new DeviceLightEvent({
         toString: function() {
           return function() {}
@@ -314,22 +314,20 @@
     assert_equals(event.value, 123, 'converts to 123');
   }, 'value resolves 123');
 
+  //test attribute EventHandler ondevicelight;
   test(function() {
-    var desc = 'Expected to find ondevicelight attribute on window object';
-    assert_idl_attribute(window, 'ondevicelight', desc);
-  }, 'ondevicelight event hander attribute must be on window object.');
+    var desc = 'window.ondevicelight did not accept callable object',
+        descidl = 'Expected to find ondevicelight attribute on window object',
+        func = function() {};
+    assert_idl_attribute(window, 'ondevicelight', descidl);
+    window.ondevicelight = func;
+    assert_equals(window.ondevicelight, func, desc);
+  }, 'expected ondevicelight on window and to be set to function');
 
   test(function() {
     var desc = 'window.ondevicelight must be null';
     assert_equals(window.ondevicelight, null, desc);
   }, 'ondevicelight is null');
-
-  test(function() {
-    var desc = 'window.ondevicelight did not accept callable object',
-        func = function() {};
-    window.ondevicelight = func;
-    assert_equals(window.ondevicelight, func, desc);
-  }, 'ondevicelight set to function');
 
   test(function() {
     var desc = 'window.ondevicelight did not treat noncallable as null';

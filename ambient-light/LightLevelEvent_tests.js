@@ -102,7 +102,7 @@
   }, 'type argument is complex object, with toString method');
 
   test(function() {
-    assert_throws(null, function() {
+    assert_throws(new TypeError(), function() {
       new LightLevelEvent({
         toString: function() {
           return function() {}
@@ -274,21 +274,18 @@
 
   //test attribute EventHandler onlightlevel;
   test(function() {
-    var desc = 'Expected to find onlightlevel attribute on window object';
-    assert_idl_attribute(window, 'onlightlevel', desc);
-  }, 'onlightlevel event hander attribute must be on window object.');
+    var desc = 'window.onlightlevel did not accept callable object',
+        desc = 'Expected to find onlightlevel attribute on window object',
+        func = function() {};
+    assert_idl_attribute(window, 'onlightlevel', descidl);
+    window.onlightlevel = func;
+    assert_equals(window.onlightlevel, func, desc);
+  }, 'expected onlightlevel on window and to be set to function');
 
   test(function() {
     var desc = 'window.onlightlevel must be null';
     assert_equals(window.onlightlevel, null, desc);
   }, 'onlightlevel is null');
-
-  test(function() {
-    var desc = 'window.onlightlevel did not accept callable object',
-        func = function() {};
-    window.onlightlevel = func;
-    assert_equals(window.onlightlevel, func, desc);
-  }, 'onlightlevel set to function');
 
   test(function() {
     var desc = 'window.onlightlevel did not treat noncallable as null';

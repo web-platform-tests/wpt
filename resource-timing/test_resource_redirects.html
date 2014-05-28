@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Resource Timing redirect names</title>
+<link rel="author" title="Google" href="http://www.google.com/" />
+<link rel="help" href="http://www.w3.org/TR/resource-timing/#performanceresourcetiming"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/webperftestharness.js"></script>
+<script src="resources/webperftestharnessextension.js"></script>
+<script>
+// explicitly test the namespace before we start testing
+test_namespace("getEntriesByType");
+
+var iframe;
+var index = window.location.pathname.lastIndexOf('/');
+var pathname = window.location.pathname.substring(0, index) + '/';
+
+function setup_iframe() {
+    var iframe_content =
+        '<link rel="stylesheet" href="' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=css"></link>' +
+        '<img src="' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=image"></img>' +
+        '<iframe src="' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe"></iframe>' +
+        '<script src="' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=script"></scr' + 'ipt>' +
+        '<script>' +
+        'var xhr = new XMLHttpRequest;' +
+        'xhr.open("GET", "' + pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe%26id=xhr", false);' +
+        'xhr.send();' +
+        '</scr' + 'ipt>';
+    iframe = document.getElementById('frameContext');
+    iframe.contentWindow.document.write(iframe_content);
+}
+function onload_test() {
+    if (window.performance.getEntriesByType === undefined) {
+      return;
+    }
+
+    var context = new PerformanceContext(iframe.contentWindow.performance);
+    var entries = context.getEntriesByType('resource');
+
+    var index = window.location.pathname.lastIndexOf('/');
+    var pathname = window.location.pathname.substring(0, index) + '/';
+
+    var expected_entries = { };
+
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=css' ] = 'link';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=image' ] = 'img';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe' ] = 'iframe';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=script' ] = 'script';
+    expected_entries[ pathname + '/common/redirect.py?location=' + pathname + 'resources/generate_resource.php%3Ftype=iframe%26id=xhr' ] = 'xmlhttprequest';
+
+    test_resource_entries(entries, expected_entries);
+}
+window.setup_iframe = setup_iframe;
+</script>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test validates that redirects do not alter the URL.</p>
+<div id="log"></div>
+<iframe id="frameContext" onload="onload_test();" src="resources/inject_resource_test.html"></iframe>
+</body>
+</html>

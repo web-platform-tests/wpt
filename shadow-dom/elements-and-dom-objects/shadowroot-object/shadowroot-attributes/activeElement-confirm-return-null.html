@@ -10,10 +10,11 @@ policies and contribution forms [3].
 -->
 <html>
 <head>
-<title>Shadow DOM Test: A_10_01_01_03_02</title>
+<title>Shadow DOM Test: Confirm activeElement return null</title>
 <link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#shadow-root-attributes">
-<meta name="assert" content="ShadowRoot Object: readonly attribute Element? activeElement; null value">
+<link rel="author" title="Masaya Iseki" href="mailto:iseki.m.aa@gmail.com">
+<link rel="help" href="http://w3c.github.io/webcomponents/spec/shadow/#attributes">
+<meta name="assert" content="ShadowRoot Object: confirm activeElement return null">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../../testcommon.js"></script>
@@ -27,14 +28,12 @@ test(unit(function (ctx) {
 	var d = newRenderedHTMLDocument(ctx);
 
 	var host = d.createElement('div');
-	host.setAttribute('id', 'shRoot');
 	d.body.appendChild(host);
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
-    assert_equals(s.activeElement, null, 'activeElement attribute of the ShadowRoot ' +
-    		'must return null if there\'s no focused element');
+    assert_equals(s.activeElement, null, 'activeElement attribute of the ShadowRoot must return null if there\'s no focused element');
 
-}), 'A_10_01_01_03_02_T01');
+}), 'confirm activeElement return null');
 
 
 test(unit(function (ctx) {
@@ -42,22 +41,17 @@ test(unit(function (ctx) {
 	var d = newRenderedHTMLDocument(ctx);
 
 	var host = d.createElement('div');
-	host.setAttribute('id', 'shRoot');
 	d.body.appendChild(host);
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var inp = d.createElement('input');
-	inp.setAttribute('type', 'text');
-	inp.setAttribute('id', 'inpId');
-	inp.setAttribute('value', 'Some text');
 	d.body.appendChild(inp);
 
 	inp.focus();
 
-    assert_equals(s.activeElement, null, 'activeElement attribute of the ShadowRoot ' +
-    		'must return null if there\'s no focused element in the shadow tree');
+    assert_equals(s.activeElement, null, 'activeElement attribute of the ShadowRoot must return null if there\'s no focused element in the shadow tree');
 
-}), 'A_10_01_01_03_02_T02_01');
+}), 'confirm activeElement return null when there is other element in body');
 
 
 test(unit(function (ctx) {
@@ -65,27 +59,20 @@ test(unit(function (ctx) {
 	var d = newRenderedHTMLDocument(ctx);
 
 	var host = d.createElement('div');
-	host.setAttribute('id', 'shRoot');
 	d.body.appendChild(host);
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var inp = d.createElement('input');
-	inp.setAttribute('type', 'text');
-	inp.setAttribute('id', 'inpId');
-	inp.setAttribute('value', 'Some text');
 	d.body.appendChild(inp);
 
 	var inp2 = d.createElement('input');
-	inp2.setAttribute('type', 'text');
-	inp2.setAttribute('value', 'Some text 2');
 	s.appendChild(inp2);
 
 	inp.focus();
 
-    assert_equals(s.activeElement, null, 'activeElement attribute of the ShadowRoot ' +
-    		'must return null if there\'s no focused element in the shadow tree');
+    assert_equals(s.activeElement, null, 'activeElement attribute of the ShadowRoot must return null if there\'s no focused element in the shadow tree');
 
-}), 'A_10_01_01_03_02_T02_02');
+}), 'confirm activeElement return null when focus on the element in the outer shadow tree');
 </script>
 </body>
 </html>

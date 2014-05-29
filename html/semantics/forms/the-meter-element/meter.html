@@ -92,6 +92,10 @@
         }, "If a value larger than or equal to 0 is given to max and min is not specified, max must be the same value as the default value of min (i.e. 0)");
 
       test(function() {
+          assert_equals(document.getElementById('meter_max_without_min_2').min, 0);
+        }, "If a value larger than or equal to 0 is given to max and min is not specified, min must be the same value as its default value (i.e. 0)");
+
+      test(function() {
           assert_equals(document.getElementById('meter_max_without_min_2').value, 0);
         }, "If a value larger than or equal to 0 is given to max and min is not specified, the actual value must be the same value as the default value of min (i.e. 0)");
 

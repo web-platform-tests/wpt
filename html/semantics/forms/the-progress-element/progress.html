@@ -42,28 +42,32 @@
       }, "Indeterminate progress bar should have value 0");
 
       test(function() {
-        assert_equals(largerthanmax.value, 1);
-      }, "Value should equal max if the parsed value is larger than max");
+        assert_array_equals(largerthanmax.value, 1);
+      }, "Value must equal max if the parsed value is larger than max");
 
       test(function() {
         assert_equals(indeterminate.max, 1);
-      }, "Max should be 1 by default");
+      }, "Max must be 1 by default");
+
+      test(function() {
+        assert_array_equals(largerthanmax.max, 1);
+      }, "Max must be 1 by default, even if value is specified");
 
       test(function() {
         assert_equals(invalidmax.max, 1);
-      }, "Max should be 1 if max value is invalid");
+      }, "Max must be 1 if max value is invalid");
 
       test(function() {
         assert_equals(negativemax.max, 1);
-      }, "Max should be 1 if the parsed max value is less than or equal to zero");
+      }, "Max must be 1 if the parsed max value is less than or equal to zero");
 
       test(function() {
         assert_equals(invalidvalue.value, 0);
-      }, "Value should be 0 if value is invalid");
+      }, "Value must be 0 if value is invalid");
 
       test(function() {
         assert_equals(negativevalue.value, 0);
-      }, "Value should be 0 if the parsed value is less than or equal to zero");
+      }, "Value must be 0 if the parsed value is less than or equal to zero");
 
     </script>
   </body>

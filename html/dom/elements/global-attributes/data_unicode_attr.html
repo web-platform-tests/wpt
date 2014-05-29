@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html >
+ <head>
+  <meta charset="utf-8">
+  <title> New Document </title>
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+ </head>
+
+ <body>
+  
+<div id="spaceship" data-ship-id="92432"
+     data-weapons="laser 2" data-shields="50%"
+     data-x="30" data-y="10" data-z="90"  data-中文属性="chineseValue">
+ <!--
+ <button class="fire"
+         onclick="alert(this.parentNode.dataset.bbb)">
+  Fire
+ </button>
+ -->
+</div>
+ <script>
+ 
+
+ test(function() {
+    var spaceship = document.getElementById("spaceship");
+    assert_equals(spaceship.dataset.weapons, "laser 2");
+	 }, "Test dataset.weapons equals to 'laser 2'");
+
+ test(function() {
+    var spaceship = document.getElementById("spaceship");
+    assert_equals(spaceship.dataset.中文属性, "chineseValue");
+	 }, "Test dataset.中文属性 equals to 'chineseValue'");
+
+
+
+
+ </script>
+
+<div id='log'></div>
+ </body>
+</html>

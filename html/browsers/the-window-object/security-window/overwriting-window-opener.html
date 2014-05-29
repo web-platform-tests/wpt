@@ -3,6 +3,7 @@
     <title>Tests for overwritten window.opener</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <meta name="timeout" content="long">
 </head>
 <body>
     <div id="log"></div>
@@ -17,24 +18,25 @@
 
         * In which cases can window.opener be read cross-domain?
 
+        * Does the rewritten opener keep its value across navigations?
+
         A new popup window is opened for each subtest.
     */
 
     var expectations = {
             "setting_succeeds": true,
             "setting_throws": false,
-            "reading_throws": true,
-            "null with var - after navigation": {stringified_opener:'null'},
-            "null without var - after navigation": {stringified_opener:'null'}
+            "reading_throws": false, /* reading for a different origin should return original property, not throw */
+            "null with var - after navigation": {stringified_opener:'null', real_opener: null},
+            "null without var - after navigation": {stringified_opener:'null', real_opener: null}
     }
-    setup({timeout: 480000, explicit_done: true});
+    setup({explicit_done: true});
     var idx = 0, win;
     var testURL = location.pathname.replace('overwriting-window-opener.html', 'support/window-opener-popup.html');
     testURL = location.protocol + '//' + 'www1.' + location.host + testURL + '?';
 
     window.addEventListener('message', function (e) {
         if(e.data === 'DONE'){
-            // this test is just an empty wrapper for the sub-tests, it doesn't assert anything
             done();
             return;
         }
@@ -55,9 +57,9 @@
                 assert_equals(data.setting_succeeds, expectations.setting_succeeds);
             }, data.name +' setting succeeds');
             test(function(){
-                assert_equals(reading_throws, expectations.reading_throws, 'opener set to '+ data.name+' - reading should throw ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
-                assert_false(opener_is_this_window, 'Opener no longer refers to this window when it\'s been set');
-            }, data.name +' getting redefined property (from opener, different origin) throws');
+                assert_equals(reading_throws, expectations.reading_throws, 'opener set to '+ data.name+' - reading should not throw ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
+                assert_true(opener_is_this_window, 'popup.opener seen from other origin still refers to this window, even though it has been set inside the popup');
+            }, data.name +' getting redefined property (from opener, different origin) returns original value');
         }else if(data.step === 'post-nav'){
             if(expectations[data.name]){ // this is a special case..
                 test(function(){
@@ -65,7 +67,7 @@
                     assert_equals(data.stringified_opener, expectations[data.name].stringified_opener);
                 }, data.name + ', stringifying throws?');
                 test(function(){
-                    assert_equals(win.opener, null);
+                    assert_equals(win.opener, expectations[data.name].real_opener);
                     assert_false(opener_is_this_window, 'is win.opener self?');
                 }, data.name + ', win.opener read from opener is null');
             }else{
@@ -75,14 +77,14 @@
                 }, data.name + ', stringifying throws');
                 test(function(){
                     assert_true(opener_is_this_window);
-                }, data.name + ', win.opener read from opener is self');
+                }, data.name + ', win.opener read from opener after navigation is self');
             }
             if(data.name.indexOf('window')>-1){
                 // special case: opener was set to 'window' (i.e. the popup's window object) before navigating
-                // maybe this is persistent in some UAs?
+                // maybe this is persistent in some UAs? It should not be, let's double-check:
                 test(function(){
                     assert_false(data.is_self);
-                }, data.name + ', window.opener read from popup is not self');
+                }, data.name + ', window.opener read from popup is not self (even when opener was set to self before navigation)');
             }
 
             win = window.open(testURL + 'idx=' + (parseInt(data.idx)+1));

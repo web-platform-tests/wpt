@@ -83,7 +83,11 @@ class FirefoxBrowser(Browser):
     def stop(self):
         self.logger.debug("Stopping browser")
         if self.runner is not None:
-            self.runner.stop()
+            try:
+                self.runner.stop()
+            except OSError:
+                # This can happen on Windows if the process is already dead
+                pass
 
     def pid(self):
         if self.runner.process_handler is not None:

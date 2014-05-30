@@ -46,6 +46,10 @@ test(function() {
 
 // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00061
 test(function() {
-  geo.watchPosition(dummyFunction, dummyFunction, 4);
-}, 'Call watchPosition() with wrong type for third argument. No exception expected.');
+  assert_throws(new TypeError(), function() {
+    geo.watchPosition(dummyFunction, dummyFunction, 4);
+  });
+}, 'Call watchPosition() with wrong type for third argument. Exception expected.');
+
+done();
 </script>

@@ -46,6 +46,10 @@ test(function() {
 
 // Rewrite http://dev.w3.org/geo/api/test-suite/t.html?00030
 test(function() {
-  geo.getCurrentPosition(dummyFunction, dummyFunction, 4);
-}, 'Call getCurrentPosition() with wrong type for third argument. No exception expected.');
+  assert_throws(new TypeError(), function() {
+    geo.getCurrentPosition(dummyFunction, dummyFunction, 4);
+  });
+}, 'Call getCurrentPosition() with wrong type for third argument. Exception expected.');
+
+done();
 </script>

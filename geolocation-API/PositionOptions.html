@@ -96,11 +96,11 @@ test(function() {
     geo.watchPosition(
         t92.step_func(function(pos) {
           assert_unreached('A success callback was invoked unexpectedly');
-          t92.done();
+          done();
         }),
         t92.step_func(function(err) {
           assert_equals(err.code, err.TIMEOUT);
-          t92.done();
+          done();
         }),
         {timeout: -1, maximumAge: 0}
     );

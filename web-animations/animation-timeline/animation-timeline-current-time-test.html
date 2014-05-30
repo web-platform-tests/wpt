@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Animation timeline currentTime attribute test</title>
+<meta name="assert" content="Animation timeline currentTime attribute returns the time value for this timeline or null if this timeline is not started">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var doc = newHTMLDocument();
+    var timeline = doc.timeline;
+    assert_not_equals(timeline.currentTime, null,
+        'Time value for the timeline should not be null');
+}, 'If timeline is started time value for this timeline is not null');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var timeline = doc.timeline;
+    assert_readonly(timeline, 'currentTime', 'Timeline attribute should be readonly');
+}, 'Timeline attribute readonly test');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var timeline = doc.timeline;
+    assert_greater_than(timeline.currentTime, 0,
+        'Time value for the timeline should be greater than zero');
+}, 'Timeline value is greater than zero test');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var timeline = doc.timeline;
+    
+    assert_equals(window.performance.timing.navigationStart + timeline.currentTime,
+            (new Date()).getTime(), 'Time value for the timeline should be relative to ' +
+            'navigationStart moment');
+}, 'Time value for the timeline is relative to navigationStart moment');
+</script>
+</body>

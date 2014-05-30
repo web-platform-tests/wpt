@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Animation timeline play() method test. Test playbackRate attribute initial value of newly-created AnimationPlayer</title>
+<meta name="assert" content="Default value of the playbackRate attribute is 1">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var doc = newHTMLDocument();
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var player = doc.timeline.play(new Animation(animationTarget, [], 100));
+
+    assert_equals(player.playbackRate, 1,
+        'Initial value of the playbackRate attribute of the newly-created AnimationPlayer ' +
+        'object should be 1');
+}, 'Test playbackRate attribute initial value of newly-created AnimationPlayer');
+</script>
+</body>

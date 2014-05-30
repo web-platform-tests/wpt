@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<title>Animation player playbackRate attribute test</title>
+<meta name="assert" content="Returns the playback rate of this player. Setting this attribute follows the procedure defined in section 3.5.3.1 Updating the playback rate.">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-playbackRate">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [], 5);
+    return doc.timeline.play(animation);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_not_equals(player.playbackRate, null,
+        'The value of AnimationPlayer.playbackRate attribute should not be of type null');
+}, 'The value of AnimationPlayer.playbackRate attribute should not be null');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_throws('TypeError',function () {
+        player.playbackRate = [];
+    }, 'TypeError should be thrown if AnimationPlayer.playbackRate attribute ' +
+        'is set to not double value');
+}, 'Test that TypeError is thrown if AnimationPlayer.playbackRate attribute ' +
+    'is set to not double value');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    var newPlaybackRate = player.playbackRate + 1;
+    player.playbackRate = newPlaybackRate;
+
+    assert_equals(player.playbackRate, newPlaybackRate,
+        'The value of AnimationPlayer.playbackRate attribute should be set to the new value');
+}, 'Test setting value of AnimationPlayer.playbackRate attribute');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_not_equals(player.playbackRate, 0,
+        'The value of AnimationPlayer.playbackRate attribute should not be 0');
+
+    var newPlaybackRate = (-1) * (player.playbackRate + 1);
+    var previousTime = player.currentTime;
+    player.playbackRate = newPlaybackRate;
+
+    assert_equals(player.playbackRate, newPlaybackRate,
+        'The value of AnimationPlayer.playbackRate attribute should be set to the new value');
+    assert_equals(player.currentTime, previousTime,
+        'The value of AnimationPlayer.currentTime attribute should be set to the ' +
+        'effective current time before setting new playback value');
+    assert_false(player.finished, 'Finished flag should be set to the false')
+}, 'Test setting value of AnimationPlayer.playbackRate attribute. ' +
+    'New value for the playback rate differs in sign');
+</script>
+</body>

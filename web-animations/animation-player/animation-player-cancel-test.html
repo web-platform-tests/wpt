@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>Animation player cancel method test</title>
+<meta name="assert" content="Set source to null and clears all effects associated with the previous source content">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-cancel-void">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<iframe id="iframe" src="../resources/blank.html"></iframe>
+<script>
+function newAnimation(doc) {
+    var animationTarget = doc.createElement('div');
+    animationTarget.style.width = '25px';
+    doc.body.appendChild(animationTarget);
+    return new Animation(animationTarget, [
+	    {width: "10px", offset: 0},
+	    {width: "100px", offset: 1/2},
+	    {width: "200px", offset: 1}], 1000);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play(newAnimation(doc));
+    player.cancel();
+
+    assert_equals(player.source, null, 'Value of AnimationPlayer.source attribute ' +
+        'should be null');
+}, 'Test that value of the AnimationPlayer.source attribute is null after ' +
+    'AnimationPlayer.cancel() call');
+
+
+test(function() {
+    var iframe = document.querySelector('#iframe');
+    var doc = iframe.contentWindow.document;
+    var animation = newAnimation(doc);
+    var player = doc.timeline.play(animation);
+
+    player.currentTime = 500;
+    assert_equals(animation.target.clientWidth, 100, 'Animation effect should take place');
+    
+    player.cancel();
+    assert_equals(animation.target.clientWidth, 25, 'Animation effect should be cleared');
+}, 'Test that animation effect is cleared by AnimationPlayer.cancel() call');
+
+document.querySelector('#iframe').remove();
+</script>
+</body>

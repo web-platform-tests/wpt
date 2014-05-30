@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<title>Animation player onfinish callback test</title>
+<meta name="assert" content="The event handler for the finish event">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-onfinish">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [
+        {top: "0px", offset: 0}, 
+        {top: "100px", offset: 1/2}, 
+        {top: "200px", offset: 1}], 1000);
+    var player = doc.timeline.play(animation);
+    player.onFinishCounter = 0;
+    player.onfinish = function() {
+        this.onFinishCounter++;
+    };
+    return player;
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_equals(player.onFinishCounter, 0, 'AnimationPlayer.onfinish callback ' +
+        'should not be called if player is not finished');
+}, 'AnimationPlayer.onfinish callback is not called if player is not finished');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+    player.finish();
+
+    assert_equals(player.onFinishCounter, 1, 'AnimationPlayer.onfinish callback should be ' +
+        'called if player is finished');
+}, 'AnimationPlayer.onfinish callback is called if player is finished');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    player.currentTime = 900;
+    assert_equals(player.onFinishCounter, 0, 'AnimationPlayer.onfinish callback should not be ' +
+        'called if player is not finished');
+
+    player.currentTime = 1100;
+    assert_equals(player.onFinishCounter, 1, 'AnimationPlayer.onfinish callback should be ' +
+        'called if player is finished');
+}, 'AnimationPlayer.onfinish callback should be called if player end time ' +
+    'is reached');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    player.currentTime = 900;
+    assert_equals(player.onFinishCounter, 0, 'AnimationPlayer.onfinish callback should not be ' +
+        'called if player is not finished');
+
+    player.currentTime = 1100;
+    assert_equals(player.onFinishCounter, 1, 'AnimationPlayer.onfinish callback should be ' +
+        'called if player is finished');
+
+    player.currentTime = 900;
+    assert_equals(player.onFinishCounter, 1, 'AnimationPlayer.onfinish callback should not be ' +
+        'called if player is not finished');
+
+    player.currentTime = 1100;
+    assert_equals(player.onFinishCounter, 2, 'AnimationPlayer.onfinish callback should be ' +
+        'called if player is finished');
+}, 'AnimationPlayer.onfinish callback should be called if player end time ' +
+    'is reached several times');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+    player.playbackRate = -1;
+
+    player.currentTime = 100;
+    assert_equals(player.onFinishCounter, 0, 'AnimationPlayer.onfinish callback should not be ' +
+        'called if player is not finished');
+
+    player.currentTime = -100;
+    assert_equals(player.onFinishCounter, 1, 'AnimationPlayer.onfinish callback should be ' +
+        'called if player is finished');
+
+}, 'The value of AnimationPlayer.finished attribute should be true if player ' +
+    'playback rate < 0 and effective current time <= zero.');
+</script>
+</body>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<title>Animation player finished attribute test</title>
+<meta name="assert" content="A boolean value that is true if this player has reached or passed the end of its source content in its current playback direction">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-finished">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [
+        {top: "0px", offset: 0}, 
+        {top: "100px", offset: 1/2}, 
+        {top: "200px", offset: 1}], 1000);
+    return doc.timeline.play(animation);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_readonly(player, 'finished', 'AnimationPlayer.finished attribute should be readonly');
+}, 'AnimationPlayer.finished attribute readonly test');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_false(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'false if player is not finished');
+}, 'The value of AnimationPlayer.finished attribute should be false if player is not finished');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+    player.finish();
+
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'true if player is finished');
+}, 'The value of AnimationPlayer.finished attribute should be false if player is finished');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    player.currentTime = 900;
+    assert_false(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'false if player is not finished');
+
+    player.currentTime = 1100;
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'true if player is finished');
+}, 'The value of AnimationPlayer.finished attribute should be true if player end time ' +
+    'is reached');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+    player.playbackRate = -1;
+
+    player.currentTime = 100;
+    assert_false(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'false if player is not finished');
+
+    player.currentTime = -100;
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'true if player is finished');
+}, 'The value of AnimationPlayer.finished attribute should be true if player ' +
+    'playback rate < 0 and effective current time <= zero.');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    player.currentTime = 900;
+    assert_false(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'false if player is not finished');
+
+    player.currentTime = 1100;
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'true if player is finished');
+
+    player.currentTime = 900;
+    assert_false(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'false again if player is not finished');
+
+    player.currentTime = 1100;
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
+        'true again if player is finished');
+}, 'The value of AnimationPlayer.finished attribute should be true if player end time ' +
+    'is reached several times');
+
+</script>
+</body>

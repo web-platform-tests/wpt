@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>Animation timeline play() method test</title>
+<meta name="assert" content="Animation timeline play() method creates a new AnimationPlayer object">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [], 5);
+    return doc.timeline.play(animation);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_not_equals(player, null, 'Player created by AnimationTimeline.play() method ' +
+        'cannot be null');
+}, 'Player created by AnimationTimeline.play() method cannot be null');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
+        'AnimationTimeline.play() method should be AnimationPlayer object instance');
+}, 'Player created by AnimationTimeline.play() method should be AnimationPlayer ' +
+    'object instance');
+</script>
+</body>

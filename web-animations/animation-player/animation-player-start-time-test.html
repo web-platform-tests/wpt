@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<title>Animation player startTime attribute test</title>
+<meta name="assert" content="Returns the start time of this player. Setting this attribute updates the player start time using the procedure defined in section 3.5.2.6 Updating the player start time.">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-startTime">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<iframe id="iframe" src="../resources/blank.html"></iframe>
+<script>
+function newAnimation(doc) {
+    var animationTarget = doc.createElement('div');
+    animationTarget.style.width = '25px';
+    doc.body.appendChild(animationTarget);
+    return new Animation(animationTarget, [
+	    {width: "0px", offset: 0},
+	    {width: "500px", offset: 1/2},
+	    {width: "1000px", offset: 1}], 1000);
+}
+
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [], 5);
+    return doc.timeline.play(animation);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play(newAnimation(doc));
+
+    assert_not_equals(player.startTime, null,
+        'The value of AnimationPlayer.startTime attribute should not be of type null');
+}, 'The value of AnimationPlayer.startTime attribute should not be null');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play(newAnimation(doc));
+
+    assert_throws('TypeError',function () {
+        player.startTime = [];
+    }, 'TypeError should be thrown if AnimationPlayer.startTime attribute ' +
+        'is set to not double value');
+}, 'Test that TypeError is thrown if AnimationPlayer.startTime attribute ' +
+    'is set to not double value');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play(newAnimation(doc));
+
+    var newStartTime = player.startTime + 100;
+    player.startTime = newStartTime;
+
+    assert_equals(player.startTime, newStartTime,
+        'The value of AnimationPlayer.startTime attribute should be set to the new value');
+	// TODO Is there a way to test the following "2. Set the hold time to null."?
+}, 'Test setting value of AnimationPlayer.startTime attribute. Player is not paused');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play(newAnimation(doc));
+
+    var newStartTime = player.startTime + 100;
+    player.pause();
+    player.startTime = newStartTime;
+
+    var expectedTime = player.timeline.currentTime - newStartTime * player.playbackRate;
+    assert_equals(player.startTime, expectedTime,
+        'The value of AnimationPlayer.startTime attribute should be set to ' +
+        'hod time value');
+}, 'Test setting value of AnimationPlayer.startTime attribute. Player is paused');
+
+
+test(function() {
+    var iframe = document.querySelector('#iframe');
+    var doc = iframe.contentWindow.document;
+    var animation = newAnimation(doc);
+    var player = doc.timeline.play(animation);
+
+    assert_equals(animation.target.clientWidth, 0,
+        'Animation effect of the AnimationPlayer object should ' +
+        'correspond player start time');
+}, 'The AnimationPlayer start time animation effect test. Start time is default');
+
+
+test(function() {
+    var iframe = document.querySelector('#iframe');
+    var doc = iframe.contentWindow.document;
+    var animation = newAnimation(doc);
+    var player = doc.timeline.play(animation);
+    player.startTime = 0;
+
+    assert_equals(animation.target.clientWidth, 0,
+        'Animation effect of the AnimationPlayer object should ' +
+        'correspond player start time');
+}, 'The AnimationPlayer start time animation effect test. Start time is zero');
+
+
+test(function() {
+    var iframe = document.querySelector('#iframe');
+    var doc = iframe.contentWindow.document;
+    var animation = newAnimation(doc);
+    var player = doc.timeline.play(animation);
+    player.startTime = 500;
+
+    assert_equals(animation.target.clientWidth, 500,
+        'Animation effect of the AnimationPlayer object should ' +
+        'correspond player start time');
+}, 'The AnimationPlayer start time animation effect test. Start time is not default');
+
+
+test(function() {
+    var iframe = document.querySelector('#iframe');
+    var doc = iframe.contentWindow.document;
+    var animation = newAnimation(doc);
+    var player = doc.timeline.play(animation);
+    player.startTime = 1000;
+
+    assert_equals(animation.target.clientWidth, 1000,
+        'Animation effect of the AnimationPlayer object should ' +
+        'correspond player start time');
+}, 'The AnimationPlayer start time animation effect test. Start time is set to end time');
+
+document.querySelector('#iframe').remove();
+</script>
+</body>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<title>Animation player change source attribute test</title>
+<meta name="assert" content="A player can only be associated with at most one animation node, and likewise, an animation node can only be associated with at most one player.">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-source">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimation(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    return new Animation(animationTarget, [], 5);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play(null);
+    var animation = newAnimation(doc);
+    player.source = animation;
+
+    assert_equals(player.source, animation, 'Value of AnimationPlayer.source attribute ' +
+        'should be set');
+    assert_equals(animation.player, player, 'Value of AnimationNode.player should ' +
+        'be set to associated player');
+}, 'Test that value of the AnimationPlayer.source attribute is changed. Initial value ' +
+    'of the source attribute is null');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var animation1 = newAnimation(doc);
+    var player = doc.timeline.play(animation1);
+
+    var animation2 = newAnimation(doc);
+    player.source = animation2;
+
+    assert_equals(player.source, animation2, 'Value of AnimationPlayer.source attribute ' +
+        'should be set');
+    assert_equals(animation2.player, player, 'Value of AnimationNode.player should ' +
+        'be set to associated player');
+    assert_equals(animation1.player, null, 'Old value of AnimationPlayer.source should ' +
+        'be disassociated from the player');
+}, 'Test that value of the AnimationPlayer.source attribute is changed. Initial value ' +
+    'of the source attribute is not null');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var animation = newAnimation(doc);
+    var player = doc.timeline.play(animation);
+
+    player.source = null;
+
+    assert_equals(player.source, null, 'Value of AnimationPlayer.source attribute ' +
+        'should be set to null');
+    assert_equals(animation.player, null, 'Old value of AnimationPlayer.source should ' +
+        'be disassociated from the player');
+}, 'Test that value of the AnimationPlayer.source attribute is changed. Initial value ' +
+    'of the source attribute is not null, new value is null');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var animation = newAnimation(doc);
+    var player = doc.timeline.play(animation);
+
+    player.source = animation;
+
+    assert_equals(player.source, animation, 'Value of AnimationPlayer.source attribute ' +
+        'should not be changed');
+    assert_equals(animation.player, player, 'Value of AnimationPlayer.source should ' +
+        'not be disassociated from the player');
+}, 'Test that value of the AnimationPlayer.source attribute is not changed. Initial value ' +
+    'of the source attribute is not null, new value is equal to the old value');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var animation1 = newAnimation(doc);
+    var player1 = doc.timeline.play(animation1);
+    var animation2 = newAnimation(doc);
+    var player2 = doc.timeline.play(animation2);
+
+    player2.source = animation1;
+
+    assert_equals(player2.source, animation1, 'Value of AnimationPlayer.source attribute ' +
+        'should be changed');
+    assert_equals(animation1.player, player2, 'Value of AnimationNode.player should ' +
+        'be set to associated player');
+    assert_equals(animation2.player, null, 'Old value of AnimationPlayer.source should ' +
+        'be disassociated from the player');
+    assert_equals(player1.source, null, 'New value of AnimationPlayer.source attribute ' +
+        'should be disassociated from its previous player');
+}, 'Test that  value of AnimationPlayer.source attribute is disassociated from ' +
+    'its previous player');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var animation1 = newAnimation(doc);
+    var animation2 = newAnimation(doc);
+    var animationGroup = new AnimationGroup([animation1, animation2]);
+    var player1 = doc.timeline.play(animation1);
+    var animation3 = newAnimation(doc);
+    var player2 = doc.timeline.play(animation3);
+
+    player2.source = animation1;
+
+    assert_equals(player2.source, animation1, 'Value of AnimationPlayer.source attribute ' +
+        'should be changed');
+    assert_equals(animation1.player, player2, 'Value of AnimationNode.player should ' +
+        'be set to associated player');
+    assert_equals(animation3.player, null, 'Old value of AnimationPlayer.source should ' +
+        'be disassociated from the player');
+    assert_equals(animation1.parent, null, 'New value of AnimationPlayer.source attribute ' +
+        'should be removed from its parent group');
+    assert_array_equals(animationGroup.children, [animation2], 'New value of ' +
+        'AnimationPlayer.source attribute should be removed from the parent group');
+
+}, 'Test that  value of AnimationPlayer.source attribute is removed from ' +
+    'its parent group');
+</script>
+</body>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Animation timeline play() method test. Test paused attribute initial value of newly-created AnimationPlayer</title>
+<meta name="assert" content="Default value of the paused attribute is false">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var doc = newHTMLDocument();
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var player = doc.timeline.play(new Animation(animationTarget, [], 100));
+
+    assert_false(player.paused, 'Initial value of the paused attribute of the ' +
+        'newly-created AnimationPlayer object should be false');
+}, 'Test paused attribute initial value of newly-created AnimationPlayer');
+</script>
+</body>

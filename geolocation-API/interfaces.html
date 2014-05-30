@@ -19,12 +19,9 @@ typedef unsigned long long DOMTimeStamp;
 </script>
 
 <script type=text/plain>
-[NoInterfaceObject]
-interface NavigatorGeolocation {
+partial interface Navigator {
   readonly attribute Geolocation geolocation;
 };
-
-Navigator implements NavigatorGeolocation;
 
 [NoInterfaceObject]
 interface Geolocation {
@@ -43,11 +40,10 @@ callback PositionCallback = void (Position position);
 
 callback PositionErrorCallback = void (PositionError positionError);
 
-[NoInterfaceObject]
-interface PositionOptions {
-  attribute boolean enableHighAccuracy;
-  attribute long timeout;
-  attribute long maximumAge;
+dictionary PositionOptions {
+  boolean enableHighAccuracy = false;
+  [Clamp] unsigned long timeout = 0xFFFFFFFF;
+  [Clamp] unsigned long maximumAge = 0;
 };
 
 [NoInterfaceObject]

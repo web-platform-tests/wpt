@@ -118,7 +118,7 @@ class MarionetteTestExecutor(TestExecutor):
 
         try:
             self.marionette.set_script_timeout((timeout + 5) * 1000)
-        except marionette.errors.InvalidResponseException:
+        except IOError, marionette.errors.InvalidResponseException:
             self.logger.error("Lost marionette connection")
             self.runner.send_message("restart_test", test)
             return Stop

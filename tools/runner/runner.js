@@ -538,7 +538,7 @@ Runner.prototype = {
             });
             this.run_next_test();
         } else {
-            alert('No tests found.');
+            document.querySelector(".path").setCustomValidity("No tests found in this path.");
         }
     },
 

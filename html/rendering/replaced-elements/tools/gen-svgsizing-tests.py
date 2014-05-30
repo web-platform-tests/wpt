@@ -7,6 +7,7 @@ template = Template("""<!DOCTYPE html>
 <html>
   <head>
     <title>SVG sizing: &lt;$placeholder></title>
+    <meta name=timeout content=long>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="../resources/svg-sizing.js"></script>

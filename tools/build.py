@@ -39,6 +39,7 @@ class Builder(object):
         self.specificationData = {}
         self.flagData = {}
         self.specNames = {}
+        self.specAnchors = {}
         self.buildSuiteNames = []
         self.buildSpecNames = {}
         self.testSuites = {}
@@ -66,28 +67,46 @@ class Builder(object):
                 pass
         return None
 
+    def _addAnchors(self, anchors, specName):
+        for anchor in anchors:
+            self.specAnchors[specName].add(anchor['uri'].lower())
+            if ('children' in anchor):
+                self._addAnchors(anchor['children'], specName)
+
     def getSpecName(self, url):
         if (not self.specNames):
             for specName in self.specificationData:
-                officialURL = self.specificationData[specName].get('base_uri')
+                specData = self.specificationData[specName]
+                officialURL = specData.get('base_uri')
                 if (officialURL):
                     if (officialURL.endswith('/')):
                         officialURL = officialURL[:-1]
                     self.specNames[officialURL.lower()] = specName
-                draftURL = self.specificationData[specName].get('draft_uri')
+                draftURL = specData.get('draft_uri')
                 if (draftURL):
                     if (draftURL.endswith('/')):
                         draftURL = draftURL[:-1]
                     self.specNames[draftURL.lower()] = specName
-        
+                self.specAnchors[specName] = set()
+                if ('anchors' in specData):
+                    self._addAnchors(specData['anchors'], specName)
+                if ('draft_anchors' in specData):
+                    self._addAnchors(specData['draft_anchors'], specName)
+    
         url = url.lower()
         for specURL in self.specNames:
             if (url.startswith(specURL) and
                 ((url == specURL) or
                  url.startswith(specURL + '/') or
                  url.startswith(specURL + '#'))):
-                return self.specNames[specURL]
-        return None
+                anchorURL = url[len(specURL):]
+                if (anchorURL.startswith('/')):
+                    anchorURL = anchorURL[1:]
+                specName = self.specNames[specURL]
+                if (anchorURL in self.specAnchors[specName]):
+                    return (specName, anchorURL)
+                return (specName, None)
+        return (None, None)
 
     def gatherTests(self, dir):
         dirName = os.path.basename(dir)
@@ -102,17 +121,20 @@ class Builder(object):
                 source = self.sourceCache.generateSource(filePath, fileName)
                 if (source.isTest()):
                     if (source.error):
-                        self.ui.status("Error parsing '", filePath, "': ", source.error, "\n")
+                        self.ui.warn("Error parsing '", filePath, "': ", source.error, "\n")
                     else:
                         metaData = source.getMetadata(True)
                         for specURL in metaData['links']:
-                            specName = self.getSpecName(specURL)
+                            specName, anchorURL = self.getSpecName(specURL)
                             if (specName):
                                 if (specName in self.buildSpecNames):
-                                    for testSuiteName in self.buildSpecNames[specName]:
-                                        if (testSuiteName not in suiteFileNames):
-                                            suiteFileNames[testSuiteName] = set()
-                                        suiteFileNames[testSuiteName].add(fileName)
+                                    if (anchorURL):
+                                        for testSuiteName in self.buildSpecNames[specName]:
+                                            if (testSuiteName not in suiteFileNames):
+                                                suiteFileNames[testSuiteName] = set()
+                                            suiteFileNames[testSuiteName].add(fileName)
+                                    else:
+                                        self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
                             else:
                                 self.ui.note("Unknown specification URL: ", specURL, "\n  in: ", filePath, "\n")
 

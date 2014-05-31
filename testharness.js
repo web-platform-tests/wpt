@@ -1073,7 +1073,7 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.timeout = function() {
-        if (this.status.status == null) {
+        if (this.status.status === null) {
             this.status.status = this.status.TIMEOUT;
         }
         this.complete();

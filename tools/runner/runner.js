@@ -4,7 +4,6 @@
 var runner;
 var testharness_properties = {output:false,
                               timeout_multiplier:1};
-
 function Manifest(path) {
     this.data = null;
     this.path = path;
@@ -347,6 +346,12 @@ function TestControl(elem, runner) {
     this.start_button = this.elem.querySelector("button.toggleStart");
     this.type_checkboxes = Array.prototype.slice.call(
         this.elem.querySelectorAll("input[type=checkbox].test-type"));
+    this.type_checkboxes.forEach(function(elem) {
+        elem.addEventListener("click", function() {
+            this.start_button.disabled = this.get_test_types().length < 1;
+        }.bind(this),
+        false);
+    }.bind(this));
     this.timeout_input = this.elem.querySelector(".timeout_multiplier");
     this.render_checkbox = this.elem.querySelector(".render");
     this.runner = runner;
@@ -356,7 +361,7 @@ function TestControl(elem, runner) {
 
 TestControl.prototype = {
     set_start: function() {
-        this.start_button.disabled = false;
+        this.start_button.disabled = this.get_test_types().length < 1;
         this.pause_button.disabled = true;
         this.start_button.textContent = "Start";
         this.path_input.disabled = false;

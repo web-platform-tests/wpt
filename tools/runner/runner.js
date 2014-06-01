@@ -4,6 +4,7 @@
 var runner;
 var testharness_properties = {output:false,
                               timeout_multiplier:1};
+
 function Manifest(path) {
     this.data = null;
     this.path = path;
@@ -543,7 +544,12 @@ Runner.prototype = {
             });
             this.run_next_test();
         } else {
-            document.querySelector(".path").setCustomValidity("No tests found in this path.");
+            var tests = "tests";
+            if (this.test_types.length < 3) {
+                tests = this.test_types.join(" tests or ") + " tests";
+            }
+            var message = "No " + tests + " found in this path."
+            document.querySelector(".path").setCustomValidity(message);
         }
     },
 

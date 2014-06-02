@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset=utf-8>
 <title>Animation player startTime attribute test</title>
 <meta name="assert" content="Returns the start time of this player. Setting this attribute updates the player start time using the procedure defined in section 3.5.2.6 Updating the player start time.">
 <link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-startTime">
@@ -13,7 +14,7 @@
 <script>
 function newAnimation(doc) {
     var animationTarget = doc.createElement('div');
-    animationTarget.style.width = '25px';
+    animationTarget.style.width = '1200px';
     doc.body.appendChild(animationTarget);
     return new Animation(animationTarget, [
 	    {width: "0px", offset: 0},
@@ -84,7 +85,7 @@ test(function() {
     var animation = newAnimation(doc);
     var player = doc.timeline.play(animation);
 
-    assert_equals(animation.target.clientWidth, 0,
+    assert_equals(window.getComputedStyle(animation.target).width, 0,
         'Animation effect of the AnimationPlayer object should ' +
         'correspond player start time');
 }, 'The AnimationPlayer start time animation effect test. Start time is default');
@@ -97,7 +98,7 @@ test(function() {
     var player = doc.timeline.play(animation);
     player.startTime = 0;
 
-    assert_equals(animation.target.clientWidth, 0,
+    assert_equals(window.getComputedStyle(animation.target).width, 0,
         'Animation effect of the AnimationPlayer object should ' +
         'correspond player start time');
 }, 'The AnimationPlayer start time animation effect test. Start time is zero');
@@ -110,7 +111,7 @@ test(function() {
     var player = doc.timeline.play(animation);
     player.startTime = 500;
 
-    assert_equals(animation.target.clientWidth, 500,
+    assert_equals(window.getComputedStyle(animation.target).width, 500,
         'Animation effect of the AnimationPlayer object should ' +
         'correspond player start time');
 }, 'The AnimationPlayer start time animation effect test. Start time is not default');
@@ -123,7 +124,7 @@ test(function() {
     var player = doc.timeline.play(animation);
     player.startTime = 1000;
 
-    assert_equals(animation.target.clientWidth, 1000,
+    assert_equals(window.getComputedStyle(animation.target).width, 1000,
         'Animation effect of the AnimationPlayer object should ' +
         'correspond player start time');
 }, 'The AnimationPlayer start time animation effect test. Start time is set to end time');

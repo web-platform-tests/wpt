@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<title>Animation timeline play() method test. Test timeline of newly-created AnimationPlayer</title>
-<meta name="assert" content="AnimationPlayer object created by play() method is associated with this timeline that is scheduled to start at currentTime">
+<meta charset=utf-8>
+<title>Animation timeline play() method test</title>
+<meta name="assert" content="Animation timeline play() method creates a new AnimationPlayer object">
 <link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
 <link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <script src="/resources/testharness.js"></script>
@@ -22,20 +23,18 @@ test(function() {
     var doc = newHTMLDocument();
     var player = newAnimationPlayer(doc);
 
-    assert_equals(player.timeline, doc.timeline,
-        'The timeline attribute of the newly-created AnimationPlayer object ' +
-        'should be set to this timeline object');
-}, 'The timeline attribute of the newly-created AnimationPlayer object ' +
-    'should be set to this timeline object');
+    assert_not_equals(player, null, 'Player created by AnimationTimeline.play() method ' +
+        'cannot be null');
+}, 'Player created by AnimationTimeline.play() method cannot be null');
 
 
 test(function() {
     var doc = newHTMLDocument();
     var player = newAnimationPlayer(doc);
 
-    assert_equals(player.startTime, doc.timeline.currentTime,
-        'Start time of the newly-created AnimationPlayer object should be set ' +
-        'to the value of this object\'s currentTime attribute');
-}, 'The newly-created AnimationPlayer start time test');
+    assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
+        'AnimationTimeline.play() method should be AnimationPlayer object instance');
+}, 'Player created by AnimationTimeline.play() method should be AnimationPlayer ' +
+    'object instance');
 </script>
 </body>

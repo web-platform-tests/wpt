@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset=utf-8>
 <title>Animation player currentTime attribute test</title>
 <meta name="assert" content="The effective current time of this player. Setting this attribute follows the procedure defined in section 3.5.2.9 Performing a seek">
 <link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-currentTime">
@@ -15,7 +16,7 @@ var CONTENT_END_TIME = 1000;
 
 function newAnimation(doc) {
     var animationTarget = doc.createElement('div');
-    animationTarget.style.width = '25px';
+    animationTarget.style.width = '300px';
     doc.body.appendChild(animationTarget);
     return new Animation(animationTarget, [
 	    {width: "10px", offset: 0},
@@ -146,7 +147,8 @@ test(function() {
     var player = doc.timeline.play(animation);
     player.currentTime = 0;
 
-    assert_equals(animation.target.clientWidth, 10, 'Animation effect should take place');
+    assert_equals(window.getComputedStyle(animation.target).width, 10,
+        'Animation effect should take place');
 }, 'Test that animation effect is changed accordingly by setting ' +
     'AnimationPlayer.currentTime attribute. Current time is zero');
 
@@ -158,7 +160,8 @@ test(function() {
     var player = doc.timeline.play(animation);
     player.currentTime = 500;
 
-    assert_equals(animation.target.clientWidth, 100, 'Animation effect should take place');
+    assert_equals(window.getComputedStyle(animation.target).width, 100,
+        'Animation effect should take place');
 }, 'Test that animation effect is changed accordingly by setting ' +
     'AnimationPlayer.currentTime attribute. Current time is > 0 and < end time');
 
@@ -170,7 +173,8 @@ test(function() {
     var player = doc.timeline.play(animation);
     player.currentTime = CONTENT_END_TIME;
 
-    assert_equals(animation.target.clientWidth, 200, 'Animation effect should take place');
+    assert_equals(window.getComputedStyle(animation.target).width, 200,
+        'Animation effect should take place');
 }, 'Test that animation effect is changed accordingly by setting ' +
     'AnimationPlayer.currentTime attribute. Current time is > 0 and < end time');
 

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset=utf-8>
 <title>Animation player cancel method test</title>
 <meta name="assert" content="Set source to null and clears all effects associated with the previous source content">
 <link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-cancel-void">
@@ -13,7 +14,7 @@
 <script>
 function newAnimation(doc) {
     var animationTarget = doc.createElement('div');
-    animationTarget.style.width = '25px';
+    animationTarget.style.width = '300px';
     doc.body.appendChild(animationTarget);
     return new Animation(animationTarget, [
 	    {width: "10px", offset: 0},
@@ -40,10 +41,12 @@ test(function() {
     var player = doc.timeline.play(animation);
 
     player.currentTime = 500;
-    assert_equals(animation.target.clientWidth, 100, 'Animation effect should take place');
-    
+    assert_equals(window.getComputedStyle(animation.target).width, 100,
+        'Animation effect should take place');
+
     player.cancel();
-    assert_equals(animation.target.clientWidth, 25, 'Animation effect should be cleared');
+    assert_equals(window.getComputedStyle(animation.target).width, 300,
+        'Animation effect should be cleared');
 }, 'Test that animation effect is cleared by AnimationPlayer.cancel() call');
 
 document.querySelector('#iframe').remove();

@@ -8,9 +8,6 @@ import time
 import threading
 
 import mozprocess
-from mozprofile import FirefoxProfile, Preferences
-from mozprofile.permissions import ServerLocations
-from mozrunner import FirefoxRunner
 
 from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
 from ..executors.executorwebdriver import WebdriverTestharnessExecutor

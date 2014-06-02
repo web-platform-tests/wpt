@@ -98,6 +98,7 @@ class TestEnvironment(object):
         self.test_path = test_path
         self.server = None
         self.config = None
+        self.test_server_port = options.pop("test_server_port", True)
         self.options = options if options is not None else {}
         self.files_to_restore = []
 
@@ -148,13 +149,14 @@ class TestEnvironment(object):
         time.sleep(2)
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
-                s = socket.socket()
-                try:
-                    s.connect((self.config["host"], port))
-                except socket.error:
-                    raise EnvironmentError("%s server on port %d failed to start" % (scheme, port))
-                finally:
-                    s.close()
+                if not self.test_server_port:
+                    s = socket.socket()
+                    try:
+                        s.connect((self.config["host"], port))
+                    except socket.error:
+                        raise EnvironmentError("%s server on port %d failed to start" % (scheme, port))
+                    finally:
+                        s.close()
 
                 if not server.is_alive():
                     raise EnvironmentError("%s server on port %d failed to start" % (scheme, port))

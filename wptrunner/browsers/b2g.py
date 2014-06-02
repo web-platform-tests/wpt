@@ -32,7 +32,8 @@ def browser_kwargs(**kwargs):
 
 def env_options():
     return {"host": "web-platform.test",
-            "bind_hostname": "false"}
+            "bind_hostname": "false",
+            "test_server_port": False}
 
 class B2GBrowser(Browser):
     used_ports = set()

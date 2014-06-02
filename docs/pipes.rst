@@ -56,7 +56,7 @@ So, for example, to write a javascript file called `xhr.js` that
 depends on the host name of the server, without hardcoding, one might
 write::
 
-    var server_url = http://{{host}}/path/to/resource;
+    var server_url = http://{{host}}:{{ports[http][0]}}/path/to/resource;
     //Create the actual XHR and so on
 
 The file would then be included as:

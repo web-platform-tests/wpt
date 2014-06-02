@@ -31,17 +31,17 @@
 </div>
 
 <script>
-  testSelector("#set1 :read-write", ["input1", "input3"], "The :read-write pseudo-class must match input elements to which the readonly attribute applies, and that are mutable");
+  testSelector("#set1 :read-write", ["input1"], "The :read-write pseudo-class must match input elements to which the readonly attribute applies, and that are mutable");
 
   testSelector("#set1 :read-only", ["input2"], "The :read-only pseudo-class must not match input elements to which the readonly attribute applies, and that are mutable");
 
   document.getElementById("input1").setAttribute("readonly", "readonly");
-  testSelector("#set1 :read-write", ["input3" ], "The :read-write pseudo-class must not match input elements after the readonly attribute has been added");
+  testSelector("#set1 :read-write", [], "The :read-write pseudo-class must not match input elements after the readonly attribute has been added");
 
   testSelector("#set1 :read-only", ["input1", "input2"], "The :read-only pseudo-class must match input elements after the readonly attribute has been added");
 
   document.getElementById("input1").removeAttribute("readonly");
-  testSelector("#set1 :read-write", ["input1", "input3"], "The :read-write pseudo-class must not match input elements after the readonly attribute has been removed");
+  testSelector("#set1 :read-write", ["input1"], "The :read-write pseudo-class must not match input elements after the readonly attribute has been removed");
 
   testSelector("#set1 :read-only", ["input2"], "The :read-only pseudo-class must match input elements after the readonly attribute has been removed");
 

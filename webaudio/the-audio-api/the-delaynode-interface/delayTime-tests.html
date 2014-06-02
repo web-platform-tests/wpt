@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+	<title>DelayNode interface - delayTime tests | WebAudio</title>
+
+	<script type="text/javascript" src="../../../resources/testharness.js"></script>
+	<script type="text/javascript" src="../../../resources/testharnessreport.js"></script>
+	<script type="text/javascript" src="../../js/vendor-prefixes.js"></script>
+</head>
+<body>
+	<div id="log">
+	</div>
+
+	<script type="text/javascript">
+		var sampleRate=44100.0;
+		var secondsPerSample=1/sampleRate;
+		var tolerance=0.01;
+
+		/*
+		Testing 2-sample delay.
+		=======================================================================
+		From the specification:
+			The number of channels of the output always equals the number of channels of the input.
+			It delays the incoming audio signal by a certain amount.
+				Specifically, at each time t, input signal input(t), delay time delayTime(t) and output signal output(t),
+				the output will be output(t) = input(t - delayTime(t)).
+			The default delayTime is 0 seconds (no delay).
+			When the delay time is changed, the implementation must make the transition smoothly, without introducing
+				noticeable clicks or glitches to the audio stream.
+			An AudioParam object representing the amount of delay (in seconds) to apply. Its default value is 0 (no delay).
+			The minimum value is 0 and the maximum value is determined by the maxDelayTime argument to the AudioContext
+				method createDelay.
+			This parameter is a-rate.
+		*/
+		(function() {
+			var delayTime=secondsPerSample*2;
+			var inputData=[-1, -1, -1, 0, 0, 0, 1, 1, 1, 64, 64, 64, -123.45, -123.45, -123.45];
+			var expectedData=[0, 0, -1, -1, -1, 0, 0, 0, 1, 1, 1, 64, 64, 64, -123.45, -123.45, -123.45, 0, 0, 0, 0, 0];
+			executeTest(delayTime, inputData, expectedData, "Testing 2-sample delay");
+		})();
+
+		(function() {
+			var delayTime=secondsPerSample*1.5;
+			var inputData=[-1, -1, -1, 0, 0, 0, 1, 1, 1, 64, 64, 64, -123.45, -123.45, -123.45];
+			var expectedData=[0, -0.5, -1, -1, -0.5, 0, 0, .5, 1, 1, 32.5, 64, 64, -29.725, -123.45, -123.45, -61.725, 0, 0, 0, 0, 0];
+			executeTest(delayTime, inputData, expectedData, "Testing 1.5-sample delay (assume interpolation)");
+		})();
+
+		(function() {
+			var inputData=[-1, -1, -1, 0, 0, 0, 1, 1, 1, 64, 64, 64, -123.45, -123.45, -123.45];
+			var expectedData=[-1, -1, -1, 0, 0, 0, 1, 1, 1, 64, 64, 64, -123.45, -123.45, -123.45, 0, 0, 0, 0, 0];
+			executeTest(0, inputData, expectedData, "Testing 0-sample delay");
+		})();
+		
+		(function() {
+			var inputData=[-1, -1, -1, 0, 0, 0, 1, 1, 1, 64, 64, 64, -123.45, -123.45, -123.45];
+			var expectedData=[-1, -1, -1, 0, 0, 0, 1, 1, 1, 64, 64, 64, -123.45, -123.45, -123.45, 0, 0, 0, 0, 0];
+			executeTest(null, inputData, expectedData, "Testing null delay");
+		})();
+
+		//TODO - Test stereo
+
+		//TODO - AudioParam - the spec says delayTime should be smoothed (so not pops).  We could test this using setValueAtTime.
+		
+		//TODO - There is a bug report that says if DelayNode connects back to itself then a 128 sample delay is added.
+
+		/**
+		* Function that does the actual testing (using an asynchronous test).
+		* @param delayTime (double?) - Delay time (seconds).
+		* @param inputData (double[]) - Array containing values for the input stream.
+		* @param expectedData (double[]) - Array containing expected results for each of the corresponding inputs.
+		* @param testName (string) - Name of the test case.
+		*/
+		function executeTest(delayTime, inputData, expectedData, testName) {
+			var stTest=async_test("DelayNode - "+testName);
+
+			// Create offline audio context.
+			var ac=new OfflineAudioContext(1, expectedData.length, sampleRate);
+
+			// Create the Delay.
+			var delay=ac.createDelay(expectedData.length);
+			if(delayTime!=null) { delay.delayTime.value=delayTime; }
+			delay.connect(ac.destination);
+
+			// Create buffer containing the input values.
+			var inputBuffer=ac.createBuffer(1, Math.max(inputData.length, 2), sampleRate);
+			var d=inputBuffer.getChannelData(0);
+			for(var i=0;i<inputData.length;i++) { d[i]=inputData[i]; }
+
+			// Play the input buffer through the WaveShaper.
+			var src=ac.createBufferSource();
+			src.buffer=inputBuffer;
+			src.connect(delay);
+			src.start();
+
+			// Test the outputs match the expected values.
+			ac.oncomplete=function(ev) {
+				var d=ev.renderedBuffer.getChannelData(0);
+
+				stTest.step(function() {
+					for(var i=0;i<expectedData.length;i++) {
+						if(expectedData[i]!=null) {
+							var comment="Index="+i+", DelayTime=["+delay.delayTime.value+"] >>> ";
+							assert_approx_equals(d[i], expectedData[i], tolerance, comment);
+						}
+					}
+				});
+
+				stTest.done();
+			};
+			ac.startRendering();
+		}
+	</script>
+</body>
+</html>

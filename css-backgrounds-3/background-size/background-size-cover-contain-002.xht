@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size" title="3.9. Sizing Images: the 'background-size' property" />
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
 
   <meta name="flags" content="image" />
   <meta name="assert" content="When 'background-size' is 'cover', then the background-image is scaled, while preserving its intrinsic aspect ratio (it is 1:1 in this test), to the smallest size such that both its width and its height can completely cover the background positioning area. When 'background-size' is 'contain', then the background-image is scaled, while preserving its intrinsic aspect ratio (it is 1:1 in this test), to the largest size such that both its width and its height can fit inside the background positioning area. In this test, the 2 background-images should be scaled to become 100px by 100px." />
@@ -22,10 +22,10 @@
   height: 50px;
   padding: 25px;
   width: 150px;
-  /* 
+  /*
   background positioning area is 200px wide by 100px tall.
-  The largest size that can fit inside it with a 1:1 ratio 
-  is 100px by 100px. So, the background image should be 
+  The largest size that can fit inside it with a 1:1 ratio
+  is 100px by 100px. So, the background image should be
   scaled to 100px by 100px.
   */
   }
@@ -41,11 +41,11 @@
   padding: 25px;
   position: relative;
   width: 0px;
-  
-  /* 
-  background positioning area to cover is 50px wide by 
-  100px tall. The smallest size that can completely cover 
-  it with a 1:1 ratio is 100px by 100px. So, the 
+
+  /*
+  background positioning area to cover is 50px wide by
+  100px tall. The smallest size that can completely cover
+  it with a 1:1 ratio is 100px by 100px. So, the
   background image should be scaled to 100px by 100px.
   */
   }

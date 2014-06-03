@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    usage
+   expectation
    design
 
 Indices and tables

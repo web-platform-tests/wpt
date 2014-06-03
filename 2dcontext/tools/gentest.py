@@ -445,7 +445,7 @@ for i in range(len(tests)):
     fonts = ''
     fonthack = ''
     for i in test.get('fonts', []):
-        fonts += '@font-face {\n  font-family: %s;\n  src: url("../fonts/%s.ttf");\n}\n' % (i, i)
+        fonts += '@font-face {\n  font-family: %s;\n  src: url("/fonts/%s.ttf");\n}\n' % (i, i)
         # Browsers require the font to actually be used in the page
         if test.get('fonthack', 1):
             fonthack += '<span style="font-family: %s; position: absolute; visibility: hidden">A</span>\n' % i

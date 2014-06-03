@@ -3,12 +3,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
  <head>
- 
+
   <title>CSS Test: table width as set when greater than sum of columns width</title>
-        
+
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="The width of an HTML/XHTML table is the distance between the left and right table border edges. The width of a table with 'table-layout' set to 'fixed' is the greater of the value of the 'width' property for the &lt;table&gt; element and the sum of the columns width (plus cell spacing and cell borders). If the table is wider than the sum of columns' width, then the extra (exceeding) space should be distributed over the columns." name="assert" />
@@ -22,12 +22,12 @@
   position: absolute;
   top: auto;
   width: 100px;
-  z-index: -1; 
-  }  
-  
+  z-index: -1;
+  }
+
   table
   {
-  background-color: red;                
+  background-color: red;
   border-collapse: separate;
   border-spacing: 0px;
   table-layout: fixed;

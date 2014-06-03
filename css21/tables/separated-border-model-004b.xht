@@ -3,16 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
  <head>
- 
+
   <title>CSS Test: width of CSS table in border-collapse separate model</title>
 
-  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> 
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border spacing but excluding table padding and table borders)." name="assert" />
- 
+
   <style type="text/css"><![CDATA[
   div#overlapped-red
   {
@@ -34,23 +34,23 @@
   font: 20px/1 serif;
   padding-bottom: 25px;
   table-layout: fixed;
-  width: 80px; 
-  /* 
-  The width of a CSS table is given by the greater of the value of 
-  the 'width' property as set for the CSS table and the sum of the 
+  width: 80px;
+  /*
+  The width of a CSS table is given by the greater of the value of
+  the 'width' property as set for the CSS table and the sum of the
   columns width plus border spacing:
 
   max(set width, sum of columns width plus border spacing).
- 
-  The width (as set) of a CSS table is given by its content-box, not 
+
+  The width (as set) of a CSS table is given by its content-box, not
   by its border-box.
-  
-  In this testcase, the content-box must be 100px by 100px and all 
-  filled with green color. 
-  In this testcase, the border-box must be 200px by 200px and all 
+
+  In this testcase, the content-box must be 100px by 100px and all
   filled with green color.
-  
-  The set width (100px) is larger than sum of columns width plus 
+  In this testcase, the border-box must be 200px by 200px and all
+  filled with green color.
+
+  The set width (100px) is larger than sum of columns width plus
   border spacing
 
     0px  : left-most border-spacing
@@ -70,7 +70,7 @@
   -
     40px : sum of columns plus border spacing
   ======
-    40px : the extra (exceeding) 40px width will be distributed over 
+    40px : the extra (exceeding) 40px width will be distributed over
    the columns, therefore given to both cells of the table.
   */
   }
@@ -95,7 +95,7 @@
      <div class="tr">
        <div class="td">3</div><div class="td">4</div>
      </div>
-  </div> 
- 
+  </div>
+
  </body>
 </html>

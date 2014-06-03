@@ -449,8 +449,12 @@ class LoggingWrapper(StringIO):
         pass
 
 def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
+    do_test_relative_imports(tests_root)
+
     run_info = wpttest.get_run_info(product, debug=False)
-    test_loader = TestLoader(tests_root, metadata_root, TestFilter(), run_info)
+    test_filter = TestFilter(include=kwargs["include"], exclude=kwargs["exclude"],
+                             manifest_path=kwargs["include_manifest"])
+    test_loader = TestLoader(tests_root, metadata_root, test_filter, run_info)
 
     for item in sorted(test_loader.get_groups(test_types)):
         print item

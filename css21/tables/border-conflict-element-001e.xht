@@ -9,7 +9,7 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#border-conflict-resolution" title="17.6.2.1 Border conflict resolution" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-color-properties" title="8.5.2 Border color" />
-  <link rel="match" href="reference/border-conflict-element-001e-ref.xht" />
+  <link rel="match" href="border-conflict-element-001e-ref.xht" />
 
 
   <meta content="image" name="flags" />
@@ -45,10 +45,10 @@
   img
   {
   height: 1em;
-  vertical-align: bottom; 
-  /* 
-  With 'vertical-align: bottom', swatch-[color] images "sit" 
-  at the bottom of the cell's line box and not on its baseline 
+  vertical-align: bottom;
+  /*
+  With 'vertical-align: bottom', swatch-[color] images "sit"
+  at the bottom of the cell's line box and not on its baseline
   */
   width: 1em;
   }
@@ -61,11 +61,11 @@
   <p>Test passes if both grids are <strong>perfectly identical</strong>.</p>
 
   <table id="test">
-    <tr> 
+    <tr>
      <td class="blue"></td> <td class="yellow"></td> <td class="yellow"></td> <td class="orange"></td>
     </tr>
 
-    <tr> 
+    <tr>
      <td class="blue"></td> <td class="yellow"></td> <td class="yellow"></td> <td class="orange"></td>
     </tr>
 

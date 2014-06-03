@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#border-conflict-resolution" title="17.6.2.1 Border conflict resolution" />
-  <link rel="match" href="reference/border-conflict-element-001d-ref.xht" />
+  <link rel="match" href="border-conflict-element-001d-ref.xht" />
 
   <meta content="ahem image" name="flags" />
   <meta content="When two adjacent cells have the same border-width and the same border-style in a 'border-collapse: collapse' table, then the color of the border from the leftmost cell wins (if the table's 'direction' is 'ltr'; right, if it is 'rtl') and the color of the border from the topmost cell wins." name="assert" />
@@ -53,10 +53,10 @@
   img
   {
   height: 1em;
-  vertical-align: bottom; 
-  /* 
-  With 'vertical-align: bottom', swatch-[color] images "sit" 
-  at the bottom of the cell's line box and not on its baseline 
+  vertical-align: bottom;
+  /*
+  With 'vertical-align: bottom', swatch-[color] images "sit"
+  at the bottom of the cell's line box and not on its baseline
   */
   width: 1em;
   }

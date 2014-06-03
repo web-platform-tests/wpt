@@ -3,6 +3,7 @@
     <title>Tests for overwritten window.opener</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <meta charset="utf-8">
     <meta name="timeout" content="long">
 </head>
 <body>
@@ -33,10 +34,12 @@
             "null with var - after navigation": {stringified_opener:'null', real_opener: null},
             "null without var - after navigation": {stringified_opener:'null', real_opener: null}
     }
-    setup({explicit_done: true});
+    var seen_results = [];
+    setup({explicit_done: true, explicit_timeout: true});
     var idx = 0, win;
     var testURL = location.pathname.replace('overwriting-window-opener.html', 'support/window-opener-popup.html');
     testURL = location.protocol + '//' + 'www1.' + location.host + testURL + '?';
+    poll_interval = null;
 
     window.addEventListener('message', function (e) {
         if(e.data === 'DONE'){
@@ -44,6 +47,14 @@
             return;
         }
         var data = e.data;
+        // The poll-for-results approach causes race conditions - potentially we can poll a window twice,
+        // get two results for the same test, and increment idx too early.. Let's try to guard against such
+        // race conditions and make sure we only record one pre-navigation and one post-navigation result per test
+        if(data.idx && seen_results.indexOf(data.step + ' ' + data.idx)>-1){
+            return;
+        }
+        seen_results.push(data.step + ' ' + data.idx);
+
         var reading_throws = false, opener_is_this_window = false, stringified_opener = '';
         try{
             var the_opener = win.opener;
@@ -52,6 +63,7 @@
         }catch(err){
             reading_throws = true;
         }
+        clearInterval(poll_interval);
         if(data.step === 'pre-nav'){ // First part of test, before navigation
             test(function(){
                 assert_equals(data.setting_throws, expectations.setting_throws);
@@ -69,6 +81,9 @@
                     assert_true(opener_is_this_window, 'popup.opener seen from other origin still refers to this window, even though it has been set inside the popup');
                }
             }, data.name +' getting redefined property (from opener, different origin) returns original value');
+            // Ideally, the popup would just post all results back to us. However, some of these tests involve "disowning" the opener
+            // then navigating. In that case we need to poll the popup window.. The popup will post results back to the source of this message
+            poll_interval = setInterval(function(){win.postMessage('poll for results', '*')}, 200);
         }else if(data.step === 'post-nav'){
             if(expectations[data.name]){ // this is a special case..
                 test(function(){
@@ -95,16 +110,12 @@
                     assert_false(data.is_self);
                 }, data.name + ', window.opener read from popup is not self (even when opener was set to self before navigation)');
             }
-
             win = window.open(testURL + 'idx=' + (parseInt(data.idx)+1));
         }
     }, false);
 
     win = window.open(testURL + 'idx=' + '0');
 
-    // Ideally, the popup would just post all results back to us. However, some of these tests involve "disowning" the opener
-    // then navigating. In that case we need to poll the popup window.. The popup will post results back to the source of this message
-    setInterval(function(){win.postMessage('poll for results', '*')}, 200);
 
     </script>
     <p>Note: popups must be enabled for this test.</p>

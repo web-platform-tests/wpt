@@ -10,7 +10,7 @@
   <link rel="bookmark" href="http://lists.w3.org/Archives/Public/www-style/2011Apr/0743.html" title="[css21] Section 17.5.2.1 should be clarified" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#fixed-table-layout" title=
   "Section 17.5.2.1 Fixed table layout" />
-  <link rel="match" href="reference/fixed-table-layout-002a-ref.xht" />
+  <link rel="match" href="fixed-table-layout-002a-ref.xht" />
 
   <meta content="image" name="flags" />
   <meta content="In the fixed table layout algorithm, the horizontal layout of the table only depends on the table's width, the width of the columns, table borders and any non-zero horizontal border-spacing if 'border-collapse: separate' applies to such table, like in this test. The specified width of columns must include the non-zero horizontal padding and/or non-zero horizontal borders which may be applying to the cells contained in such columns." name="assert" />
@@ -21,9 +21,9 @@
   font: 1em/1.25 serif;
   margin: 8px;
   }
-  
+
   strong {line-height: 1;}
-  
+
   table
   {
   border-collapse: separate;
@@ -49,40 +49,40 @@
 
   From left to right
   ------------------
-  
+
     23px (left border of table)
  +
     19px (left-most border-spacing)
- + 
+ +
    382px (specified width of first column)
- +  
-    19px (border-spacing separating the 2 cells)   
- + 
+ +
+    19px (border-spacing separating the 2 cells)
+ +
    262px (specified width of second column)
- +  
+ +
     19px (right-most border-spacing)
- +  
+ +
     34px (right border of table)
  ========
    758px
 
-  So, here, the specified width of the table is not greater 
+  So, here, the specified width of the table is not greater
   than the sum of the column widths (plus cell spacing or borders).
   So, the table's width in 'border-collapse: separate' remains as specified.
-  
+
   The col#first-column specified width of 382px should include
   the horizontal padding of 127px and the solid lime 1px border-right.
-  
+
   So, such 1px solid lime border-right should appear at
     23px (left border of table)
  +
     19px (left-most border-spacing)
- + 
+ +
    382px (specified width of first column)
  ========
    424px inside document body's content box.
   */
-  
+
   div#reference {margin-left: 23px;}
   ]]></style>
 

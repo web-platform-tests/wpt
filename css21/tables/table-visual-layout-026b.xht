@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
  <head>
- 
+
   <title>CSS Test: width of column in border-collapse separate model must include cell padding</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> 
@@ -13,7 +13,7 @@
   <link rel="bookmark" href="http://lists.w3.org/Archives/Public/www-style/2011Oct/0503.html" title="[css21] Section 17.5.2.1 should be clarified" />
   <link rel="bookmark" href="http://lists.w3.org/Archives/Public/www-style/2011Apr/0743.html" title="[css21] Section 17.5.2.1 should be clarified" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layout" title="17.5 Visual layout of table contents" />
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="In the separated borders model, the edges of columns coincide with the border edges of cells. Therefore, a column width must include horizontal padding of cells." name="assert" />
@@ -32,9 +32,9 @@
   {
   background-color: red;
   height: 50px;
-  padding: 0px 25px 0px 25px;
+  padding: 0px 0px 0px 50px;
   }
-  
+
   div#overlapping-green
   {
   background-color: green;

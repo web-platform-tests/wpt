@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
 
   <meta name="flags" content="ahem" />
   <meta name="assert" content="'border-spacing' property only applies to tables applying the 'border-collapse: separate' model. When an HTML/XHTML table applies the 'border-collapse: collapse' model, then any 'border-spacing' declaration is ignored." />
@@ -29,7 +29,7 @@
   border: 0.5em solid green;
   padding: 5px;
   }
-  
+
   tbody > tr > td, tr > td:first-child {padding: 0px;}
   ]]></style>
 
@@ -65,7 +65,7 @@
   <!--
 
 		  1st col		   2nd col		 3rd col
-  
+
 			 8				 8				 8
 			 0				 5				 5
 	8	0	16	0	8	5	16	5	8	5	16	5	8		thead == 100px
@@ -74,7 +74,7 @@
 			 0				 0				 0
 	8	0	16	0	8	0	16	0	8	0	16	0	8		tbody == 100px
 			 0				 0				 0
-			 8				 8				 8	  
+			 8				 8				 8
   			 0				 5				 5
 	8	0	16	0	8	5	16	5	8	5	16	5	8		tfoot == 100px
 			 0				 5				 5

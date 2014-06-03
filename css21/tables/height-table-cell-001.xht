@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#height-layout" title="17.5.3 Table height algorithms" />
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="The height of a 'table-row' element's box is the maximum of the row's computed 'height', the computed 'height' of each cell in such row and the minimum height required by the content of the cells. The height of a cell is the maximum between its specified 'height' and the minimum height required by its content." name="assert" />
@@ -34,7 +34,7 @@
   width: 50px;
   }
   ]]></style>
- 
+
  </head>
 
  <body>
@@ -50,8 +50,8 @@
   </table>
 
   <!--
-  In this testcase, the content of the unique cell is empty; therefore the 
-  minimum height required by the cell content is 0. So, the height of such 
+  In this testcase, the content of the unique cell is empty; therefore the
+  minimum height required by the cell content is 0. So, the height of such
   single cell is given by
   max(specified 'height', minimum height required by its content) == 50px
   Such height refers to the cell's content box, not to the cell's border box.

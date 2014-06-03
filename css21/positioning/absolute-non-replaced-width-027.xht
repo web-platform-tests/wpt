@@ -11,7 +11,7 @@
 
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width" title="10.3.7 Absolutely positioned, non-replaced elements" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height" title="10.6.4 Absolutely positioned, non-replaced elements" />
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
 
   <meta content="" name="flags" />
   <meta content="If 'width' is auto and 'left' and 'right' are not 'auto', then set 'auto' values for 'margin-left' and 'margin-right' to 0 and then solve for 'width'; the tentative width may be later constrained by max-width in which case, the algorithm must be re-entered. If 'height' is 'auto' and 'top' and 'bottom' are not 'auto', then 'auto' values for 'margin-top' and 'margin-bottom' are set to 0 and solve for 'height'; the tentative height may be later constrained by max-height in which case, the algorithm must be re-entered." name="assert" />
@@ -22,7 +22,7 @@
   background-color: green;
   height: 100px;
   position: relative;
-  width: 100px; 
+  width: 100px;
   }
 
   div#rel-pos-container > div {position: absolute;}
@@ -41,28 +41,28 @@
   background-color: green;
   bottom: 0;
   height: auto;
-  left: 0;   
+  left: 0;
   margin: auto;
   max-height: 34px;
-  max-width: 34px; 
+  max-width: 34px;
   right: 0;
   top: 0;
   width: auto;
   }
 
   /*
-  
+
   First we set both margin-left and margin-right to 0 since
-  
+
   "
   set 'auto' values for 'margin-left' and 'margin-right' to 0
   (...)
   5. 'width' is 'auto', 'left' and 'right' are not 'auto', then solve for 'width'
   "
   10.3.7 Absolutely positioned, non-replaced elements
-  http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width  
-  
-  
+  http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width
+
+
       0px       : left
   +
       0px (set) : margin-left
@@ -83,23 +83,23 @@
   =============
     100px       : width of containing block
 
-  So, (tentative) width is 100px but now we must 
-  constrain it by computed max-width value and so we 
-  must now re-enter the algorithm but this time, 
-  'width' is not 'auto': therefore horizontal margins 
+  So, (tentative) width is 100px but now we must
+  constrain it by computed max-width value and so we
+  must now re-enter the algorithm but this time,
+  'width' is not 'auto': therefore horizontal margins
   must not be set to 0:
-  
+
   "
-  If none of the three (left, width, right) is 'auto': 
-  If both 'margin-left' and 'margin-right' are 'auto', 
-  solve the equation under the extra constraint that 
+  If none of the three (left, width, right) is 'auto':
+  If both 'margin-left' and 'margin-right' are 'auto',
+  solve the equation under the extra constraint that
   the two margins get equal values
   "
   10.3.7 Absolutely positioned, non-replaced elements
-  http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width  
+  http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width
 
   So:
-  
+
       0px       : left
   +
       (solve)   : margin-left
@@ -119,22 +119,22 @@
       0px       : right
   =============
     100px       : width of containing block
-  
-  Therefore, margin-left and margin-right used values are 
-  each respectively equal to ((100px minus 34px) divided by 2) == 33px.  
-  
+
+  Therefore, margin-left and margin-right used values are
+  each respectively equal to ((100px minus 34px) divided by 2) == 33px.
+
   -----------------------------------------------
-  
+
   First we set both margin-top and margin-bottom to 0 since
-  
+
   "
-  5. 'height' is 'auto', 'top' and 'bottom' are not 'auto', 
-  then 'auto' values for 'margin-top' and 'margin-bottom' are set to 0 
+  5. 'height' is 'auto', 'top' and 'bottom' are not 'auto',
+  then 'auto' values for 'margin-top' and 'margin-bottom' are set to 0
   and solve for 'height'
   "
   10.6.4 Absolutely positioned, non-replaced elements
   http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height
-  
+
       0px       : top
   +
       0px (set) : margin-top
@@ -155,23 +155,23 @@
   =============
     100px       : height of containing block
 
-  So, (tentative) height is 100px but now we must 
-  constrain it by computed max-height value and so we 
-  must now re-enter the algorithm but this time, 
-  'height' is not 'auto': therefore vertical margins 
+  So, (tentative) height is 100px but now we must
+  constrain it by computed max-height value and so we
+  must now re-enter the algorithm but this time,
+  'height' is not 'auto': therefore vertical margins
   must not be set to 0:
-  
+
   "
-  If none of the three (top, height, bottom) are 'auto': 
-  If both 'margin-top' and 'margin-bottom' are 'auto', 
-  solve the equation under the extra constraint that 
+  If none of the three (top, height, bottom) are 'auto':
+  If both 'margin-top' and 'margin-bottom' are 'auto',
+  solve the equation under the extra constraint that
   the two margins get equal values.
   "
-  10.6.4 Absolutely positioned, non-replaced elements  
+  10.6.4 Absolutely positioned, non-replaced elements
   http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height
-  
+
   So:
-  
+
       0px       : top
   +
       (solve)   : margin-top
@@ -191,10 +191,10 @@
       0px       : bottom
   =============
     100px       : height of containing block
-  
-  Therefore, margin-top and margin-bottom used values are 
+
+  Therefore, margin-top and margin-bottom used values are
   each respectively equal to ((100px minus 34px) divided by 2) == 33px.
-  
+
   */
   ]]></style>
 

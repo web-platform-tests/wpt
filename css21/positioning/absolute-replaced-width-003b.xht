@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-width" />
-  <link rel="match" href="reference/absolute-replaced-width-003b-ref.xht" />
+  <link rel="match" href="absolute-replaced-width-003b-ref.xht" />
 
   <meta name="flags" content="nonHTML svg" />
   <meta name="assert" content="If an absolutely positioned inline replaced element (like the svg element in this test) has no intrinsic height and no intrinsic ratio, then the used value of 'height' becomes 150px. Then, if both left and right values are 'auto' and the 'direction' property of the element establishing the static-position containing block is 'ltr', then set 'left' to the static position. If 'left' or 'right' are 'auto' (like in this test), then replace any 'auto' on 'margin-left' or 'margin-right' with '0'. If at this point there is an 'auto' left (like in this test: right is 'auto'), solve the equation for that value." />
@@ -26,7 +26,7 @@
   {
   background-color: green;
   height: 150px;
-  left: auto;  
+  left: auto;
   position: absolute;
   top: auto;
   width: 150px;

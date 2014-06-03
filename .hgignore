@@ -8,7 +8,7 @@ tools/cache
 *.DS_Store
 *.pyc
 *.svn
-.directory.*
+.directory*
 *~
 *.orig
 *Thumbs.db

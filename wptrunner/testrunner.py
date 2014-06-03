@@ -336,7 +336,7 @@ class TestRunnerManager(threading.Thread):
         if self.init_fail_count < self.max_init_fails:
             self.restart_runner()
         else:
-            self.logger.warning("Test runner failed to initalise correctly; shutting down")
+            self.logger.critical("Test runner failed to initalise correctly; shutting down")
             return Stop
 
     def start_test_runner(self):

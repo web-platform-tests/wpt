@@ -153,10 +153,10 @@
 
 		/**
 		* Function that does the actual testing (using an asynchronous test).
-		* @param curveData (double[]?) - Array containing values for the WaveShaper curve.
-		* @param inputData (double[]) - Array containing values for the input stream.
-		* @param expectedData (double[]) - Array containing expected results for each of the corresponding inputs.
-		* @param testName (string) - Name of the test case.
+		* @param {?Array.<number>} curveData - Array containing values for the WaveShaper curve.
+		* @param {!Array.<number>} inputData - Array containing values for the input stream.
+		* @param {!Array.<number>} expectedData - Array containing expected results for each of the corresponding inputs.
+		* @param {!string} testName - Name of the test case.
 		*/
 		function executeTest(curveData, inputData, expectedData, testName) {
 			var stTest=async_test("WaveShaperNode - "+testName);

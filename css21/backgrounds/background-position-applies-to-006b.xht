@@ -8,61 +8,49 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" title="14.2.1 Background properties: 'background-color', 'background-image', 'background-repeat', 'background-attachment', 'background-position', and 'background'" />
-  <link rel="match" href="reference/background-position-applies-to-001e-ref.xht" />
+  <link rel="match" href="background-position-applies-to-001b-ref.xht" />
 
   <meta name="flags" content="image" />
   <meta name="assert" content="The 'background-position' property applies to elements with 'display' set to 'table-column'." />
 
   <style type="text/css"><![CDATA[
-  div#table {display: table;}
+  table {border-spacing: 0px;}
 
-  div.col {display: table-column;}
-
-  div#tested-col
+  col#tested-col
   {
   background-image: url("support/60x60-red.png");
   background-position: bottom right;
   background-repeat: no-repeat;
-  display: table-column;
   }
 
-  div#tbody {display: table-row-group;}
+  td {padding: 0px;}
 
-  div.tr {display: table-row;}
+  td#top-left {border-top: transparent solid 60px;}
 
-  div.td
+  td#top-right {border-right: transparent solid 60px;}
+
+  td#bottom-left
   {
-  display: table-cell;
-  height: 60px;
-  width: 60px;
+  border-bottom: transparent solid 60px;
+  border-left: transparent solid 60px;
   }
 
-  div#overlapping-green
-  {
-  border-bottom: green solid 60px;
-  display: table-cell;
-  height: 60px;
-  width: 60px; 
-  }
+  td#green-overlapping {border-bottom: green solid 60px;}
   ]]></style>
 
  </head>
- 
+
  <body>
 
   <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 
-  <div id="table">
-      <div class="col"></div><div id="tested-col"></div>
-      <div id="tbody">
-          <div class="tr">
-              <div class="td"></div><div class="td"></div>
-          </div>
-          <div class="tr">
-              <div class="td"></div><div id="overlapping-green"></div>
-          </div>
-      </div>
-  </div>
- 
+  <table>
+    <col></col><col id="tested-col"></col>
+    <tbody>
+      <tr><td id="top-left"></td><td id="top-right"></td></tr>
+      <tr><td id="bottom-left"></td><td id="green-overlapping"></td></tr>
+    </tbody>
+  </table>
+
  </body>
 </html>

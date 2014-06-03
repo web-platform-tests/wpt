@@ -8,18 +8,18 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#leading" title="10.8.1 Leading and half-leading" />
-  <link rel="match" href="reference/vertical-align-baseline-004a-ref.xht" />
+  <link rel="match" href="vertical-align-baseline-004a-ref.xht" />
 
   <meta content="ahem image" name="flags" />
   <meta content="The baseline of an 'inline-block' whose 'overflow' property has a computed value other than 'visible' is located at its bottom margin edge." name="assert" />
 
   <style type="text/css"><![CDATA[
-  body {margin: 8px;}  
-  
+  body {margin: 8px;}
+
   p
   {
   font: 1em/1.25 serif;
-  margin: 1em 0em;  
+  margin: 1em 0em;
   }
 
   div#wrapper
@@ -27,17 +27,17 @@
   background-color: yellow;
   /*
   The sole purpose for such yellow background
-  is to help delimit and visually identify the 
+  is to help delimit and visually identify the
   content area of the block container box.
   */
 
-  color: black; 
+  color: black;
   font: 50px/1 Ahem;
   /*
   So that 50px / 5 == 10 without remainder;
   that way, the accurate position of baseline
   does not imply fractional pixel.
-  Also, the height of the "p" glyph will not 
+  Also, the height of the "p" glyph will not
   create fractional pixel either.
   */
   }
@@ -55,16 +55,16 @@
   img
   {
   position: absolute;
-  top: 72px; 
-  
+  top: 72px;
+
   /*
-  
+
     16px : max(body's margin-top, p's margin-top) == max(8px, 16px)
   +
     20px : p's first line box height
-  +    
+  +
     20px : p's second line box height
-  +    
+  +
     16px : p's margin-bottom
   ========
     72px

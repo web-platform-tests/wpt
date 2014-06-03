@@ -27,6 +27,9 @@
             "setting_succeeds": true,
             "setting_throws": false,
             "reading_throws": false, /* reading for a different origin should return original property, not throw */
+            "opener_is_this_window": true,
+            "null with var": {"opener_is_this_window":false},
+            "null without var": {"opener_is_this_window":false},
             "null with var - after navigation": {stringified_opener:'null', real_opener: null},
             "null without var - after navigation": {stringified_opener:'null', real_opener: null}
     }
@@ -57,8 +60,14 @@
                 assert_equals(data.setting_succeeds, expectations.setting_succeeds);
             }, data.name +' setting succeeds');
             test(function(){
-                assert_equals(reading_throws, expectations.reading_throws, 'opener set to '+ data.name+' - reading should not throw ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
-                assert_true(opener_is_this_window, 'popup.opener seen from other origin still refers to this window, even though it has been set inside the popup');
+                assert_equals(reading_throws, expectations.reading_throws, 'opener set to '+ data.name+' - reading should not throw. Does it? ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
+                // popup.opener - as seen from the other-origin opener window - should in most cases be the original opener
+                // as if it were not set. However, the value null is an exception.
+               if(expectations[data.name]){ // this is a special case.. (probably null)
+                    assert_equals(opener_is_this_window, expectations[data.name].opener_is_this_window, 'popup.opener seen from other origin')
+               }else{
+                    assert_true(opener_is_this_window, 'popup.opener seen from other origin still refers to this window, even though it has been set inside the popup');
+               }
             }, data.name +' getting redefined property (from opener, different origin) returns original value');
         }else if(data.step === 'post-nav'){
             if(expectations[data.name]){ // this is a special case..

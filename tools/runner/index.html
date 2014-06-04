@@ -66,13 +66,40 @@
         <div class="form-group">
           <label for="man" class="col-sm-3 control-label">Manual tests</label>
           <div class="col-sm-9">
-            <input type=checkbox checked value="manual" id='man' class='test-type'>
+            <input type=checkbox value="manual" id='man' class='test-type'>
           </div>
         </div>
         <div class="form-group">
           <label for="path" class="col-sm-3 control-label">Run tests under path</label>
           <div class="col-sm-9">
-            <input value="/" id='path' class='path form-control' disabled>
+            <!-- input value="/" id='path' class='path form-control' disabled -->
+            <select id='path' class='path form-control' disabled>
+              <option value="/">/</option>
+              <option value="/2dcontext">/2dcontext</option>
+              <option value="/cors">/cors</option>
+              <option value="/custom-elements">/custom-elements</option>
+              <option value="/dom">/dom</option>
+              <option value="/DOMEvents">/DOMEvents</option>
+              <option value="/domparsing">/domparsing</option>
+              <option value="/domxpath">/domxpath</option>
+              <option value="/eventsource">/eventsource</option>
+              <option value="/ext-xhtml-pubid">/ext-xhtml-pubid</option>
+              <option value="/FileAPI">/FileAPI</option>
+              <option value="/html">/html</option>
+              <option value="/html-imports">/html-imports</option>
+              <option value="/microdata">/microdata</option>
+              <option value="/page-visibility">/page-visibility</option>
+              <option value="/pointerlock">/pointerlock</option>
+              <option value="/progress-events">/progress-events</option>
+              <option value="/selectors-api">/selectors-api</option>
+              <option value="/typedarrays">/typedarrays</option>
+              <option value="/url">/url</option>
+              <option value="/webgl">/webgl</option>
+              <option value="/websockets">/websockets</option>
+              <option value="/webstorage">/webstorage</option>
+              <option value="/workers">/workers</option>
+              <option value="/XMLHttpRequest">/XMLHttpRequest</option>
+            </select>
           </div>
         </div>
 

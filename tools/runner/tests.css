@@ -1,0 +1,74 @@
+body
+{
+	margin: 3%;
+}
+
+/* Buttons
+   Shamelessly stolen from jQuery mobile
+   ========================================================================== */
+
+a.button,
+#content a.button,
+.button,
+input[type="submit"] {
+	border-radius: 5px;
+	border: 1px solid #999;
+	-webkit-box-shadow:
+		0 0 5px rgba(0, 0, 0, 0.28),
+		inset 0 1px 0 rgba(255, 255, 255, 0.45),
+		inset 0px -1px 0px rgba(255, 255, 255, 0.45),
+		inset 1px 0px 0px rgba(255, 255, 255, 0.45),
+		inset -1px 1px 0px rgba(255, 255, 255, 0.45);
+	box-shadow:
+		0 0 5px rgba(0, 0, 0, 0.28),
+		inset 0 1px 0 rgba(255, 255, 255, 0.45),
+		inset 0px -1px 0px rgba(255, 255, 255, 0.45),
+		inset 1px 0px 0px rgba(255, 255, 255, 0.45),
+		inset -1px 1px 0px rgba(255, 255, 255, 0.45);
+	text-decoration: none;
+	color: #fff !important;
+	text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.35);
+	padding: 8px 15px;
+	font: bold 16px/16px "klavika-web", "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+	-webkit-transition: all 0.2s;
+	transition: all 0.2s;
+	background-color: #d18f4f;
+	float: none;
+  display:block;
+}
+
+a.button:hover,
+#content a.button:hover,
+.button:hover,
+input[type="submit"]:hover {
+	background-color: #cc8540;
+}
+
+a.button:focus,
+#content a.button:focus,
+.button:focus,
+input[type="submit"]:focus {
+	background-color: #8F5227;
+}
+
+a.button.large,
+#content a.button.large,
+button.large,
+input[type="submit"].large {
+	font-size: 20px;
+	padding: 12px 20px;
+}
+
+a.button.dark,
+#content a.button.dark,
+.button.dark,
+input[type="submit"].dark {
+	background-color: #666;
+}
+
+a.button.dark:hover,
+#content a.button.dark:hover,
+.button.dark:hover,
+input[type="submit"].dark:hover {
+	background-color: #424141;
+}

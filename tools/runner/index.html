@@ -20,29 +20,29 @@
 </header>
 
 <div class="container">
-  <h2>Running Tests</h2>
-  <p>
-    This <em>Test Runner</em> runs some set of
-    <a href="https://github.com/w3c/web-platform-tests/blob/master/README.md">web-platform-tests</a>
-    tests. The set of tests run is configurable via the <em>path</em> field below. Some examples
-    path values are:
-  <ul>
-    <li><code>/</code> - runs all of the tests from the root down</li>
-    <li><code>/websockets</code> - runs all of the
-        <a href="http://w3c-test.org/websockets/">websockets</a> tests</li>
-    <li><code>/websockets/constructor</code> - runs all of the
-        <a href="http://w3c-test.org/websockets/constructor/">websockets/constructor</a> tests</li>
-    <li><code>/html/syntax/parsing</code> - runs all of the HTML syntax parsing tests
-        <a href="http://w3c-test.org/html/syntax/parsing/">html/syntax/parsing</a> tests</li>
-  </ul>
-  <p>
-    If the test runner is run online, the set of tests available to run can be found in the
-    <a href="http://w3c-test.org/">w3c-test.org</a> test repository.
-  <p>
-    Tests will run in a new window. For reftests and manual tests it is recommended to have that
-    window and this window side by side.
-
-
+  <div id="instructions">
+    <h2>Running Tests</h2>
+    <p>
+      This <em>Test Runner</em> runs some set of
+      <a href="https://github.com/w3c/web-platform-tests/blob/master/README.md">web-platform-tests</a>
+      tests. The set of tests run is configurable via the <em>path</em> field below. Some examples
+      path values are:
+    <ul>
+      <li><code>/</code> - runs all of the tests from the root down</li>
+      <li><code>/websockets</code> - runs all of the
+          <a href="http://w3c-test.org/websockets/">websockets</a> tests</li>
+      <li><code>/websockets/constructor</code> - runs all of the
+          <a href="http://w3c-test.org/websockets/constructor/">websockets/constructor</a> tests</li>
+      <li><code>/html/syntax/parsing</code> - runs all of the HTML syntax parsing tests
+          <a href="http://w3c-test.org/html/syntax/parsing/">html/syntax/parsing</a> tests</li>
+    </ul>
+    <p>
+      If the test runner is run online, the set of tests available to run can be found in the
+      <a href="http://w3c-test.org/">w3c-test.org</a> test repository.
+    <p>
+      Tests will run in a new window. For reftests and manual tests it is recommended to have that
+      window and this window side by side.
+  </div>
 
   <div id="testControl" class="panel panel-default">
     <div class='panel-heading'>
@@ -50,80 +50,82 @@
     </div>
     <div class="panel-body">
       <form id='options' class='horizontal-form' onsubmit='return false;'>
-        <p>Include test types:</p>
-        <div class="form-group">
-          <label for="th" class="col-sm-3 control-label">JavaScript tests</label>
-          <div class="col-sm-9">
-            <input type=checkbox checked value="testharness" id='th' class='test-type'>
+        <div id='testSelection'>
+          <p>Include test types:</p>
+          <div class="form-group">
+            <label for="th" class="col-sm-3 control-label">JavaScript tests</label>
+            <div class="col-sm-9">
+              <input type=checkbox checked value="testharness" id='th' class='test-type'>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="ref" class="col-sm-3 control-label">Reference tests</label>
-          <div class="col-sm-9">
-            <input type=checkbox checked value="reftest" id='ref' class='test-type'>
+          <div class="form-group">
+            <label for="ref" class="col-sm-3 control-label">Reference tests</label>
+            <div class="col-sm-9">
+              <input type=checkbox checked value="reftest" id='ref' class='test-type'>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="man" class="col-sm-3 control-label">Manual tests</label>
-          <div class="col-sm-9">
-            <input type=checkbox value="manual" id='man' class='test-type'>
+          <div class="form-group">
+            <label for="man" class="col-sm-3 control-label">Manual tests</label>
+            <div class="col-sm-9">
+              <input type=checkbox value="manual" id='man' class='test-type'>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="path" class="col-sm-3 control-label">Run tests under path</label>
-          <div class="col-sm-9">
-            <!-- input value="/" id='path' class='path form-control' disabled -->
-            <select id='path' class='path form-control' disabled>
-              <option value="/">/</option>
-              <option value="/2dcontext">/2dcontext</option>
-              <option value="/cors">/cors</option>
-              <option value="/custom-elements">/custom-elements</option>
-              <option value="/dom">/dom</option>
-              <option value="/DOMEvents">/DOMEvents</option>
-              <option value="/domparsing">/domparsing</option>
-              <option value="/domxpath">/domxpath</option>
-              <option value="/eventsource">/eventsource</option>
-              <option value="/ext-xhtml-pubid">/ext-xhtml-pubid</option>
-              <option value="/FileAPI">/FileAPI</option>
-              <option value="/html">/html</option>
-              <option value="/html-imports">/html-imports</option>
-              <option value="/microdata">/microdata</option>
-              <option value="/page-visibility">/page-visibility</option>
-              <option value="/pointerlock">/pointerlock</option>
-              <option value="/progress-events">/progress-events</option>
-              <option value="/selectors-api">/selectors-api</option>
-              <option value="/typedarrays">/typedarrays</option>
-              <option value="/url">/url</option>
-              <option value="/webgl">/webgl</option>
-              <option value="/websockets">/websockets</option>
-              <option value="/webstorage">/webstorage</option>
-              <option value="/workers">/workers</option>
-              <option value="/XMLHttpRequest">/XMLHttpRequest</option>
-            </select>
+          <div class="form-group">
+            <label for="path" class="col-sm-3 control-label">Run tests under path</label>
+            <div class="col-sm-9">
+              <!-- input value="/" id='path' class='path form-control' disabled -->
+              <select id='path' class='path form-control' disabled>
+                <option value="/">/</option>
+                <option value="/2dcontext">/2dcontext</option>
+                <option value="/cors">/cors</option>
+                <option value="/custom-elements">/custom-elements</option>
+                <option value="/dom">/dom</option>
+                <option value="/DOMEvents">/DOMEvents</option>
+                <option value="/domparsing">/domparsing</option>
+                <option value="/domxpath">/domxpath</option>
+                <option value="/eventsource">/eventsource</option>
+                <option value="/ext-xhtml-pubid">/ext-xhtml-pubid</option>
+                <option value="/FileAPI">/FileAPI</option>
+                <option value="/html">/html</option>
+                <option value="/html-imports">/html-imports</option>
+                <option value="/microdata">/microdata</option>
+                <option value="/page-visibility">/page-visibility</option>
+                <option value="/pointerlock">/pointerlock</option>
+                <option value="/progress-events">/progress-events</option>
+                <option value="/selectors-api">/selectors-api</option>
+                <option value="/typedarrays">/typedarrays</option>
+                <option value="/url">/url</option>
+                <option value="/webgl">/webgl</option>
+                <option value="/websockets">/websockets</option>
+                <option value="/webstorage">/webstorage</option>
+                <option value="/workers">/workers</option>
+                <option value="/XMLHttpRequest">/XMLHttpRequest</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="timeout_multiplier" class="col-sm-3 control-label">Timeout Multiplier</label>
-          <div class="col-sm-9">
-            <input type=number value="1" id='timeout_multiplier' class='timeout_multiplier form-control'>
+          <div class="form-group">
+            <label for="timeout_multiplier" class="col-sm-3 control-label">Timeout Multiplier</label>
+            <div class="col-sm-9">
+              <input type=number value="1" id='timeout_multiplier' class='timeout_multiplier form-control'>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="render" class="col-sm-3 control-label">Show output (debug)</label>
+            <div class="col-sm-9">
+              <input type=checkbox id='render' value='render' class='render'>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="dumpit" class="col-sm-3 control-label">Dump JSON (debug)</label>
+            <div class="col-sm-9">
+              <input type=checkbox id='dumpit'>
+            </div>
           </div>
         </div>
-
-        <div class="form-group">
-          <label for="render" class="col-sm-3 control-label">Show output (debug)</label>
-          <div class="col-sm-9">
-            <input type=checkbox id='render' value='render' class='render'>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="dumpit" class="col-sm-3 control-label">Dump JSON (debug)</label>
-          <div class="col-sm-9">
-            <input type=checkbox id='dumpit'>
-          </div>
-        </div>
-
+        
         <div class="form-group" style='padding-top: 20px'>
           <div class="col-sm-offset-3 col-sm-9">
             <button type="submit" class="btn btn-success toggleStart" disabled>Start</button>

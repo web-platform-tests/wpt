@@ -370,6 +370,9 @@ TestControl.prototype = {
             elem.disabled = false;
         });
         this.start_button.onclick = function() {
+            // Hide the instructions
+            document.getElementById('instructions').style.display = "none";
+
             var path = this.get_path();
             var test_types = this.get_test_types();
             var settings = this.get_testharness_settings();
@@ -661,6 +664,10 @@ function setup() {
     new VisualOutput(document.getElementById("output"), runner);
 
     if (options.autorun === "1") {
+        // Hide the instructions and controls
+        document.getElementById('instructions').style.display = "none";
+        document.getElementById('testSelection').style.display = "none";
+
         runner.start(test_control.get_path(),
                      test_control.get_test_types(),
                      test_control.get_testharness_settings());

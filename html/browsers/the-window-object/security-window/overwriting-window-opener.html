@@ -35,7 +35,7 @@
             "null without var - after navigation": {stringified_opener:'null', real_opener: null}
     }
     var seen_results = [];
-    setup({explicit_done: true, explicit_timeout: true});
+    setup({explicit_done: true});
     var idx = 0, win;
     var testURL = location.pathname.replace('overwriting-window-opener.html', 'support/window-opener-popup.html');
     testURL = location.protocol + '//' + 'www1.' + location.host + testURL + '?';

@@ -96,9 +96,9 @@
 		*/
 		(function() {
 			var bigCurve=[];
-			for(var i=0;i<60000;i++) { bigCurve.push(i/3.5435); }
+			for(var i=0;i<=60000;i++) { bigCurve.push(i/3.5435); }
 			var inputData=[-1.0, 0, 1.0];
-			var expectedData=[bigCurve[0], bigCurve[30000], bigCurve[59999]];
+			var expectedData=[bigCurve[0], bigCurve[30000], bigCurve[60000]];
 			executeTest(bigCurve, inputData, expectedData, "Testing a huge curve");
 		})();
 
@@ -195,7 +195,7 @@
 							if(curveData.length<20) {
 								curveText=curveData.join(",");
 							} else {
-								curveText="TooBigToDisplay ("+(curveData.length-1)+" elements)";
+								curveText="TooBigToDisplay ("+(curveData.length)+" elements)";
 							}
 						}
 						var comment="Input="+inputData[i]+", Curve=["+curveText+"] >>> ";

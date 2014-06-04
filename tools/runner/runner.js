@@ -513,7 +513,17 @@ Runner.prototype = {
     },
 
     open_test_window: function() {
-        this.test_window = window.open("about:blank", 800, 600);
+        if(document.getElementById('iframe').checked) {
+            var iFrameElement = document.createElement("iframe");
+            iFrameElement.id = 'outputWindow';
+            iFrameElement.style.width = 800;
+            iFrameElement.style.height = 600;
+            
+            document.getElementById('iFramePlaceholder').appendChild(iFrameElement);
+            this.test_window = iFrameElement.contentWindow;
+        } else {
+            this.test_window = window.open("about:blank", 800, 600);
+        }
     },
 
     manifest_loaded: function() {
@@ -584,7 +594,12 @@ Runner.prototype = {
     done: function() {
         this.done_flag = true;
         if (this.test_window) {
-            this.test_window.close();
+            if(document.getElementById('iframe').checked) {
+                var outputWindow = document.getElementById('outputWindow');
+                outputWindow.parentNode.removeChild(outputWindow);
+            } else {
+                this.test_window.close();
+            }
         }
         this.done_callbacks.forEach(function(callback) {
             callback();
@@ -656,6 +671,9 @@ function setup() {
 
     if (options.path) {
         document.getElementById('path').value = options.path;
+    }
+    if (options.iframe) {
+        document.getElementById('iframe').checked = true;
     }
 
     runner = new Runner("/MANIFEST.json", options);

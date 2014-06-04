@@ -15,13 +15,13 @@
   <link rel="reviewer" title="Arron Eicholz" href="arronei(at)gmail.com" /> <!-- 2013-07-30 -->
   <link rel="bookmark" href="http://lists.w3.org/Archives/Public/public-css-testsuite/2012Jan/0022.html" title="[RC6] c5525-fltmult-000 imprecise and failed by several browsers" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" title="8.3.1 Collapsing margins" />
-  <link rel="match" href="reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
 
   <meta name="flags" content="" />
   <meta name="assert" content="An element on which 'clear' is set to a value other than 'none' can have its own margin-top collapse with the margin-top of its first inflow block-level child (which may also be the resulting combined margin of its own subtree of descendants) as long as no line boxes, no clearance, no padding and no border separate them." />
 
   <style type="text/css"><![CDATA[
-  body {margin: 8px;}  
+  body {margin: 8px;}
 
   p {margin: 1em 0em;}
 
@@ -41,22 +41,22 @@
   float: left;
   font: 1em/1.25 serif;
   padding: 15px;
-  /* 
-    
-    15px : padding-top  
+  /*
+
+    15px : padding-top
   +
     20px : line box height
-  + 
+  +
     15px : padding-bottom
    =====
-    50px   
+    50px
 
   */
-  width: 70px; 
+  width: 70px;
   }
 
   div#cleared-left {clear: left;}
-  
+
   div#child-of-cleared-left
   {
   background-color: red;
@@ -77,11 +77,11 @@
   height: 50px;
   margin-top: 30px;
   }
-  
-  /* 
-  The idea is to have div#cleared-left's margin-top collapse 
-  with div#child-of-clear-left's margin-top. The margin 
-  collapsing of margin-tops of descendants of div#cleared-left 
+
+  /*
+  The idea is to have div#cleared-left's margin-top collapse
+  with div#child-of-clear-left's margin-top. The margin
+  collapsing of margin-tops of descendants of div#cleared-left
   should occur before calculating clearance.
   */
   ]]></style>
@@ -95,13 +95,13 @@
   <div id="overlapped-red"></div>
 
   <div id="floated-left">flt lft</div>
-  
+
   <div id="cleared-left">
     <div id="child-of-cleared-left">
       <div id="grandchild-of-cleared-left">
         <div id="grand-grandchild-of-cleared-left">ggchld</div>
       </div>
-    </div> 
+    </div>
   </div>
 
  </body>

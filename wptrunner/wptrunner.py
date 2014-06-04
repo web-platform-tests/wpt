@@ -149,7 +149,7 @@ class TestEnvironment(object):
         time.sleep(2)
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
-                if not self.test_server_port:
+                if self.test_server_port:
                     s = socket.socket()
                     try:
                         s.connect((self.config["host"], port))

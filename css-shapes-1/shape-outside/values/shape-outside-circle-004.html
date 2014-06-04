@@ -17,7 +17,10 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests( ParsingUtils.testInlineStyle, ParsingUtils.buildPositionTests("circle", true, ParsingUtils.validUnits) );
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildPositionTests("circle", true, 'lengthUnit + inline', ParsingUtils.validUnits) );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildPositionTests("circle", true, 'lengthUnit + computed', ParsingUtils.validUnits) );
         </script>
     </body>
 </html>

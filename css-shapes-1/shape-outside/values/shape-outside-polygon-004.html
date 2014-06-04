@@ -17,19 +17,22 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests( ParsingUtils.testInlineStyle, 
-                            ParsingUtils.buildPolygonTests([
-                               ['%', 'px', 'px'],
-                               ['px', '%', 'px'],
-                               ['px', 'px', '%'],
-                               ['%', '%', '%'],
-                               ['em', 'em', 'ex'],
-                               ['vw', 'vh', '%'],
-                               ['cm', 'mm', 'pc'],
-                               ['vmin', 'vmin', 'vmax'],
-                               ['rem', 'ch', 'rem'],
-                               ['in', 'pt', '%']
-                            ]) );
+            var arg_length_units_tests = [
+               ['%', 'px', 'px'],
+               ['px', '%', 'px'],
+               ['px', 'px', '%'],
+               ['%', '%', '%'],
+               ['em', 'em', 'ex'],
+               ['vw', 'vh', '%'],
+               ['cm', 'mm', 'pc'],
+               ['vmin', 'vmin', 'vmax'],
+               ['rem', 'ch', 'rem'],
+               ['in', 'pt', '%']
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildPolygonTests(arg_length_units_tests, 'inline') );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildPolygonTests(arg_length_units_tests, 'computed') );
         </script>
     </body>
 </html>

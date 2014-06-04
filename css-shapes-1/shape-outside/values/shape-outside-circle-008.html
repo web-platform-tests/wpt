@@ -16,34 +16,34 @@
     <body>
         <div id="log"></div>
          <script type="text/javascript">
-                generate_tests(ParsingUtils.testInlineStyle, 
-                               ParsingUtils.buildTestCases([
-                               'circle(at foo)',
-                               'circle(at 50)',
-                               'circle(at 10px 20px 30px)',
-                               'circle(at 20% 30% 40%)',
-                               'circle(at 20px, 30px)',
-                               'circle(at 20%, 30%)',
-                               'circle(at 20px, 30px, 40px)',
-                               'circle(at 20%, 30%, 40%)',
-                               'circle(at closest-side)',
-                               'circle(at farthest-side)',
-                               'circle(at 20px 30px closest-side)',
-                               'circle(at 20px 30px farthest-side)',
-                               'circle(at 20px 30px foo)',
-                               'circle(at closest-side 20px 30px)',
-                               'circle(at farthest-side 20px 30px)',
-                               'circle(at 20% 30% closest-side)',
-                               'circle(at 20% 30% farthest-side)',
-                               'circle(at closest-side 20% 30%)',
-                               'circle(at farthest-side 20% 30%)',
-                               'circle(at closest-side farthest-side 20px)',
-                               'circle(at closest-side farthest-side 20%)',
-                               'circle(at farthest-side closest-side closest-side)',
-                               'circle(at farthest-side, closest-side, closest-side)',
-                               'circle(at left 50x top 50px bottom)',
-                            ], 0, true)
-                );
-            </script>
+            var invalid_circle_position_tests = [
+                {"name": "circle(at foo)"},
+                {"name": "circle(at 50)"},
+                {"name": "circle(at 10px 20px 30px)"},
+                {"name": "circle(at 20% 30% 40%)"},
+                {"name": "circle(at 20px, 30px)"},
+                {"name": "circle(at 20%, 30%)"},
+                {"name": "circle(at 20px, 30px, 40px)"},
+                {"name": "circle(at 20%, 30%, 40%)"},
+                {"name": "circle(at closest-side)"},
+                {"name": "circle(at farthest-side)"},
+                {"name": "circle(at 20px 30px closest-side)"},
+                {"name": "circle(at 20px 30px farthest-side)"},
+                {"name": "circle(at 20px 30px foo)"},
+                {"name": "circle(at closest-side 20px 30px)"},
+                {"name": "circle(at farthest-side 20px 30px)"},
+                {"name": "circle(at 20% 30% closest-side)"},
+                {"name": "circle(at 20% 30% farthest-side)"},
+                {"name": "circle(at closest-side 20% 30%)"},
+                {"name": "circle(at farthest-side 20% 30%)"},
+                {"name": "circle(at closest-side farthest-side 20px)"},
+                {"name": "circle(at closest-side farthest-side 20%)"},
+                {"name": "circle(at farthest-side closest-side closest-side)"},
+                {"name": "circle(at farthest-side, closest-side, closest-side)"},
+                {"name": "circle(at left 50x top 50px bottom)"}
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(invalid_circle_position_tests) );
+        </script>
     </body>
 </html>

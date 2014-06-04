@@ -17,29 +17,107 @@
     <body>
         <div id="log"></div>
          <script type="text/javascript">
-                generate_tests(ParsingUtils.testInlineStyle, 
-                               ParsingUtils.buildTestCases([
-                               ['ellipse(at +50px)', 'ellipse(at 50px 50%)'],
-                               ['ellipse(at -50px)', 'ellipse(at -50px 50%)'],
-                               ['ellipse(at +50%)', 'ellipse(at 50% 50%)'],
-                               ['ellipse(at -50%)', 'ellipse(at -50% 50%)'],
-                               ['ellipse(at left +50px)', 'ellipse(at 0% 50px)'],
-                               ['ellipse(at left +50%)', 'ellipse(at 0% 50%)'],
-                               ['ellipse(at right -50px)', 'ellipse(at 100% -50px)'],
-                               ['ellipse(at right -50%)', 'ellipse(at 100% -50%)'],
-                               ['ellipse(at +50px top)', 'ellipse(at 50px 0%)'],
-                               ['ellipse(at +50% top)', 'ellipse(at 50% 0%)'],
-                               ['ellipse(at -50px bottom)', 'ellipse(at -50px 100%)'],
-                               ['ellipse(at -50% bottom)', 'ellipse(at -50% 100%)'],
-                               ['ellipse(at +50px +50px)', 'ellipse(at 50px 50px)'],
-                               ['ellipse(at +50% +50%)', 'ellipse(at 50% 50%)'],
-                               ['ellipse(at -50px -50px)', 'ellipse(at -50px -50px)'],
-                               ['ellipse(at +50px -50px)', 'ellipse(at 50px -50px)'],
-                               ['ellipse(at -50px +50px)', 'ellipse(at -50px 50px)'],
-                               ['ellipse(at +50% -50%)', 'ellipse(at 50% -50%)'],
-                               ['ellipse(at -50% +50%)', 'ellipse(at -50% 50%)']
-                            ], 0)
-                );
+            var valid_ellipse_radii_tests = [
+                {
+                  "actual": "ellipse(at +50px)",
+                  "expected_inline": "ellipse(at 50px 50%)",
+                  "expected_computed": "ellipse(at 50px 50%)"
+                },
+                {
+                  "actual": "ellipse(at -50px)",
+                  "expected_inline": "ellipse(at -50px 50%)",
+                  "expected_computed": "ellipse(at -50px 50%)"
+                },
+                {
+                  "actual": "ellipse(at +50%)",
+                  "expected_inline": "ellipse(at 50% 50%)",
+                  "expected_computed": "ellipse(at 50% 50%)"
+                },
+                {
+                  "actual": "ellipse(at -50%)",
+                  "expected_inline": "ellipse(at -50% 50%)",
+                  "expected_computed": "ellipse(at -50% 50%)"
+                },
+                {
+                  "actual": "ellipse(at left +50px)",
+                  "expected_inline": "ellipse(at 0% 50px)",
+                  "expected_computed": "ellipse(at 0% 50px)"
+                },
+                {
+                  "actual": "ellipse(at left +50%)",
+                  "expected_inline": "ellipse(at 0% 50%)",
+                  "expected_computed": "ellipse(at 0% 50%)"
+                },
+                {
+                  "actual": "ellipse(at right -50px)",
+                  "expected_inline": "ellipse(at 100% -50px)",
+                  "expected_computed": "ellipse(at 100% -50px)"
+                },
+                {
+                  "actual": "ellipse(at right -50%)",
+                  "expected_inline": "ellipse(at 100% -50%)",
+                  "expected_computed": "ellipse(at 100% -50%)"
+                },
+                {
+                  "actual": "ellipse(at +50px top)",
+                  "expected_inline": "ellipse(at 50px 0%)",
+                  "expected_computed": "ellipse(at 50px 0%)"
+                },
+                {
+                  "actual": "ellipse(at +50% top)",
+                  "expected_inline": "ellipse(at 50% 0%)",
+                  "expected_computed": "ellipse(at 50% 0%)"
+                },
+                {
+                  "actual": "ellipse(at -50px bottom)",
+                  "expected_inline": "ellipse(at -50px 100%)",
+                  "expected_computed": "ellipse(at -50px 100%)"
+                },
+                {
+                  "actual": "ellipse(at -50% bottom)",
+                  "expected_inline": "ellipse(at -50% 100%)",
+                  "expected_computed": "ellipse(at -50% 100%)"
+                },
+                {
+                  "actual": "ellipse(at +50px +50px)",
+                  "expected_inline": "ellipse(at 50px 50px)",
+                  "expected_computed": "ellipse(at 50px 50px)"
+                },
+                {
+                  "actual": "ellipse(at +50% +50%)",
+                  "expected_inline": "ellipse(at 50% 50%)",
+                  "expected_computed": "ellipse(at 50% 50%)"
+                },
+                {
+                  "actual": "ellipse(at -50px -50px)",
+                  "expected_inline": "ellipse(at -50px -50px)",
+                  "expected_computed": "ellipse(at -50px -50px)"
+                },
+                {
+                  "actual": "ellipse(at +50px -50px)",
+                  "expected_inline": "ellipse(at 50px -50px)",
+                  "expected_computed": "ellipse(at 50px -50px)"
+                },
+                {
+                  "actual": "ellipse(at -50px +50px)",
+                  "expected_inline": "ellipse(at -50px 50px)",
+                  "expected_computed": "ellipse(at -50px 50px)"
+                },
+                {
+                  "actual": "ellipse(at +50% -50%)",
+                  "expected_inline": "ellipse(at 50% -50%)",
+                  "expected_computed": "ellipse(at 50% -50%)"
+                },
+                {
+                  "actual": "ellipse(at -50% +50%)",
+                  "expected_inline": "ellipse(at -50% 50%)",
+                  "expected_computed": "ellipse(at -50% 50%)"
+                }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(valid_ellipse_radii_tests, "inline") );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(valid_ellipse_radii_tests, "computed") );
             </script>
     </body>
 </html>

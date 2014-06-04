@@ -16,15 +16,36 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(
-                ParsingUtils.testInlineStyle,
-                ParsingUtils.buildTestCases([
-                    ["No arguments", "ellipse()"],
-                    ["Radial arguments", "ellipse(50px 50px)"],
-                    ["Position argument", "ellipse(at 50px 50px)"],
-                    ["Radial and position argument", "ellipse(50px 50px at 50px 50px)"]
-                ], 1)
-            );
+            var valid_ellipse_tests = [
+                {
+                  "name": "No arguments",
+                  "actual": "ellipse()",
+                  "expected_inline": "ellipse(at 50% 50%)",
+                  "expected_computed": "ellipse(at 50% 50%)"
+                },
+                {
+                  "name": "Radial arguments",
+                  "actual": "ellipse(50px 50px)",
+                  "expected_inline": "ellipse(50px 50px at 50% 50%)",
+                  "expected_computed": "ellipse(50px 50px at 50% 50%)"
+                },
+                {
+                   "name": "Position argument",
+                   "actual": "ellipse(at 50px 50px)",
+                   "expected_inline": "ellipse(at 50px 50px)",
+                   "expected_computed": "ellipse(at 50px 50px)"
+                },
+                {
+                   "name": "Radial and position argument",
+                   "actual": "ellipse(50px 50px at 50px 50px)",
+                   "expected_inline": "ellipse(50px 50px at 50px 50px)",
+                   "expected_computed": "ellipse(50px 50px at 50px 50px)"
+                }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(valid_ellipse_tests, "inline") );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(valid_ellipse_tests, "computed") );
         </script>
     </body>
 </html>

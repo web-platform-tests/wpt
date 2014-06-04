@@ -17,8 +17,11 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            ParsingUtils.validUnits.forEach(function(unit) {
-                generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.generateInsetRoundCases(unit));
+           ParsingUtils.validUnits.forEach(function(unit) {
+                generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.generateInsetRoundCases(unit, 'inline'));
+           });
+           ParsingUtils.validUnits.forEach(function(unit) {
+                generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.generateInsetRoundCases(unit, 'computed'));
            });
         </script>
     </body>

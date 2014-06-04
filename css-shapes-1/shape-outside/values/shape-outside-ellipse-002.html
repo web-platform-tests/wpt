@@ -23,7 +23,8 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildPositionTests("ellipse", true, "px"));
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildPositionTests('ellipse', true, 'inline', 'px'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildPositionTests('ellipse', true, 'computed', 'px'));
         </script>
     </body>
 </html>

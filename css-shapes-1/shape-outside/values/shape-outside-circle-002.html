@@ -23,7 +23,8 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildPositionTests("circle", true, "px"));
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildPositionTests('circle', true, 'inline', 'px'));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildPositionTests('circle', true, 'computed', 'px'));
         </script>
     </body>
 </html>

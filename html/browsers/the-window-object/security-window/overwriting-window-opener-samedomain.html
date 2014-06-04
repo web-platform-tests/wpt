@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Tests for overwritten window.opener - samedomain, written from inside popup</title>
+    <meta name="timeout" content="long">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <meta charset="utf-8">
+</head>
+<body>
+    <div id="log"></div>
+    <script type="text/javascript">
+    /*
+        This test intends to test the following:
+        * What values can window.opener be set to?
+        {}, null, window, "", 5, undefined
+        See support/window-opener-popup.html for the list of tests
+
+        * Is there a difference if it's set with and without var keyword?
+
+        * In which cases can window.opener be read cross-domain?
+
+        * Does the rewritten opener keep its value across navigations?
+
+        A new popup window is opened for each subtest.
+    */
+
+    var expectations = {
+            "setting_succeeds": true,
+            "setting_throws": false,
+            "reading_throws": false, /* reading for a different origin should return original property, not throw */
+            "opener_is_this_window": false,
+            "null with var": {"opener_is_this_window":false},
+            "null without var": {"opener_is_this_window":false},
+            "null with var - after navigation": {stringified_opener:'null', real_opener: null},
+            "null without var - after navigation": {stringified_opener:'null', real_opener: null}
+    }
+    var seen_results = [];
+    setup({explicit_done: true});
+    var idx = 0, win;
+    var testURL = location.pathname.replace('overwriting-window-opener-samedomain.html', 'support/window-opener-popup.html?');
+    poll_interval = null;
+
+    window.addEventListener('message', function (e) {
+        if(e.data === 'DONE'){
+            done();
+            return;
+        }
+        var data = e.data;
+        // The poll-for-results approach causes race conditions - potentially we can poll a window twice,
+        // get two results for the same test, and increment idx too early.. Let's try to guard against such
+        // race conditions and make sure we only record one pre-navigation and one post-navigation result per test
+        if(data.idx && seen_results.indexOf(data.step + ' ' + data.idx)>-1){
+            return;
+        }
+        seen_results.push(data.step + ' ' + data.idx);
+
+        var reading_throws = false, opener_is_this_window = false, stringified_opener = '';
+        try{
+            var the_opener = win.opener;
+            opener_is_this_window = the_opener === self;
+            stringified_opener = '' + win.opener;
+        }catch(err){
+            reading_throws = true;
+        }
+        clearInterval(poll_interval);
+        if(data.step === 'pre-nav'){ // First part of test, before navigation
+            test(function(){
+                assert_equals(data.setting_throws, expectations.setting_throws);
+            }, data.name +' - setting should not throw');
+            test(function(){
+                assert_equals(data.setting_succeeds, expectations.setting_succeeds);
+            }, data.name +' setting succeeds');
+            test(function(){
+                assert_equals(reading_throws, expectations.reading_throws, 'opener set to '+ data.name+' - reading should not throw. Does it? ' + (reading_throws ? '' : ' (opener stringifies as ' + stringified_opener + ')') );
+                // popup.opener - as seen from the other-origin opener window - should in most cases be the original opener
+                // as if it were not set. However, the value null is an exception.
+               if(expectations[data.name]){ // this is a special case.. (probably null)
+                    assert_equals(opener_is_this_window, expectations[data.name].opener_is_this_window, 'popup.opener seen from same origin opener window')
+               }else{
+                    assert_false(opener_is_this_window, 'popup.opener seen from same origin no longer refers to this window when it has been set inside the popup');
+               }
+            }, data.name +' getting redefined property (from opener, same origin) returns set value');
+            // Ideally, the popup would just post all results back to us. However, some of these tests involve "disowning" the opener
+            // then navigating. In that case we need to poll the popup window.. The popup will post results back to the source of this message
+            poll_interval = setInterval(function(){win.postMessage('poll for results', '*')}, 200);
+        }else if(data.step === 'post-nav'){
+            if(expectations[data.name]){ // this is a special case..
+                test(function(){
+                    assert_false(data.stringifying_throws);
+                    assert_equals(data.stringified_opener, expectations[data.name].stringified_opener);
+                }, data.name + ', stringifying throws?');
+                test(function(){
+                    assert_equals(win.opener, expectations[data.name].real_opener);
+                    assert_false(opener_is_this_window, 'is win.opener self?');
+                }, data.name + ', win.opener read from opener is null');
+            }else{
+                test(function(){
+                    assert_false(data.stringifying_throws);
+                    assert_equals(data.stringified_opener, '[object Window]');
+                }, data.name + ', stringifying throws');
+                test(function(){
+                    assert_true(opener_is_this_window);
+                }, data.name + ', win.opener read from opener after navigation is self');
+            }
+            if(data.name.indexOf('window')>-1){
+                // special case: opener was set to 'window' (i.e. the popup's window object) before navigating
+                // maybe this is persistent in some UAs? It should not be, let's double-check:
+                test(function(){
+                    assert_false(data.is_self);
+                }, data.name + ', window.opener read from popup is not self (even when opener was set to self before navigation)');
+            }
+            win = window.open(testURL + 'idx=' + (parseInt(data.idx)+1));
+        }
+    }, false);
+
+    win = window.open(testURL + 'idx=' + '0');
+
+
+    </script>
+    <p>Note: popups must be enabled for this test.</p>
+</body></html>

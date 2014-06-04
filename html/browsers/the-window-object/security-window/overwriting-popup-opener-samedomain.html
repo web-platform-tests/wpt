@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head>
-    <title>Tests for overwriting window.opener from the opener window (different origins)</title>
+    <title>Tests for overwriting window.opener from the opener window (same origin)</title>
     <meta charset="utf-8">
     <meta name="timeout" content="long">
     <script src="/resources/testharness.js"></script>
@@ -11,7 +11,7 @@
     <script type="text/javascript">
     /*
         This test intends to test the following:
-        * Can popup.opener be set from the opener window, when popup contents comes from a different origin?
+        * Can popup.opener be set from the opener window, when popup contents comes from the same origin?
         If yes, what values can it be set to?
         {}, null, window, "", 5, undefined
 
@@ -21,31 +21,28 @@
 
         A new popup window is opened for each subtest.
 
-        High-level summary of behaviours: you can't set popup.opener across domains to any value at all (including null).
-        Hence window.opener as seen from the popup is never affected, nor is it ever different after navigation
     */
 
     var someObj = {};
     var tests = [
-        {value: someObj, name:"object"},
-        {value: window, name:"window"},
-        {value: null, name:"null"},
-        {value: undefined, name:"undefined"},
-        {value: '',  name:"empty string"},
-        {value: 5, name:"number"}
+        {value: someObj, value_str: '[object Object]', name:"object"},
+        {value: window, value_str: '[object Window]', name:"window"},
+        {value: null, value_str: 'null', name:"null"},
+        {value: undefined, value_str: 'undefined', name:"undefined"},
+        {value: '', value_str: '', name:"empty string"},
+        {value: 5, value_str: '5', name:"number"}
     ];
     var expectations = {
-            "setting_succeeds": false,
-            "setting_throws": true,
+            "setting_succeeds": true,
+            "setting_throws": false,
             "stringifying from opener before navigation throws" : false,
-            "stringified from opener before navigation" : '[object Window]',
+            "stringified from opener before navigation" : null, /* set per-test below in the forEach */
             "stringifying from opener after navigation throws": false,
             "stringified from opener after navigation": '[object Window]',
-            "stringifying from popup before navigation throws": true,
-            "stringified from popup before navigation": 'NOT TESTED',
-            "stringifying from popup after navigation throws": true,
-            "stringified from popup after navigation":'NOT TESTED',
-            "window":{"setting_succeeds":true} /* It doesn't "succeed", it just looks successful because .opener was window already */
+            "stringifying from popup before navigation throws": false,
+            "stringified from popup before navigation": null, /* ditto - set below */
+            "stringifying from popup after navigation throws": false,
+            "stringified from popup after navigation":'[object Window]'
     }
     var results = {};
     tests.forEach(function(test){
@@ -61,12 +58,16 @@
                 "stringifying from popup after navigation throws": false,
                 "stringified from popup after navigation":'NOT TESTED'
         };
+        expectations[test.name] = {"stringified from opener before navigation":test.value_str, "stringified from popup before navigation":test.value_str};
     });
+    /* the only really special case in this code is, as usual, null */
+    expectations['null']["stringified from popup after navigation"] = 'null';
+    expectations['null']["stringified from opener after navigation"] = 'null';
+
     setup({explicit_done: true});
 
     var idx = 0, win, poll_interval;
-    var testURL = location.pathname.replace('overwriting-popup-opener.html', 'support/overwriting-popup-opener-popup.html');
-    testURL = location.protocol + '//' + 'www1.' + location.host + testURL + '?';
+    var testURL = location.pathname.replace('overwriting-popup-opener-samedomain.html', 'support/overwriting-popup-opener-popup.html?');
 
     window.addEventListener('message', function (e) {
         var data = e.data;

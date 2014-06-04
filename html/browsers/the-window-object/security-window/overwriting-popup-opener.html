@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Tests for overwritten window.opener</title>
+    <meta charset="utf-8">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <meta name="timeout" content="long">
+</head>
+<body>
+    <div id="log"></div>
+    <script type="text/javascript">
+    /*
+        This test intends to test the following:
+        * Can popup.opener be set from the opener window, when popup contents comes from a different origin?
+        If yes, what values can it be set to?
+        {}, null, window, "", 5, undefined
+
+        * If yes, what happens when window.opener is read inside the popup?
+
+        * If yes, does the rewritten opener keep its value across navigations?
+
+        A new popup window is opened for each subtest.
+
+        High-level summary of behaviours: you can't set popup.opener across domains to any value at all (including null).
+        Hence window.opener as seen from the popup is never affected, nor is it ever different after navigation
+    */
+
+    var someObj = {};
+    var tests = [
+        {value: someObj, value_str: 'someObj', useVar:false, name:"object"},
+        {value: window, value_str: 'window', useVar:false, name:"window"},
+        {value: null, value_str: 'null', useVar:false, name:"null"},
+        {value: undefined, value_str: 'undefined', useVar:false, name:"undefined"},
+        {value: '', value_str: '""', useVar:false, name:"empty string"},
+        {value: 5, value_str: '5', useVar:false, name:"number"}
+    ];
+    var expectations = {
+            "setting_succeeds": false,
+            "setting_throws": true,
+            "stringifying from opener before navigation throws" : false,
+            "stringified from opener before navigation" : '[object Window]',
+            "stringifying from opener after navigation throws": false,
+            "stringified from opener after navigation": '[object Window]',
+            "stringifying from popup before navigation throws": true,
+            "stringified from popup before navigation": 'NOT TESTED',
+            "stringifying from popup after navigation throws": true,
+            "stringified from popup after navigation":'NOT TESTED',
+            "window":{"setting_succeeds":true} /* It doesn't "succeed", it just looks successful because .opener was window already */
+    }
+    var results = {};
+    tests.forEach(function(test){
+        results[test.name] = {
+                setting_throws: false,
+                setting_succeeds: 'NOT TESTED',
+                "stringifying from opener before navigation throws" : false,
+                "stringified from opener before navigation" : 'NOT TESTED',
+                "stringifying from popup before navigation throws" : false,
+                "stringified from popup before navigation" : 'NOT TESTED',
+                "stringifying from opener after navigation throws" : false,
+                "stringified from opener after navigation" : 'NOT TESTED',
+                "stringifying from popup after navigation throws": false,
+                "stringified from popup after navigation":'NOT TESTED'
+        };
+    });
+    setup({explicit_done: true, explicit_timeout: true});
+
+    var idx = 0, win, poll_interval;
+    var testURL = location.pathname.replace('overwriting-popup-opener.html', 'support/overwriting-popup-opener-popup.html');
+    testURL = location.protocol + '//' + 'www1.' + location.host + testURL + '?';
+
+    window.addEventListener('message', function (e) { console.log(e.data);
+        var data = e.data;
+        if(e.data.step === 'init'){
+            try{
+                win.opener = tests[data.idx].value;
+            }catch(e){
+                results[tests[data.idx].name].setting_throws = true;
+            }
+            try{
+                results[tests[data.idx].name].setting_succeeds = win.opener === tests[idx].value;
+            }catch(e){
+
+            }
+            try{
+                results[tests[data.idx].name]["stringified from opener before navigation"] = ''+win.opener;
+            }catch(e){
+                results[tests[data.idx].name]["stringifying from opener before navigation throws"] = true;
+            }
+            clearInterval(poll_interval);
+            poll_interval = setInterval(function(){win.postMessage('poll for results', '*');}, 200);
+            return;
+        }
+        var name = tests[e.data.idx].name
+        for(prop in results[name]){
+            if(prop in e.data)results[name][prop] = e.data[prop];
+        }
+        if(data.step === 'post-nav'){
+            try{
+                results[tests[data.idx].name]["stringified from opener after navigation"] = ''+win.opener;
+            }catch(e){
+                results[tests[data.idx].name]["stringifying from opener after navigation throws"] = true;
+            }
+            // re-using the popup's second page from other tests means that the property names are a bit different..
+            results[tests[data.idx].name]["stringifying from popup after navigation throws"] = data.stringifying_throws;
+            results[tests[data.idx].name]["stringified from popup after navigation"] = data.stringified_opener;
+            for(var prop in results[name]){
+                if ((name in expectations) && (prop in expectations[name])){
+                    test(function(){
+                        assert_equals(results[name][prop], expectations[name][prop]);
+                    }, 'popup.opener = ' + name + ' - ' + prop);
+                }else{
+                    test(function(){
+                        assert_equals(results[name][prop], expectations[prop]);
+                    }, 'popup.opener = ' + name + ' - ' + prop);
+                }
+            }
+            idx = parseInt(data.idx) +1;
+            if(tests[idx]){
+                win = createPopup(testURL + 'idx=' + idx + '&name='+tests[idx].name);
+            }else{
+                done();
+            }
+        }else{
+            clearInterval(poll_interval);
+            poll_interval = setInterval(function(){win.postMessage('poll for results', '*');}, 200);
+        }
+    }, false);
+
+    win = createPopup(testURL + 'idx=' + '0&name='+tests[0].name);
+
+    function createPopup(url){
+        return window.open(url);
+    }
+    </script>
+    <p>Note: popups must be enabled for this test.</p>
+</body></html>

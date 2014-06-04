@@ -10,7 +10,7 @@ window.addEventListener('message', function (e) {
     if(e.data === 'poll for results'){
         var testidx = location.search.match(/idx=(\d+)/)[1];
         var name = decodeURIComponent(location.search.match(/name=([^&]+)/)[1]);
-        var stringifying_throws = false, stringified_opener = 'not tested', is_self = 'not tested';
+        var stringifying_throws = false, stringified_opener = 'NOT TESTED', is_self = 'NOT TESTED';
         try{
             stringified_opener = '' + window.opener;
         }catch(err){

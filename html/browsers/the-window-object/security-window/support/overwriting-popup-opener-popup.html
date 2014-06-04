@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Tests for overwritten window.opener (popup - helper window)</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<p>window.opener test helper window</p>
+
+<script type="text/javascript">
+    /*
+        Page is opened with query string ?0 then with ?1 etc to make sure the tests do not interfere with each other.
+    */
+    var testidx = location.search.match(/idx=(\d+)/)[1];
+    window.addEventListener('message', function(e){
+        if(e.data ===  'poll for results'){
+            var results = {"stringifying from opener before navigation throws" : false, "stringified from popup before navigation":'NOT TESTED', idx:testidx};
+            try{
+                results["stringified from popup before navigation"] = ''+opener;
+            }catch(e){
+                results["stringifying from popup before navigation throws"] = true;
+            }
+            e.source.postMessage(results, '*');
+            location.href = 'popup-second-page.html'+location.search;
+        }
+    }, false);
+    opener.postMessage({step:'init', idx:testidx}, '*');
+</script>
+
+</body></html>

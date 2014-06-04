@@ -16,7 +16,8 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildRadiiTests('circle', ParsingUtils.validUnits));
+            generate_tests(ParsingUtils.testInlineStyle, ParsingUtils.buildRadiiTests('circle', 'lengthUnit + inline', ParsingUtils.validUnits));
+            generate_tests(ParsingUtils.testComputedStyle, ParsingUtils.buildRadiiTests('circle', 'lengthUnit + computed', ParsingUtils.validUnits));
         </script>
     </body>
 </html>

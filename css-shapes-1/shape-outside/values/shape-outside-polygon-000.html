@@ -16,12 +16,36 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, [
-                ["Single point", "polygon(1px 2px)", "polygon(nonzero, 1px 2px)"],
-                ["Single point with fill-rule", "polygon(evenodd, 1px 2px)", "polygon(evenodd, 1px 2px)"],
-                ["Multiple points", "polygon(1px 2px, 3px 4px, 5px 6px)", "polygon(nonzero, 1px 2px, 3px 4px, 5px 6px)"],
-                ["Multiple points with fill-rule", "polygon(evenodd, 1px 2px, 3px 4px, 5px 6px)", "polygon(evenodd, 1px 2px, 3px 4px, 5px 6px)"]
-            ]);
+             var valid_polygon_tests = [
+                    {
+                      "name": "Single point",
+                      "actual": "polygon(1px 2px)",
+                      "expected_inline": "polygon(1px 2px)",
+                      "expected_computed": "polygon(1px 2px)"
+                    },
+                    {
+                      "name": "Single point with fill-rule",
+                      "actual": "polygon(evenodd, 1px 2px)",
+                      "expected_inline": "polygon(evenodd, 1px 2px)",
+                      "expected_computed": "polygon(evenodd, 1px 2px)"
+                    },
+                    {
+                      "name": "Multiple points",
+                      "actual": "polygon(1px 2px, 3px 4px, 5px 6px)",
+                      "expected_inline": "polygon(1px 2px, 3px 4px, 5px 6px)",
+                      "expected_computed": "polygon(1px 2px, 3px 4px, 5px 6px)"
+                    },
+                    {
+                      "name": "Multiple points with fill-rule",
+                      "actual": "polygon(evenodd, 1px 2px, 3px 4px, 5px 6px)",
+                      "expected_inline": "polygon(evenodd, 1px 2px, 3px 4px, 5px 6px)",
+                      "expected_computed": "polygon(evenodd, 1px 2px, 3px 4px, 5px 6px)"
+                    }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(valid_polygon_tests, "inline") );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(valid_polygon_tests, "computed") );
         </script>
     </body>
 </html>

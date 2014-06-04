@@ -16,40 +16,32 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            // no units
-            generate_tests(
-                ParsingUtils.testInlineStyle,
-                ParsingUtils.buildTestCases([
-                    'inset(10px round  10 20 30 40)',
-                    'inset(10px round  10px 20 30 40)',
-                    'inset(10px round  10px 20px 30 40)',
-                    'inset(10px round  10px 20px 30px 40)',
-                    'inset(10px round  10px 20px 30px 40px / 10 20 30 40)',
-                    'inset(10px round  10px 20px 30px 40px / 10px 20 30 40)',
-                    'inset(10px round  10px 20px 30px 40px / 10px 20px 30 40)',
-                    'inset(10px round  10px 20px 30px 40px / 10px 20px 30px 40)'], 0, true)
-            );
-            // commas
-            generate_tests(
-                ParsingUtils.testInlineStyle,
-                ParsingUtils.buildTestCases([
-                    'inset(10px round  10px, 20px, 30px, 40px)',
-                    'inset(10px round  10px, 20px, 30px 40px)',
-                    'inset(10px round  10px, 20px 30px 40px)',
-                    'inset(10px round  10px 20px, 30px, 40px)',
-                    'inset(10px round  10px 20px 30px, 40px)',
-                    'inset(10px round  10px, 20px, 30px, 40px / 10px, 20px, 30px, 40px)',
-                    'inset(10px round  10px 20px, 30px, 40px / 10px 20px, 30px, 40)',
-                    'inset(10px round  10px 20px 30px, 40px / 10px 20px 30px, 40)'], 0, true)
-            );
-             // commas
-             generate_tests(
-                 ParsingUtils.testInlineStyle,
-                 ParsingUtils.buildTestCases([
-                     'inset(10px round  foo, bar, boo, $$)',
-                     'inset(10px round  10px, xx, px pt)',
-                     'inset(10px round  word)'], 0, true)
-             );
+            var invalid_radial_args_tests = [
+                // no units
+                {"name": "inset(10px round 10 20 30 40)"},
+                {"name": "inset(10px round 10px 20 30 40)"},
+                {"name": "inset(10px round 10px 20px 30 40)"},
+                {"name": "inset(10px round 10px 20px 30px 40)"},
+                {"name": "inset(10px round 10px 20px 30px 40px / 10 20 30 40)"},
+                {"name": "inset(10px round 10px 20px 30px 40px / 10px 20 30 40)"},
+                {"name": "inset(10px round 10px 20px 30px 40px / 10px 20px 30 40)"},
+                {"name": "inset(10px round 10px 20px 30px 40px / 10px 20px 30px 40)"},
+                // commas
+                {"name": "inset(10px round  10px, 20px, 30px, 40px)"},
+                {"name": "inset(10px round  10px, 20px, 30px 40px)"},
+                {"name": "inset(10px round  10px, 20px 30px 40px)"},
+                {"name": "inset(10px round  10px 20px, 30px, 40px)"},
+                {"name": "inset(10px round  10px 20px 30px, 40px)"},
+                {"name": "inset(10px round  10px, 20px, 30px, 40px / 10px, 20px, 30px, 40px)"},
+                {"name": "inset(10px round  10px 20px, 30px, 40px / 10px 20px, 30px, 40)"},
+                {"name": "inset(10px round  10px 20px 30px, 40px / 10px 20px 30px, 40)"},
+                // bogus args
+                {"name": "inset(10px round  foo, bar, boo, $$)"},
+                {"name": "inset(10px round  10px, xx, px pt)"},
+                {"name": "inset(10px round  word)"}
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(invalid_radial_args_tests) );
         </script>
     </body>
 </html>

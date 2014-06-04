@@ -23,28 +23,22 @@
         Presto-based Opera handles opener differently when set with 'var', doesn't allow deleting it
 
         Firefox throws some exceptions that are being removed, no point in studying its behaviour yet
+
+        Boris Zbarsky says: per current spec the opener property is on the object itself. So all three of the tests should result in in_value:false, stringified: 'undefined'.
     */
 
     var expectations = {
             "in_value": true,
             "stringified": '[object Window]',
             'del_return_val': true,
-            /* Presto- based Opera would pass all tests with this un-commented */
-/*            'define with var, then delete': {
-                del_return_val:false, stringified: 'hi'
 
-            }
-*/
-
-            /* Chrome and Opera-Blink would pass all tests with this un-commented */
-/*
             "define without var, then delete":{
                 in_value:false, stringified: 'undefined'
             },
             "define with var, then delete":{
                 in_value:false, stringified: 'undefined'
             }
-*/
+
     }
     setup({explicit_done: true});
 

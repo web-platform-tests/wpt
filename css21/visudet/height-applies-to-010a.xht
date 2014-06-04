@@ -10,7 +10,7 @@
   <link rel="author" title="Boris Zbarsky" href="bzbarsky@MIT.EDU" />
   <link rel="help" title="10.5 Content height: the 'height' property" href="http://www.w3.org/TR/CSS21/visudet.html#the-height-property" />
   <link rel="help" title="11.1.1 Overflow: the 'overflow' property" href="http://www.w3.org/TR/CSS21/visufx.html#overflow" />
-  <link rel="match" href="reference/height-applies-to-010a-ref.xht" />
+  <link rel="match" href="height-applies-to-010a-ref.xht" />
 
   <meta content="" name="flags" />
   <meta content="If height of content exceeds the set height of a block-level non-replaced element in normal flow (like a list-item element such as in this test), then the content should overflow according to the 'overflow' property." name="assert" />
@@ -19,28 +19,28 @@
   div
   {
   color: green;
-  display: list-item; 
+  display: list-item;
   font: 2em/1 serif;
   height: 0px;
   margin-left: 1.25em;
   overflow: visible;
   }
-  
+
   ul
   {
   height: auto;
   margin-top: 3em;
   overflow: visible;
-  }  
-  
+  }
+
   li
   {
   color: green;
   font: 2em/1 serif;
   height: 0px;
-  overflow: visible;    
+  overflow: visible;
   }
-  
+
   ul#heightless {height: 0px;}
   ]]></style>
 

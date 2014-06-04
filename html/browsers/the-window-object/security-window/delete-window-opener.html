@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html><head>
+    <title>Tests for 'delete window.opener'</title>
+    <meta charset="utf-8">
+    <meta name="timeout" content="long">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+    <div id="log"></div>
+    <script type="text/javascript">
+    /*
+        This test intends to test the following:
+        * Does 'delete window.opener' have any effect?
+        * What if window.opener is first set, then deleted? Does it matter if var is used?
+
+        As you might expect, there is no real compatibility here. The only test all tested browsers agree on,
+        is that "delete window.opener" when it's not set returns true and has no effect.
+
+        Chrome (&Blink-Opera) defines opener directly on window, so when it's set, 'delete' truly nukes it -
+         stringifies to 'undefined' and 'opener' in window is false
+
+        Presto-based Opera handles opener differently when set with 'var', doesn't allow deleting it
+
+        Firefox throws some exceptions that are being removed, no point in studying its behaviour yet
+    */
+
+    var expectations = {
+            "in_value": true,
+            "stringified": '[object Window]',
+            'del_return_val': true,
+            /* Presto- based Opera would pass all tests with this un-commented */
+/*            'define with var, then delete': {
+                del_return_val:false, stringified: 'hi'
+
+            }
+*/
+
+            /* Chrome and Opera-Blink would pass all tests with this un-commented */
+/*
+            "define without var, then delete":{
+                in_value:false, stringified: 'undefined'
+            },
+            "define with var, then delete":{
+                in_value:false, stringified: 'undefined'
+            }
+*/
+    }
+    setup({explicit_done: true});
+
+    var idx = 0, win;
+    var testURL = location.pathname.replace('delete-window-opener.html', 'support/delete-opener-popup.html?');
+
+    window.addEventListener('message', function (e) {
+        var data = e.data;
+
+        test(function(){
+            assert_equals(data.del_return_val, getExpectedValue(data.name, 'del_return_val'));
+        }, data.name+', delete statement return value');
+
+        test(function(){
+            assert_equals(data.in_value, getExpectedValue(data.name, 'in_value'));
+        }, data.name+', "opener in window" after delete');
+
+        test(function(){
+            assert_equals(data.stringified, getExpectedValue(data.name, 'stringified'));
+        }, data.name+', stringified opener after delete');
+
+        if(data.idx<data.total-1){
+            win = createPopup(testURL + 'idx=' + (parseInt(data.idx)+1));
+        }else{
+            done();
+        }
+    }, false);
+
+    win = createPopup(testURL + 'idx=' + '0');
+
+    function getExpectedValue(name, property){
+        if((name in expectations) && (property in expectations[name]))return expectations[name][property];
+        return expectations[property];
+    }
+
+    function createPopup(url){
+        return window.open(url);
+    }
+    </script>
+    <p>Note: popups must be enabled for this test.</p>
+</body></html>

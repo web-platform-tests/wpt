@@ -16,7 +16,10 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests( ParsingUtils.testInlineStyle, ParsingUtils.buildInsetTests(ParsingUtils.validUnits, "%") );
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildInsetTests(ParsingUtils.validUnits, "%", "inline") );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildInsetTests(ParsingUtils.validUnits, "%", "computed") );
         </script>
     </body>
 </html>

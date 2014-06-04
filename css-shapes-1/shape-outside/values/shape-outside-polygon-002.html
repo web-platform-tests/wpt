@@ -16,11 +16,30 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(ParsingUtils.testInlineStyle, [
-                ["Lengths", "polygon(1px 2px, 3px 4px, 5px 6px)", "polygon(1px 2px, 3px 4px, 5px 6px)"],
-                ["Percentages", "polygon(1% 2%, 3% 4%, 5% 6%)", "polygon(1% 2%, 3% 4%, 5% 6%)"],
-                ["Mixed Lengths and Percentages", "polygon(1px 2px, 3px 4%, 5% 6px, 7% 8%)", "polygon(1px 2px, 3px 4%, 5% 6px, 7% 8%)"]
-            ]);
+             var valid_polygon_points_tests = [
+                {
+                  "name": "Lengths",
+                  "actual": "polygon(1px 2px, 3px 4px, 5px 6px)",
+                  "expected_inline": "polygon(1px 2px, 3px 4px, 5px 6px)",
+                  "expected_computed": "polygon(1px 2px, 3px 4px, 5px 6px)"
+                },
+                {
+                  "name": "Percentages",
+                  "actual": "polygon(1% 2%, 3% 4%, 5% 6%)",
+                  "expected_inline": "polygon(1% 2%, 3% 4%, 5% 6%)",
+                  "expected_computed": "polygon(1% 2%, 3% 4%, 5% 6%)"
+                },
+                {
+                  "name": "Mixed Lengths and Percentages",
+                  "actual": "polygon(1px 2px, 3px 4%, 5% 6px, 7% 8%)",
+                  "expected_inline": "polygon(1px 2px, 3px 4%, 5% 6px, 7% 8%)",
+                  "expected_computed": "polygon(1px 2px, 3px 4%, 5% 6px, 7% 8%)"
+                }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(valid_polygon_points_tests, 'inline') );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(valid_polygon_points_tests, 'computed') );
         </script>
     </body>
 </html>

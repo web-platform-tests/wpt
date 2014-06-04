@@ -16,27 +16,26 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
+            var invalid_circle_radiii_tests = [
+                {"name": "circle(foo)"},
+                {"name": "circle(10)"},
+                {"name": "circle(20px 30px)"},
+                {"name": "circle(20% 30%)"},
+                {"name": "circle(20px, 30px)"},
+                {"name": "circle(20%, 30%)"},
+                {"name": "circle(20px closest-side)"},
+                {"name": "circle(20px farthest-side)"},
+                {"name": "circle(closest-side 20px)"},
+                {"name": "circle(farthest-side 20px)"},
+                {"name": "circle(20% closest-side)"},
+                {"name": "circle(20% farthest-side)"},
+                {"name": "circle(closest-side 20%)"},
+                {"name": "circle(farthest-side 20%)"},
+                {"name": "circle(closest-side farthest-side)"},
+                {"name": "circle(farthest-side closest-side)"}
+            ];
             generate_tests(ParsingUtils.testInlineStyle, 
-                           ParsingUtils.buildTestCases([
-                           'circle(foo)',
-                           'circle(10)',
-                           'circle(20px 30px)',
-                           'circle(20% 30%)',
-                           'circle(20px, 30px)',
-                           'circle(20%, 30%)',
-                           'circle(20px closest-side)',
-                           'circle(20px farthest-side)',
-                           'circle(closest-side 20px)',
-                           'circle(farthest-side 20px)',
-                           'circle(20% closest-side)',
-                           'circle(20% farthest-side)',
-                           'circle(closest-side 20%)',
-                           'circle(farthest-side 20%)',
-                           'circle(closest-side farthest-side)',
-                           'circle(farthest-side closest-side)',
-                           'circle(farthest-side, closest-side)'
-                        ], 0, true)
-            );
+                           ParsingUtils.buildTestCases(invalid_circle_radiii_tests) );
         </script>
     </body>
 </html>

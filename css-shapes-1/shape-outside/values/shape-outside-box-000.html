@@ -16,14 +16,32 @@
     <body>
         <div id="log"></div>
         <script type="text/javascript">
-            generate_tests(
-                ParsingUtils.testInlineStyle,
-                ParsingUtils.buildTestCases([
-                    "content-box",
-                    "padding-box",
-                    "border-box",
-                    "margin-box" ])
-            );
+            var valid_shape_boxes = [
+                {
+                   "actual": "content-box",
+                   "expected_inline": "content-box",
+                   "expected_computed": "content-box"
+                },
+                {
+                   "actual": "padding-box",
+                   "expected_inline": "padding-box",
+                   "expected_computed": "padding-box"
+                },
+                {
+                   "actual": "border-box",
+                   "expected_inline": "border-box",
+                   "expected_computed": "border-box"
+                },
+                {
+                   "actual": "margin-box",
+                   "expected_inline": "margin-box",
+                   "expected_computed": "margin-box"
+                }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(valid_shape_boxes, 'inline') );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(valid_shape_boxes, 'computed') );
         </script>
     </body>
 </html>

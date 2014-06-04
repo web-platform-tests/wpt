@@ -6,50 +6,68 @@ function testInlineStyle(value, expected) {
     assert_equals(actual, expected);
 }
 
-function testComputedStyle(value, expected, type) {
+function testComputedStyle(value, expected) {
     var div = document.createElement('div');
     div.style.setProperty('shape-outside', value);
     document.body.appendChild(div);
     var style = getComputedStyle(div);
     var actual = style.getPropertyValue('shape-outside');
+    actual = roundResultStr(actual);
     document.body.removeChild(div);
-    assert_equals(actual, typeof expected !== 'undefined' ? expected : value);
+
+    // Some of the tests in this suite have either/or expected results
+    // so this check allows for testing that at least one of them passes.
+    // Description of the 2 expecteds is below near calcTestValues.
+    if(Object.prototype.toString.call( expected ) === '[object Array]' && expected.length == 2) {
+        assert_true(expected[0] == actual || expected[1] == actual)
+    } else {
+        assert_equals(actual, typeof expected !== 'undefined' ? expected : value);
+    }
 }
 
-function buildTestCases(testCases, testValueIdx, invalid) {
+// Builds an array of test cases to send to testharness.js where one test case is: [name, actual, expected]
+// These test cases will verify results from testInlineStyle() or testComputedStyle()
+function buildTestCases(testCases, testType, invalid) {
     var results = [];
-    testCases.forEach(function(test) {
-        if(Object.prototype.toString.call( test ) === '[object Array]') {
-            if(test.length == 2) {
-                testValue = test[testValueIdx];
-                if(testValueIdx == 0)
-                    // use the test case as the test name
-                    test.unshift(testValue += invalid ? ' is invalid': ' is valid');
-                else
-                    // otherwise, assume the expected is the actual
-                    test.push(testValue);
-            }
-            results.push(test);
-        } else {
-            var testCase = Array.apply(null, Array(2)).map(String.prototype.valueOf, test);
-            testCase[0] += invalid ? ' is invalid': ' is valid';
-            if(invalid)
-                testCase.push(null);
-            else
-                // Valid expected result is the value
-                testCase.push(test);
 
-            results.push(testCase);
+    // If test_type isn't specified, test inline style
+    var type = typeof testType == 'undefined' ? 'invalid': testType;
+
+    testCases.forEach(function(test) {
+        oneTestCase = [];
+
+        // name - annotated by type (inline vs. computed)
+        if ( test.hasOwnProperty('name') ) {
+            oneTestCase.push(test['name'] +' - '+ type);
+        } else {
+            // If test_name isn't specified, use the actual
+            oneTestCase.push(test['actual'] +' - '+ type);
         }
+
+        // actual
+        oneTestCase.push(test['actual'])
+
+        // expected
+        if( type == 'invalid' ){
+            oneTestCase.push(null)
+        } else if( type == 'inline' ) {
+            oneTestCase.push(test['expected_inline']);
+        } else if( type == 'computed' ){
+            oneTestCase.push( convertToPx(test['expected_computed']) );
+        }
+        results.push(oneTestCase);
     });
     return results;
 }
 
-function buildPositionTests(shape, valid, units, type) {
+
+function buildPositionTests(shape, valid, type, units) {
     var results = new Array();
+    var convert = type.indexOf('computed') != -1 ? true : false;
+
     if(Object.prototype.toString.call( units ) === '[object Array]') {
         units.forEach(function(unit) {
-            positionTests = buildPositionTests(shape, valid, unit, "lengthUnit");
+            positionTests = buildPositionTests(shape, valid, type, unit);
             results = results.concat(positionTests);
         });
     } else {
@@ -57,13 +75,26 @@ function buildPositionTests(shape, valid, units, type) {
             validPositions.forEach(function(test) {
                 var testCase = [], testName, actual, expected;
                 // skip if this isn't explicitly testing length units
-                if( !(type == 'lengthUnit' && test[0].indexOf("u1") == -1)) {
-                    actual = shape + '(at ' + setUnit(test[0], units) +')';
-                    expected = shape + '(at ' + setUnit(test[1], units) +')';
-                    if (type == "lengthUnit")
-                        testName = 'test unit: ' + units +' - '+ actual;
+                if( !(type.indexOf('lengthUnit') != -1 && test[0].indexOf("u1") == -1)) {
+                    // actual
+                    actual = shape + '(at ' + setUnit(test[0], false, units) +')';
+
+                    // expected
+                    if(convert && shape == 'circle')
+                        expected = shape + '(closest-side at ' + setUnit(test[1], convert, units) +')';
+                    else if(convert && shape == 'ellipse')
+                        expected = shape + '(closest-side closest-side at ' + setUnit(test[1], convert, units) +')';
                     else
-                        testName = (actual + ' serializes as ' + expected);
+                        expected = shape + '(at ' + setUnit(test[1], convert, units) +')';
+
+                    // name
+                    if (type == 'lengthUnit + inline')
+                        testName = 'test unit (inline): ' + units +' - '+ actual;
+                    else if (type == 'lengthUnit + computed')
+                         testName = 'test unit (computed): ' + units +' - '+ actual;
+                    else
+                        testName = (actual + ' serializes as ' + expected +' - '+ type);
+
                     testCase.push(testName)
                     testCase.push(actual);
                     testCase.push(expected);
@@ -72,7 +103,7 @@ function buildPositionTests(shape, valid, units, type) {
             });
         } else {
             invalidPositions.forEach(function(test) {
-                var testValue = shape + '(at ' + setUnit(test, units) +')';
+                var testValue = shape + '(at ' + setUnit(test, false, units) +')';
                 testCase = new Array();
                 testCase.push(testValue + ' is invalid');
                 testCase.push(testValue);
@@ -84,68 +115,94 @@ function buildPositionTests(shape, valid, units, type) {
     return unique(results);
 }
 
-function buildRadiiTests(shape, units, type) {
+function buildRadiiTests(shape, type, units) {
     var results = new Array();
-    testUnits = typeof units == 'undefined' ? 'px': units
+    var testUnits = typeof units == 'undefined' ? 'px': units;
+    var convert = type.indexOf('computed') != -1 ? true : false;
+
     if(Object.prototype.toString.call( testUnits ) === '[object Array]') {
            testUnits.forEach(function(unit) {
-               radiiTests = buildRadiiTests(shape, unit, "lengthUnit");
+               radiiTests = buildRadiiTests(shape, type, unit);
                results = results.concat(radiiTests);
            });
     } else {
+        var validRadii = shape == 'circle' ? validCircleRadii : validEllipseRadii;
         validRadii.forEach(function(test) {
-            var testCase = [], testName, actual, expected;
-            if(shape == 'circle' && test.split(' ').length == 1 || shape == 'ellipse')
-            {
-                // skip if this isn't explicitly testing length units
-                if( !(type == 'lengthUnit' && test.indexOf("u1") == -1)) {
-                    testValue = shape + '(' + setUnit(test, testUnits) +')';
-                    if (type == "lengthUnit")
-                        testCase.push('test unit: ' + units +' - '+ testValue);
+            var testCase = [], name, actual, expected;
+
+            // skip if this isn't explicitly testing length units
+            if( !(type.indexOf('lengthUnit') != -1 && test[0].indexOf("u1") == -1) ) {
+                actual = shape + '(' + setUnit(test[0], false, testUnits) +')';
+                // name
+                if (type.indexOf('lengthUnit') != -1) {
+                    name = 'test unit: ' + units +' - '+ actual;
+                    if(type.indexOf('computed') != -1)
+                        name = name + ' - computed';
                     else
-                        testCase.push(testValue + ' - is valid ');
-                    testCase.push(testValue);
-                    testCase.push(testValue); // expected should be the actual
-                    results.push(testCase);
+                        name = name + ' - inline';
                 }
+                else
+                    name = actual +' - '+ type;
+
+                testCase.push(name);
+
+                // actual
+                testCase.push(actual);
+
+                // expected
+                if(type.indexOf('computed') != -1 && test.length == 3) {
+                    expected = shape + '(' + setUnit(test[2], convert, testUnits) +')';
+                } else {
+                    expected = shape + '(' + setUnit(test[1], convert, testUnits) +')';
+                }
+                testCase.push(expected);
+                results.push(testCase);
             }
         });
     }
     return unique(results);
 }
 
-function buildInsetTests(unit1, unit2, testName, invalid) {
+function buildInsetTests(unit1, unit2, type) {
     var results = new Array();
+    var convert = type == 'computed' ? true : false;
+
     if(Object.prototype.toString.call( unit1 ) === '[object Array]') {
         unit1.forEach(function(unit) {
-            insetTests = buildInsetTests(unit, unit2);
+            insetTests = buildInsetTests(unit, unit2, type);
             results = results.concat(insetTests);
         });
     } else {
         validInsets.forEach(function(test) {
-            var testValue = 'inset(' + setUnit(test[1], unit1, unit2) +')';
-            testCase = Array.apply(null, Array(2)).map(String.prototype.valueOf, testValue);
-            if(testName == 0)
-                testCase.unshift(setUnit(test[0], unit1, unit2));
-            else
-                testCase.unshift(testValue += invalid ? ' is invalid': ' is valid');
+            var testCase = [], name, actual, expected;
 
-            if(invalid)
-                testCase[2] = null;
+            name = setUnit(test[0], false, unit1, unit2) +' - '+ type; 
+            actual = 'inset(' + setUnit(test[1], convert, unit1, unit2) +')';
+            expected = actual;
+
+            testCase.push(name);
+            testCase.push(actual);
+            testCase.push(expected);
+
             results.push(testCase);
         });
     }
     return unique(results);
 }
 
-function buildPolygonTests(unitSet) {
+function buildPolygonTests(unitSet, type) {
     var results = new Array();
+    var convert = type == 'computed' ? true : false;
+
     unitSet.forEach(function(set) {
         validPolygons.forEach(function(test) {
             var testCase = [];
-            testCase.push(setUnit(test[0], set[0], set[1], set[2]));
-            testCase.push('polygon(' + setUnit(test[1], set[0], set[1], set[2]) +')');
-            testCase.push('polygon(nonzero, ' + setUnit(test[1], set[0], set[1], set[2]) +')');
+            // name
+            testCase.push(setUnit(test[0], false, set[0], set[1], set[2]) +' - '+ type);
+            // actual
+            testCase.push('polygon(' + setUnit(test[1], false, set[0], set[1], set[2]) +')');
+            // expected
+            testCase.push('polygon(' + setUnit(test[1], convert, set[0], set[1], set[2]) +')');
             results.push(testCase);
         });
     });
@@ -162,7 +219,7 @@ function buildCalcTests(testCases, type) {
             testCase.push(test[2]);
         }
         else {
-            testCase.push(test[0] + ' - property value');
+            testCase.push(test[0] + ' - inline style');
             testCase.push(test[0]);
             testCase.push(test[1]);
         }
@@ -183,16 +240,94 @@ function unique(tests) {
     return list;
 }
 
-function setUnit(str, unit1, unit2, unit3) {
-    if(arguments.length == 2)
-        return str.replace(new RegExp("u1", 'g'), unit1);
-    else if(arguments.length == 3)
-        return str.replace(new RegExp("u1", 'g'), unit1).replace(new RegExp("u2", 'g'), unit2);
-    else
-        return str.replace(new RegExp("u1", 'g'), unit1).replace(new RegExp("u2", 'g'), unit2).replace(new RegExp("u3", 'g'), unit3);
+function setUnit(str, convert, unit1, unit2, unit3) {
+    var retStr = str;
+    if(typeof unit1 !== 'undefined') {
+        retStr = retStr.replace(new RegExp('u1', 'g'), unit1);
+    }
+    if(typeof unit2 !== 'undefined') {
+        retStr = retStr.replace(new RegExp("u2", 'g'), unit2);
+    }
+    if(typeof unit3 !== 'undefined') {
+        retStr = retStr.replace(new RegExp("u3", 'g'), unit3);
+    }
+    retStr = convert ? convertToPx(retStr) : retStr;
+    return retStr;
 }
 
-function generateInsetRoundCases(units) {
+function convertToPx(origValue) {
+
+    var valuesToConvert = origValue.match(/[0-9]+(\.[0-9]+)?([a-z]{2,4}|%)/g);
+    if(!valuesToConvert)
+        return origValue;
+
+    var retStr = origValue;
+    for(var i = 0; i < valuesToConvert.length; i++) {
+        var unit = valuesToConvert[i].match(/[a-z]{2,4}|%/).toString();
+        var numberStr = valuesToConvert[i].match(/[0-9]+(\.[0-9]+)?/)[0];
+
+        var number = parseFloat(numberStr);
+        var convertedUnit = 'px';
+        if( typeof number !== 'NaN' )
+        {
+             if (unit == 'in') {
+                 number = (96 * number);
+             } else if (unit == 'cm') {
+                 number = (37.795275591 * number);
+             } else if (unit == 'mm') {
+                 number = (3.779527559 * number);
+             } else if (unit == 'pt') {
+                 number = (1.333333333333 * number);
+             } else if (unit == 'pc') {
+                 number = (16 * number);
+             } else if (unit == 'em') {
+                 number = (16 * number);
+             } else if (unit == 'ex') {
+                 number = (7.1796875 * number);
+             } else if (unit == 'ch') {
+                 number = (8 * number);
+             } else if (unit == 'rem') {
+                 number = (16 * number);
+             } else if (unit == 'vw') {
+                 number = ((.01 * window.innerWidth) * number);
+             } else if (unit == 'vh') {
+                 number = ((.01 * window.innerHeight) * number);
+             } else if (unit == 'vmin') {
+                 number = Math.min( (.01 * window.innerWidth), (.01 * window.innerHeight) ) * number;
+             } else if (unit == 'vmax') {
+                number = Math.max( (.01 * window.innerWidth), (.01 * window.innerHeight) ) * number;
+             }
+             else {
+                 convertedUnit = unit;
+             }
+            number = Math.round(number * 1000) / 1000;
+            var find = valuesToConvert[i];
+            var replace = number.toString() + convertedUnit;
+            retStr = retStr.replace(valuesToConvert[i], number.toString() + convertedUnit);
+      }
+    }
+    return retStr.replace(',,', ',');
+}
+
+function roundResultStr(str) {
+    var numbersToRound = str.match(/[0-9]+\.[0-9]+/g);
+    if(!numbersToRound)
+        return str;
+
+    var retStr = str;
+    for(var i = 0; i < numbersToRound.length; i++) {
+        num = parseFloat(numbersToRound[i]);
+        if( !isNaN(num) ) {
+            roundedNum = Math.round(num*1000)/1000;
+            retStr = retStr.replace(numbersToRound[i].toString(), roundedNum.toString());
+        }
+    }
+
+    return retStr;
+}
+
+function generateInsetRoundCases(units, testType) {
+    var convert = testType.indexOf('computed') != -1 ? true : false;
     var testUnit = units;
     var sizes = [
         '10' + units,
@@ -205,23 +340,29 @@ function generateInsetRoundCases(units) {
         return 'inset(10' +testUnit+ ' round ' + value + ')';
     }
 
-    function serializedInsetRound(lhsValues, rhsValues) {
+    function serializedInsetRound(lhsValues, rhsValues, convert) {
+        var retStr = '';
         if(!rhsValues)
-            return 'inset(10' +testUnit+ ' round ' + lhsValues +')';
+            retStr = 'inset(10' +testUnit+ ' round ' + lhsValues +')';
         else
-            return 'inset(10' +testUnit+ ' round ' + lhsValues +' / '+ rhsValues +')';
+            retStr = 'inset(10' +testUnit+ ' round ' + lhsValues +' / '+ rhsValues +')';
+
+        if(convert)
+            return convertToPx(retStr);
+
+        return retStr;
     }
 
     var results = [], left, lhs, right, rhs;
     for (left = 1; left <= 4; left++) {
         lhs = sizes.slice(0, left).join(' ');
-        results.push([insetRound(lhs), insetRound(lhs), serializedInsetRound(lhs, null)]);
+        results.push([insetRound(lhs) +' - '+ testType, insetRound(lhs), serializedInsetRound(lhs, null, convert)]);
         for (right = 1; right <= 4; right++) {
             rhs = sizes.slice(0, right).join(' ');
             if(lhs == rhs)
-                results.push([insetRound(lhs + ' / ' + rhs), insetRound(lhs + ' / ' + rhs), serializedInsetRound(lhs, null)]);
+                results.push([insetRound(lhs + ' / ' + rhs) +' - '+ testType, insetRound(lhs + ' / ' + rhs), serializedInsetRound(lhs, null, convert)]);
             else
-                results.push([insetRound(lhs + ' / ' + rhs), insetRound(lhs + ' / ' + rhs), serializedInsetRound(lhs, rhs)]);
+                results.push([insetRound(lhs + ' / ' + rhs) +' - '+ testType, insetRound(lhs + ' / ' + rhs), serializedInsetRound(lhs, rhs, convert)]);
         }
     }
     return results;
@@ -537,31 +678,38 @@ var invalidPositions = [
     "right 80px right 85px"
 ];
 
-var validRadii = [
-    // circle + ellipse
-    '',
-    '50u1',
-    '50%',
-    'closest-side',
-    'farthest-side',
-    // ellipse only
-    '50u1 100u1',
-    '100u1 100px',
-    '25% 50%',
-    '50u1 25%',
-    '25% 50u1',
-    '25% closest-side',
-    '25u1 closest-side',
-    'closest-side 75%',
-    'closest-side 75u1',
-    '25% farthest-side',
-    '25u1 farthest-side',
-    'farthest-side 75%',
-    'farthest-side 75u1',
-    'closest-side closest-side',
-    'farthest-side farthest-side',
-    'closest-side farthest-side',
-    'farthest-side closest-side'
+// valid radii values for circle + ellipse
+// [value, expected_inline, [expected_computed?]]
+var validCircleRadii = [
+    ['', 'at 50% 50%', 'closest-side at 50% 50%'],
+    ['50u1', '50u1 at 50% 50%'],
+    ['50%', '50% at 50% 50%'],
+    ['closest-side', 'closest-side at 50% 50%'],
+    ['farthest-side', 'farthest-side at 50% 50%']
+]
+var validEllipseRadii = [
+    ['', 'at 50% 50%', 'closest-side closest-side at 50% 50%'],
+    ['50u1', '50u1 at 50% 50%', '50u1 closest-side at 50% 50%'],
+    ['50%', '50% at 50% 50%', '50% closest-side at 50% 50%'],
+    ['closest-side', 'closest-side at 50% 50%', 'closest-side closest-side at 50% 50%'],
+    ['farthest-side', 'farthest-side at 50% 50%', 'farthest-side closest-side at 50% 50%'],
+    ['50u1 100u1', '50u1 100u1 at 50% 50%'],
+    ['100u1 100px', '100u1 100px at 50% 50%'],
+    ['25% 50%', '25% 50% at 50% 50%'],
+    ['50u1 25%', '50u1 25% at 50% 50%'],
+    ['25% 50u1', '25% 50u1 at 50% 50%'],
+    ['25% closest-side', '25% closest-side at 50% 50%'],
+    ['25u1 closest-side', '25u1 closest-side at 50% 50%'],
+    ['closest-side 75%', 'closest-side 75% at 50% 50%'],
+    ['closest-side 75u1', 'closest-side 75u1 at 50% 50%'],
+    ['25% farthest-side', '25% farthest-side at 50% 50%'],
+    ['25u1 farthest-side', '25u1 farthest-side at 50% 50%'],
+    ['farthest-side 75%', 'farthest-side 75% at 50% 50%'],
+    ['farthest-side 75u1', 'farthest-side 75u1 at 50% 50%'],
+    ['closest-side closest-side', 'closest-side closest-side at 50% 50%'],
+    ['farthest-side farthest-side', 'farthest-side farthest-side at 50% 50%'],
+    ['closest-side farthest-side', 'closest-side farthest-side at 50% 50%'],
+    ['farthest-side closest-side', 'farthest-side closest-side at 50% 50%']
 ]
 
 var validInsets = [
@@ -618,8 +766,13 @@ var calcTestValues = [
     ["calc(30%)", "calc(30%)", "30%"],
     ["calc(100%/4)", "calc(25%)", "25%"],
     ["calc(25%*3)", "calc(75%)", "75%"],
-    ["calc(25%*3 - 10in)", "calc(75% - 10in)", "calc(75% - 960px)"],
-    ["calc((12.5%*6 + 10in) / 4)", "calc((75% + 10in) / 4)", "calc((75% + 960px) / 4)"]
+    // These following two test cases represent an either/or situation in the spec
+    // computed value is always supposed to be, at most, a tuple of a length and a percentage.
+    // the computed value of a ‘calc()’ expression can be represented as either a number or a tuple
+    // of a dimension and a percentage.
+    // http://www.w3.org/TR/css3-values/#calc-notation
+    ["calc(25%*3 - 10in)", "calc(75% - 10in)", ["calc(75% - 960px)", "calc(-960px + 75%)"]],
+    ["calc((12.5%*6 + 10in) / 4)", "calc((75% + 10in) / 4)", ["calc((75% + 960px) / 4)", "calc(240px + 18.75%)"]]
 ]
 
 return {
@@ -633,6 +786,7 @@ return {
     generateInsetRoundCases: generateInsetRoundCases,
     buildCalcTests: buildCalcTests,
     validUnits: validUnits,
-    calcTestValues: calcTestValues
+    calcTestValues: calcTestValues,
+    roundResultStr: roundResultStr
 }
 })();

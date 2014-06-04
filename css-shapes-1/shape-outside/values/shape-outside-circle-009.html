@@ -16,30 +16,108 @@
     </head>
     <body>
         <div id="log"></div>
-         <script type="text/javascript">
-                generate_tests(ParsingUtils.testInlineStyle, 
-                               ParsingUtils.buildTestCases([
-                               ['circle(at +50px)', 'circle(at 50px 50%)'],
-                               ['circle(at -50px)', 'circle(at -50px 50%)'],
-                               ['circle(at +50%)', 'circle(at 50% 50%)'],
-                               ['circle(at -50%)', 'circle(at -50% 50%)'],
-                               ['circle(at left +50px)', 'circle(at 0% 50px)'],
-                               ['circle(at left +50%)', 'circle(at 0% 50%)'],
-                               ['circle(at right -50px)', 'circle(at 100% -50px)'],
-                               ['circle(at right -50%)', 'circle(at 100% -50%)'],
-                               ['circle(at +50px top)', 'circle(at 50px 0%)'],
-                               ['circle(at +50% top)', 'circle(at 50% 0%)'],
-                               ['circle(at -50px bottom)', 'circle(at -50px 100%)'],
-                               ['circle(at -50% bottom)', 'circle(at -50% 100%)'],
-                               ['circle(at +50px +50px)', 'circle(at 50px 50px)'],
-                               ['circle(at +50% +50%)', 'circle(at 50% 50%)'],
-                               ['circle(at -50px -50px)', 'circle(at -50px -50px)'],
-                               ['circle(at +50px -50px)', 'circle(at 50px -50px)'],
-                               ['circle(at -50px +50px)', 'circle(at -50px 50px)'],
-                               ['circle(at +50% -50%)', 'circle(at 50% -50%)'],
-                               ['circle(at -50% +50%)', 'circle(at -50% 50%)']
-                            ], 0)
-                );
-            </script>
+        <script type="text/javascript">
+            var valid_circle_radii_tests = [
+                {
+                  "actual": "circle(at +50px)",
+                  "expected_inline": "circle(at 50px 50%)",
+                  "expected_computed": "circle(at 50px 50%)"
+                },
+                {
+                  "actual": "circle(at -50px)",
+                  "expected_inline": "circle(at -50px 50%)",
+                  "expected_computed": "circle(at -50px 50%)"
+                },
+                {
+                  "actual": "circle(at +50%)",
+                  "expected_inline": "circle(at 50% 50%)",
+                  "expected_computed": "circle(at 50% 50%)"
+                },
+                {
+                  "actual": "circle(at -50%)",
+                  "expected_inline": "circle(at -50% 50%)",
+                  "expected_computed": "circle(at -50% 50%)"
+                },
+                {
+                  "actual": "circle(at left +50px)",
+                  "expected_inline": "circle(at 0% 50px)",
+                  "expected_computed": "circle(at 0% 50px)"
+                },
+                {
+                  "actual": "circle(at left +50%)",
+                  "expected_inline": "circle(at 0% 50%)",
+                  "expected_computed": "circle(at 0% 50%)"
+                },
+                {
+                  "actual": "circle(at right -50px)",
+                  "expected_inline": "circle(at 100% -50px)",
+                  "expected_computed": "circle(at 100% -50px)"
+                },
+                {
+                  "actual": "circle(at right -50%)",
+                  "expected_inline": "circle(at 100% -50%)",
+                  "expected_computed": "circle(at 100% -50%)"
+                },
+                {
+                  "actual": "circle(at +50px top)",
+                  "expected_inline": "circle(at 50px 0%)",
+                  "expected_computed": "circle(at 50px 0%)"
+                },
+                {
+                  "actual": "circle(at +50% top)",
+                  "expected_inline": "circle(at 50% 0%)",
+                  "expected_computed": "circle(at 50% 0%)"
+                },
+                {
+                  "actual": "circle(at -50px bottom)",
+                  "expected_inline": "circle(at -50px 100%)",
+                  "expected_computed": "circle(at -50px 100%)"
+                },
+                {
+                  "actual": "circle(at -50% bottom)",
+                  "expected_inline": "circle(at -50% 100%)",
+                  "expected_computed": "circle(at -50% 100%)"
+                },
+                {
+                  "actual": "circle(at +50px +50px)",
+                  "expected_inline": "circle(at 50px 50px)",
+                  "expected_computed": "circle(at 50px 50px)"
+                },
+                {
+                  "actual": "circle(at +50% +50%)",
+                  "expected_inline": "circle(at 50% 50%)",
+                  "expected_computed": "circle(at 50% 50%)"
+                },
+                {
+                  "actual": "circle(at -50px -50px)",
+                  "expected_inline": "circle(at -50px -50px)",
+                  "expected_computed": "circle(at -50px -50px)"
+                },
+                {
+                  "actual": "circle(at +50px -50px)",
+                  "expected_inline": "circle(at 50px -50px)",
+                  "expected_computed": "circle(at 50px -50px)"
+                },
+                {
+                  "actual": "circle(at -50px +50px)",
+                  "expected_inline": "circle(at -50px 50px)",
+                  "expected_computed": "circle(at -50px 50px)"
+                },
+                {
+                  "actual": "circle(at +50% -50%)",
+                  "expected_inline": "circle(at 50% -50%)",
+                  "expected_computed": "circle(at 50% -50%)"
+                },
+                {
+                  "actual": "circle(at -50% +50%)",
+                  "expected_inline": "circle(at -50% 50%)",
+                  "expected_computed": "circle(at -50% 50%)"
+                }
+            ];
+            generate_tests( ParsingUtils.testInlineStyle,
+                            ParsingUtils.buildTestCases(valid_circle_radii_tests, 'inline') );
+            generate_tests( ParsingUtils.testComputedStyle,
+                            ParsingUtils.buildTestCases(valid_circle_radii_tests, 'computed') );
+        </script>
     </body>
 </html>

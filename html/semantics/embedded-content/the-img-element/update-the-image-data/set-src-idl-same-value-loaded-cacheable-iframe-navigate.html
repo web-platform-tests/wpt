@@ -1,5 +1,11 @@
 <!doctype html>
 <title>img set .src IDL attribute to same value (loaded, cacheable) in iframe, navigate</title>
+<script>
+var rtt = 0;
+if (window.performance && performance.timing && performance.timing.requestStart) {
+  rtt = new Date() - performance.timing.requestStart;
+}
+</script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -13,11 +19,6 @@ var url_settings = {
   broken: "no",
 };
 var expected_requests = '1';
-var expected_props = {
-  width: 1,
-  height: 1,
-  complete: true,
-};
 
 async_test(function() {
   var url = make_url(url_settings);
@@ -29,24 +30,26 @@ async_test(function() {
     var doc = iframe.contentDocument;
     var img = doc.createElement('img');
     img.onload = this.step_func(function() {
-      check_props(img, expected_props);
+      check_props(img, 'loaded', 'B');
       img.onload = this.unreached_func("got second load event");
       iframe.contentWindow.location.href += '?' + (+new Date()) + Math.random();
       iframe.onload = this.step_func(function() {
         var doc2 = iframe.contentDocument;
         var img2 = doc2.createElement('img');
         img2.onload = this.step_func(function() {
-          check_props(img2, expected_props);
+          check_props(img2, 'loaded', 'D');
           this.step(check_requests(url_take, expected_requests));
           img2.onload = this.unreached_func("got second load event in iframe");
         });
         img2.onerror = this.unreached_func("got error event in iframe")
         doc2.body.appendChild(img2);
         img2.src = url_put;
+        check_props(img2, 'loaded', 'C');
       });
     });
     img.onerror = this.unreached_func("got error event");
     img.src = url_put;
+    check_props(img, 'before dimensions', 'A');
   });
   iframe.src = 'resources/blank.html';
 });

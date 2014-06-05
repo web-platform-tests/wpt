@@ -13,31 +13,32 @@ function check_requests(url, expected_requests) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
     xhr.onload = this.step_func(function() {
-      assert_equals(xhr.response, expected_requests);
+      assert_equals(xhr.response, expected_requests, 'check_requests');
       setTimeout(this.step_func_done(), 250); // delay done to fail for unexpected events
     });
     xhr.send();
   };
 }
 
-function check_props(obj, props) {
-  for (p in props) {
-    assert_equals(obj[p], props[p], p);
-  }
+var expected_props = {
+  'before dimensions': {width: 0, complete: false},
+  'after dimensions': {width: 1, complete: false},
+  'loaded': {width: 1, complete: true},
+  'error': {width: 0, complete: true},
+};
+
+for (var state in expected_props) {
+  ['height', 'naturalWidth', 'naturalHeight'].forEach(function(p) {
+    expected_props[state][p] = expected_props[state].width;
+  });
 }
 
-// Measure round-trip time for more stable results in slow network situations.
-// Only tests with a delay check the timeline.
-var rtt = 0;
-if (document.title.match(/(before|after) dimensions/)) {
-  setTimeout(function() {
-    var img = new Image();
-    var start = new Date();
-    img.src = '/images/green-1x1.png?' + (start - 0) + Math.random();
-    img.onload = function() {
-      rtt = new Date() - start;
-    };
-  }, 100);
+function check_props(obj, state, msg) {
+  msg = msg || '';
+  var props = expected_props[state];
+  for (p in props) {
+    assert_equals(obj[p], props[p], 'check_props ' + msg + ' (' + state + '), ' + p);
+  }
 }
 
 function check_timeline(timeline, expected) {
@@ -45,6 +46,6 @@ function check_timeline(timeline, expected) {
   var epsilon = 250 + Math.ceil(rtt / 2);
   for (var i = 0; i < len; ++i) {
     assert_approx_equals(timeline[i + 1] - timeline[i], expected[i] + rtt, epsilon,
-    'timeline ' + i + ' should be ~' + expected[i] + 'ms (plus RTT)');
+    'check_timeline ' + i + ' should be ~' + expected[i] + 'ms (plus RTT)');
   }
 }

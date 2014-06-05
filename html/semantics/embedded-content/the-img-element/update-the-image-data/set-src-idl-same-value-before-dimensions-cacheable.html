@@ -1,5 +1,11 @@
 <!doctype html>
 <title>img set .src IDL attribute to same value (before dimensions, cacheable)</title>
+<script>
+var rtt = 0;
+if (window.performance && performance.timing && performance.timing.requestStart) {
+  rtt = new Date() - performance.timing.requestStart;
+}
+</script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -13,11 +19,6 @@ var url_settings = {
   broken: "no",
 };
 var expected_requests = '1';
-var expected_props = {
-  width: 0,
-  height: 0,
-  complete: false,
-};
 var timeline = [new Date()];
 var expected_timeline_diffs = [1000];
 
@@ -27,10 +28,7 @@ async_test(function() {
   var url_put = url + 'put';
   var url_take = url + 'take';
   img.onload = this.step_func(function() {
-    expected_props.width = 1;
-    expected_props.height = 1;
-    expected_props.complete = true;
-    check_props(img, expected_props);
+    check_props(img, 'loaded', 'D');
     timeline.push(new Date());
     check_timeline(timeline, expected_timeline_diffs);
     this.step(check_requests(url_take, expected_requests));
@@ -38,9 +36,11 @@ async_test(function() {
   });
   img.onerror = this.unreached_func("got error event");
   img.src = url_put;
+  check_props(img, 'before dimensions', 'A');
   setTimeout(this.step_func(function(){
-    check_props(img, expected_props);
+    check_props(img, 'before dimensions', 'B');
     img.src = url_put;
-  }), 500);
+    check_props(img, 'before dimensions', 'C');
+  }), 250 + rtt);
 });
 </script>

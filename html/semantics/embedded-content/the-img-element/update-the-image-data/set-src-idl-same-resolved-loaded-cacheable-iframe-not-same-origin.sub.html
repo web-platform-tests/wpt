@@ -1,5 +1,5 @@
 <!doctype html>
-<title>img set .src IDL attribute to same value (loaded, not cacheable) in iframe, about:blank</title>
+<title>img set .src IDL attribute to same resolved value (loaded, cacheable) in iframe, not same-origin</title>
 <script>
 var rtt = 0;
 if (window.performance && performance.timing && performance.timing.requestStart) {
@@ -13,38 +13,39 @@ if (window.performance && performance.timing && performance.timing.requestStart)
 <div id=log></div>
 <script>
 var url_settings = {
-  cached: "no",
+  cached: "yes",
   animated: "no",
   delay: "no",
   broken: "no",
 };
-var expected_requests = '2';
+var expected_requests = '1';
 
 async_test(function() {
   var img = new Image();
+  var path = location.pathname.substr(0, location.pathname.lastIndexOf('/') + 1);
   var url = make_url(url_settings);
-  var url_put = url + 'put';
+  var url_put = 'http://{{host}}:{{ports[http][0]}}' + path + url + 'put';
   var url_take = url + 'take';
   img.onload = this.step_func(function() {
     check_props(img, 'loaded', 'B');
     img.onload = this.unreached_func("got second load event");
     var iframe = document.createElement('iframe');
+    iframe.src = 'http://{{domains[www1]}}:{{ports[http][0]}}' + path + 'resources/img-notify-parent.html?url=' + encodeURIComponent(url_put);
     document.body.appendChild(iframe);
-    // setTimeout shouldn't be necessary but Gecko failed to fire load on img
-    // without it and Blink doesn't fire load on iframe here so...
-    setTimeout(this.step_func(function() {
-      var doc = iframe.contentDocument;
-      var img2 = doc.createElement('img');
-      img2.onload = this.step_func(function() {
-        check_props(img2, 'loaded', 'D');
+    var i = 0;
+    window.onmessage = this.step_func(function(e) {
+      i++;
+      var got = e.data;
+      if (i == 1) {
+        assert_equals(got.state, 'sync');
+        check_props(got, 'loaded', 'C');
+      } else {
+        assert_equals(got.state, 'load');
+        check_props(got, 'loaded', 'D');
         this.step(check_requests(url_take, expected_requests));
-        img2.onload = this.unreached_func("got second load event in iframe");
-      });
-      img2.onerror = this.unreached_func("got error event in iframe")
-      doc.body.appendChild(img2);
-      img2.src = url_put;
-      check_props(img2, 'before dimensions', 'C');
-    }), 0);
+        window.onmessage = this.unreached_func("got unexpected message event");
+      }
+    });
   });
   img.onerror = this.unreached_func("got error event");
   img.src = url_put;

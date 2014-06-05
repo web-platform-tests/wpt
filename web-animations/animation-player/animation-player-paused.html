@@ -11,17 +11,14 @@
 <body>
 <div id="log"></div>
 <script>
-function newAnimationPlayer(doc) {
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
-    var animation = new Animation(animationTarget, [], 5);
-    return doc.timeline.play(animation);
+function newAnimationPlayer(animationTarget) {
+    var animation = new Animation(animationTarget, [], 100);
+    return document.timeline.play(animation);
 }
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
     assert_false(player.paused, 'The value of AnimationPlayer.paused attribute should be ' +
         'initially false');
@@ -29,8 +26,20 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
+
+    player.currentTime = 99;
+    assert_false(player.paused, 'The value of AnimationPlayer.paused attribute should be ' +
+        'false if player is not paused');
+
+    player.currentTime = 101;
+    assert_false(player.paused, 'The value of AnimationPlayer.paused attribute should be ' +
+        'false if player is not paused but seek time is greater than content end');
+}, 'The value of AnimationPlayer.paused attribute should be false if player is not paused');
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
 
     player.pause();
     assert_true(player.paused, 'AnimationPlayer should be paused');
@@ -44,8 +53,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
     assert_readonly(player, 'paused', 'AnimationPlayer.paused attribute should be readonly');
 }, 'AnimationPlayer.paused attribute readonly test');

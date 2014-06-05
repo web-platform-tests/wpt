@@ -32,15 +32,15 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player1 = newAnimationPlayer(doc);
-    var player2 = newAnimationPlayer(doc);
+    var doc1 = newHTMLDocument();
+    var player1 = newAnimationPlayer(doc1);
+    var player2 = newAnimationPlayer(doc1);
 
     var doc2 = newHTMLDocument();
     var player3 = newAnimationPlayer(doc2);
     var player4 = newAnimationPlayer(doc2);
 
-    assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
+    assert_array_equals(doc1.timeline.getAnimationPlayers(), [player1, player2],
         'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
         'should be ordered by player sequence number');
     assert_array_equals(doc2.timeline.getAnimationPlayers(), [player3, player4],

@@ -11,28 +11,24 @@
 <body>
 <div id="log"></div>
 <script>
-function newAnimationPlayer(doc) {
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
+function newAnimationPlayer(animationTarget) {
     var animation = new Animation(animationTarget, [
-        {top: "0px", offset: 0}, 
-        {top: "100px", offset: 1/2}, 
-        {top: "200px", offset: 1}], 1000);
-    return doc.timeline.play(animation);
+        {top: '0px', offset: 0},
+        {top: '100px', offset: 1/2},
+        {top: '200px', offset: 1}], 1000);
+    return document.timeline.play(animation);
 }
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
     assert_readonly(player, 'finished', 'AnimationPlayer.finished attribute should be readonly');
 }, 'AnimationPlayer.finished attribute readonly test');
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
     assert_false(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
         'false if player is not finished');
@@ -40,8 +36,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
     player.finish();
 
     assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
@@ -50,8 +45,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
     player.currentTime = 900;
     assert_false(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +
@@ -65,8 +59,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
     player.playbackRate = -1;
 
     player.currentTime = 100;
@@ -81,8 +74,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
     player.currentTime = 900;
     assert_false(player.finished, 'The value of AnimationPlayer.finished attribute should be ' +

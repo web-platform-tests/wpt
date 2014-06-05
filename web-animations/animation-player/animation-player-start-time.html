@@ -10,29 +10,23 @@
 <link rel="stylesheet" href="/resources/testharness.css">
 <body>
 <div id="log"></div>
-<iframe id="iframe" src="../resources/blank.html"></iframe>
 <script>
-function newAnimation(doc) {
-    var animationTarget = doc.createElement('div');
+function newAnimation(animationTarget) {
     animationTarget.style.width = '1200px';
-    doc.body.appendChild(animationTarget);
     return new Animation(animationTarget, [
-	    {width: "0px", offset: 0},
-	    {width: "500px", offset: 1/2},
-	    {width: "1000px", offset: 1}], 1000);
+	    {width: '0px', offset: 0},
+	    {width: '500px', offset: 1/2},
+	    {width: '1000px', offset: 1}], 1000);
 }
 
-function newAnimationPlayer(doc) {
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
-    var animation = new Animation(animationTarget, [], 5);
-    return doc.timeline.play(animation);
+
+function newAnimationPlayer(animationTarget) {
+    return document.timeline.play(newAnimation(animationTarget));
 }
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(newAnimation(doc));
+    var player = newAnimationPlayer(createDiv(this));
 
     assert_not_equals(player.startTime, null,
         'The value of AnimationPlayer.startTime attribute should not be of type null');
@@ -40,20 +34,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(newAnimation(doc));
-
-    assert_throws('TypeError',function () {
-        player.startTime = [];
-    }, 'TypeError should be thrown if AnimationPlayer.startTime attribute ' +
-        'is set to not double value');
-}, 'Test that TypeError is thrown if AnimationPlayer.startTime attribute ' +
-    'is set to not double value');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(newAnimation(doc));
+    var player = newAnimationPlayer(createDiv(this));
 
     var newStartTime = player.startTime + 100;
     player.startTime = newStartTime;
@@ -65,8 +46,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(newAnimation(doc));
+    var player = newAnimationPlayer(createDiv(this));
 
     var newStartTime = player.startTime + 100;
     player.pause();
@@ -80,10 +60,8 @@ test(function() {
 
 
 test(function() {
-    var iframe = document.querySelector('#iframe');
-    var doc = iframe.contentWindow.document;
-    var animation = newAnimation(doc);
-    var player = doc.timeline.play(animation);
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
 
     assert_equals(window.getComputedStyle(animation.target).width, 0,
         'Animation effect of the AnimationPlayer object should ' +
@@ -92,10 +70,8 @@ test(function() {
 
 
 test(function() {
-    var iframe = document.querySelector('#iframe');
-    var doc = iframe.contentWindow.document;
-    var animation = newAnimation(doc);
-    var player = doc.timeline.play(animation);
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
     player.startTime = 0;
 
     assert_equals(window.getComputedStyle(animation.target).width, 0,
@@ -105,10 +81,8 @@ test(function() {
 
 
 test(function() {
-    var iframe = document.querySelector('#iframe');
-    var doc = iframe.contentWindow.document;
-    var animation = newAnimation(doc);
-    var player = doc.timeline.play(animation);
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
     player.startTime = 500;
 
     assert_equals(window.getComputedStyle(animation.target).width, 500,
@@ -118,17 +92,13 @@ test(function() {
 
 
 test(function() {
-    var iframe = document.querySelector('#iframe');
-    var doc = iframe.contentWindow.document;
-    var animation = newAnimation(doc);
-    var player = doc.timeline.play(animation);
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
     player.startTime = 1000;
 
     assert_equals(window.getComputedStyle(animation.target).width, 1000,
         'Animation effect of the AnimationPlayer object should ' +
         'correspond player start time');
 }, 'The AnimationPlayer start time animation effect test. Start time is set to end time');
-
-document.querySelector('#iframe').remove();
 </script>
 </body>

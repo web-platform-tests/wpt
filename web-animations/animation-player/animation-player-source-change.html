@@ -11,17 +11,15 @@
 <body>
 <div id="log"></div>
 <script>
-function newAnimation(doc) {
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
+function newAnimation(animationTarget) {
+    document.body.appendChild(animationTarget);
     return new Animation(animationTarget, [], 5);
 }
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(null);
-    var animation = newAnimation(doc);
+    var player = document.timeline.play(null);
+    var animation = newAnimation(createDiv(this));
     player.source = animation;
 
     assert_equals(player.source, animation, 'Value of AnimationPlayer.source attribute ' +
@@ -33,11 +31,10 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var animation1 = newAnimation(doc);
-    var player = doc.timeline.play(animation1);
+    var animation1 = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation1);
 
-    var animation2 = newAnimation(doc);
+    var animation2 = newAnimation(createDiv(this));
     player.source = animation2;
 
     assert_equals(player.source, animation2, 'Value of AnimationPlayer.source attribute ' +
@@ -51,9 +48,8 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var animation = newAnimation(doc);
-    var player = doc.timeline.play(animation);
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
 
     player.source = null;
 
@@ -66,9 +62,8 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var animation = newAnimation(doc);
-    var player = doc.timeline.play(animation);
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
 
     player.source = animation;
 
@@ -81,11 +76,10 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var animation1 = newAnimation(doc);
-    var player1 = doc.timeline.play(animation1);
-    var animation2 = newAnimation(doc);
-    var player2 = doc.timeline.play(animation2);
+    var animation1 = newAnimation(createDiv(this));
+    var player1 = document.timeline.play(animation1);
+    var animation2 = newAnimation(createDiv(this));
+    var player2 = document.timeline.play(animation2);
 
     player2.source = animation1;
 
@@ -102,13 +96,12 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var animation1 = newAnimation(doc);
-    var animation2 = newAnimation(doc);
+    var animation1 = newAnimation(createDiv(this));
+    var animation2 = newAnimation(createDiv(this));
     var animationGroup = new AnimationGroup([animation1, animation2]);
-    var player1 = doc.timeline.play(animation1);
+    var player1 = document.timeline.play(animation1);
     var animation3 = newAnimation(doc);
-    var player2 = doc.timeline.play(animation3);
+    var player2 = document.timeline.play(animation3);
 
     player2.source = animation1;
 

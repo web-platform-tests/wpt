@@ -12,33 +12,24 @@
 <div id="log"></div>
 <script>
 test(function() {
-    var doc = newHTMLDocument();
-    var timeline = doc.timeline;
-    assert_not_equals(timeline.currentTime, null,
+    assert_not_equals(document.timeline.currentTime, null,
         'Time value for the timeline should not be null');
 }, 'If timeline is started time value for this timeline is not null');
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var timeline = doc.timeline;
-    assert_readonly(timeline, 'currentTime', 'Timeline attribute should be readonly');
+    assert_readonly(document.timeline, 'currentTime', 'Timeline attribute should be readonly');
 }, 'Timeline attribute readonly test');
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var timeline = doc.timeline;
-    assert_greater_than(timeline.currentTime, 0,
+    assert_greater_than(document.timeline.currentTime, 0,
         'Time value for the timeline should be greater than zero');
 }, 'Timeline value is greater than zero test');
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var timeline = doc.timeline;
-    
-    assert_equals(window.performance.timing.navigationStart + timeline.currentTime,
+    assert_equals(window.performance.timing.navigationStart + document.timeline.currentTime,
             (new Date()).getTime(), 'Time value for the timeline should be relative to ' +
             'navigationStart moment');
 }, 'Time value for the timeline is relative to navigationStart moment');

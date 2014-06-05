@@ -11,16 +11,14 @@
 <body>
 <div id="log"></div>
 <script>
-function newAnimation(doc) {
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
+function newAnimation(animationTarget) {
+    document.body.appendChild(animationTarget);
     return new Animation(animationTarget, [], 5);
 }
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(null);
+    var player = document.timeline.play(null);
 
     assert_equals(player.source, null, 'Value of AnimationPlayer.source attribute ' +
         'should be null');
@@ -29,8 +27,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(newAnimation(doc));
+    var player = document.timeline.play(newAnimation(createDiv(this)));
 
     assert_not_equals(player.source, null, 'Value of AnimationPlayer.source attribute ' +
         'should not be null');
@@ -39,8 +36,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(newAnimation(doc));
+    var player = document.timeline.play(newAnimation(createDiv(this)));
 
     assert_true(hasAncestorClassString(player.source, 'AnimationNode'), 'Value of ' +
         'AnimationPlayer.source attribute should be of type AnimationNode');
@@ -48,25 +44,12 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var animation = newAnimation(doc);
-    var player = doc.timeline.play(animation);
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
 
     assert_equals(player.source, animation, 'Value of AnimationPlayer.source ' +
         'attribute should be value of AnimationTimeline.play() call');
 }, 'Test that value of the AnimationPlayer.source attribute is ' +
     'value of AnimationTimeline.play() call');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(null);
-
-    assert_throws('TypeError',function () {
-        player.source = [];
-    }, 'TypeError should be thrown if AnimationPlayer.source attribute ' +
-        'is set to not AnimationNode object');
-}, 'Test that TypeError is thrown if AnimationPlayer.source attribute ' +
-    'is set to not AnimationNode object');
 </script>
 </body>

@@ -15,6 +15,27 @@ function newHTMLDocument() {
     return document.implementation.createHTMLDocument('Test Document');
 }
 
+// creates div element, appends it to the document body and
+// add removing of the created element to test cleanup
+function createDiv(test, doc) {
+    if (doc == null) {
+        doc = document;
+    }
+    var div = doc.createElement('div');
+    doc.body.appendChild(div);
+    if (test != null) {
+        test.add_cleanup(function() {
+            removeElement(div);
+        });
+    }
+    return div;
+}
+
+// Removes element
+function removeElement(element) {
+    element.parentNode.removeChild(element);
+}
+
 // Returns true if there is className in object prototype chain
 function hasAncestorClassString(object, classString) {
     var proto = Object.getPrototypeOf(object);

@@ -12,11 +12,8 @@
 <div id="log"></div>
 <script>
 test(function() {
-    var doc = newHTMLDocument();
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
-    var animation = new Animation(animationTarget, [], 2000);
-    var player = doc.timeline.play(animation);
+    var animation = new Animation(createDiv(this), [], 2000);
+    var player = document.timeline.play(animation);
 
     assert_equals(player.source, animation, 'The source attribute of the created ' +
         'AnimationPlayer should be set to source parameter value');
@@ -25,8 +22,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(null);
+    var player = document.timeline.play(null);
 
     assert_equals(player.source, null, 'The source attribute of the created ' +
         'AnimationPlayer should be null if source parameter value is null');
@@ -35,8 +31,7 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play();
+    var player = document.timeline.play();
 
     assert_equals(player.source, null, 'The source attribute of the created ' +
         'AnimationPlayer should be null if source parameter value is not specified');

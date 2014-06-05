@@ -10,22 +10,18 @@
 <link rel="stylesheet" href="/resources/testharness.css">
 <body>
 <div id="log"></div>
-<iframe id="iframe" src="../resources/blank.html"></iframe>
 <script>
-function newAnimation(doc) {
-    var animationTarget = doc.createElement('div');
+function newAnimation(animationTarget) {
     animationTarget.style.width = '300px';
-    doc.body.appendChild(animationTarget);
     return new Animation(animationTarget, [
-	    {width: "10px", offset: 0},
-	    {width: "100px", offset: 1/2},
-	    {width: "200px", offset: 1}], 1000);
+	    {width: '10px', offset: 0},
+	    {width: '100px', offset: 1/2},
+	    {width: '200px', offset: 1}], 1000);
 }
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = doc.timeline.play(newAnimation(doc));
+    var player = document.timeline.play(newAnimation(createDiv(this)));
     player.cancel();
 
     assert_equals(player.source, null, 'Value of AnimationPlayer.source attribute ' +
@@ -35,10 +31,8 @@ test(function() {
 
 
 test(function() {
-    var iframe = document.querySelector('#iframe');
-    var doc = iframe.contentWindow.document;
-    var animation = newAnimation(doc);
-    var player = doc.timeline.play(animation);
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
 
     player.currentTime = 500;
     assert_equals(window.getComputedStyle(animation.target).width, 100,
@@ -48,7 +42,5 @@ test(function() {
     assert_equals(window.getComputedStyle(animation.target).width, 300,
         'Animation effect should be cleared');
 }, 'Test that animation effect is cleared by AnimationPlayer.cancel() call');
-
-document.querySelector('#iframe').remove();
 </script>
 </body>

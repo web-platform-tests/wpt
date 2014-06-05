@@ -11,38 +11,24 @@
 <body>
 <div id="log"></div>
 <script>
-function newAnimationPlayer(doc) {
-    var animationTarget = doc.createElement('div');
-    doc.body.appendChild(animationTarget);
+function newAnimationPlayer(animationTarget) {
     var animation = new Animation(animationTarget, [], 5);
-    return doc.timeline.play(animation);
+    return document.timeline.play(animation);
 }
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
     assert_not_equals(player.playbackRate, null,
-        'The value of AnimationPlayer.playbackRate attribute should not be of type null');
-}, 'The value of AnimationPlayer.playbackRate attribute should not be null');
+        'The value of AnimationPlayer.playbackRate attribute should not be null');
+    assert_equals(player.playbackRate, 1,
+        'The initial value of AnimationPlayer.playbackRate attribute should not be 1');
+}, 'Test initial value of AnimationPlayer.playbackRate attribute');
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
-
-    assert_throws('TypeError',function () {
-        player.playbackRate = [];
-    }, 'TypeError should be thrown if AnimationPlayer.playbackRate attribute ' +
-        'is set to not double value');
-}, 'Test that TypeError is thrown if AnimationPlayer.playbackRate attribute ' +
-    'is set to not double value');
-
-
-test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
     var newPlaybackRate = player.playbackRate + 1;
     player.playbackRate = newPlaybackRate;
@@ -53,13 +39,9 @@ test(function() {
 
 
 test(function() {
-    var doc = newHTMLDocument();
-    var player = newAnimationPlayer(doc);
+    var player = newAnimationPlayer(createDiv(this));
 
-    assert_not_equals(player.playbackRate, 0,
-        'The value of AnimationPlayer.playbackRate attribute should not be 0');
-
-    var newPlaybackRate = (-1) * (player.playbackRate + 1);
+    var newPlaybackRate = -1;
     var previousTime = player.currentTime;
     player.playbackRate = newPlaybackRate;
 

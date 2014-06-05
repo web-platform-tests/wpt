@@ -25,9 +25,76 @@ function testComputedStyle(value, expected) {
     }
 }
 
+function testShapeMarginInlineStyle(value, expected) {
+    var div = document.createElement('div');
+    div.style.setProperty('-shape-outside', "border-box inset(10px)");
+    div.style.setProperty('shape-margin', value);
+    var actual = div.style.getPropertyValue('shape-margin');
+    assert_equals(actual, expected);
+}
+
+function testShapeMarginComputedStyle(value, expected) {
+
+    var outerDiv = document.createElement('div');
+    outerDiv.style.setProperty('width', '100px');
+
+    var innerDiv = document.createElement('div');
+    innerDiv.style.setProperty('shape-outside', "border-box inset(10px)");
+    innerDiv.style.setProperty('shape-margin', value);
+
+    outerDiv.appendChild(innerDiv);
+    document.body.appendChild(outerDiv);
+
+    var style = getComputedStyle(innerDiv);
+    var actual = style.getPropertyValue('shape-margin');
+
+    assert_not_equals(actual, null);
+    if(actual.indexOf('calc') == -1 )
+        actual = roundResultStr(actual);
+    document.body.removeChild(outerDiv);
+
+    // See comment above about multiple expected results
+    if(Object.prototype.toString.call( expected ) === '[object Array]' && expected.length == 2) {
+        assert_true(expected[0] == actual || expected[1] == actual)
+    } else {
+        assert_equals(actual, !expected ? '0px' : expected);
+    }
+}
+
+function testShapeThresholdInlineStyle(value, expected) {
+    var div = document.createElement('div');
+    div.style.setProperty('shape-outside', 'url(someimage.png)');
+    div.style.setProperty('shape-image-threshold', value);
+    var actual = div.style.getPropertyValue('shape-image-threshold');
+    assert_equals(actual, expected);
+}
+
+function testShapeThresholdComputedStyle(value, expected) {
+
+    var div = document.createElement('div');
+    div.style.setProperty('shape-outside', 'url(someimage.png)');
+    div.style.setProperty('shape-image-threshold', value);
+    document.body.appendChild(div);
+
+    var style = getComputedStyle(div);
+    var actual = style.getPropertyValue('shape-image-threshold');
+
+    assert_not_equals(actual, null);
+    if(actual.indexOf('calc') == -1 )
+        actual = roundResultStr(actual);
+    document.body.removeChild(div);
+
+    // See comment above about multiple expected results
+    if(Object.prototype.toString.call( expected ) === '[object Array]' && expected.length == 2) {
+        assert_true(expected[0] == actual || expected[1] == actual)
+    } else {
+        assert_equals(actual, !expected ? '0' : expected);
+    }
+}
+
 // Builds an array of test cases to send to testharness.js where one test case is: [name, actual, expected]
 // These test cases will verify results from testInlineStyle() or testComputedStyle()
-function buildTestCases(testCases, testType, invalid) {
+function buildTestCases(testCases, testType) {
     var results = [];
 
     // If test_type isn't specified, test inline style
@@ -48,7 +115,7 @@ function buildTestCases(testCases, testType, invalid) {
         oneTestCase.push(test['actual'])
 
         // expected
-        if( type == 'invalid' ){
+        if( type.indexOf('invalid') != -1 ){
             oneTestCase.push(null)
         } else if( type == 'inline' ) {
             oneTestCase.push(test['expected_inline']);
@@ -310,6 +377,9 @@ function convertToPx(origValue) {
 }
 
 function roundResultStr(str) {
+    if(Object.prototype.toString.call( str ) !== '[object String]')
+        return str;
+
     var numbersToRound = str.match(/[0-9]+\.[0-9]+/g);
     if(!numbersToRound)
         return str;
@@ -778,6 +848,10 @@ var calcTestValues = [
 return {
     testInlineStyle: testInlineStyle,
     testComputedStyle: testComputedStyle,
+    testShapeMarginInlineStyle: testShapeMarginInlineStyle,
+    testShapeMarginComputedStyle: testShapeMarginComputedStyle,
+    testShapeThresholdInlineStyle: testShapeThresholdInlineStyle,
+    testShapeThresholdComputedStyle: testShapeThresholdComputedStyle,
     buildTestCases: buildTestCases,
     buildRadiiTests: buildRadiiTests,
     buildPositionTests: buildPositionTests,

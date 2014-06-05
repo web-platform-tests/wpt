@@ -33,7 +33,7 @@ async_test(function() {
       img.onerror = this.unreached_func("got third error event");
     });
     img.src = url_put;
-    check_props(img, 'error', 'C');
+    check_props(img, 'before dimensions', 'C');
   });
   img.onload = this.unreached_func("got load event");
   img.src = url_put;

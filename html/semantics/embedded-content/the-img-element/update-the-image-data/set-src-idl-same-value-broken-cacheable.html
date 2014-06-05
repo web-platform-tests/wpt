@@ -26,14 +26,14 @@ async_test(function() {
   var url_put = url + 'put';
   var url_take = url + 'take';
   img.onerror = this.step_func(function() {
-    check_props(img, 'error');
+    check_props(img, 'error', 'B');
     img.onerror = this.step_func(function() {
-      check_props(img, 'error');
+      check_props(img, 'error', 'D');
       this.step(check_requests(url_take, expected_requests));
       img.onerror = this.unreached_func("got third error event");
     });
     img.src = url_put;
-    check_props(img, 'error');
+    check_props(img, 'before dimensions', 'C');
   });
   img.onload = this.unreached_func("got load event");
   img.src = url_put;

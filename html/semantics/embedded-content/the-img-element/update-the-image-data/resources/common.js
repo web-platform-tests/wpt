@@ -36,7 +36,7 @@ for (var state in expected_props) {
 function check_props(obj, state, msg) {
   msg = msg || '';
   var props = expected_props[state];
-  for (p in props) {
+  for (var p in props) {
     assert_equals(obj[p], props[p], 'check_props ' + msg + ' (' + state + '), ' + p);
   }
 }

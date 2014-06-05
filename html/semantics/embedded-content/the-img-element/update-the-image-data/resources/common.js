@@ -43,7 +43,7 @@ function check_props(obj, state, msg) {
 
 function check_timeline(timeline, expected) {
   var len = timeline.length - 1;
-  var epsilon = 250 + Math.ceil(rtt / 2);
+  var epsilon = 250 + rtt;
   for (var i = 0; i < len; ++i) {
     assert_approx_equals(timeline[i + 1] - timeline[i], expected[i] + rtt, epsilon,
     'check_timeline ' + i + ' should be ~' + expected[i] + 'ms (plus RTT)');

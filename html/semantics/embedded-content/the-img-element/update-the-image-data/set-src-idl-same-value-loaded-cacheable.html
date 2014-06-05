@@ -1,9 +1,9 @@
 <!doctype html>
 <title>img set .src IDL attribute to same value (loaded, cacheable)</title>
 <script>
-var rtt = 0;
-if (window.performance && performance.timing && performance.timing.requestStart) {
-  rtt = new Date() - performance.timing.requestStart;
+var rtt = 250;
+if (window.performance && performance.timing && performance.timing.fetchStart) {
+  rtt = new Date() - performance.timing.fetchStart;
 }
 </script>
 <script src="/resources/testharness.js"></script>

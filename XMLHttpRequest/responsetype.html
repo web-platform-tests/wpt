@@ -17,9 +17,58 @@ var types = ['', 'json', 'document', 'arraybuffer', 'blob', 'text'];
 types.forEach(function(type) {
   test(function() {
     var xhr = new XMLHttpRequest();
+    xhr.responseType = type;
+    assert_equals(xhr.responseType, type);
+  }, 'Set responseType to ' + format_value(type) + ' when readyState is UNSENT.');
+
+  test(function() {
+    var xhr = new XMLHttpRequest();
     xhr.open('get', '/');
     xhr.responseType = type;
     assert_equals(xhr.responseType, type);
   }, 'Set responseType to ' + format_value(type) + ' when readyState is OPENED.');
+
+  async_test(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', '/');
+    xhr.onreadystatechange = this.step_func(function() {
+      if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
+        xhr.responseType = type;
+        assert_equals(xhr.responseType, type);
+        this.done();
+      }
+    });
+    xhr.send();
+  }, 'Set responseType to ' + format_value(type) + ' when readyState is HEADERS_RECEIVED.');
+
+  async_test(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', '/');
+    xhr.onreadystatechange = this.step_func(function() {
+      if (xhr.readyState === XMLHttpRequest.LOADING) {
+        assert_throws("InvalidStateError", function() {
+          xhr.responseType = type;
+        });
+        assert_equals(xhr.responseType, "");
+        this.done();
+      }
+    });
+    xhr.send();
+  }, 'Set responseType to ' + format_value(type) + ' when readyState is LOADING.');
+
+  async_test(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', '/');
+    xhr.onreadystatechange = this.step_func(function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        assert_throws("InvalidStateError", function() {
+          xhr.responseType = type;
+        });
+        assert_equals(xhr.responseType, "");
+        this.done();
+      }
+    });
+    xhr.send();
+  }, 'Set responseType to ' + format_value(type) + ' when readyState is DONE.');
 });
 </script>

@@ -8,6 +8,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
+test(function() {
+  var xhr = new XMLHttpRequest();
+  assert_equals(xhr.responseType, '');
+}, 'Initial value of responseType');
+
 var types = ['', 'json', 'document', 'arraybuffer', 'blob', 'text'];
 types.forEach(function(type) {
   test(function() {

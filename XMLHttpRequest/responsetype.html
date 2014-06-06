@@ -1,42 +1,20 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>XHR2 `responseType` property tests</title>
-<meta name=viewport content="width=device-width">
-<link rel="stylesheet" href="/resources/testharness.css">
+<title>XMLHttpRequest.responseType</title>
 <link rel="author" title="Mathias Bynens" href="http://mathiasbynens.be/">
-<link rel="help" href="http://www.w3.org/TR/XMLHttpRequest/#the-responsetype-attribute">
+<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
 <link rel="help" href="http://xhr.spec.whatwg.org/#the-responsetype-attribute">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<h1>Description</h1>
-<p>This test validates that the XHR2 <code>reponseType</code> property is supported and accepts all the proper values.</p>
 <div id="log"></div>
 <script>
-	(function() {
-		function testType(type) {
-			if (typeof XMLHttpRequest == 'undefined') {
-				return false;
-			}
-			var xhr = new XMLHttpRequest();
-			xhr.open('get', '/', true);
-			try {
-				xhr.responseType = type;
-			} catch(error) {
-				return false;
-			}
-			return 'response' in xhr && xhr.responseType == type;
-		};
-
-		var types = ['', 'json', 'document', 'arraybuffer', 'blob', 'text'];
-		types.forEach(function(type) {
-			test(
-				function() {
-					assert_true(
-						testType(type)
-					);
-				},
-				'xhr.responseType = \'' + type + '\''
-			);
-		});
-	}());
+var types = ['', 'json', 'document', 'arraybuffer', 'blob', 'text'];
+types.forEach(function(type) {
+  test(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', '/');
+    xhr.responseType = type;
+    assert_equals(xhr.responseType, type);
+  }, 'Set responseType to ' + format_value(type) + ' when readyState is OPENED.');
+});
 </script>

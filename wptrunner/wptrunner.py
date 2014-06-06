@@ -279,7 +279,7 @@ class EqualTimeChunker(TestChunker):
 
         assert len(chunks) == self.total_chunks, len(chunks)
         assert sum(item[2] for item in chunks) == full_total_time
-        sys.exit(1)
+
         chunks = sorted(chunks)
 
         return chunks[self.chunk_number - 1][1]

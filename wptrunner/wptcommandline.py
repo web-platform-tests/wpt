@@ -94,9 +94,8 @@ def create_parser(allow_mandatory=True):
 
 
 def check_args(kwargs):
-    if kwargs["total_chunks"] > 1 or kwargs["this_chunk"] > 1:
-        require_arg(kwargs, "total_chunks", lambda x:x > 1)
-        require_arg(kwargs, "this_chunk", lambda x:x > 1)
+    if kwargs["this_chunk"] > 1:
+        require_arg(kwargs, "total_chunks", lambda x:x >= kwargs["this_chunk"])
 
         if kwargs["chunk_type"] == "none":
             kwargs["chunk_type"] = "equal_time"

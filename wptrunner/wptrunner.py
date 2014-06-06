@@ -195,7 +195,7 @@ class EqualTimeChunker(TestChunker):
     """Chunker that uses the test timeout as a proxy for the running time of the test"""
 
     def _get_chunk(self, manifest_items):
-        # For each directory containing tests, calculate the mzximum execution time after running all
+        # For each directory containing tests, calculate the maximum execution time after running all
         # the tests in that directory. Then work out the index into the manifest corresponding to the
         # directories at fractions of m/N of the running time where m=1..N-1 and N is the total number
         # of chunks. Return an array of these indicies
@@ -215,7 +215,7 @@ class EqualTimeChunker(TestChunker):
                 by_dir[test_dir] = PathData()
 
             data = by_dir[test_dir]
-            time = sum(test.timeout for test in tests)
+            time = sum(wpttest.DEFAULT_TIMEOUT if test.timeout != "long" else wpttest.LONG_TIMEOUT for test in tests)
             data.time += time
             data.tests.append((test_path, tests))
 
@@ -343,6 +343,9 @@ class TestLoader(object):
 
     def iter_tests(self, test_types, chunker=None):
         manifest_items = self.test_filter(self.manifest.itertypes(*test_types))
+
+        if chunker is not None:
+            manifest_items = chunker(manifest_items)
 
         for test_path, tests in manifest_items:
             expected_file = self.load_expected_manifest(test_path)
@@ -584,9 +587,9 @@ def main():
 
     setup_logging(kwargs, {"raw": sys.stdout})
 
-    if args.list_test_groups:
+    if kwargs["list_test_groups"]:
         list_test_groups(**kwargs)
-    elif args.list_disabled:
+    elif kwargs["list_disabled"]:
         list_disabled(**kwargs)
     else:
         return run_tests(**kwargs)

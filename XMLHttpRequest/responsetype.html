@@ -70,5 +70,25 @@ types.forEach(function(type) {
     });
     xhr.send();
   }, 'Set responseType to ' + format_value(type) + ' when readyState is DONE.');
+
+  test(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', '/', false);
+    assert_throws("InvalidAccessError", function() {
+      xhr.responseType = type;
+    });
+    assert_equals(xhr.responseType, "");
+  }, 'Set responseType to ' + format_value(type) + ' when readyState is OPENED and the sync flag is set.');
+
+  test(function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', '/', false);
+    xhr.send();
+    assert_equals(xhr.readyState, XMLHttpRequest.DONE);
+    assert_throws("InvalidStateError", function() {
+      xhr.responseType = type;
+    });
+    assert_equals(xhr.responseType, "");
+  }, 'Set responseType to ' + format_value(type) + ' when readyState is DONE and the sync flag is set.');
 });
 </script>

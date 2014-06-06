@@ -221,6 +221,8 @@ class EqualTimeChunker(TestChunker):
 
             total_time += time
 
+        full_total_time = total_time
+
         if len(by_dir) < self.total_chunks:
             raise ValueError("Tried to split into %i chunks, but only %i subdirectories included" % (self.total_chunks, len(by_dir)))
 
@@ -229,7 +231,7 @@ class EqualTimeChunker(TestChunker):
 
         chunks = []
 
-        # Put any individual dirs with a time greater than the timeout into their own
+        # Put any individual dirs with a time greater than the time_per_chunk into their own
         # chunk
         while True:
             to_remove = []
@@ -238,7 +240,7 @@ class EqualTimeChunker(TestChunker):
                     to_remove.append((path, data))
             if to_remove:
                 for path, data in to_remove:
-                    chunks.append(([path], data.tests))
+                    chunks.append([[path], data.tests, data.time])
                     del by_dir[path]
 
                 n_chunks -= len(to_remove)
@@ -247,31 +249,37 @@ class EqualTimeChunker(TestChunker):
             else:
                 break
 
-        chunk_time = 0
+        start_new = True
         for i, (path, data) in enumerate(by_dir.iteritems()):
-            if i == 0:
+            if start_new:
                 # Always start a new chunk the first time
-                chunks.append(([path], data.tests))
-                chunk_time = data.time
-            elif chunk_time + data.time > time_per_chunk:
-                if (abs(time_per_chunk - chunk_time) <=
-                    abs(time_per_chunk - (chunk_time + data.time))):
+                chunks.append([[path], data.tests, data.time])
+                start_new = False
+            elif chunks[-1][2] + data.time > time_per_chunk:
+                if ((abs(time_per_chunk - chunks[-1][2]) <=
+                     abs(time_per_chunk - (chunks[-1][2] + data.time))) and
+                    i < n_chunks - 1):
                     # Add a new chunk
-                    chunks.append(([path], data.tests))
-                    chunk_time = data.time
+                    chunks.append([[path], data.tests, data.time])
                 else:
                     # Add this to the end of the previous chunk but
                     # start a new chunk next time
                     chunks[-1][0].append(path)
                     chunks[-1][1].extend(data.tests)
-                    chunk_time += data.time
+                    chunks[-1][2] += data.time
+                    start_new = True
+
+                chunk_time = 0
             else:
                 # Append this to the previous chunk
                 chunks[-1][0].append(path)
                 chunks[-1][1].extend(data.tests)
-                chunk_time += data.time
+                chunks[-1][2] += data.time
+
 
         assert len(chunks) == self.total_chunks, len(chunks)
+        assert sum(item[2] for item in chunks) == full_total_time
+        sys.exit(1)
         chunks = sorted(chunks)
 
         return chunks[self.chunk_number - 1][1]

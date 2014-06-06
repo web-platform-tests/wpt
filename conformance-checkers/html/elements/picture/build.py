@@ -189,6 +189,7 @@ errors = {
   "srcset-microsyntax-w-and-no-descriptor": "<img srcset='x 1w, y' src=x alt>",
   "srcset-microsyntax-unique-descriptors-1x-and-omitted": "<img srcset='x 1x, y' src=x alt>",
   "srcset-microsyntax-unique-descriptors-2x": "<img srcset='x 2x, y 2x' src=x alt>",
+  "srcset-microsyntax-unique-descriptors-integer-and-decimals-x": "<img srcset='x 1x, y 1.0x' src=x alt>",
   "srcset-microsyntax-unique-descriptors-w": "<img srcset='x 1w, y 1w' src=x alt>",
   # aria on picture
   "aria-role-img": "<picture role=img><img src=x alt></picture>",

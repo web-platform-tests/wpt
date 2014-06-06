@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 5.1.1-2 PMT DataCues</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-2 SPTS - UA creates DataCue for PMT, attributes set.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. -->
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!-- Script Version: BETA -->
+
+    <!-- About the Media Resource
+           To verify DOM elements the details of the test media must be known prior to test execution.
+           This test script is bound to the test media file sourced in the script.
+           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+           The media is an MPEG-2, Single Program Transport Stream.
+           PMT does not change.
+    -->
+  </head>
+
+
+  <body>
+    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
+    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+
+
+    <script>
+      var test = async_test("PMT DataCues attributes.");
+      var vid = document.getElementById("v");
+      vid.src = mediaServerURL() + "UserPrivateStreams.ts";
+
+      var index = -1;
+      var trackId = 'video/mp2t track-description';
+
+      // PMT does not change in the test media.
+      // TextTracks[index].cues.length is expected to be 1.
+      // Only one 'data' attribute exists for verification.
+      var data = [2, 176, 61, 0, 2, 193, 0, 0, 224, 33, 240, 6, 5, 4, 67, 85, 69, 73, 2, 224, 33, 240, 0, 129, 224, 36, 240, 0, 134, 224, 45, 240, 0, 192, 230, 232, 240, 9, 5, 4, 69, 84, 86, 49, 162, 1, 0, 192, 230, 234, 240, 8, 5, 4, 69, 84, 86, 49, 161, 0, 112, 252, 191, 31];
+
+
+      vid.addEventListener("playing", function() {
+
+        setTimeout(function() {
+          for (i=0; i< vid.textTracks.length; i++) {
+            if (vid.textTracks[i].id == trackId) {
+              vid.textTracks[i].mode = 'hidden';
+              index = i;
+              break;
+            }
+          }
+        }, 6000);
+
+
+        setTimeout(function() {
+
+          vid.pause();
+
+          if (index == -1) {
+            test.step(function() {
+              assert_unreached("Did not find PMT TextTrack track id in DOM");
+            }, "Did not find PMT TextTrack track id in DOM.");
+            test.done();
+
+          } else {
+            test.step(function() {
+              assert_equals(vid.textTracks[index].cues.length, 1, "DataCues.length");
+
+              var startTime = vid.textTracks[index].cues[0].startTime;
+              assert_greater_than_equal(startTime, 0, "DataCues.startTime");
+              var endTime = vid.textTracks[index].cues[0].endTime;
+              assert_equals(endTime, startTime, "DataCues.endTime");
+
+              assert_true(vid.textTracks[index].cues[0].data instanceof ArrayBuffer, "DataCues[0] is ArrayBuffer");
+              var cueData = new Uint8Array(vid.textTracks[index].cues[0].data);
+              assert_array_equals(data, cueData, "DataCues[0] data");
+
+              assert_equals(vid.textTracks[index].cues[0].text, null, "DataCues.text");
+              assert_equals(vid.textTracks[index].cues[0].pauseOnExit, false, "DataCues.pauseOnExit");
+            }, "PMT DataCues attributes.");
+            test.done();
+          }
+        }, 12000);
+      }, false);
+
+    </script>
+  </body>
+</html>

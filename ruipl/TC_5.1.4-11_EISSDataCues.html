@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 5.1.4-11 EISS DataCues</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-2 SPTS, EISS - UA creates DataCues, attributes set.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!-- Script Version: BETA -->
+
+    <!-- About the Media Resource
+           To verify DOM elements the details of the test media must be known prior to test execution.
+           This test script is bound to the test media file sourced in the script.
+           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+           The media is an MPEG-2, Single Program Transport Stream
+           containing two EISS streams, one program insertion cue stream.
+    -->
+  </head>
+
+
+  <body>
+    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
+    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+
+
+    <script>
+      var test = async_test("EISS DataCues attributes.");
+      var vid = document.getElementById("v");
+      vid.src = mediaServerURL() + "UserPrivateStreams.ts";
+
+      var pid1 = '1768';  // EISS1 PID
+      var pid2 = '1770';  // EISS2 PID
+      var index1 = -1;
+      var index2 = -1;
+
+      // TextTrack[index].cues is a list.  Each cue in the list will have a unique data attribute value.
+      // This script tests that all cues are instanceof ArrayBuffer.
+      // This script tests TextTrack[index].cues[0].data only for value.
+      var data1 = [224, 0, 114, 0, 0, 0, 3, 0, 0, 8, 0, 255, 255, 255, 0, 1, 0, 224, 94, 1, 1, 0, 0, 0, 0, 0, 0, 0, 100, 16, 82, 0, 80, 108, 105, 100, 58, 47, 47, 105, 98, 46, 116, 118, 119, 111, 114, 107, 115, 46, 99, 111, 109, 47, 67, 97, 98, 108, 101, 108, 97, 98, 115, 95, 78, 97, 116, 105, 111, 110, 97, 108, 95, 101, 116, 118, 95, 115, 116, 114, 101, 97, 109, 95, 99, 111, 110, 102, 105, 103, 47, 109, 97, 105, 110, 97, 112, 112, 47, 49, 46, 48, 47, 109, 97, 105, 110, 95, 112, 114, 46, 112, 114, 90, 3, 153, 38]; 
+
+      var data2 = [227 , 64 , 136 , 251 , 251 , 0 , 59 , 176 , 126 , 0 , 1 , 193 , 0 , 0 , 17 , 3 , 16 , 2 , 128 , 0 , 0 , 1 , 255 , 0 , 0 , 105 , 0 , 0 , 0 , 1 , 3 , 216 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 0 , 1 , 0 , 0 , 2 , 12 , 1 , 60 , 59 , 67 , 97 , 98 , 108 , 101 , 108 , 97 , 98 , 115 , 95 , 78 , 97 , 116 , 105 , 111 , 110 , 97 , 108 , 95 , 101 , 116 , 118 , 95 , 115 , 116 , 114 , 101 , 97 , 109 , 95 , 99 , 111 , 110 , 102 , 105 , 103 , 47 , 109 , 97 , 105 , 110 , 97 , 112 , 112 , 47 , 49 , 46 , 48 , 47 , 109 , 97 , 105 , 110 , 95 , 112 , 114 , 46 , 112 , 114 , 0 , 15 , 14 , 105 , 98 , 46 , 116 , 118 , 119 , 111 , 114 , 107 , 115 , 46 , 99 , 111 , 109 , 225 , 54 , 136 , 221 , 188 , 252 , 142 , 137];
+
+
+      vid.addEventListener("playing", function() {
+
+        setTimeout(function() {
+          for (i=0; i< vid.textTracks.length; i++) {
+            if (vid.textTracks[i].id == pid1) {
+              vid.textTracks[i].mode = 'hidden';
+              index1 = i;
+            }
+            if (vid.textTracks[i].id == pid2) {
+              vid.textTracks[i].mode = 'hidden';
+              index2 = i;
+            }
+          }
+        }, 6000);
+
+
+        setTimeout(function() {
+          vid.pause();
+
+          if (index1 ==  -1) {
+            test.step(function() {
+              assert_unreached("Did not find first EISS TextTrack.id (PID) " + pid1 + " in DOM.");
+            }, "Did not find first EISS TextTrack.id (PID) " + pid1 + " in DOM.");
+            test.done();
+          }
+          else if (index2 == -1) {
+            test.step(function() {
+              assert_unreached("Did not find second EISS TextTrack.id (PID) " + pid2 + " in DOM.");
+            }, "Did not find second EISS TextTrack.id (PID) " + pid2 + " in DOM.");
+            test.done();
+
+          } else {
+            test.step(function() {
+              // EISS1
+              for (i=0; i< vid.textTracks[index1].cues.length; i++) {
+
+                var startTime = vid.textTracks[index1].cues[i].startTime;
+                assert_greater_than_equal(startTime, 0, "DataCues.startTime");
+                var endTime = vid.textTracks[index1].cues[i].endTime;
+                assert_equals(endTime, startTime, "DataCues.endTime");
+
+                assert_true(vid.textTracks[index1].cues[i].data instanceof ArrayBuffer, "DataCues[i] is ArrayBuffer");
+
+                if (i==0) {
+                  var cueData = new Uint8Array(vid.textTracks[index1].cues[0].data);
+                  assert_array_equals(data1, cueData, "DataCues[first] data");
+                }
+
+                assert_equals(vid.textTracks[index1].cues[i].pauseOnExit, false, "DataCues.pauseOnExit");
+                assert_equals(vid.textTracks[index1].cues[i].text, null, "DataCues.text");
+              }
+
+              // EISS2
+              for (i=0; i< vid.textTracks[index2].cues.length; i++) {
+                var startTime = vid.textTracks[index2].cues[i].startTime;
+                assert_greater_than_equal(startTime, 0, "DataCues.startTime");
+                var endTime = vid.textTracks[index2].cues[i].endTime;
+                assert_equals(endTime, startTime, "DataCues.endTime");
+
+                assert_true(vid.textTracks[index2].cues[i].data instanceof ArrayBuffer, "DataCues[i] is ArrayBuffer");
+
+                if (i==0) {
+                  var cueData = new Uint8Array(vid.textTracks[index2].cues[0].data);
+                  assert_array_equals(data2, cueData, "DataCues[second] data");
+                }
+
+                assert_equals(vid.textTracks[index2].cues[i].pauseOnExit, false, "DataCues.pauseOnExit");
+                assert_equals(vid.textTracks[index2].cues[i].text, null, "DataCues.text");
+              }
+            }, "EISS DataCues attributes.");
+            test.done();
+          }
+        }, 12000);
+      }, false);
+
+    </script>
+  </body>
+</html>

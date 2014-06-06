@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 5.1.3-1 AudioTracks</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-2 SPTS - UA creates AudioTracks, attributes set.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!-- Script Version: BETA -->
+
+    <!-- About the Media Resource
+           To verify DOM elements the details of the test media must be known prior to test execution.
+           This test script is bound to the test media file sourced in the script.
+           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+           The media is an MPEG-2, Single Program Transport Stream
+           containing two audio elementary streams, ES PIDs 36, 41.
+    -->
+  </head>
+
+
+  <body>
+    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
+    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <audio id="a" width="400" height="300" autoplay controls></audio>
+    <div id="log"></div>
+
+
+    <script>
+      var test = async_test("AudioTracks attributes.");
+      var aud = document.getElementById("a");
+      aud.src = mediaServerURL() + "ClosedCaption.ts"; 
+
+      var index1 = -1;
+      var index2 = -1;
+      var pid1 = '36'; // audio1 ES PID
+      var pid2 = '41'; // audio2 ES PID
+      var kind = 'main';
+
+
+      aud.addEventListener("playing", function() {
+        setTimeout(function() {
+
+          aud.pause();
+
+          for (i=0; i< aud.audioTracks.length; i++) {
+            if (aud.audioTracks[i].id == pid1) {
+              index1 = i;
+            }
+            if (aud.audioTracks[i].id == pid2) {
+              index2 = i;
+            }
+          }
+
+          if (index1 == -1) {
+            test.step(function() {
+              assert_unreached("Did not find first AudioTrack PID " + pid1 + " in DOM");
+            }, "Did not find first AudioTrack PID " + pid1 + " in DOM");
+            test.done();
+
+          } else if (index2 == -1) {
+            test.step(function() {
+              assert_unreached("Did not find second AudioTrack PID " + pid2 + " in DOM");
+            }, "Did not find second AudioTrack PID " + pid2 + " in DOM");
+            test.done();
+
+          } else {
+            test.step(function() {
+              assert_equals(aud.audioTracks.length,       2,    "AudioTracks.length");
+              assert_equals(aud.audioTracks[index1].id,   pid1, "AudioTrack1.id");
+              assert_equals(aud.audioTracks[index1].kind, kind, "AudioTrack1.kind");
+              assert_equals(aud.audioTracks[index2].id,   pid2, "AudioTrack2.id");
+            });
+            test.done();
+          }
+        }, 12000);
+      }, false);
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 5.1.1-1 PMT TextTrack</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-2 SPTS - UA creates TextTrack for PMT, attributes set.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!-- Script Version: BETA -->
+
+    <!-- About the Media Resource
+           The media is an MPEG-2, Single Program Transport Stream.  PMT does not change.
+    -->
+  </head>
+
+
+  <body>
+    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
+    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+
+
+    <script>
+      var test = async_test("PMT TextTrack attributes.");
+      var vid = document.getElementById("v");
+      vid.src = mediaServerURL() + "UserPrivateStreams.ts"; 
+
+      var index = -1;
+      var trackId = 'video/mp2t track-description';
+      var kind = 'metadata';
+      var language = '';
+      var mode = 'disabled';
+
+
+      vid.addEventListener("playing", function() {
+
+        vid.pause();
+
+        setTimeout(function() {
+          for (i=0; i< vid.textTracks.length; i++) {
+            if (vid.textTracks[i].id == trackId) {
+              index = i;
+              break;
+            }
+          }
+
+          if (index == -1) {
+            test.step(function() {
+              assert_unreached("Did not find PMT TextTrack track id in DOM");
+            }, "Did not find PMT TextTrack track id in DOM.");
+            test.done();
+
+          } else {
+            test.step(function() {
+              assert_equals(vid.textTracks[index].kind,     kind,     "TextTrack.kind");
+              assert_equals(vid.textTracks[index].language, language, "TextTrack.language");
+              assert_equals(vid.textTracks[index].mode,     mode,     "TextTrack.mode");
+            }, "PMT TextTrack attributes.");
+            test.done();
+          }
+        }, 12000);
+      }, false);
+
+    </script>
+  </body>
+</html>

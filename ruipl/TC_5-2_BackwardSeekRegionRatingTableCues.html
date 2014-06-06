@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 5-2 Backward Seek Region Rating Table Cues</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-2 SPTS, Region Rating Table Cues - backward seek, UA does not create cues.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!-- Script Version: BETA -->
+
+    <!-- About the Media Resource
+           To verify DOM elements the details of the test media must be known prior to test execution.
+           This test script is bound to the test media file sourced in the script.
+           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+           The media is an MPEG-2, Single Program Transport Stream
+           containing both 608 and 708 Closed Caption.
+    -->
+  </head>
+
+
+  <body>
+    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
+    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+
+
+    <script>
+      var test = async_test("Backward Seek Region Rating Table Cues.");
+      var vid = document.getElementById("v");
+      vid.src = mediaServerURL() + "ClosedCaption.ts"; 
+
+      var index = -1;
+      var pid = "8187"; // Region Rating Table PID
+      var hasNotPlayed = true;
+      var hasNotPaused = true;
+      var firstPassCues = null;
+      var secondPassCues = null;
+
+
+      vid.addEventListener("playing", function() {
+        if (hasNotPlayed) {
+
+          hasNotPlayed = false;
+
+          setTimeout(function() {
+            for (i=0; i< vid.textTracks.length; i++) {
+              if (vid.textTracks[i].id == pid) {
+                index = i;
+                break;
+              }
+            }
+
+            if (index == -1) {
+              hasNotPaused = false;
+              vid.pause();
+              test.step(function() {
+                assert_unreached("Did not find Region Rating Table TextTrack.id (PID) " + pid + " in DOM.");
+              }, "Did not find Region Rating Table TextTrack.id (PID) " + pid + " in DOM");
+              test.done();
+            }
+          }, 15000);
+
+          setTimeout(function() {
+            vid.textTracks[index].mode = 'hidden';
+            firstPassCues = new Array();
+            for (i=0; i < vid.textTracks[index].cues.length; i++) {
+              firstPassCues[i] = new Uint8Array(vid.textTracks[index].cues[i].data);
+            }
+            vid.pause();
+            vid.currentTime = 0;
+          }, 18000);
+        }
+      }, false);
+
+
+      vid.addEventListener("pause", function() {
+        if (hasNotPaused) {
+
+          hasNotPaused = false;
+
+          setTimeout(function() {
+            vid.play();
+          }, 3000);
+
+
+          setTimeout(function() {
+            secondPassCues = new Array();
+            for (i=0; i < vid.textTracks[index].cues.length; i++) {
+              secondPassCues[i] = new Uint8Array(vid.textTracks[index].cues[i].data);
+            }
+
+            test.step(function() {
+              assert_not_equals(firstPassCues.length, 0,
+                                "First play, Region Rating Table, TextTrackCues.length was 0.");
+              assert_not_equals(secondPassCues.length, 0,
+                                "Second play, Region Rating Table, TextTrackCues.length was 0.");
+            });
+
+
+
+
+            test.step(function() {
+              var firstPassString = null;
+              var secondPassString = null;
+              var duplicateCue = 0;
+
+              for (i=0; i < firstPassCues.length; i++) {
+                firstPassString = "";
+                for (m=0; m < firstPassCues[i].length; m++) {
+                  firstPassString = firstPassString.concat(firstPassCues[i][m]);
+                }
+
+                for (j=0; j < secondPassCues.length; j++) {
+                  secondPassString = "";
+                  for (n=0; n < secondPassCues[j].length; n++) {
+                    secondPassString = secondPassString.concat(secondPassCues[j][n]);
+                  }
+
+                  if (secondPassString == firstPassString) {
+                    duplicateCue++;
+                  }
+                }
+                if (duplicateCue > 1) {
+                    assert_less_than_equal(duplicateCue, 1, 'Cue[' + i + ']' + ' was duplicated.')
+                } else {
+                    duplicateCue = 0;
+                }
+              }
+            });
+          }, 15000);
+
+          setTimeout(function() {
+            vid.pause();
+            test.done();
+          }, 18000);
+        }
+      }, false);
+
+    </script>
+  </body>
+</html>

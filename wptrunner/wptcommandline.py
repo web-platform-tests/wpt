@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+import sys
 
 import argparse
 from multiprocessing import cpu_count
@@ -20,6 +21,14 @@ def slash_prefixed(url):
     if not url.startswith("/"):
         url = "/" + url
     return url
+
+def require_arg(kwargs, name, value_func=None):
+    if value_func is None:
+        value_func = lambda x: x is not None
+
+    if not name in kwargs or not value_func(kwargs[name]):
+        print >> sys.stderr, "Missing required argument %s" % name
+        sys.exit(1)
 
 def create_parser(allow_mandatory=True):
     if not allow_mandatory:
@@ -84,6 +93,16 @@ def create_parser(allow_mandatory=True):
     return parser
 
 
+def check_args(kwargs):
+    if kwargs["total_chunks"] > 1 or kwargs["this_chunk"] > 1:
+        require_arg(kwargs, "total_chunks", lambda x:x > 1)
+        require_arg(kwargs, "this_chunk", lambda x:x > 1)
+
+        if kwargs["chunk_type"] == "none":
+            kwargs["chunk_type"] = "equal_time"
+
+    return kwargs
+
 def create_parser_update(allow_mandatory=True):
     if not allow_mandatory:
         prefix = "--"
@@ -116,5 +135,6 @@ def create_parser_reduce(allow_mandatory=True):
 
 def parse_args():
     parser = create_parser()
-    rv = parser.parse_args()
+    rv = vars(parser.parse_args())
+    check_args(rv)
     return rv

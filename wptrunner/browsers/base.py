@@ -14,12 +14,9 @@ from mozrunner import FirefoxRunner, B2GRunner
 import mozdevice
 import moznetwork
 
-here = os.path.split(__file__)[0]
+from ..wptcommandline import require_arg
 
-def require_arg(kwargs, name):
-    if not name in kwargs or kwargs[name] is None:
-        print >> sys.stderr, "Missing required argument %s" % name
-        sys.exit(1)
+here = os.path.split(__file__)[0]
 
 def cmd_arg(name, value=None):
     prefix = "-" if platform.system() == "Windows" else "--"

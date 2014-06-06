@@ -63,7 +63,6 @@ logger = None
 
 def setup_logging(args, defaults):
     global logger
-    setup_compat_args(args)
     logger = commandline.setup_logging("web-platform-tests", args, defaults)
     setup_stdlib_logger()
 
@@ -576,26 +575,9 @@ def run_tests(tests_root, metadata_root, product, **kwargs):
     return manager_group.unexpected_count() == 0
 
 
-def setup_compat_args(kwargs):
-    if not "log_raw" in kwargs or kwargs["log_raw"] is None:
-        kwargs["log_raw"] = []
-
-    if "output_file" in kwargs:
-        path = kwargs.pop("output_file")
-        if path is not None:
-            output_dir = os.path.split(path)[0]
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-            kwargs["log_raw"].append(open(path, "w"))
-
-    if "log_stdout" in kwargs:
-        if kwargs.pop("log_stdout"):
-            kwargs["log_raw"].append(sys.stdout)
-
 def main():
     """Main entry point when calling from the command line"""
-    args = wptcommandline.parse_args()
-    kwargs = vars(args)
+    kwargs = wptcommandline.parse_args()
 
     if kwargs["prefs_root"] is None:
         kwargs["prefs_root"] = os.path.abspath(os.path.join(here, "prefs"))

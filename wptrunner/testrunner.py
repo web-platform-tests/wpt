@@ -434,6 +434,7 @@ class TestRunnerManager(threading.Thread):
         assert test == self.test
         # Write the result of each subtest
         file_result, test_results = results
+        subtest_unexpected = False
         for result in test_results:
             if test.disabled(result.name):
                 continue
@@ -443,6 +444,7 @@ class TestRunnerManager(threading.Thread):
             if is_unexpected:
                 self.unexpected_count += 1
                 self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
+                subtest_unexpected = True
             self.logger.test_status(test.id,
                                     result.name,
                                     result.status,
@@ -469,7 +471,8 @@ class TestRunnerManager(threading.Thread):
         self.test = None
 
         #Handle starting the next test, with a runner restart if required
-        if file_result.status in ("CRASH", "EXTERNAL-TIMEOUT"):
+        if (file_result.status in ("CRASH", "EXTERNAL-TIMEOUT") or
+            subtest_unexpected or is_unexpected):
             return self.restart_runner()
         else:
             return self.start_next_test()

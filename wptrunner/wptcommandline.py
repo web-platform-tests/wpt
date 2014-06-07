@@ -123,7 +123,7 @@ def create_parser_update(allow_mandatory=True):
                         choices=["none", "try", "logfile"],
                         default="none", help="Process to use for updating the expectation data")
     #Should make this required iff run=logfile
-    parser.add_argument("--run-log", action="append", type=abs_path,
+    parser.add_argument("run-log", nargs="*", action="append", type=abs_path,
                         help="Log file from run of tests")
     return parser
 

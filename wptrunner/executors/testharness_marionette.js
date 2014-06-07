@@ -11,6 +11,7 @@ function listener(e) {
         var test_results = e.data.tests.map(function(x) {
             return {name:x.name, status:x.status, message:x.message}
         });
+        window.wrappedJSObject.win.close();
         marionetteScriptFinished({test:"%(url)s",
                                   tests:test_results,
                                   status: e.data.status.status,
@@ -24,4 +25,5 @@ window.wrappedJSObject.win = window.open("%(abs_url)s", "%(window_id)s");
 var timer = setTimeout(function() {
     log("Timeout fired");
     window.wrappedJSObject.win.timeout();
+    window.wrappedJSObject.win.close();
 }, %(timeout)s);

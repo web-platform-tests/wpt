@@ -12,6 +12,7 @@
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#switch-done" data-tested-assertations="following::ol[1]/li[1] following::ol[1]/li[3] following::ol[1]/li[4] following::ol[1]/li[6] following::ol[1]/li[7]" />
     <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-response-attribute" data-tested-assertations="following::ol/li[3]" />
     <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
 </head>
 
 <body>
@@ -23,9 +24,9 @@
             var expect = [4, "load", "loadend"];
             var actual = [];
 
-            xhr.onreadystatechange = function() 
+            xhr.onreadystatechange = function()
             {
-                if (xhr.readyState == 4) 
+                if (xhr.readyState == 4)
                 {
                     actual.push(xhr.readyState);
                 }

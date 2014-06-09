@@ -3,10 +3,11 @@
     <head>
         <meta charset="utf-8" />
         <title>Page Visibility API Child Document Test</title>
-        
-        <script type="text/javascript" src="/resources/testharness.js"></script>
+
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
         <script type="text/javascript" src="resources/pagevistestharness.js"></script>
-                
+
         <style type="text/css">
             iframe
             {
@@ -14,7 +15,7 @@
                 height:250px;
                 margin-left:5px;
             }
-            
+
             div.docs
             {
                 position:relative;
@@ -25,17 +26,17 @@
                 padding:3px;
             }
         </style>
-        
+
         <script type="text/javascript" >
             setup({explicit_done: true});
-        
+
             function onload_test()
             {
                 pv_test();
-                
+
                 var frames = document.getElementsByTagName("iframe");
                 var doc, doc_name;
-                
+
                 for (var i = 0; i < frames.length; i++)
                 {
                     doc = frames[i].contentDocument;
@@ -51,20 +52,20 @@
                                 frames[i].id + " == " +
                                 VISIBILITY_STATES.VISIBLE);
                 }
-                
+
                 done();
             }
         </script>
     </head>
     <body onload="onload_test()">
         <h1>Description</h1>
-        <p>This test validates that, within child documents, all of the Page Visibility API attributes exist, 
+        <p>This test validates that, within child documents, all of the Page Visibility API attributes exist,
            are read-only, and match the value of the attributes within the parent document.</p>
 
         <div id="log"></div>
-        
+
         <br/>
-        
+
         <div class="docs">
             IFrame with no style attribute
             <br/>
@@ -72,7 +73,7 @@
                 iframes unsupported
             </iframe>
         </div>
-        
+
         <div class="docs">
             IFrame with "display:none" style<br/>
             <iframe id="'display:none' style" style="display:none"
@@ -80,7 +81,7 @@
                 iframes unsupported
             </iframe>
         </div>
-        
+
         <div class="docs">
             IFrame with "visibility:hidden" style
             <br/>

@@ -4,10 +4,11 @@
         <meta charset="utf-8" />
         <title>Page Visibility Null Default View Test</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        
-        <script type="text/javascript" src="/resources/testharness.js"></script>
+
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
         <script type="text/javascript" src="resources/pagevistestharness.js"></script>
-        
+
         <script type="text/javascript" >
             setup({explicit_done: true});
 
@@ -18,15 +19,15 @@
 
                 // Test precondition: ensure subdocument has a null default view
                 test_true(subDoc.defaultView == null, "windowless subdocument generated for test has a null default view");
-                
+
                 // check that feature exists within subdocument
                 test_feature_exists(subDoc, 'windowless subdocument');
-                                
+
                 // check that the subdocument has a hidden visibility state
                 test_true(subDoc.hidden,
                           "hidden == true for windowless subdocuments with a null default view");
                 test_equals(subDoc.visibilityState, VISIBILITY_STATES.HIDDEN,
-                            "visibilityState == " + VISIBILITY_STATES.HIDDEN + 
+                            "visibilityState == " + VISIBILITY_STATES.HIDDEN +
                             " for windowless subdocuments with a null default view");
 
                 done();
@@ -35,7 +36,7 @@
     </head>
     <body onload="onload_test()">
         <h1>Description</h1>
-        <p>This test validates that document.hidden == false and 
+        <p>This test validates that document.hidden == false and
            document.visibilityState == "visible" for windowless subdocuments.</p>
         <div id="log"></div>
     </body>

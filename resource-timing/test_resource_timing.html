@@ -1,15 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
         <title>window.performance Resource Timing Entries exist</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://w3c-test.org/webperf/specs/ResourceTiming/"/>
-        
+
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="resources/webperftestharness.js"></script>
-        
+
         <script>
         var index = window.location.pathname.lastIndexOf('/');
         var pathname = window.location.pathname.substring(0, index) + '/';
@@ -22,14 +22,14 @@
         var expectedEntries = new Array();
 
         var initiatorTypes = ["iframe", "img", "link", "script", "xmlhttprequest"];
-        
+
         setup({timeout:TEST_TIMEOUT + 1000, explicit_done: true});
-        
+
         test_namespace();
 
         /*=====================================================================
         // Object entry
-        // Object representing an expected entry on the page. 
+        // Object representing an expected entry on the page.
         =====================================================================*/
         function entry(name, startTime, initiatorType)
         {
@@ -40,7 +40,7 @@
 
         /*=====================================================================
         // function get_now()
-        // Returns a (high-res if possible) timestamp as a delta from 
+        // Returns a (high-res if possible) timestamp as a delta from
         // navigationStart
         =====================================================================*/
         function get_now()
@@ -59,20 +59,20 @@
         // function onload_test
         // Main entry point to test.  This will add all of the test resources
         // to the page.  For resources which will not fire an onload event,
-        // an entry object is created here. 
+        // an entry object is created here.
         =====================================================================*/
         function onload_test()
         {
             // check that the Performance Timeline API exists
-            test_true(window.performance.getEntriesByName !== undefined, 
+            test_true(window.performance.getEntriesByName !== undefined,
                       "window.performance.getEntriesByName() is defined");
-            test_true(window.performance.getEntriesByType !== undefined, 
+            test_true(window.performance.getEntriesByType !== undefined,
                       "window.performance.getEntriesByType() is defined");
-            test_true(window.performance.getEntries !== undefined, 
+            test_true(window.performance.getEntries !== undefined,
                       "window.performance.getEntries() is defined");
-            
+
             //Early bail out if Performance Timeline APIs do not exist
-            if (window.performance.getEntriesByName == undefined || 
+            if (window.performance.getEntriesByName == undefined ||
                 window.performance.getEntriesByType == undefined ||
                 window.performance.getEntries == undefined)
             {
@@ -116,7 +116,7 @@
                             xmlhttp.send();
                             element.innerText = xmlhttp.responseText;
                             expectedEntries.push(new entry(URL_PREFIX + "resource_timing_test0.xml",
-                                                 startTime, 
+                                                 startTime,
                                                  "xmlhttprequest"));
                             document.getElementById("xmlhttprequest").appendChild(element);
                             break;
@@ -148,7 +148,7 @@
                 default:
                     type = x.localName
             }
-            expectedEntries.push(new entry((x.href || x.src), 
+            expectedEntries.push(new entry((x.href || x.src),
                                 (startTime == undefined ? 0 : startTime), //use earliest possible time if not defined
                                  type));
 
@@ -195,18 +195,18 @@
                 var name = expectedEntries[i].name;
                 var entriesByName = window.performance.getEntriesByName(name);
                 test_equals(entriesByName.length, 1,
-                            "window.performance.getEntriesByName(\"" + 
+                            "window.performance.getEntriesByName(\"" +
                             name.replace(URL_PREFIX, "http://.../") + "\") " +
                             "returns a PerformanceEntry object");
-                
+
                 if (entriesByName.length == 1)
                 {
                     test_entry(expectedEntries[i], entriesByName[0]);
 
                     var entriesByNameWithType = window.performance.getEntriesByName(name, "resource");
                     test_true(is_same_object(entriesByName[0], entriesByNameWithType[0]),
-                              "PerformanceEntry object is the same when calling via getEntriesByName(\"" + 
-                              name.replace(URL_PREFIX, "http://.../") + "\") and getEntriesByName(\"" + 
+                              "PerformanceEntry object is the same when calling via getEntriesByName(\"" +
+                              name.replace(URL_PREFIX, "http://.../") + "\") and getEntriesByName(\"" +
                               name.replace(URL_PREFIX, "http://.../") + "\", 'resource')");
                 }
             }
@@ -230,11 +230,11 @@
 
         /*=====================================================================
         // function test_entry
-        // Validates an expected entry object against a recorded Performance 
-        // Entry object; This checks that the name and initiatorType match, 
-        // that the entryType is "resource", the startTime is within 
+        // Validates an expected entry object against a recorded Performance
+        // Entry object; This checks that the name and initiatorType match,
+        // that the entryType is "resource", the startTime is within
         // TEST_ALLOWED_TIMING_DELTA of the expected startTime, the duration
-        // is calculated from responseEnd to startTime, invalid timing 
+        // is calculated from responseEnd to startTime, invalid timing
         // properties are either 0 or undefined, and the timing attributes are
         // in the correct order.
         =====================================================================*/
@@ -256,20 +256,20 @@
                         (actualEntry.entryType == "resource") &&
                         (Math.abs(actualEntry.startTime - expectedEntry.startTime) < TEST_ALLOWED_TIMING_DELTA) &&
                         (actualEntry.duration == (actualEntry.responseEnd - actualEntry.startTime));
-                      
-            (pass) ? test_true(true, 
-                               "PerformanceEntry returned by window.performance.getEntriesByName(\"" + 
-                               actualEntry.name.replace(URL_PREFIX, "http://.../") + "\") has correct name, " + 
+
+            (pass) ? test_true(true,
+                               "PerformanceEntry returned by window.performance.getEntriesByName(\"" +
+                               actualEntry.name.replace(URL_PREFIX, "http://.../") + "\") has correct name, " +
                                "initiatorType, startTime, and duration.")
                      :
                      test_true(false,
-                               "PerformanceEntry returned by window.performance.getEntriesByName(\"" + 
-                               actualEntry.name.replace(URL_PREFIX, "http://.../") + "\") has correct name, " + 
+                               "PerformanceEntry returned by window.performance.getEntriesByName(\"" +
+                               actualEntry.name.replace(URL_PREFIX, "http://.../") + "\") has correct name, " +
                                "initiatorType, startTime, and duration.<br/>" +
                                entryDetails);
-                               
+
             // validate timeline
-            var timelineDetails =   "domainLookupStart >= fetchStart: " + 
+            var timelineDetails =   "domainLookupStart >= fetchStart: " +
                                     actualEntry.domainLookupStart + " >= " + actualEntry.fetchStart + "<br/>" +
                                     "domainLookupEnd >= domainLookupStart: " +
                                     actualEntry.domainLookupEnd + " >= " + actualEntry.domainLookupStart + "<br/>" +
@@ -283,20 +283,20 @@
                                     actualEntry.responseStart + " >= " + actualEntry.requestStart + "<br/>" +
                                     "responseEnd >= responseStart: " +
                                     actualEntry.responseEnd + " >= " + actualEntry.responseStart + "<br/>";
-                               
+
             pass =  (actualEntry.redirectStart == 0) &&
                     (actualEntry.redirectEnd == 0) &&
                     (actualEntry.secureConnectionStart == undefined) &&
                     validate_timeline(actualEntry);
-                    
-            (pass) ? test_true(true, 
-                               "PerformanceEntry returned by window.performance.getEntriesByName(\"" + 
-                               actualEntry.name.replace(URL_PREFIX, "http://.../") + "\") has correct order of " + 
+
+            (pass) ? test_true(true,
+                               "PerformanceEntry returned by window.performance.getEntriesByName(\"" +
+                               actualEntry.name.replace(URL_PREFIX, "http://.../") + "\") has correct order of " +
                                "timing attributes.")
                      :
                      test_true(false,
                                "PerformanceEntry has correct name, initiatorType, " +
-                               actualEntry.name.replace(URL_PREFIX, "http://.../") + "\") has correct order of " + 
+                               actualEntry.name.replace(URL_PREFIX, "http://.../") + "\") has correct order of " +
                                "timing attributes.<br/>" +
                                timelineDetails);
         }
@@ -321,21 +321,21 @@
     </head>
     <body onload="onload_test();">
         <h1>Description</h1>
-        <p>This test validates that Resource Timing entries for resources 
-           loaded on a page exist in the Performance Timeline.  
+        <p>This test validates that Resource Timing entries for resources
+           loaded on a page exist in the Performance Timeline.
            <br />
            Resources for the following initiators are used: iframe, img, link, script, xml.
            <br />
-           NOTE: Due to caching behavior in the browser, it is possible that when revisiting this page, some resources 
-           may not have to be fetched from the network.  As a result, the performance timeline will not contain entries 
-           for these resources. This test will fail if any entries are missing to ensure that all resources are fetched 
+           NOTE: Due to caching behavior in the browser, it is possible that when revisiting this page, some resources
+           may not have to be fetched from the network.  As a result, the performance timeline will not contain entries
+           for these resources. This test will fail if any entries are missing to ensure that all resources are fetched
            from the network and entries for these resources exist in the Performance Timeline.  If revisiting this page,
-           please either perform a full reload of the page or clear the cache between visits.  In Internet Explorer 10, 
+           please either perform a full reload of the page or clear the cache between visits.  In Internet Explorer 10,
            a full reload is performed via the keyboard shortcut: ctrl + F5.
         </p>
 
         <div id="log"></div>
-        
+
         <div style="visibility:hidden">
         <table id="resources">
             <thead>

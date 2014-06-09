@@ -159,9 +159,13 @@ errors = {
   "sizes-microsyntax-default-source-size-value": "<img sizes='default' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-foo-bar-source-size-value": "<img sizes='foo-bar' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-negative-source-size-value": "<img sizes='-1px' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-empty": "<img sizes='' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-comma": "<img sizes=',' srcset='x 100w, y 200w' src=x alt>",
   # srcset microsyntax
   "srcset-microsyntax-leading-comma": "<img srcset=',x' src=x alt>",
+  "srcset-microsyntax-leading-comma-multiple": "<img srcset=',,,x' src=x alt>",
   "srcset-microsyntax-trailing-comma": "<img srcset='x,' src=x alt>",
+  "srcset-microsyntax-trailing-comma-multiple": "<img srcset='x,,,' src=x alt>",
   "srcset-microsyntax-broken-url": "<img srcset='http: 1x' src=x alt>",
   "srcset-microsyntax-non-integer-w": "<img srcset='x 1.5w' src=x alt>",
   "srcset-microsyntax-uppercase-w": "<img srcset='x 1W' src=x alt>",
@@ -191,6 +195,8 @@ errors = {
   "srcset-microsyntax-unique-descriptors-2x": "<img srcset='x 2x, y 2x' src=x alt>",
   "srcset-microsyntax-unique-descriptors-integer-and-decimals-x": "<img srcset='x 1x, y 1.0x' src=x alt>",
   "srcset-microsyntax-unique-descriptors-w": "<img srcset='x 1w, y 1w' src=x alt>",
+  "srcset-microsyntax-empty": "<img srcset='' src=x alt>",
+  "srcset-microsyntax-comma": "<img srcset=',' src=x alt>",
   # aria on picture
   "aria-role-img": "<picture role=img><img src=x alt></picture>",
   "aria-role-button": "<picture role=button><img src=x alt></picture>",

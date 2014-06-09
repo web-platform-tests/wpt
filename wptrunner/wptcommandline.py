@@ -15,7 +15,7 @@ import products
 root = os.path.join(os.path.split(__file__)[0])
 
 def abs_path(path):
-    return os.path.abspath(path)
+    return os.path.abspath(os.path.expanduser(path))
 
 def slash_prefixed(url):
     if not url.startswith("/"):

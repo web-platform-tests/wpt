@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test animation player limiting behavior of currentTime attribute</title>
+<meta name="assert" content="Test current time limiting behavior">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-currentTime">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newZeroAnimation(animationTarget) {
+    animationTarget.style.width = '300px';
+    return new Animation(animationTarget, [], 0);
+}
+
+
+function newAnimation(animationTarget) {
+    animationTarget.style.width = '300px';
+    return new Animation(animationTarget, [
+	    {width: '10px', offset: 0},
+	    {width: '100px', offset: 1/2},
+	    {width: '200px', offset: 1}], 1000);
+}
+
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.currentTime, 0, 'The value of AnimationPlayer.currentTime ' +
+        'attribute should be 0');
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be true');
+}, 'Test limiting behavior of animation player without source');
+
+
+test(function() {
+    var player = document.timeline.play(newZeroAnimation(createDiv(this)));
+
+    assert_equals(player.currentTime, 0, 'The value of AnimationPlayer.currentTime ' +
+        'attribute should be 0');
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be true');
+}, 'Test limiting behavior of animation player with zero length source');
+
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    var timesToTest = [-100, -1, 0, 1, 500, player.source.endTime - 1, player.source.endTime,
+                       player.source.endTime + 1, player.source.endTime + 100];
+    var expectedFinished = [true, true, true, false, false, false, true, true, true];
+
+    timesToTest.forEach(function (timeToTest, index) {
+        player.currentTime = timeToTest;
+
+        assert_equals(player.currentTime, timeToTest,
+            'The value of AnimationPlayer.currentTime attribute should be set to the new value');        
+        assert_equals(player.finished, expectedFinished[index],
+            'The value of AnimationPlayer.finished attribute should match time ' + timeToTest);        
+    });
+}, 'Test limiting behavior of AnimationPlayer.currentTime attribute ' +
+    'when player playback rate is 1');
+
+
+async_test(function(t) {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.currentTime = 900;
+    setTimeout(function() {
+        t.step(function () {
+            assert_equals(player.currentTime, player.source.endTime,
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'hold on content end time');
+            assert_true(player.finished, 'The value of AnimationPlayer.finished attribute ' +
+                'should be true');
+            t.done();
+        });
+    }, 150);
+}, 'Test limiting behavior of AnimationPlayer.currentTime attribute. ' +
+    'Wait for some time before checking the value when playback rate is 1');
+
+
+async_test(function(t) {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.currentTime = 100;
+    player.playbackRate = -1;
+    setTimeout(function() {
+        t.step(function () {
+            assert_equals(player.currentTime, 0,
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'hold on content end time');
+            assert_true(player.finished, 'The value of AnimationPlayer.finished attribute ' +
+                'should be true');
+            t.done();
+        });
+    }, 150);
+}, 'Test limiting behavior of AnimationPlayer.currentTime attribute. ' +
+    'Wait for some time before checking the value when playback rate is -1');
+</script>
+</body>

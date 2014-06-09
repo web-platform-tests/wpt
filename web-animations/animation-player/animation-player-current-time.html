@@ -19,10 +19,21 @@ function newAnimation(animationTarget) {
 	    {width: '200px', offset: 1}], 1000);
 }
 
+var timesToTest = [0, 100, 500, 900, 1000];
+var seekTimes = [1, 100, 500, 900, 999];
+
+function calculateEffectiveCurrentTime(timelineTime, startTime, playbackRate) {
+    return (timelineTime - startTime) * playbackRate;
+}
+
+function calculateStartTime(timelineTime, seekTime, playbackRate) {
+    return timelineTime - seekTime / playbackRate;
+}
+
 
 test(function() {
     var player = document.timeline.play(newAnimation(createDiv(this)));
-	
+
     // FIXME Now (2014, June) it's according the spec but may be changed in future.
     // Please check the specification if this test is still valid
     assert_not_equals(player.currentTime, null,
@@ -33,11 +44,107 @@ test(function() {
 test(function() {
     var player = document.timeline.play(newAnimation(createDiv(this)));
 
-    var newCurrentTime = player.currentTime + 100;
-    player.currentTime = newCurrentTime;
+    assert_equals(player.currentTime, calculateEffectiveCurrentTime(
+        player.timeline.currentTime, player.startTime, player.playbackRate),
+        'The value of AnimationPlayer.currentTime attribute should be ' +
+        'effective current time of this player');
+}, 'Value of AnimationPlayer.currentTime attribute is effective current time of this player');
 
-    assert_equals(player.currentTime, newCurrentTime,
+
+async_test(function(t) {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    setTimeout(function() {
+        t.step(function () {
+            assert_equals(player.currentTime, calculateEffectiveCurrentTime(
+                player.timeline.currentTime, player.startTime, player.playbackRate),
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'effective current time of this player');
+            t.done();
+        });
+    }, 100);
+}, 'Value of AnimationPlayer.currentTime attribute is effective current time of this player. ' +
+    'Wait for some time before checking the value');
+
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.startTime = 100;
+
+    assert_equals(player.currentTime, calculateEffectiveCurrentTime(
+        player.timeline.currentTime, player.startTime, player.playbackRate),
+        'The value of AnimationPlayer.currentTime attribute should be ' +
+        'effective current time of this player');
+}, 'Value of AnimationPlayer.currentTime attribute is effective current time of this player ' +
+    'when player startTime > 0');
+
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.playbackRate = 0.4;
+
+    assert_equals(player.currentTime, calculateEffectiveCurrentTime(
+        player.timeline.currentTime, player.startTime, player.playbackRate),
+        'The value of AnimationPlayer.currentTime attribute should be ' +
+        'effective current time of this player');
+}, 'Value of AnimationPlayer.currentTime attribute is effective current time of this player ' +
+    'when 0 < playbackRate < 1');
+
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.playbackRate = -1.6;
+
+    assert_equals(player.currentTime, calculateEffectiveCurrentTime(
+        player.timeline.currentTime, player.startTime, player.playbackRate),
+        'The value of AnimationPlayer.currentTime attribute should be ' +
+        'effective current time of this player');
+}, 'Value of AnimationPlayer.currentTime attribute is effective current time of this player ' +
+    'when playbackRate < 0');
+
+
+async_test(function(t) {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.startTime = 100;
+    setTimeout(function() {
+        t.step(function () {
+            console.log(player.currentTime);
+            assert_equals(player.currentTime, calculateEffectiveCurrentTime(
+                player.timeline.currentTime, player.startTime, player.playbackRate),
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'effective current time of this player');
+            t.done();
+        });
+    }, 100);
+}, 'Value of AnimationPlayer.currentTime attribute is effective current time of this player. ' +
+    'Start time > 0 and wait for some time before checking the value');
+
+
+async_test(function(t) {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.playbackRate = -1;
+    player.startTime = 500;
+    setTimeout(function() {
+        t.step(function () {
+            console.log(player.currentTime);
+            assert_equals(player.currentTime, calculateEffectiveCurrentTime(
+                player.timeline.currentTime, player.startTime, player.playbackRate),
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'effective current time of this player');
+            t.done();
+        });
+    }, 100);
+}, 'Value of AnimationPlayer.currentTime attribute is effective current time of this player. ' +
+    'Wait for some time is before checking the value. playbackRate < 0');
+
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+
+    timesToTest.forEach(function(val) {
+        player.currentTime = val;
+        assert_equals(player.currentTime, val,
         'The value of AnimationPlayer.currentTime attribute should be set to the new value');
+    });
 }, 'Test setting value of AnimationPlayer.currentTime attribute');
 
 
@@ -45,11 +152,11 @@ test(function() {
     var player = document.timeline.play(newAnimation(createDiv(this)));
     player.pause();
 
-    var newCurrentTime = player.currentTime + 100;
-    player.currentTime = newCurrentTime;
-
-    assert_equals(player.currentTime, newCurrentTime,
+    timesToTest.forEach(function(val) {
+        player.currentTime = val;
+        assert_equals(player.currentTime, val,
         'The value of AnimationPlayer.currentTime attribute should be set to the new value');
+    });
 }, 'Test setting value of AnimationPlayer.currentTime attribute when player is paused');
 
 
@@ -57,62 +164,28 @@ test(function() {
     var player = document.timeline.play(newAnimation(createDiv(this)));
     player.playbackRate = 0;
 
-    var newCurrentTime = player.currentTime + 100;
-    player.currentTime = newCurrentTime;
-
-    assert_equals(player.currentTime, newCurrentTime,
+    timesToTest.forEach(function(val) {
+        player.currentTime = val;
+        assert_equals(player.currentTime, val,
         'The value of AnimationPlayer.currentTime attribute should be set to the new value');
+    });
 }, 'Test setting value of AnimationPlayer.currentTime attribute ' +
     'when player playback rate is zero');
 
 
 test(function() {
     var player = document.timeline.play(newAnimation(createDiv(this)));
-    player.playbackRate = -1;
 
-    var newCurrentTime = -100;
-    player.currentTime = newCurrentTime;
+    seekTimes.forEach(function(seekTime) {
+        var expectedTime = calculateStartTime(player.timeline.currentTime, seekTime,
+            player.playbackRate);
+        player.currentTime = seekTime;
 
-    assert_equals(player.currentTime, newCurrentTime,
-        'The value of AnimationPlayer.currentTime attribute should be set to the new value');
-}, 'Test setting value of AnimationPlayer.currentTime attribute ' +
-    'when player playback rate is < 0 and seek time < 0');
-
-
-test(function() {
-    var player = document.timeline.play(newAnimation(createDiv(this)));
-
-    var newCurrentTime = player.source.endTime;
-    player.currentTime = newCurrentTime;
-
-    assert_equals(player.currentTime, newCurrentTime,
-        'The value of AnimationPlayer.currentTime attribute should be set to the new value');
-}, 'Test setting value of AnimationPlayer.currentTime attribute ' +
-    'when player playback rate is > 0 and seek time equals to the source content end');
-
-
-test(function() {
-    var player = document.timeline.play(newAnimation(createDiv(this)));
-
-    var newCurrentTime = player.source.endTime + 100;
-    player.currentTime = newCurrentTime;
-
-    assert_equals(player.currentTime, newCurrentTime,
-        'The value of AnimationPlayer.currentTime attribute should be set to the new value');
-}, 'Test setting value of AnimationPlayer.currentTime attribute ' +
-    'when player playback rate is > 0 and seek time > source content end');
-
-
-test(function() {
-    var player = document.timeline.play(newAnimation(createDiv(this)));
-
-    var seekTime = player.currentTime + 100;
-    var expectedTime = player.timeline.currentTime - seekTime;
-    player.currentTime = seekTime;
-
-    assert_equals(player.currentTime, expectedTime,
-        'The value of AnimationPlayer.currentTime attribute should be set to the new value');
-    assert_false(player.finished, 'Player\'s finished flag should be set to false');
+        assert_equals(player.startTime, expectedTime,
+            'The value of AnimationPlayer.startTime attribute should be set when seek ' +
+            'is performed');
+        assert_false(player.finished, 'Player\'s finished flag should be set to false');
+    });
 }, 'Test setting value of AnimationPlayer.currentTime attribute ' +
     'when player is not paused and playback rate is not zero');
 
@@ -121,21 +194,41 @@ test(function() {
     var player = document.timeline.play(newAnimation(createDiv(this)));
     player.playbackRate = 0.4;
 
-    var seekTime = player.currentTime + 100;
-    var expectedTime = player.timeline.currentTime - seekTime / player.playbackRate;
-    player.currentTime = seekTime;
+    seekTimes.forEach(function(seekTime) {
+        var expectedTime = calculateStartTime(player.timeline.currentTime, seekTime,
+            player.playbackRate);
+        player.currentTime = seekTime;
 
-    assert_equals(player.currentTime, expectedTime,
-        'The value of AnimationPlayer.currentTime attribute should be set to the new value');
-    assert_false(player.finished, 'Player\'s finished flag should be set to false');
+        assert_equals(player.startTime, expectedTime,
+            'The value of AnimationPlayer.startTime attribute should be set when seek ' +
+            'is performed');
+        assert_false(player.finished, 'Player\'s finished flag should be set to false');
+    });
 }, 'Test setting value of AnimationPlayer.currentTime attribute ' +
     'when player is not paused and playback rate is not zero and not 1');
 
 
 test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.playbackRate = -0.4;
+
+    seekTimes.forEach(function(seekTime) {
+        var expectedTime = calculateStartTime(player.timeline.currentTime, seekTime,
+            player.playbackRate);
+        player.currentTime = seekTime;
+
+        assert_equals(player.startTime, expectedTime,
+            'The value of AnimationPlayer.startTime attribute should be set when sek ' +
+            'is performed');
+        assert_false(player.finished, 'Player\'s finished flag should be set to false');
+    });
+}, 'Test setting value of AnimationPlayer.currentTime attribute ' +
+    'when player is not paused and playback rate is negative and not 1');
+
+
+test(function() {
     var animation = newAnimation(createDiv(this));
     var player = document.timeline.play(animation);
-    player.currentTime = 0;
 
     assert_equals(window.getComputedStyle(animation.target).width, 10,
         'Animation effect should take place');

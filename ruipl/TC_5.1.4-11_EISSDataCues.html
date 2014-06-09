@@ -86,9 +86,9 @@
               for (i=0; i< vid.textTracks[index1].cues.length; i++) {
 
                 var startTime = vid.textTracks[index1].cues[i].startTime;
-                assert_greater_than_equal(startTime, 0, "DataCues.startTime");
+                assert_equals(startTime, 0, "DataCues.startTime");
                 var endTime = vid.textTracks[index1].cues[i].endTime;
-                assert_equals(endTime, startTime, "DataCues.endTime");
+                assert_greater_than_equal(endTime, startTime, "DataCues.endTime");
 
                 assert_true(vid.textTracks[index1].cues[i].data instanceof ArrayBuffer, "DataCues[i] is ArrayBuffer");
 
@@ -104,9 +104,9 @@
               // EISS2
               for (i=0; i< vid.textTracks[index2].cues.length; i++) {
                 var startTime = vid.textTracks[index2].cues[i].startTime;
-                assert_greater_than_equal(startTime, 0, "DataCues.startTime");
+                assert_equals(startTime, 0, "DataCues.startTime");
                 var endTime = vid.textTracks[index2].cues[i].endTime;
-                assert_equals(endTime, startTime, "DataCues.endTime");
+                assert_greater_than_equal(endTime, startTime, "DataCues.endTime");
 
                 assert_true(vid.textTracks[index2].cues[i].data instanceof ArrayBuffer, "DataCues[i] is ArrayBuffer");
 

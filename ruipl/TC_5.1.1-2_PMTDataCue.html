@@ -73,9 +73,9 @@
               assert_equals(vid.textTracks[index].cues.length, 1, "DataCues.length");
 
               var startTime = vid.textTracks[index].cues[0].startTime;
-              assert_greater_than_equal(startTime, 0, "DataCues.startTime");
+              assert_equals(startTime, 0, "DataCues.startTime");
               var endTime = vid.textTracks[index].cues[0].endTime;
-              assert_equals(endTime, startTime, "DataCues.endTime");
+              assert_greater_than_equal(endTime, startTime, "DataCues.endTime");
 
               assert_true(vid.textTracks[index].cues[0].data instanceof ArrayBuffer, "DataCues[0] is ArrayBuffer");
               var cueData = new Uint8Array(vid.textTracks[index].cues[0].data);

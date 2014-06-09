@@ -70,9 +70,9 @@
               for (i=0; i< vid.textTracks[index].cues.length; i++) {
 
                 var startTime = vid.textTracks[index].cues[i].startTime;
-                assert_greater_than_equal(startTime, 0, "DataCues.startTime");
+                assert_equals(startTime, 0, "DataCues.startTime");
                 var endTime = vid.textTracks[index].cues[i].endTime;
-                assert_equals(endTime, startTime, "DataCues.endTime");
+                assert_greater_than_equal(endTime, startTime, "DataCues.endTime");
 
                 assert_true(vid.textTracks[index].cues[i].data instanceof ArrayBuffer, "DataCues[i] is ArrayBuffer");
 

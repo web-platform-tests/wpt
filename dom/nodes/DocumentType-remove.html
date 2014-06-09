@@ -10,7 +10,7 @@
 var node, parent;
 setup(function() {
   node = document.implementation.createDocumentType("html", "", "");
-  parent = document.implementation.createDocument(null, "", null);
+  parentNode = document.implementation.createDocument(null, "", null);
 });
-testRemove(node, parent, "doctype");
+testRemove(node, parentNode, "doctype");
 </script>

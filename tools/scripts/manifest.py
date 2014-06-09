@@ -231,6 +231,20 @@ def markup_type(ext):
     return None
 
 
+def get_timeout_meta(root):
+    return root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='timeout']")
+
+
+def get_testharness_scripts(root):
+    return root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharness.js']")
+
+
+def get_reference_links(root):
+    match_links = root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='match']")
+    mismatch_links = root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='mismatch']")
+    return match_links, mismatch_links
+
+
 def get_manifest_items(rel_path):
     if rel_path.endswith(os.path.sep):
         return []
@@ -294,7 +308,7 @@ def get_manifest_items(rel_path):
         else:
             root = tree
 
-        timeout_nodes = root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='timeout']")
+        timeout_nodes = get_timeout_meta(root)
         if timeout_nodes:
             timeout_str = timeout_nodes[0].attrib.get("content", None)
             if timeout_str and timeout_str.lower() == "long":
@@ -303,11 +317,10 @@ def get_manifest_items(rel_path):
                 except:
                     pass
 
-        if root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharness.js']"):
+        if get_testharness_scripts(root):
             return [TestharnessTest(rel_path, url, timeout=timeout)]
         else:
-            match_links = root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='match']")
-            mismatch_links = root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='mismatch']")
+            match_links, mismatch_links = get_reference_links(root)
             for item in match_links + mismatch_links:
                 ref_url = urlparse.urljoin(url, item.attrib["href"])
                 ref_type = "==" if item.attrib["rel"] == "match" else "!="

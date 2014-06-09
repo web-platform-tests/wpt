@@ -3,7 +3,7 @@
   <head>
     <title>Battery Status API Test Suite</title>
     <script src="/resources/testharness.js"></script>
-    <link rel="stylesheet" href="/resources/testharness.css" media="all"/>
+    <script src="/resources/testharnessreport.js"></script>
     <meta name="flags" content="interact">
   </head>
   <body>
@@ -27,19 +27,19 @@
       test(function() {
         assert_true(navigator.battery.charging);
       }, 'The charging attribute must be set to true if the battery is full (the "otherwise" condition).');
-      
+
       test(function() {
         assert_true(navigator.battery.chargingTime === 0);
       }, 'The chargingTime attribute must be set to 0.');
-      
+
       test(function() {
         assert_true(navigator.battery.dischargingTime === Infinity);
       }, 'The dischargingTime attribute must be set to the value positive Infinity (the "otherwise" condition).');
-      
+
       test(function() {
         assert_true(navigator.battery.level === 1.0);
       }, 'The level attribute must be set to the value 1.0.');
-      
+
     })();
     </script>
   </body>

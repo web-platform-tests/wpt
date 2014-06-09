@@ -5,6 +5,14 @@ import sys
 import fnmatch
 
 from collections import defaultdict
+try:
+    from xml.etree import cElementTree as ElementTree
+except ImportError:
+    from xml.etree import ElementTree
+
+import html5lib
+
+import manifest
 
 here = os.path.split(__file__)[0]
 
@@ -89,6 +97,82 @@ def check_whitespace(path, f):
 
     return errors
 
+def check_parsed(path, f):
+    ext = os.path.splitext(path)[1][1:]
+
+    errors = []
+
+    if path.endswith("-manual.%s" % ext):
+        return []
+
+    parsers = {"html":lambda x:html5lib.parse(x, treebuilder="etree"),
+               "htm":lambda x:html5lib.parse(x, treebuilder="etree"),
+               "xhtml":ElementTree.parse,
+               "xhtm":ElementTree.parse,
+               "svg":ElementTree.parse}
+
+    parser = parsers.get(ext)
+
+    if parser is None:
+        return []
+
+    try:
+        tree = parser(f)
+    except:
+        return [("PARSE-FAILED", "Unable to parse file %s" % path, None)]
+
+    if hasattr(tree, "getroot"):
+        root = tree.getroot()
+    else:
+        root = tree
+
+    timeout_nodes = manifest.get_timeout_meta(root)
+    if len(timeout_nodes) > 1:
+        errors.append(("MULTIPLE-TIMEOUT", "%s more than one meta name='timeout'" % path, None))
+
+    for timeout_node in timeout_nodes:
+        timeout_value = timeout_node.attrib.get("content", "").lower()
+        if timeout_value != "long":
+            errors.append(("INVALID-TIMEOUT", "%s invalid timeout value %s" % (path, timeout_value), None))
+
+    testharness_nodes = manifest.get_testharness_scripts(root)
+    if testharness_nodes:
+        if len(testharness_nodes) > 1:
+            errors.append(("MULTIPLE-TESTHARNESS", "%s more than one <script src='/resources/testharness.js>'" % path, None))
+
+        testharnessreport_nodes = root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharnessreport.js']")
+        if not testharnessreport_nodes:
+            errors.append(("MISSING-TESTHARNESSREPORT", "%s missing <script src='/resources/testharnessreport.js>'" % path, None))
+        else:
+            if len(testharnessreport_nodes) > 1:
+                errors.append(("MULTIPLE-TESTHARNESSREPORT", "%s more than one <script src='/resources/testharnessreport.js>'" % path, None))
+
+        seen_elements = {"timeout": False,
+                         "testharness": False,
+                         "testharnessreport": False}
+        required_elements = [key for key, value in {"testharness": True,
+                                                    "testharnessreport": len(testharnessreport_nodes) > 0,
+                                                    "timeout": len(timeout_nodes) > 0}.iteritems() if value]
+
+        for elem in root.iter():
+            if timeout_nodes and elem == timeout_nodes[0]:
+                seen_elements["timeout"] = True
+                if seen_elements["testharness"]:
+                    errors.append(("LATE-TIMEOUT", "%s <meta name=timeout> seen after testharness.js script" % path, None))
+
+            elif elem == testharness_nodes[0]:
+                seen_elements["testharness"] = True
+
+            elif testharnessreport_nodes and elem == testharnessreport_nodes[0]:
+                seen_elements["testharnessreport"] = True
+                if not seen_elements["testharness"]:
+                    errors.append(("EARLY-TESTHARNESSREPORT", "%s testharnessreport.js script seen before testharness.js script" % path, None))
+
+            if all(seen_elements[name] for name in required_elements):
+                break
+
+    return errors
+
 def output_errors(errors):
     for error_type, error, line_number in errors:
         print "%s: %s" % (error_type, error)
@@ -115,6 +199,8 @@ def main():
 
     for path in iter_files():
         abs_path = os.path.join(repo_root, path)
+        if not os.path.exists(path):
+            continue
         for path_fn in path_lints:
             run_lint(path, path_fn)
 
@@ -122,12 +208,13 @@ def main():
             with open(abs_path) as f:
                 for file_fn in file_lints:
                     run_lint(path, file_fn, f)
+                    f.seek(0)
 
     output_error_count(error_count)
     return sum(error_count.itervalues())
 
 path_lints = [check_path_length]
-file_lints = [check_whitespace]
+file_lints = [check_whitespace, check_parsed]
 
 if __name__ == "__main__":
     error_count = main()

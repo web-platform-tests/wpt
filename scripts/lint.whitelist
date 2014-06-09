@@ -21,3 +21,11 @@ CR AT EOL:*.ogv
 CR AT EOL:*.webm
 CR AT EOL:*.mp4
 CR AT EOL:*.m4v
+PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/empty.svg
+PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/empty.xhtml
+PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/minimal_html.svg
+PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/minimal_html.xhtml
+#These have undefined entities; should probably find a way to define them
+PARSE-FAILED:ext-xhtml-pubid/the-xhtml-syntax/parsing-xhtml-documents/xhtml-pubid-1.xhtml
+PARSE-FAILED:ext-xhtml-pubid/the-xhtml-syntax/parsing-xhtml-documents/xhtml-pubid-2.xhtml
+PARSE-FAILED:ext-xhtml-pubid/the-xhtml-syntax/parsing-xhtml-documents/xhtml-pubid-3.xhtml

@@ -21,5 +21,5 @@
   function mediaServerURL()
   {
     //return "http://localhost:80/media/";
-    return "http://10.36.32.48:80/media/";
+    return "/media/";
   }

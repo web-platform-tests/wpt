@@ -71,6 +71,8 @@ types.forEach(function(type) {
     xhr.send();
   }, 'Set responseType to ' + format_value(type) + ' when readyState is DONE.');
 
+  // Note: the case of setting responseType first, and then calling synchronous
+  // open(), is tested in open-method-responsetype-set-sync.htm.
   test(function() {
     var xhr = new XMLHttpRequest();
     xhr.open('get', '/', false);

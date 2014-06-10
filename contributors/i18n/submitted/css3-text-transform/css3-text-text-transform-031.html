@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: Georgian, lowercase</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-031-ref.html">
+<meta name='flags' content=''>
+<meta name="assert" content="The UA will lowercase all applicable letters in the Georgian Unicode block when text-transform is set to lowercase.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: lowercase; }
+@font-face {
+    font-family: 'webfont';
+    src: url('support/BPG-Ucnobi-U.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+	}
+.test, .ref { font-family: webfont, serif; }
+
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p><p class="instructionNote">If you can't see all the glyphs, click on Skip.</p>
+
+
+<div class="test"><span>&#x10A0; &#x2D00;</span> <span>&#x10A1; &#x2D01;</span> <span>&#x10A2; &#x2D02;</span> <span>&#x10A3; &#x2D03;</span> <span>&#x10A4; &#x2D04;</span> <span>&#x10A5; &#x2D05;</span> <span>&#x10A6; &#x2D06;</span> <span>&#x10A7; &#x2D07;</span> <span>&#x10A8; &#x2D08;</span> <span>&#x10A9; &#x2D09;</span> <span>&#x10AA; &#x2D0A;</span> <span>&#x10AB; &#x2D0B;</span> <span>&#x10AC; &#x2D0C;</span> <span>&#x10AD; &#x2D0D;</span> <span>&#x10AE; &#x2D0E;</span> <span>&#x10AF; &#x2D0F;</span> <span>&#x10B0; &#x2D10;</span> <span>&#x10B1; &#x2D11;</span> <span>&#x10B2; &#x2D12;</span> <span>&#x10B3; &#x2D13;</span> <span>&#x10B4; &#x2D14;</span> <span>&#x10B5; &#x2D15;</span> <span>&#x10B6; &#x2D16;</span> <span>&#x10B7; &#x2D17;</span> <span>&#x10B8; &#x2D18;</span> <span>&#x10B9; &#x2D19;</span> <span>&#x10BA; &#x2D1A;</span> <span>&#x10BB; &#x2D1B;</span> <span>&#x10BC; &#x2D1C;</span> <span>&#x10BD; &#x2D1D;</span> <span>&#x10BE; &#x2D1E;</span> <span>&#x10BF; &#x2D1F;</span> <span>&#x10C0; &#x2D20;</span> <span>&#x10C1; &#x2D21;</span> <span>&#x10C2; &#x2D22;</span> <span>&#x10C3; &#x2D23;</span> <span>&#x10C4; &#x2D24;</span> <span>&#x10C5; &#x2D25;</span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+-->
+
+
+</body>
+</html>

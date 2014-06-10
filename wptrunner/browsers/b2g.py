@@ -267,7 +267,11 @@ class B2GExecutorBrowser(ExecutorBrowser):
         marionette.set_context(marionette.CONTEXT_CONTENT)
         marionette.execute_async_script("""
 let manager = window.wrappedJSObject.AppWindowManager || window.wrappedJSObject.WindowManager;
-let app = ('getActiveApp' in manager) ? manager.getActiveApp() : manager.getCurrentDisplayedApp();
+log(manager);
+let app = null;
+if (manager) {
+  app = ('getActiveApp' in manager) ? manager.getActiveApp() : manager.getCurrentDisplayedApp();
+}
 log(app);
 if (app) {
   log('Already loaded home screen');
@@ -278,8 +282,6 @@ if (app) {
     log('received mozbrowserloadend for ' + aEvent.target.src);
     if (aEvent.target.src.indexOf('ftu') != -1 || aEvent.target.src.indexOf('homescreen') != -1) {
       window.removeEventListener('mozbrowserloadend', loaded);
-      let app = ('getActiveApp' in manager) ? manager.getActiveApp() : manager.getCurrentDisplayedApp();
-      log(app);
       marionetteScriptFinished();
     }
   });

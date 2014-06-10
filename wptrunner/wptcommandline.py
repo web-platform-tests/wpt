@@ -75,7 +75,7 @@ def create_parser(allow_mandatory=True):
                         default=False,
                         help="List the tests that are disabled on the current platform")
 
-    parser.add_argument("--timeout-multiplier", action="store", type=float, default=1,
+    parser.add_argument("--timeout-multiplier", action="store", type=float, default=None,
                         help="Multiplier relative to standard test timeout to use")
     parser.add_argument("--repeat", action="store", type=int, default=1,
                         help="Number of times to run the tests")

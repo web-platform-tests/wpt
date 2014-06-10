@@ -20,7 +20,7 @@ def do_delayed_imports():
     import marionette
 
 class MarionetteTestExecutor(TestExecutor):
-    def __init__(self, browser, http_server_url, timeout_multiplier=1):
+    def __init__(self, browser, http_server_url, timeout_multiplier=1, close_after_done=True):
         do_delayed_imports()
         TestExecutor.__init__(self, browser, http_server_url, timeout_multiplier)
         self.marionette_port = browser.marionette_port
@@ -28,6 +28,7 @@ class MarionetteTestExecutor(TestExecutor):
 
         self.timer = None
         self.window_id = str(uuid.uuid4())
+        self.close_after_done = close_after_done
 
     def setup(self, runner):
         """Connect to browser via marionette"""
@@ -175,6 +176,7 @@ class MarionetteTestharnessExecutor(MarionetteTestExecutor):
                            "url": test.url,
                            "window_id": self.window_id,
                            "timeout_multiplier": self.timeout_multiplier,
+                           "close_after_done": "true" if self.close_after_done else "false",
                            "timeout": timeout * 1000}, new_sandbox=False)
 
 

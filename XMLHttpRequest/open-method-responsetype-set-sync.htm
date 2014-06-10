@@ -10,6 +10,8 @@
   <body>
     <div id="log"></div>
     <script>
+      // Note: the case of calling synchronous open() first, and then setting
+      // responseType, is tested in responsetype.html.
       function request(type) {
         test(function() {
           var client = new XMLHttpRequest()

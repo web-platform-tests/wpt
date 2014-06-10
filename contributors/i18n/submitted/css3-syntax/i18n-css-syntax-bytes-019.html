@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="iso-8859-1"/>
+<title>CSS3 Syntax, input byte stream: http vs. @charset</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://www.w3.org/TR/css3-syntax/#input-byte-stream'>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name='flags' content='http dom'>
+<meta name="assert" content="An HTTP encoding declaration for a stylesheet takes precedence over an @charset declaration.">
+<style type='text/css'>
+.test div { width:50px; }
+
+p { color: gray; margin-top: 3em; font-size: 80%; }
+</style>
+<link rel="stylesheet" type="text/css" href="support/http1-charset8.css">
+</head>
+<body>
+
+
+
+<div class="test"><div id="box" class="ýäè">&#xA0;</div></div>
+
+
+<!--Notes:
+This test is only valid if the user agent recognises the HTTP and @charset declarations.
+
+In the style sheet, the CSS selector identifies a class name with the following byte sequence: c3 bd c3 a4 c3 a8.  Read as UTF-8 this gives the characters ���.  Read as ISO 8859-1, this gives  ýäè.
+
+This HTML page is served as UTF-8 and uses a different byte sequence for the class name (c3 83 c2 bd c3 83 c2 a4 c3 83 c2 a8) that equates to the character sequence ýäè.  
+
+The class ids will therefore only match if the CSS is read as ISO 8859-1.
+
+The CSS style sheet contains an @charset rule that says the file is UTF-8, but the HTTP header says ISO 8859-1. If the HTTP header overrides the @charset rule, the selector will match the class name and the test will pass.
+
+-->
+<script>
+test(function() {
+assert_equals(document.getElementById('box').offsetWidth, 100);
+}, " ");
+</script>
+
+<div id='log'></div>
+
+<p class="ýäè"><span><span id="debug">Text as read from the style sheet: </span><br />(If blank, the style sheet hasn't been read at all.)</span></p>
+</body>
+</html>

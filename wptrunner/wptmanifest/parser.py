@@ -18,7 +18,6 @@
 
 import types
 from cStringIO import StringIO
-import operator
 
 from node import *
 
@@ -441,7 +440,6 @@ class Parser(object):
         self.tree.pop()
 
     def expr_start(self):
-        old_tree = self.tree
         self.expr_builder = ExpressionBuilder()
         self.expr_builders.append(self.expr_builder)
         self.expr()

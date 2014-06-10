@@ -1,8 +1,5 @@
 import unittest
 
-import sys
-import os
-
 from cStringIO import StringIO
 
 from .. import parser, serializer
@@ -115,7 +112,7 @@ class TokenizerTest(unittest.TestCase):
 """
 )
 
-    def test_10(self):
+    def test_11(self):
         self.compare("""key:
   if not a and b and c and d: true
 """

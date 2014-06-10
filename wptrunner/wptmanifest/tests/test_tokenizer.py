@@ -1,7 +1,5 @@
 import unittest
 
-import sys
-import os
 sys.path.insert(0, os.path.abspath(".."))
 from cStringIO import StringIO
 
@@ -59,7 +57,7 @@ class TokenizerTest(unittest.TestCase):
                       (token_types.string, "Heading []text"),
                       (token_types.paren, "]")])
 
-    def test_heading_3(self):
+    def test_heading_6(self):
         self.compare("""[Heading \\ttext]""",
                      [(token_types.paren, "["),
                       (token_types.string, "Heading \ttext"),
@@ -134,7 +132,7 @@ class TokenizerTest(unittest.TestCase):
         with self.assertRaises(parser.ParseError):
             self.tokenize("""key: 'value""")
 
-    def test_key_12(self):
+    def test_key_13(self):
         with self.assertRaises(parser.ParseError):
             self.tokenize("""key: 'value' abc""")
 

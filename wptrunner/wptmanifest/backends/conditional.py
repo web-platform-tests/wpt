@@ -1,7 +1,6 @@
 import operator
-from functools import partial
 
-from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ValueNode, StringNode
+from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ValueNode
 from ..parser import parse
 
 class ConditionalValue(object):
@@ -83,7 +82,6 @@ class Compiler(NodeVisitor):
         assert self.output_node is not None
 
     def visit_KeyValueNode(self, node):
-        key_name = node.data
         key_values = []
         for child in node.children:
             condition, value = self.visit(child)

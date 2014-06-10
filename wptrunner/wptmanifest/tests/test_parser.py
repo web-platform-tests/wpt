@@ -1,7 +1,5 @@
 import unittest
 
-import sys
-import os
 from cStringIO import StringIO
 
 from .. import parser

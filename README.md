@@ -165,7 +165,12 @@ If you wish to contribute actively, you're very welcome to join the
 public-html-testsuite@w3.org mailing list (low traffic) by
 [signing up to our mailing list](mailto:public-html-testsuite-request@w3.org?subject=subscribe).
 
+Join us on irc #testing ([irc.w3.org][ircw3org], port 6665). The channel
+is [archived][ircarchive].
+
 [contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md
+[ircw3org]: https://www.w3.org/wiki/IRC
+[ircarchive]: http://krijnhoetmer.nl/irc-logs/testing/
 
 Documentation
 -------------

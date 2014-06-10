@@ -1333,10 +1333,11 @@ policies and contribution forms [3].
         }
         var node = output_document.getElementById("log");
         if (!node) {
-            if (!document.body) {
+            if (!document.body || document.readyState == "loading") {
                 return;
             }
             node = output_document.createElement("div");
+            node.id = "log";
             output_document.body.appendChild(node);
         }
         this.output_document = output_document;

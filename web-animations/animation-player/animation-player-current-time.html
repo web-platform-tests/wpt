@@ -107,7 +107,6 @@ async_test(function(t) {
     player.startTime = 100;
     setTimeout(function() {
         t.step(function () {
-            console.log(player.currentTime);
             assert_equals(player.currentTime, calculateEffectiveCurrentTime(
                 player.timeline.currentTime, player.startTime, player.playbackRate),
                 'The value of AnimationPlayer.currentTime attribute should be ' +
@@ -125,7 +124,6 @@ async_test(function(t) {
     player.startTime = 500;
     setTimeout(function() {
         t.step(function () {
-            console.log(player.currentTime);
             assert_equals(player.currentTime, calculateEffectiveCurrentTime(
                 player.timeline.currentTime, player.startTime, player.playbackRate),
                 'The value of AnimationPlayer.currentTime attribute should be ' +

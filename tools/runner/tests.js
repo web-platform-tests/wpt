@@ -25,7 +25,8 @@ tests = [
   "XMLHttpRequest"
 ];
 
-var indexSelected = -1;
+var indexSelected = -2;
+var optionIFrame = null;
 
 function start()
 {
@@ -35,7 +36,7 @@ function start()
     var test = tests[i];
     
     var testLink = document.createElement("a");
-    testLink.href = "index.html?autorun=1&path=/"+test;
+    testLink.href = "javascript:startTest("+i+")";
     testLink.className = "button";
     testLink.innerText = test;
     testLink.id = "test_"+i;
@@ -45,7 +46,9 @@ function start()
     
     testList.appendChild(testElement);
   }
-  
+
+  optionIFrame = document.getElementById("optionIFrame");
+
   // focusItem(indexSelected);
 }
 
@@ -55,15 +58,29 @@ function focusItem(item)
   indexSelected = item;
 }
 
+function toggleIFrame()
+{
+  optionIFrame.checked = !optionIFrame.checked;
+}
+
+function startTest(index)
+{
+  var url = "index.html?autorun=1&path=/"+tests[index];
+  if(optionIFrame.checked) {
+    url += "&iframe=1";
+  }
+  document.location.href = url;
+}
+
 function onKey(e)
 {
   switch(e.keyCode)
   {
     case 38 /* "ArrowUp" */:
-      if(indexSelected > 0) {
+      if(indexSelected > -1) {
         focusItem(indexSelected - 1);
-      } else if (-1 == indexSelected) {
-        focusItem(0);
+      } else if (-2 == indexSelected) {
+        focusItem(-1);
       }
       break;
       
@@ -74,8 +91,11 @@ function onKey(e)
       break;
       
     case 13 /* "Return" */:
-      if(-1 != indexSelected) {
-        document.location.href = document.getElementById("test_"+indexSelected).href;
+      if(indexSelected >= 0) 
+      {
+        startTest(indexSelected);
+      } else if(-1 == indexSelected) {
+        toggleIFrame();
       }
       break;
 

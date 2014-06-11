@@ -34,7 +34,7 @@
             "hash": "589023372dc033b0a77be1cd01f54f5f8c3ebfa8",
             "secno": "2",
             "testPageHash": "64e326cce473f71fd2e90a6561ded97278c870eb",
-            "testPagePath": "2-concepts.html",
+            "testPagePath": "stub-2-concepts.html",
             "testable": true
         },
         {
@@ -43,7 +43,7 @@
             "hash": "34feeb18dea978349a2f76e6b17c127123b3db74",
             "secno": "3",
             "testPageHash": "fd0bf220d4dff5a8942814d5c7cb95193a89505c",
-            "testPagePath": "3-document-context.html",
+            "testPagePath": "stub-3-document-context.html",
             "testable": true
         },
         {
@@ -52,7 +52,7 @@
             "hash": "6cbd0107199072ab86b36e72d08d5465b42e6da8",
             "secno": "3.1",
             "testPageHash": "8dbbc9aa4300f0203524f3e405dbf7ca462e7164",
-            "testPagePath": "3.1-service-worker-obj.html",
+            "testPagePath": "stub-3.1-service-worker-obj.html",
             "testable": true
         },
         {
@@ -61,7 +61,7 @@
             "hash": "136f25ef227515a7be9b32c44967f68b34ad8924",
             "secno": "3.1.1",
             "testPageHash": "965a00b32d56192330aa9f6337072bb3633ad382",
-            "testPagePath": "3.1.1-service-worker-scope.html",
+            "testPagePath": "stub-3.1.1-service-worker-scope.html",
             "testable": true
         },
         {
@@ -70,7 +70,7 @@
             "hash": "df66a1b4b3bfa3e7ab96fd491a6829fab1d18a88",
             "secno": "3.1.2",
             "testPageHash": "92f6aed1437bb39c5941b495ac6c5f342c025b38",
-            "testPagePath": "3.1.2-service-worker-url.html",
+            "testPagePath": "stub-3.1.2-service-worker-url.html",
             "testable": true
         },
         {
@@ -79,7 +79,7 @@
             "hash": "8f80f2b4cbb1c228867c9dd90c05cbecfc92dd77",
             "secno": "3.1.3",
             "testPageHash": "4aad1dc47572879fdc2c79a814ad21e1ef9a64ec",
-            "testPagePath": "3.1.3-service-worker-state.html",
+            "testPagePath": "stub-3.1.3-service-worker-state.html",
             "testable": true
         },
         {
@@ -88,7 +88,7 @@
             "hash": "0f8fd9d1431deacea72fe739f42992ab5a396bf2",
             "secno": "3.1.4",
             "testPageHash": "6bb309bccc1e7c74ade7fc4c6e400bafb60daceb",
-            "testPagePath": "3.1.4-service-worker-on-state-change.html",
+            "testPagePath": "stub-3.1.4-service-worker-on-state-change.html",
             "testable": true
         },
         {
@@ -97,7 +97,7 @@
             "hash": "22f1ebbafca6976d0f4814b0fbb8f173bf919f06",
             "secno": "3.2",
             "testPageHash": "6d597735816a09ec774150029ed5136198f52ab7",
-            "testPagePath": "3.2-navigator-service-worker.html",
+            "testPagePath": "stub-3.2-navigator-service-worker.html",
             "testable": true
         },
         {
@@ -106,7 +106,7 @@
             "hash": "9675c3cdf5ba4b4155284e06a19e4de631645509",
             "secno": "3.2.1",
             "testPageHash": "2c8e56e74c130104e395de46bad20fb5d3021d95",
-            "testPagePath": "3.2.1-navigator-service-worker-installing.html",
+            "testPagePath": "stub-3.2.1-navigator-service-worker-installing.html",
             "testable": true
         },
         {
@@ -115,7 +115,7 @@
             "hash": "88b4db92cc49109e6a15ddebdd219690d9648e76",
             "secno": "3.2.2",
             "testPageHash": "1cf6ed58bf5ecf963fed8c3d9211b853dab564e2",
-            "testPagePath": "3.2.2-navigator-service-worker-waiting.html",
+            "testPagePath": "stub-3.2.2-navigator-service-worker-waiting.html",
             "testable": true
         },
         {
@@ -124,7 +124,7 @@
             "hash": "0da48e885c77da60d1837197780049904789e3cb",
             "secno": "3.2.3",
             "testPageHash": "f5dca8c6eb5f29a0f9a5f06e25861e7f3106cc67",
-            "testPagePath": "3.2.3-navigator-service-worker-active.html",
+            "testPagePath": "stub-3.2.3-navigator-service-worker-active.html",
             "testable": true
         },
         {
@@ -133,7 +133,7 @@
             "hash": "293433ccb7bb2a22d8d5a81e788892e071b25e65",
             "secno": "3.2.4",
             "testPageHash": "6452f431d0765d7aa3135d18fee43e6664dcbb12",
-            "testPagePath": "3.2.4-navigator-service-worker-controller.html",
+            "testPagePath": "stub-3.2.4-navigator-service-worker-controller.html",
             "testable": true
         },
         {
@@ -142,7 +142,7 @@
             "hash": "6240fde8d7168beeb95f4f36aa9e143319b2061b",
             "secno": "3.2.5",
             "testPageHash": "ae4fd694c88bab72f338d97bf96b7d23e2e83e87",
-            "testPagePath": "3.2.5-navigator-service-worker-ready.html",
+            "testPagePath": "stub-3.2.5-navigator-service-worker-ready.html",
             "testable": true
         },
         {
@@ -151,7 +151,7 @@
             "hash": "292ee3af2cc8fadc24302446809d04bf2e9811a5",
             "secno": "3.2.6",
             "testPageHash": "4096ae712cc3e753456fbe05bb4d0cfc4399d2c9",
-            "testPagePath": "3.2.6-navigator-service-worker-getAll.html",
+            "testPagePath": "stub-3.2.6-navigator-service-worker-getAll.html",
             "testable": true
         },
         {
@@ -160,7 +160,7 @@
             "hash": "c999dc5f67126c9f0f02b25fd943a34b48cff618",
             "secno": "3.2.7",
             "testPageHash": "bde900b97dbb08b053ff8115775ea3b79a124b6e",
-            "testPagePath": "3.2.7-navigator-service-worker-register.html",
+            "testPagePath": "stub-3.2.7-navigator-service-worker-register.html",
             "testable": true
         },
         {
@@ -169,7 +169,7 @@
             "hash": "fd196f926f181563855e4683cc995405c1e611d0",
             "secno": "3.2.8",
             "testPageHash": "dbd99a1dcbcb629431617790a305e840495049eb",
-            "testPagePath": "3.2.8-navigator-service-worker-unregister.html",
+            "testPagePath": "stub-3.2.8-navigator-service-worker-unregister.html",
             "testable": true
         },
         {
@@ -178,7 +178,7 @@
             "hash": "2bb5aabaca24a68f9e6b4c4443968178eb1ccfe8",
             "secno": "3.2.9",
             "testPageHash": "eef0c1c39577abefb3654a6e9917ff2da657871b",
-            "testPagePath": "3.2.9-navigator-service-worker-onupdatefound.html",
+            "testPagePath": "stub-3.2.9-navigator-service-worker-onupdatefound.html",
             "testable": true
         },
         {
@@ -187,7 +187,7 @@
             "hash": "c89a4ffba10d9285e07c38c28718719d87053994",
             "secno": "3.2.10",
             "testPageHash": "35e0ce2b8f4527ebbd75d4dfa3436fd7f8c79792",
-            "testPagePath": "3.2.10-navigator-service-worker-oncontrollerchange.html",
+            "testPagePath": "stub-3.2.10-navigator-service-worker-oncontrollerchange.html",
             "testable": true
         },
         {
@@ -196,7 +196,7 @@
             "hash": "424441910abf2e1bdc3db658fe46827f7abe60a4",
             "secno": "3.2.11",
             "testPageHash": "ae614de17e5f339b65f77cafa6e0f5625491abfb",
-            "testPagePath": "3.2.11-navigator-service-worker-onreloadpage.html",
+            "testPagePath": "stub-3.2.11-navigator-service-worker-onreloadpage.html",
             "testable": true
         },
         {
@@ -205,7 +205,7 @@
             "hash": "710f7fcd2f5340147b9e030bc5932b8242cef828",
             "secno": "3.2.12",
             "testPageHash": "cd62779e27151d55f14ac6ab7aa41dcf723e0ac7",
-            "testPagePath": "3.2.12-navigator-service-worker-onerror.html",
+            "testPagePath": "stub-3.2.12-navigator-service-worker-onerror.html",
             "testable": true
         },
         {
@@ -214,7 +214,7 @@
             "hash": "ddf24f0adf58237e264c3c43cb7ab07af3013c9d",
             "secno": "4",
             "testPageHash": "1c19e641d3d6fc7552f60109ce02f8a38edc964a",
-            "testPagePath": "4-execution-context.html",
+            "testPagePath": "stub-4-execution-context.html",
             "testable": true
         },
         {
@@ -223,7 +223,7 @@
             "hash": "e6b8bb7f99c125f4226fc5b6c51cf03a7437f2ef",
             "secno": "4.1",
             "testPageHash": "2f596b6b07bcfb71c01d75f725eb52c84e9c69dd",
-            "testPagePath": "4.1-service-worker-global-scope.html",
+            "testPagePath": "stub-4.1-service-worker-global-scope.html",
             "testable": true
         },
         {
@@ -232,7 +232,7 @@
             "hash": "43d3c9f441b3a7abd0d3a7f55d93faaceeb7d97d",
             "secno": "4.1.1",
             "testPageHash": "f19b91c887f6312688b66b1988147a599cd9470f",
-            "testPagePath": "4.1.1-service-worker-global-scope-caches.html",
+            "testPagePath": "stub-4.1.1-service-worker-global-scope-caches.html",
             "testable": true
         },
         {
@@ -241,7 +241,7 @@
             "hash": "cb83230107645229da9776ed0fc9f7bc6fcce747",
             "secno": "4.1.2",
             "testPageHash": "45b3aae572f7161748fa98e97b4f2b738c3dcfef",
-            "testPagePath": "4.1.2-service-worker-global-scope-clients.html",
+            "testPagePath": "stub-4.1.2-service-worker-global-scope-clients.html",
             "testable": true
         },
         {
@@ -250,7 +250,7 @@
             "hash": "08c808048b647aa9d4cc0b0a0f70b06ca89af4a3",
             "secno": "4.1.3",
             "testPageHash": "bfe7eaf8deb8de7d2ccfbba97640478b1c81d6c7",
-            "testPagePath": "4.1.3-service-worker-global-scope-scope.html",
+            "testPagePath": "stub-4.1.3-service-worker-global-scope-scope.html",
             "testable": true
         },
         {
@@ -259,7 +259,7 @@
             "hash": "b66133d8a2c67f9b10c274d5b05383ff76d2cd42",
             "secno": "4.1.4",
             "testPageHash": "2b1ffa915afddeb099dfff23f4ecf555b0710ed4",
-            "testPagePath": "4.1.4-service-worker-global-scope-fetch.html",
+            "testPagePath": "stub-4.1.4-service-worker-global-scope-fetch.html",
             "testable": true
         },
         {
@@ -268,7 +268,7 @@
             "hash": "3ddf48cecb4d4a67a329248787dd220ce17f4eff",
             "secno": "4.1.5",
             "testPageHash": "15879bf45f460c0ab0c02793655096c1bca418a7",
-            "testPagePath": "4.1.5-service-worker-global-scope-update.html",
+            "testPagePath": "stub-4.1.5-service-worker-global-scope-update.html",
             "testable": true
         },
         {
@@ -277,7 +277,7 @@
             "hash": "fff9ef2daa5689b38a17eeb9a6bd7071098ca778",
             "secno": "4.1.6",
             "testPageHash": "c4bf327228628b794db9c6f2eb17519e37cea6b9",
-            "testPagePath": "4.1.6-service-worker-global-scope-unregister.html",
+            "testPagePath": "stub-4.1.6-service-worker-global-scope-unregister.html",
             "testable": true
         },
         {
@@ -286,7 +286,7 @@
             "hash": "bc8f6aed2d515dc7f6b0757afa02f37899082668",
             "secno": "4.1.7",
             "testPageHash": "9e6f2732d21871ec06e9541ea881baf962f7cdf4",
-            "testPagePath": "4.1.7-service-worker-global-scope-onmessage.html",
+            "testPagePath": "stub-4.1.7-service-worker-global-scope-onmessage.html",
             "testable": true
         },
         {
@@ -295,7 +295,7 @@
             "hash": "47a1c10cd9e4db9a5c86d9bcf80477f771ea954c",
             "secno": "4.2",
             "testPageHash": "21d74c1af0b3176b029c9b62b37fe73436e0f197",
-            "testPagePath": "4.2-client.html",
+            "testPagePath": "stub-4.2-client.html",
             "testable": true
         },
         {
@@ -304,7 +304,7 @@
             "hash": "c2c6f4873f07b53705a46b2bd44ba10f84dd2b56",
             "secno": "4.3",
             "testPageHash": "9c0366e6cfd28caaeaf940bad2b3c7ace93037f6",
-            "testPagePath": "4.3-service-worker-clients.html",
+            "testPagePath": "stub-4.3-service-worker-clients.html",
             "testable": true
         },
         {
@@ -313,7 +313,7 @@
             "hash": "299abaa21cf096e423edfa19755987986f742a1f",
             "secno": "4.3.1",
             "testPageHash": "efeb1c2dc8144c30e6628cb56b3e532531ee1e88",
-            "testPagePath": "4.3.1-get-serviced-method.html",
+            "testPagePath": "stub-4.3.1-get-serviced-method.html",
             "testable": true
         },
         {
@@ -322,7 +322,7 @@
             "hash": "bb4d775d261e69cbeaf65c123e949c24cf542ae7",
             "secno": "4.3.2",
             "testPageHash": "d1a4dde873b77201b4de745d2083bf63549b0b8b",
-            "testPagePath": "4.3.2-reloadall-method.html",
+            "testPagePath": "stub-4.3.2-reloadall-method.html",
             "testable": true
         },
         {
@@ -331,7 +331,7 @@
             "hash": "65ae6c08f720a2eedb7b140f5635a5ac46ddadfc",
             "secno": "4.4",
             "testPageHash": "ec493c70e8a0d8d3eeb0ecaef59610aed97d298e",
-            "testPagePath": "4.4-request-objects.html",
+            "testPagePath": "stub-4.4-request-objects.html",
             "testable": true
         },
         {
@@ -340,7 +340,7 @@
             "hash": "2efbff63c70ab92f93e4acd021409b9df4776882",
             "secno": "4.5",
             "testPageHash": "8340b69d62f111f56095c5fe9047d9215fa7aefc",
-            "testPagePath": "4.5-response-objects.html",
+            "testPagePath": "stub-4.5-response-objects.html",
             "testable": true
         },
         {
@@ -349,7 +349,7 @@
             "hash": "bddc306a9892c0bca43e8b361c1ee22b87759e23",
             "secno": "4.5.1",
             "testPageHash": "eb256c2d0852f584842e414625270d6c41c80e2a",
-            "testPagePath": "4.5.1-abstract-response.html",
+            "testPagePath": "stub-4.5.1-abstract-response.html",
             "testable": true
         },
         {
@@ -358,7 +358,7 @@
             "hash": "6471d25755bdab0d4f72413f9367b7bb36c53a6f",
             "secno": "4.5.2",
             "testPageHash": "346d63cc7eb8ee412f5f704ba241205c8d437540",
-            "testPagePath": "4.5.2-response.html",
+            "testPagePath": "stub-4.5.2-response.html",
             "testable": true
         },
         {
@@ -374,7 +374,7 @@
             "hash": "df5431f4fbd26d81f2d4f567309c6a7a26dbfd4a",
             "secno": "4.5.4",
             "testPageHash": "85373f290cf594f0f09eb0a76bc6ef6299be595f",
-            "testPagePath": "4.5.4-opaque-response.html",
+            "testPagePath": "stub-4.5.4-opaque-response.html",
             "testable": true
         },
         {
@@ -390,7 +390,7 @@
             "hash": "001d0dfb8fbcbcb6443d1be2b722c9a84d6fd95b",
             "secno": "4.6",
             "testPageHash": "c1ef341d15a8c76d015eef57842ed10e62c02927",
-            "testPagePath": "4.6-cache-objects.html",
+            "testPagePath": "stub-4.6-cache-objects.html",
             "testable": true
         },
         {
@@ -399,7 +399,7 @@
             "hash": "7c73698ca9b686a0314ddf368bf8ad4ca6af392f",
             "secno": "4.6.1",
             "testPageHash": "f3524320a98f2fbdc5d711de82770957a7f5ec4b",
-            "testPagePath": "4.6.1-cache-lifetimes.html",
+            "testPagePath": "stub-4.6.1-cache-lifetimes.html",
             "testable": true
         },
         {
@@ -408,7 +408,7 @@
             "hash": "bf1fe844577ab57a60eb550be24335a3321ca2ee",
             "secno": "4.6.2",
             "testPageHash": "c55b7b05c8e2f4b65722e16cdbcd78ffdfe1e4bf",
-            "testPagePath": "4.6.2-cache.html",
+            "testPagePath": "stub-4.6.2-cache.html",
             "testable": true
         },
         {
@@ -417,7 +417,7 @@
             "hash": "9cdaac070f56e55d66a89cd4b6e669a04aa73b82",
             "secno": "4.6.3",
             "testPageHash": "ee6902f170d94cc1e3a4a00f4c90e7e19c4dff95",
-            "testPagePath": "4.6.3-cache-storage.html",
+            "testPagePath": "stub-4.6.3-cache-storage.html",
             "testable": true
         },
         {
@@ -433,7 +433,7 @@
             "hash": "8495382b418adbbed436b2002ab0155a3a295ef2",
             "secno": "4.7.1",
             "testPageHash": "e48e98d51936bd57d21903615203f2b78d3f4b12",
-            "testPagePath": "4.7.1-install-phase-event.html",
+            "testPagePath": "stub-4.7.1-install-phase-event.html",
             "testable": true
         },
         {
@@ -442,7 +442,7 @@
             "hash": "295fb5d4932396fd13365ed2fe57aa672f1f2a56",
             "secno": "4.7.1.1",
             "testPageHash": "c3769e51852b8438a97c39c50fa62351a73c4ee6",
-            "testPagePath": "4.7.1.1-wait-until-method.html",
+            "testPagePath": "stub-4.7.1.1-wait-until-method.html",
             "testable": true
         },
         {
@@ -451,7 +451,7 @@
             "hash": "3a0f6da1771c22ab21ddc00729433a4d95ac6782",
             "secno": "4.7.2",
             "testPageHash": "9a103cc461eaca3da75db583ce08f13ecd2b1a98",
-            "testPagePath": "4.7.2-install-event.html",
+            "testPagePath": "stub-4.7.2-install-event.html",
             "testable": true
         },
         {
@@ -460,7 +460,7 @@
             "hash": "4631577df2efc1a4350000461629bc1ca93dbd14",
             "secno": "4.7.2.1",
             "testPageHash": "32f54e74bef784d2f0ac772b44abeee06573062d",
-            "testPagePath": "4.7.2.1-install-event-section.html",
+            "testPagePath": "stub-4.7.2.1-install-event-section.html",
             "testable": true
         },
         {
@@ -469,7 +469,7 @@
             "hash": "b9093b05204d09748311023b4c737ede02ff8115",
             "secno": "4.7.2.2",
             "testPageHash": "372bed923f8c35c4923634ae27fa121919ac0fec",
-            "testPagePath": "4.7.2.2-replace-method.html",
+            "testPagePath": "stub-4.7.2.2-replace-method.html",
             "testable": true
         },
         {
@@ -478,7 +478,7 @@
             "hash": "ac3d03aa0ed961fb1122850aeab92c302c55ecd0",
             "secno": "4.7.3",
             "testPageHash": "6241762ab1d6f430fa9b7cc8f02a00e6591c6bc6",
-            "testPagePath": "4.7.3-activate-event.html",
+            "testPagePath": "stub-4.7.3-activate-event.html",
             "testable": true
         },
         {
@@ -494,7 +494,7 @@
             "hash": "ae24fda9664a3bd7b7fe2a8712ac469c3ee7128e",
             "secno": "4.7.4.1",
             "testPageHash": "393fc7b65e9f5afd18da666b6b206ccd639397cd",
-            "testPagePath": "4.7.4.1-fetch-event-section.html",
+            "testPagePath": "stub-4.7.4.1-fetch-event-section.html",
             "testable": true
         },
         {
@@ -503,7 +503,7 @@
             "hash": "7e4f010e2ec1ea0500b435cf599ba58942164457",
             "secno": "4.7.4.2",
             "testPageHash": "31e0acd058b9a5b722ae9f405b50bc94d31596b8",
-            "testPagePath": "4.7.4.2-respond-with-method.html",
+            "testPagePath": "stub-4.7.4.2-respond-with-method.html",
             "testable": true
         },
         {
@@ -512,7 +512,7 @@
             "hash": "4d6f8f93b2e10ab0e486dbf464ff107ec1a6aa4c",
             "secno": "4.7.4.3",
             "testPageHash": "34e015c973887e2b3bf8b6db62f75d5d417a43cc",
-            "testPagePath": "4.7.4.3-default-method.html",
+            "testPagePath": "stub-4.7.4.3-default-method.html",
             "testable": true
         },
         {
@@ -521,7 +521,7 @@
             "hash": "6e1afd9e8940e9cd38aa7de1ed57e8c5b1a60e3d",
             "secno": "4.7.4.4",
             "testPageHash": "703a6469782d37be3c25e2214f897d1064acca47",
-            "testPagePath": "4.7.4.4-is-reload-attribute.html",
+            "testPagePath": "stub-4.7.4.4-is-reload-attribute.html",
             "testable": true
         },
         {
@@ -530,7 +530,7 @@
             "hash": "5b02b143172647dd7f74f0464dffa7ec7d0e8f94",
             "secno": "5",
             "testPageHash": "112267598598f956b5d5c546391aab163ad3125e",
-            "testPagePath": "5-security-considerations.html",
+            "testPagePath": "stub-5-security-considerations.html",
             "testable": true
         },
         {
@@ -539,7 +539,7 @@
             "hash": "72bbbd7d3d43a859af6ff9f19353210ddfcc26de",
             "secno": "5.1",
             "testPageHash": "1c92607dfac57b0f59654d059a4a67e0f984b84d",
-            "testPagePath": "5.1-origin-relativity.html",
+            "testPagePath": "stub-5.1-origin-relativity.html",
             "testable": true
         },
         {
@@ -548,7 +548,7 @@
             "hash": "6176879ecfb5ae769679ceef4ee1e8889be8df92",
             "secno": "5.2",
             "testPageHash": "bcf85ba278c70c086645c416cee729ce753bc528",
-            "testPagePath": "5.2-cross-origin-resources.html",
+            "testPagePath": "stub-5.2-cross-origin-resources.html",
             "testable": true
         },
         {
@@ -557,7 +557,7 @@
             "hash": "e101cee2062749b1a73086492377458251a5e875",
             "secno": "6",
             "testPageHash": "2f3958fc6d20b63d4086e262142c5f66012da842",
-            "testPagePath": "6-storage-considerations.html",
+            "testPagePath": "stub-6-storage-considerations.html",
             "testable": true
         },
         {
@@ -566,7 +566,7 @@
             "hash": "ef1b382bb89c52e01edad421b02b237765a21ce7",
             "secno": "7",
             "testPageHash": "05966318414a24782b55d761daca9dfd10de9929",
-            "testPagePath": "7-extensibility.html",
+            "testPagePath": "stub-7-extensibility.html",
             "testable": true
         },
         {
@@ -575,7 +575,7 @@
             "hash": "d130247eab1d368efea646ff369e65f6c0c19481",
             "secno": "8",
             "testPageHash": "16feac976deda97cbf4735ae30974c56a66fb71f",
-            "testPagePath": "8-algorithms.html",
+            "testPagePath": "stub-8-algorithms.html",
             "testable": true
         },
         {
@@ -584,7 +584,7 @@
             "hash": "b688d090671c08ca17ea7cadc561e6d471ee099e",
             "secno": "8.1",
             "testPageHash": "b658395fc728d5f54b2c9837eb9cd52552858a97",
-            "testPagePath": "8.1-registration-algorithm.html",
+            "testPagePath": "stub-8.1-registration-algorithm.html",
             "testable": true
         },
         {
@@ -593,7 +593,7 @@
             "hash": "679a19fef428affc83103c1eec0dbd3be40c4e2a",
             "secno": "8.2",
             "testPageHash": "4c31c44c0add3290ee796061481dca52803ed0dd",
-            "testPagePath": "8.2-update-algorithm.html",
+            "testPagePath": "stub-8.2-update-algorithm.html",
             "testable": true
         },
         {
@@ -602,7 +602,7 @@
             "hash": "8eb103f5cd0e595ee5e25f075e8c6239211e482a",
             "secno": "8.3",
             "testPageHash": "84d53435f9f06fb764e8432d77c7b4198a1d0d39",
-            "testPagePath": "8.3-soft-update-algorithm.html",
+            "testPagePath": "stub-8.3-soft-update-algorithm.html",
             "testable": true
         },
         {
@@ -611,7 +611,7 @@
             "hash": "5874d9247d979009b67aedf964ae097837cfb3d9",
             "secno": "8.4",
             "testPageHash": "472779a6cab95c82cf4d28de20c4f548633789b1",
-            "testPagePath": "8.4-installation-algorithm.html",
+            "testPagePath": "stub-8.4-installation-algorithm.html",
             "testable": true
         },
         {
@@ -620,7 +620,7 @@
             "hash": "648b34baf6e7c2096a842e6d367949117843108e",
             "secno": "8.5",
             "testPageHash": "e754ecee2460db055a6ba9808c774e0468447856",
-            "testPagePath": "8.5-activation-algorithm.html",
+            "testPagePath": "stub-8.5-activation-algorithm.html",
             "testable": true
         },
         {
@@ -629,7 +629,7 @@
             "hash": "e1da43671071ec307f99cd781fc9b46353f3adfd",
             "secno": "8.6",
             "testPageHash": "a498a54a8b4088c0b3e9d8a56c68b074cf09b7fb",
-            "testPagePath": "8.6-on-fetch-request-algorithm.html",
+            "testPagePath": "stub-8.6-on-fetch-request-algorithm.html",
             "testable": true
         },
         {
@@ -638,7 +638,7 @@
             "hash": "8a7196b5dd04ad4fb9b96e16a52f4f7ac1906763",
             "secno": "8.7",
             "testPageHash": "d8d8913380f6288da7e58e36f355905f43d304a1",
-            "testPagePath": "8.7-on-document-unload-algorithm.html",
+            "testPagePath": "stub-8.7-on-document-unload-algorithm.html",
             "testable": true
         },
         {
@@ -647,7 +647,7 @@
             "hash": "0114db166d42211d0d7ab4b8e77de64a9fc97517",
             "secno": "8.8",
             "testPageHash": "4ac84606ea08c3231149dfeccd7d9df024ba9ba3",
-            "testPagePath": "8.8-unregistration-algorithm.html",
+            "testPagePath": "stub-8.8-unregistration-algorithm.html",
             "testable": true
         },
         {
@@ -656,7 +656,7 @@
             "hash": "2ed8a1e7479f1a8ad038aa44ccdd5e4f6b65cf05",
             "secno": "8.9",
             "testPageHash": "ae1318d0fb15143f979bdfc5290400140d093acd",
-            "testPagePath": "8.9-update-state-algorithm.html",
+            "testPagePath": "stub-8.9-update-state-algorithm.html",
             "testable": true
         },
         {
@@ -665,7 +665,7 @@
             "hash": "a2117fb34a8fa4ca3e832d9276477cfc1318dd1a",
             "secno": "8.10",
             "testPageHash": "8fead781f18e9918a817e972b14e446ff3bafb5b",
-            "testPagePath": "8.10-scope-match-algorithm.html",
+            "testPagePath": "stub-8.10-scope-match-algorithm.html",
             "testable": true
         },
         {
@@ -674,7 +674,7 @@
             "hash": "b20332db952ba8f4b7e5f65b740a18da4a199c2e",
             "secno": "8.11",
             "testPageHash": "22e53662c0787bf9a291bc3878a38a7654d793ab",
-            "testPagePath": "8.11-get-registration-algorithm.html",
+            "testPagePath": "stub-8.11-get-registration-algorithm.html",
             "testable": true
         },
         {
@@ -683,7 +683,7 @@
             "hash": "72dc1cbee8c98501931c411018fd1cad4376142b",
             "secno": "8.12",
             "testPageHash": "e824809fd489f00b23e99ccf3ecf8299491649d3",
-            "testPagePath": "8.12-get-newest-worker-algorithm.html",
+            "testPagePath": "stub-8.12-get-newest-worker-algorithm.html",
             "testable": true
         },
         {

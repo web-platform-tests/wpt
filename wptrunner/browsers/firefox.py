@@ -4,10 +4,13 @@
 
 import os
 
+import mozcrash
 from mozprocess import ProcessHandler
 from mozprofile import FirefoxProfile, Preferences
 from mozprofile.permissions import ServerLocations
 from mozrunner import FirefoxRunner
+import mozcrash
+from mozcrash import mozcrash
 
 from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
 from ..executors import executor_kwargs as base_executor_kwargs
@@ -33,7 +36,9 @@ def browser_kwargs(**kwargs):
     return {"binary": kwargs["binary"],
             "prefs_root": kwargs["prefs_root"],
             "debug_args": kwargs["debug_args"],
-            "interactive": kwargs["interactive"]}
+            "interactive": kwargs["interactive"],
+            "symbols_path":kwargs["symbols_path"],
+            "stackwalk_binary":kwargs["stackwalk_binary"]}
 
 
 def executor_kwargs(http_server_url, **kwargs):
@@ -51,7 +56,8 @@ def env_options():
 class FirefoxBrowser(Browser):
     used_ports = set()
 
-    def __init__(self, logger, binary, prefs_root, debug_args=None, interactive=None):
+    def __init__(self, logger, binary, prefs_root, debug_args=None, interactive=None,
+                 symbols_path=None, stackwalk_binary=None):
         Browser.__init__(self, logger)
         self.binary = binary
         self.prefs_root = prefs_root
@@ -60,6 +66,9 @@ class FirefoxBrowser(Browser):
         self.runner = None
         self.debug_args = debug_args
         self.interactive = interactive
+        self.profile = None
+        self.symbols_path = symbols_path
+        self.stackwalk_binary = stackwalk_binary
 
     def start(self):
         self.marionette_port = get_free_port(2828, exclude=self.used_ports)
@@ -74,12 +83,12 @@ class FirefoxBrowser(Browser):
 
         preferences = self.load_prefs()
 
-        profile = FirefoxProfile(locations=locations, proxy=True, preferences=preferences)
-        profile.set_preferences({"marionette.defaultPrefs.enabled": True,
-                                 "marionette.defaultPrefs.port": self.marionette_port,
-                                 "dom.disable_open_during_load": False})
+        self.profile = FirefoxProfile(locations=locations, proxy=True, preferences=preferences)
+        self.profile.set_preferences({"marionette.defaultPrefs.enabled": True,
+                                      "marionette.defaultPrefs.port": self.marionette_port,
+                                      "dom.disable_open_during_load": False})
 
-        self.runner = FirefoxRunner(profile=profile,
+        self.runner = FirefoxRunner(profile=self.profile,
                                     binary=self.binary,
                                     cmdargs=[cmd_arg("marionette"), "about:blank"],
                                     env=env,
@@ -133,3 +142,9 @@ class FirefoxBrowser(Browser):
     def executor_browser(self):
         assert self.marionette_port is not None
         return ExecutorBrowser, {"marionette_port": self.marionette_port}
+
+    def log_crash(self, logger, process, test):
+        dump_dir = os.path.join(self.profile.profile, "minidumps")
+        mozcrash.log_crashes(logger, dump_dir, symbols_path=self.symbols_path,
+                             stackwalk_binary=self.stackwalk_binary,
+                             process=process, test=test)

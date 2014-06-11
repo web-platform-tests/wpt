@@ -92,6 +92,11 @@ def create_parser(product_choices=None):
     parser.add_argument('--pause-on-unexpected', action="store_true",
                         help="Halt the test runner when an unexpected result is encountered")
 
+    parser.add_argument("--symbols-path", action="store", type=abs_path,
+                        help="Path to symbols file used to analyse crash minidumps.")
+    parser.add_argument("--stackwalk-binary", action="store", type=abs_path,
+                        help="Path to stackwalker program used to analyse minidumps.")
+
     parser.add_argument("--b2g-no-backup", action="store_true", default=False,
                         help="Don't backup device before testrun with --product=b2g")
 

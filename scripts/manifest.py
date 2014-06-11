@@ -277,11 +277,11 @@ def get_manifest_items(rel_path):
         elif url.startswith(item):
             return []
 
-    if name.lower().endswith("-manual"):
-        return [ManualTest(rel_path, url)]
-
     if name.startswith("stub-"):
         return [Stub(rel_path, url)]
+
+    if name.lower().endswith("-manual"):
+        return [ManualTest(rel_path, url)]
 
     ref_list = []
 

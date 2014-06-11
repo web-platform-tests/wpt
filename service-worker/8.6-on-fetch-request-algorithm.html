@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<title>Service Workers: _OnFetchRequest</title>
+    <head>
+        <link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/#on-fetch-request-algorithm">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    
+    </head>
+    <body>
+
+<!--
+
+The [_OnFetchRequest algorithm][1] is the entry point for the [fetch][2]
+handling handed to the Service Worker context. The invocation of handle a fetch
+with `request` must act as if the caller immediately invoked [_OnFetchRequest
+algorithm][1] with `request`.
+
+Input:
+    `request`, the object representing the request of fetching a resource; a
+    [Request][3] object
+Output:
+    None
+1.  If `request.context` is `"navigate"`, then:
+    1.  If `request` is a force-refresh (shift+refresh), then:
+        1.  Return null.
+    2.  Let `parsedUrl` be the result of parsing `request`.`url`.
+    3.  Let `serviceWorkerRegistration` be the result of running
+        [_ScopeMatch algorithm][4] passing `parsedUrl` as the argument.
+2.  Else,
+    1.  Let `serviceWorkerRegistration` be the Service Worker
+        [registration][5] used by this document.
+3.  If `serviceWorkerRegistration` is null, then:
+    1.  Return null.
+4.  Let `matchedServiceWorker` be
+    `serviceWorkerRegistration`.`activeWorker`.
+5.  If `matchedServiceWorker` is null, then:
+    1.  Return null.
+6.  If `request.context` is `"navigate"`, then:
+    1.  Document will now use `serviceWorkerRegistration` as its Service
+        Worker [registration][5].
+7.  If `matchedServiceWorker`.`state` is `activating`, then:
+    1.  Wait for `matchedServiceWorker`.`state` to become `activated`.
+8.  [Fire an event][6] named `fetch`, using [FetchEvent][7] interface, with
+    `request` attribute initialized to `request`, `client` attribute
+    initialized to [client][8] of the [request][9], in the form of
+    [Client][10] object, represented by `request`, `context` attribute
+    initialized to [context][11] of the [request][9] represented by
+    `request`, and `isReload` initialized to `true` if event was dispatched
+    with the user's intention for the page reload, and `false` otherwise,
+    on the associated [`ServiceWorkerGlobalScope`][12] object.
+9.  If the `respondWith()` method was not called, then:
+    1.  Return null and run the following steps asynchronously.
+    2.  If `request.context` is `"navigate"`, then:
+        1.  Queue a task to invoke [_SoftUpdate algorithm][13] with
+            `serviceWorkerRegistration` as its argument.
+    3.  Abort these steps.
+10. Let `promise` be the value of the argument, casted to a promise, passed
+    into the `respondWith()` method on the associated
+    [`ServiceWorkerGlobalScope`][12] object.
+11. Wait for `promise` to settle.
+12. If `promise` rejected, then:
+    1.  Return a [network error][14].
+13. If `promise` resolves to `response`, an instance of `OpaqueResponse`
+    interface, and `event.context` is `"navigate"`, then:
+    1.  Return a [network error][14].
+14. If `promise` resolves to `response`, an instance of `AbstractResponse`
+    interface, then:
+    1.  Return a [response][15] represented by `response` and run the
+        following steps asynchronously.
+    2.  If `event.context` is `"navigate"`, then:
+        1.  Queue a task to invoke [_SoftUpdate algorithm][13] with the
+            [registration][5] of the Service Worker represented by `self`
+            object as the argument.
+    3.  Abort these steps.
+15. Return a [network error][14].
+
+
+
+[1]: on-fetch-request-algorithm
+[2]: http://goo.gl/fGMifs
+[3]: #request-interface
+[4]: #scope-match-algorithm
+[5]: #registration
+[6]: http://goo.gl/xsVftM
+[7]: #fetch-event-interface
+[8]: http://goo.gl/2Rv6NZ
+[9]: http://goo.gl/kMzwgq
+[10]: #client-interface
+[11]: http://goo.gl/ivocT8
+[12]: #service-worker-global-scope-interface
+[13]: #soft-update-algorithm
+[14]: http://goo.gl/jprjjc
+[15]: http://goo.gl/7F83ei
+
+-->
+
+
+
+    <script>
+        test(function() {
+            // not_implemented();
+        }, "There are no tests for section _OnFetchRequest so far.");
+    </script>
+
+    </body>
+</html>
+

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<title>Service Workers: _UpdateState</title>
+    <head>
+        <link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/#update-state-algorithm">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    
+    </head>
+    <body>
+
+<!--
+
+Input:
+    `serviceWorker`, the object representing the document-side view of a
+    Service Worker; a [ServiceWorker][1] object
+    `state`, the enumeration of the Service Worker state; a
+    [ServiceWorkerState][2] enum
+Output:
+    None
+1.  Set `serviceWorker`.`state` to `state`.
+2.  [Fire an event][3] named `statechange` on `serviceWorker`.
+
+[1]: #service-worker-interface
+[2]: #service-worker-state-enum
+[3]: http://goo.gl/xsVftM
+
+-->
+
+
+
+    <script>
+        test(function() {
+            // not_implemented();
+        }, "There are no tests for section _UpdateState so far.");
+    </script>
+
+    </body>
+</html>
+

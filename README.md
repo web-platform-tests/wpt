@@ -148,7 +148,7 @@ The way to contribute is just as usual:
 * fork this repository (and make sure you're still relatively in sync
   with it if you forked a while ago);
 * create a branch for your changes:
-  `git checkout -b submission/your-name/topic`;
+  `git checkout -b your-name/topic`;
 * make your changes;
 * push that to your repo;
 * and send in a pull request based on the above.
@@ -162,8 +162,8 @@ the specification correctly. But we look at all of them, and take
 everything that we can.
 
 If you wish to contribute actively, you're very welcome to join the
-public-html-testsuite@w3.org mailing list (low traffic) by
-[signing up to our mailing list](mailto:public-html-testsuite-request@w3.org?subject=subscribe).
+public-test-infra@w3.org mailing list (low traffic) by
+[signing up to our mailing list](mailto:public-test-infra-request@w3.org?subject=subscribe).
 
 Join us on irc #testing ([irc.w3.org][ircw3org], port 6665). The channel
 is [archived][ircarchive].

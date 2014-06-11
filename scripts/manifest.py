@@ -105,6 +105,12 @@ class ManualTest(ManifestItem):
     def from_json(cls, obj):
         return cls(obj["path"], obj["url"])
 
+class Stub(ManifestItem):
+    item_type = "stub"
+
+    @classmethod
+    def from_json(cls, obj):
+        return cls(obj["path"], obj["url"])
 
 class Helper(ManifestItem):
     item_type = "helper"
@@ -121,7 +127,7 @@ class ManifestError(Exception):
 class Manifest(object):
     def __init__(self, git_rev):
         self.item_types = ["testharness", "reftest",
-                           "manual", "helper"]
+                           "manual", "helper", "stub"]
         self._data = dict((item_type, defaultdict(set)) for item_type in self.item_types)
         self.rev = git_rev
         self.local_changes = LocalChanges()
@@ -177,7 +183,8 @@ class Manifest(object):
         item_classes = {"testharness":TestharnessTest,
                         "reftest":RefTest,
                         "manual":ManualTest,
-                        "helper":Helper}
+                        "helper":Helper,
+                        "stub": Stub}
 
         for k, values in obj["items"].iteritems():
             if k not in self.item_types:
@@ -272,6 +279,9 @@ def get_manifest_items(rel_path):
 
     if name.lower().endswith("-manual"):
         return [ManualTest(rel_path, url)]
+
+    if name.startswith("stub-"):
+        return [Stub(rel_path, url)]
 
     ref_list = []
 

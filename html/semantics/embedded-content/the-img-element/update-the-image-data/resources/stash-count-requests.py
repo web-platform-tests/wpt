@@ -22,6 +22,9 @@ def main(request, response):
         if request.GET.first("broken") == "yes":
             data = "GIF89aBROKENIMAGE"
             split = 10
+        elif request.GET.first("broken") == "fail-sniffing":
+            data = "NOTGIFBROKENIMAGE"
+            split = 10
         else:
             if request.GET.first("animated") == "no":
                 # 1x1 black gif http://css-tricks.com/snippets/html/base64-encode-of-1x1px-transparent-gif/

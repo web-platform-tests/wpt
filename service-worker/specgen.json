@@ -33,18 +33,14 @@
             "id": "concepts",
             "hash": "589023372dc033b0a77be1cd01f54f5f8c3ebfa8",
             "secno": "2",
-            "testPageHash": "64e326cce473f71fd2e90a6561ded97278c870eb",
-            "testPagePath": "stub-2-concepts.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#document-context",
             "id": "document-context",
             "hash": "34feeb18dea978349a2f76e6b17c127123b3db74",
             "secno": "3",
-            "testPageHash": "fd0bf220d4dff5a8942814d5c7cb95193a89505c",
-            "testPagePath": "stub-3-document-context.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#service-worker-obj",
@@ -213,9 +209,7 @@
             "id": "execution-context",
             "hash": "ddf24f0adf58237e264c3c43cb7ab07af3013c9d",
             "secno": "4",
-            "testPageHash": "1c19e641d3d6fc7552f60109ce02f8a38edc964a",
-            "testPagePath": "stub-4-execution-context.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#service-worker-global-scope",
@@ -348,9 +342,7 @@
             "id": "abstract-response",
             "hash": "bddc306a9892c0bca43e8b361c1ee22b87759e23",
             "secno": "4.5.1",
-            "testPageHash": "eb256c2d0852f584842e414625270d6c41c80e2a",
-            "testPagePath": "stub-4.5.1-abstract-response.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#response",
@@ -529,9 +521,7 @@
             "id": "security-considerations",
             "hash": "5b02b143172647dd7f74f0464dffa7ec7d0e8f94",
             "secno": "5",
-            "testPageHash": "112267598598f956b5d5c546391aab163ad3125e",
-            "testPagePath": "stub-5-security-considerations.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#origin-relativity",
@@ -556,135 +546,105 @@
             "id": "storage-considerations",
             "hash": "e101cee2062749b1a73086492377458251a5e875",
             "secno": "6",
-            "testPageHash": "2f3958fc6d20b63d4086e262142c5f66012da842",
-            "testPagePath": "stub-6-storage-considerations.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#extensibility",
             "id": "extensibility",
             "hash": "ef1b382bb89c52e01edad421b02b237765a21ce7",
             "secno": "7",
-            "testPageHash": "05966318414a24782b55d761daca9dfd10de9929",
-            "testPagePath": "stub-7-extensibility.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#algorithms",
             "id": "algorithms",
             "hash": "d130247eab1d368efea646ff369e65f6c0c19481",
             "secno": "8",
-            "testPageHash": "16feac976deda97cbf4735ae30974c56a66fb71f",
-            "testPagePath": "stub-8-algorithms.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#registration-algorithm",
             "id": "registration-algorithm",
             "hash": "b688d090671c08ca17ea7cadc561e6d471ee099e",
             "secno": "8.1",
-            "testPageHash": "b658395fc728d5f54b2c9837eb9cd52552858a97",
-            "testPagePath": "stub-8.1-registration-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#update-algorithm",
             "id": "update-algorithm",
             "hash": "679a19fef428affc83103c1eec0dbd3be40c4e2a",
             "secno": "8.2",
-            "testPageHash": "4c31c44c0add3290ee796061481dca52803ed0dd",
-            "testPagePath": "stub-8.2-update-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#soft-update-algorithm",
             "id": "soft-update-algorithm",
             "hash": "8eb103f5cd0e595ee5e25f075e8c6239211e482a",
             "secno": "8.3",
-            "testPageHash": "84d53435f9f06fb764e8432d77c7b4198a1d0d39",
-            "testPagePath": "stub-8.3-soft-update-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#installation-algorithm",
             "id": "installation-algorithm",
             "hash": "5874d9247d979009b67aedf964ae097837cfb3d9",
             "secno": "8.4",
-            "testPageHash": "472779a6cab95c82cf4d28de20c4f548633789b1",
-            "testPagePath": "stub-8.4-installation-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#activation-algorithm",
             "id": "activation-algorithm",
             "hash": "648b34baf6e7c2096a842e6d367949117843108e",
             "secno": "8.5",
-            "testPageHash": "e754ecee2460db055a6ba9808c774e0468447856",
-            "testPagePath": "stub-8.5-activation-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#on-fetch-request-algorithm",
             "id": "on-fetch-request-algorithm",
             "hash": "e1da43671071ec307f99cd781fc9b46353f3adfd",
             "secno": "8.6",
-            "testPageHash": "a498a54a8b4088c0b3e9d8a56c68b074cf09b7fb",
-            "testPagePath": "stub-8.6-on-fetch-request-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#on-document-unload-algorithm",
             "id": "on-document-unload-algorithm",
             "hash": "8a7196b5dd04ad4fb9b96e16a52f4f7ac1906763",
             "secno": "8.7",
-            "testPageHash": "d8d8913380f6288da7e58e36f355905f43d304a1",
-            "testPagePath": "stub-8.7-on-document-unload-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#unregistration-algorithm",
             "id": "unregistration-algorithm",
             "hash": "0114db166d42211d0d7ab4b8e77de64a9fc97517",
             "secno": "8.8",
-            "testPageHash": "4ac84606ea08c3231149dfeccd7d9df024ba9ba3",
-            "testPagePath": "stub-8.8-unregistration-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#update-state-algorithm",
             "id": "update-state-algorithm",
             "hash": "2ed8a1e7479f1a8ad038aa44ccdd5e4f6b65cf05",
             "secno": "8.9",
-            "testPageHash": "ae1318d0fb15143f979bdfc5290400140d093acd",
-            "testPagePath": "stub-8.9-update-state-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#scope-match-algorithm",
             "id": "scope-match-algorithm",
             "hash": "a2117fb34a8fa4ca3e832d9276477cfc1318dd1a",
             "secno": "8.10",
-            "testPageHash": "8fead781f18e9918a817e972b14e446ff3bafb5b",
-            "testPagePath": "stub-8.10-scope-match-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#get-registration-algorithm",
             "id": "get-registration-algorithm",
             "hash": "b20332db952ba8f4b7e5f65b740a18da4a199c2e",
             "secno": "8.11",
-            "testPageHash": "22e53662c0787bf9a291bc3878a38a7654d793ab",
-            "testPagePath": "stub-8.11-get-registration-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#get-newest-worker-algorithm",
             "id": "get-newest-worker-algorithm",
             "hash": "72dc1cbee8c98501931c411018fd1cad4376142b",
             "secno": "8.12",
-            "testPageHash": "e824809fd489f00b23e99ccf3ecf8299491649d3",
-            "testPagePath": "stub-8.12-get-newest-worker-algorithm.html",
-            "testable": true
+            "testable": false
         },
         {
             "href": "#acknowledgements",

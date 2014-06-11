@@ -45,7 +45,8 @@ interface DOMError {
   readonly attribute DOMString message;
 };
 
-[Constructor(DOMString type, optional EventInit eventInitDict)]
+[Constructor(DOMString type, optional EventInit eventInitDict),
+ Exposed=Window,Worker]
 interface Event {
   readonly attribute DOMString type;
   readonly attribute EventTarget? target;
@@ -76,7 +77,8 @@ dictionary EventInit {
   boolean cancelable = false;
 };
 
-[Constructor(DOMString type, optional CustomEventInit eventInitDict)]
+[Constructor(DOMString type, optional CustomEventInit eventInitDict),
+ Exposed=Window,Worker]
 interface CustomEvent : Event {
   readonly attribute any detail;
 
@@ -87,6 +89,7 @@ dictionary CustomEventInit : EventInit {
   any detail = null;
 };
 
+[Exposed=Window,Worker]
 interface EventTarget {
   void addEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
   void removeEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
@@ -96,6 +99,13 @@ interface EventTarget {
 callback interface EventListener {
   void handleEvent(Event event);
 };
+
+[NoInterfaceObject]
+interface NonElementParentNode {
+  Element? getElementById(DOMString elementId);
+};
+Document implements NonElementParentNode;
+DocumentFragment implements NonElementParentNode;
 
 [NoInterfaceObject]
 interface ParentNode {
@@ -117,6 +127,14 @@ DocumentFragment implements ParentNode;
 Element implements ParentNode;
 
 [NoInterfaceObject]
+interface NonDocumentTypeChildNode {
+  readonly attribute Element? previousElementSibling;
+  readonly attribute Element? nextElementSibling;
+};
+Element implements NonDocumentTypeChildNode;
+CharacterData implements NonDocumentTypeChildNode;
+
+[NoInterfaceObject]
 interface ChildNode {
   void before((Node or DOMString)... nodes);
   void after((Node or DOMString)... nodes);
@@ -126,14 +144,6 @@ interface ChildNode {
 DocumentType implements ChildNode;
 Element implements ChildNode;
 CharacterData implements ChildNode;
-
-[NoInterfaceObject]
-interface NonDocumentTypeChildNode {
-  readonly attribute Element? previousElementSibling;
-  readonly attribute Element? nextElementSibling;
-};
-Element implements NonDocumentTypeChildNode;
-CharacterData implements NonDocumentTypeChildNode;
 
 // XXX unrecognized tokens "class", "extends"
 // https://www.w3.org/Bugs/Public/show_bug.cgi?id=20020
@@ -245,6 +255,7 @@ interface Document : Node {
   [SameObject] readonly attribute DOMImplementation implementation;
   readonly attribute DOMString URL;
   readonly attribute DOMString documentURI;
+  readonly attribute DOMString origin;
   readonly attribute DOMString compatMode;
   readonly attribute DOMString characterSet;
   readonly attribute DOMString contentType;
@@ -254,7 +265,6 @@ interface Document : Node {
   HTMLCollection getElementsByTagName(DOMString localName);
   HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
   HTMLCollection getElementsByClassName(DOMString classNames);
-  Element? getElementById(DOMString elementId);
 
   [NewObject] Element createElement(DOMString localName);
   [NewObject] Element createElementNS(DOMString? namespace, DOMString qualifiedName);
@@ -282,7 +292,7 @@ interface DOMImplementation {
   [NewObject] XMLDocument createDocument(DOMString? namespace, [TreatNullAs=EmptyString] DOMString qualifiedName, optional DocumentType? doctype = null);
   [NewObject] Document createHTMLDocument(optional DOMString title);
 
-  boolean hasFeature(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
+  boolean hasFeature(); // useless; always returns true
 };
 
 [Constructor]
@@ -315,6 +325,7 @@ interface Element : Node {
   boolean hasAttribute(DOMString name);
   boolean hasAttributeNS(DOMString? namespace, DOMString localName);
 
+  Element? closest(DOMString selectors);
   boolean matches(DOMString selectors);
 
   HTMLCollection getElementsByTagName(DOMString localName);
@@ -329,6 +340,8 @@ interface Attr {
   readonly attribute DOMString name;
   readonly attribute DOMString? namespaceURI;
   readonly attribute DOMString? prefix;
+
+  readonly attribute boolean specified; // useless; always returns true
 };
 
 interface CharacterData : Node {

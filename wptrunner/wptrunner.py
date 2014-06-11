@@ -428,6 +428,8 @@ class LogThread(threading.Thread):
                 msg = self.queue.get()
             except EOFError:
                 break
+            except IOError:
+                break
             if msg is None:
                 break
             else:

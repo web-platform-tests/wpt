@@ -21,6 +21,7 @@ from cStringIO import StringIO
 
 from node import *
 
+
 class ParseError(Exception):
     pass
 
@@ -38,11 +39,14 @@ binary_operators = ["==", "!=", "and", "or"]
 
 operators = ["==", "!=", "not", "and", "or"]
 
+
 def decode(byte_str):
     return byte_str.decode("string_escape").decode("utf8")
 
+
 def precedence(operator_node):
     return len(operators) - operators.index(operator_node.data)
+
 
 class TokenTypes(object):
     def __init__(self):
@@ -50,6 +54,7 @@ class TokenTypes(object):
             setattr(self, type, type)
 
 token_types = TokenTypes()
+
 
 class Tokenizer(object):
     def __init__(self):
@@ -109,9 +114,9 @@ class Tokenizer(object):
             while self.index < self.indent_levels[-1]:
                 self.indent_levels.pop()
                 yield (token_types.group_end, None)
-                #This is terrible; if we were parsing an expression
-                #then the next_state will be expr_or_value but when we deindent
-                #it must always be a heading or key next so we go back to data_line_state
+                # This is terrible; if we were parsing an expression
+                # then the next_state will be expr_or_value but when we deindent
+                # it must always be a heading or key next so we go back to data_line_state
                 self.next_state = self.data_line_state
             if self.index != self.indent_levels[-1]:
                 raise ParseError("Unexpected indent")
@@ -137,7 +142,7 @@ class Tokenizer(object):
                 if c == eol:
                     raise ParseError("Unexpected EOL in heading")
                 elif c == "]":
-                    skip_indexes.append(self.index-1)
+                    skip_indexes.append(self.index - 1)
                 self.consume()
             elif c == "]":
                 break
@@ -213,7 +218,7 @@ class Tokenizer(object):
                     self.state = self.comment_state
                     break
                 elif c == " ":
-                    #prevent whitespace before comments from being included in the value
+                    # prevent whitespace before comments from being included in the value
                     pass
                 elif c == eol:
                     break
@@ -286,7 +291,7 @@ class Tokenizer(object):
             self.state = self.ident_state
 
     def operator_state(self):
-        #Only symbolic operators
+        # Only symbolic operators
         index_0 = self.index
         while True:
             c = self.char()
@@ -352,6 +357,7 @@ class Tokenizer(object):
 class Parser(object):
     def __init__(self):
         self.reset()
+
     def reset(self):
         self.token = None
         self.unary_operators = "!"
@@ -504,6 +510,7 @@ class Parser(object):
         self.expr_builder.push_operand(NumberNode(self.token[1]))
         self.consume()
 
+
 class Treebuilder(object):
     def __init__(self, root):
         self.root = root
@@ -518,6 +525,7 @@ class Treebuilder(object):
         node = self.node
         self.node = self.node.parent
         return node
+
 
 class ExpressionBuilder(object):
     def __init__(self):
@@ -572,6 +580,7 @@ class ExpressionBuilder(object):
         if operator is None:
             return 0
         return precedence(operator)
+
 
 def parse(stream):
     p = Parser()

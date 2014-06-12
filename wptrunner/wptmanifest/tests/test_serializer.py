@@ -4,6 +4,7 @@ from cStringIO import StringIO
 
 from .. import parser, serializer
 
+
 class TokenizerTest(unittest.TestCase):
     def setUp(self):
         self.serializer = serializer.ManifestSerializer()
@@ -110,10 +111,10 @@ class TokenizerTest(unittest.TestCase):
 [Heading 2]
   other_key: other_value
 """
-)
+                     )
 
     def test_11(self):
         self.compare("""key:
   if not a and b and c and d: true
 """
-)
+                     )

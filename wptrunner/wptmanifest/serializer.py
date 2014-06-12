@@ -1,6 +1,7 @@
 from node import NodeVisitor, ValueNode, BinaryExpressionNode
 from parser import precedence
 
+
 def escape(string, extras=""):
     rv = string.encode("utf8").encode("string_escape")
     for extra in extras:
@@ -99,6 +100,7 @@ class ManifestSerializer(NodeVisitor):
 
     def visit_BinaryOperatorNode(self, node):
         return [node.data]
+
 
 def serialize(tree, *args, **kwargs):
     s = ManifestSerializer(*args, **kwargs)

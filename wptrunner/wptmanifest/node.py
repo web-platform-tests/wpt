@@ -1,10 +1,11 @@
 class NodeVisitor(object):
     def visit(self, node):
-        #This is ugly as hell, but we don't have multimethods and
-        #they aren't trivial to fake without access to the class
-        #object from the class body
+        # This is ugly as hell, but we don't have multimethods and
+        # they aren't trivial to fake without access to the class
+        # object from the class body
         func = getattr(self, "visit_%s" % (node.__class__.__name__))
         return func(node)
+
 
 class Node(object):
     def __init__(self, data=None):
@@ -25,7 +26,7 @@ class Node(object):
     def __str__(self):
         rv = [repr(self)]
         for item in self.children:
-            rv.extend("  %s"%line for line in str(item).split("\n"))
+            rv.extend("  %s" % line for line in str(item).split("\n"))
         return "\n".join(rv)
 
     def __eq__(self, other):
@@ -44,6 +45,7 @@ class Node(object):
             new.append(item.copy())
         return new
 
+
 class DataNode(Node):
     def append(self, other):
         # Append that retains the invariant that child data nodes
@@ -58,6 +60,7 @@ class DataNode(Node):
             for i in xrange(index):
                 assert other.data != self.children[i].data
             self.children.insert(index, other)
+
 
 class KeyValueNode(Node):
     def append(self, other):
@@ -74,12 +77,15 @@ class KeyValueNode(Node):
             else:
                 self.children.append(other)
 
+
 class ValueNode(Node):
     def append(self, other):
         raise TypeError
 
+
 class ConditionalNode(Node):
     pass
+
 
 class UnaryExpressionNode(Node):
     def __init__(self, operator, operand):
@@ -95,6 +101,7 @@ class UnaryExpressionNode(Node):
         new = self.__class__(self.children[0].copy(),
                              self.children[1].copy())
         return new
+
 
 class BinaryExpressionNode(Node):
     def __init__(self, operator, operand_0, operand_1):
@@ -113,22 +120,28 @@ class BinaryExpressionNode(Node):
                              self.children[2].copy())
         return new
 
+
 class UnaryOperatorNode(Node):
     def append(self, other):
         raise TypeError
+
 
 class BinaryOperatorNode(Node):
     def append(self, other):
         raise TypeError
 
+
 class IndexNode(Node):
     pass
+
 
 class VariableNode(Node):
     pass
 
+
 class StringNode(Node):
     pass
+
 
 class NumberNode(ValueNode):
     pass

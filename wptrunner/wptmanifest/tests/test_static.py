@@ -7,6 +7,7 @@ from ..backends import static
 # There aren't many tests here because it turns out to be way more convenient to
 # use test_serializer for the majority of cases
 
+
 class TestStatic(unittest.TestCase):
     def parse(self, input_str):
         return self.parser.parse(StringIO(input_str))
@@ -25,7 +26,7 @@ key: value
     value_3
 """
 
-        manifest = self.compile(data, {"a":2})
+        manifest = self.compile(data, {"a": 2})
 
         self.assertEquals(manifest.get("key"), "value")
         children = list(item for item in manifest.iterchildren())
@@ -46,7 +47,7 @@ key: value
     if a == 2: value_2
     value_3
 """
-        manifest = self.compile(data, {"a":3})
+        manifest = self.compile(data, {"a": 3})
 
         children = list(item for item in manifest.iterchildren())
         section = children[0]
@@ -57,10 +58,10 @@ key: value
   if a == "1": value_1
   if a[0] == "ab"[0]: value_2
 """
-        manifest = self.compile(data, {"a":"1"})
+        manifest = self.compile(data, {"a": "1"})
         self.assertEquals(manifest.get("key"), "value_1")
 
-        manifest = self.compile(data, {"a":"ac"})
+        manifest = self.compile(data, {"a": "ac"})
         self.assertEquals(manifest.get("key"), "value_2")
 
     def test_get_4(self):
@@ -68,12 +69,11 @@ key: value
   if not a: value_1
   value_2
 """
-        manifest = self.compile(data, {"a":True})
+        manifest = self.compile(data, {"a": True})
         self.assertEquals(manifest.get("key"), "value_2")
 
-        manifest = self.compile(data, {"a":False})
+        manifest = self.compile(data, {"a": False})
         self.assertEquals(manifest.get("key"), "value_1")
-
 
     def test_api(self):
         data = """key:
@@ -81,7 +81,7 @@ key: value
   value_2
 key_1: other_value
 """
-        manifest = self.compile(data, {"a":1.5})
+        manifest = self.compile(data, {"a": 1.5})
 
         self.assertFalse(manifest.is_empty)
         self.assertEquals(manifest.root, manifest)
@@ -99,4 +99,3 @@ key_1: other_value
         manifest = self.compile(data, {})
 
         self.assertTrue(manifest.is_empty)
-

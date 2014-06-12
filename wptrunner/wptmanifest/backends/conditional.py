@@ -3,6 +3,7 @@ import operator
 from ..node import NodeVisitor, DataNode, ConditionalNode, KeyValueNode, ValueNode
 from ..parser import parse
 
+
 class ConditionalValue(object):
     def __init__(self, node, condition_func):
         self.node = node
@@ -35,10 +36,11 @@ class ConditionalValue(object):
             self.node.parent.remove()
         self.node.remove()
 
+
 class Compiler(NodeVisitor):
     def compile(self, tree, data_cls_getter=None, **kwargs):
         if data_cls_getter is None:
-            self.data_cls_getter = lambda x, y:ManifestItem
+            self.data_cls_getter = lambda x, y: ManifestItem
         else:
             self.data_cls_getter = data_cls_getter
 
@@ -90,13 +92,14 @@ class Compiler(NodeVisitor):
         self.output_node._add_key_value(node, key_values)
 
     def visit_ValueNode(self, node):
-        return (lambda x:True, node.data)
+        return (lambda x: True, node.data)
 
     def visit_ConditionalNode(self, node):
         return self.visit(node.children[0]), self.visit(node.children[1])
 
     def visit_StringNode(self, node):
         indexes = [self.visit(child) for child in node.children]
+
         def value(x):
             rv = node.data
             for index in indexes:
@@ -112,6 +115,7 @@ class Compiler(NodeVisitor):
 
     def visit_VariableNode(self, node):
         indexes = [self.visit(child) for child in node.children]
+
         def value(x):
             data = x[node.data]
             for index in indexes:
@@ -139,8 +143,7 @@ class Compiler(NodeVisitor):
         assert operand_0 is not None
         assert operand_1 is not None
 
-        return lambda x:operator(operand_0(x), operand_1(x))
-
+        return lambda x: operator(operand_0(x), operand_1(x))
 
     def visit_UnaryOperatorNode(self, node):
         return {"not": operator.not_}[node.data]
@@ -150,6 +153,7 @@ class Compiler(NodeVisitor):
                 "or": operator.or_,
                 "==": operator.eq,
                 "!=": operator.ne}[node.data]
+
 
 class ManifestItem(object):
     def __init__(self, node=None, **kwargs):
@@ -164,7 +168,7 @@ class ManifestItem(object):
     def __str__(self):
         rv = [repr(self)]
         for item in self.children:
-            rv.extend("  %s"%line for line in str(item).split("\n"))
+            rv.extend("  %s" % line for line in str(item).split("\n"))
         return "\n".join(rv)
 
     @property
@@ -206,15 +210,15 @@ class ManifestItem(object):
         raise KeyError
 
     def set(self, key, value, condition=None):
-        #First try to update the existing value
+        # First try to update the existing value
         if key in self._data:
             cond_values = self._data[key]
             for cond_value in cond_values:
                 if cond_value.condition_node == condition:
                     cond_value.value = value
                     return
-            #If there isn't a conditional match reuse the existing KeyValueNode as the
-            #parent
+            # If there isn't a conditional match reuse the existing KeyValueNode as the
+            # parent
             node = None
             for child in self.node.children:
                 if child.data == key:
@@ -245,7 +249,6 @@ class ManifestItem(object):
             self._data[key].insert(len(self._data[key]) - 1, cond_value)
         else:
             self._data[key].append(cond_value)
-
 
     def _add_key_value(self, node, values):
         """Called during construction to set a key-value node"""
@@ -293,8 +296,10 @@ class ManifestItem(object):
             del self._data[key]
         value.remove()
 
+
 def compile_ast(ast, data_cls_getter=None, **kwargs):
     return Compiler().compile(ast, data_cls_getter=data_cls_getter, **kwargs)
+
 
 def compile(stream, data_cls_getter=None, **kwargs):
     return compile_ast(parse(stream),

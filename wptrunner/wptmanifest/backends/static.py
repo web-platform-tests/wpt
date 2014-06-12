@@ -3,6 +3,7 @@ import operator
 from ..node import NodeVisitor
 from ..parser import parse
 
+
 class Compiler(NodeVisitor):
     """Compiler backend that evaluates conditional expressions
     to give static output"""
@@ -12,7 +13,7 @@ class Compiler(NodeVisitor):
         self.expr_data = expr_data
 
         if data_cls_getter is None:
-            self.data_cls_getter = lambda x, y:ManifestItem
+            self.data_cls_getter = lambda x, y: ManifestItem
         else:
             self.data_cls_getter = data_cls_getter
 
@@ -75,7 +76,7 @@ class Compiler(NodeVisitor):
     def visit_IndexNode(self, node):
         assert len(node.children) == 1
         index = self.visit(node.children[0])
-        return lambda x:x[index]
+        return lambda x: x[index]
 
     def visit_UnaryExpressionNode(self, node):
         assert len(node.children) == 2
@@ -101,6 +102,7 @@ class Compiler(NodeVisitor):
                 "==": operator.eq,
                 "!=": operator.ne}[node.data]
 
+
 class ManifestItem(object):
     def __init__(self, name, **kwargs):
         self.parent = None
@@ -114,7 +116,7 @@ class ManifestItem(object):
     def __str__(self):
         rv = [repr(self)]
         for item in self.children:
-            rv.extend("  %s"%line for line in str(item).split("\n"))
+            rv.extend("  %s" % line for line in str(item).split("\n"))
         return "\n".join(rv)
 
     @property
@@ -183,11 +185,13 @@ class ManifestItem(object):
         self.children.append(child)
         return child
 
+
 def compile_ast(ast, expr_data, data_cls_getter=None, **kwargs):
     return Compiler().compile(ast,
                               expr_data,
                               data_cls_getter=data_cls_getter,
                               **kwargs)
+
 
 def compile(stream, expr_data, data_cls_getter=None, **kwargs):
     return compile_ast(parse(stream),

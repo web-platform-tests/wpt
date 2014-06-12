@@ -7,6 +7,7 @@ from .. import parser
 # There aren't many tests here because it turns out to be way more convenient to
 # use test_serializer for the majority of cases
 
+
 class TestExpression(unittest.TestCase):
     def setUp(self):
         self.parser = parser.Parser()
@@ -27,40 +28,40 @@ class TestExpression(unittest.TestCase):
 
     def test_expr_0(self):
         self.compare(
-"""
+            """
 key:
   if x == 1 : value""",
-["DataNode", None,
- [["KeyValueNode", "key",
-   [["ConditionalNode", None,
-     [["BinaryExpressionNode", None,
-       [["BinaryOperatorNode", "==", []],
-        ["VariableNode", "x", []],
-        ["NumberNode", "1", []]
-       ]],
-      ["ValueNode", "value", []],
-]]]]]]
-)
+            ["DataNode", None,
+             [["KeyValueNode", "key",
+               [["ConditionalNode", None,
+                 [["BinaryExpressionNode", None,
+                   [["BinaryOperatorNode", "==", []],
+                    ["VariableNode", "x", []],
+                       ["NumberNode", "1", []]
+                    ]],
+                     ["ValueNode", "value", []],
+                  ]]]]]]
+        )
 
     def test_expr_1(self):
         self.compare(
-"""
+            """
 key:
   if not x and y : value""",
-["DataNode", None,
- [["KeyValueNode", "key",
-   [["ConditionalNode", None,
-     [["BinaryExpressionNode", None,
-       [["BinaryOperatorNode", "and", []],
-        ["UnaryExpressionNode", None,
-         [["UnaryOperatorNode", "not", []],
-          ["VariableNode", "x", []]
-        ]],
-        ["VariableNode", "y", []]
-       ]],
-      ["ValueNode", "value", []],
-]]]]]]
-)
+            ["DataNode", None,
+             [["KeyValueNode", "key",
+               [["ConditionalNode", None,
+                 [["BinaryExpressionNode", None,
+                   [["BinaryOperatorNode", "and", []],
+                    ["UnaryExpressionNode", None,
+                       [["UnaryOperatorNode", "not", []],
+                        ["VariableNode", "x", []]
+                        ]],
+                       ["VariableNode", "y", []]
+                    ]],
+                     ["ValueNode", "value", []],
+                  ]]]]]]
+        )
 
 if __name__ == "__main__":
     unittest.main()

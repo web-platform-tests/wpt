@@ -6,6 +6,7 @@ from cStringIO import StringIO
 from .. import parser
 from ..parser import token_types
 
+
 class TokenizerTest(unittest.TestCase):
     def setUp(self):
         self.tokenizer = parser.Tokenizer()
@@ -90,7 +91,6 @@ class TokenizerTest(unittest.TestCase):
     def test_key_4(self):
         with self.assertRaises(parser.ParseError):
             self.tokenize("""ke y: value""")
-
 
     def test_key_5(self):
         with self.assertRaises(parser.ParseError):
@@ -200,11 +200,11 @@ key:
 
     def test_expr_4(self):
         self.compare(
-"""
+            """
 key:
   if cond==1.1 and cond2 == "a": value""",
             [(token_types.string, "key"),
-            (token_types.separator, ":"),
+             (token_types.separator, ":"),
              (token_types.group_start, None),
              (token_types.ident, "if"),
              (token_types.ident, "cond"),

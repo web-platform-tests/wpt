@@ -3,6 +3,7 @@ import importlib
 
 here = os.path.join(os.path.split(__file__)[0])
 
+
 def iter_products():
     product_dir = os.path.join(here, "browsers")
     plugin_files = [os.path.splitext(x)[0] for x in os.listdir(product_dir)

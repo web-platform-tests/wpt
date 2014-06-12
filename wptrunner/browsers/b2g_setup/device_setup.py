@@ -18,8 +18,9 @@ def main(options):
     print "Forwarding marionette port"
     ret = dm.forward("tcp:2828", "tcp:2828")
     if ret != 0:
-        #TODO: right thing here is to keep trying local ports and pass that value in our config
-        raise Exception("Can't use localhost:2828 for port forwarding. Is something else using port 2828?")
+        # TODO: right thing here is to keep trying local ports and pass that value in our config
+        raise Exception(
+            "Can't use localhost:2828 for port forwarding. Is something else using port 2828?")
     # install the app
     print "installing the app"
     f = open("app_install.js", "r")
@@ -32,11 +33,11 @@ def main(options):
     m.execute_async_script(script)
     m.delete_session()
 
-    
+
 if __name__ == "__main__":
     parser = OptionParser()
     # TODO: take in device serial and marionette port, though likely won't be useful
     parser.add_option("--adb-path", dest="adb_path",
-                        help="path to adb executable")
+                      help="path to adb executable")
     (options, args) = parser.parse_args()
     main(options)

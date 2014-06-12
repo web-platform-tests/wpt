@@ -5,6 +5,7 @@
 import subprocess
 from functools import partial
 
+
 def vcs(bin_name):
     def inner(command, *args, **kwargs):
         repo = kwargs.pop("repo", None)
@@ -30,8 +31,10 @@ def vcs(bin_name):
 git = vcs("git")
 hg = vcs("hg")
 
+
 def bind_to_repo(vcs_func, repo):
     return partial(vcs_func, repo=repo)
+
 
 def is_git_root(path):
     try:
@@ -39,5 +42,4 @@ def is_git_root(path):
     except subprocess.CalledProcessError:
         return False
     print rv
-    return  rv == "\n"
-
+    return rv == "\n"

@@ -132,10 +132,10 @@ class TestNode(ManifestItem):
 
         for conditional_value, results in self.updated_expected:
             if not results:
-                #The conditional didn't match anything in these runs so leave it alone
+                # The conditional didn't match anything in these runs so leave it alone
                 final_conditionals.append(conditional_value)
             elif all(results[0].status == result.status for result in results):
-                #All the new values for this conditional matched, so update the node
+                # All the new values for this conditional matched, so update the node
                 result = results[0]
                 if (result.status == unconditional_status and
                     conditional_value.condition_node is not None):

@@ -13,13 +13,16 @@ import products
 
 root = os.path.join(os.path.split(__file__)[0])
 
+
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
+
 
 def slash_prefixed(url):
     if not url.startswith("/"):
         url = "/" + url
     return url
+
 
 def require_arg(kwargs, name, value_func=None):
     if value_func is None:
@@ -28,6 +31,7 @@ def require_arg(kwargs, name, value_func=None):
     if not name in kwargs or not value_func(kwargs[name]):
         print >> sys.stderr, "Missing required argument %s" % name
         sys.exit(1)
+
 
 def create_parser(allow_mandatory=True):
     if not allow_mandatory:
@@ -49,7 +53,7 @@ def create_parser(allow_mandatory=True):
                         help="Path to the folder containing browser prefs"),
     parser.add_argument("--test-types", action="store",
                         nargs="*", default=["testharness", "reftest"],
-                    choices=["testharness", "reftest"],
+                        choices=["testharness", "reftest"],
                         help="Test types to run")
     parser.add_argument("--processes", action="store", type=int, default=1,
                         help="Number of simultaneous processes to use")
@@ -94,12 +98,13 @@ def create_parser(allow_mandatory=True):
 
 def check_args(kwargs):
     if kwargs["this_chunk"] > 1:
-        require_arg(kwargs, "total_chunks", lambda x:x >= kwargs["this_chunk"])
+        require_arg(kwargs, "total_chunks", lambda x: x >= kwargs["this_chunk"])
 
         if kwargs["chunk_type"] == "none":
             kwargs["chunk_type"] = "equal_time"
 
     return kwargs
+
 
 def create_parser_update(allow_mandatory=True):
     if not allow_mandatory:
@@ -121,15 +126,17 @@ def create_parser_update(allow_mandatory=True):
     parser.add_argument("--update-expected-type", action="store", dest="run_type",
                         choices=["none", "try", "logfile"],
                         default="none", help="Process to use for updating the expectation data")
-    #Should make this required iff run=logfile
+    # Should make this required iff run=logfile
     parser.add_argument("run_log", nargs="*", type=abs_path,
                         help="Log file from run of tests")
     return parser
+
 
 def create_parser_reduce(allow_mandatory=True):
     parser = create_parser(allow_mandatory)
     parser.add_argument("target", action="store", help="Test id that is unstable")
     return parser
+
 
 def parse_args():
     parser = create_parser()

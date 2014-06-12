@@ -22,8 +22,10 @@ __wptrunner__ = {"product": "b2g",
                  "executor_kwargs": "get_executor_kwargs",
                  "env_options": "env_options"}
 
+
 def check_args(**kwargs):
     pass
+
 
 def browser_kwargs(**kwargs):
     return {"prefs_root": kwargs["prefs_root"],
@@ -36,7 +38,7 @@ def get_executor_kwargs(http_server_url, **kwargs):
         timeout_multiplier = 2
 
     executor_kwargs = {"http_server_url": http_server_url,
-                       "timeout_multiplier":timeout_multiplier,
+                       "timeout_multiplier": timeout_multiplier,
                        "close_after_done": False}
     return executor_kwargs
 
@@ -45,6 +47,7 @@ def env_options():
     return {"host": "web-platform.test",
             "bind_hostname": "false",
             "test_server_port": False}
+
 
 class B2GBrowser(Browser):
     used_ports = set()
@@ -95,7 +98,7 @@ class B2GBrowser(Browser):
                                  # "dom.ipc.browser_frames.oop_by_default": False,
                                  # "marionette.force-local": True,
                                  # "dom.testing.datastore_enabled_for_hosted_apps": True
-        })
+                                 })
 
         self.runner = B2GRunner(profile, self.device, marionette_port=self.marionette_port)
         self.runner.start()
@@ -155,6 +158,7 @@ class B2GBrowser(Browser):
         # consider the possibility that wlan0 is not the right interface
 
         self.logger.info("Waiting for net connection")
+
         def has_connection():
             try:
                 return self.device.getIP(["wlan0"]) is not None
@@ -196,6 +200,7 @@ class B2GBrowser(Browser):
     def executor_browser(self):
         return B2GExecutorBrowser, {"marionette_port": self.marionette_port}
 
+
 class B2GExecutorBrowser(ExecutorBrowser):
     # The following methods are called from a different process
     def __init__(self, *args, **kwargs):
@@ -235,7 +240,8 @@ class B2GExecutorBrowser(ExecutorBrowser):
         # app management is done in the system app
         marionette.switch_to_frame()
 
-        # TODO: replace this with pkg_resources if we know that we'll be installing this as a package
+        # TODO: replace this with pkg_resources if we know that we'll be
+        # installing this as a package
         marionette.import_script(os.path.join(here, "b2g_setup", "app_management.js"))
         script = "GaiaApps.launchWithName('CertTest App');"
 
@@ -286,6 +292,7 @@ if (app) {
     }
   });
 }""", script_timeout=30000)
+
 
 class B2GMarionetteTestharnessExecutor(MarionetteTestharnessExecutor):
     def after_connect(self):

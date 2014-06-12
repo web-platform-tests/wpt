@@ -18,24 +18,28 @@ import manifestupdate
 import wptmanifest
 import wpttest
 from vcs import git
-manifest = None # Module that will be imported relative to test_root
+manifest = None  # Module that will be imported relative to test_root
 
 logger = structuredlog.StructuredLogger("web-platform-tests")
 
+
 def manifest_path(metadata_root):
     return os.path.join(metadata_root, "MANIFEST.json")
+
 
 def load_test_manifest(test_root, metadata_root):
     do_test_relative_imports(test_root)
     return manifest.load(manifest_path(metadata_root))
 
+
 def update_manifest(git_root, metadata_root):
     manifest.setup_git(git_root)
-    #Create an entirely new manifest
+    # Create an entirely new manifest
     new_manifest = manifest.Manifest(None)
     manifest.update(new_manifest)
     manifest.write(new_manifest, manifest_path(metadata_root))
     return new_manifest
+
 
 def update_expected(test_root, metadata_root, log_file_names, rev_old=None, rev_new="HEAD"):
     """Update the metadata files for web-platform-tests based on
@@ -60,6 +64,7 @@ def update_expected(test_root, metadata_root, log_file_names, rev_old=None, rev_
 
     return unexpected_changes(change_data, results_changed)
 
+
 def do_test_relative_imports(test_root):
     global manifest
 
@@ -67,8 +72,10 @@ def do_test_relative_imports(test_root):
     sys.path.insert(0, os.path.join(test_root, "tools", "scripts"))
     import manifest
 
+
 def files_in_repo(repo_root):
     return git("ls-tree", "-r", "--name-only", "HEAD").split("\n")
+
 
 def rev_range(rev_old, rev_new, symmetric=False):
     joiner = ".." if not symmetric else ".."
@@ -89,10 +96,11 @@ def load_change_data(rev_old, rev_new, repo):
     status_keys = {"M": "modified",
                    "A": "new",
                    "D": "deleted"}
-    #TODO: deal with renames
+    # TODO: deal with renames
     for item in changes:
         rv[item[1]] = status_keys[item[0]]
     return rv
+
 
 def unexpected_changes(change_data, files_changed):
     rv = []
@@ -114,6 +122,7 @@ def unexpected_changes(change_data, files_changed):
 #      If any new values mismatch mark the test as needing human attention
 #   Check if all the RHS values are the same; if so collapse the conditionals
 
+
 def update_from_logs(metadata_path, manifest, *log_filenames):
     expected_map, id_path_map = create_test_tree(metadata_path, manifest)
     updater = ExpectedUpdater(expected_map, id_path_map)
@@ -131,21 +140,22 @@ def update_from_logs(metadata_path, manifest, *log_filenames):
 
 
 def write_changes(metadata_path, expected_map):
-    #First write the new manifest files to a temporary directory
+    # First write the new manifest files to a temporary directory
     temp_path = tempfile.mkdtemp()
     write_new_expected(temp_path, expected_map)
     shutil.copyfile(os.path.join(metadata_path, "MANIFEST.json"),
                     os.path.join(temp_path, "MANIFEST.json"))
 
-    #Then move the old manifest files to a new location
+    # Then move the old manifest files to a new location
     temp_path_2 = metadata_path + str(uuid.uuid4)
     os.rename(metadata_path, temp_path_2)
-    #Move the new files to the destination location and remove the old files
+    # Move the new files to the destination location and remove the old files
     os.rename(temp_path, metadata_path)
     shutil.rmtree(temp_path_2)
 
+
 def write_new_expected(metadata_path, expected_map):
-    #Serialize the data back to a file
+    # Serialize the data back to a file
     for tree in expected_map.itervalues():
         if not tree.is_empty:
             manifest_str = wptmanifest.serialize(tree.node, skip_empty_data=True)
@@ -156,6 +166,7 @@ def write_new_expected(metadata_path, expected_map):
                 os.makedirs(dir)
             with open(path, "w") as f:
                 f.write(manifest_str.encode("utf8"))
+
 
 class ExpectedUpdater(object):
     def __init__(self, expected_tree, id_path_map):
@@ -208,7 +219,6 @@ class ExpectedUpdater(object):
 
         subtest.set_result(self.run_info, result)
 
-
     def test_end(self, data):
         test_id = self.test_id(data["test"])
         test = self.test_cache[test_id]
@@ -220,6 +230,7 @@ class ExpectedUpdater(object):
 
         test.set_result(self.run_info, result)
         del self.test_cache[test_id]
+
 
 def create_test_tree(metadata_path, manifest):
     expected_map = {}
@@ -242,11 +253,13 @@ def create_test_tree(metadata_path, manifest):
 
     return expected_map, test_id_path_map
 
+
 def create_expected(test_path, tests):
     expected = manifestupdate.ExpectedManifest(None, test_path)
     for test in tests:
         expected.append(manifestupdate.TestNode.create(test.item_type, test.id))
     return expected
+
 
 def load_expected(metadata_path, test_path, tests):
     expected_manifest = manifestupdate.get_manifest(metadata_path, test_path)

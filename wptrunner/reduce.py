@@ -10,6 +10,7 @@ from mozlog.structured import commandline, reader
 
 logger = None
 
+
 def setup_logging(args, defaults):
     global logger
     logger = commandline.setup_logging("web-platform-tests-unstable", args, defaults)
@@ -21,20 +22,23 @@ def setup_logging(args, defaults):
 
     return logger
 
+
 def group(items, size):
     rv = []
     i = 0
     while i < len(items):
-        rv.append(items[i:i+size])
+        rv.append(items[i:i + size])
         i += size
 
     return rv
+
 
 def next_power_of_two(num):
     rv = 1
     while rv < num:
         rv = rv << 1
     return rv
+
 
 class Reducer(object):
     def __init__(self, target, **kwargs):
@@ -75,7 +79,7 @@ class Reducer(object):
             chunk_results = [None] * len(chunks)
 
             for i, chunk in enumerate(chunks):
-                logger.debug("Running chunk %i/%i of size %i" % (i+1, len(chunks), chunk_size))
+                logger.debug("Running chunk %i/%i of size %i" % (i + 1, len(chunks), chunk_size))
                 trial_tests = []
                 chunk_str = ""
                 for j, inc_chunk in enumerate(chunks):
@@ -90,8 +94,8 @@ class Reducer(object):
                 chunk_results[i] = self.unstable(trial_tests)
 
                 # if i == len(chunks) - 2 and all(item is False for item in chunk_results[:-1]):
-                #     # Dangerous? optimisation that if you got stability for 0..N-1 chunks
-                #     # it must be unstable with the Nth chunk
+                # Dangerous? optimisation that if you got stability for 0..N-1 chunks
+                # it must be unstable with the Nth chunk
                 #     chunk_results[i+1] = True
                 #     continue
 
@@ -135,7 +139,8 @@ class Reducer(object):
 
             sys.stdout, sys.stderr = stdout, stderr
 
-        logger.debug("Result %s unstable with chunk removed" % ("was" if is_unstable else "was not"))
+        logger.debug("Result %s unstable with chunk removed" %
+                     ("was" if is_unstable else "was not"))
 
         return is_unstable
 
@@ -168,7 +173,7 @@ class Reducer(object):
         return any(len(item) > 1 for item in statuses.itervalues())
 
     def get_initial_tests(self):
-        #Need to pass in arguments
+        # Need to pass in arguments
 
         all_tests = self.test_loader.load_tests([self.test_type],
                                                 "none", 1, 1)[self.test_type]
@@ -181,6 +186,7 @@ class Reducer(object):
         logger.debug("Starting with tests: %s" % ("\n".join(item.id for item in tests)))
 
         return tests
+
 
 def do_reduce(**kwargs):
     target = kwargs.pop("target")

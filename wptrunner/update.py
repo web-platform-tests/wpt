@@ -18,6 +18,7 @@ import wptcommandline
 
 base_path = os.path.abspath(os.path.split(__file__)[0])
 
+
 def do_test_relative_imports(test_root):
     global manifest
 
@@ -25,8 +26,10 @@ def do_test_relative_imports(test_root):
     sys.path.insert(0, os.path.join(test_root, "tools", "scripts"))
     import manifest
 
+
 class RepositoryError(Exception):
     pass
+
 
 class WebPlatformTests(object):
     def __init__(self, remote_url, repo_path, rev="origin/master"):
@@ -67,7 +70,8 @@ class WebPlatformTests(object):
         git("branch", "-D", self.local_branch, repo=self.repo_path)
 
     def _tree_paths(self):
-        repo_paths = [self.repo_path] + [os.path.join(self.repo_path, path) for path in self._submodules()]
+        repo_paths = [self.repo_path] +  [os.path.join(self.repo_path, path)
+                                          for path in self._submodules()]
 
         rv = []
 
@@ -116,6 +120,7 @@ class WebPlatformTests(object):
             dest_path = os.path.join(dest, destination, os.path.split(source)[1])
             shutil.copy2(source_path, dest_path)
 
+
 class NoVCSTree(object):
     name = "non-vcs"
 
@@ -142,6 +147,7 @@ class NoVCSTree(object):
 
     def commit_patch(self):
         pass
+
 
 class HgTree(object):
     name = "mercurial"
@@ -173,7 +179,7 @@ class HgTree(object):
     def create_patch(self, patch_name, message):
         try:
             pass
-            #self.hg("qinit")
+            # self.hg("qinit")
         except subprocess.CalledProcessError:
             # There is already a patch queue in this repo
             # Should only happen during development
@@ -192,6 +198,7 @@ class HgTree(object):
 
     def commit_patch(self):
         self.hg("qfinish", repo=self.repo_root)
+
 
 class GitTree(object):
     name = "git"
@@ -239,13 +246,14 @@ class GitTree(object):
     def commit_patch(self):
         pass
 
+
 class Try(object):
     def __init__(self, url):
         self.url = url
 
     def options_message(self):
-        #Just hardcode what's actually needed here for now
-        #XXX - probably want more platforms
+        # Just hardcode what's actually needed here for now
+        # XXX - probably want more platforms
         return "try: -b o -p linux -u web-platform-tests -t none"
 
     def push(self, local_tree):
@@ -255,6 +263,7 @@ class Try(object):
         hg("push", "-f", "-r tip", try_server.url, repo=local_tree.root)
         hg("qpop", repo=local_tree.root)
         hg("qremove", patch_name, repo=local_tree.root)
+
 
 class Runner(object):
     def __init__(self, config, bug):
@@ -270,13 +279,14 @@ class Runner(object):
     def cleanup(self):
         pass
 
+
 class TryRunner(Runner):
     def __init__(self, config, bug):
         self.bug = bug
         self.server = Try(config["try"]["url"])
 
     def do_run(self, local_tree, log_file):
-#        self.bug.comment("Pushing hg revision %s to try" % local_tree.revision)
+        #        self.bug.comment("Pushing hg revision %s to try" % local_tree.revision)
         self.server.push(local_tree)
 
         sys.exit(0)
@@ -298,6 +308,7 @@ class LogFilesRunner(Runner):
 
     def do_run(self, local_tree):
         return self.config["command-args"]["run_log"]
+
 
 class ConfigDict(dict):
     def __init__(self, base_path, *args, **kwargs):
@@ -324,6 +335,7 @@ def ensure_exists(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
+
 def sync_tests(config, paths, local_tree, wpt, bug):
     wpt.update()
 
@@ -333,10 +345,10 @@ def sync_tests(config, paths, local_tree, wpt, bug):
         wpt.copy_work_tree(paths["test"])
         new_manifest = metadata.update_manifest(paths["sync"], paths["metadata"])
 
-        local_tree.create_patch("web-platform-tests_update_%s"  % wpt.rev,
-                                  "Bug %i - Update web-platform-tests to revision %s" % (
-                                      bug.id if bug else 0, wpt.rev
-                                  ))
+        local_tree.create_patch("web-platform-tests_update_%s" % wpt.rev,
+                                "Bug %i - Update web-platform-tests to revision %s" % (
+                                    bug.id if bug else 0, wpt.rev
+                                ))
         local_tree.add_new(os.path.relpath(paths["test"], local_tree.root))
         local_tree.update_patch(include=[paths["test"], paths["metadata"]])
     except Exception as e:
@@ -344,9 +356,10 @@ def sync_tests(config, paths, local_tree, wpt, bug):
         sys.stderr.write(traceback.format_exc())
         raise
     finally:
-        pass#wpt.clean()
+        pass  # wpt.clean()
 
     return initial_manifest, new_manifest
+
 
 def update_metadata(config, paths, local_tree, wpt, initial_rev, bug):
     try:
@@ -356,13 +369,13 @@ def update_metadata(config, paths, local_tree, wpt, initial_rev, bug):
         with runner_cls(config, bug) as runner:
             log_files = runner.do_run(local_tree)
             try:
-                #XXX remove try/except
-                local_tree.create_patch("web-platform-tests_update_%s_metadata"  % wpt.rev,
-                                          "Bug %i - Update web-platform-tests expected data to revision %s" % (
-                                              bug.id if bug else 0, wpt.rev
-                                          ))
+                # XXX remove try/except
+                local_tree.create_patch("web-platform-tests_update_%s_metadata" % wpt.rev,
+                                        "Bug %i - Update web-platform-tests expected data to revision %s" % (
+                                            bug.id if bug else 0, wpt.rev
+                                        ))
             except subprocess.CalledProcessError:
-                #Patch with that name already exists, probably
+                # Patch with that name already exists, probably
                 pass
             needs_human = metadata.update_expected(paths["sync"],
                                                    paths["metadata"],
@@ -376,7 +389,7 @@ def update_metadata(config, paths, local_tree, wpt, initial_rev, bug):
         sys.stderr.write(traceback.format_exc())
         raise
     finally:
-        pass#wpt.clean()
+        pass  # wpt.clean()
 
 
 def run_update(**kwargs):
@@ -421,10 +434,9 @@ def run_update(**kwargs):
 
     sys.exit(1)
 
-
     ### Unimplemented past this point ###
 
-    #Need to be more careful about only operating on patches that we have actually added
+    # Need to be more careful about only operating on patches that we have actually added
 
     local_tree.commit_patch_queue()
 
@@ -437,6 +449,7 @@ def run_update(**kwargs):
     else:
         #bug.comment("Not auto updating because of unexpected changes in the following files: ")
         pass
+
 
 def main():
     parser = wptcommandline.create_parser_update()

@@ -4,11 +4,13 @@ sys.path.insert(0, "..")
 
 import wptrunner
 
+
 class MockTest(object):
     def __init__(self, id, timeout=10):
         self.id = id
         self.item_type = "testharness"
         self.timeout = timeout
+
 
 def make_mock_manifest(*items):
     rv = []
@@ -16,6 +18,7 @@ def make_mock_manifest(*items):
         for i in range(num_tests):
             rv.append((dir_path + "/%i.test" % i, set([MockTest(i)])))
     return rv
+
 
 class TestEqualTimeChunker(unittest.TestCase):
 

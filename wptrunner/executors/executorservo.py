@@ -29,7 +29,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
 
         timeout = test.timeout * self.timeout_multiplier
 
-        #Now wait to get the output we expect, or until we reach the timeout
+        # Now wait to get the output we expect, or until we reach the timeout
         self.result_flag.wait(timeout + 5)
 
         if self.result_flag.is_set():

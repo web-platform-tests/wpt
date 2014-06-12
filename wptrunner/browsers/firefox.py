@@ -24,12 +24,15 @@ __wptrunner__ = {"product": "firefox",
                  "executor_kwargs": "get_executor_kwargs",
                  "env_options": "env_options"}
 
+
 def check_args(**kwargs):
     require_arg(kwargs, "binary")
+
 
 def browser_kwargs(**kwargs):
     return {"binary": kwargs["binary"],
             "prefs_root": kwargs["prefs_root"]}
+
 
 def get_executor_kwargs(http_server_url, **kwargs):
 
@@ -37,9 +40,11 @@ def get_executor_kwargs(http_server_url, **kwargs):
     executor_kwargs["close_after_done"] = True
     return executor_kwargs
 
+
 def env_options():
     return {"host": "localhost",
             "bind_hostname": "true"}
+
 
 class FirefoxBrowser(Browser):
     used_ports = set()
@@ -119,4 +124,3 @@ class FirefoxBrowser(Browser):
 
     def executor_browser(self):
         return ExecutorBrowser, {"marionette_port": self.marionette_port}
-

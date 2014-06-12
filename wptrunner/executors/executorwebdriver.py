@@ -15,11 +15,13 @@ here = os.path.join(os.path.split(__file__)[0])
 webdriver = None
 exceptions = None
 
+
 def do_delayed_imports():
     global webdriver
     global exceptions
     from selenium import webdriver
     from selenium.common import exceptions
+
 
 class WebdriverTestExecutor(TestExecutor):
     def __init__(self, browser, http_server_url, timeout_multiplier=1, **kwargs):
@@ -36,7 +38,8 @@ class WebdriverTestExecutor(TestExecutor):
         """Connect to browser via webdriver"""
         self.runner = runner
 
-        self.logger.debug("Connecting to webdriver on url http://localhost:%i/wd/url" % self.webdriver_port)
+        self.logger.debug(
+            "Connecting to webdriver on url http://localhost:%i/wd/url" % self.webdriver_port)
 
         session_started = False
 
@@ -76,9 +79,9 @@ class WebdriverTestExecutor(TestExecutor):
 
     def is_alive(self):
         try:
-            #Get a simple property over the connection
+            # Get a simple property over the connection
             self.webdriver.current_window_handle
-        #TODO what exception?
+        # TODO what exception?
         except (socket.timeout, exceptions.ErrorInResponseException):
             return False
         return True
@@ -94,10 +97,10 @@ class WebdriverTestExecutor(TestExecutor):
         This method is independent of the test type, and calls
         do_test to implement the type-sepcific testing functionality.
         """
-        #Lock to prevent races between timeouts and other results
-        #This might not be strictly necessary if we need to deal
-        #with the result changing post-hoc anyway (e.g. due to detecting
-        #a crash after we get the data back from webdriver)
+        # Lock to prevent races between timeouts and other results
+        # This might not be strictly necessary if we need to deal
+        # with the result changing post-hoc anyway (e.g. due to detecting
+        # a crash after we get the data back from webdriver)
         result = None
         result_flag = threading.Event()
         result_lock = threading.Lock()
@@ -144,7 +147,7 @@ class WebdriverTestExecutor(TestExecutor):
             #         break
             # Now need to check if the browser is still responsive and restart it if not
 
-        #TODO: try to detect crash here
+        # TODO: try to detect crash here
         except (socket.timeout, exceptions.ErrorInResponseException):
             # This can happen on a crash
             # Also, should check after the test if the firefox process is still running

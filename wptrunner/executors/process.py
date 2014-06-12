@@ -1,5 +1,6 @@
 from .base import TestExecutor
 
+
 class ProcessTestExecutor(TestExecutor):
     def __init__(self, *args, **kwargs):
         TestExecutor.__init__(self, *args, **kwargs)

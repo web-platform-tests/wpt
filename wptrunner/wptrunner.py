@@ -75,7 +75,8 @@ def do_test_relative_imports(test_root):
 
     sys.path.insert(0, os.path.join(test_root))
     sys.path.insert(0, os.path.join(test_root, "tools", "scripts"))
-    import serve, manifest
+    import serve
+    import manifest
 
 
 class TestEnvironmentError(Exception):
@@ -145,7 +146,8 @@ class TestEnvironment(object):
                     try:
                         s.connect((self.config["host"], port))
                     except socket.error:
-                        raise EnvironmentError("%s server on port %d failed to start" % (scheme, port))
+                        raise EnvironmentError(
+                            "%s server on port %d failed to start" % (scheme, port))
                     finally:
                         s.close()
 
@@ -158,6 +160,7 @@ class TestEnvironment(object):
             if os.path.exists(path + ".orig"):
                 os.rename(path + ".orig", path)
 
+
 class TestChunker(object):
     def __init__(self, total_chunks, chunk_number):
         self.total_chunks = total_chunks
@@ -166,6 +169,7 @@ class TestChunker(object):
 
     def __call__(self, manifest):
         raise NotImplementedError
+
 
 class Unchunked(TestChunker):
     def __init__(self, *args, **kwargs):
@@ -176,12 +180,14 @@ class Unchunked(TestChunker):
         for item in manifest:
             yield item
 
+
 class HashChunker(TestChunker):
     def __call__(self):
         chunk_index = self.chunk_number - 1
         for test_path, tests in manifest:
             if hash(test_path) % self.total_chunks == chunk_index:
                 yield test_path, tests
+
 
 class EqualTimeChunker(TestChunker):
     """Chunker that uses the test timeout as a proxy for the running time of the test"""
@@ -207,7 +213,8 @@ class EqualTimeChunker(TestChunker):
                 by_dir[test_dir] = PathData()
 
             data = by_dir[test_dir]
-            time = sum(wpttest.DEFAULT_TIMEOUT if test.timeout != "long" else wpttest.LONG_TIMEOUT for test in tests)
+            time = sum(wpttest.DEFAULT_TIMEOUT if test.timeout !=
+                       "long" else wpttest.LONG_TIMEOUT for test in tests)
             data.time += time
             data.tests.append((test_path, tests))
 
@@ -216,7 +223,8 @@ class EqualTimeChunker(TestChunker):
         full_total_time = total_time
 
         if len(by_dir) < self.total_chunks:
-            raise ValueError("Tried to split into %i chunks, but only %i subdirectories included" % (self.total_chunks, len(by_dir)))
+            raise ValueError("Tried to split into %i chunks, but only %i subdirectories included" % (
+                self.total_chunks, len(by_dir)))
 
         n_chunks = self.total_chunks
         time_per_chunk = float(total_time) / n_chunks
@@ -266,7 +274,6 @@ class EqualTimeChunker(TestChunker):
                 chunks[-1][1].extend(data.tests)
                 chunks[-1][2] += data.time
 
-
         assert len(chunks) == self.total_chunks, len(chunks)
         assert sum(item[2] for item in chunks) == full_total_time
 
@@ -274,12 +281,12 @@ class EqualTimeChunker(TestChunker):
 
         return chunks[self.chunk_number - 1][1]
 
-
     def __call__(self, manifest_iter):
         manifest = list(manifest_iter)
         tests = self._get_chunk(manifest)
         for item in tests:
             yield item
+
 
 class TestFilter(object):
     def __init__(self, include=None, exclude=None, manifest_path=None):
@@ -306,6 +313,7 @@ class TestFilter(object):
 
             if include_tests:
                 yield test_path, include_tests
+
 
 class TestLoader(object):
     def __init__(self, tests_root, metadata_root, test_filter, run_info):
@@ -403,6 +411,7 @@ class TestLoader(object):
 
         return test_ids, tests_queue
 
+
 class LogThread(threading.Thread):
     def __init__(self, queue, logger, level):
         self.queue = queue
@@ -427,6 +436,7 @@ class LogThread(threading.Thread):
 class LoggingWrapper(StringIO):
     """Wrapper for file like objects to redirect output to logger
     instead"""
+
     def __init__(self, queue, prefix=None):
         self.queue = queue
         self.prefix = prefix
@@ -448,6 +458,7 @@ class LoggingWrapper(StringIO):
     def flush(self):
         pass
 
+
 def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
     do_test_relative_imports(tests_root)
 
@@ -459,6 +470,7 @@ def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
     for item in sorted(test_loader.get_groups(test_types)):
         print item
 
+
 def list_disabled(tests_root, metadata_root, test_types, product, **kwargs):
     rv = []
     run_info = wpttest.get_run_info(product, debug=False)
@@ -468,6 +480,7 @@ def list_disabled(tests_root, metadata_root, test_types, product, **kwargs):
         for test in tests:
             rv.append({"test": test.id, "reason": test.disabled()})
     print json.dumps(rv, indent=2)
+
 
 def run_tests(tests_root, metadata_root, product, **kwargs):
     logging_queue = None
@@ -536,7 +549,8 @@ def run_tests(tests_root, metadata_root, product, **kwargs):
                                                           **kwargs)
 
                     if executor_cls is None:
-                        logger.error("Unsupported test type %s for product %s" % (test_type, product))
+                        logger.error("Unsupported test type %s for product %s" %
+                                     (test_type, product))
                         continue
 
                     with ManagerGroup("web-platform-tests",

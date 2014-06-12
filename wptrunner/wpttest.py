@@ -2,12 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-DEFAULT_TIMEOUT = 10 #seconds
-LONG_TIMEOUT = 60 #seconds
+DEFAULT_TIMEOUT = 10  # seconds
+LONG_TIMEOUT = 60  # seconds
 
 import mozinfo
 
-#These are quite similar to moztest, but slightly different
+# These are quite similar to moztest, but slightly different
+
+
 class Result(object):
     def __init__(self, status, message, expected=None):
         if status not in self.statuses:
@@ -41,11 +43,13 @@ class TestharnessSubtestResult(SubtestResult):
     default_expected = "PASS"
     statuses = set(["PASS", "FAIL", "TIMEOUT", "NOTRUN"])
 
+
 def get_run_info(product, **kwargs):
     if product == "b2g":
         return B2GRunInfo(product, **kwargs)
     else:
         return RunInfo(product, **kwargs)
+
 
 class RunInfo(dict):
     def __init__(self, product, debug):
@@ -53,10 +57,12 @@ class RunInfo(dict):
         self["product"] = product
         self["debug"] = debug
 
+
 class B2GRunInfo(dict):
     def __init__(self, product, **kwargs):
         self["product"] = product
         self["os"] = "b2g"
+
 
 class Test(object):
     result_cls = None
@@ -111,6 +117,7 @@ class Test(object):
         except KeyError:
             return default
 
+
 class TestharnessTest(Test):
     result_cls = TestharnessResult
     subtest_result_cls = TestharnessSubtestResult
@@ -118,6 +125,7 @@ class TestharnessTest(Test):
     @property
     def id(self):
         return self.url
+
 
 class ManualTest(Test):
     @property
@@ -146,9 +154,10 @@ class ReftestTest(Test):
     def keys(self):
         return ("reftype", "refurl")
 
-manifest_test_cls = {"reftest":ReftestTest,
-                     "testharness":TestharnessTest,
-                     "manual":ManualTest}
+manifest_test_cls = {"reftest": ReftestTest,
+                     "testharness": TestharnessTest,
+                     "manual": ManualTest}
+
 
 def from_manifest(manifest_test, expected_metadata):
     test_cls = manifest_test_cls[manifest_test.item_type]

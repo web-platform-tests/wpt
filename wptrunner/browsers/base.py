@@ -6,12 +6,14 @@ from ..wptcommandline import require_arg
 
 here = os.path.split(__file__)[0]
 
+
 def cmd_arg(name, value=None):
     prefix = "-" if platform.system() == "Windows" else "--"
     rv = prefix + name
     if value is not None:
         rv += "=" + value
     return rv
+
 
 def get_free_port(start_port, exclude=None):
     """Get the first port number after start_port (inclusive) that is
@@ -91,6 +93,7 @@ class Browser(object):
         with which it should be instantiated"""
         return ExecutorBrowser, {}
 
+
 class NullBrowser(Browser):
     def start(self):
         """No-op browser to use in scenarios where the TestRunnerManager shouldn't
@@ -103,6 +106,7 @@ class NullBrowser(Browser):
 
     def is_alive(self):
         return True
+
 
 class ExecutorBrowser(object):
     def __init__(self, **kwargs):

@@ -3,14 +3,16 @@ import os
 
 here = os.path.split(__file__)[0]
 
+
 def get_executor_kwargs(http_server_url, **kwargs):
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 1
 
     executor_kwargs = {"http_server_url": http_server_url,
-                       "timeout_multiplier":timeout_multiplier}
+                       "timeout_multiplier": timeout_multiplier}
     return executor_kwargs
+
 
 class TestharnessResultConverter(object):
     harness_codes = {0: "OK",
@@ -32,8 +34,10 @@ class TestharnessResultConverter(object):
                                          subtest["message"]) for subtest in result["tests"]])
 testharness_result_converter = TestharnessResultConverter()
 
+
 def reftest_result_converter(self, test, result):
     return (test.result_cls(result["status"], result["message"]), [])
+
 
 class TestExecutor(object):
     convert_result = None

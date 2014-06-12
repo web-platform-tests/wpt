@@ -15,21 +15,26 @@ __wptrunner__ = {"product": "chrome",
                  "executor_kwargs": "executor_kwargs",
                  "env_options": "env_options"}
 
+
 def check_args(**kwargs):
     require_arg(kwargs, "binary")
+
 
 def browser_kwargs(**kwargs):
     return {"binary": kwargs["binary"]}
 
+
 def executor_kwargs(http_server_url, **kwargs):
     from selenium import webdriver
     return {"http_server_url": http_server_url,
-            "timeout_multiplier":kwargs["timeout_multiplier"],
+            "timeout_multiplier": kwargs["timeout_multiplier"],
             "capabilities": webdriver.DesiredCapabilities.CHROME}
+
 
 def env_options():
     return {"host": "localhost",
             "bind_hostname": "true"}
+
 
 class ChromeBrowser(Browser):
     used_ports = set()

@@ -1,0 +1,22 @@
+<!doctype html>
+<title>img markup with src content attribute set to unresolvable URL</title>
+<script>
+var rtt = 250;
+if (window.performance && performance.timing && performance.timing.fetchStart) {
+  rtt = new Date() - performance.timing.fetchStart;
+}
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/common.js"></script>
+<div id=log></div>
+<script>
+async_test(function() {
+  window.error_callback = this.step_func_done(function(e) {
+    check_props(e.target, 'error', 'B');
+  });
+  window.load_callback = this.unreached_func("got load event");
+});
+</script>
+<img src='http://foo:bar/' onerror='window.error_callback(event);' onload='window.load_callback(event);'>

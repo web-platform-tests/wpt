@@ -20,7 +20,7 @@ registration, removal, upgrade, and communication with Service Workers that are
 workers is provided via standard [HTML5 messaging APIs][2], and [messaging
 occurs as per usual with Web Workers][3].
 -->
-<pre id="idl_0">
+<script type=text/plain id="idl_0">
 partial interface Navigator {
   readonly attribute ServiceWorkerContainer serviceWorker;
 };
@@ -50,7 +50,7 @@ dictionary RegistrationOptionList {
 interface ReloadPageEvent : Event {
   void waitUntil(Promise<any> f);
 };
-</pre>
+</script>
 
 <!--
 [1]: http://goo.gl/I7WAhg
@@ -59,7 +59,7 @@ interface ReloadPageEvent : Event {
 -->
 
 
-    <pre id="untested_idls" style="display:none;">
+    <script type=text/plain id="untested_idls">
         interface ServiceWorker {};
         interface EventHandler {};
         interface EventTarget {};

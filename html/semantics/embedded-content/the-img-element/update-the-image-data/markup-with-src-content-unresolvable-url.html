@@ -14,7 +14,7 @@ if (window.performance && performance.timing && performance.timing.fetchStart) {
 <script>
 async_test(function() {
   window.error_callback = this.step_func_done(function(e) {
-    check_props(e.target, 'error', 'B');
+    check_props(e.target, 'error', 'A');
   });
   window.load_callback = this.unreached_func("got load event");
 });

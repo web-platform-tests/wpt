@@ -2,25 +2,22 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sys
 import os
-import subprocess
-from collections import defaultdict
-import types
-import tempfile
 import shutil
+import sys
+import tempfile
+import types
 import uuid
 from collections import defaultdict
 
-from mozlog.structured import structuredlog
 from mozlog.structured import reader
+from mozlog.structured import structuredlog
 
-import wpttest
 import expected
-from vcs import git
 import manifestupdate
-import expected
 import wptmanifest
+import wpttest
+from vcs import git
 manifest = None # Module that will be imported relative to test_root
 
 logger = structuredlog.StructuredLogger("web-platform-tests")
@@ -269,10 +266,3 @@ def load_expected(metadata_path, test_path, tests):
             expected_manifest.append(manifestupdate.TestNode.create(test.item_type, test.id))
 
     return expected_manifest
-
-
-if __name__ == "__main__":
-    args = sys.argv[1:]
-    with open(args[2]) as log:
-        args[2] = log
-        print update(*args)

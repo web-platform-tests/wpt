@@ -1,17 +1,5 @@
-import socket
-import sys
-import os
-import uuid
-from collections import defaultdict
-import time
-import urlparse
-import threading
-import hashlib
-import traceback
 import json
-
-import marionette
-from mozprocess import ProcessHandler
+import os
 
 here = os.path.split(__file__)[0]
 

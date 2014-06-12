@@ -28,7 +28,6 @@ class ManifestSerializer(NodeVisitor):
             else:
                 indent = ""
 
-            children_seen = set()
             for child in node.children:
                 rv.extend("%s%s" % (indent if item else "", item) for item in self.visit(child))
 

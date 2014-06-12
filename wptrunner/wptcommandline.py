@@ -6,7 +6,6 @@ import os
 import sys
 
 import argparse
-from multiprocessing import cpu_count
 
 from mozlog.structured import commandline
 

@@ -3,15 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import ConfigParser
-import cStringIO
 import os
 import shutil
 import subprocess
 import sys
-import tempfile
 import traceback
 import uuid
-from multiprocessing import cpu_count
 
 import vcs
 from vcs import git, hg
@@ -71,7 +68,6 @@ class WebPlatformTests(object):
 
     def _tree_paths(self):
         repo_paths = [self.repo_path] + [os.path.join(self.repo_path, path) for path in self._submodules()]
-        ls_tree = ("ls-tree", "-r", "--name-only", "HEAD")
 
         rv = []
 

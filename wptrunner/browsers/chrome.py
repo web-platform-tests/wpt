@@ -1,11 +1,4 @@
 import os
-import socket
-import sys
-import uuid
-import traceback
-import urlparse
-import time
-import threading
 
 import mozprocess
 

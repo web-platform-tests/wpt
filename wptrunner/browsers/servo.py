@@ -1,11 +1,6 @@
 import os
 
-from mozprocess import ProcessHandler
-from mozprofile import FirefoxProfile, Preferences
-from mozprofile.permissions import ServerLocations
-from mozrunner import FirefoxRunner
-
-from .base import get_free_port, NullBrowser, ExecutorBrowser, require_arg
+from .base import NullBrowser, ExecutorBrowser, require_arg
 from ..executors import get_executor_kwargs
 from ..executors.executorservo import ServoTestharnessExecutor
 

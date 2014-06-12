@@ -1,18 +1,6 @@
 import os
 import platform
-import shutil
 import socket
-import subprocess
-import sys
-import tempfile
-import time
-
-import mozprocess
-from mozprofile import FirefoxProfile, Preferences
-from mozprofile.permissions import ServerLocations
-from mozrunner import FirefoxRunner, B2GRunner
-import mozdevice
-import moznetwork
 
 from ..wptcommandline import require_arg
 

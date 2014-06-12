@@ -4,7 +4,6 @@
 
 from __future__ import unicode_literals
 
-import hashlib
 import json
 import logging
 import os
@@ -13,21 +12,14 @@ import socket
 import sys
 import threading
 import time
-import traceback
-import urlparse
 from StringIO import StringIO
 from collections import defaultdict, OrderedDict
 from multiprocessing import Queue
 
-import moznetwork
-from mozlog.structured import structuredlog, commandline, stdadapter
-from mozlog.structured.formatters import JSONFormatter
-from mozlog.structured.handlers import StreamHandler
-from mozprocess import ProcessHandler
+from mozlog.structured import commandline, stdadapter
 
 import manifestexpected
 import manifestinclude
-import metadata
 import products
 import wptcommandline
 import wpttest
@@ -268,8 +260,6 @@ class EqualTimeChunker(TestChunker):
                     chunks[-1][1].extend(data.tests)
                     chunks[-1][2] += data.time
                     start_new = True
-
-                chunk_time = 0
             else:
                 # Append this to the previous chunk
                 chunks[-1][0].append(path)
@@ -374,8 +364,6 @@ class TestLoader(object):
     def load_tests(self, test_types, chunk_type, total_chunks, chunk_number):
         """Read in the tests from the manifest file and add them to a queue"""
         rv = defaultdict(list)
-
-        manifest_items = self.test_filter(self.manifest.itertypes(*test_types))
 
         chunker = {"none": Unchunked,
                    "hash": HashChunker,

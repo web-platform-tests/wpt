@@ -4,16 +4,12 @@
 
 from __future__ import unicode_literals
 
-import sys
-
-import urlparse
-from Queue import Empty
 import multiprocessing
-from multiprocessing import Process, current_process, Queue
+import sys
 import threading
-import uuid
-import socket
 import traceback
+from Queue import Empty
+from multiprocessing import Process, current_process, Queue
 
 from mozlog.structured import structuredlog
 
@@ -117,7 +113,7 @@ class TestRunner(object):
             self.send_message("test_start", test)
         try:
             return self.executor.run_test(test)
-        except Exception as e:
+        except Exception:
             self.logger.critical(traceback.format_exc())
             raise
 
@@ -138,7 +134,7 @@ def start_runner(test_queue, runner_command_queue, runner_result_queue,
                 runner.run()
             except KeyboardInterrupt:
                 stop_flag.set()
-    except Exception as e:
+    except Exception:
         runner_result_queue.put(("log", ("critical", traceback.format_exc())))
         print >> sys.stderr, traceback.format_exc()
         stop_flag.set()

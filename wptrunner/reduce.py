@@ -1,11 +1,10 @@
 import sys
 import tempfile
-from collections import defaultdict
 from cStringIO import StringIO
+from collections import defaultdict
 
 import wptrunner
 import wpttest
-import wptcommandline
 
 from mozlog.structured import commandline, reader
 

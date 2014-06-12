@@ -1,8 +1,6 @@
 import os
 import importlib
 
-import moznetwork
-
 here = os.path.join(os.path.split(__file__)[0])
 
 def iter_products():

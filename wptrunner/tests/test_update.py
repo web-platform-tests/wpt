@@ -2,7 +2,6 @@ import unittest
 import StringIO
 
 from .. import metadata, manifestupdate
-from ..wptmanifest import serializer
 from mozlog.structured import structuredlog, handlers, formatters
 
 class TestExpectedUpdater(unittest.TestCase):
@@ -145,7 +144,7 @@ class TestExpectedUpdater(unittest.TestCase):
         self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected", {"debug": False, "os": "osx"}), "FAIL")
         self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected", {"debug": False, "os": "linux"}), "TIMEOUT")
 
-    def test_update_multiple_0(self):
+    def test_update_multiple_1(self):
         test_id = "/path/to/test.htm"
         prev_data = [("path/to/test.htm.ini", [test_id], """[test.htm]
   type: testharness
@@ -183,7 +182,7 @@ class TestExpectedUpdater(unittest.TestCase):
         self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected", {"debug": False, "os": "linux"}), "TIMEOUT")
         self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected", {"debug": False, "os": "windows"}), "FAIL")
 
-    def test_update_multiple_1(self):
+    def test_update_multiple_2(self):
         test_id = "/path/to/test.htm"
         prev_data = [("path/to/test.htm.ini", [test_id], """[test.htm]
   type: testharness
@@ -220,7 +219,7 @@ class TestExpectedUpdater(unittest.TestCase):
         self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected", {"debug": False, "os": "osx"}), "FAIL")
         self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected", {"debug": True, "os": "osx"}), "TIMEOUT")
 
-    def test_update_multiple_2(self):
+    def test_update_multiple_3(self):
         test_id = "/path/to/test.htm"
         prev_data = [("path/to/test.htm.ini", [test_id], """[test.htm]
   type: testharness

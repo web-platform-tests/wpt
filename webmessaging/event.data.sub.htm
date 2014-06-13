@@ -25,7 +25,7 @@
     var TARGET1 = document.querySelectorAll("iframe")[0];
     var TARGET2 = document.querySelectorAll("iframe")[1];
     var XORIGIN = "http://{{domains[www]}}:{{ports[http][0]}}";
-    var SORIGIN = "http://" + location.hostname;
+    var SORIGIN = "http://" + location.host;
     var ExpectedResult = [DATA, TYPE, DATA, TYPE];
     var ActualResult = [];
     var loaded = 0;

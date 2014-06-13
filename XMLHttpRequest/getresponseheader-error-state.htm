@@ -27,7 +27,7 @@
             }
           })
         }
-        var url = location.protocol + "//" + 'www1.' + location.hostname + (location.pathname.replace(/getresponseheader-error-state\.htm/, 'resources/nocors/folder.txt'))
+        var url = location.protocol + "//" + 'www1.' + location.host + (location.pathname.replace(/getresponseheader-error-state\.htm/, 'resources/nocors/folder.txt'))
         client.open("GET", url)
         client.send(null)
       })

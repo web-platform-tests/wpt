@@ -8,6 +8,6 @@
 var tests = ['ws:', 'ws:/', 'wss:', 'wss:/'];
 //Pass condition is to not throw
 for (var i = 0; i < tests.length; ++i) {
-  test(function(){new WebSocket(tests[i]+location.hostname+'/echo')}, tests[i]);
+  test(function(){new WebSocket(tests[i]+location.host+'/echo')}, tests[i]);
 }
 </script>

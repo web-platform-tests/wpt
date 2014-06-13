@@ -12,7 +12,7 @@
     <script>
       // first make sure we actually run off a domain with at least three parts, in order to be able to shorten it..
       if (location.hostname.split(/\./).length < 3) {
-        location.href = location.protocol+'//www2.'+location.hostname+location.pathname
+        location.href = location.protocol+'//www2.'+location.host+location.pathname
       }
 
       test(function() {

@@ -2,14 +2,17 @@
 <html lang="en">
   <head>
     <title>Web tests</title>
-    <script language="Javascript" type="text/javascript" src="tests.js"></script>
+    <script type="text/javascript" src="tests.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="tests.css">
   </head>
   <body onload="start()" onkeydown="return onKey(event)">
-    <div id="testOptions">
-      <a id="test_-1" class="button" href="javascript:toggleIFrame()"> <input id="optionIFrame" type="checkbox" /> Use iFrame </a>
+    <div id="testOptions" class="list-group">
+      <a id="test_-1" class="list-group-item" onclick="toggleIFrame()"> <input id="optionIFrame" type="checkbox" checked="checked" /> Use iFrame </a>
     </div>
-    <div id="testList">
+    <div id="testList" class="list-group">
     </div>
   </body>
 </html>

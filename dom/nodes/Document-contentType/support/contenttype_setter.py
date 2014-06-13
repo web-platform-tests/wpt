@@ -14,7 +14,7 @@ def main(request, response):
     content = '<head>'
     mimeHead = request.GET.first("mime", None);
     if mimeHead:
-        content = '<meta http-equiv="Content-Type" content="%s; charset=utf-8"/>' % mimeHead
+        content += '<meta http-equiv="Content-Type" content="%s; charset=utf-8"/>' % mimeHead
     content += "</head>"
 
     return content

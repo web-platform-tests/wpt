@@ -4,12 +4,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-var tests = [async_test("Timeout on original window, scope"),
-             async_test("Timeout on original window, this object"),
+var tests = [async_test("Timeout on original window"),
              async_test("Timeout on new window, scope"),
              async_test("Timeout on new window, this object")];
-function tests_done() {
-  tests.forEach(function(t) {t.done()});
-}
 </script>
 <iframe src="016-1.html"></iframe>

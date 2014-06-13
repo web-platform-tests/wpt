@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Web tests</title>
-    <script type="text/javascript" src="tests.js"></script>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Web tests</title>
+
+    <script type="text/javascript" src="tests.js"></script>
+
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="tests.css">
   </head>
   <body onload="start()" onkeydown="return onKey(event)">
     <div id="testOptions" class="list-group">
-      <a id="test_-1" class="list-group-item" onclick="toggleIFrame()"> <input id="optionIFrame" type="checkbox" checked="checked" /> Use iFrame </a>
+      <div id="test_-1" class="list-group-item" onclick="toggleIFrame()"> <input id="optionIFrame" type="checkbox" checked="checked" /> Use iFrame </div>
     </div>
     <div id="testList" class="list-group">
     </div>

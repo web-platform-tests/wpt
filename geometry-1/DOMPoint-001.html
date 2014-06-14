@@ -33,7 +33,7 @@
             checkDOMPoint(new DOMPoint(1, 2, 3, 4), {x:1, y:2, z:3, w:4});
         },'testConstructor4');
         test(function() {
-            assert_throws(new TypeError(), function() { new DOMPoint(1, 2, 3, 4, 5);})
+            checkDOMPoint(new DOMPoint(1, 2, 3, 4, 5), {x:1, y:2, z:3, w:4});
         },'testConstructor5');
         test(function() {
             checkDOMPoint(new DOMPoint({}), {x:0, y:0, z:0, w:1});
@@ -71,6 +71,12 @@
         test(function() {
             checkDOMPoint(new DOMPoint({x:"a", y:"b"}), {x:NaN, y:NaN, z:0, w:1});
         },'testConstructorUndefined2');
+        test(function() {
+            assert_throws(new TypeError(), function() { new DOMPointReadOnly();})
+        },'testConstructorIllegal1');
+        test(function() {
+            assert_throws(new TypeError(), function() { new DOMPointReadOnly(1, 2, 3, 4);})
+        },'testConstructorIllegal2');
         test(function() {
             var p = new DOMPoint(0, 0, 0, 1);
             p.x = undefined;

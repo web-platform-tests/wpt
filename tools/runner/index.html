@@ -4,8 +4,10 @@
 <title>Web tests</title>
 <link rel='stylesheet' href='css/bootstrap.min.css'>
 <link rel='stylesheet' href='css/bootstrap-theme.min.css'>
-<link rel=stylesheet href=runner.css>
-<script src=runner.js></script>
+<link rel='stylesheet' href='runner.css'>
+
+<script type="text/javascript" src="testlist.js"></script>
+<script type="text/javascript" src="runner.js"></script>
 
 
 <header class="navbar navbar-inverse navbar-fixed-top">
@@ -49,85 +51,60 @@
       <h2 class='panel-title'>Runner Options</h2>
     </div>
     <div class="panel-body">
-      <form id='options' class='horizontal-form' onsubmit='return false;'>
+      <form id='options' class='form-horizontal' onsubmit='return false;'>
         <div id='testSelection'>
           <p>Include test types:</p>
           <div class="form-group">
             <label for="th" class="col-sm-3 control-label">JavaScript tests</label>
             <div class="col-sm-9">
-              <input type=checkbox checked value="testharness" id='th' class='test-type'>
+              <input type="checkbox" checked value="testharness" id='th' class='test-type'>
             </div>
           </div>
           <div class="form-group">
             <label for="ref" class="col-sm-3 control-label">Reference tests</label>
             <div class="col-sm-9">
-              <input type=checkbox checked value="reftest" id='ref' class='test-type'>
+              <input type="checkbox" checked value="reftest" id='ref' class='test-type'>
             </div>
           </div>
           <div class="form-group">
             <label for="man" class="col-sm-3 control-label">Manual tests</label>
             <div class="col-sm-9">
-              <input type=checkbox value="manual" id='man' class='test-type'>
+              <input type="checkbox" value="manual" id='man' class='test-type'>
             </div>
           </div>
           <div class="form-group">
             <label for="iframe" class="col-sm-3 control-label">Use iFrame</label>
             <div class="col-sm-9">
-              <input type='checkbox' value="iframe" id='iframe' class='test-type'>
+              <input type="checkbox" value="iframe" id='iframe' class='test-type'>
             </div>
           </div>
-          <div class="form-group">
-            <label for="path" class="col-sm-3 control-label">Run tests under path</label>
+          <div class="form-group has-feedback">
+            <label for="pathSelector" class="col-sm-3 control-label">Run tests under path</label>
             <div class="col-sm-9">
-              <!-- input value="/" id='path' class='path form-control' disabled -->
-              <select id='path' class='path form-control' disabled>
-                <option value="/">/</option>
-                <option value="/2dcontext">/2dcontext</option>
-                <option value="/cors">/cors</option>
-                <option value="/custom-elements">/custom-elements</option>
-                <option value="/dom">/dom</option>
-                <option value="/DOMEvents">/DOMEvents</option>
-                <option value="/domparsing">/domparsing</option>
-                <option value="/domxpath">/domxpath</option>
-                <option value="/eventsource">/eventsource</option>
-                <option value="/ext-xhtml-pubid">/ext-xhtml-pubid</option>
-                <option value="/FileAPI">/FileAPI</option>
-                <option value="/html">/html</option>
-                <option value="/html-imports">/html-imports</option>
-                <option value="/microdata">/microdata</option>
-                <option value="/page-visibility">/page-visibility</option>
-                <option value="/pointerlock">/pointerlock</option>
-                <option value="/progress-events">/progress-events</option>
-                <option value="/selectors-api">/selectors-api</option>
-                <option value="/typedarrays">/typedarrays</option>
-                <option value="/url">/url</option>
-                <option value="/webgl">/webgl</option>
-                <option value="/websockets">/websockets</option>
-                <option value="/webstorage">/webstorage</option>
-                <option value="/workers">/workers</option>
-                <option value="/XMLHttpRequest">/XMLHttpRequest</option>
+              <select id='pathSelector' class='form-control'>
+                <option value="/">All</option>
               </select>
+              <input value="/" id='path' class='path pathText form-control' disabled />
             </div>
           </div>
-
           <div class="form-group">
             <label for="timeout_multiplier" class="col-sm-3 control-label">Timeout Multiplier</label>
             <div class="col-sm-9">
-              <input type=number value="1" id='timeout_multiplier' class='timeout_multiplier form-control'>
+              <input type="number" value="1" id='timeout_multiplier' class='timeout_multiplier form-control'>
             </div>
           </div>
 
           <div class="form-group">
             <label for="render" class="col-sm-3 control-label">Show output (debug)</label>
             <div class="col-sm-9">
-              <input type=checkbox id='render' value='render' class='render'>
+              <input type="checkbox" id='render' value='render' class='render'>
             </div>
           </div>
 
           <div class="form-group">
             <label for="dumpit" class="col-sm-3 control-label">Dump JSON (debug)</label>
             <div class="col-sm-9">
-              <input type=checkbox id='dumpit'>
+              <input type="checkbox" id='dumpit'>
             </div>
           </div>
         </div>

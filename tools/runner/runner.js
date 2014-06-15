@@ -477,6 +477,26 @@ Results.prototype = {
     }
 };
 
+function TopLevelTestList(inputBox, selectList)
+{
+  this.inputBox = inputBox;
+  this.selectList = selectList;
+  selectList.addEventListener('change', this.on_change.bind(this));
+  for(var i = 0; i < tests.length; i++)
+  {
+    var test = tests[i];
+    
+    var opt = new Option(test, "/"+test);
+    selectList.add(opt);
+  }
+}
+
+TopLevelTestList.prototype = {
+    on_change: function() {
+        this.inputBox.value = this.selectList.value;
+    }
+};
+
 function Runner(manifest_path) {
     this.server = location.protocol + "//" + location.host;
     this.manifest = new Manifest(manifest_path);
@@ -680,6 +700,7 @@ function setup() {
     var test_control = new TestControl(document.getElementById("testControl"), runner);
     new ManualUI(document.getElementById("manualUI"), runner);
     new VisualOutput(document.getElementById("output"), runner);
+    new TopLevelTestList(document.getElementById("path"), document.getElementById("pathSelector"));
 
     if (options.autorun === "1") {
         // Hide the instructions and controls

@@ -160,3 +160,11 @@ td.ERROR {
 .stopped {
     background-image: linear-gradient(to bottom, #fc0000 0, #770000 100%);
 }
+
+.pathText
+{
+   position: absolute;
+   top: 0;
+   left: 15px;
+   width: 90%;
+}

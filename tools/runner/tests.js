@@ -1,32 +1,5 @@
 /*jslint browser: true, sloppy: true, vars: true, white: true, indent: 2 */
 
-var tests = [
-  "2dcontext",
-  "cors",
-  "custom-elements",
-  "dom",
-  "DOMEvents",
-  "domparsing",
-  "domxpath",
-  "eventsource",
-  "ext-xhtml-pubid",
-  "FileAPI",
-  "html",
-  "html-imports",
-  "microdata",
-  "page-visibility",
-  "pointerlock",
-  "progress-events",
-  "selectors-api",
-  "typedarrays",
-  "url",
-  "webgl",
-  "websockets",
-  "webstorage",
-  "workers",
-  "XMLHttpRequest"
-];
-
 var indexSelected = -2;
 
 var optionIndexIFrame = -1;
@@ -90,9 +63,8 @@ function installHandler(testLink, i)
 function start()
 {
   var testList = document.getElementById("testList");
-  var i;
   
-  for(i = 0; i < tests.length; i++)
+  for(var i = 0; i < tests.length; i++)
   {
     var test = tests[i];
     

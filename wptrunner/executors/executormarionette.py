@@ -184,8 +184,12 @@ class MarionetteTestharnessExecutor(MarionetteTestExecutor):
                            "url": test.url,
                            "window_id": self.window_id,
                            "timeout_multiplier": self.timeout_multiplier,
-                           "close_after_done": "true" if self.close_after_done else "false",
                            "timeout": timeout * 1000}, new_sandbox=False)
+
+    def after_result(self):
+        if self.close_after_done:
+            self.logger.info("closing window")
+            self.marionette.execute_script("window.wrappedJSObject.win.close()")
 
 
 class MarionetteReftestExecutor(MarionetteTestExecutor):

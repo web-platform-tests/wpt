@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 5.1.4-1 TextTrackList Order</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-2 SPTS - UA creates ordered TextTrackList.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!-- Script Version: BETA -->
+
+    <!-- About the Media Resource
+           To verify DOM elements the details of the test media must be known prior to test execution.
+           This test script is bound to the test media file sourced in the script.
+           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+           The test media is an MPEG-2, Single Program Transport Stream
+           containing two EISS streams, and one program insertion cue stream.
+           In test media file the PMT 'ES apperance order'
+           is the same as the assending order of ES PIDs.
+    -->
+  </head>
+
+
+  <body>
+    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
+    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+
+
+    <script>
+      var test = async_test("TextTrackList order.");
+      var vid = document.getElementById("v");
+      vid.src = mediaServerURL() + "UserPrivateStreams.ts";
+
+      // In test media file the PMT 'ES apperance order'
+      // is the same as the assending order of ES PIDs.
+      var pids = ['45', '1768', '1770'];                // SCTE-35, EISS, EISS PIDS
+      var foundIds = ['-1', '-1', '-1'];                // SCTE-35, EISS, EISS
+      var pmtStreamId = 'video/mp2t track-description'; // exclude PMT TextTrack from test
+
+
+      vid.addEventListener("playing", function() {
+        setTimeout(function() {
+
+          vid.pause();
+
+          test.step(function() {
+            // Find the 3 'Other TextTracks' in DOM.  Exclude the PMT TextTrack
+            for (i=0; i< vid.textTracks.length; i++) {
+              if (vid.textTracks[i].id != pmtStreamId) {
+                foundIds[i] = vid.textTracks[i].id;
+              }
+            }
+            assert_array_equals(foundIds, pids, "TextTrackList Order");
+          }, "TextTrackListOrder.");
+
+          test.done();
+        }, 15000);
+      }, false);
+
+    </script>
+  </body>
+</html>

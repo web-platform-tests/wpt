@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 5.1.4-4 EISS TextTrack</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-2 SPTS, EISS - UA creates TextTrack, attributes set.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. -->
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!-- Script Version: BETA -->
+
+    <!-- About the Media Resource
+           To verify DOM elements the details of the test media must be known prior to test execution.
+           This test script is bound to the test media file sourced in the script.
+           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+           The media is an MPEG-2, Single Program Transport Stream
+           containing two EISS streams and one program insertion cue stream.
+    -->
+  </head>
+
+
+  <body>
+    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
+    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+
+
+    <script>
+      var test = async_test("EISS TextTrack attributes.");
+      var vid = document.getElementById("v");
+      vid.src = mediaServerURL() + "UserPrivateStreams.ts";
+
+      var index1 = -1;
+      var index2 = -1;
+      var pid1 = '1768';  // EISS1 PID
+      var pid2 = '1770';  // EISS2 PID
+      var kind = 'metadata';
+      var language = '';
+      var mode = 'disabled';
+
+
+      vid.addEventListener("playing", function() {
+        setTimeout(function() {
+
+          vid.pause();
+
+          for (i=0; i< vid.textTracks.length; i++) {
+            if (vid.textTracks[i].id == pid1) {
+              index1 = i;
+            }
+            if (vid.textTracks[i].id == pid2) {
+              index2 = i;
+            }
+          }
+
+          if (pid1 == -1) {
+            test.step(function() {
+              assert_unreached("Did not find first EISS TextTrack.id (PID) " + pid1 + " in DOM.");
+            }, "Did not find first EISS TextTrack.id (PID) " + pid1 + " in DOM.");
+            test.done();
+          }
+          else if (pid2 == -1) {
+            test.step(function() {
+              assert_unreached("Did not find second EISS TextTrack.id (PID) " + pid2 + " in DOM.");
+            }, "Did not find second EISS TextTrack.id (PID) " + pid2 + " in DOM.");
+            test.done();
+
+          } else {
+            test.step(function() {
+              // EISS1
+              assert_equals(vid.textTracks[index1].id, pid1, "TextTrackList1.id EISS1");
+              assert_equals(vid.textTracks[index1].kind, kind, "TextTrack1.kind");
+              assert_equals(vid.textTracks[index1].language, language, "TextTrack1.language");
+              assert_equals(vid.textTracks[index1].mode, mode, "TextTrack1.mode");
+
+              // EISS2
+              assert_equals(vid.textTracks[index2].id, pid2, "TextTrackList2.id EISS2");
+              assert_equals(vid.textTracks[index2].kind, kind, "TextTrack2.kind");
+              assert_equals(vid.textTracks[index2].language, language, "TextTrack2.language");
+              assert_equals(vid.textTracks[index2].mode, mode, "TextTrack2.mode");
+            });
+
+            test.done();
+          }
+        }, 12000);
+      }, false);
+
+    </script>
+  </body>
+</html>

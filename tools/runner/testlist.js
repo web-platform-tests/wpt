@@ -24,5 +24,7 @@ var tests = [
   "websockets",
   "webstorage",
   "workers",
-  "XMLHttpRequest"
+  "XMLHttpRequest",
+  "mpegmap",
+  "signature"
 ];

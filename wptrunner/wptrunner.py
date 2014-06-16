@@ -129,13 +129,15 @@ class TestEnvironment(object):
         for source, destination, copy_if_exists in self.required_files:
             source_path = os.path.join(here, source)
             dest_path = os.path.join(self.test_path, destination, os.path.split(source)[1])
-            if os.path.exists(dest_path):
-                if copy_if_exists:
+            dest_exists = os.path.exists(dest_path)
+            if not dest_exists or copy_if_exists:
+                if dest_exists:
+                    backup_path = dest_path + ".orig"
+                    logger.info("Backing up %s to %s" % (dest_path, backup_path))
                     self.files_to_restore.append(dest_path)
-                    shutil.copy2(dest_path, dest_path + ".orig")
-                else:
-                    continue
-            shutil.copy2(source_path, dest_path)
+                    shutil.copy2(dest_path, backup_path)
+                logger.info("Copying %s to %s" % (source_path, dest_path))
+                shutil.copy2(source_path, dest_path)
 
     def ensure_started(self):
         time.sleep(2)

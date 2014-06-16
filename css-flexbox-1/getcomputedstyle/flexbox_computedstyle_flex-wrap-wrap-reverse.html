@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>flexbox | computed style | flex-wrap: wrap-reverse</title>
+<link rel="author" href="http://opera.com" title="Opera Software">
+<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-wrap-property">
+<meta name="flags" content="dom">
+<style>
+body {
+	color: red;
+	flex-wrap: wrap-reverse;
+}
+.PASS {color: black;}
+</style>
+<h1>FAIL, enable javascript</h1>
+<script>
+    var body = document.body;
+
+    var passed =
+	    getComputedStyle(body).getPropertyValue("flex-wrap") ==
+	    "wrap-reverse";
+    body.textContent = body.className = passed ? "PASS" : "FAIL";
+    try{top.opener.rr(passed)}catch(e){}
+</script>

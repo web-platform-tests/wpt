@@ -1,47 +1,8 @@
-W3C CSS Test Suite Repository
------------------------------
- 
-approved/ is for tests that have been reviewed and approved.
-Approved tests are managed as a common resource.
-Do not touch anything here unless you are a test suite Owner
-or Peer, or have permission from one and know what you are doing.
-
-contributors/ contains a directory for each test suite contributor.
-Tests inside a contributor's directory are managed by that contributor.
-Do not touch anything outside your own directory unless you have
-permission from the directory's owner or from a test suite Owner
-or Peer.
-
-tools/ is random scripts that may be useful when administering tests.
- 
-Legal Stuff
------------
- 
-These tests are copyright by W3C and/or the author listed in the test
-file. The tests are dual-licensed under the W3C Test Suite License:
-  http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
-and the BSD 3-clause License:
-  http://www.w3.org/Consortium/Legal/2008/03-bsd-license
-under W3C's test suite licensing policy:
-  http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright
-
-Contributions to this repository are governed by the W3C's Policies
-for Contribution of Testcases to W3C:
-  http://www.w3.org/2004/10/27-testcases
-
-Contributors who are not members of the CSS Working Group must agree
-to the terms of Grant II by filling out this form:
-  http://www.w3.org/2002/09/wbs/1/testgrants2-200409/
-before submitting any tests to this repository.
-
-Write Access
-------------
-
-To gain write access to this repository, sign up for an account
-on the CSS Test Suite Manager (aka Shepherd) at:
-https://test.csswg.org/shepherd/register
-and then submit a request on the Repository Access page at:
-https://test.csswg.org/shepherd/account/access/
-
-You will be notified by email when your request is processed.
-
+Place tests in the appropriate directory based on the
+first rel="help" link in the test. If the rel="help"
+links change, move the test. Note that filenames must
+be unique across the entire directory tree, not just
+in that folder: the tests are split into multiple
+directories only because 10000 tests in one folder is
+unweildy on certain systems. The build scripts can and
+do grab arbitrary subsets that occupy a single folder.

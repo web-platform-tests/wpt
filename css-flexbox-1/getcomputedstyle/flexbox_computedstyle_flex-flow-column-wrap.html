@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>flexbox | computed style | flex-flow: column wrap</title>
+<link rel="author" href="http://opera.com" title="Opera Software">
+<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow">
+<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow-column">
+<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-flow-wrap">
+<meta name="flags" content="dom">
+<style>
+body {
+	color: red;
+	flex-flow: column wrap;
+}
+.PASS {color: black;}
+</style>
+<h1>FAIL, enable javascript</h1>
+<script>
+    var body = document.body;
+
+    var passed =
+	    (getComputedStyle(body).getPropertyValue("flex-direction") ==
+	    "column" &&
+	    getComputedStyle(body).getPropertyValue("flex-wrap") ==
+	    "wrap");
+    body.textContent = body.className = passed ? "PASS" : "FAIL";
+    try{top.opener.rr(passed)}catch(e){}
+</script>

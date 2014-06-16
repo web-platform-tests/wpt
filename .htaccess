@@ -1,10 +1,10 @@
-HeaderName README
+HeaderName README.md
 ReadmeName none
 
 # README is returned as text/plain anyway, but this is needed to
 # make it show up.
 
-<Files "README">
+<Files "README.md">
 ForceType text/plain
 </Files>
 
@@ -21,4 +21,4 @@ AddDefaultCharset utf-8
 # Indexing Options
 Options +Indexes +MultiViews
 IndexOptions DescriptionWidth=* NameWidth=* FancyIndexing FoldersFirst ScanHTMLTitles
-IndexIgnore .htaccess *~ .#* #*# CVS README .svn
+IndexIgnore .htaccess *~ .#* #*# CVS README.md .svn

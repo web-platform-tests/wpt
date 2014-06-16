@@ -1,0 +1,3 @@
+[submodule "resources"]
+	path = resources
+	url = git://github.com/w3c/testharness.js.git

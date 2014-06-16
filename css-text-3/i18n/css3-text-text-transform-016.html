@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: Greek Extended, uppercase</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-016-ref.html">
+<meta name='flags' content=''>
+<meta name="assert" content="The UA will uppercase all applicable letters in the Greek Extended Unicode block when text-transform is set to uppercase.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: uppercase; }
+@font-face {
+    font-family: 'webfont';
+    src: url('support/GentiumPlus-R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+	}
+.test, .ref { font-family: webfont, serif; }
+
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p><p class="instructionNote">If you can't see all the glyphs, click on Skip.</p>
+
+
+<div class="test"><span>&#x1F00; &#x1F08;</span> <span>&#x1F01; &#x1F09;</span> <span>&#x1F02; &#x1F0A;</span> <span>&#x1F03; &#x1F0B;</span> <span>&#x1F04; &#x1F0C;</span> <span>&#x1F05; &#x1F0D;</span> <span>&#x1F06; &#x1F0E;</span> <span>&#x1F07; &#x1F0F;</span> <span>&#x1F10; &#x1F18;</span> <span>&#x1F11; &#x1F19;</span> <span>&#x1F12; &#x1F1A;</span> <span>&#x1F13; &#x1F1B;</span> <span>&#x1F14; &#x1F1C;</span> <span>&#x1F15; &#x1F1D;</span> <span>&#x1F20; &#x1F28;</span> <span>&#x1F21; &#x1F29;</span> <span>&#x1F22; &#x1F2A;</span> <span>&#x1F23; &#x1F2B;</span> <span>&#x1F24; &#x1F2C;</span> <span>&#x1F25; &#x1F2D;</span> <span>&#x1F26; &#x1F2E;</span> <span>&#x1F27; &#x1F2F;</span> <span>&#x1F30; &#x1F38;</span> <span>&#x1F31; &#x1F39;</span> <span>&#x1F32; &#x1F3A;</span> <span>&#x1F33; &#x1F3B;</span> <span>&#x1F34; &#x1F3C;</span> <span>&#x1F35; &#x1F3D;</span> <span>&#x1F36; &#x1F3E;</span> <span>&#x1F37; &#x1F3F;</span> <span>&#x1F40; &#x1F48;</span> <span>&#x1F41; &#x1F49;</span> <span>&#x1F42; &#x1F4A;</span> <span>&#x1F43; &#x1F4B;</span> <span>&#x1F44; &#x1F4C;</span> <span>&#x1F45; &#x1F4D;</span> <span>&#x1F51; &#x1F59;</span> <span>&#x1F53; &#x1F5B;</span> <span>&#x1F55; &#x1F5D;</span> <span>&#x1F57; &#x1F5F;</span> <span>&#x1F60; &#x1F68;</span> <span>&#x1F61; &#x1F69;</span> <span>&#x1F62; &#x1F6A;</span> <span>&#x1F63; &#x1F6B;</span> <span>&#x1F64; &#x1F6C;</span> <span>&#x1F65; &#x1F6D;</span> <span>&#x1F66; &#x1F6E;</span> <span>&#x1F67; &#x1F6F;</span> <span>&#x1F70; &#x1FBA;</span> <span>&#x03AC; &#x0386;</span> <span>&#x1F72; &#x1FC8;</span> <span>&#x03AD; &#x0388;</span> <span>&#x1F74; &#x1FCA;</span> <span>&#x03AE; &#x0389;</span> <span>&#x1F76; &#x1FDA;</span> <span>&#x03AF; &#x038A;</span> <span>&#x1F78; &#x1FF8;</span> <span>&#x03CC; &#x038C;</span> <span>&#x1F7A; &#x1FEA;</span> <span>&#x03CD; &#x038E;</span> <span>&#x1F7C; &#x1FFA;</span> <span>&#x03CE; &#x038F;</span> <span>&#x1F80; &#x1F88;</span> <span>&#x1F81; &#x1F89;</span> <span>&#x1F82; &#x1F8A;</span> <span>&#x1F83; &#x1F8B;</span> <span>&#x1F84; &#x1F8C;</span> <span>&#x1F85; &#x1F8D;</span> <span>&#x1F86; &#x1F8E;</span> <span>&#x1F87; &#x1F8F;</span> <span>&#x1F90; &#x1F98;</span> <span>&#x1F91; &#x1F99;</span> <span>&#x1F92; &#x1F9A;</span> <span>&#x1F93; &#x1F9B;</span> <span>&#x1F94; &#x1F9C;</span> <span>&#x1F95; &#x1F9D;</span> <span>&#x1F96; &#x1F9E;</span> <span>&#x1F97; &#x1F9F;</span> <span>&#x1FA0; &#x1FA8;</span> <span>&#x1FA1; &#x1FA9;</span> <span>&#x1FA2; &#x1FAA;</span> <span>&#x1FA3; &#x1FAB;</span> <span>&#x1FA4; &#x1FAC;</span> <span>&#x1FA5; &#x1FAD;</span> <span>&#x1FA6; &#x1FAE;</span> <span>&#x1FA7; &#x1FAF;</span> <span>&#x1FB0; &#x1FB8;</span> <span>&#x1FB1; &#x1FB9;</span> <span>&#x1FB3; &#x1FBC;</span> <span>&#x03B9; &#x0399;</span> <span>&#x1FC3; &#x1FCC;</span> <span>&#x1FD0; &#x1FD8;</span> <span>&#x1FD1; &#x1FD9;</span> <span>&#x1FE0; &#x1FE8;</span> <span>&#x1FE1; &#x1FE9;</span> <span>&#x1FE5; &#x1FEC;</span> <span>&#x1FF3; &#x1FFC;</span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+-->
+
+
+</body>
+</html>

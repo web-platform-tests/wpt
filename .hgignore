@@ -2,11 +2,13 @@ syntax: glob
 
 dist
 dist_last
+build-temp
+tools/cache
 *.xcodeproj
 *.DS_Store
 *.pyc
 *.svn
-*.directory
+.directory*
 *~
 *.orig
 *Thumbs.db

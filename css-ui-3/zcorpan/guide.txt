@@ -1,0 +1,47 @@
+The purpose of tests is to demonstrate differences in browsers so that the browsers can be fixed to
+work the same.
+
+First find a feature you want to test.
+
+http://dev.w3.org/csswg/css-ui/#box-sizing0
+[[ 
+padding-box
+The specified width and height (and respective min/max properties) on this element determine the
+padding box of the element. That is, any padding specified on the element is laid out and drawn
+inside this specified width and height. The content width and height are calculated by subtracting
+the padding widths of the respective sides from the specified ‘width’ and ‘height’ properties. As
+the content width and height cannot be negative ([CSS21], section 10.2), this computation is floored
+at 0.
+]]
+Read the relevant part of the spec several times until you understand what it means. In the case of
+padding-box, we can visualize what it does like this:
+
+http://software.hixie.ch/utilities/js/live-dom-viewer/saved/2630 (test in Firefox)
+
+When writing the test case we don't want to use browser-specific prefixes, just the standard
+property.
+
+Things to test:
+* The width calculation for
+  - different 'display'
+  - floats
+  - position:absolute
+  - replaced elements
+  - form controls
+* That the width content can't be negative
+* That it doesn't inherit
+* getComputedStyle() (see CSSOM spec)
+
+Let's test width computation for display:block, see
+box-sizing-padding-box-block-001.html
+box-sizing-padding-box-block-001-ref.html
+
+This test sets box-sizing to padding-box and width to 150px and padding to 50px, which means that
+the content width should be 50px.
+
+The reference file should have the same rendering as the test when the test passes, without using
+the feature that you're trying to test. In this case we just set the width to 50px. The reference
+file can be used by several tests so shouldn't point to the spec and can have a generic title and
+even file name. Tests are connected to the reference using a manifest file (using the meta tag).
+
+See http://wiki.csswg.org/test/reftest for more information on reftests.

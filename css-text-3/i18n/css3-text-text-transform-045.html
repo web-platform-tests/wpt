@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: small kana mappings, katakana</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-045-ref.html">
+<meta name='flags' content=''>
+<meta name="assert" content="The browser will map small katakana characters to full sized katakana for display if text-transform is set to full-size-kana.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: full-size-kana; }
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p><p class="instructionNote">If you can't see all the glyphs, click on Skip.</p>
+
+
+<div class="test" lang="ja"><span>&#x30A1; &#x30A2;</span> <span>&#x30A3; &#x30A4;</span> <span>&#x30A5; &#x30A6;</span> <span>&#x30A7; &#x30A8;</span> <span>&#x30A9; &#x30AA;</span> <span>&#x30F5; &#x30AB;</span> <span>&#x31F0; &#x30AF;</span> <span>&#x30F6; &#x30B1;</span> <span>&#x31F1; &#x30B7;</span> <span>&#x31F2; &#x30B9;</span> <span>&#x30C3; &#x30C4;</span> <span>&#x31F3; &#x30C8;</span> <span>&#x31F4; &#x30CC;</span> <span>&#x31F5; &#x30CF;</span> <span>&#x31F6; &#x30D2;</span> <span>&#x31F7; &#x30D5;</span> <span>&#x31F8; &#x30D8;</span> <span>&#x31F9; &#x30DB;</span> <span>&#x31FA; &#x30E0;</span> <span>&#x30E3; &#x30E4;</span> <span>&#x30E5; &#x30E6;</span> <span>&#x30E7; &#x30E8;</span> <span>&#x31FB; &#x30E9;</span> <span>&#x31FC; &#x30EA;</span> <span>&#x31FD; &#x30EB;</span> <span>&#x31FE; &#x30EC;</span> <span>&#x31FF; &#x30ED;</span> <span>&#x30EE; &#x30EF; </span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+-->
+
+
+</body>
+</html>

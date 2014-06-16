@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>flexbox | computed style | flex-basis: 0</title>
+<link rel="author" href="http://opera.com" title="Opera Software">
+<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#flex-basis-property">
+<meta name="flags" content="dom">
+<style>
+body {
+	color: red;
+	flex-basis: 0;
+}
+.PASS {color: black;}
+</style>
+<h1>FAIL, enable javascript</h1>
+<script>
+    var body = document.body;
+
+    var passed =
+	    getComputedStyle(body).getPropertyValue("flex-basis") ==
+	    "0px";
+    body.textContent = body.className = passed ? "PASS" : "FAIL";
+    try{top.opener.rr(passed)}catch(e){}
+</script>

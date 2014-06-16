@@ -1,3 +1,0 @@
-The lib directory houses perl modules used for the build process.  
-common for files used by all version, css2_1 for css2, css3_common for 
-those used by all css3 modules and (if necessary) css3-{VERSION_NAME} for css 3 module specific libraries.  (e.g. css3-page)

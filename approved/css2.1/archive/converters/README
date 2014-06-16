@@ -1,4 +1,0 @@
-This directory contains, for historical record only, the scripts that
-were used to generated or help generated the tests based on external
-sources. These scripts should not be run again, and do not typically
-generate complete CSS2.1 tests.

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS Test: GCPM string-set with content(before)</title>
+<link rel="author" title="Dave Cramer" href="mailto:dave.cramer@hbgusa.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-gcpm/#string-set">
+<!--WD of this spec is out of date; referencing the ED-->
+<meta name="flags" content="paged">
+<meta name="assert" content="Test checks that a named string can be set to the content of the before pseudo-element">
+<style>
+  @page {
+   @top-center {
+   content: string(title); 
+   }
+  }
+ 
+ h1 {
+   string-set: title content(before); 
+ }
+ 
+ h1::before {
+ content: 'before-';
+ }
+ 
+ 
+</style>
+</head>
+<body>
+<h1>Chapter Title</h1>
+<p>Test passes if “before-” appears in the running head at the top of the page.</p>
+</body>
+</html>

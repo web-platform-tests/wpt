@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: Latin Extended-B, lowercase</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-008-ref.html">
+<meta name='flags' content='font'>
+<meta name="assert" content="The UA will lowercase all applicable letters in the Latin Extended-B Unicode block when text-transform is set to lowercase.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: lowercase; }
+@font-face {
+    font-family: 'webfont';
+    src: url('support/GentiumPlus-R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+	}
+.test, .ref { font-family: webfont, serif; }
+
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p>
+
+
+<div class="test"><span>&#x0181; &#x0253;</span> <span>&#x0182; &#x0183;</span> <span>&#x0184; &#x0185;</span> <span>&#x0186; &#x0254;</span> <span>&#x0187; &#x0188;</span> <span>&#x0189; &#x0256;</span> <span>&#x018A; &#x0257;</span> <span>&#x018B; &#x018C;</span> <span>&#x018E; &#x01DD;</span> <span>&#x018F; &#x0259;</span> <span>&#x0190; &#x025B;</span> <span>&#x0191; &#x0192;</span> <span>&#x0193; &#x0260;</span> <span>&#x0194; &#x0263;</span> <span>&#x0196; &#x0269;</span> <span>&#x0197; &#x0268;</span> <span>&#x0198; &#x0199;</span> <span>&#x019C; &#x026F;</span> <span>&#x019D; &#x0272;</span> <span>&#x019F; &#x0275;</span> <span>&#x01A0; &#x01A1;</span> <span>&#x01A2; &#x01A3;</span> <span>&#x01A4; &#x01A5;</span> <span>&#x01A6; &#x0280;</span> <span>&#x01A7; &#x01A8;</span> <span>&#x01A9; &#x0283;</span> <span>&#x01AC; &#x01AD;</span> <span>&#x01AE; &#x0288;</span> <span>&#x01AF; &#x01B0;</span> <span>&#x01B1; &#x028A;</span> <span>&#x01B2; &#x028B;</span> <span>&#x01B3; &#x01B4;</span> <span>&#x01B5; &#x01B6;</span> <span>&#x01B7; &#x0292;</span> <span>&#x01B8; &#x01B9;</span> <span>&#x01BC; &#x01BD;</span> <span>&#x01C4; &#x01C6;</span> <span>&#x01C5; &#x01C6;</span> <span>&#x01C7; &#x01C9;</span> <span>&#x01C8; &#x01C9;</span> <span>&#x01CA; &#x01CC;</span> <span>&#x01CB; &#x01CC;</span> <span>&#x01CD; &#x01CE;</span> <span>&#x01CF; &#x01D0;</span> <span>&#x01D1; &#x01D2;</span> <span>&#x01D3; &#x01D4;</span> <span>&#x01D5; &#x01D6;</span> <span>&#x01D7; &#x01D8;</span> <span>&#x01D9; &#x01DA;</span> <span>&#x01DB; &#x01DC;</span> <span>&#x01DE; &#x01DF;</span> <span>&#x01E0; &#x01E1;</span> <span>&#x01E2; &#x01E3;</span> <span>&#x01E4; &#x01E5;</span> <span>&#x01E6; &#x01E7;</span> <span>&#x01E8; &#x01E9;</span> <span>&#x01EA; &#x01EB;</span> <span>&#x01EC; &#x01ED;</span> <span>&#x01EE; &#x01EF;</span> <span>&#x01F1; &#x01F3;</span> <span>&#x01F2; &#x01F3;</span> <span>&#x01F4; &#x01F5;</span> <span>&#x01F6; &#x0195;</span> <span>&#x01F7; &#x01BF;</span> <span>&#x01F8; &#x01F9;</span> <span>&#x01FA; &#x01FB;</span> <span>&#x01FC; &#x01FD;</span> <span>&#x01FE; &#x01FF;</span> <span>&#x0200; &#x0201;</span> <span>&#x0202; &#x0203;</span> <span>&#x0204; &#x0205;</span> <span>&#x0206; &#x0207;</span> <span>&#x0208; &#x0209;</span> <span>&#x020A; &#x020B;</span> <span>&#x020C; &#x020D;</span> <span>&#x020E; &#x020F;</span> <span>&#x0210; &#x0211;</span> <span>&#x0212; &#x0213;</span> <span>&#x0214; &#x0215;</span> <span>&#x0216; &#x0217;</span> <span>&#x0218; &#x0219;</span> <span>&#x021A; &#x021B;</span> <span>&#x021C; &#x021D;</span> <span>&#x021E; &#x021F;</span> <span>&#x0220; &#x019E;</span> <span>&#x0222; &#x0223;</span> <span>&#x0224; &#x0225;</span> <span>&#x0226; &#x0227;</span> <span>&#x0228; &#x0229;</span> <span>&#x022A; &#x022B;</span> <span>&#x022C; &#x022D;</span> <span>&#x022E; &#x022F;</span> <span>&#x0230; &#x0231;</span> <span>&#x0232; &#x0233;</span> <span>&#x023A; &#x2C65;</span> <span>&#x023B; &#x023C;</span> <span>&#x023D; &#x019A;</span> <span>&#x023E; &#x2C66;</span> <span>&#x0241; &#x0242;</span> <span>&#x0243; &#x0180;</span> <span>&#x0244; &#x0289;</span> <span>&#x0245; &#x028C;</span> <span>&#x0246; &#x0247;</span> <span>&#x0248; &#x0249;</span> <span>&#x024A; &#x024B;</span> <span>&#x024C; &#x024D;</span> <span>&#x024E; &#x024F;</span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+Characters from this block that do not have case equivalents: &#x018D; &#x019B; &#x01AA; &#x01AB; &#x01BA; &#x01BB; &#x01BE; &#x01C0; &#x01C1; &#x01C2; &#x01C3; &#x01F0; &#x0221; &#x0234; &#x0235; &#x0236; &#x0237; &#x0238; &#x0239;
+
+Tip: To identify the characters where differences occur, in order to report problem characters, copy and paste the sequence into a tool such as <a href='http://rishida.net/tools/analysestring/' target='_blank'>String Analyser</a> or the <a href='http://rishida.net/tools/conversion' target='_blank'>Unicode Conversion Tool</a>.
+
+-->
+
+
+</body>
+</html>

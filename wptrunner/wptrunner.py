@@ -92,6 +92,7 @@ class TestEnvironment(object):
         self.config = None
         self.test_server_port = options.pop("test_server_port", True)
         self.options = options if options is not None else {}
+        self.required_files = options.pop("required_files", [])
         self.files_to_restore = []
 
     def __enter__(self):
@@ -125,8 +126,7 @@ class TestEnvironment(object):
 
     def copy_required_files(self):
         logger.info("Placing required files in server environment.")
-        for source, destination, copy_if_exists in [("testharness_runner.html", "", False),
-                                                    ("testharnessreport.js", "resources/", True)]:
+        for source, destination, copy_if_exists in self.required_files:
             source_path = os.path.join(here, source)
             dest_path = os.path.join(self.test_path, destination, os.path.split(source)[1])
             if os.path.exists(dest_path):

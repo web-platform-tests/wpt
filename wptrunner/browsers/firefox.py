@@ -11,7 +11,7 @@ from mozrunner import FirefoxRunner
 
 from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
 from ..executors import get_executor_kwargs as base_executor_kwargs
-from ..executors.executormarionette import MarionetteTestharnessExecutor, MarionetteReftestExecutor
+from ..executors.executormarionette import MarionetteTestharnessExecutor, MarionetteReftestExecutor, required_files
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -35,7 +35,6 @@ def browser_kwargs(**kwargs):
 
 
 def get_executor_kwargs(http_server_url, **kwargs):
-
     executor_kwargs = base_executor_kwargs(http_server_url, **kwargs)
     executor_kwargs["close_after_done"] = True
     return executor_kwargs
@@ -43,7 +42,8 @@ def get_executor_kwargs(http_server_url, **kwargs):
 
 def env_options():
     return {"host": "localhost",
-            "bind_hostname": "true"}
+            "bind_hostname": "true",
+            "required_files": required_files}
 
 
 class FirefoxBrowser(Browser):

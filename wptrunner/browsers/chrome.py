@@ -3,7 +3,7 @@ import os
 import mozprocess
 
 from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
-from ..executors.executorwebdriver import WebdriverTestharnessExecutor
+from ..executors.executorwebdriver import WebdriverTestharnessExecutor, required_files
 
 here = os.path.split(__file__)[0]
 
@@ -33,7 +33,8 @@ def executor_kwargs(http_server_url, **kwargs):
 
 def env_options():
     return {"host": "localhost",
-            "bind_hostname": "true"}
+            "bind_hostname": "true",
+            "required_files": required_files}
 
 
 class ChromeBrowser(Browser):

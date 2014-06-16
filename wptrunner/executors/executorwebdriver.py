@@ -16,6 +16,10 @@ webdriver = None
 exceptions = None
 
 
+required_files = [("testharness_runner.html", "", False),
+                  ("testharnessreport.js", "resources/", True)]
+
+
 def do_delayed_imports():
     global webdriver
     global exceptions

@@ -16,6 +16,10 @@ from .base import TestExecutor, testharness_result_converter, reftest_result_con
 from ..testrunner import Stop
 
 
+required_files = [("testharness_runner.html", "", False),
+                  ("testharnessreport.js", "resources/", True)]
+
+
 def do_delayed_imports():
     global marionette
     import marionette

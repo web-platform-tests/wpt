@@ -231,6 +231,21 @@ VisualOutput.prototype = {
         a.textContent = "Download JSON results";
         if (!a.getAttribute("download")) a.textContent += " (right-click and save as to download)";
         a.style.display = "inline";
+
+	// Upload the results (for devices w/o local storage)
+	var file = randName();
+	var d = this.elem.querySelector(".uploadLocation");
+	var u = this.elem.querySelector(".uploadJsonResults");
+	u.href = "";
+	u.onclick = function () {
+	    var up = "http://web-platform.test/upload/"
+	    ajax(up+"upload.php",
+		 function () { return true; },
+		 "file="+file+"&log="+json);
+	    d.innerHTML = "Your file may be downloaded from:<br>"+
+	                  "<a href='"+up+"download.html?id="+file+"'>"+
+	                  up+"download.html?id="+file+"</a>";
+	    return false;};
     },
 
     test_name_node: function(test) {

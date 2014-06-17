@@ -60,6 +60,7 @@ class FirefoxBrowser(Browser):
     def start(self):
         env = os.environ.copy()
         env['MOZ_CRASHREPORTER_NO_REPORT'] = '1'
+        env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"] = "1"
 
         locations = ServerLocations(filename=os.path.join(here, "server-locations.txt"))
 

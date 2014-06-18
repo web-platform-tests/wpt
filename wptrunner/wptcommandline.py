@@ -8,6 +8,7 @@ import sys
 import argparse
 
 from mozlog.structured import commandline
+from mozrunner import local
 
 import products
 
@@ -89,6 +90,12 @@ def create_parser(allow_mandatory=True):
     parser.add_argument("--product", action="store", choices=[item[0] for item in products.iter_products()],
                         default="firefox")
 
+    parser.add_argument('--debugger',
+                        help="run under a debugger, e.g. gdb or valgrind")
+    parser.add_argument('--debugger-args', help="arguments to the debugger")
+    parser.add_argument('--pause-on-unexpected', action="store_true",
+                        help="Halt the test runner when an unexpected result is encountered")
+
     parser.add_argument("--b2g-no-backup", action="store_true", default=False,
                         help="Don't backup device before testrun with --product=b2g")
 
@@ -102,6 +109,18 @@ def check_args(kwargs):
 
         if kwargs["chunk_type"] == "none":
             kwargs["chunk_type"] = "equal_time"
+
+    if kwargs["debugger"] is not None:
+        debug_args, interactive = local.debugger_arguments(kwargs["debugger"],
+                                                           kwargs["debugger_args"])
+        if interactive:
+            require_arg(kwargs, "processes", lambda x: x == 1)
+            kwargs["no_capture_stdio"] = True
+        kwargs["interactive"] = interactive
+        kwargs["debug_args"] = debug_args
+    else:
+        kwargs["interactive"] = False
+        kwargs["debug_args"] = None
 
     return kwargs
 

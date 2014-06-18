@@ -31,7 +31,9 @@ def check_args(**kwargs):
 
 def browser_kwargs(**kwargs):
     return {"binary": kwargs["binary"],
-            "prefs_root": kwargs["prefs_root"]}
+            "prefs_root": kwargs["prefs_root"],
+            "debug_args": kwargs["debug_args"],
+            "interactive": kwargs["interactive"]}
 
 
 def get_executor_kwargs(http_server_url, **kwargs):
@@ -49,13 +51,15 @@ def env_options():
 class FirefoxBrowser(Browser):
     used_ports = set()
 
-    def __init__(self, logger, binary, prefs_root):
+    def __init__(self, logger, binary, prefs_root, debug_args=None, interactive=None):
         Browser.__init__(self, logger)
         self.binary = binary
         self.prefs_root = prefs_root
         self.marionette_port = get_free_port(2828, exclude=self.used_ports)
         self.used_ports.add(self.marionette_port)
         self.runner = None
+        self.debug_args = debug_args
+        self.interactive = interactive
 
     def start(self):
         env = os.environ.copy()
@@ -79,7 +83,7 @@ class FirefoxBrowser(Browser):
                                     process_class=ProcessHandler)
 
         self.logger.debug("Starting Firefox")
-        self.runner.start()
+        self.runner.start(debug_args=self.debug_args, interactive=self.interactive)
         self.logger.debug("Firefox Started")
 
     def load_prefs(self):

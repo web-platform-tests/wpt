@@ -560,7 +560,8 @@ def run_tests(tests_root, metadata_root, product, **kwargs):
                                       browser_cls,
                                       browser_kwargs,
                                       executor_cls,
-                                      executor_kwargs) as manager_group:
+                                      executor_kwargs,
+                                      kwargs["pause_on_unexpected"]) as manager_group:
                         try:
                             manager_group.start(tests_queue)
                         except KeyboardInterrupt:

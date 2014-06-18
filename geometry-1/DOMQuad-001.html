@@ -17,6 +17,14 @@
     <p>Test DOMQuad interface</p>
     <div id="log"></div>
     <script>
+        initial = {
+            p1: { x: 0, y: 0, z: 0, w: 1 },
+            p2: { x: 0, y: 0, z: 0, w: 1 },
+            p3: { x: 0, y: 0, z: 0, w: 1 },
+            p4: { x: 0, y: 0, z: 0, w: 1 },
+            bounds: { x: 0, y: 0, width: 0, height: 0 }
+        };
+
         test(function() {
             checkDOMQuad(new DOMQuad(), initial);
         },'testConstructor0');
@@ -147,14 +155,6 @@
             assert_equals(q.bounds.width, exp.bounds.width, "Expected value for bounds.width is " + exp.bounds.width);
             assert_equals(q.bounds.height, exp.bounds.height, "Expected value for bounds.height is " + exp.bounds.height);
         }
-
-        var initial = {
-                    p1: { x: 0, y: 0, z: 0, w: 1 },
-                    p2: { x: 0, y: 0, z: 0, w: 1 },
-                    p3: { x: 0, y: 0, z: 0, w: 1 },
-                    p4: { x: 0, y: 0, z: 0, w: 1 },
-                    bounds: { x: 0, y: 0, width: 0, height: 0 }
-                };
     </script>
 </body>
 </html>

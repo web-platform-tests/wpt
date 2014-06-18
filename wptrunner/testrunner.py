@@ -350,6 +350,9 @@ class TestRunnerManager(threading.Thread):
             return Stop
 
     def start_test_runner(self):
+        # Note that we need to be careful to start the browser before the
+        # test runner to ensure that any state set when the browser is started
+        # can be passed in to the test runner.
         assert self.command_queue is not None
         assert self.remote_queue is not None
         executor_browser_cls, executor_browser_kwargs = self.browser.executor_browser()

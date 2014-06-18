@@ -55,13 +55,15 @@ class FirefoxBrowser(Browser):
         Browser.__init__(self, logger)
         self.binary = binary
         self.prefs_root = prefs_root
-        self.marionette_port = get_free_port(2828, exclude=self.used_ports)
+        self.marionette_port = None
         self.used_ports.add(self.marionette_port)
         self.runner = None
         self.debug_args = debug_args
         self.interactive = interactive
 
     def start(self):
+        self.marionette_port = get_free_port(2828, exclude=self.used_ports)
+
         env = os.environ.copy()
         env['MOZ_CRASHREPORTER_NO_REPORT'] = '1'
         env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"] = "1"
@@ -128,4 +130,5 @@ class FirefoxBrowser(Browser):
         self.stop()
 
     def executor_browser(self):
+        assert self.marionette_port is not None
         return ExecutorBrowser, {"marionette_port": self.marionette_port}

@@ -241,7 +241,7 @@ VisualOutput.prototype = {
 	    var up = "http://web-platform.test/upload/"
 	    ajax(up+"upload.php",
 		 function () { return true; },
-		 "file="+file+"&log="+json);
+		 "file="+file+"&log="+encodeURIComponent(json));
 	    d.innerHTML = "Your file may be downloaded from:<br>"+
 	                  "<a href='"+up+"download.html?id="+file+"'>"+
 	                  up+"download.html?id="+file+"</a>";

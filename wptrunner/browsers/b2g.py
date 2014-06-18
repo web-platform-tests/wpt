@@ -235,6 +235,7 @@ class B2GExecutorBrowser(ExecutorBrowser):
         marionette = executor.marionette
 
         self.wait_for_homescreen(marionette)
+        executor.logger.info("Homescreen loaded")
 
         marionette.set_context("content")
 
@@ -243,11 +244,13 @@ class B2GExecutorBrowser(ExecutorBrowser):
 
         # TODO: replace this with pkg_resources if we know that we'll be
         # installing this as a package
+        executor.logger.debug("Loading app_management library")
         marionette.import_script(os.path.join(here, "b2g_setup", "app_management.js"))
         script = "GaiaApps.launchWithName('CertTest App');"
 
         # NOTE: if the app is already launched, this doesn't launch a new app, it will return
         # a reference to the existing app
+        executor.logger.info("Launching CertTest app")
         self.cert_test_app = marionette.execute_async_script(script, script_timeout=5000)
         if not self.cert_test_app:
             raise Exception("Launching CertTest App failed")

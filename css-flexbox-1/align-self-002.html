@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Flexbox Test: align-self - stretch (height: number)</title>
+<title>CSS Flexbox Test: align-self - flex-end</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Shiyou Tan" href="mailto:shiyoux.tan@intel.com">
 <link rel="help" title="8.3. Cross-axis Alignment: the 'align-items' and 'align-self' properties" href="http://www.w3.org/TR/css3-flexbox/#align-self">
-<link rel="match" href="ref-filled-green-100px-square.xht">
+<link rel="match" href="reference/ref-filled-green-100px-square.xht">
 <meta name="flags" content="">
-<meta name="assert" content="The 'align-self' property set 'stretch' will be invalid while cross size of the flex item set exact number">
+<meta name="assert" content="The 'align-self' property set 'flex-end' aligns the flex items to the end edge of cross axis">
 <style>
   #test {
-    background-color: green;
+    background-color: red;
     display: flex;
     height: 100px;
     width: 100px;
   }
   #test div {
-    align-self: stretch;
-    background-color: red;
+    align-self: flex-end;
+    background-color: green;
     height: 50px;
     width: 25px;
   }
   #cover {
     background-color: green;
     height: 50px;
-    position: relative;
-    top: -100px;
+    margin-top: -100px;
     width: 100px;
   }
 </style>
@@ -36,5 +35,5 @@
     <div></div>
     <div></div>
   </div>
-  <div id="cover"></div> 
+  <div id="cover"></div>
 </body>

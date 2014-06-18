@@ -1,36 +1,25 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Flexbox Test: align-self - center</title>
+<title>CSS Flexbox Test: align-self - stretch</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Shiyou Tan" href="mailto:shiyoux.tan@intel.com">
 <link rel="help" title="8.3. Cross-axis Alignment: the 'align-items' and 'align-self' properties" href="http://www.w3.org/TR/css3-flexbox/#align-self">
-<link rel="match" href="ref-filled-green-100px-square.xht">
+<link rel="match" href="reference/ref-filled-green-100px-square.xht">
 <meta name="flags" content="">
-<meta name="assert" content="The 'align-self' property set 'center' centered the flex items in the cross axis within the line">
+<meta name="assert" content="The 'align-self' property set 'stretch' makes the cross size of the item's margin box
+as close to the same size as the line as possible">
 <style>
   #test {
+    align-items: center;
     background-color: red;
     display: flex;
     height: 100px;
     width: 100px;
   }
   #test div {
-    align-self: center;
+    align-self: stretch;
     background-color: green;
-    height: 50px;
     width: 25px;
-  }
-  #top {
-    background-color: green;
-    margin-top: -100px;
-    height: 25px;
-    width: 100px;
-  }
-  #bottom {
-    background-color: green;
-    height: 25px;
-    margin-top: 50px;
-    width: 100px;
   }
 </style>
 <body>
@@ -41,6 +30,4 @@
     <div></div>
     <div></div>
   </div>
-  <div id="top"></div>
-  <div id="bottom"></div>
 </body>

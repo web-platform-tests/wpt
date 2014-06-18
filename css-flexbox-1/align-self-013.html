@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Flexbox Test: align-self - flex-start</title>
+<title>CSS Flexbox Test: align-self - invalid if applied to flex container</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Shiyou Tan" href="mailto:shiyoux.tan@intel.com">
 <link rel="help" title="8.3. Cross-axis Alignment: the 'align-items' and 'align-self' properties" href="http://www.w3.org/TR/css3-flexbox/#align-self">
-<link rel="match" href="ref-filled-green-100px-square.xht">
+<link rel="help" href="http://www.w3.org/TR/css3-flexbox/#align-items">
+<link rel="match" href="reference/ref-filled-green-100px-square.xht">
 <meta name="flags" content="">
-<meta name="assert" content="The 'align-self' property set 'flex-start' aligns the flex items to the start edge of cross axis">
+<meta name="assert" content="The 'align-self' property is invalid if applied to flex container">
 <style>
   #test {
+    align-items: flex-start;
+    align-self: flex-end;
     background-color: red;
     display: flex;
     height: 100px;
     width: 100px;
   }
   #test div {
-    align-self: flex-start;
     background-color: green;
     height: 50px;
     width: 25px;

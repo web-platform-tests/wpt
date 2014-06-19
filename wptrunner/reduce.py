@@ -117,25 +117,22 @@ class Reducer(object):
         return tests + target_test
 
     def unstable(self, tests):
-        is_unstable = None
+        logger.debug("Running with %i tests" % len(tests))
 
-        while is_unstable is None:
-            logger.debug("Running with %i tests" % len(tests))
+        self.test_loader.tests = {self.test_type: tests}
 
-            self.test_loader.tests = {self.test_type: tests}
+        stdout, stderr = sys.stdout, sys.stderr
+        sys.stdout = StringIO()
+        sys.stderr = StringIO()
 
-            stdout, stderr = sys.stdout, sys.stderr
-            sys.stdout = StringIO()
-            sys.stderr = StringIO()
-
-            with tempfile.NamedTemporaryFile() as f:
-                args = self.kwargs.copy()
-                args["log_raw"] = [f]
-                args["capture_stdio"] = False
-                wptrunner.setup_logging(args, {})
-                wptrunner.run_tests(test_loader=self.test_loader, **args)
-                wptrunner.logger.remove_handler(wptrunner.logger.handlers[0])
-                is_unstable = self.log_is_unstable(f)
+        with tempfile.NamedTemporaryFile() as f:
+            args = self.kwargs.copy()
+            args["log_raw"] = [f]
+            args["capture_stdio"] = False
+            wptrunner.setup_logging(args, {})
+            wptrunner.run_tests(test_loader=self.test_loader, **args)
+            wptrunner.logger.remove_handler(wptrunner.logger.handlers[0])
+            is_unstable = self.log_is_unstable(f)
 
             sys.stdout, sys.stderr = stdout, stderr
 

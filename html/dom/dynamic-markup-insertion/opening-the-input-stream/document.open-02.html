@@ -9,18 +9,19 @@
 function open() {
   assert_unreached("The call should be redirected to the real window.open")
 }
-test(function() {
-  var w = document.open("/resources/testharness.js", "", "");
+test(function(t) {
+  var w;
+  t.add_cleanup(function() {try {w.close()} catch(e) {}});
+  w = document.open("/resources/testharness.js", "", "");
   assert_true(w instanceof w.Window, "Expected a window");
 }, "document.open should redirect to window.open when called with three arguments");
-if ("DOMParser" in window) {
-  test(function() {
-    var parser = new DOMParser();
-    var doc = parser.parseFromString("", "text/html");
-    assert_equals(doc.defaultView, null);
-    assert_throws("INVALID_ACCESS_ERR", function() {
-      doc.open("/resources/testharness.js", "", "");
-    });
-  }, "document.open should throw when it has no window and is called with three arguments");
-}
+
+test(function() {
+  var parser = new DOMParser();
+  var doc = parser.parseFromString("", "text/html");
+  assert_equals(doc.defaultView, null);
+  assert_throws("INVALID_ACCESS_ERR", function() {
+    doc.open("/resources/testharness.js", "", "");
+  });
+}, "document.open should throw when it has no window and is called with three arguments");
 </script>

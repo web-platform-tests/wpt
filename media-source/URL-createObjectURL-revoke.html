@@ -7,13 +7,9 @@
   <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<div>
-    <video id='v' controls autoplay width='320' height='240'></video>
-</div>
 <div id="log"></div>
-
 <script>
-var video = document.querySelector('video');
+var video = document.createElement('video');
 test(function() {
     var mediaSource = new MediaSource();
     var url = window.URL.createObjectURL(mediaSource);

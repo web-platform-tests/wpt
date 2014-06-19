@@ -7,17 +7,14 @@
   <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<div>
-    <video id='v' controls autoplay width='320' height='240'></video>
-</div>
 <div id="log"></div>
 <script>
-var video = document.querySelector('video');
-
 test(function() {
+    var video = document.createElement('video');
     ['video/webm; codecs="vorbis,vp8"', 'video/mp4'].forEach(function(mime) {
-        assert_equals(MediaSource.isTypeSupported(mime),
-                      video.canPlayType(mime) == 'probably' ? true : false);
+        if(MediaSource.isTypeSupported(mime)) {
+            assert_true(video.canPlayType(mime) == 'maybe' || video.canPlayType(mime) == 'probably');
+        }
     });
 
     assert_equals(MediaSource.isTypeSupported(''), false,

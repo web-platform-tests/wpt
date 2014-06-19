@@ -242,8 +242,6 @@ class B2GExecutorBrowser(ExecutorBrowser):
         # app management is done in the system app
         marionette.switch_to_frame()
 
-        # TODO: replace this with pkg_resources if we know that we'll be
-        # installing this as a package
         executor.logger.debug("Loading app_management library")
         marionette.import_script(os.path.join(here, "b2g_setup", "app_management.js"))
         script = "GaiaApps.launchWithName('CertTest App');"
@@ -277,12 +275,10 @@ class B2GExecutorBrowser(ExecutorBrowser):
         marionette.set_context(marionette.CONTEXT_CONTENT)
         marionette.execute_async_script("""
 let manager = window.wrappedJSObject.AppWindowManager || window.wrappedJSObject.WindowManager;
-log(manager);
 let app = null;
 if (manager) {
   app = ('getActiveApp' in manager) ? manager.getActiveApp() : manager.getCurrentDisplayedApp();
 }
-log(app);
 if (app) {
   log('Already loaded home screen');
   marionetteScriptFinished();

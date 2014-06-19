@@ -38,7 +38,7 @@ function GET(url, processBody) {
         processBody(new Uint8Array(xhr.response));
     };
 }
-function test(file, mime) {
+function mediaTest(file, mime) {
     async_test(function(t) {
         if(!isTypeSupported.bind(t)(mime)) {
             return;
@@ -63,7 +63,7 @@ function test(file, mime) {
        'an INVALID_STATE_ERR exception and abort these steps.');
 }
 for(var file in contents) {
-    test(file, contents[file]);
+    mediaTest(file, contents[file]);
 }
 </script>
 </body>

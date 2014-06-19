@@ -38,7 +38,7 @@ function isTypeSupported(mime) {
     }
     return true;
 }
-function test(file, mime) {
+function mediaTest(file, mime) {
     async_test(function(t) {
         if(!isTypeSupported.bind(t)(mime)) {
             return;
@@ -92,7 +92,7 @@ function test(file, mime) {
     }, 'SourceBuffer#abort() (' + mime + ') : Check the algorithm when the updating attribute is true.');
 }
 for(var file in contents) {
-    test(file, contents[file]);
+    mediaTest(file, contents[file]);
 }
 </script>
 </body>

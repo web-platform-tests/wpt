@@ -24,7 +24,7 @@ function isTypeSupported(mime) {
     }
     return true;
 }
-function test(mime) {
+function mediaTest(mime) {
     async_test(function(t) {
         if(!isTypeSupported.bind(t)(mime)) {
             return;
@@ -43,7 +43,7 @@ function test(mime) {
     }, 'SourceBuffer#abort() (' + mime + '): Check the values of appendWindowStart and appendWindowEnd.');
 }
 mimes.forEach(function(mime) {
-    test(mime);
+    mediaTest(mime);
 });
 </script>
 </body>

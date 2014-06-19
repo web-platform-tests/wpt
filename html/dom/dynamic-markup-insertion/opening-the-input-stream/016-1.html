@@ -9,24 +9,28 @@ onload = function() {
 
   setTimeout(function() {
     parent.tests[0].step(function() {
-        assert_unreached()
+      parent.assert_equals(test_prop, 1, "Global scope from original window timeout");
+      parent.assert_equals(window.test_prop, 2, "Window property from original window timeout")
+    });
+    parent.tests[1].step(function() {
+      var t = get_this();
+      parent.assert_equals(t.test_prop, 2, "Window property from original window timeout");
+      parent.assert_equals(t, window, "Global scope from original window timeout");
     });
   }, 0);
 
   window.setTimeout(function() {
-    parent.tests[0].done();
-    parent.tests[1].step(function() {
+    parent.tests[2].step(function() {
       parent.assert_equals(test_prop, 1, "Global scope from original window timeout");
       parent.assert_equals(window.test_prop, 2, "Window property from original window timeout")
-      parent.tests[1].done();
     });
-    parent.tests[2].step(function() {
+    parent.tests[3].step(function() {
       var t = get_this();
       parent.assert_equals(t.test_prop, 2, "Window property from original window timeout");
       parent.assert_equals(t, window, "Global scope from original window timeout");
-      parent.tests[2].done();
     });
-  }, 500);
+    parent.tests_done();
+  }, 100);
 };
 
 function get_this() {

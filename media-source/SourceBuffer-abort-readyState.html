@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>SourceBuffer#abort() if SourceBuffer#updating attribute equals true</title>
+  <title>SourceBuffer#abort() when readyState attribute is not in the "open"</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -48,30 +48,22 @@ function test(file, mime) {
         }
         GET(file, function(data) {
             var mediaSource = new MediaSource();
-            var events = [];
+            var sourceBuffer = null;
             mediaSource.addEventListener('sourceopen', function(e) {
-                var sourceBuffer = mediaSource.addSourceBuffer(mime);
-                sourceBuffer.addEventListener('updatestart', function(e) {
+                sourceBuffer = mediaSource.addSourceBuffer(mime);
+                mediaSource.endOfStream();
+            });
+            mediaSource.addEventListener('sourceclose', function(e) {
+                assert_throws({name: 'InvalidStateError'}, function() {
                     sourceBuffer.abort();
-                    t.step(function() {
-                        assert_equals(sourceBuffer.updating, false);
-                    });
                 });
-                sourceBuffer.addEventListener('abort', function(e) {
-                    events.push('abort');
-                });
-                sourceBuffer.addEventListener('updateend', function(e) {
-                    events.push('updateend');
-                    t.step(function() {
-                        assert_array_equals(events, ['abort', 'updateend']);
-                    });
-                    t.done();
-                });
-                sourceBuffer.appendBuffer(data);
+                t.done();
             });
             video.src = window.URL.createObjectURL(mediaSource);
         });
-    }, 'SourceBuffer#abort() (' + mime + ') : in case the updating attribute equals true');
+    }, 'SourceBuffer#abort() (' + mime + ') : If the readyState attribute ' +
+       'of the parent media source is not in the "open" state then throw ' +
+       'an INVALID_STATE_ERR exception and abort these steps.');
 }
 for(var file in contents) {
     test(file, contents[file]);

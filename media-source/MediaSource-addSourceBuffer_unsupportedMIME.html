@@ -7,12 +7,8 @@
   <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<div>
-    <video id='v' controls autoplay width='320' height='240'></video>
-</div>
 <div id="log"></div>
 <script>
-var video = document.querySelector('video');
 async_test(function(t) {
     var mediaSource = new MediaSource();
     mediaSource.addEventListener('sourceopen', function(e) {
@@ -26,6 +22,7 @@ async_test(function(t) {
         });
         t.done();
     }, false);
+    var video = document.createElement('video');
     video.src = window.URL.createObjectURL(mediaSource);
 }, 'MediaSource#addSourceBuffer : If type contains a MIME type that is not supported ' +
    'or contains a MIME type that is not supported with the types specified for the ' +

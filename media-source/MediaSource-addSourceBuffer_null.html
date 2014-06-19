@@ -26,14 +26,15 @@ async_test(function(t) {
                           function() {
                               sourceBuffer = mediaSource.addSourceBuffer('');
                           },
-                          'Set a empty string');
+                          'Set an empty string');
         });
         t.done();
         mediaSource.endOfStream();
     }, false);
     var video = document.createElement('video');
     video.src = window.URL.createObjectURL(mediaSource);
-}, 'MediaSource#addSourceBuffer : If type is null or an empty string then throw an INVALID_ACCESS_ERR exception and abort these steps.');
+}, 'MediaSource#addSourceBuffer : If type is null, TypeError should be thrown.' +
+   'If type is an empty string, INVALID_ACCESS_ERR exception should be thrown.');
 </script>
 </body>
 </html>

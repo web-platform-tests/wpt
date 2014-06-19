@@ -7,23 +7,15 @@
   <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<div>
-    <video id='v' controls autoplay width='320' height='240'></video>
-</div>
 <div id="log"></div>
 <script>
-var video = document.querySelector('video');
-async_test(function(t) {
+var video = document.createElement('video');
+test(function() {
     var mediaSource = new MediaSource();
-    t.step(function() {
-        assert_throws({name : 'InvalidAccessError'},
-                      function() {
-                          mediaSource.removeSourceBuffer(null);
-                      },
-                      'Set invalid MIME');
+    assert_throws(new TypeError(), function() {
+        mediaSource.removeSourceBuffer(null);
     });
-    t.done();
-}, 'MediaSource#removeSouceBuffer : If sourceBuffer is null then throw an INVALID_ACCESS_ERR exception and abort these steps.');
+}, 'MediaSource#removeSouceBuffer : doesn\'t accept a null value.');
 </script>
 </body>
 </html>

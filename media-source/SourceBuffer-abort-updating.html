@@ -43,7 +43,7 @@ function canPlayType(mime) {
 }
 function test(file, mime) {
     async_test(function(t) {
-        if(!canPlayType.bind(t)(mime)) {
+        if(!isTypeSupported.bind(t)(mime)) {
             return;
         }
         GET(file, function(data) {

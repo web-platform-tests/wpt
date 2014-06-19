@@ -7,20 +7,16 @@
   <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<div>
-    <video id='v' controls autoplay width='320' height='240'></video>
-</div>
 <div id="log"></div>
-
 <script>
-var video = document.querySelector('video');
+var video = document.createElement('video');
 var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
 //check the browser supports the MIME used in this test
-function canPlayType(mime) {
-    if(video.canPlayType(mime) != 'probably') {
+function isTypeSupported(mime) {
+    if(!MediaSource.isTypeSupported(mime)) {
         this.step(function() {
-            assert_unreached("Browser doesn't support the MIME used in this test.");
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
         });
         this.done();
         return false;
@@ -29,7 +25,7 @@ function canPlayType(mime) {
 }
 function test(mime) {
     async_test(function(t) {
-        if(!canPlayType.bind(t)(mime)) {
+        if(!isTypeSupported.bind(t)(mime)) {
             return;
         }
         var mediaSource = new MediaSource();

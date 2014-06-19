@@ -10,8 +10,9 @@
 <div id="log"></div>
 <script>
 test(function() {
-    var url = window.URL.createObjectURL(null);
-    assert_equals(url, null);
+    assert_throws(new TypeError(), function() {
+        window.URL.createObjectURL(null);
+    });
 }, "URL.createObjectURL(null)");
 </script>
 </body>

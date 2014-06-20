@@ -37,8 +37,8 @@
 
             html.setAttribute("xml:base", "");
             assert_equals(ele[item.get], url.substr(0, url.lastIndexOf("/")) +"/test.txt", "The '" + item.get + "' attribute is incorrect.");
-            html.setAttribute("xml:base", "http://www.example.org/");
-            assert_equals(ele[item.get], "http://www.example.org/test.txt", "The '" + item.get + "' attribute is incorrect.");
+            html.setAttribute("xml:base", "http://{{domains[www]}}:{{ports[http][0]}}");
+            assert_equals(ele[item.get], "http://{{domains[www]}}:{{ports[http][0]}}/test.txt", "The '" + item.get + "' attribute is incorrect.");
           }, "The '" + item.set + "' attribute of the '" + item.elements[j] + "' element");
         }
       }
@@ -48,10 +48,10 @@
         var val1 = s1.src;
         var val2 = div.firstChild.href;
 
-        div.setAttribute("xml:base", "http://www.example2.org/");
+        div.setAttribute("xml:base", "http://{{domains[www2]}}:{{ports[http][0]}}");
         assert_equals(s1.src, val1, "The outer element must not be effected.");
         assert_not_equals(div.firstChild.href, val2, "The inner element must be effected.");
-        assert_equals(div.firstChild.href, "http://www.example2.org/test.txt");
+        assert_equals(div.firstChild.href, "http://{{domains[www2]}}:{{ports[http][0]}}/test.txt");
       }, "Change the base URL must effect the descendant elements only");
       ]]>
     </script>

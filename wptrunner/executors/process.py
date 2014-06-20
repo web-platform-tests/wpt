@@ -5,6 +5,8 @@ class ProcessTestExecutor(TestExecutor):
     def __init__(self, *args, **kwargs):
         TestExecutor.__init__(self, *args, **kwargs)
         self.binary = self.browser.binary
+        self.debug_args = self.browser.debug_args
+        self.interactive = self.browser.interactive
 
     def setup(self, runner):
         self.runner = runner

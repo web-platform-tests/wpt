@@ -1,6 +1,7 @@
 import urlparse
 import threading
 import json
+import subprocess
 
 from mozprocess import ProcessHandler
 
@@ -22,6 +23,10 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
 
         self.command = [self.binary,
                         urlparse.urljoin(self.http_server_url, test.url)]
+
+        if self.debug_args:
+            self.command = list(self.debug_args) + self.command
+
 
         self.proc = ProcessHandler(self.command,
                                    processOutputLine=[self.on_output])
@@ -52,6 +57,9 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             self.result_data = json.loads(line[len(prefix):])
             self.result_flag.set()
         else:
-            self.logger.process_output(self.proc.pid,
-                                       line,
-                                       " ".join(self.command))
+            if self.interactive:
+                print line
+            else:
+                self.logger.process_output(self.proc.pid,
+                                           line,
+                                           " ".join(self.command))

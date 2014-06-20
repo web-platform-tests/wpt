@@ -1,4 +1,4 @@
- (function() {
+(function() {
   //inheritance tests
   test(function() {
     var event = new DeviceLightEvent('');
@@ -102,7 +102,7 @@
   }, 'type argument is complex object, with toString method');
 
   test(function() {
-    assert_throws(null, function() {
+    assert_throws(new TypeError(), function() {
       new DeviceLightEvent({
         toString: function() {
           return function() {}
@@ -111,11 +111,101 @@
     });
   }, 'toString is of type function');
 
+  //eventInitDict attribute tests
+  test(function() {
+    var event = new DeviceLightEvent('test', undefined);
+    assert_equals(event.value, Infinity);
+  }, 'eventInitDict argument sets to undefined');
+
+  test(function() {
+    var event = new DeviceLightEvent('test', null);
+    assert_equals(event.value, Infinity);
+  }, 'eventInitDict argument is null');
+
+  test(function() {
+    var date = new Date();
+    assert_throws(new TypeError(), function() {
+      new DeviceLightEvent('test', date);
+    });
+  }, 'eventInitDict argument is Date object');
+
+  test(function() {
+    var regexp = /abc/;
+    assert_throws(new TypeError(), function() {
+      new DeviceLightEvent('test', regexp);
+    });
+  }, 'eventInitDict argument is RegExp object');
+
+  test(function() {
+    assert_throws(new TypeError(), function() {
+      new DeviceLightEvent('test', false);
+    });
+  }, 'eventInitDict argument is boolean');
+
+  test(function() {
+    assert_throws(new TypeError(), function() {
+      new DeviceLightEvent('test', 123);
+    });
+  }, 'eventInitDict argument is number');
+
+  test(function() {
+    assert_throws(new TypeError(), function() {
+      new DeviceLightEvent('test', 'hello');
+    });
+  }, 'eventInitDict argument is string');
+
   //test readonly attribute double value;
   test(function() {
     var event = new DeviceLightEvent('test');
     assert_readonly(event, 'value', 'readonly attribute value');
   }, 'value is readonly');
+
+  test(function() {
+    var event = new DeviceLightEvent('test');
+    assert_equals(event.value, Infinity);
+  }, 'value initializes to positive Infinity');
+
+  test(function() {
+    var event = new DeviceLightEvent('test', {
+      value: Infinity
+    });
+    assert_equals(event.value, Infinity);
+  }, 'value set to positive Infinity');
+
+  test(function() {
+    var event = new DeviceLightEvent('test', {
+      value: -Infinity
+    });
+    assert_equals(event.value, -Infinity);
+  }, 'value set to negative Infinity');
+
+  test(function() {
+    var event = new DeviceLightEvent('test', {
+      value: 0
+    });
+    assert_equals(event.value, 0);
+  }, 'value set to 0');
+
+  test(function() {
+    var event = new DeviceLightEvent('test', {
+      value: 1
+    });
+    assert_equals(event.value, 1);
+  }, 'value set to 1');
+
+  test(function() {
+    var event = new DeviceLightEvent('test', {
+      value: -1
+    });
+    assert_equals(event.value, -1);
+  }, 'value set to -1');
+
+  test(function() {
+    var event = new DeviceLightEvent('test', {
+      value: 0.5
+    });
+    assert_equals(event.value, 0.5);
+  }, 'value set to 0.5');
 
   test(function() {
     var event = new DeviceLightEvent('test', {
@@ -140,7 +230,7 @@
       var event = new DeviceLightEvent('test', prop);
       assert_true(isNaN(event.value));
     } catch(e) {
-      assert_unreached("error message: " + e.message);
+      assert_unreached('error message: ' + e.message);
     }
   }, 'value of undefined resolves to NaN');
 
@@ -196,7 +286,7 @@
       var event = new DeviceLightEvent('test', prop);
       assert_true(isNaN(event.value));
     } catch(e) {
-      assert_unreached("error message: " + e.message);
+      assert_unreached('error message: ' + e.message);
     }
   }, 'value of {} resolves to NaN');
 
@@ -210,7 +300,7 @@
       var event = new DeviceLightEvent('test', prop);
       assert_true(isNaN(event.value));
     } catch(e) {
-      assert_unreached("error message: " + e.message);
+      assert_unreached('error message: ' + e.message);
     }
   }, 'value resolves to NaN');
 
@@ -224,24 +314,20 @@
     assert_equals(event.value, 123, 'converts to 123');
   }, 'value resolves 123');
 
+  //test attribute EventHandler ondevicelight;
   test(function() {
-    var desc = 'Expected to find ondevicelight attribute on window object';
-    assert_idl_attribute(window, 'ondevicelight', desc);
-  }, 'ondevicelight event hander attr must be on window object.');
+    var desc = 'window.ondevicelight did not accept callable object',
+        descidl = 'Expected to find ondevicelight attribute on window object',
+        func = function() {};
+    assert_idl_attribute(window, 'ondevicelight', descidl);
+    window.ondevicelight = func;
+    assert_equals(window.ondevicelight, func, desc);
+  }, 'expected ondevicelight on window and to be set to function');
 
   test(function() {
     var desc = 'window.ondevicelight must be null';
     assert_equals(window.ondevicelight, null, desc);
   }, 'ondevicelight is null');
-
-  test(function() {
-    var desc = 'window.ondevicelight did not accept callable object',
-      func = function() {},
-      descidl = 'Expected to find ondevicelight attribute on window object';
-    assert_idl_attribute(window, 'ondevicelight', descidl);
-    window.ondevicelight = func;
-    assert_equals(window.ondevicelight, func, desc);
-  }, 'expected ondevicelight on window and to be set to function');
 
   test(function() {
     var desc = 'window.ondevicelight did not treat noncallable as null';

@@ -1,2 +1,0 @@
-DeviceLight_tests.html							
-

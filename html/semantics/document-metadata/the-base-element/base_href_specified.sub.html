@@ -5,7 +5,7 @@
 <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#the-base-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<base id="base" href="http://www.example.com">
+<base id="base" href="http://{{domains[www]}}:{{ports[http][0]}}">
 <div id="log"></div>
 <img id="test" src="test.ico" style="display:none">
 
@@ -19,10 +19,10 @@
   });
 
   test(function() {
-    assert_equals(baseElement.href, "http://www.example.com/", "The href attribute of the base element is incorrect.");
+    assert_equals(baseElement.href, "http://{{domains[www]}}:{{ports[http][0]}}/", "The href attribute of the base element is incorrect.");
   }, "The href attribute of the base element is specified");
 
   test(function() {
-    assert_equals(testElement.src, "http://www.example.com/test.ico", "The src attribute of the img element is incorrect.");
+    assert_equals(testElement.src, "http://{{domains[www]}}:{{ports[http][0]}}/test.ico", "The src attribute of the img element is incorrect.");
   }, "The src attribute of the img element must relative to the href attribute of the base element");
 </script>

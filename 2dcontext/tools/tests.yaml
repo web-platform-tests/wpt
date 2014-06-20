@@ -873,13 +873,13 @@
     @assert throws SECURITY_ERR canvas.toDataURL();
     @assert throws SECURITY_ERR ctx.getImageData(0, 0, 1, 1);
 
-- name: security.pattern.create
+- name: security.pattern.create.sub
   desc: Creating an unclean pattern does not make the canvas origin-unclean
   mozilla: { disabled } # relies on external resources
   testing:
     - security.start
   images:
-    - http://test2.w3.org/images/yellow.png
+    - http://{{domains[www]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     canvas.toDataURL();

@@ -72,6 +72,3 @@ class TestExecutor(object):
 
     def run_test(self):
         raise NotImplementedError
-
-    def after_result(self):
-        pass

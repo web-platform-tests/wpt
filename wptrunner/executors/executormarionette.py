@@ -178,17 +178,16 @@ class MarionetteTestharnessExecutor(MarionetteTestExecutor):
 
     def do_test(self, test, timeout):
         assert len(self.marionette.window_handles) == 1
+        if self.close_after_done:
+            self.logger.info("closing window")
+            self.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
+
         return self.marionette.execute_async_script(
             self.script % {"abs_url": urlparse.urljoin(self.http_server_url, test.url),
                            "url": test.url,
                            "window_id": self.window_id,
                            "timeout_multiplier": self.timeout_multiplier,
                            "timeout": timeout * 1000}, new_sandbox=False)
-
-    def after_result(self):
-        if self.close_after_done:
-            self.logger.info("closing window")
-            self.marionette.execute_script("window.wrappedJSObject.win.close()")
 
 
 class MarionetteReftestExecutor(MarionetteTestExecutor):

@@ -86,7 +86,6 @@ class TestRunner(object):
         the associated methods"""
         self.setup()
         commands = {"run_test": self.run_test,
-                    "after_result": self.after_result,
                     "stop": self.stop}
         while True:
             command, args = self.command_queue.get()
@@ -120,10 +119,6 @@ class TestRunner(object):
         except Exception:
             self.logger.critical(traceback.format_exc())
             raise
-
-    def after_result(self):
-        self.executor.after_result()
-        self.send_message("test_done")
 
     def send_message(self, command, *args):
         self.result_queue.put((command, args))
@@ -239,7 +234,6 @@ class TestRunnerManager(threading.Thread):
                                 "init_failed": self.init_failed,
                                 "test_start": self.test_start,
                                 "test_ended": self.test_ended,
-                                "test_done": self.test_done,
                                 "restart_runner": self.restart_runner,
                                 "runner_teardown": self.runner_teardown,
                                 "log": self.log,
@@ -492,11 +486,7 @@ class TestRunnerManager(threading.Thread):
             subtest_unexpected or is_unexpected):
             return self.restart_runner()
         else:
-            self.send_message("after_result")
-
-    def test_done(self):
-        self.logger.info("test_done")
-        return self.start_next_test()
+            return self.start_next_test()
 
     def restart_runner(self):
         """Stop and restart the TestRunner"""

@@ -51,7 +51,7 @@ class MarionetteTestExecutor(TestExecutor):
         session_started = False
         if success:
             try:
-                self.logger.debug("Starting marionette session attempt %i" % i)
+                self.logger.debug("Starting marionette session")
                 self.marionette.start_session()
             except:
                 self.logger.warning("Starting marionette session failed")

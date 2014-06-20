@@ -16,9 +16,11 @@ def data_cls_getter(output_node, visited_node):
 
 
 class ExpectedManifest(ManifestItem):
-    def __init__(self, name, test_path=None):
-        assert name is None
-        assert test_path is not None
+    def __init__(self, name, test_path):
+        if name is not None:
+            raise ValueError("ExpectedManifest should represent the root node")
+        if test_path is None:
+            raise ValueError("ExpectedManifest requires a test path")
         ManifestItem.__init__(self, name)
         self.child_map = {}
         self.test_path = test_path

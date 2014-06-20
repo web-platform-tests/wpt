@@ -15,6 +15,9 @@ here = os.path.join(os.path.split(__file__)[0])
 from .base import TestExecutor, testharness_result_converter, reftest_result_converter
 from ..testrunner import Stop
 
+# Extra timeout to use after internal test timeout at which the harness
+# should force a timeout
+extra_timeout = 5 # seconds
 
 required_files = [("testharness_runner.html", "", False),
                   ("testharnessreport.js", "resources/", True)]
@@ -47,18 +50,14 @@ class MarionetteTestExecutor(TestExecutor):
         success = self.marionette.wait_for_port(60)
         session_started = False
         if success:
-            for i in xrange(5):
-                try:
-                    self.logger.debug("Starting marionette session attempt %i" % i)
-                    self.marionette.start_session()
-                except:
-                    self.logger.warning("Starting marionette session failed")
-                    time.sleep(1)
-                    break
-                else:
-                    self.logger.debug("Marionette session started")
-                    session_started = True
-                    break
+            try:
+                self.logger.debug("Starting marionette session attempt %i" % i)
+                self.marionette.start_session()
+            except:
+                self.logger.warning("Starting marionette session failed")
+            else:
+                self.logger.debug("Marionette session started")
+                session_started = True
 
         if not success or not session_started:
             self.logger.warning("Failed to connect to marionette")
@@ -122,11 +121,11 @@ class MarionetteTestExecutor(TestExecutor):
                     result = (test.result_cls("EXTERNAL-TIMEOUT", None), [])
                     self.runner.send_message("test_ended", test, result)
 
-        self.timer = threading.Timer(timeout + 10, timeout_func)
+        self.timer = threading.Timer(timeout + 2 * extra_timeout, timeout_func)
         self.timer.start()
 
         try:
-            self.marionette.set_script_timeout((timeout + 5) * 1000)
+            self.marionette.set_script_timeout((timeout + extra_timeout) * 1000)
         except IOError, marionette.errors.InvalidResponseException:
             self.logger.error("Lost marionette connection")
             self.runner.send_message("restart_test", test)

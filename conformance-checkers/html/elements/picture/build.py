@@ -74,8 +74,8 @@ errors = {
   "always-matching-source-media-all-spaces-with-following-source-srcset": "<picture><source srcset=x media=' all '><source srcset=x><img src=x alt></picture>",
   "always-matching-source-sizes-with-following-source-srcset": "<picture><source srcset='x 100w' sizes=50vw><source srcset=x><img src=x alt></picture>",
   # sizes present
-  "img-srcset-no-descriptor-with-sizes": "<img srcset='x' sizes=50vw alt>",
-  "img-srcset-w-and-x-width-sizes": "<img srcset='x 100w, y 2x' sizes=50vw alt>",
+  "img-srcset-no-descriptor-with-sizes": "<img src=x srcset='x' sizes=50vw alt>",
+  "img-srcset-w-and-x-width-sizes": "<img src=x srcset='x 100w, y 2x' sizes=50vw alt>",
   "source-srcset-x-with-sizes": "<picture><source srcset='x 1x, y 2x' sizes=50vw><img src=x alt></picture>",
   "source-srcset-h-with-sizes": "<picture><source srcset='x 100h, y 200h' sizes=50vw><img src=x alt></picture>",
   "source-srcset-w-and-x-with-sizes": "<picture><source srcset='x 100w, y 2x' sizes=50vw><img src=x alt></picture>",
@@ -120,7 +120,7 @@ errors = {
   # srcset on other elements
   "link-rel-icon-srcset": "<link rel=icon srcset=x href=x>",
   "input-type-image-srcset": "<input type=image src=x srcset=x alt=x>",
-  "object-srcset": "<object srcset=x></object>",
+  "object-srcset": "<object data=x srcset=x></object>",
   "video-srcset": "<video src=x srcset=x></video>",
   "audio-srcset": "<audio src=x srcset=x></audio>",
   "track-srcset": "<video src=x><track src=x srcset=x></video>",
@@ -219,9 +219,9 @@ non_errors = {
   "parent-p": "<p><picture><img src=x alt></picture></p>",
   "parent-h1": "<h1><picture><img src=x alt=x></picture></h1>",
   "parent-noscript-in-body": "<noscript><picture><img src=x alt></picture></noscript>",
-  "parent-object": "<object><picture><img src=x alt></picture></object>",
+  "parent-object": "<object data=x><picture><img src=x alt></picture></object>",
   "parent-video": "<video src=x><picture><img src=x alt></picture></video>",
-  "parent-section": "<section><picture><img src=x alt></picture></section>",
+  "parent-section": "<section><h2>x</h2><picture><img src=x alt></picture></section>",
   "parent-main": "<main><picture><img src=x alt></picture></main>",
   "parent-canvas": "<canvas><picture><img src=x alt></picture></canvas>",
   "parent-template-in-body": "<template><picture><img src=x alt></picture></template>",
@@ -248,6 +248,7 @@ non_errors = {
   "source-with-type-source-with-srcset": "<picture><source srcset=x type=image/gif><source srcset=x><img src=x alt></picture>",
   # sizes present
   "img-with-sizes": "<img srcset='x 100w, y 200w' sizes=50vw src=x alt>",
+  "img-with-sizes-no-srcset": "<img sizes=50vw src=foo alt>",
   "source-with-sizes": "<picture><source srcset='x 100w, y 200w' sizes=50vw><img src=x alt></picture>",
   # width descriptor without sizes
   "img-srcset-w-no-sizes": "<img srcset='x 100w, y 200w' src=x alt>",

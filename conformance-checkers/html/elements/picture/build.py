@@ -94,6 +94,11 @@ errors = {
   "source-vspace": "<picture><source srcset=x vspace=1><img src=x alt></picture>",
   "source-longdesc": "<picture><source srcset=x longdesc=x><img src=x alt></picture>",
   "source-border": "<picture><source srcset=x border=1><img src=x alt></picture>",
+  # missing srcset on source
+  "source-no-srcset": "<picture><source><img src=x alt></picture>",
+  "source-no-srcset-with-sizes": "<picture><source sizes=50vw><img src=x alt></picture>",
+  "source-no-srcset-with-media": "<picture><source media=screen><img src=x alt></picture>",
+  "source-no-srcset-with-type": "<picture><source type='image/webp'><img src=x alt></picture>",
   # invalid attributes on picture
   "picture-src": "<picture src=x><img src=x alt></picture>",
   "picture-srcset": "<picture srcset=x><img src=x alt></picture>",

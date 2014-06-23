@@ -211,7 +211,7 @@ errors = {
   # aria
   "picture-aria-role-img": "<picture role=img><img src=x alt></picture>",
   "picture-aria-role-button": "<picture role=button><img src=x alt></picture>",
-  "picture-aria-role-button": "<picture role=region><img src=x alt></picture>",
+  "picture-aria-role-region": "<picture role=region><img src=x alt></picture>",
   "picture-aria-role-application": "<picture role=application><img src=x alt></picture>",
   "source-aria-role-img": "<picture><source role=img srcset=x><img src=x alt></picture>",
 }

@@ -309,7 +309,7 @@ non_errors = {
   "sizes-microsyntax-px-in-source-size-value": "<img sizes='1px' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-non-integer-px-in-source-size-value": "<img sizes='0.2px' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-leading-css-comment": "<img sizes='/**/50vw' srcset='x 100w, y 200w' src=x alt>",
-  "sizes-microsyntax-trailing-css-comment": "<img sizes='/**/50vw' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-trailing-css-comment": "<img sizes='50vw/**/' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-plus": "<img sizes='+50vw' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-non-integer-omitted-zero": "<img sizes='.2px' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-scientifi-notation-0": "<img sizes='-0e-0px' srcset='x 100w, y 200w' src=x alt>",

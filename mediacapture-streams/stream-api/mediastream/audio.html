@@ -27,7 +27,8 @@ t.step(function() {
     assert_equals(stream.getAudioTracks()[0].kind, "audio", "getAudioTracks() returns a sequence of tracks whose kind is 'audio'");
     assert_equals(stream.getVideoTracks().length, 0, "the media stream has zero video track");
     t.done();
-  }));
+  }),
+  function(error) {});
 });
 </script>
 </body>

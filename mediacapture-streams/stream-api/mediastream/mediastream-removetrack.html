@@ -20,10 +20,10 @@
 var t = async_test("Tests that a removal from a MediaStream works as expected", {timeout:10000});
 t.step(function () {
   var audio;
-  navigator.getUserMedia({audio:true}, gotAudio, function() {});
+  navigator.getUserMedia({audio:true}, gotAudio, function(error) {});
   function gotAudio(stream) {
      audio = stream;
-     navigator.getUserMedia({video:true}, gotVideo, function() {});
+     navigator.getUserMedia({video:true}, gotVideo, function(error) {});
   }
 
   function gotVideo(stream) {

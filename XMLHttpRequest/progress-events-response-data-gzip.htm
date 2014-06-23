@@ -6,6 +6,7 @@
     <script src="/resources/testharnessreport.js"></script>
     <link rel="help" href="http://www.w3.org/TR/progress-events/#firing-events-using-the-progressevent-interface-for-http" data-tested-assertations="following::p[contains(text(),'content-encodings')]" />
     <!-- TODO: find better spec reference when https://www.w3.org/Bugs/Public/show_bug.cgi?id=25587 is fixed -->
+    <meta name="timeout" content="long">
   </head>
   <body>
     <div id="log"></div>
@@ -14,15 +15,37 @@
       test.step(function() {
         var client = new XMLHttpRequest()
         /*
-          Two behaviours are considered acceptable, so there are two ways to pass this test
-          a) Provide "compressed download progress" data - event.total reflects the Content-length of the gzipp'ed resource, event.loaded how many gzipped bytes have arrived over the wire so far
-          b) If the implementation can't provide "compressed download progress" numbers, set lengthComputable to false for gzip'ed resources, set event.total to 0, and event.loaded to the number of bytes available so far after gzip decoding
+
+          Two behaviours are considered acceptable, so there are two ways to
+          pass this test
+
+          a) Set data for the compressed resource:
+            * event.total reflects the Content-length of the gzipp'ed resource
+            * event.loaded how many gzipped bytes have arrived over the wire so far
+            * lengthComputable is true
+
+          or
+
+          b) If the implementation does not provide progress details for the compressed
+          resource, set
+            * lengthComputable to false
+            * event.total to 0
+            * event.loaded to the number of bytes available so far after gzip decoding
 
           Implications of this are tested here as follows:
-          * If lengthComputable is true: 
-              * Event.total must match Content-length header, event.loaded should be a smaller number while resource is loading and match Content-length when loading is finished
-              * Setting event.loaded to equal event.total for each progress event if the resource is not fully downloaded would be cheating
-          * If lengthComputable is false, event.total should be 0 and event.loaded should be the length of the decompressed content, i.e. bigger than Content-length
+
+          * If lengthComputable is true:
+              * Event.total must match Content-length header
+              * event.loaded should be a smaller number while resource is loading
+                and match Content-length when loading is finished
+              * Setting event.loaded to equal event.total for each progress event if the
+                resource is not fully downloaded would be cheating
+
+          * If lengthComputable is false:
+              * event.total should be 0
+              * event.loaded should be the length of the decompressed content, i.e.
+                bigger than Content-length header value when finished loading
+
         */
         client.addEventListener('loadend', test.step_func(function(e){
           var len = parseInt(client.getResponseHeader('content-length'), 10)
@@ -37,13 +60,13 @@
         }), false)
         client.addEventListener('progress', test.step_func(function(e){
           if(e.lengthComputable && e.total && e.target.readyState < 4){
-            assert_false(e.total == e.loaded, 'total should not equal loaded while download/decode is incomplete')
+            assert_not_equals(e.total, e.loaded, 'total should not equal loaded while download/decode is incomplete')
           }
         }), false)
         // image.gif is 62 bytes compressed. Sending 21 bytes at a time with 1 second delay will load it in 3 seconds
         client.open("GET", "resources/image.gif?pipe=gzip|trickle(21:d1:r2)", true)
         client.send()
-      }, document.title, {timeout:3500})
+      })
     </script>
   </body>
 </html>

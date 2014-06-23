@@ -15,18 +15,24 @@
     <script>
       var test = async_test(document.title)
       var client = new XMLHttpRequest()
+      var gotTimeout = false
       client.open("GET", "http://www2." + location.hostname + (location.port ? ":" + location.port : "") +(location.pathname.replace(/[^\/]+$/, '')+'resources/corsenabled.py')+"?delay=2&code=200")
       client.timeout = 100
       client.addEventListener('timeout', function (e) {
         test.step(function() {
           assert_equals(e.type, 'timeout')
           assert_equals(client.status, 0)
-          test.done()
+          gotTimeout = true
         })
       })
       client.addEventListener('load', function (e) {
         test.step(function() {
           assert_unreached('load event should not fire')
+        })
+      })
+      client.addEventListener('loadend', function (e) {
+        test.step(function() {
+          assert_true(gotTimeout, "timeout event should fire")
           test.done()
         })
       })

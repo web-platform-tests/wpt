@@ -214,6 +214,8 @@ errors = {
   "picture-aria-role-region": "<picture role=region><img src=x alt></picture>",
   "picture-aria-role-application": "<picture role=application><img src=x alt></picture>",
   "source-aria-role-img": "<picture><source role=img srcset=x><img src=x alt></picture>",
+  "picture-aria-role-presentation": "<picture role=presentation><img src=x alt></picture>",
+  "source-aria-role-presentation": "<picture><source role=presentation srcset=x><img src=x alt></picture>",
 }
 
 non_errors_in_head = {
@@ -337,9 +339,6 @@ non_errors = {
   "img-ismap-with-picture": "<a href=x><picture><img ismap src=x alt></picture></a>",
   "img-width-height-with-picture": "<picture><img src=x alt width=1 height=1></picture>",
   "img-width-height-zero-with-picture": "<picture><img src=x alt width=0 height=0></picture>",
-  # aria
-  "picture-aria-role-presentation": "<picture role=presentation><img src=x alt></picture>",
-  "source-aria-role-presentation": "<picture><source role=presentation srcset=x><img src=x alt></picture>",
   # global attributes on picture
   "picture-global-attributes": "<picture title=x class=x dir=ltr hidden id=asdf tabindex=0><img src=x alt></picture>",
 }

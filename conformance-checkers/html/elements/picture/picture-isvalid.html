@@ -3,7 +3,6 @@
 <title>valid picture</title>
 <template><picture><img src=x alt></picture></template> <!-- parent-template-in-head -->
 <body>
-<picture><source role=presentation srcset=x><img src=x alt></picture> <!-- source-aria-role-presentation -->
 <img sizes='1q' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-q-in-source-size-value -->
 <img sizes='not (width:500px) and (width:500px) 500px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-media-not-and -->
 <img sizes='1mm' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-mm-in-source-size-value -->
@@ -32,7 +31,6 @@
 <picture><source srcset=x media=screen><source srcset=x><img src=x alt></picture> <!-- source-with-media-source-with-srcset -->
 <img sizes='-0' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-minus-zero -->
 <img src=x srcset='x 100w, y 200w' alt> <!-- img-src-also-in-srcset-w -->
-<picture role=presentation><img src=x alt></picture> <!-- picture-aria-role-presentation -->
 <img src=x srcset='y 1x, x 2x' alt> <!-- img-src-also-in-srcset-2x -->
 <img srcset='%20' src=x alt> <!-- srcset-microsyntax-percent-escaped-space-in-url -->
 <picture><source srcset=x type=image/gif><img src=x srcset=x alt></picture> <!-- source-with-type-img-with-srcset -->

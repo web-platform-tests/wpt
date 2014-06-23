@@ -79,6 +79,7 @@ errors = {
   "source-srcset-x-with-sizes": "<picture><source srcset='x 1x, y 2x' sizes=50vw><img src=x alt></picture>",
   "source-srcset-h-with-sizes": "<picture><source srcset='x 100h, y 200h' sizes=50vw><img src=x alt></picture>",
   "source-srcset-w-and-x-with-sizes": "<picture><source srcset='x 100w, y 2x' sizes=50vw><img src=x alt></picture>",
+  "img-with-sizes-no-srcset": "<img sizes=50vw src=foo alt>",
   # invalid attributes on source
   "source-src": "<picture><source src=x><img src=x alt></picture>",
   "source-src-srcset": "<picture><source src=x srcset=x><img src=x alt></picture>",
@@ -166,6 +167,10 @@ errors = {
   "sizes-microsyntax-negative-source-size-value": "<img sizes='-1px' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-empty": "<img sizes='' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-comma": "<img sizes=',' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-css-comment-after-plus": "<img sizes='+/**/50vw' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-css-comment-before-unit": "<img sizes='50/**/vw' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-scientific-notation-negative": "<img sizes='-1e+0px' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-scientific-notation-non-integer-in-exponent": "<img sizes='1e+1.5px' srcset='x 100w, y 200w' src=x alt>",
   # srcset microsyntax
   "srcset-microsyntax-leading-comma": "<img srcset=',x' src=x alt>",
   "srcset-microsyntax-leading-comma-multiple": "<img srcset=',,,x' src=x alt>",
@@ -202,11 +207,12 @@ errors = {
   "srcset-microsyntax-unique-descriptors-w": "<img srcset='x 1w, y 1w' src=x alt>",
   "srcset-microsyntax-empty": "<img srcset='' src=x alt>",
   "srcset-microsyntax-comma": "<img srcset=',' src=x alt>",
-  # aria on picture
-  "aria-role-img": "<picture role=img><img src=x alt></picture>",
-  "aria-role-button": "<picture role=button><img src=x alt></picture>",
-  "aria-role-button": "<picture role=region><img src=x alt></picture>",
-  "aria-role-application": "<picture role=application><img src=x alt></picture>",
+  # aria
+  "picture-aria-role-img": "<picture role=img><img src=x alt></picture>",
+  "picture-aria-role-button": "<picture role=button><img src=x alt></picture>",
+  "picture-aria-role-button": "<picture role=region><img src=x alt></picture>",
+  "picture-aria-role-application": "<picture role=application><img src=x alt></picture>",
+  "source-aria-role-img": "<picture><source role=img srcset=x><img src=x alt></picture>",
 }
 
 non_errors_in_head = {
@@ -253,7 +259,6 @@ non_errors = {
   "source-with-type-source-with-srcset": "<picture><source srcset=x type=image/gif><source srcset=x><img src=x alt></picture>",
   # sizes present
   "img-with-sizes": "<img srcset='x 100w, y 200w' sizes=50vw src=x alt>",
-  "img-with-sizes-no-srcset": "<img sizes=50vw src=foo alt>",
   "source-with-sizes": "<picture><source srcset='x 100w, y 200w' sizes=50vw><img src=x alt></picture>",
   # width descriptor without sizes
   "img-srcset-w-no-sizes": "<img srcset='x 100w, y 200w' src=x alt>",
@@ -302,6 +307,15 @@ non_errors = {
   "sizes-microsyntax-pt-in-source-size-value": "<img sizes='1pt' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-px-in-source-size-value": "<img sizes='1px' srcset='x 100w, y 200w' src=x alt>",
   "sizes-microsyntax-non-integer-px-in-source-size-value": "<img sizes='0.2px' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-leading-css-comment": "<img sizes='/**/50vw' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-trailing-css-comment": "<img sizes='/**/50vw' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-plus": "<img sizes='+50vw' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-non-integer-omitted-zero": "<img sizes='.2px' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-scientifi-notation-0": "<img sizes='-0e-0px' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-scientifi-notation-1": "<img sizes='+11.11e+11px' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-scientifi-notation-2": "<img sizes='2.2e2px' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-scientifi-notation-3": "<img sizes='33E33px' srcset='x 100w, y 200w' src=x alt>",
+  "sizes-microsyntax-scientifi-notation-4": "<img sizes='.4E4px' srcset='x 100w, y 200w' src=x alt>",
   # srcset microsyntax
   "srcset-microsyntax-comma-in-url": "<img srcset='x,x' src=x alt>",
   "srcset-microsyntax-percent-escaped-leading-comma-in-url": "<img srcset='%2Cx' src=x alt>",
@@ -322,8 +336,9 @@ non_errors = {
   "img-ismap-with-picture": "<a href=x><picture><img ismap src=x alt></picture></a>",
   "img-width-height-with-picture": "<picture><img src=x alt width=1 height=1></picture>",
   "img-width-height-zero-with-picture": "<picture><img src=x alt width=0 height=0></picture>",
-  # aria on picture
-  "aria-role-presentation": "<picture role=presentation><img src=x alt></picture>",
+  # aria
+  "picture-aria-role-presentation": "<picture role=presentation><img src=x alt></picture>",
+  "source-aria-role-presentation": "<picture><source role=presentation srcset=x><img src=x alt></picture>",
   # global attributes on picture
   "picture-global-attributes": "<picture title=x class=x dir=ltr hidden id=asdf tabindex=0><img src=x alt></picture>",
 }

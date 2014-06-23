@@ -3,6 +3,7 @@
 <title>valid picture</title>
 <template><picture><img src=x alt></picture></template> <!-- parent-template-in-head -->
 <body>
+<picture><source role=presentation srcset=x><img src=x alt></picture> <!-- source-aria-role-presentation -->
 <img sizes='1q' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-q-in-source-size-value -->
 <img sizes='not (width:500px) and (width:500px) 500px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-media-not-and -->
 <img sizes='1mm' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-mm-in-source-size-value -->
@@ -11,7 +12,8 @@
 <picture><source srcset='x 100w, y 200w'><img src=x alt></picture> <!-- source-srcset-w-no-sizes -->
 <embed srcset> <!-- embed-srcset-empty -->
 <picture title=x class=x dir=ltr hidden id=asdf tabindex=0><img src=x alt></picture> <!-- picture-global-attributes -->
-<img srcset='x 1e+0x' src=x alt> <!-- srcset-microsyntax-scientific-notation-e-plus-x -->
+<img sizes='/**/50vw' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-leading-css-comment -->
+<img sizes='1em' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-em-in-source-size-value -->
 <picture><source srcset=x media=' 
 	screen 
 	'><img src=x srcset=x alt></picture> <!-- source-with-media-spaces-img-with-srcset -->
@@ -19,42 +21,48 @@
 <img srcset='%2Cx' src=x alt> <!-- srcset-microsyntax-percent-escaped-leading-comma-in-url -->
 <img srcset='x 1x,y 2x' src=x alt> <!-- srcset-microsyntax-no-space-between-candidates -->
 <video src=x><picture><img src=x alt></picture></video> <!-- parent-video -->
-<img sizes='0' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-zero -->
+<img sizes='/**/50vw' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-trailing-css-comment -->
 <picture><img usemap=#x src=x alt></picture><map name=x></map> <!-- img-usemap-with-picture -->
 <ruby>x<rt><picture><img src=x alt></picture></rt></ruby> <!-- parent-rt -->
 <img src=x srcset='y 1x, z 2x' alt> <!-- img-src-not-in-srcset-x -->
 <ruby>x<rp><picture><img src=x alt></picture></rp><rt>x</rt><rp>x</rp></ruby> <!-- parent-rp -->
 <img sizes='1vmax' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-vmax-in-source-size-value -->
-<img src=x alt> <!-- basic-img-src -->
 <main><picture><img src=x alt></picture></main> <!-- parent-main -->
 <img sizes='1in' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-in-in-source-size-value -->
 <picture><source srcset=x media=screen><source srcset=x><img src=x alt></picture> <!-- source-with-media-source-with-srcset -->
 <img sizes='-0' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-minus-zero -->
 <img src=x srcset='x 100w, y 200w' alt> <!-- img-src-also-in-srcset-w -->
+<picture role=presentation><img src=x alt></picture> <!-- picture-aria-role-presentation -->
 <img src=x srcset='y 1x, x 2x' alt> <!-- img-src-also-in-srcset-2x -->
 <img srcset='%20' src=x alt> <!-- srcset-microsyntax-percent-escaped-space-in-url -->
 <picture><source srcset=x type=image/gif><img src=x srcset=x alt></picture> <!-- source-with-type-img-with-srcset -->
 <img srcset='x 100w, y 200w' sizes=50vw src=x alt> <!-- img-with-sizes -->
 <picture><template></template><source srcset=x><script></script><img src=x alt><template></template></picture> <!-- script-and-template -->
-<picture role=presentation><img src=x alt></picture> <!-- aria-role-presentation -->
+<img sizes='+50vw' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-plus -->
 <img src=x srcset='y 100w, z 200w' alt> <!-- img-src-not-in-srcset-w -->
 <h1><picture><img src=x alt=x></picture></h1> <!-- parent-h1 -->
 <embed sizes> <!-- embed-sizes-empty -->
 <embed srcset='foo bar'> <!-- embed-srcset-junk -->
 <picture><source srcset=x><script></script><img src=x alt></picture> <!-- script-between -->
+<img src=x alt> <!-- basic-img-src -->
+<picture><img src=x alt width=1 height=1></picture> <!-- img-width-height-with-picture -->
 <canvas><picture><img src=x alt></picture></canvas> <!-- parent-canvas -->
-<img sizes=50vw src=foo alt> <!-- img-with-sizes-no-srcset -->
 <img src=x srcset='x 1x, y 2x' alt> <!-- img-src-also-in-srcset-1x -->
 <img srcset='x 100w, y 200w' src=x alt> <!-- img-srcset-w-no-sizes -->
 <img sizes='(min-width:calc(500px)) 500px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-calc-in-media -->
 <ruby><picture><img src=x alt></picture><rt>x</rt></ruby> <!-- parent-ruby -->
-<img sizes='500px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-only-default -->
+<img sizes='33E33px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-scientifi-notation-3 -->
+<img sizes='2.2e2px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-scientifi-notation-2 -->
+<img sizes='+11.11e+11px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-scientifi-notation-1 -->
+<img sizes='-0e-0px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-scientifi-notation-0 -->
 <a href=x><picture><img src=x alt></picture></a> <!-- parent-a -->
+<img sizes='.4E4px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-scientifi-notation-4 -->
 <img sizes='calc(500px)' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-calc-in-default -->
 <img srcset='x 1e-0x' src=x alt> <!-- srcset-microsyntax-scientific-notation-e-minus-x -->
 <img sizes='(min-width:500px) 500px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-no-default -->
 <embed sizes='foo bar'> <!-- embed-sizes-junk -->
 <p><picture><img src=x alt></picture></p> <!-- parent-p -->
+<img sizes='.2px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-non-integer-omitted-zero -->
 <img sizes='(min-width:500px) 500px, 100vw' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-media-min-width -->
 <img srcset='x 1w' src=x alt> <!-- srcset-microsyntax-w -->
 <object data=x><picture><img src=x alt></picture></object> <!-- parent-object -->
@@ -67,25 +75,26 @@
 <picture><img src=x alt width=0 height=0></picture> <!-- img-width-height-zero-with-picture -->
 <img sizes='1vw' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-vw-in-source-size-value -->
 <picture><source srcset='x 1x, y 2x' type=image/gif><img src=x alt></picture> <!-- source-type-srcset-x -->
-<img sizes='1em' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-em-in-source-size-value -->
+<img srcset='x 1e+0x' src=x alt> <!-- srcset-microsyntax-scientific-notation-e-plus-x -->
 <picture><template></template><source srcset=x><img src=x alt></picture> <!-- template-first -->
+<img sizes='0' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-zero -->
 <img sizes='1ch' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-ch-in-source-size-value -->
 <img sizes='1px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-px-in-source-size-value -->
 <picture><source srcset='x 100w, y 200w' type=image/gif><img src=x alt></picture> <!-- source-type-srcset-w -->
 <picture><source srcset='x 100w, y 200w' type=image/gif sizes=50vw><img src=x alt></picture> <!-- source-type-srcset-w-sizes -->
 <picture><script></script><source srcset=x><script></script><img src=x alt><script></script></picture> <!-- script-before-between-after -->
-<picture><img src=x alt width=1 height=1></picture> <!-- img-width-height-with-picture -->
+<img sizes='500px' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-only-default -->
 <picture><img crossorigin src=x alt></picture> <!-- img-crossorigin-with-picture -->
 <picture><img src=x alt></picture> <!-- basic-picture-img-src -->
 <img sizes='1pt' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-pt-in-source-size-value -->
 <picture><source srcset=x type=image/gif><img src=x alt></picture> <!-- source-type -->
-<picture><script></script><source srcset=x><img src=x alt><script></script></picture> <!-- script-before-after -->
+<img srcset='x%2C' src=x alt> <!-- srcset-microsyntax-percent-escaped-trailing-comma-in-url -->
 <button><picture><img src=x alt></picture></button> <!-- parent-button -->
 <img srcset='x 1.5x' src=x alt> <!-- srcset-microsyntax-non-integer-x -->
 <img sizes='1cm' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-cm-in-source-size-value -->
 <img sizes='(min-width:500px) calc(500px)' srcset='x 100w, y 200w' src=x alt> <!-- sizes-microsyntax-calc-in-source-size-value -->
 <img srcset='x 1e0x' src=x alt> <!-- srcset-microsyntax-scientific-notation-x -->
-<img srcset='x%2C' src=x alt> <!-- srcset-microsyntax-percent-escaped-trailing-comma-in-url -->
+<picture><script></script><source srcset=x><img src=x alt><script></script></picture> <!-- script-before-after -->
 <section><h2>x</h2><picture><img src=x alt></picture></section> <!-- parent-section -->
 <picture><source srcset='x 100w, y 200w' sizes=50vw><img src=x alt></picture> <!-- source-with-sizes -->
 <picture><source srcset=x media=screen><img src=x srcset=x alt></picture> <!-- source-with-media-img-with-srcset -->

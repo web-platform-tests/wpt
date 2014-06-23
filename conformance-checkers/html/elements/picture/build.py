@@ -207,6 +207,7 @@ errors = {
   "srcset-microsyntax-unique-descriptors-w": "<img srcset='x 1w, y 1w' src=x alt>",
   "srcset-microsyntax-empty": "<img srcset='' src=x alt>",
   "srcset-microsyntax-comma": "<img srcset=',' src=x alt>",
+  "srcset-microsyntax-css-comment-after-descriptor": "<img srcset='x 2x/**/' src=x alt>",
   # aria
   "picture-aria-role-img": "<picture role=img><img src=x alt></picture>",
   "picture-aria-role-button": "<picture role=button><img src=x alt></picture>",

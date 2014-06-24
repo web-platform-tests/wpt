@@ -67,8 +67,8 @@ web-platform-tests root.
 You must do this step to use the test runner, even if you are not
 creating a new test suite.
 
-To generate this file navigate to the root
-directory and run:
+To generate this file, from a command prompt at the root
+directory of the repo, run:
 
 ```
 python tools/scripts/manifest.py

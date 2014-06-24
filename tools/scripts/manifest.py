@@ -497,8 +497,6 @@ def sync_urls(manifest, updated_files):
 
 
 def sync_local_changes(manifest, local_changes):
-    #If we just refuse to write the manifest in the face of local changes
-    #this can be simplified somewhat
     if local_changes:
         logger.info("Working directory not clean, adding local changes")
     prev_local_changes = manifest.local_changes
@@ -507,12 +505,12 @@ def sync_local_changes(manifest, local_changes):
     for path, status in prev_local_changes.iteritems():
         print status, path, path in local_changes
         if path not in local_changes:
-            #If a path was previously marked as deleted but is now back
-            #we need to readd it to the manifest
+            # If a path was previously marked as deleted but is now back
+            # we need to readd it to the manifest
             if status == "D" and path in all_paths:
                 local_changes[path] = "A"
-            #If a path was previously marked as added but is now
-            #not then we need to remove it from the manifest
+            # If a path was previously marked as added but is now
+            # not then we need to remove it from the manifest
             elif status == "A" and path not in all_paths:
                 local_changes[path] = "D"
 
@@ -587,7 +585,6 @@ def create_parser():
         help="include local changes in the manifest rather than just committed "
              "changes (experimental)")
     return parser
-
 
 if __name__ == "__main__":
     try:

@@ -22,6 +22,7 @@ sys.path.insert(1, os.path.join(repo_root, "tools", "pywebsocket", "src"))
 from mod_pywebsocket import standalone as pywebsocket
 
 routes = [("GET", "/tools/runner/*", handlers.file_handler),
+          ("POST", "/tools/runner/update_manifest.py", handlers.python_script_handler),
           (any_method, "/tools/*", handlers.ErrorHandler(404)),
           (any_method, "/serve.py", handlers.ErrorHandler(404)),
           (any_method, "*.py", handlers.python_script_handler),

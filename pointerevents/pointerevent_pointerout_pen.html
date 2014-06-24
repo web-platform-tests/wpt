@@ -5,12 +5,13 @@
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="http://w3c-test.org/resources/testharness.js"></script>
+        <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
     </head>
     <body onload="run()">
         <h2>pointerout</h2>
-        <h4>Test Description: This test checks if pointerout event triggers for pen. Place your pen over the black rectangle and then move it out. </h4>
+        <h4>Test Description: This test checks if pointerout event triggers for pen. Place your pen over the black rectangle and then pull the pen out of the digitizer's detectable range. </h4>
         <p>Note: this test is for devices that support hover - for pen only</p>
         <div id="target0"></div>
         <script>
@@ -19,14 +20,14 @@
             // Requirements: the callback function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
-            
+
             var eventTested = false;
             var isPointerupReceived = false;
             var detected_pointertypes = {};
-            
+
             function run() {
-            	var target0 = document.getElementById("target0");
-	
+                var target0 = document.getElementById("target0");
+
                 // When a pen stylus leaves the hover range detectable by the digitizer the pointerout event must be dispatched. 
                 // TA: 7.2
                 on_event(target0, "pointerout", function (event) {
@@ -45,7 +46,7 @@
                     }
                 });
             }
-            
+
         </script>
         <h1>Pointer Events pointerout tests</h1>
         <div id="complete-notice">

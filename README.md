@@ -55,15 +55,20 @@ to some port of your choice e.g.
 Test Runner
 ===========
 
-There is a test runner in `tools/runner` that is designed to provide a
+There is a test runner that is designed to provide a
 convenient way to run the web-platform tests in-browser. It will run
 testharness.js tests automatically but requires manual work for
 reftests and manual tests.
 
 In order to use the runner, it is first necessary to generate a test
 manifest. This must be called `MANIFEST.json` and placed in the
-web-platform-tests root. To generate this navigate to the root
-directory and run
+web-platform-tests root.
+
+You must do this step to use the test runner, even if you are not
+creating a new test suite.
+
+To generate this file, from a command prompt at the root
+directory of the repo, run:
 
 ```
 python tools/scripts/manifest.py
@@ -73,6 +78,13 @@ If you have not installed it yet, run:
 ```
 pip install html5lib
 ```
+
+On Mac OS X, python is installed with Xcode, but pip is not. Try
+```
+sudo easy_install pip
+```
+if pip is not already on your system.
+
 
 Running the tests requires that the test environment be activated as
 described above. The runner can be found at `/tools/runner/index.html`

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml' lang='en'>
+<html>
   <head>
     <meta charset='utf-8'/>
     <title>Vibration API: test that calls to vibrate() are silently ignored when the device cannot vibrate</title>
@@ -7,10 +7,6 @@
     <link rel='help' href='http://www.w3.org/TR/vibration/#methods'/>
     <meta name='flags' content='dom, no-vibrator'/>
     <meta name='assert' content='If the device does not provide a vibration mechanism, or it is disabled, the user agent must silently ignore any invocations of the vibrate() method.'/>
-    <!--
-      When you review this test, please add
-      <link rel='reviewer' title='Your Name' href='mailto:your-email-address'/>
-    -->
     <link rel='stylesheet' href='/resources/testharness.css' media='all'/>
   </head>
   <body>

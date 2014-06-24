@@ -62,7 +62,7 @@ reftests and manual tests.
 
 In order to use the runner, it is first necessary to generate a test
 manifest. This must be called `MANIFEST.json` and placed in the
-web-platform-tests root. 
+web-platform-tests root.
 
 You must do this step to use the test runner, even if you are not
 creating a new test suite.

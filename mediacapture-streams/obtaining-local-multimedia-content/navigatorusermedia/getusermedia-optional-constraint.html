@@ -18,13 +18,14 @@
 <script>
 var t = async_test("Tests that setting an optional constraint in getUserMedia is handled as optional", {timeout:10000});
 t.step(function() {
-  navigator.getUserMedia({video: {optional: [{width: {min:1024}}, {width: {max: 800}}]}}, t.step_func(function (stream) {
-    assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
-    t.done();
-  }), t.step_func(function(error) {
-    assert_unreached("an optional constraint can't prevent the obtention of a video stream");
-    t.done();
-  }));
+  navigator.getUserMedia({video: {optional: [{width: {min:1024}}, {width: {max: 800}}]}},
+      t.step_func(function (stream) {
+        assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
+        t.done();
+      }),
+      t.step_func(function(error) {
+        assert_unreached("an optional constraint can't stop us from obtaining a video stream");
+      }));
 });
 </script>
 </body>

@@ -14,14 +14,14 @@
     <canvas id="test_canvas_2"></canvas>
     <canvas id="test_canvas_3"></canvas>
 
-    <script>    
+    <script>
     (function() {
       test(function() {
         var canvas = document.getElementById('test_canvas_1');
         var ctx = canvas.getContext('2d');
 
-        assert_true(ctx.imageSmoothingEnabled);        
-      }, "When the CanvasRenderingContext2D object is created, the attribute must be set to true.");  
+        assert_true(ctx.imageSmoothingEnabled);
+      }, "When the CanvasRenderingContext2D object is created, the attribute must be set to true.");
 
       test(function() {
         var canvas = document.getElementById('test_canvas_2');
@@ -36,7 +36,7 @@
           var ctx = canvas.getContext('2d');
 
           ctx.imageSmoothingEnabled = false;
-          assert_equals(ctx.imageSmoothingEnabled, false); 
+          assert_equals(ctx.imageSmoothingEnabled, false);
         }, "On setting the imageSmoothingEnabled attribute, it must be set to the new value.");
     })();
 

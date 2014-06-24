@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1>Description</h1>
-    <p>WindowProxy Test</p>
+    <p>WindowProxy.statusbar Test</p>
 
     <h1>Manual Test Steps:</h1>
     <ol>
@@ -20,10 +20,10 @@
     <div id="log"></div>
 
     <script type="text/javascript" >
-    	test(function () {
-    		assert_not_equals(typeof window.statusbar.visible, undefined, 'window.statusbar.visible');
-    		assert_true(window.statusbar.visible, 'window.statusbar.visible');
-    	}, "BarProp attribute: window.statusbar.visible");
+    test(function () {
+        assert_not_equals(typeof window.statusbar.visible, undefined, 'window.statusbar.visible');
+        assert_true(window.statusbar.visible, 'window.statusbar.visible');
+    }, "BarProp attribute: window.statusbar.visible");
     </script>
 </body>
 </html>

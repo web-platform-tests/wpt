@@ -1,5 +1,4 @@
-import gzip
-from cStringIO import StringIO
+import zlib
 
 def main(request, response):
     if "content" in request.GET:
@@ -7,13 +6,10 @@ def main(request, response):
     else:
         output = request.body
 
-    out = StringIO()
-    with gzip_module.GzipFile(fileobj=out, mode="w") as f:
-      f.write(output)
-    output = out.getvalue()
+    output = zlib.compress(output, 9)
 
     headers = [("Content-type", "text/plain"),
-               ("Content-Encoding", "gzip"),
+               ("Content-Encoding", "deflate"),
                ("X-Request-Method", request.method),
                ("X-Request-Query", request.url_parts.query if request.url_parts.query else "NO"),
                ("X-Request-Content-Length", request.headers.get("Content-Length", "NO")),

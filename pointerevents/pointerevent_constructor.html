@@ -11,7 +11,7 @@
     </head>
     <body onload="run()">
     <h1>PointerEvent: Dispatch custom event</h1>
-    <h4>Test Description: This test checks if PointerEvent constructor works properly. This test is based on pointerover and pointerout events. Avoid real pointerover and pointerout for getting of the proper results.</h4>
+    <h4>Test Description: This test checks if PointerEvent constructor works properly using synthetic pointerover and pointerout events. For valid results, this test must be run without generating real (trusted) pointerover or pointerout events on the black rectangle below.</h4>
     <div id="target0"></div>
     <script>
         var eventTested = false;
@@ -70,6 +70,7 @@
             });
             
             if(typeof(PointerEvent) != "undefined") {
+                try { 
                 pointerEventCustom = new PointerEvent("pointerover",
                 {bubbles: testBubbles,
                 cancelable: testCancelable,
@@ -91,6 +92,9 @@
                 pointerEventDefault = new PointerEvent("pointerout");
                 target0.dispatchEvent(pointerEventDefault);
                 done();
+                }catch(e) {
+                    assert_equals(true,)
+                }
             }
         }
     </script>

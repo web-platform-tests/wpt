@@ -1,8 +1,10 @@
 import utils
 
 content_types = utils.invert_dict({"text/html": ["htm", "html"],
+                                   "application/json": ["json"],
                                    "application/xhtml+xml": ["xht", "xhtm", "xhtml"],
                                    "application/xml": ["xml"],
+                                   "application/x-xpinstall": ["xpi"],
                                    "text/javascript": ["js"],
                                    "text/css": ["css"],
                                    "text/plain": ["txt", "md"],

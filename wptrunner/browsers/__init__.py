@@ -21,3 +21,8 @@ a dictionary with the fields
 All classes and functions named in the above dict must be imported into the
 module global scope.
 """
+
+product_list = ["b2g",
+                "chrome",
+                "firefox",
+                "servo"]

@@ -1,16 +1,14 @@
 import os
 import importlib
 
-here = os.path.join(os.path.split(__file__)[0])
-
+from .browsers import product_list
 
 def iter_products():
+    here = os.path.join(os.path.split(__file__)[0])
     product_dir = os.path.join(here, "browsers")
-    plugin_files = [os.path.splitext(x)[0] for x in os.listdir(product_dir)
-                    if not x[0] in ("_", ".", "#") and x.endswith(".py")]
 
-    for fn in plugin_files:
-        mod = importlib.import_module("wptrunner.browsers." + fn)
+    for product in product_list:
+        mod = importlib.import_module("wptrunner.browsers." + product)
         if hasattr(mod, "__wptrunner__"):
             yield mod.__wptrunner__["product"], mod
 

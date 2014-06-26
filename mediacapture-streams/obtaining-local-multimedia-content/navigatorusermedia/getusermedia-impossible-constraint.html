@@ -17,14 +17,13 @@
 <script src=/resources/testharnessreport.js></script>
 <script src="/common/vendor-prefix.js" data-prefixed-objects='[{"ancestors":["navigator"], "name":"getUserMedia"}]'></script>
 <script>
-var t = async_test("Tests that setting a trivial mandatory constraint in getUserMedia works", {timeout:10000});
+var t = async_test("Tests that setting an impossible constraint in getUserMedia fails", {timeout:10000});
 t.step(function() {
   navigator.getUserMedia({video: {mandatory: {width: {min:Infinity}}}}, t.step_func(function (stream) {
     assert_unreached("a Video stream of infinite width cannot be created");
     t.done();
   }), t.step_func(function(error) {
-    console.log(error);
-    assert_equals(error.name, "ContraintNotSatisfied", "An impossible constraint triggers a ContraintNotSatified error");
+    assert_equals(error.name, "ConstraintNotSatisfiedError", "An impossible constraint triggers a ConstraintNotSatisfiedError");
     assert_equals(error.constraintName, "width", "The name of the not satisfied error is given in error.constraintName");
     t.done();
   }));

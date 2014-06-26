@@ -20,7 +20,7 @@
 var t = async_test("");
 _addTest(function(canvas, ctx) {
 
-_assert_throws("SYNTAX_ERR", function() { ctx.createPattern(canvas, "null"); });
+assert_throws("SYNTAX_ERR", function() { ctx.createPattern(canvas, "null"); });
 
 
 });

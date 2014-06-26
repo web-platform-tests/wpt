@@ -20,9 +20,9 @@
 var t = async_test("createImageData(sw, sh) throws INDEX_SIZE_ERR if size is zero");
 _addTest(function(canvas, ctx) {
 
-_assert_throws("INDEX_SIZE_ERR", function() { ctx.createImageData(10, 0); });
-_assert_throws("INDEX_SIZE_ERR", function() { ctx.createImageData(0, 10); });
-_assert_throws("INDEX_SIZE_ERR", function() { ctx.createImageData(0, 0); });
+assert_throws("INDEX_SIZE_ERR", function() { ctx.createImageData(10, 0); });
+assert_throws("INDEX_SIZE_ERR", function() { ctx.createImageData(0, 10); });
+assert_throws("INDEX_SIZE_ERR", function() { ctx.createImageData(0, 0); });
 
 
 });

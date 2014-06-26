@@ -22,9 +22,9 @@ _addTest(function(canvas, ctx) {
 
 canvas.width = 50;
 ctx.drawImage(document.getElementById('yellow.png'), 0, 0);
-_assert_throws("SECURITY_ERR", function() { canvas.toDataURL(); });
+assert_throws("SECURITY_ERR", function() { canvas.toDataURL(); });
 canvas.width = 100;
-_assert_throws("SECURITY_ERR", function() { canvas.toDataURL(); });
+assert_throws("SECURITY_ERR", function() { canvas.toDataURL(); });
 
 
 });

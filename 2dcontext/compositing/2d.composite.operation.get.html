@@ -26,7 +26,7 @@ var modes = ['source-atop', 'source-in', 'source-out', 'source-over',
 for (var i = 0; i < modes.length; ++i)
 {
     ctx.globalCompositeOperation = modes[i];
-    _assertEqual(ctx.globalCompositeOperation, modes[i], "ctx.globalCompositeOperation", "modes[\""+(i)+"\"]");
+    _assertSame(ctx.globalCompositeOperation, modes[i], "ctx.globalCompositeOperation", "modes[\""+(i)+"\"]");
 }
 
 

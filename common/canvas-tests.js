@@ -53,16 +53,6 @@ function _assertDifferent(a, b, text_a, text_b)
     assert_not_equals(a, b, msg);
 }
 
-function _assertEqual(a, b, text_a, text_b)
-{
-    _asserted = true;
-    var msg = text_a + ' == ' + text_b + ' (got ' + _valToString(a) +
-              ', expected ' + _valToString(b) + ')';
-    if (a != b)
-        _fail('Failed assertion ' + msg);
-    assert_true(a == b, msg);
-}
-
 function _assertMatch(a, b, text_a, text_b)
 {
     _asserted = true;
@@ -195,7 +185,7 @@ function _addTest(testFn)
 function _assertGreen(ctx, canvasWidth, canvasHeight)
 {
     var testColor = function(d, idx, expected) {
-        _assertEqual(d[idx], expected, "d[" + idx + "]", String(expected));
+        assert_equals(d[idx], expected, "d[" + idx + "]", String(expected));
     };
     var imagedata = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
     var w = imagedata.width, h = imagedata.height, d = imagedata.data;

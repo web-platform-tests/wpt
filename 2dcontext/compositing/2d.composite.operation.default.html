@@ -20,7 +20,7 @@
 var t = async_test("");
 _addTest(function(canvas, ctx) {
 
-_assertEqual(ctx.globalCompositeOperation, 'source-over', "ctx.globalCompositeOperation", "'source-over'");
+_assertSame(ctx.globalCompositeOperation, 'source-over', "ctx.globalCompositeOperation", "'source-over'");
 
 
 });

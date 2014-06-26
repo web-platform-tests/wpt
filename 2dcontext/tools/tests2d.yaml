@@ -455,11 +455,11 @@
     ctx.lineWidth = 2;
     ctx.save();
     ctx.lineWidth = 3;
-    @assert ctx.lineWidth == 3;
+    @assert ctx.lineWidth === 3;
     ctx.restore();
-    @assert ctx.lineWidth == 2;
+    @assert ctx.lineWidth === 2;
     ctx.restore();
-    @assert ctx.lineWidth == 1;
+    @assert ctx.lineWidth === 1;
 
 - name: 2d.state.saverestore.stackdepth
   desc: save()/restore() stack depth is not unreasonably limited
@@ -475,7 +475,7 @@
     }
     for (var i = limit-1; i > 0; --i)
     {
-        @assert ctx.lineWidth == i;
+        @assert ctx.lineWidth === i;
         ctx.restore();
     }
 
@@ -488,7 +488,7 @@
         ctx.restore();
     ctx.lineWidth = 0.5;
     ctx.restore();
-    @assert ctx.lineWidth == 0.5;
+    @assert ctx.lineWidth === 0.5;
 
 
 - name: 2d.transformation.order
@@ -902,13 +902,13 @@
     ctx.globalAlpha = 0.5;
     var a = ctx.globalAlpha; // might not be exactly 0.5, if it is rounded/quantised, so remember for future comparisons
     ctx.globalAlpha = 1.1;
-    @assert ctx.globalAlpha == a;
+    @assert ctx.globalAlpha === a;
     ctx.globalAlpha = -0.1;
-    @assert ctx.globalAlpha == a;
+    @assert ctx.globalAlpha === a;
     ctx.globalAlpha = 0;
-    @assert ctx.globalAlpha == 0;
+    @assert ctx.globalAlpha === 0;
     ctx.globalAlpha = 1;
-    @assert ctx.globalAlpha == 1;
+    @assert ctx.globalAlpha === 1;
 
 - name: 2d.composite.globalAlpha.invalid
   testing:
@@ -1254,7 +1254,7 @@
     for (var i = 0; i < modes.length; ++i)
     {
         ctx.globalCompositeOperation = modes[i];
-        @assert ctx.globalCompositeOperation == modes[i];
+        @assert ctx.globalCompositeOperation === modes[i];
     }
 
 - name: 2d.composite.operation.unrecognised
@@ -1263,7 +1263,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'nonexistent';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.darker
   testing:
@@ -1271,7 +1271,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'darker';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.over
   testing:
@@ -1279,7 +1279,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'over';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.clear
   testing:
@@ -1287,7 +1287,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'clear';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.highlight
   testing:
@@ -1295,7 +1295,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'highlight';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.nullsuffix
   testing:
@@ -1303,7 +1303,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'source-over\0';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.casesensitive
   testing:
@@ -1311,13 +1311,13 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'Source-over';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.default
   testing:
     - 2d.composite.operation.default
   code: |
-    @assert ctx.globalCompositeOperation == 'source-over';
+    @assert ctx.globalCompositeOperation === 'source-over';
 
 
 - meta: |
@@ -1561,19 +1561,19 @@
     - 2d.serializecolour.transparent
   code: |
     ctx.fillStyle = 'rgba(0,0,0,0)';
-    @assert ctx.fillStyle == 'rgba(0, 0, 0, 0)';
+    @assert ctx.fillStyle === 'rgba(0, 0, 0, 0)';
 
 - name: 2d.fillStyle.default
   testing:
     - 2d.colours.default
   code: |
-    @assert ctx.fillStyle == '#000000';
+    @assert ctx.fillStyle === '#000000';
 
 - name: 2d.strokeStyle.default
   testing:
     - 2d.colours.default
   code: |
-    @assert ctx.strokeStyle == '#000000';
+    @assert ctx.strokeStyle === '#000000';
 
 
 - name: 2d.gradient.object.type
@@ -8359,26 +8359,26 @@
   code: |
     ctx.moveTo(25, 25);
     ctx.bezierCurveTo(50, -50, 50, 100, 75, 25);
-    @assert ctx.isPointInPath(25, 20) == false;
-    @assert ctx.isPointInPath(25, 30) == false;
-    @assert ctx.isPointInPath(30, 20) == true;
-    @assert ctx.isPointInPath(30, 30) == false;
-    @assert ctx.isPointInPath(40, 2) == false;
-    @assert ctx.isPointInPath(40, 20) == true;
-    @assert ctx.isPointInPath(40, 30) == false;
-    @assert ctx.isPointInPath(40, 47) == false;
-    @assert ctx.isPointInPath(45, 20) == true;
-    @assert ctx.isPointInPath(45, 30) == false;
-    @assert ctx.isPointInPath(55, 20) == false;
-    @assert ctx.isPointInPath(55, 30) == true;
-    @assert ctx.isPointInPath(60, 2) == false;
-    @assert ctx.isPointInPath(60, 20) == false;
-    @assert ctx.isPointInPath(60, 30) == true;
-    @assert ctx.isPointInPath(60, 47) == false;
-    @assert ctx.isPointInPath(70, 20) == false;
-    @assert ctx.isPointInPath(70, 30) == true;
-    @assert ctx.isPointInPath(75, 20) == false;
-    @assert ctx.isPointInPath(75, 30) == false;
+    @assert ctx.isPointInPath(25, 20) === false;
+    @assert ctx.isPointInPath(25, 30) === false;
+    @assert ctx.isPointInPath(30, 20) === true;
+    @assert ctx.isPointInPath(30, 30) === false;
+    @assert ctx.isPointInPath(40, 2) === false;
+    @assert ctx.isPointInPath(40, 20) === true;
+    @assert ctx.isPointInPath(40, 30) === false;
+    @assert ctx.isPointInPath(40, 47) === false;
+    @assert ctx.isPointInPath(45, 20) === true;
+    @assert ctx.isPointInPath(45, 30) === false;
+    @assert ctx.isPointInPath(55, 20) === false;
+    @assert ctx.isPointInPath(55, 30) === true;
+    @assert ctx.isPointInPath(60, 2) === false;
+    @assert ctx.isPointInPath(60, 20) === false;
+    @assert ctx.isPointInPath(60, 30) === true;
+    @assert ctx.isPointInPath(60, 47) === false;
+    @assert ctx.isPointInPath(70, 20) === false;
+    @assert ctx.isPointInPath(70, 30) === true;
+    @assert ctx.isPointInPath(75, 20) === false;
+    @assert ctx.isPointInPath(75, 30) === false;
 
 - name: 2d.path.isPointInPath.winding
   desc: isPointInPath() uses the non-zero winding number rule
@@ -9139,7 +9139,7 @@
     - 2d.imageData.initial
   code: |
     var imgdata = ctx.createImageData(10, 20);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
     @assert imgdata.width < imgdata.height;
     @assert imgdata.width > 0;
     var isTransparentBlack = true;
@@ -9159,9 +9159,9 @@
     ctx.fillRect(0, 0, 100, 50);
     var imgdata1 = ctx.getImageData(0, 0, 10, 20);
     var imgdata2 = ctx.createImageData(imgdata1);
-    @assert imgdata2.data.length == imgdata1.data.length;
-    @assert imgdata2.width == imgdata1.width;
-    @assert imgdata2.height == imgdata1.height;
+    @assert imgdata2.data.length === imgdata1.data.length;
+    @assert imgdata2.width === imgdata1.width;
+    @assert imgdata2.height === imgdata1.height;
     var isTransparentBlack = true;
     for (var i = 0; i < imgdata2.data.length; ++i)
         if (imgdata2.data[i] !== 0)
@@ -9174,7 +9174,7 @@
     - 2d.imageData.create2.size
   code: |
     var imgdata = ctx.createImageData(1000, 2000);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
     @assert imgdata.width < imgdata.height;
     @assert imgdata.width > 0;
     var isTransparentBlack = true;
@@ -9190,9 +9190,9 @@
     - 2d.imageData.one
   code: |
     var imgdata = ctx.createImageData(0.0001, 0.0001);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
-    @assert imgdata.width == 1;
-    @assert imgdata.height == 1;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
+    @assert imgdata.width === 1;
+    @assert imgdata.height === 1;
     var isTransparentBlack = true;
     for (var i = 0; i < imgdata.data.length; ++i)
         if (imgdata.data[i] !== 0)
@@ -9208,9 +9208,9 @@
     var imgdata2 = ctx.createImageData(-10, 20);
     var imgdata3 = ctx.createImageData(10, -20);
     var imgdata4 = ctx.createImageData(-10, -20);
-    @assert imgdata1.data.length == imgdata2.data.length;
-    @assert imgdata2.data.length == imgdata3.data.length;
-    @assert imgdata3.data.length == imgdata4.data.length;
+    @assert imgdata1.data.length === imgdata2.data.length;
+    @assert imgdata2.data.length === imgdata3.data.length;
+    @assert imgdata3.data.length === imgdata4.data.length;
 
 - name: 2d.imageData.create2.zero
   desc: createImageData(sw, sh) throws INDEX_SIZE_ERR if size is zero
@@ -9247,8 +9247,8 @@
   code: |
     var imgdata1 = ctx.createImageData(10.01, 10.99);
     var imgdata2 = ctx.getImageData(0, 0, 10.01, 10.99);
-    @assert imgdata1.width == imgdata2.width;
-    @assert imgdata1.height == imgdata2.height;
+    @assert imgdata1.width === imgdata2.width;
+    @assert imgdata1.height === imgdata2.height;
 
 - name: 2d.imageData.get.basic
   desc: getImageData() exists and returns something
@@ -9401,9 +9401,9 @@
     - 2d.imageData.one
   code: |
     var imgdata = ctx.getImageData(0, 0, 0.0001, 0.0001);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
-    @assert imgdata.width == 1;
-    @assert imgdata.height == 1;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
+    @assert imgdata.width === 1;
+    @assert imgdata.height === 1;
 
 - name: 2d.imageData.get.nonpremul
   desc: getImageData() returns non-premultiplied colours
@@ -9458,7 +9458,7 @@
     - 2d.pixelarray.length
   code: |
     var imgdata = ctx.getImageData(0, 0, 10, 10);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
 
 - name: 2d.imageData.get.order.cols
   desc: getImageData() returns leftmost columns first
@@ -9547,9 +9547,9 @@
     - 2d.imageData.type
   code: |
     var imgdata = ctx.getImageData(0, 0, 10, 10);
-    @assert typeof(imgdata.width) == 'number';
-    @assert typeof(imgdata.height) == 'number';
-    @assert typeof(imgdata.data) == 'object';
+    @assert typeof(imgdata.width) === 'number';
+    @assert typeof(imgdata.height) === 'number';
+    @assert typeof(imgdata.data) === 'object';
 
 - name: 2d.imageData.object.readonly
   desc: ImageData objects properties are read-only

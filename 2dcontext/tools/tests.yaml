@@ -6,7 +6,7 @@
   testing:
     - fallback
   code: |
-    @assert canvas.childNodes.length == 1;
+    @assert canvas.childNodes.length === 1;
 
 - name: fallback.multiple
   desc: Fallback content with multiple elements
@@ -14,7 +14,7 @@
     - fallback
   fallback: '<p class="fallback">FAIL</p><p class="fallback">FAIL</p>'
   code: |
-    @assert canvas.childNodes.length == 2;
+    @assert canvas.childNodes.length === 2;
 
 - name: fallback.nested
   desc: Fallback content containing another canvas (mostly testing parsers)
@@ -22,7 +22,7 @@
     - fallback
   fallback: '<canvas><p class="fallback">FAIL (fallback content)</p></canvas><p class="fallback">FAIL (fallback content)</p>'
   code: |
-    @assert canvas.childNodes.length == 2;
+    @assert canvas.childNodes.length === 2;
 
 - name: type.name
   desc: HTMLCanvasElement type and toString
@@ -222,7 +222,7 @@
 
             # With "100%", Opera gets canvas.width = 100 but renders at 100% of the frame width,
             # so check the CSS display width
-            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") == "%spx";\n' % (exp, )
+            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") === "%spx";\n' % (exp, )
 
         code += "@assert canvas.getAttribute('width') === %r;\n" % string
         code += "@assert canvas.getAttribute('height') === %r;\n" % string
@@ -262,8 +262,8 @@
     - size.css
   canvas: 'width="50" height="30" style="width: 100px; height: 50px"'
   code: |
-    @assert canvas.width == 50;
-    @assert canvas.height == 30;
+    @assert canvas.width === 50;
+    @assert canvas.height === 30;
   expected: size 100 50
 
 - name: size.large
@@ -279,8 +279,8 @@
     var n = 2147483647; // 2^31 - 1, which should be supported by any sensible definition of "long"
     canvas.width = n;
     canvas.height = n;
-    @assert canvas.width == n;
-    @assert canvas.height == n;
+    @assert canvas.width === n;
+    @assert canvas.height === n;
 #  expected: size 2147483647 2147483647 # not a good idea to generate the expected image in this case...
 
 - name: initial.colour

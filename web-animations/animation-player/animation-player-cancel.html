@@ -19,7 +19,6 @@ function newAnimation(animationTarget) {
 	    {width: '200px', offset: 1}], 1000);
 }
 
-
 test(function() {
     var player = document.timeline.play(newAnimation(createDiv(this)));
     player.cancel();
@@ -28,7 +27,6 @@ test(function() {
         'should be null');
 }, 'Test that value of the AnimationPlayer.source attribute is null after ' +
     'AnimationPlayer.cancel() call');
-
 
 test(function() {
     var animation = newAnimation(createDiv(this));

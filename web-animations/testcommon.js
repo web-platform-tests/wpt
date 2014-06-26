@@ -18,7 +18,7 @@ function newHTMLDocument() {
 // creates div element, appends it to the document body and
 // add removing of the created element to test cleanup
 function createDiv(test, doc) {
-    if (doc == null) {
+    if (!doc) {
         doc = document;
     }
     var div = doc.createElement('div');
@@ -37,7 +37,7 @@ function removeElement(element) {
 // Returns true if there is className in object prototype chain
 function hasAncestorClassString(object, classString) {
     var proto = Object.getPrototypeOf(object);
-    if (proto == null) {
+    if (proto === null) {
         return false;
     }
     if (proto.constructor.name === classString) {
@@ -46,7 +46,7 @@ function hasAncestorClassString(object, classString) {
     return hasAncestorClassString(proto, classString);
 }
 
-// Returns true if timed item is in current as defined at
+// Returns true if timed item is current as defined at
 // http://dev.w3.org/fxtf/web-animations/#dfn-current
 function isCurrent(timedItem) {
     return isInBeforePhase(timedItem) || isInPlay(timedItem)
@@ -57,50 +57,50 @@ function isCurrent(timedItem) {
 // http://dev.w3.org/fxtf/web-animations/#dfn-before-phase
 function isInBeforePhase(timedItem) {
     return timedItem.localTime !== null
-            && timedItem.startTime < timedItem.timing.delay;
+        && timedItem.startTime < timedItem.timing.delay;
 }
 
 // Returns true if timed item is in play as defined at
 // http://dev.w3.org/fxtf/web-animations/#dfn-in-play
 function isInPlay(timedItem) {
-    var condition1 = isInActivePhase(timedItem);
-    var condition2 = false;
-    if (timedItem.parent !== null && isInPlay(timedItem.parent)) {
-        condition2 = true;
-    } else if (timedItem.player !== null && !isLimited(timedItem.player)) {
-        condition2 = true;
+    if (!isInActivePhase(timedItem)) {
+        return false;
     }
-    return  condition1 && condition2;
+    if (timedItem.parent !== null && isInPlay(timedItem.parent)) {
+        return true;
+    } else if (timedItem.player !== null && !isLimited(timedItem.player)) {
+        return true;
+    }
+    return  false;
 }
 
 // Returns true if timed item is in active phase as defined at
 // http://dev.w3.org/fxtf/web-animations/#dfn-active-phase
 function isInActivePhase(timedItem) {
     return timedItem.localTime !== null
-            && timedItem.startTime >= timedItem.timing.delay
-            && timedItem.startTime <= timedItem.timing.delay
-                    + timedItem.activeDuration;
+        && timedItem.startTime >= timedItem.timing.delay
+        && timedItem.startTime <= timedItem.timing.delay + timedItem.activeDuration;
 }
 
 // Returns true if player is limited as defined at
 // http://dev.w3.org/fxtf/web-animations/#dfn-limited
 function isLimited(player) {
-    return (player.playbackRate > 0 && player.currentTime >= getPlayerSourceContentEnd(player))
+    return (player.playbackRate > 0 && player.currentTime >= calcPlayerSourceContentEnd(player))
         || (player.playbackRate < 0 && player.currentTime <= 0);
 }
 
 // Returns player source content end as defined at
 // http://dev.w3.org/fxtf/web-animations/#dfn-source-content-end
-function getPlayerSourceContentEnd(player) {
+function calcPlayerSourceContentEnd(player) {
     if (player.source === null) {
         return 0;
     }
-    return getEndTime(player.source);
+    return calcEndTime(player.source);
 }
 
 // Returns end time of a timed item as defined at
 // http://dev.w3.org/fxtf/web-animations/#dfn-end-time
-function getEndTime(timedItem) {
+function calcEndTime(timedItem) {
     return timedItem.startTime + timedItem.timing.delay + timedItem.activeDuration
         + timedItem.timing.endDelay;
 }

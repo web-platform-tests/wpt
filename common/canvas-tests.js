@@ -147,21 +147,6 @@ function _addTest(testFn)
         }
     };
     window.endTest = endTest;
-    window.wrapFunction = function (f)
-    {
-        return function()
-        {
-            try
-            {
-                f.apply(null, arguments);
-            }
-            catch (e)
-            {
-                _fail('Aborted with exception: ' + e.message);
-            }
-            endTest();
-        };
-    };
 
     on_event(window, "load", function()
     {

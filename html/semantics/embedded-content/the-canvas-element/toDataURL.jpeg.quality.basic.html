@@ -38,7 +38,7 @@ if (!data.match(/^data:image\/jpeg[;,]/)) {
   img_hi.onload = function ()
   {
       var img_lo = new Image();
-      img_lo.onload = wrapFunction(function ()
+      img_lo.onload = t.step_func_done(function ()
       {
           ctx.drawImage(img_hi, 0, 0, 50, 50, 0, 0, 50, 50);
           ctx.drawImage(img_lo, 0, 0, 50, 50, 50, 0, 50, 50);

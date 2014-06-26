@@ -97,6 +97,16 @@ def check_whitespace(path, f):
 
     return errors
 
+w3ctestorg_regexp = re.compile("w3c-test.org")
+def check_w3ctestorg(path, f):
+    errors = []
+    for i, line in enumerate(f):
+        for regexp, error in [(w3ctestorg_regexp, "W3C-TEST.ORG")]:
+            if regexp.search(line):
+                errors.append((error, "%s line %i" % (path, i+1), i+1))
+
+    return errors
+
 def check_parsed(path, f):
     ext = os.path.splitext(path)[1][1:]
 
@@ -214,7 +224,7 @@ def main():
     return sum(error_count.itervalues())
 
 path_lints = [check_path_length]
-file_lints = [check_whitespace, check_parsed]
+file_lints = [check_whitespace, check_w3ctestorg, check_parsed]
 
 if __name__ == "__main__":
     error_count = main()

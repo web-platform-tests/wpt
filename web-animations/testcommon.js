@@ -66,12 +66,8 @@ function isInPlay(timedItem) {
     if (!isInActivePhase(timedItem)) {
         return false;
     }
-    if (timedItem.parent !== null && isInPlay(timedItem.parent)) {
-        return true;
-    } else if (timedItem.player !== null && !isLimited(timedItem.player)) {
-        return true;
-    }
-    return  false;
+    return (timed.parent !== null && isInPlay(timedItem.parent)) ||
+        (timedItem.player !== null && !isLimited(timedItem.parent));
 }
 
 // Returns true if timed item is in active phase as defined at
@@ -79,7 +75,8 @@ function isInPlay(timedItem) {
 function isInActivePhase(timedItem) {
     return timedItem.localTime !== null
         && timedItem.startTime >= timedItem.timing.delay
-        && timedItem.startTime <= timedItem.timing.delay + timedItem.activeDuration;
+        && timedItem.startTime <=
+            timedItem.timing.delay + timedItem.activeDuration;
 }
 
 // Returns true if player is limited as defined at

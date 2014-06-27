@@ -91,7 +91,8 @@ def check_regexp_line(path, f):
     errors = []
     for i, line in enumerate(f):
         for regexp, error in [(trailing_whitespace_regexp, "TRAILING WHITESPACE"),
-                              (tabs_regexp, "INDENT TABS"), (cr_regexp, "CR AT EOL"),
+                              (tabs_regexp, "INDENT TABS"),
+                              (cr_regexp, "CR AT EOL"),
                               (w3ctestorg_regexp, "W3C-TEST.ORG")]:
             if regexp.search(line):
                 errors.append((error, "%s line %i" % (path, i+1), i+1))

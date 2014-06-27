@@ -29,7 +29,7 @@ test(function () {
     var widget = d.createElement('div');
     d.body.appendChild(widget);
 
-    var s = createSR(widget);
+    var s = widget.createShadowRoot();
 
     var thumb = d.createElement('span');
     thumb.innerHTML = 'This is a pseudo-element';

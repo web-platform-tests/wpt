@@ -8932,6 +8932,17 @@
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
+- name: 2d.drawImage.svg
+  desc: drawImage() of an SVG image
+  testing:
+    - 2d.drawImage.svg
+  images:
+    - green.svg
+  code: |
+    ctx.drawImage(document.getElementById('green.svg'), 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
+  expected: green
+
 - name: 2d.drawImage.animated.gif
   desc: drawImage() of an animated GIF draws the first frame
   testing:

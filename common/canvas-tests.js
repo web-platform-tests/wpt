@@ -38,10 +38,6 @@ function _requireManualCheck()
     _manual_check = true;
 }
 
-function _crash()
-{
-}
-
 function _getPixel(canvas, x,y)
 {
     var ctx = canvas.getContext('2d');

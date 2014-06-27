@@ -237,8 +237,6 @@ def expand_test_code(code):
     
     code = re.sub(r'@manual;', '_requireManualCheck();', code)
 
-    code = re.sub(r'@crash;', 'return _crash();', code)
-
     code = re.sub(r' @moz-todo', '', code)
 
     code = re.sub(r'@moz-UniversalBrowserRead;',

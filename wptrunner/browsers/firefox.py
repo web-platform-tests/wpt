@@ -77,12 +77,12 @@ class FirefoxBrowser(Browser):
                                  "marionette.defaultPrefs.port": self.marionette_port,
                                  "dom.disable_open_during_load": False})
 
-        self.runner = FirefoxRunner(profile,
-                                    self.binary,
+        self.runner = FirefoxRunner(profile=profile,
+                                    binary=self.binary,
                                     cmdargs=[cmd_arg("marionette"), "about:blank"],
                                     env=env,
-                                    kp_kwargs={"processOutputLine": [self.on_output]},
-                                    process_class=ProcessHandler)
+                                    process_class=ProcessHandler,
+                                    process_args={"processOutputLine": [self.on_output]})
 
         self.logger.debug("Starting Firefox")
         self.runner.start(debug_args=self.debug_args, interactive=self.interactive)

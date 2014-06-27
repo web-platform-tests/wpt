@@ -5,7 +5,7 @@ import shutil
 import subprocess
 
 from mozprofile import FirefoxProfile, Preferences
-from mozrunner import B2GRunner
+from mozrunner import B2GDeviceRunner
 import mozdevice
 import moznetwork
 
@@ -101,8 +101,12 @@ class B2GBrowser(Browser):
                                  # "dom.testing.datastore_enabled_for_hosted_apps": True
                                  })
 
-        self.runner = B2GRunner(profile, self.device, marionette_port=self.marionette_port)
+        self.logger.debug("Creating device runner")
+        self.runner = B2GDeviceRunner(profile=profile)
+        self.logger.debug("Starting device runner")
         self.runner.start()
+        self.wait_for_net()
+        self.logger.debug("Device runner started")
 
     def setup_hosts(self):
         hosts = ["web-platform.test", "www.web-platform.test", "www1.web-platform.test", "www2.web-platform.test",
@@ -175,8 +179,7 @@ class B2GBrowser(Browser):
             time.sleep(1)
 
     def stop(self):
-        if hasattr(self.logger, "logcat"):
-            self.logger.logcat(self.device.getLogcat())
+        pass
 
     def cleanup(self):
         self.logger.debug("Running browser cleanup steps")
@@ -205,50 +208,59 @@ class B2GBrowser(Browser):
 class B2GExecutorBrowser(ExecutorBrowser):
     # The following methods are called from a different process
     def __init__(self, *args, **kwargs):
+        print "Creating B2GExecutorBrowser"
         ExecutorBrowser.__init__(self, *args, **kwargs)
         self.device = mozdevice.DeviceManagerADB()
+        self.executor = None
+        print "Forwarding marionette port"
+        subprocess.check_call([self.device._adbPath,
+                               'forward',
+                               'tcp:%s' % self.marionette_port,
+                               'tcp:2828'])
 
     def after_connect(self, executor):
-        executor.logger.debug("Running browser.after_connect steps")
-        self.install_cert_app(executor)
-        self.use_cert_app(executor)
+        self.executor = executor
+        self.executor.logger.debug("Running browser.after_connect steps")
+        self.install_cert_app()
+        self.use_cert_app()
         self.wait_for_net()
 
-    def install_cert_app(self, executor):
-        marionette = executor.marionette
+    def install_cert_app(self):
+        marionette = self.executor.marionette
         if self.device.dirExists("/data/local/webapps/certtest-app"):
-            executor.logger.info("certtest_app is already installed")
+            self.executor.logger.info("certtest_app is already installed")
             return
-        executor.logger.info("Copying certtest_app")
+        self.executor.logger.info("Installing certtest_app")
         self.device.pushFile(os.path.join(here, "b2g_setup", "certtest_app.zip"),
                              "/data/local/certtest_app.zip")
 
-        executor.logger.info("Installing certtest_app")
+        self.executor.logger.debug("Running install script")
         with open(os.path.join(here, "b2g_setup", "app_install.js"), "r") as f:
             script = f.read()
 
         marionette.set_context("chrome")
         marionette.set_script_timeout(5000)
         marionette.execute_async_script(script)
+        self.executor.logger.debug("Install script complete")
 
-    def use_cert_app(self, executor):
-        marionette = executor.marionette
+    def use_cert_app(self):
+        marionette = self.executor.marionette
 
         self.wait_for_homescreen(marionette)
-        executor.logger.info("Homescreen loaded")
+        self.executor.logger.info("Homescreen loaded")
 
         marionette.set_context("content")
 
         # app management is done in the system app
         marionette.switch_to_frame()
 
-        executor.logger.debug("Loading app_management library")
+        self.executor.logger.debug("Loading app_management library")
         marionette.import_script(os.path.join(here, "b2g_setup", "app_management.js"))
         script = "GaiaApps.launchWithName('CertTest App');"
 
         # NOTE: if the app is already launched, this doesn't launch a new app, it will return
         # a reference to the existing app
-        executor.logger.info("Launching CertTest app")
+        self.executor.logger.info("Launching CertTest app")
         self.cert_test_app = marionette.execute_async_script(script, script_timeout=5000)
         if not self.cert_test_app:
             raise Exception("Launching CertTest App failed")
@@ -257,7 +269,7 @@ class B2GExecutorBrowser(ExecutorBrowser):
     def wait_for_net(self):
         # TODO: limit how long we wait before we fail
         # consider the possibility that wlan0 is not the right interface
-
+        self.executor.logger.info("Waiting for net connection")
         def has_connection():
             try:
                 return self.device.getIP(["wlan0"]) is not None
@@ -272,6 +284,7 @@ class B2GExecutorBrowser(ExecutorBrowser):
             time.sleep(1)
 
     def wait_for_homescreen(self, marionette):
+        self.executor.logger.info("Waiting for homescreen to load")
         marionette.set_context(marionette.CONTEXT_CONTENT)
         marionette.execute_async_script("""
 let manager = window.wrappedJSObject.AppWindowManager || window.wrappedJSObject.WindowManager;

@@ -98,7 +98,8 @@ def create_parser(allow_mandatory=True):
 
 
 def check_args(kwargs):
-    from mozrunner import local
+    from mozrunner import cli
+
     if kwargs["this_chunk"] > 1:
         require_arg(kwargs, "total_chunks", lambda x: x >= kwargs["this_chunk"])
 
@@ -106,8 +107,8 @@ def check_args(kwargs):
             kwargs["chunk_type"] = "equal_time"
 
     if kwargs["debugger"] is not None:
-        debug_args, interactive = local.debugger_arguments(kwargs["debugger"],
-                                                           kwargs["debugger_args"])
+        debug_args, interactive = cli.debugger_arguments(kwargs["debugger"],
+                                                         kwargs["debugger_args"])
         if interactive:
             require_arg(kwargs, "processes", lambda x: x == 1)
             kwargs["no_capture_stdio"] = True

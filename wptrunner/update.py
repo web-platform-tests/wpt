@@ -225,7 +225,7 @@ class GitTree(object):
         if prefix is None:
             args = ("-a",)
         else:
-            args = (prefix,)
+            args = ("--no-ignore-removal", prefix)
         self.git("add", *args)
 
     def create_patch(self, patch_name, message):

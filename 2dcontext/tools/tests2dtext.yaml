@@ -208,6 +208,7 @@
 
 - name: 2d.text.draw.fill.basic
   desc: fillText draws filled text
+  manual:
   testing:
     - 2d.text.draw
     - 2d.text.draw.fill
@@ -218,7 +219,6 @@
     ctx.strokeStyle = '#f00';
     ctx.font = '35px Arial, sans-serif';
     ctx.fillText('PASS', 5, 35);
-    @manual;
   expected: &passfill |
     size 100 50
     cr.set_source_rgb(0, 0, 0)
@@ -256,6 +256,7 @@
 
 - name: 2d.text.draw.fill.rtl
   desc: fillText respects Right-To-Left Override characters
+  manual:
   testing:
     - 2d.text.draw
   code: |
@@ -265,11 +266,11 @@
     ctx.strokeStyle = '#f00';
     ctx.font = '35px Arial, sans-serif';
     ctx.fillText('\u202eFAIL \xa0 \xa0 SSAP', 5, 35);
-    @manual;
   expected: *passfill
 
 - name: 2d.text.draw.fill.maxWidth.large
   desc: fillText handles maxWidth correctly
+  manual:
   testing:
     - 2d.text.draw.maxwidth
   code: |
@@ -278,7 +279,6 @@
     ctx.fillStyle = '#0f0';
     ctx.font = '35px Arial, sans-serif';
     ctx.fillText('PASS', 5, 35, 200);
-    @manual;
   expected: *passfill
 
 - name: 2d.text.draw.fill.maxWidth.small
@@ -322,6 +322,7 @@
 
 - name: 2d.text.draw.stroke.basic
   desc: strokeText draws stroked text
+  manual:
   testing:
     - 2d.text.draw
     - 2d.text.draw.stroke
@@ -333,7 +334,6 @@
     ctx.lineWidth = 1;
     ctx.font = '35px Arial, sans-serif';
     ctx.strokeText('PASS', 5, 35);
-    @manual;
   expected: |
     size 100 50
     cr.set_source_rgb(0, 0, 0)
@@ -373,6 +373,7 @@
 
 - name: 2d.text.draw.kern.consistent
   desc: Stroked and filled text should have exactly the same kerning so it overlaps
+  manual:
   testing:
     - 2d.text.draw
   code: |
@@ -386,7 +387,6 @@
     ctx.fillText('ToToToToToToTo', -50, 45);
     ctx.strokeText('VAVAVAVAVAVAVA', -50, 25);
     ctx.strokeText('ToToToToToToTo', -50, 45);
-    @manual;
   expected: green
 
 # CanvasTest is:

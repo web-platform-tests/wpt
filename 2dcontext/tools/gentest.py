@@ -235,8 +235,6 @@ def expand_test_code(code):
                 % (m.group(1), escapeJS(m.group(1)))
             , code)
     
-    code = re.sub(r'@manual;', '_requireManualCheck();', code)
-
     code = re.sub(r' @moz-todo', '', code)
 
     code = re.sub(r'@moz-UniversalBrowserRead;',
@@ -326,7 +324,7 @@ for i in range(len(tests)):
     if not mapped_name:
         print "LIKELY ERROR: %s has no defined target directory mapping" % name
         mapped_name = name
-    if '@manual' in test['code']:
+    if 'manual' in test:
         mapped_name += "-manual"
 
     cat_total = ''
@@ -349,7 +347,7 @@ for i in range(len(tests)):
 
     code = expand_test_code(test['code'])
 
-    mochitest = not (W3CMODE or '@manual' in test['code'] or 'disabled' in test.get('mozilla', {}))
+    mochitest = not (W3CMODE or 'manual' in test or 'disabled' in test.get('mozilla', {}))
     if mochitest:
         mochi_code = expand_mochitest_code(test['code'])
 

@@ -31,13 +31,6 @@ function _assertMatch(a, b, text_a, text_b)
 }
 
 
-var _manual_check = false;
-
-function _requireManualCheck()
-{
-    _manual_check = true;
-}
-
 function _getPixel(canvas, x,y)
 {
     var ctx = canvas.getContext('2d');

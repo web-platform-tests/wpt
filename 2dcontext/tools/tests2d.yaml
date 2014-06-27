@@ -268,6 +268,7 @@
 - name: 2d.coordinatespace
   desc: Coordinate space goes from top-left to bottom-right
   notes: This should not be upside down.
+  manual: We can't tell that getPixelData isn't using the wrong coordinate space too.
   testing:
     - 2d.coordinatespace
   code: |
@@ -279,7 +280,6 @@
     @assert pixel 75,12 == 0,0,255,255;
     @assert pixel 25,37 == 0,0,255,255;
     @assert pixel 75,37 == 0,0,255,255;
-    @manual; // because we can't tell that getPixelData isn't using the wrong coordinate space too
   expected: |
     size 100 50
     cr.set_source_rgb(0, 0, 1)
@@ -292,12 +292,12 @@
 - name: 2d.scaled
   desc: CSS-scaled canvases get drawn correctly
   canvas: 'width="50" height="25" style="width: 100px; height: 50px"'
+  manual:
   code: |
     ctx.fillStyle = '#00f';
     ctx.fillRect(0, 0, 50, 25);
     ctx.fillStyle = '#0ff';
     ctx.fillRect(0, 0, 25, 10);
-    @manual;
   expected: |
     size 100 50
     cr.set_source_rgb(0, 0, 1)
@@ -5316,6 +5316,7 @@
 
 - name: 2d.shadow.blur.low
   desc: Shadows look correct for small blurs
+  manual:
   testing:
     - 2d.shadow.render
   code: |
@@ -5332,7 +5333,6 @@
         ctx.fillRect(-200, -200, 500, 200);
         ctx.restore();
     }
-    @manual;
   expected: |
     size 100 50
     import math
@@ -5355,6 +5355,7 @@
 
 - name: 2d.shadow.blur.high
   desc: Shadows look correct for large blurs
+  manual:
   testing:
     - 2d.shadow.render
   code: |
@@ -5364,7 +5365,6 @@
     ctx.shadowOffsetY = 0;
     ctx.shadowBlur = 100;
     ctx.fillRect(-200, -200, 200, 400);
-    @manual;
   expected: |
     size 100 50
     import math

@@ -319,9 +319,16 @@ class TestRunnerManager(threading.Thread):
                 self.browser.start()
                 self.start_test_runner()
             except:
+                self.logger.warning("Failure during init %s" % traceback.format_exc())
                 self.init_timer.cancel()
                 self.logger.error(traceback.format_exc())
-                self.init_failed()
+                succeeded = False
+            else:
+                succeeded = True
+
+        # This has to happen after the lock is released
+        if not succeeded:
+            self.init_failed()
 
     def init_succeeded(self):
         """Callback when we have started the browser, connected via

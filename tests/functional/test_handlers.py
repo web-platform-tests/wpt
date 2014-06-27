@@ -1,7 +1,8 @@
+import json
 import os
 import unittest
 import urllib2
-import json
+import uuid
 
 import wptserve
 from base import TestUsingServer, doc_root
@@ -12,6 +13,15 @@ class TestFileHandler(TestUsingServer):
         self.assertEquals(200, resp.getcode())
         self.assertEquals("text/plain", resp.info()["Content-Type"])
         self.assertEquals(open(os.path.join(doc_root, "document.txt")).read(), resp.read())
+
+    def test_headers(self):
+        resp = self.request("/with_headers.txt")
+        self.assertEquals(200, resp.getcode())
+        self.assertEquals("PASS", resp.info()["Custom-Header"])
+        # This will fail if it isn't a valid uuid
+        uuid.UUID(resp.info()["Another-Header"])
+        self.assertEquals(resp.info()["Same-Value-Header"], resp.info()["Another-Header"])
+
 
     def test_range(self):
         resp = self.request("/document.txt", headers={"Range":"bytes=10-19"})

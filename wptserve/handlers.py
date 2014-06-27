@@ -7,7 +7,7 @@ import urllib
 import urlparse
 
 from constants import content_types
-from pipes import Pipeline
+from pipes import Pipeline, template
 from ranges import RangeParser
 from response import MultipartContent
 from utils import HTTPException
@@ -76,7 +76,7 @@ class FileHandler(object):
         try:
             #This is probably racy with some other process trying to change the file
             file_size = os.stat(path).st_size
-            response.headers.update(self.get_headers(path))
+            response.headers.update(self.get_headers(request, path))
             if "Range" in request.headers:
                 try:
                     byte_ranges = RangeParser()(request.headers['Range'], file_size)
@@ -103,19 +103,29 @@ class FileHandler(object):
         except (OSError, IOError):
             raise HTTPException(404)
 
-    def get_headers(self, path):
+    def get_headers(self, request, path):
         rv = self.default_headers(path)
-        rv.extend(self.load_headers(os.path.join(os.path.split(path)[0], "__dir__")))
-        rv.extend(self.load_headers(path))
+        rv.extend(self.load_headers(request, os.path.join(os.path.split(path)[0], "__dir__")))
+        rv.extend(self.load_headers(request, path))
         return rv
 
-    def load_headers(self, path):
+    def load_headers(self, request, path):
+        headers_path = path + ".sub.headers"
+        if os.path.exists(headers_path):
+            use_sub = True
+        else:
+            headers_path = path + ".headers"
+            use_sub = False
+
         try:
-            with open(path + ".headers") as headers_file:
-                return [tuple(item.strip() for item in line.split(":", 1))
-                        for line in headers_file if line]
+            with open(headers_path) as headers_file:
+                data = headers_file.read()
         except IOError:
             return []
+        else:
+            data = template(request, data)
+            return [tuple(item.strip() for item in line.split(":", 1))
+                    for line in data.splitlines() if line]
 
     def get_data(self, response, path, byte_ranges):
         with open(path, 'rb') as f:

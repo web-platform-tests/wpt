@@ -1,11 +1,11 @@
 from cgi import escape
+import gzip as gzip_module
 import logging
 import re
 import time
 import types
-import gzip as gzip_module
+import uuid
 from cStringIO import StringIO
-
 
 logger = logging.getLogger("wptserve")
 
@@ -293,10 +293,15 @@ class ReplacementTokenizer(object):
             token = unicode(token, "utf8")
         return ("index", token)
 
+    def var(scanner, token):
+        token = token[:-1]
+        return ("var", token)
+
     def tokenize(self, string):
         return self.scanner.scan(string)[0]
 
-    scanner = re.Scanner([(r"\w+", ident),
+    scanner = re.Scanner([(r"\$\w+:", var),
+                          (r"\$?\w+(?:\(\))?", ident),
                           (r"\[[^\]]*\]", index)])
 
 
@@ -327,6 +332,8 @@ def sub(request, response):
       A dictionary of HTTP headers in the request.
     GET
       A dictionary of query parameters supplied with the request.
+    uuid()
+      A pesudo-random UUID suitable for usage with stash
 
     So for example in a setup running on localhost with a www
     subdomain and a http server on ports 80 and 81::
@@ -334,33 +341,68 @@ def sub(request, response):
       {{host}} => localhost
       {{domains[www]}} => www.localhost
       {{ports[http][1]}} => 81
+
+
+    It is also possible to assign a value to a variable name, which must start with
+    the $ character, using the ":" syntax e.g.
+
+    {{$id:uuid()}
+
+    Later substitutions in the same file may then refer to the variable
+    by name e.g.
+
+    {{$id}}
     """
-    #TODO: There basically isn't any error handling here
     content = resolve_content(response)
+
+    new_content = template(request, content)
+
+    response.content = new_content
+    return response
+
+def template(request, content):
+    #TODO: There basically isn't any error handling here
     tokenizer = ReplacementTokenizer()
+
+    variables = {}
 
     def config_replacement(match):
         content, = match.groups()
 
         tokens = tokenizer.tokenize(content)
 
+        print tokens
+
+        if tokens[0][0] == "var":
+            variable = tokens[0][1]
+            tokens = tokens[1:]
+        else:
+            variable = None
+
         assert tokens[0][0] == "ident" and all(item[0] == "index" for item in tokens[1:]), tokens
 
         field = tokens[0][1]
 
-        if field == "headers":
+        if field in variables:
+            value = variables[field]
+        elif field == "headers":
             value = request.headers
         elif field == "GET":
             value = FirstWrapper(request.GET)
         elif field in request.server.config:
             value = request.server.config[tokens[0][1]]
+        elif field == "uuid()":
+            value = str(uuid.uuid4())
         else:
-            raise Exception("Invalid field")
+            raise Exception("Undefined template variable %s" % field)
 
         for item in tokens[1:]:
             value = value[item[1]]
 
         assert isinstance(value, (int,) + types.StringTypes), tokens
+
+        if variable is not None:
+            variables[variable] = value
 
         #Should possibly support escaping for other contexts e.g. script
         #TODO: read the encoding of the response
@@ -369,8 +411,7 @@ def sub(request, response):
     template_regexp = re.compile(r"{{([^}]*)}}")
     new_content, count = template_regexp.subn(config_replacement, content)
 
-    response.content = new_content
-    return response
+    return new_content
 
 @pipe()
 def gzip(request, response):

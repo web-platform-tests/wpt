@@ -40,27 +40,27 @@ class MarionetteTestExecutor(TestExecutor):
         self.close_after_done = close_after_done
 
     def setup(self, runner):
-        """Connect to browser via marionette"""
+        """Connect to browser via Marionette."""
         self.runner = runner
 
         self.logger.debug("Connecting to marionette on port %i" % self.marionette_port)
         self.marionette = marionette.Marionette(host='localhost', port=self.marionette_port)
         # XXX Move this timeout somewhere
-        self.logger.debug("Waiting for marionette connection")
+        self.logger.debug("Waiting for Marionette connection")
         success = self.marionette.wait_for_port(60)
         session_started = False
         if success:
             try:
-                self.logger.debug("Starting marionette session")
+                self.logger.debug("Starting Marionette session")
                 self.marionette.start_session()
-            except:
-                self.logger.warning("Starting marionette session failed")
+            except Exception as e:
+                self.logger.warning("Starting marionette session failed: %s" % e)
             else:
                 self.logger.debug("Marionette session started")
                 session_started = True
 
         if not success or not session_started:
-            self.logger.warning("Failed to connect to marionette")
+            self.logger.warning("Failed to connect to Marionette")
             self.runner.send_message("init_failed")
         else:
             try:

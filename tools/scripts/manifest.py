@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from collections import defaultdict
-import argparse
 import argparse
 import json
 import logging
@@ -10,6 +8,8 @@ import re
 import subprocess
 import sys
 import urlparse
+
+from collections import defaultdict
 
 manifest_name = "MANIFEST.json"
 exclude_php_hack = True

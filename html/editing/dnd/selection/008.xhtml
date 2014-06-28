@@ -14,7 +14,7 @@ div[ondragenter]
 </head>
 <body onload="document.querySelector('input').select()">
 <p>You should not be able to drag and drop selection from password field to the blue box.</p>
-<p><input type="password" value="FAIL"/></p>
+<p><input type="password" value="FAIL" autocomplete="off"/></p>  <!-- turn off autocomplete to enhance security -->
 <div
 	ondragenter="event.preventDefault()"
 	ondragover="return false"

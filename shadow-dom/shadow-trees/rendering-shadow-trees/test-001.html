@@ -52,7 +52,7 @@ test(unit(function (ctx) {
 
     //make nested shadow tree to check the reprojection
     var li1 = d.querySelector('#li1');
-    var s = createSR(li1);
+    var s = li1.createShadowRoot();
     var shadowLI1 = document.createElement('li');
     shadowLI1.innerHTML = '<content select=".cl1"></content>';
     s.appendChild(shadowLI1);
@@ -87,7 +87,7 @@ test(unit(function (ctx) {
     var ul = d.querySelector('#host');
 
     //make an old shadow tree
-    var s2 = createSR(ul);
+    var s2 = ul.createShadowRoot();
     var div2 = d.createElement('div');
     div2.innerHTML = '<ul><content select=".shadow"></content></ul>';
     s2.appendChild(div2);
@@ -117,7 +117,7 @@ test(unit(function (ctx) {
 
 
     //make a young shadow tree
-    var s3 = createSR(ul);
+    var s3 = ul.createShadowRoot();
     var div3 = d.createElement('div');
     div3.innerHTML = '<ul><content select=".shadow2"></content></ul>';
     s3.appendChild(div3);
@@ -196,7 +196,7 @@ test(unit(function (ctx) {
 		'Point 59: Aleady distributed nodes should behave like a shadow host child nodes');
 
 	//replace the nested tree by younger one
-    var s4 = createSR(li1);
+    var s4 = li1.createShadowRoot();
     var shadowLI4 = document.createElement('li');
     shadowLI4.innerHTML = '<content select=".cl2"></content>';
     s4.appendChild(shadowLI4);

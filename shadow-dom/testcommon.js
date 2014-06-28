@@ -77,16 +77,6 @@ function ShadowDomNotSupportedError() {
     this.message = "Shadow DOM is not supported";
 }
 
-function createSR(element) {
-	if (element.createShadowRoot) {
-		return element.createShadowRoot(); 
-	}
-	if (element.webkitCreateShadowRoot) {
-		return element.webkitCreateShadowRoot();
-	}
-	throw new ShadowDomNotSupportedError();
-}
-
 // To allow using of both prefixed and non-prefixed API we do
 // the following hook
 function addPrefixed(element) {
@@ -190,6 +180,8 @@ function unit(f) {
         var ctx = newContext();
         try {
             f(ctx);
+        } catch(e) {
+            console.log(e.getMessage());
         } finally {
             cleanContext(ctx);
         }
@@ -242,7 +234,7 @@ function createTestMediaPlayer(d) {
 	    '</div>' +
 	'</div>';
 
-	var playerShadowRoot = createSR(d.querySelector('#player-shadow-root'));
+	var playerShadowRoot = d.querySelector('#player-shadow-root').createShadowRoot();
 	playerShadowRoot.innerHTML = '' +
 		'<div id="controls">' +
 			'<button class="play-button">PLAY</button>' +
@@ -258,10 +250,10 @@ function createTestMediaPlayer(d) {
 		    '</div>' +
 		'</div>';
 
-	var timeLineShadowRoot = createSR(playerShadowRoot.querySelector('#timeline-shadow-root'));
+	var timeLineShadowRoot = playerShadowRoot.querySelector('#timeline-shadow-root').createShadowRoot();
 	timeLineShadowRoot.innerHTML =  '<div class="slider-thumb" id="timeline-slider-thumb"></div>';
 
-	var volumeShadowRoot = createSR(playerShadowRoot.querySelector('#volume-shadow-root'));
+	var volumeShadowRoot = playerShadowRoot.querySelector('#volume-shadow-root').createShadowRoot();
 	volumeShadowRoot.innerHTML = '<div class="slider-thumb" id="volume-slider-thumb"></div>';
 
 	return {

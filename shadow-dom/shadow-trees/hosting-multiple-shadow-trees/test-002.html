@@ -35,19 +35,19 @@ A_04_05_02_T1.step(function () {
             var ul = d.querySelector('ul.stories');
 
             //make the oldest shadow subtree
-            var s1 = createSR(ul);
+            var s1 = ul.createShadowRoot();
             var subdiv1 = d.createElement('div');
             subdiv1.innerHTML = '<ul><content select="#li1"></content></ul>';
             s1.appendChild(subdiv1);
 
             //make an old shadow subtree
-            var s2 = createSR(ul);
+            var s2 = ul.createShadowRoot();
             var subdiv2 = d.createElement('div');
             subdiv2.innerHTML = '<ul><content select=".shadow"></content></ul>';
             s2.appendChild(subdiv2);
 
             //make the youngest shadow subtree
-            var s3 = createSR(ul);
+            var s3 = ul.createShadowRoot();
             var subdiv3 = d.createElement('div');
             subdiv3.innerHTML = '<ul><content select=".shadow2"></content></ul>';
             s3.appendChild(subdiv3);

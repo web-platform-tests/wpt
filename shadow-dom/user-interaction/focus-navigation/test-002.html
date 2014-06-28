@@ -66,7 +66,7 @@ A_07_02_02_T01.step(unit(function (ctx) {
 	expectations[2] = false;
 	host.appendChild(chb3);
 
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var div = d.createElement('div');
 	div.innerHTML = '<content select=".shadow"></content>';
@@ -173,7 +173,7 @@ A_07_02_02_T02.step(unit(function (ctx) {
 	expectations[2] = false;
 	host.appendChild(chb3);
 
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var div = d.createElement('div');
 	div.innerHTML = '<content select=".shadow"></content>';

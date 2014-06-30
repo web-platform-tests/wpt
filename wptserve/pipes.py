@@ -318,8 +318,7 @@ def sub(request, response):
     """Substitute environment information about the server and request into the script.
 
     The format is a very limited template language. Substitutions are
-    enclosed by {{ and }}. There are 5 fields "host", "domains",
-    "ports", "headers" and "GET":
+    enclosed by {{ and }}. There are several avaliable substitutions:
 
     host
       A simple string value and represents the primary host from which the
@@ -328,6 +327,11 @@ def sub(request, response):
       A dictionary of available domains indexed by subdomain name.
     ports
       A dictionary of lists of ports indexed by protocol.
+    location
+      A dictionary of parts of the request URL. Valid keys are
+      'server, 'scheme', 'host', 'hostname', 'port', 'path' and 'query'.
+      'server' is scheme://host:port, 'host' is hostname:port, and query
+       includes the leading '?', but other delimiters are omitted.
     headers
       A dictionary of HTTP headers in the request.
     GET
@@ -391,6 +395,17 @@ def template(request, content):
             value = FirstWrapper(request.GET)
         elif field in request.server.config:
             value = request.server.config[tokens[0][1]]
+        elif field == "location":
+            value = {"server": "%s://%s:%s" % (request.url_parts.scheme,
+                                               request.url_parts.hostname,
+                                               request.url_parts.port),
+                     "scheme": request.url_parts.scheme,
+                     "host": "%s:%s" % (request.url_parts.hostname,
+                                        request.url_parts.port),
+                     "hostname": request.url_parts.hostname,
+                     "port": request.url_parts.port,
+                     "path": request.url_parts.path,
+                     "query": "?%s" % request.url_parts.query}
         elif field == "uuid()":
             value = str(uuid.uuid4())
         else:

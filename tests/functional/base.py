@@ -1,10 +1,10 @@
+import base64
+import logging
 import os
-import urlparse
+import unittest
 import urllib
 import urllib2
-import unittest
-import logging
-import base64
+import urlparse
 
 import wptserve
 

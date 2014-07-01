@@ -41,7 +41,8 @@ def update_manifest(git_root, metadata_root):
     return new_manifest
 
 
-def update_expected(test_root, metadata_root, log_file_names, rev_old=None, rev_new="HEAD"):
+def update_expected(test_root, metadata_root, log_file_names, rev_old=None, rev_new="HEAD",
+                    ignore_existing=False):
     """Update the metadata files for web-platform-tests based on
     the results obtained in a previous run"""
 
@@ -56,7 +57,8 @@ def update_expected(test_root, metadata_root, log_file_names, rev_old=None, rev_
     else:
         change_data = {}
 
-    expected_map = update_from_logs(metadata_root, manifest, *log_file_names)
+    expected_map = update_from_logs(metadata_root, manifest, *log_file_names,
+                                    ignore_existing=ignore_existing)
 
     write_changes(metadata_root, expected_map)
 
@@ -123,9 +125,11 @@ def unexpected_changes(change_data, files_changed):
 #   Check if all the RHS values are the same; if so collapse the conditionals
 
 
-def update_from_logs(metadata_path, manifest, *log_filenames):
+def update_from_logs(metadata_path, manifest, *log_filenames, **kwargs):
+    ignore_existing = kwargs.pop("ignore_existing", False)
+
     expected_map, id_path_map = create_test_tree(metadata_path, manifest)
-    updater = ExpectedUpdater(expected_map, id_path_map)
+    updater = ExpectedUpdater(expected_map, id_path_map, ignore_existing=ignore_existing)
     for log_filename in log_filenames:
         with open(log_filename) as f:
             updater.update_from_log(f)
@@ -169,9 +173,11 @@ def write_new_expected(metadata_path, expected_map):
 
 
 class ExpectedUpdater(object):
-    def __init__(self, expected_tree, id_path_map):
+    def __init__(self, expected_tree, id_path_map, ignore_existing=False):
         self.expected_tree = expected_tree
         self.id_path_map = id_path_map
+        self.ignore_existing = ignore_existing
+        print "ignore_existing", ignore_existing
         self.run_info = None
         self.action_map = {"suite_start": self.suite_start,
                            "test_start": self.test_start,
@@ -201,6 +207,8 @@ class ExpectedUpdater(object):
         self.test_cache[test_id] = test
 
         if test_id not in self.tests_visited:
+            if self.ignore_existing:
+                test.clear_expected()
             self.tests_visited[test_id] = set()
 
     def test_status(self, data):

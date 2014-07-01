@@ -109,6 +109,8 @@ class TestNode(ManifestItem):
         else:
             self.default_status = result.default_expected
 
+        # Add this result to the list of results satifying
+        # any condition in the list of updated results it matches
         for (cond, values) in self.updated_expected:
             if cond(run_info):
                 values.append(Result(run_info, result.status))
@@ -191,6 +193,20 @@ class TestNode(ManifestItem):
             self.updated_expected = []
             for value in values:
                 self.updated_expected.append((value, []))
+
+    def clear_expected(self):
+        print "clear_expected"
+        self.updated_expected = []
+        if "expected" in self._data:
+            for child in self.node.children:
+                if (isinstance(child, KeyValueNode) and
+                    child.data == "expected"):
+                    child.remove()
+                    del self._data["expected"]
+                    break
+
+        for subtest in self.subtests.itervalues():
+            subtest.clear_expected()
 
     def append(self, node):
         child = ManifestItem.append(self, node)
@@ -312,8 +328,12 @@ def get_manifest(metadata_root, test_path):
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
         with open(manifest_path) as f:
-            return conditional.compile(f,
-                                       data_cls_getter=data_cls_getter,
-                                       test_path=test_path)
+            compile(f, test_path)
     except IOError:
         return None
+
+
+def compile(manifest_file, test_path):
+    return conditional.compile(manifest_file,
+                               data_cls_getter=data_cls_getter,
+                               test_path=test_path)

@@ -10,7 +10,7 @@ class TestExpectedUpdater(unittest.TestCase):
         f = StringIO.StringIO(data)
         return manifestupdate.compile(f, test_path)
 
-    def create_updater(self, data):
+    def create_updater(self, data, **kwargs):
         expected_tree = {}
         id_path_map = {}
         for test_path, test_ids, manifest_str in data:
@@ -20,10 +20,9 @@ class TestExpectedUpdater(unittest.TestCase):
             for test_id in test_ids:
                 id_path_map[test_id] = test_path
 
-        return metadata.ExpectedUpdater(expected_tree, id_path_map)
+        return metadata.ExpectedUpdater(expected_tree, id_path_map, **kwargs)
 
     def create_log(self, *args, **kwargs):
-        print kwargs.get("run_info")
         logger = structuredlog.StructuredLogger("expected_test")
         data = StringIO.StringIO()
         handler = handlers.StreamHandler(data, formatters.JSONFormatter())
@@ -39,6 +38,14 @@ class TestExpectedUpdater(unittest.TestCase):
         logger.remove_handler(handler)
         data.seek(0)
         return data
+
+
+    def coalesce_results(self, trees):
+        for tree in trees:
+            for test in tree.iterchildren():
+                for subtest in test.iterchildren():
+                    subtest.coalesce_expected()
+                test.coalesce_expected()
 
     def test_update_0(self):
         prev_data = [("path/to/test.htm.ini", ["/path/to/test.htm"], """[test.htm]
@@ -57,7 +64,7 @@ class TestExpectedUpdater(unittest.TestCase):
         updater.update_from_log(new_data)
 
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
-        metadata.coalesce_results([new_manifest])
+        self.coalesce_results([new_manifest])
         self.assertTrue(new_manifest.is_empty)
 
     def test_update_1(self):
@@ -78,7 +85,7 @@ class TestExpectedUpdater(unittest.TestCase):
         updater.update_from_log(new_data)
 
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
-        metadata.coalesce_results([new_manifest])
+        self.coalesce_results([new_manifest])
         self.assertFalse(new_manifest.is_empty)
         self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected"), "FAIL")
 
@@ -96,14 +103,15 @@ class TestExpectedUpdater(unittest.TestCase):
                                                     "expected": "FAIL"}),
                                    ("test_status", {"test": test_id,
                                                     "subtest": "test2",
-                                                    "status": "FAIL"}),
+                                                    "status": "FAIL",
+                                                    "expected": "PASS"}),
                                    ("test_end", {"test": test_id,
                                                  "status": "OK"}))
         updater = self.create_updater(prev_data)
         updater.update_from_log(new_data)
 
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
-        metadata.coalesce_results([new_manifest])
+        self.coalesce_results([new_manifest])
         self.assertFalse(new_manifest.is_empty)
         self.assertEquals(new_manifest.get_test(test_id).children[0].get("expected"), "FAIL")
         self.assertEquals(new_manifest.get_test(test_id).children[1].get("expected"), "FAIL")
@@ -139,7 +147,7 @@ class TestExpectedUpdater(unittest.TestCase):
 
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
 
-        metadata.coalesce_results([new_manifest])
+        self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
         self.assertEquals(new_manifest.get_test(test_id).children[0].get(
@@ -178,7 +186,7 @@ class TestExpectedUpdater(unittest.TestCase):
 
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
 
-        metadata.coalesce_results([new_manifest])
+        self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
         self.assertEquals(new_manifest.get_test(test_id).children[0].get(
@@ -219,7 +227,7 @@ class TestExpectedUpdater(unittest.TestCase):
 
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
 
-        metadata.coalesce_results([new_manifest])
+        self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
         self.assertEquals(new_manifest.get_test(test_id).children[0].get(
@@ -260,10 +268,51 @@ class TestExpectedUpdater(unittest.TestCase):
 
         new_manifest = updater.expected_tree["path/to/test.htm.ini"]
 
-        metadata.coalesce_results([new_manifest])
+        self.coalesce_results([new_manifest])
 
         self.assertFalse(new_manifest.is_empty)
         self.assertEquals(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": False, "os": "osx"}), "FAIL")
         self.assertEquals(new_manifest.get_test(test_id).children[0].get(
             "expected", {"debug": True, "os": "osx"}), "TIMEOUT")
+
+    def test_update_ignore_existing(self):
+        test_id = "/path/to/test.htm"
+        prev_data = [("path/to/test.htm.ini", [test_id], """[test.htm]
+  type: testharness
+  [test1]
+    expected:
+      if debug: TIMEOUT
+      if not debug and os == "osx": NOTRUN""")]
+
+        new_data_0 = self.create_log(("test_start", {"test": test_id}),
+                                     ("test_status", {"test": test_id,
+                                                      "subtest": "test1",
+                                                      "status": "FAIL",
+                                                      "expected": "PASS"}),
+                                     ("test_end", {"test": test_id,
+                                                   "status": "OK"}),
+                                     run_info={"debug": False, "os": "linux"})
+
+        new_data_1 = self.create_log(("test_start", {"test": test_id}),
+                                     ("test_status", {"test": test_id,
+                                                      "subtest": "test1",
+                                                      "status": "FAIL",
+                                                      "expected": "PASS"}),
+                                     ("test_end", {"test": test_id,
+                                                   "status": "OK"}),
+                                     run_info={"debug": True, "os": "windows"})
+        updater = self.create_updater(prev_data, ignore_existing=True)
+
+        updater.update_from_log(new_data_0)
+        updater.update_from_log(new_data_1)
+
+        new_manifest = updater.expected_tree["path/to/test.htm.ini"]
+
+        self.coalesce_results([new_manifest])
+
+        self.assertFalse(new_manifest.is_empty)
+        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+            "expected", {"debug": True, "os": "osx"}), "FAIL")
+        self.assertEquals(new_manifest.get_test(test_id).children[0].get(
+            "expected", {"debug": False, "os": "osx"}), "FAIL")

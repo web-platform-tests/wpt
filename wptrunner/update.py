@@ -380,7 +380,9 @@ def update_metadata(config, paths, local_tree, wpt, initial_rev, bug):
             needs_human = metadata.update_expected(paths["sync"],
                                                    paths["metadata"],
                                                    log_files,
-                                                   rev_old=initial_rev)
+                                                   rev_old=initial_rev,
+                                                   ignore_existing=config["command-args"]["ignore_existing"])
+
             if not local_tree.is_clean():
                 local_tree.add_new(os.path.relpath(paths["metadata"], local_tree.root))
                 local_tree.update_patch(include=[paths["metadata"]])

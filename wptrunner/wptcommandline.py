@@ -142,6 +142,7 @@ def create_parser_update(allow_mandatory=True):
     parser.add_argument("--update-expected-type", action="store", dest="run_type",
                         choices=["none", "try", "logfile"],
                         default="none", help="Process to use for updating the expectation data")
+    parser.add_argument("--ignore-existing", action="store_true", help="When updating test results only consider results from the logfiles provided, not existing expectations.")
     # Should make this required iff run=logfile
     parser.add_argument("run_log", nargs="*", type=abs_path,
                         help="Log file from run of tests")

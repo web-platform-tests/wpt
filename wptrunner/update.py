@@ -383,6 +383,11 @@ def update_metadata(config, paths, local_tree, wpt, initial_rev, bug):
                                                    rev_old=initial_rev,
                                                    ignore_existing=config["command-args"]["ignore_existing"])
 
+            if needs_human:
+                print >> sys.stderr, "The following files got updated metadata, but did not change in the test update:"
+                for item in needs_human:
+                    print >> sys.stderr, item
+
             if not local_tree.is_clean():
                 local_tree.add_new(os.path.relpath(paths["metadata"], local_tree.root))
                 local_tree.update_patch(include=[paths["metadata"]])

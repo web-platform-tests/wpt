@@ -204,15 +204,84 @@ class EqualTimeChunker(TestChunker):
         by_dir = OrderedDict()
 
         class PathData(object):
-            def __init__(self):
+            def __init__(self, path):
+                self.path = path
                 self.time = 0
                 self.tests = []
+
+        class Chunk(object):
+            def __init__(self):
+                self.paths = []
+                self.tests = []
+                self.time = 0
+
+            def append(self, path_data):
+                self.paths.append(path_data.path)
+                self.tests.extend(path_data.tests)
+                self.time += path_data.time
+
+        class ChunkList(object):
+            def __init__(self, total_time, n_chunks):
+                self.total_time = total_time
+                self.n_chunks = n_chunks
+
+                self.remaining_chunks = n_chunks
+
+                self.chunks = []
+
+                self.update_time_per_chunk()
+
+            def __iter__(self):
+                for item in self.chunks:
+                    yield item
+
+            def __getitem__(self, i):
+                return self.chunks[i]
+
+            def sort_chunks(self):
+                self.chunks = sorted(self.chunks, key=lambda x:x.paths[0])
+
+            def get_tests(self, chunk_number):
+                return self[chunk_number - 1].tests
+
+            def append(self, chunk):
+                if len(self.chunks) == self.n_chunks:
+                    raise ValueError("Tried to create more than %n chunks" % self.n_chunks)
+                self.chunks.append(chunk)
+                self.remaining_chunks -= 1
+
+            @property
+            def current_chunk(self):
+                if self.chunks:
+                    return self.chunks[-1]
+
+            def update_time_per_chunk(self):
+                self.time_per_chunk = (self.total_time - sum(item.time for item in self)) / self.remaining_chunks
+
+            def create(self):
+                rv = Chunk()
+                self.append(rv)
+                return rv
+
+            def add_path(self, path_data):
+                sum_time = self.current_chunk.time + path_data.time
+                if sum_time > self.time_per_chunk:
+                    overshoot = sum_time - self.time_per_chunk
+                    undershoot = self.time_per_chunk - self.current_chunk.time
+                    if overshoot < undershoot:
+                        self.create()
+                        self.current_chunk.append(path_data)
+                    else:
+                        self.create()
+                        self.current_chunk.append(path_data)
+                else:
+                    self.current_chunk.append(path_data)
 
         for i, (test_path, tests) in enumerate(manifest_items):
             test_dir = tuple(os.path.split(test_path)[0].split(os.path.sep)[:3])
 
             if not test_dir in by_dir:
-                by_dir[test_dir] = PathData()
+                by_dir[test_dir] = PathData(test_dir)
 
             data = by_dir[test_dir]
             time = sum(wpttest.DEFAULT_TIMEOUT if test.timeout !=
@@ -222,66 +291,38 @@ class EqualTimeChunker(TestChunker):
 
             total_time += time
 
-        full_total_time = total_time
+        chunk_list = ChunkList(total_time, self.total_chunks)
 
         if len(by_dir) < self.total_chunks:
             raise ValueError("Tried to split into %i chunks, but only %i subdirectories included" % (
                 self.total_chunks, len(by_dir)))
 
-        n_chunks = self.total_chunks
-        time_per_chunk = float(total_time) / n_chunks
-
-        chunks = []
-
-        # Put any individual dirs with a time greater than the time_per_chunk into their own
+        # Put any individual dirs with a time greater than the time per chunk into their own
         # chunk
         while True:
             to_remove = []
-            for path, data in by_dir.iteritems():
-                if data.time > time_per_chunk:
-                    to_remove.append((path, data))
+            for path_data in by_dir.itervalues():
+                if path_data.time > chunk_list.time_per_chunk:
+                    to_remove.append(path_data)
             if to_remove:
-                for path, data in to_remove:
-                    chunks.append([[path], data.tests, data.time])
-                    del by_dir[path]
-
-                n_chunks -= len(to_remove)
-                total_time -= sum(item[1].time for item in to_remove)
-                time_per_chunk = total_time / n_chunks
+                for path_data in to_remove:
+                    chunk = chunk_list.create()
+                    chunk.append(path_data)
+                    del by_dir[path_data.path]
+                chunk_list.update_time_per_chunk()
             else:
                 break
 
-        start_new = True
-        for i, (path, data) in enumerate(by_dir.iteritems()):
-            if start_new:
-                # Always start a new chunk the first time
-                chunks.append([[path], data.tests, data.time])
-                start_new = False
-            elif chunks[-1][2] + data.time > time_per_chunk:
-                if ((abs(time_per_chunk - chunks[-1][2]) <=
-                     abs(time_per_chunk - (chunks[-1][2] + data.time))) and
-                    i < n_chunks - 1):
-                    # Add a new chunk
-                    chunks.append([[path], data.tests, data.time])
-                else:
-                    # Add this to the end of the previous chunk but
-                    # start a new chunk next time
-                    chunks[-1][0].append(path)
-                    chunks[-1][1].extend(data.tests)
-                    chunks[-1][2] += data.time
-                    start_new = True
-            else:
-                # Append this to the previous chunk
-                chunks[-1][0].append(path)
-                chunks[-1][1].extend(data.tests)
-                chunks[-1][2] += data.time
+        chunk = chunk_list.create()
+        for path_data in by_dir.itervalues():
+            chunk_list.add_path(path_data)
 
-        assert len(chunks) == self.total_chunks, len(chunks)
-        assert sum(item[2] for item in chunks) == full_total_time
+        assert len(chunk_list.chunks) == self.total_chunks, len(chunk_list.chunks)
+        assert sum(item.time for item in chunk_list) == chunk_list.total_time
 
-        chunks = sorted(chunks)
+        chunk_list.sort_chunks()
 
-        return chunks[self.chunk_number - 1][1]
+        return chunk_list.get_tests(self.chunk_number)
 
     def __call__(self, manifest_iter):
         manifest = list(manifest_iter)

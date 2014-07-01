@@ -2,7 +2,7 @@ import unittest
 import sys
 sys.path.insert(0, "..")
 
-import wptrunner
+from wptrunner import wptrunner
 
 
 class MockTest(object):

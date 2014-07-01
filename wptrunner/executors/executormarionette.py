@@ -83,7 +83,7 @@ class MarionetteTestExecutor(TestExecutor):
         try:
             # Get a simple property over the connection
             self.marionette.current_window_handle
-        except (socket.timeout, marionette.errors.InvalidResponseException):
+        except:
             return False
         return True
 
@@ -127,8 +127,7 @@ class MarionetteTestExecutor(TestExecutor):
         try:
             self.marionette.set_script_timeout((timeout + extra_timeout) * 1000)
         except IOError, marionette.errors.InvalidResponseException:
-            self.logger.error("Lost marionette connection")
-            self.runner.send_message("restart_test", test)
+            self.logger.error("Lost marionette connection before starting test")
             return Stop
 
         try:

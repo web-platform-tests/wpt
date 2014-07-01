@@ -6,6 +6,7 @@ import argparse
 import os
 import sys
 
+
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
 

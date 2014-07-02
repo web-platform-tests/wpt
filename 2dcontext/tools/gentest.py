@@ -226,8 +226,8 @@ def expand_test_code(code):
             , code)
     
     code = re.sub(r'@assert (.*) =~ (.*);',
-            lambda m: '_assertMatch(%s, %s, "%s", "%s");'
-                % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
+            lambda m: 'assert_regexp_match(%s, %s);'
+                % (m.group(1), m.group(2))
             , code)
 
     code = re.sub(r'@assert (.*);',

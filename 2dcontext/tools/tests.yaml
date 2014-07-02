@@ -6,7 +6,7 @@
   testing:
     - fallback
   code: |
-    @assert canvas.childNodes.length == 1;
+    @assert canvas.childNodes.length === 1;
 
 - name: fallback.multiple
   desc: Fallback content with multiple elements
@@ -14,7 +14,7 @@
     - fallback
   fallback: '<p class="fallback">FAIL</p><p class="fallback">FAIL</p>'
   code: |
-    @assert canvas.childNodes.length == 2;
+    @assert canvas.childNodes.length === 2;
 
 - name: fallback.nested
   desc: Fallback content containing another canvas (mostly testing parsers)
@@ -22,7 +22,7 @@
     - fallback
   fallback: '<canvas><p class="fallback">FAIL (fallback content)</p></canvas><p class="fallback">FAIL (fallback content)</p>'
   code: |
-    @assert canvas.childNodes.length == 2;
+    @assert canvas.childNodes.length === 2;
 
 - name: type.name
   desc: HTMLCanvasElement type and toString
@@ -222,7 +222,7 @@
 
             # With "100%", Opera gets canvas.width = 100 but renders at 100% of the frame width,
             # so check the CSS display width
-            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") == "%spx";\n' % (exp, )
+            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") === "%spx";\n' % (exp, )
 
         code += "@assert canvas.getAttribute('width') === %r;\n" % string
         code += "@assert canvas.getAttribute('height') === %r;\n" % string
@@ -262,8 +262,8 @@
     - size.css
   canvas: 'width="50" height="30" style="width: 100px; height: 50px"'
   code: |
-    @assert canvas.width == 50;
-    @assert canvas.height == 30;
+    @assert canvas.width === 50;
+    @assert canvas.height === 30;
   expected: size 100 50
 
 - name: size.large
@@ -279,8 +279,8 @@
     var n = 2147483647; // 2^31 - 1, which should be supported by any sensible definition of "long"
     canvas.width = n;
     canvas.height = n;
-    @assert canvas.width == n;
-    @assert canvas.height == n;
+    @assert canvas.width === n;
+    @assert canvas.height === n;
 #  expected: size 2147483647 2147483647 # not a good idea to generate the expected image in this case...
 
 - name: initial.colour
@@ -609,7 +609,7 @@
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.drawImage(img, 0, 0);
         @assert pixel 12,20 == 255,255,0,255;
@@ -649,7 +649,7 @@
     ctx.fillRect(75, 0, 25, 25);
     var img = new Image();
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.drawImage(img, 0, 25);
         // (The alpha values do not really survive float->int conversion, so just
@@ -693,7 +693,7 @@
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.drawImage(img, 0, 0);
         @assert pixel 12,20 ==~ 255,255,0,255 +/- 8;
@@ -735,7 +735,7 @@
       ctx.fillRect(0, 0, 100, 50);
       var img = new Image();
       deferTest();
-      img.onload = wrapFunction(function ()
+      img.onload = t.step_func_done(function ()
       {
           ctx.drawImage(img, 0, 0);
           @assert pixel 50,25 ==~ 63,127,63,255 +/- 8;
@@ -772,7 +772,7 @@
       img_hi.onload = function ()
       {
           var img_lo = new Image();
-          img_lo.onload = wrapFunction(function ()
+          img_lo.onload = t.step_func_done(function ()
           {
               ctx.drawImage(img_hi, 0, 0, 50, 50, 0, 0, 50, 50);
               ctx.drawImage(img_lo, 0, 0, 50, 50, 50, 0, 50, 50);
@@ -1007,7 +1007,7 @@
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.drawImage(img, 0, 0);
         canvas.toDataURL(); // should be permitted

@@ -219,12 +219,12 @@ def expand_test_code(code):
             lambda m: '_assertSame(%s, %s, "%s", "%s");'
                 % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
             , code)
-    
+
     code = re.sub(r'@assert (.*) !== (.*);',
             lambda m: '_assertDifferent(%s, %s, "%s", "%s");'
                 % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
             , code)
-    
+
     code = re.sub(r'@assert (.*) =~ (.*);',
             lambda m: 'assert_regexp_match(%s, %s);'
                 % (m.group(1), m.group(2))
@@ -234,7 +234,7 @@ def expand_test_code(code):
             lambda m: '_assert(%s, "%s");'
                 % (m.group(1), escapeJS(m.group(1)))
             , code)
-    
+
     code = re.sub(r' @moz-todo', '', code)
 
     code = re.sub(r'@moz-UniversalBrowserRead;',
@@ -343,7 +343,7 @@ for i in range(len(tests)):
         print "Test %s doesn't refer to any spec points" % name
 
     if test.get('expected', '') == 'green' and re.search(r'@assert pixel .* 0,0,0,0;', test['code']):
-        print "Probable incorrect pixel test in %s" % name 
+        print "Probable incorrect pixel test in %s" % name
 
     code = expand_test_code(test['code'])
 

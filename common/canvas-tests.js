@@ -43,7 +43,7 @@ function _assertPixel(canvas, x,y, r,g,b,a, pos, colour)
     var c = _getPixel(canvas, x,y);
     var msg = 'got pixel [' + c + '] at ('+x+','+y+'), ' +
               'expected ['+r+','+g+','+b+','+a+']';
-    assert_true(!c || (c[0] == r && c[1] == g && c[2] == b && c[3] == a), msg);
+    assert_true(c[0] == r && c[1] == g && c[2] == b && c[3] == a, msg);
 }
 
 function _assertPixelApprox(canvas, x,y, r,g,b,a, pos, colour, tolerance)
@@ -51,7 +51,7 @@ function _assertPixelApprox(canvas, x,y, r,g,b,a, pos, colour, tolerance)
     var c = _getPixel(canvas, x,y);
     var msg = 'got pixel [' + c + '] at ('+x+','+y+'), ' +
               'expected ['+r+','+g+','+b+','+a+'] +/- ' + tolerance;
-    assert_true(!c || Math.max(Math.abs(c[0]-r), Math.abs(c[1]-g), Math.abs(c[2]-b), Math.abs(c[3]-a)) <= tolerance,
+    assert_true(Math.max(Math.abs(c[0]-r), Math.abs(c[1]-g), Math.abs(c[2]-b), Math.abs(c[3]-a)) <= tolerance,
                 msg);
 }
 

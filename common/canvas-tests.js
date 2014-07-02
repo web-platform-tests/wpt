@@ -41,18 +41,19 @@ function _getPixel(canvas, x,y)
 function _assertPixel(canvas, x,y, r,g,b,a, pos, colour)
 {
     var c = _getPixel(canvas, x,y);
-    var msg = 'got pixel [' + c + '] at ('+x+','+y+'), ' +
-              'expected ['+r+','+g+','+b+','+a+']';
-    assert_true(c[0] == r && c[1] == g && c[2] == b && c[3] == a, msg);
+    assert_equals(c[0], r, 'Red channel of the pixel at (' + x + ', ' + y + ')');
+    assert_equals(c[1], g, 'Green channel of the pixel at (' + x + ', ' + y + ')');
+    assert_equals(c[2], b, 'Blue channel of the pixel at (' + x + ', ' + y + ')');
+    assert_equals(c[3], a, 'Alpha channel of the pixel at (' + x + ', ' + y + ')');
 }
 
 function _assertPixelApprox(canvas, x,y, r,g,b,a, pos, colour, tolerance)
 {
     var c = _getPixel(canvas, x,y);
-    var msg = 'got pixel [' + c + '] at ('+x+','+y+'), ' +
-              'expected ['+r+','+g+','+b+','+a+'] +/- ' + tolerance;
-    assert_true(Math.max(Math.abs(c[0]-r), Math.abs(c[1]-g), Math.abs(c[2]-b), Math.abs(c[3]-a)) <= tolerance,
-                msg);
+    assert_approx_equals(c[0], r, tolerance, 'Red channel of the pixel at (' + x + ', ' + y + ')');
+    assert_approx_equals(c[1], g, tolerance, 'Green channel of the pixel at (' + x + ', ' + y + ')');
+    assert_approx_equals(c[2], b, tolerance, 'Blue channel of the pixel at (' + x + ', ' + y + ')');
+    assert_approx_equals(c[3], a, tolerance, 'Alpha channel of the pixel at (' + x + ', ' + y + ')');
 }
 
 function _addTest(testFn)

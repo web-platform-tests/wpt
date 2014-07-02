@@ -1,3 +1,4 @@
+"use strict";
 function getCSSStyleDeclaration() {
     var e = document.documentElement; 
     if (e['style'] === undefined)

@@ -12,5 +12,5 @@
 <h1>Test Interface HTMLAllCollection Signature</h1>
 <div id='log'></div>
 <script>
-level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return document.all;});
+level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return 'all' in document && document.all;});
 </script>

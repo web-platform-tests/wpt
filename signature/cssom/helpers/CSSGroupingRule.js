@@ -1,3 +1,4 @@
+"use strict";
 function getCSSGroupingRule() {
     var e = document.createElement('style'); 
     e.textContent = '@media all {}';

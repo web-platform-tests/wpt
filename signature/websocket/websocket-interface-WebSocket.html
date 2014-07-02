@@ -12,5 +12,5 @@
 <h1>Test Interface WebSocket Signature</h1>
 <div id='log'></div>
 <script>
-level1('websocket', JSON.parse(document.getElementById('idl').textContent), function(test){return !!window['WebSocket'] && new WebSocket('ws://web-platform.test:8000/echo');});
+level1('websocket', JSON.parse(document.getElementById('idl').textContent), function(test){return 'WebSocket' in window && new WebSocket('ws://web-platform.test:8000/echo');});
 </script>

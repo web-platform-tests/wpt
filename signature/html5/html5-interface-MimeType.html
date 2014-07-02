@@ -6,11 +6,12 @@
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
 <script src='/tools/common/level1.js'></script>
+<script src='./helpers/MimeType.js'></script>
 <script type='text/plain' id='idl'>
 {"type":"interface","name":"MimeType","partial":false,"members":[{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":true,"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"type","extAttrs":[]},{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":true,"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"description","extAttrs":[]},{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":true,"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"suffixes","extAttrs":[]},{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":true,"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"Plugin"},"name":"enabledPlugin","extAttrs":[]}],"inheritance":null,"extAttrs":[]}
 </script>
 <h1>Test Interface MimeType Signature</h1>
 <div id='log'></div>
 <script>
-level1('html5', JSON.parse(document.getElementById('idl').textContent), undefined);
+level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return getMimeType();});
 </script>

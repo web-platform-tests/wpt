@@ -12,5 +12,5 @@
 <h1>Test Interface PortCollection Signature</h1>
 <div id='log'></div>
 <script>
-level1('webmessage', JSON.parse(document.getElementById('idl').textContent), function(test){return !!window['PortCollection'] && new PortCollection();});
+level1('webmessage', JSON.parse(document.getElementById('idl').textContent), function(test){return 'PortCollection' in window && new PortCollection();});
 </script>

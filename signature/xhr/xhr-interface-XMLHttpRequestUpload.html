@@ -12,5 +12,5 @@
 <h1>Test Interface XMLHttpRequestUpload Signature</h1>
 <div id='log'></div>
 <script>
-level1('xhr', JSON.parse(document.getElementById('idl').textContent), function(test){return !!window['XMLHttpRequest'] && new XMLHttpRequest().upload;});
+level1('xhr', JSON.parse(document.getElementById('idl').textContent), function(test){return 'XMLHttpRequest' in window && new XMLHttpRequest().upload;});
 </script>

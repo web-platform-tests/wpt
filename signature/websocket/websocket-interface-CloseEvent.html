@@ -12,5 +12,5 @@
 <h1>Test Interface CloseEvent Signature</h1>
 <div id='log'></div>
 <script>
-level1('websocket', JSON.parse(document.getElementById('idl').textContent), function(test){return !!window['CloseEvent'] && new CloseEvent('close');});
+level1('websocket', JSON.parse(document.getElementById('idl').textContent), function(test){return 'CloseEvent' in window && new CloseEvent('close');});
 </script>

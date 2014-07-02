@@ -6,12 +6,12 @@
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
 <script src='/tools/common/level1.js'></script>
+<script src='./helpers/CanvasPattern.js'></script>
 <script type='text/plain' id='idl'>
 {"type":"interface","name":"CanvasPattern","partial":false,"members":[],"inheritance":null,"extAttrs":[]}
 </script>
 <h1>Test Interface CanvasPattern Signature</h1>
 <div id='log'></div>
-<script src='./helpers/CanvasPattern.js'></script>
 <script>
 level1('canvas2d', JSON.parse(document.getElementById('idl').textContent), function(test){return getCanvasPattern();});
 </script>

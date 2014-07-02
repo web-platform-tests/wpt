@@ -12,5 +12,5 @@
 <h1>Test Interface NavigatorLanguage Signature</h1>
 <div id='log'></div>
 <script>
-level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return window.navigator;});
+level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return 'navigator' in window && window.navigator;});
 </script>

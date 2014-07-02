@@ -12,5 +12,5 @@
 <h1>Test Interface BarProp Signature</h1>
 <div id='log'></div>
 <script>
-level1('html5', JSON.parse(document.getElementById('idl').textContent), undefined);
+level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return 'statusbar' in window && window.statusbar;});
 </script>

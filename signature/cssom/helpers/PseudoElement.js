@@ -1,3 +1,4 @@
+"use strict";
 function getPseudoElement() {
     var e = document.documentElement;
     if (e['pseudo'] === undefined)

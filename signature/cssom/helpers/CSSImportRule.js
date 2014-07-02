@@ -1,3 +1,4 @@
+"use strict";
 function getCSSImportRule() {
     var e = document.createElement('style'); 
     e.textContent = '@import "empty.css";';

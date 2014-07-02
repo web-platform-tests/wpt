@@ -12,5 +12,5 @@
 <h1>Test Interface TrackEvent Signature</h1>
 <div id='log'></div>
 <script>
-level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return !!window['TrackEvent'] && new TrackEvent('addtrack', { track: document.createElement('track').track });});
+level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return 'TrackEvent' in window && new TrackEvent('addtrack', { track: document.createElement('track').track });});
 </script>

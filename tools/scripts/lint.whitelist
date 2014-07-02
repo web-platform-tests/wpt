@@ -6,9 +6,10 @@
 # to allow trailing whitespace on example/file.html line 128
 INDENT TABS:*
 TRAILING WHITESPACE:*
-CR AT EOL:cors/resources/cors-headers.asis
-CR AT EOL:webvtt/webvtt-file-format-parsing/webvtt-file-parsing/support/newlines.vtt
 CR AT EOL:WebIDL/tests/submissions/W3C/valid/idl/documentation-dos.widl
+CR AT EOL:cors/resources/cors-headers.asis
+CR AT EOL:html/semantics/embedded-content/the-canvas-element/size.attributes.parse.whitespace.html
+CR AT EOL:webvtt/webvtt-file-format-parsing/webvtt-file-parsing/support/newlines.vtt
 CR AT EOL:*.pdf
 CR AT EOL:*.jpg
 CR AT EOL:*.png

@@ -27,7 +27,7 @@ function _assertDifferent(a, b, text_a, text_b)
 function _assertMatch(a, b, text_a, text_b)
 {
     var msg = text_a + ' matches ' + text_b + ' (got ' + _valToString(a) + ')';
-    assert_true(a.match(b), msg);
+    assert_true(!!a.match(b), msg);
 }
 
 

@@ -1,14 +1,15 @@
-import sys
-import os
-from collections import defaultdict
-import re
-import urlparse
-import argparse
-import json
-import subprocess
-import logging
+#!/usr/bin/env python
 
 import argparse
+import json
+import logging
+import os
+import re
+import subprocess
+import sys
+import urlparse
+
+from collections import defaultdict
 
 manifest_name = "MANIFEST.json"
 exclude_php_hack = True
@@ -18,6 +19,7 @@ blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/"
 logging.basicConfig()
 logger = logging.getLogger("Web platform tests")
 logger.setLevel(logging.DEBUG)
+
 
 class ManifestItem(object):
     item_type = None
@@ -104,6 +106,7 @@ class ManualTest(ManifestItem):
     @classmethod
     def from_json(cls, obj):
         return cls(obj["path"], obj["url"])
+
 
 class Stub(ManifestItem):
     item_type = "stub"
@@ -374,8 +377,10 @@ def get_committed_changes(base_rev):
         data  = git("diff", "--name-status", base_rev)
         return [line.split("\t", 1) for line in data.split("\n") if line]
 
+
 def has_local_changes():
     return git("status", "--porcelain", "--ignore-submodules=untracked").strip() != ""
+
 
 def get_local_changes():
     #This doesn't account for whole directories that have been added
@@ -445,6 +450,7 @@ def get_repo_root():
 def get_current_rev():
     return git("rev-parse", "HEAD").strip()
 
+
 def load(manifest_path):
     if os.path.exists(manifest_path):
         logger.debug("Opening manifest at %s" % manifest_path)
@@ -498,20 +504,20 @@ def update_manifest(repo_path, opts):
 
 def get_parser():
     parser = argparse.ArgumentParser()
-
     parser.add_argument("--path", default=os.path.join(get_repo_root(), "MANIFEST.json"),
                         help="Mainifest path")
     parser.add_argument("--rebuild", action="store_true", default=False,
                         help="Force a full rebuild of the manifest rather than updating incrementally.")
     parser.add_argument("--experimental-include-local-changes", action="store_true", default=False,
                         help="Include local changes in the manifest rather than just committed changes (experimental)")
-
     return parser
+
 
 def main():
     repo_root = get_repo_root()
     opts = get_parser().parse_args()
     update_manifest(repo_root, opts)
+
 
 if __name__ == "__main__":
     main()

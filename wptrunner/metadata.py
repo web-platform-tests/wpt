@@ -62,7 +62,7 @@ def update_expected(test_root, metadata_root, log_file_names, rev_old=None, rev_
 
     write_changes(metadata_root, expected_map)
 
-    results_changed = [item for item in expected_map.itervalues() if item.modified]
+    results_changed = [item.test_path for item in expected_map.itervalues() if item.modified]
 
     return unexpected_changes(change_data, results_changed)
 
@@ -177,7 +177,6 @@ class ExpectedUpdater(object):
         self.expected_tree = expected_tree
         self.id_path_map = id_path_map
         self.ignore_existing = ignore_existing
-        print "ignore_existing", ignore_existing
         self.run_info = None
         self.action_map = {"suite_start": self.suite_start,
                            "test_start": self.test_start,

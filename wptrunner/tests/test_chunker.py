@@ -4,7 +4,6 @@ sys.path.insert(0, "..")
 
 from wptrunner import wptrunner
 
-
 class MockTest(object):
     def __init__(self, id, timeout=10):
         self.id = id

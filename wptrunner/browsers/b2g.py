@@ -208,11 +208,9 @@ class B2GBrowser(Browser):
 class B2GExecutorBrowser(ExecutorBrowser):
     # The following methods are called from a different process
     def __init__(self, *args, **kwargs):
-        print "Creating B2GExecutorBrowser"
         ExecutorBrowser.__init__(self, *args, **kwargs)
         self.device = mozdevice.DeviceManagerADB()
         self.executor = None
-        print "Forwarding marionette port"
         subprocess.check_call([self.device._adbPath,
                                'forward',
                                'tcp:%s' % self.marionette_port,

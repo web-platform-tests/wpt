@@ -195,7 +195,6 @@ class TestNode(ManifestItem):
                 self.updated_expected.append((value, []))
 
     def clear_expected(self):
-        print "clear_expected"
         self.updated_expected = []
         if "expected" in self._data:
             for child in self.node.children:

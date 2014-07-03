@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'wptrunner'
-PACKAGE_VERSION = '0.3.12'
+PACKAGE_VERSION = '0.3.13'
 
 # dependencies
 with open('requirements.txt') as f:

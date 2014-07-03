@@ -136,7 +136,7 @@ class Router(object):
             methods = [methods]
         for method in methods:
             self.routes.append((method, compile_path_match(path), handler))
-            print self.routes[-1][1].pattern
+            logger.debug("Route pattern: %s" % self.routes[-1][1].pattern)
 
     def get_handler(self, request):
         """Get a handler for a request or None if there is no handler.

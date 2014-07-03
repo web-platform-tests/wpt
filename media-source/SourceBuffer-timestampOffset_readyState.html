@@ -7,15 +7,11 @@
   <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<div>
-    <video id='v' controls autoplay width='320' height='240'></video>
-</div>
 <div id="log"></div>
-
 <script>
-var video = document.querySelector('video');
+var video = document.createElement('video');
 var contents  = {'/media/white.webm' : 'video/webm; codecs="vorbis,vp8"',
-                 '/media/white.mp4'  : 'video/mp4'};
+                 '/media/segmented-3s.mp4'  : 'video/mp4'};
 
 function GET(url, processBody) {
     var xhr = new XMLHttpRequest();
@@ -31,19 +27,19 @@ function GET(url, processBody) {
     };
 }
 //check the browser supports the MIME used in this test
-function canPlayType(mime) {
-    if(video.canPlayType(mime) != 'probably') {
+function isTypeSupported(mime) {
+    if(!MediaSource.isTypeSupported(mime)) {
         this.step(function() {
-            assert_unreached("Browser doesn't support the MIME used in this test.");
+            assert_unreached("Browser doesn't support the MIME used in this test: " + mime);
         });
         this.done();
         return false;
     }
     return true;
 }
-function test(file, mime) {
+function testMedia(file, mime) {
     async_test(function(t) {
-        if(!canPlayType.bind(t)(mime)) {
+        if(!isTypeSupported.bind(t)(mime)) {
             return;
         }
         GET(file, function(data) {
@@ -85,7 +81,7 @@ function test(file, mime) {
        '2. Queue a task to fire a simple event named sourceopen at the parent media source.');
 }
 for(var file in contents) {
-    test(file, contents[file]);
+    testMedia(file, contents[file]);
 }
 </script>
 </body>

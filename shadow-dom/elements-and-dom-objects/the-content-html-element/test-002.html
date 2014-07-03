@@ -24,36 +24,36 @@ policies and contribution forms [3].
 <script>
 test(unit(function (ctx) {
 
-	var d = newRenderedHTMLDocument(ctx);
+    var d = newRenderedHTMLDocument(ctx);
 
-	d.body.innerHTML =
-		'<ul class="cls">' +
-			'<li id="li1" class="shadow">1</li>' +
-			'<li id="li2" class="shadow2">2</li>' +
-			'<li id="li3" class="shadow">3</li>' +
-			'<li id="li4">4</li>' +
-			'<li id="li5" class="shadow">5</li>' +
-			'<li id="li6" class="shadow2">6</li>' +
-		'</ul>';
+    d.body.innerHTML =
+        '<ul class="cls">' +
+            '<li id="li1" class="shadow">1</li>' +
+            '<li id="li2" class="shadow2">2</li>' +
+            '<li id="li3" class="shadow">3</li>' +
+            '<li id="li4">4</li>' +
+            '<li id="li5" class="shadow">5</li>' +
+            '<li id="li6" class="shadow2">6</li>' +
+        '</ul>';
 
-	var host = d.querySelector('.cls');
-	//Shadow root to play with
-	var s = host.createShadowRoot();
+    var host = d.querySelector('.cls');
+    //Shadow root to play with
+    var s = host.createShadowRoot();
 
-	var div = d.createElement('div');
-	div.innerHTML = '' +
-		'<ul><content select=".shadow"><span id="spandex">This is fallback content</span></content></ul>';
-	s.appendChild(div);
+    var div = d.createElement('div');
+    div.innerHTML = '' +
+        '<ul><content select=".shadow"><span id="spandex">This is fallback content</span></content></ul>';
+    s.appendChild(div);
 
-	assert_equals(s.querySelector('#spandex').offsetTop, 0, 'Fallback content should not be rendered');
+    assert_equals(s.querySelector('#spandex').offsetTop, 0, 'Fallback content should not be rendered');
 
-	assert_equals(d.querySelector('#li2').offsetTop, 0, 'Point 1: Element should not be rendered');
-	assert_equals(d.querySelector('#li4').offsetTop, 0, 'Point 2: Element should not be rendered');
-	assert_equals(d.querySelector('#li6').offsetTop, 0, 'Point 3: Element should not be rendered');
+    assert_equals(d.querySelector('#li2').offsetTop, 0, 'Point 1: Element should not be rendered');
+    assert_equals(d.querySelector('#li4').offsetTop, 0, 'Point 2: Element should not be rendered');
+    assert_equals(d.querySelector('#li6').offsetTop, 0, 'Point 3: Element should not be rendered');
 
-	assert_true(d.querySelector('#li1').offsetTop > 0, 'Point 11: Element should be rendered');
-	assert_true(d.querySelector('#li3').offsetTop > 0, 'Point 12: Element should be rendered');
-	assert_true(d.querySelector('#li5').offsetTop > 0, 'Point 13: Element should be rendered');
+    assert_true(d.querySelector('#li1').offsetTop > 0, 'Point 11: Element should be rendered');
+    assert_true(d.querySelector('#li3').offsetTop > 0, 'Point 12: Element should be rendered');
+    assert_true(d.querySelector('#li5').offsetTop > 0, 'Point 13: Element should be rendered');
 
 }), 'A_10_04_02_T01_01');
 
@@ -61,36 +61,36 @@ test(unit(function (ctx) {
 
 test(unit(function (ctx) {
 
-	var d = newRenderedHTMLDocument(ctx);
+    var d = newRenderedHTMLDocument(ctx);
 
-	d.body.innerHTML =
-		'<ul class="cls">' +
-			'<li id="li1" class="shadow">1</li>' +
-			'<li id="li2" class="shadow2">2</li>' +
-			'<li id="li3" class="shadow">3</li>' +
-			'<li id="li4">4</li>' +
-			'<li id="li5" class="shadow">5</li>' +
-			'<li id="li6" class="shadow2">6</li>' +
-		'</ul>';
+    d.body.innerHTML =
+        '<ul class="cls">' +
+            '<li id="li1" class="shadow">1</li>' +
+            '<li id="li2" class="shadow2">2</li>' +
+            '<li id="li3" class="shadow">3</li>' +
+            '<li id="li4">4</li>' +
+            '<li id="li5" class="shadow">5</li>' +
+            '<li id="li6" class="shadow2">6</li>' +
+        '</ul>';
 
-	var host = d.querySelector('.cls');
-	//Shadow root to play with
-	var s = host.createShadowRoot();
+    var host = d.querySelector('.cls');
+    //Shadow root to play with
+    var s = host.createShadowRoot();
 
-	var div = d.createElement('div');
-	div.innerHTML = '' +
-		'<ul><content select=".shadow, #li4"><span id="spandex">This is fallback content</span></content></ul>';
-	s.appendChild(div);
+    var div = d.createElement('div');
+    div.innerHTML = '' +
+        '<ul><content select=".shadow, #li4"><span id="spandex">This is fallback content</span></content></ul>';
+    s.appendChild(div);
 
-	assert_equals(s.querySelector('#spandex').offsetTop, 0, 'Fallback content should not be rendered');
+    assert_equals(s.querySelector('#spandex').offsetTop, 0, 'Fallback content should not be rendered');
 
-	assert_equals(d.querySelector('#li2').offsetTop, 0, 'Point 1: Element should not be rendered');
-	assert_equals(d.querySelector('#li6').offsetTop, 0, 'Point 2: Element should not be rendered');
+    assert_equals(d.querySelector('#li2').offsetTop, 0, 'Point 1: Element should not be rendered');
+    assert_equals(d.querySelector('#li6').offsetTop, 0, 'Point 2: Element should not be rendered');
 
-	assert_true(d.querySelector('#li1').offsetTop > 0, 'Point 11: Element should be rendered');
-	assert_true(d.querySelector('#li3').offsetTop > 0, 'Point 12: Element should be rendered');
-	assert_true(d.querySelector('#li5').offsetTop > 0, 'Point 13: Element should be rendered');
-	assert_true(d.querySelector('#li4').offsetTop > 0, 'Point 14: Element should be rendered');
+    assert_true(d.querySelector('#li1').offsetTop > 0, 'Point 11: Element should be rendered');
+    assert_true(d.querySelector('#li3').offsetTop > 0, 'Point 12: Element should be rendered');
+    assert_true(d.querySelector('#li5').offsetTop > 0, 'Point 13: Element should be rendered');
+    assert_true(d.querySelector('#li4').offsetTop > 0, 'Point 14: Element should be rendered');
 
 }), 'A_10_04_02_T01_02');
 </script>

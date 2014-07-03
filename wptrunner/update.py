@@ -409,11 +409,14 @@ def run_update(**kwargs):
     for path in paths.itervalues():
         ensure_exists(path)
 
-    for tree_cls in [HgTree, GitTree, NoVCSTree]:
-        if tree_cls.is_type(os.path.abspath(os.curdir)):
-            local_tree = tree_cls()
-            print "Updating into a %s tree" % local_tree.name
-            break
+    if config["command-args"]["patch"]:
+        for tree_cls in [HgTree, GitTree, NoVCSTree]:
+            if tree_cls.is_type(os.path.abspath(os.curdir)):
+                local_tree = tree_cls()
+                print "Updating into a %s tree" % local_tree.name
+                break
+    else:
+        local_tree = NoVCSTree()
 
     if not local_tree.is_clean():
         sys.stderr.write("Working tree is not clean\n")

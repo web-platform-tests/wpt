@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>FileAPI Test: filereaderSync_readAsDataURL</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/FileAPI/#dfn-readAsDataURLSync">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+
+<script>
+async_test(function(t) {
+  var worker = new Worker("filereaderSync.js");
+  worker.postMessage("fileReaderSync_readAsDataURL");
+  worker.onmessage = t.step_func(function (event) {
+    assert_equals(event.data.indexOf("data:"), 0);
+    assert_true(event.data.indexOf("base64") > 0);
+    t.done();
+  });
+}, "Check return the data of blob as a Data URL by FileReaderSync interface");
+</script>
+

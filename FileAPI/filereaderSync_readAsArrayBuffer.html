@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>FileAPI Test: filereaderSync_readAsArrayBuffer</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/FileAPI/#dfn-readAsArrayBufferSync">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+
+<script>
+async_test(function(t) {
+  var worker = new Worker("filereaderSync.js");
+  worker.postMessage("fileReaderSync_readAsArrayBuffer");
+  worker.onmessage = t.step_func(function (event) {
+    assert_true(event.data instanceof ArrayBuffer);
+    t.done();
+  });
+}, "Check obtain an ArrayBuffer object using the readAsArrayBuffer method by FileReaderSync interface");
+</script>
+

@@ -7,14 +7,15 @@ import os
 import mozprocess
 
 from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
-from ..executors.executorwebdriver import WebdriverTestharnessExecutor, required_files
+from ..executors.executorselenium import SeleniumTestharnessExecutor, required_files
+
 
 here = os.path.split(__file__)[0]
 
 __wptrunner__ = {"product": "chrome",
                  "check_args": "check_args",
                  "browser": "ChromeBrowser",
-                 "executor": {"testharness": "WebdriverTestharnessExecutor"},
+                 "executor": {"testharness": "SeleniumTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_options": "env_options"}
@@ -69,7 +70,6 @@ class ChromeBrowser(Browser):
             return self.proc.pid
 
     def on_output(self, line):
-        """Write a line of output from the firefox process to the log"""
         self.logger.process_output(self.pid(),
                                    line.decode("utf8", "replace"),
                                    command=" ".join(self.cmd))

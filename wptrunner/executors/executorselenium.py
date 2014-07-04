@@ -14,11 +14,11 @@ import uuid
 from .base import TestExecutor, testharness_result_converter
 from ..testrunner import Stop
 
+
 here = os.path.join(os.path.split(__file__)[0])
 
 webdriver = None
 exceptions = None
-
 
 required_files = [("testharness_runner.html", "", False),
                   ("testharnessreport.js", "resources/", True)]
@@ -31,7 +31,7 @@ def do_delayed_imports():
     from selenium.common import exceptions
 
 
-class WebdriverTestExecutor(TestExecutor):
+class SeleniumTestExecutor(TestExecutor):
     def __init__(self, browser, http_server_url, timeout_multiplier=1, **kwargs):
         do_delayed_imports()
         TestExecutor.__init__(self, browser, http_server_url, timeout_multiplier)
@@ -43,34 +43,35 @@ class WebdriverTestExecutor(TestExecutor):
         self.capabilities = kwargs.pop("capabilities")
 
     def setup(self, runner):
-        """Connect to browser via webdriver"""
+        """Connect to browser via Selenium's WebDriver implementation."""
         self.runner = runner
-
-        webdriver_url = "http://localhost:%i/wd/url" % self.webdriver_port
-        self.logger.debug("Connecting to webdriver on url %s" % webdriver_url)
+        url = "http://localhost:%i/wd/url" % self.webdriver_port
+        self.logger.debug("Connecting to Selenium on URL: %s" % url)
 
         session_started = False
-
         try:
-            self.webdriver = webdriver.Remote(webdriver_url,
-                                              desired_capabilities=self.capabilities)
+            time.sleep(1)
+            self.webdriver = webdriver.Remote(
+                url, desired_capabilities=self.capabilities)
             time.sleep(10)
         except:
-            self.logger.warning("Connecting to Webdriver failed:\n%s" % traceback.format_exc())
+            self.logger.warning(
+                "Connecting to Selenium failed:\n%s" % traceback.format_exc())
             time.sleep(1)
         else:
-            self.logger.debug("Webdriver session started")
+            self.logger.debug("Selenium session started")
             session_started = True
 
         if not session_started:
-            self.logger.warning("Failed to connect to webdriver")
+            self.logger.warning("Failed to connect to Selenium")
             self.runner.send_message("init_failed")
         else:
             try:
                 self.after_connect()
-            except Exception:
+            except:
                 print >> sys.stderr, traceback.format_exc()
-                self.logger.warning("Failed to connect to navigate initial page")
+                self.logger.warning(
+                    "Failed to connect to navigate initial page")
                 self.runner.send_message("init_failed")
             else:
                 self.runner.send_message("init_succeeded")
@@ -171,11 +172,11 @@ class WebdriverTestExecutor(TestExecutor):
                 self.runner.send_message("test_ended", test, result)
 
 
-class WebdriverTestharnessExecutor(WebdriverTestExecutor):
+class SeleniumTestharnessExecutor(SeleniumTestExecutor):
     convert_result = testharness_result_converter
 
     def __init__(self, *args, **kwargs):
-        WebdriverTestExecutor.__init__(self, *args, **kwargs)
+        SeleniumTestExecutor.__init__(self, *args, **kwargs)
         self.script = open(os.path.join(here, "testharness_webdriver.js")).read()
 
     def do_test(self, test, timeout):

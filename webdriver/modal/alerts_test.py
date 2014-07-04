@@ -1,25 +1,20 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
 import os
 import sys
 import unittest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 
-from client.exceptions import ElementNotVisibleException, NoSuchAlertException
-from client.wait import WebDriverWait
 
 class AlertsTest(base_test.WebDriverBaseTest):
-
     def setUp(self):
-        self.wait = WebDriverWait(self.driver, 5, ignored_exceptions = [NoSuchAlertException])
+        self.wait = wait.WebDriverWait(self.driver, 5, ignored_exceptions = [exceptions.NoSuchAlertException])
         self.driver.get(self.webserver.where_is('modal/res/alerts.html'))
 
     def tearDown(self):
         try:
             self.driver.switch_to_alert().dismiss()
-        except NoSuchAlertException:
+        except exceptions.NoSuchAlertException:
             pass
 
     # Alerts
@@ -51,7 +46,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
     def test_setting_the_value_of_an_alert_throws(self):
         self.driver.find_element_by_id('alert').click()
         alert = self.wait.until(lambda x: x.switch_to_alert())
-	with self.assertRaises(ElementNotVisibleException):
+	with self.assertRaises(exceptions.ElementNotVisibleException):
 	    alert.send_keys('cheese')
         alert.accept()
 
@@ -59,7 +54,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
         self.driver.find_element_by_id('alert').click()
         alert = self.wait.until(lambda x: x.switch_to_alert())
         alert.accept()
-        with self.assertRaises(NoSuchAlertException):
+        with self.assertRaises(exceptions.NoSuchAlertException):
             alert.get_text()
 
     # Prompts
@@ -93,7 +88,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
         self.driver.find_element_by_id('prompt').click()
         alert = self.wait.until(lambda x: x.switch_to_alert())
         alert.accept()
-        with self.assertRaises(NoSuchAlertException):
+        with self.assertRaises(exceptions.NoSuchAlertException):
             alert.get_text()
 
     def test_prompt_should_use_default_value_if_no_keys_sent(self):
@@ -124,7 +119,7 @@ class AlertsTest(base_test.WebDriverBaseTest):
     def test_setting_the_value_of_a_confirm_throws(self):
         self.driver.find_element_by_id('confirm').click()
         alert = self.wait.until(lambda x: x.switch_to_alert())
-        with self.assertRaises(ElementNotVisibleException):
+        with self.assertRaises(exceptions.ElementNotVisibleException):
             alert.send_keys('cheese')
         alert.accept()
 
@@ -139,12 +134,13 @@ class AlertsTest(base_test.WebDriverBaseTest):
         self.driver.find_element_by_id('confirm').click()
         alert = self.wait.until(lambda x: x.switch_to_alert())
         alert.accept()
-        with self.assertRaises(NoSuchAlertException):
+        with self.assertRaises(exceptions.NoSuchAlertException):
             alert.get_text()
 
     def test_switch_to_missing_alert_fails(self):
-    	with self.assertRaises(NoSuchAlertException):
+        with self.assertRaises(exceptions.NoSuchAlertException):
             self.driver.switch_to_alert()
+
 
 if __name__ == '__main__':
     unittest.main()

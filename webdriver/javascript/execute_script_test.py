@@ -1,30 +1,24 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
 import os
 import sys
 import unittest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 
 
 class ExecuteScriptTest(base_test.WebDriverBaseTest):
-
     def test_ecmascript_translates_null_return_to_none(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         result = self.driver.execute_script("return null;")
         self.assertIsNone(result)
 
     def test_ecmascript_translates_undefined_return_to_none(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         result = self.driver.execute_script("var undef; return undef;")
         self.assertIsNone(result)
 
     def test_can_return_numbers_from_scripts(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         self.assertEquals(1, self.driver.execute_script("return 1;"))
         self.assertEquals(3.14, self.driver.execute_script("return 3.14;"))
 
@@ -46,7 +40,6 @@ class ExecuteScriptTest(base_test.WebDriverBaseTest):
 
     def test_can_return_nested_arrays(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         result = self.driver.execute_script("return [[1, 2, [3]]]")
 
         self.assertIsInstance(result, list)
@@ -71,7 +64,6 @@ class ExecuteScriptTest(base_test.WebDriverBaseTest):
 
     def test_can_return_complex_object_literals(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         result = self.driver.execute_script("return {a:{b: 'hello'}}")
         self.assertIsInstance(result, dict)
         self.assertIsInstance(result['a'], dict)
@@ -111,28 +103,23 @@ class ExecuteScriptTest(base_test.WebDriverBaseTest):
 
     def test_return_object_literal_with_dom_element_property(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         result = self.driver.execute_script("return {a: document.body}")
-
         self.assertIsInstance(result, dict)
         self.assertEquals("body", result["a"].tag_name)
 
     def test_scripts_execute_in_anonymous_function_and_do_not_pollute_global_scope(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         self.driver.execute_script("var x = 1;")
         self.assertEquals("undefined", self.driver.execute_script("return typeof x;"));
 
     def test_scripts_can_modify_context_window_object(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         self.driver.execute_script("window.x = 1;")
         self.assertEquals("number", self.driver.execute_script("return typeof x;"));
         self.assertEquals(1, self.driver.execute_script("return x;"));
 
     def test_that_ecmascript_returns_document_title(self):
         self.driver.get(self.webserver.where_is("javascript/res/execute_script_test.html"))
-
         result = self.driver.execute_script("return document.title;")
         self.assertEquals("executeScript test", result)
 

@@ -1,18 +1,14 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
-import unittest
-import sys
 import os
+import sys
+import unittest
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 
-class RefreshPageTest(base_test.WebDriverBaseTest):
 
+class RefreshPageTest(base_test.WebDriverBaseTest):
     # Get a static page that must be the same upon refresh
     def test_refreshPage(self):
-        
         self.driver.get(self.webserver.where_is('navigation/res/refreshPageStatic.html'))
         body = self.driver.find_element_by_css("body").get_text()
         self.driver.execute_script("document.getElementById('body').innerHTML=''")
@@ -25,6 +21,7 @@ class RefreshPageTest(base_test.WebDriverBaseTest):
         self.driver.refresh()
         newbody = self.driver.find_element_by_css("body").get_text()
         self.assertNotEqual(body, newbody)
+
 
 if __name__ == '__main__':
     unittest.main()

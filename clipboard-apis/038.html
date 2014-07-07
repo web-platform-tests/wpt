@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - events fire on TEXTAREA </title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** events fire on TEXTAREA  */
+/* Events: paste */
+/* Test HTML: <form><textarea id="input_text" autofocus onfocus="this.select()">original text</textarea></form>*/
+/* Targets: document 'input_text' */
+/* paste data: "pasted text" */
+function clipboard_api_test(e){
+	var passed = e.type === window.eventType;
+	passed = passed && e.target.id==='input_text';
+	return passed;
+}
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<form><textarea id="input_text" autofocus onfocus="this.select()">original text</textarea></form>
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste="pasted text" ;
+	var externalPassCondition=null;
+	var eventTarget=document;
+	var eventType='paste';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - Using beforecopy to enable 'copy' UI that would otherwise be disabled </title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** Using beforecopy to enable 'copy' UI that would otherwise be disabled  */
+/* Events: copy */
+/* paste data: "pasted text" */
+/* Test HTML: <p>The "copy" menu UI state is enabled on this page even when there is no selection.</p> */
+document.onbeforecopy = function(){return false;}
+function clipboard_api_test(e){
+	result('UI test: passes if "copy" menu UI state is enabled');
+}
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<p>The "copy" menu UI state is enabled on this page even when there is no selection.</p> 
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste="pasted text" ;
+	var externalPassCondition=null;
+	var eventTarget=document;
+	var eventType='copy';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

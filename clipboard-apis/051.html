@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - getData() supports legacy 'url' argument </title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** getData() supports legacy 'url' argument  */
+/* Events: paste */
+/* paste data: "{'text/uri-list':'http://www.example.com/', 'text/plain': 'example.com'}" */
+
+function clipboard_api_test(e){
+    var passed = false;
+    if(e.clipboardData && e.clipboardData.getData){
+        if(  e.clipboardData.getData('url')==='http://www.example.com/'
+        && e.clipboardData.getData('uRl')==='http://www.example.com/'
+        && e.clipboardData.getData('text/plain') === 'example.com' )passed=true;
+    }
+    return passed;
+}
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste="{'text/uri-list':'http://www.example.com/', 'text/plain': 'example.com'}" ;
+	var externalPassCondition=null;
+	var eventTarget=document;
+	var eventType='paste';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

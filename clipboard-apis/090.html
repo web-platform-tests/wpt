@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - event target when no specific element has focus  </title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** event target when no specific element has focus   */
+/* Events: copy cut paste */
+/* Test HTML: <div>This is filler text</div>*/
+/* Targets: document */
+
+function clipboard_api_test(e){
+	var passed = e.target===document.body;
+	return passed;
+}
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<div>This is filler text</div>
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste='';
+	var externalPassCondition=null;
+	var eventTarget=document;
+	var eventType='paste';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - clearData() method without preventing events's default action </title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** clearData() method without preventing events's default action  */
+/* Events: copy cut */
+/* External pass condition - clipboard data: "unmodified text" */
+/* Test HTML: <form><input autofocus onfocus="this.select()" value="unmodified text"></form>*/
+function clipboard_api_test(e){
+	var passed = false;
+	e.clipboardData.clearData();
+	//e.preventDefault(); // The point of this test is that we do NOT call preventDefault() here.
+}
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<form><input autofocus onfocus="this.select()" value="unmodified text"></form>
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste='';
+	var externalPassCondition="unmodified text" ;
+	var eventTarget=document;
+	var eventType='cut';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

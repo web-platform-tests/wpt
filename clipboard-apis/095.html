@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - pasting a file </title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** pasting a file  */
+/* Events: paste */
+/* Targets: document */
+/* 	Clipboard data type: file reference: ./support/image.jpg */
+/* Test HTML: <p>To complete this test, copy the './support/image.jpg' file from the OS file manager and paste into this page</p>*/
+
+function clipboard_api_test(e){
+	var passed = e.clipboardData.items && e.clipboardData.items.length === 1;
+	passed = passed && e.clipboardData.items[0].kind=='file' && ( /image\/jpe?g/i.test(e.clipboardData.items[0].type) );
+	return passed;
+}
+// TODO: figure out how to automate this test (i.e. find a better cross-platform clipboard library for JRuby..)
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<p>To complete this test, copy the './support/image.jpg' file from the OS file manager and paste into this page</p>
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste='';
+	var externalPassCondition=null;
+	var eventTarget=document;
+	var eventType='paste';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

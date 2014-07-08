@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Web Notifications Test: notification - constructor (invalid)</title>
+<title>Web Notifications Test: notification - constructor (basic)</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
 <link rel="help" title="5 API" href="http://www.w3.org/TR/notifications/">
@@ -10,10 +10,11 @@
   <div id="log"></div>
   <script>
     test(function() {
-      assert_throws({name: "TypeError"}, function() {
-        var notification = new Notification();
+      var notification = new Notification("New Email Received", {
+        body: "Room 101"
       });
-    }, "Test checks that notification constructor arguments can't be empty");
+      assert_equals(typeof notification, "object");
+    }, "Test checks that notification constructor is correct");
   </script>
 </body>
 

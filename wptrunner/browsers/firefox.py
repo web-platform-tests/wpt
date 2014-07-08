@@ -65,7 +65,9 @@ class FirefoxBrowser(Browser):
         self.marionette_port = get_free_port(2828, exclude=self.used_ports)
 
         env = os.environ.copy()
-        env['MOZ_CRASHREPORTER_NO_REPORT'] = '1'
+        env["MOZ_CRASHREPORTER"] = "1"
+        env["MOZ_CRASHREPORTER_SHUTDOWN"] = "1"
+        env["MOZ_CRASHREPORTER_NO_REPORT"] = "1"
         env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"] = "1"
 
         locations = ServerLocations(filename=os.path.join(here, "server-locations.txt"))

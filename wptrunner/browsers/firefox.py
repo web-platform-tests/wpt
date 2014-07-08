@@ -10,7 +10,7 @@ from mozprofile.permissions import ServerLocations
 from mozrunner import FirefoxRunner
 
 from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
-from ..executors import get_executor_kwargs as base_executor_kwargs
+from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executormarionette import MarionetteTestharnessExecutor, MarionetteReftestExecutor, required_files
 
 here = os.path.join(os.path.split(__file__)[0])
@@ -21,7 +21,7 @@ __wptrunner__ = {"product": "firefox",
                  "executor": {"testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteReftestExecutor"},
                  "browser_kwargs": "browser_kwargs",
-                 "executor_kwargs": "get_executor_kwargs",
+                 "executor_kwargs": "executor_kwargs",
                  "env_options": "env_options"}
 
 
@@ -36,7 +36,7 @@ def browser_kwargs(**kwargs):
             "interactive": kwargs["interactive"]}
 
 
-def get_executor_kwargs(http_server_url, **kwargs):
+def executor_kwargs(http_server_url, **kwargs):
     executor_kwargs = base_executor_kwargs(http_server_url, **kwargs)
     executor_kwargs["close_after_done"] = True
     return executor_kwargs

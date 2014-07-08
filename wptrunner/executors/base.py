@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 here = os.path.split(__file__)[0]
 
 
-def get_executor_kwargs(http_server_url, **kwargs):
+def executor_kwargs(http_server_url, **kwargs):
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 1

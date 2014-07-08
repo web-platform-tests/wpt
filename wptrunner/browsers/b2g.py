@@ -19,7 +19,7 @@ __wptrunner__ = {"product": "b2g",
                  "browser": "B2GBrowser",
                  "executor": {"testharness": "B2GMarionetteTestharnessExecutor"},
                  "browser_kwargs": "browser_kwargs",
-                 "executor_kwargs": "get_executor_kwargs",
+                 "executor_kwargs": "executor_kwargs",
                  "env_options": "env_options"}
 
 
@@ -32,7 +32,7 @@ def browser_kwargs(**kwargs):
             "no_backup": kwargs.get("b2g_no_backup", False)}
 
 
-def get_executor_kwargs(http_server_url, **kwargs):
+def executor_kwargs(http_server_url, **kwargs):
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 2

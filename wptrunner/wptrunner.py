@@ -467,9 +467,7 @@ class LogThread(threading.Thread):
         while True:
             try:
                 msg = self.queue.get()
-            except EOFError:
-                break
-            except IOError:
+            except (EOFError, IOError):
                 break
             if msg is None:
                 break

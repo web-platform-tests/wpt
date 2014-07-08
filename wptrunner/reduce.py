@@ -136,8 +136,8 @@ class Reducer(object):
 
             sys.stdout, sys.stderr = stdout, stderr
 
-        logger.debug("Result %s unstable with chunk removed" %
-                     ("was" if is_unstable else "was not"))
+        logger.debug("Result was unstable with chunk removed"
+                     if is_unstable else "stable")
 
         return is_unstable
 

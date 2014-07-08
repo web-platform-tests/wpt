@@ -74,7 +74,7 @@ class B2GBrowser(Browser):
         self.logger.info("Running B2G setup")
         self.backup_path = tempfile.mkdtemp()
 
-        self.logger.debug(self.backup_path)
+        self.logger.debug("Backing up device to %s"  % (self.backup_path,))
 
         if not self.no_backup:
             self.backup_dirs = [("/data/local", os.path.join(self.backup_path, "local")),
@@ -93,13 +93,7 @@ class B2GBrowser(Browser):
     def start(self):
         profile = FirefoxProfile()
 
-        profile.set_preferences({"dom.disable_open_during_load": False,
-                                 # "dom.mozBrowserFramesEnabled": True,
-                                 # "dom.ipc.tabs.disabled": False,
-                                 # "dom.ipc.browser_frames.oop_by_default": False,
-                                 # "marionette.force-local": True,
-                                 # "dom.testing.datastore_enabled_for_hosted_apps": True
-                                 })
+        profile.set_preferences({"dom.disable_open_during_load": False})
 
         self.logger.debug("Creating device runner")
         self.runner = B2GDeviceRunner(profile=profile)

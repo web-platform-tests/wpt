@@ -44,8 +44,6 @@ class Reducer(object):
     def __init__(self, target, **kwargs):
         self.target = target
 
-        print kwargs
-
         self.test_type = kwargs["test_types"][0]
         run_info = wpttest.get_run_info(kwargs["product"], debug=False)
         test_filter = wptrunner.TestFilter(include=kwargs["include"])

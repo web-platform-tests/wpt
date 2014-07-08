@@ -1,6 +1,7 @@
 import os
 import platform
 import socket
+from abc import ABCMeta, abstractmethod
 
 from ..wptcommandline import require_arg
 
@@ -42,6 +43,8 @@ class BrowserError(Exception):
 
 
 class Browser(object):
+    __metaclass__ = ABCMeta
+
     process_cls = None
     init_timeout = 30
 
@@ -68,18 +71,22 @@ class Browser(object):
         """Used for browser-specific setup that happens at the start of a test run"""
         pass
 
+    @abstractmethod
     def start(self):
         """Launch the browser object and get it into a state where is is ready to run tests"""
         raise NotImplementedError
 
-    def stop():
+    @abstractmethod
+    def stop(self):
         """Stop the running browser process."""
         raise NotImplementedError
 
+    @abstractmethod
     def on_output(self, line):
         """Callback function used with ProcessHandler to handle output from the browser process."""
         raise NotImplementedError
 
+    @abstractmethod
     def is_alive(self):
         """Boolean indicating whether the browser process is still running"""
         raise NotImplementedError
@@ -107,6 +114,8 @@ class NullBrowser(Browser):
     def is_alive(self):
         return True
 
+    def on_output(self, line):
+        raise NotImplementedError
 
 class ExecutorBrowser(object):
     def __init__(self, **kwargs):

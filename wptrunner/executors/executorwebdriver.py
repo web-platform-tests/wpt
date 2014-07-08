@@ -47,19 +47,16 @@ class WebdriverTestExecutor(TestExecutor):
 
         session_started = False
 
-        for i in xrange(1):
-            try:
-                self.webdriver = webdriver.Remote("http://localhost:%i/wd/url" % self.webdriver_port,
-                                                  desired_capabilities=self.capabilities)
-                time.sleep(10)
-            except:
-                self.logger.warning("Connecting to Webdriver failed:\n%s" % traceback.format_exc())
-                time.sleep(1)
-                break
-            else:
-                self.logger.debug("Webdriver session started")
-                session_started = True
-                break
+        try:
+            self.webdriver = webdriver.Remote("http://localhost:%i/wd/url" % self.webdriver_port,
+                                              desired_capabilities=self.capabilities)
+            time.sleep(10)
+        except:
+            self.logger.warning("Connecting to Webdriver failed:\n%s" % traceback.format_exc())
+            time.sleep(1)
+        else:
+            self.logger.debug("Webdriver session started")
+            session_started = True
 
         if not session_started:
             self.logger.warning("Failed to connect to webdriver")

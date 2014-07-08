@@ -99,7 +99,6 @@ class B2GBrowser(Browser):
         self.runner = B2GDeviceRunner(profile=profile)
         self.logger.debug("Starting device runner")
         self.runner.start()
-        self.wait_for_net()
         self.logger.debug("Device runner started")
 
     def setup_hosts(self):
@@ -205,10 +204,8 @@ class B2GExecutorBrowser(ExecutorBrowser):
         ExecutorBrowser.__init__(self, *args, **kwargs)
         self.device = mozdevice.DeviceManagerADB()
         self.executor = None
-        subprocess.check_call([self.device._adbPath,
-                               'forward',
-                               'tcp:%s' % self.marionette_port,
-                               'tcp:2828'])
+        self.device.forward('tcp:%s' % self.marionette_port,
+                            'tcp:2828')
 
     def after_connect(self, executor):
         self.executor = executor

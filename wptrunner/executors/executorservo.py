@@ -52,7 +52,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
 
     def on_output(self, line):
         prefix = "ALERT: RESULT: "
-        line = line.decode("utf8")
+        line = line.decode("utf8", "replace")
         if line.startswith(prefix):
             self.result_data = json.loads(line[len(prefix):])
             self.result_flag.set()

@@ -122,7 +122,7 @@ class FirefoxBrowser(Browser):
     def on_output(self, line):
         """Write a line of output from the firefox process to the log"""
         self.logger.process_output(self.pid(),
-                                   line.decode("utf8"),
+                                   line.decode("utf8", "replace"),
                                    command=" ".join(self.runner.command))
 
     def is_alive(self):

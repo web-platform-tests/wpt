@@ -5,6 +5,7 @@ import expected
 
 
 def data_cls_getter(output_node, visited_node):
+    # visited_node is intentionally unused
     if output_node is None:
         return ExpectedManifest
     elif isinstance(output_node, ExpectedManifest):

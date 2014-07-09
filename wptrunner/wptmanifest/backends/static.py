@@ -9,6 +9,20 @@ class Compiler(NodeVisitor):
     to give static output"""
 
     def compile(self, tree, expr_data, data_cls_getter=None, **kwargs):
+        """Compile a raw AST into a form with conditional expressions
+        evaluated.
+
+        tree - The root node of the wptmanifest AST to compile
+
+        expr_data - A dictionary of key / value pairs to use when
+                    evaluating conditional expressions
+
+        data_cls_getter - A function taking two parameters; the previous
+                          output node and the current ast node and returning
+                          the class of the output node to use for the current
+                          ast node
+        """
+
         self._kwargs = kwargs
         self.expr_data = expr_data
 

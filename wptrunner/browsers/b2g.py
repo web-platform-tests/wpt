@@ -4,10 +4,11 @@ import tempfile
 import shutil
 import subprocess
 
-from mozprofile import FirefoxProfile, Preferences
-from mozrunner import B2GDeviceRunner
+import fxos_appgen
 import mozdevice
 import moznetwork
+from mozprofile import FirefoxProfile, Preferences
+from mozrunner import B2GDeviceRunner
 
 from .base import get_free_port, BrowserError, Browser, ExecutorBrowser
 from ..executors.executormarionette import MarionetteTestharnessExecutor, required_files
@@ -220,17 +221,9 @@ class B2GExecutorBrowser(ExecutorBrowser):
             self.executor.logger.info("certtest_app is already installed")
             return
         self.executor.logger.info("Installing certtest_app")
-        self.device.pushFile(os.path.join(here, "b2g_setup", "certtest_app.zip"),
-                             "/data/local/certtest_app.zip")
-
-        self.executor.logger.debug("Running install script")
-        with open(os.path.join(here, "b2g_setup", "app_install.js"), "r") as f:
-            script = f.read()
-
-        marionette.set_context("chrome")
-        marionette.set_script_timeout(5000)
-        marionette.execute_async_script(script)
-        self.executor.logger.debug("Install script complete")
+        app_path = os.path.join(here, "b2g_setup", "certtest_app.zip")
+        fxos_appgen.install_app('CertTest App', app_path, marionette=self.executor.marionette)
+        self.executor.logger.debug("Install complete")
 
     def use_cert_app(self):
         marionette = self.executor.marionette

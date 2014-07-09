@@ -157,6 +157,15 @@
       assert_equals(touch.clientY, touch.pageY - window.pageYOffset, "touch.clientY is touch.pageY - window.pageYOffset.");
     }
 
+    function check_screenXY_clientXY_pageXY(touch) {
+      assert_greater_than_equal(touch.screenX, 0, "the value of touch.screenX");
+      assert_greater_than_equal(touch.screenY, 0, "the value of touch.screenY");
+      assert_greater_than_equal(touch.clientX, 0, "the value of touch.clientX");
+      assert_greater_than_equal(touch.clientY, 0, "the value of touch.clientY");
+      assert_greater_than_equal(touch.pageX, 0, "the value of touch.pageX");
+      assert_greater_than_equal(touch.pageY, 0, "the value of touch.pageY");
+    }
+
     function run() {
       var target0 = document.getElementById("target0");
       var target1 = document.getElementById("target1");
@@ -218,6 +227,10 @@
         test(function() {
           check_touch_clientXY(t);
         }, "touchstart: touch clientX/clientY is consistent with pageX/pageY");
+
+        test(function() {
+          check_screenXY_clientXY_pageXY(t);
+        }, "touchstart: touch screenX/screenY pageX/pageY and clientX/clientY values is greater than 0");
         // Note we don't bother testing screenX/screenY values - there's no reliable way to
         // verify they are consistent with clientX/clientY (due to unknown amount of window
         // chrome), and also various forms of scaling mean they are in different units.
@@ -266,6 +279,10 @@
           check_touch_clientXY(tt);
         }, "touchmove: touch clientX/clientY is consistent with pageX/pageY");
 
+        test(function() {
+          check_screenXY_clientXY_pageXY(tt);
+        }, "touchmove: touch screenX/screenY pageX/pageY and clientX/clientY values is greater than 0");
+
       });
 
       on_event(target1, "touchmove", function onTouchMove(ev) {
@@ -306,6 +323,10 @@
         test(function() {
           check_touch_clientXY(t);
         }, "touchend: touch clientX/clientY is consistent with pageX/pageY");
+
+        test(function() {
+          check_screenXY_clientXY_pageXY(t);
+        }, "touchend: touch screenX/screenY pageX/pageY and clientX/clientY values is greater than 0");
 
         done();
       });

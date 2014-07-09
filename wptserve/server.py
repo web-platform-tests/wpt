@@ -297,10 +297,6 @@ class WebTestHttpd(object):
 
       Boolean indicating whether the server is using ssl
 
-    .. attribute:: httpd
-
-      The WebTestServer instance this server is using
-
     .. attribute:: started
 
       Boolean indictaing whether the server is running

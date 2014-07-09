@@ -270,12 +270,41 @@ class WebTestHttpd(object):
     :param rewrites: List of rewrites with which to initialize the rewriter_cls
     :param config: Dictionary holding environment configuration settings for
                    handlers to read, or None to use the default values.
-    :param bind_hostname Boolean indicating whether to bind server to hostname.
+    :param bind_hostname: Boolean indicating whether to bind server to hostname.
 
     HTTP server designed for testing scenarios.
 
     Takes a router class which provides one method get_handler which takes a Request
     and returns a handler function."
+
+    .. attribute:: host
+
+      The host name or ip address of the server
+
+    .. attribute:: port
+
+      The port on which the server is running
+
+    .. attribute:: router
+
+      The Router object used to associate requests with resources for this server
+
+    .. attribute:: rewriter
+
+      The Rewriter object used for URL rewriting
+
+    .. attribute:: use_ssl
+
+      Boolean indicating whether the server is using ssl
+
+    .. attribute:: httpd
+
+      The WebTestServer instance this server is using
+
+    .. attribute:: started
+
+      Boolean indictaing whether the server is running
+
     """
     def __init__(self, host="127.0.0.1", port=8000,
                  server_cls=None, handler_cls=WebTestRequestHandler,

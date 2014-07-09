@@ -175,6 +175,9 @@ class B2GBrowser(Browser):
     def stop(self):
         pass
 
+    def on_output(self):
+        raise NotImplementedError
+
     def cleanup(self):
         self.logger.debug("Running browser cleanup steps")
 

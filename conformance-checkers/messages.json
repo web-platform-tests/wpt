@@ -431,6 +431,8 @@
     "html/elements/picture/source-after-img-novalid.html": "Element \u201csource\u201d not allowed in this context. (The parent was element \u201cpicture\u201d.) Suppressing further errors from this subtree.",
     "html/elements/picture/source-align-novalid.html": "Attribute \u201calign\u201d not allowed on element \u201csource\u201d in this context.",
     "html/elements/picture/source-alt-novalid.html": "Attribute \u201calt\u201d not allowed on element \u201csource\u201d in this context.",
+    "html/elements/picture/source-aria-role-img-novalid.html": "Attribute \u201crole\u201d not allowed on element \u201csource\u201d in this context.",
+    "html/elements/picture/source-aria-role-presentation-novalid.html": "Attribute \u201crole\u201d not allowed on element \u201csource\u201d in this context.",
     "html/elements/picture/source-before-and-after-img-novalid.html": "Element \u201csource\u201d not allowed in this context. (The parent was element \u201cpicture\u201d.) Suppressing further errors from this subtree.",
     "html/elements/picture/source-border-novalid.html": "Attribute \u201cborder\u201d not allowed on element \u201csource\u201d in this context.",
     "html/elements/picture/source-crossorigin-novalid.html": "Attribute \u201ccrossorigin\u201d not allowed on element \u201csource\u201d in this context.",

@@ -52,8 +52,8 @@ var GaiaApps = {
   getPermission: function(appName, permissionName) {
     GaiaApps.locateWithName(appName, function(app) {
       console.log("Getting permission '" + permissionName + "' for " + appName);
-      var mozPerms = navigator.mozPermissionSettings;
-      var result = mozPerms.get(
+      let mozPerms = navigator.mozPermissionSettings;
+      let result = mozPerms.get(
         permissionName, app.manifestURL, app.origin, false
       );
       marionetteScriptFinished(result);
@@ -64,7 +64,7 @@ var GaiaApps = {
     GaiaApps.locateWithName(appName, function(app) {
       console.log("Setting permission '" + permissionName + "' for " +
         appName + "to '" + value + "'");
-      var mozPerms = navigator.mozPermissionSettings;
+      let mozPerms = navigator.mozPermissionSettings;
       mozPerms.set(
         permissionName, value, app.manifestURL, app.origin, false
       );
@@ -73,9 +73,9 @@ var GaiaApps = {
   },
 
   sendLocateResponse: function(aCallback, app, appName, entryPoint) {
-    var callback = aCallback || marionetteScriptFinished;
+    let callback = aCallback || marionetteScriptFinished;
     if (callback === marionetteScriptFinished) {
-      var result = false;
+      let result = false;
       if (typeof(app) === 'object') {
         result = {
           name: app.manifest.name,
@@ -91,7 +91,7 @@ var GaiaApps = {
   },
 
   locateWithName: function(name, aCallback) {
-    var callback = aCallback || marionetteScriptFinished;
+    let callback = aCallback || marionetteScriptFinished;
     let apps = window.wrappedJSObject.Applications.installedApps;
     let normalizedSearchName = GaiaApps.normalizeName(name);
 
@@ -120,9 +120,9 @@ var GaiaApps = {
   },
 
   locateWithManifestURL: function(manifestURL, entryPoint, aCallback) {
-    var callback = aCallback || marionetteScriptFinished;
-    var app = window.wrappedJSObject.Applications.getByManifestURL(manifestURL);
-    var appName;
+    let callback = aCallback || marionetteScriptFinished;
+    let app = window.wrappedJSObject.Applications.getByManifestURL(manifestURL);
+    let appName;
 
     if (entryPoint) {
       if (app.manifest.entry_points[entryPoint]) {
@@ -150,7 +150,7 @@ var GaiaApps = {
 
   // Kills the specified app.
   kill: function(aOrigin, aCallback) {
-    var callback = aCallback || marionetteScriptFinished;
+    let callback = aCallback || marionetteScriptFinished;
     let manager = window.wrappedJSObject.AppWindowManager || window.wrappedJSObject.WindowManager;
     let runningApps = manager.getRunningApps();
     if (!runningApps.hasOwnProperty(aOrigin)) {

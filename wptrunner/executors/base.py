@@ -69,11 +69,11 @@ class TestExecutor(object):
 
     @abstractmethod
     def setup(self, runner):
-        raise NotImplementedError
+        pass
 
     def teardown(self):
         pass
 
     @abstractmethod
     def run_test(self):
-        raise NotImplementedError
+        pass

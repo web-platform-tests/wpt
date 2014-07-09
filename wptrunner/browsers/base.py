@@ -74,22 +74,22 @@ class Browser(object):
     @abstractmethod
     def start(self):
         """Launch the browser object and get it into a state where is is ready to run tests"""
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def stop(self):
         """Stop the running browser process."""
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def on_output(self, line):
         """Callback function used with ProcessHandler to handle output from the browser process."""
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def is_alive(self):
         """Boolean indicating whether the browser process is still running"""
-        raise NotImplementedError
+        pass
 
     def cleanup(self):
         """Browser-specific cleanup that is run after the testrun is finished"""

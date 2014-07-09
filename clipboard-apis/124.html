@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - integration with execCommand, can prevent default action  - paste on 'ifr.contentWindow'</title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** integration with execCommand, can prevent default action  */
+/* Events: paste */
+/* paste data: "clipboard text" */
+/* Test HTML: <iframe id="ifr"></iframe>*/
+/* Targets: 'ifr.contentWindow' */
+function clipboard_api_test(e){
+	window.eventFired=true;
+	e.preventDefault();
+}
+function triggerTestManually(){
+	var ifr=document.getElementById('ifr');
+	ifr.contentDocument.designMode='on';
+	ifr.contentWindow.focus();
+	try{
+		ifr.contentDocument.execCommand(window.eventType, false, false);
+		setTimeout(function(){
+			var passed= window.eventFired === true && ifr.contentDocument.body.innerHTML.indexOf('clipboard text')==-1;
+			result(passed);
+		}, 10);
+	}catch(e){
+		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard access in preferences for '+location.hostname+' before running this test)');
+	}
+}
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<iframe id="ifr"></iframe>
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste="clipboard text" ;
+	var externalPassCondition=null;
+	var eventTarget='ifr.contentWindow';
+	var eventType='paste';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - ClipboardEvent interface - synthetic paste event does not insert text/html payload data into INPUT   - paste on document</title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** ClipboardEvent interface - synthetic paste event does not insert text/html payload data into INPUT   */
+/* Events: paste */
+/* paste data: "clipboard text" */
+/* Test HTML: <form><input autofocus></form>*/
+/* Targets: document */
+function clipboard_api_test(e){ }
+function onTestSetupReady(){
+	try{
+		var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/html', data:'<em>synthetic event text</em>' } );
+		document.getElementsByTagName('input')[0].dispatchEvent(evt);
+		setTimeout( function(){
+			result(document.getElementsByTagName('input')[0].value.indexOf( 'synthetic event text' )>-1);
+		}, 50 );
+	}catch(e){
+		result('Unexpected Exception when initiating ClipboardEvent: '+e);
+		return;
+	}
+}
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<form><input autofocus></form>
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste="clipboard text" ;
+	var externalPassCondition=null;
+	var eventTarget=document;
+	var eventType='paste';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

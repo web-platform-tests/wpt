@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="UTF-8">
+	<title>  ClipboardEvent - ClipboardEvent and non-ASCII data I - Japanese  - cut on 'input_text'</title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+	<script src="support/_lib.js"></script>
+	<script>
+/** ClipboardEvent and non-ASCII data I - Japanese  */
+/* Events: copy cut */
+/* Test HTML: <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>*/
+/* Targets: 'input_text' */
+/* External pass condition - clipboard data: "テスト" */
+
+function clipboard_api_test(e){
+	e.clipboardData.setData( 'text/plain', 'テスト' );
+	e.preventDefault();
+}
+
+	</script>
+</head>
+<body>
+
+	<p>FAILED (This TC requires JavaScript enabled)</p>
+	<form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>
+	<div id="log"></div>
+
+	<script>
+	var dataToPaste='';
+	var externalPassCondition="テスト" ;
+	var eventTarget='input_text';
+	var eventType='cut';
+	window.onload=function(){
+		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+	}
+	</script>
+</body></html>

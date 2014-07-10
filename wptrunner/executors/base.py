@@ -68,16 +68,25 @@ class TestExecutor(object):
 
     @property
     def logger(self):
+        """StructuredLogger for this executor"""
         if self.runner is not None:
             return self.runner.logger
 
     @abstractmethod
     def setup(self, runner):
+        """Run steps needed before tests can be started e.g. connecting to
+        browser instance
+
+        :param runner: TestRunner instance that is going to run the tests"""
         pass
 
     def teardown(self):
+        """Run cleanup steps after tests have finished"""
         pass
 
     @abstractmethod
-    def run_test(self):
+    def run_test(self, test):
+        """Run a particular test.
+
+        :param test: The test to run"""
         pass

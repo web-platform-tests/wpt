@@ -85,6 +85,7 @@ class MarionetteTestExecutor(TestExecutor):
         del self.marionette
 
     def is_alive(self):
+        """Check if the marionette connection is still active"""
         try:
             # Get a simple property over the connection
             self.marionette.current_window_handle
@@ -177,11 +178,19 @@ class MarionetteTestExecutor(TestExecutor):
             if result:
                 self.runner.send_message("test_ended", test, result)
 
+    def do_test(self, test, timeout):
+        """Run the steps specific to a given test type for Marionette-based tests.
+
+        :param test: - the Test being run
+        :param timeout: - the timeout in seconds to give the test
+        """
+        raise NotImplementedError
 
 class MarionetteTestharnessExecutor(MarionetteTestExecutor):
     convert_result = testharness_result_converter
 
     def __init__(self, *args, **kwargs):
+        """Marionette-based executor for testharness.js tests"""
         MarionetteTestExecutor.__init__(self, *args, **kwargs)
         self.script = open(os.path.join(here, "testharness_marionette.js")).read()
 
@@ -203,6 +212,7 @@ class MarionetteReftestExecutor(MarionetteTestExecutor):
     convert_result = reftest_result_converter
 
     def __init__(self, *args, **kwargs):
+        """Marionette-based executor for reftests"""
         MarionetteTestExecutor.__init__(self, *args, **kwargs)
         with open(os.path.join(here, "reftest.js")) as f:
             self.script = f.read()

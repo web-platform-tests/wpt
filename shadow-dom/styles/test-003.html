@@ -22,69 +22,48 @@ policies and contribution forms [3].
 <body>
 <div id="log"></div>
 <script>
-//TODO Now this tests produces an error because styleSheets property
-//is not implemented. See https://bugs.webkit.org/show_bug.cgi?id=103393
 test(unit(function (ctx) {
     var d = newRenderedHTMLDocument(ctx);
     var host = d.createElement('div');
     d.body.appendChild(host);
 
-	//Shadow root to play with
-	var s = host.createShadowRoot();
+    //Shadow root to play with
+    var s = host.createShadowRoot();
 
-	assert_equals(s.styleSheets.length, 0, 'There should be no style sheets');
+    assert_equals(s.styleSheets.length, 0, 'There should be no style sheets');
 }), 'A_06_00_03_T01');
 
 
-//TODO Now this tests produces an error because styleSheets property
-//is not implemented. See https://bugs.webkit.org/show_bug.cgi?id=103393
 test(unit(function (ctx) {
     var d = newRenderedHTMLDocument(ctx);
     var host = d.createElement('div');
     host.setAttribute('style', 'width:100px');
     d.body.appendChild(host);
 
-	//Shadow root to play with
-	var s = host.createShadowRoot();
+    //Shadow root to play with
+    var s = host.createShadowRoot();
 
 	assert_equals(s.styleSheets.length, 0, 'There should be no style sheets');
 }), 'A_06_00_03_T02');
 
-//TODO Now this tests produces an error because styleSheets property
-//is not implemented. See https://bugs.webkit.org/show_bug.cgi?id=103393
-test(unit(function (ctx) {
-	var d = newRenderedHTMLDocument(ctx);
-	var host = d.createElement('div');
-
-	//Shadow root to play with
-	var s = host.createShadowRoot();
-
-	var style = d.createElement('style');
-	style.innerHTML = 'div {witht: 50%;}';
-	s.appendChild(style);
-
-	assert_equals(s.styleSheets.length, 1, 'Style sheet is not accessible via styleSheets');
-}), 'A_06_00_03_T03');
-
-
-
-//TODO Now this tests produces an error because addStyleSheet method
-//is not implemented. See https://bugs.webkit.org/show_bug.cgi?id=103395
+//TODO Now this tests produces an error on Chromium because styleSheets.length
+//returns 0 when the shadow root is orphaned.
+//Tracking bug: http://crbug.com/392771
 test(unit(function (ctx) {
     var d = newRenderedHTMLDocument(ctx);
     var host = d.createElement('div');
-    host.setAttribute('style', 'width:100px');
-    d.body.appendChild(host);
 
-	//Shadow root to play with
-	var s = host.createShadowRoot();
+    //Shadow root to play with
+    var s = host.createShadowRoot();
 
-    // create StyleSheet
     var style = d.createElement('style');
-    s.addStyleSheet(style);
+    style.textContent = 'div {width: 50%;}';
+    s.appendChild(style);
 
+    // The following line fixes the issue on Chromium, http://crbug.com/392771
+    // d.body.appendChild(host);
     assert_equals(s.styleSheets.length, 1, 'Style sheet is not accessible via styleSheets');
-}), 'A_06_00_03_T04');
+}), 'A_06_00_03_T03');
 </script>
 </body>
 </html>

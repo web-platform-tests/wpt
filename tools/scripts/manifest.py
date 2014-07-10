@@ -14,13 +14,10 @@ from fnmatch import fnmatch
 
 
 def get_repo_root():
-    file_path = os.path.abspath(__file__)
-    while file_path:
-        if os.path.exists(os.path.join(file_path, ".git")):
-            return file_path
-        else:
-            file_path = os.path.split(file_path)[0]
-    return None
+    try:
+        return subprocess.check_output("git rev-parse --show-toplevel").rstrip()
+    except subprocess.CalledProcessError:
+        return None
 
 
 repo_root = get_repo_root()

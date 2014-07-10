@@ -10,27 +10,49 @@ import sys
 import urlparse
 
 from collections import defaultdict
+from fnmatch import fnmatch
 
+
+def get_git_func(repo_path):
+    def git(cmd, *args):
+        proc = subprocess.Popen(["git", cmd] + list(args), stdout=subprocess.PIPE, cwd=repo_path)
+        stdout, stderr = proc.communicate()
+        return stdout
+    return git
+
+
+def setup_git(repo_path):
+    assert os.path.exists(os.path.join(repo_path, ".git"))
+    global git
+    git = get_git_func(repo_path)
+
+
+def get_repo_root():
+    git = get_git_func(os.path.dirname(__file__))
+    return git("rev-parse", "--show-toplevel").rstrip()
+
+
+repo_root = get_repo_root()
 manifest_name = "MANIFEST.json"
+default_manifest = os.path.join(repo_root, manifest_name)
 exclude_php_hack = True
 ref_suffixes = ["_ref", "-ref"]
-blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/", "/webdriver/"]
+wd_pattern = "*.py"
+blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/"]
 
 logging.basicConfig()
-logger = logging.getLogger("Web platform tests")
+logger = logging.getLogger("manifest")
 logger.setLevel(logging.DEBUG)
 
 
 class ManifestItem(object):
     item_type = None
 
-    def __init__(self, path, url):
+    def __init__(self, path):
         self.path = path
-        self.url = url
-        self.id = self.url
 
     def _key(self):
-        return self.item_type, self.url
+        return self.item_type, self.path
 
     def __eq__(self, other):
         if not hasattr(other, "_key"):
@@ -41,9 +63,7 @@ class ManifestItem(object):
         return hash(self._key())
 
     def to_json(self):
-        rv = {"path":self.path,
-              "url":self.url}
-        return rv
+        return {"path": self.path}
 
     @classmethod
     def from_json(self, obj):
@@ -54,11 +74,13 @@ class TestharnessTest(ManifestItem):
     item_type = "testharness"
 
     def __init__(self, path, url, timeout=None):
-        ManifestItem.__init__(self, path, url)
+        ManifestItem.__init__(self, path)
+        self.url = url
         self.timeout = timeout
 
     def to_json(self):
         rv = ManifestItem.to_json(self)
+        rv.update({"url": self.url})
         if self.timeout:
             rv["timeout"] = self.timeout
         return rv
@@ -77,7 +99,8 @@ class RefTest(ManifestItem):
                  timeout=None):
         if ref_type not in ["==", "!="]:
             raise ValueError, "Unrecognised ref_type %s" % ref_type
-        ManifestItem.__init__(self, path, url)
+        ManifestItem.__init__(self, path)
+        self.url = url
         self.ref_url = ref_url
         self.ref_type = ref_type
         self.timeout = timeout
@@ -88,7 +111,8 @@ class RefTest(ManifestItem):
 
     def to_json(self):
         rv = ManifestItem.to_json(self)
-        rv.update({"ref_type": self.ref_type,
+        rv.update({"url": self.url,
+                   "ref_type": self.ref_type,
                    "ref_url": self.ref_url})
         if self.timeout:
             rv["timeout"] = self.timeout
@@ -103,6 +127,15 @@ class RefTest(ManifestItem):
 class ManualTest(ManifestItem):
     item_type = "manual"
 
+    def __init__(self, path, url):
+        ManifestItem.__init__(self, path)
+        self.url = url
+
+    def to_json(self):
+        rv = ManifestItem.to_json(self)
+        rv.update({"url": self.url})
+        return rv
+
     @classmethod
     def from_json(cls, obj):
         return cls(obj["path"], obj["url"])
@@ -111,16 +144,43 @@ class ManualTest(ManifestItem):
 class Stub(ManifestItem):
     item_type = "stub"
 
+    def __init__(self, path, url):
+        ManifestItem.__init__(self, path)
+        self.url = url
+
+    def to_json(self):
+        rv = ManifestItem.to_json(self)
+        rv.update({"url": self.url})
+        return rv
+
     @classmethod
     def from_json(cls, obj):
         return cls(obj["path"], obj["url"])
+
 
 class Helper(ManifestItem):
     item_type = "helper"
 
+    def __init__(self, path, url):
+        ManifestItem.__init__(self, path)
+        self.url = url
+
+    def to_json(self):
+        rv = ManifestItem.to_json(self)
+        rv.update({"url": self.url})
+        return rv
+
     @classmethod
     def from_json(cls, obj):
         return cls(obj["path"], obj["url"])
+
+
+class WebdriverSpecTest(ManifestItem):
+    item_type = "wdspec"
+
+    @classmethod
+    def from_json(cls, obj):
+        return cls(obj["path"])
 
 
 class ManifestError(Exception):
@@ -129,9 +189,10 @@ class ManifestError(Exception):
 
 class Manifest(object):
     def __init__(self, git_rev):
-        self.item_types = ["testharness", "reftest",
-                           "manual", "helper", "stub"]
-        self._data = dict((item_type, defaultdict(set)) for item_type in self.item_types)
+        self.item_types = [
+            "testharness", "reftest", "manual", "helper", "stub", "wdspec"]
+        self._data = dict((item_type, defaultdict(set))
+                          for item_type in self.item_types)
         self.rev = git_rev
         self.local_changes = LocalChanges()
 
@@ -187,7 +248,8 @@ class Manifest(object):
                         "reftest":RefTest,
                         "manual":ManualTest,
                         "helper":Helper,
-                        "stub": Stub}
+                        "stub": Stub,
+                        "wdspec": WebdriverSpecTest}
 
         for k, values in obj["items"].iteritems():
             if k not in self.item_types:
@@ -228,10 +290,8 @@ def get_ref(path):
 def markup_type(ext):
     if not ext:
         return None
-
     if ext[0] == ".":
         ext = ext[1:]
-
     if ext in ["html", "htm"]:
         return "html"
     elif ext in ["xhtml", "xht"]:
@@ -261,12 +321,13 @@ def get_manifest_items(rel_path):
 
     url = "/" + rel_path.replace(os.sep, "/")
 
-    path = os.path.join(get_repo_root(), rel_path)
+    path = os.path.join(repo_root, rel_path)
     if not os.path.exists(path):
         return []
 
     base_path, filename = os.path.split(path)
     name, ext = os.path.splitext(filename)
+    rel_dir_tree = rel_path.split(os.path.sep)
 
     file_markup_type = markup_type(ext)
 
@@ -296,6 +357,14 @@ def get_manifest_items(rel_path):
             ref_url = ref_url + suffix + ext
             #Need to check if this is the right reftype
             ref_list = [RefTest(rel_path, url, ref_url, "==")]
+
+    # wdspec tests are in subdirectories of /webdriver excluding __init__.py
+    # files.
+    if (rel_dir_tree[0] == "webdriver" and
+        len(rel_dir_tree) > 2 and
+        filename != "__init__.py" and
+        fnmatch(filename, wd_pattern)):
+        return [WebdriverSpecTest(rel_path)]
 
     if file_markup_type:
         timeout = None
@@ -347,20 +416,6 @@ def get_manifest_items(rel_path):
 
 def abs_path(path):
     return os.path.abspath(path)
-
-
-def get_git_func(repo_base):
-    def git(cmd, *args):
-        proc = subprocess.Popen(["git", cmd] + list(args), stdout=subprocess.PIPE, cwd=repo_base)
-        stdout, stderr = proc.communicate()
-        return stdout
-    return git
-
-
-def setup_git(repo_path):
-    assert os.path.exists(os.path.join(repo_path, ".git"))
-    global git
-    git = get_git_func(repo_path)
 
 
 def get_repo_paths():
@@ -437,16 +492,6 @@ def sync_local_changes(manifest, local_changes):
     sync_urls(manifest, ((status, path) for path, status in local_changes.iteritems()))
 
 
-def get_repo_root():
-    file_path = os.path.abspath(__file__)
-    while file_path:
-        if os.path.exists(os.path.join(file_path, ".git")):
-            return file_path
-        else:
-            file_path = os.path.split(file_path)[0]
-    return None
-
-
 def get_current_rev():
     return git("rev-parse", "HEAD").strip()
 
@@ -487,14 +532,13 @@ def write(manifest, manifest_path):
         json.dump(manifest.to_json(), f, indent=2)
 
 
-def update_manifest(repo_path, opts):
+def update_manifest(repo_path, **kwargs):
     setup_git(repo_path)
-    if not opts.rebuild:
+    if not kwargs.get("rebuild", False):
         manifest = load(opts.path)
     else:
         manifest = Manifest(None)
-
-    if has_local_changes() and not opts.experimental_include_local_changes:
+    if has_local_changes() and not kwargs.get("local_changes", False):
         logger.info("Not writing manifest because working directory is not clean.")
     else:
         logger.info("Updating manifest")
@@ -502,22 +546,23 @@ def update_manifest(repo_path, opts):
         write(manifest, opts.path)
 
 
-def get_parser():
+def create_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--path", default=os.path.join(get_repo_root(), "MANIFEST.json"),
-                        help="Mainifest path")
-    parser.add_argument("--rebuild", action="store_true", default=False,
-                        help="Force a full rebuild of the manifest rather than updating incrementally.")
-    parser.add_argument("--experimental-include-local-changes", action="store_true", default=False,
-                        help="Include local changes in the manifest rather than just committed changes (experimental)")
+    parser.add_argument(
+        "-p", "--path", default=default_manifest, help="path to manifest file")
+    parser.add_argument(
+        "-r", "--rebuild", action="store_true", default=False,
+        help="force a full rebuild of the manifest rather than updating "
+        "incrementally")
+    parser.add_argument(
+        "-c", "--experimental-include-local-changes", action="store_true", default=False,
+        help="include local changes in the manifest rather than just committed "
+             "changes (experimental)")
     return parser
 
 
-def main():
-    repo_root = get_repo_root()
-    opts = get_parser().parse_args()
-    update_manifest(repo_root, opts)
-
-
 if __name__ == "__main__":
-    main()
+    opts = create_parser().parse_args()
+    update_manifest(repo_root,
+                    rebuild=opts.rebuild,
+                    local_changes=opts.experimental_include_local_changes)

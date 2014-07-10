@@ -227,13 +227,13 @@
         test(function() {
           check_touch_clientXY(t);
         }, "touchstart: touch clientX/clientY is consistent with pageX/pageY");
+        // Note we don't bother testing screenX/screenY values - there's no reliable way to
+        // verify they are consistent with clientX/clientY (due to unknown amount of window
+        // chrome), and also various forms of scaling mean they are in different units.
 
         test(function() {
           check_screenXY_clientXY_pageXY(t);
         }, "touchstart: touch screenX/screenY pageX/pageY and clientX/clientY values are no less than 0");
-        // Note we don't bother testing screenX/screenY values - there's no reliable way to
-        // verify they are consistent with clientX/clientY (due to unknown amount of window
-        // chrome), and also various forms of scaling mean they are in different units.
       });
 
       on_event(target0, "touchmove", function onTouchMove(ev) {

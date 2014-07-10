@@ -13,11 +13,23 @@ from collections import defaultdict
 from fnmatch import fnmatch
 
 
+def get_git_func(repo_path):
+    def git(cmd, *args):
+        proc = subprocess.Popen(["git", cmd] + list(args), stdout=subprocess.PIPE, cwd=repo_path)
+        stdout, stderr = proc.communicate()
+        return stdout
+    return git
+
+
+def setup_git(repo_path):
+    assert os.path.exists(os.path.join(repo_path, ".git"))
+    global git
+    git = get_git_func(repo_path)
+
+
 def get_repo_root():
-    try:
-        return subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).rstrip()
-    except subprocess.CalledProcessError:
-        return None
+    git = get_git_func(os.path.dirname(__file__))
+    return git("rev-parse", "--show-toplevel").rstrip()
 
 
 repo_root = get_repo_root()
@@ -405,20 +417,6 @@ def abs_path(path):
     return os.path.abspath(path)
 
 
-def get_git_func(repo_base):
-    def git(cmd, *args):
-        proc = subprocess.Popen(["git", cmd] + list(args), stdout=subprocess.PIPE, cwd=repo_base)
-        stdout, stderr = proc.communicate()
-        return stdout
-    return git
-
-
-def setup_git(repo_path):
-    assert os.path.exists(os.path.join(repo_path, ".git"))
-    global git
-    git = get_git_func(repo_path)
-
-
 def get_repo_paths():
     data = git("ls-tree", "--name-only", "--full-tree", "-r", "HEAD")
     return [item for item in data.split("\n") if not item.endswith(os.path.sep)]
@@ -547,7 +545,7 @@ def update_manifest(repo_path, rebuild=False, local_changes=False):
         write(manifest, opts.path)
 
 
-if __name__ == "__main__":
+def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--path", default=default_manifest, help="path to manifest file")
@@ -559,7 +557,11 @@ if __name__ == "__main__":
         "-c", "--experimental-include-local-changes", action="store_true", default=False,
         help="include local changes in the manifest rather than just committed "
              "changes (experimental)")
-    opts = parser.parse_args()
+    return parser
+
+
+if __name__ == "__main__":
+    opts = create_parser().parse_args()
     update_manifest(repo_root,
                     rebuild=opts.rebuild,
                     local_changes=opts.experimental_include_local_changes)

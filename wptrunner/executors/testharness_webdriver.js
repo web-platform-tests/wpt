@@ -6,19 +6,19 @@ var callback = arguments[arguments.length - 1];
 window.timeout_multiplier = %(timeout_multiplier)d;
 
 window.done = function(tests, status) {
-    clearTimeout(timer);
-    var test_results = tests.map(function(x) {
-        return {name:x.name, status:x.status, message:x.message}
-    });
-    callback({test:"%(url)s",
-              tests:test_results,
-              status: status.status,
-              message: status.message});
+  clearTimeout(timer);
+  var test_results = tests.map(function(x) {
+    return {name:x.name, status:x.status, message:x.message}
+  });
+  callback({test:"%(url)s",
+            tests:test_results,
+            status: status.status,
+            message: status.message});
 }
 
 window.win = window.open("%(abs_url)s", "%(window_id)s");
 
 var timer = setTimeout(function() {
-    window.win.timeout();
-    window.win.close();
+  window.win.timeout();
+  window.win.close();
 }, %(timeout)s);

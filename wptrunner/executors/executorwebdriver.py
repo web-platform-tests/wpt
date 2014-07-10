@@ -2,14 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
 import socket
 import sys
-import os
-import uuid
-import time
-import urlparse
 import threading
+import time
 import traceback
+import urlparse
+import uuid
 
 from .base import TestExecutor, testharness_result_converter
 from ..testrunner import Stop
@@ -46,13 +46,13 @@ class WebdriverTestExecutor(TestExecutor):
         """Connect to browser via webdriver"""
         self.runner = runner
 
-        self.logger.debug(
-            "Connecting to webdriver on url http://localhost:%i/wd/url" % self.webdriver_port)
+        webdriver_url = "http://localhost:%i/wd/url" % self.webdriver_port
+        self.logger.debug("Connecting to webdriver on url %s" % webdriver_url)
 
         session_started = False
 
         try:
-            self.webdriver = webdriver.Remote("http://localhost:%i/wd/url" % self.webdriver_port,
+            self.webdriver = webdriver.Remote(webdriver_url,
                                               desired_capabilities=self.capabilities)
             time.sleep(10)
         except:

@@ -531,13 +531,13 @@ def write(manifest, manifest_path):
         json.dump(manifest.to_json(), f, indent=2)
 
 
-def update_manifest(repo_path, rebuild=False, local_changes=False):
+def update_manifest(repo_path, **kwargs):
     setup_git(repo_path)
-    if not rebuild:
+    if not kwargs.get("rebuild", False):
         manifest = load(opts.path)
     else:
         manifest = Manifest(None)
-    if has_local_changes() and not local_changes:
+    if has_local_changes() and not kwargs.get("local_changes", False):
         logger.info("Not writing manifest because working directory is not clean.")
     else:
         logger.info("Updating manifest")

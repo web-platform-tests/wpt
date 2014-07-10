@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+
 """Subpackage where each product is defined. Each product is created by adding a
 a .py file containing a __wptrunner__ variable in the global scope. This must be
 a dictionary with the fields

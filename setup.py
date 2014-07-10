@@ -19,7 +19,7 @@ setup(name=PACKAGE_NAME,
       description="Harness for running the W3C web-platform-tests against various products",
       author='Mozilla Automation and Testing Team',
       author_email='tools@lists.mozilla.org',
-      license='MPL 1.1/GPL 2.0/LGPL 2.1',
+      license='MPL 2.0',
       packages=find_packages(exclude=["tests", "metadata", "prefs"]),
       entry_points={
           'console_scripts': [

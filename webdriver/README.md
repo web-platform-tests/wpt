@@ -21,7 +21,9 @@ whether they meet the recognized standard.
 2b. Create a virtual env configuration and directory: `virtualenv webdriver-tests`
 2c. Enter the directory: `cd webdriver-tests`
 3. `source bin/activate` to activate the local Python installation
-4. Install Selenium: `pip install selenium` or `easy_install selenium`
+4. Install wptserver: `pip install wptserve` or `easy_install wptserve`
+  Alternatively clone the repo: https://github.com/w3c/wptserve and run
+  `python setup.py install`
 5. Go to the WebDriver tests: `cd _WEBDRIVER_TEST_ROOT_`
 6. Run the tests: `python runtests.py`
 7. Run the test against a different config specified in webdriver.cfg:

@@ -4,7 +4,7 @@ import os
 import sys
 import unittest
 
-from webserver import Httpd
+from wptserve import server
 from network import get_lan_ip
 
 repo_root = os.path.abspath(os.path.join(__file__, "../.."))
@@ -17,8 +17,9 @@ class WebDriverBaseTest(unittest.TestCase):
     def setUpClass(cls):
         cls.driver = create_driver()
 
-        cls.webserver = Httpd(host=get_lan_ip())
+        cls.webserver = server.WebTestHttpd(host=get_lan_ip())
         cls.webserver.start()
+        cls.webserver.where_is = cls.webserver.get_url
 
     @classmethod
     def tearDownClass(cls):

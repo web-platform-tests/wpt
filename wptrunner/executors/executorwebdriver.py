@@ -92,9 +92,11 @@ class WebdriverTestExecutor(TestExecutor):
         return True
 
     def after_connect(self):
-        self.logger.debug(urlparse.urljoin(self.http_server_url, "/testharness_runner.html"))
-        self.webdriver.get(urlparse.urljoin(self.http_server_url, "/testharness_runner.html"))
-        self.webdriver.execute_script("document.title = '%s'" % threading.current_thread().name)
+        url = urlparse.urljoin(self.http_server_url, "/testharness_runner.html")
+        self.logger.debug("Loading %s" % url)
+        self.webdriver.get(url)
+        self.webdriver.execute_script("document.title = '%s'" %
+                                      threading.current_thread().name.replace("'", '"'))
 
     def run_test(self, test):
         """Run a single test.

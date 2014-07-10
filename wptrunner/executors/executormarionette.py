@@ -96,7 +96,7 @@ class MarionetteTestExecutor(TestExecutor):
     def after_connect(self):
         url = urlparse.urljoin(
             self.http_server_url, "/testharness_runner.html")
-        self.logger.debug(url)
+        self.logger.debug("Loading %s" % url)
         try:
             self.marionette.navigate(url)
         except:
@@ -107,7 +107,7 @@ class MarionetteTestExecutor(TestExecutor):
                 "prevent access." % url)
             raise
         self.marionette.execute_script(
-            "document.title = '%s'" % threading.current_thread().name)
+            "document.title = '%s'" % threading.current_thread().name.replace("'", '"'))
 
     def run_test(self, test):
         """Run a single test.

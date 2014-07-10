@@ -15,7 +15,7 @@ from fnmatch import fnmatch
 
 def get_repo_root():
     try:
-        return subprocess.check_output("git rev-parse --show-toplevel").rstrip()
+        return subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).rstrip()
     except subprocess.CalledProcessError:
         return None
 

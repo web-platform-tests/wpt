@@ -358,11 +358,12 @@ def get_manifest_items(rel_path):
             #Need to check if this is the right reftype
             ref_list = [RefTest(rel_path, url, ref_url, "==")]
 
-    # wdspec tests are in subdirectories of /webdriver excluding
-    # /webdriver/client and  __init__.py files.
-    if (rel_dir_tree[0] == "webdriver" and len(rel_dir_tree) > 2 and
-            rel_dir_tree[1] != "client" and filename != "__init__.py" and
-            fnmatch(filename, wd_pattern)):
+    # wdspec tests are in subdirectories of /webdriver excluding __init__.py
+    # files.
+    if (rel_dir_tree[0] == "webdriver" and
+        len(rel_dir_tree) > 2 and
+        filename != "__init__.py" and
+        fnmatch(filename, wd_pattern)):
         return [WebdriverSpecTest(rel_path)]
 
     if file_markup_type:

@@ -7,21 +7,34 @@ from wptmanifest.backends.static import ManifestItem
 
 import expected
 
+""" Manifest structured used to store expected results of a test.
+
+Each manifest file is represented by an ExpectedManifest that
+has one or more TestNode children, one per test in the manifest.
+Each TestNode has zero or more SubtestNode children, one for each
+known subtest of the test.
+"""
 
 def data_cls_getter(output_node, visited_node):
     # visited_node is intentionally unused
     if output_node is None:
         return ExpectedManifest
-    elif isinstance(output_node, ExpectedManifest):
+    if isinstance(output_node, ExpectedManifest):
         return TestNode
-    elif isinstance(output_node, TestNode):
+    if isinstance(output_node, TestNode):
         return SubtestNode
-    else:
-        raise ValueError
+    raise ValueError
 
 
 class ExpectedManifest(ManifestItem):
     def __init__(self, name, test_path):
+        """Object representing all the tests in a particular manifest
+
+        :param name: Name of the AST Node associated with this object.
+                     Should always be None since this should always be associated with
+                     the root node of the AST.
+        :param test_path: Path of the test file associated with this manifest.
+        """
         if name is not None:
             raise ValueError("ExpectedManifest should represent the root node")
         if test_path is None:
@@ -31,6 +44,7 @@ class ExpectedManifest(ManifestItem):
         self.test_path = test_path
 
     def append(self, child):
+        """Add a test to the manifest"""
         ManifestItem.append(self, child)
         self.child_map[child.id] = child
         assert len(self.child_map) == len(self.children)
@@ -41,12 +55,18 @@ class ExpectedManifest(ManifestItem):
         assert len(self.child_map) == len(self.children)
 
     def get_test(self, test_id):
+        """Get a test from the manifest by ID
+
+        :param test_id: ID of the test to return."""
         if test_id in self.child_map:
             return self.child_map[test_id]
 
 
 class TestNode(ManifestItem):
     def __init__(self, name):
+        """Tree node associated with a particular test in a manifest
+
+        :param name: name of the test"""
         assert name is not None
         ManifestItem.__init__(self, name)
         self.updated_expected = []
@@ -79,16 +99,23 @@ class TestNode(ManifestItem):
             return url
 
     def disabled(self):
+        """Boolean indicating whether the test is disabled"""
         try:
             return self.get("disabled")
         except KeyError:
             return False
 
     def append(self, node):
+        """Add a subtest to the current test
+
+        :param node: AST Node associated with the subtest"""
         child = ManifestItem.append(self, node)
         self.subtests[child.name] = child
 
     def get_subtest(self, name):
+        """Get the SubtestNode corresponding to a particular subtest, by name
+
+        :param name: Name of the node to return"""
         if name in self.subtests:
             return self.subtests[name]
         return None
@@ -96,6 +123,9 @@ class TestNode(ManifestItem):
 
 class SubtestNode(TestNode):
     def __init__(self, name):
+        """Tree node associated with a particular subtest in a manifest
+
+        :param name: name of the subtest"""
         TestNode.__init__(self, name)
 
     @property
@@ -106,6 +136,14 @@ class SubtestNode(TestNode):
 
 
 def get_manifest(metadata_root, test_path, run_info):
+    """Get the ExpectedManifest for a particular test path, or None if there is no
+    metadata stored for that test path.
+
+    :param metadata_root: Absolute path to the root of the metadata directory
+    :param test_path: Path to the test(s) relative to the test root
+    :param run_info: Dictionary of properties of the test run for which the expectation
+                     values should be computed.
+    """
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
         with open(manifest_path) as f:

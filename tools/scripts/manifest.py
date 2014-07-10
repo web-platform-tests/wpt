@@ -315,6 +315,7 @@ def get_manifest_items(rel_path):
 
     base_path, filename = os.path.split(path)
     name, ext = os.path.splitext(filename)
+    rel_dir_tree = rel_path.split(os.path.sep)
 
     file_markup_type = markup_type(ext)
 
@@ -347,13 +348,10 @@ def get_manifest_items(rel_path):
 
     # wdspec tests are in subdirectories of /webdriver excluding
     # /webdriver/client and  __init__.py files.
-    if rel_path.startswith("webdriver"):
-        if not base_path.endswith("webdriver") and \
-                not base_path.endswith("client") and \
-                filename != "__init__.py" and \
-                fnmatch(filename, wd_pattern):
-            return [WebdriverSpecTest(rel_path)]
-        return []
+    if (rel_dir_tree[0] == "webdriver" and len(rel_dir_tree) > 2 and
+            rel_dir_tree[1] != "client" and filename != "__init__.py" and
+            fnmatch(filename, wd_pattern)):
+        return [WebdriverSpecTest(rel_path)]
 
     if file_markup_type:
         timeout = None

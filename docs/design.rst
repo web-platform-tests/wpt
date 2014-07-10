@@ -53,17 +53,18 @@ The test environment is encapsulated in the
 ``web-platform-tests`` which actually starts the required servers to
 run the tests.
 
-The set of tests to run is defined by the :py:class:`TestLoader`. This
-is constructed with a :py:class:`TestFilter` (not shown), which takes
-any filter arguments from the command line to restrict the set of
-tests that will be run. The :py:class:`TestLoader` reads both the
-``web-platforms-test`` JSON manifest and the expectation data stored
-in ini files and produces a :py:class:`multiprocessing.Queue` of tests
-to run, and their expected results.
+The set of tests to run is defined by the
+:py:class:`TestLoader`. This is constructed with a
+:py:class:`TestFilter` (not shown), which takes any filter arguments
+from the command line to restrict the set of tests that will be
+run. The :py:class:`TestLoader` reads both the ``web-platforms-tests``
+JSON manifest and the expectation data stored in ini files and
+produces a :py:class:`multiprocessing.Queue` of tests to run, and
+their expected results.
 
 Actually running the tests happens through the
 :py:class:`ManagerGroup` object. This takes the :py:class:`Queue` of
-tests to be run and starts a :py:class:`TestRunnerManager` for each
+tests to be run and starts a :py:class:`testrunner.TestRunnerManager` for each
 instance of the browser under test that will be started. These
 :py:class:`TestRunnerManager` instances are each started in their own
 thread.
@@ -72,22 +73,21 @@ A :py:class:`TestRunnerManager` coordinates starting the product under
 test, and outputting results from the test. In the case that the test
 has timed out or the browser has crashed, it has to restart the
 browser to ensure the test run can continue. The functionality for
-initalising the browser under test, and probing its state
+initialising the browser under test, and probing its state
 (e.g. whether the process is still alive) is implemented through a
 :py:class:`Browser` object. An implementation of this class must be
 provided for each product that is supported.
 
 The functionality for actually running the tests is provided by a
 :py:class:`TestRunner` object. In order that this may be stopped and
-started at will, and in particular may be restarted at the same time
-as the browser it is controlling, it is implemented in a seperate
-process, using the primitives provided by the
-:py:mod:`multiprocessing` module. Communication between the
-:py:class:`TestRunnerManager` and the :py:class:`TestRunner` is
-provided by a pair of queues, one for sending messages in each
-direction. In particular test results are sent from the
-:py:class:`TestRunner` to the :py:class:`TestRunnerManager` using one
-of these queues.
+started at will, and may be restarted at the same time as the browser
+it is controlling, it is created in a child process, using the
+primitives provided by the :py:mod:`multiprocessing`
+module. Communication between the :py:class:`TestRunnerManager` and
+the :py:class:`TestRunner` is provided by a pair of queues, one for
+sending messages in each direction. In particular test results are
+sent from the :py:class:`TestRunner` to the
+:py:class:`TestRunnerManager` using one of these queues.
 
 The :py:class:`TestRunner` object is generic in that the same
 :py:class:`TestRunner` is used regardless of the product under

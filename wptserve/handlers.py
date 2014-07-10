@@ -9,6 +9,7 @@ import urlparse
 from constants import content_types
 from pipes import Pipeline, template
 from ranges import RangeParser
+from request import Authentication
 from response import MultipartContent
 from utils import HTTPException
 
@@ -279,6 +280,27 @@ class AsIsHandler(object):
 
 as_is_handler = AsIsHandler()
 
+class BasicAuthHandler(object):
+    def __init__(self, credentials=None):
+        if credentials:
+            self._user, self._password = credentials
+        else:
+            self._user = None
+            self._password = None
+
+    def __call__(self, request, response):
+        if "authorization" not in request.headers:
+            response.status = 401
+            response.headers.set("WWW-Authenticate", "Basic")
+            return response
+        else:
+            auth = Authentication(request.headers)
+            if self._user and (self._user != auth.username or self._password != auth.password):
+                response.set_error(403, "Invalid username or password")
+                return response
+            return file_handler(request, response)
+
+basic_auth_handler = BasicAuthHandler()
 
 class ErrorHandler(object):
     def __init__(self, status):

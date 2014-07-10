@@ -1,12 +1,8 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
 import os
 import sys
 import unittest
 
-from selenium.common.exceptions import ElementNotVisibleException
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 
 
@@ -301,26 +297,27 @@ class VisibilityInteractionTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("element_state/res/input-type-hidden-unclickable.html"))
         input = self.driver.find_element_by_css("input")
 
-        with self.assertRaises(ElementNotVisibleException):
+        with self.assertRaises(exceptions.ElementNotVisibleException):
             input.click()
 
     def test_hidden_input_checkbox_is_untogglable(self):
         self.driver.get(self.webserver.where_is("element_state/res/hidden-input-type-checkbox-untogglable.html"))
         checkbox = self.driver.find_element_by_css("input")
 
-        with self.assertRaises(ElementNotVisibleException):
+        with self.assertRaises(exceptions.ElementNotVisibleException):
             checkbox.click()
 
     def test_typing_in_hidden_input_is_impossible(self):
         self.driver.get(self.webserver.where_is("element_state/res/hidden-input-type-text-writing.html"))
         textfield = self.driver.find_element_by_css("input")
 
-        with self.assertRaises(ElementNotVisibleException):
+        with self.assertRaises(exceptions.ElementNotVisibleException):
             textfield.send_keys("Koha is a popular Indian cheese")
 
 
 class OpacityTest(base_test.WebDriverBaseTest):
     pass
+
 
 if __name__ == "__main__":
     unittest.main()

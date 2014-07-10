@@ -1,16 +1,12 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
 import os
 import sys
 import unittest
-from selenium.common.exceptions import NoSuchElementException
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 
 
 class ImplicitWaitsTests(base_test.WebDriverBaseTest):
-
     def setUp(self):
         self.driver.get(self.webserver.where_is('timeouts/res/implicit_waits_tests.html'))
 
@@ -25,7 +21,7 @@ class ImplicitWaitsTests(base_test.WebDriverBaseTest):
         try:
             self.driver.find_element_by_id("box0")
             self.fail("Expected NoSuchElementException to have been thrown")
-        except NoSuchElementException as e:
+        except exceptions.NoSuchElementException as e:
             pass
         except Exception as e:
             self.fail("Expected NoSuchElementException but got " + str(e))
@@ -36,7 +32,7 @@ class ImplicitWaitsTests(base_test.WebDriverBaseTest):
         try:
             self.driver.find_element_by_id("box0")
             self.fail("Expected NoSuchElementException to have been thrown")
-        except NoSuchElementException as e:
+        except exceptions.NoSuchElementException as e:
             pass
         except Exception as e:
             self.fail("Expected NoSuchElementException but got " + str(e))
@@ -61,6 +57,7 @@ class ImplicitWaitsTests(base_test.WebDriverBaseTest):
         add.click()
         elements = self.driver.find_elements_by_class_name("redbox")
         self.assertEqual(0, len(elements))
+
 
 if __name__ == "__main__":
     unittest.main()

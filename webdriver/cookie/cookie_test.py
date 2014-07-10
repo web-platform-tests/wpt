@@ -1,16 +1,12 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
 import os
 import sys
 import unittest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
-from client.exceptions import InvalidCookieDomainException, UnableToSetCookieException
 
-class CookieTest( base_test.WebDriverBaseTest ):
 
+class CookieTest(base_test.WebDriverBaseTest):
     def setUp(self):
         self.driver.get(self.webserver.where_is("cookie/res/cookie_container.html"))
 
@@ -50,7 +46,7 @@ class CookieTest( base_test.WebDriverBaseTest ):
 
         except UnableToSetCookieException:
             pass
-        except InvalidCookieDomainException:
+        except exceptions.InvalidCookieDomainException:
             pass
 
     def test_should_throw_an_exception_the_name_is_null(self):
@@ -60,10 +56,11 @@ class CookieTest( base_test.WebDriverBaseTest ):
             self.driver.add_cookie({ 'name': None, 'value': val })
             self.fail( 'should have thrown exceptions.' )
 
-        except UnableToSetCookieException:
+        except exceptions.UnableToSetCookieException:
             pass
-        except InvalidCookieDomainException:
+        except exceptions.InvalidCookieDomainException:
             pass
+
 
 if __name__ == '__main__':
     unittest.main()

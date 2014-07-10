@@ -1,15 +1,12 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
 import os
 import sys
 import unittest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 
 
 class ElementLocationTest(base_test.WebDriverBaseTest):
-
     def test_find_element_by_id(self):
         self.driver.get(self.webserver.where_is("element_location/res/elements.html"))
         e = self.driver.find_element_by_id("id")
@@ -39,6 +36,7 @@ class ElementLocationTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("element_location/res/elements.html"))
         e = self.driver.find_element_by_xpath("//*[@id='id']")
         self.assertEquals("id", e.text)
+
 
 if __name__ == "__main__":
     unittest.main()

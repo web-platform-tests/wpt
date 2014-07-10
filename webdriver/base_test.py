@@ -1,16 +1,19 @@
-
 import ConfigParser
 import json
 import os
+import sys
 import unittest
 
 from webserver import Httpd
 from network import get_lan_ip
 
-from client.driver import WebDriver
+repo_root = os.path.abspath(os.path.join(__file__, "../.."))
+sys.path.insert(1, os.path.join(repo_root, "tools", "webdriver"))
+from webdriver.driver import WebDriver
+from webdriver import exceptions, wait
+
 
 class WebDriverBaseTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.driver = create_driver()
@@ -37,7 +40,7 @@ def create_driver():
         try:
             capabilities = json.loads(config.get(section, "capabilities"))
         except:
-          pass
+            pass
     mode = 'compatibility'
     if config.has_option(section, 'mode'):
         mode = config.get(section, 'mode')

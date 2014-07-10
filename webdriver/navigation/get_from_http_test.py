@@ -1,21 +1,15 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
-import unittest
-import sys
 import os
+import sys
+import unittest
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 
-class GetFromHttpTest(base_test.WebDriverBaseTest):
 
-    # Boot strapping test. There is no assertion in this case, but this test
-    # must pass before anything else will.
+class GetFromHttpTest(base_test.WebDriverBaseTest):
     def testGetUrlWithNoRedirectionOverHttp(self):
         page = self.webserver.where_is('navigation/res/empty.html')
         self.driver.get(page)
-
         url = self.driver.get_current_url()
         self.assertEquals(page, url)
 
@@ -23,7 +17,6 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
     def testGetWillFollowTheLocationHeader(self):
         page = self.webserver.where_is('navigation/redirect')
         self.driver.get(page)
-
         expected = self.webserver.where_is('navigation/res/empty.html')
         url = self.driver.get_current_url()
         self.assertEquals(expected, url)
@@ -32,7 +25,6 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
     def testGetWillFollowMetaRefreshThatRefreshesInstantly(self):
         page = self.webserver.where_is('navigation/res/instant-meta-redirect.html')
         self.driver.get(page)
-
         expected = self.webserver.where_is('navigation/res/empty.html')
         url = self.driver.get_current_url()
         self.assertEquals(expected, url)
@@ -41,7 +33,6 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
     def testGetWillFollowMetaRefreshThatRefreshesAfterOneSecond(self):
         page = self.webserver.where_is('navigation/res/1s-meta-redirect.html')
         self.driver.get(page)
-
         expected = self.webserver.where_is('navigation/res/empty.html')
         url = self.driver.get_current_url()
         self.assertEquals(expected, url)
@@ -50,7 +41,6 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
     def testGetWillNotFollowMetaRefreshThatRefreshesAfterMoreThanOneSecond(self):
         page = self.webserver.where_is('navigation/res/60s-meta-redirect.html')
         self.driver.get(page)
-
         url = self.driver.get_current_url()
         self.assertEquals(page, url)
 

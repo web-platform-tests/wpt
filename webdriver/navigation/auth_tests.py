@@ -1,15 +1,12 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
 import os
 import sys
 import unittest
 import ConfigParser
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-
-from webserver import Httpd
-from client.exceptions import TimeoutException
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
+from webserver import Httpd
+
 
 class WebDriverAuthTest(unittest.TestCase):
 
@@ -43,7 +40,7 @@ class WebDriverAuthTest(unittest.TestCase):
             self.driver.get( page )
             # if we got a responses instead of timeout, that's success
             self.assertTrue(True)
-        except TimeoutException:
+        except exceptions.TimeoutException:
             self.fail("Did not get response from browser.")
         except:
             self.fail("Unexpected failure. Please investigate.")

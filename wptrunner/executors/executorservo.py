@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import urlparse
-import threading
 import json
 import subprocess
+import threading
+import urlparse
 
 from mozprocess import ProcessHandler
 
@@ -25,7 +25,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         self.result_data = None
         self.result_flag = threading.Event()
 
-        self.command = [self.binary,
+        self.command = [self.binary, "--hard-fail",
                         urlparse.urljoin(self.http_server_url, test.url)]
 
         if self.debug_args:

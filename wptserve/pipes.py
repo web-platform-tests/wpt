@@ -375,8 +375,6 @@ def template(request, content):
 
         tokens = tokenizer.tokenize(content)
 
-        print tokens
-
         if tokens[0][0] == "var":
             variable = tokens[0][1]
             tokens = tokens[1:]

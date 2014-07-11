@@ -57,7 +57,7 @@ The set of tests to run is defined by the
 :py:class:`TestLoader`. This is constructed with a
 :py:class:`TestFilter` (not shown), which takes any filter arguments
 from the command line to restrict the set of tests that will be
-run. The :py:class:`TestLoader` reads both the ``web-platforms-tests``
+run. The :py:class:`TestLoader` reads both the ``web-platform-tests``
 JSON manifest and the expectation data stored in ini files and
 produces a :py:class:`multiprocessing.Queue` of tests to run, and
 their expected results.

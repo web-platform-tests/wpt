@@ -267,8 +267,7 @@ def group_conditionals(values):
 
     conditions = {}
 
-    for result in values:
-        run_info, status = result
+    for run_info, status in values:
         prop_set = tuple((prop, run_info[prop]) for prop in include_props)
         if prop_set in conditions:
             continue

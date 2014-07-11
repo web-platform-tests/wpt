@@ -178,8 +178,7 @@ class HgTree(object):
 
     def create_patch(self, patch_name, message):
         try:
-            pass
-            # self.hg("qinit")
+            self.hg("qinit")
         except subprocess.CalledProcessError:
             # There is already a patch queue in this repo
             # Should only happen during development

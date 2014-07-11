@@ -36,8 +36,7 @@ def load_product(product):
                 executor_classes[test_type] = cls
 
             break
-
-    if browser_cls is None:
+    else:
         raise ValueError("Unknown product %s" % product)
 
     return check_args, browser_cls, browser_kwargs, executor_classes, executor_kwargs, env_options

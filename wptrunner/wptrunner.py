@@ -28,11 +28,6 @@ from testrunner import ManagerGroup
 here = os.path.split(__file__)[0]
 
 
-# TODO
-# Multiplatform expectations
-# Documentation
-# HTTP server crashes
-
 """Runner for web-platform-tests
 
 The runner has several design goals:

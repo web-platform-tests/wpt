@@ -45,7 +45,7 @@ directory passed to the test runner. The directory layout follows that
 of web-platform-tests with each test path having a corresponding
 manifest file. Tests that differ only by query string, or reftests
 with the same test path but different ref paths share the same
-reference file. The file name is taken from the last /-seperated part
+reference file. The file name is taken from the last /-separated part
 of the path, suffixed with ``.ini``.
 
 As an optimisation, files which produce only default results

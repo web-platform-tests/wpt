@@ -7,8 +7,6 @@ LONG_TIMEOUT = 60  # seconds
 
 import mozinfo
 
-# These are quite similar to moztest, but slightly different
-
 
 class Result(object):
     def __init__(self, status, message, expected=None):

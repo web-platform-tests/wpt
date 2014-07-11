@@ -13,6 +13,25 @@ from wptmanifest.backends.conditional import ManifestItem
 
 import expected
 
+"""Manifest structure used to update the expected results of a test
+
+Each manifest file is represented by an ExpectedManifest that has one
+or more TestNode children, one per test in the manifest.  Each
+TestNode has zero or more SubtestNode children, one for each known
+subtest of the test.
+
+In these representations, conditionals expressions in the manifest are
+not evaluated upfront but stored as python functions to be evaluated
+at runtime.
+
+When a result for a test is to be updated set_result on the
+[Sub]TestNode is called to store the new result, alongside the
+existing conditional that result's run info matched, if any. Once all
+new results are known, coalesce_expected is called to compute the new
+set of results and conditionals. The AST of the underlying parsed manifest
+is updated with the changes, and the result is serialised to a file.
+"""
+
 Result = namedtuple("Result", ["run_info", "status"])
 
 
@@ -30,6 +49,12 @@ def data_cls_getter(output_node, visited_node):
 
 class ExpectedManifest(ManifestItem):
     def __init__(self, node, test_path=None):
+        """Object representing all the tests in a particular manifest
+
+        :param node: AST Node associated with this object. If this is None,
+                     a new AST is created to associate with this manifest.
+        :param test_path: Path of the test file associated with this manifest.
+        """
         if node is None:
             node = DataNode(None)
         ManifestItem.__init__(self, node)
@@ -48,14 +73,27 @@ class ExpectedManifest(ManifestItem):
         assert len(self.child_map) == len(self.children)
 
     def get_test(self, test_id):
+        """Return a TestNode by test id, or None if no test matches
+
+        :param test_id: The id of the test to look up"""
+
         return self.child_map[test_id]
 
     def has_test(self, test_id):
+        """Boolean indicating whether the current test has a known child test
+        with id test id
+
+        :param test_id: The id of the test to look up"""
+
         return test_id in self.child_map
 
 
 class TestNode(ManifestItem):
     def __init__(self, node):
+        """Tree node associated with a particular test in a manifest
+
+        :param node: AST node associated with the test"""
+
         ManifestItem.__init__(self, node)
         self.updated_expected = []
         self.new_expected = []
@@ -65,6 +103,11 @@ class TestNode(ManifestItem):
 
     @classmethod
     def create(cls, test_type, test_id):
+        """Create a TestNode corresponding to a given test
+
+        :param test_type: The type of the test
+        :param test_id: The id of the test"""
+
         if test_type == "reftest":
             url = test_id[0]
         else:
@@ -91,10 +134,14 @@ class TestNode(ManifestItem):
 
     @property
     def test_type(self):
+        """The type of the test represented by this TestNode"""
+
         return self.get("type", None)
 
     @property
     def id(self):
+        """The id of the test represented by this TestNode"""
+
         components = self.parent.test_path.split(os.path.sep)[:-1]
         components.append(self.name)
         url = "/" + "/".join(components)
@@ -104,9 +151,20 @@ class TestNode(ManifestItem):
             return url
 
     def disabled(self, run_info):
+        """Boolean indicating whether this test is disabled when run in an
+        environment with the given run_info
+
+        :param run_info: Dictionary of run_info parameters"""
+
         return self.get("disabled", run_info) is not None
 
     def set_result(self, run_info, result):
+        """Set the result of the test in a particular run
+
+        :param run_info: Dictionary of run_info parameters corresponding
+                         to this run
+        :param result: Status of the test in this run"""
+
         found = False
 
         if self.default_status is not None:
@@ -130,6 +188,16 @@ class TestNode(ManifestItem):
             self.root.modified = True
 
     def coalesce_expected(self):
+        """Update the underlying manifest AST for this test based on all the
+        added results.
+
+        This will update existing conditionals if they got the same result in
+        all matching runs in the updated results, will delete existing conditionals
+        that get more than one different result in the updated run, and add new
+        conditionals for anything that doesn't match an existing conditional.
+
+        Conditionals not matched by any added result are not changed."""
+
         final_conditionals = []
 
         try:
@@ -200,6 +268,8 @@ class TestNode(ManifestItem):
                 self.updated_expected.append((value, []))
 
     def clear_expected(self):
+        """Clear all the expected data for this test and all of its subtests"""
+
         self.updated_expected = []
         if "expected" in self._data:
             for child in self.node.children:
@@ -217,6 +287,12 @@ class TestNode(ManifestItem):
         self.subtests[child.name] = child
 
     def get_subtest(self, name):
+        """Return a SubtestNode corresponding to a particular subtest of
+        the current test, creating a new one if no subtest with that name
+        already exists.
+
+        :param name: Name of the subtest"""
+
         if name in self.subtests:
             return self.subtests[name]
         else:
@@ -244,6 +320,12 @@ class SubtestNode(TestNode):
 
 
 def group_conditionals(values):
+    """Given a list of Result objects, return a list of
+    (conditional_node, status) pairs representing the conditional
+    expressions that are required to match each status
+
+    :param values: List of Results"""
+
     by_property = defaultdict(set)
     for run_info, status in values:
         for prop_name, prop_value in run_info.iteritems():
@@ -327,6 +409,12 @@ def make_expr(prop_set, status):
 
 
 def get_manifest(metadata_root, test_path):
+    """Get the ExpectedManifest for a particular test path, or None if there is no
+    metadata stored for that test path.
+
+    :param metadata_root: Absolute path to the root of the metadata directory
+    :param test_path: Path to the test(s) relative to the test root
+    """
     manifest_path = expected.expected_path(metadata_root, test_path)
     try:
         with open(manifest_path) as f:

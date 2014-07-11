@@ -465,10 +465,7 @@ class TestRunnerManager(threading.Thread):
                                     message=result.message,
                                     expected=expected)
 
-        # Check if we crashed after getting a result
-#        if not self.browser.is_alive():
-#            logger.debug("Changing status of test %r to crash" % (test.id,))
-#            file_result.status = "CRASH"
+        # TODO: consider changing result if there is a crash dump file
 
         # Write the result of the test harness
         expected = test.expected()

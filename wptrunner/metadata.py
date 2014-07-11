@@ -238,12 +238,9 @@ class ExpectedUpdater(object):
 def create_test_tree(metadata_path, manifest):
     expected_map = {}
     test_id_path_map = {}
-    exclude_types = frozenset(["helper", "manual"])
-    for test_path, tests in manifest:
-        # This is a very silly way to exclude types
-        # but the API in manifest.py should be updated
-        if list(tests)[0].item_type in exclude_types:
-            continue
+    exclude_types = frozenset(["stub", "helper", "manual"])
+    include_types = set(manifest.item_types) ^ exclude_types
+    for test_path, tests in manifest.itertypes(include_types):
 
         expected_data = load_expected(metadata_path, test_path, tests)
         if expected_data is None:

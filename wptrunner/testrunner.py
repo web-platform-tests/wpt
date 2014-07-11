@@ -149,7 +149,7 @@ def start_runner(test_queue, runner_command_queue, runner_result_queue,
 manager_count = 0
 
 
-def get_manager_number():
+def next_manager_number():
     global manager_count
     local = manager_count = manager_count + 1
     return local
@@ -190,7 +190,7 @@ class TestRunnerManager(threading.Thread):
 
         self.pause_on_unexpected = pause_on_unexpected
 
-        self.manager_number = get_manager_number()
+        self.manager_number = next_manager_number()
 
         self.command_queue = Queue()
         self.remote_queue = Queue()

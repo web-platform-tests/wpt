@@ -219,7 +219,7 @@ class TestRunnerManager(threading.Thread):
     def run(self):
         """Main loop for the TestManager.
 
-        TestManagers generally recieve commands from their
+        TestManagers generally receive commands from their
         TestRunner updating them on the status of a test. They
         may also have a stop flag set by the main thread indicating
         that the manager should shut down the next time the event loop
@@ -347,7 +347,7 @@ class TestRunnerManager(threading.Thread):
         if self.init_fail_count < self.max_init_fails:
             self.restart_runner()
         else:
-            self.logger.critical("Test runner failed to initalise correctly; shutting down")
+            self.logger.critical("Test runner failed to initialise correctly; shutting down")
             return Stop
 
     def start_test_runner(self):
@@ -538,7 +538,7 @@ class ManagerGroup(object):
         """Start all managers in the group"""
         self.logger.debug("Using %i processes" % self.size)
         self.tests_queue = tests_queue
-        for i in range(self.size):
+        for _ in range(self.size):
             manager = TestRunnerManager(self.suite_name,
                                         tests_queue,
                                         self.browser_cls,
@@ -552,10 +552,7 @@ class ManagerGroup(object):
 
     def is_alive(self):
         """Boolean indicating whether any manager in the group is still alive"""
-        for manager in self.pool:
-            if manager.is_alive():
-                return True
-        return False
+        return any(manager.is_alive() for manager in self.pool)
 
     def wait(self):
         """Wait for all the managers in the group to finish"""
@@ -569,7 +566,4 @@ class ManagerGroup(object):
         self.logger.debug("Stop flag set in ManagerGroup")
 
     def unexpected_count(self):
-        count = 0
-        for item in self.pool:
-            count += item.unexpected_count
-        return count
+        return sum(item.unexpected_count for item in self.pool)

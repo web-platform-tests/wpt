@@ -7,7 +7,7 @@ from wptmanifest.backends.static import ManifestItem
 
 import expected
 
-""" Manifest structured used to store expected results of a test.
+"""Manifest structure used to store expected results of a test.
 
 Each manifest file is represented by an ExpectedManifest that
 has one or more TestNode children, one per test in the manifest.
@@ -58,8 +58,7 @@ class ExpectedManifest(ManifestItem):
         """Get a test from the manifest by ID
 
         :param test_id: ID of the test to return."""
-        if test_id in self.child_map:
-            return self.child_map[test_id]
+        return self.child_map.get(test_id)
 
 
 class TestNode(ManifestItem):

@@ -114,7 +114,7 @@ class TestNode(ManifestItem):
         else:
             self.default_status = result.default_expected
 
-        # Add this result to the list of results satifying
+        # Add this result to the list of results satisfying
         # any condition in the list of updated results it matches
         for (cond, values) in self.updated_expected:
             if cond(run_info):
@@ -245,8 +245,7 @@ class SubtestNode(TestNode):
 
 def group_conditionals(values):
     by_property = defaultdict(set)
-    for result in values:
-        run_info, status = result
+    for run_info, status in values:
         for prop_name, prop_value in run_info.iteritems():
             by_property[(prop_name, prop_value)].add(status)
 

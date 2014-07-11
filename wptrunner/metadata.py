@@ -80,7 +80,7 @@ def files_in_repo(repo_root):
 
 
 def rev_range(rev_old, rev_new, symmetric=False):
-    joiner = ".." if not symmetric else ".."
+    joiner = ".." if not symmetric else "..."
     return "".join([rev_old, joiner, rev_new])
 
 
@@ -105,11 +105,7 @@ def load_change_data(rev_old, rev_new, repo):
 
 
 def unexpected_changes(change_data, files_changed):
-    rv = []
-    for fn in files_changed:
-        if change_data.get(fn) != "M":
-            rv.append(fn)
-    return rv
+    return [fn for fn in files_changed if change_data.get(fn) != "M"]
 
 # For each testrun
 # Load all files and scan for the suite_start entry
@@ -151,7 +147,7 @@ def write_changes(metadata_path, expected_map):
                     os.path.join(temp_path, "MANIFEST.json"))
 
     # Then move the old manifest files to a new location
-    temp_path_2 = metadata_path + str(uuid.uuid4)
+    temp_path_2 = metadata_path + str(uuid.uuid4())
     os.rename(metadata_path, temp_path_2)
     # Move the new files to the destination location and remove the old files
     os.rename(temp_path, metadata_path)
@@ -222,7 +218,7 @@ class ExpectedUpdater(object):
         result = test_cls.subtest_result_cls(
             data["subtest"],
             data["status"],
-            data["message"] if "message" in data else None)
+            data.get("message"))
 
         subtest.set_result(self.run_info, result)
 
@@ -233,7 +229,7 @@ class ExpectedUpdater(object):
 
         result = test_cls.result_cls(
             data["status"],
-            data["message"] if "message" in data else None)
+            data.get("message"))
 
         test.set_result(self.run_info, result)
         del self.test_cache[test_id]

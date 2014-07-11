@@ -2,6 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""Manifest structure used to store paths that should be included in a test run.
+
+The manifest is represented by a tree of IncludeManifest objects, the root
+representing the file and each subnode representing a subdirectory that should
+be included or excluded.
+"""
+
 from wptmanifest.node import DataNode
 from wptmanifest.backends import conditional
 from wptmanifest.backends.conditional import ManifestItem

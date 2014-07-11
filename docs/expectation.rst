@@ -69,7 +69,7 @@ wptrunner provides the tool ``wptupdate`` to generate expectation
 files from the results of a set of baseline test runs. The basic
 syntax for this is::
 
-  wptupdate [options] config data_root logfile...
+  wptupdate [options] config data_root [logfile]...
 
 ``config`` is an ini file containing information about the remote used
 for updates, and the structure of the local directories. For example::
@@ -98,9 +98,11 @@ other expectations untouched.
 
 wptupdate takes several useful options:
 
-``--no-sync``
-  Don't attempt to pull the latest version of web-platform-tests from
-  upstream.
+``--sync``
+  Pull the latest version of web-platform-tests from the
+  upstream specified in the config file. If this is specified in
+  combination with logfiles, it is assumed that the results in the log
+  files apply to the post-update tests.
 
 ``--no-check-clean``
   Don't attempt to check if the working directory is clean before
@@ -118,14 +120,19 @@ wptupdate takes several useful options:
 Examples
 ~~~~~~~~
 
+Update the local copy of web-platform-tests without changing the
+expectation data and commit (or create a mq patch for) the result::
+
+  wptupdate config.ini . --patch --sync
+
 Update all the expectations from a set of cross-platform test runs::
 
-  wptupdate config.ini . --no-check-clean --no-sync --patch osx.log linux.log windows.log
+  wptupdate config.ini . --no-check-clean --patch osx.log linux.log windows.log
 
 Add expectation data for some new tests that are expected to be
 platform-independent::
 
-  wptupdate config.ini . --no-check-clean --no-sync --patch --ignore-existing tests.log
+  wptupdate config.ini . --no-check-clean --patch --ignore-existing tests.log
 
 Manifest Format
 ---------------

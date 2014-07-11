@@ -247,24 +247,6 @@ class GitTree(object):
         pass
 
 
-class Try(object):
-    def __init__(self, url):
-        self.url = url
-
-    def options_message(self):
-        # Just hardcode what's actually needed here for now
-        # XXX - probably want more platforms
-        return "try: -b o -p linux -u web-platform-tests -t none"
-
-    def push(self, local_tree):
-        sys.exit(1)
-        patch_name = "try_" + str(uuid.uuid4())
-        hg("qnew", "-m", self.options_message(), patch_name, repo=local_tree.root)
-        hg("push", "-f", "-r tip", try_server.url, repo=local_tree.root)
-        hg("qpop", repo=local_tree.root)
-        hg("qremove", patch_name, repo=local_tree.root)
-
-
 class Runner(object):
     def __init__(self, config, bug):
         self.bug = bug
@@ -278,27 +260,6 @@ class Runner(object):
 
     def cleanup(self):
         pass
-
-
-class TryRunner(Runner):
-    def __init__(self, config, bug):
-        self.bug = bug
-        self.server = Try(config["try"]["url"])
-
-    def do_run(self, local_tree, log_file):
-        #        self.bug.comment("Pushing hg revision %s to try" % local_tree.revision)
-        self.server.push(local_tree)
-
-        sys.exit(0)
-
-        pulse = Pulse()
-
-        pulse.wait_on_job()
-        #self.bug.comment("Try job complete")
-
-        logs = moz_try.get_logs()
-
-        log_file.write(logs.read())
 
 
 class LogFilesRunner(Runner):
@@ -363,10 +324,7 @@ def sync_tests(config, paths, local_tree, wpt, bug):
 
 def update_metadata(config, paths, local_tree, wpt, initial_rev, bug):
     try:
-        runner_cls = {"try": TryRunner,
-                      "logfile": LogFilesRunner}[config["command-args"]["run_type"]]
-
-        with runner_cls(config, bug) as runner:
+        with LogFilesRunner(config, bug) as runner:
             log_files = runner.do_run(local_tree)
             try:
                 # XXX remove try/except
@@ -430,8 +388,6 @@ def run_update(**kwargs):
     wpt = WebPlatformTests(config["web-platform-tests"]["remote_url"],
                            paths["sync"],
                            rev=rev)
-
-    #bug = bz.create_bug("Doing update of web-platform tests")
     bug = None
 
     initial_rev = None
@@ -439,26 +395,8 @@ def run_update(**kwargs):
         initial_manifest, new_manifest = sync_tests(config, paths, local_tree, wpt, bug)
         initial_rev = initial_manifest.rev
 
-    if config["command-args"]["run_type"] != "none":
+    if config["command-args"]["run_log"]:
         update_metadata(config, paths, local_tree, wpt, initial_rev, bug)
-
-    sys.exit(1)
-
-    ### Unimplemented past this point ###
-
-    # Need to be more careful about only operating on patches that we have actually added
-
-    local_tree.commit_patch_queue()
-
-    patch = local_tree.make_patches()
-    bug.upload_patch(patch)
-
-    if not needs_human:
-        #bug.request_checkin() or local_tree.push()
-        pass
-    else:
-        #bug.comment("Not auto updating because of unexpected changes in the following files: ")
-        pass
 
 
 def main():

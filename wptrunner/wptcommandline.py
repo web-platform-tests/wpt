@@ -139,11 +139,8 @@ def create_parser_update(allow_mandatory=True):
                         help="Don't check the working directory is clean before updating")
     parser.add_argument("--patch", action="store_true",
                         help="Create an mq patch or git branch+commit containing the changes.")
-    parser.add_argument("--no-sync", dest="sync", action="store_false", default=True,
-                        help="Don't resync the tests, just update the expected results")
-    parser.add_argument("--update-expected-type", action="store", dest="run_type",
-                        choices=["none", "try", "logfile"],
-                        default="none", help="Process to use for updating the expectation data")
+    parser.add_argument("--sync", dest="sync", action="store_true", default=False,
+                        help="Sync the tests with the latest from upstream")
     parser.add_argument("--ignore-existing", action="store_true", help="When updating test results only consider results from the logfiles provided, not existing expectations.")
     # Should make this required iff run=logfile
     parser.add_argument("run_log", nargs="*", type=abs_path,

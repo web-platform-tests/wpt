@@ -44,7 +44,7 @@ test(unit(function (ctx) {
 
 
 	var host = d.querySelector('#shHost');
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var div = d.createElement('div');
 	div.innerHTML ='<ul><content select=".shadow"></content></ul>';

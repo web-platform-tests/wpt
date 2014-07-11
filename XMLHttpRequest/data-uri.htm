@@ -18,6 +18,7 @@
         if (method.toUpperCase() !== 'GET') {
           assert_equals(client.status, 0);
           assert_equals(client.responseText, null);
+          test.done();
           return;
         }
         assert_equals(client.responseText, "Hello, World!");

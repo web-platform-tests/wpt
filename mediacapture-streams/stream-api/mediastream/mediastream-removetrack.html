@@ -8,9 +8,9 @@
 <link rel='stylesheet' href='/resources/testharness.css' media='all'/>
 </head>
 <body>
-<p>When prompted, accept to share your audio stream, then your video stream.</p>
-<h1>Description</h1>
-<p>This test checks that removinging a track from a MediaStream works as expected.</p>
+<p class="instructions">When prompted, accept to share your audio stream, then your video stream.</p>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks that removinging a track from a MediaStream works as expected.</p>
 
 <div id='log'></div>
 <script src=/resources/testharness.js></script>
@@ -20,10 +20,10 @@
 var t = async_test("Tests that a removal from a MediaStream works as expected", {timeout:10000});
 t.step(function () {
   var audio;
-  navigator.getUserMedia({audio:true}, gotAudio, function() {});
+  navigator.getUserMedia({audio:true}, gotAudio, function(error) {});
   function gotAudio(stream) {
      audio = stream;
-     navigator.getUserMedia({video:true}, gotVideo, function() {});
+     navigator.getUserMedia({video:true}, gotVideo, function(error) {});
   }
 
   function gotVideo(stream) {

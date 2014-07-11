@@ -10,42 +10,10 @@
 <h1>HTML IDL tests</h1>
 <div id=log></div>
 
-<!-- URL IDLs -->
+<!-- URLUtils* stubs -->
 <script type=text/plain class=untested>
-[Constructor(DOMString url, optional (URL or DOMString) base = "about:blank")]
-interface URL {
-};
-URL implements URLUtils;
-
-[NoInterfaceObject]
-interface URLUtils {
-  stringifier attribute DOMString href;
-  readonly attribute DOMString origin;
-
-           attribute DOMString protocol;
-           attribute DOMString username;
-           attribute DOMString password;
-           attribute DOMString host;
-           attribute DOMString hostname;
-           attribute DOMString port;
-           attribute DOMString pathname;
-           attribute DOMString search;
-           attribute URLQuery? query;
-           attribute DOMString hash;
-};
-
-[NoInterfaceObject]
-interface URLUtilsReadOnly {
-  stringifier readonly attribute DOMString href;
-
-  readonly attribute DOMString protocol;
-  readonly attribute DOMString host;
-  readonly attribute DOMString hostname;
-  readonly attribute DOMString port;
-  readonly attribute DOMString pathname;
-  readonly attribute DOMString search;
-  readonly attribute DOMString hash;
-};
+interface URLUtils {};
+interface URLUtilsReadOnly {};
 </script>
 <!-- DOM IDLs -->
 <script type=text/plain class=untested>
@@ -2531,71 +2499,6 @@ dictionary MessageEventInit : EventInit {
   MessagePort[]? ports;
 };
 
-[Constructor(DOMString url, optional EventSourceInit eventSourceInitDict)]
-interface EventSource : EventTarget {
-  readonly attribute DOMString url;
-  readonly attribute boolean withCredentials;
-
-  // ready state
-  const unsigned short CONNECTING = 0;
-  const unsigned short OPEN = 1;
-  const unsigned short CLOSED = 2;
-  readonly attribute unsigned short readyState;
-
-  // networking
-           attribute EventHandler onopen;
-           attribute EventHandler onmessage;
-           attribute EventHandler onerror;
-  void close();
-};
-
-dictionary EventSourceInit {
-  boolean withCredentials = false;
-};
-
-enum BinaryType { "blob", "arraybuffer" };
-[Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)]
-interface WebSocket : EventTarget {
-  readonly attribute DOMString url;
-
-  // ready state
-  const unsigned short CONNECTING = 0;
-  const unsigned short OPEN = 1;
-  const unsigned short CLOSING = 2;
-  const unsigned short CLOSED = 3;
-  readonly attribute unsigned short readyState;
-  readonly attribute unsigned long bufferedAmount;
-
-  // networking
-           attribute EventHandler onopen;
-           attribute EventHandler onerror;
-           attribute EventHandler onclose;
-  readonly attribute DOMString extensions;
-  readonly attribute DOMString protocol;
-  void close([Clamp] optional unsigned short code, optional DOMString reason);
-
-  // messaging
-           attribute EventHandler onmessage;
-           attribute BinaryType binaryType;
-  void send(DOMString data);
-  void send(Blob data);
-  void send(ArrayBuffer data);
-  void send(ArrayBufferView data);
-};
-
-[Constructor(DOMString type, optional CloseEventInit eventInitDict)]
-interface CloseEvent : Event {
-  readonly attribute boolean wasClean;
-  readonly attribute unsigned short code;
-  readonly attribute DOMString reason;
-};
-
-dictionary CloseEventInit : EventInit {
-  boolean wasClean;
-  unsigned short code;
-  DOMString reason;
-};
-
 [Constructor]
 interface MessageChannel {
   readonly attribute MessagePort port1;
@@ -2620,44 +2523,6 @@ MessagePort implements Transferable;
 };
 
 callback PortCollectionCallback = void (MessagePort port);
-
-interface Storage {
-  readonly attribute unsigned long length;
-  DOMString? key(unsigned long index);
-  getter DOMString? getItem(DOMString key);
-  setter creator void setItem(DOMString key, DOMString value);
-  deleter void removeItem(DOMString key);
-  void clear();
-};
-
-[NoInterfaceObject]
-interface WindowSessionStorage {
-  readonly attribute Storage sessionStorage;
-};
-Window implements WindowSessionStorage;
-
-[NoInterfaceObject]
-interface WindowLocalStorage {
-  readonly attribute Storage localStorage;
-};
-Window implements WindowLocalStorage;
-
-[Constructor(DOMString type, optional StorageEventInit eventInitDict)]
-interface StorageEvent : Event {
-  readonly attribute DOMString? key;
-  readonly attribute DOMString? oldValue;
-  readonly attribute DOMString? newValue;
-  readonly attribute DOMString url;
-  readonly attribute Storage? storageArea;
-};
-
-dictionary StorageEventInit : EventInit {
-  DOMString? key;
-  DOMString? oldValue;
-  DOMString? newValue;
-  DOMString url;
-  Storage? storageArea;
-};
 
 interface HTMLAppletElement : HTMLElement {
            attribute DOMString align;
@@ -2940,38 +2805,6 @@ partial interface Document {
   readonly attribute HTMLAllCollection all;
 };
 </script>
-<!-- WebVTT IDLs -->
-<script type=text/plain>
-enum AutoKeyword { "auto" };
-enum DirectionSetting { "" /* horizontal */, "rl", "lr" };
-enum AlignSetting { "start", "middle", "end", "left", "right" };
-[Constructor(double startTime, double endTime, DOMString text)]
-interface VTTCue : TextTrackCue {
-           attribute VTTRegion? region;
-           attribute DirectionSetting vertical;
-           attribute boolean snapToLines;
-           attribute (double or AutoKeyword) line;
-           attribute AlignSetting lineAlign;
-           attribute double position;
-           attribute AlignSetting positionAlign;
-           attribute double size;
-           attribute AlignSetting align;
-           attribute DOMString text;
-  DocumentFragment getCueAsHTML();
-};
-
-enum ScrollSetting { "" /* none */, "up" };
-[Constructor]
-interface VTTRegion {
-           attribute double width;
-           attribute long lines;
-           attribute double regionAnchorX;
-           attribute double regionAnchorY;
-           attribute double viewportAnchorX;
-           attribute double viewportAnchorY;
-           attribute ScrollSetting scroll;
-};
-</script>
 <script>
 "use strict";
 var idlArray;
@@ -3193,24 +3026,14 @@ window.onload = function() {
 		Worker: [],
 		SharedWorker: [],
 		MessageEvent: [],
-		EventSource: [],
-		WebSocket: [],
-		CloseEvent: [],
 		MessageChannel: [],
 		MessagePort: [],
-		Storage: [],
-		WindowSessionStorage: ['window.sessionStorage'],
-		WindowLocalStorage: ['window.localStorage'],
-		StorageEvent: [],
 		HTMLAppletElement: ['document.createElement("applet")'],
 		HTMLMarqueeElement: ['document.createElement("marquee")'],
 		HTMLFrameSetElement: ['document.createElement("frameset")'],
 		HTMLFrameElement: ['document.createElement("frame")'],
 		HTMLDirectoryElement: ['document.createElement("dir")'],
 		HTMLFontElement: ['document.createElement("font")'],
-		// WebVTT
-		VTTCue: ['new VTTCue(0, 1, "foo")'],
-		VTTRegion: ['new VTTRegion()']
 	});
 	idlArray.prevent_multiple_testing("HTMLElement");
 	idlArray.test();

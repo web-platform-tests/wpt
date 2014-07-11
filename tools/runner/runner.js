@@ -110,6 +110,7 @@ function VisualOutput(elem, runner) {
     this.progress = this.elem.querySelector(".summary .progress");
     this.meter = this.progress.querySelector(".progress-bar");
     this.result_count = null;
+    this.json_results_area = this.elem.querySelector("textarea");
 
     this.elem.style.display = "none";
     this.runner.start_callbacks.push(this.on_start.bind(this));
@@ -128,6 +129,11 @@ VisualOutput.prototype = {
                 this.elem.querySelector("td." + p).textContent = 0;
             }
         }
+        if (this.json_results_area) {
+            this.json_results_area.parentNode.removeChild(this.json_results_area);
+        }
+        this.meter.style.width = '0px';
+        this.meter.textContent = '0%';
         this.elem.querySelector(".jsonResults").style.display = "none";
         this.results_table.removeChild(this.results_table.tBodies[0]);
         this.results_table.appendChild(document.createElement("tbody"));
@@ -136,6 +142,7 @@ VisualOutput.prototype = {
     on_start: function() {
         this.clear();
         this.elem.style.display = "block";
+        this.meter.classList.remove("stopped");
         this.meter.classList.add("progress-striped", "active");
     },
 
@@ -180,7 +187,11 @@ VisualOutput.prototype = {
         if (subtests_count) {
             subtests_node.textContent = subtest_pass_count + "/" + subtests_count;
         } else {
-            subtests_node.textContent = "1/1";
+            if (status == "PASS") {
+                subtests_node.textContent = "1/1";
+            } else {
+                subtests_node.textContent = "0/1";
+            }
         }
 
         var status_arr = ["PASS", "FAIL", "ERROR", "TIMEOUT"];
@@ -195,21 +206,24 @@ VisualOutput.prototype = {
     on_done: function() {
         this.meter.setAttribute("aria-valuenow", this.meter.getAttribute("aria-valuemax"));
         this.meter.style.width = "100%";
-        this.meter.textContent = "Done!";
+        if (this.runner.stop_flag) {
+            this.meter.textContent = "Stopped";
+            this.meter.classList.add("stopped");
+        } else {
+            this.meter.textContent = "Done!";
+        }
         this.meter.classList.remove("progress-striped", "active");
+        this.runner.test_div.textContent = "";
         //add the json serialization of the results
         var a = this.elem.querySelector(".jsonResults");
         var json = this.runner.results.to_json();
-        var ta = this.elem.querySelector("textarea");
-        if (ta) {
-            ta.parentNode.removeChild(ta);
-        }
+
         if (document.getElementById("dumpit").checked) {
-            ta = document.createElement("textarea");
-            ta.style.width = "100%";
-            ta.setAttribute("rows", "50");
-            this.elem.appendChild(ta);
-            ta.textContent = json;
+            this.json_results_area = document.createElement("textarea");
+            this.json_results_area.style.width = "100%";
+            this.json_results_area.setAttribute("rows", "50");
+            this.elem.appendChild(this.json_results_area);
+            this.json_results_area.textContent = json;
         }
         var blob = new Blob([json], { type: "application/json" });
         a.href = window.URL.createObjectURL(blob);
@@ -259,6 +273,7 @@ function ManualUI(elem, runner) {
     this.hide();
 
     this.runner.test_start_callbacks.push(this.on_test_start.bind(this));
+    this.runner.test_pause_callbacks.push(this.hide.bind(this));
     this.runner.done_callbacks.push(this.on_done.bind(this));
 
     this.pass_button.onclick = function() {
@@ -332,6 +347,12 @@ function TestControl(elem, runner) {
     this.start_button = this.elem.querySelector("button.toggleStart");
     this.type_checkboxes = Array.prototype.slice.call(
         this.elem.querySelectorAll("input[type=checkbox].test-type"));
+    this.type_checkboxes.forEach(function(elem) {
+        elem.addEventListener("click", function() {
+            this.start_button.disabled = this.get_test_types().length < 1;
+        }.bind(this),
+        false);
+    }.bind(this));
     this.timeout_input = this.elem.querySelector(".timeout_multiplier");
     this.render_checkbox = this.elem.querySelector(".render");
     this.runner = runner;
@@ -341,7 +362,7 @@ function TestControl(elem, runner) {
 
 TestControl.prototype = {
     set_start: function() {
-        this.start_button.disabled = false;
+        this.start_button.disabled = this.get_test_types().length < 1;
         this.pause_button.disabled = true;
         this.start_button.textContent = "Start";
         this.path_input.disabled = false;
@@ -352,9 +373,11 @@ TestControl.prototype = {
             var path = this.get_path();
             var test_types = this.get_test_types();
             var settings = this.get_testharness_settings();
-            this.set_stop();
-            this.set_pause();
             this.runner.start(path, test_types, settings);
+            if (this.runner.manifest_iterator.count() > 0) {
+                this.set_stop();
+                this.set_pause();
+            }
         }.bind(this);
     },
 
@@ -367,6 +390,7 @@ TestControl.prototype = {
             elem.disabled = true;
         });
         this.start_button.onclick = function() {
+            this.runner.stop_flag = true;
             this.runner.done();
         }.bind(this);
     },
@@ -458,14 +482,17 @@ function Runner(manifest_path) {
     this.manifest_iterator = null;
 
     this.test_window = null;
-
+    this.test_div = document.getElementById('test_url');
     this.current_test = null;
     this.timeout = null;
     this.num_tests = null;
     this.pause_flag = false;
+    this.stop_flag = false;
+    this.done_flag = false;
 
     this.start_callbacks = [];
     this.test_start_callbacks = [];
+    this.test_pause_callbacks = [];
     this.result_callbacks = [];
     this.done_callbacks = [];
 
@@ -494,6 +521,8 @@ Runner.prototype = {
 
     start: function(path, test_types, testharness_settings) {
         this.pause_flag = false;
+        this.stop_flag = false;
+        this.done_flag = false;
         this.path = path;
         this.test_types = test_types;
         window.testharness_properties = testharness_settings;
@@ -508,15 +537,27 @@ Runner.prototype = {
     },
 
     do_start: function() {
-        this.open_test_window();
-        this.start_callbacks.forEach(function(callback) {
-            callback();
-        });
-        this.run_next_test();
+        if (this.manifest_iterator.count() > 0) {
+            this.open_test_window();
+            this.start_callbacks.forEach(function(callback) {
+                callback();
+            });
+            this.run_next_test();
+        } else {
+            var tests = "tests";
+            if (this.test_types.length < 3) {
+                tests = this.test_types.join(" tests or ") + " tests";
+            }
+            var message = "No " + tests + " found in this path."
+            document.querySelector(".path").setCustomValidity(message);
+        }
     },
 
     pause: function() {
         this.pause_flag = true;
+        this.test_pause_callbacks.forEach(function(callback) {
+            callback(this.current_test);
+        }.bind(this));
     },
 
     unpause: function() {
@@ -538,6 +579,7 @@ Runner.prototype = {
     },
 
     done: function() {
+        this.done_flag = true;
         if (this.test_window) {
             this.test_window.close();
         }
@@ -551,7 +593,7 @@ Runner.prototype = {
             return;
         }
         var next_test = this.manifest_iterator.next();
-        if (next_test === null) {
+        if (next_test === null||this.done_flag) {
             this.done();
             return;
         }
@@ -562,6 +604,7 @@ Runner.prototype = {
             this.timeout = setTimeout(this.on_timeout.bind(this),
                                       this.test_timeout * window.testharness_properties.timeout_multiplier);
         }
+        this.test_div.textContent = this.current_test.url;
         this.load(this.current_test.url);
 
         this.test_start_callbacks.forEach(function(callback) {

@@ -1,10 +1,8 @@
-# -*- mode: python; fill-column: 100; comment-column: 100; -*-
-
 import os
 import sys
 import unittest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 
 
@@ -67,6 +65,7 @@ class GetElementAttributeTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("element_state/res/element-without-attribute.html"))
         el = self.driver.find_element_by_css("div")
         self.assertIsNone(el.get_attribute("class"))
+
 
 if __name__ == "__main__":
     unittest.main()

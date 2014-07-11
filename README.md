@@ -11,8 +11,8 @@ Running the Tests
 The tests are designed to be run from your local computer. The test environment
 requires Python 2.7+ (but not Python 3.x).
 
-To get the tests running, you need to set up the test domains in your /etc/hosts
-(or platform-equivalent) file. The following entries are required:
+To get the tests running, you need to set up the test domains in your 
+[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The following entries are required:
 
 ```
 127.0.0.1	web-platform.test
@@ -55,15 +55,20 @@ to some port of your choice e.g.
 Test Runner
 ===========
 
-There is a test runner in `tools/runner` that is designed to provide a
+There is a test runner that is designed to provide a
 convenient way to run the web-platform tests in-browser. It will run
 testharness.js tests automatically but requires manual work for
 reftests and manual tests.
 
 In order to use the runner, it is first necessary to generate a test
 manifest. This must be called `MANIFEST.json` and placed in the
-web-platform-tests root. To generate this navigate to the root
-directory and run
+web-platform-tests root.
+
+You must do this step to use the test runner, even if you are not
+creating a new test suite.
+
+To generate this file, from a command prompt at the root
+directory of the repo, run:
 
 ```
 python tools/scripts/manifest.py
@@ -73,6 +78,13 @@ If you have not installed it yet, run:
 ```
 pip install html5lib
 ```
+
+On Mac OS X, python is installed with Xcode, but pip is not. Try
+```
+sudo easy_install pip
+```
+if pip is not already on your system.
+
 
 Running the tests requires that the test environment be activated as
 described above. The runner can be found at `/tools/runner/index.html`
@@ -148,7 +160,7 @@ The way to contribute is just as usual:
 * fork this repository (and make sure you're still relatively in sync
   with it if you forked a while ago);
 * create a branch for your changes:
-  `git checkout -b submission/your-name/topic`;
+  `git checkout -b your-name/topic`;
 * make your changes;
 * push that to your repo;
 * and send in a pull request based on the above.
@@ -162,10 +174,15 @@ the specification correctly. But we look at all of them, and take
 everything that we can.
 
 If you wish to contribute actively, you're very welcome to join the
-public-html-testsuite@w3.org mailing list (low traffic) by
-[signing up to our mailing list](mailto:public-html-testsuite-request@w3.org?subject=subscribe).
+public-test-infra@w3.org mailing list (low traffic) by
+[signing up to our mailing list](mailto:public-test-infra-request@w3.org?subject=subscribe).
+
+Join us on irc #testing ([irc.w3.org][ircw3org], port 6665). The channel
+is [archived][ircarchive].
 
 [contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md
+[ircw3org]: https://www.w3.org/wiki/IRC
+[ircarchive]: http://krijnhoetmer.nl/irc-logs/testing/
 
 Documentation
 -------------

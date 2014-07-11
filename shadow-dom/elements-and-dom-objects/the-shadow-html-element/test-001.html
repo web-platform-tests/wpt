@@ -30,7 +30,7 @@ test(unit(function (ctx) {
 	d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var div = d.createElement('div');
 	div.innerHTML = '' +
@@ -42,7 +42,6 @@ test(unit(function (ctx) {
 
 }), 'A_10_05_01_T01');
 
-
 test(unit(function (ctx) {
 
 	var d = newRenderedHTMLDocument(ctx);
@@ -51,7 +50,7 @@ test(unit(function (ctx) {
 	d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var div = d.createElement('div');
 	div.innerHTML = '' +

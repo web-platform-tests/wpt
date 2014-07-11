@@ -12,7 +12,7 @@
 
     //Type attribute tests
     test(function() {
-        assert_throws("TypeError", function() {
+        assert_throws(new TypeError(), function() {
             new DeviceProximityEvent();
         }, 'First argument is required, so was expecting a TypeError.');
     }, 'Missing type argument');
@@ -102,7 +102,7 @@
     }, 'type argument is complext object, with toString method');
 
     test(function() {
-        assert_throws("TypeError", function() {
+        assert_throws(new TypeError(), function() {
             new DeviceProximityEvent({
                 toString: function() {
                     return function() {}
@@ -111,40 +111,243 @@
         });
     }, 'toString is of type function');
 
-    //test the attributes exist
+    //eventInitDict attribute tests
+    test(function() {
+        var event = new DeviceProximityEvent('test', undefined);
+        assert_equals(event.value, Infinity);
+        assert_equals(event.min, -Infinity);
+        assert_equals(event.max, Infinity);
+    }, 'eventInitDict argument sets to undefined');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', null);
+        assert_equals(event.value, Infinity);
+        assert_equals(event.min, -Infinity);
+        assert_equals(event.max, Infinity);
+    }, 'eventInitDict argument is null');
+
+    test(function() {
+        var date = new Date();
+        assert_throws(new TypeError(), function() {
+            new DeviceProximityEvent('test', date);
+        });
+    }, 'eventInitDict argument is Date object');
+
+    test(function() {
+        var regexp = /abc/;
+        assert_throws(new TypeError(), function() {
+            new DeviceProximityEvent('test', regexp);
+        });
+    }, 'eventInitDict argument is RegExp object');
+
+    test(function() {
+        assert_throws(new TypeError(), function() {
+            new DeviceProximityEvent('test', false);
+        });
+    }, 'eventInitDict argument is boolean');
+
+    test(function() {
+        assert_throws(new TypeError(), function() {
+            new DeviceProximityEvent('test', 123);
+        });
+    }, 'eventInitDict argument is number');
+
+    test(function() {
+        assert_throws(new TypeError(), function() {
+            new DeviceProximityEvent('test', 'hello');
+        });
+    }, 'eventInitDict argument is string');
+
+    //test readonly attribute unrestricted double value;
     test(function() {
         var event = new DeviceProximityEvent('test');
         assert_idl_attribute(event, 'value', 'must have attribute value');
     }, 'value attribute exist');
 
+     test(function() {
+        var event = new DeviceProximityEvent('test');
+        assert_readonly(event, 'value', 'readonly attribute value');
+    }, 'value attribute is readonly');
+
     test(function() {
+        var event = new DeviceProximityEvent('test');
+        assert_equals(event.value, Infinity);
+    }, 'value initializes to positive Infinity');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: Infinity
+        });
+        assert_equals(event.value, Infinity);
+    }, 'value set to positive Infinity');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: -Infinity
+        });
+        assert_equals(event.value, -Infinity);
+    }, 'value set to negative Infinity');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: 0
+        });
+        assert_equals(event.value, 0);
+    }, 'value set to 0');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: 1
+        });
+        assert_equals(event.value, 1);
+    }, 'value set to 1');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: 0.5
+        });
+        assert_equals(event.value, 0.5);
+    }, 'value set to 0.5');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: false
+        });
+        assert_equals(event.value, 0, 'value set to false, converts to 0.');
+    }, 'value set to false');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: true
+        });
+        assert_equals(event.value, 1, 'value set to true, converts to 1.');
+    }, 'value set to true');
+
+
+    test(function() {
+        var prop = {
+            value: undefined
+        };
+        try {
+            var event = new DeviceProximityEvent('test', prop);
+            assert_true(isNaN(event.value));
+        } catch(e) {
+            assert_unreached('error message: ' + e.message);
+        }
+    }, 'value of undefined resolves to NaN');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: null
+        });
+        assert_equals(event.value, 0, 'value resolves to 0');
+    }, 'value of null resolves to 0');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: ''
+        });
+        assert_equals(event.value, 0, 'value must resolve to 0');
+    }, 'value of empty string must resolve to 0');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: '\u0020'
+        });
+        assert_equals(event.value, 0, 'value must resolve to 0');
+    }, 'value of U+0020 must resolve to 0');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: '\u0020\u0020\u0020\u0020\u0020\u0020'
+        });
+        assert_equals(event.value, 0, 'value must resolve to 0');
+    }, 'value of multiple U+0020 must resolve to 0');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: '\u0020\u0020\u00201234\u0020\u0020\u0020'
+        });
+        assert_equals(event.value, 1234, 'converts to 1234');
+    }, 'value converts to 1234');
+
+    test(function() {
+        var event = new DeviceProximityEvent('test', {
+            value: []
+        });
+        assert_equals(event.value, 0, 'converts to 0');
+    }, 'value converts to 0');
+
+
+    test(function() {
+        var prop = {
+            value: {}
+        };
+        try {
+            var event = new DeviceProximityEvent('test', prop);
+            assert_true(isNaN(event.value));
+        } catch(e) {
+            assert_unreached('error message: ' + e.message);
+        }
+    }, 'value of {} resolves to NaN');
+
+    test(function() {
+        var prop = {
+            get value() {
+                return NaN;
+            }
+        };
+        try {
+            var event = new DeviceProximityEvent('test', prop);
+            assert_true(isNaN(event.value));
+        } catch(e) {
+            assert_unreached('error message: ' + e.message);
+        }
+    }, 'value resolves to NaN');
+
+    test(function() {
+        var prop = {
+            get value() {
+                return '123';
+            }
+        };
+        var event = new DeviceProximityEvent('test', prop);
+        assert_equals(event.value, 123, 'converts to 123');
+    }, 'value resolves 123');
+
+    //test readonly attribute unrestricted double min
+   test(function() {
         var event = new DeviceProximityEvent('test');
         assert_idl_attribute(event, 'min', 'must have attribute min');
     }, 'min attribute exist');
 
     test(function() {
         var event = new DeviceProximityEvent('test');
-        assert_idl_attribute(event, 'max', 'must have attribute max');
-    }, 'max attribute exist');
-
-    //test readonly attribute double value;
-    test(function() {
-        var event = new DeviceProximityEvent('test');
-        assert_readonly(event, 'value', 'readonly attribute value');
-    }, 'value attribute is readonly');
-
-    //test readonly attribute double min
-    test(function() {
-        var event = new DeviceProximityEvent('test');
         assert_readonly(event, 'min', 'readonly attribute min');
     }, 'min attribute is readonly');
 
-    //readonly attribute double max;
+    test(function() {
+        var event = new DeviceProximityEvent('test');
+        assert_equals(event.min, -Infinity);
+    }, 'min initializes to negative Infinity');
+
+    //test readonly attribute unrestricted double max;
+    test(function() {
+        var event = new DeviceProximityEvent('test');
+        assert_idl_attribute(event, 'max', 'must have attribute max');
+    }, 'max attribute exist');
+
     test(function() {
         var event = new DeviceProximityEvent('test');
         assert_readonly(event, 'max', 'readonly attribute max');
     }, 'max attribute is readonly');
 
+    test(function() {
+        var event = new DeviceProximityEvent('test');
+        assert_equals(event.max, Infinity);
+    }, 'max initializes to positive Infinity');
+
+    //test attribute EventHandler ondeviceproximity;
     test(function() {
         var desc = 'Expected to find ondeviceproximity attribute on window object';
         assert_idl_attribute(window, 'ondeviceproximity', desc);

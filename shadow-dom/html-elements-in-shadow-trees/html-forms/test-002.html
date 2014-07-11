@@ -32,7 +32,7 @@ test(function () {
 
     var div = d.createElement('div');
     d.body.appendChild(div);
-    var s = createSR(div);
+    var s = div.createShadowRoot();
 
 
     HTML5_FORM_ASSOCIATED_ELEMENTS.forEach(function (tagName) {
@@ -59,7 +59,7 @@ test(function () {
 
     var div = d.createElement('div');
     form.appendChild(div);
-    var s = createSR(div);
+    var s = div.createShadowRoot();
 
     HTML5_FORM_ASSOCIATED_ELEMENTS.forEach(function (tagName) {
 
@@ -91,7 +91,7 @@ test(function () {
         el.setAttribute('id', tagName + '_id');
         div.appendChild(el);
 
-        var s = createSR(div);
+        var s = div.createShadowRoot();
     	s.innerHTML = '<content select="' + tagName + '"></content>';
 
         assert_true(s.querySelector('#' + tagName + '_id') == null, 'Distributed form-associated element ' + tagName +

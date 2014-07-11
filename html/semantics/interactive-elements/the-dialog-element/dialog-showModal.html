@@ -48,6 +48,7 @@
       d7 = document.getElementById('d7'),
       d8 = document.getElementById('d8'),
       b0 = document.getElementById('b0'),
+      b1 = document.getElementById('b1'),
       b3 = document.getElementById('b3'),
       b4 = document.getElementById('b4'),
       b5 = document.getElementById('b5');
@@ -59,7 +60,7 @@
     this.add_cleanup(function() { d1.close(); });
     assert_true(d1.open);
     assert_true(b0.commandDisabled);
-    assert_equals(document.activeElement, d1.firstChild);
+    assert_equals(document.activeElement, b1);
   });
 
   test(function(){

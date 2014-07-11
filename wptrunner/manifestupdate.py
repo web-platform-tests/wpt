@@ -165,8 +165,6 @@ class TestNode(ManifestItem):
                          to this run
         :param result: Status of the test in this run"""
 
-        found = False
-
         if self.default_status is not None:
             assert self.default_status == result.default_expected
         else:
@@ -179,11 +177,9 @@ class TestNode(ManifestItem):
                 values.append(Result(run_info, result.status))
                 if result.status != cond.value:
                     self.root.modified = True
-                found = True
                 break
-
-        # We didn't find a previous value for this
-        if not found:
+        else:
+            # We didn't find a previous value for this
             self.new_expected.append(Result(run_info, result.status))
             self.root.modified = True
 

@@ -36,7 +36,8 @@ directory called ``metadata``::
 
 This file needs to be regenerated every time that the
 web-platform-tests checkout is updated. To aid with the update process
-there is a tool called ``wptupdate``, which will be covered separately.
+there is a tool called ``wptupdate``, which is described in
+:ref:`wptupdate-label`.
 
 Running the Tests
 -----------------

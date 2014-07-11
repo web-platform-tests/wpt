@@ -60,13 +60,72 @@ would have an expectation file ::
   metadata/spec/section/file.html.ini
 
 
+.. _wptupdate-label:
+
 Generating Expectation Files
 ----------------------------
 
 wptrunner provides the tool ``wptupdate`` to generate expectation
-files from the results of a set of baseline test runs.
+files from the results of a set of baseline test runs. The basic
+syntax for this is::
 
-[...]
+  wptupdate [options] config data_root logfile...
+
+``config`` is an ini file containing information about the remote used
+for updates, and the structure of the local directories. For example::
+
+  [web-platform-tests]
+  remote_url = https://github.com/w3c/web-platform-tests.git
+  branch = master
+  sync_path = sync
+
+  [local]
+  test_path = tests
+  metadata_path = metadata
+
+``data_root`` is the path to the root directory relative to which the
+local paths in ``config.ini`` should be resolved. For example if the
+tests are in ``/home/user/web-platform/tests`` and the metadata is in
+``/home/user/web-platform/metadata`` then the ``data_root`` would be
+``/home/user/web-platform``.
+
+Each ``logfile`` is a structured log file from a previous run. These
+can be generated from wptrunner using the ``--log-raw`` option
+e.g. ``--log-raw=structured.log``. The default behaviour is to update
+all the test data for the particular combination of hardware and OS
+used in the run corresponding to the log data, whilst leaving any
+other expectations untouched.
+
+wptupdate takes several useful options:
+
+``--no-sync``
+  Don't attempt to pull the latest version of web-platform-tests from
+  upstream.
+
+``--no-check-clean``
+  Don't attempt to check if the working directory is clean before
+  doing the update (assuming that the working directory is a git or
+  mercurial tree).
+
+``--patch``
+  Create a branch containing a git commit, or a mq patch with the
+  changes made by wptupdate.
+
+``--ignore-existing``
+  Overwrite all the expectation data for any tests that have a result
+  in the passed log files, not just data for the same platform.
+
+Examples
+~~~~~~~~
+
+Update all the expectations from a set of cross-platform test runs::
+
+  wptupdate config.ini . --no-check-clean --no-sync --patch osx.log linux.log windows.log
+
+Add expectation data for some new tests that are expected to be
+platform-independent::
+
+  wptupdate config.ini . --no-check-clean --no-sync --patch --ignore-existing tests.log
 
 Manifest Format
 ---------------

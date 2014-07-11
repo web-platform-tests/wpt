@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS.supports condition text for compound productions</title>
+<link rel="author" title="Adobe" href="http://html.adobe.com">
+<link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+<link rel="help" href="http://www.w3.org/TR/css3-conditional/#the-css-interface">
+<meta name="assert" content="CSS.supports allows for combinations of the productions.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='css-supports-utils.js'></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+var conditions = [
+// negation and conjunction
+["NOT ((margin:0) AND (foo:bar))", true],
+["(margin:0) AND (NOT (foo:bar))", true],
+
+// negation and disjunction
+["NOT ((foo:bar) OR (foo:bar))", true],
+["(NOT (foo:bar)) OR (foo:bar)", true],
+
+// conjunction and disjunction
+["((margin:0) AND (foo:bar)) OR (margin:0)", true],
+["((margin:0) OR (foo:bar)) AND (margin:0)", true],
+
+// negation, conjunction and disjunction
+["(NOT ((margin:0) AND (foo:bar))) OR (foo:bar)", true],
+["((margin:0) AND (NOT (foo:bar))) OR (foo:bar)", true],
+
+["(NOT ((foo:bar) OR (foo:bar))) AND (margin:0)", true],
+["((NOT (foo:bar)) OR (foo:bar)) AND (margin:0)", true],
+
+["NOT (((margin:0) AND (foo:bar)) OR (margin:0))", false],
+["NOT (((margin:0) OR (foo:bar)) AND (margin:0))", false]
+];
+
+function buildTestCases(items) {
+    return items.map(function(item) {
+        var condition = item[0];
+        return [condition, CSS.supports(condition), item[1]];
+    });
+}
+
+generate_tests(assert_equals, buildTestCases(conditions));
+
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS.supports condition text for supports_condition_in_parens</title>
+<link rel="author" title="Adobe" href="http://html.adobe.com">
+<link rel="author" title="Bear Travis" href="mailto:betravis@adobe.com">
+<link rel="help" href="http://www.w3.org/TR/css3-conditional/#the-css-interface">
+<meta name="assert" content="CSS.supports allows nesting of parentheticals with and
+without spaces.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src='css-supports-utils.js'></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+function buildTestCases(items) {
+    var cases = [];
+    cases = cases.concat(items.map(function(item) {
+        var condition = '(' + item[0] +')';
+        return [condition, CSS.supports(condition), item[1]];
+    }));
+    cases = cases.concat(items.map(function(item) {
+        var condition = ' ( ' + item[0] + ' ) ';
+        return [condition, CSS.supports(condition), item[1]];
+    }));
+    return cases;
+}
+
+generate_tests(assert_equals, buildTestCases(parentheticals));
+
+</script>
+</body>
+</html>

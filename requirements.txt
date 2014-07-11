@@ -1,4 +1,4 @@
-fxos-appgen >= 0.5
+fxos_appgen >= 0.5
 html5lib >= 0.99
 marionette_client >= 0.7.10
 mozdevice >= 0.37

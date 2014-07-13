@@ -28,6 +28,8 @@
                     test.step(function()
                     {
                         blob = xhr.response;
+                        assert_equals(xhr.response, xhr.response,
+                                      "Response should be cached");
                         assert_true(blob instanceof Blob, 'blob is a Blob');
 
                         var reader = new FileReader();

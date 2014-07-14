@@ -69,6 +69,9 @@ class ManifestItem(object):
     def from_json(self, obj):
         raise NotImplementedError
 
+    @property
+    def id(self):
+        raise NotImplementedError
 
 class TestharnessTest(ManifestItem):
     item_type = "testharness"
@@ -77,6 +80,10 @@ class TestharnessTest(ManifestItem):
         ManifestItem.__init__(self, path)
         self.url = url
         self.timeout = timeout
+
+    @property
+    def id(self):
+        return self.url
 
     def to_json(self):
         rv = ManifestItem.to_json(self)
@@ -104,7 +111,10 @@ class RefTest(ManifestItem):
         self.ref_url = ref_url
         self.ref_type = ref_type
         self.timeout = timeout
-        self.id = (self.url, self.ref_type, self.ref_url)
+
+    @property
+    def id(self):
+        return (self.url, self.ref_type, self.ref_url)
 
     def _key(self):
         return self.item_type, self.url, self.ref_type, self.ref_url
@@ -131,6 +141,10 @@ class ManualTest(ManifestItem):
         ManifestItem.__init__(self, path)
         self.url = url
 
+    @property
+    def id(self):
+        return self.url
+
     def to_json(self):
         rv = ManifestItem.to_json(self)
         rv.update({"url": self.url})
@@ -147,6 +161,10 @@ class Stub(ManifestItem):
     def __init__(self, path, url):
         ManifestItem.__init__(self, path)
         self.url = url
+
+    @property
+    def id(self):
+        return self.url
 
     def to_json(self):
         rv = ManifestItem.to_json(self)
@@ -165,6 +183,10 @@ class Helper(ManifestItem):
         ManifestItem.__init__(self, path)
         self.url = url
 
+    @property
+    def id(self):
+        return self.url
+
     def to_json(self):
         rv = ManifestItem.to_json(self)
         rv.update({"url": self.url})
@@ -177,6 +199,10 @@ class Helper(ManifestItem):
 
 class WebdriverSpecTest(ManifestItem):
     item_type = "wdspec"
+
+    @property
+    def id(self):
+        return self.path
 
     @classmethod
     def from_json(cls, obj):

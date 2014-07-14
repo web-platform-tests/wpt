@@ -2356,7 +2356,6 @@ interface ImageBitmapFactories {
   void createImageBitmap(ImageBitmapSource image, ImageBitmapCallback _callback, optional long sx, long sy, long sw, long sh);
 };
 Window implements ImageBitmapFactories;
-WorkerGlobalScope implements ImageBitmapFactories;
 
 interface DataTransfer {
            attribute DOMString dropEffect;
@@ -2405,29 +2404,6 @@ dictionary DragEventInit : MouseEventInit {
   DataTransfer? dataTransfer;
 };
 
-interface WorkerGlobalScope : EventTarget {
-  readonly attribute WorkerGlobalScope self;
-  readonly attribute WorkerLocation location;
-
-  void close();
-           attribute EventHandler onerror;
-           attribute EventHandler onoffline;
-           attribute EventHandler ononline;
-
-  // also has obsolete members
-};
-
-interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
-  void postMessage(any message, optional sequence<Transferable> transfer);
-           attribute EventHandler onmessage;
-};
-
-interface SharedWorkerGlobalScope : WorkerGlobalScope {
-  readonly attribute DOMString name;
-  readonly attribute ApplicationCache applicationCache;
-           attribute EventHandler onconnect;
-};
-
 [Constructor(DOMString type, optional ErrorEventInit eventInitDict)]
 interface ErrorEvent : Event {
   readonly attribute DOMString message;
@@ -2463,24 +2439,6 @@ interface SharedWorker : EventTarget {
   readonly attribute MessagePort port;
 };
 SharedWorker implements AbstractWorker;
-
-[NoInterfaceObject]
-partial interface WorkerGlobalScope {
-  void importScripts(DOMString... urls);
-  readonly attribute WorkerNavigator navigator;
-};
-WorkerGlobalScope implements WindowTimers;
-WorkerGlobalScope implements WindowBase64;
-
-interface WorkerNavigator {};
-WorkerNavigator implements NavigatorID;
-WorkerNavigator implements NavigatorLanguage;
-WorkerNavigator implements NavigatorOnLine;
-
-interface WorkerLocation {
-  stringifier readonly attribute DOMString href;
-};
-WorkerLocation implements URLUtilsReadOnly;
 
 [Constructor(DOMString type, optional MessageEventInit eventInitDict)]
 interface MessageEvent : Event {

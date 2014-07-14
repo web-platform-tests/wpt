@@ -1,4 +1,0 @@
-ref table-width-150percent.html == table-width-150percent-ref.html
-ref table-border-1.html == table-border-1-ref.html
-ref table-border-2.html != table-border-2-notref.html == table-border-2-ref.html
-ref table-layout.html != table-layout-notref.html == table-layout-ref.html

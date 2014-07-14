@@ -37,6 +37,9 @@
                         assert_equals(arr[3], 0x6c, "Expect 'l'");
                         assert_equals(arr[4], 0x6f, "Expect 'o'");
 
+                        assert_equals(xhr.response, xhr.response,
+                                      "Response should be cached");
+
                         test.done();
                     });
                 }

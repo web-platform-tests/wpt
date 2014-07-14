@@ -1,7 +1,0 @@
-battery-interface.html		Battery Status API Test Suite					
-battery-charging.html		Battery Status API Test Suite					
-battery-created.html		Battery Status API Test Suite					
-battery-discharging.html		Battery Status API Test Suite					
-battery-full.html		Battery Status API Test Suite					
-battery-plugged-in.html		Battery Status API Test Suite					
-battery-unplugged.html		Battery Status API Test Suite					

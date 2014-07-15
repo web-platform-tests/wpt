@@ -81,7 +81,8 @@ class MarionetteTestExecutor(TestExecutor):
         try:
             self.marionette.delete_session()
         except:
-            print >> sys.stderr, traceback.format_exc()
+            # This is typically because the session never started
+            pass
         del self.marionette
 
     def is_alive(self):

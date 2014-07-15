@@ -138,7 +138,7 @@ def start_runner(test_queue, runner_command_queue, runner_result_queue,
             except KeyboardInterrupt:
                 stop_flag.set()
     except Exception:
-        runner_result_queue.put(("log", ("critical", traceback.format_exc())))
+        runner_result_queue.put(("log", ("critical", {"message": traceback.format_exc()})))
         print >> sys.stderr, traceback.format_exc()
         stop_flag.set()
     finally:

@@ -50,7 +50,7 @@ def path(check_argv=True):
         else:
             path = os.path.join(here, "..", "wptrunner.default.ini")
 
-    return path
+    return os.path.abspath(path)
 
 def load():
     return read(path())

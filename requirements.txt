@@ -1,10 +1,5 @@
-fxos_appgen >= 0.5
 html5lib >= 0.99
-marionette_client >= 0.7.10
-mozdevice >= 0.37
 mozinfo >= 0.7
 mozlog >= 1.8
-moznetwork >= 0.24
-mozprocess >= 0.19
-mozprofile >= 0.21
+# Unfortunately, just for gdb flags
 mozrunner >= 6.1

@@ -519,7 +519,7 @@ def list_disabled(tests_root, metadata_root, test_types, product, **kwargs):
     print json.dumps(rv, indent=2)
 
 
-def run_tests(tests_root, metadata_root, product, **kwargs):
+def run_tests(config, tests_root, metadata_root, product, **kwargs):
     logging_queue = None
     logging_thread = None
     original_stdio = (sys.stdout, sys.stderr)
@@ -540,7 +540,7 @@ def run_tests(tests_root, metadata_root, product, **kwargs):
         (check_args,
          browser_cls, get_browser_kwargs,
          executor_classes, get_executor_kwargs,
-         env_options) = products.load_product(product)
+         env_options) = products.load_product(config, product)
 
         check_args(**kwargs)
 

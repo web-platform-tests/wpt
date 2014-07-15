@@ -15,8 +15,15 @@ from fnmatch import fnmatch
 
 def get_git_func(repo_path):
     def git(cmd, *args):
-        proc = subprocess.Popen(["git", cmd] + list(args), stdout=subprocess.PIPE, cwd=repo_path)
+        full_cmd = ["git", cmd] + list(args)
+        proc = subprocess.Popen(full_cmd,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                cwd=repo_path)
         stdout, stderr = proc.communicate()
+        if proc.returncode != 0:
+            raise subprocess.CalledProcessError(proc.returncode,
+                                                full_cmd)
         return stdout
     return git
 
@@ -32,9 +39,7 @@ def get_repo_root():
     return git("rev-parse", "--show-toplevel").rstrip()
 
 
-repo_root = get_repo_root()
 manifest_name = "MANIFEST.json"
-default_manifest = os.path.join(repo_root, manifest_name)
 exclude_php_hack = True
 ref_suffixes = ["_ref", "-ref"]
 wd_pattern = "*.py"
@@ -347,7 +352,7 @@ def get_manifest_items(rel_path):
 
     url = "/" + rel_path.replace(os.sep, "/")
 
-    path = os.path.join(repo_root, rel_path)
+    path = os.path.join(get_repo_root(), rel_path)
     if not os.path.exists(path):
         return []
 
@@ -572,10 +577,11 @@ def update_manifest(repo_path, **kwargs):
         write(manifest, opts.path)
 
 
-def create_parser():
+def create_parser(repo_root):
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-p", "--path", default=default_manifest, help="path to manifest file")
+        "-p", "--path", default=os.path.join(repo_root, "MANIFEST.json"),
+        help="path to manifest file")
     parser.add_argument(
         "-r", "--rebuild", action="store_true", default=False,
         help="force a full rebuild of the manifest rather than updating "
@@ -588,7 +594,8 @@ def create_parser():
 
 
 if __name__ == "__main__":
-    opts = create_parser().parse_args()
+    repo_root = get_repo_root()
+    opts = create_parser(get_repo_root()).parse_args()
     update_manifest(repo_root,
                     rebuild=opts.rebuild,
                     local_changes=opts.experimental_include_local_changes)

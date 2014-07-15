@@ -21,10 +21,10 @@
       http.open("GET", "test.png", true);
       http.responseType = "blob";
 
-      on_event(http, "loadend", function(evt) {
+      http.onloadend = function() {
         var fileDisplay = document.querySelector("#fileDisplay");
         fileDisplay.src = window.URL.createObjectURL(http.response);
-      });
+      };
 
       http.send();
     </script>

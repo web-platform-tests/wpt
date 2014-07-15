@@ -14,9 +14,9 @@
       <p>Original tree's node</p>
     </div>
   <script>
-    var shadowRoot = createSR(host);
+    var shadowRoot = host.createShadowRoot();
     shadowRoot.innerHTML = "<div><p>Older tree's node</p><content></content></div>";
-    var shadowRoot = createSR(host);
+    var shadowRoot = host.createShadowRoot();
     shadowRoot.innerHTML = "<div><p>Younger tree's node</p><shadow></shadow></div>";
   </script>
   </body>

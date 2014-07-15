@@ -204,45 +204,36 @@ def expand_test_code(code):
             code)
 
     code = re.sub(r'@assert throws (\S+_ERR) (.*);',
-            r'_assert_throws("\1", function() { \2; });',
+            r'assert_throws("\1", function() { \2; });',
             code)
 
     code = re.sub(r'@assert throws (\S+Error) (.*);',
-            r'_assert_throws(new \1(), function() { \2; });',
+            r'assert_throws(new \1(), function() { \2; });',
             code)
 
     code = re.sub(r'@assert throws (.*);',
-            r'_assert_throws(null, function() { \1; });',
+            r'assert_throws(null, function() { \1; });',
             code)
 
     code = re.sub(r'@assert (.*) === (.*);',
             lambda m: '_assertSame(%s, %s, "%s", "%s");'
                 % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
             , code)
-    
+
     code = re.sub(r'@assert (.*) !== (.*);',
             lambda m: '_assertDifferent(%s, %s, "%s", "%s");'
                 % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
             , code)
-    
-    code = re.sub(r'@assert (.*) == (.*);',
-            lambda m: '_assertEqual(%s, %s, "%s", "%s");'
-                % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
-            , code)
-    
+
     code = re.sub(r'@assert (.*) =~ (.*);',
-            lambda m: '_assertMatch(%s, %s, "%s", "%s");'
-                % (m.group(1), m.group(2), escapeJS(m.group(1)), escapeJS(m.group(2)))
+            lambda m: 'assert_regexp_match(%s, %s);'
+                % (m.group(1), m.group(2))
             , code)
 
     code = re.sub(r'@assert (.*);',
             lambda m: '_assert(%s, "%s");'
                 % (m.group(1), escapeJS(m.group(1)))
             , code)
-    
-    code = re.sub(r'@manual;', '_requireManualCheck();', code)
-
-    code = re.sub(r'@crash;', 'return _crash();', code)
 
     code = re.sub(r' @moz-todo', '', code)
 
@@ -333,7 +324,7 @@ for i in range(len(tests)):
     if not mapped_name:
         print "LIKELY ERROR: %s has no defined target directory mapping" % name
         mapped_name = name
-    if '@manual' in test['code']:
+    if 'manual' in test:
         mapped_name += "-manual"
 
     cat_total = ''
@@ -352,11 +343,11 @@ for i in range(len(tests)):
         print "Test %s doesn't refer to any spec points" % name
 
     if test.get('expected', '') == 'green' and re.search(r'@assert pixel .* 0,0,0,0;', test['code']):
-        print "Probable incorrect pixel test in %s" % name 
+        print "Probable incorrect pixel test in %s" % name
 
     code = expand_test_code(test['code'])
 
-    mochitest = not (W3CMODE or '@manual' in test['code'] or 'disabled' in test.get('mozilla', {}))
+    mochitest = not (W3CMODE or 'manual' in test or 'disabled' in test.get('mozilla', {}))
     if mochitest:
         mochi_code = expand_mochitest_code(test['code'])
 

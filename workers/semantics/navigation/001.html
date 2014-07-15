@@ -11,24 +11,24 @@
 var date;
 var newDate;
 </script>
-<iframe src="001-1.html"></iframe>
+<iframe></iframe>
 <script>
 var t = async_test();
+var iframe = document.querySelector('iframe');
 onload = t.step_func(function() {
-  var iframe = document.querySelector('iframe');
+  iframe.src = "001-1.html?" + Math.random();
+});
+var start_test = t.step_func(function() {
+  window[0].document.links[0].click();
+});
+var after_load = t.step_func(function() {
+  history.back();
+  newDate = new Date();
   setTimeout(this.step_func(function() {
-    window[0].document.links[0].click();
-    iframe.onload = this.step_func(function() {
-      this.onload = null;
-      history.back();
-      newDate = new Date();
-      setTimeout(this.step_func(function() {
-        assert_greater_than(Number(date), Number(newDate));
-        assert_equals(window[0].document.title, '001-1');
-        this.done();
-      }), 300);
-    });
-  }), 150);
+    assert_greater_than(Number(date), Number(newDate));
+    assert_equals(window[0].document.title, '001-1');
+    this.done();
+  }), 500);
 });
 </script>
 <!--

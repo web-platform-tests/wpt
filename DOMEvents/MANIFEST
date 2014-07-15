@@ -1,8 +1,0 @@
-../dom/events/Document-createEvent.html
-../dom/events/Event-constants.html
-../dom/events/Event-defaultPrevented.html
-../dom/events/Event-initEvent.html
-../dom/events/EventTarget-addEventListener.html
-../dom/events/EventTarget-dispatchEvent.html
-../dom/events/EventTarget-removeEventListener.html
-../dom/events/Event-type.html

@@ -11,8 +11,8 @@ Running the Tests
 The tests are designed to be run from your local computer. The test environment
 requires Python 2.7+ (but not Python 3.x).
 
-To get the tests running, you need to set up the test domains in your /etc/hosts
-(or platform-equivalent) file. The following entries are required:
+To get the tests running, you need to set up the test domains in your 
+[`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The following entries are required:
 
 ```
 127.0.0.1	web-platform.test

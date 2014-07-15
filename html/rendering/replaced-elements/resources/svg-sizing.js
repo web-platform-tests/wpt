@@ -1,5 +1,7 @@
 // Simple implementation of SVG sizing
 
+setup({explicit_done: true});
+
 var SVGSizing = (function() {
     function parseLength(l) {
         var match = /^([-+]?[0-9]+|[-+]?[0-9]*\.[0-9]+)(px|%)?$/.exec(l);
@@ -395,7 +397,15 @@ var SVGSizing = (function() {
             function cont(id) {
                 var config = computeConfig(id);
                 if (config && (!testSingleId || testSingleId == id)) {
-                    func(config, id, cont);
+                    var next = function() {func(config, id, cont)};
+                    // Make sure we don't blow the stack, without too much slowness
+                    if (id % 20 === 0) {
+                        setTimeout(next, 0);
+                    } else {
+                        next();
+                    }
+                } else {
+                    done();
                 }
             };
 

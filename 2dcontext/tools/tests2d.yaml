@@ -268,6 +268,7 @@
 - name: 2d.coordinatespace
   desc: Coordinate space goes from top-left to bottom-right
   notes: This should not be upside down.
+  manual: We can't tell that getPixelData isn't using the wrong coordinate space too.
   testing:
     - 2d.coordinatespace
   code: |
@@ -279,7 +280,6 @@
     @assert pixel 75,12 == 0,0,255,255;
     @assert pixel 25,37 == 0,0,255,255;
     @assert pixel 75,37 == 0,0,255,255;
-    @manual; // because we can't tell that getPixelData isn't using the wrong coordinate space too
   expected: |
     size 100 50
     cr.set_source_rgb(0, 0, 1)
@@ -292,12 +292,12 @@
 - name: 2d.scaled
   desc: CSS-scaled canvases get drawn correctly
   canvas: 'width="50" height="25" style="width: 100px; height: 50px"'
+  manual:
   code: |
     ctx.fillStyle = '#00f';
     ctx.fillRect(0, 0, 50, 25);
     ctx.fillStyle = '#0ff';
     ctx.fillRect(0, 0, 25, 10);
-    @manual;
   expected: |
     size 100 50
     cr.set_source_rgb(0, 0, 1)
@@ -455,11 +455,11 @@
     ctx.lineWidth = 2;
     ctx.save();
     ctx.lineWidth = 3;
-    @assert ctx.lineWidth == 3;
+    @assert ctx.lineWidth === 3;
     ctx.restore();
-    @assert ctx.lineWidth == 2;
+    @assert ctx.lineWidth === 2;
     ctx.restore();
-    @assert ctx.lineWidth == 1;
+    @assert ctx.lineWidth === 1;
 
 - name: 2d.state.saverestore.stackdepth
   desc: save()/restore() stack depth is not unreasonably limited
@@ -475,7 +475,7 @@
     }
     for (var i = limit-1; i > 0; --i)
     {
-        @assert ctx.lineWidth == i;
+        @assert ctx.lineWidth === i;
         ctx.restore();
     }
 
@@ -488,7 +488,7 @@
         ctx.restore();
     ctx.lineWidth = 0.5;
     ctx.restore();
-    @assert ctx.lineWidth == 0.5;
+    @assert ctx.lineWidth === 0.5;
 
 
 - name: 2d.transformation.order
@@ -902,13 +902,13 @@
     ctx.globalAlpha = 0.5;
     var a = ctx.globalAlpha; // might not be exactly 0.5, if it is rounded/quantised, so remember for future comparisons
     ctx.globalAlpha = 1.1;
-    @assert ctx.globalAlpha == a;
+    @assert ctx.globalAlpha === a;
     ctx.globalAlpha = -0.1;
-    @assert ctx.globalAlpha == a;
+    @assert ctx.globalAlpha === a;
     ctx.globalAlpha = 0;
-    @assert ctx.globalAlpha == 0;
+    @assert ctx.globalAlpha === 0;
     ctx.globalAlpha = 1;
-    @assert ctx.globalAlpha == 1;
+    @assert ctx.globalAlpha === 1;
 
 - name: 2d.composite.globalAlpha.invalid
   testing:
@@ -1254,7 +1254,7 @@
     for (var i = 0; i < modes.length; ++i)
     {
         ctx.globalCompositeOperation = modes[i];
-        @assert ctx.globalCompositeOperation == modes[i];
+        @assert ctx.globalCompositeOperation === modes[i];
     }
 
 - name: 2d.composite.operation.unrecognised
@@ -1263,7 +1263,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'nonexistent';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.darker
   testing:
@@ -1271,7 +1271,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'darker';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.over
   testing:
@@ -1279,7 +1279,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'over';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.clear
   testing:
@@ -1287,7 +1287,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'clear';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.highlight
   testing:
@@ -1295,7 +1295,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'highlight';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.nullsuffix
   testing:
@@ -1303,7 +1303,7 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'source-over\0';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.casesensitive
   testing:
@@ -1311,13 +1311,13 @@
   code: |
     ctx.globalCompositeOperation = 'xor';
     ctx.globalCompositeOperation = 'Source-over';
-    @assert ctx.globalCompositeOperation == 'xor';
+    @assert ctx.globalCompositeOperation === 'xor';
 
 - name: 2d.composite.operation.default
   testing:
     - 2d.composite.operation.default
   code: |
-    @assert ctx.globalCompositeOperation == 'source-over';
+    @assert ctx.globalCompositeOperation === 'source-over';
 
 
 - meta: |
@@ -1561,19 +1561,19 @@
     - 2d.serializecolour.transparent
   code: |
     ctx.fillStyle = 'rgba(0,0,0,0)';
-    @assert ctx.fillStyle == 'rgba(0, 0, 0, 0)';
+    @assert ctx.fillStyle === 'rgba(0, 0, 0, 0)';
 
 - name: 2d.fillStyle.default
   testing:
     - 2d.colours.default
   code: |
-    @assert ctx.fillStyle == '#000000';
+    @assert ctx.fillStyle === '#000000';
 
 - name: 2d.strokeStyle.default
   testing:
     - 2d.colours.default
   code: |
-    @assert ctx.strokeStyle == '#000000';
+    @assert ctx.strokeStyle === '#000000';
 
 
 - name: 2d.gradient.object.type
@@ -2885,7 +2885,7 @@
     var img = document.getElementById('green.png');
     var pattern = ctx.createPattern(img, 'no-repeat');
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.fillStyle = pattern;
         ctx.fillRect(0, 0, 100, 50);
@@ -2911,7 +2911,7 @@
     ctx.fillStyle = '#00f';
     ctx.fillRect(0, 0, 100, 50);
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.fillStyle = pattern;
         ctx.fillRect(0, 0, 100, 50);
@@ -3420,7 +3420,7 @@
         var pattern = ctx.createPattern(document.getElementById('anim-gr.gif'), 'repeat');
         ctx.fillStyle = pattern;
         ctx.fillRect(0, 0, 50, 50);
-        setTimeout(wrapFunction(function () {
+        setTimeout(t.step_func_done(function () {
             ctx.fillRect(50, 0, 50, 50);
             @assert pixel 25,25 ==~ 0,255,0,255;
             @assert pixel 75,25 ==~ 0,255,0,255;
@@ -5316,6 +5316,7 @@
 
 - name: 2d.shadow.blur.low
   desc: Shadows look correct for small blurs
+  manual:
   testing:
     - 2d.shadow.render
   code: |
@@ -5332,7 +5333,6 @@
         ctx.fillRect(-200, -200, 500, 200);
         ctx.restore();
     }
-    @manual;
   expected: |
     size 100 50
     import math
@@ -5355,6 +5355,7 @@
 
 - name: 2d.shadow.blur.high
   desc: Shadows look correct for large blurs
+  manual:
   testing:
     - 2d.shadow.render
   code: |
@@ -5364,7 +5365,6 @@
     ctx.shadowOffsetY = 0;
     ctx.shadowBlur = 100;
     ctx.fillRect(-200, -200, 200, 400);
-    @manual;
   expected: |
     size 100 50
     import math
@@ -8359,26 +8359,26 @@
   code: |
     ctx.moveTo(25, 25);
     ctx.bezierCurveTo(50, -50, 50, 100, 75, 25);
-    @assert ctx.isPointInPath(25, 20) == false;
-    @assert ctx.isPointInPath(25, 30) == false;
-    @assert ctx.isPointInPath(30, 20) == true;
-    @assert ctx.isPointInPath(30, 30) == false;
-    @assert ctx.isPointInPath(40, 2) == false;
-    @assert ctx.isPointInPath(40, 20) == true;
-    @assert ctx.isPointInPath(40, 30) == false;
-    @assert ctx.isPointInPath(40, 47) == false;
-    @assert ctx.isPointInPath(45, 20) == true;
-    @assert ctx.isPointInPath(45, 30) == false;
-    @assert ctx.isPointInPath(55, 20) == false;
-    @assert ctx.isPointInPath(55, 30) == true;
-    @assert ctx.isPointInPath(60, 2) == false;
-    @assert ctx.isPointInPath(60, 20) == false;
-    @assert ctx.isPointInPath(60, 30) == true;
-    @assert ctx.isPointInPath(60, 47) == false;
-    @assert ctx.isPointInPath(70, 20) == false;
-    @assert ctx.isPointInPath(70, 30) == true;
-    @assert ctx.isPointInPath(75, 20) == false;
-    @assert ctx.isPointInPath(75, 30) == false;
+    @assert ctx.isPointInPath(25, 20) === false;
+    @assert ctx.isPointInPath(25, 30) === false;
+    @assert ctx.isPointInPath(30, 20) === true;
+    @assert ctx.isPointInPath(30, 30) === false;
+    @assert ctx.isPointInPath(40, 2) === false;
+    @assert ctx.isPointInPath(40, 20) === true;
+    @assert ctx.isPointInPath(40, 30) === false;
+    @assert ctx.isPointInPath(40, 47) === false;
+    @assert ctx.isPointInPath(45, 20) === true;
+    @assert ctx.isPointInPath(45, 30) === false;
+    @assert ctx.isPointInPath(55, 20) === false;
+    @assert ctx.isPointInPath(55, 30) === true;
+    @assert ctx.isPointInPath(60, 2) === false;
+    @assert ctx.isPointInPath(60, 20) === false;
+    @assert ctx.isPointInPath(60, 30) === true;
+    @assert ctx.isPointInPath(60, 47) === false;
+    @assert ctx.isPointInPath(70, 20) === false;
+    @assert ctx.isPointInPath(70, 30) === true;
+    @assert ctx.isPointInPath(75, 20) === false;
+    @assert ctx.isPointInPath(75, 30) === false;
 
 - name: 2d.path.isPointInPath.winding
   desc: isPointInPath() uses the non-zero winding number rule
@@ -8932,6 +8932,17 @@
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
+- name: 2d.drawImage.svg
+  desc: drawImage() of an SVG image
+  testing:
+    - 2d.drawImage.svg
+  images:
+    - green.svg
+  code: |
+    ctx.drawImage(document.getElementById('green.svg'), 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
+  expected: green
+
 - name: 2d.drawImage.animated.gif
   desc: drawImage() of an animated GIF draws the first frame
   testing:
@@ -8940,7 +8951,7 @@
     - anim-gr.gif
   code: |
     deferTest();
-    setTimeout(wrapFunction(function () {
+    setTimeout(t.step_func_done(function () {
         ctx.drawImage(document.getElementById('anim-gr.gif'), 0, 0);
         @assert pixel 50,25 ==~ 0,255,0,255;
     }), 500);
@@ -8954,7 +8965,7 @@
     - anim-gr.png
   code: |
     deferTest();
-    setTimeout(wrapFunction(function () {
+    setTimeout(t.step_func_done(function () {
         ctx.drawImage(document.getElementById('anim-gr.png'), 0, 0);
         @assert pixel 50,25 ==~ 0,255,0,255;
     }), 500);
@@ -9139,7 +9150,7 @@
     - 2d.imageData.initial
   code: |
     var imgdata = ctx.createImageData(10, 20);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
     @assert imgdata.width < imgdata.height;
     @assert imgdata.width > 0;
     var isTransparentBlack = true;
@@ -9159,9 +9170,9 @@
     ctx.fillRect(0, 0, 100, 50);
     var imgdata1 = ctx.getImageData(0, 0, 10, 20);
     var imgdata2 = ctx.createImageData(imgdata1);
-    @assert imgdata2.data.length == imgdata1.data.length;
-    @assert imgdata2.width == imgdata1.width;
-    @assert imgdata2.height == imgdata1.height;
+    @assert imgdata2.data.length === imgdata1.data.length;
+    @assert imgdata2.width === imgdata1.width;
+    @assert imgdata2.height === imgdata1.height;
     var isTransparentBlack = true;
     for (var i = 0; i < imgdata2.data.length; ++i)
         if (imgdata2.data[i] !== 0)
@@ -9174,7 +9185,7 @@
     - 2d.imageData.create2.size
   code: |
     var imgdata = ctx.createImageData(1000, 2000);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
     @assert imgdata.width < imgdata.height;
     @assert imgdata.width > 0;
     var isTransparentBlack = true;
@@ -9190,9 +9201,9 @@
     - 2d.imageData.one
   code: |
     var imgdata = ctx.createImageData(0.0001, 0.0001);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
-    @assert imgdata.width == 1;
-    @assert imgdata.height == 1;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
+    @assert imgdata.width === 1;
+    @assert imgdata.height === 1;
     var isTransparentBlack = true;
     for (var i = 0; i < imgdata.data.length; ++i)
         if (imgdata.data[i] !== 0)
@@ -9208,9 +9219,9 @@
     var imgdata2 = ctx.createImageData(-10, 20);
     var imgdata3 = ctx.createImageData(10, -20);
     var imgdata4 = ctx.createImageData(-10, -20);
-    @assert imgdata1.data.length == imgdata2.data.length;
-    @assert imgdata2.data.length == imgdata3.data.length;
-    @assert imgdata3.data.length == imgdata4.data.length;
+    @assert imgdata1.data.length === imgdata2.data.length;
+    @assert imgdata2.data.length === imgdata3.data.length;
+    @assert imgdata3.data.length === imgdata4.data.length;
 
 - name: 2d.imageData.create2.zero
   desc: createImageData(sw, sh) throws INDEX_SIZE_ERR if size is zero
@@ -9247,8 +9258,8 @@
   code: |
     var imgdata1 = ctx.createImageData(10.01, 10.99);
     var imgdata2 = ctx.getImageData(0, 0, 10.01, 10.99);
-    @assert imgdata1.width == imgdata2.width;
-    @assert imgdata1.height == imgdata2.height;
+    @assert imgdata1.width === imgdata2.width;
+    @assert imgdata1.height === imgdata2.height;
 
 - name: 2d.imageData.get.basic
   desc: getImageData() exists and returns something
@@ -9401,9 +9412,9 @@
     - 2d.imageData.one
   code: |
     var imgdata = ctx.getImageData(0, 0, 0.0001, 0.0001);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
-    @assert imgdata.width == 1;
-    @assert imgdata.height == 1;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
+    @assert imgdata.width === 1;
+    @assert imgdata.height === 1;
 
 - name: 2d.imageData.get.nonpremul
   desc: getImageData() returns non-premultiplied colours
@@ -9458,7 +9469,7 @@
     - 2d.pixelarray.length
   code: |
     var imgdata = ctx.getImageData(0, 0, 10, 10);
-    @assert imgdata.data.length == imgdata.width*imgdata.height*4;
+    @assert imgdata.data.length === imgdata.width*imgdata.height*4;
 
 - name: 2d.imageData.get.order.cols
   desc: getImageData() returns leftmost columns first
@@ -9547,9 +9558,9 @@
     - 2d.imageData.type
   code: |
     var imgdata = ctx.getImageData(0, 0, 10, 10);
-    @assert typeof(imgdata.width) == 'number';
-    @assert typeof(imgdata.height) == 'number';
-    @assert typeof(imgdata.data) == 'object';
+    @assert typeof(imgdata.width) === 'number';
+    @assert typeof(imgdata.height) === 'number';
+    @assert typeof(imgdata.data) === 'object';
 
 - name: 2d.imageData.object.readonly
   desc: ImageData objects properties are read-only

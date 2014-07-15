@@ -50,7 +50,7 @@ test(unit(function (ctx) {
 
     //make nested shadow tree to check the reprojection
     var li1 = d.querySelector('#li1');
-    var s = createSR(li1);
+    var s = li1.createShadowRoot();
     var shadowLI1 = document.createElement('li');
     shadowLI1.innerHTML = '<content select=".cl1"></content>';
     s.appendChild(shadowLI1);
@@ -59,7 +59,7 @@ test(unit(function (ctx) {
     var ul = d.querySelector('#host');
 
     //make an old shadow tree
-    var s2 = createSR(ul);
+    var s2 = ul.createShadowRoot();
     var div2 = d.createElement('div');
     div2.innerHTML = '<ul><content select=".shadow2"></content></ul>';
     s2.appendChild(div2);
@@ -87,7 +87,7 @@ test(unit(function (ctx) {
 
 
     //make a young shadow tree
-    var s3 = createSR(ul);
+    var s3 = ul.createShadowRoot();
     var div3 = d.createElement('div');
     div3.innerHTML = '<ul><content select=".shadow"></content></ul>';
     s3.appendChild(div3);

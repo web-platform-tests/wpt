@@ -10,42 +10,10 @@
 <h1>HTML IDL tests</h1>
 <div id=log></div>
 
-<!-- URL IDLs -->
+<!-- URLUtils* stubs -->
 <script type=text/plain class=untested>
-[Constructor(DOMString url, optional (URL or DOMString) base = "about:blank")]
-interface URL {
-};
-URL implements URLUtils;
-
-[NoInterfaceObject]
-interface URLUtils {
-  stringifier attribute DOMString href;
-  readonly attribute DOMString origin;
-
-           attribute DOMString protocol;
-           attribute DOMString username;
-           attribute DOMString password;
-           attribute DOMString host;
-           attribute DOMString hostname;
-           attribute DOMString port;
-           attribute DOMString pathname;
-           attribute DOMString search;
-           attribute URLQuery? query;
-           attribute DOMString hash;
-};
-
-[NoInterfaceObject]
-interface URLUtilsReadOnly {
-  stringifier readonly attribute DOMString href;
-
-  readonly attribute DOMString protocol;
-  readonly attribute DOMString host;
-  readonly attribute DOMString hostname;
-  readonly attribute DOMString port;
-  readonly attribute DOMString pathname;
-  readonly attribute DOMString search;
-  readonly attribute DOMString hash;
-};
+interface URLUtils {};
+interface URLUtilsReadOnly {};
 </script>
 <!-- DOM IDLs -->
 <script type=text/plain class=untested>
@@ -2388,7 +2356,6 @@ interface ImageBitmapFactories {
   void createImageBitmap(ImageBitmapSource image, ImageBitmapCallback _callback, optional long sx, long sy, long sw, long sh);
 };
 Window implements ImageBitmapFactories;
-WorkerGlobalScope implements ImageBitmapFactories;
 
 interface DataTransfer {
            attribute DOMString dropEffect;
@@ -2437,29 +2404,6 @@ dictionary DragEventInit : MouseEventInit {
   DataTransfer? dataTransfer;
 };
 
-interface WorkerGlobalScope : EventTarget {
-  readonly attribute WorkerGlobalScope self;
-  readonly attribute WorkerLocation location;
-
-  void close();
-           attribute EventHandler onerror;
-           attribute EventHandler onoffline;
-           attribute EventHandler ononline;
-
-  // also has obsolete members
-};
-
-interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
-  void postMessage(any message, optional sequence<Transferable> transfer);
-           attribute EventHandler onmessage;
-};
-
-interface SharedWorkerGlobalScope : WorkerGlobalScope {
-  readonly attribute DOMString name;
-  readonly attribute ApplicationCache applicationCache;
-           attribute EventHandler onconnect;
-};
-
 [Constructor(DOMString type, optional ErrorEventInit eventInitDict)]
 interface ErrorEvent : Event {
   readonly attribute DOMString message;
@@ -2495,24 +2439,6 @@ interface SharedWorker : EventTarget {
   readonly attribute MessagePort port;
 };
 SharedWorker implements AbstractWorker;
-
-[NoInterfaceObject]
-partial interface WorkerGlobalScope {
-  void importScripts(DOMString... urls);
-  readonly attribute WorkerNavigator navigator;
-};
-WorkerGlobalScope implements WindowTimers;
-WorkerGlobalScope implements WindowBase64;
-
-interface WorkerNavigator {};
-WorkerNavigator implements NavigatorID;
-WorkerNavigator implements NavigatorLanguage;
-WorkerNavigator implements NavigatorOnLine;
-
-interface WorkerLocation {
-  stringifier readonly attribute DOMString href;
-};
-WorkerLocation implements URLUtilsReadOnly;
 
 [Constructor(DOMString type, optional MessageEventInit eventInitDict)]
 interface MessageEvent : Event {

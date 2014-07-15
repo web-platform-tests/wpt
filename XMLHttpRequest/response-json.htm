@@ -40,6 +40,8 @@
                     }else{
                         assert_equals(xhr.response, expectedResponse) // null comparison, basically
                     }
+                    assert_equals(xhr.response, xhr.response,
+                                  "Response should be cached")
                     test.done()
                 })
             }

@@ -9,10 +9,11 @@ import shutil
 import subprocess
 
 import fxos_appgen
+import gaiatest
 import mozdevice
 import moznetwork
+import mozrunner
 from mozprofile import FirefoxProfile, Preferences
-from mozrunner import B2GDeviceRunner
 
 from .base import get_free_port, BrowserError, Browser, ExecutorBrowser
 from ..executors.executormarionette import MarionetteTestharnessExecutor, required_files
@@ -101,14 +102,18 @@ class B2GBrowser(Browser):
         profile.set_preferences({"dom.disable_open_during_load": False})
 
         self.logger.debug("Creating device runner")
-        self.runner = B2GDeviceRunner(profile=profile)
+        self.runner = mozrunner.B2GDeviceRunner(profile=profile)
         self.logger.debug("Starting device runner")
         self.runner.start()
         self.logger.debug("Device runner started")
 
     def setup_hosts(self):
-        hosts = ["web-platform.test", "www.web-platform.test", "www1.web-platform.test", "www2.web-platform.test",
-                 "xn--n8j6ds53lwwkrqhv28a.web-platform.test", "xn--lve-6lad.web-platform.test"]
+        hosts = ["web-platform.test",
+                 "www.web-platform.test",
+                 "www1.web-platform.test",
+                 "www2.web-platform.test",
+                 "xn--n8j6ds53lwwkrqhv28a.web-platform.test",
+                 "xn--lve-6lad.web-platform.test"]
 
         host_ip = moznetwork.get_ip()
 
@@ -156,26 +161,6 @@ class B2GBrowser(Browser):
 
         return preferences
 
-    def wait_for_net(self):
-        # TODO: limit how long we wait before we fail
-        # consider the possibility that wlan0 is not the right interface
-
-        self.logger.info("Waiting for net connection")
-
-        def has_connection():
-            try:
-                return self.device.getIP(["wlan0"]) is not None
-            except mozdevice.DMError:
-                return False
-
-        t0 = time.time()
-        timeout = 60
-        while not has_connection():
-            if time.time() - t0 > timeout:
-                self.logger.error("Waiting for net timed out")
-                raise BrowserError("Waiting for net timed out")
-            time.sleep(1)
-
     def stop(self):
         pass
 
@@ -210,75 +195,58 @@ class B2GExecutorBrowser(ExecutorBrowser):
     # The following methods are called from a different process
     def __init__(self, *args, **kwargs):
         ExecutorBrowser.__init__(self, *args, **kwargs)
-        self.device = mozdevice.DeviceManagerADB()
+
+        import sys, subprocess
+
+        self.dm = mozdevice.DeviceManagerADB()
+        self.dm.forward("tcp:%s" % self.marionette_port,
+                        "tcp:2828")
+        print >> sys.stderr, subprocess.call(["adb", "forward", "--list"])
         self.executor = None
-        self.device.forward('tcp:%s' % self.marionette_port,
-                            'tcp:2828')
+        self.marionette = None
+        self.gaia_device = None
+        self.gaia_apps = None
 
     def after_connect(self, executor):
         self.executor = executor
+        self.marionette = executor.marionette
         self.executor.logger.debug("Running browser.after_connect steps")
+
+        self.gaia_device = gaiatest.GaiaDevice(marionette=executor.marionette,
+                                               manager=self.dm)
+        self.gaia_apps = gaiatest.GaiaApps(executor.marionette)
+
+        self.executor.logger.debug("Waiting for homescreen to load")
+        self.executor.logger.debug("B2G is running: %s" % self.gaia_device.is_b2g_running)
+#        self.wait_for_homescreen()
+        try:
+            self.gaia_device.wait_for_b2g_ready(timeout=60)
+        except:
+            self.executor.logger.debug(self.dm._checkCmd("logcat"))
+            self.executor.logger.debug("B2G is running: %s" % self.gaia_device.is_b2g_running)
+            raise
+
         self.install_cert_app()
         self.use_cert_app()
-        self.wait_for_net()
 
     def install_cert_app(self):
         """Install the container app used to run the tests"""
-
-        marionette = self.executor.marionette
-        if self.device.dirExists("/data/local/webapps/certtest-app"):
-            self.executor.logger.info("certtest_app is already installed")
+        if fxos_appgen.is_installed("CertTest App"):
+            self.executor.logger.info("CertTest App is already installed")
             return
-        self.executor.logger.info("Installing certtest_app")
+        self.executor.logger.info("Installing CertTest App")
         app_path = os.path.join(here, "b2g_setup", "certtest_app.zip")
-        fxos_appgen.install_app('CertTest App', app_path, marionette=self.executor.marionette)
+        fxos_appgen.install_app("CertTest App", app_path, marionette=self.marionette)
         self.executor.logger.debug("Install complete")
 
     def use_cert_app(self):
         """Start the app used to run the tests"""
-        marionette = self.executor.marionette
-
-        self.wait_for_homescreen(marionette)
         self.executor.logger.info("Homescreen loaded")
+        self.gaia_apps.launch("CertTest App")
 
-        marionette.set_context("content")
-
-        # app management is done in the system app
-        marionette.switch_to_frame()
-
-        self.executor.logger.debug("Loading app_management library")
-        marionette.import_script(os.path.join(here, "b2g_setup", "app_management.js"))
-        script = "GaiaApps.launchWithName('CertTest App');"
-
-        # NOTE: if the app is already launched, this doesn't launch a new app, it will return
-        # a reference to the existing app
-        self.executor.logger.info("Launching CertTest app")
-        self.cert_test_app = marionette.execute_async_script(script, script_timeout=5000)
-        if not self.cert_test_app:
-            raise Exception("Launching CertTest App failed")
-        marionette.switch_to_frame(self.cert_test_app["frame"])
-
-    def wait_for_net(self):
-        # TODO: limit how long we wait before we fail
-        # consider the possibility that wlan0 is not the right interface
-        self.executor.logger.info("Waiting for net connection")
-        def has_connection():
-            try:
-                return self.device.getIP(["wlan0"]) is not None
-            except mozdevice.DMError:
-                return False
-
-        t0 = time.time()
-        timeout = 60
-        while not has_connection():
-            if time.time() - t0 > timeout:
-                raise BrowserError("Waiting for net timed out")
-            time.sleep(1)
-
-    def wait_for_homescreen(self, marionette):
+    def wait_for_homescreen(self):
         """Wait for the Gaia homescreen to load"""
-
-        self.executor.logger.info("Waiting for homescreen to load")
+        marionette = self.marionette
         marionette.set_context(marionette.CONTEXT_CONTENT)
         marionette.execute_async_script("""
 let manager = window.wrappedJSObject.AppWindowManager || window.wrappedJSObject.WindowManager;

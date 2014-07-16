@@ -15,7 +15,7 @@ import urlparse
 from request import Server, Request
 from response import Response
 from router import Router
-import routes
+import routes as default_routes
 from utils import HTTPException
 
 
@@ -91,12 +91,16 @@ class RequestRewriter(object):
         :param request_handler: BaseHTTPRequestHandler for which to
                                 rewrite the request.
         """
-        if request_handler.path in self.rules:
-            methods, destination = self.rules[request_handler.path]
+        split_url = urlparse.urlsplit(request_handler.path)
+        if split_url.path in self.rules:
+            methods, destination = self.rules[split_url.path]
             if "*" in methods or request_handler.command in methods:
                 logger.debug("Rewriting request path %s to %s" %
                              (request_handler.path, destination))
-                request_handler.path = destination
+                new_url = list(split_url)
+                new_url[2] = destination
+                new_url = urlparse.urlunsplit(new_url)
+                request_handler.path = new_url
 
 
 class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
@@ -275,7 +279,7 @@ class WebTestHttpd(object):
     HTTP server designed for testing scenarios.
 
     Takes a router class which provides one method get_handler which takes a Request
-    and returns a handler function."
+    and returns a handler function.
 
     .. attribute:: host
 
@@ -305,9 +309,12 @@ class WebTestHttpd(object):
     def __init__(self, host="127.0.0.1", port=8000,
                  server_cls=None, handler_cls=WebTestRequestHandler,
                  use_ssl=False, certificate=None, router_cls=Router,
-                 doc_root=os.curdir, routes=routes.routes,
+                 doc_root=os.curdir, routes=None,
                  rewriter_cls=RequestRewriter, bind_hostname=True, rewrites=None,
                  config=None):
+
+        if routes is None:
+            routes = default_routes.routes
 
         self.host = host
 

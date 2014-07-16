@@ -16,15 +16,7 @@ from fnmatch import fnmatch
 def get_git_func(repo_path):
     def git(cmd, *args):
         full_cmd = ["git", cmd] + list(args)
-        proc = subprocess.Popen(full_cmd,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                cwd=repo_path)
-        stdout, stderr = proc.communicate()
-        if proc.returncode != 0:
-            raise subprocess.CalledProcessError(proc.returncode,
-                                                full_cmd)
-        return stdout
+        return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT)
     return git
 
 
@@ -34,9 +26,13 @@ def setup_git(repo_path):
     git = get_git_func(repo_path)
 
 
+_repo_root = None
 def get_repo_root():
-    git = get_git_func(os.path.dirname(__file__))
-    return git("rev-parse", "--show-toplevel").rstrip()
+    global _repo_root
+    if _repo_root is None:
+        git = get_git_func(os.path.dirname(__file__))
+        _repo_root = git("rev-parse", "--show-toplevel").rstrip()
+    return _repo_root
 
 
 manifest_name = "MANIFEST.json"
@@ -577,10 +573,10 @@ def update_manifest(repo_path, **kwargs):
         write(manifest, opts.path)
 
 
-def create_parser(repo_root):
+def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-p", "--path", default=os.path.join(repo_root, "MANIFEST.json"),
+        "-p", "--path", default=os.path.join(get_repo_root(), "MANIFEST.json"),
         help="path to manifest file")
     parser.add_argument(
         "-r", "--rebuild", action="store_true", default=False,
@@ -594,8 +590,12 @@ def create_parser(repo_root):
 
 
 if __name__ == "__main__":
-    repo_root = get_repo_root()
-    opts = create_parser(get_repo_root()).parse_args()
-    update_manifest(repo_root,
+    try:
+        get_repo_root()
+    except subprocess.CalledProcessError:
+        print "Script must be inside a web-platform-tests git clone."
+        sys.exit(1)
+    opts = create_parser().parse_args()
+    update_manifest(get_repo_root(),
                     rebuild=opts.rebuild,
                     local_changes=opts.experimental_include_local_changes)

@@ -757,16 +757,21 @@ partial interface Window {
 
 <!-- HTML IDLs -->
 <script type=text/plain>
+typedef (Int8Array or Uint8Array or Uint8ClampedArray or
+         Int16Array or Uint16Array or
+         Int32Array or Uint32Array or
+         Float32Array or Float64Array or
+         DataView) ArrayBufferView;
 interface HTMLAllCollection : HTMLCollection {
-  // inherits length and item(unsigned long index)
-  object? item(DOMString name);
-  legacycaller getter object? namedItem(DOMString name); // shadows inherited namedItem()
-  HTMLAllCollection tags(DOMString tagName);
+  // inherits length and 'getter'
+  Element? item(unsigned long index);
+  (HTMLCollection or Element)? item(DOMString name);
+  legacycaller getter (HTMLCollection or Element)? namedItem(DOMString name); // shadows inherited namedItem()
 };
 
 interface HTMLFormControlsCollection : HTMLCollection {
   // inherits length and item()
-  legacycaller getter object? namedItem(DOMString name); // shadows inherited namedItem()
+  legacycaller getter (RadioNodeList or Element)? namedItem(DOMString name); // shadows inherited namedItem()
 };
 
 interface RadioNodeList : NodeList {
@@ -776,7 +781,7 @@ interface RadioNodeList : NodeList {
 interface HTMLOptionsCollection : HTMLCollection {
   // inherits item()
            attribute unsigned long length; // shadows inherited length
-  legacycaller getter object? namedItem(DOMString name); // shadows inherited namedItem()
+  legacycaller HTMLOptionElement? (DOMString name);
   setter creator void (unsigned long index, HTMLOptionElement? option);
   void add((HTMLOptionElement or HTMLOptGroupElement) element, optional (HTMLElement or long)? before = null);
   void remove(long index);
@@ -795,6 +800,7 @@ interface PropertyNodeList : NodeList {
   PropertyValueArray getValues();
 };
 
+[OverrideBuiltins, Exposed=Window,Worker]
 interface DOMStringMap {
   getter DOMString (DOMString name);
   setter creator void (DOMString name, DOMString value);
@@ -840,8 +846,8 @@ partial /*sealed*/ interface Document {
   readonly attribute HTMLScriptElement? currentScript;
 
   // dynamic markup insertion
-  Document open(optional DOMString type, optional DOMString replace);
-  WindowProxy open(DOMString url, DOMString name, DOMString features, optional boolean replace);
+  Document open(optional DOMString type = "text/html", optional DOMString replace = "");
+  WindowProxy open(DOMString url, DOMString name, DOMString features, optional boolean replace = false);
   void close();
   void write(DOMString... text);
   void writeln(DOMString... text);
@@ -910,9 +916,6 @@ interface HTMLElement : Element {
   readonly attribute boolean? commandHidden;
   readonly attribute boolean? commandDisabled;
   readonly attribute boolean? commandChecked;
-
-  // styling
-  [PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 };
 HTMLElement implements GlobalEventHandlers;
 
@@ -934,7 +937,6 @@ interface HTMLBaseElement : HTMLElement {
 };
 
 interface HTMLLinkElement : HTMLElement {
-           attribute boolean disabled;
            attribute DOMString href;
            attribute DOMString crossOrigin;
            attribute DOMString rel;
@@ -957,7 +959,6 @@ interface HTMLMetaElement : HTMLElement {
 };
 
 interface HTMLStyleElement : HTMLElement {
-           attribute boolean disabled;
            attribute DOMString media;
            attribute DOMString type;
            attribute boolean scoped;
@@ -1029,7 +1030,6 @@ interface HTMLDivElement : HTMLElement {
 };
 
 interface HTMLAnchorElement : HTMLElement {
-  stringifier attribute DOMString href;
            attribute DOMString target;
            attribute DOMString download;
            attribute DOMString ping;
@@ -1062,12 +1062,18 @@ interface HTMLModElement : HTMLElement {
            attribute DOMString cite;
            attribute DOMString dateTime;
 };
-
+interface HTMLPictureElement : HTMLElement {};
+partial interface HTMLSourceElement {
+           attribute DOMString srcset;
+           attribute DOMString sizes;
+           attribute DOMString media;
+};
 [NamedConstructor=Image(optional unsigned long width, optional unsigned long height)]
 interface HTMLImageElement : HTMLElement {
            attribute DOMString alt;
            attribute DOMString src;
            attribute DOMString srcset;
+           attribute DOMString sizes;
            attribute DOMString crossOrigin;
            attribute DOMString useMap;
            attribute boolean isMap;
@@ -1076,6 +1082,7 @@ interface HTMLImageElement : HTMLElement {
   readonly attribute unsigned long naturalWidth;
   readonly attribute unsigned long naturalHeight;
   readonly attribute boolean complete;
+  readonly attribute DOMString currentSrc;
 
   // also has obsolete members
 };
@@ -1121,6 +1128,7 @@ interface HTMLObjectElement : HTMLElement {
   readonly attribute ValidityState validity;
   readonly attribute DOMString validationMessage;
   boolean checkValidity();
+  boolean reportValidity();
   void setCustomValidity(DOMString error);
 
   legacycaller any (any... arguments);
@@ -1149,7 +1157,6 @@ interface HTMLAudioElement : HTMLMediaElement {};
 interface HTMLSourceElement : HTMLElement {
            attribute DOMString src;
            attribute DOMString type;
-           attribute DOMString media;
 };
 
 interface HTMLTrackElement : HTMLElement {
@@ -1167,7 +1174,7 @@ interface HTMLTrackElement : HTMLElement {
 
   readonly attribute TextTrack track;
 };
-
+enum CanPlayTypeResult { "" /* empty string */, "maybe", "probably" };
 interface HTMLMediaElement : HTMLElement {
 
   // error state
@@ -1185,7 +1192,7 @@ interface HTMLMediaElement : HTMLElement {
            attribute DOMString preload;
   readonly attribute TimeRanges buffered;
   void load();
-  DOMString canPlayType(DOMString type);
+  CanPlayTypeResult canPlayType(DOMString type);
 
   // ready state
   const unsigned short HAVE_NOTHING = 0;
@@ -1200,7 +1207,7 @@ interface HTMLMediaElement : HTMLElement {
            attribute double currentTime;
   void fastSeek(double time);
   readonly attribute unrestricted double duration;
-  readonly attribute Date startDate;
+  Date getStartDate();
   readonly attribute boolean paused;
            attribute double defaultPlaybackRate;
            attribute double playbackRate;
@@ -1226,7 +1233,7 @@ interface HTMLMediaElement : HTMLElement {
   readonly attribute AudioTrackList audioTracks;
   readonly attribute VideoTrackList videoTracks;
   readonly attribute TextTrackList textTracks;
-  TextTrack addTextTrack(DOMString kind, optional DOMString label, optional DOMString language);
+  TextTrack addTextTrack(TextTrackKind kind, optional DOMString label = "", optional DOMString language = "");
 };
 
 interface MediaError {
@@ -1317,16 +1324,20 @@ interface MediaController : EventTarget {
 interface TextTrackList : EventTarget {
   readonly attribute unsigned long length;
   getter TextTrack (unsigned long index);
+  TextTrack? getTrackById(DOMString id);
 
+           attribute EventHandler onchange;
            attribute EventHandler onaddtrack;
            attribute EventHandler onremovetrack;
 };
-
-enum TextTrackMode { "disabled", "hidden", "showing" };
+enum TextTrackMode { "disabled",  "hidden",  "showing" };
+enum TextTrackKind { "subtitles",  "captions",  "descriptions",  "chapters",  "metadata" };
 interface TextTrack : EventTarget {
-  readonly attribute DOMString kind;
+  readonly attribute TextTrackKind kind;
   readonly attribute DOMString label;
   readonly attribute DOMString language;
+
+  readonly attribute DOMString id;
   readonly attribute DOMString inBandMetadataTrackDispatchType;
 
            attribute TextTrackMode mode;
@@ -1357,7 +1368,10 @@ interface TextTrackCue : EventTarget {
            attribute EventHandler onenter;
            attribute EventHandler onexit;
 };
-
+[Constructor(double startTime, double endTime, ArrayBuffer data)]
+interface DataCue : TextTrackCue {
+               attribute ArrayBuffer data;
+};
 interface TimeRanges {
   readonly attribute unsigned long length;
   double start(unsigned long index);
@@ -1366,11 +1380,11 @@ interface TimeRanges {
 
 [Constructor(DOMString type, optional TrackEventInit eventInitDict)]
 interface TrackEvent : Event {
-  readonly attribute object? track;
+  readonly attribute (VideoTrack or AudioTrack or TextTrack) track;
 };
 
 dictionary TrackEventInit : EventInit {
-  object? track;
+  (VideoTrack or AudioTrack or TextTrack) track;
 };
 
 typedef (CanvasRenderingContext2D or WebGLRenderingContext) RenderingContext;
@@ -1618,7 +1632,6 @@ interface HTMLAreaElement : HTMLElement {
            attribute DOMString alt;
            attribute DOMString coords;
            attribute DOMString shape;
-  stringifier attribute DOMString href;
            attribute DOMString target;
            attribute DOMString download;
            attribute DOMString ping;
@@ -1646,6 +1659,7 @@ interface HTMLTableElement : HTMLElement {
   readonly attribute HTMLCollection rows;
   HTMLElement insertRow(optional long index = -1);
   void deleteRow(long index);
+           attribute DOMString border;
            attribute boolean sortable;
   void stopSorting();
 
@@ -1715,33 +1729,14 @@ interface HTMLFormElement : HTMLElement {
   readonly attribute HTMLFormControlsCollection elements;
   readonly attribute long length;
   getter Element (unsigned long index);
-  getter object (DOMString name);
+  getter (RadioNodeList or Element) (DOMString name);
 
   void submit();
   void reset();
   boolean checkValidity();
-};
+  boolean reportValidity();
 
-interface HTMLFieldSetElement : HTMLElement {
-           attribute boolean disabled;
-  readonly attribute HTMLFormElement? form;
-           attribute DOMString name;
-
-  readonly attribute DOMString type;
-
-  readonly attribute HTMLFormControlsCollection elements;
-
-  readonly attribute boolean willValidate;
-  readonly attribute ValidityState validity;
-  readonly attribute DOMString validationMessage;
-  boolean checkValidity();
-  void setCustomValidity(DOMString error);
-};
-
-interface HTMLLegendElement : HTMLElement {
-  readonly attribute HTMLFormElement? form;
-
-  // also has obsolete members
+  void requestAutocomplete();
 };
 
 interface HTMLLabelElement : HTMLElement {
@@ -1773,6 +1768,7 @@ interface HTMLInputElement : HTMLElement {
            attribute DOMString max;
            attribute long maxLength;
            attribute DOMString min;
+           attribute long minLength;
            attribute boolean multiple;
            attribute DOMString name;
            attribute DOMString pattern;
@@ -1787,6 +1783,8 @@ interface HTMLInputElement : HTMLElement {
   [TreatNullAs=EmptyString] attribute DOMString value;
            attribute Date? valueAsDate;
            attribute unrestricted double valueAsNumber;
+           attribute double valueLow;
+           attribute double valueHigh;
            attribute unsigned long width;
 
   void stepUp(optional long n = 1);
@@ -1796,6 +1794,7 @@ interface HTMLInputElement : HTMLElement {
   readonly attribute ValidityState validity;
   readonly attribute DOMString validationMessage;
   boolean checkValidity();
+  boolean reportValidity();
   void setCustomValidity(DOMString error);
 
   readonly attribute NodeList labels;
@@ -1805,7 +1804,7 @@ interface HTMLInputElement : HTMLElement {
            attribute unsigned long selectionEnd;
            attribute DOMString selectionDirection;
   void setRangeText(DOMString replacement);
-  void setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode);
+  void setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
   void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
 
   // also has obsolete members
@@ -1829,12 +1828,14 @@ interface HTMLButtonElement : HTMLElement {
   readonly attribute ValidityState validity;
   readonly attribute DOMString validationMessage;
   boolean checkValidity();
+  boolean reportValidity();
   void setCustomValidity(DOMString error);
 
   readonly attribute NodeList labels;
 };
 
 interface HTMLSelectElement : HTMLElement {
+           attribute DOMString autocomplete;
            attribute boolean autofocus;
            attribute boolean disabled;
   readonly attribute HTMLFormElement? form;
@@ -1847,9 +1848,10 @@ interface HTMLSelectElement : HTMLElement {
 
   readonly attribute HTMLOptionsCollection options;
            attribute unsigned long length;
-  getter Element item(unsigned long index);
-  object namedItem(DOMString name);
+  getter Element? item(unsigned long index);
+  HTMLOptionElement? namedItem(DOMString name);
   void add((HTMLOptionElement or HTMLOptGroupElement) element, optional (HTMLElement or long)? before = null);
+  void remove(); // ChildNode overload
   void remove(long index);
   setter creator void (unsigned long index, HTMLOptionElement? option);
 
@@ -1861,6 +1863,7 @@ interface HTMLSelectElement : HTMLElement {
   readonly attribute ValidityState validity;
   readonly attribute DOMString validationMessage;
   boolean checkValidity();
+  boolean reportValidity();
   void setCustomValidity(DOMString error);
 
   readonly attribute NodeList labels;
@@ -1897,6 +1900,7 @@ interface HTMLTextAreaElement : HTMLElement {
   readonly attribute HTMLFormElement? form;
            attribute DOMString inputMode;
            attribute long maxLength;
+           attribute long minLength;
            attribute DOMString name;
            attribute DOMString placeholder;
            attribute boolean readOnly;
@@ -1913,6 +1917,7 @@ interface HTMLTextAreaElement : HTMLElement {
   readonly attribute ValidityState validity;
   readonly attribute DOMString validationMessage;
   boolean checkValidity();
+  boolean reportValidity();
   void setCustomValidity(DOMString error);
 
   readonly attribute NodeList labels;
@@ -1922,7 +1927,7 @@ interface HTMLTextAreaElement : HTMLElement {
            attribute unsigned long selectionEnd;
            attribute DOMString selectionDirection;
   void setRangeText(DOMString replacement);
-  void setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode);
+  void setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
   void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
 };
 
@@ -1940,6 +1945,7 @@ interface HTMLKeygenElement : HTMLElement {
   readonly attribute ValidityState validity;
   readonly attribute DOMString validationMessage;
   boolean checkValidity();
+  boolean reportValidity();
   void setCustomValidity(DOMString error);
 
   readonly attribute NodeList labels;
@@ -1958,6 +1964,7 @@ interface HTMLOutputElement : HTMLElement {
   readonly attribute ValidityState validity;
   readonly attribute DOMString validationMessage;
   boolean checkValidity();
+  boolean reportValidity();
   void setCustomValidity(DOMString error);
 
   readonly attribute NodeList labels;
@@ -1979,12 +1986,40 @@ interface HTMLMeterElement : HTMLElement {
            attribute double optimum;
   readonly attribute NodeList labels;
 };
+interface HTMLFieldSetElement : HTMLElement {
+           attribute boolean disabled;
+  readonly attribute HTMLFormElement? form;
+           attribute DOMString name;
 
+  readonly attribute DOMString type;
+
+  readonly attribute HTMLFormControlsCollection elements;
+
+  readonly attribute boolean willValidate;
+  readonly attribute ValidityState validity;
+  readonly attribute DOMString validationMessage;
+  boolean checkValidity();
+  boolean reportValidity();
+  void setCustomValidity(DOMString error);
+};
+interface HTMLLegendElement : HTMLElement {
+  readonly attribute HTMLFormElement? form;
+};
+enum AutocompleteErrorReason { "" /* empty string */, "cancel", "disabled", "invalid" };
+
+[Constructor(DOMString type, optional AutocompleteErrorEventInit eventInitDict)]
+interface AutocompleteErrorEvent : Event {
+  readonly attribute AutocompleteErrorReason reason;
+};
+
+dictionary AutocompleteErrorEventInit : EventInit {
+  AutocompleteErrorReason reason;
+};
 enum SelectionMode {
   "select",
   "start",
   "end",
-  "preserve"
+  "preserve" // default
 };
 
 interface ValidityState {
@@ -1992,6 +2027,7 @@ interface ValidityState {
   readonly attribute boolean typeMismatch;
   readonly attribute boolean patternMismatch;
   readonly attribute boolean tooLong;
+  readonly attribute boolean tooShort;
   readonly attribute boolean rangeUnderflow;
   readonly attribute boolean rangeOverflow;
   readonly attribute boolean stepMismatch;
@@ -2038,8 +2074,79 @@ interface HTMLDialogElement : HTMLElement {
   void showModal(optional (MouseEvent or Element) anchor);
   void close(optional DOMString returnValue);
 };
+interface HTMLScriptElement : HTMLElement {
+           attribute DOMString src;
+           attribute DOMString type;
+           attribute DOMString charset;
+           attribute boolean async;
+           attribute boolean defer;
+           attribute DOMString crossOrigin;
+           attribute DOMString text;
+};
+interface HTMLTemplateElement : HTMLElement {
+  readonly attribute DocumentFragment content;
+};
+typedef (CanvasRenderingContext2D or WebGLRenderingContext) RenderingContext;
 
-[NamedPropertiesObject]
+interface HTMLCanvasElement : HTMLElement {
+           attribute unsigned long width;
+           attribute unsigned long height;
+
+  RenderingContext? getContext(DOMString contextId, any... arguments);
+  boolean probablySupportsContext(DOMString contextId, any... arguments);
+
+  void setContext(RenderingContext context);
+  CanvasProxy transferControlToProxy();
+
+  DOMString toDataURL(optional DOMString type, any... arguments);
+  void toBlob(FileCallback? _callback, optional DOMString type, any... arguments);
+};
+[Exposed=Window,Worker]
+interface CanvasProxy {
+  void setContext(RenderingContext context);
+};
+// CanvasProxy implements Transferable;
+interface DataTransfer {
+           attribute DOMString dropEffect;
+           attribute DOMString effectAllowed;
+
+  readonly attribute DataTransferItemList items;
+
+  void setDragImage(Element image, long x, long y);
+
+  /* old interface */
+  readonly attribute DOMString[] types;
+  DOMString getData(DOMString format);
+  void setData(DOMString format, DOMString data);
+  void clearData(optional DOMString format);
+  readonly attribute FileList files;
+};
+interface DataTransferItemList {
+  readonly attribute unsigned long length;
+  getter DataTransferItem (unsigned long index);
+  DataTransferItem? add(DOMString data, DOMString type);
+  DataTransferItem? add(File data);
+  void remove(unsigned long index);
+  void clear();
+};
+interface DataTransferItem {
+  readonly attribute DOMString kind;
+  readonly attribute DOMString type;
+  void getAsString(FunctionStringCallback? _callback);
+  File? getAsFile();
+};
+
+callback FunctionStringCallback = void (DOMString data);
+[Constructor(DOMString type, optional DragEventInit eventInitDict)]
+interface DragEvent : MouseEvent {
+  readonly attribute DataTransfer? dataTransfer;
+};
+
+dictionary DragEventInit : MouseEventInit {
+  DataTransfer? dataTransfer;
+};
+
+[PrimaryGlobal]
 /*sealed*/ interface Window : EventTarget {
   // the current browsing context
   [Unforgeable] readonly attribute WindowProxy window;
@@ -2056,6 +2163,7 @@ interface HTMLDialogElement : HTMLElement {
   [Replaceable] readonly attribute BarProp toolbar;
            attribute DOMString status;
   void close();
+  readonly attribute boolean closed;
   void stop();
   void focus();
   void blur();
@@ -2064,26 +2172,25 @@ interface HTMLDialogElement : HTMLElement {
   [Replaceable] readonly attribute WindowProxy frames;
   [Replaceable] readonly attribute unsigned long length;
   [Unforgeable] readonly attribute WindowProxy top;
-           attribute WindowProxy? opener;
+           attribute any opener;
   readonly attribute WindowProxy parent;
   readonly attribute Element? frameElement;
-  WindowProxy open(optional DOMString url, optional DOMString target, optional DOMString features, optional boolean replace);
+  WindowProxy open(optional DOMString url = "about:blank", optional DOMString target = "_blank", optional DOMString features = "", optional boolean replace = false);
   getter WindowProxy (unsigned long index);
   getter object (DOMString name);
 
   // the user agent
   readonly attribute Navigator navigator;
-  readonly attribute External external;
+  [Replaceable] readonly attribute External external;
   readonly attribute ApplicationCache applicationCache;
 
   // user prompts
-  // TODO https://www.w3.org/Bugs/Public/show_bug.cgi?id=21587
-  // void alert(DOMString message);
-  // boolean confirm(DOMString message);
-  // DOMString? prompt(DOMString message, optional DOMString default);
+  void alert();
+  void alert(DOMString message);
+  boolean confirm(optional DOMString message = "");
+  DOMString? prompt(optional DOMString message = "", optional DOMString default = "");
   void print();
-  // TODO freezes WebKit
-  // any showModalDialog(DOMString url, optional any argument);
+  any showModalDialog(DOMString url, optional any argument);
 
   void postMessage(any message, DOMString targetOrigin, optional sequence<Transferable> transfer);
 };
@@ -2105,15 +2212,13 @@ interface History {
 };
 
 [Unforgeable] interface Location {
-  stringifier attribute DOMString href;
-  // TODO causes infinite loop in Opera
-  // void assign(DOMString url);
-  // void replace(DOMString url);
+  void assign(DOMString url);
+  void replace(DOMString url);
   void reload();
 };
 Location implements URLUtils;
 
-[Constructor(DOMString type, optional PopStateEventInit eventInitDict)]
+[Constructor(DOMString type, optional PopStateEventInit eventInitDict), Exposed=Window,Worker]
 interface PopStateEvent : Event {
   readonly attribute any state;
 };
@@ -2122,7 +2227,7 @@ dictionary PopStateEventInit : EventInit {
   any state;
 };
 
-[Constructor(DOMString type, optional HashChangeEventInit eventInitDict)]
+[Constructor(DOMString type, optional HashChangeEventInit eventInitDict), Exposed=Window,Worker]
 interface HashChangeEvent : Event {
   readonly attribute DOMString oldURL;
   readonly attribute DOMString newURL;
@@ -2133,7 +2238,7 @@ dictionary HashChangeEventInit : EventInit {
   DOMString newURL;
 };
 
-[Constructor(DOMString type, optional PageTransitionEventInit eventInitDict)]
+[Constructor(DOMString type, optional PageTransitionEventInit eventInitDict), Exposed=Window,Worker]
 interface PageTransitionEvent : Event {
   readonly attribute boolean persisted;
 };
@@ -2146,6 +2251,7 @@ interface BeforeUnloadEvent : Event {
            attribute DOMString returnValue;
 };
 
+[Exposed=Window,SharedWorker]
 interface ApplicationCache : EventTarget {
 
   // update status
@@ -2173,25 +2279,42 @@ interface ApplicationCache : EventTarget {
            attribute EventHandler onobsolete;
 };
 
-[NoInterfaceObject]
+[NoInterfaceObject, Exposed=Window,Worker]
 interface NavigatorOnLine {
   readonly attribute boolean onLine;
 };
+[Constructor(DOMString type, optional ErrorEventInit eventInitDict), Exposed=Window,Worker]
+interface ErrorEvent : Event {
+  readonly attribute DOMString message;
+  readonly attribute DOMString filename;
+  readonly attribute unsigned long lineno;
+  readonly attribute unsigned long colno;
+  readonly attribute any error;
+};
 
+dictionary ErrorEventInit : EventInit {
+  DOMString message;
+  DOMString filename;
+  unsigned long lineno;
+  unsigned long colno;
+  any error;
+};
 [TreatNonCallableAsNull]
 callback EventHandlerNonNull = any (Event event);
 typedef EventHandlerNonNull? EventHandler;
 
 [TreatNonCallableAsNull]
-callback OnErrorEventHandlerNonNull = any ((Event or DOMString) event, optional DOMString source, optional unsigned long lineno, optional unsigned long column);
+callback OnErrorEventHandlerNonNull = any ((Event or DOMString) event, optional DOMString source, optional unsigned long lineno, optional unsigned long column, optional any error);
 typedef OnErrorEventHandlerNonNull? OnErrorEventHandler;
-
+[TreatNonCallableAsNull]
+callback OnBeforeUnloadEventHandlerNonNull = DOMString? (Event event);
+typedef OnBeforeUnloadEventHandlerNonNull? OnBeforeUnloadEventHandler;
 [NoInterfaceObject]
 interface GlobalEventHandlers {
            attribute EventHandler onabort;
+           attribute EventHandler onautocomplete;
+           attribute EventHandler onautocompleteerror;
            attribute EventHandler onblur;
-           attribute OnErrorEventHandler onerror;
-           attribute EventHandler onfocus;
            attribute EventHandler oncancel;
            attribute EventHandler oncanplay;
            attribute EventHandler oncanplaythrough;
@@ -2212,6 +2335,8 @@ interface GlobalEventHandlers {
            attribute EventHandler ondurationchange;
            attribute EventHandler onemptied;
            attribute EventHandler onended;
+           attribute OnErrorEventHandler onerror;
+           attribute EventHandler onfocus;
            attribute EventHandler oninput;
            attribute EventHandler oninvalid;
            attribute EventHandler onkeydown;
@@ -2235,6 +2360,7 @@ interface GlobalEventHandlers {
            attribute EventHandler onprogress;
            attribute EventHandler onratechange;
            attribute EventHandler onreset;
+           attribute EventHandler onresize;
            attribute EventHandler onscroll;
            attribute EventHandler onseeked;
            attribute EventHandler onseeking;
@@ -2245,6 +2371,7 @@ interface GlobalEventHandlers {
            attribute EventHandler onsubmit;
            attribute EventHandler onsuspend;
            attribute EventHandler ontimeupdate;
+           attribute EventHandler ontoggle;
            attribute EventHandler onvolumechange;
            attribute EventHandler onwaiting;
 };
@@ -2253,42 +2380,41 @@ interface GlobalEventHandlers {
 interface WindowEventHandlers {
            attribute EventHandler onafterprint;
            attribute EventHandler onbeforeprint;
-           attribute EventHandler onbeforeunload;
-           attribute EventHandler onfullscreenchange;
-           attribute EventHandler onfullscreenerror;
+           attribute OnBeforeUnloadEventHandler onbeforeunload;
            attribute EventHandler onhashchange;
+           attribute EventHandler onlanguagechange;
            attribute EventHandler onmessage;
            attribute EventHandler onoffline;
            attribute EventHandler ononline;
            attribute EventHandler onpagehide;
            attribute EventHandler onpageshow;
            attribute EventHandler onpopstate;
-           attribute EventHandler onresize;
            attribute EventHandler onstorage;
            attribute EventHandler onunload;
 };
 
-[NoInterfaceObject]
+[NoInterfaceObject, Exposed=Window,Worker]
 interface WindowBase64 {
   DOMString btoa(DOMString btoa);
   DOMString atob(DOMString atob);
 };
 Window implements WindowBase64;
 
-[NoInterfaceObject]
+[NoInterfaceObject, Exposed=Window,Worker]
 interface WindowTimers {
-  long setTimeout(Function handler, optional long timeout, any... arguments);
-  long setTimeout(DOMString handler, optional long timeout, any... arguments);
-  void clearTimeout(long handle);
-  long setInterval(Function handler, optional long timeout, any... arguments);
-  long setInterval(DOMString handler, optional long timeout, any... arguments);
-  void clearInterval(long handle);
+  long setTimeout(Function handler, optional long timeout = 0, any... arguments);
+  long setTimeout(DOMString handler, optional long timeout = 0, any... arguments);
+  void clearTimeout(optional long handle = 0);
+  long setInterval(Function handler, optional long timeout = 0, any... arguments);
+  long setInterval(DOMString handler, optional long timeout = 0, any... arguments);
+  void clearInterval(optional long handle = 0);
 };
 Window implements WindowTimers;
 
-[NoInterfaceObject] interface WindowModal {
+[NoInterfaceObject]
+interface WindowModal {
   readonly attribute any dialogArguments;
-           attribute DOMString returnValue;
+           attribute any returnValue;
 };
 
 interface Navigator {
@@ -2299,21 +2425,23 @@ Navigator implements NavigatorLanguage;
 Navigator implements NavigatorOnLine;
 Navigator implements NavigatorContentUtils;
 Navigator implements NavigatorStorageUtils;
+Navigator implements NavigatorPlugins;
 
-[NoInterfaceObject]
+[NoInterfaceObject, Exposed=Window,Worker]
 interface NavigatorID {
+  readonly attribute DOMString appCodeName; // constant "Mozilla"
   readonly attribute DOMString appName;
   readonly attribute DOMString appVersion;
   readonly attribute DOMString platform;
+  readonly attribute DOMString product; // constant "Gecko"
+  boolean taintEnabled(); // constant false
   readonly attribute DOMString userAgent;
-
-  // TODO: Invalid WebIDL
-  // const DOMString product = "Gecko"; // for historical reasons
 };
 
-[NoInterfaceObject]
+[NoInterfaceObject, Exposed=Window,Worker]
 interface NavigatorLanguage {
   readonly attribute DOMString? language;
+  readonly attribute DOMString[] languages;
 };
 
 [NoInterfaceObject]
@@ -2329,19 +2457,55 @@ interface NavigatorContentUtils {
 
 [NoInterfaceObject]
 interface NavigatorStorageUtils {
+  readonly attribute boolean cookieEnabled;
   void yieldForStorageUpdates();
 };
 
+[NoInterfaceObject]
+interface NavigatorPlugins {
+  readonly attribute PluginArray plugins;
+  readonly attribute MimeTypeArray mimeTypes;
+  readonly attribute boolean javaEnabled;
+};
+
+interface PluginArray {
+  void refresh(optional boolean reload = false);
+  readonly attribute unsigned long length;
+  getter Plugin? item(unsigned long index);
+  getter Plugin? namedItem(DOMString name);
+};
+
+interface MimeTypeArray {
+  readonly attribute unsigned long length;
+  getter MimeType? item(unsigned long index);
+  getter MimeType? namedItem(DOMString name);
+};
+
+interface Plugin {
+  readonly attribute DOMString name;
+  readonly attribute DOMString description;
+  readonly attribute DOMString filename;
+  readonly attribute unsigned long length;
+  getter MimeType? item(unsigned long index);
+  getter MimeType? namedItem(DOMString name);
+};
+
+interface MimeType {
+  readonly attribute DOMString type;
+  readonly attribute DOMString description;
+  readonly attribute DOMString suffixes; // comma-separated
+  readonly attribute Plugin enabledPlugin;
+};
 interface External {
   void AddSearchProvider(DOMString engineURL);
   unsigned long IsSearchProviderInstalled(DOMString engineURL);
 };
 
+[Exposed=Window,Worker]
 interface ImageBitmap {
-  // opaque object
+  readonly attribute unsigned long width;
+  readonly attribute unsigned long height;
 };
-
-callback ImageBitmapCallback = void (ImageBitmap image);
 
 typedef (HTMLImageElement or
          HTMLVideoElement or
@@ -2351,73 +2515,12 @@ typedef (HTMLImageElement or
          CanvasRenderingContext2D or
          ImageBitmap) ImageBitmapSource;
 
-[NoInterfaceObject]
+[NoInterfaceObject, Exposed=Window,Worker]
 interface ImageBitmapFactories {
-  void createImageBitmap(ImageBitmapSource image, ImageBitmapCallback _callback, optional long sx, long sy, long sw, long sh);
+  Promise createImageBitmap(ImageBitmapSource image, optional long sx, long sy, long sw, long sh);
 };
 Window implements ImageBitmapFactories;
-
-interface DataTransfer {
-           attribute DOMString dropEffect;
-           attribute DOMString effectAllowed;
-
-  readonly attribute DataTransferItemList items;
-
-  void setDragImage(Element image, long x, long y);
-
-  /* old interface */
-  readonly attribute DOMString[] types;
-  DOMString getData(DOMString format);
-  void setData(DOMString format, DOMString data);
-  void clearData(optional DOMString format);
-  readonly attribute FileList files;
-};
-
-interface DataTransferItemList {
-  readonly attribute unsigned long length;
-  getter DataTransferItem (unsigned long index);
-  deleter void (unsigned long index);
-  void clear();
-
-  DataTransferItem? add(DOMString data, DOMString type);
-  DataTransferItem? add(File data);
-};
-
-interface DataTransferItem {
-  readonly attribute DOMString kind;
-  readonly attribute DOMString type;
-  void getAsString(FunctionStringCallback? _callback);
-  File? getAsFile();
-};
-
-[Callback, NoInterfaceObject]
-interface FunctionStringCallback {
-  void handleEvent(DOMString data);
-};
-
-[Constructor(DOMString type, optional DragEventInit eventInitDict)]
-interface DragEvent : MouseEvent {
-  readonly attribute DataTransfer? dataTransfer;
-};
-
-dictionary DragEventInit : MouseEventInit {
-  DataTransfer? dataTransfer;
-};
-
-[Constructor(DOMString type, optional ErrorEventInit eventInitDict)]
-interface ErrorEvent : Event {
-  readonly attribute DOMString message;
-  readonly attribute DOMString filename;
-  readonly attribute unsigned long lineno;
-  readonly attribute unsigned long column;
-};
-
-dictionary ErrorEventInit : EventInit {
-  DOMString message;
-  DOMString filename;
-  unsigned long lineno;
-  unsigned long column;
-};
+WorkerGlobalScope implements ImageBitmapFactories;
 
 [NoInterfaceObject]
 interface AbstractWorker {
@@ -2625,6 +2728,7 @@ partial interface HTMLIFrameElement {
 
 partial interface HTMLImageElement {
            attribute DOMString name;
+           attribute DOMString lowsrc;
            attribute DOMString align;
            attribute unsigned long hspace;
            attribute unsigned long vspace;
@@ -2759,9 +2863,17 @@ partial interface Document {
   readonly attribute HTMLCollection applets;
 
   void clear();
+  void captureEvents();
+  void releaseEvents();
 
   readonly attribute HTMLAllCollection all;
 };
+
+partial interface Window {
+  void captureEvents();
+  void releaseEvents();
+};
+
 </script>
 <script>
 "use strict";
@@ -2892,6 +3004,7 @@ window.onload = function() {
 			'document.createElement("ins")',
 			'document.createElement("del")',
 		],
+		HTMLPictureElement: ['document.createElement("picture")'],
 		HTMLImageElement: ['document.createElement("img")', 'new Image()'],
 		HTMLIframeElement: ['document.createElement("iframe")'],
 		HTMLEmbedElement: ['document.createElement("embed")'],
@@ -2912,6 +3025,7 @@ window.onload = function() {
 		TextTrack: ['document.createElement("track").track'],
 		TextTrackCueList: ['document.createElement("video").addTextTrack("subtitles").cues'],
 		TextTrackCue: [],
+		DataCue: [],
 		TimeRanges: ['document.createElement("video").buffered'],
 		TrackEvent: ['new TrackEvent("addtrack"; {track:document.createElement("track").track})'],
 		HTMLCanvasElement: ['document.createElement("canvas")'],

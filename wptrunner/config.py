@@ -39,10 +39,10 @@ def path(check_argv=True):
             if arg == "--config":
                 if i + 1 < len(sys.argv):
                     path = sys.argv[i+1]
-                elif arg.startswith("--config="):
-                    path = arg.split("=", 1)[1]
-                if path is not None:
-                    break
+            elif arg.startswith("--config="):
+                path = arg.split("=", 1)[1]
+            if path is not None:
+                break
 
     if path is None:
         if os.path.exists("wptrunner.ini"):

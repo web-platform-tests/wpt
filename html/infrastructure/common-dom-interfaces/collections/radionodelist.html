@@ -22,7 +22,7 @@ setup(function () {
 //on getting
 test(function () {
   assert_equals(rdoList.value, "", "The value attribute should be empty.");
-}, "The value attribute should be empty of no element is checked.");
+}, "The value attribute should be empty if no element is checked");
 
 test(function () {
   document.getElementById("r2").checked = true;
@@ -31,7 +31,7 @@ test(function () {
 
 test(function () {
   document.getElementById("r1").checked = true;
-  assert_equals(rdoList.value, "", "The value attribute should be empty string.");
+  assert_equals(rdoList.value, "on", "The value attribute should be on.");
 
   document.getElementById("r1").value = 1;
   assert_equals(rdoList.value, "1", "The value attribute should be 1.");

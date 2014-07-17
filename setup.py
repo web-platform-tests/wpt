@@ -54,4 +54,5 @@ install the extra dependencies. These are provided as requirements_[name].txt an
 can be installed using e.g.
 
 pip install -r requirements_firefox.txt
-"
+"""
+

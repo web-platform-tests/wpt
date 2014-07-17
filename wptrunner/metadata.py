@@ -240,7 +240,7 @@ def create_test_tree(metadata_path, manifest):
     test_id_path_map = {}
     exclude_types = frozenset(["stub", "helper", "manual"])
     include_types = set(manifest.item_types) ^ exclude_types
-    for test_path, tests in manifest.itertypes(include_types):
+    for test_path, tests in manifest.itertypes(*include_types):
 
         expected_data = load_expected(metadata_path, test_path, tests)
         if expected_data is None:

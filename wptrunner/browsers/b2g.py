@@ -219,7 +219,7 @@ class B2GExecutorBrowser(ExecutorBrowser):
         self.executor.logger.debug("B2G is running: %s" % self.gaia_device.is_b2g_running)
 
         # Moved out of gaia_test temporarily
-        self.executor.logger.info"Waiting for B2G to be ready")
+        self.executor.logger.info("Waiting for B2G to be ready")
         self.wait_for_b2g_ready(timeout=60)
 
         self.install_cert_app()
@@ -242,8 +242,8 @@ class B2GExecutorBrowser(ExecutorBrowser):
 
     def wait_for_b2g_ready(self, timeout):
         # Wait for the homescreen to finish loading
-        Wait(self.marionette, timeout).until(expected.element_present(
-            By.CSS_SELECTOR, '#homescreen[loading-state=false]'))
+        gaiatest.Wait(self.marionette, timeout).until(gaiatest.expected.element_present(
+            gaiatest.By.CSS_SELECTOR, '#homescreen[loading-state=false]'))
 
 class B2GMarionetteTestharnessExecutor(MarionetteTestharnessExecutor):
     def after_connect(self):

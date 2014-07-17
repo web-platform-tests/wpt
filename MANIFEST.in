@@ -1,6 +1,5 @@
 exclude MANIFEST.in
 include requirements.txt
-include requirements_*.txt
 include wptrunner/browsers/b2g_setup/*
 include wptrunner.default.ini
 include wptrunner/testharness_runner.html

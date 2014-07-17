@@ -2,10 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import sys
+
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'wptrunner'
-PACKAGE_VERSION = '0.3.13'
+PACKAGE_VERSION = '0.4'
 
 # dependencies
 with open('requirements.txt') as f:
@@ -49,7 +51,8 @@ setup(name=PACKAGE_NAME,
       install_requires=deps
      )
 
-print """In order to use with one of the built-in browser products, you will need to
+if "install" in sys.argv:
+    print """In order to use with one of the built-in browser products, you will need to
 install the extra dependencies. These are provided as requirements_[name].txt and
 can be installed using e.g.
 

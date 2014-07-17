@@ -48,3 +48,10 @@ setup(name=PACKAGE_NAME,
       data_files=[("config", ["config.ini"])],
       install_requires=deps
      )
+
+print """In order to use with one of the built-in browser products, you will need to
+install the extra dependencies. These are provided as requirements_[name].txt and
+can be installed using e.g.
+
+pip install -r requirements_firefox.txt
+"

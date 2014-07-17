@@ -27,6 +27,11 @@
                     test_pointerEvent.step(function () {
                         assert_equals(event.pointerType, "pen", "Test should be run using a pen as input");
                         assert_equals(event.type, "pointerleave", "The " + event.type + " event was received");
+                        assert_true((event.clientX > target0.getBoundingClientRect().left)&&
+                            (event.clientX < target0.getBoundingClientRect().right)&&
+                            (event.clientY > target0.getBoundingClientRect().top)&&
+                            (event.clientY < target0.getBoundingClientRect().bottom),
+                            "pointerleave should be received inside of target bounds");
                     });
                     detected_pointertypes[event.pointerType] = true;
                     test_pointerEvent.done(); // complete test

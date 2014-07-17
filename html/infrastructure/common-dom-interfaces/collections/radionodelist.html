@@ -30,6 +30,7 @@ test(function () {
 }, "The RadioNodeList.value must be the first checked radio button's value");
 
 test(function () {
+  // Spec bug, "" vs "on": https://www.w3.org/Bugs/Public/show_bug.cgi?id=26353
   document.getElementById("r1").checked = true;
   assert_equals(rdoList.value, "on", "The value attribute should be on.");
 

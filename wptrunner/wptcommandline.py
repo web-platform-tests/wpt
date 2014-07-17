@@ -100,6 +100,9 @@ def create_parser(product_choices=None):
 
 
 def set_from_config(kwargs):
+    if kwargs["config"] is None:
+        kwargs["config"] = config.path()
+
     kwargs["config"] = config.read(kwargs["config"])
 
     keys = {"paths": [("tests", "tests_root", True), ("metadata", "metadata_root", True)],

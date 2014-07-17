@@ -86,7 +86,7 @@ class B2GBrowser(Browser):
             self.backup_dirs = [("/data/local", os.path.join(self.backup_path, "local")),
                                 ("/data/b2g/mozilla", os.path.join(self.backup_path, "profile"))]
 
-            self.backup_paths = [("/system/etc/hosts", os.path.join(self.backup_path, "etc/hosts"))]
+            self.backup_paths = [("/system/etc/hosts", os.path.join(self.backup_path, "hosts"))]
 
             for remote, local in self.backup_dirs:
                 self.device.getDirectory(remote, local)
@@ -99,7 +99,8 @@ class B2GBrowser(Browser):
     def start(self):
         profile = FirefoxProfile()
 
-        profile.set_preferences({"dom.disable_open_during_load": False})
+        profile.set_preferences({"dom.disable_open_during_load": False,
+                                 "marionette.defaultPrefs.enabled": True})
 
         self.logger.debug("Creating device runner")
         self.runner = mozrunner.B2GDeviceRunner(profile=profile)
@@ -121,7 +122,7 @@ class B2GBrowser(Browser):
         hosts_path = os.path.join(temp_dir, "hosts")
         remote_path = "/system/etc/hosts"
         try:
-            self.device.getFile("/etc/hosts", hosts_path)
+            self.device.getFile("/system/etc/hosts", hosts_path)
 
             with open(hosts_path, "a+") as f:
                 hosts_present = set()
@@ -201,7 +202,6 @@ class B2GExecutorBrowser(ExecutorBrowser):
         self.dm = mozdevice.DeviceManagerADB()
         self.dm.forward("tcp:%s" % self.marionette_port,
                         "tcp:2828")
-        print >> sys.stderr, subprocess.call(["adb", "forward", "--list"])
         self.executor = None
         self.marionette = None
         self.gaia_device = None
@@ -218,13 +218,10 @@ class B2GExecutorBrowser(ExecutorBrowser):
 
         self.executor.logger.debug("Waiting for homescreen to load")
         self.executor.logger.debug("B2G is running: %s" % self.gaia_device.is_b2g_running)
-#        self.wait_for_homescreen()
-        try:
-            self.gaia_device.wait_for_b2g_ready(timeout=60)
-        except:
-            self.executor.logger.debug(self.dm._checkCmd("logcat"))
-            self.executor.logger.debug("B2G is running: %s" % self.gaia_device.is_b2g_running)
-            raise
+
+        # Moved out of gaia_test temporarily
+        self.executor.logger.info"Waiting for B2G to be ready")
+        self.wait_for_b2g_ready(timeout=60)
 
         self.install_cert_app()
         self.use_cert_app()
@@ -244,30 +241,10 @@ class B2GExecutorBrowser(ExecutorBrowser):
         self.executor.logger.info("Homescreen loaded")
         self.gaia_apps.launch("CertTest App")
 
-    def wait_for_homescreen(self):
-        """Wait for the Gaia homescreen to load"""
-        marionette = self.marionette
-        marionette.set_context(marionette.CONTEXT_CONTENT)
-        marionette.execute_async_script("""
-let manager = window.wrappedJSObject.AppWindowManager || window.wrappedJSObject.WindowManager;
-let app = null;
-if (manager) {
-  app = ('getActiveApp' in manager) ? manager.getActiveApp() : manager.getCurrentDisplayedApp();
-}
-if (app) {
-  log('Already loaded home screen');
-  marionetteScriptFinished();
-} else {
-  log('waiting for mozbrowserloadend');
-  window.addEventListener('mozbrowserloadend', function loaded(aEvent) {
-    log('received mozbrowserloadend for ' + aEvent.target.src);
-    if (aEvent.target.src.indexOf('ftu') != -1 || aEvent.target.src.indexOf('homescreen') != -1) {
-      window.removeEventListener('mozbrowserloadend', loaded);
-      marionetteScriptFinished();
-    }
-  });
-}""", script_timeout=30000)
-
+    def wait_for_b2g_ready(self, timeout):
+        # Wait for the homescreen to finish loading
+        Wait(self.marionette, timeout).until(expected.element_present(
+            By.CSS_SELECTOR, '#homescreen[loading-state=false]'))
 
 class B2GMarionetteTestharnessExecutor(MarionetteTestharnessExecutor):
     def after_connect(self):

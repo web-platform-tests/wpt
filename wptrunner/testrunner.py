@@ -273,7 +273,7 @@ class TestRunnerManager(threading.Thread):
                                 # Need to consider the unlikely case where one test causes the
                                 # runner process to repeatedly die
                                 self.logger.info("Last test did not complete, requeueing")
-                                self.requeue_test(self.test)
+                                self.requeue_test()
                             self.logger.warning(
                                 "More tests found, but runner process died, restarting")
                             self.restart_count += 1
@@ -315,7 +315,6 @@ class TestRunnerManager(threading.Thread):
             self.init_timer = threading.Timer(self.browser.init_timeout, init_failed)
             try:
                 self.init_timer.start()
-
                 self.browser.start()
                 self.start_test_runner()
             except:

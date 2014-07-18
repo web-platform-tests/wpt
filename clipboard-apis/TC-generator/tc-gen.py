@@ -7,34 +7,31 @@ import os, re, codecs
 spec_path = os.path.abspath(os.path.dirname(__file__)+'..'+os.sep+'clipops-source.html')
 tc_path = os.path.abspath(os.path.dirname(__file__)+'..'+os.sep+'testsuite')+os.sep
 
-tc_path = "C:\\mozilla\\web-platform-tests\\clipboard-apis\\" #
-
 template = u"""<!DOCTYPE html>
 <html><head>
-	<meta charset="UTF-8">
-	<title>  ClipboardEvent - {title}</title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="support/_lib.js"></script>
-	<script>
+    <meta charset="UTF-8">
+    <title>  ClipboardEvent - {title}</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
 {test_javascript_code}
-	</script>
+    </script>
 </head>
 <body>
 
-	<p>FAILED (This TC requires JavaScript enabled)</p>
-	{test_html}
-	<div id="log"></div>
-
-	<script>
-	var dataToPaste={data_to_paste};
-	var externalPassCondition={external_pass_condition};
-	var eventTarget={event_target};
-	var eventType='{event_type}';
-	window.onload=function(){{
-		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-	}}
-	</script>
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    {test_html}
+    <div id="log"></div>
+    <script>
+    var dataToPaste={data_to_paste};
+    var externalPassCondition={external_pass_condition};
+    var eventTarget={event_target};
+    var eventType='{event_type}';
+    window.onload=function(){{
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }}
+    </script>
 </body></html>
 """
 

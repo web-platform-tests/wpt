@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html><head>
-	<meta charset="UTF-8">
-	<title>  ClipboardEvent - clipboard events relative to key events   - copy on 'input_text'</title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="support/_lib.js"></script>
-	<script>
+    <meta charset="UTF-8">
+    <title>  ClipboardEvent - clipboard events relative to key events   - copy on 'input_text'</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
 /** clipboard events relative to key events   */
 /* Events: copy cut paste */
 /* Test HTML: <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form><p>Note: please trigger event from keyboard (ctrl+x/c/v) for this test</p>*/
@@ -27,21 +27,20 @@ function clipboard_api_test(e){
   }, 500);
 }
 
-	</script>
+    </script>
 </head>
 <body>
 
-	<p>FAILED (This TC requires JavaScript enabled)</p>
-	<form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form><p>Note: please trigger event from keyboard (ctrl+x/c/v) for this test</p>
-	<div id="log"></div>
-
-	<script>
-	var dataToPaste='';
-	var externalPassCondition=null;
-	var eventTarget='input_text';
-	var eventType='copy';
-	window.onload=function(){
-		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-	}
-	</script>
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form><p>Note: please trigger event from keyboard (ctrl+x/c/v) for this test</p>
+    <div id="log"></div>
+    <script>
+    var dataToPaste='';
+    var externalPassCondition=null;
+    var eventTarget='input_text';
+    var eventType='copy';
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
+    </script>
 </body></html>

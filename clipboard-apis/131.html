@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html><head>
-	<meta charset="UTF-8">
-	<title>  ClipboardEvent - clipboard events relative to other input events   - cut on 'input_text'</title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="support/_lib.js"></script>
-	<script>
+    <meta charset="UTF-8">
+    <title>  ClipboardEvent - clipboard events relative to other input events   - cut on 'input_text'</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
 /** clipboard events relative to other input events   */
 /* Events: cut */
 /* Test HTML: <form action=""><input id="input_text" autofocus onfocus="this.select()" value="copied text" required></form>*/
@@ -34,21 +34,20 @@ function clipboard_api_test(e){
   logEvent( {type: e.type+' handler done'} );
 }
 
-	</script>
+    </script>
 </head>
 <body>
 
-	<p>FAILED (This TC requires JavaScript enabled)</p>
-	<form action=""><input id="input_text" autofocus onfocus="this.select()" value="copied text" required></form>
-	<div id="log"></div>
-
-	<script>
-	var dataToPaste='';
-	var externalPassCondition=null;
-	var eventTarget='input_text';
-	var eventType='cut';
-	window.onload=function(){
-		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-	}
-	</script>
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <form action=""><input id="input_text" autofocus onfocus="this.select()" value="copied text" required></form>
+    <div id="log"></div>
+    <script>
+    var dataToPaste='';
+    var externalPassCondition=null;
+    var eventTarget='input_text';
+    var eventType='cut';
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
+    </script>
 </body></html>

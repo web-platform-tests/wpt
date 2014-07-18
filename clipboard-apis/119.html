@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html><head>
-	<meta charset="UTF-8">
-	<title>  ClipboardEvent - integration with execCommand, events are syncronous  - copy on 'iframe.contentWindow'</title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="support/_lib.js"></script>
-	<script>
+    <meta charset="UTF-8">
+    <title>  ClipboardEvent - integration with execCommand, events are syncronous  - copy on 'iframe.contentWindow'</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
 /** integration with execCommand, events are syncronous  */
 /* Events: copy cut paste */
 /* Test HTML: <iframe id="iframe"></iframe>*/
@@ -36,21 +36,20 @@ function onTestSetupReady( eventType ){
 	}
 }
 
-	</script>
+    </script>
 </head>
 <body>
 
-	<p>FAILED (This TC requires JavaScript enabled)</p>
-	<iframe id="iframe"></iframe>
-	<div id="log"></div>
-
-	<script>
-	var dataToPaste='';
-	var externalPassCondition=null;
-	var eventTarget='iframe.contentWindow';
-	var eventType='copy';
-	window.onload=function(){
-		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-	}
-	</script>
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <iframe id="iframe"></iframe>
+    <div id="log"></div>
+    <script>
+    var dataToPaste='';
+    var externalPassCondition=null;
+    var eventTarget='iframe.contentWindow';
+    var eventType='copy';
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
+    </script>
 </body></html>

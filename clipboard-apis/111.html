@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html><head>
-	<meta charset="UTF-8">
-	<title>  ClipboardEvent - ClipboardEvent interface - synthetic copy/cut events must not affect system clipboard  - cut on document</title>
-	<script src="/resources/testharness.js"></script>
-	<script src="/resources/testharnessreport.js"></script>
-	<script src="support/_lib.js"></script>
-	<script>
+    <meta charset="UTF-8">
+    <title>  ClipboardEvent - ClipboardEvent interface - synthetic copy/cut events must not affect system clipboard  - cut on document</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
 /** ClipboardEvent interface - synthetic copy/cut events must not affect system clipboard  */
 /* Events: copy cut */
 /* paste data: "clipboard text" */
@@ -30,21 +30,20 @@ function onTestSetupReady(){
 	}
 }
 
-	</script>
+    </script>
 </head>
 <body>
 
-	<p>FAILED (This TC requires JavaScript enabled)</p>
-	<form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
-	<div id="log"></div>
-
-	<script>
-	var dataToPaste="clipboard text" ;
-	var externalPassCondition="clipboard text" ;
-	var eventTarget=document;
-	var eventType='cut';
-	window.onload=function(){
-		setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-	}
-	</script>
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
+    <div id="log"></div>
+    <script>
+    var dataToPaste="clipboard text" ;
+    var externalPassCondition="clipboard text" ;
+    var eventTarget=document;
+    var eventType='cut';
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
+    </script>
 </body></html>

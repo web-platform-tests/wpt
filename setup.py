@@ -64,7 +64,7 @@ products, you will need to install the extra dependencies. These are provided
 as requirements_[name].txt in the %s directory and can be installed using
 e.g.""" % path, 80)
 
-print """
+    print """
 
 pip install -r %s/requirements_firefox.txt
 """ % path

@@ -33,6 +33,7 @@
                 pointerenterReceived;
 
             var testStarted = false;
+            var isAsync = false;
 
             var target0 = document.getElementById('target0');
             var target1 = document.getElementById('target1');
@@ -49,6 +50,9 @@
                     }
                     else {
                         rPointerCapture(e);
+                        setTimeout(function() {
+                            isAsync = true;
+                        });
                     }
                  });
 
@@ -71,6 +75,7 @@
                     testStarted = false;
 
                     test(function() {
+                        assert_true(isAsync, "lostpointercapture must be fired asynchronously");
                         assert_true((pointeroverReceived == false)&&
                         (pointeroutReceived == false)&&
                         (pointerdownReceived == false)&&

@@ -35,7 +35,7 @@ latter approach has been adopted, leading to the requirement:
 
 There are few extant formats that meet these requirements, so
 wptrunner uses a bespoke ``expectation manifest`` format, which is
-closely based on the standard `ini` format.
+closely based on the standard ``ini`` format.
 
 Directory Layout
 ----------------
@@ -69,25 +69,7 @@ wptrunner provides the tool ``wptupdate`` to generate expectation
 files from the results of a set of baseline test runs. The basic
 syntax for this is::
 
-  wptupdate [options] config data_root [logfile]...
-
-``config`` is an ini file containing information about the remote used
-for updates, and the structure of the local directories. For example::
-
-  [web-platform-tests]
-  remote_url = https://github.com/w3c/web-platform-tests.git
-  branch = master
-  sync_path = sync
-
-  [local]
-  test_path = tests
-  metadata_path = metadata
-
-``data_root`` is the path to the root directory relative to which the
-local paths in ``config.ini`` should be resolved. For example if the
-tests are in ``/home/user/web-platform/tests`` and the metadata is in
-``/home/user/web-platform/metadata`` then the ``data_root`` would be
-``/home/user/web-platform``.
+  wptupdate [options] [logfile]...
 
 Each ``logfile`` is a structured log file from a previous run. These
 can be generated from wptrunner using the ``--log-raw`` option

@@ -11,6 +11,14 @@ The easiest way to install wptrunner is into a virtualenv, using pip::
   source bin/activate
   pip install wptrunner
 
+This will install the base dependencies for wptrunner, but not any
+extra dependencies required to test against specific browsers. In
+order to do this you must use use the extra requirements files in
+``$VIRTUAL_ENV/requirements/requirements_browser.txt``. For example,
+in order to test against Firefox you would have to run::
+
+  pip install requirements/requirements_firefox.txt
+
 If you intend to work on the code, the ``-e`` option to pip should be
 used in combination with a source checkout i.e. inside a virtual
 environment created as above::
@@ -28,11 +36,11 @@ directory of the wptrunner checkout called `tests`::
 
 It is also necessary to generate the ``MANIFEST.json`` file for the
 web-platform-tests. It is recommended to put this file in a separate
-directory called ``metadata``::
+directory called ``meta``::
 
-  mkdir metadata
+  mkdir meta
   cd web-platform-tests
-  python tools/scripts/manifest.py ../metadata/MANIFEST.json
+  python tools/scripts/manifest.py ../meta/MANIFEST.json
 
 This file needs to be regenerated every time that the
 web-platform-tests checkout is updated. To aid with the update process
@@ -42,26 +50,24 @@ there is a tool called ``wptupdate``, which is described in
 Running the Tests
 -----------------
 
-A test run is started using the ``wptrunner`` command. This takes two
-mandatory arguments; the path to the metadata files (i.e. the
-directory containing ``MANIFEST.json``, and the path to the test
-files. Therefore, if the checkout follows the structure above, the
-most basic invocation of ``wptrunner`` is::
+A test run is started using the ``wptrunner`` command. By default this
+assumes that tests are in a subdirectory of the current directory
+called ``tests`` and the metadata is in a subdirectory called
+``meta``. These defaults can be changed using either a command line
+flag or a configuration file.
 
-  wptrunner metadata tests
-
-In practice, however, more arguments are typically required. The first
-common argument is ``--product`` which specifies the product to test (if
-nothing is specified here the default is ``firefox`` which tests
-Firefox desktop. ``wptrunner --help`` can be used to see a list of
-supported products.
+To specify the prower product to test against, use the ``--product``
+flag. If no product is specified, the default is ``firefox`` which
+tests Firefox desktop. ``wptrunner --help`` can be used to see a list
+of supported products. Note that this does not take account of the
+products for which the correct dependencies have been installed.
 
 Depending on the product, further arguments may be required. For
 example when testing desktop browsers ``--binary`` is commonly needed
 to specify the path to the browser executable. So a complete command
 line for running tests on firefox desktop might be::
 
-  wptrunner --product=firefox --binary=/usr/bin/firefox metadata tests
+  wptrunner --product=firefox --binary=/usr/bin/firefox
 
 It is also possible to run multiple browser instances in parallel to
 speed up the testing process. This is achieved through the
@@ -98,3 +104,54 @@ summary to stdout, one might pass the options::
 
   --log-raw=output.log --log-mach=-
 
+Configuration File
+------------------
+
+wptrunner uses a ``.ini`` file to control some configuration
+sections. The file has three sections; ``[products]``,
+``[paths]`` and ``[web-platform-tests]``.
+
+``[products]`` is used to
+define the set of available products. By default this section is empty
+which means that all the products distributed with wptrunner are
+enabled (although their dependencies may not be installed). The set
+of enabled products can be set by using the product name as the
+key. For built in products the value is empty. It is also possible to
+provide the path to a script implementing the browser functionality
+e.g.::
+
+  [products]
+  chrome =
+  netscape4 = path/to/netscape.py
+
+``[paths]`` specifies the default paths for the tests and metadata,
+relative to the config file. For example::
+
+  [paths]
+  tests = checkouts/web-platform-tests
+  metadata = /home/example/wpt/metadata
+
+
+``[web-platform-tests]`` is used to set the properties of the upstream
+repository when updating the paths. ``remote_url`` specifies the git
+url to pull from; ``branch`` the branch to sync against and
+``sync_path`` the local path, relative to the configuration file, to
+use when checking out the tests e.g.::
+
+  [web-platform-tests]
+  remote_url = https://github.com/w3c/web-platform-tests.git
+  branch = master
+  sync_path = sync
+
+A configuration file must contain all the above fields; falling back
+to the default values for unspecified fields is not yet supported.
+
+The ``wptrunner`` and ``wptupdate`` commands will use configuration
+files in the following order:
+
+ * Any path supplied with a ``--config`` flag to the command.
+
+ * A file called ``wptrunner.ini`` in the current directory
+
+ * The default configuration file (``wptrunner.default.ini`` in the
+   source directory)

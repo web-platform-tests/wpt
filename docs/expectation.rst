@@ -105,16 +105,16 @@ Examples
 Update the local copy of web-platform-tests without changing the
 expectation data and commit (or create a mq patch for) the result::
 
-  wptupdate config.ini . --patch --sync
+  wptupdate --patch --sync
 
 Update all the expectations from a set of cross-platform test runs::
 
-  wptupdate config.ini . --no-check-clean --patch osx.log linux.log windows.log
+  wptupdate --no-check-clean --patch osx.log linux.log windows.log
 
 Add expectation data for some new tests that are expected to be
 platform-independent::
 
-  wptupdate config.ini . --no-check-clean --patch --ignore-existing tests.log
+  wptupdate --no-check-clean --patch --ignore-existing tests.log
 
 Manifest Format
 ---------------

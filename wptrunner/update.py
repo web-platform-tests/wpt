@@ -276,9 +276,7 @@ def sync_tests(paths, local_tree, wpt, bug):
         new_manifest = metadata.update_manifest(paths["sync"], paths["metadata"])
 
         local_tree.create_patch("web-platform-tests_update_%s" % wpt.rev,
-                                "Bug %i - Update web-platform-tests to revision %s" % (
-                                    bug.id if bug else 0, wpt.rev
-                                ))
+                                "Update web-platform-tests to revision %s" % wpt.rev)
         local_tree.add_new(os.path.relpath(paths["test"], local_tree.root))
         local_tree.update_patch(include=[paths["test"], paths["metadata"]])
     except Exception as e:
@@ -295,9 +293,8 @@ def update_metadata(paths, local_tree, wpt, initial_rev, bug, log_files, ignore_
     try:
         try:
             local_tree.create_patch("web-platform-tests_update_%s_metadata" % wpt.rev,
-                                    "Bug %i - Update web-platform-tests expected data to revision %s" % (
-                                        bug.id if bug else 0, wpt.rev
-                                    ))
+                                    "Update web-platform-tests expected data to revision %s" %
+                                    wpt.rev)
         except subprocess.CalledProcessError:
             # Patch with that name already exists, probably
             pass
@@ -308,10 +305,8 @@ def update_metadata(paths, local_tree, wpt, initial_rev, bug, log_files, ignore_
                                                ignore_existing=ignore_existing)
 
         if needs_human:
+            #TODO: List all the files that should be checked carefully for changes.
             pass
-            # print >> sys.stderr, "The following files got updated metadata, but did not change in the test update:"
-            # for item in needs_human:
-            #     print >> sys.stderr, item
 
         if not local_tree.is_clean():
             local_tree.add_new(os.path.relpath(paths["metadata"], local_tree.root))

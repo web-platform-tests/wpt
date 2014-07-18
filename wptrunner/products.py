@@ -36,7 +36,6 @@ def product_module(config, product):
 
 def load_product(config, product):
     module = product_module(config, product)
-    print module
     data = module.__wptrunner__
 
     check_args = getattr(module, data["check_args"])

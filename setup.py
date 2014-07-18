@@ -5,6 +5,7 @@
 import glob
 import os
 import sys
+import textwrap
 
 from setuptools import setup, find_packages
 
@@ -57,10 +58,13 @@ setup(name=PACKAGE_NAME,
      )
 
 if "install" in sys.argv:
-    print """In order to use with one of the built-in browser products, you will need to
-install the extra dependencies. These are provided as requirements_[name].txt in the
-requirements/ directory and can be installed using e.g.
+    path = os.path.relpath(os.path.join(sys.prefix, "requirements"), os.curdir)
+    print textwrap.fill("""In order to use with one of the built-in browser
+products, you will need to install the extra dependencies. These are provided
+as requirements_[name].txt in the %s directory and can be installed using
+e.g.""" % path, 80)
 
-pip install -r requirements/requirements_firefox.txt
-"""
+print """
 
+pip install -r %s/requirements_firefox.txt
+""" % path

@@ -70,9 +70,21 @@ def do_test_relative_imports(test_root):
 
     sys.path.insert(0, os.path.join(test_root))
     sys.path.insert(0, os.path.join(test_root, "tools", "scripts"))
-    import serve
-    import manifest
+    failed = None
+    try:
+        import serve
+    except ImportError:
+        failed = "serve"
+    try:
+        import manifest
+    except ImportError:
+        failed = "manifest"
 
+    if failed:
+        logger.critical(
+            "Failed to import %s. Ensure that tests path %s contains web-platform-tests" %
+            (failed, test_root))
+        sys.exit(1)
 
 class TestEnvironmentError(Exception):
     pass
@@ -366,7 +378,7 @@ class TestLoader(object):
 
     def create_manifest(self):
         logger.info("Creating test manifest")
-        manifest.setup_git(self.test_path)
+        manifest.setup_git(self.tests_root)
         manifest_file = manifest.Manifest(None)
         manifest.update(manifest_file)
         manifest.write(manifest_file, self.manifest_path)

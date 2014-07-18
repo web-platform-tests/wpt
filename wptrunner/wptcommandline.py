@@ -122,10 +122,23 @@ def set_from_config(kwargs):
                     new_value = kwargs["config"].get(section, {}).get_path(config_value)
                 kwargs[kw_value] = new_value
 
+
 def check_args(kwargs):
     from mozrunner import cli
 
     set_from_config(kwargs)
+
+    for key in ["tests_root", "metadata_root"]:
+        name = key.split("_", 1)[0]
+        path = kwargs[key]
+
+        if not os.path.exists(path):
+            print "Fatal: %s path %s does not exist" % (name, path)
+            sys.exit(1)
+
+        if not os.path.isdir(path):
+            print "Fatal: %s path %s is not a directory" % (name, path)
+            sys.exit(1)
 
     if kwargs["this_chunk"] > 1:
         require_arg(kwargs, "total_chunks", lambda x: x >= kwargs["this_chunk"])

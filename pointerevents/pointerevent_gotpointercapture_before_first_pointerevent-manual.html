@@ -21,7 +21,7 @@
 
             var target0;
             var listener;
-            var pointerover_event;
+            var pointerdown_event;
             var detected_pointerEvents = new Array();
             var eventRcvd = false;
 
@@ -46,14 +46,14 @@
                             }
                             test_pointerEvent.step(function () {
                                 assert_false(eventRcvd, "no other events should be received before gotpointercapture." + eventsRcvd_str);
-                                assert_equals(event.pointerId, pointerover_event.pointerId, "pointerID is same for pointerdown and gotpointercapture");
+                                assert_equals(event.pointerId, pointerdown_event.pointerId, "pointerID is same for pointerdown and gotpointercapture");
                             });
 
                             detected_pointertypes[event.pointerType] = true;
                             test_pointerEvent.done(); // complete test
                         }
                         else {
-                            if (pointerover_event.pointerId === event.pointerId) {
+                            if (pointerdown_event.pointerId === event.pointerId) {
                                 detected_pointerEvents.push(event.type);
                                 eventRcvd = true;
                             }
@@ -63,8 +63,8 @@
 
                 // set pointer capture
                 on_event(target0, "pointerdown", function (event) {
-                pointerover_event = event;
-                listener.setPointerCapture(event.pointerId);
+                    pointerdown_event = event;
+                    listener.setPointerCapture(event.pointerId);
                 });
             }
         </script>

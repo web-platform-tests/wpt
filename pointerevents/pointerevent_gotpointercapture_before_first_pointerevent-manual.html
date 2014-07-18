@@ -24,6 +24,7 @@
             var pointerdown_event;
             var detected_pointerEvents = new Array();
             var eventRcvd = false;
+            var isAsync = false;
 
 
             function run() {
@@ -36,6 +37,7 @@
                     on_event(listener, All_Pointer_Events[i], function (event) {
                         if (event.type == "gotpointercapture") {
                             check_PointerEvent(event);
+                            assert_true(isAsync, "gotpointercapture must be fired asynchronously");
                             // if any events have been received with same pointerId before gotpointercapture, then fail
                             var eventsRcvd_str = "";
                             if (eventRcvd) {
@@ -65,6 +67,9 @@
                 on_event(target0, "pointerdown", function (event) {
                     pointerdown_event = event;
                     listener.setPointerCapture(event.pointerId);
+                    setTimeout(function() {
+                        isAsync = true;
+                    });
                 });
             }
         </script>

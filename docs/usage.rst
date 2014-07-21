@@ -56,7 +56,7 @@ called ``tests`` and the metadata is in a subdirectory called
 ``meta``. These defaults can be changed using either a command line
 flag or a configuration file.
 
-To specify the prower product to test against, use the ``--product``
+To specify the browser product to test against, use the ``--product``
 flag. If no product is specified, the default is ``firefox`` which
 tests Firefox desktop. ``wptrunner --help`` can be used to see a list
 of supported products. Note that this does not take account of the

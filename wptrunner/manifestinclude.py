@@ -66,11 +66,11 @@ class IncludeManifest(ManifestItem):
     def _get_path_components(self, test):
         test_url = test.url
         assert test_url[0] == "/"
-        return list(item for item in reversed(test_url.split("/")) if item)
+        return [item for item in reversed(test_url.split("/")) if item]
 
     def _add_rule(self, url, direction):
         assert direction in ("include", "exclude")
-        components = list(item for item in reversed(url.split("/")) if item)
+        components = [item for item in reversed(url.split("/")) if item]
 
         node = self
         while components:

@@ -21,17 +21,17 @@ def product_module(config, product):
 
     if product not in products_enabled(config):
         raise ValueError("Unknown product %s" % product)
-    else:
-        path = config.get("products", {}).get(product, None)
-        if path:
-            module = imp.load_source('wptrunner.browsers.' + product, path)
-        else:
-            module = importlib.import_module("wptrunner.browsers." + product)
 
-    if hasattr(module, "__wptrunner__"):
-        return module
+    path = config.get("products", {}).get(product, None)
+    if path:
+        module = imp.load_source('wptrunner.browsers.' + product, path)
     else:
+        module = importlib.import_module("wptrunner.browsers." + product)
+
+    if not hasattr(module, "__wptrunner__"):
         raise ValueError("Product module does not define __wptrunner__ variable")
+
+    return module
 
 
 def load_product(config, product):

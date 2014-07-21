@@ -105,16 +105,14 @@ def set_from_config(kwargs):
 
     kwargs["config"] = config.read(kwargs["config"])
 
-    keys = {"paths": [("tests", "tests_root", True), ("metadata", "metadata_root", True)],
-            "web-platform-tests": ["remote_url", "branch", ("sync_path", "sync_path", True)]}
+    keys = {"paths": [("tests", "tests_root", True),
+                      ("metadata", "metadata_root", True)],
+            "web-platform-tests": [("remote_url", "remote_url", False),
+                                   ("branch", "branch", False),
+                                   ("sync_path", "sync_path", True)]}
 
     for section, values in keys.iteritems():
-        for value in values:
-            if type(value) in (str, unicode):
-                config_value, kw_value, is_path = value, value, False
-            else:
-                config_value, kw_value, is_path = value
-
+        for config_value, kw_value, is_path in values:
             if kw_value in kwargs and kwargs[kw_value] is None:
                 if not is_path:
                     new_value = kwargs["config"].get(section, {}).get(config_value, None)

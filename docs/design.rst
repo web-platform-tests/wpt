@@ -79,15 +79,15 @@ initialising the browser under test, and probing its state
 provided for each product that is supported.
 
 The functionality for actually running the tests is provided by a
-:py:class:`TestRunner` object. In order that this may be stopped and
-started at will, and may be restarted at the same time as the browser
-it is controlling, it is created in a child process, using the
-primitives provided by the :py:mod:`multiprocessing`
-module. Communication between the :py:class:`TestRunnerManager` and
-the :py:class:`TestRunner` is provided by a pair of queues, one for
-sending messages in each direction. In particular test results are
-sent from the :py:class:`TestRunner` to the
-:py:class:`TestRunnerManager` using one of these queues.
+:py:class:`TestRunner` object. :py:class:`TestRunner` instances are
+run in their own child process created with the
+:py:mod:`multiprocessing` module. This allows them to run concurrently
+and to be killed and restarted as required. Communication between the
+:py:class:`TestRunnerManager` and the :py:class:`TestRunner` is
+provided by a pair of queues, one for sending messages in each
+direction. In particular test results are sent from the
+:py:class:`TestRunner` to the :py:class:`TestRunnerManager` using one
+of these queues.
 
 The :py:class:`TestRunner` object is generic in that the same
 :py:class:`TestRunner` is used regardless of the product under

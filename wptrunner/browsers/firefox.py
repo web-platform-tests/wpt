@@ -110,14 +110,13 @@ class FirefoxBrowser(Browser):
                 pass
 
     def pid(self):
-        if self.runner.process_handler is not None:
-            try:
-                pid = self.runner.process_handler.pid
-            except AttributeError:
-                pid = None
-        else:
-            pid = None
-        return pid
+        if self.runner.process_handler is None:
+            return None
+
+        try:
+            return self.runner.process_handler.pid
+        except AttributeError:
+            return None
 
     def on_output(self, line):
         """Write a line of output from the firefox process to the log"""

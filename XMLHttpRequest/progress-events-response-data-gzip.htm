@@ -64,7 +64,7 @@
           }
         }), false)
         // image.gif is 62 bytes compressed. Sending 21 bytes at a time with 1 second delay will load it in 3 seconds
-        client.open("GET", "resources/image.gif?pipe=gzip|trickle(21:d1:r2)", true)
+        client.open("GET", "resources/image.gif?pipe=gzip|trickle(45000:d1:r2)", true)
         client.send()
       })
     </script>

@@ -1,4 +1,4 @@
-import gzip
+import gzip as gzip_module
 from cStringIO import StringIO
 
 def main(request, response):

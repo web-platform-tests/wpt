@@ -224,7 +224,7 @@ function run() {
 			}, "touchmove #" + touchmove_received + ": touches must be same as last received touches");
 
 			// TA: 1.6.3
-			check_starting_element(ev.changedTouches);
+			check_starting_elements(ev.changedTouches);
 		}
 
 		last_touches = ev.touches;

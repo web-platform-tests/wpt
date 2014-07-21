@@ -312,8 +312,8 @@ class FirstWrapper(object):
     def __getitem__(self, key):
         try:
           return self.params.first(key)
-	except KeyError:
-	  return ""
+        except KeyError:
+          return ""
 
 
 @pipe()

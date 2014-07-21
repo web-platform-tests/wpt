@@ -66,7 +66,7 @@ def create_parser(product_choices=None):
     parser.add_argument("--this-chunk", action="store", type=int, default=1,
                         help="Chunk number to run")
     parser.add_argument("--chunk-type", action="store", choices=["none", "equal_time", "hash"],
-                        default="none", help="Chunking type to use")
+                        default=None, help="Chunking type to use")
 
     parser.add_argument("--list-test-groups", action="store_true",
                         default=False,
@@ -141,8 +141,11 @@ def check_args(kwargs):
     if kwargs["this_chunk"] > 1:
         require_arg(kwargs, "total_chunks", lambda x: x >= kwargs["this_chunk"])
 
-        if kwargs["chunk_type"] == "none":
+    if kwargs["chunk_type"] is None:
+        if kwargs["total_chunks"] > 1:
             kwargs["chunk_type"] = "equal_time"
+        else:
+            kwargs["chunk_type"] = "none"
 
     if kwargs["debugger"] is not None:
         debug_args, interactive = cli.debugger_arguments(kwargs["debugger"],

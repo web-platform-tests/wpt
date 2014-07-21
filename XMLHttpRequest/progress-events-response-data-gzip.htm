@@ -59,11 +59,16 @@
           test.done();
         }), false)
         client.addEventListener('progress', test.step_func(function(e){
-          if(e.lengthComputable && e.total && e.target.readyState < 4){
+          if(e.lengthComputable && e.total && e.loaded && e.target.readyState < 4){
             assert_not_equals(e.total, e.loaded, 'total should not equal loaded while download/decode is incomplete')
+            // We should only do this assertation once
+            // it's theoretically possible that all the data would get in
+            // and a progress event fire before the readyState switches from 3 to 4 -
+            // in this case we might report bogus and random failures. Better to remove the event listener again..
+            client.removeEventListener('progress', arguments.callee, false);
           }
         }), false)
-        // image.gif is 62 bytes compressed. Sending 21 bytes at a time with 1 second delay will load it in 3 seconds
+        // image.gif is 165375 bytes compressed. Sending 45000 bytes at a time with 1 second delay will load it in 4 seconds
         client.open("GET", "resources/image.gif?pipe=gzip|trickle(45000:d1:r2)", true)
         client.send()
       })

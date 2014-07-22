@@ -31,8 +31,13 @@ def browser_kwargs(**kwargs):
 
 def executor_kwargs(http_server_url, **kwargs):
     from selenium import webdriver
+
+    timeout_multiplier = kwargs["timeout_multiplier"]
+    if timeout_multiplier is None:
+        timeout_multiplier = 1
+
     return {"http_server_url": http_server_url,
-            "timeout_multiplier": kwargs["timeout_multiplier"],
+            "timeout_multiplier": timeout_multiplier,
             "capabilities": webdriver.DesiredCapabilities.CHROME}
 
 

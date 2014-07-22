@@ -10,8 +10,6 @@
 <div id=log></div>
 <iframe name="B"></iframe>
 <iframe name="C"></iframe>
-<iframe name="D"></iframe>
-<iframe name="E"></iframe>
 <script>
 
 /*
@@ -23,11 +21,6 @@ setup({explicit_done: true});
 path = location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/frame.html';
 B.frameElement.uriToLoad = path;
 C.frameElement.uriToLoad = 'http://www1.web-platform.test:' + location.port + path;
-
-// The last two are only used for the document.domain tests, in which D ceases to
-// be same-origin with E and becomes same-origin with B.
-D.frameElement.uriToLoad = 'http://www2.web-platform.test:' + location.port + path;
-E.frameElement.uriToLoad = 'http://www2.web-platform.test:' + location.port + path;
 
 function reloadSubframes(cb) {
   var iframes = document.getElementsByTagName('iframe');
@@ -304,23 +297,18 @@ addTest(function() {
   checkFunction(set_href_B, B.Function.prototype);
 }, "Same-origin observers get different accessors for cross-origin objects");
 
-// The document.domain test is unavoidably side-effect-y, so we do it last.
 function doDocumentDomainTest(cb) {
-    window.onmessage = function() {
-      test(function() {
-        assert_true(D.checkWindowReferences(), "D's Window references are still self-consistent after document.domain");
-        for (var i = 0; i < window.length; ++i) {
-          assert_true(window[i] === D.windowReferences[i],
-                      "Window reference " + i + " consistent between globals after document.domain");
-          assert_true(window[i].location === D.locationReferences[i],
-                      "Location reference " + i + " consistent between globals after document.domain");
-        }
-      }, "Cross-origin object identity preserved across document.domain");
-      cb();
-    }
-    B.document.domain = B.document.domain;
-    document.domain = document.domain;
-    D.postMessage('', '*');
+  window.addEventListener('message', function onmessage(evt) {
+    window.removeEventListener('message', onmessage);
+    test(function() {
+      var results = evt.data;
+      assert_true(results.length > 0, 'Need results');
+      results.forEach(function(r) { assert_true(r.pass, r.message); });
+    }, "Cross-origin object identity preserved across document.domain");
+    win.close();
+    cb();
+  });
+  var win = window.open('win-documentdomain.html');
 }
 
 // We do a fresh load of the subframes for each test to minimize side-effects.
@@ -332,7 +320,7 @@ function runNextTest() {
   if (testList.length != 0)
     reloadSubframes(runNextTest);
   else
-    doDocumentDomainTest(done); // Side-effect-y. Do it last.
+    doDocumentDomainTest(done); // Asynchronous.
 }
 reloadSubframes(runNextTest);
 

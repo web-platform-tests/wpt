@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    function loadFrames() {
+      var path = location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/frame.html';
+      A.location = 'frame.html';
+      B.location = frameURI = 'http://www2.web-platform.test:' + location.port + path;
+      C.location = frameURI = 'http://www2.web-platform.test:' + location.port + path;
+      D.location = frameURI = 'http://www1.web-platform.test:' + location.port + path;
+
+      var loadCount = 0;
+      function frameLoaded() {
+        if (++loadCount == 4)
+          go();
+      }
+      Array.forEach(document.getElementsByTagName('iframe'), function(ifr) { ifr.onload = frameLoaded; });
+    }
+
+
+    var results = [];
+    function assert(cond, msg) {
+      results.push({pass: !!cond, message: msg});
+    }
+
+    function go() {
+      window.onmessage = function() {
+        assert(B.checkWindowReferences(), "B's Window references are still self-consistent after document.domain");
+        for (var i = 0; i < window.length; ++i) {
+          assert(window[i] === B.windowReferences[i],
+                 "Window reference " + i + " consistent between globals after document.domain");
+          assert(window[i].location === B.locationReferences[i],
+                 "Location reference " + i + " consistent between globals after document.domain");
+        }
+        opener.postMessage(results, '*');
+      };
+      A.document.domain = A.document.domain;
+      document.domain = document.domain;
+      B.postMessage('', '*');
+    }
+
+  </script>
+</head>
+<body onload="loadFrames()">
+  <iframe name="A"></iframe>
+  <iframe name="B"></iframe>
+  <iframe name="C"></iframe>
+  <iframe name="D"></iframe>
+</body>
+</html>

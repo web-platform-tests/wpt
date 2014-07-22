@@ -75,7 +75,9 @@
                     testStarted = false;
 
                     test(function() {
+                        // TA: 11.2
                         assert_true(isAsync, "lostpointercapture must be fired asynchronously");
+
                         assert_true((pointeroverReceived == false)&&
                         (pointeroutReceived == false)&&
                         (pointerdownReceived == false)&&

@@ -37,7 +37,10 @@
                     on_event(listener, All_Pointer_Events[i], function (event) {
                         if (event.type == "gotpointercapture") {
                             check_PointerEvent(event);
+
+                            // TA: 10.2
                             assert_true(isAsync, "gotpointercapture must be fired asynchronously");
+
                             // if any events have been received with same pointerId before gotpointercapture, then fail
                             var eventsRcvd_str = "";
                             if (eventRcvd) {

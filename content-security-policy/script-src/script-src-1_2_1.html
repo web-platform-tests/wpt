@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <link rel='stylesheet' href='/resources/testharness.css'>
+</head>
+<body>
+    <h1>Inline script attached by DOM manipulation should not run without an 'unsafe-inline' script-src policy, even with default-src *</h1>
+    <div id="log"></div>
+    
+    <script> 
+    test(function() {
+        assert_false(true, "Unsafe inline script ran.")},
+        "Inline script in a <script> tag should not run without an unsafe-inline directive"
+    );
+    </script>
+    
+    
+	<!-- This is our test case, but we don't expect it to actually execute if CSP is working. -->
+	<div id=attachHere></div>
+
+	<script id=emptyScript></script>
+
+	<div id=emptyDiv></div>
+
+	<script src="addInlineTestsWithDOMManipulation.js"></script>
+    
+    <script async defer src="../support/checkReport.sub.js?reportField=violated-directive&reportValue=script-src%20%*"></script>
+   
+</body>
+</html>

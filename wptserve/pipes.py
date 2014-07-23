@@ -310,7 +310,10 @@ class FirstWrapper(object):
         self.params = params
 
     def __getitem__(self, key):
-        return self.params.first(key)
+        try:
+          return self.params.first(key)
+        except KeyError:
+          return ""
 
 
 @pipe()

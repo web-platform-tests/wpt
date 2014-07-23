@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: small kana mappings, half-width katakana</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-046-ref.html">
+<meta name='flags' content=''>
+<meta name="assert" content="The browser will map small half-width katakana characters to full sized half-width katakana for display if text-transform is set to full-size-kana.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: full-size-kana; }
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p><p class="instructionNote">If you can't see all the glyphs, click on Skip.</p>
+
+
+<div class="test" lang="ja"><span>&#xFF67; &#xFF71;</span> <span>&#xFF68; &#xFF72;</span> <span>&#xFF69; &#xFF73;</span> <span>&#xFF6A; &#xFF74;</span> <span>&#xFF6B; &#xFF75;</span> <span>&#xFF6F; &#xFF82;</span> <span>&#xFF6C; &#xFF94;</span> <span>&#xFF6D; 		&#xFF95;</span> <span>&#xFF6E; &#xFF96;</span></div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+-->
+
+
+</body>
+</html>

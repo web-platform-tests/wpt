@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8"/>
+<title>CSS3 Text, text transform: Latin Extended-B, uppercase</title>
+<link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
+<link rel='help' href='http://dev.w3.org/csswg/css-text/#text-transform'>
+<link rel="match" href="reference/css3-text-text-transform-007-ref.html">
+<meta name='flags' content='font'>
+<meta name="assert" content="The UA will uppercase all applicable letters in the Latin Extended-B Unicode block when text-transform is set to uppercase.">
+<style type='text/css'>
+/* the CSS below is not part of the test */
+.test, .ref { font-size: 200%; line-height: 2.5em; }
+.test span, .ref span { margin-right: 1em; white-space: nowrap; }
+.test { text-transform: uppercase; }
+@font-face {
+    font-family: 'webfont';
+    src: url('support/GentiumPlus-R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+	}
+.test, .ref { font-family: webfont, serif; }
+
+</style>
+<script src="support/script.js"> </script>
+
+</head>
+<body>
+<p class="instructions">Test passes if the both characters in each pair match.</p>
+
+
+<div class="test"><span>&#x0180; &#x0243;</span> <span>&#x0183; &#x0182;</span> <span>&#x0185; &#x0184;</span> <span>&#x0188; &#x0187;</span> <span>&#x018C; &#x018B;</span> <span>&#x0192; &#x0191;</span> <span>&#x0195; &#x01F6;</span> <span>&#x0199; &#x0198;</span> <span>&#x019A; &#x023D;</span> <span>&#x019E; &#x0220;</span> <span>&#x01A1; &#x01A0;</span> <span>&#x01A3; &#x01A2;</span> <span>&#x01A5; &#x01A4;</span> <span>&#x01A8; &#x01A7;</span> <span>&#x01AD; &#x01AC;</span> <span>&#x01B0; &#x01AF;</span> <span>&#x01B4; &#x01B3;</span> <span>&#x01B6; &#x01B5;</span> <span>&#x01B9; &#x01B8;</span> <span>&#x01BD; &#x01BC;</span> <span>&#x01BF; &#x01F7;</span> <span>&#x01C5; &#x01C4;</span> <span>&#x01C6; &#x01C4;</span> <span>&#x01C8; &#x01C7;</span> <span>&#x01C9; &#x01C7;</span> <span>&#x01CB; &#x01CA;</span> <span>&#x01CC; &#x01CA;</span> <span>&#x01CE; &#x01CD;</span> <span>&#x01D0; &#x01CF;</span> <span>&#x01D2; &#x01D1;</span> <span>&#x01D4; &#x01D3;</span> <span>&#x01D6; &#x01D5;</span> <span>&#x01D8; &#x01D7;</span> <span>&#x01DA; &#x01D9;</span> <span>&#x01DC; &#x01DB;</span> <span>&#x01DD; &#x018E;</span> <span>&#x01DF; &#x01DE;</span> <span>&#x01E1; &#x01E0;</span> <span>&#x01E3; &#x01E2;</span> <span>&#x01E5; &#x01E4;</span> <span>&#x01E7; &#x01E6;</span> <span>&#x01E9; &#x01E8;</span> <span>&#x01EB; &#x01EA;</span> <span>&#x01ED; &#x01EC;</span> <span>&#x01EF; &#x01EE;</span> <span>&#x01F2; &#x01F1;</span> <span>&#x01F3; &#x01F1;</span> <span>&#x01F5; &#x01F4;</span> <span>&#x01F9; &#x01F8;</span> <span>&#x01FB; &#x01FA;</span> <span>&#x01FD; &#x01FC;</span> <span>&#x01FF; &#x01FE;</span> <span>&#x0201; &#x0200;</span> <span>&#x0203; &#x0202;</span> <span>&#x0205; &#x0204;</span> <span>&#x0207; &#x0206;</span> <span>&#x0209; &#x0208;</span> <span>&#x020B; &#x020A;</span> <span>&#x020D; &#x020C;</span> <span>&#x020F; &#x020E;</span> <span>&#x0211; &#x0210;</span> <span>&#x0213; &#x0212;</span> <span>&#x0215; &#x0214;</span> <span>&#x0217; &#x0216;</span> <span>&#x0219; &#x0218;</span> <span>&#x021B; &#x021A;</span> <span>&#x021D; &#x021C;</span> <span>&#x021F; &#x021E;</span> <span>&#x0223; &#x0222;</span> <span>&#x0225; &#x0224;</span> <span>&#x0227; &#x0226;</span> <span>&#x0229; &#x0228;</span> <span>&#x022B; &#x022A;</span> <span>&#x022D; &#x022C;</span> <span>&#x022F; &#x022E;</span> <span>&#x0231; &#x0230;</span> <span>&#x0233; &#x0232;</span> <span>&#x023C; &#x023B;</span> <span>&#x0242; &#x0241;</span> <span>&#x0247; &#x0246;</span> <span>&#x0249; &#x0248;</span> <span>&#x024B; &#x024A;</span> <span>&#x024D; &#x024C;</span> <span>&#x024F; &#x024E;</span> <span>&#x0180; &#x0243;</span> <span>&#x0183; &#x0182;</span> <span>&#x0185; &#x0184;</span> </div>
+
+
+<!--Notes:
+A downloaded WOFF font is used to maximise the likelihood that the characters can be seen.
+
+Two character pairs are excluded from this test because there are no glyphs for them in the downloaded font.
+
+Characters from this block that do not have case equivalents: &#x018D; &#x019B; &#x01AA; &#x01AB; &#x01BA; &#x01BB; &#x01BE; &#x01C0; &#x01C1; &#x01C2; &#x01C3; &#x01F0; &#x0221; &#x0234; &#x0235; &#x0236; &#x0237; &#x0238; &#x0239;
+
+Tip: To identify the characters where differences occur, in order to report problem characters, copy and paste the sequence into a tool such as <a href='http://rishida.net/tools/analysestring/' target='_blank'>String Analyser</a> or the <a href='http://rishida.net/tools/conversion' target='_blank'>Unicode Conversion Tool</a>.
+
+-->
+
+
+</body>
+</html>

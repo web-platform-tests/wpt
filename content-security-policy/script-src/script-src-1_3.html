@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <link rel='stylesheet' href='/resources/testharness.css'>
+</head>
+<body>
+    <h1>Positive test case: Inline script should run 'unsafe-inline' script-src directive.</h1>
+    <div id='log'></div>
+    
+    <script> 
+    test(function() {
+        assert_true(true, 'Unsafe inline script ran.')},
+        'Inline script in a script tag should  run with an unsafe-inline directive'
+    );
+    </script>
+    
+    <img src='doesnotexist.jpg' onerror='test(function() { assert_true(true, "Unsafe inline event handler ran.") }, "Inline event handlers should run with an unsafe-inline directive");'>
+    
+    <script async defer src='../support/checkReport.sub.js?reportExists=false'></script>
+   
+</body>
+</html>

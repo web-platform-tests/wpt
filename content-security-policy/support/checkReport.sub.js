@@ -13,6 +13,10 @@
   var reportValue  = "{{GET[reportValue]}}";
   var reportExists = "{{GET[reportExists]}}";
     
+  console.log("reportField: " + reportField);
+  console.log("reportValue: " + reportValue);
+  console.log("reportExists: " + reportExists);
+    
   var thisTestName = document.location.pathname.split('/')[document.location.pathname.split('/').length - 1].split('.')[0];
 
   console.log("thisTestName: \"" + thisTestName + "\"");    
@@ -41,14 +45,18 @@
     
   function reportOnLoad() {
       
-    var data = this.responseText;
-    data = JSON.parse(data);
-    
+    var data = "";
+      
+    if(this.responseText) {
+        data = JSON.parse(this.responseText);
+        console.log(JSON.stringify(data));
+    }    
+      
     reportTest.step(function () {
-            if (reportExists == "false" && (data === null || data == "")) {
+            if (reportExists == "false" && (data === null || data == "" || data.error.code == 500)) {
                 assert_true(true, "No report sent.");
                 reportTest.done();
-            } else if (reportExists == "true" && (data === null || data == "")) {
+            } else if (reportExists == "true" && (data === null || data == "" || data.error.code == 500)) {
                 assert_true(false, "Report not sent.");
                 reportTest.done();
             } else if (data === null || data == "") {
@@ -70,7 +78,7 @@
   }
     
   var report = new XMLHttpRequest(); 
-  report.onload = reportOnLoad;    
+  report.onload = reportOnLoad;
   report.open("GET", reportLocation, true);
   report.send();
 

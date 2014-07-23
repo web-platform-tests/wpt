@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+    <link rel='stylesheet' href='/resources/testharness.css'>
+</head>
+<body>
+    <h1>eval() should not run wihtout 'unsafe-eval' script-src directive.</h1>
+    <div id='log'></div>
+    
+   	<script>
+        try {
+		  eval('test(function() {assert_false(true, "Unsafe eval ran.")})');
+        } catch(e) {
+          console.log(e);   
+        }
+	</script>
+    
+    <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=script-src%20%27self%27+%27unsafe-inline%27'></script>
+   
+</body>
+</html>

@@ -15,7 +15,7 @@
             var detected_pointertypes = {};
             var test_pointerEvent = async_test("pointerup has same isPrimary as last pointerdown"); // set up test harness
             // showPointerTypes is defined in pointerevent_support.js
-            // Requirements: the callbakc function will reference the test_pointerEvent object and
+            // Requirements: the callback function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
 
@@ -26,25 +26,19 @@
                 var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointerup", function (event) {
-                    if(pointerdown_event != null && event.pointerId == pointerdown_event.pointerId) {
+                    if (pointerdown_event != null && event.pointerId == pointerdown_event.pointerId) {
                         test_pointerEvent.step(function () {
-                            assert_equals(event.pointerId, pointerdown_event.pointerId, "For this test, pointerup.pointerId should the same as pointerdown.pointerId.");
+                            assert_equals(event.pointerId, pointerdown_event.pointerId, "pointerup.pointerId should the same as pointerdown.pointerId.");
                             assert_equals(event.isPrimary, pointerdown_event.isPrimary, "pointerup.isPrimary should be the same as pointerdown.isPrimary.");
                         });
                         pointerup_event = event;
+                        test_pointerEvent.done(); // complete test
                     }
                 });
 
                 on_event(target0, "pointerdown", function (event) {
                     pointerdown_event = event;
                     detected_pointertypes[event.pointerType] = true;
-                });
-
-                on_event(target0, "pointerup", function (event) {
-                    test_pointerEvent.step(function () {
-                        assert_not_equals(pointerup_event, null, "pointerup event was never received: ");
-                    });
-                    test_pointerEvent.done(); // complete test
                 });
             }
         </script>
@@ -55,7 +49,7 @@
             The isPrimary attribute of a pointerup event must have the same value as the isPrimary attribute of the last pointerdown event with the same pointerId attribute.
         </h4>
         <div id="instructions">
-            Press and release a mouse button, touch contact or pen contact on this element.
+            Press and release a mouse button, touch contact or pen contact on this element. Only use one device per test run.
         </div>
         <div id="target0" style="touch-action: none;">
         </div>

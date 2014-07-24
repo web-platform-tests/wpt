@@ -15,7 +15,7 @@
             <li>Press mouse left button over the black rectangle.
             <li>Then release the mouse.
         </ol>
-        <p>Note: You may use several different pointer devices during the test (i.e. mouse and touch, etc.)
+        <p>Note: This test may be run with different pointer devices, however only one device should be used per test run.
         <p>
         <div id="target0"></div>
         <script>
@@ -29,14 +29,14 @@
             add_completion_callback(showPointerTypes);
 
             function run() {
-                 var target0 = document.getElementById("target0");
+                var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointerover", function(event) {
                     detected_pointertypes[ event.pointerType ] = true;
                 });
 
-                 // The pointerType attribute of a pointerup event must have the same value as the pointerType attribute of the last pointerdown event with the same pointerId attribute.
-                 // TA: 3.1
+                // The pointerType attribute of a pointerup event must have the same value as the pointerType attribute of the last pointerdown event with the same pointerId attribute.
+                // TA: 3.1
                 on_event(target0, "pointerdown", function (event) {
                     pointerdown_event = event;
                     pointerTypeGot = true;
@@ -47,7 +47,7 @@
                         if(!eventTested) {
                             test(function() {
                                 assert_equals(event.pointerId, pointerdown_event.pointerId, "pointer IDs are equal: ");
-                                assert_equals(event.pointerType, pointerdown_event.pointerType, "pointerType is dispatched properly: ");
+                                assert_equals(event.pointerType, pointerdown_event.pointerType, "pointerType of pointerup event matches pointerdown event: ");
                             }, "pointerType is dispatched properly");
                         }
                         done();

@@ -39,8 +39,7 @@
   }
     
   var reportLocation = document.location.protocol + "//" + document.location.host + "/content-security-policy/support/report.py?op=take&reportID=" + reportID;
-
-    
+  
   var reportTest = async_test("Violation report was sent.");    
     
   function reportOnLoad() {
@@ -53,26 +52,20 @@
     }    
       
     reportTest.step(function () {
-            if (reportExists == "false" && (data === null || data == "" || data.error)) {
-                assert_true(true, "No report sent.");
-                reportTest.done();
-            } else if (reportExists == "true" && (data === null || data == "" || data.error)) {
-                assert_true(false, "Report not sent.");
-                reportTest.done();
-            } else if (data === null || data == "") {
-                assert_false(true, "Report not sent.");
-                reportTest.done();
+        
+            if(data == "" || data.error) {
+                assert_equals("false", reportExists, "A report was sent when none should have been.");
             } else {
-
-                // Firefox expands 'self' or origins to the actual origin value
-                // so "www.example.com" becomes "http://www.example.com:80"
-                // accomodate this by just testing that the correct directive name
+                // Firefox expands 'self' or origins in a policy to the actual origin value
+                // so "www.example.com" becomes "http://www.example.com:80".
+                // Accomodate this by just testing that the correct directive name
                 // is reported, not the details... 
 
                 assert_true(data["csp-report"][reportField].indexOf(reportValue.split(" ")[0]) != -1,
                     reportField + " value of  \"" + data["csp-report"][reportField] + "\" did not match " + reportValue.split(" ")[0] + ".");
-                reportTest.done();
             }
+        
+            reportTest.done();
         }, "");
 
   }
@@ -82,5 +75,4 @@
   report.open("GET", reportLocation, true);
   report.send();
 
-
-  })();
+})();

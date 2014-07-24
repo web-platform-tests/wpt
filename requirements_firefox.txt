@@ -1,0 +1,3 @@
+marionette_client >= 0.7.10
+mozprofile >= 0.21
+mozprocess >= 0.19

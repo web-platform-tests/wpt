@@ -41,7 +41,7 @@
   var reportLocation = document.location.protocol + "//" + document.location.host + "/content-security-policy/support/report.py?op=take&reportID=" + reportID;
 
     
-  var reportTest = async_test("Verify report.");    
+  var reportTest = async_test("Violation report was sent.");    
     
   function reportOnLoad() {
       

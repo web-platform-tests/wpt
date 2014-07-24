@@ -53,10 +53,10 @@
     }    
       
     reportTest.step(function () {
-            if (reportExists == "false" && (data === null || data == "" || data.error.code == 500)) {
+            if (reportExists == "false" && (data === null || data == "" || data.error)) {
                 assert_true(true, "No report sent.");
                 reportTest.done();
-            } else if (reportExists == "true" && (data === null || data == "" || data.error.code == 500)) {
+            } else if (reportExists == "true" && (data === null || data == "" || data.error)) {
                 assert_true(false, "Report not sent.");
                 reportTest.done();
             } else if (data === null || data == "") {

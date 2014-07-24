@@ -10,11 +10,16 @@
     <div id='log'></div>
     
    	<script>
+        
+        var evalRan = false;
+        
         try {
-		  eval('test(function() {assert_false(true, "Unsafe eval ran.")})');
+		  eval('evalRan = true;');
         } catch(e) {
           console.log(e);   
         }
+        
+        test(function() {assert_false(evalRan, "Unsafe eval ran.")}, "eval() should be blocked without an 'unsafe-eval' directive");
 	</script>
     
     <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=script-src%20%27self%27+%27unsafe-inline%27'></script>

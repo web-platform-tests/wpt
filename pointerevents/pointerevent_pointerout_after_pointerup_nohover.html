@@ -32,8 +32,8 @@
                     isPointerupReceived = true;
                 });
 
-                // When touch, a device that does not support hover, after firing the pointerup event the pointerout event must be dispatched.
-                // TA: 7.5
+                // For input devices that do not support hover, a pointerout event must follow the pointerup event.
+                // TA: 3.6
                 on_event(target0, "pointerout", function (event) {
                     if(event.pointerType == 'touch') {
                         detected_pointertypes[event.pointerType] = true;

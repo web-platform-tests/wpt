@@ -26,22 +26,22 @@
     var fileInput = document.querySelector('#fileChooser');
 
     fileInput.onchange = t.step_func(function(e) {
-      var blob, file = fileInput.files[0];
+      var blobURL, file = fileInput.files[0];
 
       test(function() {
         assert_true(file instanceof File, "FileList contains File");
       }, "Check if FileList contains File");
 
       test(function() {
-        blob = window.URL.createObjectURL(file);
-        assert_equals(typeof blob, "string", "Blob URL is type of string");
-        assert_equals(blob.indexOf("blob"), 0, "Blob URL's scheme is blob");
+        blobURL = window.URL.createObjectURL(file);
+        assert_equals(typeof blobURL, "string", "Blob URL is type of string");
+        assert_equals(blobURL.indexOf("blob"), 0, "Blob URL's scheme is blob");
       }, "Check if URL.createObjectURL(File) returns a Blob URL");
 
       test(function() {
-        blob = window.URL.createFor(file);
-        assert_equals(typeof blob, "string", "Blob URL is type of string");
-        assert_equals(blob.indexOf("blob"), 0, "Blob URL's scheme is blob");
+        blobURL = window.URL.createFor(file);
+        assert_equals(typeof blobURL, "string", "Blob URL is type of string");
+        assert_equals(blobURL.indexOf("blob"), 0, "Blob URL's scheme is blob");
       }, "Check if URL.createFor(File) returns a Blob URL");
 
       t.done();

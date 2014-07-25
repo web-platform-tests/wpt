@@ -1,30 +1,26 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>FileAPI Test: url</title>
-    <link rel="author" title="Intel" href="www.intel.com">
-    <link rel="help" href="http://www.w3.org/TR/FileAPI/#dfn-createObjectURL">
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-  </head>
-  <body>
-    <div id="log"></div>
+<meta charset="utf-8">
+<title>FileAPI Test: Creating Blob URL with Blob</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="author" title="JunChen Xia" href="mailto:xjconlyme@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-    <script>
-      var blob = new Blob(["Test Blob"]);
+<div id="log"></div>
 
-      test(function() {
-        var testBlob = window.URL.createObjectURL(blob);
-        assert_equals(typeof testBlob, "string", "Blob URI is typeof string");
-        assert_equals(testBlob.indexOf("blob"), 0, "Blob URI starts with 'blob'");
-      }, "Check if the Blob URI starts with 'blob' using createObjectURL()");
+<script>
+  var blob = new Blob(["Test Blob"]);
 
-      test(function() {
-        var testBlob = window.URL.createFor(blob);
-        assert_equals(typeof testBlob, "string", "Blob URI is typeof string");
-        assert_equals(testBlob.indexOf("blob"), 0, "Blob URI starts with 'blob'");
-      }, "Check if the Blob URI starts with 'blob' using createFor()");
-    </script>
-  </body>
-</html>
+  test(function() {
+    var testBlob = window.URL.createObjectURL(blob);
+    assert_equals(typeof testBlob, "string", "Blob URI is typeof string");
+    assert_equals(testBlob.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+  }, "Check if the Blob URI starts with 'blob' using createObjectURL()");
+
+  test(function() {
+    var testBlob = window.URL.createFor(blob);
+    assert_equals(typeof testBlob, "string", "Blob URI is typeof string");
+    assert_equals(testBlob.indexOf("blob"), 0, "Blob URI starts with 'blob'");
+  }, "Check if the Blob URI starts with 'blob' using createFor()");
+</script>
+

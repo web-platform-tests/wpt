@@ -1,31 +1,28 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>FileAPI Test: url_createobjecturl_img</title>
-    <link rel="author" title="Intel" href="www.intel.com">
-    <link rel="help" href="http://www.w3.org/TR/FileAPI/#creating-revoking">
-  </head>
-  <body>
-    <div>
-      <p>Test step:</p>
-      <ol>
-        <li>Download <a href="test.png">test.png</a> to local.</li>
-        <li>Select the local file (test.png) to run the test.</li>
-      </ol>
-      <p>Test Result:</p>
-      <p>Test passes if the local file (test.png) displays normally in page</p>
-      <p><input type="file" accept="image/*" id="fileChooser"/></p>
-      <p><img id="displayImage"></img></p>
-    </div>
+<meta charset="utf-8">
+<title>FileAPI Test: Creating Blob URL with File as image source</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="author" title="JunChen Xia" href="mailto:xjconlyme@gmail.com">
 
-    <script>
-      var fileInput = document.querySelector("#fileChooser");
-      var img = document.querySelector("#displayImage");
+<div>
+  <p>Test steps:</p>
+  <ol>
+    <li>Download <a href="/images/blue96x96.png">blue96x96.png</a> to local.</li>
+    <li>Select the local file (blue96x96.png) to run the test.</li>
+  </ol>
+  <p>Pass/fail criteria:</p>
+  <p>Test passes if there is a filled blue square.</p>
 
-      fileInput.addEventListener("change", function(evt) {
-        img.src = window.URL.createObjectURL(fileInput.files[0]);
-      }, false);
-    </script>
-  </body>
-</html>
+  <p><input type="file" accept="image/*" id="fileChooser"></p>
+  <p><img id="displayImage"></img></p>
+</div>
+
+<script>
+  var fileInput = document.querySelector("#fileChooser");
+  var img = document.querySelector("#displayImage");
+
+  fileInput.addEventListener("change", function(evt) {
+    img.src = window.URL.createObjectURL(fileInput.files[0]);
+  }, false);
+</script>
+

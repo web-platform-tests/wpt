@@ -44,18 +44,18 @@
 &lt;body&gt;
     &lt;h1&gt;Inline script should not run without &#39;unsafe-inline&#39; script-src directive.&lt;/h1&gt;
     &lt;div id=&#39;log&#39;&gt;&lt;/div&gt;
-    
-    &lt;script&gt; 
+
+    &lt;script&gt;
     test(function() {
         asset_unreached(&#39;Unsafe inline script ran.&#39;)},
         &#39;Inline script in a script tag should not run without an unsafe-inline directive&#39;
     );
     &lt;/script&gt;
-    
+
     &lt;img src=&#39;doesnotexist.jpg&#39; onerror=&#39;test(function() { assert_false(true, &quot;Unsafe inline event handler ran.&quot;) }, &quot;Inline event handlers should not run without an unsafe-inline directive&quot;);&#39;&gt;
-    
+
     &lt;script async defer src=&#39;../support/checkReport.sub.js?reportField=violated-directive&amp;reportValue=<span class=highlight1>script-src%20%27self%27</span>&#39;&gt;&lt;/script&gt;
-   
+
 &lt;/body&gt;
 &lt;/html&gt;
         </code></pre>

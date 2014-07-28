@@ -38,7 +38,7 @@
                     detected_pointertypes[event.pointerType] = true;
                     if(pointercancel_event) {
                         if (eventTested == false) {
-							test_pointerout.step(function() {
+				            test_pointerout.step(function() {
 								assert_equals(event.pointerType, pointercancel_event.pointerType, "pointerType is same for pointercancel and pointerout");
 								assert_equals(event.isPrimary, pointercancel_event.isPrimary, "isPrimary is same for pointercancel and pointerout");
 							});
@@ -59,7 +59,6 @@
         <h1>Pointer Events pointerout tests</h1>
         <div id="complete-notice">
             <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
-            <p>Refresh the page to run the tests again with a different pointer type.</p>
         </div>
         <div id="log"></div>
     </body>

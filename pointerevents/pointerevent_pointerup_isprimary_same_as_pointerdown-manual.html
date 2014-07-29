@@ -26,9 +26,9 @@
                 var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointerup", function (event) {
-                    if (pointerdown_event != null && event.pointerId == pointerdown_event.pointerId) {
+                    if (pointerdown_event != null) {
                         test_pointerEvent.step(function () {
-                            assert_equals(event.pointerId, pointerdown_event.pointerId, "pointerup.pointerId should the same as pointerdown.pointerId.");
+                            assert_equals(event.pointerId, pointerdown_event.pointerId, "pointerup.pointerId should be the same as pointerdown.pointerId.");
                             assert_equals(event.isPrimary, pointerdown_event.isPrimary, "pointerup.isPrimary should be the same as pointerdown.isPrimary.");
                         });
                         pointerup_event = event;

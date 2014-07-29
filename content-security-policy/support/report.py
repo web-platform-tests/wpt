@@ -6,11 +6,12 @@ def main(request, response):
     key = request.GET.first("reportID")
 
     if op == "take":
+      timeout = request.GET.first("timeout")
       value = request.server.stash.take(key=key)
       if value is not None:
           return [("Content-Type", "application/json")], value
       else:
-          time.sleep(3)
+          time.sleep(timeout)
           value = request.server.stash.take(key=key)
           if value is not None:
             return [("Content-Type", "application/json")], value

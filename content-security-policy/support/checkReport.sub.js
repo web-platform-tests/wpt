@@ -40,7 +40,7 @@
 
 
   var location = window.location;
-  var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&reportID=" + reportID;
+  var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=3&reportID=" + reportID;
 
   var reportTest = async_test("Violation report was sent.");
   reportTest.step(function () {

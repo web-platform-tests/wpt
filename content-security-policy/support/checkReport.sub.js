@@ -31,7 +31,7 @@
       if (cookieName == thisTestName) {
           //console.log("matching cookie, report GUID is " + cookieValue);
           reportID = cookieValue;
-          var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0,document.location.pathname.lastIndexOf('/')+1);
+          var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
           //console.log("removing: " + cookieToDelete);
           document.cookie = cookieToDelete;
           break;

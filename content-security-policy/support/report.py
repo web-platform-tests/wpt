@@ -1,4 +1,5 @@
 import time
+import json
 
 def main(request, response):
 
@@ -6,7 +7,7 @@ def main(request, response):
     key = request.GET.first("reportID")
 
     if op == "take":
-      timeout = request.GET.first("timeout")
+      timeout = float(request.GET.first("timeout"))
       value = request.server.stash.take(key=key)
       if value is not None:
           return [("Content-Type", "application/json")], value
@@ -16,7 +17,7 @@ def main(request, response):
           if value is not None:
             return [("Content-Type", "application/json")], value
           else:
-            return [("Content-Type", "application/json")], "{ \"error\": \"No such report.\", \"guid\": \"" + key + "\" }"
+            return [("Content-Type", "application/json")], json.dumps({'error': 'No such report.' , 'guid' : key})
     else:
         report = request.raw_input.read()
         report.rstrip()

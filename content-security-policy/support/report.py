@@ -19,7 +19,7 @@ def main(request, response):
           else:
             return [("Content-Type", "application/json")], json.dumps({'error': 'No such report.' , 'guid' : key})
     else:
-        report = request.raw_input.read()
+        report = request.body
         report.rstrip()
         request.server.stash.take(key=key)
         request.server.stash.put(key=key, value=report)

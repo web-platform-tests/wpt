@@ -48,9 +48,8 @@
                     }
                     else {
                         test_pointerleave.step(function() {
-                            assert_true(false,
-                            "pointercancel received before pointerleave");
-                        }, "pointercancel received before pointerleave");
+                            assert_unreached("pointercancel should be received after pointerleave");
+                        }, "pointercancel should be received after pointerleave");
                     }
                 });
             }

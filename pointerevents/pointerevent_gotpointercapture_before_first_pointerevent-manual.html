@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Pointer Event: gotpiontercapture is fired first.</title>
+        <title>Pointer Event: gotpiontercapture is fired first and asynchronously.</title>
         <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <meta name="assert" content="After setting capture, the gotpointercapture dispatched to the capturing element before any other event is fired." />
@@ -81,7 +81,7 @@
         <h1>Pointer Event: Dispatch gotpointercapture event</h1>
         <h4>Test Description:
             After pointer capture is set for a pointer, and prior to dispatching the first event for the pointer, the gotpointercapture
-            event must be dispatched to the element that is receiving the pointer capture.
+            event must be dispatched to the element that is receiving the pointer capture. The gotpointercapture event must be dispatched asynchronously.
         </h4>
         <br />
         <div id="target0">

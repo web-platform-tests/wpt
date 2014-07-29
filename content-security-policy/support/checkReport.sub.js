@@ -55,7 +55,7 @@
 
     reportTest.step(function () {
 
-            if(data == "" || data.error) {
+            if (data == "" || data.error) {
                 assert_equals("false", reportExists, "A report was sent when none should have been.");
             } else {
                 // Firefox expands 'self' or origins in a policy to the actual origin value

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>AnimationTimeline.play() creates AnimationPlayer object with paused attribute initially set to false</title>
+<meta name="assert" content="AnimationTimeline play() creates AnimationPlayer object with paused attribute initially set to false">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var player = document.timeline.play(new Animation(createDiv(this), [], 100));
+
+    assert_false(player.paused, 'Initial value of the paused attribute of the ' +
+        'newly-created AnimationPlayer object should be false');
+}, 'Test AnimationTimeline.play() creates AnimationPlayer object with paused attribute '+
+    'initially set to false');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_false(player.paused, 'Initial value of the paused attribute of the ' +
+        'newly-created AnimationPlayer object should be false');
+}, 'Test AnimationTimeline.play(null) creates AnimationPlayer object with paused attribute '+
+    'initially set to false.');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_false(player.paused, 'Initial value of the paused attribute of the ' +
+        'newly-created AnimationPlayer object should be false');
+}, 'Test AnimationTimeline.play() without arguments creates AnimationPlayer ' +
+    'object with paused attribute initially set to false.');
+</script>
+</body>

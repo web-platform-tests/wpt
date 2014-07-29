@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>AnimationTimeline.play() creates AnimationPlayer object with attribute startTime set to value of currentTime attribute at the moment the method was called</title>
+<meta name="assert" content="AnimationTimeline.play() creates AnimationPlayer object with attribute startTime set to value of currentTime attribute at the moment the method was called">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var animation = new Animation(createDiv(this), [], 2000);
+    var player = document.timeline.play(animation);
+
+    assert_equals(player.startTime, document.timeline.currentTime,
+        'Start time of the newly-created AnimationPlayer object should be set ' +
+        'to the value of this object\'s currentTime attribute');
+}, 'Test startTime attribute of newly-created AnimationPlayer object');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.startTime, document.timeline.currentTime,
+        'Start time of the newly-created AnimationPlayer object should be set ' +
+        'to the value of this object\'s currentTime attribute');
+}, 'Test startTime attribute of newly-created AnimationPlayer object with null source');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_equals(player.startTime, document.timeline.currentTime,
+        'Start time of the newly-created AnimationPlayer object should be set ' +
+        'to the value of this object\'s currentTime attribute');
+}, 'Test startTime attribute of newly-created AnimationPlayer object without source passed');
+</script>
+</body>

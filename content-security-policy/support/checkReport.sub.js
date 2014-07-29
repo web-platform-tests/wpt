@@ -17,7 +17,8 @@
   //console.log("reportValue: " + reportValue);
   //console.log("reportExists: " + reportExists);
 
-  var thisTestName = document.location.pathname.split('/')[document.location.pathname.split('/').length - 1].split('.')[0];
+  var location = window.location;
+  var thisTestName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
 
   //console.log("thisTestName: \"" + thisTestName + "\"");
   var reportID = "";
@@ -38,8 +39,6 @@
       }
   }
 
-
-  var location = window.location;
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=3&reportID=" + reportID;
 
   var reportTest = async_test("Violation report was sent.");

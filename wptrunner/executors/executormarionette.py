@@ -198,7 +198,6 @@ class MarionetteTestharnessExecutor(MarionetteTestExecutor):
     def do_test(self, test, timeout):
         assert len(self.marionette.window_handles) == 1
         if self.close_after_done:
-            self.logger.info("closing window")
             self.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
 
         return self.marionette.execute_async_script(

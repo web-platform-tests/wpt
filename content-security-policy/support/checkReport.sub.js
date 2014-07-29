@@ -48,7 +48,7 @@
 
     var data = "";
 
-    if(this.responseText) {
+    if (this.responseText) {
         data = JSON.parse(this.responseText);
         //console.log(JSON.stringify(data));
     }

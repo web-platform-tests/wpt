@@ -170,6 +170,8 @@ class B2GBrowser(Browser):
     def cleanup(self):
         self.logger.debug("Running browser cleanup steps")
 
+        self.device.remount()
+
         for remote, local in self.backup_dirs:
             self.device.removeDir(remote)
             self.device.pushDir(local, remote)
@@ -213,7 +215,7 @@ class B2GExecutorBrowser(ExecutorBrowser):
 
         self.gaia_device = gaiatest.GaiaDevice(marionette=executor.marionette,
                                                manager=self.dm)
-        self.gaia_apps = gaiatest.GaiaApps(executor.marionette)
+        self.gaia_apps = gaiatest.GaiaApps(marionette=executor.marionette)
 
         self.executor.logger.debug("Waiting for homescreen to load")
         self.executor.logger.debug("B2G is running: %s" % self.gaia_device.is_b2g_running)

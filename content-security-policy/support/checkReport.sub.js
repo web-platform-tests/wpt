@@ -13,13 +13,13 @@
   var reportValue  = "{{GET[reportValue]}}";
   var reportExists = "{{GET[reportExists]}}";
 
-  console.log("reportField: " + reportField);
-  console.log("reportValue: " + reportValue);
-  console.log("reportExists: " + reportExists);
+  //console.log("reportField: " + reportField);
+  //console.log("reportValue: " + reportValue);
+  //console.log("reportExists: " + reportExists);
 
   var thisTestName = document.location.pathname.split('/')[document.location.pathname.split('/').length - 1].split('.')[0];
 
-  console.log("thisTestName: \"" + thisTestName + "\"");
+  //console.log("thisTestName: \"" + thisTestName + "\"");
   var reportID = "";
 
   var cookies = document.cookie.split(';');
@@ -27,12 +27,12 @@
       var cookieName = cookies[i].split('=')[0].trim();
       var cookieValue = cookies[i].split('=')[1].trim();
 
-      console.log("found cookie name: \"" + cookieName + "\"");
+      //console.log("found cookie name: \"" + cookieName + "\"");
       if (cookieName == thisTestName) {
-          console.log("matching cookie, report GUID is " + cookieValue);
+          //console.log("matching cookie, report GUID is " + cookieValue);
           reportID = cookieValue;
           var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0,document.location.pathname.lastIndexOf('/')+1);
-          console.log("removing: " + cookieToDelete);
+          //console.log("removing: " + cookieToDelete);
           document.cookie = cookieToDelete;
           break;
       }
@@ -48,7 +48,7 @@
 
     if(this.responseText) {
         data = JSON.parse(this.responseText);
-        console.log(JSON.stringify(data));
+        //console.log(JSON.stringify(data));
     }
 
     reportTest.step(function () {

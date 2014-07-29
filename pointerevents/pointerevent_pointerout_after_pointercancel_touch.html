@@ -36,12 +36,12 @@
                 // TA: 4.3
                 on_event(target0, "pointerout", function (event) {
                     detected_pointertypes[event.pointerType] = true;
-                    if(pointercancel_event) {
+                    if(pointercancel_event != null) {
                         if (eventTested == false) {
-				            test_pointerout.step(function() {
-								assert_equals(event.pointerType, pointercancel_event.pointerType, "pointerType is same for pointercancel and pointerout");
-								assert_equals(event.isPrimary, pointercancel_event.isPrimary, "isPrimary is same for pointercancel and pointerout");
-							});
+                            test_pointerout.step(function() {
+                                assert_equals(event.pointerType, pointercancel_event.pointerType, "pointerType is same for pointercancel and pointerout");
+                                assert_equals(event.isPrimary, pointercancel_event.isPrimary, "isPrimary is same for pointercancel and pointerout");
+                            });
                             eventTested = true;
                             test_pointerout.done();
                         }

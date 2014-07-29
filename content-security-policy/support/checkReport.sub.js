@@ -43,38 +43,30 @@
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&reportID=" + reportID;
 
   var reportTest = async_test("Violation report was sent.");
+  reportTest.step(function () {
 
-  function reportOnLoad() {
+    var report = new XMLHttpRequest();
+    report.onload = reportTest.step_func(function () {
 
-    var data = "";
+        var data = JSON.parse(report.responseText);
 
-    if (this.responseText) {
-        data = JSON.parse(this.responseText);
-        //console.log(JSON.stringify(data));
-    }
+        if (data.error) {
+            assert_equals("false", reportExists, reportExists ? "Report sent in error" : "No report sent.");
+        } else {
+            // Firefox expands 'self' or origins in a policy to the actual origin value
+            // so "www.example.com" becomes "http://www.example.com:80".
+            // Accomodate this by just testing that the correct directive name
+            // is reported, not the details...
 
-    reportTest.step(function () {
+            assert_true(data["csp-report"][reportField].indexOf(reportValue.split(" ")[0]) != -1,
+                reportField + " value of  \"" + data["csp-report"][reportField] + "\" did not match " + reportValue.split(" ")[0] + ".");
+        }
 
-            if (data == "" || data.error) {
-                assert_equals("false", reportExists, "A report was sent when none should have been.");
-            } else {
-                // Firefox expands 'self' or origins in a policy to the actual origin value
-                // so "www.example.com" becomes "http://www.example.com:80".
-                // Accomodate this by just testing that the correct directive name
-                // is reported, not the details...
+        reportTest.done();
+    });
 
-                assert_true(data["csp-report"][reportField].indexOf(reportValue.split(" ")[0]) != -1,
-                    reportField + " value of  \"" + data["csp-report"][reportField] + "\" did not match " + reportValue.split(" ")[0] + ".");
-            }
-
-            reportTest.done();
-        }, "");
-
-  }
-
-  var report = new XMLHttpRequest();
-  report.onload = reportOnLoad;
-  report.open("GET", reportLocation, true);
-  report.send();
+    report.open("GET", reportLocation, true);
+    report.send();
+  });
 
 })();

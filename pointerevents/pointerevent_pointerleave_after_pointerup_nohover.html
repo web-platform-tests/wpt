@@ -50,9 +50,8 @@
                         }
                         else {
                             test_pointerleave.step(function() {
-                                assert_true(false,
-                                "pointerup received before pointerleave");
-                            }, "pointerup received before pointerleave");
+                                assert_unreached("pointerleave received before pointerup");
+                            }, "pointerleave received before pointerup");
                         }
                     }
                 });

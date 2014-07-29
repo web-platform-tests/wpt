@@ -38,18 +38,18 @@
                     detected_pointertypes[event.pointerType] = true;
                     if(pointercancel_event) {
                         if(eventTested == false) {
-							test_pointerleave.step(function() {
-								assert_equals(event.pointerType, pointercancel_event.pointerType, "pointerType is same for pointercancel and pointerleave");
-								assert_equals(event.isPrimary, pointercancel_event.isPrimary, "isPrimary is same for pointercancel and pointerleave");
-							});
+                            test_pointerleave.step(function() {
+                                assert_equals(event.pointerType, pointercancel_event.pointerType, "pointerType is same for pointercancel and pointerleave");
+                                assert_equals(event.isPrimary, pointercancel_event.isPrimary, "isPrimary is same for pointercancel and pointerleave");
+                            });
                             eventTested = true;
                             test_pointerleave.done();
                         }
                     }
                     else {
                         test_pointerleave.step(function() {
-                            assert_unreached("pointercancel should be received after pointerleave");
-                        }, "pointercancel should be received after pointerleave");
+                            assert_unreached("pointerleave received before pointercancel");
+                        }, "pointerleave received before pointercancel");
                     }
                 });
             }

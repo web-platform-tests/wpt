@@ -38,7 +38,7 @@
                 on_event(target0, "pointerleave", function (event) {
                     if(event.pointerType == 'touch') {
                         detected_pointertypes[event.pointerType] = true;
-                        if(pointerup_event) {
+                        if(pointerup_event != null) {
                             if(eventTested == false) {
                                 eventTested = true;
                                 test_pointerleave.step(function() {

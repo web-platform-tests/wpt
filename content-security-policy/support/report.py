@@ -1,7 +1,7 @@
 import time
 
 def main(request, response):
-    
+
     op = request.GET.first("op");
     key = request.GET.first("reportID")
 
@@ -21,4 +21,4 @@ def main(request, response):
         report.rstrip()
         request.server.stash.take(key=key)
         request.server.stash.put(key=key, value=report)
-        return [("Content-Type", "text/plain")], "Recorded report " + report 
+        return [("Content-Type", "text/plain")], "Recorded report " + report

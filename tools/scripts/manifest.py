@@ -556,7 +556,7 @@ def update(manifest):
 
 def write(manifest, manifest_path):
     with open(manifest_path, "w") as f:
-        json.dump(manifest.to_json(), f, indent=2)
+        json.dump(manifest.to_json(), f, sort_keys=True, indent=2, separators=(',', ': '))
 
 
 def update_manifest(repo_path, **kwargs):

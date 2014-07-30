@@ -562,7 +562,7 @@ def write(manifest, manifest_path):
 def update_manifest(repo_path, **kwargs):
     setup_git(repo_path)
     if not kwargs.get("rebuild", False):
-        manifest = load(opts.path)
+        manifest = load(kwargs["path"])
     else:
         manifest = Manifest(None)
     if has_local_changes() and not kwargs.get("local_changes", False):
@@ -570,7 +570,7 @@ def update_manifest(repo_path, **kwargs):
     else:
         logger.info("Updating manifest")
         update(manifest)
-        write(manifest, opts.path)
+        write(manifest, kwargs["path"])
 
 
 def create_parser():

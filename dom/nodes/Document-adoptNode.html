@@ -9,15 +9,20 @@
 <script>
 test(function() {
   var y = document.getElementsByTagName("x<")[0]
+  var child = y.firstChild
   assert_equals(y.parentNode, document.body)
   assert_equals(y.ownerDocument, document)
   assert_equals(document.adoptNode(y), y)
   assert_equals(y.parentNode, null)
+  assert_equals(y.firstChild, child)
   assert_equals(y.ownerDocument, document)
+  assert_equals(child.ownerDocument, document)
   var doc = document.implementation.createDocument(null, null, null)
   assert_equals(doc.adoptNode(y), y)
   assert_equals(y.parentNode, null)
+  assert_equals(y.firstChild, child)
   assert_equals(y.ownerDocument, doc)
+  assert_equals(child.ownerDocument, doc)
 }, "Adopting an Element called 'x<' should work.")
 
 test(function() {

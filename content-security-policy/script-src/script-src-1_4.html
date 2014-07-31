@@ -13,10 +13,11 @@
 
         var evalRan = false;
 
+        <!-- This is wrapped in a try because some browsers throw an EvalError. This is neither mandated nor forbidden by the spec, so catch it and only care whether the eval code actually ran. -->
         try {
           eval('evalRan = true;');
         } catch(e) {
-          console.log(e);   
+          console.log(e);
         }
 
         test(function() {assert_false(evalRan, "Unsafe eval ran.")}, "eval() should be blocked without an 'unsafe-eval' directive");

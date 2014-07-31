@@ -12,7 +12,7 @@
   var reportField  = "{{GET[reportField]}}";
   var reportValue  = "{{GET[reportValue]}}";
   var reportExists = "{{GET[reportExists]}}";
-    
+
   var location = window.location;
   var thisTestName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
 

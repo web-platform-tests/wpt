@@ -33,7 +33,7 @@
 
   var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=3&reportID=" + reportID;
 
-  var reportTest = async_test("Violation report was sent.");
+  var reportTest = async_test("Violation report status OK.");
   reportTest.step(function () {
 
     var report = new XMLHttpRequest();

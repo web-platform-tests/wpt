@@ -3,7 +3,7 @@
   var dmTest = async_test("DOM manipulation inline tests");
   var attachPoint = document.getElementById('attachHere');
   var inlineScript = document.createElement('script');
-  var scriptText = document.createTextNode('test(function() {assert_false(true, "Unsafe inline script ran - createTextNode.")});');
+  var scriptText = document.createTextNode('dmTest.step(function() {assert_unreached("Unsafe inline script ran - createTextNode.")});');
 
   inlineScript.appendChild(scriptText);
   attachPoint.appendChild(inlineScript);

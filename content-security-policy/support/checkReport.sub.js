@@ -12,15 +12,10 @@
   var reportField  = "{{GET[reportField]}}";
   var reportValue  = "{{GET[reportValue]}}";
   var reportExists = "{{GET[reportExists]}}";
-
-  //console.log("reportField: " + reportField);
-  //console.log("reportValue: " + reportValue);
-  //console.log("reportExists: " + reportExists);
-
+    
   var location = window.location;
   var thisTestName = location.pathname.split('/')[location.pathname.split('/').length - 1].split('.')[0];
 
-  //console.log("thisTestName: \"" + thisTestName + "\"");
   var reportID = "";
 
   var cookies = document.cookie.split(';');
@@ -28,14 +23,11 @@
       var cookieName = cookies[i].split('=')[0].trim();
       var cookieValue = cookies[i].split('=')[1].trim();
 
-      //console.log("found cookie name: \"" + cookieName + "\"");
       if (cookieName == thisTestName) {
-          //console.log("matching cookie, report GUID is " + cookieValue);
-          reportID = cookieValue;
-          var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
-          //console.log("removing: " + cookieToDelete);
-          document.cookie = cookieToDelete;
-          break;
+        reportID = cookieValue;
+        var cookieToDelete = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" + document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
+        document.cookie = cookieToDelete;
+        break;
       }
   }
 
@@ -50,15 +42,14 @@
         var data = JSON.parse(report.responseText);
 
         if (data.error) {
-            assert_equals("false", reportExists, reportExists ? "Report sent in error" : "No report sent.");
+          assert_equals("false", reportExists, reportExists ? "Report sent in error" : "No report sent.");
         } else {
-            // Firefox expands 'self' or origins in a policy to the actual origin value
-            // so "www.example.com" becomes "http://www.example.com:80".
-            // Accomodate this by just testing that the correct directive name
-            // is reported, not the details...
+          // Firefox expands 'self' or origins in a policy to the actual origin value
+          // so "www.example.com" becomes "http://www.example.com:80".
+          // Accomodate this by just testing that the correct directive name
+          // is reported, not the details...
 
-            assert_true(data["csp-report"][reportField].indexOf(reportValue.split(" ")[0]) != -1,
-                reportField + " value of  \"" + data["csp-report"][reportField] + "\" did not match " + reportValue.split(" ")[0] + ".");
+          assert_true(data["csp-report"][reportField].indexOf(reportValue.split(" ")[0]) != -1, reportField + " value of  \"" + data["csp-report"][reportField] + "\" did not match " + reportValue.split(" ")[0] + ".");
         }
 
         reportTest.done();

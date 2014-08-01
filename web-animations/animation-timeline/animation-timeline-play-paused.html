@@ -13,7 +13,7 @@
 <div id="log"></div>
 <script>
 test(function() {
-    var player = document.timeline.play(new Animation(createDiv(this), [], 100));
+    var player = document.timeline.play(newAnimation(createDiv(this)));
 
     assert_false(player.paused, 'Initial value of the paused attribute of the ' +
         'newly-created AnimationPlayer object should be false');

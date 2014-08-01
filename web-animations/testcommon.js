@@ -29,16 +29,7 @@ function newAnimation(animationTarget) {
 
 function newAnimationPlayer(animationTarget) {
     var animation = newAnimation(animationTarget);
-    return newPlayerFromAnimation(animation);
-}
-
-function newPlayerFromAnimation(animation) {
-    var player = document.timeline.play(animation);
-    player.onFinishCounter = 0;
-    player.onfinish = function() {
-        this.onFinishCounter++;
-    };
-    return player;
+    return document.timeline.play(animation);
 }
 
 // creates div element, appends it to the document body and

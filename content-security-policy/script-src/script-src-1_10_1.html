@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>data: as script src should run with a policy that specifies data: as an allowed source</title>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+</head>
+<body>
+    <h1>data: as script src should run with a policy that specifies data: as an allowed source</h1>
+    <div id='log'></div>
+
+    <!-- This is our test case that we expect to be allowed to execute -->
+    <script src="data:text/javascript;charset=utf-8;base64,KGZ1bmN0aW9uICgpDQp7DQoJdGVzdChmdW5jdGlvbigpIHthc3NlcnRfdHJ1ZSh0cnVlKX0sICJTY3JpcHQgc2hvdWxkIGV4ZWN1dGUgZnJvbSBkYXRhOiB1cmkiKTsNCn0pKCk="></script>
+
+    <script async defer src='../support/checkReport.sub.js?reportExists=false></script>
+</body>
+</html>

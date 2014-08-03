@@ -11,9 +11,9 @@
 
     <script>
       var relativeMediaURL = "/support/media/flash.swf";
-      var pageURL = window.location.toString(); 
-      var temp1 = pageURL.split("//"); 
-      var temp2 = temp1[1].substring (0, temp1[1].lastIndexOf("/object-src/")); 
+      var pageURL = window.location.toString();
+      var temp1 = pageURL.split("//");
+      var temp2 = temp1[1].substring (0, temp1[1].lastIndexOf("/object-src/"));
       var mediaURL = "http://www2." + temp2 + relativeMediaURL;
       var htmlStr = "<embed id='flashObject' type='application/x-shockwave-flash' src='" + mediaURL + "' width='200' height='200'></object>";
       document.write (htmlStr);
@@ -26,7 +26,7 @@
       for ( var i=0;i<len;i++ ) {
         allTypes+=navigator.mimeTypes[i].type;
       }
-      
+
       var hasMimeType = allTypes.indexOf(flashMimeType) != -1;
 
       <!-- The actual test. -->
@@ -50,7 +50,7 @@
       }
     </script>
 
-    <script async defer src="../support/checkReport.sub.js?reportField=violated-directive&reportValue=object-src%20*"></script>
+    <script async defer src="../support/checkReport.sub.js?reportField=violated-directive&reportValue=object-src%20%27self%27"></script>
 
 </body>
 </html>

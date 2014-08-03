@@ -12,12 +12,11 @@
 
 <script>
 var selfTest = async_test("Iframe loaded from self (as allowed by frame-src policy)");
-
 </script>
 
     <iframe src="frame-src-5_1yes.html" id="selfiFrame" onload='selfTest.done()'></iframe>
     <iframe src="http://www1.web-platform.test:8000/content-security-policy/frame-src/frame-src-5_1no.html"></iframe>
 
-    <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=frame-src%20%27self%27'></script> 
+    <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=frame-src%20%27self%27'></script>
 </body>
 </html>

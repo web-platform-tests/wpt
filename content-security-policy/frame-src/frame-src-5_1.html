@@ -13,25 +13,29 @@
 <script>
 var selfTest = async_test("Iframe loaded from self (as allowed by frame-src policy)");
 var nonSelfTest = async_test("Iframe not loaded from www1.web-platform.test (as denied by frame-src policy)");
+var brokenTest = async_test("blah");
+setTimeout(function () {
+    var ifr=document.getElementById('badiframe');
+    ifr.onload=function(){
+        brokenTest.step(function () {
+            assert_false(true, "onload ran in bad iframe.");
+        });
+    };
+    brokenTest.done();
+}, 1000);
 
-function checkiFrameLoad(name) {
-    iframe = document.getElementById("nonSelfiFrame");
-    var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    // Check if loading is complete
-    if (  iframeDoc.readyState  == 'complete' ) {
-        assert_unreached("bad iframe from www1.web-platform.test was loaded");
-        return;
-    }
-    window.setTimeout('checkiFrameLoad();', 100);  
-}
 </script>
-    <iframe src="frame-src-5_1yes.html" onload='selfTest.done()'></iframe>
-    <iframe src="http://www1.web-platform.test:8000/content-security-policy/frame-src/frame-src-5_1no.html" id="nonSelfiFrame" onload='nonSelfTest.step(assert_unreached("iframe from non-self frame-src loaded")'></iframe>
+
+    <iframe src="frame-src-5_1yes.html" id="selfiFrame" onload='selfTest.done()'></iframe>
+    <iframe src="http://www1.web-platform.test:8000/content-security-policy/frame-src/frame-src-5_1no.html" id="nonSelfiFrame" onload='nonSelfTest.step(function() {function() {test(assert_false(true, "loaded bad iframe from www1.web-platform.test (should have been denied by policy)"))})'></iframe>
+
+    <iframe id="badiframe" src="/content-security-policy/frame-src/frame-src-5_1no.html" onload='brokenTest.step(function() {test(assert_false(true, "bad iframe"))})'></iframe>
+
+<script>
+nonSelfTest.done();
+</script>
+
 
     <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=frame-src%20%27self%27'></script> 
-    <script>
-        checkiFrameLoad();
-    	nonSelfTest.done();
-    </script>
 </body>
 </html>

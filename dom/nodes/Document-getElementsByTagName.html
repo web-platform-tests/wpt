@@ -14,6 +14,7 @@ test(function() {
   assert_true(document.getElementsByTagName("html") instanceof HTMLCollection,
               "Should return an HTMLCollection")
 }, "Interfaces")
+
 test(function() {
   var firstCollection = document.getElementsByTagName("html"),
       secondCollection = document.getElementsByTagName("html")
@@ -27,6 +28,7 @@ test(function() {
   assert_equals(l[5], undefined)
   assert_equals(l.item(5), null)
 }, "Shouldn't be able to set unsigned properties on a HTMLCollection (non-strict mode)")
+
 test(function() {
   var l = document.getElementsByTagName("nosuchtag")
   assert_throws(new TypeError(), function() {
@@ -36,6 +38,7 @@ test(function() {
   assert_equals(l[5], undefined)
   assert_equals(l.item(5), null)
 }, "Shouldn't be able to set unsigned properties on a HTMLCollection (strict mode)")
+
 test(function() {
   var l = document.getElementsByTagName("nosuchtag")
   var fn = l.item;
@@ -44,6 +47,7 @@ test(function() {
   assert_equals(l.item, "pass")
   assert_equals(HTMLCollection.prototype.item, fn);
 }, "Should be able to set expando shadowing a proto prop (item)")
+
 test(function() {
   var l = document.getElementsByTagName("nosuchtag")
   var fn = l.namedItem;
@@ -86,6 +90,7 @@ test(function() {
   assert_equals(document.body.getElementsByTagName("I").length, 0)
   assert_equals(document.body.getElementsByTagName("i").length, 0)
 }, "HTML element with uppercase tagName never matches in HTML Documents")
+
 test(function() {
   var t = document.body.appendChild(document.createElementNS("test", "st"))
   this.add_cleanup(function() {document.body.removeChild(t)})
@@ -97,28 +102,33 @@ test(function() {
   this.add_cleanup(function() {document.body.removeChild(t)})
   assert_array_equals(document.getElementsByTagName("ST"), [t])
   assert_array_equals(document.getElementsByTagName("st"), [])
-  assert_array_equals(document.getElementsByTagName("te:st"), [])
 }, "Element in non-HTML namespace, no prefix, uppercase name")
+
 test(function() {
   var t = document.body.appendChild(document.createElementNS("test", "te:st"))
   this.add_cleanup(function() {document.body.removeChild(t)})
   assert_array_equals(document.getElementsByTagName("st"), [t])
   assert_array_equals(document.getElementsByTagName("ST"), [])
 }, "Element in non-HTML namespace, prefix, lowercase name")
+
 test(function() {
   var t = document.body.appendChild(document.createElementNS("test", "te:ST"))
   this.add_cleanup(function() {document.body.removeChild(t)})
   assert_array_equals(document.getElementsByTagName("ST"), [t])
   assert_array_equals(document.getElementsByTagName("st"), [])
   assert_array_equals(document.getElementsByTagName("te:st"), [])
+  assert_array_equals(document.getElementsByTagName("te:ST"), [])
 }, "Element in non-HTML namespace, prefix, uppercase name")
+
 test(function() {
-  var t = document.body.appendChild(document.createElement("AÇ"))
+  var t = document.body.appendChild(document.createElement("aÇ"))
   this.add_cleanup(function() {document.body.removeChild(t)})
+  assert_equals(t.localName, "aÇ")
   assert_array_equals(document.getElementsByTagName("AÇ"), [t], "All uppercase input")
   assert_array_equals(document.getElementsByTagName("aÇ"), [t], "Ascii lowercase input")
   assert_array_equals(document.getElementsByTagName("aç"), [], "All lowercase input")
 }, "Element in HTML namespace, no prefix, non-ascii characters in name")
+
 test(function() {
   var t = document.body.appendChild(document.createElementNS("test", "AÇ"))
   this.add_cleanup(function() {document.body.removeChild(t)})
@@ -126,6 +136,7 @@ test(function() {
   assert_array_equals(document.getElementsByTagName("aÇ"), [])
   assert_array_equals(document.getElementsByTagName("aç"), [])
 }, "Element in non-HTML namespace, non-ascii characters in name")
+
 test(function() {
   var t = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "test:aÇ"))
   this.add_cleanup(function() {document.body.removeChild(t)})
@@ -133,6 +144,7 @@ test(function() {
   assert_array_equals(document.getElementsByTagName("aÇ"), [t], "Ascii lowercase input")
   assert_array_equals(document.getElementsByTagName("aç"), [], "All lowercase input")
 }, "Element in HTML namespace, prefix, non-ascii characters in name")
+
 test(function() {
   var t = document.body.appendChild(document.createElementNS("test", "test:AÇ"))
   this.add_cleanup(function() {document.body.removeChild(t)})
@@ -140,17 +152,18 @@ test(function() {
   assert_array_equals(document.getElementsByTagName("aÇ"), [], "Ascii lowercase input")
   assert_array_equals(document.getElementsByTagName("aç"), [], "All lowercase input")
 }, "Element in non-HTML namespace, prefix, non-ascii characters in name")
+
 test(function() {
   var actual = document.getElementsByTagName("*");
   var expected = [];
-  get_elements = function(node) {
-      for (var i = 0; i < node.childNodes.length; i++) {
-          var child = node.childNodes[i];
-          if (child.nodeType === child.ELEMENT_NODE) {
-              expected.push(child);
-              get_elements(child);
-          }
+  var get_elements = function(node) {
+    for (var i = 0; i < node.childNodes.length; i++) {
+      var child = node.childNodes[i];
+      if (child.nodeType === child.ELEMENT_NODE) {
+        expected.push(child);
+        get_elements(child);
       }
+    }
   }
   get_elements(document);
   assert_array_equals(actual, expected);

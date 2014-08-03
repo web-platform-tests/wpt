@@ -21,16 +21,16 @@ test(function() {
   this.add_cleanup(function() {document.body.removeChild(t)})
   var actual = document.getElementsByTagNameNS("*", "body");
   var expected = [];
-  get_elements = function(node) {
-      for (var i = 0; i < node.childNodes.length; i++) {
-          var child = node.childNodes[i];
-          if (child.nodeType === child.ELEMENT_NODE) {
-              if (child.localName == "body") {
-                  expected.push(child);
-              }
-              get_elements(child);
-          }
+  var get_elements = function(node) {
+    for (var i = 0; i < node.childNodes.length; i++) {
+      var child = node.childNodes[i];
+      if (child.nodeType === child.ELEMENT_NODE) {
+        if (child.localName == "body") {
+          expected.push(child);
+        }
+        get_elements(child);
       }
+    }
   }
   get_elements(document);
   assert_array_equals(actual, expected);
@@ -41,7 +41,6 @@ test(function() {
   var t = document.body.appendChild(document.createElementNS("", "body"))
   this.add_cleanup(function() {document.body.removeChild(t)})
   assert_array_equals(document.getElementsByTagNameNS("", "*"), [t]);
-
 }, "Empty string namespace")
 
 test(function() {
@@ -67,6 +66,7 @@ test(function() {
   var t = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "abc"))
   this.add_cleanup(function() {document.body.removeChild(t)})
   assert_array_equals(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "abc"), [t]);
+ assert_array_equals(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "ABC"), []);
   assert_array_equals(document.getElementsByTagNameNS("test", "ABC"), []);
 }, "abc element in html namespace")
 
@@ -97,16 +97,16 @@ test(function() {
   this.add_cleanup(function() {document.body.removeChild(t)})
   var actual = document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "*");
   var expected = [];
-  get_elements = function(node) {
-      for (var i = 0; i < node.childNodes.length; i++) {
-          var child = node.childNodes[i];
-          if (child.nodeType === child.ELEMENT_NODE) {
-              if (child != t) {
-                  expected.push(child);
-              }
-              get_elements(child);
-          }
+  var get_elements = function(node) {
+    for (var i = 0; i < node.childNodes.length; i++) {
+      var child = node.childNodes[i];
+      if (child.nodeType === child.ELEMENT_NODE) {
+        if (child !== t) {
+          expected.push(child);
+        }
+        get_elements(child);
       }
+    }
   }
   get_elements(document);
   assert_array_equals(actual, expected);
@@ -115,14 +115,14 @@ test(function() {
 test(function() {
   var actual = document.getElementsByTagNameNS("*", "*");
   var expected = [];
-  get_elements = function(node) {
-      for (var i = 0; i < node.childNodes.length; i++) {
-          var child = node.childNodes[i];
-          if (child.nodeType === child.ELEMENT_NODE) {
-              expected.push(child);
-              get_elements(child);
-          }
+  var get_elements = function(node) {
+    for (var i = 0; i < node.childNodes.length; i++) {
+      var child = node.childNodes[i];
+      if (child.nodeType === child.ELEMENT_NODE) {
+        expected.push(child);
+        get_elements(child);
       }
+    }
   }
   get_elements(document);
   assert_array_equals(actual, expected);

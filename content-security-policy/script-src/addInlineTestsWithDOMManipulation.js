@@ -12,7 +12,7 @@
   document.getElementById('emptyDiv').outerHTML = '<script id=outerHTMLScript>dmTest.step(function() {assert_unreached("Unsafe inline script ran - outerHTML.")});</script>';
 
   document.write('<script>dmTest.step(function() {assert_unreached("Unsafe inline script ran - document.write")});</script>');
-  document.writeln('<script>tmTest.step(function() {assert_unreached("Unsafe inline script ran - document.writeln")});</script>');
+  document.writeln('<script>dmTest.step(function() {assert_unreached("Unsafe inline script ran - document.writeln")});</script>');
 
   dmTest.done();
 })();

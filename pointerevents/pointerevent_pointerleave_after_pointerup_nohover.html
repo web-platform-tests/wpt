@@ -23,14 +23,14 @@
 
             var eventTested = false;
             var isPointerupReceived = false;
-			var pointerup_event = null;
+            var pointerup_event = null;
             var detected_pointertypes = {};
 
             function run() {
                 var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointerup", function (event) {
-					pointerup_event = event;
+                    pointerup_event = event;
                 });
 
                 // For input devices that do not support hover, a pointerleave event must follow the pointerup event.

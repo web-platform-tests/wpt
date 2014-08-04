@@ -20,8 +20,8 @@ setTimeout(function () {selfTestAgain.done();}, 2000);
 var nonSelfErrorTest = async_test("onerror should fire when iframe not loaded");
 </script>
 
-<iframe src="frame-src-5_1yes.html" 
-    id="selfiFrame" 
+<iframe src="frame-src-5_1yes.html"
+    id="selfiFrame"
     onload='selfTest.done()'>
 </iframe>
 <iframe src="http://www1.web-platform.test:8000/content-security-policy/frame-src/frame-src-5_1no.html"

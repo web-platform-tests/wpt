@@ -9,12 +9,12 @@
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
     </head>
-    <body onload="run()">
+    <body class="scrollable" onload="run()">
         <h1>pointercancel test</h1>
         <h3>Warning: this test works properly only for devices that have touchscreen</h3>
         <h4>
 		Test Description: This test checks if pointercancel event triggers.
-		<p>Start touch over the black rectangle and then move your finger as you are scrolling the page.</p>
+		<p>Start touch over the black rectangle and then move your finger to scroll the page.</p>
 		</h4>
         <p>
         <div id="target0" style="background: black"></div>
@@ -22,7 +22,7 @@
             var detected_pointertypes = {};
             var test_pointerEvent = async_test("pointercancel event received");
             // showPointerTypes is defined in pointerevent_support.js
-            // Requirements: the callbakc function will reference the test_pointerEvent object and
+            // Requirements: the callback function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
 

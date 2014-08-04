@@ -55,3 +55,7 @@ border: 1px solid orange;
 position: absolute;
 top: -100px;
 }
+
+body.scrollable {
+min-height: 5000px;
+}

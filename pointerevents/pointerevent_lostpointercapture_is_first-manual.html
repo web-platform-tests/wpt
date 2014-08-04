@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Lostpointercapture triggers first</title>
+        <title>Lostpointercapture triggers first and asynchronously</title>
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
@@ -12,7 +12,7 @@
         <h1>Pointer Events capture test - lostpointercapture order</h1>
         <h4>
             Test Description:
-            This test checks if lostpointercapture is handled prior to all subsequent events.
+            This test checks if lostpointercapture is handled asynchronously and prior to all subsequent events.
             Complete the folowing actions:
             <ol>
                 <li> Press and hold left mouse button over "Set Capture" button. "gotpointercapture" should be logged inside of the black rectangle
@@ -33,6 +33,7 @@
                 pointerenterReceived;
 
             var testStarted = false;
+            var isAsync = false;
 
             var target0 = document.getElementById('target0');
             var target1 = document.getElementById('target1');
@@ -49,6 +50,9 @@
                     }
                     else {
                         rPointerCapture(e);
+                        setTimeout(function() {
+                            isAsync = true;
+                        });
                     }
                  });
 
@@ -71,6 +75,9 @@
                     testStarted = false;
 
                     test(function() {
+                        // TA: 11.2
+                        assert_true(isAsync, "lostpointercapture must be fired asynchronously");
+
                         assert_true((pointeroverReceived == false)&&
                         (pointeroutReceived == false)&&
                         (pointerdownReceived == false)&&

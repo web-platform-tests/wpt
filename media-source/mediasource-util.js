@@ -1,7 +1,24 @@
 (function(window) {
-    setup({ timeout: 12000 });
+    setup({ explicit_timeout: 12000 });
 
     var SEGMENT_INFO_LIST = [
+        {
+            url: 'mp4/test.mp4',
+            type: 'video/mp4; codecs="mp4a.40.2, avc1.4D401E"',
+            duration: 6.0756,
+            init: { offset: 0, size: 1178 },
+            media: [
+                {  offset: 1246, size: 23828, timecode: 0 },
+                {  offset: 25142, size: 25394, timecode: 0.797 },
+                {  offset: 50604, size: 24761, timecode: 1.594 },
+                {  offset: 75433, size: 25138, timecode: 2.390 },
+                {  offset: 100639, size: 22935, timecode: 3.187 },
+                {  offset: 123642, size: 24995, timecode: 3.984},
+                {  offset: 148637, size: 24968, timecode: 4.781 },
+                {  offset: 173689, size: 19068, timecode: 5.578 },
+                {  offset: 192757, size: 200, timecode: 5.619 },
+            ],
+        },
         {
             url: 'webm/test.webm',
             type: 'video/webm; codecs="vp8, vorbis"',
@@ -24,23 +41,6 @@
                 {  offset: 183320, size: 13069, timecode: 5.168 },
                 {  offset: 196389, size: 13788, timecode: 5.563 },
                 {  offset: 210177, size: 9009, timecode: 5.957 },
-            ],
-        },
-        {
-            url: 'mp4/test.mp4',
-            type: 'video/mp4; codecs="mp4a.40.2, avc1.4D401E"',
-            duration: 6.0368,
-            init: { offset: 0, size: 1178 },
-            media: [
-                {  offset: 1246, size: 23828, timecode: 0 },
-                {  offset: 25142, size: 25394, timecode: 0.797 },
-                {  offset: 50604, size: 24761, timecode: 1.594 },
-                {  offset: 75433, size: 25138, timecode: 2.390 },
-                {  offset: 100639, size: 22935, timecode: 3.187 },
-                {  offset: 123642, size: 24995, timecode: 3.984},
-                {  offset: 148637, size: 24968, timecode: 4.781 },
-                {  offset: 173689, size: 19068, timecode: 5.578 },
-                {  offset: 192757, size: 200, timecode: 5.619 },
             ],
         }
     ];
@@ -226,9 +226,9 @@
         return null;
     }
 
-    var audioOnlyTypes = ['audio/webm;codecs="vorbis"', 'audio/mp4;codecs="mp4a.40.2"'];
-    var videoOnlyTypes = ['video/webm;codecs="vp8"', 'video/mp4;codecs="avc1.4D4001"'];
-    var audioVideoTypes = ['video/webm;codecs="vp8,vorbis"', 'video/mp4;codecs="avc1.4D4001,mp4a.40.2"'];
+    var audioOnlyTypes = ['audio/mp4;codecs="mp4a.40.2"', 'audio/webm;codecs="vorbis"'];
+    var videoOnlyTypes = ['video/mp4;codecs="avc1.4D4001"', 'video/webm;codecs="vp8"'];
+    var audioVideoTypes = ['video/mp4;codecs="avc1.4D4001,mp4a.40.2"', 'video/webm;codecs="vp8,vorbis"'];
     MediaSourceUtil.AUDIO_ONLY_TYPE = getFirstSupportedType(audioOnlyTypes);
     MediaSourceUtil.VIDEO_ONLY_TYPE = getFirstSupportedType(videoOnlyTypes);
     MediaSourceUtil.AUDIO_VIDEO_TYPE = getFirstSupportedType(audioVideoTypes);
@@ -325,15 +325,13 @@
 
             // Overload done() so that element added to the document can be removed.
             test.removeMediaElement_ = true;
-            var oldTestDone = test.done.bind(test);
-            test.done = function()
+            test.add_cleanup(function()
             {
                 if (test.removeMediaElement_) {
                     document.body.removeChild(mediaTag);
                     test.removeMediaElement_ = false;
                 }
-                oldTestDone();
-            };
+            });
 
             openMediaSource_(test, mediaTag, function(mediaSource)
             {

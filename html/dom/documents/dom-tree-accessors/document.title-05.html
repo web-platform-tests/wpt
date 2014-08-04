@@ -32,7 +32,8 @@ var White_Space = [
 
 White_Space.forEach(function(character, i) {
   test(function() {
-    var s = "a" + character + character + "b" + character + "c" + String(i);
+    var s = character + "a" + character + character + "b" + character + "c" +
+      String(i) + character;
     document.title = s;
     assert_equals(document.title, s);
   }, "Removing whitespace in document.title: U+" +

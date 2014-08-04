@@ -9,13 +9,19 @@
 <div id="log"></div>
 <script>
 test(function() {
+  var element = document.createElement("p");
+  assert_equals(element.childNodes, element.childNodes);
+}, "Caching of Node.childNodes");
+
+test(function() {
   var elem = document.createElement("p");
   assert_array_equals(elem.childNodes, []);
 
   var children = elem.childNodes;
   var child = document.createElement("p");
   elem.appendChild(child);
-  assert_array_equals(elem.childNodes, [child]);
+  assert_equals(elem.childNodes, children);
+  assert_array_equals(children, [child]);
   assert_equals(children.item(0), child);
 
   var child2 = document.createElement("p");

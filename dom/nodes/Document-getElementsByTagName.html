@@ -97,6 +97,7 @@ test(function() {
   assert_array_equals(document.getElementsByTagName("st"), [t])
   assert_array_equals(document.getElementsByTagName("ST"), [])
 }, "Element in non-HTML namespace, no prefix, lowercase name")
+
 test(function() {
   var t = document.body.appendChild(document.createElementNS("test", "ST"))
   this.add_cleanup(function() {document.body.removeChild(t)})

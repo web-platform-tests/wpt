@@ -17,6 +17,7 @@ var nonSelfTest = async_test("Iframe not loaded from www1.web-platform.test (as 
 setTimeout(function () {nonSelfTest.done();}, 2000);
 var selfTestAgain = async_test("second valid iframe test");
 setTimeout(function () {selfTestAgain.done();}, 2000);
+var nonSelfErrorTest = async_test("onerror should fire when iframe not loaded");
 </script>
 
 <iframe src="frame-src-5_1yes.html" 
@@ -25,11 +26,12 @@ setTimeout(function () {selfTestAgain.done();}, 2000);
 </iframe>
 <iframe src="http://www1.web-platform.test:8000/content-security-policy/frame-src/frame-src-5_1no.html"
     id="nonSelfiFrame"
-    onload='nonSelfTest.step(function() {assert_false(true, "loaded bad iframe from www1.web-platform.test (should have been denied by policy)")})'>
+    onload='nonSelfTest.step(function() {assert_false(true, "onload fired for www1.web-platform.test:8000 iframe (should have been denied by policy)")})'
+    onerror='nonSelfErrorTest.done()'>
 </iframe>
 <iframe src="http://web-platform.test:8000/content-security-policy/frame-src/frame-src-5_1yes.html"
     id="selfiFrame2"
-    onload='selfTestAgain.step(function() {assert_true(true, "selfiFrame loaded")})'>
+    onload='selfTestAgain.step(function() {assert_true(true, "onload fired for second self iframe")})'>
 </iframe>
 
 <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=frame-src%20%27self%27'></script>

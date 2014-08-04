@@ -1,5 +1,5 @@
 (function(window) {
-    setup({ explicit_timeout: 12000 });
+    setup({ timeout: 12000 });
 
     var SEGMENT_INFO_LIST = [
         {

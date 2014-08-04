@@ -159,6 +159,11 @@ def check_args(kwargs):
         kwargs["interactive"] = False
         kwargs["debug_args"] = None
 
+    if kwargs["binary"] is not None:
+        if not os.path.exists(kwargs["binary"]):
+            print >> sys.stderr, "Binary path %s does not exist" % kwargs["binary"]
+            sys.exit(1)
+
     return kwargs
 
 

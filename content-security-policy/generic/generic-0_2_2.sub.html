@@ -9,7 +9,7 @@
       var head = document.getElementsByTagName('head')[0];
       var script = document.createElement('script');
       script.type = 'text/javascript';
-      script.src = "http://" + location.hostname + ":44403/content-security-policy/generic/unreached.js";
+      script.src = "http://" + location.hostname + ":{{ports[http][1]}}/content-security-policy/generic/unreached.js";
       head.appendChild(script);
     </script>
 </head>

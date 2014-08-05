@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
     <head>
         <title>Pointer Event: releasePointerCapture() - subsequent events follow normal hitting testing mechanisms</title>
@@ -12,7 +12,8 @@
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script type="text/javascript">
             var detected_pointertypes = {};
-            var test_pointerEvent = async_test("lostpointercapture: subsequent events to target."); // set up test harness
+            var test_pointerEvent = async_test("lostpointercapture: subsequent events to target.");  // set up test harness
+            var suppressedEventsFail = false;
             // showPointerTypes is defined in pointerevent_support.js
             // Requirements: the callback function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
@@ -23,7 +24,6 @@
             var f_lostPointerCapture = false;
 
             function listenerEventHandler(event) {
-
                 if (event.type == "gotpointercapture") {
                     f_gotPointerCapture = true;
                     check_PointerEvent(event);
@@ -33,9 +33,16 @@
                     f_gotPointerCapture = false;
                     check_PointerEvent(event);
                 }
-
-                if (event.type !== "lostpointercapture" && event.type !== "gotpointercapture" && event.pointerId == captured_event.pointerId) {
-                    if (f_gotPointerCapture) {
+                else if(event.type == "pointerover" || event.type == "pointerenter" || event.type == "pointerout" || event.type == "pointerleave") {
+                    if(!suppressedEventsFail) {
+                        test(function() {
+                            assert_true(false, "Suppressed events were received");
+                        }, "Suppressed events were received");
+                        suppressedEventsFail = true;
+                    }
+                }
+                else if (event.pointerId == captured_event.pointerId) {
+                    if (f_gotPointerCapture && event.type == "pointermove") {
                         // on first event received for capture, release capture
                         listener.releasePointerCapture(event.pointerId);
                     }
@@ -49,11 +56,10 @@
             }
 
             function targetEventHandler(event) {
-
                 if (f_gotPointerCapture) {
-                    if (event.type != "pointerout" && event.type != "pointerleave") {
+                    if(event.type != "pointerout" && event.type != "pointerleave") {
                         test_pointerEvent.step(function () {
-                            assert_true(false, "The Target element should not have received any events while capture is active. Event recieved:" + event.type + ". ");
+                            assert_true(false, "The Target element should not have received any events while capture is active. Event recieved:" + event.type + ".  ");
                         });
                     }
                 }
@@ -92,7 +98,7 @@
                 var pointertypes = Object.keys(detected_pointertypes); pointertype_log.innerHTML = pointertypes.length ? pointertypes.join(",") : "(none)";
                 if (test_pointerEvent.status == test_pointerEvent.NOTRUN
                     || test_pointerEvent.status == test_pointerEvent.TIMEOUT) {
-                    complete_notice.innerHTML = "Test FAIL due to time out. This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
+                    complete_notice.innerHTML = "Test FAIL due to time out.  This is due to the browser not supporting pointer, or the manual steps were not run to completion.";
                     complete_notice.style.background = "red";
                 }
                 complete_notice.style.display = "block";
@@ -112,7 +118,7 @@
             Use mouse, touch or pen to contact here and move around.
         </div>
         <div id="complete-notice">
-            <p>Test complete: Scroll to Summary to view Pass/Fail Results.</p>
+            <p>Test complete:  Scroll to Summary to view Pass/Fail Results.</p>
             <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
             <p>Refresh the page to run the tests again with a different pointer type.</p>
         </div>

@@ -24,7 +24,7 @@ test(function() {
   assert_array_equals(children, [child]);
   assert_equals(children.item(0), child);
 
-  var child2 = document.createElement("p");
+  var child2 = document.createComment("comment");
   elem.appendChild(child2);
   assert_array_equals(children, [child, child2]);
   assert_equals(children.item(0), child);

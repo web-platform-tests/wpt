@@ -30,9 +30,11 @@
         <p>Note: this test is for touch only</p>
         <div id="target0">
             <span id="testspan">
-            Test Span
+                Test span
             </span>
         </div>
+        <input type="button" id="btnComplete" value="Complete test">
+
         <script type='text/javascript'>
             var detected_pointertypes = {};
 
@@ -40,21 +42,14 @@
             var yScrollIsReceived = false;
             var failScrollIsReceived = false;
             var xScr0, yScr0, xScr1, yScr1;
-
             var scrollReturnInterval = 500;
-
             var isFirstPart = true;
-
-            var moveCount = 0;
-            var countToPass = 50;
-            var isFirstScroll = true;
-
-            var timeoutSettings = 35000;
-            setup({timeout: timeoutSettings});
+            setup({ explicit_timeout: true });
             add_completion_callback(showPointerTypes);
 
             function run() {
                 var target0 = document.getElementById("target0");
+                var btnComplete = document.getElementById("btnComplete");
 
                 var test_touchaction_div = async_test("touch-action attribute test out of element");
                 var test_touchaction_span = async_test("touch-action attribute test in element");
@@ -62,10 +57,14 @@
                 xScr0 = target0.scrollLeft;
                 yScr0 = target0.scrollTop;
 
-                target0.focus();
-
-                on_event(target0, 'pointercancel', function(event) {
+                on_event(btnComplete, 'pointerdown', function(event) {
                     detected_pointertypes[event.pointerType] = true;
+                    test_touchaction_span.step(function() {
+                        assert_not_equals(target0.scrollLeft, 0, "span scroll x offset should not be 0 in the end of the test");
+                        assert_not_equals(target0.scrollTop, 0, "span scroll y offset should not be 0 in the end of the test");
+                    });
+                    test_touchaction_span.done();
+                    updateDescriptionComplete();
                 });
 
                 on_event(target0, 'scroll', function(event) {
@@ -95,26 +94,6 @@
                                 xScrollIsReceived = false;
                                 yScrollIsReceived = false;
                             }, 2 * scrollReturnInterval); // avoid immediate triggering while scroll is still being performed
-                        }
-                    }
-                    else {
-                        xScr1 = target0.scrollLeft;
-                        yScr1 = target0.scrollTop;
-
-                        if(xScr1 != xScr0) {
-                            xScrollIsReceived = true;
-                        }
-
-                        if(yScr1 != yScr0) {
-                            test_touchaction_span.step(function () {
-                                yScrollIsReceived = true;
-                                assert_true(true, "y-scroll received.");
-                            });
-                            updateDescriptionFourthStepTouchActionElement(target0, scrollReturnInterval);
-                        }
-                        if(xScrollIsReceived && yScrollIsReceived) {
-                            test_touchaction_span.done();
-                            updateDescriptionComplete();
                         }
                     }
                 });

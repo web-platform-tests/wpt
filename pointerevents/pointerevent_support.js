@@ -137,7 +137,7 @@ function updateDescriptionThirdStepTouchActionElement(target, scrollReturnInterv
     window.setTimeout(function() {
     objectScroller(target, 'left', 0);}
     , scrollReturnInterval);
-    document.getElementById('desc').innerHTML = "Test Description: Try to scroll element DOWN starting your touch inside of the element";
+    document.getElementById('desc').innerHTML = "Test Description: Try to scroll element DOWN then RIGHT starting your touch inside of the element. Then tap complete button";
 }
 
 function updateDescriptionFourthStepTouchActionElement(target, scrollReturnInterval) {

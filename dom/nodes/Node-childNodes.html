@@ -13,19 +13,18 @@ test(function() {
   assert_equals(element.childNodes, element.childNodes);
 }, "Caching of Node.childNodes");
 
-test(function() {
-  var elem = document.createElement("p");
-  assert_array_equals(elem.childNodes, []);
+var check_parent_node = function(node) {
+  assert_array_equals(node.childNodes, []);
 
-  var children = elem.childNodes;
+  var children = node.childNodes;
   var child = document.createElement("p");
-  elem.appendChild(child);
-  assert_equals(elem.childNodes, children);
+  node.appendChild(child);
+  assert_equals(node.childNodes, children);
   assert_array_equals(children, [child]);
   assert_equals(children.item(0), child);
 
   var child2 = document.createComment("comment");
-  elem.appendChild(child2);
+  node.appendChild(child2);
   assert_array_equals(children, [child, child2]);
   assert_equals(children.item(0), child);
   assert_equals(children.item(1), child2);
@@ -33,5 +32,17 @@ test(function() {
   assert_false(2 in children);
   assert_equals(children[2], undefined);
   assert_equals(children.item(2), null);
-});
+};
+
+test(function() {
+  check_parent_node(document.createElement("p"));
+}, "Node.childNodes on an Element.");
+
+test(function() {
+  check_parent_node(document.createDocumentFragment());
+}, "Node.childNodes on a DocumentFragment.");
+
+test(function() {
+  check_parent_node(new Document());
+}, "Node.childNodes on a Document.");
 </script>

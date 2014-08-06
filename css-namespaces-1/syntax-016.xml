@@ -2,7 +2,7 @@
  <head>
   <link rel="author" title="Daniel Glazman" href="http://glazman.org/"/>
   <link rel="author" title="Disruptive Innovations SAS" href="http://disruptive-innovations.com/"/>
-  <link rel="help" href="http://www.w3.org/TR/css3-namespace/#syntax"/>
+  <link rel="help" href="http://www.w3.org/TR/css-namespaces-1/#syntax"/>
   <title>CSS Namespaces Test Suite: @namespace and other rules ordering</title>
   <style>
     @namespace test url("test");

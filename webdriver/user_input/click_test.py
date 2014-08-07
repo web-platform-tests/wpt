@@ -9,6 +9,7 @@ repo_root = os.path.abspath(os.path.join(__file__, "../../.."))
 sys.path.insert(1, os.path.join(repo_root, "tools", "webdriver"))
 from webdriver import exceptions, wait
 
+
 class ClickTest(base_test.WebDriverBaseTest):
     def setUp(self):
         self.wait = wait.WebDriverWait(self.driver, 5, ignored_exceptions = [exceptions.NoSuchAlertException])

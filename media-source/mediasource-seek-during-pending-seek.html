@@ -9,15 +9,14 @@
     <body>
         <div id="log"></div>
         <script>
-
           mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {
               mediaElement.play();
 
               var initSegment = MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.init);
               var firstSegment = MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.media[0]);
-              var secondSegmentInfo = segmentInfo.media[2];
-              var secondSegment = MediaSourceUtil.extractSegmentData(mediaData, secondSegmentInfo);
+              var segmentIndex = 2;
+              var secondSegmentInfo = segmentInfo.media[segmentIndex];
 
               // Append the initialization segment to trigger a transition to HAVE_METADATA.
               test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
@@ -45,11 +44,11 @@
                   assert_true(mediaElement.seeking, 'mediaElement is still seeking');
                   assert_equals(mediaElement.readyState, mediaElement.HAVE_METADATA, 'Still in HAVE_METADATA');
 
-                  // Append media data for the current position.
-                  test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
+                  // Append media data for the current position until the element starts playing.
                   test.expectEvent(mediaElement, 'seeked', 'mediaElement finished seek');
                   test.expectEvent(mediaElement, 'playing', 'mediaElement playing');
-                  sourceBuffer.appendBuffer(secondSegment);
+
+                  MediaSourceUtil.appendUntilEventFires(test, mediaElement, 'playing', sourceBuffer, mediaData, segmentInfo, segmentIndex);
               });
 
               test.waitForExpectedEvents(function()
@@ -74,8 +73,8 @@
               var firstSegment = MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.media[0]);
               var secondSegmentInfo = segmentInfo.media[2];
               var secondSegment = MediaSourceUtil.extractSegmentData(mediaData, secondSegmentInfo);
-              var thirdSegmentInfo = segmentInfo.media[4];
-              var thirdSegment = MediaSourceUtil.extractSegmentData(mediaData, thirdSegmentInfo);
+              var segmentIndex = 4;
+              var thirdSegmentInfo = segmentInfo.media[segmentIndex];
 
               // Append the initialization segment to trigger a transition to HAVE_METADATA.
               test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
@@ -121,7 +120,7 @@
                   // Append media data for the second seek position.
                   test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
                   test.expectEvent(mediaElement, 'seeked', 'mediaElement finished seek');
-                  sourceBuffer.appendBuffer(thirdSegment);
+                  MediaSourceUtil.appendUntilEventFires(test, mediaElement, 'seeked', sourceBuffer, mediaData, segmentInfo, segmentIndex);
               });
 
               test.waitForExpectedEvents(function()

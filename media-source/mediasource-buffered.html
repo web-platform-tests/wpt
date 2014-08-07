@@ -29,8 +29,8 @@
                 mediasource_test(function(test, mediaElement, mediaSource)
                 {
                     mediaElement.pause();
-                    test.failOnEvent(mediaElement, 'error');
-                    test.endOnEvent(mediaElement, 'ended');
+                    test.failOnEvent(mediaElement, "error");
+                    test.endOnEvent(mediaElement, "ended");
 
                     MediaSourceUtil.fetchManifestAndData(test, manifestFilenameA, function(typeA, dataA)
                     {
@@ -85,8 +85,8 @@
             mediasource_test(function(test, mediaElement, mediaSource)
             {
                 mediaElement.pause();
-                test.failOnEvent(mediaElement, 'error');
-                test.endOnEvent(mediaElement, 'ended');
+                test.failOnEvent(mediaElement, "error");
+                test.endOnEvent(mediaElement, "ended");
 
                 MediaSourceUtil.fetchManifestAndData(test, subType + "/test-av-384k-44100Hz-1ch-320x240-30fps-10kfr-manifest.json", function(type, data)
                 {
@@ -121,7 +121,7 @@
             mediaSourceDemuxedTest(function(test, mediaElement, mediaSource, dataA, dataB) {
                 var dataBSize = {
                     webm: 318,
-                    mp4: 820,
+                    mp4: 835,
                 };
                 appendData(test, mediaSource, dataA, dataB.subarray(0, dataBSize[subType]), function()
                 {
@@ -142,8 +142,8 @@
             mediasource_test(function(test, mediaElement, mediaSource)
             {
                 mediaElement.pause();
-                test.failOnEvent(mediaElement, 'error');
-                test.endOnEvent(mediaElement, 'ended');
+                test.failOnEvent(mediaElement, "error");
+                test.endOnEvent(mediaElement, "ended");
 
                 MediaSourceUtil.fetchManifestAndData(test, subType + "/test-av-384k-44100Hz-1ch-320x240-30fps-10kfr-manifest.json", function(type, data)
                 {

@@ -156,16 +156,18 @@
 
                   test.waitForExpectedEvents(function()
                   {
+                      mediaSource.endOfStream();
+                      assert_false(sourceBuffer.updating, "updating");
+
                       var duration = segmentInfo.duration.toFixed(3);
                       var subType = MediaSourceUtil.getSubType(segmentInfo.type);
 
                       assertBufferedEquals(sourceBuffer, "{ [0.000, " + duration + ") }", "Initial buffered range.");
-                      callback(test, sourceBuffer, duration, subType);
+                      callback(test, mediaSource, sourceBuffer, duration, subType);
                   });
               }, description);
           };
-
-          function removeAndCheckBufferedRanges(test, sourceBuffer, start, end, expected)
+          function removeAndCheckBufferedRanges(test, mediaSource, sourceBuffer, start, end, expected)
           {
               test.expectEvent(sourceBuffer, "updatestart");
               test.expectEvent(sourceBuffer, "update");
@@ -174,49 +176,52 @@
 
               test.waitForExpectedEvents(function()
               {
+                  mediaSource.endOfStream();
+                  assert_false(sourceBuffer.updating, "updating");
+
                   assertBufferedEquals(sourceBuffer, expected, "Buffered ranges after remove().");
                   test.done();
               });
           }
 
-          removeAppendedDataTests(function(test, sourceBuffer, duration, subType)
+          removeAppendedDataTests(function(test, mediaSource, sourceBuffer, duration, subType)
           {
-              removeAndCheckBufferedRanges(test, sourceBuffer, 0, Number.POSITIVE_INFINITY, "{ }");
+              removeAndCheckBufferedRanges(test, mediaSource, sourceBuffer, 0, Number.POSITIVE_INFINITY, "{ }");
           }, "Test removing all appended data.");
 
-          removeAppendedDataTests(function(test, sourceBuffer, duration, subType)
+          removeAppendedDataTests(function(test, mediaSource, sourceBuffer, duration, subType)
           {
               var expectations = {
                 webm: ("{ [3.187, " + duration + ") }"),
-                mp4: ("{ [3.021, " + duration + ") }"),
+                mp4: ("{ [3.154, " + duration + ") }"),
               };
 
               // Note: Range doesn't start exactly at the end of the remove range because there isn't
               // a keyframe there. The resulting range starts at the first keyframe >= the end time.
-              removeAndCheckBufferedRanges(test, sourceBuffer, 0, 3, expectations[subType]);
+              removeAndCheckBufferedRanges(test, mediaSource, sourceBuffer, 0, 3, expectations[subType]);
           }, "Test removing beginning of appended data.");
 
-          removeAppendedDataTests(function(test, sourceBuffer, duration, subType)
+          removeAppendedDataTests(function(test, mediaSource, sourceBuffer, duration, subType)
           {
               var expectations = {
                 webm: ("{ [0.000, 1.012) [3.187, " + duration + ") }"),
-                mp4: ("{ [0.000, 1.022) [3.021, " + duration + ") }"),
+                mp4: ("{ [0.000, 1.022) [3.154, " + duration + ") }"),
               };
 
               // Note: The first resulting range ends slightly after start because the removal algorithm only removes
               // frames with a timestamp >= the start time. If a frame starts before and ends after the remove() start
               // timestamp, then it stays in the buffer.
-              removeAndCheckBufferedRanges(test, sourceBuffer, 1, 3, expectations[subType]);
+              removeAndCheckBufferedRanges(test, mediaSource, sourceBuffer, 1, 3, expectations[subType]);
           }, "Test removing the middle of appended data.");
 
-          removeAppendedDataTests(function(test, sourceBuffer, duration, subType)
+          removeAppendedDataTests(function(test, mediaSource, sourceBuffer, duration, subType)
           {
               var expectations = {
                 webm: "{ [0.000, 1.012) }",
-                mp4: "{ [0.000, 1.022) }",
+                mp4: "{ [0.000, 1.029) }",
               };
 
-              removeAndCheckBufferedRanges(test, sourceBuffer, 1, Number.POSITIVE_INFINITY, expectations[subType]);
+              removeAndCheckBufferedRanges(test, mediaSource, sourceBuffer, 1, Number.POSITIVE_INFINITY, expectations[subType]);
           }, "Test removing the end of appended data.");
         </script>
     </body>

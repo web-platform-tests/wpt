@@ -31,8 +31,8 @@ function check_PointerEvent(event) {
     };
     [
         ["readonly", "long", "pointerId"],
-        ["readonly", "long", "width"],
-        ["readonly", "long", "height"],
+        ["readonly", "float", "width"],
+        ["readonly", "float", "height"],
         ["readonly", "float", "pressure"],
         ["readonly", "long", "tiltX"],
         ["readonly", "long", "tiltY"],

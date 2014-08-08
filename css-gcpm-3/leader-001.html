@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>CSS Test: GCPM Solid Leader</title>
+<title>CSS Test: GCPM Dotted Leader</title>
 <link rel="author" title="Dave Cramer" href="mailto:dauwhe@gmail.com">
-<link rel="help" href="http://www.w3.org/TR/css3-gcpm/#solid-leader">
+<link rel="help" href="http://www.w3.org/TR/css-gcpm-3/#dotted-leader">
+
 
 <meta name="flags" content="paged">
-<meta name="assert" content="Test checks that a basic solid leader is implemented">
+<meta name="assert" content="Test checks that a basic dotted leader is implemented">
 <style>
  
-span.cn::after { content: leader(solid); }
+span.cn::after { content: leader(dotted); }
  
 </style>
 </head>
 <body>
 
-<p>Test passes if there's a continuous row of underscores between "Chapter One" and "1"</p>
+<p>Test passes if there's a dotted leader between "Chapter One" and "1"</p>
 
 <ol>
 <li>

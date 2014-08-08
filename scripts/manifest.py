@@ -597,5 +597,6 @@ if __name__ == "__main__":
         sys.exit(1)
     opts = create_parser().parse_args()
     update_manifest(get_repo_root(),
+                    path=opts.path,
                     rebuild=opts.rebuild,
                     local_changes=opts.experimental_include_local_changes)

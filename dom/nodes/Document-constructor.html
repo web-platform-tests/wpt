@@ -34,4 +34,12 @@ test(function() {
   assert_equals(doc.contentType, "application/xml");
   assert_equals(doc.createElement("DIV").localName, "DIV");
 }, "new Document(): metadata")
+
+test(function() {
+  var doc = new Document();
+  var a = doc.createElement("a");
+  // In UTF-8: 0xC3 0xA4
+  a.href = "http://example.org/?\u00E4";
+  assert_equals(a.href, "http://example.org/?%C3%A4");
+}, "new Document(): URL parsing")
 </script>

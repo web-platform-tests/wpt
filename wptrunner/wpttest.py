@@ -5,6 +5,8 @@
 DEFAULT_TIMEOUT = 10  # seconds
 LONG_TIMEOUT = 60  # seconds
 
+import os
+
 import mozinfo
 
 
@@ -42,23 +44,37 @@ class TestharnessSubtestResult(SubtestResult):
     statuses = set(["PASS", "FAIL", "TIMEOUT", "NOTRUN"])
 
 
-def get_run_info(product, **kwargs):
+def get_run_info(metadata_root, product, **kwargs):
     if product == "b2g":
-        return B2GRunInfo(product, **kwargs)
+        return B2GRunInfo(metadata_root, product, **kwargs)
     else:
-        return RunInfo(product, **kwargs)
+        return RunInfo(metadata_root, product, **kwargs)
 
 
 class RunInfo(dict):
-    def __init__(self, product, debug):
+    def __init__(self, metadata_root, product, debug):
+        self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
         self["product"] = product
-        self["debug"] = debug
+        if not "debug" in self:
+            self["debug"] = debug
 
+    def _update_mozinfo(self, metadata_root):
+        """Add extra build information from a mozinfo.json file in a parent
+        directory"""
+        path = metadata_root
+        dirs = set()
+        while path != os.path.expanduser('~'):
+            if path in dirs:
+                break
+            dirs.add(path)
+            path = os.path.split(path)[0]
+
+        mozinfo.find_and_update_from_json(dirs)
 
 class B2GRunInfo(dict):
-    def __init__(self, product, **kwargs):
-        self["product"] = product
+    def __init__(self, *args, **kwargs):
+        RunInfo.__init__(self, *args, **kwargs)
         self["os"] = "b2g"
 
 

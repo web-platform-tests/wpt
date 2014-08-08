@@ -49,7 +49,9 @@ class Reducer(object):
         self.target = target
 
         self.test_type = kwargs["test_types"][0]
-        run_info = wpttest.get_run_info(kwargs["product"], debug=False)
+        run_info = wpttest.get_run_info(kwargs["metadata_root"],
+                                        kwargs["product"],
+                                        debug=False)
         test_filter = wptrunner.TestFilter(include=kwargs["include"])
         self.test_loader = wptrunner.TestLoader(kwargs["tests_root"],
                                                 kwargs["metadata_root"],

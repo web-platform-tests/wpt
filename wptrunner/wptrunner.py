@@ -511,7 +511,7 @@ class LoggingWrapper(StringIO):
 def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
     do_test_relative_imports(tests_root)
 
-    run_info = wpttest.get_run_info(product, debug=False)
+    run_info = wpttest.get_run_info(metadata_root, product, debug=False)
     test_filter = TestFilter(include=kwargs["include"], exclude=kwargs["exclude"],
                              manifest_path=kwargs["include_manifest"])
     test_loader = TestLoader(tests_root, metadata_root, test_filter, run_info)
@@ -522,7 +522,7 @@ def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
 
 def list_disabled(tests_root, metadata_root, test_types, product, **kwargs):
     rv = []
-    run_info = wpttest.get_run_info(product, debug=False)
+    run_info = wpttest.get_run_info(metadata_root, product, debug=False)
     test_loader = TestLoader(tests_root, metadata_root, TestFilter(), run_info)
 
     for test_type, tests in test_loader.get_disabled(test_types).iteritems():
@@ -547,7 +547,7 @@ def run_tests(config, tests_root, metadata_root, product, **kwargs):
 
         do_test_relative_imports(tests_root)
 
-        run_info = wpttest.get_run_info(product, debug=False)
+        run_info = wpttest.get_run_info(metadata_root, product, debug=False)
 
         (check_args,
          browser_cls, get_browser_kwargs,

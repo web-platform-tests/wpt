@@ -8,6 +8,7 @@
     <!-- 
     http://www.gtalbot.org/BrowserBugsSection/review/background-size-008-review.html  
     -->
+    <link rel="match" href="reference/ref-filled-green-100px-square.xht">
     <meta name="flags" content="image">
     <meta name="assert" content="Check if 'background-size' is '100px', maximum width of the positioning area in length, then such value is the width of the corresponding image and the second value (corresponding to the height of the background image) is assumed to be 'auto'. An 'auto' value for one dimension is resolved by using the image's intrinsic ratio (in this test, the image's intrinsic ratio is 1:1) and (multiplied by) the size of the other dimension. Therefore the used height of the background-size in this test should be 100px.">
     <style>

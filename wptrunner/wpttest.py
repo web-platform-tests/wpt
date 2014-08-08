@@ -57,7 +57,7 @@ class RunInfo(dict):
         self.update(mozinfo.info)
         self["product"] = product
         if not "debug" in self:
-            debug = debug
+            self["debug"] = debug
 
     def _update_mozinfo(self, metadata_root):
         """Add extra build information from a mozinfo.json file in a parent
@@ -73,8 +73,8 @@ class RunInfo(dict):
         mozinfo.find_and_update_from_json(dirs)
 
 class B2GRunInfo(dict):
-    def __init__(self, metadata_root, product, **kwargs):
-        RunInfo.__init__(self, metadata_root, product, **kwargs)
+    def __init__(self, *args, **kwargs):
+        RunInfo.__init__(self, *args, **kwargs)
         self["os"] = "b2g"
 
 

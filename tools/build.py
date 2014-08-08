@@ -120,10 +120,8 @@ class Builder(object):
             if (self.sourceTree.isTestCase(filePath)):
                 source = self.sourceCache.generateSource(filePath, fileName)
                 if (source.isTest()):
-                    if (source.error):
-                        self.ui.warn("Error parsing '", filePath, "': ", source.error, "\n")
-                    else:
-                        metaData = source.getMetadata(True)
+                    metaData = source.getMetadata(True)
+                    if (metaData):
                         for specURL in metaData['links']:
                             specName, anchorURL = self.getSpecName(specURL)
                             if (specName):
@@ -137,6 +135,12 @@ class Builder(object):
                                         self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
                             else:
                                 self.ui.note("Unknown specification URL: ", specURL, "\n  in: ", filePath, "\n")
+                    else:
+                        if (source.errors):
+                            self.ui.warn("Error parsing '", filePath, "': ", ' '.join(source.errors), "\n")
+                        else:
+                            self.ui.warn("No metadata available for '", filePath, "'\n")
+
 
         for testSuiteName in suiteFileNames:
             if (dirName in self.rawDirs):

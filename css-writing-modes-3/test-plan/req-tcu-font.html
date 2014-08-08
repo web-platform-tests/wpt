@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Requirements for "TCU-font" for testing text-combine-upright property</title>
+<meta charset='utf-8'>
+<script src='http://www.w3.org/Tools/respec/respec-w3c-common' async class='remove'></script>
+<script class='remove'>
+var respecConfig = {
+  specStatus: "unofficial",
+  shortName:  "tcu-font-req",
+  editors: [
+    {
+      name: "Masataka Yakura",
+      url: "https://google.com/+MasatakaYakura"
+    }
+  ],
+  publishDate:  "2014-07-22",
+
+};
+</script>
+<style>
+/*****************************************************************
+ * ReSpec 3 CSS
+ * Robin Berjon - http://berjon.com/
+ *****************************************************************/
+
+/* --- INLINES --- */
+em.rfc2119 { text-transform: lowercase; font-variant: small-caps; font-style: normal; color: #900; }
+h1 abbr, h2 abbr, h3 abbr, h4 abbr, h5 abbr, h6 abbr, a abbr { border: none; }
+dfn { font-weight: bold; }
+a.internalDFN { color: inherit; border-bottom: 1px solid #99c; text-decoration: none; }
+a.externalDFN { color: inherit; border-bottom: 1px dotted #ccc; text-decoration: none; }
+a.bibref { text-decoration: none; }
+cite .bibref { font-style: normal; }
+code { color: #C83500; }
+
+/* --- TOC --- */
+.toc a, .tof a { text-decoration: none; }
+a .secno, a .figno { color: #000; }
+ul.tof, ol.tof { list-style: none outside none; }
+.caption { margin-top: 0.5em; font-style: italic; }
+
+/* --- TABLE --- */
+table.simple { border-spacing: 0; border-collapse: collapse; border-bottom: 3px solid #005a9c; }
+.simple th { background: #005a9c; color:  #fff; padding: 3px 5px; text-align: left; }
+.simple th[scope="row"] { background: inherit; color:  inherit; border-top: 1px solid #ddd; }
+.simple td { padding: 3px 10px; border-top: 1px solid #ddd; }
+.simple tr:nth-child(even) { background: #f0f6ff; }
+
+/* --- DL --- */
+.section dd > p:first-child { margin-top: 0; }
+.section dd > p:last-child { margin-bottom: 0; }
+.section dd { margin-bottom: 1em; }
+.section dl.attrs dd, .section dl.eldef dd { margin-bottom: 0; }
+
+@media print { .removeOnSave { display: none; } }
+</style>
+<style>/* --- ISSUES/NOTES --- */
+div.issue-title, div.note-title { padding-right: 1em; min-width: 7.5em; color: #b9ab2d; }
+div.issue-title { color: #e05252; }
+div.note-title { color: #2b2; }
+div.issue-title span, div.note-title span { text-transform: uppercase; }
+div.note, div.issue { margin-top: 1em; margin-bottom: 1em; }
+.note > p:first-child, .issue > p:first-child { margin-top: 0 }
+.issue, .note { padding: .5em; border-left-width: .5em; border-left-style: solid; }
+div.issue, div.note { padding: 1em 1.2em 0.5em; margin: 1em 0; position: relative; clear: both; }
+span.note, span.issue { padding: .1em .5em .15em; }
+.issue { border-color: #e05252; background: #fbe9e9; }
+.note { border-color: #52e052; background: #e9fbe9; }
+</style>
+<style>/* HIGHLIGHTS */
+code.prettyprint { color: inherit; }
+
+/* this from google-code-prettify */
+.pln{color:#000}@media screen{.str{color:#080}.kwd{color:#008}.com{color:#800}.typ{color:#606}.lit{color:#066}.pun,.opn,.clo{color:#660}.tag{color:#008}.atn{color:#606}.atv{color:#080}.dec,.var{color:#606}.fun{color:red}}@media print,projection{.str{color:#060}.kwd{color:#006;font-weight:bold}.com{color:#600;font-style:italic}.typ{color:#404;font-weight:bold}.lit{color:#044}.pun,.opn,.clo{color:#440}.tag{color:#006;font-weight:bold}.atn{color:#404}.atv{color:#060}}ol.linenums{margin-top:0;margin-bottom:0}li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}
+</style>
+<link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/w3c-unofficial">
+<!--[if lt IE 9]><script src='https://www.w3.org/2008/site/js/html5shiv.js'></script><![endif]-->
+</head>
+<body>
+
+<section id="abstract">
+<p>The <a href="http://dev.w3.org/csswg/css-writing-modes/">CSS Writing Modes</a> specification defines a property <code>text-combine-upright</code> which enables <i>tate-chu-yoko</i> (<span lang="ja">縦中横</span>) effect by combining a short run of text in vertical writing modes horizontally.
+
+<p>While invesitigating the specification for developing test suite, test authors found the need for some fonts designed for testing this property. This document gives some basic understanding of testing <code>text-combine-upright</code> and lists the requiremnts of the font needed to test the property.
+</section>
+
+<section>
+<h2>CSS testing terminology</h2>
+<p>Before getting into the requirements, let's intoroduce some terms specific to testing CSS features.</p>
+
+<section>
+<h3>Reftests (reference tests)</h3>
+<p>A <a href="http://testthewebforward.org/docs/reftests.html">reftest</a> are one of the testing format used in W3C and browser vendors for testing features that add visual effects to a page such as CSS and SVG. A reftest are made of two files: a reference file made using widely-implemented features (e.g. CSS2), and a test case made using features to test. On conforming implementation the reference and the test case match visually.
+<p>For ease of testing, references are often simple geometric shapes such as <a href="http://test.csswg.org/source/css-flexbox-1/reference/flexbox-flex-wrap-nowrap-ref.htm">green square</a>.
+<figure>
+  <iframe src="http://test.csswg.org/source/css-flexbox-1/reference/flexbox-flex-wrap-nowrap-ref.htm" frameborder="0" width="360" height="200"></iframe>
+  <figcaption>A reference of green rectangle, used for a flexbox test</figcaption>
+</figure>
+</section>
+
+<section>
+<h3>The Ahem font</h3>
+<p>In order to test CSS features, it is required to install the <a href="http://www.w3.org/Style/CSS/Test/Fonts/Ahem/">Ahem font</a> in a testing system. The Ahem font only contains geometric glyphs which are handy to craft reftests. Here's a design specification of Ahem quoting from the README file:
+<blockquote cite="http://www.w3.org/Style/CSS/Test/Fonts/Ahem/">
+<pre>The font's em square is exactly square.
+Its ascent and descent is exactly the size of the em square. This
+means that the font's extent is exactly the same as its line-height,
+meaning that it can be exactly aligned with padding, borders, margins,
+and so forth.
+
+The font's alphabetic baseline is 0.2em above its bottom, and 0.8em
+below its top. The font has an x-height of 0.8em.
+
+The font has four glyphs:
+
+  'X' U+0058 A square exactly 1em in height and width.
+
+  'p' U+0070 A rectangle exactly 0.2em high, 1em wide, and aligned so
+             that its top is flush with the baseline.
+
+  'É' U+00C9 A rectangle exactly 0.8em high, 1em wide, and aligned so
+             that its bottom is flush with the baseline.
+
+  ' ' U+0020 A transparent space exactly 1em high and wide.
+
+Most other US-ASCII characters in the font have the same glyph as X.</pre>
+</blockquote>
+</section>
+
+</section>
+
+
+<section>
+<h2>Testing <code>text-combine-upright</code></h2>
+<p>The <a href="http://dev.w3.org/csswg/css-writing-modes/#text-combine-upright"><code>text-combine-upright</code></a> property combines a short run of text in vertical writing modes horizontally and make them fit into a 1em square. This effect is called <i>tate-chu-yoko</i> (<span lang="ja">縦中横</span>, sometimes abbreviated as <abbr>TCY</abbr>) and used for short digits in vertical Japanese layout.
+<figure class="example">
+<img src="http://dev.w3.org/csswg/css-writing-modes/tate-chu-yoko.png">
+<figcaption>example of tate-chu-yoko. the digits "20" and "16" are aligned horizontally even in vertical writing modes.</figcaption>
+</figure>
+<p>The basic idea on testing <code>text-combine-upright</code> is to design a font which is made of some geometric glyphs (e.g. a 1em x 1em square glyph). With such font, a test and the reference for it can be written as follows:
+<pre class="highlight"><code>
+&lt;style&gt;
+.test {
+  writing-mode: vertical-rl;
+  font-family: TCU-test; /* "the font" */
+}
+.tcy {
+  text-combine-upright: all;
+}
+&lt;/style&gt;
+
+&lt;p&gt;Test passes if the following is identical:&lt;/p&gt;
+
+&lt;div class="test"&gt;
+  &lt;p&gt;&lt;span class="tcy"&gt;123&lt;/span&gt;&lt;/p&gt;
+  &lt;p&gt;x&lt;/p&gt;
+&lt;/div&gt;
+
+<p>&lt;!-- Note: in TCU-test all letters maps to a black square glyph --&gt;
+</code></pre>
+<p>With "the font," on conforming user agents, the "123" combination will be rendered as a single square, resulting to match the reference, where the first paragraph only contains "x" and rendered as a square. On non-conforming user agents the span "123" will not combine nor be compressed as a single square, it will not match the reference rendering.
+<figure class="example">
+<img src="img/figure-rendering-tcu.svg" width="480">
+</figure>
+</section>
+
+<section>
+<h2>Requirements</h2>
+
+<p class="issue">This section is work-in-progress.
+
+<section>
+<h3>Baseline</h3>
+<p>The font should set its horizontal baseline different from one in Ahem (0.8em below the top, 0.2em above the bottom).
+<p class="note">So the typical setting, which is <code>Ascender 880; Descender -120;</code> is just fine.
+</section>
+
+
+<section>
+<h3>Line Gap</h3>
+<p>For ease of test authoring, both horizontal and vertical line gap should be zero.
+</section>
+
+
+<section>
+<h3>Glyphs</h3>
+
+<!-- 
+<section>
+<h4>A black square</h4>
+<p>A black square is a 1em x 1em square glyph; it is pretty much the same as Ahem's glyph for <code>x</code>.
+<figure>
+<img src="img/square_black.svg" width="200">
+</figure>
+<p>This black square can be used as an alternative to Ahem.
+</section>
+
+
+<section>
+<h4>A blank</h4>
+<p>This is pretty much the same as the glyph defined in <a href="https://github.com/adobe-fonts/adobe-blank">Adobe Blank</a>
+<figure>
+<img src="img/square_blank.svg" width="200">
+</figure>
+</section> -->
+
+
+<section>
+<h4>An overline and a underline</h4>
+<p>In <a href="http://dev.w3.org/csswg/css-writing-modes/#text-combine-layout">Section 9.1.2 Layout Rules</a> it says:
+<blockquote>
+When combining text as for text-combine-upright: all, the glyphs of the combined text are composed horizontally (<mark>ignoring letter-spacing and any forced line breaks, but using the specified font settings</mark>), similar to the contents of an inline-box with a horizontal writing mode and a line-height of 1em.
+</blockquote>
+<p>Later in the section it says:
+<blockquote>
+For other text layout purposes, e.g. emphasis marks, text-decoration, spacing, etc. the resulting composition is treated as a single glyph representing the Object Replacement Character U+FFFC.
+</blockquote>
+<p>So we need to test if user agents ignore spacing, emphasis marks, decorations applied to <em>each</em> character inside the composition but rather apply those effects to the composition treated as a single character.
+<p>The test should be written to check if there is no emphasis mark or ruby character inside the composition. To make this easy to observe, we need a glyph that is mostly blank as something like the following figure:
+<figure>
+<img src="img/over_and_under.svg" width="200">
+</figure>
+<p>With such glyph, the test would be written as:
+<figure>
+<pre class="highlight"><code>&lt;style&gt;
+.test {
+  writing-mode: vertical-rl;
+  font-family: TCU-test;
+}
+.tcy {
+  text-combine-upright: all;
+  text-emphasis: dot;
+}
+&lt;/style&gt;
+
+&lt;p&gt;&lt;span class="tcy"&gt;AB&lt;/span&gt;&lt;/p&gt;</code></pre>
+</figure>
+<p>This will make the test reftestable.
+<figure>
+<img src="img/figure-over_and_under-pass.svg" width="200">
+<img src="img/figure-over_and_under-fail.svg" width="200">
+<figcaption>Conforming user agents apply text-emphasis as if the content inside .tcy is a single character (left). Non-conforming user agents might apply text-emphasis to each character inside .tcy (right)</figcaption>
+</figure>
+<p class="note">This test cannot cover the assertion <q>the resulting composition is treated as a single glyph representing the Object Replacement Character U+FFFC</q>; however, test authors think that it is sufficient to check if ruby, emphasis, and other decorations are applied after the composition.
+</section>
+
+
+<section>
+<h4>TBD</h4>
+<p>In <a href="http://dev.w3.org/csswg/css-writing-modes/#text-combine-layout">9.1.2 Layout Rules</a> the spec says:
+<blockquote>
+The effective size of the composition is assumed to be 1em square; anything outside the square is not measured for layout purposes. The UA should center the glyphs horizontally and vertically within the measured 1em square.
+</blockquote>
+<p>Hence, we need a glyph whose width and height is greater than 1em.
+</section>
+
+
+<section>
+<h4>Stripes</h4>
+<p>In <a href="http://dev.w3.org/csswg/css-writing-modes/#text-combine-compression">9.1.3 Compression Rules</a> the spec says:
+<blockquote>
+OpenType implementations must use width-specific variants (OpenType features hwid/twid/qwid; other glyph-width features such as fwid or pwid are not included) to compress text in cases where those variants are available for all characters in the composition.
+</blockquote>
+<p>In order to test this, we need hwid, twid, qwid, fwid, and pwid glyphs and a character which has these five glyphs. hwid, twid, qwid and fwid/pwid glyphs are easily distinguishable from each other. Each hwid, twid, qwid glyph must have an "extended" version for the reference.
+</ul>
+<p>Here are some idea for glyph design.
+
+<section>
+<h5>A double stripe</h5>
+<p>Used for the <i>hwid</i> feature. 
+<figure>
+<img src="img/stripe_double.svg" width="200">
+<figcaption>double stripe. reference glyph on left, hwid glyph on right.</figure>
+</figure>
+</section>
+
+<section>
+<h5>A triple stripe</h5>
+<p>Used for the <i>twid</i> feature. 
+<figure>
+<img src="img/stripe_triple.svg" width="200">
+<figcaption>triple stripe. reference glyph on left, twid glyph on right.</figure>
+</figure>
+</section>
+
+<section>
+<h5>A quadruple stripe</h5>
+<p>Used for the <i>qwid</i> feature. 
+<figure>
+<img src="img/stripe_quad.svg" width="200">
+<figcaption>quadruple stripe. reference glyph on left, qwid glyph on right.</figure>
+</figure>
+</section>
+
+</section>
+
+
+<section>
+<h4>TBD: 水</h4>
+<p>The last paragraph in <a href="http://dev.w3.org/csswg/css-writing-modes/#text-combine-compression">9.1.3 Compression Rules</a> says:
+<blockquote>
+In some fonts, the ideographic glyphs are given a compressed design such that they are 1em wide but shorter than 1em tall. To accommodate such fonts, the UA may vertically scale the the composition to match the advance height of 水 U+6C34.
+</blockquote>
+<p>so we need:
+<ul>
+<li>a glyph of horizontal rectangle (e.g. 1em &times; .3em), mapping to 0x6C34
+<li>a glyph of thinner horizontal rectangle (e.g. 1em &times; .3em), mapping to a certain codepoint
+</ul>
+</section>
+
+
+</section>
+
+
+</section>
+
+
+<section>
+<h2>Acknowledgements</h2>
+<p>TBD <!-- Kawabata-san, fantasai, Koji, Murakami-san, CSS WG discussions -->
+</section>
+
+
+<section>
+<h2>TODO</h2>
+<ul>
+<li>Glyph description
+<li>CMap
+<li>Acks.
+</ul>
+</section>

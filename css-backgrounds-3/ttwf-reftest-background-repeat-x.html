@@ -12,8 +12,8 @@
 		}
 		th{ 
 			height:160px;
-			filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='table-head.jpg',sizingMethod='scale'); background-repeat: repeat-x;
-			/*background:url(table-head.jpg) repeat-x;*/
+			filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='support/table-head.jpg',sizingMethod='scale'); background-repeat: repeat-x;
+			/*background:url(support/table-head.jpg) repeat-x;*/
 			border-width:0px;
 		}
 		
@@ -28,7 +28,7 @@
 	if(filter){
 		for(i=0;i<obj_array.length;i++){
 			obj_array[i].style.filter="";
-			obj_array[i].style.background="url(table-head.jpg) repeat-x";
+			obj_array[i].style.background="url(support/table-head.jpg) repeat-x";
 		} 
 		var button=document.getElementById("switch-button");
 		button.value="has use the pure repeat-x.click here to cancel repeat-x,to use filter!!!";
@@ -37,7 +37,7 @@
 	else{
 		for(i=0;i<obj_array.length;i++){
 			obj_array[i].style.background="";
-			obj_array[i].style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='table-head.jpg',sizingMethod='scale'); background-repeat: repeat-x";
+			obj_array[i].style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='support/table-head.jpg',sizingMethod='scale'); background-repeat: repeat-x";
 		} 
 		var button=document.getElementById("switch-button");
 		button.value="has used the filter.click here to cancel filter,to use pure repeat-x!!!";

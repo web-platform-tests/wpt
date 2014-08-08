@@ -4,7 +4,6 @@
     <title>CSS Background and Border Test:background-size conflicts with background-attachment</title>
     <link rel="author" title="xiaochun" href="stenders@163.com">
     <link rel="reviewer" title="Jinlong Zhang" href="jinlongz@oupeng.com"><!--2012/10/21-->
-    <link rel="help" href="http://dev.w3.org/csswg/css3-background/#background-size">
     <link rel="help" href="http://www.w3.org/TR/css3-background/#the-background-size">
     <link rel="match" href="reference/background-size-ref.html">
     <meta name="assert" content="The test passes if we can see the background-image is exactly same as above.">
@@ -13,7 +12,7 @@
         width:295px;
         height:289px;
 
-        background-image:url(bg.jpg);
+        background-image:url(support/bg.jpg);
         background-repeat:no-repeat;
         background-size:cover;
         background-attachment:fixed;
@@ -22,7 +21,7 @@
 </head>
 <body>
     The image used as background-image is :<br />
-    <img src="bg.jpg" />
+    <img src="support/bg.jpg" />
 
     <p>The test passes if we can see the background-image is exactly same as above.</p>
     <div class="container">

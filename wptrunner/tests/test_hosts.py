@@ -22,6 +22,23 @@ class HostsTest(unittest.TestCase):
 # Another comment
 """)
 
+    def test_blank_lines(self):
+        self.do_test("""127.0.0.1    \tlocalhost  alias # comment
+
+\r
+    \t
+# Another comment""",
+                     """127.0.0.1 localhost alias # comment
+# Another comment
+""")
+
+    def test_whitespace(self):
+        self.do_test("""    \t127.0.0.1    \tlocalhost  alias # comment     \r
+    \t# Another comment""",
+                     """127.0.0.1 localhost alias # comment
+# Another comment
+""")
+
     def test_alignment(self):
         self.do_test("""127.0.0.1    \tlocalhost  alias
 192.168.1.1 another_host    another_alias

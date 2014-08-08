@@ -15,11 +15,10 @@ class HostsLine(object):
 
     @classmethod
     def from_string(cls, line):
+        if not line.strip():
+            return
 
-        if line[-1] == "\n":
-            line = line[:-1]
-        if line[-1] == "\r":
-            lines = line[:-1]
+        line = line.strip()
 
         ip_address = None
         canonical_hostname = None
@@ -65,7 +64,8 @@ class HostsFile(object):
         rv = cls()
         for line in f:
             host = HostsLine.from_string(line)
-            rv.set_host(host)
+            if host is not None:
+                rv.set_host(host)
         return rv
 
     def to_string(self):

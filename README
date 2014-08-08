@@ -1,8 +1,0 @@
-Place tests in the appropriate directory based on the
-first rel="help" link in the test. If the rel="help"
-links change, move the test. Note that filenames must
-be unique across the entire directory tree, not just
-in that folder: the tests are split into multiple
-directories only because 10000 tests in one folder is
-unweildy on certain systems. The build scripts can and
-do grab arbitrary subsets that occupy a single folder.

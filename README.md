@@ -2,8 +2,9 @@ W3C CSS Test Suite Repository
 -----------------------------
  
 This repository contains top level directories for all of CSS specs for
-which we currently have tests. If you are writing tests for a spec and it
-doesn't yet have a directory here, feel free to create it.
+which we currently have tests. Place tests in the appropriate directory based
+on the first rel="help" link in the test. If you are writing tests for a spec
+and it doesn't yet have a directory here, feel free to create it.
 
 There are a few directories that do not map to specifications:
 

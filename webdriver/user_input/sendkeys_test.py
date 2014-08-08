@@ -33,15 +33,13 @@ class WindowSizeTest(base_test.WebDriverBaseTest):
         element.send_keys("world ")
         element.send_keys("wide ")
         element.send_keys("web ")
-        element.send_keys("corporation")
+        element.send_keys("consortium")
 
         backspace= unichr(int("E003", 16))
         for i in range(0, 11):
             element.send_keys([backspace])
 
-        element.send_keys("consortium")
-
-        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"world wide web consortium")
+        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"world wide web")
 
     def test_send_tab(self):
         element1 = self.driver.find_element_by_id("Text1")

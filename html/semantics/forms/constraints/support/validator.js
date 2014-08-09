@@ -126,7 +126,8 @@ var validator = {
 
       if (data.expected) {
         assert_true(ctl.validity.customError, "The validity.customError attribute should be true.");
-        assert_equals(ctl.validationMessage, data.conditions.message, "The validationMessage attribute should be '" + data.conditions.message + "'.");
+        assert_equals(ctl.validationMessage, data.conditions.message,
+                      "The validationMessage attribute should be '" + data.conditions.message + "'.");
       } else {
         assert_false(ctl.validity.customError, "The validity.customError attribute should be false.");
         assert_equals(ctl.validationMessage, "", "The validationMessage attribute must be empty.");

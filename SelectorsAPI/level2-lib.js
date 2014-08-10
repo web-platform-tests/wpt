@@ -48,18 +48,18 @@ function setupSpecialElements(parent) {
 }
 
 /*
- * Check that the find, findAll and matches() methods exist on the given Node
+ * Check that the query, queryAll and matches() methods exist on the given Node
  */
 function interfaceCheck(type, obj) {
 	test(function() {
-		var q = typeof obj.find === "function";
-		assert_true(q, type + " supports find.");
-	}, type + " supports find")
+		var q = typeof obj.query === "function";
+		assert_true(q, type + " supports query.");
+	}, type + " supports query")
 
 	test(function() {
-		var qa = typeof obj.findAll === "function";
-		assert_true( qa, type + " supports findAll.");
-	}, type + " supports findAll")
+		var qa = typeof obj.queryAll === "function";
+		assert_true( qa, type + " supports queryAll.");
+	}, type + " supports queryAll")
 
 	if (obj.nodeType === obj.ELEMENT_NODE) {
 		test(function() {
@@ -69,14 +69,14 @@ function interfaceCheck(type, obj) {
 }
 
 /*
- * Verify that the NodeList returned by findAll is static and and that a new list is created after
+ * Verify that the NodeList returned by queryAll is static and and that a new list is created after
  * each call. A static list should not be affected by subsequent changes to the DOM.
  */
 function verifyStaticList(type, root) {
 	var pre, post, preLength;
 
 	test(function() {
-		pre = root.findAll("div");
+		pre = root.queryAll("div");
 		preLength = pre.length;
 
 		var div = doc.createElement("div");
@@ -86,7 +86,7 @@ function verifyStaticList(type, root) {
 	}, type + ": static NodeList")
 
 	test(function() {
-		post = root.findAll("div"),
+		post = root.queryAll("div"),
 		assert_equals(post.length, preLength + 1, "The length of the new NodeList should be 1 more than the previous list.")
 	}, type + ": new NodeList")
 }
@@ -97,46 +97,46 @@ function verifyStaticList(type, root) {
  */
 function runSpecialSelectorTests(type, root) {
 	test(function() { // 1
-		assert_equals(root.findAll(null).length, 1, "This should find one element with the tag name 'NULL'.");
-	}, type + ".findAll null")
+		assert_equals(root.queryAll(null).length, 1, "This should query one element with the tag name 'NULL'.");
+	}, type + ".queryAll null")
 
 	test(function() { // 2
-		assert_equals(root.findAll(undefined).length, 1, "This should find one elements with the tag name 'UNDEFINED'.");
-	}, type + ".findAll undefined")
+		assert_equals(root.queryAll(undefined).length, 1, "This should query one elements with the tag name 'UNDEFINED'.");
+	}, type + ".queryAll undefined")
 
 	test(function() { // 3
 		assert_throws(TypeError(), function() {
-			root.findAll();
+			root.queryAll();
 		}, "This should throw a TypeError.")
-	}, type + ".findAll no parameter")
+	}, type + ".queryAll no parameter")
 
 	test(function() { // 4
-		var elm = root.find(null)
-		assert_not_equals(elm, null, "This should find an element.");
+		var elm = root.query(null)
+		assert_not_equals(elm, null, "This should query an element.");
 		assert_equals(elm.tagName.toUpperCase(), "NULL", "The tag name should be 'NULL'.")
-	}, type + ".find null")
+	}, type + ".query null")
 
 	test(function() { // 5
-		var elm = root.find(undefined)
-		assert_not_equals(elm, undefined, "This should find an element.");
+		var elm = root.query(undefined)
+		assert_not_equals(elm, undefined, "This should query an element.");
 		assert_equals(elm.tagName.toUpperCase(), "UNDEFINED", "The tag name should be 'UNDEFINED'.")
-	}, type + ".find undefined")
+	}, type + ".query undefined")
 
 	test(function() { // 6
 		assert_throws(TypeError(), function() {
-			root.find();
+			root.query();
 		}, "This should throw a TypeError.")
-	}, type + ".find no parameter.")
+	}, type + ".query no parameter.")
 
 	test(function() { // 7
-		result = root.findAll("*");
+		result = root.queryAll("*");
 		var i = 0;
 		traverse(root, function(elem) {
 			if (elem !== root) {
 				assert_equals(elem, result[i++], "The result in index " + i + " should be in tree order.")
 			}
 		})
-	}, type + ".findAll tree order");
+	}, type + ".queryAll tree order");
 }
 
 function runSpecialMatchesTests(type, element) {
@@ -164,23 +164,23 @@ function runSpecialMatchesTests(type, element) {
 }
 
 /*
- * Execute queries with the specified valid selectors for both find() and findAll()
+ * Execute queries with the specified valid selectors for both query() and queryAll()
  * Only run these tests when results are expected. Don't run for syntax error tests.
  *
- * Where testType is TEST_FIND_BASELINE or TEST_FIND_ADDITIONAL:
+ * Where testType is TEST_QUERY_BASELINE or TEST_QUERY_ADDITIONAL:
  *
- * context.findAll(selector, refNodes)
- * context.findAll(selector)        // Only if refNodes is not specified
- * root.findAll(selector, context)  // Only if refNodes is not specified
- * root.findAll(selector, refNodes) // Only if context is not specified
- * root.findAll(selector)           // Only if neither context nor refNodes is specified
+ * context.queryAll(selector, refNodes)
+ * context.queryAll(selector)        // Only if refNodes is not specified
+ * root.queryAll(selector, context)  // Only if refNodes is not specified
+ * root.queryAll(selector, refNodes) // Only if context is not specified
+ * root.queryAll(selector)           // Only if neither context nor refNodes is specified
  *
  * Where testType is TEST_QSA_BASELINE or TEST_QSA_ADDITIONAL
  *
  * context.querySelectorAll(selector) // Only if refNodes is not specified
  * root.querySelectorAll(selector)    // Only if neither context nor refNodes is specified
  *
- * Equivalent tests will be run for .find() as well.
+ * Equivalent tests will be run for .query() as well.
  * Note: Do not specify a testType of TEST_QSA_* where either implied :scope or explicit refNodes
  * are required.
  */
@@ -200,13 +200,13 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
 			//console.log("Running tests " + nodeType + ": " + s["testType"] + "&" + testType + "=" + (s["testType"] & testType) + ": " + JSON.stringify(s))
 			var foundall, found, context, refNodes, refArray;
 
-			if (s["testType"] & testType & (TEST_FIND_BASELINE | TEST_FIND_ADDITIONAL)) {
+			if (s["testType"] & testType & (TEST_QUERY_BASELINE | TEST_QUERY_ADDITIONAL)) {
 
 
 				/*
 				 * If ctx and ref are specified:
-				 * context.findAll(selector, refNodes)
-				 * context.find(selector, refNodes)
+				 * context.queryAll(selector, refNodes)
+				 * context.query(selector, refNodes)
 				 */
 				if (ctx && ref) {
 					context = root.querySelector(ctx);
@@ -214,103 +214,103 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
 					refArray = Array.prototype.slice.call(refNodes, 0);
 
 					test(function() {
-						foundall = context.findAll(q, refNodes);
+						foundall = context.queryAll(q, refNodes);
 						verifyNodeList(foundall, expect);
-					}, type + " [Context Element].findAll: " + n + " (with refNodes NodeList): " + q);
+					}, type + " [Context Element].queryAll: " + n + " (with refNodes NodeList): " + q);
 
 					test(function() {
-						foundall = context.findAll(q, refArray);
+						foundall = context.queryAll(q, refArray);
 						verifyNodeList(foundall, expect);
-					}, type + " [Context Element].findAll: " + n + " (with refNodes Array): " + q);
+					}, type + " [Context Element].queryAll: " + n + " (with refNodes Array): " + q);
 
 					test(function() {
-						found = context.find(q, refNodes);
+						found = context.query(q, refNodes);
 						verifyElement(found, foundall, expect)
-					}, type + " [Context Element].find: " + n + " (with refNodes NodeList): " + q);
+					}, type + " [Context Element].query: " + n + " (with refNodes NodeList): " + q);
 
 					test(function() {
-						found = context.find(q, refArray);
+						found = context.query(q, refArray);
 						verifyElement(found, foundall, expect)
-					}, type + " [Context Element].find: " + n + " (with refNodes Array): " + q);
+					}, type + " [Context Element].query: " + n + " (with refNodes Array): " + q);
 				}
 
 
 				/*
 				 * If ctx is specified, ref is not:
-				 * context.findAll(selector)
-				 * context.find(selector)
-				 * root.findAll(selector, context)
-				 * root.find(selector, context)
+				 * context.queryAll(selector)
+				 * context.query(selector)
+				 * root.queryAll(selector, context)
+				 * root.query(selector, context)
 				 */
 				if (ctx && !ref) {
 					context = root.querySelector(ctx);
 
 					test(function() {
-						foundall = context.findAll(q);
+						foundall = context.queryAll(q);
 						verifyNodeList(foundall, expect);
-					}, type + " [Context Element].findAll: " + n + " (with no refNodes): " + q);
+					}, type + " [Context Element].queryAll: " + n + " (with no refNodes): " + q);
 
 					test(function() {
-						found = context.find(q);
+						found = context.query(q);
 						verifyElement(found, foundall, expect)
-					}, type + " [Context Element].find: " + n + " (with no refNodes): " + q);
+					}, type + " [Context Element].query: " + n + " (with no refNodes): " + q);
 
 					test(function() {
-						foundall = root.findAll(q, context);
+						foundall = root.queryAll(q, context);
 						verifyNodeList(foundall, expect);
-					}, type + " [Root Node].findAll: " + n + " (with refNode Element): " + q);
+					}, type + " [Root Node].queryAll: " + n + " (with refNode Element): " + q);
 
 					test(function() {
-						foundall = root.find(q, context);
+						foundall = root.query(q, context);
 						verifyElement(found, foundall, expect);
-					}, type + " [Root Node].find: " + n + " (with refNode Element): " + q);
+					}, type + " [Root Node].query: " + n + " (with refNode Element): " + q);
 				}
 
 				/*
 				 * If ref is specified, ctx is not:
-				 * root.findAll(selector, refNodes)
-				 * root.find(selector, refNodes)
+				 * root.queryAll(selector, refNodes)
+				 * root.query(selector, refNodes)
 				 */
 				if (!ctx && ref) {
 					refNodes = root.querySelectorAll(ref);
 					refArray = Array.prototype.slice.call(refNodes, 0);
 					
 					test(function() {
-						foundall = root.findAll(q, refNodes);
+						foundall = root.queryAll(q, refNodes);
 						verifyNodeList(foundall, expect);
-					}, type + " [Root Node].findAll: " + n + " (with refNodes NodeList): " + q);
+					}, type + " [Root Node].queryAll: " + n + " (with refNodes NodeList): " + q);
 
 					test(function() {
-						foundall = root.findAll(q, refArray);
+						foundall = root.queryAll(q, refArray);
 						verifyNodeList(foundall, expect);
-					}, type + " [Root Node].findAll: " + n + " (with refNodes Array): " + q);
+					}, type + " [Root Node].queryAll: " + n + " (with refNodes Array): " + q);
 
 					test(function() {
-						found = root.find(q, refNodes);
+						found = root.query(q, refNodes);
 						verifyElement(found, foundall, expect);
-					}, type + " [Root Node].find: " + n + " (with refNodes NodeList): " + q);
+					}, type + " [Root Node].query: " + n + " (with refNodes NodeList): " + q);
 
 					test(function() {
-						found = root.find(q, refArray);
+						found = root.query(q, refArray);
 						verifyElement(found, foundall, expect);
-					}, type + " [Root Node].find: " + n + " (with refNodes Array): " + q);
+					}, type + " [Root Node].query: " + n + " (with refNodes Array): " + q);
 				}
 
 				/*
 				 * If neither ctx nor ref is specified:
-				 * root.findAll(selector)
-				 * root.find(selector)
+				 * root.queryAll(selector)
+				 * root.query(selector)
 				 */
 				if (!ctx && !ref) {
 					test(function() {
-						foundall = root.findAll(q);
+						foundall = root.queryAll(q);
 						verifyNodeList(foundall, expect);
-					}, type + ".findAll: " + n + " (with no refNodes): " + q);
+					}, type + ".queryAll: " + n + " (with no refNodes): " + q);
 
 					test(function() {
-						found = root.find(q);
+						found = root.query(q);
 						verifyElement(found, foundall, expect);
-					}, type + ".find: " + n + " (with no refNodes): " + q);
+					}, type + ".query: " + n + " (with no refNodes): " + q);
 				}
 			}
 
@@ -330,7 +330,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
 }
 
 /*
- * Execute queries with the specified invalid selectors for both find() and findAll()
+ * Execute queries with the specified invalid selectors for both query() and queryAll()
  * Only run these tests when errors are expected. Don't run for valid selector tests.
  */
 function runInvalidSelectorTest(type, root, selectors) {
@@ -341,15 +341,15 @@ function runInvalidSelectorTest(type, root, selectors) {
 
 		test(function() {
 			assert_throws("SyntaxError", function() {
-				root.find(q)
+				root.query(q)
 			})
-		}, type + ".find: " + n + ": " + q);
+		}, type + ".query: " + n + ": " + q);
 
 		test(function() {
 			assert_throws("SyntaxError", function() {
-				root.findAll(q)
+				root.queryAll(q)
 			})
-		}, type + ".findAll: " + n + ": " + q);
+		}, type + ".queryAll: " + n + ": " + q);
 
 		if (root.nodeType === root.ELEMENT_NODE) {
 			test(function() {

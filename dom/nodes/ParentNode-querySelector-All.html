@@ -4,7 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="selectors.js"></script>
-<script src="level1-lib.js"></script>
+<script src="ParentNode-querySelector-All.js"></script>
 <style>iframe { visibility: hidden; position: absolute; }</style>
 
 <div id="log">This test requires JavaScript.</div>
@@ -17,7 +17,7 @@ var frame = document.createElement("iframe"),
     doc;
 
 frame.onload = init;
-frame.src = "level1-content.html#target";
+frame.src = "ParentNode-querySelector-All-content.html#target";
 document.body.appendChild(frame);
 
 function init() {
@@ -52,7 +52,7 @@ function init() {
 	 * All the selectors tested for both the valid and invalid selector tests are found in selectors.js.
 	 * See comments in that file for documentation of the format used.
 	 *
-	 * The level1-lib.js file contains all the common test functions for running each of the aforementioned tests
+	 * The ParentNode-querySelector-All.js file contains all the common test functions for running each of the aforementioned tests
 	 */
 
 	// Prepare the nodes for testing

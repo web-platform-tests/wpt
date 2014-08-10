@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html id="html" lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head id="head">
-<title>Selectors-API Test Suite: XHTML with Selectors Level 3</title>
-<!-- Selectors API Test Suite Version 3 -->
+<title>Selectors-API Test Suite: XHTML</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="selectors.js"></script>
@@ -13,7 +12,7 @@
 <div id="log">This test requires JavaScript.</div>
 
 <script><![CDATA[
-var testType = TEST_QSA_BASELINE | TEST_QSA_ADDITIONAL; // Only run baseline tests.
+var testType = TEST_QSA_BASELINE | TEST_QSA_ADDITIONAL; // Run all tests.
 var docType  = "xhtml"; // Only run tests suitable for XHTML
 
 var frame = document.createElement("iframe"),

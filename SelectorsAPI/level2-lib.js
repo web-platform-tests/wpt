@@ -1,19 +1,5 @@
 // Require selectors.js to be included before this.
 
-// Determine the name of the matches method
-var matches = "matches";
-if (!document.documentElement.matches) { // If unprefixed method is not supported, test prefixed implementations.
-	if (document.documentElement.mozMatchesSelector) {
-		matches = "mozMatchesSelector"
-	} else if (document.documentElement.webkitMatchesSelector) {
-		matches = "webkitMatchesSelector"
-	} else if (document.documentElement.oMatchesSelector) {
-		matches = "oMatchesSelector"
-	} else if (document.documentElement.msMatchesSelector) {
-		matches = "msMatchesSelector"
-	}
-}
-
 /*
  * Create and append special elements that cannot be created correctly with HTML markup alone.
  */
@@ -77,13 +63,8 @@ function interfaceCheck(type, obj) {
 
 	if (obj.nodeType === obj.ELEMENT_NODE) {
 		test(function() {
-			assert_idl_attribute(obj, matches, type + " supports " + matches);
-		}, type + " supports " + matches)
-
-		test(function() {
-			assert_idl_attribute(obj, matches, type + " supports matches");
-			assert_equals(matches, "matches", "The matches method should be supported without a prefix.")
-		}, type + " unprefixed matches method.")
+			assert_idl_attribute(obj, "matches", type + " supports matches");
+		}, type + " supports matches")
 	}
 }
 
@@ -161,26 +142,25 @@ function runSpecialSelectorTests(type, root) {
 function runSpecialMatchesTests(type, element) {
 	test(function() { // 1
 		if (element.tagName.toLowerCase() === "null") {
-			console.log("Matches method: " + matches)
-			assert_true(element[matches](null), "An element with the tag name '" + element.tagName.toLowerCase() + "' should match.");
+			assert_true(element.matches(null), "An element with the tag name '" + element.tagName.toLowerCase() + "' should match.");
 		} else {
-			assert_false(element[matches](null), "An element with the tag name '" + element.tagName.toLowerCase() + "' should not match.");
+			assert_false(element.matches(null), "An element with the tag name '" + element.tagName.toLowerCase() + "' should not match.");
 		}
-	}, type + "." + matches + "(null)")
+	}, type + ".matches(null)")
 
 	test(function() { // 2
 		if (element.tagName.toLowerCase() === "undefined") {
-			assert_true(element[matches](undefined), "An element with the tag name '" + element.tagName.toLowerCase() + "' should match.");
+			assert_true(element.matches(undefined), "An element with the tag name '" + element.tagName.toLowerCase() + "' should match.");
 		} else {
-			assert_false(element[matches](undefined), "An element with the tag name '" + element.tagName.toLowerCase() + "' should not match.");
+			assert_false(element.matches(undefined), "An element with the tag name '" + element.tagName.toLowerCase() + "' should not match.");
 		}
-	}, type + "." + matches + "(undefined)")
+	}, type + ".matches(undefined)")
 
 	test(function() { // 3
 		assert_throws(TypeError(), function() {
-			element[matches]();
+			element.matches();
 		}, "This should throw a TypeError.")
-	}, type + "." + matches + " no parameter")
+	}, type + ".matches no parameter")
 }
 
 /*
@@ -374,9 +354,9 @@ function runInvalidSelectorTest(type, root, selectors) {
 		if (root.nodeType === root.ELEMENT_NODE) {
 			test(function() {
 				assert_throws("SyntaxError", function() {
-					root[matches](q)
+					root.matches(q)
 				})
-			}, type + "." + matches + ": " + n + ": " + q);
+			}, type + ".matches: " + n + ": " + q);
 		}
 	}
 }
@@ -403,17 +383,17 @@ function runMatchesTest(type, root, selectors, testType, docType) {
 					for (j = 0; j < e.length; j++) {
 						element = root.querySelector("#" + e[j]);
 						refNode = root.querySelector(ctx);
-						assert_true(element[matches](q, refNode), "The element #" + e[j] + " should match the selector.")
+						assert_true(element.matches(q, refNode), "The element #" + e[j] + " should match the selector.")
 					}
 
 					if (u) {
 						for (j = 0; j < u.length; j++) {
 							element = root.querySelector("#" + u[j]);
 							refNode = root.querySelector(ctx);
-							assert_false(element[matches](q, refNode), "The element #" + u[j] + " should not match the selector.")
+							assert_false(element.matches(q, refNode), "The element #" + u[j] + " should not match the selector.")
 						}
 					}
-				}, type + " Element." + matches + ": " + n + " (with refNode Element): " + q);
+				}, type + " Element.matches: " + n + " (with refNode Element): " + q);
 			}
 
 			if (ref) {
@@ -422,33 +402,33 @@ function runMatchesTest(type, root, selectors, testType, docType) {
 					for (j = 0; j < e.length; j++) {
 						element = root.querySelector("#" + e[j]);
 						refNodes = root.querySelectorAll(ref);
-						assert_true(element[matches](q, refNodes), "The element #" + e[j] + " should match the selector.")
+						assert_true(element.matches(q, refNodes), "The element #" + e[j] + " should match the selector.")
 					}
 
 					if (u) {
 						for (j = 0; j < u.length; j++) {
 							element = root.querySelector("#" + u[j]);
 							refNodes = root.querySelectorAll(ref);
-							assert_false(element[matches](q, refNodes), "The element #" + u[j] + " should not match the selector.")
+							assert_false(element.matches(q, refNodes), "The element #" + u[j] + " should not match the selector.")
 						}
 					}
-				}, type + " Element." + matches + ": " + n + " (with refNodes NodeList): " + q);
+				}, type + " Element.matches: " + n + " (with refNodes NodeList): " + q);
 			}
 
 			if (!ctx && !ref) {
 				test(function() {
 					for (var j = 0; j < e.length; j++) {
 						var element = root.querySelector("#" + e[j]);
-						assert_true(element[matches](q), "The element #" + e[j] + " should match the selector.")
+						assert_true(element.matches(q), "The element #" + e[j] + " should match the selector.")
 					}
 
 					if (u) {
 						for (j = 0; j < u.length; j++) {
 							element = root.querySelector("#" + u[j]);
-							assert_false(element[matches](q), "The element #" + u[j] + " should not match the selector.")
+							assert_false(element.matches(q), "The element #" + u[j] + " should not match the selector.")
 						}
 					}
-				}, type + " Element." + matches + ": " + n + " (with no refNodes): " + q);
+				}, type + " Element.matches: " + n + " (with no refNodes): " + q);
 			}
 		}
 	}

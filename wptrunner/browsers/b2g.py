@@ -108,12 +108,12 @@ class B2GBrowser(Browser):
         self.logger.debug("Device runner started")
 
     def setup_hosts(self):
-        hosts = ["web-platform.test",
-                 "www.web-platform.test",
-                 "www1.web-platform.test",
-                 "www2.web-platform.test",
-                 "xn--n8j6ds53lwwkrqhv28a.web-platform.test",
-                 "xn--lve-6lad.web-platform.test"]
+        hostnames = ["web-platform.test",
+                     "www.web-platform.test",
+                     "www1.web-platform.test",
+                     "www2.web-platform.test",
+                     "xn--n8j6ds53lwwkrqhv28a.web-platform.test",
+                     "xn--lve-6lad.web-platform.test"]
 
         host_ip = moznetwork.get_ip()
 
@@ -123,24 +123,14 @@ class B2GBrowser(Browser):
         try:
             self.device.getFile("/system/etc/hosts", hosts_path)
 
-            with open(hosts_path, "a+") as f:
-                hosts_present = set()
-                for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    ip, host = line.split()
-                    hosts_present.add(host)
+            with open(hosts_path) as f:
+                hosts_file = HostsFile.from_file(f)
 
-                    if host in hosts and ip != host_ip:
-                        raise Exception("Existing hosts file has an ip for %s" % host)
+            for canonical_hostname in hostnames:
+                hosts_file.set_host(HostsLine(host_ip, canonical_hostname))
 
-                f.seek(f.tell() - 1)
-                if f.read() != "\n":
-                    f.write("\n")
-
-                for host in hosts:
-                    f.write("%s%s%s\n" % (host_ip, " " * (28 - len(host_ip)), host))
+            with open(hosts_path, "w") as f:
+                hosts_file.to_file(f)
 
             self.logger.info("Installing hosts file")
 

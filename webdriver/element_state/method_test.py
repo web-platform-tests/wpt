@@ -84,12 +84,6 @@ class GetElementAttributeTest(base_test.WebDriverBaseTest):
         attribute = element.get_attribute("style")
         self.assertEquals("font-size: 11px; display: block;", attribute)
 
-    #def test_find_attribute_that_does_not_exist(self):
-    #    self.driver.get(self.webserver.where_is("element_state/res/get-element-attribute-extended.html"))
-    #    element = self.driver.find_element_by_id("attribute_that_does_not_exist")
-    #    attribute = element.get_attribute("lang")
-    #    self.assertEquals('', attribute)
-
     def test_find_attribute_accesskey(self):
         self.driver.get(self.webserver.where_is("element_state/res/get-element-attribute-extended.html"))
         element = self.driver.find_element_by_id("id_attribute_accesskey")

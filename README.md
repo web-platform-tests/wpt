@@ -22,7 +22,28 @@ work-in-progress/ is a legacy directory that contains all the work that was
 once submitted to the repo, but was not yet ready for review. Since the CSSWG
 has adopted the GitHub pull request process, no new files should be landed here.
 The subdirectories here are named by test author or contributing organization.
- 
+
+Linking Your Tests to Specifications
+-----------------------------------
+
+In addition to placing your tests in the appropriate directory in this repository,
+you must also include at least one specification link in the test metadata, following
+[these guidelines][speclinks].
+
+For CSS tests, you must also be sure you're linking to the latest version of the spec.
+Whenever possible, it's preferable to link to published Working Draft of the spec,
+which will start with http://www.w3.org/TR/.  This can be retrieved from the spec itself
+listed under 'Latest version'.
+
+If for some reason you want to include the link to an Editor's Draft, the link must be
+appended with the same number as the Latest version of the Working Draft.
+
+For example, if the latest version of the CSS Flexbox spec is:
+http://www.w3.org/TR/css-flexbox-1/
+
+The correct Editor's Draft link to include in the test is:
+http://dev.w3.org/csswg/css-flexbox-1/
+
 Contributing
 -------------
 
@@ -55,3 +76,4 @@ that don't require a review, or from advanced users of the system.
 
 [contributing]: https://github.com/rhauck/csswg-test/blob/master/CONTRIBUTING.md
 [github101]: http://testthewebforward.org/docs/github-101.html
+[speclinks]: http://testthewebforward.org/docs/test-templates.html#specification-links

@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from __future__ import unicode_literals
+
+
 class HostsLine(object):
     def __init__(self, ip_address, canonical_hostname, aliases=None, comment=None):
         self.ip_address = ip_address
@@ -41,6 +44,7 @@ class HostsLine(object):
             aliases = fields[2:]
 
         return cls(ip_address, canonical_hostname, aliases, comment)
+
 
 class HostsFile(object):
     def __init__(self):
@@ -97,4 +101,4 @@ class HostsFile(object):
         return "\n".join(lines)
 
     def to_file(self, f):
-        f.write(self.to_string())
+        f.write(self.to_string().encode("utf8"))

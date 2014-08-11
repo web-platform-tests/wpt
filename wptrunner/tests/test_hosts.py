@@ -10,6 +10,7 @@ sys.path.insert(0, "..")
 
 import hosts
 
+
 class HostsTest(unittest.TestCase):
     def do_test(self, input, expected):
         host_file = hosts.HostsFile.from_file(StringIO(input))

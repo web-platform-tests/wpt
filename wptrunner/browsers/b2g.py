@@ -204,16 +204,13 @@ class B2GExecutorBrowser(ExecutorBrowser):
         self.marionette = executor.marionette
         self.executor.logger.debug("Running browser.after_connect steps")
 
-        self.gaia_device = gaiatest.GaiaDevice(marionette=executor.marionette,
-                                               manager=self.dm)
         self.gaia_apps = gaiatest.GaiaApps(marionette=executor.marionette)
 
         self.executor.logger.debug("Waiting for homescreen to load")
-        self.executor.logger.debug("B2G is running: %s" % self.gaia_device.is_b2g_running)
 
         # Moved out of gaia_test temporarily
         self.executor.logger.info("Waiting for B2G to be ready")
-        self.wait_for_b2g_ready(timeout=60)
+        self.wait_for_homescreen(timeout=60)
 
         self.install_cert_app()
         self.use_cert_app()
@@ -233,10 +230,27 @@ class B2GExecutorBrowser(ExecutorBrowser):
         self.executor.logger.info("Homescreen loaded")
         self.gaia_apps.launch("CertTest App")
 
-    def wait_for_b2g_ready(self, timeout):
-        # Wait for the homescreen to finish loading
-        gaiatest.Wait(self.marionette, timeout).until(gaiatest.expected.element_present(
-            gaiatest.By.CSS_SELECTOR, '#homescreen[loading-state=false]'))
+    def wait_for_homescreen(self, timeout):
+        self.executor.logger.info("Waiting for homescreen")
+        self.marionette.execute_async_script("""
+let manager = window.wrappedJSObject.AppWindowManager || window.wrappedJSObject.WindowManager;
+let app = null;
+if (manager) {
+  app = ('getActiveApp' in manager) ? manager.getActiveApp() : manager.getCurrentDisplayedApp();
+}
+if (app) {
+  log('Already loaded home screen');
+  marionetteScriptFinished();
+} else {
+  log('waiting for mozbrowserloadend');
+  window.addEventListener('mozbrowserloadend', function loaded(aEvent) {
+    log('received mozbrowserloadend for ' + aEvent.target.src);
+    if (aEvent.target.src.indexOf('ftu') != -1 || aEvent.target.src.indexOf('homescreen') != -1) {
+      window.removeEventListener('mozbrowserloadend', loaded);
+      marionetteScriptFinished();
+    }
+  });
+}""", script_timeout=1000 * timeout)
 
 class B2GMarionetteTestharnessExecutor(MarionetteTestharnessExecutor):
     def after_connect(self):

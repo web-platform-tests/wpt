@@ -27,22 +27,24 @@ Linking Your Tests to Specifications
 -----------------------------------
 
 In addition to placing your tests in the appropriate directory in this repository,
-you must also include at least one specification link in the test metadata, following
-[these guidelines][speclinks].
+you must also include at least one specification link in the test metadata,
+following [these guidelines][speclinks].
 
-For CSS tests, you must also be sure you're linking to the latest version of the spec.
-Whenever possible, it's preferable to link to published Working Draft of the spec,
-which will start with http://www.w3.org/TR/.  This can be retrieved from the spec itself
-listed under 'Latest version'.
+For CSS tests, you must also be sure you’re linking to a specific level of the spec,
+generally the first level where the feature being tested is defined. Where possible,
+it’s preferable to link to the official version of the spec, which will start with
+http://www.w3.org/TR/. This can usually be found as the ‘Latest version’ link in the
+spec itself and will include the level of the spec in the URL. For example, the proper
+link to level 1 of the CSS Flexbox spec is:
 
-If for some reason you want to include the link to an Editor's Draft, the link must be
-appended with the same number as the Latest version of the Working Draft.
+http://www.w3.org/TR/css-flexbox-1/#RELEVANT_SECTION
 
-For example, if the latest version of the CSS Flexbox spec is:
-http://www.w3.org/TR/css-flexbox-1/
+When testing features not yet available in an official draft, link to the appropriate
+Editor’s Draft found at http://dev.w3.org/csswg/. Be sure to include the level of the
+specification in the link. For example, the proper link to the CSS Flexbox Level 1
+Editor’s Draft is:
 
-The correct Editor's Draft link to include in the test is:
-http://dev.w3.org/csswg/css-flexbox-1/
+http://dev.w3.org/csswg/css-flexbox-1/#RELEVANT_SECTION
 
 Contributing
 -------------

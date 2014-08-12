@@ -72,7 +72,7 @@ class RunInfo(dict):
 
         mozinfo.find_and_update_from_json(dirs)
 
-class B2GRunInfo(dict):
+class B2GRunInfo(RunInfo):
     def __init__(self, *args, **kwargs):
         RunInfo.__init__(self, *args, **kwargs)
         self["os"] = "b2g"

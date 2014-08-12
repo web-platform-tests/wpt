@@ -16,6 +16,7 @@ from mozprofile import FirefoxProfile, Preferences
 
 from .base import get_free_port, BrowserError, Browser, ExecutorBrowser
 from ..executors.executormarionette import MarionetteTestharnessExecutor, required_files
+from ..hosts import HostsFile, HostsLine
 
 here = os.path.split(__file__)[0]
 

@@ -10,7 +10,7 @@ import textwrap
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'wptrunner'
-PACKAGE_VERSION = '1.0'
+PACKAGE_VERSION = '1.1'
 
 # Dependencies
 with open('requirements.txt') as f:

@@ -70,7 +70,7 @@ class RunInfo(dict):
             dirs.add(path)
             path = os.path.split(path)[0]
 
-        mozinfo.find_and_update_from_json(dirs)
+        mozinfo.find_and_update_from_json(*dirs)
 
 class B2GRunInfo(RunInfo):
     def __init__(self, *args, **kwargs):

@@ -107,6 +107,9 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
     allow_reuse_address = True
     acceptable_errors = (errno.EPIPE, errno.ECONNABORTED)
 
+    # Ensure that we don't hang on shutdown waiting for requests
+    daemon_threads = True
+
     def __init__(self, server_address, RequestHandlerClass, router, rewriter, bind_hostname, config=None,
                  use_ssl=False, certificate=None, **kwargs):
         """Server for HTTP(s) Requests

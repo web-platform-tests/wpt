@@ -162,9 +162,9 @@ VisualOutput.prototype = {
     },
 
     on_manifest_wait: function() {
-      this.clear();
-      this.elem.style.display = "block";
-      this.manifest_status.style.display = "block";
+        this.clear();
+        this.elem.style.display = "block";
+        this.manifest_status.style.display = "block";
     },
 
     on_start: function() {

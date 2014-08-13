@@ -13,6 +13,10 @@ function Manifest(path) {
 
 Manifest.prototype = {
     load: function(loaded_callback) {
+        this.generate(loaded_callback);
+    },
+
+    do_load: function(loaded_callback) {
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState !== 4) {
@@ -25,6 +29,21 @@ Manifest.prototype = {
             loaded_callback();
         }.bind(this);
         xhr.open("GET", this.path);
+        xhr.send(null);
+    },
+
+    generate: function(loaded_callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== 4) {
+                return;
+            }
+            if (!(xhr.status === 200 || xhr.status === 0)) {
+                throw new Error("Manifest generation failed");
+            }
+            this.do_load(loaded_callback);
+        }.bind(this);
+        xhr.open("POST", "update_manifest.py");
         xhr.send(null);
     },
 
@@ -107,12 +126,14 @@ function VisualOutput(elem, runner) {
     this.section_wrapper = null;
     this.results_table = this.elem.querySelector(".results > table");
     this.section = null;
+    this.manifest_status = this.elem.querySelector("#manifest");
     this.progress = this.elem.querySelector(".summary .progress");
     this.meter = this.progress.querySelector(".progress-bar");
     this.result_count = null;
     this.json_results_area = this.elem.querySelector("textarea");
 
     this.elem.style.display = "none";
+    this.runner.manifest_wait_callbacks.push(this.on_manifest_wait.bind(this));
     this.runner.start_callbacks.push(this.on_start.bind(this));
     this.runner.result_callbacks.push(this.on_result.bind(this));
     this.runner.done_callbacks.push(this.on_done.bind(this));
@@ -134,9 +155,16 @@ VisualOutput.prototype = {
         }
         this.meter.style.width = '0px';
         this.meter.textContent = '0%';
+        this.manifest_status.style.display = "none";
         this.elem.querySelector(".jsonResults").style.display = "none";
         this.results_table.removeChild(this.results_table.tBodies[0]);
         this.results_table.appendChild(document.createElement("tbody"));
+    },
+
+    on_manifest_wait: function() {
+        this.clear();
+        this.elem.style.display = "block";
+        this.manifest_status.style.display = "block";
     },
 
     on_start: function() {
@@ -374,10 +402,8 @@ TestControl.prototype = {
             var test_types = this.get_test_types();
             var settings = this.get_testharness_settings();
             this.runner.start(path, test_types, settings);
-            if (this.runner.manifest_iterator.count() > 0) {
-                this.set_stop();
-                this.set_pause();
-            }
+            this.set_stop();
+            this.set_pause();
         }.bind(this);
     },
 
@@ -490,6 +516,7 @@ function Runner(manifest_path) {
     this.stop_flag = false;
     this.done_flag = false;
 
+    this.manifest_wait_callbacks = [];
     this.start_callbacks = [];
     this.test_start_callbacks = [];
     this.test_pause_callbacks = [];
@@ -530,10 +557,17 @@ Runner.prototype = {
         this.num_tests = null;
 
         if (this.manifest.data === null) {
-            this.start_after_manifest_load = true;
+            this.wait_for_manifest();
         } else {
             this.do_start();
         }
+    },
+
+    wait_for_manifest: function() {
+        this.start_after_manifest_load = true;
+        this.manifest_wait_callbacks.forEach(function(callback) {
+            callback();
+        });
     },
 
     do_start: function() {
@@ -550,6 +584,7 @@ Runner.prototype = {
             }
             var message = "No " + tests + " found in this path."
             document.querySelector(".path").setCustomValidity(message);
+            this.done();
         }
     },
 

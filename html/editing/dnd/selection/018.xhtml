@@ -12,7 +12,7 @@ textarea
 </head>
 <body onload="document.querySelector('input').select()">
 <p>You should not be able to drag and drop selection from password field to the textarea.</p>
-<p><input type="password" value="FAIL"/></p>
+<p><input type="password" value="FAIL" autocomplete="off"/></p>  <!-- turn off autocomplete to enhance security -->
 <p><textarea placeholder="Drop selection here"/></p>
 </body>
 </html>

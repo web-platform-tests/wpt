@@ -11,7 +11,7 @@ input[placeholder]
 </head>
 <body onload="document.querySelector('input').select()">
 <p>You should not be able to drag and drop selection from password field to the input below.</p>
-<p><input type="password" value="FAIL"/></p>
+<p><input type="password" value="FAIL" autocomplete="off"/></p>  <!-- turn off autocomplete to enhance security -->
 <p><input placeholder="Drop selection here"/></p>
 </body>
 </html>

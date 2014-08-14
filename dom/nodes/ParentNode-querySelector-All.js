@@ -44,7 +44,7 @@ function setupSpecialElements(parent) {
 	}
 
 	parent.appendChild(anyNS);
-	parent.appendChild(noNS);	
+	parent.appendChild(noNS);
 }
 
 /*
@@ -63,12 +63,12 @@ function interfaceCheck(type, obj) {
 
 	test(function() {
 		var list = obj.querySelectorAll("div");
-		if (obj.ownerDocument) { // The object is not a Document	
+		if (obj.ownerDocument) { // The object is not a Document
 			assert_true(list instanceof obj.ownerDocument.defaultView.NodeList, "The result should be an instance of a NodeList")
 		} else { // The object is a Document
 			assert_true(list instanceof obj.defaultView.NodeList, "The result should be an instance of a NodeList")
 		}
-	}, type + ".querySelectorAll returns NodeList instance")		
+	}, type + ".querySelectorAll returns NodeList instance")
 }
 
 /*

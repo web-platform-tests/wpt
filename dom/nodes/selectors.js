@@ -113,7 +113,7 @@ var validSelectors = [
 	{name: "Attribute whitespace-separated list selector with double-quoted value, not matching value with space",               selector: "#attr-whitespace a[rel~=\"book mark\"]",                                    expect: [] /* no matches */,      level: 2, testType: TEST_QSA},
 	{name: "Attribute whitespace-separated list selector, matching title attribute with value using non-ASCII characters",       selector: "#attr-whitespace [title~=中文]",                                              expect: ["attr-whitespace-p1"],   level: 2, testType: TEST_QSA | TEST_MATCH_BASELINE},
 
-	// - hyphen-separated list     [att|=val] 
+	// - hyphen-separated list     [att|=val]
 	{name: "Attribute hyphen-separated list selector, not matching unspecified lang attribute",    selector: "#attr-hyphen-div1[lang|=\"en\"]",    expect: [] /*no matches*/,    level: 2, testType: TEST_QSA},
 	{name: "Attribute hyphen-separated list selector, matching lang attribute with exact value",   selector: "#attr-hyphen-div2[lang|=\"fr\"]",    expect: ["attr-hyphen-div2"], level: 2, testType: TEST_QSA | TEST_MATCH_BASELINE},
 	{name: "Attribute hyphen-separated list selector, matching lang attribute with partial value", selector: "#attr-hyphen-div3[lang|=\"en\"]",    expect: ["attr-hyphen-div3"], level: 2, testType: TEST_QSA | TEST_MATCH_BASELINE},

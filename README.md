@@ -22,7 +22,30 @@ work-in-progress/ is a legacy directory that contains all the work that was
 once submitted to the repo, but was not yet ready for review. Since the CSSWG
 has adopted the GitHub pull request process, no new files should be landed here.
 The subdirectories here are named by test author or contributing organization.
- 
+
+Linking Your Tests to Specifications
+-----------------------------------
+
+In addition to placing your tests in the appropriate directory in this repository,
+you must also include at least one specification link in the test metadata,
+following [these guidelines][speclinks].
+
+For CSS tests, you must also be sure you’re linking to a specific level of the spec,
+generally the first level where the feature being tested is defined. Where possible,
+it’s preferable to link to the official version of the spec, which will start with
+http://www.w3.org/TR/. This can usually be found as the ‘Latest version’ link in the
+spec itself and will include the level of the spec in the URL. For example, the proper
+link to level 1 of the CSS Flexbox spec is:
+
+http://www.w3.org/TR/css-flexbox-1/#RELEVANT_SECTION
+
+When testing features not yet available in an official draft, link to the appropriate
+Editor’s Draft found at http://dev.w3.org/csswg/. Be sure to include the level of the
+specification in the link. For example, the proper link to the CSS Flexbox Level 1
+Editor’s Draft is:
+
+http://dev.w3.org/csswg/css-flexbox-1/#RELEVANT_SECTION
+
 Contributing
 -------------
 
@@ -55,3 +78,4 @@ that don't require a review, or from advanced users of the system.
 
 [contributing]: https://github.com/rhauck/csswg-test/blob/master/CONTRIBUTING.md
 [github101]: http://testthewebforward.org/docs/github-101.html
+[speclinks]: http://testthewebforward.org/docs/test-templates.html#specification-links

@@ -27,8 +27,12 @@ t.step(function() {
       {video: true},
       t.step_func(function (stream) {
         var testOncePlaying = function() {
+          if (stream.getVideoTracks()[0].enabled) {
+            stream.getVideoTracks()[0].enabled = false;
+            return;
+          }
+
           vid.removeEventListener("timeupdate", testOncePlaying, false);
-          stream.getVideoTracks()[0].enabled = false;
           cv.width = vid.offsetWidth;
           cv.height = vid.offsetHeight;
           var ctx = cv.getContext("2d");

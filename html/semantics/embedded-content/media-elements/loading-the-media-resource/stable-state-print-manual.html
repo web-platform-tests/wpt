@@ -1,18 +1,22 @@
 <!doctype html>
-<title>stable state in dialogs</title>
+<title>stable state in print()</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
+<button>click this button and dismiss the print dialog</button>
 <script>
-['alert', 'confirm', 'prompt'].forEach(function(dialog) {
-  test(function() {
+async_test(function(t) {
+  var button = document.querySelector('button');
+  button.onclick = t.step_func(function() {
     v = document.createElement('video');
     v.src = 'data:,';
     assert_equals(v.networkState, v.NETWORK_NO_SOURCE, 'networkState before dialog');
     assert_equals(v.currentSrc, '', 'currentSrc before dialog');
-    window[dialog]('dismiss this dialog');
+    print();
     assert_equals(v.networkState, v.NETWORK_NO_SOURCE, 'networkState after dialog');
     assert_equals(v.currentSrc, '', 'currentSrc after dialog');
-  }, 'stable state in ' + dialog + '()');
+    t.done();
+    button.remove();
+  });
 });
 </script>

@@ -1029,4 +1029,3 @@
     @assert throws SECURITY_ERR canvas.toDataURL();
     canvas.width = 100;
     @assert throws SECURITY_ERR canvas.toDataURL();
-

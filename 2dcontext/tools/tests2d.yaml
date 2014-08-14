@@ -599,7 +599,7 @@
 
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-100, -10, 100, 50);
-    
+
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
@@ -709,7 +709,7 @@
 
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-100, -10, 100, 50);
-    
+
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
@@ -740,7 +740,7 @@
 
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-100, -10, 100, 50);
-    
+
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
@@ -823,7 +823,7 @@
 
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-100, -10, 100, 50);
-    
+
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
@@ -890,7 +890,7 @@
 
     ctx.fillStyle = '#0f0';
     ctx.fillRect(-100, -10, 100, 50);
-    
+
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
@@ -3001,7 +3001,7 @@
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    
+
     var img = document.getElementById('green.png');
     var pattern = ctx.createPattern(img, 'no-repeat');
     ctx.fillStyle = pattern;
@@ -3360,7 +3360,7 @@
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    
+
     var img = document.getElementById('rrgg-256x256.png');
     var pattern = ctx.createPattern(img, 'no-repeat');
     ctx.fillStyle = pattern;
@@ -3385,7 +3385,7 @@
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    
+
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
     canvas2.height = 50;
@@ -4411,7 +4411,7 @@
     - 2d.shadow.blur.initial
   code: |
     @assert ctx.shadowBlur === 0;
-    
+
 - name: 2d.shadow.attributes.shadowBlur.valid
   testing:
     - 2d.shadow.blur.get
@@ -4422,13 +4422,13 @@
 
     ctx.shadowBlur = 0.5;
     @assert ctx.shadowBlur === 0.5;
-    
+
     ctx.shadowBlur = 1e6;
     @assert ctx.shadowBlur === 1e6;
-    
+
     ctx.shadowBlur = 0;
     @assert ctx.shadowBlur === 0;
-    
+
 - name: 2d.shadow.attributes.shadowBlur.invalid
   testing:
     - 2d.shadow.blur.invalid
@@ -4440,11 +4440,11 @@
     ctx.shadowBlur = 1;
     ctx.shadowBlur = Infinity;
     @assert ctx.shadowBlur === 1;
-    
+
     ctx.shadowBlur = 1;
     ctx.shadowBlur = -Infinity;
     @assert ctx.shadowBlur === 1;
-    
+
     ctx.shadowBlur = 1;
     ctx.shadowBlur = NaN;
     @assert ctx.shadowBlur === 1;
@@ -4470,12 +4470,12 @@
     ctx.shadowOffsetY = 0.25;
     @assert ctx.shadowOffsetX === 0.5;
     @assert ctx.shadowOffsetY === 0.25;
-    
+
     ctx.shadowOffsetX = -0.5;
     ctx.shadowOffsetY = -0.25;
     @assert ctx.shadowOffsetX === -0.5;
     @assert ctx.shadowOffsetY === -0.25;
-    
+
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     @assert ctx.shadowOffsetX === 0;
@@ -4535,11 +4535,11 @@
     ctx.shadowColor = '#00ff00';
     ctx.shadowColor = 'bogus';
     @assert ctx.shadowColor === '#00ff00';
-    
+
     ctx.shadowColor = '#00ff00';
     ctx.shadowColor = 'red bogus';
     @assert ctx.shadowColor === '#00ff00';
-    
+
     ctx.shadowColor = '#00ff00';
     ctx.shadowColor = ctx;
     @assert ctx.shadowColor === '#00ff00';
@@ -6817,7 +6817,7 @@
     ctx.stroke();
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
-  
+
 - name: 2d.path.arc.nonempty
   desc: arc() with a non-empty path does draw a straight line to the start point
   testing:
@@ -8045,7 +8045,7 @@
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
 
-    ctx.fillStyle = '#f00';    
+    ctx.fillStyle = '#f00';
     ctx.translate(-100, 0);
     ctx.rect(0, 0, 100, 50);
     ctx.fill();
@@ -9310,7 +9310,7 @@
   code: |
     ctx.fillStyle = '#08f';
     ctx.fillRect(0, 0, 100, 50);
-   
+
     var imgdata1 = ctx.getImageData(-10, 5, 1, 1);
     @assert imgdata1.data[0] === 0;
     @assert imgdata1.data[1] === 0;
@@ -9379,7 +9379,7 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.fillStyle = '#fff';
     ctx.fillRect(20, 10, 60, 10);
-   
+
     var imgdata1 = ctx.getImageData(85, 25, -10, -10);
     @assert imgdata1.data[0] === 255;
     @assert imgdata1.data[1] === 255;
@@ -10028,4 +10028,3 @@
     ctx.fill();
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
-

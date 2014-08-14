@@ -276,7 +276,7 @@ index: |
 
     <p>Developed by <a href="mailto:excors&#64;gmail.com">Philip Taylor</a>.
     Last updated %(updated)s.
-    
+
     <p>Based on the <a
     href="http://www.whatwg.org/specs/web-apps/current-work/#the-canvas">HTML</a>
     Draft Standard &mdash; 22 February 2010. See also the <a
@@ -376,4 +376,3 @@ results: |
     <col id="col1">
     <tr>
     <th>Test
-

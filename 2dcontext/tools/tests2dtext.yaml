@@ -30,7 +30,7 @@
   #     em ex px
   #   2d.text.font.parse.size.length.absolute
   #     in cm mm pt pc
- 
+
 - name: 2d.text.font.parse.size.percentage
   testing:
     - 2d.text.font.parse

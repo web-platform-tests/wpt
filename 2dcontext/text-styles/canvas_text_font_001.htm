@@ -1,4 +1,4 @@
-<!doctype HTML> 
+<!doctype HTML>
 <html>
     <head>
         <title>HTML5 Canvas Test:  Ignore property-independent style sheet syntax "inherit" in Text</title>
@@ -6,7 +6,7 @@
         <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-context-2d-font" />
         <meta name="assert" content=":  Ignore 'inherit' property-independent style sheet syntax without assigning a new font value." />
         <script type="text/javascript">
-            function runTest() 
+            function runTest()
             {
                 var canvas = document.getElementById("canvas1");
                 var ctx = canvas.getContext("2d");
@@ -20,7 +20,7 @@
 
                 // Assign a valid font which was used earlier.
                 ctx.font = "40px Times New Roman";
-                ctx.fillText("Test String", 5, 100);  
+                ctx.fillText("Test String", 5, 100);
             }
         </script>
     </head>

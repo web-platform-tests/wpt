@@ -5,30 +5,24 @@
   <link rel="stylesheet" href="../resources/css/result.css">
  </head>
  <body>
-	<p>
-		<h3>navigator_online_event</h3>
-	</p>
+	<h1>navigator_online_event</h1>
 	
-	<ol type="1">
+	<ol>
 	<li>Change the 'work offline' mode.</li>
 	<li>If actual result and expected result are same, then test is <span class="manualpass">Pass</span>, otherwise <span class="manualfail">Fail</span>.</li>
 	</ol>
 
 	<hr>
 
-	<p>
-		<h3>[Actual Result]</h3>
-		<div id="actualResult" >
-			<span id="actualMsg"></span>
-		</div>
-	</p>
+	<h2>Actual Result</h2>
+	<div id="actualResult">
+		<span id="actualMsg"></span>
+	</div>
   
-	<p>
-		<h3>[Expected Result]</h3>
-		<div id="expectedResult" >
-			<span id="expectedMsg">apply 'work offline': offline event is raised.<p>release 'work offline': online event is raised.</span>
-		</div>
-	</p> 
+	<h2>Expected Result</h2>
+	<div id="expectedResult">
+		<span id="expectedMsg">apply 'work offline': offline event is raised.<p>release 'work offline': online event is raised.</span>
+	</div>
 	<script>
 
 	function showOnline() {
@@ -39,16 +33,8 @@
 		document.getElementById('actualMsg').innerHTML = 'offline event is raised.';
 	}
 
-	if (window.addEventListener) {
-        window.addEventListener("online", showOnline, false);
-		window.addEventListener("offline", showOffline, false);
-	} else if (window.attachEvent) {
-		window.attachEvent("ononline", showOnline);
-		window.attachEvent("onoffline", showOffline);
-	} else {
-		
-	}
-
+	window.addEventListener("online", showOnline, false);
+	window.addEventListener("offline", showOffline, false);
 	</script>
  </body>
 </html>

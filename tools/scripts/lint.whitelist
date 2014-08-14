@@ -13,6 +13,7 @@ CR AT EOL:webvtt/webvtt-file-format-parsing/webvtt-file-parsing/support/newlines
 CR AT EOL:*.pdf
 CR AT EOL:*.jpg
 CR AT EOL:*.png
+CR AT EOL:*.gif
 CR AT EOL:*.pdf
 CR AT EOL:*.wav
 CR AT EOL:*.mp3

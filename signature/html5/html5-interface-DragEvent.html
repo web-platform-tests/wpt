@@ -7,10 +7,10 @@
 <script src='/resources/testharnessreport.js'></script>
 <script src='/tools/common/level1.js'></script>
 <script type='text/plain' id='idl'>
-{"type":"interface","name":"DragEvent","partial":false,"members":[{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":true,"idlType":{"sequence":false,"nullable":true,"array":false,"union":false,"idlType":"DataTransfer"},"name":"dataTransfer","extAttrs":[]}],"inheritance":"MouseEvent","extAttrs":[{"name":"Constructor","arguments":[{"optional":false,"variadic":false,"extAttrs":[],"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"type"},{"optional":true,"variadic":false,"extAttrs":[],"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"DragEventInit"},"name":"eventInitDict"}]}]}
+{"type":"interface","name":"DragEvent","partial":false,"members":[{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":true,"idlType":{"sequence":false,"generic":null,"nullable":true,"array":false,"union":false,"idlType":"DataTransfer"},"name":"dataTransfer","extAttrs":[]}],"inheritance":"MouseEvent","extAttrs":[{"name":"Constructor","arguments":[{"optional":false,"variadic":false,"extAttrs":[],"idlType":{"sequence":false,"generic":null,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"type"},{"optional":true,"variadic":false,"extAttrs":[],"idlType":{"sequence":false,"generic":null,"nullable":false,"array":false,"union":false,"idlType":"DragEventInit"},"name":"eventInitDict"}]}]}
 </script>
 <h1>Test Interface DragEvent Signature</h1>
 <div id='log'></div>
 <script>
-level1('html5', JSON.parse(document.getElementById('idl').textContent), undefined);
+level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return document.createEvent('DragEvent');});
 </script>

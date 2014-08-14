@@ -1,3 +1,4 @@
+"use strict";
 function getMediaList() {
     var e = document.createElement('style'); 
     e.textContent = '@media print, screen {}';

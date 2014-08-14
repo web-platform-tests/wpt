@@ -1,3 +1,4 @@
+"use strict";
 function getCSSPageRule() {
     var e = document.createElement('style'); 
     e.textContent = '@page { margin: 1cm; }';

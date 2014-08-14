@@ -1,3 +1,4 @@
+"use strict";
 function getCSSCharsetRule() {
     var e = document.createElement('style'); 
     e.textContent = '@charset "utf-8";';

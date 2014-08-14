@@ -7,10 +7,10 @@
 <script src='/resources/testharnessreport.js'></script>
 <script src='/tools/common/level1.js'></script>
 <script type='text/plain' id='idl'>
-{"type":"interface","name":"BeforeUnloadEvent","partial":false,"members":[{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":false,"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"returnValue","extAttrs":[]}],"inheritance":"Event","extAttrs":[]}
+{"type":"interface","name":"BeforeUnloadEvent","partial":false,"members":[{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":false,"idlType":{"sequence":false,"generic":null,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"returnValue","extAttrs":[]}],"inheritance":"Event","extAttrs":[]}
 </script>
 <h1>Test Interface BeforeUnloadEvent Signature</h1>
 <div id='log'></div>
 <script>
-level1('html5', JSON.parse(document.getElementById('idl').textContent), undefined);
+level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return document.createEvent('BeforeUnloadEvent');});
 </script>

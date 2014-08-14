@@ -1,3 +1,4 @@
+"use strict";
 function getCSSRule() {
     var e = document.createElement('style'); 
     document.head.appendChild(e);

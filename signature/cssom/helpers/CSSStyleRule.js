@@ -1,3 +1,4 @@
+"use strict";
 function getCSSStyleRule() {
     var e = document.createElement('style'); 
     document.head.appendChild(e);

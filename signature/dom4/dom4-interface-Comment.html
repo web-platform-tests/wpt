@@ -7,10 +7,10 @@
 <script src='/resources/testharnessreport.js'></script>
 <script src='/tools/common/level1.js'></script>
 <script type='text/plain' id='idl'>
-{"type":"interface","name":"Comment","partial":false,"members":[],"inheritance":"CharacterData","extAttrs":[{"name":"Constructor","arguments":[{"optional":true,"variadic":false,"extAttrs":[],"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"data","default":{"type":"string","value":""}}]}]}
+{"type":"interface","name":"Comment","partial":false,"members":[],"inheritance":"CharacterData","extAttrs":[{"name":"Constructor","arguments":[{"optional":true,"variadic":false,"extAttrs":[],"idlType":{"sequence":false,"generic":null,"nullable":false,"array":false,"union":false,"idlType":"DOMString"},"name":"data","default":{"type":"string","value":""}}]}]}
 </script>
 <h1>Test Interface Comment Signature</h1>
 <div id='log'></div>
 <script>
-level1('dom4', JSON.parse(document.getElementById('idl').textContent), function(test){return document.implementation.createDocument(null, '', null).createComment('comment');});
+level1('dom4', JSON.parse(document.getElementById('idl').textContent), function(test){return document.createComment('comment');});
 </script>

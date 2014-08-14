@@ -6,12 +6,12 @@
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
 <script src='/tools/common/level1.js'></script>
+<script src='./helpers/MediaError.js'></script>
 <script type='text/plain' id='idl'>
-{"type":"interface","name":"MediaError","partial":false,"members":[{"type":"const","nullable":false,"idlType":"unsigned short","name":"MEDIA_ERR_ABORTED","value":{"type":"number","value":1},"extAttrs":[]},{"type":"const","nullable":false,"idlType":"unsigned short","name":"MEDIA_ERR_NETWORK","value":{"type":"number","value":2},"extAttrs":[]},{"type":"const","nullable":false,"idlType":"unsigned short","name":"MEDIA_ERR_DECODE","value":{"type":"number","value":3},"extAttrs":[]},{"type":"const","nullable":false,"idlType":"unsigned short","name":"MEDIA_ERR_SRC_NOT_SUPPORTED","value":{"type":"number","value":4},"extAttrs":[]},{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":true,"idlType":{"sequence":false,"nullable":false,"array":false,"union":false,"idlType":"unsigned short"},"name":"code","extAttrs":[]}],"inheritance":null,"extAttrs":[]}
+{"type":"interface","name":"MediaError","partial":false,"members":[{"type":"const","nullable":false,"idlType":"unsigned short","name":"MEDIA_ERR_ABORTED","value":{"type":"number","value":1},"extAttrs":[]},{"type":"const","nullable":false,"idlType":"unsigned short","name":"MEDIA_ERR_NETWORK","value":{"type":"number","value":2},"extAttrs":[]},{"type":"const","nullable":false,"idlType":"unsigned short","name":"MEDIA_ERR_DECODE","value":{"type":"number","value":3},"extAttrs":[]},{"type":"const","nullable":false,"idlType":"unsigned short","name":"MEDIA_ERR_SRC_NOT_SUPPORTED","value":{"type":"number","value":4},"extAttrs":[]},{"type":"attribute","static":false,"stringifier":false,"inherit":false,"readonly":true,"idlType":{"sequence":false,"generic":null,"nullable":false,"array":false,"union":false,"idlType":"unsigned short"},"name":"code","extAttrs":[]}],"inheritance":null,"extAttrs":[]}
 </script>
 <h1>Test Interface MediaError Signature</h1>
 <div id='log'></div>
-<script src='./helpers/MediaError.js'></script>
 <script>
-level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return getTestErrorVideoElement().error;});
+level1('html5', JSON.parse(document.getElementById('idl').textContent), function(test){return getMediaError();});
 </script>

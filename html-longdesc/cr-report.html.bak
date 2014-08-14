@@ -19,12 +19,15 @@ nav ul, nav li { display: inline; }
       attribute as described in the HTML Image Description Extension (longdesc)
       specification is implementable, and that independent implementations are
       highly likely to be interoperable.</p>
-    <p>Multi-function tests are used to test 3 requirements:</p>
-    <ol>
-      <li>User agents </li>
-      <li><br>
-      </li>
-    </ol>
+    <h1>longdesc test results</h1>
+    <nav>Results:
+      <ul>
+        <li><a href="#muft">Multi-function tests - browser</a></li>
+        <li><a href="#muftapi">Multi-function tests - API</a></li>
+        <li><a href="#auto">Automatic browser tests</a></li>
+        <li><a href="#validation">Validator tests</a></li>
+      </ul>
+    </nav>
     <h2 id="muft">Multi-function tests</h2>
     <table border="1">
       <tbody>
@@ -61,6 +64,75 @@ nav ul, nav li { display: inline; }
           <th scope="col">Access</th>
         </tr>
         <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/data-uri-image-data-uri-description.html">data:URI
+              - data:URI desc</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-image-data-uri-description.html">empty
+              img - data:URI desc</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-data-uri-description-girt-by-spaces.html">ext
+              img - data:URI desc with spaces</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-data-uri-description.html">ext
               img - data:URI desc</a></th>
           <td class="pass">PASS</td>
@@ -84,6 +156,29 @@ nav ul, nav li { display: inline; }
           <td class="pass">PASS</td>
         </tr>
         <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/data-uri-image-external-description.html">data:URI
+              img - ext desc</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-image-external-description.html">empty
               img - external desc</a></th>
           <td class="pass">PASS</td>
@@ -95,6 +190,29 @@ nav ul, nav li { display: inline; }
           <td class="pass">PASS</td>
           <td class="pass">PASS</td>
           <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-external-description-girt-by-spaces.html">ext
+              img - ext desc with spaces</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
           <td class="fail">FAIL</td>
           <td class="pass">PASS</td>
           <td class="pass">PASS</td>
@@ -130,6 +248,75 @@ nav ul, nav li { display: inline; }
           <td class="pass">PASS</td>
         </tr>
         <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/data-uri-image-internal-description.html">data:URI
+              img - internal desc</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-image-internal-description.html">empty
+              img - internal desc</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-internal-description-girt-by-spaces.html">ext
+              img - internal desc with spaces</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-internal-description.html">ext
               img - internal desc</a></th>
           <td class="pass">PASS</td>
@@ -146,6 +333,56 @@ nav ul, nav li { display: inline; }
           <td class="pass">PASS</td>
           <td class="pass">PASS</td>
           <td class="fail">FAIL</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/data-uri-image-external-description-fragment.html">data:URI
+              - ext desc fragment</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-image-external-description-fragment.html">empty
+              img - ext desc fragment</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td class="fail">FAIL</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td><br>
+          </td>
+          <td><br>
+          </td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
           <td class="fail">FAIL</td>
           <td class="pass">PASS</td>
           <td class="pass">PASS</td>
@@ -292,15 +529,13 @@ nav ul, nav li { display: inline; }
           </td>
           <td colspan="2">Discovery is weak - there is a longdesc option in the
             context menu when there is a longdesc available</td>
-          <td colspan="2">Data:uri images fail to render properly, but this is
-            not a longdesc bug.</td>
+          <td colspan="2">Data:uri images fail to show. Problem with the tests?</td>
         </tr>
       </tbody>
       <tfoot>
         <tr>
           <th rowspan="2" scope="col">Test</th>
-          <th colspan="2" scope="col">Yandex 1.7 + "Longdesc" extension (made
-            for Chrome),&nbsp; MacOS</th>
+          <th colspan="2" scope="col">Yandex 1.7 + "Longdesc" extension, MacOS</th>
           <th colspan="2" scope="col">FF 23, MacOS 10.7.5</th>
           <th colspan="2" scope="col">FF 23, JAWS 15</th>
           <th colspan="2" scope="col">IE10, JAWS 15</th>
@@ -313,23 +548,32 @@ nav ul, nav li { display: inline; }
       </tfoot>
     </table>
     <h2 id="muftapi">Multi-function tests - API exposure</h2>
-    <table style="width: 1091px; height: 818px;" border="1">
+    <table border="1">
       <tbody>
         <tr>
           <th scope="col">Test</th>
           <th scope="col">IE 11.09,MSAA, Aviewer,WIN</th>
           <th scope="col">FF 27.0a1,MSAA,Aviewer,WIN</th>
+          <th scope="col">Chrome 32.0.1675.2,MSAA,Aviewer,WIN</th>
+          <th scope="col">Safari 6.0.5,Accessibility Inspector,MAC</th>
+          <th scope="col">iCab,Accessibility Inspector,MAC</th>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/data-uri-image-data-uri-description.html">data:URI
               - data:URI desc</a></th>
           <td class="pass">PASS <sup>[<a href="#fn1">1</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-image-data-uri-description.html">empty
               img - data:URI desc</a></th>
           <td class="pass">PASS <sup>[<a href="#fn1">1</a>]</sup><sup> [<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
@@ -338,23 +582,35 @@ nav ul, nav li { display: inline; }
           <td class="pass">PASS <sup>[<a href="#fn1">1</a>] </sup><sup>[<a href="#fn7">7</a>]</sup>
           </td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-data-uri-description.html">ext
               img - data:URI desc</a></th>
           <td class="pass">PASS <sup>[<a href="#fn1">1</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/data-uri-image-external-description.html">data:URI
               img - ext desc</a></th>
           <td class="pass">PASS <sup>[<a href="#fn2">2</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-image-external-description.html">empty
               img - external desc</a></th>
           <td class="pass">PASS <sup>[<a href="#fn2">2</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
@@ -362,23 +618,35 @@ nav ul, nav li { display: inline; }
               img - ext desc with spaces</a></th>
           <td class="pass">PASS <sup>[<a href="#fn2">2</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-external-description.html">ext
               img - ext desc</a></th>
           <td class="pass">PASS <sup>[<a href="#fn2">2</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/data-uri-image-internal-description.html">data:URI
               img - internal desc</a></th>
           <td class="pass">PASS <sup>[<a href="#fn3">3</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-image-internal-description.html">empty
               img - internal desc</a></th>
           <td class="pass">PASS <sup>[<a href="#fn3">3</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
@@ -386,23 +654,35 @@ nav ul, nav li { display: inline; }
               img - internal desc with spaces</a></th>
           <td class="pass">PASS <sup>[<a href="#fn3">3</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-internal-description.html">ext
               img - internal desc</a></th>
           <td class="pass">FAIL <sup>[<a href="#fn3">3</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/data-uri-image-external-description-fragment.html">data:URI
               - ext desc fragment</a></th>
           <td class="pass">FAIL <sup>[<a href="#fn4">4</a>] [<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-image-external-description-fragment.html">empty
               img - ext desc fragment</a></th>
           <td class="pass">PASS <sup>[<a href="#fn4">4</a>] [<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
@@ -410,30 +690,45 @@ nav ul, nav li { display: inline; }
               img - ext desc fragment with spaces</a></th>
           <td class="pass">PASS <sup>[<a href="#fn4">4</a>] [<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-external-description-fragment.html">ext
               img - ext desc fragment</a></th>
           <td class="pass">PASS <sup>[<a href="#fn4">4</a>] [<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-with-absolute-base-external-description.html">ext
               img - ext desc with absolute base</a></th>
           <td class="pass">PASS <sup>[<a href="#fn5">5</a>] [<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/external-image-with-relative-base-external-description.html">ext
               img - ext desc with relative base</a></th>
           <td class="pass">PASS <sup>[<a href="#fn5">5</a>] [<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
         <tr>
           <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/iframe-discoverability.html">img
               in <code>&lt;iframe&gt;</code></a></th>
           <td class="pass">PASS <sup>[<a href="#fn2">2</a>]</sup> <sup>[<a href="#fn7">7</a>]</sup></td>
           <td class="pass">PASS <sup>[<a href="#fn8">8</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
+          <td class="fail">FAIL <sup>[<a href="#fn7">7</a>]</sup></td>
         </tr>
       </tbody>
     </table>
@@ -473,6 +768,47 @@ nav ul, nav li { display: inline; }
         </tr>
       </tbody>
     </table>
-    <br>
+    <h2 id="validation">Validation tool tests</h2>
+    <table>
+      <tbody>
+        <tr>
+          <th scope="col">Test</th>
+          <th scope="col"><a href="http://validator.w3.org">W3C validator</a></th>
+          <th scope="col"><a href="http://wave.webaim.org">Wave</a> (Webaim)</th>
+          <th scope="col"><a href="http://www.cynthiasays.com">Cynthia Says</a>
+            (HiSoftware)</th>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/invalid-longdesc.html">invalid
+              longdesc (plain text)</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS*</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/empty-longdesc.html">invalid
+              longdesc (empty attribute)</a></th>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS</td>
+          <td class="pass">PASS*</td>
+        </tr>
+        <tr>
+          <th scope="row"><a href="https://rawgithub.com/chaals/longdesc-tests/master/fail-fragment-pointer.html">invalid
+              - malformed fragment</a></th>
+          <td>Did not pass</td>
+          <td>Did not pass</td>
+          <td class="pass">PASS*</td>
+        </tr>
+        <tr>
+          <th scope="row">Comments</th>
+          <td><br>
+          </td>
+          <td><br>
+          </td>
+          <td>*The system directs you to verify manually… so it isn't the
+            highest quality pass imaginable</td>
+        </tr>
+      </tbody>
+    </table>
   </body>
 </html>

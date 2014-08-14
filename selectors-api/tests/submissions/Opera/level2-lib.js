@@ -58,7 +58,7 @@ function setupSpecialElements(parent) {
   }
 
   parent.appendChild(anyNS);
-  parent.appendChild(noNS);  
+  parent.appendChild(noNS);
 }
 
 /*
@@ -294,7 +294,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
         if (!ctx && ref) {
           refNodes = root.querySelectorAll(ref);
           refArray = Array.prototype.slice.call(refNodes, 0);
-          
+
           test(function() {
             foundall = root.findAll(q, refNodes);
             verifyNodeList(foundall, expect);
@@ -338,7 +338,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
         if (ctx && !ref) {
            // context.querySelectorAll(selector) // Only if refNodes is not specified
         }
-        
+
         if (!ctx && !ref) {
           // root.querySelectorAll(selector)    // Only if neither context nor refNodes is specified
         }
@@ -489,7 +489,7 @@ function verifyNodeList(resultAll, expect) {
     assert_not_equals(resultAll[i], null, "The item in index " + i + " should not be null.")
     assert_equals(resultAll[i].getAttribute("id"), e[i], "The item in index " + i + " should have the expected ID.");
     assert_false(resultAll[i].hasAttribute("data-clone"), "This should not be a cloned element.");
-  }  
+  }
 }
 
 function verifyElement(result, resultAll, expect) {
@@ -500,5 +500,5 @@ function verifyElement(result, resultAll, expect) {
     assert_false(found.hasAttribute("data-clone"), "This should not be annotated as a cloned element.");
   } else {
     assert_equals(result, null, "The method should not match anything.");
-  }  
+  }
 }

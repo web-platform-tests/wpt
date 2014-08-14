@@ -114,7 +114,7 @@ var validSelectors = [
   {name: "Attribute whitespace-separated list selector with double-quoted value, not matching value with space",               selector: "#attr-whitespace a[rel~=\"book mark\"]",                                    expect: [] /* no matches */,      level: 2, testType: TEST_QSA_BASELINE},
   {name: "Attribute whitespace-separated list selector, matching title attribute with value using non-ASCII characters",       selector: "#attr-whitespace [title~=中文]",                                              expect: ["attr-whitespace-p1"],   level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
 
-  // - hyphen-separated list     [att|=val] 
+  // - hyphen-separated list     [att|=val]
   {name: "Attribute hyphen-separated list selector, not matching unspecified lang attribute",    selector: "#attr-hyphen-div1[lang|=\"en\"]",    expect: [] /*no matches*/,    level: 2, testType: TEST_QSA_BASELINE},
   {name: "Attribute hyphen-separated list selector, matching lang attribute with exact value",   selector: "#attr-hyphen-div2[lang|=\"fr\"]",    expect: ["attr-hyphen-div2"], level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
   {name: "Attribute hyphen-separated list selector, matching lang attribute with partial value", selector: "#attr-hyphen-div3[lang|=\"en\"]",    expect: ["attr-hyphen-div3"], level: 2, testType: TEST_QSA_BASELINE | TEST_MATCH_BASELINE},
@@ -425,7 +425,7 @@ var validSelectors = [
  *
  * The tests involving refNodes for both find(), findAll() and matches() will each be run by passing the
  * collection as a NodeList, an Array and, if there is only a single element, an Element node.
- * 
+ *
  * Note: Interactive pseudo-classes (:active :hover and :focus) have not been tested in this test suite.
  */
 
@@ -476,7 +476,7 @@ var scopedSelectors = [
   {name: "Attribute whitespace-separated list selector with double-quoted value, not matching value with space",               selector: "a[rel~=\"book mark\"]",                                    ctx: "#attr-whitespace", expect: [] /* no matches */,      level: 2, testType: TEST_FIND_BASELINE},
   {name: "Attribute whitespace-separated list selector, matching title attribute with value using non-ASCII characters",       selector: "[title~=中文]",                                              ctx: "#attr-whitespace", expect: ["attr-whitespace-p1"],   level: 2, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},
 
-  // - hyphen-separated list     [att|=val] 
+  // - hyphen-separated list     [att|=val]
   {name: "Attribute hyphen-separated list selector, not matching unspecified lang attribute",    selector: "#attr-hyphen-div1[lang|=\"en\"]",    ctx: "#attr-hyphen", expect: [] /*no matches*/,    level: 2, testType: TEST_FIND_BASELINE},
   {name: "Attribute hyphen-separated list selector, matching lang attribute with exact value",   selector: "#attr-hyphen-div2[lang|=\"fr\"]",    ctx: "#attr-hyphen", expect: ["attr-hyphen-div2"], level: 2, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},
   {name: "Attribute hyphen-separated list selector, matching lang attribute with partial value", selector: "#attr-hyphen-div3[lang|=\"en\"]",    ctx: "#attr-hyphen", expect: ["attr-hyphen-div3"], level: 2, testType: TEST_FIND_BASELINE | TEST_MATCH_BASELINE},

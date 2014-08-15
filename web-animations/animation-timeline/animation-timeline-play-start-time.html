@@ -15,7 +15,8 @@
 test(function() {
     var animation = newAnimation(createDiv(this));
     var player = document.timeline.play(animation);
-
+    // FIXME For now (August, 2014) this is according the specification
+    // but it can be changed shortly. Please chec the specification
     assert_equals(player.startTime, document.timeline.currentTime,
         'Start time of the newly-created AnimationPlayer object should be set ' +
         'to the value of this object\'s currentTime attribute');

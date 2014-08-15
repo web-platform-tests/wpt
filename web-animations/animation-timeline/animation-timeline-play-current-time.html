@@ -12,33 +12,26 @@
 <body>
 <div id="log"></div>
 <script>
-function calculateCurrentTime(timelineTime, startTime, playbackRate) {
-    return (timelineTime - startTime) * playbackRate;
-}
-
 test(function() {
     var animation = newAnimation(createDiv(this));
     var player = document.timeline.play(animation);
 
-    assert_equals(player.currentTime, calculateCurrentTime(document.timeline.currentTime,
-        player.startTime, player.playbackRate), 'Current time of the newly-created ' +
-        'AnimationPlayer object should be calculated as expected');
+    assert_equals(player.currentTime, 0, 'Current time of the newly-created ' +
+        'AnimationPlayer object should be 0');
 }, 'Test currentTime attribute of newly-created AnimationPlayer object');
 
 test(function() {
     var player = document.timeline.play(null);
 
-    assert_equals(player.currentTime, calculateCurrentTime(document.timeline.currentTime,
-        player.startTime, player.playbackRate), 'Current time of the newly-created ' +
-        'AnimationPlayer object should be calculated as expected');
+    assert_equals(player.currentTime, 0, 'Current time of the newly-created ' +
+        'AnimationPlayer object should be 0');
 }, 'Test currentTime attribute of newly-created AnimationPlayer object with null source');
 
 test(function() {
     var player = document.timeline.play();
 
-    assert_equals(player.currentTime, calculateCurrentTime(document.timeline.currentTime,
-        player.startTime, player.playbackRate), 'Current time of the newly-created ' +
-        'AnimationPlayer object should be calculated as expected');
+    assert_equals(player.currentTime, 0, 'Current time of the newly-created ' +
+        'AnimationPlayer object should be 0');
 }, 'Test currentTime attribute of newly-created AnimationPlayer without source parameter');
 </script>
 </body>

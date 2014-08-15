@@ -95,7 +95,7 @@ valid_absolute = {
   "scheme-gopher-no-slash": "gopher:example.com/",
   "scheme-wss-no-slash": "wss:example.com/",
   "scheme-mailto-no-slash": "mailto:example.com/",
-  "scheme-data-no-slash": "data:example.com/",
+  "scheme-data-no-slash": "data:text/plain,foo",
   "userinfo": "http://user:pass@foo:21/bar;par?b#c",
   "host-ipv6": "http://[2001::1]",
   "host-ipv6-port": "http://[2001::1]:80",

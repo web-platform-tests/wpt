@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# based on https://github.com/w3c/web-platform-tests/blob/275544eab54a0d0c7f74ccc2baae9711293d8908/url/urltestdata.txt
 invalid = {
   "scheme-trailing-tab": "a:\tfoo.com",
   "scheme-trailing-newline": "a:\nfoo.com",
@@ -14,7 +15,7 @@ invalid = {
   "scheme-http-single-slash": "http:/example.com/",
   "scheme-ftp-single-slash": "ftp:/example.com/",
   "scheme-https-single-slash": "https:/example.com/",
-  "scheme-data-single-slash": "data:/example.com/",
+  "scheme-data-single-slash": "data:text/plain,foo",
   "scheme-ftp-no-slash": "ftp:example.com/",
   "scheme-https-no-slash": "https:example.com/",
   "scheme-javascript-no-slash-malformed": "javascript:example.com/",
@@ -200,7 +201,9 @@ warnings = {
 
 element_attribute_pairs = [
   "a href",
+  "a ping",
   "area href",
+  "area ping",
   "audio src",
   "base href",
   "blockquote cite",
@@ -223,6 +226,7 @@ element_attribute_pairs = [
   "source src",
   "track src",
   "video poster",
+  "video src",
 ]
 
 template = "<!DOCTYPE html>\n<meta charset=utf-8>\n"
@@ -245,7 +249,7 @@ def write_novalid_files():
         f.write('<!DOCTYPE html>\n')
         f.write('<html manifest="%s">\n' % url)
         f.write('<meta charset=utf-8>\n')
-        f.write(template + '<title>invalid manifest: %s</title>\n' %  desc)
+        f.write('<title>invalid manifest: %s</title>\n' %  desc)
         f.write('</html>\n')
         f.close()
       elif ("img" == el):
@@ -275,7 +279,7 @@ def write_novalid_files():
       elif ("link" == el):
         f = open("elements/link/href/%s-novalid.html" % desc, 'wb')
         f.write(template + '<title>invalid href: %s</title>\n' %  desc)
-        f.write('<link href="%s" rel>\n' % url)
+        f.write('<link href="%s" rel=help>\n' % url)
         f.close()
       elif ("source" == el or "track" == el):
         f = open("elements/%s/%s/%s-novalid.html" % (el, attr, desc), 'wb')
@@ -357,7 +361,7 @@ def write_haswarn_files():
       elif ("link" == el):
         f = open("elements/link/href/%s-haswarn.html" % desc, 'wb')
         f.write(template + '<title>%s warning: %s</title>\n' % (attr, desc))
-        f.write('<%s %s="%s" rel>\n' % (el, attr, url))
+        f.write('<%s %s="%s" rel=help>\n' % (el, attr, url))
         f.close()
       elif ("source" == el or "track" == el):
         f = open("elements/%s/%s/%s-haswarn.html" % (el, attr, desc), 'wb')
@@ -417,7 +421,7 @@ def write_isvalid_files():
         fs.write('<%s type=submit %s="%s"><!-- %s -->\n' % (el, attr, url, desc))
         fi.write('<%s type=image alt="foo" %s="%s"><!-- %s -->\n' % (el, attr, url, desc))
       elif ("link" == el):
-        f.write('<%s %s="%s" rel><!-- %s -->\n' % (el, attr, url, desc))
+        f.write('<%s %s="%s" rel=help><!-- %s -->\n' % (el, attr, url, desc))
       elif ("source" == el or "track" == el):
         f.write('<video><%s %s="%s"></video><!-- %s -->\n' % (el, attr, url, desc))
       else:
@@ -426,6 +430,8 @@ def write_isvalid_files():
       fs.close()
       fi.close()
     else:
+      if ("a" == el and "href" == attr):
+        f.write('<a href=""></a><!-- empty-href -->\n')
       f.close()
   for desc, url in valid.items():
     f = open("elements/base/href/%s-isvalid.html" % desc, 'wb')
@@ -439,6 +445,11 @@ def write_isvalid_files():
     f.write('<title>valid manifest: %s</title>\n' % desc)
     f.write('</html>\n')
     f.close()
+  f = open("elements/meta/refresh-isvalid.html", 'wb')
+  f.write(template + '<title>valid meta refresh</title>\n')
+  for desc, url in valid.items():
+    f.write('<meta http-equiv=refresh content="0; URL=%s"><!-- %s -->\n' % (url, desc))
+  f.close()
   f = open("microdata/itemid-isvalid.html", 'wb')
   f.write(template + '<title>valid itemid</title>\n')
   for desc, url in valid.items():

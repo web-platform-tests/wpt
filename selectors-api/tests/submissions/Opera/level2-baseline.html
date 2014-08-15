@@ -4,14 +4,14 @@
 <!-- Selectors API Test Suite Version 3 -->
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="selectors.js"></script>
+<script src="/dom/nodes/selectors.js"></script>
 <script src="level2-lib.js"></script>
 <style>iframe { visibility: hidden; position: absolute; }</style>
 
 <div id="log">This test requires JavaScript.</div>
 
 <script>
-var testType = TEST_FIND_BASELINE | TEST_MATCH_BASELINE; // Only run baseline tests.
+var testType = TEST_FIND | TEST_MATCH;
 var docType  = "html"; // Only run tests suitable for HTML
 
 var frame = document.createElement("iframe"),

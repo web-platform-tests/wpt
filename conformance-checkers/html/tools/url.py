@@ -104,7 +104,6 @@ valid_absolute = {
   "port-00000000000000": "http://f:00000000000000/c",
   "port-00000000000000000000080": "http://f:00000000000000000000080/c",
   "port-00000000000000000000080": "http://f:00000000000000000000080/c",
-  "port-999999": "http://f:999999/c",
   "userinfo-host-port-path": "http://a:b@c:29/d",
   "userinfo-username-non-alpha": "http://foo.com:b@d/",
   "query-contains-question-mark": "http://foo/abcd?efgh?ijkl",
@@ -132,9 +131,6 @@ valid_absolute = {
   "host-exotic-dot": u"http://www.foo\u3002bar.com".encode('utf-8'),
   "host-fullwidth": u"http://\uff27\uff4f.com".encode('utf-8'),
   "host-idn-unicode-han": u"http://\u4f60\u597d\u4f60\u597d".encode('utf-8'),
-  "host-IP-address-percent-encoded": "http://%30%78%63%30%2e%30%32%35%30.01",
-  "host-IP-address-percent-encoded": "http://%30%78%63%30%2e%30%32%35%30.01",
-  "host-IP-address-fullwidth": u"http://\uff10\uff38\uff43\uff10\uff0e\uff10\uff12\uff15\uff10\uff0e\uff10\uff11".encode('utf-8'),
   "host-IP-address-broken": "http://192.168.0.257/",
 }
 valid = valid_absolute.copy()

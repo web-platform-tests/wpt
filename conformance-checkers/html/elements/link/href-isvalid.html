@@ -64,9 +64,7 @@
 <link href="http://example.com/﻿/foo" rel=help><!-- path-uFEFF -->
 <link href="wss:/example.com/" rel=help><!-- scheme-wss-single-slash -->
 <link href="http://foo/abcd#foo?bar" rel=help><!-- fragment-contains-question-mark -->
-<link href="http://f:999999/c" rel=help><!-- port-999999 -->
 <link href=":#" rel=help><!-- path-leading-colon-hash-relative -->
-<link href="http://%30%78%63%30%2e%30%32%35%30.01" rel=help><!-- host-IP-address-percent-encoded -->
 <link href="http://example.com/foo%91" rel=help><!-- path-percent-encoded-u0091 -->
 <link href="c:/foo" rel=help><!-- scheme-private-single-letter -->
 <link href=":foo.com" rel=help><!-- path-leading-colon-chars-relative -->
@@ -75,7 +73,6 @@
 <link href="file:" rel=help><!-- scheme-file-scheme-only -->
 <link href="#β" rel=help><!-- fragment-non-ascii-relative -->
 <link href="foo:/bar.com/" rel=help><!-- scheme-private-path -->
-<link href="http://０Ｘｃ０．０２５０．０１" rel=help><!-- host-IP-address-fullwidth -->
 <link href="http://f:0/c" rel=help><!-- port-0 -->
 <link href="#;?" rel=help><!-- fragment-semicolon-question-mark-relative -->
 <link href="http://Ｇｏ.com" rel=help><!-- host-fullwidth -->

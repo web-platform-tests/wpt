@@ -64,9 +64,7 @@
 <img src="http://example.com/﻿/foo" alt><!-- path-uFEFF -->
 <img src="wss:/example.com/" alt><!-- scheme-wss-single-slash -->
 <img src="http://foo/abcd#foo?bar" alt><!-- fragment-contains-question-mark -->
-<img src="http://f:999999/c" alt><!-- port-999999 -->
 <img src=":#" alt><!-- path-leading-colon-hash-relative -->
-<img src="http://%30%78%63%30%2e%30%32%35%30.01" alt><!-- host-IP-address-percent-encoded -->
 <img src="http://example.com/foo%91" alt><!-- path-percent-encoded-u0091 -->
 <img src="c:/foo" alt><!-- scheme-private-single-letter -->
 <img src=":foo.com" alt><!-- path-leading-colon-chars-relative -->
@@ -75,7 +73,6 @@
 <img src="file:" alt><!-- scheme-file-scheme-only -->
 <img src="#β" alt><!-- fragment-non-ascii-relative -->
 <img src="foo:/bar.com/" alt><!-- scheme-private-path -->
-<img src="http://０Ｘｃ０．０２５０．０１" alt><!-- host-IP-address-fullwidth -->
 <img src="http://f:0/c" alt><!-- port-0 -->
 <img src="#;?" alt><!-- fragment-semicolon-question-mark-relative -->
 <img src="http://Ｇｏ.com" alt><!-- host-fullwidth -->

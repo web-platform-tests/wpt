@@ -64,9 +64,7 @@
 <map name=foo><area href="http://example.com/﻿/foo" alt></map><!-- path-uFEFF -->
 <map name=foo><area href="wss:/example.com/" alt></map><!-- scheme-wss-single-slash -->
 <map name=foo><area href="http://foo/abcd#foo?bar" alt></map><!-- fragment-contains-question-mark -->
-<map name=foo><area href="http://f:999999/c" alt></map><!-- port-999999 -->
 <map name=foo><area href=":#" alt></map><!-- path-leading-colon-hash-relative -->
-<map name=foo><area href="http://%30%78%63%30%2e%30%32%35%30.01" alt></map><!-- host-IP-address-percent-encoded -->
 <map name=foo><area href="http://example.com/foo%91" alt></map><!-- path-percent-encoded-u0091 -->
 <map name=foo><area href="c:/foo" alt></map><!-- scheme-private-single-letter -->
 <map name=foo><area href=":foo.com" alt></map><!-- path-leading-colon-chars-relative -->
@@ -75,7 +73,6 @@
 <map name=foo><area href="file:" alt></map><!-- scheme-file-scheme-only -->
 <map name=foo><area href="#β" alt></map><!-- fragment-non-ascii-relative -->
 <map name=foo><area href="foo:/bar.com/" alt></map><!-- scheme-private-path -->
-<map name=foo><area href="http://０Ｘｃ０．０２５０．０１" alt></map><!-- host-IP-address-fullwidth -->
 <map name=foo><area href="http://f:0/c" alt></map><!-- port-0 -->
 <map name=foo><area href="#;?" alt></map><!-- fragment-semicolon-question-mark-relative -->
 <map name=foo><area href="http://Ｇｏ.com" alt></map><!-- host-fullwidth -->

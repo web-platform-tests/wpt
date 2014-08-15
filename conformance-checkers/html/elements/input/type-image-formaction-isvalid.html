@@ -64,9 +64,7 @@
 <input type=image alt="foo" formaction="http://example.com/﻿/foo"><!-- path-uFEFF -->
 <input type=image alt="foo" formaction="wss:/example.com/"><!-- scheme-wss-single-slash -->
 <input type=image alt="foo" formaction="http://foo/abcd#foo?bar"><!-- fragment-contains-question-mark -->
-<input type=image alt="foo" formaction="http://f:999999/c"><!-- port-999999 -->
 <input type=image alt="foo" formaction=":#"><!-- path-leading-colon-hash-relative -->
-<input type=image alt="foo" formaction="http://%30%78%63%30%2e%30%32%35%30.01"><!-- host-IP-address-percent-encoded -->
 <input type=image alt="foo" formaction="http://example.com/foo%91"><!-- path-percent-encoded-u0091 -->
 <input type=image alt="foo" formaction="c:/foo"><!-- scheme-private-single-letter -->
 <input type=image alt="foo" formaction=":foo.com"><!-- path-leading-colon-chars-relative -->
@@ -75,7 +73,6 @@
 <input type=image alt="foo" formaction="file:"><!-- scheme-file-scheme-only -->
 <input type=image alt="foo" formaction="#β"><!-- fragment-non-ascii-relative -->
 <input type=image alt="foo" formaction="foo:/bar.com/"><!-- scheme-private-path -->
-<input type=image alt="foo" formaction="http://０Ｘｃ０．０２５０．０１"><!-- host-IP-address-fullwidth -->
 <input type=image alt="foo" formaction="http://f:0/c"><!-- port-0 -->
 <input type=image alt="foo" formaction="#;?"><!-- fragment-semicolon-question-mark-relative -->
 <input type=image alt="foo" formaction="http://Ｇｏ.com"><!-- host-fullwidth -->

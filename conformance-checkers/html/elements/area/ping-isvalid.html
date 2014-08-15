@@ -64,9 +64,7 @@
 <map name=foo><area ping="http://example.com/﻿/foo" alt></map><!-- path-uFEFF -->
 <map name=foo><area ping="wss:/example.com/" alt></map><!-- scheme-wss-single-slash -->
 <map name=foo><area ping="http://foo/abcd#foo?bar" alt></map><!-- fragment-contains-question-mark -->
-<map name=foo><area ping="http://f:999999/c" alt></map><!-- port-999999 -->
 <map name=foo><area ping=":#" alt></map><!-- path-leading-colon-hash-relative -->
-<map name=foo><area ping="http://%30%78%63%30%2e%30%32%35%30.01" alt></map><!-- host-IP-address-percent-encoded -->
 <map name=foo><area ping="http://example.com/foo%91" alt></map><!-- path-percent-encoded-u0091 -->
 <map name=foo><area ping="c:/foo" alt></map><!-- scheme-private-single-letter -->
 <map name=foo><area ping=":foo.com" alt></map><!-- path-leading-colon-chars-relative -->
@@ -75,7 +73,6 @@
 <map name=foo><area ping="file:" alt></map><!-- scheme-file-scheme-only -->
 <map name=foo><area ping="#β" alt></map><!-- fragment-non-ascii-relative -->
 <map name=foo><area ping="foo:/bar.com/" alt></map><!-- scheme-private-path -->
-<map name=foo><area ping="http://０Ｘｃ０．０２５０．０１" alt></map><!-- host-IP-address-fullwidth -->
 <map name=foo><area ping="http://f:0/c" alt></map><!-- port-0 -->
 <map name=foo><area ping="#;?" alt></map><!-- fragment-semicolon-question-mark-relative -->
 <map name=foo><area ping="http://Ｇｏ.com" alt></map><!-- host-fullwidth -->

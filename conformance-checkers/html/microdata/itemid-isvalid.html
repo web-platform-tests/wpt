@@ -64,9 +64,7 @@
 <div itemid="http://example.com/﻿/foo" itemtype="http://foo" itemscope></div><!-- path-uFEFF -->
 <div itemid="wss:/example.com/" itemtype="http://foo" itemscope></div><!-- scheme-wss-single-slash -->
 <div itemid="http://foo/abcd#foo?bar" itemtype="http://foo" itemscope></div><!-- fragment-contains-question-mark -->
-<div itemid="http://f:999999/c" itemtype="http://foo" itemscope></div><!-- port-999999 -->
 <div itemid=":#" itemtype="http://foo" itemscope></div><!-- path-leading-colon-hash-relative -->
-<div itemid="http://%30%78%63%30%2e%30%32%35%30.01" itemtype="http://foo" itemscope></div><!-- host-IP-address-percent-encoded -->
 <div itemid="http://example.com/foo%91" itemtype="http://foo" itemscope></div><!-- path-percent-encoded-u0091 -->
 <div itemid="c:/foo" itemtype="http://foo" itemscope></div><!-- scheme-private-single-letter -->
 <div itemid=":foo.com" itemtype="http://foo" itemscope></div><!-- path-leading-colon-chars-relative -->
@@ -75,7 +73,6 @@
 <div itemid="file:" itemtype="http://foo" itemscope></div><!-- scheme-file-scheme-only -->
 <div itemid="#β" itemtype="http://foo" itemscope></div><!-- fragment-non-ascii-relative -->
 <div itemid="foo:/bar.com/" itemtype="http://foo" itemscope></div><!-- scheme-private-path -->
-<div itemid="http://０Ｘｃ０．０２５０．０１" itemtype="http://foo" itemscope></div><!-- host-IP-address-fullwidth -->
 <div itemid="http://f:0/c" itemtype="http://foo" itemscope></div><!-- port-0 -->
 <div itemid="#;?" itemtype="http://foo" itemscope></div><!-- fragment-semicolon-question-mark-relative -->
 <div itemid="http://Ｇｏ.com" itemtype="http://foo" itemscope></div><!-- host-fullwidth -->

@@ -198,7 +198,11 @@ class ExpectedUpdater(object):
 
     def test_start(self, data):
         test_id = self.test_id(data["test"])
-        test = self.expected_tree[self.id_path_map[test_id]].get_test(test_id)
+        try:
+            test = self.expected_tree[self.id_path_map[test_id]].get_test(test_id)
+        except KeyError:
+            print "Test not found %s, skipping" % test_id
+            return
         self.test_cache[test_id] = test
 
         if test_id not in self.tests_visited:
@@ -208,7 +212,9 @@ class ExpectedUpdater(object):
 
     def test_status(self, data):
         test_id = self.test_id(data["test"])
-        test = self.test_cache[test_id]
+        test = self.test_cache.get(test_id)
+        if test is None:
+            return
         test_cls = wpttest.manifest_test_cls[test.test_type]
 
         subtest = test.get_subtest(data["subtest"])
@@ -224,7 +230,9 @@ class ExpectedUpdater(object):
 
     def test_end(self, data):
         test_id = self.test_id(data["test"])
-        test = self.test_cache[test_id]
+        test = self.test_cache.get(test_id)
+        if test is None:
+            return
         test_cls = wpttest.manifest_test_cls[test.test_type]
 
         result = test_cls.result_cls(

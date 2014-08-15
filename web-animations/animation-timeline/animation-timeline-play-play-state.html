@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test playState attribute of AnimationPlayer created by AnimationTimeline.play()</title>
+<meta name="assert" content="AnimationTimeline.play() creates AnimationPlayer object with playState attribute initially set to 'pending'">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationTimeline-play-AnimationPlayer-AnimationNode-source">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+
+    assert_equals(player.playState, 'pending',
+        'Initial value of the playState attribute of the newly-created AnimationPlayer ' +
+        'object should be \'pending\'');
+}, 'Test AnimationTimeline.play() creates AnimationPlayer object with playState ' +
+    'attribute initially set to \'pending\'');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.playState, 'pending',
+            'Initial value of the playState attribute of the newly-created AnimationPlayer ' +
+            'object should be \'pending\'');
+}, 'Test AnimationTimeline.play() with null argument creates AnimationPlayer object ' +
+    'with playState attribute initially set to \'pending\'');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_equals(player.playState, 'pending',
+            'Initial value of the playState attribute of the newly-created AnimationPlayer ' +
+            'object should be \'pending\'');
+}, 'Test AnimationTimeline.play() without argument creates AnimationPlayer object with ' +
+    'playState attribute initially set to \'pending\'');
+</script>
+</body>

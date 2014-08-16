@@ -15,7 +15,7 @@ invalid = {
   "scheme-http-single-slash": "http:/example.com/",
   "scheme-ftp-single-slash": "ftp:/example.com/",
   "scheme-https-single-slash": "https:/example.com/",
-  "scheme-data-single-slash": "data:text/plain,foo",
+  "scheme-data-single-slash": "data:/example.com/",
   "scheme-ftp-no-slash": "ftp:example.com/",
   "scheme-https-no-slash": "https:example.com/",
   "scheme-javascript-no-slash-malformed": "javascript:example.com/",

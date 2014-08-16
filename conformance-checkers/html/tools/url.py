@@ -54,7 +54,6 @@ invalid = {
   "host-u0000-percent-encoded-percent-encoded": "http://%ef%bc%85%ef%bc%90%ef%bc%90.com",
 }
 invalid_absolute = invalid.copy()
-invalid_itemprop = invalid.copy()
 
 invalid_url_code_points = {
   "fragment-backslash": "#\\",
@@ -134,7 +133,6 @@ valid_absolute = {
   "host-IP-address-broken": "http://192.168.0.257/",
 }
 valid = valid_absolute.copy()
-valid_itemprop = valid_absolute.copy()
 
 valid_relative = {
   "scheme-schemeless-relative": "//foo/bar",
@@ -149,7 +147,6 @@ valid_relative = {
   "fragment-non-ascii-relative": u"#\u03B2".encode('utf-8'),
 }
 valid.update(valid_relative)
-valid_itemprop.update(valid_relative)
 invalid_absolute.update(valid_relative)
 
 valid_relative_colon_dot = {
@@ -167,7 +164,6 @@ valid_relative_colon_dot = {
   "path-contains-pile-of-poo": "http💩//:foo",
 }
 valid.update(valid_relative_colon_dot)
-invalid_itemprop.update(valid_relative_colon_dot)
 
 invalid_file = {
   "scheme-file-backslash": "file:c:\\foo\\bar.html",
@@ -292,13 +288,6 @@ def write_novalid_files():
     f.write(template + '<title>invalid itemid: %s</title>\n' % desc)
     f.write('<div itemid="%s" itemtype="http://foo" itemscope></div>\n' % url)
     f.close()
-  for desc, url in invalid_itemprop.items():
-    f = open("microdata/itemprop/%s-novalid.html" % desc, 'wb')
-    f.write(template + '<title>invalid itemprop: %s</title>\n' % desc)
-    f.write('<div itemscope>\n')
-    f.write('<p itemprop="%s">\n' % url)
-    f.write('</div>\n')
-    f.close()
   for desc, url in invalid_absolute.items():
     f = open("microdata/itemtype/%s-novalid.html" % desc, 'wb')
     f.write(template + '<title>invalid itemtype: %s</title>\n' % desc)
@@ -378,12 +367,6 @@ def write_haswarn_files():
     f.write(template + '<title>warning: %s</title>\n' % desc)
     f.write('<div itemid="%s" itemtype="http://foo" itemscope></div>\n' % url)
     f.close()
-    f = open("microdata/itemprop-%s-haswarn.html" % desc, 'wb')
-    f.write(template + '<title>warning: %s</title>\n' % desc)
-    f.write('<div itemscope>\n')
-    f.write('<p itemprop="%s">\n' % url)
-    f.write('</div>\n')
-    f.close()
 
 def write_isvalid_files():
   for el, attr in (pair.split() for pair in element_attribute_pairs):
@@ -450,13 +433,6 @@ def write_isvalid_files():
   f.write(template + '<title>valid itemid</title>\n')
   for desc, url in valid.items():
     f.write('<div itemid="%s" itemtype="http://foo" itemscope></div><!-- %s -->\n' % (url, desc))
-  f.close()
-  f = open("microdata/itemprop-isvalid.html", 'wb')
-  f.write(template + '<title>valid itemprop</title>\n')
-  for desc, url in valid_itemprop.items():
-    f.write('<div itemscope>\n')
-    f.write('<p itemprop="%s"><!-- %s -->\n' % (url, desc))
-    f.write('</div>\n')
   f.close()
   f = open("microdata/itemtype-isvalid.html", 'wb')
   f.write(template + '<title>valid itemtype</title>\n')

@@ -197,9 +197,9 @@ warnings = {
 
 element_attribute_pairs = [
   "a href",
-  "a ping",
+  # "a ping", space-separated list of URLs; tested elsewhere
   "area href",
-  "area ping",
+  # "area ping", space-separated list of URLs; tested elsewhere
   "audio src",
   "base href",
   "blockquote cite",

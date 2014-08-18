@@ -47,6 +47,14 @@
       vid.addEventListener("playing", function() {
         setTimeout(function() {
 
+          for (i=0; i< vid.textTracks.length; i++) {
+	    vid.textTracks[i].mode = 'hidden';
+          }
+
+        }, 100);
+
+    setTimeout(function() {
+
           vid.pause();
 
           for (i=0; i< vid.textTracks.length; i++) {

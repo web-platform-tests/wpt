@@ -46,7 +46,7 @@
 
 
       vid.addEventListener("playing", function() {
-
+/* Move this code into the next function
         setTimeout(function() {
           vid.pause();
 
@@ -58,8 +58,17 @@
             }
           }
         }, 6000);
-
+*/
         setTimeout(function() {
+          vid.pause();
+
+          for (i=0; i< vid.textTracks.length; i++) {
+            if (vid.textTracks[i].id == pid) {
+              vid.textTracks[i].mode = 'hidden';
+              index = i;
+              break;
+            }
+          }
           if (index == -1) {
             test.step(function() {
               assert_unreached("Did not find Program Insertion Cue TextTrack.id (PID) " + pid + " in DOM.");

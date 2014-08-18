@@ -86,11 +86,27 @@
               for (i=0; i< vid.textTracks[index1].cues.length; i++) {
 
                 var startTime = vid.textTracks[index1].cues[i].startTime;
-                assert_equals(startTime, 0, "DataCues.startTime");
                 var endTime = vid.textTracks[index1].cues[i].endTime;
-                assert_greater_than_equal(endTime, startTime, "DataCues.endTime");
 
-                assert_true(vid.textTracks[index1].cues[i].data instanceof ArrayBuffer, "DataCues[i] is ArrayBuffer");
+		if (i <= 13) {
+		  assert_equals(startTime, 0, "DataCues.startTime");
+		} else if (i <= 14) {
+		   assert_approx_equals(startTime, 1.65, 0.1, "DataCues.startTime")
+		} else if (i <= 15) {
+		   assert_approx_equals(startTime, 3.52, 0.1, "DataCues.startTime")
+		} else if (i <= 16) {
+		   assert_approx_equals(startTime, 4.79, 0.1, "DataCues.startTime")
+		} else if (i <= 17) {
+		   assert_approx_equals(startTime, 5.59, 0.1, "DataCues.startTime")
+		} else if (i <= 18) {
+		   assert_approx_equals(startTime, 8.09, 0.1, "DataCues.startTime")
+		} else if (i <= 19) {
+		   assert_approx_equals(startTime, 10.46, 0.1, "DataCues.startTime")
+		}
+
+                assert_greater_than_equal(endTime, startTime, "DataCues.endTime");
+                assert_true(vid.textTracks[index1].cues[i].data instanceof ArrayBuffer,
+			    "DataCues[i] is ArrayBuffer");
 
                 if (i==0) {
                   var cueData = new Uint8Array(vid.textTracks[index1].cues[0].data);
@@ -104,11 +120,27 @@
               // EISS2
               for (i=0; i< vid.textTracks[index2].cues.length; i++) {
                 var startTime = vid.textTracks[index2].cues[i].startTime;
-                assert_equals(startTime, 0, "DataCues.startTime");
                 var endTime = vid.textTracks[index2].cues[i].endTime;
-                assert_greater_than_equal(endTime, startTime, "DataCues.endTime");
 
-                assert_true(vid.textTracks[index2].cues[i].data instanceof ArrayBuffer, "DataCues[i] is ArrayBuffer");
+		if (i <= 14) {
+		  assert_equals(startTime, 0, "DataCues.startTime");
+		} else if (i <= 15) {
+		   assert_approx_equals(startTime, 1.65, 0.1, "DataCues.startTime")
+		} else if (i <= 16) {
+		   assert_approx_equals(startTime, 3.15, 0.1, "DataCues.startTime")
+		} else if (i <= 17) {
+		   assert_approx_equals(startTime, 4.62, 0.1, "DataCues.startTime")
+		} else if (i <= 18) {
+		   assert_approx_equals(startTime, 5.52, 0.1, "DataCues.startTime")
+		} else if (i <= 19) {
+		   assert_approx_equals(startTime, 8.03, 0.1, "DataCues.startTime")
+		} else if (i <= 20) {
+		   assert_approx_equals(startTime, 10.06, 0.1, "DataCues.startTime")
+		}
+
+                assert_greater_than_equal(endTime, startTime, "DataCues.endTime");
+                assert_true(vid.textTracks[index2].cues[i].data instanceof ArrayBuffer,
+			    "DataCues[i] is ArrayBuffer");
 
                 if (i==0) {
                   var cueData = new Uint8Array(vid.textTracks[index2].cues[0].data);

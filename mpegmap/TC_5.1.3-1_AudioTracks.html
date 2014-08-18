@@ -40,7 +40,8 @@
       var index2 = -1;
       var pid1 = '36'; // audio1 ES PID
       var pid2 = '41'; // audio2 ES PID
-      var kind = 'main';
+      var kind1 = 'main';
+      var kind2 = '';
 
 
       aud.addEventListener("playing", function() {
@@ -71,10 +72,11 @@
 
           } else {
             test.step(function() {
-              assert_equals(aud.audioTracks.length,       2,    "AudioTracks.length");
-              assert_equals(aud.audioTracks[index1].id,   pid1, "AudioTrack1.id");
-              assert_equals(aud.audioTracks[index1].kind, kind, "AudioTrack1.kind");
-              assert_equals(aud.audioTracks[index2].id,   pid2, "AudioTrack2.id");
+              assert_equals(aud.audioTracks.length,       2,     "AudioTracks.length");
+              assert_equals(aud.audioTracks[index1].id,   pid1,  "AudioTrack1.id");
+              assert_equals(aud.audioTracks[index1].kind, kind1, "AudioTrack1.kind");
+              assert_equals(aud.audioTracks[index2].id,   pid2,  "AudioTrack2.id");
+              assert_equals(aud.audioTracks[index2].kind, kind2, "AudioTrack2.kind");
             });
             test.done();
           }

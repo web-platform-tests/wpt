@@ -51,7 +51,7 @@ generate_tests(test_xpath_succeeds,[
   ["SVG elements mixed case selector", "//svg:PatH", [], ns_resolver],
   ["Non-ascii HTML element", "//dØdd", document.getElementsByTagName("dØdd"), ns_resolver],
   ["Non-ascii HTML element2", "//dødd", [], ns_resolver],
-  ["Non-ascii HTML element2", "//DØDD", document.getElementsByTagName("dØdd"), ns_resolver]
+  ["Non-ascii HTML element3", "//DØDD", document.getElementsByTagName("dØdd"), ns_resolver]
 ])
 
 generate_tests(test_xpath_throws, [

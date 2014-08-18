@@ -391,7 +391,7 @@
     t.done();
   });
 
-  var t2 = async_test('test if DeviceLightEvent received');
+  var t2 = async_test('test if DeviceLightEvent received (event handler attribute)');
   window.ondevicelight = function(e) {
     t2.step(function() {
       var msg = 'expected instance of DeviceLightEvent: ';

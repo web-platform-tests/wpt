@@ -40,7 +40,12 @@ shouldPass(" "+location.protocol + "//" + location.host + "   	 ");
 shouldPass("	"+location.protocol + "//" + location.host);
 
 
+var failOrigins = [];
 function shouldFail(origin) {
+    if (failOrigins.indexOf(origin) > -1) {
+        return;
+    }
+    failOrigins.push(origin);
     test(function () {
         var client = new XMLHttpRequest()
         client.open('GET', CROSSDOMAIN

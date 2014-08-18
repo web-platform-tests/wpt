@@ -4,7 +4,7 @@
     <title>drawFocusIfNeeded() - AAPI test</title>
     <link rel="author" title="Mark Sadecki" href="mark@w3.org">
     <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-context-2d-drawFocusIfNeeded">
-    
+
   </head>
   <body>
     <h1>Description</h1>
@@ -16,35 +16,35 @@
     </canvas>
     <p><a href="http://www.w3.org">Fourth focusable element</a></p>
 
-    <script>       
+    <script>
         var button1 = document.getElementById('button1');
         var button2 = document.getElementById('button2');
         var canvas = document.getElementById('canvas');
         var buttons = canvas.getElementsByTagName('a');
 
         for (var i = 0; i < buttons.length; i++) {
-          buttons[i].addEventListener('focus', drawCanvas, false);
-          buttons[i].addEventListener('blur', drawCanvas, false);
+          buttons[i].addEventListener('focus', update, false);
+          buttons[i].addEventListener('blur', update, false);
         }
 
-        function drawRect(context, color, element) {
+        function drawRect(context, color, element, x, y) {
+          x = x + 10 || "10";
+          y = y + 10 || "10";
           context.beginPath();
-          context.rect(10, 10, 80, 80);
+          context.rect(x, y, 80, 80);
           context.fillStyle = color;
           context.fill();
           context.drawFocusIfNeeded(element);
         }
 
-        function drawCanvas() {
+        function update() {
           var canvas = document.getElementById('canvas');
           var context = canvas.getContext('2d');
           context.clearRect (0, 0, 200, 100);
-
           drawRect(context, "gray", button1);
-          context.translate(100,0);
-          drawRect(context, "orange", button2);
+          drawRect(context, "orange", button2, 100);
         }
-        drawCanvas();
+        update();
     </script>
   </body>
 </html>

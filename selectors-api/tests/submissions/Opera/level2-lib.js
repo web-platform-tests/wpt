@@ -200,7 +200,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
       //console.log("Running tests " + nodeType + ": " + s["testType"] + "&" + testType + "=" + (s["testType"] & testType) + ": " + JSON.stringify(s))
       var foundall, found, context, refNodes, refArray;
 
-      if (s["testType"] & testType & (TEST_FIND_BASELINE | TEST_FIND_ADDITIONAL)) {
+      if (s["testType"] & testType & (TEST_FIND)) {
 
 
         /*
@@ -314,7 +314,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
         }
       }
 
-      if (s["testType"] & testType & (TEST_QSA_BASELINE | TEST_QSA_ADDITIONAL)) {
+      if (s["testType"] & testType & (TEST_QSA)) {
         if (ctx && !ref) {
            // context.querySelectorAll(selector) // Only if refNodes is not specified
         }
@@ -375,7 +375,7 @@ function runMatchesTest(type, root, selectors, testType, docType) {
     var ref = s["ref"];
 
     if ((!s["exclude"] || (s["exclude"].indexOf(nodeType) === -1 && s["exclude"].indexOf(docType) === -1))
-     && (s["testType"] & testType & (TEST_MATCH_BASELINE | TEST_MATCH_ADDITIONAL)) ) {
+     && (s["testType"] & testType & (TEST_MATCH)) ) {
 
       if (ctx && !ref) {
         test(function() {

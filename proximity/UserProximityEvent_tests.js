@@ -331,7 +331,7 @@
         t.done();
     });
 
-    var t2 = async_test('test if user proximity event received');
+    var t2 = async_test('test if user proximity event received (idl attribute)');
     window.onuserproximity = function(e) {
         t2.step(function() {
             var msg = 'expected instance of UserProximityEvent: ';

@@ -638,8 +638,10 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
             data.nonCanon = {};
         }
         for (var i = 0; i < data.keywords.length; i++) {
-            domTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
-            idlTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
+            if (data.keywords[i] != "") {
+                domTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
+                idlTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
+            }
 
             if (data.keywords[i].length > 1) {
                 domTests.push(data.keywords[i].slice(1));

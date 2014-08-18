@@ -60,7 +60,7 @@ test(function() {
   this.add_cleanup(function() {document.body.removeChild(t)})
   assert_array_equals(document.getElementsByTagNameNS("test", "BODY"), [t]);
   assert_array_equals(document.getElementsByTagNameNS("test", "body"), []);
-}, "body element in test namespace, no prefix")
+}, "BODY element in test namespace, no prefix")
 
 test(function() {
   var t = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "abc"))
@@ -90,7 +90,7 @@ test(function() {
   this.add_cleanup(function() {document.body.removeChild(t)})
   assert_array_equals(document.getElementsByTagNameNS("test", "BODY"), [t]);
   assert_array_equals(document.getElementsByTagNameNS("test", "body"), []);
-}, "body element in test namespace, prefix")
+}, "BODY element in test namespace, prefix")
 
 test(function() {
   var t = document.body.appendChild(document.createElementNS("test", "test:test"))

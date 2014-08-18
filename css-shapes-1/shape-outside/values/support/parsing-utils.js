@@ -27,7 +27,7 @@ function testComputedStyle(value, expected) {
 
 function testShapeMarginInlineStyle(value, expected) {
     var div = document.createElement('div');
-    div.style.setProperty('-shape-outside', "border-box inset(10px)");
+    div.style.setProperty('shape-outside', "border-box inset(10px)");
     div.style.setProperty('shape-margin', value);
     var actual = div.style.getPropertyValue('shape-margin');
     assert_equals(actual, expected);
@@ -147,12 +147,12 @@ function buildPositionTests(shape, valid, type, units) {
                     actual = shape + '(at ' + setUnit(test[0], false, units) +')';
 
                     // expected
-                    if(convert && shape == 'circle')
-                        expected = shape + '(closest-side at ' + setUnit(test[1], convert, units) +')';
-                    else if(convert && shape == 'ellipse')
-                        expected = shape + '(closest-side closest-side at ' + setUnit(test[1], convert, units) +')';
-                    else
-                        expected = shape + '(at ' + setUnit(test[1], convert, units) +')';
+                  //  if(convert && shape == 'circle')
+                  //      expected = shape + '(at ' + setUnit(test[1], convert, units) +')';
+                  //  else if(convert && shape == 'ellipse')
+                  //      expected = shape + '(at ' + setUnit(test[1], convert, units) +')';
+                  //  else
+                   expected = shape + '(at ' + setUnit(test[1], convert, units) +')';
 
                     // name
                     if (type == 'lengthUnit + inline')
@@ -751,35 +751,35 @@ var invalidPositions = [
 // valid radii values for circle + ellipse
 // [value, expected_inline, [expected_computed?]]
 var validCircleRadii = [
-    ['', 'at 50% 50%', 'closest-side at 50% 50%'],
+    ['', 'at 50% 50%', 'at 50% 50%'],
     ['50u1', '50u1 at 50% 50%'],
     ['50%', '50% at 50% 50%'],
-    ['closest-side', 'closest-side at 50% 50%'],
+    ['closest-side', 'at 50% 50%'],
     ['farthest-side', 'farthest-side at 50% 50%']
 ]
 var validEllipseRadii = [
-    ['', 'at 50% 50%', 'closest-side closest-side at 50% 50%'],
-    ['50u1', '50u1 at 50% 50%', '50u1 closest-side at 50% 50%'],
-    ['50%', '50% at 50% 50%', '50% closest-side at 50% 50%'],
-    ['closest-side', 'closest-side at 50% 50%', 'closest-side closest-side at 50% 50%'],
-    ['farthest-side', 'farthest-side at 50% 50%', 'farthest-side closest-side at 50% 50%'],
+    ['', 'at 50% 50%', 'at 50% 50%'],
+    ['50u1', '50u1 at 50% 50%', '50u1 at 50% 50%'],
+    ['50%', '50% at 50% 50%', '50% at 50% 50%'],
+    ['closest-side', 'at 50% 50%', 'at 50% 50%'],
+    ['farthest-side', 'farthest-side at 50% 50%', 'farthest-side at 50% 50%'],
     ['50u1 100u1', '50u1 100u1 at 50% 50%'],
     ['100u1 100px', '100u1 100px at 50% 50%'],
     ['25% 50%', '25% 50% at 50% 50%'],
     ['50u1 25%', '50u1 25% at 50% 50%'],
     ['25% 50u1', '25% 50u1 at 50% 50%'],
-    ['25% closest-side', '25% closest-side at 50% 50%'],
-    ['25u1 closest-side', '25u1 closest-side at 50% 50%'],
+    ['25% closest-side', '25% at 50% 50%'],
+    ['25u1 closest-side', '25u1 at 50% 50%'],
     ['closest-side 75%', 'closest-side 75% at 50% 50%'],
     ['closest-side 75u1', 'closest-side 75u1 at 50% 50%'],
     ['25% farthest-side', '25% farthest-side at 50% 50%'],
     ['25u1 farthest-side', '25u1 farthest-side at 50% 50%'],
     ['farthest-side 75%', 'farthest-side 75% at 50% 50%'],
     ['farthest-side 75u1', 'farthest-side 75u1 at 50% 50%'],
-    ['closest-side closest-side', 'closest-side closest-side at 50% 50%'],
+    ['closest-side closest-side', 'at 50% 50%'],
     ['farthest-side farthest-side', 'farthest-side farthest-side at 50% 50%'],
     ['closest-side farthest-side', 'closest-side farthest-side at 50% 50%'],
-    ['farthest-side closest-side', 'farthest-side closest-side at 50% 50%']
+    ['farthest-side closest-side', 'farthest-side at 50% 50%']
 ]
 
 var validInsets = [

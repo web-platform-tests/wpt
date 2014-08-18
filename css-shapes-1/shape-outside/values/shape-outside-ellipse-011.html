@@ -23,11 +23,11 @@
                             'ellipse(at '+ value[1] +' 50%)'];
                 if(Object.prototype.toString.call( value[2] ) === '[object Array]' && value[2].length == 2) {
                     testCase.push([
-                                    'ellipse(closest-side closest-side at '+ value[2][0] +' 50%)',
-                                    'ellipse(closest-side closest-side at '+ value[2][1] +' 50%)'
+                                    'ellipse(at '+ value[2][0] +' 50%)',
+                                    'ellipse(at '+ value[2][1] +' 50%)'
                                  ]);
                 } else {
-                    testCase.push('ellipse(closest-side closest-side at '+ value[2] +' 50%)');
+                    testCase.push('ellipse(at '+ value[2] +' 50%)');
                 }
                 ellipse_position_calc_tests.push(testCase);
             });
@@ -36,11 +36,11 @@
                             'ellipse(farthest-side at '+ value[1] +' 50%)'];
                 if(Object.prototype.toString.call( value[2] ) === '[object Array]' && value[2].length == 2) {
                     testCase.push([
-                                    'ellipse(farthest-side closest-side at '+ value[2][0] +' 50%)',
-                                    'ellipse(farthest-side closest-side at '+ value[2][1] +' 50%)'
+                                    'ellipse(farthest-side at '+ value[2][0] +' 50%)',
+                                    'ellipse(farthest-side at '+ value[2][1] +' 50%)'
                                   ]);
                 } else {
-                    testCase.push('ellipse(farthest-side closest-side at '+ value[2] +' 50%)');
+                    testCase.push('ellipse(farthest-side at '+ value[2] +' 50%)');
                 }
                 ellipse_position_calc_tests.push(testCase);
             });

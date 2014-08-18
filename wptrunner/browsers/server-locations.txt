@@ -6,22 +6,24 @@
 # See /build/pgo/server-locations.txt for documentation on the format
 
 http://localhost:8000    primary
-http://www.localhost:8000
-http://www1.localhost:8000
-http://www2.localhost:8000
-http://xn--n8j6ds53lwwkrqhv28a.localhost:8000
-http://xn--lve-6lad.localhost:8000
 
-http://localhost:8001
-http://www.localhost:8001
-http://www1.localhost:8001
-http://www2.localhost:8001
-http://xn--n8j6ds53lwwkrqhv28a.localhost:8001
-http://xn--lve-6lad.localhost:8001
+http://web-platform.test:8000
+http://www.web-platform.test:8000
+http://www1.web-platform.test:8000
+http://www2.web-platform.test:8000
+http://xn--n8j6ds53lwwkrqhv28a.web-platform.test:8000
+http://xn--lve-6lad.web-platform.test:8000
 
-ws://localhost:8888
-ws://www.localhost:8888
-ws://www1.localhost:8888
-ws://www2.localhost:8888
-ws://xn--n8j6ds53lwwkrqhv28a.localhost:8888
-ws://xn--lve-6lad.localhost:8888
+http://web-platform.test:8001
+http://www.web-platform.test:8001
+http://www1.web-platform.test:8001
+http://www2.web-platform.test:8001
+http://xn--n8j6ds53lwwkrqhv28a.web-platform.test:8001
+http://xn--lve-6lad.web-platform.test:8001
+
+ws://web-platform.test:8888
+ws://www.web-platform.test:8888
+ws://www1.web-platform.test:8888
+ws://www2.web-platform.test:8888
+ws://xn--n8j6ds53lwwkrqhv28a.web-platform.test:8888
+ws://xn--lve-6lad.web-platform.test:8888

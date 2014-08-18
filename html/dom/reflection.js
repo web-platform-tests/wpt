@@ -640,8 +640,6 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         for (var i = 0; i < data.keywords.length; i++) {
             if (data.keywords[i] != "") {
                 domTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
-            }
-            if (data.keywords[i] != "") {
                 idlTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
             }
 

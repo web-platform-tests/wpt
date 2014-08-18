@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>CSS Writing Modes: parsing text-combine-upright with valid values</title>
 <link rel="author" title="Masataka Yakura" href="http://google.com/+MasatakaYakura">
-<link rel="help" href="http://www.w3.org/TR/2014/CR-css-writing-modes-3-20140320/#text-combine-upright">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-combine-upright">
 <meta name="assert" content="text-combine-upright supports `none`, `all`, `digits`, and `digits` followed by a digit in the range from 2 to 4.">
 <meta name="flags" content="dom">
 <script src="/resources/testharness.js"></script>
@@ -178,7 +178,6 @@ test(function () {
   assert_equals(getComputedValueFor('valid_unset_outer'), 'digits 4');
   assert_equals(getComputedValueFor('valid_unset_inner'), 'digits 4');
 }, 'Computed value for `text-combine-upright: unset` is `digits 4` which is inherited from the parent element');
-
 </script>
 </body>
 </html>

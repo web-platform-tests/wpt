@@ -243,7 +243,7 @@ function print_diffs(test_id, uri_encoded_input, expected, actual, container) {
 var current_tests = {};
 var iframe_map = {};
 
-function init_tests(test_type, file_timeout) {
+function init_tests(test_type) {
   var test_func = null;
   var test_funcs = {
     "write":test_document_write,
@@ -294,8 +294,7 @@ function init_tests(test_type, file_timeout) {
       document.body.appendChild(iframe);
     }
   },
-  {explicit_done:true,
-  timeout:file_timeout});
+  {explicit_done:true});
 
   function test_next(iframe) {
     var test_id = order[tests_started];

@@ -2,6 +2,7 @@
   <head>
     <meta charset="utf8"/>
     <title>HTML 5 Parser tests ${file_name}</title>
+    <meta name="timeout" content="long"/>
   </head>
   <body>
     <h1>html5lib Parser Test</h1>
@@ -16,10 +17,10 @@
 
       var order = [<py:for each="test in tests">'${test.id}',</py:for>];
       var tests = {
-          <py:for each="test in tests">"${test.id}":[async_test('${file_name} ${test.id}', {'timeout':${test_timeout}}), ${test.string_uri_encoded_input}, ${test.string_escaped_expected}, '${test.container}'],</py:for>
+          <py:for each="test in tests">"${test.id}":[async_test('${file_name} ${test.id}'), ${test.string_uri_encoded_input}, ${test.string_escaped_expected}, '${test.container}'],</py:for>
       }
 
-      init_tests("innerHTML", ${file_timeout});
+      init_tests("innerHTML");
 
     </script>
   </body>

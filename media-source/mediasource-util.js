@@ -376,7 +376,6 @@
             var mediaTag = document.createElement("video");
             document.body.appendChild(mediaTag);
 
-            // Overload done() so that element added to the document can be removed.
             test.removeMediaElement_ = true;
             test.add_cleanup(function()
             {

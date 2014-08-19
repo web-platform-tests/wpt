@@ -104,6 +104,10 @@ class Browser(object):
         with which it should be instantiated"""
         return ExecutorBrowser, {}
 
+    def log_crash(self, logger, process, test):
+        """Return a list of dictionaries containing information about crashes that happend
+        in the browser, or an empty list if no crashes occurred"""
+        logger.crash(process, test)
 
 class NullBrowser(Browser):
     def start(self):

@@ -4,7 +4,6 @@
 
 import os
 
-import mozcrash
 from mozprocess import ProcessHandler
 from mozprofile import FirefoxProfile, Preferences
 from mozprofile.permissions import ServerLocations

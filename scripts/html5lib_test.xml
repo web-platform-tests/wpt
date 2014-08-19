@@ -17,9 +17,9 @@
 
       var order = [<py:for each="test in tests">'${test.id}',</py:for>];
       var tests = {
-          <py:for each="test in tests">"${test.id}":[async_test('${file_name} ${test.id}', {'timeout':${test_timeout}}), ${test.string_uri_encoded_input}, ${test.string_escaped_expected}],</py:for>
+          <py:for each="test in tests">"${test.id}":[async_test('${file_name} ${test.id}'), ${test.string_uri_encoded_input}, ${test.string_escaped_expected}],</py:for>
       }
-      init_tests(get_type(), ${file_timeout});
+      init_tests(get_type());
     </script>
 
   </body>

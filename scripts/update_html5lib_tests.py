@@ -101,9 +101,7 @@ def write_test_file(script_dir, out_dir, tests, file_name, template_file_name):
     with open(os.path.join(script_dir, template_file_name)) as f:
         template = MarkupTemplate(f)
 
-    stream = template.generate(file_name=short_name, tests=tests,
-                               file_timeout=min(1000*len(tests), 60*1000),
-                               test_timeout=1000)
+    stream = template.generate(file_name=short_name, tests=tests)
 
     with open(file_name, "w") as f:
         f.write(stream.render('html', doctype='html5',

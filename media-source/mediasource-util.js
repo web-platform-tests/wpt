@@ -228,7 +228,7 @@
     function getFirstSupportedType(typeList)
     {
         for (var i = 0; i < typeList.length; ++i) {
-            if (MediaSource.isTypeSupported(typeList[i]))
+            if (window.MediaSource && MediaSource.isTypeSupported(typeList[i]))
                 return typeList[i];
         }
         return "";
@@ -238,7 +238,7 @@
     {
         for (var i = 0; i < SEGMENT_INFO_LIST.length; ++i) {
             var segmentInfo = SEGMENT_INFO_LIST[i];
-            if (MediaSource.isTypeSupported(segmentInfo.type)) {
+            if (window.MediaSource && MediaSource.isTypeSupported(segmentInfo.type)) {
                 return segmentInfo;
             }
         }

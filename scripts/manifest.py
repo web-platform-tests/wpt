@@ -9,6 +9,7 @@ import subprocess
 import sys
 import urlparse
 
+from StringIO import StringIO
 from collections import defaultdict
 from fnmatch import fnmatch
 
@@ -16,7 +17,9 @@ from fnmatch import fnmatch
 def get_git_func(repo_path):
     def git(cmd, *args):
         full_cmd = ["git", cmd] + list(args)
+        print full_cmd
         return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT)
+    print git
     return git
 
 
@@ -36,7 +39,6 @@ def get_repo_root():
 
 
 manifest_name = "MANIFEST.json"
-exclude_php_hack = True
 ref_suffixes = ["_ref", "-ref"]
 wd_pattern = "*.py"
 blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/"]
@@ -213,18 +215,32 @@ class WebdriverSpecTest(ManifestItem):
 class ManifestError(Exception):
     pass
 
+item_types = ["testharness", "reftest", "manual", "helper", "stub", "wdspec"]
 
 class Manifest(object):
     def __init__(self, git_rev):
-        self.item_types = [
-            "testharness", "reftest", "manual", "helper", "stub", "wdspec"]
+        # Dict of item_type: {path: set(manifest_items)}
         self._data = dict((item_type, defaultdict(set))
-                          for item_type in self.item_types)
+                          for item_type in item_types)
         self.rev = git_rev
         self.local_changes = LocalChanges()
 
+    def _included_items(self, item_types=None):
+        if item_types is None:
+            item_types = item_types
+
+        for item_type in item_types:
+            paths = self._data[item_type].copy()
+            for item_types, local_paths in self.local_changes.itertypes(item_type):
+                for path, items in local_paths.iteritems():
+                    paths[path] = items
+                for path in self.local_changes.iterdeleted():
+                    del paths[path]
+
+            yield item_type, paths
+
     def contains_path(self, path):
-        return any(path in item for item in self._data.itervalues())
+        return any(path in item for item in self._included_items().itervalues())
 
     def add(self, item):
         self._data[item.item_type][item.path].add(item)
@@ -234,35 +250,59 @@ class Manifest(object):
             self.add(item)
 
     def remove_path(self, path):
-        for item_type in self.item_types:
+        for item_type in item_types:
             if path in self._data[item_type]:
                 del self._data[item_type][path]
 
     def itertypes(self, *types):
-        for item_type in types:
-            for item in sorted(self._data[item_type].items()):
+        for item_type, items in self._included_items(types):
+            for item in sorted(items.items()):
                 yield item
 
     def __iter__(self):
-        for item_type in self.item_types:
-            for item in self._data[item_type].iteritems():
+        for item_type, items in self._included_items(types):
+            for item in sorted(items.items()):
                 yield item
 
-    def __getitem__(self, key):
-        for items in self._data.itervalues():
-            if key in items:
-                return items[key]
+    def __getitem__(self, path):
+        for items in self._data._included_items():
+            if path in items:
+                return items[path]
         raise KeyError
 
+    def update(self, new_rev, committed_changes=None, local_changes=None):
+        if local_changes is None:
+            local_changes = {}
+
+        if committed_changes is not None:
+            for path, status in committed_changes:
+                self.remove_path(path)
+                if status == "modified":
+                    use_committed = path in local_changes
+                    if use_committed:
+                        print path
+                    self.extend(get_manifest_items(path, use_committed=use_committed))
+
+        self.local_changes = LocalChanges()
+        for path, status in local_changes.iteritems():
+            if status == "modified":
+                items = set(get_manifest_items(path, use_committed=False))
+                self.local_changes.extend(items)
+            else:
+                self.local_changes.add_deleted(path)
+
+        self.rev = new_rev
+
     def to_json(self):
-        items = defaultdict(list)
-        for test_path, tests in self.itertypes(*self.item_types):
-            for test in tests:
-                items[test.item_type].append(test.to_json())
+        out_items = defaultdict(list)
+        for item_type, items in self._data.iteritems():
+            for path, tests in items.iteritems():
+                for test in tests:
+                    out_items[test.item_type].append(test.to_json())
 
         rv = {"rev":self.rev,
               "local_changes":self.local_changes.to_json(),
-              "items":items}
+              "items":out_items}
         return rv
 
     @classmethod
@@ -279,7 +319,7 @@ class Manifest(object):
                         "wdspec": WebdriverSpecTest}
 
         for k, values in obj["items"].iteritems():
-            if k not in self.item_types:
+            if k not in item_types:
                 raise ManifestError
             for v in values:
                 manifest_item = item_classes[k].from_json(v)
@@ -287,21 +327,69 @@ class Manifest(object):
         self.local_changes = LocalChanges.from_json(obj["local_changes"])
         return self
 
+class LocalChanges(object):
+    def __init__(self):
+        self._data = dict((item_type, defaultdict(set)) for item_type in item_types)
+        self._deleted = set()
 
-class LocalChanges(dict):
-    def __setitem__(self, path, status):
-        if status not in ["A", "M", "D"]:
-            raise ValueError, "Unrecognised status %s for path %s" % (status, path)
-        dict.__setitem__(self, path, status)
+    def add(self, item):
+        self._data[item.item_type][item.path].add(item)
+
+    def extend(self, items):
+        for item in items:
+            self.add(item)
+
+    def add_deleted(self, path):
+        self._deleted.add(path)
+
+    def is_deleted(self, path):
+        return path in self._deleted
+
+    def itertypes(self, *types):
+        for item_type in types:
+            yield item_type, self._data[item_type]
+
+    def iterdeleted(self):
+        for item in self._deleted:
+            yield item
+
+    def __getitem__(self, item_type):
+        return self._data[item_type]
 
     def to_json(self):
-        return [(self[item], item) for item in sorted(self.keys())]
+        rv = {"items": defaultdict(dict),
+              "deleted": []}
+
+        rv["deleted"].extend(self._deleted)
+
+        for test_type, paths in self._data.iteritems():
+            for path, tests in paths.iteritems():
+                rv["items"][test_type][path] = [test.to_json() for test in tests]
+
+        return rv
 
     @classmethod
     def from_json(cls, obj):
         self = cls()
-        for status, path in obj:
-            self[path] = status
+        if not hasattr(obj, "iteritems"):
+            raise ManifestError
+
+        item_classes = {"testharness":TestharnessTest,
+                        "reftest":RefTest,
+                        "manual":ManualTest,
+                        "helper":Helper,
+                        "stub": Stub,
+                        "wdspec": WebdriverSpecTest}
+
+        for test_type, paths in obj["items"].iteritems():
+            for path, tests in paths.iteritems():
+                for test in tests:
+                    manifest_item = item_classes[test_type].from_json(test)
+                    self.add(manifest_item)
+
+        for item in obj["deleted"]:
+            self.add_deleted(item)
+
         return self
 
 
@@ -342,14 +430,30 @@ def get_reference_links(root):
     return match_links, mismatch_links
 
 
-def get_manifest_items(rel_path):
+def get_file(rel_path, use_committed):
+    if use_committed:
+        blob = git("show", "HEAD:%s" % rel_path)
+        file_obj = ContextManagerStringIO(blob)
+    else:
+        path = os.path.join(get_repo_root(), rel_path)
+        file_obj = open(path)
+    return file_obj
+
+class ContextManagerStringIO(StringIO):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self.close()
+
+def get_manifest_items(rel_path, use_committed=False):
     if rel_path.endswith(os.path.sep):
         return []
 
     url = "/" + rel_path.replace(os.sep, "/")
-
     path = os.path.join(get_repo_root(), rel_path)
-    if not os.path.exists(path):
+
+    if not use_committed and not os.path.exists(path):
         return []
 
     base_path, filename = os.path.split(path)
@@ -396,21 +500,15 @@ def get_manifest_items(rel_path):
     if file_markup_type:
         timeout = None
 
-        if exclude_php_hack:
-            php_re =re.compile("\.php")
-            with open(path) as f:
-                text = f.read()
-                if php_re.findall(text):
-                    return []
-
         parser = {"html":lambda x:html5lib.parse(x, treebuilder="etree"),
                   "xhtml":ElementTree.parse,
                   "svg":ElementTree.parse}[file_markup_type]
-        try:
-            with open(path) as f:
+
+        with get_file(rel_path, use_committed) as f:
+            try:
                 tree = parser(f)
-        except:
-            return [Helper(rel_path, url)]
+            except:
+                return [Helper(rel_path, url)]
 
         if hasattr(tree, "getroot"):
             root = tree.getroot()
@@ -450,71 +548,106 @@ def get_repo_paths():
     return [item for item in data.split("\n") if not item.endswith(os.path.sep)]
 
 
+def chunks(data, n):
+    for i in range(0, len(data) - 1, n):
+        yield data[i:i+n]
+
+
 def get_committed_changes(base_rev):
     if base_rev is None:
         logger.debug("Adding all changesets to the manifest")
-        return [("A", item) for item in get_repo_paths()]
-    else:
-        logger.debug("Updating the manifest from %s to %s" % (base_rev, get_current_rev()))
-        data  = git("diff", "--name-status", base_rev)
-        return [line.split("\t", 1) for line in data.split("\n") if line]
+        return [(item, "modified") for item in get_repo_paths()]
+
+    logger.debug("Updating the manifest from %s to %s" % (base_rev, get_current_rev()))
+    rv = []
+    data  = git("diff", "-z", "--name-status", base_rev + "..HEAD")
+    items = data.split("\0")
+    for status, filename in chunks(items, 2):
+        if status == "D":
+            rv.append((filename, "deleted"))
+        else:
+            rv.append((filename, "modified"))
+    return rv
 
 
 def has_local_changes():
     return git("status", "--porcelain", "--ignore-submodules=untracked").strip() != ""
 
 
-def get_local_changes():
-    #This doesn't account for whole directories that have been added
-    data  = git("status", "--porcelain", "--ignore-submodules=all")
-    rv = LocalChanges()
-    for line in data.split("\n"):
-        line = line.strip()
-        if not line:
-            continue
-        status, path = line.split(" ", 1)
-        if path.endswith(os.path.sep):
-            logger.warning("Ignoring added directory %s" % path)
-            continue
-        if status == "??":
-            status = "A"
-        elif status == "R":
-            old_path, path = tuple(item.strip() for item in path.split("->"))
-            rv[old_path] = "D"
-            status = "A"
-        elif status == "MM":
-            status = "M"
-        rv[path] = status
+def get_local_changes(path=None):
+    # -z is stable like --porcelain; see the git status documentation for details
+    cmd = ["status", "-z", "--ignore-submodules=all"]
+    if path is not None:
+        cmd.extend(["--", path])
+
+    rv = {}
+
+    data = git(*cmd)
+    assert data[-1] == "\0"
+    f = StringIO(data)
+
+    while f.tell() < len(data):
+        # First two bytes are the status in the stage (index) and working tree, respectively
+        staged = f.read(1)
+        worktree = f.read(1)
+        assert f.read(1) == " "
+
+        if staged == "R":
+            # When a file is renamed, there are two files, the source and the destination
+            files = 2
+        else:
+            files = 1
+
+        filenames = []
+
+        for i in range(files):
+            filenames.append("")
+            char = f.read(1)
+            while char != "\0":
+                filenames[-1] += char
+                char = f.read(1)
+
+        rv.update(local_status(staged, worktree, filenames))
+
     return rv
 
+def local_status(staged, worktree, filenames):
+    # Convert the complex range of statuses that git can have to two values
+    # we care about; "modified" and "deleted" and return a dictionary mapping
+    # filenames to statuses
 
-def sync_urls(manifest, updated_files):
-    for status, path in updated_files:
-        if status in ("D", "M"):
-            manifest.remove_path(path)
-        if status in ("A", "M"):
-            manifest.extend(get_manifest_items(path))
+    rv = {}
 
+    if (staged, worktree) in [("D", "D"), ("A", "U"), ("U", "D"), ("U", "A"),
+                              ("D", "U"), ("A", "A"), ("U", "U")]:
+        raise Exception("Can't operate on tree containing unmerged paths")
 
-def sync_local_changes(manifest, local_changes):
-    if local_changes:
-        logger.info("Working directory not clean, adding local changes")
-    prev_local_changes = manifest.local_changes
-    all_paths = get_repo_paths()
+    if staged == "R":
+        assert len(filenames) == 2
+        dest, src = filenames
+        rv[dest] = "modified"
+        rv[src] = "deleted"
+    else:
+        assert len(filenames) == 1
 
-    for path, status in prev_local_changes.iteritems():
-        print status, path, path in local_changes
-        if path not in local_changes:
-            # If a path was previously marked as deleted but is now back
-            # we need to readd it to the manifest
-            if status == "D" and path in all_paths:
-                local_changes[path] = "A"
-            # If a path was previously marked as added but is now
-            # not then we need to remove it from the manifest
-            elif status == "A" and path not in all_paths:
-                local_changes[path] = "D"
+        filename = filenames[0]
 
-    sync_urls(manifest, ((status, path) for path, status in local_changes.iteritems()))
+        if staged == "D" or worktree == "D":
+            # Actually if something is deleted in the index but present in the worktree
+            # it will get included by having a status of both "D " and "??".
+            # It isn't clear whether that's a bug
+            rv[filename] = "deleted"
+        elif staged == "?" and worktree == "?":
+            # A new file. If it's a directory, recurse into it
+            if os.path.isdir(os.path.join(get_repo_root(),
+                                          filename)):
+                rv.update(get_local_changes(filename))
+            else:
+                rv[filename] = "modified"
+        else:
+            rv[filename] = "modified"
+
+    return rv
 
 
 def get_current_rev():
@@ -535,7 +668,7 @@ def load(manifest_path):
     return manifest
 
 
-def update(manifest):
+def update(manifest, ignore_local=False):
     global ElementTree
     global html5lib
 
@@ -546,10 +679,14 @@ def update(manifest):
 
     import html5lib
 
-    sync_urls(manifest, get_committed_changes(manifest.rev))
-    sync_local_changes(manifest, get_local_changes())
+    if not ignore_local:
+        local_changes = get_local_changes()
+    else:
+        local_changes = None
 
-    manifest.rev = get_current_rev()
+    manifest.update(get_current_rev(),
+                    get_committed_changes(manifest.rev),
+                    local_changes)
 
 
 def write(manifest, manifest_path):
@@ -557,33 +694,30 @@ def write(manifest, manifest_path):
         json.dump(manifest.to_json(), f, sort_keys=True, indent=2, separators=(',', ': '))
 
 
-def update_manifest(repo_path, **kwargs):
+def update_from_cli(repo_path, **kwargs):
     setup_git(repo_path)
+    path = kwargs["path"]
     if not kwargs.get("rebuild", False):
-        manifest = load(kwargs["path"])
+        manifest = load(path)
     else:
         manifest = Manifest(None)
-    if has_local_changes() and not kwargs.get("local_changes", False):
-        logger.info("Not writing manifest because working directory is not clean.")
-    else:
-        logger.info("Updating manifest")
-        update(manifest)
-        write(manifest, kwargs["path"])
+
+    logger.info("Updating manifest")
+    update(manifest, ignore_local=kwargs.get("ignore_local", False))
+    write(manifest, path)
 
 
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--path", default=os.path.join(get_repo_root(), "MANIFEST.json"),
-        help="path to manifest file")
+        help="Path to manifest file.")
     parser.add_argument(
         "-r", "--rebuild", action="store_true", default=False,
-        help="force a full rebuild of the manifest rather than updating "
-        "incrementally")
+        help="Force a full rebuild of the manifest.")
     parser.add_argument(
-        "-c", "--experimental-include-local-changes", action="store_true", default=False,
-        help="include local changes in the manifest rather than just committed "
-             "changes (experimental)")
+        "--ignore-local", action="store_true", default=False,
+        help="Don't include uncommitted local changes in the manifest.")
     return parser
 
 if __name__ == "__main__":
@@ -593,7 +727,4 @@ if __name__ == "__main__":
         print "Script must be inside a web-platform-tests git clone."
         sys.exit(1)
     opts = create_parser().parse_args()
-    update_manifest(get_repo_root(),
-                    path=opts.path,
-                    rebuild=opts.rebuild,
-                    local_changes=opts.experimental_include_local_changes)
+    update_from_cli(get_repo_root(), **vars(opts))

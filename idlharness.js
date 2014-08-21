@@ -1444,8 +1444,9 @@ IdlInterface.prototype.test_members = function()
             break;
 
         case "attribute":
+            // For unforgeable attributes, we do the checks in
+            // test_interface_of instead.
             if (!member.has_extended_attribute("Unforgeable")) {
-                // We do the checks in test_interface_of instead
                 this.test_member_attribute(member);
             }
             break;

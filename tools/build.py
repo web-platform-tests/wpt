@@ -128,9 +128,17 @@ class Builder(object):
                                 if (specName in self.buildSpecNames):
                                     if (anchorURL):
                                         for testSuiteName in self.buildSpecNames[specName]:
-                                            if (testSuiteName not in suiteFileNames):
-                                                suiteFileNames[testSuiteName] = set()
-                                            suiteFileNames[testSuiteName].add(fileName)
+                                            formats = self.testSuiteData[testSuiteName].get('formats')
+                                            if (formats):
+                                                for formatName in formats:
+                                                    if (((formatName) in self.formatData) and
+                                                        (self.formatData[formatName].get('mime_type') == source.mimetype)):
+                                                        if (testSuiteName not in suiteFileNames):
+                                                            suiteFileNames[testSuiteName] = set()
+                                                        suiteFileNames[testSuiteName].add(fileName)
+                                                        break
+                                                else:
+                                                    self.ui.note("Test not in acceptable format: ", source.mimetype, "\n for: ", filePath, "\n")
                                     else:
                                         self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
                             else:
@@ -218,7 +226,7 @@ class Builder(object):
             os.makedirs(self.cacheDir)
         except:
             pass
-        self.testSuiteData = self._loadShepherdData('test_suites', 'test suite')
+        self.testSuiteData = self._loadShepherdData('test_suites', 'test suite', repo = 'css')
         if (not self.testSuiteData):
             self.ui.warn("ERROR: Unable to load test suite information.\n")
             return -1
@@ -263,6 +271,11 @@ class Builder(object):
         if (not self.flagData):
             self.ui.warn("ERROR: Unable to load flag information\n")
             return -4
+
+        self.formatData = self._loadShepherdData('test_formats', 'test format')
+        if (not self.formatData):
+            self.ui.warn("ERROR: Unable to load format information\n")
+            return -5
 
 
         self.buildSuiteNames.sort()

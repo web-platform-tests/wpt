@@ -10,7 +10,7 @@
 <script>
 async_test("Properties of the 'message' event").step(function() {
     var channel = new MessageChannel();
-    
+
     var targetPort = channel.port2;
     targetPort.start();
 
@@ -20,7 +20,7 @@ async_test("Properties of the 'message' event").step(function() {
         assert_false(evt.bubbles, "bubbles should be false");
         assert_false(evt.cancelable, "cancelable should be false");
     }), true);
-    
+
     channel.port1.postMessage("ping");
 });
 </script>

@@ -19,6 +19,11 @@ async_test("Properties of the 'message' event").step(function() {
         assert_equals(evt.type, "message");
         assert_false(evt.bubbles, "bubbles should be false");
         assert_false(evt.cancelable, "cancelable should be false");
+        assert_equals(evt.data, "ping", "data");
+        assert_equals(evt.origin, "", "origin");
+        assert_equals(evt.lastEventId, "", "lastEventId");
+        assert_equals(evt.source, null, "source");
+        assert_array_equals(evt.ports, [], "ports");
     }), true);
 
     channel.port1.postMessage("ping");

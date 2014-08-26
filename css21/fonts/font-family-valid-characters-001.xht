@@ -8,6 +8,7 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-family-prop"/>
         <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#characters"/>
         <link rel="help" href="http://www.w3.org/TR/css-fonts-3/#font-family-prop"/>
+        <link rel="match" href="font-family-valid-characters-ref.html" />
         <meta name="flags" content="ahem" />
         <meta name="assert" content="Valid characters in font family names."/>
         <style type="text/css">
@@ -47,6 +48,10 @@
             {
                 font-family: \testfoo, Ahem;
             }
+            #div10
+            {
+                font-family: test-_foo, Ahem;
+            }
         </style>
     </head>
     <body>
@@ -60,5 +65,6 @@
         <div id="div7">Fail</div>
         <div id="div8">Fail</div>
         <div id="div9">Fail</div>
+        <div id="div10">Fail</div>
     </body>
 </html>

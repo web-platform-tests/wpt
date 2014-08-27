@@ -240,7 +240,7 @@ class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         except socket.timeout, e:
             self.log_error("Request timed out: %r", e)
-            self.close_connection = 1
+            self.close_connection = True
             return
 
         except Exception as e:
@@ -254,7 +254,7 @@ class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         try:
             self.raw_requestline = self.rfile.readline(65537)
         except socket.error:
-            self.close_connection = 1
+            self.close_connection = True
             return False
         if len(self.raw_requestline) > 65536:
                 self.requestline = ''
@@ -262,7 +262,7 @@ class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 self.command = ''
                 return False
         if not self.raw_requestline:
-            self.close_connection = 1
+            self.close_connection = True
         return True
 
 

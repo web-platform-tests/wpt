@@ -3,7 +3,7 @@ in a browser window. For running larger groups of tests, or runing
 tests frequently, this is not a practical approach, and several better
 options exist.
 
-## From Inside A Browser
+## From Inside a Browser
 
 For running multiple tests inside a browser, there is the test runner,
 located at
@@ -22,7 +22,7 @@ edge-cases like tests that cause the browser to crash or hang.
 ## By Automating the Browser
 
 For automated test running designed to be robust enough to use in a CI
-environment, the [wptrunner][http://github.com/wptrunner] test runner
+environment, the [wptrunner](http://github.com/wptrunner) test runner
 can be used. This is a test runner written in Python and designed to
 control the browser from the outside using some remote control
 protocol such as WebDriver. This allows it to handle cases such as the
@@ -31,4 +31,4 @@ also has the ability to automatically run both testharness-based tests
 and reftests.
 
 Full instructions for using wptrunner are provided in its own
-[documentation][http://wptrunner.readthedocs.org].
+[documentation](http://wptrunner.readthedocs.org).

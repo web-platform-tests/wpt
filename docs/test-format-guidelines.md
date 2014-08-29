@@ -70,6 +70,15 @@ Tests should be as cross-platform as reasonably possible, working
 across different devices, screen resolutions, paper sizes, etc.
 Exceptions should document their assumptions.
 
+### Self-contained
+
+Tests must not depend on external network resources, including
+w3c-test.org. When these tests are run on CI systems they are
+typically configured with access to external resources disabled, so
+tests that try to access them will fail. Where tests want to use
+multiple hosts this is possible thorough a known set of subdomains and
+features of wptserve.
+
 ## File Formats
 
 Tests must be HTML, XHTML or SVG files.

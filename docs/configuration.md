@@ -4,8 +4,8 @@ the web-platform-tests repository.
 
 ## Requirements
 
- * git
- * Python 2.7
+ * [git](http://git-scm.com/)
+ * [Python 2.7](http://python.org)
 
 ## Hosts configuration
 

@@ -1,4 +1,6 @@
-This page describes the standard test format for all test types.
+This page describes the avaliable test types and the requirements for
+authoring that apply to all test types. There is also a supplementary
+[guide to writing good testcases](test-style-guidelines.html).
 
 ## Test Locations
 
@@ -8,12 +10,13 @@ the shortname of the spec (i.e. the name used for snapshot
 publications under `/TR/`).
 
 Within the specification-specific directory there are two common ways
-of laying out tests. The first is a flat structure which works well
-for very short specifications. The alternative is a nested structure
-with each subdirectory corresponding to the id of a heading in the
-specification. This layout provides some implicit metadata about the
-part of a specification being tested according to its location in the
-filesystem, and should be used for larger specifications.
+of laying out tests. The first is a flat structure which is sometimes
+adopted for very short specifications. The alternative is a nested
+structure with each subdirectory corresponding to the id of a heading
+in the specification. This layout provides some implicit metadata
+about the part of a specification being tested according to its
+location in the filesystem, and is preferred for larger
+specifications.
 
 When adding new tests to existing specifications, try to follow the
 structure of existing tests.
@@ -28,15 +31,19 @@ automation).
 Tests should be written using the mechanism that is most conducive to
 running in automation. In general the following order of preference holds:
 
-* [idlharness.js][idlharness] tests
+* [idlharness.js](testharness-idlharness.html) tests - for testing
+  anything in a WebIDL block.
 
-* [testharness.js][testharness] tests
+* [testharness.js](testharness.html) tests - for any test that can be
+  written using script alone.
 
-* [Reftests][reftests]
+* [Reftests][reftests] - for most tests of rendering.
 
-* WebDriver tests
+* WebDriver tests - for testing the webdriver protocol itself or (in
+  the future) for certain tests that require access to priviledged APIs.
 
-* Manual tests
+* Manual tests - as a last resort for anything that can't be tested
+  using one of the above techniques.
 
 Some scenarios demand certain test types. For example:
 
@@ -50,11 +57,7 @@ Some scenarios demand certain test types. For example:
   (e.g. to pick a file from the local filesystem) typically have to be
   manual tests.
 
-## Design Requirements
-
-A complete
-[guide to writing good testcases](test-style-guidelines.html),
-particularly relevant to reftests and manual tests, is avaliable.
+## General Test Design Requirements
 
 ### Short
 
@@ -79,7 +82,7 @@ Tests should be as cross-platform as reasonably possible, working
 across different devices, screen resolutions, paper sizes, etc.
 Exceptions should document their assumptions.
 
-### Self-contained
+### Self-Contained
 
 Tests must not depend on external network resources, including
 w3c-test.org. When these tests are run on CI systems they are
@@ -87,6 +90,13 @@ typically configured with access to external resources disabled, so
 tests that try to access them will fail. Where tests want to use
 multiple hosts this is possible thorough a known set of subdomains and
 features of wptserve.
+
+## File Names
+
+Generally file names should be somewhat descriptive of what is being
+tested; very generic names like `001.html` are discouraged. A common
+format, required by CSS tests, is described in
+[CSS Naming Conventions](css_names.html).
 
 ## File Formats
 
@@ -110,6 +120,14 @@ Except when specifically testing encoding, tests must be encoded in
 UTF-8, marked through the use of e.g. `<meta charset=utf-8>`, or in
 pure ASCII.
 
+## Support files
+
+Various support files are avaliable in in the `/common/` and `/media/`
+directories (web-platform-tests) and `/support/` (CSS). Reusing
+existing resources is encouraged where possible, as is adding
+generally useful files to these common areas rather than to specific
+testsuites.
+
 ## Style Rules
 
 A number of style rules should be applied to the test file. These are
@@ -122,7 +140,91 @@ new tests. Any of these rules may be broken if the test demands it:
 
  * Use UNIX-style line endings (i.e. no CR characters at EOL).
 
-## Test lint
+## Advanced Testing Features
+
+Certain test scenarios require more than just static HTML
+generation. This is supported through the
+[wptserve](http://github.com/w3c/wptserve) server. Several scenarios
+in particular are common:
+
+### Tests Involving Multiple Origins
+
+In the test environment, five subdomains are avaliable; `www`, `www1`,
+`www2`, `天気の良い日` and `élève`. These must be used for
+cross-origin tests. In addition two ports are avaliable for http and
+one for websockets. Tests must not hardcode the hostname of the server
+that they expect to be running on or the port numbers, as these are
+not guaranteed by the test environment. Instead tests can get this
+information in one of two ways:
+
+* From script, using the `location` API.
+
+* By using a textual substitution feature of the server.
+
+In order for the latter to work, a file must either have a name of the
+form `{name}.sub.{ext}` e.g. `example-test.sub.html` or be referenced
+through a URL containing `pipe=sub` in the query string
+e.g. `example-test.html?pipe=sub`. The substitution syntax uses ``{{
+}}` to delimit items for substitution. For example to substitute in
+the host name on which the tests are running, one would write:
+
+    {{host}}
+
+As well as the host, one can get full domains, including subdomains
+using the `domains` dictionary. For example:
+
+    {{domains[www]}}
+
+would be replaced by the fully qualified domain name of the `www`
+subdomain. Ports are also avaliable on a per-protocol basis e.g.
+
+    {{ports[ws][0]}}
+
+is replaced with the first (and only) websockets ports whilst
+
+    {{ports[http][1]}}
+
+is replaced with the second HTTP port.
+
+The request URL itself can be used as part of the substitution using
+the `location` dictionary, which has entries matching the
+`window.location` API. For example
+
+    {{location[host]}}
+
+is replaced by hostname:port for the current request.
+
+### Tests Requiring Special Headers
+
+For tests requiring that a certain HTTP header is set to some static
+value, a file with the same path as the test file except for an an
+additional `.headers` suffix may be created. For example for
+`/example/test.html`, the headers file would be
+`/example/test.html.headers`. This file consists of lines of the form
+
+    header-name: header-value
+
+For example
+
+    Content-Type: text/html; charset=big5
+
+To apply the same headers to all files in a directory use a
+`__dir__.headers` file. This will only apply to the immediate
+directory and not subdirectories.
+
+Headers files may be used in combination with substitutions by naming
+the file e.g. `test.html.sub.headers`.
+
+### Tests Requiring Full Control Over The HTTP Response
+
+For full control over the request and response the server provides the
+ability to write `.asis` files; these are served as literal HTTP
+responses. It also provides the ability to write python scripts that
+have access to request data and can manipulate the content and timing
+of the response. For details see the
+[wptserve documentation](http://wptserve.readthedocs.org).
+
+## Test Lint
 
 A lint tool is avaliable to catch common mistakes in tests. It may be
 run from the web-platform-tests home directory using:
@@ -134,7 +236,6 @@ of the rules will be regarded as an error. In order to silence
 unwanted linter errors, add the error to the whitelist in
 `tools/scripts/lint.whitelist`.
 
-[selftest]: ./selftest.html
 [reftests]: ./reftests.html
 [test-templates]: ./test-templates.html
 [requirement-flags]: ./test-templates.html#requirement-flags

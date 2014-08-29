@@ -1,7 +1,22 @@
-This page describes the standard test format for [reftests][reftests]
-and [script tests][testharness-documentation]. The design
-requirements are explained and to make things easier we've also
-provided several [templates][test-templates] you can copy.
+This page describes the standard test format for all test types.
+
+## Test Locations
+
+Each top level directory in the repository corresponds to tests for a
+single specification. For W3C specs, these directories are named after
+the shortname of the spec (i.e. the name used for snapshot
+publications under `/TR/`).
+
+Within the specification-specific directory there are two common ways
+of laying out tests. The first is a flat structure which works well
+for very short specifications. The alternative is a nested structure
+with each subdirectory corresponding to the id of a heading in the
+specification. This layout provides some implicit metadata about the
+part of a specification being tested according to its location in the
+filesystem, and should be used for larger specifications.
+
+When adding new tests to existing specifications, try to follow the
+structure of existing tests.
 
 ## Choosing the Test Type
 
@@ -82,7 +97,7 @@ mechanism, or in pure ascii.
 ### Location
 
 The correct location for a test depends on the exact spec being
-tested. Typically each specification has its own top level directory. 
+tested. Typically each specification has its own top level directory.
 
 ### Path Length
 

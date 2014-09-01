@@ -240,11 +240,11 @@ of the response. For details see the
 Tests for CSS specs have some additional requirements that have to be
 met in order to be included in the official specification testsuite.
 
-* [Naming conventions](css-names.md)
+* [Naming conventions](css-names.html)
 
-* [User style sheets](css-user-styles.md)
+* [User style sheets](css-user-styles.html)
 
-* [Metadata](css-metadata.md)
+* [Metadata](css-metadata.html)
 
 ## Test Lint
 

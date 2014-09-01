@@ -36,6 +36,14 @@ update all submodules:
 
     git submodule update --init --recursive
 
+## Font Files
+
+Many layout tests require a set of test-specific fonts, notably
+Ahem. These are avaliable from the
+[CSS Fonts](http://www.w3.org/Style/CSS/Test/Fonts/) website. These
+must be installed according to the normal font-install procedure for
+your operating system.
+
 ## Running the Test Server
 
 The test environment can be started using

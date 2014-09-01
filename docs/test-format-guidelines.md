@@ -97,7 +97,7 @@ features of wptserve (see
 Generally file names should be somewhat descriptive of what is being
 tested; very generic names like `001.html` are discouraged. A common
 format, required by CSS tests, is described in
-[CSS Naming Conventions](css_names.html).
+[CSS Naming Conventions](css-names.html).
 
 ## File Formats
 
@@ -234,6 +234,17 @@ responses. It also provides the ability to write python scripts that
 have access to request data and can manipulate the content and timing
 of the response. For details see the
 [wptserve documentation](http://wptserve.readthedocs.org).
+
+## CSS-Specific Requirements
+
+Tests for CSS specs have some additional requirements that have to be
+met in order to be included in the official specification testsuite.
+
+* [Naming conventions](css-names.md)
+
+* [User style sheets](css-user-styles.md)
+
+* [Metadata](css-metadata.md)
 
 ## Test Lint
 

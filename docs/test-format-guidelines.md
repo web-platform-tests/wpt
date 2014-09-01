@@ -89,7 +89,8 @@ w3c-test.org. When these tests are run on CI systems they are
 typically configured with access to external resources disabled, so
 tests that try to access them will fail. Where tests want to use
 multiple hosts this is possible thorough a known set of subdomains and
-features of wptserve.
+features of wptserve (see
+["Tests Involving Multiple Origins"](#tests-involving-multiple-origins)).
 
 ## File Names
 
@@ -164,25 +165,33 @@ information in one of two ways:
 In order for the latter to work, a file must either have a name of the
 form `{name}.sub.{ext}` e.g. `example-test.sub.html` or be referenced
 through a URL containing `pipe=sub` in the query string
-e.g. `example-test.html?pipe=sub`. The substitution syntax uses ``{{
-}}` to delimit items for substitution. For example to substitute in
+e.g. `example-test.html?pipe=sub`. The substitution syntax uses {% raw %} `{{
+}}` {% endraw %} to delimit items for substitution. For example to substitute in
 the host name on which the tests are running, one would write:
 
+{% raw %}
     {{host}}
+{% endraw %}
 
 As well as the host, one can get full domains, including subdomains
 using the `domains` dictionary. For example:
 
+{% raw %}
     {{domains[www]}}
+{% endraw %}
 
 would be replaced by the fully qualified domain name of the `www`
 subdomain. Ports are also avaliable on a per-protocol basis e.g.
 
+{% raw %}
     {{ports[ws][0]}}
+{% endraw %}
 
-is replaced with the first (and only) websockets ports whilst
+is replaced with the first (and only) websockets port, whilst
 
+{% raw %}
     {{ports[http][1]}}
+{% endraw %}
 
 is replaced with the second HTTP port.
 
@@ -190,7 +199,9 @@ The request URL itself can be used as part of the substitution using
 the `location` dictionary, which has entries matching the
 `window.location` API. For example
 
+{% raw %}
     {{location[host]}}
+{% endraw %}
 
 is replaced by hostname:port for the current request.
 

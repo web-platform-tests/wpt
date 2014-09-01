@@ -5,8 +5,8 @@ CSS tests have some particular requirements for metadata.
 ``` html
 <title>[Test Area]: [Title/Scope of Test]</title>
 or
-<title>[Test Area] Reference File</title>```
-
+<title>[Test Area] Reference File</title>
+```
 
 The title appears in the generated index, so make sure it is
 concise and descriptive. The role of the title is to

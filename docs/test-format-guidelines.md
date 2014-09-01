@@ -97,7 +97,7 @@ features of wptserve (see
 Generally file names should be somewhat descriptive of what is being
 tested; very generic names like `001.html` are discouraged. A common
 format, required by CSS tests, is described in
-[CSS Naming Conventions](css-names.html).
+[CSS Naming Conventions](css-naming.html).
 
 ## File Formats
 
@@ -240,7 +240,7 @@ of the response. For details see the
 Tests for CSS specs have some additional requirements that have to be
 met in order to be included in the official specification testsuite.
 
-* [Naming conventions](css-names.html)
+* [Naming conventions](css-naming.html)
 
 * [User style sheets](css-user-styles.html)
 

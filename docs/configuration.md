@@ -11,7 +11,7 @@ the web-platform-tests repository.
 
 The tests depend on certain domains being avaliable. These are
 typically configured locally with `web-platform.test` as the top level
-domain and five subdomains. To onfigure these domains you need to edit
+domain and five subdomains. To configure these domains you need to edit
 your
 [`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The
 following entries are required:

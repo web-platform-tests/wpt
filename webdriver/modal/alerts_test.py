@@ -22,19 +22,19 @@ class AlertsTest(base_test.WebDriverBaseTest):
         self.driver.find_element_by_id('alert').click()
         alert = self.wait.until(lambda x: x.switch_to_alert())
         alert.accept()
-        self.driver.get_current_url()
+        self.driver.current_url
 
     def test_should_allow_user_to_accept_an_alert_with_no_text(self):
         self.driver.find_element_by_id('empty-alert').click()
         alert = self.wait.until(lambda x: x.switch_to_alert())
         alert.accept()
-        self.driver.get_current_url()
+        self.driver.current_url
 
     def test_should_allow_user_to_dismiss_an_alert(self):
         self.driver.find_element_by_id('alert').click()
         alert = self.wait.until(lambda x: x.switch_to_alert())
         alert.dismiss()
-        self.driver.get_current_url()
+        self.driver.current_url
 
     def test_should_allow_user_to_get_text_of_an_alert(self):
         self.driver.find_element_by_id('alert').click()

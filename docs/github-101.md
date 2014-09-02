@@ -109,8 +109,7 @@ At the command prompt, cd into the directory where you want to keep the tests.
 * If you cloned the the test repo and did not use the `--recursive` option, you will likely have an empty `resources` directory at the root of your cloned repo. You can clone the submodules with these additional steps:
 
         $ cd test-repo-root
-        $ git submodule init
-        $ git submodule update
+        $ git submodule update --init --recursive
 
     _You should now see the submodules in the repository. For example,_ `testharness` _files in should be in the resources directory._
 
@@ -162,15 +161,15 @@ branch you will end up with a big nested mess._
 
 At the command line:
 
-    $ git checkout -b username/topic
+    $ git checkout -b topic
 
-This will create a branch named `username/topic` and immediately
+This will create a branch named `topic` and immediately
 switch this to be your active working branch.
 
 _The branch name should describe specifically what you are testing.
 For Example:_
 
-    $ git checkout -b username/flexbox-flex-direction-prop
+    $ git checkout -b flexbox-flex-direction-prop
 
 You're ready to start writing tests! Come back to this page you're ready to
 [commit][commit] them or [submit][submit] them for review.
@@ -226,16 +225,16 @@ them back up to the server.
 
     At the command prompt:
 
-        $ git push https://github.com/username/web-platform-tests.git username/topic
+        $ git push https://github.com/username/web-platform-tests.git topic
 
     Or, for short:
 
-        $ git push origin username/topic
+        $ git push origin topic
 
     _Note: Here,_ `origin` _refers to remote repo from which you cloned
     (downloaded) the files after you forked, referred to as
     web-platform-tests.git in the previous example;_
-    `username/topic` _refers to the name of your local branch that
+    `topic` _refers to the name of your local branch that
     you want to push_.
 
 2.  Now you can send a message that you have changes or additions you'd like
@@ -253,10 +252,10 @@ GitHub UI.  Below is one method and others can be found on
     b.  On the left, you should see the base repo is the
     w3c/web-platform-tests. On the right, you should see your fork of that
     repo. In the branch menu of your forked repo, switch to
-    `username/topic`
+    `topic`
     **Note:** If you see _'There isn't anything to compare'_, click the
     ![edit][editbtn] button and make sure your fork and your
-    `username/topic` branch is selected on the right side.
+    `topic` branch is selected on the right side.
 
     c. Select the ![create pull request][createprlink] link at the top.
 
@@ -279,7 +278,7 @@ accepted, detele youre branch (see '
 
 That's it! If you're currently at a Test the Web Forward event, find an
 expert nearby and ask for a review. If you're doing this on your own
-(AWESOME!), your pull request will be go into a queue and will be reviewed
+(AWESOME!), your pull request will go into a queue and will be reviewed
 soon.
 
 ## Modify
@@ -290,17 +289,17 @@ comments asking for modifications to your code. When you are ready to make the
 changes, follow these steps:
 
 1.  Check out the branch corresponding to your changes e.g. if your branch was
-    called `username/topic`
+    called `topic`
     run:
 
-        $ git checkout username/topic
+        $ git checkout topic
 
 2.  Make the changes needed to address the comments, and commit them just like
     before.
 
 3.  Push the changes to the remote branch containing the pull request:
 
-        $ git push origin username/topic
+        $ git push origin topic
 
 4.  The pull request will automatically be updated with the new commit. Note
     for advanced users: it is generally discouraged to rebase your pull request

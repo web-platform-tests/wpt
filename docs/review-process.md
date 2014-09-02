@@ -43,6 +43,12 @@ Pull requests get automatically labelled in the Github repository. Check
 out the [list of labels in Github][issues]
 to see the open pull requests for a given specification or a given Working Group.
 
+## Status
+
+The
+[web-platform-tests dashboard](http://testthewebforward.org/dashboard/#all)
+shows the number of open review requests, and can be filtered by testsuite.
+
 [format]: ./test-format-guidelines.html
 [style]: ./test-style-guidelines.html
 [review-checklist]: ./review-checklist.html

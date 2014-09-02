@@ -6,6 +6,10 @@ Each template is given in two forms, one minimal and one including
 [extra metadata](css-metadata.html). Usually the metadata is required
 by CSS tests and optional for other tests.
 
+Templates for filenames are also given. In this case `{}` is used to
+delimit text to be replaced `#` represents a digit and `ext` is a
+filename extension.
+
 ## Reftests
 
 ### Minimal Reftest
@@ -22,6 +26,8 @@ by CSS tests and optional for other tests.
     ${4:Test content}
 </body>
 ```
+
+Filename: `{test-topic}-###.ext`
 
 ### Reftest Including Metadata
 
@@ -42,6 +48,8 @@ by CSS tests and optional for other tests.
 </body>
 ```
 
+Filename: `{test-topic}-###.ext`
+
 ### Minimal Reftest Reference:
 
 ``` html
@@ -55,6 +63,8 @@ by CSS tests and optional for other tests.
     ${3:Reference content}
 </body>
 ```
+
+Filename: `{description}.ext` or `{test-topic}-###-ref.ext`
 
 ### Reference Including Metadata
 
@@ -71,6 +81,8 @@ by CSS tests and optional for other tests.
 </body>
 ```
 
+Filename: `{description}.ext` or `{test-topic}-###-ref.ext`
+
 ## testharness.js tests
 
 ### Minimal Script Test
@@ -85,6 +97,8 @@ by CSS tests and optional for other tests.
 ${2:Test body}
 </script>
 ```
+
+Filename: `{test-topic}-###.ext`
 
 ### Script Test With Metadata
 
@@ -103,6 +117,8 @@ ${7:Test body}
 </script>
 ```
 
+Filename: `{test-topic}-###.ext`
+
 ### Manual Test
 
 ``` html
@@ -116,3 +132,5 @@ setup({explicit_timeout: true});
 ${2:Test body}
 </script>
 ```
+
+Filename: `{test-topic}-###-manual.ext`

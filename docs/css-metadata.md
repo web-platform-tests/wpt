@@ -41,8 +41,8 @@ number, since the test might get reused for the next version.
 ### Credits
 
 ``` html
-<link rel="author" title="NAME_OF_AUTHOR" href="[mailto:some@address
-  or http://some.url]" />
+<link rel="author" title="NAME_OF_AUTHOR"
+ href="[mailto:some@address or http://some.url]" />
 ```
 
 Credits provide a way to identify the person or organization that
@@ -53,15 +53,15 @@ test. A test can have multiple author credits if necessary.
 Example 1:
 
 ``` html
-<link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.
-  edu" />
+<link rel="author" title="Boris Zbarsky"
+ href="mailto:bzbarsky@mit.edu" />
 ```
 
 Example 2:
 
 ``` html
-<link rel="author" title="Bert Bos" href="http://www.w3.org/People/
-  Bos/" />
+<link rel="author" title="Bert Bos"
+ href="http://www.w3.org/People/Bos/" />
 ```
 
 Example 3:
@@ -85,15 +85,15 @@ must be a person, not an organization.
 Example 1:
 
 ``` html
-<link rel="reviewer" title="Boris Zbarsky" href="mailto:bzbarsky@mit.
-  edu" /> <!-- 2008-02-19 -->
+<link rel="reviewer" title="Boris Zbarsky"
+ href="mailto:bzbarsky@mit.edu" /> <!-- 2008-02-19 -->
 ```
 
 Example 2:
 
 ``` html
-<link rel="reviewer" title="Bert Bos" href="http://www.w3.org/People/
-Bos/" /> <!-- 2005-05-03 -->
+<link rel="reviewer" title="Bert Bos"
+ href="http://www.w3.org/People/Bos/" /> <!-- 2005-05-03 -->
 ```
 
 If a test would pass review with some (non-metadata) changes and the
@@ -109,12 +109,12 @@ test at the time of the review.
 Example of a fully-reviewed test:
 
 ``` html
-<link rel="author" title="Bert Bos" href="http://www.w3.org/People/
-  Bos/" />
+<link rel="author" title="Bert Bos"
+ href="http://www.w3.org/People/Bos/" />
 <link rel="reviewer author" title="Boris Zbarsky"
   href="mailto:bzbarsky@mit.edu" /> <!-- 2008-02-19 -->
-<link rel="reviewer" title="Bert Bos" href="http://www.w3.org/People/
-  Bos/" /> <!-- 2008-04-22 -->
+<link rel="reviewer" title="Bert Bos"
+ href="http://www.w3.org/People/Bos/" /> <!-- 2008-04-22 -->
 ```
 
 This test was written by Bert Bos, then reviewed by Boris Zbarsky,
@@ -154,13 +154,13 @@ Example 1:
 Example 2:
 
 ``` html
-<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment
-  -prop" />
+<link rel="help"
+ href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
 <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#q7" />
-<link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#line-
-  height" />
-<link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#
-  background-properties" />
+<link rel="help"
+ href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
+<link rel="help"
+ href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
 ```
 
 ### Reference Links

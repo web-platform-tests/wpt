@@ -50,11 +50,10 @@ exist, the suffixed tests must be subsets of the unsuffixed test.
 For example, if ```bidi-004``` and ```bidi-004a``` both exist,
 ```bidi-004a``` must be a subset of ```bidi-004```.
 
-If the unsuffixed test is strictly the union of the suffixed tests, i
-.e. covers all aspects of the suffixed tests (such that a user agent
+If the unsuffixed test is strictly the union of the suffixed tests,
+i.e. covers all aspects of the suffixed tests (such that a user agent
 passing the unsuffixed test will, by design, pass all the suffixed
-tests), then the unsuffixed test should be marked with the combo flag
-.
+tests), then the unsuffixed test should be marked with the combo flag.
 
 If ```bidi-004a``` and ```bidi-004b``` cover all aspects of ```bidi-
 004``` (except their interaction), then bidi-004 should be given the

@@ -6,7 +6,7 @@ following rules.
 ``` css
 #user-stylesheet-indication
 {
-   /* Used by the harness to display and indication there is a user
+   /* Used by the harness to display an indication there is a user
    style sheet applied */
     display: block!important;
 }
@@ -63,7 +63,7 @@ Examples: (code for the cascade.css file)
 ```
 
 The rule ```#cascade``` in the example above is used by the test
-page to hid the prerequisite text. The rule name should match the
+page to hide the prerequisite text. The rule name should match the
 user style sheet CSS file name in order to keep this orderly.
 
 Examples: (code for the cascade-### XHTML files)

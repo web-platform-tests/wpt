@@ -6,7 +6,7 @@ sync with it if you forked a while ago)
 * Create a branch for your changes. Being a key of effective Git flow, it is
 strongly recommended that the **topic branch** tradition be followed here,
 i.e. the branch naming convention is based on the "topic" you will be working
-on, e.g. `git checkout -b username/topic-name`
+on, e.g. `git checkout -b topic-name`
 
 * Make your changes
 

@@ -88,7 +88,7 @@ code.prettyprint { color: inherit; }
 <p>A <a href="http://testthewebforward.org/docs/reftests.html">reftest</a> are one of the testing format used in W3C and browser vendors for testing features that add visual effects to a page such as CSS and SVG. A reftest are madte of two (or more) files: a test case made using features to test, and reference file(s) made using widely-implemented-and-deployed features (e.g. CSS2). On conforming implementation the reference and the test case will visually match.
 <p>For ease of testing, references often use simple geometric shapes such as <a href="http://test.csswg.org/source/css-flexbox-1/reference/flexbox-flex-wrap-nowrap-ref.htm">green square</a>.
 <figure>
-<iframe src="/css-flexbox-1/reference/flexbox-flex-wrap-nowrap-ref.htm" frameborder="0" width="400" height="200"></iframe>
+<iframe src="../../css-flexbox-1/reference/flexbox-flex-wrap-nowrap-ref.htm" frameborder="0" width="400" height="200"></iframe>
 <figcaption>A reference of green rectangle, used for a flexbox test</figcaption>
 </figure>
 </section>
@@ -166,10 +166,10 @@ Most other US-ASCII characters in the font have the same glyph as X.</pre>
 
 <p>This section describes requirements for glyphs that the font needs and gives some ideas of glyphs.
 
- 
+
 <section>
 <h3>Glyphs that can be used as an alternative to Ahem glyphs</h3>
-<p>In the prior section we demonstrate how we can test <code>text-combine-upright</code> using Ahem. In some cases tests can be written only using Ahem, but there are cases where we need additional glyphs. 
+<p>In the prior section we demonstrate how we can test <code>text-combine-upright</code> using Ahem. In some cases tests can be written only using Ahem, but there are cases where we need additional glyphs.
 <ul>
   <li>A black square is a 1em &times; 1em square glyph; it is pretty much the same as Ahem's glyph for <code>x</code>
   <li>A blank of 1em &times; 1em
@@ -255,8 +255,8 @@ For other text layout purposes, e.g. emphasis marks, text-decoration, spacing, e
 </figure>
 <p>This will make the test reftestable.
 <figure>
-<img src="img/figure-over_and_under-pass.svg" width="200">
-<img src="img/figure-over_and_under-fail.svg" width="200">
+<img src="img/figure-over_and_under-pass.svg" width="300">
+<img src="img/figure-over_and_under-fail.svg" width="300">
 <figcaption>Conforming user agents apply text-emphasis as if the content inside <code>&lt;span class="tcy"&gt;</code> were a single character (left). Non-conforming user agents might apply text-emphasis to each character inside <code>&lt;span class="tcy"&gt;</code> (right)</figcaption>
 </figure>
 <p class="issue">This glyph cannot cover the assertion <q>the resulting composition is treated as a single glyph representing the Object Replacement Character U+FFFC</q>. Test authors are not sure if that will cause a visual effect that can be tested.
@@ -308,7 +308,7 @@ body {
 The UA should center the glyphs horizontally and vertically within the measured 1em square.
 </blockquote>
 <p class="issue">work in progress
-<!-- 
+<!--
 <p>
 <ul>
 <li>
@@ -333,7 +333,7 @@ OpenType implementations must use width-specific variants (OpenType features hwi
 
 <section>
 <h4>A double stripe</h4>
-<p>Used for the <i>hwid</i> feature. 
+<p>Used for the <i>hwid</i> feature.
 <figure>
 <img src="img/stripe_double.svg" width="300">
 <figcaption>double stripe. reference glyph on left, hwid glyph on right.</figure>
@@ -342,7 +342,7 @@ OpenType implementations must use width-specific variants (OpenType features hwi
 
 <section>
 <h4>A triple stripe</h4>
-<p>Used for the <i>twid</i> feature. 
+<p>Used for the <i>twid</i> feature.
 <figure>
 <img src="img/stripe_triple.svg" width="300">
 <figcaption>triple stripe. reference glyph on left, twid glyph on right.</figure>
@@ -351,7 +351,7 @@ OpenType implementations must use width-specific variants (OpenType features hwi
 
 <section>
 <h4>A quadruple stripe</h4>
-<p>Used for the <i>qwid</i> feature. 
+<p>Used for the <i>qwid</i> feature.
 <figure>
 <img src="img/stripe_quad.svg" width="300">
 <figcaption>quadruple stripe. reference glyph on left, qwid glyph on right.</figure>

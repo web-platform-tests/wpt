@@ -14,13 +14,19 @@
     test.step(function() {
       var client = new XMLHttpRequest();
       client.onreadystatechange = test.step_func(function () {
-        if (client.readyState !== 4) return;
+        if (client.readyState !== 4) {
+          return;
+        }
+
+        // Note: fetching a data URL with a non-GET method returns a network
+        // error per <http://fetch.spec.whatwg.org/#basic-fetch>.
         if (method.toUpperCase() !== 'GET') {
           assert_equals(client.status, 0);
           assert_equals(client.responseText, null);
           test.done();
           return;
         }
+
         assert_equals(client.responseText, "Hello, World!");
         assert_equals(client.status, 200);
         assert_equals(client.getResponseHeader('Content-Type'), charset);

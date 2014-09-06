@@ -43,6 +43,9 @@
   do_test("GET getAllResponseHeaders", 'GET', "data:text/plain,Hello, World!", function (client) {
     assert_equals(client.getAllResponseHeaders(), 'content-type: text/plain');
   });
+
+  // Note: fetching a data URL with a non-GET method returns a network error
+  // per <http://fetch.spec.whatwg.org/#basic-fetch>.
   do_test("POST responseText", 'POST', "data:text/plain,Hello, World!", function (client) {
     assert_equals(client.responseText, null);
   });

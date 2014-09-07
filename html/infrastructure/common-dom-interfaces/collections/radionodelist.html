@@ -59,4 +59,21 @@ test(function () {
               "The second radio input element should be checked.");
 }, "Check the RadioNodeList.value on setting");
 
+//setting to on, specific case
+test(function () {
+  rdoList.value = "on";
+  assert_equals(rdoList.value, document.getElementById("r2").value,
+                "The value attribute should be the second radio input element's value.");
+  assert_true(document.getElementById("r2").checked,
+              "The second radio input element should be checked.");
+
+  document.getElementById("r1").removeAttribute("value");
+  rdoList.value = "on";
+  assert_equals(rdoList.value, document.getElementById("r1").value,
+                "The value attribute should be the first radio input element's value.");
+  assert_true(document.getElementById("r1").checked,
+              "The first radio input element should be checked.");
+}, "Check the RadioNodeList.value on setting to 'on'");
+
+
 </script>

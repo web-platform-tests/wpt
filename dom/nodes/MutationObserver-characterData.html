@@ -121,8 +121,8 @@
   var n31 = document.getElementById('n31').firstChild;
   countMutations += runMutationTest(n31,
                   {"characterData":true,"characterDataOldValue":true},
-                  [{type: "characterData", oldValue: "CHANGED" }],
-                  function() { n31.deleteData(0, 0); },
+                  [{type: "characterData", oldValue: "CHANGED" }, {type: "characterData", oldValue: "CHANGED" }],
+                  function() { n31.deleteData(0, 0); n31.data = "n31"; },
                   "characterData Text.deleteData: empty mutation");
 
   var n40 = document.getElementById('n40').firstChild;

@@ -5,7 +5,9 @@ function checkRecords(target, sequence1, sequence2) {
     var mr2 = sequence2[item];
 
     assert_equals(mr1.type, mr2.type);
-    if (mr2.target !== undefined) {
+    if (mr2.target instanceof Function) {
+      assert_equals(mr1.target, mr2.target());
+    } else if (mr2.target !== undefined) {
       assert_equals(mr1.target, mr2.target);
     } else {
       assert_equals(mr1.target, target);
@@ -71,9 +73,9 @@ function runMutationTest(node, mutationObserverOptions, mutationRecordSequence, 
   }
 
   test.step(
-     function () {
-        (new MutationObserver(moc)).observe(node, mutationObserverOptions);
-         mutationFunction();
+    function () {
+      (new MutationObserver(moc)).observe(node, mutationObserverOptions);
+      mutationFunction();
     }
   );
   return mutationRecordSequence.length

@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>MutationObservers: takeRecords</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="mutationobservers.js"></script>
+<h1>MutationObservers: document mutations</h1>
+<div id="log"></div>
+
+<script id='s001'>
+  var parentTest = async_test("parser insertion mutations");
+  var parentTestDone = false;
+
+  function masterMO(sequence, obs) {
+    if (parentTestDone) return;
+    parentTestDone = true;
+    parentTest.step(
+      function () {
+        checkRecords(document, sequence,
+                     [{type: "childList",
+                       addedNodes: function () {
+                           return [ document.getElementById("n00") ];
+                         },
+                       previousSibling: function () {
+                           return document.getElementById("s001");
+                         },
+                       target: document.body},
+                      {type: "childList",
+                       addedNodes: function () {
+                           return [ document.getElementById("s002") ];
+                         },
+                       previousSibling: function () {
+                           return document.getElementById("n00");
+                         },
+                       target: document.body},
+                      {type: "childList",
+                       addedNodes: function () {
+                           return [ document.getElementById("s002").firstChild ];
+                         },
+                       target: function () {
+                           return document.getElementById("s002");
+                         }}]);
+      });
+    parentTest.done();
+  }
+  var document_observer = new MutationObserver(masterMO);
+  document_observer.observe(document, {subtree:true,childList:true});
+</script><p id='n00'></p><script id='s002'>
+  document_observer.disconnect();
+  if (!parentTestDone) {
+    parentTest.step(
+      function () {
+        assert_unreached("document observer did not trigger");
+      });
+    parentTest.done();
+  }
+</script>
+
+<p id='n012'></p><div id='d01'>
+<script id='s011'>
+  var removalTest = async_test("removal of parent during parsing");
+  var d01 = document.getElementById("d01");
+  var removalTestCount = 0;
+
+  function removalMO(sequence, obs) {
+    removalTestCount++;
+    if (removalTestCount == 1) {
+      removalTest.step(
+        function () {
+          checkRecords(document, sequence,
+                       [{type: "childList",
+                         removedNodes: function () {
+                           return [ d01 ];
+                         },
+                         previousSibling: function () {
+                           return document.getElementById("n012");
+                         },
+                         target: document.body}]);
+        });
+    } else if (removalTestCount == 2) {
+      removalTest.step(
+        function () {
+          checkRecords(document, sequence,
+                       [{type: "childList",
+                         addedNodes: function () {
+                           return [ document.getElementById("s012") ];
+                         },
+                         previousSibling: function () {
+                           return document.getElementById("n012");
+                         },
+                         target: document.body},
+                        {type: "childList",
+                          addedNodes: function () {
+                            return [ document.getElementById("s012").firstChild ];
+                          },
+                          target: function () {
+                            return document.getElementById("s012");
+                          }}]);
+        });
+      removalTest.done();
+    }
+  }
+  var document2_observer = new MutationObserver(removalMO);
+  document2_observer.observe(document, {subtree:true,childList:true});
+  d01.parentNode.removeChild(d01);
+</script><p id='n01'></p></div><script id='s012'>
+  document2_observer.disconnect();
+  if (removalTestCount < 2) {
+    removalTest.step(
+      function () {
+        assert_unreached("document observer did not trigger");
+      });
+    removalTest.done();
+  }
+</script>

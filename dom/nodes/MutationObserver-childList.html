@@ -306,9 +306,12 @@
                   "childList Node.removeChild: removal mutation");
 
   var n70 = document.getElementById('n70');
-  var r70 = new Range();
-  r70.setStartBefore(n70.firstChild);
-  r70.setEndAfter(n70.firstChild);
+  var r70 = null;
+  try {
+    r70 = new Range();
+    r70.setStartBefore(n70.firstChild);
+    r70.setEndAfter(n70.firstChild);
+  } catch (e) {}
   countMutations += runMutationTest(n70,
                   {"childList":true},
                   [{type: "childList",
@@ -321,9 +324,12 @@
   n71.appendChild(document.createTextNode("NNN"));
   n71.appendChild(document.createTextNode("NGED"));
   countMutations+=2;
-  var r71 = new Range();
-  r71.setStart(n71.firstChild, 4);
-  r71.setEnd(n71.lastChild, 1);
+  var r71 = null;
+  try {
+    r71 = new Range();
+    r71.setStart(n71.firstChild, 4);
+    r71.setEnd(n71.lastChild, 1);
+  } catch (e) {}
   countMutations += runMutationTest(n71,
                   {"childList":true},
                   [{type: "childList",
@@ -334,9 +340,12 @@
                   "childList Range.deleteContents: child and data removal mutation");
 
   var n80 = document.getElementById('n80');
-  var r80 = new Range();
-  r80.setStartBefore(n80.firstChild);
-  r80.setEndAfter(n80.firstChild);
+  var r80 = null;
+  try {
+    r80 = new Range();
+    r80.setStartBefore(n80.firstChild);
+    r80.setEndAfter(n80.firstChild);
+  } catch (e) {}
   countMutations += runMutationTest(n80,
                   {"childList":true},
                   [{type: "childList",
@@ -349,9 +358,12 @@
   n81.appendChild(document.createTextNode("NNN"));
   n81.appendChild(document.createTextNode("NGED"));
   countMutations+=2;
-  var r81 = new Range();
-  r81.setStart(n81.firstChild, 4);
-  r81.setEnd(n81.lastChild, 1);
+  var r81 = null;
+  try {
+    r81 = new Range();
+    r81.setStart(n81.firstChild, 4);
+    r81.setEnd(n81.lastChild, 1);
+  } catch (e) {}
   countMutations += runMutationTest(n81,
                   {"childList":true},
                   [{type: "childList",
@@ -363,9 +375,12 @@
 
   var n90 = document.getElementById('n90');
   var f90 = document.createTextNode("NG");
-  var r90 = new Range();
-  r90.setStartAfter(n90.firstChild);
-  r90.setEndBefore(n90.lastChild);
+  var r90 = null;
+  try {
+    r90 = new Range();
+    r90.setStartAfter(n90.firstChild);
+    r90.setEndBefore(n90.lastChild);
+  } catch (e) {}
   countMutations += runMutationTest(n90,
                   {"childList":true},
                   [{type: "childList",
@@ -379,9 +394,12 @@
   n91.appendChild(document.createTextNode("D"));
   countMutations++;
   var f91 = document.createTextNode("NG");
-  var r91 = new Range();
-  r91.setStart(n91.firstChild, 3);
-  r91.setEnd(n91.lastChild, 0);
+  var r91 = null;
+  try {
+    r91 = new Range();
+    r91.setStart(n91.firstChild, 3);
+    r91.setEnd(n91.lastChild, 0);
+  } catch (e) {}
   countMutations += runMutationTest(n91,
                   {"childList":true},
                   [{type: "childList",
@@ -396,10 +414,13 @@
                   "childList Range.insertNode: children insertion mutation");
 
   var n100 = document.getElementById('n100');
-  var r100 = new Range();
   var f100 = document.createElement("span");
-  r100.setStartBefore(n100.firstChild);
-  r100.setEndAfter(n100.lastChild);
+  var r100 = null;
+  try {
+    r100 = new Range();
+    r100.setStartBefore(n100.firstChild);
+    r100.setEndAfter(n100.lastChild);
+  } catch (e) {}
   countMutations += runMutationTest(n100,
                   {"childList":true},
                   [{type: "childList",

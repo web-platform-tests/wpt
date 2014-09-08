@@ -162,9 +162,12 @@
   var n70 = document.getElementById('n70');
   n70.appendChild(document.createTextNode("NNN"));
   n70.appendChild(document.createTextNode("NGED"));
-  var r70 = new Range();
-  r70.setStart(n70.firstChild, 4);
-  r70.setEnd(n70.lastChild, 1);
+  var r70 = null;
+  try {
+    r70 = new Range();
+    r70.setStart(n70.firstChild, 4);
+    r70.setEnd(n70.lastChild, 1);
+  } catch (e) {}
   countMutations += runMutationTest(n70.firstChild,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANN" }],
@@ -175,9 +178,12 @@
   var n71 = document.getElementById('n71');
   n71.appendChild(document.createTextNode("NNN"));
   n71.appendChild(document.createTextNode("NGED"));
-  var r71 = new Range();
-  r71.setStart(n71.firstChild, 4);
-  r71.setEnd(n71.lastChild, 1);
+  var r71 = null;
+  try {
+    r71 = new Range();
+    r71.setStart(n71.firstChild, 4);
+    r71.setEnd(n71.lastChild, 1);
+  } catch (e) {}
   countMutations += runMutationTest(n71.lastChild,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "NGED"}],
@@ -188,9 +194,12 @@
   var n80 = document.getElementById('n80');
   n80.appendChild(document.createTextNode("NNN"));
   n80.appendChild(document.createTextNode("NGED"));
-  var r80 = new Range();
-  r80.setStart(n80.firstChild, 4);
-  r80.setEnd(n80.lastChild, 1);
+  var r80 = null;
+  try {
+    r80 = new Range();
+    r80.setStart(n80.firstChild, 4);
+    r80.setEnd(n80.lastChild, 1);
+  } catch (e) {}
   countMutations += runMutationTest(n80.firstChild,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANN" }],
@@ -201,9 +210,12 @@
   var n81 = document.getElementById('n81');
   n81.appendChild(document.createTextNode("NNN"));
   n81.appendChild(document.createTextNode("NGED"));
-  var r81 = new Range();
-  r81.setStart(n81.firstChild, 4);
-  r81.setEnd(n81.lastChild, 1);
+  var r81 = null;
+  try {
+    r81 = new Range();
+    r81.setStart(n81.firstChild, 4);
+    r81.setEnd(n81.lastChild, 1);
+  } catch (e) {}
   countMutations += runMutationTest(n81.lastChild,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "NGED" }],

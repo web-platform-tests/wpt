@@ -307,11 +307,11 @@
 
   var n70 = document.getElementById('n70');
   var r70 = null;
-  try {
+  test(function () {
     r70 = document.createRange();
     r70.setStartBefore(n70.firstChild);
     r70.setEndAfter(n70.firstChild);
-  } catch (e) {}
+   }, "Range (r70) is created");
   countMutations += runMutationTest(n70,
                   {"childList":true},
                   [{type: "childList",
@@ -325,11 +325,11 @@
   n71.appendChild(document.createTextNode("NGED"));
   countMutations+=2;
   var r71 = null;
-  try {
+  test(function () {
     r71 = document.createRange();
     r71.setStart(n71.firstChild, 4);
     r71.setEnd(n71.lastChild, 1);
-  } catch (e) {}
+   }, "Range (r71) is created");
   countMutations += runMutationTest(n71,
                   {"childList":true},
                   [{type: "childList",
@@ -341,11 +341,11 @@
 
   var n80 = document.getElementById('n80');
   var r80 = null;
-  try {
+  test(function () {
     r80 = document.createRange();
     r80.setStartBefore(n80.firstChild);
     r80.setEndAfter(n80.firstChild);
-  } catch (e) {}
+   }, "Range (r80) is created");
   countMutations += runMutationTest(n80,
                   {"childList":true},
                   [{type: "childList",
@@ -359,11 +359,11 @@
   n81.appendChild(document.createTextNode("NGED"));
   countMutations+=2;
   var r81 = null;
-  try {
+  test(function () {
     r81 = document.createRange();
     r81.setStart(n81.firstChild, 4);
     r81.setEnd(n81.lastChild, 1);
-  } catch (e) {}
+   }, "Range (r81) is created");
   countMutations += runMutationTest(n81,
                   {"childList":true},
                   [{type: "childList",
@@ -376,11 +376,11 @@
   var n90 = document.getElementById('n90');
   var f90 = document.createTextNode("NG");
   var r90 = null;
-  try {
+  test(function () {
     r90 = document.createRange();
     r90.setStartAfter(n90.firstChild);
     r90.setEndBefore(n90.lastChild);
-  } catch (e) {}
+   }, "Range (r90) is created");
   countMutations += runMutationTest(n90,
                   {"childList":true},
                   [{type: "childList",
@@ -395,11 +395,11 @@
   countMutations++;
   var f91 = document.createTextNode("NG");
   var r91 = null;
-  try {
+  test(function () {
     r91 = document.createRange();
     r91.setStart(n91.firstChild, 3);
     r91.setEnd(n91.lastChild, 0);
-  } catch (e) {}
+   }, "Range (r91) is created");
   countMutations += runMutationTest(n91,
                   {"childList":true},
                   [{type: "childList",
@@ -416,11 +416,11 @@
   var n100 = document.getElementById('n100');
   var f100 = document.createElement("span");
   var r100 = null;
-  try {
+  test(function () {
     r100 = document.createRange();
     r100.setStartBefore(n100.firstChild);
     r100.setEndAfter(n100.lastChild);
-  } catch (e) {}
+   }, "Range (r100) is created");
   countMutations += runMutationTest(n100,
                   {"childList":true},
                   [{type: "childList",

@@ -5,7 +5,7 @@
 <script src=../../../constants.js?pipe=sub></script>
 <div id=log></div>
 <script>
-test(function(){
+test(function() {
   var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/');
   assert_equals(ws.close(), undefined);
 });

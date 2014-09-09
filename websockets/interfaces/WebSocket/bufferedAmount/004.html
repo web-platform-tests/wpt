@@ -6,12 +6,15 @@
 <div id=log></div>
 <script>
 test(function(){
-  delete WebSocket.prototype.bufferedAmount;
   var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
-  assert_equals(ws.bufferedAmount, 0, 'after attempt to delete WebSocket.prototype.bufferedAmount');
+  assert_equals(ws.bufferedAmount, 0, 'after creation');
   ws.close();
   delete ws.bufferedAmount;
-  assert_equals(ws.bufferedAmount, 0, 'after attempt to delete ws.bufferedAmount');
+  assert_equals(ws.bufferedAmount, 0,
+                'after attempt to delete ws.bufferedAmount');
+  delete WebSocket.prototype.bufferedAmount;
+  assert_equals(ws.bufferedAmount, undefined,
+                'after attempt to delete WebSocket.prototype.bufferedAmount');
 });
 </script>
 

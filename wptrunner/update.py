@@ -179,10 +179,17 @@ class HgTree(object):
         try:
             self.hg("qinit")
         except subprocess.CalledProcessError:
-            # There is already a patch queue in this repo
-            # Should only happen during development
             pass
-        self.hg("qnew", patch_name, "-X", self.root, "-m", message)
+
+        patch_names = [item.strip() for item in self.hg("qseries").split("\n") if item.strip()]
+
+        suffix = 0
+        test_name = patch_name
+        while test_name in patch_names:
+            suffix += 1
+            test_name = "%s-%i" % (patch_name, suffix)
+
+        self.hg("qnew", test_name, "-X", self.root, "-m", message)
 
     def update_patch(self, include=None):
         if include is not None:
@@ -227,9 +234,8 @@ class GitTree(object):
         self.git("add", *args)
 
     def create_patch(self, patch_name, message):
-        # In git a patch is actually a branch
+        # In git a patch is actually a commit
         self.message = message
-        self.git("checkout", "-b", patch_name)
 
     def update_patch(self, include=None):
         assert self.message is not None
@@ -289,20 +295,27 @@ def sync_tests(paths, local_tree, wpt, bug):
     return initial_manifest, new_manifest
 
 
-def update_metadata(paths, local_tree, wpt, initial_rev, bug, log_files, ignore_existing):
+def update_metadata(paths, local_tree, initial_rev, bug, log_files, ignore_existing,
+                    wpt_repo=None):
     try:
         try:
-            local_tree.create_patch("web-platform-tests_update_%s_metadata" % wpt.rev,
-                                    "Update web-platform-tests expected data to revision %s" %
-                                    wpt.rev)
+            if wpt_repo is not None:
+                name = "web-platform-tests_update_%s_metadata" % wpt_repo.rev
+                message = "Update web-platform-tests expected data to revision %s" % wpt_repo.rev
+            else:
+                name = "web-platform-tests_update_metadata"
+                message = "Update web-platform-tests expected data"
+
+            local_tree.create_patch(name, message)
         except subprocess.CalledProcessError:
             # Patch with that name already exists, probably
             pass
-        needs_human = metadata.update_expected(paths["sync"],
+        needs_human = metadata.update_expected(paths["test"],
                                                paths["metadata"],
                                                log_files,
                                                rev_old=initial_rev,
-                                               ignore_existing=ignore_existing)
+                                               ignore_existing=ignore_existing,
+                                               sync_root=paths.get("sync", None))
 
         if needs_human:
             #TODO: List all the files that should be checked carefully for changes.
@@ -321,9 +334,11 @@ def update_metadata(paths, local_tree, wpt, initial_rev, bug, log_files, ignore_
 def run_update(**kwargs):
     config = kwargs["config"]
 
-    paths = {"sync": kwargs["sync_path"],
-             "test": kwargs["tests_root"],
+    paths = {"test": kwargs["tests_root"],
              "metadata": kwargs["metadata_root"]}
+
+    if kwargs["sync"]:
+        paths["sync"] = kwargs["sync_path"]
 
     for path in paths.itervalues():
         ensure_exists(path)
@@ -352,19 +367,26 @@ expected data."""
     if rev is None:
         rev = config["web-platform-tests"].get("branch", "master")
 
-    wpt = WebPlatformTests(config["web-platform-tests"]["remote_url"],
-                           paths["sync"],
-                           rev=rev)
     bug = None
 
     initial_rev = None
+    wpt_repo = None
+
     if kwargs["sync"]:
-        initial_manifest, new_manifest = sync_tests(paths, local_tree, wpt, bug)
+        wpt_repo = WebPlatformTests(config["web-platform-tests"]["remote_url"],
+                                    paths["sync"],
+                                    rev=rev)
+        initial_manifest, new_manifest = sync_tests(paths, local_tree, wpt_repo, bug)
         initial_rev = initial_manifest.rev
 
     if kwargs["run_log"]:
-        update_metadata(paths, local_tree, wpt, initial_rev, bug,
-                        kwargs["run_log"], kwargs["ignore_existing"])
+        update_metadata(paths,
+                        local_tree,
+                        initial_rev,
+                        bug,
+                        kwargs["run_log"],
+                        kwargs["ignore_existing"],
+                        wpt_repo=wpt_repo)
 
 
 def main():

@@ -367,14 +367,38 @@ class TestFilter(object):
 
 
 class TestLoader(object):
-    def __init__(self, tests_root, metadata_root, test_filter, run_info):
+    def __init__(self, tests_root, metadata_root, test_types, test_filter, run_info,
+                 chunk_type="none", total_chunks=1, chunk_number=1):
         self.tests_root = tests_root
         self.metadata_root = metadata_root
+        self.test_types = test_types
         self.test_filter = test_filter
         self.run_info = run_info
         self.manifest_path = os.path.join(self.metadata_root, "MANIFEST.json")
         self.manifest = self.load_manifest()
         self.tests = None
+        self.disabled_tests = None
+
+        self.chunk_type = chunk_type
+        self.total_chunks = total_chunks
+        self.chunk_number = chunk_number
+
+        self.chunker = {"none": Unchunked,
+                        "hash": HashChunker,
+                        "equal_time": EqualTimeChunker}[chunk_type](total_chunks,
+                                                                    chunk_number)
+
+        self._test_ids = None
+        self._load_tests()
+
+    @property
+    def test_ids(self):
+        if self._test_ids is None:
+            self._test_ids = []
+            for test_dict in [self.disabled_tests, self.tests]:
+                for test_type in self.test_types:
+                    self._test_ids += [item.id for item in test_dict[test_type]]
+        return self._test_ids
 
     def create_manifest(self):
         logger.info("Creating test manifest")
@@ -398,11 +422,11 @@ class TestLoader(object):
     def load_expected_manifest(self, test_path):
         return manifestexpected.get_manifest(self.metadata_root, test_path, self.run_info)
 
-    def iter_tests(self, test_types, chunker=None):
-        manifest_items = self.test_filter(self.manifest.itertypes(*test_types))
+    def iter_tests(self):
+        manifest_items = self.test_filter(self.manifest.itertypes(*self.test_types))
 
-        if chunker is not None:
-            manifest_items = chunker(manifest_items)
+        if self.chunker is not None:
+            manifest_items = self.chunker(manifest_items)
 
         for test_path, tests in manifest_items:
             expected_file = self.load_expected_manifest(test_path)
@@ -411,34 +435,19 @@ class TestLoader(object):
                 test_type = manifest_test.item_type
                 yield test_path, test_type, test
 
-    def get_disabled(self, test_types):
-        rv = defaultdict(list)
-
-        for test_path, test_type, test in self.iter_tests(test_types):
-            if test.disabled():
-                rv[test_type].append(test)
-
-        return rv
-
-    def load_tests(self, test_types, chunk_type, total_chunks, chunk_number):
+    def _load_tests(self):
         """Read in the tests from the manifest file and add them to a queue"""
-        rv = defaultdict(list)
+        tests = {"enabled":defaultdict(list),
+                 "disabled":defaultdict(list)}
 
-        chunker = {"none": Unchunked,
-                   "hash": HashChunker,
-                   "equal_time": EqualTimeChunker}[chunk_type](total_chunks,
-                                                               chunk_number)
+        for test_path, test_type, test in self.iter_tests():
+            key = "enabled" if not test.disabled() else "disabled"
+            tests[key][test_type].append(test)
 
-        for test_path, test_type, test in self.iter_tests(test_types, chunker):
-            if not test.disabled():
-                rv[test_type].append(test)
+        self.tests = tests["enabled"]
+        self.disabled_tests = tests["disabled"]
 
-        return rv
-
-    def get_groups(self, test_types, chunk_type="none", total_chunks=1, chunk_number=1):
-        if self.tests is None:
-            self.tests = self.load_tests(test_types, chunk_type, total_chunks, chunk_number)
-
+    def groups(self, test_types, chunk_type="none", total_chunks=1, chunk_number=1):
         groups = set()
 
         for test_type in test_types:
@@ -448,20 +457,14 @@ class TestLoader(object):
 
         return groups
 
-    def queue_tests(self, test_types, chunk_type, total_chunks, chunk_number):
-        if self.tests is None:
-            self.tests = self.load_tests(test_types, chunk_type, total_chunks, chunk_number)
-
+    def queue_tests(self):
         tests_queue = defaultdict(Queue)
-        test_ids = []
 
-        for test_type in test_types:
+        for test_type in self.test_types:
             for test in self.tests[test_type]:
                 tests_queue[test_type].put(test)
-                test_ids.append(test.id)
 
-        return test_ids, tests_queue
-
+        return tests_queue
 
 class LogThread(threading.Thread):
     def __init__(self, queue, logger, level):
@@ -514,18 +517,18 @@ def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
     run_info = wpttest.get_run_info(metadata_root, product, debug=False)
     test_filter = TestFilter(include=kwargs["include"], exclude=kwargs["exclude"],
                              manifest_path=kwargs["include_manifest"])
-    test_loader = TestLoader(tests_root, metadata_root, test_filter, run_info)
+    test_loader = TestLoader(tests_root, metadata_root, test_types, test_filter, run_info)
 
-    for item in sorted(test_loader.get_groups(test_types)):
+    for item in sorted(test_loader.groups()):
         print item
 
 
 def list_disabled(tests_root, metadata_root, test_types, product, **kwargs):
     rv = []
     run_info = wpttest.get_run_info(metadata_root, product, debug=False)
-    test_loader = TestLoader(tests_root, metadata_root, TestFilter(), run_info)
+    test_loader = TestLoader(tests_root, metadata_root, test_types, TestFilter(), run_info)
 
-    for test_type, tests in test_loader.get_disabled(test_types).iteritems():
+    for test_type, tests in test_loader.disabled_tests.iteritems():
         for test in tests:
             rv.append({"test": test.id, "reason": test.disabled()})
     print json.dumps(rv, indent=2)
@@ -563,9 +566,17 @@ def run_tests(config, tests_root, metadata_root, product, **kwargs):
         if "test_loader" in kwargs:
             test_loader = kwargs["test_loader"]
         else:
-            test_filter = TestFilter(include=kwargs["include"], exclude=kwargs["exclude"],
+            test_filter = TestFilter(include=kwargs["include"],
+                                     exclude=kwargs["exclude"],
                                      manifest_path=kwargs["include_manifest"])
-            test_loader = TestLoader(tests_root, metadata_root, test_filter, run_info)
+            test_loader = TestLoader(tests_root,
+                                     metadata_root,
+                                     kwargs["test_types"],
+                                     test_filter,
+                                     run_info,
+                                     kwargs["chunk_type"],
+                                     kwargs["total_chunks"],
+                                     kwargs["this_chunk"])
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
@@ -583,14 +594,17 @@ def run_tests(config, tests_root, metadata_root, product, **kwargs):
                 if repeat > 1:
                     logger.info("Repetition %i / %i" % (repeat_count + 1, repeat))
 
-                test_ids, test_queues = test_loader.queue_tests(kwargs["test_types"],
-                                                                kwargs["chunk_type"],
-                                                                kwargs["total_chunks"],
-                                                                kwargs["this_chunk"])
+                test_queues = test_loader.queue_tests()
+
                 unexpected_count = 0
-                logger.suite_start(test_ids, run_info)
+                logger.suite_start(test_loader.test_ids, run_info)
                 for test_type in kwargs["test_types"]:
                     logger.info("Running %s tests" % test_type)
+
+                    for test in test_loader.disabled_tests[test_type]:
+                        logger.test_start(test.id)
+                        logger.test_end(test.id, status="SKIP")
+
                     tests_queue = test_queues[test_type]
 
                     executor_cls = executor_classes.get(test_type)

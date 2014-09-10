@@ -2,6 +2,7 @@
 <title>img parse a srcset attribute</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src=common.js></script>
 <div id=log></div>
 <!-- splitting loop -->
 <img srcset='' data-expect=''>
@@ -111,23 +112,3 @@
 <img srcset='data:,a 1w 1h Infinityh' data-expect='data:,a'>
 <img srcset='data:,a 1w 1h NaNh' data-expect='data:,a'>
 <img srcset='data:,a 1w 1h 1&#x1;h' data-expect='data:,a'>
-<script>
-setup({explicit_done:true});
-
-function check(img) {
-  test(function() {
-    var expect = img.dataset.expect;
-    if ('resolve' in img.dataset) {
-      var a = document.createElement('a');
-      a.href = expect;
-      expect = a.href;
-    }
-    assert_equals(img.currentSrc, expect);
-  }, format_value(img.getAttribute('srcset')));
-}
-
-onload = function() {
-  [].forEach.call(document.images, check);
-  done();
-};
-</script>

@@ -33,7 +33,7 @@
         assert_equals(client.getResponseHeader('Content-Type'), charset);
         var allHeaders = client.getAllResponseHeaders();
         assert_regexp_match(allHeaders, /content\-type\:/i, 'getAllResponseHeaders() includes Content-Type');
-        assert_regexp_match(allHeaders, /content\-length\:/i, 'getAllResponseHeaders() includes Content-Length');
+        assert_false(/content\-length\:/i.test(allHeaders), 'getAllResponseHeaders() must not include Content-Length');
         test.done();
       });
       client.open(method, uri);

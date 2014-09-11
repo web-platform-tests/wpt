@@ -1,5 +1,6 @@
 <!doctype html>
-<title>WebSockets: bufferedAmount for blob</title>
+<meta charset=utf-8>
+<title>WebSockets: bufferedAmount for unicode data</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../../../constants.js?pipe=sub></script>
@@ -7,18 +8,14 @@
 <script>
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
-  var data = "";
-  var datasize = 10;  
+  var data = "¥¥¥¥¥¥";
   ws.onopen = t.step_func(function(e) {
-				ws.binaryType = "blob";
-				data = new ArrayBuffer(datasize);
-				ws.send(data);
-				assert_equals(ws.bufferedAmount, data.byteLength);
+    ws.send(data);
+    assert_equals(data.length * 2, ws.bufferedAmount);
   });
   ws.onmessage = t.step_func(function(e) {
-    assert_true(e.data instanceof Blob);
-    assert_equals(e.data.size, datasize);
+    assert_equals(e.data, data);
     t.done();
-		});
+  });
 });
 </script>

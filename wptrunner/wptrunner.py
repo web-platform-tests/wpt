@@ -12,7 +12,10 @@ import socket
 import sys
 import threading
 import time
+import urlparse
+from Queue import Empty
 from StringIO import StringIO
+from abc import ABCMeta, abstractmethod
 from collections import defaultdict, OrderedDict
 from multiprocessing import Queue
 
@@ -460,14 +463,82 @@ class TestLoader(object):
 
         return groups
 
-    def queue_tests(self):
-        tests_queue = defaultdict(Queue)
 
-        for test_type in self.test_types:
-            for test in self.tests[test_type]:
-                tests_queue[test_type].put(test)
+class TestSource(object):
+    __metaclass__ = ABCMeta
 
-        return tests_queue
+    @abstractmethod
+    def queue_tests(self, test_queue):
+        pass
+
+    @abstractmethod
+    def requeue_test(self, test):
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        pass
+
+
+class SingleTestSource(TestSource):
+    def __init__(self, test_queue):
+        self.test_queue = test_queue
+
+    @classmethod
+    def queue_tests(cls, test_queue, test_type, tests):
+        for test in tests[test_type]:
+            test_queue.put(test)
+
+    def get_queue(self):
+        if self.test_queue.empty():
+            return None
+        return self.test_queue
+
+    def requeue_test(self, test):
+        self.test_queue.put(test)
+
+class PathGroupedSource(TestSource):
+    def __init__(self, test_queue):
+        self.test_queue = test_queue
+        self.current_queue = None
+
+    @classmethod
+    def queue_tests(cls, test_queue, test_type, tests, depth=None):
+        if depth is True:
+            depth = None
+
+        prev_path = None
+        group = None
+
+        for test in tests[test_type]:
+            path = urlparse.urlsplit(test.url).path.split("/")[1:-1][:depth]
+            if path != prev_path:
+                group = []
+                test_queue.put(group)
+                prev_path = path
+
+            group.append(test)
+
+    def get_queue(self):
+        if not self.current_queue or self.current_queue.empty():
+            try:
+                data = self.test_queue.get(block=True, timeout=1)
+                self.current_queue = Queue()
+                for item in data:
+                    self.current_queue.put(item)
+            except Empty:
+                return None
+
+        return self.current_queue
+
+    def requeue_test(self, test):
+        self.current_queue.put(test)
+
+    def __exit__(self, *args, **kwargs):
+        if self.current_queue:
+            self.current_queue.close()
 
 class LogThread(threading.Thread):
     def __init__(self, queue, logger, level):
@@ -583,6 +654,14 @@ def run_tests(config, tests_root, metadata_root, product, **kwargs):
                                      kwargs["total_chunks"],
                                      kwargs["this_chunk"])
 
+        if kwargs["run_by_dir"] is False:
+            test_source_cls = SingleTestSource
+            test_source_kwargs = {}
+        else:
+            # A value of None indicates infinite depth
+            test_source_cls = PathGroupedSource
+            test_source_kwargs = {"depth": kwargs["run_by_dir"]}
+
         logger.info("Using %i client processes" % kwargs["processes"])
 
         with TestEnvironment(tests_root, env_options) as test_environment:
@@ -599,7 +678,6 @@ def run_tests(config, tests_root, metadata_root, product, **kwargs):
                 if repeat > 1:
                     logger.info("Repetition %i / %i" % (repeat_count + 1, repeat))
 
-                test_queues = test_loader.queue_tests()
 
                 unexpected_count = 0
                 logger.suite_start(test_loader.test_ids, run_info)
@@ -610,8 +688,6 @@ def run_tests(config, tests_root, metadata_root, product, **kwargs):
                         logger.test_start(test.id)
                         logger.test_end(test.id, status="SKIP")
 
-                    tests_queue = test_queues[test_type]
-
                     executor_cls = executor_classes.get(test_type)
                     executor_kwargs = get_executor_kwargs(base_server,
                                                           **kwargs)
@@ -621,20 +697,22 @@ def run_tests(config, tests_root, metadata_root, product, **kwargs):
                                      (test_type, product))
                         continue
 
+
                     with ManagerGroup("web-platform-tests",
                                       kwargs["processes"],
+                                      test_source_cls,
+                                      test_source_kwargs,
                                       browser_cls,
                                       browser_kwargs,
                                       executor_cls,
                                       executor_kwargs,
                                       kwargs["pause_on_unexpected"]) as manager_group:
                         try:
-                            manager_group.start(tests_queue)
+                            manager_group.run(test_type, test_loader.tests)
                         except KeyboardInterrupt:
                             logger.critical("Main thread got signal")
                             manager_group.stop()
                             raise
-                        manager_group.wait()
                     unexpected_count += manager_group.unexpected_count()
 
                 unexpected_total += unexpected_count

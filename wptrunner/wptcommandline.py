@@ -68,6 +68,11 @@ def create_parser(product_choices=None):
     parser.add_argument("--include-manifest", type=abs_path,
                         help="Path to manifest listing tests to include")
 
+    parser.add_argument("--run-by-dir", type=int, nargs="?", default=False,
+                        help="Split run into groups by directories. With a parameter,"
+                        "limit the depth of splits e.g. --run-by-dir=1 to split by top-level"
+                        "directory")
+
     parser.add_argument("--total-chunks", action="store", type=int, default=1,
                         help="Total number of chunks to use")
     parser.add_argument("--this-chunk", action="store", type=int, default=1,

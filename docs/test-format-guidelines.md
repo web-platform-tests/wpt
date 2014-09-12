@@ -129,6 +129,16 @@ existing resources is encouraged where possible, as is adding
 generally useful files to these common areas rather than to specific
 testsuites.
 
+For CSS tests the following standard images are avaliable in the
+support directory:
+
+ * 1x1 color swatches
+ * 15x15 color swatches
+ * 15x15 bordered color swatches
+ * assorted rulers and red/green grids
+ * a cat
+ * a 4-part picture
+
 ## Style Rules
 
 A number of style rules should be applied to the test file. These are

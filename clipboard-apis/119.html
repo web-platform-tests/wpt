@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="UTF-8">
+    <title>  ClipboardEvent - integration with execCommand, events are syncronous  - copy on 'iframe.contentWindow'</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
+/** integration with execCommand, events are syncronous  */
+/* Events: copy cut paste */
+/* Test HTML: <iframe id="iframe"></iframe>*/
+/* Targets: 'iframe.contentWindow' */
+/* This assertation is based on Gecko's implementation. */
+function clipboard_api_test(e){
+	return window.afterExecCommand===false; /* the event is syncronous, must not run after the execCommand call is finished */
+}
+function onTestSetupReady( eventType ){
+  document.getElementsByTagName('p')[0].firstChild.data='FAILED'; // if event doesn't fire, this test failed..
+	var ifr=document.getElementById('iframe'), doc;
+	(doc=ifr.contentDocument).designMode='on';
+	doc.body.innerHTML='<p>Frame contents</p>';
+	ifr.contentWindow.focus();
+	if(eventType in { copy:1, cut:1 }){	// create a selection
+		var rng=doc.createRange();
+		rng.selectNodeContents(doc.getElementsByTagName('p')[0]);
+		var sel=ifr.contentWindow.getSelection();
+		sel.removeAllRanges();
+		sel.addRange(rng);
+	}
+	try{
+		window.afterExecCommand=false;
+		ifr.contentDocument.execCommand(window.eventType, false, false);
+		window.afterExecCommand=true;
+	}catch(e){
+		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+	}
+}
+
+    </script>
+</head>
+<body>
+
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <iframe id="iframe"></iframe>
+    <div id="log"></div>
+    <script>
+    var dataToPaste='';
+    var externalPassCondition=null;
+    var eventTarget='iframe.contentWindow';
+    var eventType='copy';
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
+    </script>
+</body></html>

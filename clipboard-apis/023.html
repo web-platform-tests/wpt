@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="UTF-8">
+    <title>  ClipboardEvent - getData() method in cut and copy events should return an empty string  - copy on document</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
+/** getData() method in cut and copy events should return an empty string  */
+/* Events: cut copy */
+function clipboard_api_test(e){
+	var passed = false;
+	if(e.clipboardData && e.clipboardData.getData){
+		if(e.clipboardData.getData('text/plain')==='')passed=true;
+	}
+	return passed;
+}
+
+    </script>
+</head>
+<body>
+
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
+    <div id="log"></div>
+    <script>
+    var dataToPaste='';
+    var externalPassCondition=null;
+    var eventTarget=document;
+    var eventType='copy';
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
+    </script>
+</body></html>

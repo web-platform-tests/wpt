@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="UTF-8">
+    <title>  ClipboardEvent - integration with execCommand, can prevent default action  - copy on 'ifr.contentWindow'</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/_lib.js"></script>
+    <script>
+/** integration with execCommand, can prevent default action  */
+/* Events: copy cut */
+/* paste data: "clipboard text" */
+/* Test HTML: <iframe id="ifr"></iframe>*/
+/* Targets: 'ifr.contentWindow' */
+/* External pass condition - clipboard data: "clipboard text" */
+
+function clipboard_api_test(e){
+	e.preventDefault();
+}
+
+function triggerTestManually(){
+  document.getElementsByTagName('p')[0].firstChild.data='FAILED'; // if event doesn't fire, this test failed..
+	var ifr=document.getElementById('ifr');
+	var doc=ifr.contentDocument;
+	doc.designMode='on';
+	ifr.contentDocument.body.innerHTML='<p>Frame contents</p>';
+	ifr.contentWindow.focus();
+	doc.body.innerHTML='<p>This is filler text</p>';
+	var range=doc.createRange();
+	range.selectNodeContents(doc.getElementsByTagName('p')[0]);
+	doc.defaultView.getSelection().addRange(range);
+	try{
+		doc.execCommand(window.eventType, false, false);
+    // result(doc.body.innerHTML=='<p>This is filler text</p>'); // sorry, pass condition here is external
+	}catch(e){
+		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+	}
+}
+
+    </script>
+</head>
+<body>
+
+    <p>FAILED (This TC requires JavaScript enabled)</p>
+    <iframe id="ifr"></iframe>
+    <div id="log"></div>
+    <script>
+    var dataToPaste="clipboard text" ;
+    var externalPassCondition="clipboard text" ;
+    var eventTarget='ifr.contentWindow';
+    var eventType='copy';
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
+    </script>
+</body></html>

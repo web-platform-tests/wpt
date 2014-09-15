@@ -71,10 +71,11 @@ will be rendered by the harness itself).
 ### Minimal
 
 Tests should generally avoid depending on edge case behaviour of
-features that they don't explicitly intend to test. For example, except
-where testing parsing, tests should be [valid] HTML. Of course tests
-which intentionally address the interactions between multiple platform
-features are not only acceptable but encouraged.
+features that they don't explicitly intend to test. For example,
+except where testing parsing, tests should contain no
+[parse errors][validator]. Of course tests which intentionally address
+the interactions between multiple platform features are not only
+acceptable but encouraged.
 
 ### Cross-platform
 
@@ -258,7 +259,7 @@ met in order to be included in an official specification testsuite.
 
 ## Test Lint
 
-A lint tool is avaliable to catch common mistakes in tests. It may be
+A lint tool is available to catch common mistakes in tests. It may be
 run from the web-platform-tests home directory using:
 
     python tools/script/lint.py

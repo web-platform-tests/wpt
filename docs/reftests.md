@@ -109,7 +109,7 @@ In some situations a test may have subtle differences in rendering
 compared to the reference due to e.g. antialiasing. This may cause the
 test to pass on some platforms but fail on others. In this case some
 affordance for subtle discrepancies is desirable. However no mechanism
-to allow this has yet been standardised.
+to allow this has yet been standardized.
 
 ## Limitations
 

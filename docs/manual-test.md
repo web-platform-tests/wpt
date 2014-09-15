@@ -12,8 +12,8 @@ regressions than automated tests.
 However, there are certain scenarios in which this is not yet
 possible. For example:
 
-* Tests that require interaction with browser security UI (e.g. `<input
-  type=file>` pickers
+* Tests that require interaction with browser security UI (e.g. a test
+  in which a user refuses a geolocation permissions grant)
 
 * Tests that require interaction with the underlying OS e.g. tests for
   drag and drop from the desktop onto the browser
@@ -70,5 +70,3 @@ setup({explicit_timeout: true})
 passes, otherwise it fails</p>
 <button onclick="done()">Click Here</button>
 ```
-
-

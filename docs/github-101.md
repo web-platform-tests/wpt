@@ -221,13 +221,7 @@ some awesome tests and are ready to submit them. Congratulations and welcome
 back!
 
 1.  The first thing you do before submitting them to the W3C repo is to push
-them back up to the server.
-
-    At the command prompt:
-
-        $ git push https://github.com/username/web-platform-tests.git topic
-
-    Or, for short:
+them back up to the server:
 
         $ git push origin topic
 

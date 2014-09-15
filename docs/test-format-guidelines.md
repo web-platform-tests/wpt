@@ -1,4 +1,4 @@
-This page describes the avaliable test types and the requirements for
+This page describes the available test types and the requirements for
 authoring that apply to all test types. There is also a supplementary
 [guide to writing good testcases](test-style-guidelines.html).
 
@@ -40,7 +40,7 @@ running in automation. In general the following order of preference holds:
 * [Reftests][reftests] - for most tests of rendering.
 
 * WebDriver tests - for testing the webdriver protocol itself or (in
-  the future) for certain tests that require access to priviledged APIs.
+  the future) for certain tests that require access to privileged APIs.
 
 * Manual tests - as a last resort for anything that can't be tested
   using one of the above techniques.
@@ -62,7 +62,7 @@ Some scenarios demand certain test types. For example:
 ### Short
 
 Tests should be as short as possible. For reftests in particular
-scrollbars at 800x600px window size must be avoided unless scrolling
+scrollbars at 800&#xD7;600px window size must be avoided unless scrolling
 behaviour is specifically being tested. For all tests extraneous
 elements on the page should be avoided so it is clear what is part of
 the test (for a typical testharness test, the only content on the page
@@ -103,9 +103,9 @@ format, required by CSS tests, is described in
 
 Tests must be HTML, XHTML or SVG files.
 
-Note: For CSS tests, the test source will be parsed and re-
-serialized. This re-serialization will cause minor changes to the test
-file, notably: attribute values will always be quoted, whitespace
+Note: For CSS tests, the test source will be parsed and
+re-serialized. This re-serialization will cause minor changes to the
+test file, notably: attribute values will always be quoted, whitespace
 between attributes will be collapsed to a single space, duplicate
 attributes will be removed, optional closing tags will be inserted,
 and invalid markup will be normalized.  If these changes should make
@@ -248,7 +248,7 @@ of the response. For details see the
 ## CSS-Specific Requirements
 
 Tests for CSS specs have some additional requirements that have to be
-met in order to be included in the official specification testsuite.
+met in order to be included in an official specification testsuite.
 
 * [Naming conventions](css-naming.html)
 

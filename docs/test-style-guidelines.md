@@ -38,6 +38,7 @@ Self-describing tests have some advantages:
   test without needing special tools.
 
 ### Manual Tests
+
 While it is highly encouraged to write automatable tests either as [
 reftests][reftests] or [script tests][scripttests], in rare cases a
 test can only be executed manually. All manual tests must be
@@ -61,8 +62,7 @@ may be automatically compared.
 
 [Script tests][scripttests] may also be self-describing, but rather
 than including a supplemental statement on the page, this is
-generally done in the test results output from ```testharness.js```
-rendered if ```<div id="log"></div>``` is present in the test file.
+generally done in the test results output from ```testharness.js```.
 
 ### Self-Describing Test Examples
 
@@ -84,7 +84,7 @@ In addition to the [self describing](#self-describing) statement
 visible in the test, there are many techniques commonly used to add
 clarity and robustness to tests. Particularly for reftests, which
 rely wholly on how the page is rendered, the following should be
-considered and utilized when designing new tests.
+considered and used when designing new tests.
 
 ### Indicating success
 
@@ -126,7 +126,7 @@ over each other. The bottom box is colored red, and the top box is
 colored green. Should the top box be misplaced by a faulty user
 agent, it will cause the red to be shown. (These tests sometimes
 come in pairs, one checking that the first box is no bigger than the
-second, and the other checking the reverse.) These tests freqently
+second, and the other checking the reverse.) These tests frequently
 look like:
 
 <p>Test passes if there is a green square and no red.</p>
@@ -135,16 +135,16 @@ look like:
 #### The green paragraph and the blank page
 
 These tests appear to be identical to the green paragraph tests
- mentioned above. In reality, however, they actually have more in
- common with the green square tests, but with the green square
- colored white instead. This type of test is used when the
- displacement that could be expected in the case of failure is
- likely to be very small, and so any red must be made as obvious as
- possible. Because of this, test would appear totally blank when the
- test has passed. This is a problem because a blank page is the
- symptom of a badly handled network error. For this reason, a single
- line of green text is added to the top of the test, reading
- something like:
+mentioned above. In reality, however, they actually have more in
+common with the green square tests, but with the green square
+colored white instead. This type of test is used when the
+displacement that could be expected in the case of failure is
+likely to be very small, and so any red must be made as obvious as
+possible. Because of this, test would appear totally blank when the
+test has passed. This is a problem because a blank page is the
+symptom of a badly handled network error. For this reason, a single
+line of green text is added to the top of the test, reading
+something like:
 
 <p style="color: green">This line should be green and there should
 be no red on this page.</p>
@@ -245,7 +245,7 @@ inconsistently (due to rounding errors introduced by certain
 platforms' font APIs). We suggest to use a minimum computed font-
 size of 20px.
 
-Eg. Bad:
+E.g. Bad:
 
 ``` css
 {font: 1in/1em Ahem;}  /* Computed font-size is 96px */
@@ -254,7 +254,7 @@ Eg. Bad:
 {font: 1em Ahem;} /* with computed 1em font-size being 16px */
 ```
 
-Eg. Good:
+E.g. Good:
 
 ``` css
 {font: 100px/1 Ahem;}
@@ -267,7 +267,7 @@ elements is specified; avoid 'line-height: normal'__. Also, for
 absolute reliability, the difference between computed line-height
 and computed font-size should be dividable by 2.
 
-Eg. Bad:
+E.g. Bad:
 
 ``` css
 {font: 1.25em Ahem;} /* computed line-height value is 'normal' */
@@ -276,7 +276,7 @@ Eg. Bad:
 computed line-height and computed font-size is not dividable by 2. */
 ```
 
-Eg. Good:
+E.g. Good:
 
 ``` css
 {font-size: 25px; line-height: 51px;} /* the difference between
@@ -292,7 +292,7 @@ _View the page's source to see how the Ahem font is used._
 
 1. Download the [TrueType version of Ahem][download-ahem].
 2. Open the folder where you downloaded the font file.
-3. Right-click the downloaded font file and select “Install”.
+3. Right-click the downloaded font file and select "Install".
 
 ### Explanatory Text
 
@@ -387,7 +387,7 @@ tests that examine the scrolling mechanism! However, these tests are
 considered tests of user interaction and are not run with the
 majority of the tests.
 
-In general, any test that is so long that it needs scrolling can be
+Any test that is so long that it needs scrolling can usually be
 split into several smaller tests, so in practice this isn't much of
 a problem.
 

@@ -42,7 +42,7 @@ number, since the test might get reused for the next version.
 
 ``` html
 <link rel="author" title="NAME_OF_AUTHOR"
- href="[mailto:some@address or http://some.url]" />
+href="[mailto:some@address or http://some.url]" />
 ```
 
 Credits provide a way to identify the person or organization that
@@ -54,14 +54,14 @@ Example 1:
 
 ``` html
 <link rel="author" title="Boris Zbarsky"
- href="mailto:bzbarsky@mit.edu" />
+href="mailto:bzbarsky@mit.edu" />
 ```
 
 Example 2:
 
 ``` html
 <link rel="author" title="Bert Bos"
- href="http://www.w3.org/People/Bos/" />
+href="http://www.w3.org/People/Bos/" />
 ```
 
 Example 3:
@@ -73,8 +73,8 @@ Example 3:
 ### Reviewer
 
 ``` html
-<link rel="reviewer" title="NAME_OF_REVIEWER" href="[mailto:some@
-  address or http://some.url]" /> <!-- YYYY-MM-DD -->
+<link rel="reviewer" title="NAME_OF_REVIEWER" href="[mailto:some@address
+or http://some.url]" /> <!-- YYYY-MM-DD -->
 ```
 
 If a test has passed review, then the reviewer should note this by
@@ -86,14 +86,14 @@ Example 1:
 
 ``` html
 <link rel="reviewer" title="Boris Zbarsky"
- href="mailto:bzbarsky@mit.edu" /> <!-- 2008-02-19 -->
+href="mailto:bzbarsky@mit.edu" /> <!-- 2008-02-19 -->
 ```
 
 Example 2:
 
 ``` html
 <link rel="reviewer" title="Bert Bos"
- href="http://www.w3.org/People/Bos/" /> <!-- 2005-05-03 -->
+href="http://www.w3.org/People/Bos/" /> <!-- 2005-05-03 -->
 ```
 
 If a test would pass review with some (non-metadata) changes and the
@@ -110,11 +110,11 @@ Example of a fully-reviewed test:
 
 ``` html
 <link rel="author" title="Bert Bos"
- href="http://www.w3.org/People/Bos/" />
+href="http://www.w3.org/People/Bos/" />
 <link rel="reviewer author" title="Boris Zbarsky"
-  href="mailto:bzbarsky@mit.edu" /> <!-- 2008-02-19 -->
+href="mailto:bzbarsky@mit.edu" /> <!-- 2008-02-19 -->
 <link rel="reviewer" title="Bert Bos"
- href="http://www.w3.org/People/Bos/" /> <!-- 2008-04-22 -->
+href="http://www.w3.org/People/Bos/" /> <!-- 2008-04-22 -->
 ```
 
 This test was written by Bert Bos, then reviewed by Boris Zbarsky,
@@ -147,20 +147,20 @@ information in the specification being tested.
 Example 1:
 
 ``` html
-<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment
-  -prop" />
+<link rel="help"
+href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
 ```
 
 Example 2:
 
 ``` html
 <link rel="help"
- href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
+href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
 <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#q7" />
 <link rel="help"
- href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
+href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
 <link rel="help"
- href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
+href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
 ```
 
 ### Reference Links
@@ -190,10 +190,10 @@ the list of reference file(s) that the test should be compared to.
   the test file. A test may have any number of mismatch references.
   The test is considered to fail if it renders the same as any of
   the mismatch references.
-  * Note that reference files may themselves have mismatch references
-    . In that case the reference file must not render the same as
-    any of its mismatch references in order to be considered valid.
-    If a reference is considered invalid (by the fact of not
+  * Note that reference files may themselves have mismatch
+    references. In that case the reference file must not render the
+    same as any of its mismatch references in order to be considered
+    valid.  If a reference is considered invalid (by the fact of not
     matching any of its match references, or matching any of its
     mismatch references), then a test that refers to the reference
     will be considered to have failed.

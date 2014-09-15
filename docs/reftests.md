@@ -1,8 +1,8 @@
 A reftest is a test that compares the visual output of one file (the
 test case) with the output of one or more other files (the
 references). The test and the reference must be carefully written so
-that when the test passes they have identical rendering, but if test
-fails they have different rendering.
+that when the test passes they have identical rendering, but different
+rendering when the test fails.
 
 ## How to Run Reftests
 
@@ -23,7 +23,7 @@ follow the [format][format] and [style][style] guidelines.
 
 It is preferable that a reftest is [self-describing][selfdesc],
 since it allows for both machine comparison and manual
-verification.  Having the expected rendering described on the page
+verification. Having the expected rendering described on the page
 lets the tester check that the test and the reference are not
 _both_ being rendered incorrectly and triggering a false pass.
 Designing it for an obvious fail makes it easier to find what went
@@ -72,17 +72,17 @@ multiple files.
 
 ## Controlling When Comparison Occurs
 
-By default reftest screenshots are taken in response to the `onload`
+By default reftest screenshots are taken in response to the `load`
 event firing. In some cases it is necessary to delay the screenshot
 later than this, for example becase some DOM manipulation is
 required to set up the desired test conditions. To enable this, the
 test may have a `class="reftest-wait"` attribute specified on the root
 element. This will cause the screenshot to be delayed until the load
 event has fired and the reftest-wait class has been removed from the
-root element (technical note: the implementataion in wptrunner uses
+root element (technical note: the implementation in wptrunner uses
 mutation observers so the screenshot will be triggered in the
 microtask checkpoint after the class is removed. Because the harness
-isn't synchronised with the browser event loop it is dangerous to rely
+isn't synchronized with the browser event loop it is dangerous to rely
 on precise timing here).
 
 ## Matching Multiple References
@@ -131,7 +131,7 @@ render to pass the tests.
 
 ### Test File
 
-This test verifies that a right- to-left rendering of **SAW** within a
+This test verifies that a right-to-left rendering of **SAW** within a
 ```<bdo>``` element displays as **WAS**.
 
 ([view page rendering][html-reftest-example])
@@ -140,7 +140,7 @@ This test verifies that a right- to-left rendering of **SAW** within a
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>BDO element dir=rtl</title>
-<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/text-level-semantics.html#the-bdo-element">
+<link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/#the-bdo-element">
 <meta name="assert" content="BDO element's DIR content attribute renders corrently given value of 'rtl'.">
 <link rel="match" href="test-bdo-001.html">
 <p>Pass if you see WAS displayed below.</p>

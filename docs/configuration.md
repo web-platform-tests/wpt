@@ -9,7 +9,7 @@ the web-platform-tests repository.
 
 ## Hosts configuration
 
-The tests depend on certain domains being avaliable. These are
+The tests depend on certain domains being available. These are
 typically configured locally with `web-platform.test` as the top level
 domain and five subdomains. To configure these domains you need to edit
 your
@@ -39,7 +39,7 @@ update all submodules:
 ## Font Files
 
 Many layout tests require a set of test-specific fonts, notably
-Ahem. These are avaliable from the
+Ahem. These are available from the
 [CSS Fonts](http://www.w3.org/Style/CSS/Test/Fonts/) website. These
 must be installed according to the normal font-install procedure for
 your operating system.
@@ -64,5 +64,5 @@ replacing the part that reads:
 to some port of your choice e.g.
 
 ```
-"http":[1234, "auto"]
+"http": [1234, "auto"]
 ```

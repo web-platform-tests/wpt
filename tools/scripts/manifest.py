@@ -17,16 +17,12 @@ from fnmatch import fnmatch
 def get_git_func(repo_path):
     def git(cmd, *args):
         full_cmd = ["git", cmd] + list(args)
-        print full_cmd
         return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT)
-    print git
     return git
 
 
-def setup_git(repo_path):
-    assert os.path.exists(os.path.join(repo_path, ".git"))
-    global git
-    git = get_git_func(repo_path)
+def is_git_repo(tests_root):
+    return os.path.exists(os.path.join(tests_root, ".git"))
 
 
 _repo_root = None
@@ -43,16 +39,44 @@ ref_suffixes = ["_ref", "-ref"]
 wd_pattern = "*.py"
 blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/"]
 
+
 logging.basicConfig()
 logger = logging.getLogger("manifest")
 logger.setLevel(logging.DEBUG)
 
 
+def rel_path_to_url(rel_path, url_base="/"):
+    assert not os.path.isabs(rel_path)
+    if url_base[0] != "/":
+        url_base = "/" + url_base
+    if url_base[-1] != "/":
+        url_base += "/"
+    return url_base + rel_path.replace(os.sep, "/")
+
+
+def url_to_rel_path(url, url_base):
+    url_path = urlparse.urlsplit(url).path
+    if not url_path.startswith(url_base):
+        raise ValueError
+    url_path = url_path[len(url_base):]
+    return url_path
+
+
+def is_blacklisted(url):
+    for item in blacklist:
+        if item == "/":
+            if "/" not in url[1:]:
+                return True
+        elif url.startswith(item):
+            return True
+    return False
+
+
 class ManifestItem(object):
     item_type = None
 
-    def __init__(self, path):
-        self.path = path
+    def __init__(self):
+        self.manifest = None
 
     def _key(self):
         return self.item_type, self.path
@@ -66,51 +90,71 @@ class ManifestItem(object):
         return hash(self._key())
 
     def to_json(self):
-        return {"path": self.path}
+        raise NotImplementedError
 
     @classmethod
-    def from_json(self, obj):
+    def from_json(self, manifest, obj):
         raise NotImplementedError
 
     @property
     def id(self):
         raise NotImplementedError
 
-class TestharnessTest(ManifestItem):
-    item_type = "testharness"
 
-    def __init__(self, path, url, timeout=None):
-        ManifestItem.__init__(self, path)
+class URLManifestItem(ManifestItem):
+    def __init__(self, url, url_base="/"):
+        ManifestItem.__init__(self)
         self.url = url
-        self.timeout = timeout
+        self.url_base = url_base
 
     @property
     def id(self):
         return self.url
 
+    def _key(self):
+        return self.item_type, self.url
+
+    @property
+    def path(self):
+        return url_to_rel_path(self.url, self.url_base)
+
     def to_json(self):
-        rv = ManifestItem.to_json(self)
-        rv.update({"url": self.url})
+        rv = {"url": self.url}
+        return rv
+
+    @classmethod
+    def from_json(cls, manifest, obj):
+        return cls(obj["url"],
+                   url_base=manifest.url_base)
+
+
+class TestharnessTest(URLManifestItem):
+    item_type = "testharness"
+
+    def __init__(self, url, url_base="/", timeout=None):
+        URLManifestItem.__init__(self, url, url_base=url_base)
+        self.timeout = timeout
+
+    def to_json(self):
+        rv = {"url": self.url}
         if self.timeout:
             rv["timeout"] = self.timeout
         return rv
 
     @classmethod
-    def from_json(cls, obj):
-        return cls(obj["path"],
-                   obj["url"],
+    def from_json(cls, manifest, obj):
+        return cls(obj["url"],
+                   url_base=manifest.url_base,
                    timeout=obj.get("timeout"))
 
 
-class RefTest(ManifestItem):
+class RefTest(URLManifestItem):
     item_type = "reftest"
 
-    def __init__(self, path, url, ref_url, ref_type,
-                 timeout=None):
+    def __init__(self, url, ref_url, ref_type, url_base="/", timeout=None):
+        URLManifestItem.__init__(self, url, url_base=url_base)
         if ref_type not in ["==", "!="]:
             raise ValueError, "Unrecognised ref_type %s" % ref_type
-        ManifestItem.__init__(self, path)
-        self.url = url
         self.ref_url = ref_url
         self.ref_type = ref_type
         self.timeout = timeout
@@ -123,93 +167,47 @@ class RefTest(ManifestItem):
         return self.item_type, self.url, self.ref_type, self.ref_url
 
     def to_json(self):
-        rv = ManifestItem.to_json(self)
-        rv.update({"url": self.url,
-                   "ref_type": self.ref_type,
-                   "ref_url": self.ref_url})
+        rv = {"url": self.url,
+              "ref_type": self.ref_type,
+              "ref_url": self.ref_url}
         if self.timeout:
             rv["timeout"] = self.timeout
         return rv
 
     @classmethod
-    def from_json(cls, obj):
-        return cls(obj["path"], obj["url"], obj["ref_url"], obj["ref_type"],
+    def from_json(cls, manifest, obj):
+        return cls(obj["url"],
+                   obj["ref_url"],
+                   obj["ref_type"],
+                   url_base=manifest.url_base,
                    timeout=obj.get("timeout"))
 
 
-class ManualTest(ManifestItem):
+class ManualTest(URLManifestItem):
     item_type = "manual"
 
-    def __init__(self, path, url):
-        ManifestItem.__init__(self, path)
-        self.url = url
-
-    @property
-    def id(self):
-        return self.url
-
-    def to_json(self):
-        rv = ManifestItem.to_json(self)
-        rv.update({"url": self.url})
-        return rv
-
-    @classmethod
-    def from_json(cls, obj):
-        return cls(obj["path"], obj["url"])
-
-
-class Stub(ManifestItem):
+class Stub(URLManifestItem):
     item_type = "stub"
 
-    def __init__(self, path, url):
-        ManifestItem.__init__(self, path)
-        self.url = url
-
-    @property
-    def id(self):
-        return self.url
-
-    def to_json(self):
-        rv = ManifestItem.to_json(self)
-        rv.update({"url": self.url})
-        return rv
-
-    @classmethod
-    def from_json(cls, obj):
-        return cls(obj["path"], obj["url"])
-
-
-class Helper(ManifestItem):
+class Helper(URLManifestItem):
     item_type = "helper"
-
-    def __init__(self, path, url):
-        ManifestItem.__init__(self, path)
-        self.url = url
-
-    @property
-    def id(self):
-        return self.url
-
-    def to_json(self):
-        rv = ManifestItem.to_json(self)
-        rv.update({"url": self.url})
-        return rv
-
-    @classmethod
-    def from_json(cls, obj):
-        return cls(obj["path"], obj["url"])
-
 
 class WebdriverSpecTest(ManifestItem):
     item_type = "wdspec"
+
+    def __init__(self, path):
+        self.path = path
 
     @property
     def id(self):
         return self.path
 
+    def to_json(self):
+        return {"path": self.path}
+
     @classmethod
-    def from_json(cls, obj):
-        return cls(obj["path"])
+    def from_json(cls, manifest, obj):
+        return cls(path=obj["path"])
 
 
 class ManifestError(Exception):
@@ -218,20 +216,21 @@ class ManifestError(Exception):
 item_types = ["testharness", "reftest", "manual", "helper", "stub", "wdspec"]
 
 class Manifest(object):
-    def __init__(self, git_rev):
+    def __init__(self, git_rev=None, url_base="/"):
         # Dict of item_type: {path: set(manifest_items)}
         self._data = dict((item_type, defaultdict(set))
                           for item_type in item_types)
         self.rev = git_rev
         self.local_changes = LocalChanges()
+        self.url_base = url_base
 
-    def _included_items(self, item_types=None):
-        if item_types is None:
-            item_types = item_types
+    def _included_items(self, include_types=None):
+        if include_types is None:
+            include_types = item_types
 
-        for item_type in item_types:
+        for item_type in include_types:
             paths = self._data[item_type].copy()
-            for item_types, local_paths in self.local_changes.itertypes(item_type):
+            for local_types, local_paths in self.local_changes.itertypes(item_type):
                 for path, items in local_paths.iteritems():
                     paths[path] = items
                 for path in self.local_changes.iterdeleted():
@@ -240,10 +239,11 @@ class Manifest(object):
             yield item_type, paths
 
     def contains_path(self, path):
-        return any(path in item for item in self._included_items().itervalues())
+        return any(path in item for item in self._included_items())
 
     def add(self, item):
         self._data[item.item_type][item.path].add(item)
+        item.manifest = self
 
     def extend(self, items):
         for item in items:
@@ -260,7 +260,7 @@ class Manifest(object):
                 yield item
 
     def __iter__(self):
-        for item_type, items in self._included_items(types):
+        for item_type, items in self._included_items():
             for item in sorted(items.items()):
                 yield item
 
@@ -270,28 +270,40 @@ class Manifest(object):
                 return items[path]
         raise KeyError
 
-    def update(self, new_rev, committed_changes=None, local_changes=None):
+    def update(self,
+               tests_root,
+               url_base,
+               new_rev,
+               committed_changes=None,
+               local_changes=None):
+
         if local_changes is None:
             local_changes = {}
 
         if committed_changes is not None:
-            for path, status in committed_changes:
-                self.remove_path(path)
+            for rel_path, status in committed_changes:
+                self.remove_path(rel_path)
                 if status == "modified":
-                    use_committed = path in local_changes
-                    if use_committed:
-                        print path
-                    self.extend(get_manifest_items(path, use_committed=use_committed))
+                    use_committed = rel_path in local_changes
+                    manifest_items = get_manifest_items(tests_root,
+                                                        rel_path,
+                                                        url_base,
+                                                        use_committed=use_committed)
+                    self.extend(manifest_items)
 
         self.local_changes = LocalChanges()
-        for path, status in local_changes.iteritems():
+        for rel_path, status in local_changes.iteritems():
             if status == "modified":
-                items = set(get_manifest_items(path, use_committed=False))
+                items = set(get_manifest_items(tests_root,
+                                               rel_path,
+                                               url_base,
+                                               use_committed=False))
                 self.local_changes.extend(items)
             else:
                 self.local_changes.add_deleted(path)
 
         self.rev = new_rev
+        self.url_base = url_base
 
     def to_json(self):
         out_items = defaultdict(list)
@@ -300,14 +312,16 @@ class Manifest(object):
                 for test in tests:
                     out_items[test.item_type].append(test.to_json())
 
-        rv = {"rev":self.rev,
+        rv = {"url_base":self.url_base,
+              "rev":self.rev,
               "local_changes":self.local_changes.to_json(),
               "items":out_items}
         return rv
 
     @classmethod
     def from_json(cls, obj):
-        self = cls(obj["rev"])
+        self = cls(git_rev=obj["rev"],
+                   url_base=obj["url_base"])
         if not hasattr(obj, "iteritems"):
             raise ManifestError
 
@@ -322,7 +336,7 @@ class Manifest(object):
             if k not in item_types:
                 raise ManifestError
             for v in values:
-                manifest_item = item_classes[k].from_json(v)
+                manifest_item = item_classes[k].from_json(self, v)
                 self.add(manifest_item)
         self.local_changes = LocalChanges.from_json(obj["local_changes"])
         return self
@@ -430,12 +444,12 @@ def get_reference_links(root):
     return match_links, mismatch_links
 
 
-def get_file(rel_path, use_committed):
+def get_file(base_path, rel_path, use_committed):
     if use_committed:
         blob = git("show", "HEAD:%s" % rel_path)
         file_obj = ContextManagerStringIO(blob)
     else:
-        path = os.path.join(get_repo_root(), rel_path)
+        path = os.path.join(base_path, rel_path)
         file_obj = open(path)
     return file_obj
 
@@ -446,17 +460,17 @@ class ContextManagerStringIO(StringIO):
     def __exit__(self, *args, **kwargs):
         self.close()
 
-def get_manifest_items(rel_path, use_committed=False):
-    if rel_path.endswith(os.path.sep):
+def get_manifest_items(tests_root, rel_path, url_base, use_committed=False):
+    if os.path.isdir(rel_path):
         return []
 
-    url = "/" + rel_path.replace(os.sep, "/")
-    path = os.path.join(get_repo_root(), rel_path)
+    url = rel_path_to_url(rel_path, url_base)
+    path = os.path.join(tests_root, rel_path)
 
     if not use_committed and not os.path.exists(path):
         return []
 
-    base_path, filename = os.path.split(path)
+    dir_path, filename = os.path.split(path)
     name, ext = os.path.splitext(filename)
     rel_dir_tree = rel_path.split(os.path.sep)
 
@@ -465,29 +479,25 @@ def get_manifest_items(rel_path, use_committed=False):
     if filename.startswith("MANIFEST") or filename.startswith("."):
         return []
 
-    for item in blacklist:
-        if item == "/":
-            if "/" not in url[1:]:
-                return []
-        elif url.startswith(item):
-            return []
+    if is_blacklisted(url):
+        return []
 
     if name.startswith("stub-"):
-        return [Stub(rel_path, url)]
+        return [Stub(url)]
 
     if name.lower().endswith("-manual"):
-        return [ManualTest(rel_path, url)]
+        return [ManualTest(url)]
 
     ref_list = []
 
     for suffix in ref_suffixes:
         if name.endswith(suffix):
-            return [Helper(rel_path, rel_path)]
-        elif os.path.exists(os.path.join(base_path, name + suffix + ext)):
+            return [Helper(url)]
+        elif os.path.exists(os.path.join(dir_path, name + suffix + ext)):
             ref_url, ref_ext = url.rsplit(".", 1)
             ref_url = ref_url + suffix + ext
             #Need to check if this is the right reftype
-            ref_list = [RefTest(rel_path, url, ref_url, "==")]
+            ref_list = [RefTest(url, ref_url, "==")]
 
     # wdspec tests are in subdirectories of /webdriver excluding __init__.py
     # files.
@@ -504,11 +514,11 @@ def get_manifest_items(rel_path, use_committed=False):
                   "xhtml":ElementTree.parse,
                   "svg":ElementTree.parse}[file_markup_type]
 
-        with get_file(rel_path, use_committed) as f:
+        with get_file(tests_root, rel_path, use_committed) as f:
             try:
                 tree = parser(f)
             except:
-                return [Helper(rel_path, url)]
+                return [Helper(url)]
 
         if hasattr(tree, "getroot"):
             root = tree.getroot()
@@ -525,27 +535,22 @@ def get_manifest_items(rel_path, use_committed=False):
                     pass
 
         if get_testharness_scripts(root):
-            return [TestharnessTest(rel_path, url, timeout=timeout)]
+            return [TestharnessTest(url, timeout=timeout)]
         else:
             match_links, mismatch_links = get_reference_links(root)
             for item in match_links + mismatch_links:
                 ref_url = urlparse.urljoin(url, item.attrib["href"])
                 ref_type = "==" if item.attrib["rel"] == "match" else "!="
-                reftest = RefTest(rel_path, url, ref_url, ref_type, timeout=timeout)
+                reftest = RefTest(url, ref_url, ref_type, timeout=timeout)
                 if reftest not in ref_list:
                     ref_list.append(reftest)
             return ref_list
 
-    return [Helper(rel_path, url)]
+    return [Helper(url)]
 
 
 def abs_path(path):
     return os.path.abspath(path)
-
-
-def get_repo_paths():
-    data = git("ls-tree", "--name-only", "--full-tree", "-r", "HEAD")
-    return [item for item in data.split("\n") if not item.endswith(os.path.sep)]
 
 
 def chunks(data, n):
@@ -553,105 +558,156 @@ def chunks(data, n):
         yield data[i:i+n]
 
 
-def get_committed_changes(base_rev):
-    if base_rev is None:
-        logger.debug("Adding all changesets to the manifest")
-        return [(item, "modified") for item in get_repo_paths()]
+class TestTree(object):
+    def __init__(self, tests_root, url_base):
+        self.tests_root = tests_root
+        self.url_base = url_base
 
-    logger.debug("Updating the manifest from %s to %s" % (base_rev, get_current_rev()))
-    rv = []
-    data  = git("diff", "-z", "--name-status", base_rev + "..HEAD")
-    items = data.split("\0")
-    for status, filename in chunks(items, 2):
-        if status == "D":
-            rv.append((filename, "deleted"))
-        else:
-            rv.append((filename, "modified"))
-    return rv
+    def current_rev(self):
+        pass
+
+    def local_changes(self):
+        pass
+
+    def comitted_changes(self, base_rev=None):
+        pass
 
 
-def has_local_changes():
-    return git("status", "--porcelain", "--ignore-submodules=untracked").strip() != ""
+class GitTree(TestTree):
+    def __init__(self, tests_root, url_base):
+        TestTree.__init__(self, tests_root, url_base)
+        self.git = self.setup_git()
 
+    def setup_git(self):
+        assert os.path.exists(os.path.join(self.tests_root, ".git"))
+        return get_git_func(self.tests_root)
 
-def get_local_changes(path=None):
-    # -z is stable like --porcelain; see the git status documentation for details
-    cmd = ["status", "-z", "--ignore-submodules=all"]
-    if path is not None:
-        cmd.extend(["--", path])
+    def current_rev(self):
+        return self.git("rev-parse", "HEAD").strip()
 
-    rv = {}
+    def local_changes(self, path=None):
+        # -z is stable like --porcelain; see the git status documentation for details
+        cmd = ["status", "-z", "--ignore-submodules=all"]
+        if path is not None:
+            cmd.extend(["--", path])
 
-    data = git(*cmd)
-    assert data[-1] == "\0"
-    f = StringIO(data)
+        rv = {}
 
-    while f.tell() < len(data):
-        # First two bytes are the status in the stage (index) and working tree, respectively
-        staged = f.read(1)
-        worktree = f.read(1)
-        assert f.read(1) == " "
+        data = self.git(*cmd)
+        assert data[-1] == "\0"
+        f = StringIO(data)
+
+        while f.tell() < len(data):
+            # First two bytes are the status in the stage (index) and working tree, respectively
+            staged = f.read(1)
+            worktree = f.read(1)
+            assert f.read(1) == " "
+
+            if staged == "R":
+                # When a file is renamed, there are two files, the source and the destination
+                files = 2
+            else:
+                files = 1
+
+            filenames = []
+
+            for i in range(files):
+                filenames.append("")
+                char = f.read(1)
+                while char != "\0":
+                    filenames[-1] += char
+                    char = f.read(1)
+
+            if not is_blacklisted(rel_path_to_url(filenames[0], self.url_base)):
+                rv.update(self.local_status(staged, worktree, filenames))
+
+        return rv
+
+    def committed_changes(self, base_rev=None):
+        if base_rev is None:
+            logger.debug("Adding all changesets to the manifest")
+            return [(item, "modified") for item in self.paths()]
+
+        logger.debug("Updating the manifest from %s to %s" % (base_rev, self.current_rev()))
+        rv = []
+        data  = self.git("diff", "-z", "--name-status", base_rev + "..HEAD")
+        items = data.split("\0")
+        for status, filename in chunks(items, 2):
+            if is_blacklisted(rel_path_to_url(filename, self.url_base)):
+                continue
+            if status == "D":
+                rv.append((filename, "deleted"))
+            else:
+                rv.append((filename, "modified"))
+        return rv
+
+    def paths(self):
+        data = self.git("ls-tree", "--name-only", "--full-tree", "-r", "HEAD")
+        return [item for item in data.split("\n") if not item.endswith(os.path.sep)]
+
+    def local_status(self, staged, worktree, filenames):
+        # Convert the complex range of statuses that git can have to two values
+        # we care about; "modified" and "deleted" and return a dictionary mapping
+        # filenames to statuses
+
+        rv = {}
+
+        if (staged, worktree) in [("D", "D"), ("A", "U"), ("U", "D"), ("U", "A"),
+                                  ("D", "U"), ("A", "A"), ("U", "U")]:
+            raise Exception("Can't operate on tree containing unmerged paths")
 
         if staged == "R":
-            # When a file is renamed, there are two files, the source and the destination
-            files = 2
+            assert len(filenames) == 2
+            dest, src = filenames
+            rv[dest] = "modified"
+            rv[src] = "deleted"
         else:
-            files = 1
+            assert len(filenames) == 1
 
-        filenames = []
+            filename = filenames[0]
 
-        for i in range(files):
-            filenames.append("")
-            char = f.read(1)
-            while char != "\0":
-                filenames[-1] += char
-                char = f.read(1)
-
-        rv.update(local_status(staged, worktree, filenames))
-
-    return rv
-
-def local_status(staged, worktree, filenames):
-    # Convert the complex range of statuses that git can have to two values
-    # we care about; "modified" and "deleted" and return a dictionary mapping
-    # filenames to statuses
-
-    rv = {}
-
-    if (staged, worktree) in [("D", "D"), ("A", "U"), ("U", "D"), ("U", "A"),
-                              ("D", "U"), ("A", "A"), ("U", "U")]:
-        raise Exception("Can't operate on tree containing unmerged paths")
-
-    if staged == "R":
-        assert len(filenames) == 2
-        dest, src = filenames
-        rv[dest] = "modified"
-        rv[src] = "deleted"
-    else:
-        assert len(filenames) == 1
-
-        filename = filenames[0]
-
-        if staged == "D" or worktree == "D":
-            # Actually if something is deleted in the index but present in the worktree
-            # it will get included by having a status of both "D " and "??".
-            # It isn't clear whether that's a bug
-            rv[filename] = "deleted"
-        elif staged == "?" and worktree == "?":
-            # A new file. If it's a directory, recurse into it
-            if os.path.isdir(os.path.join(get_repo_root(),
-                                          filename)):
-                rv.update(get_local_changes(filename))
+            if staged == "D" or worktree == "D":
+                # Actually if something is deleted in the index but present in the worktree
+                # it will get included by having a status of both "D " and "??".
+                # It isn't clear whether that's a bug
+                rv[filename] = "deleted"
+            elif staged == "?" and worktree == "?":
+                # A new file. If it's a directory, recurse into it
+                if os.path.isdir(os.path.join(self.tests_root, filename)):
+                    rv.update(self.local_changes(filename))
+                else:
+                    rv[filename] = "modified"
             else:
                 rv[filename] = "modified"
-        else:
-            rv[filename] = "modified"
 
-    return rv
+        return rv
 
+class NoVCSTree(TestTree):
+    """Subclass that doesn't depend on git but assumes that all changes are comitted"""
 
-def get_current_rev():
-    return git("rev-parse", "HEAD").strip()
+    ignore = ["*.py[c|0]", "*~", "#*"]
+
+    def current_rev(self):
+        return None
+
+    def local_changes(self):
+        return None
+
+    def committed_changes(self, base_rev=None):
+        if base_rev is not None:
+            raise ValueError("Tried to update a tree with no VCS against a base_rev")
+
+        rv = []
+        for dir_path, dir_names, filenames in os.walk(self.tests_root):
+            for filename in filenames:
+                if any(fnmatch(filename, pattern) for pattern in self.ignore):
+                    continue
+                rel_path = os.path.relpath(os.path.join(dir_path, filename),
+                                           self.tests_root)
+                if is_blacklisted(rel_path_to_url(rel_path, self.url_base)):
+                    continue
+                rv.append((rel_path, "modified"))
+        return rv
 
 
 def load(manifest_path):
@@ -668,7 +724,7 @@ def load(manifest_path):
     return manifest
 
 
-def update(manifest, ignore_local=False):
+def update(tests_root, url_base, manifest, ignore_local=False):
     global ElementTree
     global html5lib
 
@@ -679,13 +735,20 @@ def update(manifest, ignore_local=False):
 
     import html5lib
 
+    if is_git_repo(tests_root):
+        tests_tree = GitTree(tests_root, url_base)
+    else:
+        tests_tree = NoVCSTree(tests_root, url_base)
+
     if not ignore_local:
-        local_changes = get_local_changes()
+        local_changes = tests_tree.local_changes()
     else:
         local_changes = None
 
-    manifest.update(get_current_rev(),
-                    get_committed_changes(manifest.rev),
+    manifest.update(tests_root,
+                    url_base,
+                    tests_tree.current_rev(),
+                    tests_tree.committed_changes(manifest.rev),
                     local_changes)
 
 
@@ -694,24 +757,43 @@ def write(manifest, manifest_path):
         json.dump(manifest.to_json(), f, sort_keys=True, indent=2, separators=(',', ': '))
 
 
-def update_from_cli(repo_path, **kwargs):
-    setup_git(repo_path)
+def update_from_cli(**kwargs):
+    tests_root = kwargs["tests_root"]
     path = kwargs["path"]
+    assert tests_root is not None
     if not kwargs.get("rebuild", False):
         manifest = load(path)
     else:
         manifest = Manifest(None)
 
     logger.info("Updating manifest")
-    update(manifest, ignore_local=kwargs.get("ignore_local", False))
+    update(tests_root, manifest, ignore_local=kwargs.get("ignore_local", False),
+           extra_dirs=kwargs["extra_dirs"])
     write(manifest, path)
 
+
+def colon_seperated(arg):
+    if ":" not in arg:
+        raise ValueError("Argument requires a :")
+    path, url = arg.split(":", 1)
+    if url[0] != "/":
+        url = "/" + url
+    if url[-1] != "/":
+        url = url + "/"
+    return abs_path(path), url
+
+def abs_path(path):
+    return os.path.abspath(os.path.expanduser(path))
 
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-p", "--path", default=os.path.join(get_repo_root(), "MANIFEST.json"),
-        help="Path to manifest file.")
+        "-p", "--path", type=abs_path, help="Path to manifest file.")
+    parser.add_argument(
+        "--tests-root", type=abs_path, help="Path to root of tests.")
+    parser.add_argument(
+        "--extra-dir", dest="extra_dirs", action="append", type=colon_seperated
+    )
     parser.add_argument(
         "-r", "--rebuild", action="store_true", default=False,
         help="Force a full rebuild of the manifest.")
@@ -721,10 +803,12 @@ def create_parser():
     return parser
 
 if __name__ == "__main__":
-    try:
-        get_repo_root()
-    except subprocess.CalledProcessError:
-        print "Script must be inside a web-platform-tests git clone."
-        sys.exit(1)
     opts = create_parser().parse_args()
-    update_from_cli(get_repo_root(), **vars(opts))
+
+    if opts.tests_root is None:
+        opts.tests_root = get_repo_root()
+
+    if opts.path is None:
+        opts.path = os.path.join(opts.tests_root, "MANIFEST.json")
+
+    update_from_cli(**vars(opts))

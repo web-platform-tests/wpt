@@ -13,6 +13,7 @@ import vcs
 from vcs import git, hg
 manifest = None
 import metadata
+import testloader
 import wptcommandline
 
 base_path = os.path.abspath(os.path.split(__file__)[0])
@@ -48,11 +49,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 """
 
-def do_test_relative_imports(test_root):
+def do_delayed_imports(serve_root):
     global manifest
-
-    sys.path.insert(0, os.path.join(test_root))
-    sys.path.insert(0, os.path.join(test_root, "tools", "scripts"))
+    sys.path.insert(0, os.path.join(serve_root, "tools", "scripts"))
     import manifest
 
 
@@ -311,16 +310,25 @@ def ensure_exists(path):
 def sync_tests(paths, local_tree, wpt, bug):
     wpt.update()
 
+    do_delayed_imports(paths["sync"])
+
     try:
         #bug.comment("Updating to %s" % wpt.rev)
-        initial_manifest = metadata.load_test_manifest(paths["sync"], paths["metadata"])
-        wpt.copy_work_tree(paths["test"])
-        new_manifest = metadata.update_manifest(paths["sync"], paths["metadata"])
+        sync_paths = {"/": {"tests_path": paths["sync"],
+                            "metadata_path": paths["sync_dest"]["metadata_path"]}}
+
+        manifest_loader = testloader.ManifestLoader(sync_paths)
+        initial_manifest = manifest_loader.load()
+        wpt.copy_work_tree(paths["sync_dest"]["test_path"])
+        new_manifest = metadata.update_manifest(paths["sync"],
+                                                paths["sync_dest"]["metadata_path"])
 
         local_tree.create_patch("web-platform-tests_update_%s" % wpt.rev,
                                 "Update web-platform-tests to revision %s" % wpt.rev)
-        local_tree.add_new(os.path.relpath(paths["test"], local_tree.root))
-        local_tree.update_patch(include=[paths["test"], paths["metadata"]])
+        local_tree.add_new(os.path.relpath(paths["sync_dest"]["test_path"],
+                                           local_tree.root))
+        local_tree.update_patch(include=[paths["sync_dest"]["test_path"],
+                                         paths["sync_dest"]["metadata_path"]])
     except Exception as e:
         #bug.comment("Update failed with error:\n %s" % traceback.format_exc())
         sys.stderr.write(traceback.format_exc())
@@ -346,8 +354,8 @@ def update_metadata(paths, local_tree, initial_rev, bug, log_files, ignore_exist
         except subprocess.CalledProcessError:
             # Patch with that name already exists, probably
             pass
-        needs_human = metadata.update_expected(paths["test"],
-                                               paths["metadata"],
+        needs_human = metadata.update_expected(paths["test_paths"],
+                                               paths["serve"],
                                                log_files,
                                                rev_old=initial_rev,
                                                ignore_existing=ignore_existing,
@@ -370,14 +378,18 @@ def update_metadata(paths, local_tree, initial_rev, bug, log_files, ignore_exist
 def run_update(**kwargs):
     config = kwargs["config"]
 
-    paths = {"test": kwargs["tests_root"],
-             "metadata": kwargs["metadata_root"]}
+    paths = {}
+    paths["test_paths"] = kwargs["test_paths"]
 
     if kwargs["sync"]:
+        paths["sync_dest"] = kwargs["test_paths"]["/"]
         paths["sync"] = kwargs["sync_path"]
 
-    for path in paths.itervalues():
-        ensure_exists(path)
+
+    paths["serve"] = kwargs["serve_root"] if kwargs["serve_root"] else paths["test_paths"]["/"]["tests_path"]
+
+#    for path in paths.itervalues():
+#        ensure_exists(path)
 
     if not kwargs["sync"] and not kwargs["run_log"]:
         print """Nothing to do.

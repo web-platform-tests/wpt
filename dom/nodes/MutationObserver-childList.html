@@ -83,7 +83,9 @@
       });
     parentTest.done();
   }
-  (new MutationObserver(masterMO)).observe(n00.parentNode, {"subtree": true, "childList": true});
+  parentTest.step(function() {
+    (new MutationObserver(masterMO)).observe(n00.parentNode, {"subtree": true, "childList": true});
+  });
 
   runMutationTest(n00,
                   {"childList":true, "attributes":true},
@@ -321,11 +323,11 @@
                   "childList Range.deleteContents: child removal mutation");
 
   var n71 = document.getElementById('n71');
-  n71.appendChild(document.createTextNode("NNN"));
-  n71.appendChild(document.createTextNode("NGED"));
   countMutations+=2;
   var r71 = null;
   test(function () {
+    n71.appendChild(document.createTextNode("NNN"));
+    n71.appendChild(document.createTextNode("NGED"));
     r71 = document.createRange();
     r71.setStart(n71.firstChild, 4);
     r71.setEnd(n71.lastChild, 1);
@@ -355,11 +357,11 @@
                   "childList Range.extractContents: child removal mutation");
 
   var n81 = document.getElementById('n81');
-  n81.appendChild(document.createTextNode("NNN"));
-  n81.appendChild(document.createTextNode("NGED"));
   countMutations+=2;
   var r81 = null;
   test(function () {
+    n81.appendChild(document.createTextNode("NNN"));
+    n81.appendChild(document.createTextNode("NGED"));
     r81 = document.createRange();
     r81.setStart(n81.firstChild, 4);
     r81.setEnd(n81.lastChild, 1);
@@ -391,11 +393,11 @@
                   "childList Range.insertNode: child insertion mutation");
 
   var n91 = document.getElementById('n91');
-  n91.appendChild(document.createTextNode("D"));
   countMutations++;
   var f91 = document.createTextNode("NG");
   var r91 = null;
   test(function () {
+    n91.appendChild(document.createTextNode("D"));
     r91 = document.createRange();
     r91.setStart(n91.firstChild, 3);
     r91.setEnd(n91.lastChild, 0);

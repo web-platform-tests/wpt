@@ -17,12 +17,24 @@
 </section>
 
 <script>
-  var n00 = document.getElementById('n00');
-  var oldText = n00.firstChild;
+  var n00;
+  var n00oldText;
+  var n01;
+  var n01oldText;
+  var n02;
+
+  setup(function() {
+    n00 = document.getElementById('n00');
+    n00oldText = n00.firstChild;
+    n01 = document.getElementById('n01');
+    n01oldText = n01.firstChild;
+    n02 = document.getElementById('n02');
+  })
+
   runMutationTest(n00,
                   {childList:true,attributes:true},
                   [{type: "childList",
-                    removedNodes: [oldText],
+                    removedNodes: [n00oldText],
                     addedNodes: function() {
                       return [document.getElementById("n00").firstChild];
                     }},
@@ -30,12 +42,10 @@
                   function() { n00.innerHTML = "new text"; n00.className = "c01"},
                   "innerHTML mutation");
 
-  var n01 = document.getElementById('n01');
-  var oldText = n01.firstChild;
   runMutationTest(n01,
                   {childList:true},
                   [{type: "childList",
-                    removedNodes: [oldText],
+                    removedNodes: [n01oldText],
                     addedNodes: function() {
                       return [document.getElementById("n01").firstChild,
                               document.getElementById("n01").lastChild];
@@ -43,7 +53,6 @@
                   function() { n01.innerHTML = "<span>new</span><span>text</span>"; },
                   "innerHTML with 2 children mutation");
 
-  var n02 = document.getElementById('n02');
   runMutationTest(n02,
                   {childList:true},
                   [{type: "childList",

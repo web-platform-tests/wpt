@@ -23,7 +23,9 @@
       });
     parentTest.done();
   }
-  (new MutationObserver(masterMO)).observe(n00.parentNode, {"subtree": true, "attributes": true});
+  parentTest.step(function() {
+    (new MutationObserver(masterMO)).observe(n00.parentNode, {"subtree": true, "attributes": true});
+  });
 
   var disconnectTest = async_test("disconnect discarded some mutations");
 
@@ -37,16 +39,20 @@
         disconnectTest.done();
     });
   }
-  var observer = new MutationObserver(observerCallback);
+  var observer;
 
-  observer.observe(n00, {"attributes": true});
-  n00.id = "foo";
-  n00.id = "bar";
-  observer.disconnect();
-  observer.observe(n00, {"attributes": true, "attributeOldValue": true});
-  n00.id = "latest";
-  observer.disconnect();
-  observer.observe(n00, {"attributes": true, "attributeOldValue": true});
-  n00.id = "n0000";
+  parentTest.step(function() {
+    observer = new MutationObserver(observerCallback);
+    observer.observe(n00, {"attributes": true});
+    n00.id = "foo";
+    n00.id = "bar";
+    observer.disconnect();
+    observer.observe(n00, {"attributes": true, "attributeOldValue": true});
+    n00.id = "latest";
+    observer.disconnect();
+    observer.observe(n00, {"attributes": true, "attributeOldValue": true});
+    n00.id = "n0000";
+  });
+
 
 </script>

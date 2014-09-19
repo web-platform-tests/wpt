@@ -16,7 +16,10 @@
 <script>
 
   var parentTest = async_test("subtree mutations");
-  var n00 = document.getElementById('n00');
+  var n00;
+  setup (function() {
+    n00 = document.getElementById('n00');
+  });
 
   function masterMO(sequence, obs) {
     parentTest.step(
@@ -25,27 +28,32 @@
       });
     parentTest.done();
   }
-  (new MutationObserver(masterMO)).observe(n00.parentNode, {"subtree": true,
+
+  parentTest.step(function() {
+    (new MutationObserver(masterMO)).observe(n00.parentNode, {"subtree": true,
                                                       "attributes": true,
                                                       "attributeFilter": ["class"],
                                                     });
+  });
 
   var unused = async_test("unreachabled test");
 
-  var observer = new MutationObserver(unused.unreached_func("the observer callback should not fire"));
-
-  observer.observe(n00, { "subtree": true,
+  var observer;
+  unused.step(function () {
+    observer = new MutationObserver(unused.unreached_func("the observer callback should not fire"));
+    observer.observe(n00, { "subtree": true,
                           "childList": true,
                           "attributes": true,
                           "characterData": true,
                           "attributeOldValue": true,
                           "characterDataOldValue": true,
                           "attributeFilter": ["id"]});
-  n00.id = "foo";
-  n00.id = "bar";
-  n00.className = "bar";
-  n00.textContent = "old data";
-  n00.firstChild.data = "new data";
+    n00.id = "foo";
+    n00.id = "bar";
+    n00.className = "bar";
+    n00.textContent = "old data";
+    n00.firstChild.data = "new data";
+  });
 
   test(function() {
     checkRecords(n00, observer.takeRecords(), [{type: "attributes", attributeName: "id", oldValue: "n00"},

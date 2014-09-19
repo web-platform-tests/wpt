@@ -43,8 +43,8 @@
 
 <script>
   var countMutations = 0;
-
   var n = document.getElementById('n');
+
   var parentTest = async_test("subtree mutations");
   function masterMO(sequence, obs) {
     parentTest.step(
@@ -53,7 +53,9 @@
       });
     parentTest.done();
   }
-  (new MutationObserver(masterMO)).observe(n.parentNode, {"subtree": true, "characterData": true});
+  parentTest.step(function() {
+    (new MutationObserver(masterMO)).observe(n.parentNode, {"subtree": true, "characterData": true});
+  });
 
   var n = n.firstChild;
   countMutations += runMutationTest(n,
@@ -160,11 +162,11 @@
                   "characterData Comment: data mutations");
 
   var n70 = document.getElementById('n70');
-  n70.appendChild(document.createTextNode("NNN"));
-  n70.appendChild(document.createTextNode("NGED"));
   var r70 = null;
   test(function () {
-  	r70 = document.createRange();
+    n70.appendChild(document.createTextNode("NNN"));
+    n70.appendChild(document.createTextNode("NGED"));
+    r70 = document.createRange();
     r70.setStart(n70.firstChild, 4);
     r70.setEnd(n70.lastChild, 1);
    }, "Range (r70) is created");
@@ -176,10 +178,10 @@
   countMutations++;
 
   var n71 = document.getElementById('n71');
-  n71.appendChild(document.createTextNode("NNN"));
-  n71.appendChild(document.createTextNode("NGED"));
   var r71 = null;
   test(function () {
+    n71.appendChild(document.createTextNode("NNN"));
+    n71.appendChild(document.createTextNode("NGED"));
     r71 = document.createRange();
     r71.setStart(n71.firstChild, 4);
     r71.setEnd(n71.lastChild, 1);
@@ -192,10 +194,10 @@
   countMutations++;
 
   var n80 = document.getElementById('n80');
-  n80.appendChild(document.createTextNode("NNN"));
-  n80.appendChild(document.createTextNode("NGED"));
   var r80 = null;
   test(function () {
+    n80.appendChild(document.createTextNode("NNN"));
+    n80.appendChild(document.createTextNode("NGED"));
     r80 = document.createRange();
     r80.setStart(n80.firstChild, 4);
     r80.setEnd(n80.lastChild, 1);
@@ -208,10 +210,10 @@
   countMutations++;
 
   var n81 = document.getElementById('n81');
-  n81.appendChild(document.createTextNode("NNN"));
-  n81.appendChild(document.createTextNode("NGED"));
   var r81 = null;
   test(function () {
+    n81.appendChild(document.createTextNode("NNN"));
+    n81.appendChild(document.createTextNode("NGED"));
     r81 = document.createRange();
     r81.setStart(n81.firstChild, 4);
     r81.setEnd(n81.lastChild, 1);

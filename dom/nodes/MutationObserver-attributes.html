@@ -78,7 +78,9 @@
       });
     parentTest.done();
   }
-  (new MutationObserver(masterMO)).observe(n.parentNode, {"subtree": true, "attributes": true});
+  parentTest.step(function() {
+    (new MutationObserver(masterMO)).observe(n.parentNode, {"subtree": true, "attributes": true});
+  });
 
   countMutations += runMutationTest(n,
                   {"attributes":true},
@@ -399,7 +401,7 @@
                   {"attributeOldValue": true},
                   [{type: "attributes", oldValue: "n2000", attributeName: "id"}],
                   function() { n2000.id = "abc";},
-                  "attributes/attributeOldValue alone Element.id: update mutation");
+                  "attributeOldValue alone Element.id: update mutation");
 
   var n2001 = document.getElementById('n2001');
   countMutations += runMutationTest(n2001,
@@ -407,7 +409,7 @@
                   [{type: "attributes", attributeName: "id"},
                    {type: "attributes", attributeName: "class"}],
                   function() { n2001.id = "abcd"; n2001.className = "c02"; n2001.setAttribute("lang", "fr");},
-                  "attributes/attributeFilter alone Element.id/Element.className: multiple filter update mutation");
+                  "attributeFilter alone Element.id/Element.className: multiple filter update mutation");
   countMutations++;
 
   var n3000 = document.getElementById('n3000');

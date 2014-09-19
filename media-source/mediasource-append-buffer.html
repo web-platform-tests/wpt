@@ -316,7 +316,7 @@
               test.expectEvent(sourceBuffer, "update", "Append success.");
               test.expectEvent(sourceBuffer, "updateend", "Append ended.");
 
-              var arrayBuffer = mediaData.buffer.slice();
+              var arrayBuffer = mediaData.buffer.slice(0);
 
               assert_equals(arrayBuffer.byteLength, mediaData.buffer.byteLength, "arrayBuffer.byteLength before transfer.");
 

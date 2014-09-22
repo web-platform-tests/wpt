@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>drawFocusIfNeeded when the associated element does not have focus and is not a descendant of the an element with focus</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="author" title="Mark Sadecki">
+    <link rel="help" href="http://www.w3.org/TR/2dcontext/#dom-context-2d-drawfocusifneeded">
+  </head>
+  <body>
+    <h1>Description</h1>
+    <p>This test verifies that no focus indicator is drawn if the associated element does not have focus and is not a descendant of the an element with focus.  This test passes if the the green square has a focus indicator and the red square does not.</p>
+    <div>
+      <p>green square has focus indicator, red square does not.</p>
+      <canvas height='100' width='100' id='canvas'>
+	    <a href='http://www.w3.org' id='focus'>Focus</a>
+	    <a href='http://www.w3.org' id='nofocus'>No Focus</a>
+      </canvas>
+    </div>
+    <script>
+      test(function() {
+        // focus
+        var canvas = document.getElementById('canvas');
+        var focus = document.getElementById('focus');
+        var context = canvas.getContext('2d');
+        context.beginPath();
+        context.rect(10, 10, 40, 40);
+        context.fillStyle = "green";
+        context.fill();
+        focus.focus();
+        context.drawFocusIfNeeded(focus);
+        
+        // nofocus
+        var canvas = document.getElementById('canvas');
+        var nofocus = document.getElementById('nofocus');
+        var context = canvas.getContext('2d');
+        context.beginPath();
+        context.rect(10, 60, 40, 40);
+        context.fillStyle = "red";
+        context.fill();
+        context.drawFocusIfNeeded(nofocus);
+        
+        /*// TODO make test automated
+          
+          assert_false(assertion, "Failure");
+        */
+                
+      }, 'drawFocusIfNeeded when the associated element does not have focus and is not a descendant of the an element with focus');
+    </script>
+    <div id="log"></div>
+  </body>
+</html>

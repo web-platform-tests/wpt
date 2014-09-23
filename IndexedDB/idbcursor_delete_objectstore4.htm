@@ -20,17 +20,14 @@
         for (var i = 0; i < records.length; i++) {
             objStore.add(records[i]);
         }
-    }
-
-    open_rq.onsuccess = function (event) {
-        var txn = db.transaction("store", "readwrite");
-        var rq = txn.objectStore("store").openCursor();
+    
+        var rq = objStore.openCursor();
         rq.onsuccess = t.step_func(function(event) {
             var cursor = event.target.result;
             assert_true(cursor instanceof IDBCursor, "cursor exist");
 
+            db.deleteObjectStore("store");
             assert_throws("InvalidStateError", function() {
-                db.deleteObjectStore("store");
                 cursor.delete();
             }, "If the cursor's source or effective object store has been deleted, the implementation MUST throw a DOMException of type InvalidStateError");
 

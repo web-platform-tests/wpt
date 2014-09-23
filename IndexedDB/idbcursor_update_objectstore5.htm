@@ -19,27 +19,23 @@
 
         for (var i = 0; i < records.length; i++)
             objStore.add(records[i]);
-    };
 
-    open_rq.onsuccess = function(e) {
-        var cursor_rq = db.transaction("test")
-                          .objectStore("test")
-                          .openCursor();
+        var cursor_rq = objStore.openCursor();
 
         cursor_rq.onsuccess = t.step_func(function(e) {
             var cursor = e.target.result;
             assert_true(cursor instanceof IDBCursor, "cursor exists");
 
+            db.deleteObjectStore("test");
+            cursor.value += "_updated";
             assert_throws("InvalidStateError", function() {
-                db.deleteObjectStore("store");
-                cursor.value.pKey += "_updated";
                 cursor.update(cursor.value);
             }, "If the cursor's source or effective object store has been deleted, the implementation MUST throw a DOMException of type InvalidStateError");
 
 
             t.done();
         });
-    };
+    }
 
 </script>
 

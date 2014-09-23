@@ -26,7 +26,7 @@
             var cursor = event.target.result;
             assert_true(cursor instanceof IDBCursor, "cursor exist");
 
-            db.deleteObjectStore("store")
+            db.deleteObjectStore("store");
             assert_throws("InvalidStateError", function() {
                 cursor.delete();
             }, "If the cursor's source or effective object store has been deleted, the implementation MUST throw a DOMException of type InvalidStateError");

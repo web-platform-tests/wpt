@@ -1,4 +1,5 @@
 <!doctype html>
+<meta charset=utf-8>
 <title>WebSockets: bufferedAmount for ArrayBuffer</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -7,18 +8,16 @@
 <script>
 async_test(function(t) {
   var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
-  var data = "";
-  var datasize = 10;  
+  var datasize = 10;
   ws.onopen = t.step_func(function(e) {
-   ws.binaryType = "arraybuffer";
-   data = new ArrayBuffer(datasize);
-   ws.send(data);
-   assert_equals(ws.bufferedAmount, data.byteLength);
+    ws.binaryType = "arraybuffer";
+    var data = new ArrayBuffer(datasize);
+    ws.send(data);
+    assert_equals(ws.bufferedAmount, data.byteLength);
   })
   ws.onmessage = t.step_func(function(e) {
     assert_equals(e.data.byteLength, datasize);
     t.done();
   })
-  
 });
 </script>

@@ -1,5 +1,6 @@
 <!doctype html>
-<title>WebSockets: replacing close</title>
+<meta charset=utf-8>
+<title>WebSockets: setting bufferedAmount</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../../../constants.js?pipe=sub></script>
@@ -7,7 +8,7 @@
 <script>
 test(function(){
   var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/');
-  ws.close = 5;
-  assert_equals(ws.close, 5);
+  ws.bufferedAmount = 5;
+  assert_equals(ws.bufferedAmount, 0);
 });
 </script>

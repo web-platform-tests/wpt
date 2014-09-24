@@ -124,13 +124,13 @@ pure ASCII.
 
 ## Support files
 
-Various support files are avaliable in in the `/common/` and `/media/`
+Various support files are available in in the `/common/` and `/media/`
 directories (web-platform-tests) and `/support/` (CSS). Reusing
 existing resources is encouraged where possible, as is adding
 generally useful files to these common areas rather than to specific
 testsuites.
 
-For CSS tests the following standard images are avaliable in the
+For CSS tests the following standard images are available in the
 support directory:
 
  * 1x1 color swatches
@@ -161,9 +161,9 @@ in particular are common:
 
 ### Tests Involving Multiple Origins
 
-In the test environment, five subdomains are avaliable; `www`, `www1`,
+In the test environment, five subdomains are available; `www`, `www1`,
 `www2`, `天気の良い日` and `élève`. These must be used for
-cross-origin tests. In addition two ports are avaliable for http and
+cross-origin tests. In addition two ports are available for http and
 one for websockets. Tests must not hardcode the hostname of the server
 that they expect to be running on or the port numbers, as these are
 not guaranteed by the test environment. Instead tests can get this
@@ -192,7 +192,7 @@ using the `domains` dictionary. For example:
 {% endraw %}
 
 would be replaced by the fully qualified domain name of the `www`
-subdomain. Ports are also avaliable on a per-protocol basis e.g.
+subdomain. Ports are also available on a per-protocol basis e.g.
 
 {% raw %}
     {{ports[ws][0]}}

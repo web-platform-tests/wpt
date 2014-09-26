@@ -11,29 +11,43 @@ policies and contribution forms [3].
 <html>
 <head>
 <meta charset="utf-8">
-<title>Object.prototype.preventExtensions</title>
+<title>Object.preventExtensions</title>
 <link rel="author" title="Masaya Iseki" href="mailto:iseki.m.aa@gmail.com">
-<link rel="help" href="http://www.ecma-international.org/ecma-262/5.1/#sec-15.2.3.10">
+<link rel="help" href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.preventextensions">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
 test(function() {
-  var obj = new Object();
-  assert_true(Object.isExtensible(obj));
-  obj.prop = 'exist';
+  [{}, []].forEach(function(that){
+    assert_true(Object.isExtensible(that));
+    that.prop = 'exist';
 
-  Object.preventExtensions(obj);
-  assert_false(Object.isExtensible(obj));
+    Object.preventExtensions(that);
+    assert_false(Object.isExtensible(that));
+    assert_false(Object.isFrozen(that));
+    assert_false(Object.isSealed(that));
 
-  obj.extension = 'This property should not be added';
-  assert_equals(undefined, obj.extension, 'Confirtm to prevent adding property.');
+    that.extension = 'This property should not be added';
+    assert_equals(undefined, that.extension, 'Confirm to prevent adding property.');
 
-  obj.prop = 'changed';
-  assert_equals('changed', obj.prop,
-        'Confirm to be able to change a property value.');
+    that.prop = 'changed';
+    assert_equals('changed', that.prop,
+          'Confirm to be able to change a property value.');
 
-  delete obj.prop;
-  assert_equals(undefined, obj.prop, 'Confirm to be able to delete a property.');
+    delete that.prop;
+    assert_equals(undefined, that.prop, 'Confirm to be able to delete a property.');
+  });
+});
+
+test(function() {
+  [null, undefined].forEach(function(that) {
+    try {
+      Object.preventextensions(that);
+    }
+    catch(err) {
+      assert_equals('TypeError', err.name);
+    }
+  });
 });
 </script>
 

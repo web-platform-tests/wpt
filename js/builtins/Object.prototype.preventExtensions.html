@@ -40,7 +40,7 @@ test(function() {
 });
 
 test(function() {
-  [null, undefined].forEach(function(that) {
+  ['foo', 42, null, undefined].forEach(function(that) {
     try {
       Object.preventextensions(that);
     }

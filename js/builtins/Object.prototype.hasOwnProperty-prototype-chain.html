@@ -13,17 +13,34 @@ policies and contribution forms [3].
 <meta charset="utf-8">
 <title>Object.prototype.hasOwnProperty: Check prototype chain</title>
 <link rel="author" title="Masaya Iseki" href="mailto:iseki.m.aa@gmail.com">
-<link rel="help" href="http://www.ecma-international.org/ecma-262/5.1/#sec-15.2.4.5">
+<link rel="help" href="https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.hasownproperty">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script>
 test(function() {
-  var obj = new Object();
+  [{}, []].forEach(function(that) {
+  	that.prop = 'exists';
+  	assert_true(that.hasOwnProperty('prop'));
+  	assert_true('hasOwnProperty' in that);
+  	assert_false(that.hasOwnProperty('hasOwnProperty'));
+  });
+});
 
-  obj.prop = 'exists';
-  assert_true(Object.hasOwnProperty.call(obj, 'prop'));
-  assert_true('hasOwnProperty' in obj);
-  assert_false(Object.hasOwnProperty.call(obj, 'hasOwnProperty'));
+test(function() {
+  ['foo', 42].forEach(function(that) {
+  	assert_false(that.hasOwnProperty('hasOwnProperty'));
+  });
+});
+
+test(function() {
+  [null, undefined].forEach(function(that) {
+  	try {
+  	  that.hasOwnProperty('hasOwnProperty');  
+  	}
+  	catch(err) {
+  	  assert_equals('TypeError', err.name);
+  	}
+  });
 });
 </script>
 

@@ -41,12 +41,8 @@ test(function() {
 
 test(function() {
   ['foo', 42, null, undefined].forEach(function(that) {
-    try {
-      Object.preventextensions(that);
-    }
-    catch(err) {
-      assert_equals('TypeError', err.name);
-    }
+    assert_throws(new TypeError(),
+        function() { Object.preventExtensions(that) });
   });
 });
 </script>

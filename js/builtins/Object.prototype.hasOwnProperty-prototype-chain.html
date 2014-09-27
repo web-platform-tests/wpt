@@ -34,12 +34,8 @@ test(function() {
 
 test(function() {
   [null, undefined].forEach(function(that) {
-  	try {
-  	  that.hasOwnProperty('hasOwnProperty');  
-  	}
-  	catch(err) {
-  	  assert_equals('TypeError', err.name);
-  	}
+    assert_throws(new TypeError(),
+        function() { that.hasOwnProperty('hasOwnProperty'); });
   });
 });
 </script>

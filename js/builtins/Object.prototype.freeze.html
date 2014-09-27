@@ -42,12 +42,8 @@ test(function() {
 
 test(function() {
   ['foo', 42, null, undefined].forEach(function(that) {
-    try {
-      Object.freeze(that);
-    }
-    catch(err) {
-      assert_equals('TypeError', err.name);
-    }
+    assert_throws(new TypeError(),
+        function() { Object.freeze(that) });
   });
 });
 </script>

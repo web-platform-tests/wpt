@@ -62,7 +62,7 @@ function createSampleDOM()
     f.appendChild(h);
 
     var i = document.createTextNode("i");
-    d.appendChild(g);
+    d.appendChild(i);
 
     var j = document.createComment("j");
     c.appendChild(j);
@@ -80,13 +80,6 @@ function check_walker(walker, root)
     assert_readonly(walker, 'root');
     assert_readonly(walker, 'whatToShow');
     assert_readonly(walker, 'filter');
-    assert_idl_attribute(walker, 'parentNode');
-    assert_idl_attribute(walker, 'firstChild');
-    assert_idl_attribute(walker, 'lastChild');
-    assert_idl_attribute(walker, 'previousSibling');
-    assert_idl_attribute(walker, 'nextSibling');
-    assert_idl_attribute(walker, 'previousNode');
-    assert_idl_attribute(walker, 'nextNode');
 }
 
 test(function ()
@@ -117,7 +110,6 @@ test(function ()
     var root = createSampleDOM();
     var walker = document.createTreeWalker(root);
     var f = root.lastChild.firstChild.childNodes[1];  // An element node: div#f.
-    var body = document.body;  // An element outside |root|.
 
     assert_node(walker.currentNode, { type: Element, id: 'a' });
     assert_equals(walker.parentNode(), null);
@@ -141,20 +133,6 @@ test(function ()
     walker.currentNode = f;
     assert_equals(walker.currentNode, f);
 }, 'Walk over nodes.');
-
-// FIXME: Add tests that use |whatToShow| argument and/or |filter| argument.
-
-// test(function ()
-// {
-//     var filter = function () {
-//         return NodeFilter.FILTER_ACCEPT;
-//     };
-//     [true, false].forEach(function (expandEntityReferences) {
-//        var walker = document.createTreeWalker(createSampleDOM(), /*NodeFilter.*/SHOW_ALL, filter, expandEntityReferences);
-//         assert_true(walker instanceof TreeWalker);
-//         assert_false(walker.expandEntityReferences);
-//     });
-// }, 'Test that the fourth argument (expandEntityReferences) is ignored.');
 
 test(function() {
     var treeWalker = document.createTreeWalker(document.body, 42, null);

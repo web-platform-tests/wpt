@@ -14,32 +14,34 @@ Test adapted from https://mxr.mozilla.org/chromium/source/src/third_party/WebKit
 <body>
 <p>Test JS objects as NodeFilters</p>
 <script>
-var testElement = document.createElement("div");
-testElement.id = 'root';
-//testElement.innerHTML='<div id="A1"><div id="B1"></div><div id="B2"></div></div>';
+var testElement;
+setup(function() {
+    testElement = document.createElement("div");
+    testElement.id = 'root';
+    //testElement.innerHTML='<div id="A1"><div id="B1"></div><div id="B2"></div></div>';
 
-// XXX for Servo, build the tree without using innerHTML
-var a1 = document.createElement("div");
-a1.id = "A1";
-var b1 = document.createElement("div");
-b1.id = "B1";
-var b2 = document.createElement("div");
-b2.id = "B2";
-testElement.appendChild(a1);
-a1.appendChild(b1);
-a1.appendChild(b2);
+    // XXX for Servo, build the tree without using innerHTML
+    var a1 = document.createElement("div");
+    a1.id = "A1";
+    var b1 = document.createElement("div");
+    b1.id = "B1";
+    var b2 = document.createElement("div");
+    b2.id = "B2";
+    testElement.appendChild(a1);
+    a1.appendChild(b1);
+    a1.appendChild(b2);
+});
 
 test(function()
 {
     function filter(node)
     {
-        debug(" filtering node " + node.id);
         if (node.id == "B1")
             return /*NodeFilter.*/FILTER_SKIP;
         return /*NodeFilter.*/FILTER_ACCEPT;
     }
 
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, filter, false);
+    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, filter);
     assert_node(walker.currentNode, { type: Element, id: 'root' });
     assert_node(walker.firstChild(), { type: Element, id: 'A1' });
     assert_node(walker.currentNode, { type: Element, id: 'A1' });
@@ -51,12 +53,11 @@ test(function()
 {
     var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, {
         acceptNode : function(node) {
-            debug(" filtering node " + node.id);
             if (node.id == "B1")
                 return /*NodeFilter.*/FILTER_SKIP;
             return /*NodeFilter.*/FILTER_ACCEPT;
         }
-    }, false);
+    });
     assert_node(walker.currentNode, { type: Element, id: 'root' });
     assert_node(walker.firstChild(), { type: Element, id: 'A1' });
     assert_node(walker.currentNode, { type: Element, id: 'A1' });
@@ -66,7 +67,7 @@ test(function()
 
 test(function()
 {
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, null, false);
+    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, null);
     assert_node(walker.currentNode, { type: Element, id: 'root' });
     assert_node(walker.firstChild(), { type: Element, id: 'A1' });
     assert_node(walker.currentNode, { type: Element, id: 'A1' });
@@ -76,7 +77,7 @@ test(function()
 
 test(function()
 {
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, undefined, false);
+    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, undefined);
     assert_node(walker.currentNode, { type: Element, id: 'root' });
     assert_node(walker.firstChild(), { type: Element, id: 'A1' });
     assert_node(walker.currentNode, { type: Element, id: 'A1' });
@@ -87,7 +88,7 @@ test(function()
 // XXX Servo breaks the test when a callback isn't callable
 test(function()
 {
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, {}, false);
+    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, {});
     assert_throws(null, function () { walker.firstChild(); });
     assert_node(walker.currentNode, { type: Element, id: 'root' });
     assert_throws(null, function () { walker.nextNode(); });
@@ -97,7 +98,7 @@ test(function()
 // XXX Servo breaks the test when a callback isn't callable
 test(function()
 {
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, { acceptNode: "foo" }, false);
+    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, { acceptNode: "foo" });
     assert_throws(null, function () { walker.firstChild(); });
     assert_node(walker.currentNode, { type: Element, id: 'root' });
     assert_throws(null, function () { walker.nextNode(); });
@@ -108,7 +109,7 @@ test(function()
 {
     var filter = function() { return /*NodeFilter.*/FILTER_ACCEPT; };
     filter.acceptNode = function(node) { return /*NodeFilter.*/FILTER_SKIP; };
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, filter, false);
+    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, filter);
     assert_node(walker.firstChild(), { type: Element, id: 'A1' });
     assert_node(walker.nextNode(), { type: Element, id: 'B1' });
 }, 'Testing with function having acceptNode function');
@@ -117,11 +118,10 @@ test(function()
 {
     var filter = {
         acceptNode: function(node) {
-            debug('Callee: ' + arguments.callee);
             return /*NodeFilter.*/FILTER_ACCEPT;
         }
     };
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, filter, false);
+    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, filter);
     assert_node(walker.firstChild(), { type: Element, id: 'A1' });
 }, 'Testing acceptNode callee');
 
@@ -132,7 +132,7 @@ test(function()
                                            function(node) {
                                                throw('filter exception');
                                                return /*NodeFilter.*/FILTER_ACCEPT;
-                                           }, false);
+                                           });
     assert_throws(null, function () { walker.firstChild(); });
     assert_node(walker.currentNode, { type: Element, id: 'root' });
     assert_throws(null, function () { walker.nextNode(); });
@@ -148,7 +148,7 @@ test(function()
                                                    throw('filter exception');
                                                    return /*NodeFilter.*/FILTER_ACCEPT;
                                                }
-                                           }, false);
+                                           });
     assert_throws(null, function () { walker.firstChild(); });
     assert_node(walker.currentNode, { type: Element, id: 'root' });
     assert_throws(null, function () { walker.nextNode(); });

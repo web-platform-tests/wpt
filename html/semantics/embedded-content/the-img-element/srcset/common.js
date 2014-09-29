@@ -1,6 +1,13 @@
 setup({explicit_done:true});
 
 function check(img) {
+  var name = format_value(img.getAttribute('srcset'));
+  if (img.hasAttribute('sizes')) {
+    name += ' sizes=' + format_value(img.getAttribute('sizes'));
+  }
+  if (img.hasAttribute('data-desc')) {
+    name += ' (' + img.getAttribute('data-desc') + ')';
+  }
   test(function() {
     var expect = img.dataset.expect;
     if ('resolve' in img.dataset) {
@@ -9,7 +16,7 @@ function check(img) {
       expect = a.href;
     }
     assert_equals(img.currentSrc, expect);
-  }, format_value(img.getAttribute('srcset')) + (img.hasAttribute('sizes') ? ' sizes=' + format_value(img.getAttribute('sizes')) : ''));
+  }, name);
 }
 
 onload = function() {

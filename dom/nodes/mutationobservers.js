@@ -1,4 +1,4 @@
-// Compares a mutation record to 
+// Compares a mutation record to a predefined one
 // mutationToCheck is a mutation record from the user agent
 // expectedRecord is a mutation record minted by the test
 //    for expectedRecord, if properties are ommitted, they get default ones
@@ -10,11 +10,11 @@ function checkRecords(target, mutationToCheck, expectedRecord) {
 
     assert_equals(mr1.type, mr2.type, "mutation types must match");
     if (mr2.target instanceof Function) {
-      assert_equals(mr1.target, mr2.target());
+      assert_equals(mr1.target, mr2.target(), "target node must match");
     } else if (mr2.target !== undefined) {
-      assert_equals(mr1.target, mr2.target);
+      assert_equals(mr1.target, mr2.target, "target node must match");
     } else {
-      assert_equals(mr1.target, target);
+      assert_equals(mr1.target, target, "target node must match");
     }
     if (mr2.addedNodes instanceof Array) {
       assert_array_equals(mr1.addedNodes, mr2.addedNodes, "addedNodes must match");

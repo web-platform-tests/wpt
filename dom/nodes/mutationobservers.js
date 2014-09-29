@@ -1,10 +1,14 @@
-function checkRecords(target, sequence1, sequence2) {
-  assert_equals(sequence1.length, sequence2.length, "mutation records must match");
-  for (var item = 0; item < sequence1.length; item++) {
-    var mr1 = sequence1[item];
-    var mr2 = sequence2[item];
+// Compares a mutation record to 
+// mutationToCheck is a mutation record from the user agent
+// expectedRecord is a mutation record minted by the test
+//    for expectedRecord, if properties are ommitted, they get default ones
+function checkRecords(target, mutationToCheck, expectedRecord) {
+  assert_equals(mutationToCheck.length, expectedRecord.length, "mutation records must match");
+  for (var item = 0; item < mutationToCheck.length; item++) {
+    var mr1 = mutationToCheck[item];
+    var mr2 = expectedRecord[item];
 
-    assert_equals(mr1.type, mr2.type);
+    assert_equals(mr1.type, mr2.type, "mutation types must match");
     if (mr2.target instanceof Function) {
       assert_equals(mr1.target, mr2.target());
     } else if (mr2.target !== undefined) {

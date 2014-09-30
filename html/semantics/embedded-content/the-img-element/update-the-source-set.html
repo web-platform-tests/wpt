@@ -80,7 +80,8 @@ onload = function() {
 <div><picture><source srcset='data:,b' media='not all and !'><img src='data:,a' data-expect='data:,a'></picture></div>
 <div><picture><source srcset='data:,b' media='not all and (!)'><img src='data:,a' data-expect='data:,a'></picture></div>
 <div><picture><source srcset='data:,b' media='all, !'><img src='data:,a' data-expect='data:,b'></picture></div>
-<div><picture><source srcset='data:,b' media=','><img src='data:,a' data-expect='data:,b'></picture></div>
+<div><picture><source srcset='data:,b' media=','><img src='data:,a' data-expect='data:,a'></picture></div>
+<div><picture><source srcset='data:,b' media=', all'><img src='data:,a' data-expect='data:,b'></picture></div>
 
 <!-- <source type> assume support for gif, png, jpg, svg, ico -->
 

@@ -68,24 +68,33 @@ def setup_stdlib_logger():
 
 
 def do_delayed_imports(serve_root):
-    global serve, manifest
+    global serve, manifest, sslutils
 
-    sys.path.insert(0, os.path.join(serve_root))
-    sys.path.insert(0, os.path.join(serve_root, "tools", "scripts"))
-    failed = None
+    sys.path.insert(0, serve_root)
+    sys.path.insert(0, str(os.path.join(serve_root, "tools")))
+    sys.path.insert(0, str(os.path.join(serve_root, "tools", "scripts")))
+    failed = []
+
+    print sys.path
+
     try:
         import serve
     except ImportError:
-        failed = "serve"
+        failed.append("serve")
     try:
         import manifest
     except ImportError:
-        failed = "manifest"
+        failed.append("manifest")
+    try:
+        import sslutils
+    except ImportError:
+        raise
+        failed.append("sslutils")
 
     if failed:
         logger.critical(
             "Failed to import %s. Ensure that tests path %s contains web-platform-tests" %
-            (failed, serve_root))
+            (", ".join(failed), serve_root))
         sys.exit(1)
 
 
@@ -117,11 +126,12 @@ class LogLevelRewriter(object):
 
 
 class TestEnvironment(object):
-    def __init__(self, serve_path, test_paths, options):
+    def __init__(self, serve_path, test_paths, ssl_env, options):
         """Context manager that owns the test environment i.e. the http and
         websockets servers"""
         self.serve_path = serve_path
         self.test_paths = test_paths
+        self.ssl_env = ssl_env
         self.server = None
         self.config = None
         self.external_config = None
@@ -131,15 +141,18 @@ class TestEnvironment(object):
         self.files_to_restore = []
 
     def __enter__(self):
+        self.ssl_env.__enter__()
         self.copy_required_files()
         self.setup_server_logging()
         self.setup_routes()
         self.config = self.load_config()
         serve.set_computed_defaults(self.config)
-        self.external_config, self.servers = serve.start(self.config)
+        self.external_config, self.servers = serve.start(self.config, self.ssl_env)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.ssl_env.__exit__(exc_type, exc_val, exc_tb)
+
         self.restore_files()
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
@@ -156,10 +169,25 @@ class TestEnvironment(object):
             data = f.read()
             local_config = json.loads(data % self.options)
 
+        #TODO: allow non-default configuration for ssl
+
         local_config["external_host"] = self.options.get("external_host", None)
 
         config = serve.merge_json(default_config, local_config)
         config["doc_root"] = self.serve_path
+
+        if self.ssl_env.ssl_enabled:
+            config["ports"]["https"] = [8443]
+        else:
+            config["ports"]["https"] = [None]
+
+        host = self.options.get("certificate_domain", config["host"])
+        hosts = [host]
+        hosts.extend("%s.%s" % (item, host) for item in serve.get_subdomains(host).values())
+        key_file, certificate = self.ssl_env.host_cert_path(hosts)
+
+        config["key_file"] = key_file
+        config["certificate"] = certificate
 
         return config
 
@@ -300,6 +328,7 @@ def list_test_groups(serve_root, test_paths, test_types, product, **kwargs):
     for item in sorted(test_loader.groups(test_types)):
         print item
 
+
 def list_disabled(serve_root, test_paths, test_types, product, **kwargs):
     do_delayed_imports(serve_root)
     rv = []
@@ -313,6 +342,13 @@ def list_disabled(serve_root, test_paths, test_types, product, **kwargs):
         for test in tests:
             rv.append({"test": test.id, "reason": test.disabled()})
     print json.dumps(rv, indent=2)
+
+
+def get_ssl_kwargs(**kwargs):
+    if kwargs["ssl_type"] == "openssl":
+        return {"openssl_binary": kwargs["openssl_binary"]}
+    elif kwargs["ssl_type"] == "pregenerated":
+        raise NotImplementedError
 
 
 def run_tests(config, serve_root, test_paths, product, **kwargs):
@@ -340,7 +376,8 @@ def run_tests(config, serve_root, test_paths, product, **kwargs):
 
         check_args(**kwargs)
 
-        browser_kwargs = get_browser_kwargs(**kwargs)
+        ssl_env_cls = sslutils.environments[kwargs["ssl_type"]]
+        ssl_env = ssl_env_cls(logger, **get_ssl_kwargs(**kwargs))
 
         unexpected_total = 0
 
@@ -371,6 +408,7 @@ def run_tests(config, serve_root, test_paths, product, **kwargs):
 
         with TestEnvironment(serve_root,
                              test_paths,
+                             ssl_env,
                              env_options) as test_environment:
             try:
                 test_environment.ensure_started()
@@ -378,8 +416,10 @@ def run_tests(config, serve_root, test_paths, product, **kwargs):
                 logger.critical("Error starting test environment: %s" % e.message)
                 raise
 
+            browser_kwargs = get_browser_kwargs(ssl_env=ssl_env, **kwargs)
             base_server = "http://%s:%i" % (test_environment.external_config["host"],
                                             test_environment.external_config["ports"]["http"][0])
+
             repeat = kwargs["repeat"]
             for repeat_count in xrange(repeat):
                 if repeat > 1:

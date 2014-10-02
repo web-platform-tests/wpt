@@ -124,6 +124,14 @@ def create_parser(product_choices=None):
     parser.add_argument("--stackwalk-binary", action="store", type=abs_path,
                         help="Path to stackwalker program used to analyse minidumps.")
 
+    parser.add_argument("--ssl-type", action="store", default="openssl",
+                        choices=["openssl", "pregenerated", "none"],
+                        help="Type of ssl support to enable (running without ssl may lead to spurious errors)")
+    parser.add_argument("--openssl-binary", action="store",
+                        help="Path to openssl binary", default="openssl")
+    parser.add_argument("--certutil-binary", action="store",
+                        help="Path to certutil binary for use with Firefox + ssl")
+
     parser.add_argument("--b2g-no-backup", action="store_true", default=False,
                         help="Don't backup device before testrun with --product=b2g")
 

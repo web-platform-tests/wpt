@@ -129,6 +129,8 @@ class TestEnvironment(object):
             data = f.read()
             local_config = json.loads(data % self.options)
 
+        local_config["external_host"] = self.options.get("external_host", None)
+
         return serve.merge_json(default_config, local_config)
 
     def copy_required_files(self):

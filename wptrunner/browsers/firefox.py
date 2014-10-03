@@ -42,12 +42,12 @@ def browser_kwargs(**kwargs):
 def executor_kwargs(http_server_url, **kwargs):
     executor_kwargs = base_executor_kwargs(http_server_url, **kwargs)
     executor_kwargs["close_after_done"] = True
-    executor_kwargs["http_server_override"] = "http://web-platform.test:8000"
     return executor_kwargs
 
 
 def env_options():
     return {"host": "localhost",
+            "external_host": "web-platform.test",
             "bind_hostname": "true",
             "required_files": required_files}
 

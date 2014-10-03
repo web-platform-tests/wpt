@@ -18,10 +18,10 @@
 
                 on_event(target0, "pointerdown", function (event) {
                     try {
-                        target1.setPointerCapture(INVALID_POINTERID);
+                        target1.setPointerCapture(event.pointerId);
 
                         test_setPointerCapture.step(function() {
-                            assert_unreachable("DOMException: InvalidStateError should have been thrown.");
+                            assert_unreached("DOMException: InvalidStateError should have been thrown.");
                         });
                     } catch (e) {
                         // TA: 13.4

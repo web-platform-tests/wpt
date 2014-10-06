@@ -133,7 +133,9 @@ class FirefoxBrowser(Browser):
                                    command=" ".join(self.runner.command))
 
     def is_alive(self):
-        return self.runner.is_running()
+        if self.runner:
+            return self.runner.is_running()
+        return False
 
     def cleanup(self):
         self.stop()

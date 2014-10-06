@@ -175,7 +175,7 @@ class B2GBrowser(Browser):
         self.device.reboot(wait=True)
 
     def pid(self):
-        return "Remote"
+        return None
 
     def is_alive(self):
         return True

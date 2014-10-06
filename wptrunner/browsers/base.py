@@ -91,6 +91,11 @@ class Browser(object):
         pass
 
     @abstractmethod
+    def pid(self):
+        """pid of the browser process or None if there is no pid"""
+        pass
+
+    @abstractmethod
     def is_alive(self):
         """Boolean indicating whether the browser process is still running"""
         pass
@@ -118,6 +123,9 @@ class NullBrowser(Browser):
 
     def stop(self):
         pass
+
+    def pid(self):
+        return None
 
     def is_alive(self):
         return True

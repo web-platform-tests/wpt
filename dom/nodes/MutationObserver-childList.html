@@ -16,6 +16,7 @@
 <span id='d50'>text content</span>
 <span id='d51'>text content</span>
 </p>
+
 </section>
 <section style="display: none">
 <p id='n00'><span>text content</span></p>
@@ -72,20 +73,7 @@
     return fragment;
   }
 
-  var countMutations = 0;
-
   var n00 = document.getElementById('n00');
-  var parentTest = async_test("subtree mutations");
-  function masterMO(sequence, obs) {
-    parentTest.step(
-      function () {
-        assert_equals(sequence.length, countMutations, "mutation records must match");
-      });
-    parentTest.done();
-  }
-  parentTest.step(function() {
-    (new MutationObserver(masterMO)).observe(n00.parentNode, {"subtree": true, "childList": true});
-  });
 
   runMutationTest(n00,
                   {"childList":true, "attributes":true},
@@ -94,7 +82,7 @@
                   "childList Node.nodeValue: no mutation");
 
   var n10 = document.getElementById('n10');
-  countMutations += runMutationTest(n10,
+  runMutationTest(n10,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n10.firstChild],
@@ -103,7 +91,7 @@
                   "childList Node.textContent: replace content mutation");
 
   var n11 = document.getElementById('n11');
-  countMutations += runMutationTest(n11,
+  runMutationTest(n11,
                   {"childList":true},
                   [{type: "childList",
                     addedNodes: function() {return [n11.firstChild]}}],
@@ -118,7 +106,7 @@
                   "childList Node.textContent: textContent no mutation");
 
   var n13 = document.getElementById('n13');
-  countMutations += runMutationTest(n13,
+  runMutationTest(n13,
                   {"childList":true},
                   [{type: "childList", removedNodes: [n13.firstChild]}],
                   function() { n13.textContent = ""; },
@@ -126,8 +114,7 @@
 
   var n20 = document.getElementById('n20');
   n20.appendChild(document.createTextNode("S"));
-  countMutations++;
-  countMutations += runMutationTest(n20,
+  runMutationTest(n20,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n20.lastChild],
@@ -138,8 +125,7 @@
   var n21 = document.getElementById('n21');
   n21.appendChild(document.createTextNode("AN"));
   n21.appendChild(document.createTextNode("GED"));
-  countMutations+=2;
-  countMutations += runMutationTest(n21,
+  runMutationTest(n21,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n21.lastChild.previousSibling],
@@ -153,7 +139,7 @@
 
   var n30 = document.getElementById('n30');
   var d30 = document.getElementById('d30');
-  countMutations += runMutationTest(n30,
+  runMutationTest(n30,
                   {"childList":true},
                   [{type: "childList",
                     addedNodes: [d30],
@@ -162,7 +148,7 @@
                   "childList Node.insertBefore: addition mutation");
 
   var n31 = document.getElementById('n31');
-  countMutations += runMutationTest(n31,
+  runMutationTest(n31,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n31.firstChild]}],
@@ -170,7 +156,7 @@
                   "childList Node.insertBefore: removal mutation");
 
   var n32 = document.getElementById('n32');
-  countMutations += runMutationTest(n32,
+  runMutationTest(n32,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n32.firstChild.nextSibling],
@@ -183,7 +169,7 @@
 
   var n33 = document.getElementById('n33');
   var f33 = createFragment();
-  countMutations += runMutationTest(n33,
+  runMutationTest(n33,
                   {"childList":true},
                   [{type: "childList",
                     addedNodes: [f33.firstChild, f33.lastChild],
@@ -193,7 +179,7 @@
 
   var n34 = document.getElementById('n34');
   var f34 = createFragment();
-  countMutations += runMutationTest(f34,
+  runMutationTest(f34,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [f34.firstChild, f34.lastChild]}],
@@ -202,7 +188,7 @@
 
   var n35 = document.getElementById('n35');
   var d35 = document.getElementById('d35');
-  countMutations += runMutationTest(n35,
+  runMutationTest(n35,
                   {"childList":true},
                   [{type: "childList",
                     addedNodes: [d35],
@@ -212,7 +198,7 @@
 
   var n40 = document.getElementById('n40');
   var d40 = document.getElementById('d40');
-  countMutations += runMutationTest(n40,
+  runMutationTest(n40,
                   {"childList":true},
                   [{type: "childList",
                     addedNodes: [d40],
@@ -221,7 +207,7 @@
                   "childList Node.appendChild: addition mutation");
 
   var n41 = document.getElementById('n41');
-  countMutations += runMutationTest(n41,
+  runMutationTest(n41,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n41.firstChild]}],
@@ -229,7 +215,7 @@
                   "childList Node.appendChild: removal mutation");
 
   var n42 = document.getElementById('n42');
-  countMutations += runMutationTest(n42,
+  runMutationTest(n42,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n42.firstChild.nextSibling],
@@ -242,7 +228,7 @@
 
   var n43 = document.getElementById('n43');
   var f43 = createFragment();
-  countMutations += runMutationTest(n43,
+  runMutationTest(n43,
                   {"childList":true},
                   [{type: "childList",
                     addedNodes: [f43.firstChild, f43.lastChild],
@@ -252,7 +238,7 @@
 
   var n44 = document.getElementById('n44');
   var f44 = createFragment();
-  countMutations += runMutationTest(f44,
+  runMutationTest(f44,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [f44.firstChild, f44.lastChild]}],
@@ -270,7 +256,7 @@
 
   var n50 = document.getElementById('n50');
   var d50 = document.getElementById('d50');
-  countMutations += runMutationTest(n50,
+  runMutationTest(n50,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n50.firstChild],
@@ -280,7 +266,7 @@
 
   var n51 = document.getElementById('n51');
   var d51 = document.getElementById('d51');
-  countMutations += runMutationTest(n51,
+  runMutationTest(n51,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n51.firstChild]}],
@@ -288,7 +274,7 @@
                   "childList Node.replaceChild: removal mutation");
 
   var n52 = document.getElementById('n52');
-  countMutations += runMutationTest(n52,
+  runMutationTest(n52,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n52.lastChild],
@@ -300,7 +286,7 @@
                   "childList Node.replaceChild: internal replacement mutation");
 
   var n60 = document.getElementById('n60');
-  countMutations += runMutationTest(n60,
+  runMutationTest(n60,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n60.firstChild]}],
@@ -314,7 +300,7 @@
     r70.setStartBefore(n70.firstChild);
     r70.setEndAfter(n70.firstChild);
    }, "Range (r70) is created");
-  countMutations += runMutationTest(n70,
+  runMutationTest(n70,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n70.firstChild],
@@ -323,7 +309,6 @@
                   "childList Range.deleteContents: child removal mutation");
 
   var n71 = document.getElementById('n71');
-  countMutations+=2;
   var r71 = null;
   test(function () {
     n71.appendChild(document.createTextNode("NNN"));
@@ -332,7 +317,7 @@
     r71.setStart(n71.firstChild, 4);
     r71.setEnd(n71.lastChild, 1);
    }, "Range (r71) is created");
-  countMutations += runMutationTest(n71,
+  runMutationTest(n71,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n71.firstChild.nextSibling],
@@ -348,7 +333,7 @@
     r80.setStartBefore(n80.firstChild);
     r80.setEndAfter(n80.firstChild);
    }, "Range (r80) is created");
-  countMutations += runMutationTest(n80,
+  runMutationTest(n80,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n80.firstChild],
@@ -357,7 +342,6 @@
                   "childList Range.extractContents: child removal mutation");
 
   var n81 = document.getElementById('n81');
-  countMutations+=2;
   var r81 = null;
   test(function () {
     n81.appendChild(document.createTextNode("NNN"));
@@ -366,7 +350,7 @@
     r81.setStart(n81.firstChild, 4);
     r81.setEnd(n81.lastChild, 1);
    }, "Range (r81) is created");
-  countMutations += runMutationTest(n81,
+  runMutationTest(n81,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n81.firstChild.nextSibling],
@@ -383,7 +367,7 @@
     r90.setStartAfter(n90.firstChild);
     r90.setEndBefore(n90.lastChild);
    }, "Range (r90) is created");
-  countMutations += runMutationTest(n90,
+  runMutationTest(n90,
                   {"childList":true},
                   [{type: "childList",
                     addedNodes: [f90],
@@ -393,7 +377,6 @@
                   "childList Range.insertNode: child insertion mutation");
 
   var n91 = document.getElementById('n91');
-  countMutations++;
   var f91 = document.createTextNode("NG");
   var r91 = null;
   test(function () {
@@ -402,7 +385,7 @@
     r91.setStart(n91.firstChild, 3);
     r91.setEnd(n91.lastChild, 0);
    }, "Range (r91) is created");
-  countMutations += runMutationTest(n91,
+  runMutationTest(n91,
                   {"childList":true},
                   [{type: "childList",
                     addedNodes: function() { return [n91.lastChild.previousSibling]; },
@@ -423,7 +406,7 @@
     r100.setStartBefore(n100.firstChild);
     r100.setEndAfter(n100.lastChild);
    }, "Range (r100) is created");
-  countMutations += runMutationTest(n100,
+  runMutationTest(n100,
                   {"childList":true},
                   [{type: "childList",
                     removedNodes: [n100.firstChild],

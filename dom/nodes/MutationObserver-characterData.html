@@ -42,107 +42,92 @@
 </section>
 
 <script>
-  var countMutations = 0;
-  var n = document.getElementById('n');
-
-  var parentTest = async_test("subtree mutations");
-  function masterMO(sequence, obs) {
-    parentTest.step(
-      function () {
-        assert_equals(sequence.length, countMutations, "mutation records must match");
-      });
-    parentTest.done();
-  }
-  parentTest.step(function() {
-    (new MutationObserver(masterMO)).observe(n.parentNode, {"subtree": true, "characterData": true});
-  });
-
-  var n = n.firstChild;
-  countMutations += runMutationTest(n,
+  var n = document.getElementById('n').firstChild;
+runMutationTest(n,
                   {"characterData":true},
                   [{type: "characterData"}],
                   function() { n.data = "NEW VALUE"; },
                   "characterData Text.data: simple mutation without oldValue");
 
   var n00 = document.getElementById('n00').firstChild;
-  countMutations += runMutationTest(n00,
+runMutationTest(n00,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "text content" }],
                   function() { n00.data = "CHANGED"; },
                   "characterData Text.data: simple mutation");
 
   var n10 = document.getElementById('n10').firstChild;
-  countMutations += runMutationTest(n10,
+runMutationTest(n10,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHAN" }],
                   function() { n10.appendData("GED"); },
                   "characterData Text.appendData: simple mutation");
 
   var n11 = document.getElementById('n11').firstChild;
-  countMutations += runMutationTest(n11,
+runMutationTest(n11,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANGED" }],
                   function() { n11.appendData(""); },
                   "characterData Text.appendData: empty string mutation");
 
   var n12 = document.getElementById('n12').firstChild;
-  countMutations += runMutationTest(n12,
+runMutationTest(n12,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANGED" }],
                   function() { n12.appendData(null); },
                   "characterData Text.appendData: null string mutation");
 
   var n20 = document.getElementById('n20').firstChild;
-  countMutations += runMutationTest(n20,
+runMutationTest(n20,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHGED" }],
                   function() { n20.insertData(2, "AN"); },
                   "characterData Text.insertData: simple mutation");
 
   var n21 = document.getElementById('n21').firstChild;
-  countMutations += runMutationTest(n21,
+runMutationTest(n21,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANGED" }],
                   function() { n21.insertData(2, ""); },
                   "characterData Text.insertData: empty string mutation");
 
   var n22 = document.getElementById('n22').firstChild;
-  countMutations += runMutationTest(n22,
+runMutationTest(n22,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANGED" }],
                   function() { n22.insertData(2, null); },
                   "characterData Text.insertData: null string mutation");
 
   var n30 = document.getElementById('n30').firstChild;
-  countMutations += runMutationTest(n30,
+runMutationTest(n30,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CCCHANGED" }],
                   function() { n30.deleteData(0, 2); },
                   "characterData Text.deleteData: simple mutation");
 
   var n31 = document.getElementById('n31').firstChild;
-  countMutations += runMutationTest(n31,
+runMutationTest(n31,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANGED" }, {type: "characterData", oldValue: "CHANGED" }],
                   function() { n31.deleteData(0, 0); n31.data = "n31"; },
                   "characterData Text.deleteData: empty mutation");
 
   var n40 = document.getElementById('n40').firstChild;
-  countMutations += runMutationTest(n40,
+runMutationTest(n40,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CCCHANGED" }],
                   function() { n40.replaceData(0, 2, "CH"); },
                   "characterData Text.replaceData: simple mutation");
 
   var n41 = document.getElementById('n41').firstChild;
-  countMutations += runMutationTest(n41,
+runMutationTest(n41,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANGED" }],
                   function() { n41.replaceData(0, 0, "CH"); },
                   "characterData Text.replaceData: empty mutation");
 
   var n50 = document.getElementById('n50').firstChild;
-  countMutations += runMutationTest(n50,
+runMutationTest(n50,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "?processing data?" },{type: "characterData", oldValue: "CHANGED" },{type: "characterData", oldValue: "CHANGED" }],
                   function() {
@@ -152,7 +137,7 @@
                   "characterData ProcessingInstruction: data mutations");
 
   var n60 = document.getElementById('n60').firstChild;
-  countMutations += runMutationTest(n60,
+runMutationTest(n60,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: " data " },{type: "characterData", oldValue: "CHANGED" },{type: "characterData", oldValue: "CHANGED" }],
                   function() {
@@ -170,12 +155,11 @@
     r70.setStart(n70.firstChild, 4);
     r70.setEnd(n70.lastChild, 1);
    }, "Range (r70) is created");
-  countMutations += runMutationTest(n70.firstChild,
+runMutationTest(n70.firstChild,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANN" }],
                   function() { r70.deleteContents(); },
                   "characterData Range.deleteContents: child and data removal mutation");
-  countMutations++;
 
   var n71 = document.getElementById('n71');
   var r71 = null;
@@ -186,12 +170,11 @@
     r71.setStart(n71.firstChild, 4);
     r71.setEnd(n71.lastChild, 1);
    }, "Range (r71) is created");
-  countMutations += runMutationTest(n71.lastChild,
+runMutationTest(n71.lastChild,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "NGED"}],
                   function() { r71.deleteContents(); },
                   "characterData Range.deleteContents: child and data removal mutation (2)");
-  countMutations++;
 
   var n80 = document.getElementById('n80');
   var r80 = null;
@@ -202,12 +185,11 @@
     r80.setStart(n80.firstChild, 4);
     r80.setEnd(n80.lastChild, 1);
    }, "Range (r80) is created");
-  countMutations += runMutationTest(n80.firstChild,
+runMutationTest(n80.firstChild,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANN" }],
                   function() { r80.extractContents(); },
                   "characterData Range.extractContents: child and data removal mutation");
-  countMutations++;
 
   var n81 = document.getElementById('n81');
   var r81 = null;
@@ -218,15 +200,14 @@
     r81.setStart(n81.firstChild, 4);
     r81.setEnd(n81.lastChild, 1);
    }, "Range (r81) is created");
-  countMutations += runMutationTest(n81.lastChild,
+runMutationTest(n81.lastChild,
                   {"characterData":true,"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "NGED" }],
                   function() { r81.extractContents(); },
                   "characterData Range.extractContents: child and data removal mutation (2)");
-  countMutations++;
 
   var n90 = document.getElementById('n90').firstChild;
-  countMutations += runMutationTest(n90,
+runMutationTest(n90,
                   {"characterDataOldValue":true},
                   [{type: "characterData", oldValue: "CHANN" }],
                   function() { n90.data = "CHANGED"; },

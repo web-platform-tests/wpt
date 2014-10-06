@@ -29,9 +29,6 @@
                     console.warn('No element found for ' + xpath + ' (relative to ' + id + '), not able to link this assertation to '+item.testURL);
                     continue;
                 }
-                console.log(id+' '+elm)
-                console.log(xpath)
-                console.log(assert_elm)
                 assert_elm.classList.add('seems_well_tested');
                 var annotation = assert_elm.getElementsByClassName('test_annotation')[0] || document.createElement('span');
                 annotation.className = 'test_annotation';

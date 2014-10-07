@@ -78,8 +78,31 @@ test(function() {
   });
   invalid.forEach(function(arg) {
     test(function() {
-      assert_throws("INVALID_CHARACTER_ERR", function() { document.createElement(arg) })
+      assert_throws("INVALID_CHARACTER_ERR", function() {
+        document.createElement(arg)
+      })
     }, "createElement(" + format_value(arg) + ")");
   });
 })
+
+function checkElement(elt) {
+  assert_equals(elt.localName, "A", "localName must not be converted to ASCII lowercase");
+  assert_equals(elt.namespaceURI, null, "createElement");
+}
+
+test(function () {
+  checkElement(document.implementation
+    .createDocument(null, null, null).createElement("A"));
+}, "createElement on non-HTML documents");
+
+test(function () {
+  checkElement(document.implementation
+    .createDocument("http://www.w3.org/1999/xhtml", "html", null).createElement("A"));
+}, "createElement on non-HTML XHTML documents");
+
+test(function () {
+  checkElement(document.implementation
+    .createDocument("http://www.w3.org/2000/svg", "svg", null).createElement("A"));
+}, "createElement on non-HTML SVG documents");
+
 </script>

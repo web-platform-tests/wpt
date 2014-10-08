@@ -1,0 +1,9 @@
+WEBVTT
+lang:en
+title:Content Test - Paragraph - 003
+desc:Test the p element with styling and timing attributes.
+copyright:Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+style:Paragraph003.css
+
+0:00:00.000 --> 0:00:10.000
+<c.redCue>This text must be red.

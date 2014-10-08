@@ -1,0 +1,19 @@
+WEBVTT
+lang:en
+title:Content Test - div - 003
+desc:Test multiple div elements in the body with the xml:lang attribute.
+copyright:Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+style:Div002.css
+
+0:00:00.000 --> 0:00:05.000
+<c.redCue><lang.en>This text must be red.
+
+0:00:05.000 --> 0:00:10.000
+<c.greenCue><lang.fr>Ce texte doit être vert.
+
+0:00:10.000 --> 0:00:15.000
+<c.redCue><lang.ja>このテキストは赤くなければならない。
+
+0:00:15.000 --> 0:00:20.000
+<lang.en>This test is over.
+

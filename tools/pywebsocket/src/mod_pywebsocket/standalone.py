@@ -658,6 +658,8 @@ class WebSocketRequestHandler(CGIHTTPServer.CGIHTTPRequestHandler):
     # Use httplib.HTTPMessage instead of mimetools.Message.
     MessageClass = httplib.HTTPMessage
 
+    protocol_version = "HTTP/1.1"
+
     def setup(self):
         """Override SocketServer.StreamRequestHandler.setup to wrap rfile
         with MemorizingFile.
@@ -712,6 +714,12 @@ class WebSocketRequestHandler(CGIHTTPServer.CGIHTTPRequestHandler):
         # how _StandaloneRequest's members are implemented using these
         # attributes).
         if not CGIHTTPServer.CGIHTTPRequestHandler.parse_request(self):
+            return False
+
+        if self.command == "CONNECT":
+            self.send_response(200, "Connected")
+            self.send_header("Connection", "keep-alive")
+            self.end_headers()
             return False
 
         if self._options.use_basic_auth:

@@ -1,0 +1,19 @@
+WEBVTT
+lang:en
+title:Content Test - div - 002
+desc:Test multiple div elements in the body.
+copyright:Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+style:Div001-v2.css
+
+0:00:00.000 --> 0:00:05.000
+<c.redCue>This text must be red.
+
+0:00:05.000 --> 0:00:10.000
+<c.greenCue>This text must be green.
+
+0:00:10.000 --> 0:00:15.000
+<c.redCue>This text must be red.
+
+0:00:15.000 --> 0:00:20.000
+This test is over.
+

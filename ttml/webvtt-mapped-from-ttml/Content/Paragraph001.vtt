@@ -1,0 +1,9 @@
+WEBVTT
+lang:en
+title:Content Test - Paragraph - 001
+desc:Test the p element with no styling attribute.
+copyright:Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+
+0:00:00.000 --> 0:00:10.000
+This text must be visible.
+

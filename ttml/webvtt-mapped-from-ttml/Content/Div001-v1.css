@@ -1,0 +1,7 @@
+::cue(#redCue) {
+	color: red;
+}
+
+::cue(.greenCue) {
+	color: green;
+}

@@ -1,0 +1,13 @@
+WEBVTT
+
+NOTE This is a translation of DisplayAlign001a.xml
+NOTE CSS settings are assumed to be:
+NOTE	background=black
+NOTE	color=white
+NOTE	text-align=top
+
+Region: id=r1 width=31% lines=5 regionanchor=0%,0% scroll=up
+
+00:00:00.000 --> 00:00:10.000 region:r1 align:left
+This text is aligned with
+the before edge of the region.

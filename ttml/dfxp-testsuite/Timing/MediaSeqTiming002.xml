@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Timing Test - Seq - 002</ttm:title>
+      <ttm:desc>Testing seq in seq and default timing attributes</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#time-offset-with-frames</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body timeContainer="par">
+    <div timeContainer="seq" dur="40s">
+      <div timeContainer="seq" dur="20s">
+        <metadata>
+          <ttm:desc>default duration for elements in this context is 0</ttm:desc>
+        </metadata>
+        <p begin="00:00:05:00" dur="5s">This text must appear at 5 seconds<br/>and be remain visible to 10 seconds,</p>
+        <p begin="00:00:05:00">This text must not appear.</p>
+        <p  dur="00:00:05:00">This text must appear at 15 seconds<br/>and be remain visible to 20 seconds,</p>
+      </div>
+      <div timeContainer="seq" dur="20s">
+        <p begin="00:00:05:00" dur="5s">This text must appear at 25 seconds<br/>and be remain visible to 30 seconds..</p>
+        <p >This text must not appear.</p>
+        <p begin="5s" dur="00:00:05:00">This text must appear at 35 seconds<br/>and be remain visible to 40 seconds.</p>
+      </div>
+    </div>
+  </body>
+</tt>

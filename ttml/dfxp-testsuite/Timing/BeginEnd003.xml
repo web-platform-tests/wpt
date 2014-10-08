@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata> 
+      <ttm:title>Timing Test - BeginEnd - 003</ttm:title>
+      <ttm:desc>Test the begin and end attributes on p elements in random order. @@Is it a valid test?</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation"/>
+  </head>
+  <body timeContainer="par">
+    <div>
+      <p begin='0s' end='6s'>This test is going to display a message<br />every other second.</p>
+      <p begin='18s' end='19s'>and, from 18s to 19s.</p>
+      <p begin='10s' end='11s'>from 10s to 11s,</p>
+      <p begin='14s' end='15s'>from 14s to 15s,</p>
+      <p begin='8s' end='9s'>from 8s to 9s,</p>
+      <p begin='6s' end='7s'>From 6s to 7s,</p>
+      <p begin='16s' end='17s'>from 16s to 17s,</p>
+      <p begin='12s' end='13s'>from 12s to 13s,</p>
+      <p begin='20s' end='25s'>This test is over.</p>
+    </div>
+  </body>
+</tt>
+

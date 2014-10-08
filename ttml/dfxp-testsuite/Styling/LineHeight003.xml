@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - LineHeight - 003</ttm:title>
+      <ttm:desc>Test tts:lineHeight attribute using a length value in the style element.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#lineHeight</ttp:feature>
+        <ttp:feature>#length-px</ttp:feature>
+        <ttp:feature>#styling-referential</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <styling>
+    	<style xml:id="s1" tts:lineHeight="30px"/>
+    </styling>
+  </head>
+  <body>
+    <div>
+    	<p begin="0s" end="10s" style="s1">The line height of this<br />two-row caption is 30 pixels.</p>
+    </div>
+  </body>
+</tt>

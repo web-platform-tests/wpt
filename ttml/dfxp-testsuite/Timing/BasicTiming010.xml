@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Timing Test - Basic 010</ttm:title>
+      <ttm:desc>Testing basic time expressions  on span</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#time-clock-with-frames</ttp:feature>
+        <ttp:feature>#time-offset-with-frames</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body timeContainer="par">
+    <div timeContainer="par">
+      <p begin="10000ms" dur="00:00:30:00">
+        <span end="0.004h">This text must appear at 10 seconds and disappear at 24.4 seconds</span>
+        <br/>
+        <span begin="0.25m" dur="300f">This text must appear at 25 seconds and disappear at 35 seconds</span>
+      </p>
+    </div>
+  </body>
+</tt>

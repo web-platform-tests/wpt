@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata> 
+      <ttm:title>Timing Test - BeginEnd - 001</ttm:title>
+      <ttm:desc>Test the begin and dur attributes on p elements.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation"/>
+  </head>
+  <body  timeContainer="par">
+    <div>
+      <p begin='0s' dur='6s'>This test is going to display a message<br />every other second.</p>
+      <p begin='6s' dur='1s'>From 6s to 7s,</p>
+      <p begin='8s' dur='1s'>from 8s to 9s,</p>
+      <p begin='10s' dur='1s'>from 10s to 11s,</p>
+      <p begin='12s' dur='1s'>from 12s to 13s,</p>
+      <p begin='14s' dur='1s'>from 14s to 15s,</p>
+      <p begin='16s' dur='1s'>from 16s to 17s,</p>
+      <p begin='18s' dur='1s'>and, from 18s to 19s.</p>
+      <p begin='20s' dur='5s'>This test is over.</p>
+    </div>
+  </body>
+</tt>
+

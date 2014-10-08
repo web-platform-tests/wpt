@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - overflow - 004</ttm:title>
+      <ttm:desc>Test tts:overflow attribute with the hidden value and wrapped text.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#layout</ttp:feature>
+        <ttp:feature>#overflow</ttp:feature>
+        <ttp:feature>#styling-nested</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <layout>
+      <region xml:id="r1">
+	<style tts:origin="0px 0px"/>
+	<style tts:extent="150px 30px"/>
+	<style tts:backgroundColor="black"/>
+	<style tts:color="white"/>
+	<style tts:textAlign="start"/>
+    	<style tts:fontSize="18px"/>
+	<style tts:wrapOption="wrap"/>
+	<style tts:overflow="hidden"/>
+      </region>
+    </layout>
+  </head>
+  <body>
+    <div region="r1">
+      <p begin="0s" end="10s">Text is not visible below the after edge of the text region.</p>
+    </div>
+  </body>
+</tt>

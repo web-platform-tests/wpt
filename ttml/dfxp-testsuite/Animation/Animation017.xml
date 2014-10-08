@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Animation Test - Animate 017</ttm:title>
+      <ttm:desc>Set zIndex  </ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#animation</ttp:feature>
+        <ttp:feature>#layout</ttp:feature>
+        <ttp:feature>#overflow-visible</ttp:feature>
+	<ttp:feature>#styling-inline</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+        <ttp:feature>#zIndex</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <styling>
+      <style xml:id="s1"
+             tts:origin="10px 18px"
+             tts:extent="350px 100px"
+             tts:padding="5px"
+             tts:backgroundColor="red"
+             tts:color="white"
+             tts:textAlign="center"
+             />
+    </styling>
+    <layout>
+      <region dur="10s" xml:id="r1" style="s1" tts:zIndex="1"/>
+      <region dur="10s" xml:id="r2" style="s1" tts:zIndex="0">
+        <set begin="5s" end="10s" tts:zIndex="2" />
+      </region>
+    </layout>
+  </head>
+  <body>
+    <div timeContainer="par" dur="10s">
+      <p region="r1" dur="10s" tts:overflow="visible">This text should appear from 0 to 5s</p>
+      <p region="r2" dur="10s" tts:overflow="visible">This text should appear from 5s to 10s</p>
+    </div>
+  </body>
+</tt>

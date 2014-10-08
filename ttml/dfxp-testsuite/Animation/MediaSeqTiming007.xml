@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Animation Test - Seq - 007</ttm:title>
+      <ttm:desc>Testing more end truncation on seq</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#animation</ttp:feature>
+        <ttp:feature>#display-block</ttp:feature>
+	<ttp:feature>#styling-inline</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+        <ttp:feature>#timing-clock-with-frames</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body timeContainer="par">
+    <div timeContainer="par" end="10s">
+      <metadata>
+        <ttm:desc>end truncates par at 10s</ttm:desc>
+      </metadata>
+      <div timeContainer="seq" dur="20s">
+        <p begin="00:00:05:00" dur="10s">This text must appear at 5 seconds<br/>and be remain visible to 10 seconds,</p>
+        <p begin="5s" dur="00:00:05:00">This text must not appear.</p>
+      </div>
+      <div timeContainer="seq" dur="20s">
+        <p tts:display="none" dur="00:00:20:00">
+          <set begin="5s" dur="00:00:20:00" tts:display="auto"/>This text must appear at 5 seconds<br/>and remain visible to 10 seconds</p>
+        <p begin="5s" dur="00:00:05:00">This text must not appear.</p>
+      </div>
+    </div>
+  </body>
+</tt>

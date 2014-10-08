@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Styling Test - WrapOption - 005</ttm:title>
+      <ttm:desc>Test tts:wrapOption attribute with the noWrap value in a span.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation" xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#layout</ttp:feature>
+        <ttp:feature>#styling-nested</ttp:feature>
+        <ttp:feature>#styling-inline</ttp:feature>
+        <ttp:feature>#styling-inheritance-region</ttp:feature>
+        <ttp:feature>#wrapOption</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <layout>
+      <region xml:id="r1">
+    	<style tts:backgroundColor="black"/>
+    	<style tts:color="white"/>
+    	<style tts:textAlign="start"/>
+    	<style tts:fontSize="14px"/>
+    	<style tts:wrapOption="wrap"/>
+      </region>
+    </layout>
+  </head>
+  <body>
+    <div region="r1">
+      <p begin="0s" end="5s">The text in this caption wraps, staying within the text region.</p>
+      <p begin="5s" end="10s"><span tts:wrapOption="noWrap">The text in this caption does not wrap, extending beyond the end edge of the text region.</span></p>
+    </div>
+  </body>
+</tt>

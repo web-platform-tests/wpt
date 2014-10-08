@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Timing Test - Basic 012</ttm:title>
+      <ttm:desc>Using basic time expressions to simulate crawl</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#layout</ttp:feature>
+        <ttp:feature>#styling-nested</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+        <ttp:feature>#wrapOption</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+    <layout>
+      <region xml:id="crawl">
+        <style tts:textAlign="end"/>
+        <style tts:backgroundColor="black"/>
+        <style tts:color="white"/>
+        <style tts:origin="10px 4em"/>
+        <style tts:extent="20em 3em"/>
+        <style tts:wrapOption="noWrap"/>
+        <style tts:overflow="hidden"/>
+      </region>
+    </layout>
+  </head>
+  <body timeContainer="par">
+    <div region="crawl" timeContainer="par">
+      <p timeContainer="par" >
+        <span begin="0.1875s" >This </span>
+        <span begin="0.375s" >text </span>
+        <span begin="0.5625s" >should </span>
+        <span begin="0.75s" >appear </span>
+        <span begin="0.9375s" >on </span>
+        <span begin="1.125s" >one </span>
+        <span begin="1.3125s" >line </span>
+        <span begin="1.5s" >scrolling  </span>
+        <span begin="1.6875s" >from </span>
+        <span begin="1.875s" >right </span>
+        <span begin="2.0625s" >to </span>
+        <span begin="2.25s" >left </span>
+        <span begin="2.4375s" xml:space='preserve'>        </span>
+        <span begin="2.625s" xml:space='preserve'>         </span>
+        <span begin="2.8125s" xml:space='preserve'>        </span>
+        <span begin="3s" xml:space='preserve'>        </span>
+        <span begin="3.1875s" xml:space='preserve'>        </span>
+        <span begin="3.375s" xml:space='preserve'>        </span>
+      </p>
+    </div>
+  </body>
+</tt>

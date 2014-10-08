@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Animation Test - Animate 013</ttm:title>
+      <ttm:desc>Set textDecoration, also tests multiple sets in action</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#animation</ttp:feature>
+	<ttp:feature>#styling-inline</ttp:feature>
+        <ttp:feature>#textDecoration</ttp:feature>
+        <ttp:feature>#timeContainer</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body>
+    <div timeContainer="seq" dur="20s">
+      <p  dur="10s" tts:textDecoration ="overline">
+        <set tts:textDecoration="lineThrough " begin="2s" />
+        <set tts:textDecoration="underline " begin="4s" />
+        <set tts:textDecoration="none " begin="6s" />The line should move progressively down through this sentence every 2 seconds</p>
+    </div>
+  </body>
+</tt>

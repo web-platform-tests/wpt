@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Timing Test - Container 003</ttm:title>
+      <ttm:desc>Begin after parent ends</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation">
+      <ttp:features xml:base="http://www.w3.org/ns/ttml/feature/">
+        <ttp:feature>#timeContainer</ttp:feature>
+      </ttp:features>
+    </ttp:profile>
+  </head>
+  <body>
+    <div timeContainer="seq" dur="10s">
+      <p timeContainer="par" dur="10s">
+        <span begin="5s" dur="5s">This first sentence begins at 5 seconds and persists for 5 seconds.</span>
+        <span begin="10s" dur="5s">This second sentence should not appear</span>
+      </p>
+      <p dur="10s">This third sentence should not appear</p>
+    </div>
+  </body>
+</tt>

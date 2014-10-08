@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata"
+    xmlns:ttp="http://www.w3.org/ns/ttml#parameter">
+  <head>
+    <metadata>
+      <ttm:title>Timing Test - Seq - 007</ttm:title>
+      <ttm:desc>Testing more end truncation on seq</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+    <ttp:profile use="dfxp-presentation"/>
+  </head>
+  <body timeContainer="par">
+    <div>
+      <p begin='0s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>0
+      </p>
+      <p begin='1s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>1
+      </p>
+      <p begin='2s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>2
+      </p>
+      <p begin='3s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>3
+      </p>
+      <p begin='4s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>4
+      </p>
+      <p begin='5s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>5
+      </p>
+      <p begin='6s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>6
+      </p>
+      <p begin='7s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>7
+      </p>
+      <p begin='8s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>8
+      </p>
+      <p begin='9s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>9
+      </p>
+      <p begin='10s'>
+        This test counts from 0 to 10 in 10 seconds.<br/>10
+      </p>
+      <p begin='11s' end='20s'>This test is over.</p>
+    </div>
+  </body>
+</tt>

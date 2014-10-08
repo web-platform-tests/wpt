@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xml:lang="en"
+    xmlns="http://www.w3.org/ns/ttml"
+    xmlns:tts="http://www.w3.org/ns/ttml#styling"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata">
+  <head>
+    <metadata> 
+      <ttm:title>Content Test - div - 001</ttm:title>
+      <ttm:desc>Test nested div elements.</ttm:desc>
+      <ttm:copyright>Copyright (C) 2008 W3C (MIT, ERCIM, Keio).</ttm:copyright>
+    </metadata>
+  </head>
+  <body>
+    <div>
+      <div begin="0s" end="5s" tts:color='red'>
+	<p begin="0s" end="5s">This text must be red.</p>
+      </div>
+      <div begin="5s" end="10s" tts:color='green'>
+	<p begin="0s" end="5s">This text must be green.</p>
+      </div>
+      <div begin="10s" end="20s">
+	<p begin="0s" end="5s">This test is over.</p>
+      </div>
+    </div>
+  </body>
+</tt>

@@ -29,11 +29,8 @@ test(function() {
   assert_equals(blob.type, "");
 }, "no-argument Blob constructor");
 test(function() {
-  var blob = Blob();
-  assert_true(blob instanceof Blob);
-  assert_equals(blob.size, 0);
-  assert_equals(blob.type, "");
-}, "no-argument Blob constructor without 'new'");
+  assert_throws(new TypeError(), function() { var blob = Blob() }
+}, "Blob constructor without 'new' should throw");
 test(function() {
   var blob = new Blob;
   assert_true(blob instanceof Blob);

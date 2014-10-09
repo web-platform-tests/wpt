@@ -2,6 +2,12 @@
 <html>
     <head>
         <title>touch-action: basic verification</title>
+        <meta name="assert" content="TA15.20 - The touch-action CSS property determines whether touch input MAY trigger default behavior supplied by the user agent.
+        auto: The user agent MAY determine any permitted touch behaviors, such as panning and zooming manipulations of the viewport, for touches that begin on the element. 
+        none: Touches that begin on the element MUST NOT trigger default touch behaviors.
+        pan-x: The user agent MAY consider touches that begin on the element only for the purposes of horizontally scrolling the element's nearest ancestor with horizontally scrollable content.
+        pan-y: The user agent MAY consider touches that begin on the element only for the purposes of vertically scrolling the element's nearest ancestor with vertically scrollable content.
+        manipulation: The user agent MAY consider touches that begin on the element only for the purposes of scrolling and continuous zooming. Any additional behaviors supported by auto are out of scope for this specification.">
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
@@ -59,7 +65,6 @@
             var detected_pointertypes = {};
 
             setup({ explicit_done: true });
-            add_completion_callback(showPointerTypes);
 
             function run() {
                 var target0 = document.getElementById('target0');
@@ -68,6 +73,7 @@
                 var target3 = document.getElementById('target3');
                 var target4 = document.getElementById('target4');
 
+                //TA 15.20
                 test(function() {
                         assert_true(getComputedStyle(target0).touchAction == 'auto', "'auto' is set properly");
                     }, "'auto' is set properly");

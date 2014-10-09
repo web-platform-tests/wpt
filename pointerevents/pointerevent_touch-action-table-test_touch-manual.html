@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Table touch-action test</title>
+        <meta name="assert" content="TA15.19 The touch-action CSS property applies to all elements except table rows, row groups, table columns, and column groups.">
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
@@ -63,17 +64,19 @@
                 var target0 = document.getElementById("target0");
                 var btnComplete = document.getElementById("btnComplete");
 
+                //TA 15.19
                 var test_touchaction_cell = async_test("touch-action attribute test on the cell");
                 var test_touchaction_row = async_test("touch-action attribute test on the row");
 
                 xScr0 = target0.scrollLeft;
                 yScr0 = target0.scrollTop;
 
-                on_event(btnComplete, 'pointerdown', function(event) {
+                on_event(btnComplete, 'click', function(event) {
                     detected_pointertypes[event.pointerType] = true;
                     test_touchaction_cell.step(function() {
                         assert_equals(target0.scrollLeft, 0, "table scroll x offset should be 0 in the end of the test");
                         assert_equals(target0.scrollTop, 0, "table scroll y offset should be 0 in the end of the test");
+                        assert_true(xScrollIsReceived && yScrollIsReceived, "target0 x and y scroll offsets should be greater than 0 after first two interactions (outside red border) respectively");
                     });
                     test_touchaction_cell.done();
                     updateDescriptionComplete();
@@ -91,7 +94,6 @@
                         if(yScr1 != yScr0) {
                             test_touchaction_row.step(function () {
                                 yScrollIsReceived = true;
-                                assert_true(true, "y-scroll received.");
                             });
                             updateDescriptionSecondStepTable(target0, scrollReturnInterval);
                         }
@@ -126,9 +128,6 @@
                 document.getElementById('desc').innerHTML = "Test Description: Try to scroll element DOWN then RIGHT starting your touch inside of the Cell 3";
             }
 
-            function updateDescriptionFourthStepTable(target, scrollReturnInterval) {
-                document.getElementById('desc').innerHTML = "Test Description: Try to scroll element RIGHT starting your touch inside of the Row 1";
-            }
         </script>
         <h1>touch-action: none</h1>
         <div id="complete-notice">

@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Span touch-action test</title>
+        <meta name="assert" content="TA15.18 - The touch-action CSS property applies to all elements except non-replaced inline elements."
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
         <script src="/resources/testharness.js"></script>
@@ -51,17 +52,19 @@
                 var target0 = document.getElementById("target0");
                 var btnComplete = document.getElementById("btnComplete");
 
+                //TA 15.18
                 var test_touchaction_div = async_test("touch-action attribute test out of element");
                 var test_touchaction_span = async_test("touch-action attribute test in element");
 
                 xScr0 = target0.scrollLeft;
                 yScr0 = target0.scrollTop;
 
-                on_event(btnComplete, 'pointerdown', function(event) {
+                on_event(btnComplete, 'click', function(event) {
                     detected_pointertypes[event.pointerType] = true;
                     test_touchaction_span.step(function() {
                         assert_not_equals(target0.scrollLeft, 0, "span scroll x offset should not be 0 in the end of the test");
                         assert_not_equals(target0.scrollTop, 0, "span scroll y offset should not be 0 in the end of the test");
+                        assert_true(!isFirstPart, "target0 x and y scroll offsets should be greater than 0 after first two interactions (outside red border) respectively");
                     });
                     test_touchaction_span.done();
                     updateDescriptionComplete();
@@ -79,7 +82,6 @@
                         if(yScr1 != yScr0) {
                             test_touchaction_div.step(function () {
                                 yScrollIsReceived = true;
-                                assert_true(true, "y-scroll received.");
                             });
                             updateDescriptionSecondStepTouchActionElement(target0, scrollReturnInterval);
                         }

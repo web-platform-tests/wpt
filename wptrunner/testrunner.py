@@ -488,7 +488,7 @@ class TestRunnerManager(threading.Thread):
         self.test = None
 
         if self.pause_on_unexpected and (subtest_unexpected or is_unexpected):
-            self.logger.info("Got an unexpected result, pausing until the browser exists")
+            self.logger.info("Got an unexpected result, pausing until the browser exits")
             self.browser.runner.process_handler.wait()
 
         # Handle starting the next test, with a runner restart if required

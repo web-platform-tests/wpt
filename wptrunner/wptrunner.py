@@ -97,6 +97,7 @@ class TestEnvironment(object):
         self.test_path = test_path
         self.server = None
         self.config = None
+        self.external_config = None
         self.test_server_port = options.pop("test_server_port", True)
         self.options = options if options is not None else {}
         self.required_files = options.pop("required_files", [])
@@ -105,11 +106,11 @@ class TestEnvironment(object):
     def __enter__(self):
         self.copy_required_files()
 
-        config = self.load_config()
-        serve.set_computed_defaults(config)
+        self.config = self.load_config()
+        serve.set_computed_defaults(self.config)
 
         serve.logger = serve.default_logger("info")
-        self.config, self.servers = serve.start(config)
+        self.external_config, self.servers = serve.start(self.config)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -578,8 +579,8 @@ def run_tests(config, tests_root, metadata_root, product, **kwargs):
                 logger.critical("Error starting test environment: %s" % e.message)
                 raise
 
-            base_server = "http://%s:%i" % (test_environment.config["host"],
-                                            test_environment.config["ports"]["http"][0])
+            base_server = "http://%s:%i" % (test_environment.external_config["host"],
+                                            test_environment.external_config["ports"]["http"][0])
             repeat = kwargs["repeat"]
             for repeat_count in xrange(repeat):
                 if repeat > 1:

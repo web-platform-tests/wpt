@@ -57,10 +57,28 @@
 <img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) 1px, 100vw'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) 1px, (min-width:0) 100vw, 100vw'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) 1px'>
-<img srcset='data:,a 50w, data:,b 51w' sizes='not (blahblah) 1px'>
-<img srcset='data:,a 50w, data:,b 51w' sizes='not blahblah 100vw, 1px'>
-<img srcset='data:,a 50w, data:,b 51w' sizes='(blahblah) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not (min-width:0) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:unknown-mf-value) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not (min-width:unknown-mf-value) 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:-1px) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not (min-width:-1px) 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(unknown-mf-name) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not (unknown-mf-name) 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='("unknown-general-enclosed") 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not ("unknown-general-enclosed") 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='unknown-general-enclosed(foo) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not unknown-general-enclosed(foo) 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='unknown-media-type 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not unknown-media-type 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) or (unknown-mf-name) 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) or (min-width:unknown-mf-value) 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) or (min-width:-1px) 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) or ("unknown-general-enclosed") 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) or unknown-general-enclosed(foo) 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) or (!) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='(min-width:0) or unknown-media-type 100vw, 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='(123) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not (123) 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='(!) 100vw, 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='not (!) 100vw, 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='! 100vw, 1px'>
@@ -76,6 +94,7 @@
 <img srcset='data:,a 50w, data:,b 51w' sizes=') 100vw, 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='not ) 100vw, 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='(;) 100vw, 1px'>
+<img srcset='data:,a 50w, data:,b 51w' sizes='not (;) 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='; 100vw, 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes='not ; 100vw, 1px'>
 <img srcset='data:,a 50w, data:,b 51w' sizes=', 1px'>

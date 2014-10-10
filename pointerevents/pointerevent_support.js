@@ -163,7 +163,6 @@ function sPointerCapture(e) {
 function rPointerCapture(e) {
     try {
         captureButton.value = 'Set Capture';
-        isPointerCapture = false;
         target0.releasePointerCapture(e.pointerId);
     }
     catch(e) {

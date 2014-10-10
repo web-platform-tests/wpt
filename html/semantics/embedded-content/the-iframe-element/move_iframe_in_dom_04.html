@@ -1,0 +1,30 @@
+<!DOCTYPE html><html><head>
+<title>moving modified IFRAME in document (original page from server, document.write modification)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="http://www.w3.org/TR/html5/embedded-content-0.html#process-the-iframe-attributes">
+</head>
+<body>
+<p id="log">FAILED (script did not run)</p>
+<iframe src="support/blank.htm"></iframe>
+<div id="target"></div>
+<script>
+var t = async_test();
+window.onload = function(){
+    var ifr = document.getElementsByTagName('iframe')[0];
+    ifr.contentDocument.open();
+    ifr.contentDocument.write('Modified document');
+    ifr.contentDocument.close();
+    setTimeout(function () {
+        document.getElementById('target').appendChild(ifr);
+        var passed = ifr.contentDocument.body.textContent.indexOf('Modified')===-1
+        t.step(function () {
+            assert_true(passed);
+        })
+        t.done();
+    }, 100);
+}
+
+</script>
+</body>
+</html>

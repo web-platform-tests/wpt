@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>  ClipboardEvent - ClipboardEvent interface - synthetic paste event inserts plain text data into contentEditable element   - paste on document</title>
+    <title>  ClipboardEvent - ClipboardEvent interface - synthetic paste event does not insert plain text data into contentEditable element   - paste on document</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
     <script>
-/** ClipboardEvent interface - synthetic paste event inserts plain text data into contentEditable element   */
+/** ClipboardEvent interface - synthetic paste event does not insert plain text data into contentEditable element   */
 /* Events: paste */
 /* paste data: "clipboard text" */
 /* Test HTML: <div id="editable" contentEditable><p>Editable element</p></div><script>document.getElementById('editable').focus();<\/script>*/
@@ -18,7 +18,7 @@ function onTestSetupReady(){
 		document.getElementById('editable').dispatchEvent(evt);
 		setTimeout( function(){
 			try{
-				result(document.getElementById('editable').textContent.indexOf( 'synthetic event text' )>-1);
+				result(document.getElementById('editable').textContent.indexOf( 'synthetic event text' )===-1);
 			}catch(e){
 				result('Unexpected exception when looking for inserted HTML data: '+e);
 			}

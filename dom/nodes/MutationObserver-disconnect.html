@@ -33,7 +33,7 @@ function observerCallback(sequence, obs) {
 }
 
 var observer;
-parentTest.step(function() {
+disconnectTest.step(function() {
   observer = new MutationObserver(observerCallback);
   observer.observe(n00, {"attributes": true});
   n00.id = "foo";

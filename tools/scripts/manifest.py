@@ -10,6 +10,7 @@ import sys
 import urlparse
 
 from StringIO import StringIO
+from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import defaultdict
 from fnmatch import fnmatch
 
@@ -57,7 +58,7 @@ def rel_path_to_url(rel_path, url_base="/"):
 def url_to_rel_path(url, url_base):
     url_path = urlparse.urlsplit(url).path
     if not url_path.startswith(url_base):
-        raise ValueError
+        raise ValueError, url
     url_path = url_path[len(url_base):]
     return url_path
 
@@ -73,22 +74,26 @@ def is_blacklisted(url):
 
 
 class ManifestItem(object):
+    __metaclass__ = ABCMeta
+
     item_type = None
 
     def __init__(self):
         self.manifest = None
 
-    def _key(self):
-        return self.item_type, self.path
+    @abstractmethod
+    def key(self):
+        pass
 
     def __eq__(self, other):
-        if not hasattr(other, "_key"):
+        if not hasattr(other, "key"):
             return False
-        return self._key() == other._key()
+        return self.key() == other.key()
 
     def __hash__(self):
-        return hash(self._key())
+        return hash(self.key())
 
+    @abstractmethod
     def to_json(self):
         raise NotImplementedError
 
@@ -96,9 +101,9 @@ class ManifestItem(object):
     def from_json(self, manifest, obj):
         raise NotImplementedError
 
-    @property
+    @abstractproperty
     def id(self):
-        raise NotImplementedError
+        pass
 
 
 class URLManifestItem(ManifestItem):
@@ -111,7 +116,7 @@ class URLManifestItem(ManifestItem):
     def id(self):
         return self.url
 
-    def _key(self):
+    def key(self):
         return self.item_type, self.url
 
     @property
@@ -137,7 +142,7 @@ class TestharnessTest(URLManifestItem):
 
     def to_json(self):
         rv = {"url": self.url}
-        if self.timeout:
+        if self.timeout is not None:
             rv["timeout"] = self.timeout
         return rv
 
@@ -163,14 +168,14 @@ class RefTest(URLManifestItem):
     def id(self):
         return (self.url, self.ref_type, self.ref_url)
 
-    def _key(self):
+    def key(self):
         return self.item_type, self.url, self.ref_type, self.ref_url
 
     def to_json(self):
         rv = {"url": self.url,
               "ref_type": self.ref_type,
               "ref_url": self.ref_url}
-        if self.timeout:
+        if self.timeout is not None:
             rv["timeout"] = self.timeout
         return rv
 
@@ -196,6 +201,7 @@ class WebdriverSpecTest(ManifestItem):
     item_type = "wdspec"
 
     def __init__(self, path):
+        ManifestItem.__init__(self)
         self.path = path
 
     @property
@@ -204,6 +210,9 @@ class WebdriverSpecTest(ManifestItem):
 
     def to_json(self):
         return {"path": self.path}
+
+    def key(self):
+        return self.path
 
     @classmethod
     def from_json(cls, manifest, obj):
@@ -221,8 +230,8 @@ class Manifest(object):
         self._data = dict((item_type, defaultdict(set))
                           for item_type in item_types)
         self.rev = git_rev
-        self.local_changes = LocalChanges()
         self.url_base = url_base
+        self.local_changes = LocalChanges(self)
 
     def _included_items(self, include_types=None):
         if include_types is None:
@@ -239,7 +248,7 @@ class Manifest(object):
             yield item_type, paths
 
     def contains_path(self, path):
-        return any(path in item for item in self._included_items())
+        return any(path in paths for _, paths in self._included_items())
 
     def add(self, item):
         self._data[item.item_type][item.path].add(item)
@@ -255,19 +264,20 @@ class Manifest(object):
                 del self._data[item_type][path]
 
     def itertypes(self, *types):
+        if not types:
+            types = None
         for item_type, items in self._included_items(types):
             for item in sorted(items.items()):
                 yield item
 
     def __iter__(self):
-        for item_type, items in self._included_items():
-            for item in sorted(items.items()):
-                yield item
+        for item in self.itertypes():
+            yield item
 
     def __getitem__(self, path):
-        for items in self._data._included_items():
-            if path in items:
-                return items[path]
+        for _, paths in self._data._included_items():
+            if path in paths:
+                return paths[path]
         raise KeyError
 
     def update(self,
@@ -291,7 +301,7 @@ class Manifest(object):
                                                         use_committed=use_committed)
                     self.extend(manifest_items)
 
-        self.local_changes = LocalChanges()
+        self.local_changes = LocalChanges(self)
         for rel_path, status in local_changes.iteritems():
             if status == "modified":
                 items = set(get_manifest_items(tests_root,
@@ -312,23 +322,23 @@ class Manifest(object):
                 for test in tests:
                     out_items[test.item_type].append(test.to_json())
 
-        rv = {"url_base":self.url_base,
-              "rev":self.rev,
-              "local_changes":self.local_changes.to_json(),
-              "items":out_items}
+        rv = {"url_base": self.url_base,
+              "rev": self.rev,
+              "local_changes": self.local_changes.to_json(),
+              "items": out_items}
         return rv
 
     @classmethod
     def from_json(cls, obj):
         self = cls(git_rev=obj["rev"],
-                   url_base=obj["url_base"])
+                   url_base=obj.get("url_base", "/"))
         if not hasattr(obj, "iteritems"):
             raise ManifestError
 
-        item_classes = {"testharness":TestharnessTest,
-                        "reftest":RefTest,
-                        "manual":ManualTest,
-                        "helper":Helper,
+        item_classes = {"testharness": TestharnessTest,
+                        "reftest": RefTest,
+                        "manual": ManualTest,
+                        "helper": Helper,
                         "stub": Stub,
                         "wdspec": WebdriverSpecTest}
 
@@ -338,16 +348,18 @@ class Manifest(object):
             for v in values:
                 manifest_item = item_classes[k].from_json(self, v)
                 self.add(manifest_item)
-        self.local_changes = LocalChanges.from_json(obj["local_changes"])
+        self.local_changes = LocalChanges.from_json(self, obj["local_changes"])
         return self
 
 class LocalChanges(object):
-    def __init__(self):
+    def __init__(self, manifest):
+        self.manifest = manifest
         self._data = dict((item_type, defaultdict(set)) for item_type in item_types)
         self._deleted = set()
 
     def add(self, item):
         self._data[item.item_type][item.path].add(item)
+        item.manifest = self.manifest
 
     def extend(self, items):
         for item in items:
@@ -383,22 +395,22 @@ class LocalChanges(object):
         return rv
 
     @classmethod
-    def from_json(cls, obj):
-        self = cls()
+    def from_json(cls, url_base, obj):
+        self = cls(url_base)
         if not hasattr(obj, "iteritems"):
             raise ManifestError
 
-        item_classes = {"testharness":TestharnessTest,
-                        "reftest":RefTest,
-                        "manual":ManualTest,
-                        "helper":Helper,
+        item_classes = {"testharness": TestharnessTest,
+                        "reftest": RefTest,
+                        "manual": ManualTest,
+                        "helper": Helper,
                         "stub": Stub,
                         "wdspec": WebdriverSpecTest}
 
         for test_type, paths in obj["items"].iteritems():
             for path, tests in paths.iteritems():
                 for test in tests:
-                    manifest_item = item_classes[test_type].from_json(test)
+                    manifest_item = item_classes[test_type].from_json(self.manifest, test)
                     self.add(manifest_item)
 
         for item in obj["deleted"]:
@@ -579,7 +591,7 @@ class GitTree(TestTree):
         self.git = self.setup_git()
 
     def setup_git(self):
-        assert os.path.exists(os.path.join(self.tests_root, ".git"))
+        assert is_git_repo(self.tests_root)
         return get_git_func(self.tests_root)
 
     def current_rev(self):
@@ -767,23 +779,16 @@ def update_from_cli(**kwargs):
         manifest = Manifest(None)
 
     logger.info("Updating manifest")
-    update(tests_root, manifest, ignore_local=kwargs.get("ignore_local", False),
-           extra_dirs=kwargs["extra_dirs"])
+    update(tests_root,
+           kwargs["url_base"],
+           manifest,
+           ignore_local=kwargs.get("ignore_local", False))
     write(manifest, path)
 
 
-def colon_seperated(arg):
-    if ":" not in arg:
-        raise ValueError("Argument requires a :")
-    path, url = arg.split(":", 1)
-    if url[0] != "/":
-        url = "/" + url
-    if url[-1] != "/":
-        url = url + "/"
-    return abs_path(path), url
-
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
+
 
 def create_parser():
     parser = argparse.ArgumentParser()
@@ -792,14 +797,14 @@ def create_parser():
     parser.add_argument(
         "--tests-root", type=abs_path, help="Path to root of tests.")
     parser.add_argument(
-        "--extra-dir", dest="extra_dirs", action="append", type=colon_seperated
-    )
-    parser.add_argument(
         "-r", "--rebuild", action="store_true", default=False,
         help="Force a full rebuild of the manifest.")
     parser.add_argument(
         "--ignore-local", action="store_true", default=False,
         help="Don't include uncommitted local changes in the manifest.")
+    parser.add_argument(
+        "--url-base", action="store", default="/",
+        help="Base url to use as the mount point for tests in this manifest.")
     return parser
 
 if __name__ == "__main__":

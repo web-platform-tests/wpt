@@ -17,7 +17,7 @@ function setupTest( target, event, dataToPaste, externalPassCondition ){
     target.attachEvent('on'+event, intermediateListener);
   }
 	if( dataToPaste || event==='paste' ){
-		logNode.data+='Please place the following text on the clipboard before continuing the test: "'+(dataToPaste || 'clipboard text' )+'"\n';
+		logNode.data+='Please place this on the clipboard before continuing the test: "'+(dataToPaste || 'clipboard text' )+'"\n';
     logNode.parentNode.style.whiteSpace='pre';
 		if(dataToPaste.indexOf('{')==0){ // sorry about the content sniffing, this is likely a JSON string with alternate clipboard formats
 			if(dataToPaste.indexOf('text/html')>-1){
@@ -31,11 +31,13 @@ function setupTest( target, event, dataToPaste, externalPassCondition ){
 		}
 	}
 	if(typeof triggerTestManually==='function'){
+		/* Tests that require user interaction define a "triggerTestManually()" function.
+		These are for example tests that rely on trusted events. */
 		logNode.parentNode.appendChild(document.createTextNode('  '));
 		var btn=logNode.parentNode.appendChild(document.createElement('button'))
 		btn.type='button';
 		btn.onclick=function(){
-			triggerTestManually();
+			triggerTestManually(event);
 			btn.parentNode.removeChild(btn);
 		}
 		btn.appendChild(document.createTextNode(' Click here to run test: '));

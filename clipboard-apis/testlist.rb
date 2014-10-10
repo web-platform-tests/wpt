@@ -233,15 +233,15 @@ describe "Clipboard events testsuite" do
 		doSingleTest 110
 	end
 
-	it "112 ClipboardEvent interface - synthetic copy/cut events dispatched from trusted events do affect system clipboard " do
+	it "112 ClipboardEvent interface - events triggered from document.execCommand() inside trusted events do affect system clipboard " do
 		doSingleTest 112
 	end
 
-	it "114 ClipboardEvent interface - synthetic paste event inserts payload data into TEXTAREA  " do
+	it "114 ClipboardEvent interface - synthetic paste event does not insert payload data into TEXTAREA  " do
 		doSingleTest 114
 	end
 
-	it "115 ClipboardEvent interface - synthetic paste event inserts payload data into INPUT  " do
+	it "115 ClipboardEvent interface - synthetic paste event does not insert payload data into INPUT  " do
 		doSingleTest 115
 	end
 
@@ -249,11 +249,11 @@ describe "Clipboard events testsuite" do
 		doSingleTest 116
 	end
 
-	it "117 ClipboardEvent interface - synthetic paste event inserts plain text data into contentEditable element  " do
+	it "117 ClipboardEvent interface - synthetic paste event does not insert plain text data into contentEditable element  " do
 		doSingleTest 117
 	end
 
-	it "118 ClipboardEvent interface - synthetic paste event inserts HTML data into contentEditable element  " do
+	it "118 ClipboardEvent interface - synthetic paste event does not insert HTML data into contentEditable element  " do
 		doSingleTest 118
 	end
 

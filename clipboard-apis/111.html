@@ -13,17 +13,21 @@
 function clipboard_api_test(e){
 
 }
-function onTestSetupReady(){
+function onTestSetupReady(type){
 	try{
-		var evt=new ClipboardEvent( window.eventType, {bubbles:true, cancelable:true, dataType: 'text/plain', data:'synthetic event text'} );
-    if( window.eventType=='cut' )document.body.contentEditable='true';
+		var evt = new ClipboardEvent(window.eventType, {bubbles:true, cancelable:true, dataType: 'text/plain', data:'synthetic event text'});
+        if(type === 'cut'){
+            document.body.contentEditable='true';
+        }
 		/* make a selection to check if selected text is copied by the synthetic event.. */
-		var range=document.createRange();
+		var range = document.createRange();
 		range.selectNodeContents(document.body);
 		window.getSelection().addRange(range);
 		document.dispatchEvent(evt);
 		window.getSelection().removeAllRanges();
-    if( window.eventType=='cut' )document.body.contentEditable='false';
+        if(type === 'cut'){
+            document.body.contentEditable = 'false';
+        }
 	}catch(e){
 		result('Unexpected Exception when initiating ClipboardEvent: '+e);
 		return;

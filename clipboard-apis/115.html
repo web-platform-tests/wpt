@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>  ClipboardEvent - ClipboardEvent interface - synthetic paste event inserts payload data into INPUT   - paste on document</title>
+    <title>  ClipboardEvent - ClipboardEvent interface - synthetic paste event does not insert payload data into INPUT   - paste on document</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
     <script>
-/** ClipboardEvent interface - synthetic paste event inserts payload data into INPUT   */
+/** ClipboardEvent interface - synthetic paste event does not insert payload data into INPUT   */
 /* Events: paste */
 /* paste data: "clipboard text" */
 /* Test HTML: <form><input autofocus></form>*/
@@ -17,7 +17,7 @@ function onTestSetupReady(){
 		var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/plain', data:'synthetic event text' } );
 		document.getElementsByTagName('input')[0].dispatchEvent(evt);
 		setTimeout( function(){
-			result(document.getElementsByTagName('input')[0].value.indexOf( 'synthetic event text' )>-1);
+			result(document.getElementsByTagName('input')[0].value.indexOf( 'synthetic event text' )===-1);
 		}, 50 );
 	}catch(e){
 		result('Unexpected Exception when initiating ClipboardEvent: '+e);

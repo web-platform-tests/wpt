@@ -9,7 +9,8 @@
 /** pasting a file  */
 /* Events: paste */
 /* Targets: document */
-/* 	Clipboard data type: file reference: ./support/image.jpg */
+/* Clipboard data type: file reference: ./support/image.jpg */
+/* paste data: "the file 'support/image.jpg'" */
 /* Test HTML: <p>To complete this test, copy the './support/image.jpg' file from the OS file manager and paste into this page</p> <div contentEditable="true" id="paste_here">&nbsp;</div><script>document.getElementById('paste_here').focus()<\/script>*/
 
 function clipboard_api_test(e){
@@ -27,7 +28,7 @@ function clipboard_api_test(e){
     <p>To complete this test, copy the './support/image.jpg' file from the OS file manager and paste into this page</p> <div contentEditable="true" id="paste_here">&nbsp;</div><script>document.getElementById('paste_here').focus()</script>
     <div id="log"></div>
     <script>
-    var dataToPaste='';
+    var dataToPaste="the file 'support/image.jpg'" ;
     var externalPassCondition=null;
     var eventTarget=document;
     var eventType='paste';

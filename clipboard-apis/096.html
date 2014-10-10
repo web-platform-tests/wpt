@@ -8,6 +8,7 @@
     <script>
 /** pasting a file of unknown type  */
 /* Events: paste */
+/* paste data: "the file 'support/test'" */
 /* Targets: document */
 /* 	Clipboard data type: file reference: ./support/test */
 /* Test HTML: <p>To complete this test, copy the "./support/test" file from the OS file manager and paste into this page</p>*/
@@ -27,7 +28,7 @@ function clipboard_api_test(e){
     <p>To complete this test, copy the "./support/test" file from the OS file manager and paste into this page</p>
     <div id="log"></div>
     <script>
-    var dataToPaste='';
+    var dataToPaste="the file 'support/test'" ;
     var externalPassCondition=null;
     var eventTarget=document;
     var eventType='paste';

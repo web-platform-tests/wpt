@@ -5,7 +5,7 @@ too hard. Documentation welcome!
 [`annevk/url`](https://github.com/annevk/url) hosts some other files that might be of
 interest if you want to create additional tests.
 
-Similar to a-element.html it would be trivial to add more tests for other objects that
+Similar to `a-element.html` it would be trivial to add more tests for other objects that
 expose links (e.g. URL and `<area>`). There's also room for enhancement and bits that
 require independent tests:
 

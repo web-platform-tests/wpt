@@ -2,28 +2,31 @@
 <html>
 <head>
   <meta charset=utf-8>
-  <title>&lt;del&gt;</title>
+  <title>&lt;ins&gt;</title>
 </head>
 <body>
 
-
   <!-- can contain strictly inline while in strictly inline context -->
   <p><dfn>strictly inline
-    <del>
+    <ins>
       <em>text</em>
-    </del>
+    </ins>
   </dfn></p>
 
   <!-- can contain interactive if ancestor does not forbid it -->
   <p>paragraph
-    <del>
+    <ins>
       <a>link</a>
-    </del>
+    </ins>
   </p>
   <p><dfn>strictly inline
-    <del>
+    <ins>
       <a>link</a>
-    </del>
+    </ins>
   </dfn></p>
+
+  <!-- ins with flow content and flow parent -->
+  <div><ins><p>foo</p></ins></div>
+
 </body>
 </html>

@@ -2,41 +2,31 @@
 <html>
 <head>
   <meta charset=utf-8>
-  <title>&lt;ins&gt;</title>
+  <title>&lt;del&gt;</title>
 </head>
 <body>
-  <!-- can contain inline while in inline context -->
-  <p>paragraph
-    <ins>
-      <em>some</em> <ul><li>inline</li></ul> content
-    </ins>
-  </p>
+
 
   <!-- can contain strictly inline while in strictly inline context -->
   <p><dfn>strictly inline
-    <ins>
+    <del>
       <em>text</em>
-    </ins>
+    </del>
   </dfn></p>
-
-  <!-- can contain blocks while in block context -->
-  <ins>
-    <p>text</p>
-  </ins>
 
   <!-- can contain interactive if ancestor does not forbid it -->
   <p>paragraph
-    <ins>
+    <del>
       <a>link</a>
-    </ins>
+    </del>
   </p>
   <p><dfn>strictly inline
-    <ins>
+    <del>
       <a>link</a>
-    </ins>
+    </del>
   </dfn></p>
-  <ins>
-    <p><a>link</a></p>
-  </ins>
+
+  <div><del><p>foo</p></del></div><!-- with flow content and flow parent -->
+
 </body>
 </html>

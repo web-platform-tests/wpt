@@ -527,6 +527,8 @@ def list_test_groups(tests_root, metadata_root, test_types, product, **kwargs):
 
 
 def list_disabled(tests_root, metadata_root, test_types, product, **kwargs):
+    do_test_relative_imports(tests_root)
+
     rv = []
     run_info = wpttest.get_run_info(metadata_root, product, debug=False)
     test_loader = TestLoader(tests_root, metadata_root, test_types, TestFilter(), run_info)

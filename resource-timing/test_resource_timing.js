@@ -46,8 +46,6 @@ onload = function()
                              "window.performance.getEntries() is defined");
     });
 
-    // add elements to the page.  We do this here so that we can
-    // control the start time for validation later
     var expected_entry;
     var url;
     var type;

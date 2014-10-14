@@ -33,9 +33,9 @@
             var cursor = e.target.result;
             assert_true(cursor instanceof IDBCursor);
 
+            var record = cursor.value;
+            record.data = document;
             assert_throws('DataCloneError', function() {
-                var record = cursor.value;
-                record.data = document;
                 cursor.update(record);
             });
             t.done();

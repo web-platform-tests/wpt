@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBFactory.cmp() - invalid value</title>
+<title>IDBFactory.cmp() - invalid key</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#widl-IDBFactory-cmp-short-any-first-any-second">
 <script src=/resources/testharness.js></script>
@@ -12,36 +12,30 @@
         assert_throws(new TypeError(), function() {
             indexedDB.cmp();
         });
-    }, "IDBFactory.cmp() - no argument.");
+    }, "IDBFactory.cmp() - no argument");
 
     test( function() {
         assert_throws("DataError", function() {
             indexedDB.cmp(null, null);
         });
-    }, "IDBFactory.cmp(null, null) - null parameters are incorrect.");
-
-    test( function() {
         assert_throws("DataError", function() {
             indexedDB.cmp(1, null);
         });
         assert_throws("DataError", function() {
             indexedDB.cmp(null, 1);
         });
-    }, "IDBFactory.cmp(1, null / null, 1) - null parameter is incorrect.");
+    }, "IDBFactory.cmp() - null");
 
     test( function() {
         assert_throws("DataError", function() {
             indexedDB.cmp(NaN, NaN);
         });
-    }, "IDBFactory.cmp(NaN, NaN) - NaN parameters are incorrect.");
-
-    test( function() {
         assert_throws("DataError", function() {
             indexedDB.cmp(1, NaN);
         });
         assert_throws("DataError", function() {
             indexedDB.cmp(NaN, 1);
         });
-    }, "IDBFactory.cmp(1, NaN / NaN, 1) - NaN parameter is incorrect.");
+    }, "IDBFactory.cmp() - NaN");
 </script>
 

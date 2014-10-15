@@ -47,7 +47,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             result = self.convert_result(test, self.result_data)
             self.proc.kill()
         else:
-            if self.proc.pid is None:
+            if self.proc.poll() < 0:
                 result = (test.result_cls("CRASH", None), [])
             else:
                 self.proc.kill()

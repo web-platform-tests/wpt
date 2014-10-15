@@ -30,12 +30,11 @@
         test.step(function () {
           var isActive = ((new Date()).getTime() - lastEventTime) < 2500;
           if (es.readyState === EventSource.CLOSED) {
-            var message = "In case EventSource was stopped, it should not be active, and the last event should be an error event.";
-            assert_true(!isActive, message);
-            assert_true(lastEventType === "error", message);
-            assert_true(readyStateAtLastEvent === EventSource.CLOSED, message);
+            assert_true(!isActive, "In case EventSource was stopped, it should not be active");
+            assert_equals(lastEventType, "error", "In case EventSource was stopped, the last event should be an error event");
+            assert_equals(readyStateAtLastEvent, EventSource.CLOSED, "In case EventSource was stopped, readyState at last event should be closed");
           } else {
-            assert_true(isActive, "EventSource is active, but readyState is EventSource.CLOSED.");
+            assert_true(isActive, "EventSource is active, but readyState is not EventSource.CLOSED.");
           }
         });
         es.close();

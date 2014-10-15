@@ -330,8 +330,5 @@ http://192.168.0.1\shello
 # These are "0Xc0.0250.01" in fullwidth.
 http://\uff10\uff38\uff43\uff10\uff0e\uff10\uff12\uff15\uff10\uff0e\uff10\uff11  s:http p:/ h:0xc0.0250.01
 
-# Broken IP addresses.
-http://192.168.0.257
-
 # Broken IPv6
 http://[google.com]

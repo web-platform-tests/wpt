@@ -150,8 +150,8 @@ class FirefoxBrowser(Browser):
         assert self.marionette_port is not None
         return ExecutorBrowser, {"marionette_port": self.marionette_port}
 
-    def log_crash(self, logger, process, test):
+    def log_crash(self, process, test):
         dump_dir = os.path.join(self.profile.profile, "minidumps")
-        mozcrash.log_crashes(logger, dump_dir, symbols_path=self.symbols_path,
+        mozcrash.log_crashes(self.logger, dump_dir, symbols_path=self.symbols_path,
                              stackwalk_binary=self.stackwalk_binary,
                              process=process, test=test)

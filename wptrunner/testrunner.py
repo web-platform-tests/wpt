@@ -495,7 +495,7 @@ class TestRunnerManager(threading.Thread):
             self.unexpected_count += 1
             self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
         if status == "CRASH":
-            self.browser.log_crash(self.logger, process=self.browser_pid, test=test.id)
+            self.browser.log_crash(process=self.browser_pid, test=test.id)
 
         self.logger.test_end(test.id,
                              status,

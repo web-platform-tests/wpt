@@ -236,6 +236,9 @@ class ExpectedUpdater(object):
             return
         test_cls = wpttest.manifest_test_cls[test.test_type]
 
+        if data["status"] == "SKIP":
+            return
+
         result = test_cls.result_cls(
             data["status"],
             data.get("message"))

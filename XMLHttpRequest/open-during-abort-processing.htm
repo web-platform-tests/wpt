@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: open() during abort processing - abort() called from onloadstart</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method" data-tested-assertations="following::ol/li[15] following::ol/li[15]/ol/li[1] following::ol/li[15]/ol/li[2]" />
+    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-abort" data-tested-assertations="following::ol/li[2]/ol/li[3]" />
+    <!-- TODO: no suitable assertation in spec yet for the main point of this test - see https://www.w3.org/Bugs/Public/show_bug.cgi?id=27033#c5 -->
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      var client = new XMLHttpRequest(), test_state = 0
+
+      client.upload.onabort = test.step_func(function () {
+        assert_unreached('abort() algorithm should have been terminated by open() in the readystatechange handler')
+      })
+
+      client.onabort = test.step_func(function () {
+        assert_unreached('abort() algorithm should have been terminated by open() in the readystatechange handler')
+      })
+
+      client.onloadstart = function(){
+        test_state = 1
+        client.abort() // This will trigger an abort event
+      }
+
+      client.onload = test.step_func(function(){
+        test.done()
+      })
+
+      client.onreadystatechange = test.step_func(function() {
+          if(test_state === 1){ // this readystatechange event is fired due to the abort() algorithm
+            client.onreadystatechange = null // must kill this event handler to avoid a very strange recursion problem
+            // this, if enabled, would also test #dom-xmlhttprequest-abort step following::ol/li[2]/ol/li[1]
+            //assert_equals(client.readyState, client.DONE, 'abort() should first set readyState to DONE')
+            test_state = 2
+            client.open("GET", "resources/well-formed.xml")
+            assert_equals(client.readyState, client.OPENED, 'readyState after open()')
+            client.send(null)
+          }
+      })
+
+      client.open("GET", "resources/well-formed.xml")
+      client.send('abcd')
+    </script>
+  </body>
+</html>

@@ -1,28 +1,20 @@
-<!DOCTYPE html><html><head>
+<!DOCTYPE html>
 <title>moving modified IFRAME in document (original page about:blank, DOM modification)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link rel="help" href="http://www.w3.org/TR/html5/embedded-content-0.html#process-the-iframe-attributes">
-</head>
-<body>
-<p id="log">FAILED (script did not run)</p>
+<link rel="help" href="https://html.spec.whatwg.org/#iframe-load-event-steps">
 <iframe src="about:blank"></iframe>
 <div id="target"></div>
 <script>
-var t = async_test();
-window.onload = function(){
-    var ifr = document.getElementsByTagName('iframe')[0];
-    ifr.contentDocument.body.appendChild(ifr.contentDocument.createElement('p')).textContent = 'Modified document';
-    setTimeout(function () {
-        document.getElementById('target').appendChild(ifr);
-        var passed = ifr.contentDocument.body.textContent.indexOf('Modified')===-1
-        t.step(function () {
-            assert_true(passed);
-        })
-        t.done();
+onload = function() {
+  var ifr = document.getElementsByTagName('iframe')[0];
+  ifr.contentDocument.body.appendChild(ifr.contentDocument.createElement('p')).textContent = 'Modified document';
+  setTimeout(function () {
+    document.getElementById('target').appendChild(ifr);
+    setTimeout(function() {
+      assert_equals(ifr.contentDocument.body.textContent.indexOf('Modified'), -1);
+      done();
     }, 100);
+  }, 100);
 }
-
 </script>
-</body>
-</html>

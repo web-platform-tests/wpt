@@ -18,7 +18,12 @@
         log.push('upload.onloadstart')
         client.abort() // This will trigger an abort event
       }
-
+      /*
+      The following code runs from upload.onabort because per spec the abort event
+      fires first on the upload, then on the xhr object. Hence, we can assert in
+      client.onabort that the listener should not run at all - client.upload.onabort
+      should fire first, and calling open() should interrupt abort processing.
+      */
       client.upload.onabort = test.step_func(function () {
         // this, if enabled, would also test #dom-xmlhttprequest-abort step following::ol/li[2]/ol/li[1]
         //assert_equals(client.readyState, client.DONE, 'abort() should first set readyState to DONE')
@@ -29,11 +34,10 @@
       })
 
       client.onabort = test.step_func(function () {
-        assert_unreached('abort() algorithm should have been terminated by open() in the handler')
+        assert_unreached('abort() algorithm should have been terminated by open() in the upload.abort handler')
       })
 
       client.onload = test.step_func(function(){
-        alert(log)
         assert_array_equals(log, ['upload.onloadstart', 'upload.onabort'])
         test.done()
       })

@@ -12,11 +12,23 @@
     <div id="log"></div>
     <script>
       var test = async_test()
-      var client = new XMLHttpRequest(), log = []
+      var client = new XMLHttpRequest(), log = [], lastTest = false
+      var expected = [
+        'readyState before abort() 1' /* we abort from onloadstart - still OPENED state */,
+        "upload.onabort - before open() 4", /* onabort fires first on upload, now in DONE state due to "request error steps" algo */
+        "client.onabort 4", /* open question: should open() stop this? Should readyState now be 1? */
+        "client.onloadend 4", /* ditto open questions.. */
+        "readyState after open() 1", /* no-brainer */
+        "readyState after abort() 1", /* the abort() call now returns, readyState was already set by open() */
+        "client.onload 4", /* These are logged by the second request completing successfully */
+        "client.onloadend 4"
+        ]
 
       client.upload.onloadstart = function(){
-        log.push('upload.onloadstart')
+        log.push('readyState before abort() '+client.readyState)
         client.abort() // This will trigger an abort event
+        log.push('readyState after abort() '+client.readyState)
+
       }
       /*
       The following code runs from upload.onabort because per spec the abort event
@@ -27,22 +39,31 @@
       client.upload.onabort = test.step_func(function () {
         // this, if enabled, would also test #dom-xmlhttprequest-abort step following::ol/li[2]/ol/li[1]
         //assert_equals(client.readyState, client.DONE, 'abort() should first set readyState to DONE')
-        log.push('upload.onabort')
-        client.open("GET", "resources/well-formed.xml")
-        assert_equals(client.readyState, client.OPENED, 'readyState after open()')
+        log.push('upload.onabort - before open() ' + client.readyState)
+        client.open("GET", "resources/content.py")
+        log.push('readyState after open() ' + client.readyState)
+        lastTest = true
         client.send(null)
       })
 
       client.onabort = test.step_func(function () {
-        assert_unreached('abort() algorithm should have been terminated by open() in the upload.abort handler')
+        log.push('client.onabort ' + client.readyState)
+      })
+
+      client.onloadend = test.step_func(function () {
+        log.push('client.onloadend ' + client.readyState)
+        if(lastTest){
+          console.log(log)
+          assert_array_equals(log, expected)
+          test.done()
+        }
       })
 
       client.onload = test.step_func(function(){
-        assert_array_equals(log, ['upload.onloadstart', 'upload.onabort'])
-        test.done()
+        log.push('client.onload ' + client.readyState)
       })
 
-      client.open("POST", "resources/well-formed.xml")
+      client.open("POST", "resources/content.py")
       client.send(document)
     </script>
   </body>

@@ -65,8 +65,7 @@
                             log("gotpointercapture", target0);
                             return;
                         }
-
-                        if (event.type == "lostpointercapture") {
+                        else if (event.type == "lostpointercapture") {
                             log("lostpointercapture", target0);
                             captureButton.value = 'Set Capture';
                             isPointerCapture = false;

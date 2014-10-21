@@ -5,7 +5,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#the-clip-path"/>
 	<html:link rel="match" href="reference/clip-path-circle-001-ref.svg" />
-	<html:meta class="flags">svg</html:meta>
+	<metadata class="flags">svg</metadata>
 	<desc class="assert">A basic shape function circle() applied to an SVG
 	rectangle. The specified keyword stroke-box defines the reference box
 	stroking bounding box. You should see a full green circle.</desc>

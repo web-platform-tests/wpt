@@ -5,7 +5,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-invisible-ref.svg" />
-	<html:meta class="flags">svg</html:meta>
+	<metadata class="flags">svg</metadata>
 	<desc class="assert">From the spec: "If a child element is made invisible
 	by display or visibility it does not contribute to the clipping path."
 	&lt;clipPath> without content hides the clipped element. Nothing should be

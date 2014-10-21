@@ -5,7 +5,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#the-clip-path"/>
 	<html:link rel="match" href="reference/clip-path-square-001-ref.svg" />
-	<html:meta class="flags">svg</html:meta>
+	<metadata class="flags">svg</metadata>
 	<desc class="assert">A basic shape function polygon() with absolute values
 	applied to an SVG rectangle. The clip-rule is not specified and defaults to
 	nonzero. You should see a green square.</desc>

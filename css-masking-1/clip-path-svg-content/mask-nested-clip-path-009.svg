@@ -7,7 +7,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-masks"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#MaskElement"/>
 	<html:link rel="match" href="reference/mask-nested-clip-path-002-ref.svg" />
-	<html:meta class="flags">svg</html:meta>
+	<metadata class="flags">svg</metadata>
 	<desc class="assert">Multiple references between &lt;clipPath> and
 	&lt;mask> elements. You should see 4 equaly sized and positioned green
 	squares.</desc>

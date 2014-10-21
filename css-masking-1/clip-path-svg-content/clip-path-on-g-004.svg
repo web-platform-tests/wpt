@@ -5,7 +5,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-square-002-ref.svg" />
-	<html:meta class="flags">svg</html:meta>
+	<metadata class="flags">svg</metadata>
 	<desc class="assert">A &lt;clipPath> element on a child and a differnt
 	&lt;clipPath> element on &lt;g> should clip their targets indendent of
 	each other but the child first. You should see a green square.</desc>

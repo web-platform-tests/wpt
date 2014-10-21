@@ -5,7 +5,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-square-002-ref.svg" />
-	<html:meta class="flags">svg</html:meta>
+	<metadata class="flags">svg</metadata>
 	<desc class="assert">A &lt;clipPath> element with clipPathUnits
 	userSpaceOnUse gets clipped by a &lt;clipPath> element with cliPathUnits
 	objectBoundingBox. You should see a green square.</desc>

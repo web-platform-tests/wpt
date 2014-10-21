@@ -8,7 +8,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-masks"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#MaskElement"/>
 	<html:link rel="match" href="reference/clip-path-precision-002-ref.svg" />
-	<html:meta class="flags">svg</html:meta>
+	<metadata class="flags">svg</metadata>
 	<desc class="assert">Various comma values should no influence the precision
 	of the &lt;clipPath> element. The test should not show any red outlines
 	around the boxes.</desc>

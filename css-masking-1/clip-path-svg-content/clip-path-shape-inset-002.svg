@@ -5,7 +5,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#the-clip-path"/>
 	<html:link rel="match" href="reference/clip-path-shape-inset-001-ref.svg" />
-	<html:meta class="flags">svg</html:meta>
+	<metadata class="flags">svg</metadata>
 	<desc class="assert">A basic shape function inset() applied to an SVG
 	rectangle. The inset used per side is specified by the first 20px argument.
 	The second 20px specify the border radius. You should see a green square

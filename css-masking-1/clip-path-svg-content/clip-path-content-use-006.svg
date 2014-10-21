@@ -12,7 +12,6 @@
 	The one &lt;clipPath> element gets clipped by the other one. A green square
 	should be visible.</desc>
 </g>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
 	<rect id="rect1" width="150" height="150"/>
 	<rect id="rect2" width="150" height="150"/>

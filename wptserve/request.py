@@ -271,7 +271,6 @@ class Request(object):
         self._POST = None
         self._cookies = None
         self._auth = None
-        self._url_base = "/"
 
         self.server = Server(self)
 

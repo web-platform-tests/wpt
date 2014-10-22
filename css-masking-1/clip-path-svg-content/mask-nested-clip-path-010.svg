@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" width="10000" height="400">
 <g id="testmeta">
-	<title>CSS Masking: &lt;clipPath> and &lt;mask> nesting 10</title>
+	<title>CSS Masking: clipPath and mask nesting 10</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
@@ -8,8 +8,8 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#MaskElement"/>
 	<html:link rel="match" href="reference/mask-nested-clip-path-003-ref.svg" />
 	<metadata class="flags">svg</metadata>
-	<desc class="assert">Multiple references between &lt;clipPath> and
-	&lt;mask> elements. You should see 2 equaly sized and positioned green
+	<desc class="assert">Multiple references between clipPath and
+	mask elements. You should see 2 equally sized and positioned green
 	squares next to each other.</desc>
 </g>
 <defs>

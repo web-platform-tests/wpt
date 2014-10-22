@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: Basic shape polygon() on SVG &lt;rect> with evenodd</title>
+	<title>CSS Masking: Basic shape polygon() on SVG rectangle with evenodd</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#the-clip-path"/>

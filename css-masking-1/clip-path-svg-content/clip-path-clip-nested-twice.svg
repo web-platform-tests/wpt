@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: &lt;clipPath> nested twice</title>
+	<title>CSS Masking: clipPath element nested twice</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-square-002-ref.svg" />
 	<metadata class="flags">svg</metadata>
-	<desc class="assert">Check deep referencing of content of one &lt;clipPath>
-	element to another &lt;clipPath> element. A green square should be visible.
+	<desc class="assert">Check deep referencing of content of one clipPath
+	element to another clipPath element. A green square should be visible.
 	</desc>
 </g>
 <clipPath id="clip3">

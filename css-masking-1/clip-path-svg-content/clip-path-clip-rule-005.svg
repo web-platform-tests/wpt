@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: &lt;clipPath> clip-rule evenodd nonzero</title>
+	<title>CSS Masking: clipPath clip-rule evenodd nonzero</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
@@ -9,7 +9,7 @@
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">Test two different clip-rules on two different content
 	elements. You should see two green rectangles. The one on the top left
-	should have a hole, the shiften one shouldn't.</desc>
+	should have a hole, the shifted one shouldn't.</desc>
 </g>
 <clipPath id="clip1">
 	<polygon points="0 0, 150 0, 150 150, 0 150, 0 25, 125 25, 125 125, 25 125, 25 25, 0 25" clip-rule="evenodd"/>

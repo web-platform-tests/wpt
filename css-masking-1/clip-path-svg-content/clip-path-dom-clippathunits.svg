@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: Dynamic change of clipPathUnits on &lt;clipPath></title>
+	<title>CSS Masking: Dynamic change of clipPathUnits on clipPath</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-square-003-ref.svg" />
 	<metadata class="flags">svg</metadata>
-	<desc class="assert">The clipPathUnits attribute on the &lt;clipPath>
+	<desc class="assert">The clipPathUnits attribute on the clipPath
 	element gets changed dynamically from objectBoundingBox to userSpaceOnUse.
 	This reduces the clipping area from a size much bigger than the document to
 	the size of the green rectangle. A green square should be visible.</desc>

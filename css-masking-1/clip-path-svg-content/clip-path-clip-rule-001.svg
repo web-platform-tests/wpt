@@ -8,7 +8,7 @@
 	<html:link rel="match" href="reference/clip-path-square-hole-001-ref.svg" />
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">Check if the clip-rule 'evenodd' applies to a content
-	&lt;polygon> element of &lt;clipPath> element. A green square with a
+	polygon element of clipPath element. A green square with a
 	rectangular hole should be visible.</desc>
 </g>
 <clipPath id="clip1">

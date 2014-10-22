@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: Content of &lt;clipPath> with visibility: hidden</title>
+	<title>CSS Masking: Content of clipPath with visibility: hidden</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
@@ -8,7 +8,7 @@
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">From the spec: "If a child element is made invisible
 	by display or visibility it does not contribute to the clipping path."
-	&lt;clipPath> without content hides the clipped element. Nothing should be
+	clipPath without content hides the clipped element. Nothing should be
 	visible.
 	</desc>
 </g>

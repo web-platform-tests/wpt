@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml"
 	 xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="testmeta">
-	<title>CSS Masking: Clipped &lt;clipPath> on &lt;use></title>
+	<title>CSS Masking: Clipped clipPath on use</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-square-002-ref.svg" />
 	<metadata class="flags">svg</metadata>
-	<desc class="assert">A &lt;use> element can be clipped by an &lt;clipPath>
-	element. The &lt;clipPath> element can be clipped as well. You should see a
+	<desc class="assert">A use element can be clipped by an clipPath
+	element. The clipPath element can be clipped as well. You should see a
 	green square.</desc>
 </g>
 <defs>

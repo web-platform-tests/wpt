@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: &lt;mask> with objectBoundingBox gets clipped 1</title>
+	<title>CSS Masking: mask with objectBoundingBox gets clipped 1</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
@@ -8,7 +8,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#MaskElement"/>
 	<html:link rel="match" href="reference/mask-content-clip-002-ref.svg" />
 	<metadata class="flags">svg</metadata>
-	<desc class="assert">The &lt;mask> element with
+	<desc class="assert">The mask element with
 	maskContentUnits="objectBoundingBox" gets clipped. The clipping path has a
 	transform that scales the content down. You should see a full green circle.
 	</desc>

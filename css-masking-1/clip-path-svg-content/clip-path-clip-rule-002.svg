@@ -8,7 +8,7 @@
 	<html:link rel="match" href="reference/clip-path-square-001-ref.svg" />
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">Check if the clip-rule 'nonzero' applies to a content
-	&lt;polygon> element of &lt;clipPath> element. A green square should be
+	polygon element of clipPath element. A green square should be
 	visible.</desc>
 </g>
 <clipPath id="clip1">

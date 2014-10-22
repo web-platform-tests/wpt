@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml"
 	 xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="testmeta">
-	<title>CSS Masking: &lt;clipPath> negative scale</title>
+	<title>CSS Masking: clipPath negative scale</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-negative-scale-ref.svg" />
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">Negative scale factors on clipped elements should
-	be handled correctly by &lt;clipPath> elements. First clipped, then
+	be handled correctly by clipPath elements. First clipped, then
 	scaled.</desc>
 </g>
 <defs>

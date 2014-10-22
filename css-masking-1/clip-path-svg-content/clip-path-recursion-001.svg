@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: &lt;clipPath> recursion 1</title>
+	<title>CSS Masking: clipPath recursion 1</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
@@ -8,7 +8,7 @@
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#MaskElement"/>
 	<html:link rel="match" href="reference/clip-path-invisible-ref.svg" />
 	<metadata class="flags">svg</metadata>
-	<desc class="assert">A &lt;clipPath> recursion counts as invalid clipping
+	<desc class="assert">A clipPath recursion counts as invalid clipping
 	path and makes the element disappear. You should see nothing.</desc>
 </g>
 <defs>

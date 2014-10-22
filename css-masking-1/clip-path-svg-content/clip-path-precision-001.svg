@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml"
 	 xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="testmeta">
-	<title>CSS Masking: &lt;clipPath> precision</title>
+	<title>CSS Masking: clipPath precision</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
@@ -10,7 +10,7 @@
 	<html:link rel="match" href="reference/clip-path-precision-002-ref.svg" />
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">Various comma values should no influence the precision
-	of the &lt;clipPath> element. The test should not show any red outlines
+	of the clipPath element. The test should not show any red outlines
 	around the boxes.</desc>
 </g>
 <defs>

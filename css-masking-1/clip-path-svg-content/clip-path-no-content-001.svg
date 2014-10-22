@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: &lt;clipPath> without content</title>
+	<title>CSS Masking: clipPath without content</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-invisible-ref.svg" />
 	<metadata class="flags">svg</metadata>
-	<desc class="assert">&lt;clipPath> element without content make the clipped
+	<desc class="assert">clipPath element without content make the clipped
 	element disappear. Nothing should be visible.</desc>
 </g>
 <clipPath id="clip1">

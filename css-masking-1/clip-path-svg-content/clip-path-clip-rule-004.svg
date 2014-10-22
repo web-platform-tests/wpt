@@ -8,7 +8,7 @@
 	<html:link rel="match" href="reference/clip-path-square-001-ref.svg" />
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">Check that clip-rule 'nonzero' applies to
-	&lt;clipPath> element and a second &lt;clipPath> element can be applied to
+	clipPath element and a second clipPath element can be applied to
 	the first one. A green square should be visible.</desc>
 </g>
 <clipPath id="clip2">

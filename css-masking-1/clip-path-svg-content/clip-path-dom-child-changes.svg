@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: Dynamic transform on &lt;clipPath> content element</title>
+	<title>CSS Masking: Dynamic transform on clipPath content element</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-square-003-ref.svg" />
 	<metadata class="flags">svg</metadata>
 	<desc class="assert">A transformation is applied on the content element of
-	&lt;clipPath>. A green square should be visible.</desc>
+	clipPath. A green square should be visible.</desc>
 </g>
 <clipPath id="clip1">
 	<rect width="400" height="400"/>

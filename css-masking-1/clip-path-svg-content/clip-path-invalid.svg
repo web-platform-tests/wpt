@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml">
 <g id="testmeta">
-	<title>CSS Masking: &lt;clipPath> invalid content element</title>
+	<title>CSS Masking: clipPath invalid content element</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-clipping-paths"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#ClipPathElement"/>
 	<html:link rel="match" href="reference/clip-path-invisible-ref.svg" />
 	<metadata class="flags">svg</metadata>
-	<desc class="assert">&lt;clipPath> elements get invalid if the content
+	<desc class="assert">clipPath elements get invalid if the content
 	element is not a basic shape or a reference to a basic shape.
-	Invalid &lt;clipPath> elements let the clipped element disappear.
+	Invalid clipPath elements let the clipped element disappear.
 	Nothing should be visible.</desc>
 </g>
 <clipPath id="clip1">

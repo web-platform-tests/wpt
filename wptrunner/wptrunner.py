@@ -262,7 +262,7 @@ def list_test_groups(serve_root, test_paths, test_types, product, **kwargs):
                                         test_filter,
                                         run_info)
 
-    for item in sorted(test_loader.groups()):
+    for item in sorted(test_loader.groups(test_types)):
         print item
 
 def list_disabled(serve_root, test_paths, test_types, product, **kwargs):

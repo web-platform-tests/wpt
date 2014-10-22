@@ -606,6 +606,9 @@ class GitTree(TestTree):
         rv = {}
 
         data = self.git(*cmd)
+        if data == "":
+            return rv
+
         assert data[-1] == "\0"
         f = StringIO(data)
 

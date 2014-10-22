@@ -2,9 +2,9 @@
 <meta charset=utf-8>
 <title>AnimationNode before() method tests</title>
 <meta name="assert" content="Inserts nodes before this animation node.">
-<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationNode-before-void-AnimationNode...-nodes">
-<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#dfn-insert-children">
-<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#dfn-remove-an-animation-node">
+<link rel="help" href="http://w3c.github.io/web-animations/#dom-animationnode-before">
+<link rel="help" href="http://w3c.github.io/web-animations/#insert-children">
+<link rel="help" href="http://w3c.github.io/web-animations/#remove-an-animation-node">
 <link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
 <script src="/resources/testharness.js"></script>
@@ -21,7 +21,7 @@ test(function() {
         try {
             node.before(null);
         } catch(e) {
-            assert_unreached(type(node) + '.before(null) thorws unexpected exception: ' + e);
+            assert_unreached(type(node) + '.before(null) throws unexpected exception: ' + e);
         }
     });
 }, 'AnimationNode.before() does nothing if the node has no parent animation group. ' +
@@ -226,7 +226,7 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.before() inserts node before this node. The previous position ' +
-    'of the inserted node is lower in the tree than current node');
+    'of the inserted node is deeper in the tree than current node');
 
 test(function() {
     var test = this;
@@ -262,7 +262,7 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.before() inserts node before this node. The previous position ' +
-    'of the inserted node is higher in the tree than current node, but not ancestor');
+    'of the inserted node is shallower in the tree than current node, but not ancestor');
 
 test(function() {
     var test = this;
@@ -329,6 +329,39 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.before() inserts several nodes before this node, duplicate nodes are ignored');
+
+test(function() {
+    var test = this;
+    var parents = [AnimationGroup, AnimationSequence];
+    parents.forEach(function(parentCtor) {
+        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        nodes.forEach(function(node2) {
+            var node1 = newAnimation(createDiv(test));
+            var node3 = newAnimation(createDiv(test));
+            var node4 = newAnimation(createDiv(test));
+            var parent = new parentCtor([node1, node2]);
+
+            node2.before(node3, node4, node3);
+
+            assert_equals(node1.nextSibling, node4, type(node1) + '.before() should insert ' +
+                'nodes before this node');
+            assert_equals(node4.previousSibling, node1, type(node1) + '.before() should insert ' +
+                'nodes before this node');
+            assert_equals(node4.nextSibling, node3, type(node1) + '.before() should insert ' +
+                'nodes before this node');
+            assert_equals(node4.parent, parent, 'Parent group of the inserted node should be changed');
+            assert_equals(node3.previousSibling, node4, type(node1) + '.before() should insert ' +
+                'nodes before this node');
+            assert_equals(node3.nextSibling, node2, type(node1) + '.before() should insert ' +
+                'nodes before this node');
+            assert_equals(node3.parent, parent, 'Parent group of the inserted node should be changed');
+            assert_equals(node2.previousSibling, node3, type(node1) + '.before() should insert ' +
+                'nodes before this node');
+            assert_array_equals(parent.children, [node1, node4, node3, node2], parentCtor.name +
+                '.children should be updated');
+        });
+    });
+}, 'Test AnimationNode.before() inserts several nodes before this node, check insertion order');
 
 test(function() {
     var test = this;

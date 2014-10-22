@@ -104,7 +104,7 @@ test(function() {
 
             node2.remove();
 
-            assert_array_equals(parent.children, [node1, node2], type(node2) +
+            assert_array_equals(parent.children, [node1, node3], type(node2) +
                 ' node should be removed from the parent ' + parentCtor.name);
             assert_equals(node2.parent, null, 'Removed ' + type(node2) +
                 ' node parent attribute should be updated');
@@ -151,7 +151,7 @@ test(function() {
                 'Remaining node previousSibling attribute should be updated');
         });
     });
-}, 'Test removing a node with the children');
+}, 'Test removing a node that has children');
 
 test(function() {
     var nodes = [newAnimation(createDiv(this)), new AnimationGroup([]), new AnimationSequence([])];
@@ -164,5 +164,77 @@ test(function() {
     });
 }, 'AnimationNode.remove() disassociates the node from player, ' +
     'if node is directly associated with a player');
+
+test(function() {
+    var test = this;
+    var parents = [AnimationGroup, AnimationSequence];
+    parents.forEach(function(parentCtor) {
+        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        nodes.forEach(function(node2) {
+            var node1 = newAnimation(createDiv(test));
+            var node3 = newAnimation(createDiv(test));
+            var parent = new parentCtor([node1, node2, node3]);
+            var player = document.timeline.play(parent);
+
+            node2.remove();
+
+            assert_equals(player.source, parent, type(node2) +
+                ' node should be disassociated from the player');
+        });
+    });
+}, 'AnimationNode.remove() keeps parent direct association with the player');
+
+test(function() {
+    var test = this;
+    var parents = [AnimationGroup, AnimationSequence];
+    parents.forEach(function(parentCtor) {
+        parents.forEach(function(nodeCtor) {
+            var node1 = newAnimation(createDiv(test));
+            var node2 = newAnimation(createDiv(test));
+            var node3 = newAnimation(createDiv(test));
+            var node4 = newAnimation(createDiv(test));
+            var node5 = new parentCtor([node4]);
+            var group1 = new AnimationGroup([node3, node5]);
+            var node6 = newAnimation(createDiv(test));
+            var node7 = new parentCtor([node6]);
+            var node8 = newAnimation(createDiv(test));
+            var sequence1 = new AnimationSequence([node7,node8]);
+            var node9 = new nodeCtor([node1, group1, node2, sequence1]);
+            var node10 = newAnimation(createDiv(test));
+            var parent = new parentCtor([node9, node10]);
+
+            node9.remove();
+
+            assert_equals(node9.parent, null, 'Removed ' + type(node9) +
+                ' node parent attribute should be updated');
+            assert_array_equals(node9.children, [node1, group1, node2, sequence1],
+                'Removed ' + type(node9) + ' node children should not be changed');
+            node9.children.forEach(function(node) {
+                assert_equals(node.parent, node9, 'Removed ' + type(node9) +
+                    ' node children parent attribute should not be changed');
+            });
+            assert_array_equals(group1.children, [node3, node5],
+                'Removed ' + type(node9) + ' node grand children should not be changed');
+            group1.children.forEach(function(node) {
+                assert_equals(node.parent, group1, 'Removed ' + type(node9) +
+                    ' node grand children parent attribute should not be changed');
+            });
+            assert_array_equals(sequence1.children, [node7,node8],
+                'Removed ' + type(node9) + ' node grand children should not be changed');
+            sequence1.children.forEach(function(node) {
+                assert_equals(node.parent, sequence1, 'Removed ' + type(node9) +
+                    ' node grand children parent attribute should not be changed');
+            });
+            assert_array_equals(node5.children, [node4],
+                'Removed ' + type(node9) + ' node grand children should not be changed');
+            assert_equals(node4.parent, node5, 'Removed ' + type(node9) +
+                ' node grand children parent attribute should not be changed');
+            assert_array_equals(node7.children, [node6],
+                'Removed ' + type(node9) + ' node grand children should not be changed');
+            assert_equals(node6.parent, node7, 'Removed ' + type(node9) +
+                ' node grand children parent attribute should not be changed');
+        });
+    });
+}, 'AnimationNode.remove() on the root of a non-trivial tree do not change child structure');
 </script>
 </body>

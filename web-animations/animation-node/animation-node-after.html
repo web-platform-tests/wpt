@@ -21,7 +21,7 @@ test(function() {
         try {
             node.after(null);
         } catch(e) {
-            assert_unreached(type(node) + '.after(null) thorws unexpected exception: ' + e);
+            assert_unreached(type(node) + '.after(null) throws unexpected exception: ' + e);
         }
     });
 }, 'AnimationNode.after() does nothing if the node has no parent animation group. ' +
@@ -228,7 +228,7 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.after() inserts node after this node. The previous position ' +
-    'of the inserted node is lower in the tree than current node');
+    'of the inserted node is deeper in the tree than current node');
 
 test(function() {
     var test = this;
@@ -264,7 +264,7 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.after() inserts node after this node. The previous position ' +
-    'of the inserted node is higher in the tree than current node, but not ancestor');
+    'of the inserted node is shallower in the tree than current node, but not ancestor');
 
 test(function() {
     var test = this;
@@ -331,6 +331,39 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.after() inserts several nodes after this node, duplicate nodes are ignored');
+
+test(function() {
+    var test = this;
+    var parents = [AnimationGroup, AnimationSequence];
+    parents.forEach(function(parentCtor) {
+        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        nodes.forEach(function(node1) {
+            var node2 = newAnimation(createDiv(test));
+            var node3 = newAnimation(createDiv(test));
+            var node4 = newAnimation(createDiv(test));
+            var parent = new parentCtor([node1, node2]);
+
+            node1.after(node3, node4, node3);
+
+            assert_equals(node1.nextSibling, node4, type(node1) + '.after() should insert ' +
+                'nodes after this node');
+            assert_equals(node4.previousSibling, node1, type(node1) + '.after() should insert ' +
+                'nodes after this node');
+            assert_equals(node4.nextSibling, node3, type(node1) + '.after() should insert ' +
+                'nodes after this node');
+            assert_equals(node4.parent, parent, 'Parent group of the inserted node should be changed');
+            assert_equals(node3.previousSibling, node4, type(node1) + '.after() should insert ' +
+                'nodes after this node');
+            assert_equals(node3.nextSibling, node2, type(node1) + '.after() should insert ' +
+                'nodes after this node');
+            assert_equals(node3.parent, parent, 'Parent group of the inserted node should be changed');
+            assert_equals(node2.previousSibling, node3, type(node1) + '.after() should insert ' +
+                'nodes after this node');
+            assert_array_equals(parent.children, [node1, node4, node3, node2], parentCtor.name +
+                '.children should be updated');
+        });
+    });
+}, 'Test AnimationNode.after() inserts several nodes after this node, check insertion order');
 
 test(function() {
     var test = this;

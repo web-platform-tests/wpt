@@ -10,9 +10,6 @@ policies and contribution forms [3].
 
 "use strict";
 
-// Epsilon value for assert_approx_equals()
-var EPSILON = 20;
-
 var ANIMATION_END_TIME = 1000;
 var ANIMATION_TOP_DEFAULT = 300;
 var ANIMATION_TOP_0 = 10;

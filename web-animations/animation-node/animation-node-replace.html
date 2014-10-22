@@ -141,7 +141,7 @@ test(function() {
             assert_array_equals(parent.children, [], type(node) +
                 ' node should be removed from parent ' + parentCtor.name);
             assert_equals(node.parent, null, type(node) +
-                'node parent attribute should be updated');
+                ' node parent attribute should be updated');
         });
     });
 }, 'AnimationNode.replace() without arguments removes the node from the parent ' +
@@ -160,13 +160,13 @@ test(function() {
             node2.replace(node3);
 
             assert_array_equals(parent.children, [node1,node3], type(node2) +
-                'node should be removed from parent ' + parentCtor.name);
+                ' node should be removed from parent ' + parentCtor.name);
             assert_equals(node2.parent, null, type(node2) +
-                'node parent attribute should be updated');
+                ' node parent attribute should be updated');
             assert_equals(node2.nextSibling, null, type(node2) +
-                'node nextSibling attribute should be updated');
+                ' node nextSibling attribute should be updated');
             assert_equals(node2.previousSibling, null, type(node2) +
-                'node previousSibling attribute should be updated');
+                ' node previousSibling attribute should be updated');
             assert_equals(node1.nextSibling, node3,
                 'Sibling node nextSibling attribute should be updated');
             assert_equals(node3.previousSibling, node1,
@@ -188,7 +188,7 @@ test(function() {
             node1.replace(node2);
 
             assert_array_equals(parent.children, [node2], type(node2) +
-                'node should be replaced');
+                ' node should be replaced');
             assert_equals(node2.parent, parent,
                 'Replacement node should be assigned to a parent group');
         });
@@ -227,7 +227,7 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.replace() replaces given node. The previous position ' +
-    'of the replacement node is lower in the tree than the current node');
+    'of the replacement node is deeper in the tree than the current node');
 
 test(function() {
     var test = this;
@@ -261,7 +261,7 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.replace() replaces given node. The previous position ' +
-    'of the replacement node is higher in the tree than current node, but is not an ancestor');
+    'of the replacement node is shallower in the tree than current node, but is not an ancestor');
 
 test(function() {
     var test = this;
@@ -298,6 +298,78 @@ test(function() {
         });
     });
 }, 'Test AnimationNode.replace() replaces given node. Test several arguments');
+
+test(function() {
+    var test = this;
+    var parents = [AnimationGroup, AnimationSequence];
+    parents.forEach(function(parentCtor) {
+        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        nodes.forEach(function(node2) {
+            var node1 = newAnimation(createDiv(test));
+            var node3 = newAnimation(createDiv(test));
+            var node4 = newAnimation(createDiv(test));
+            var parent = new parentCtor([node1, node2]);
+
+            node2.replace(node3, node4, node3, node4);
+
+            assert_array_equals(parent.children, [node1, node3, node4], type(node2) + '.replace() ' +
+                'should replace the current node by ones passed in arguments');
+            assert_equals(node1.nextSibling, node3, 'nextSibling attribute should be updated');
+            assert_equals(node3.previousSibling, node1, 'Inserted node previousSibling attribute ' +
+                'should be updated');
+            assert_equals(node3.nextSibling, node4, 'Inserted node nextSibling attribute ' +
+                'should be updated');
+            assert_equals(node3.parent, parent, 'Parent group of the inserted node should be changed');
+            assert_equals(node4.previousSibling, node3, 'Inserted node previousSibling attribute ' +
+                'should be updated');
+            assert_equals(node4.nextSibling, null, 'Inserted node nextSibling attribute ' +
+                'should be updated');
+            assert_equals(node4.parent, parent, 'Parent group of the second inserted node ' +
+                'should be changed');
+            assert_equals(node2.parent, null, 'Replaced node parent group should be changed');
+            assert_equals(node2.previousSibling, null,
+                'Replaced node previousSibling attribute should be updated');
+            assert_equals(node2.nextSibling, null, 'Replaced node nextSibling attribute ' +
+                'should be updated');
+        });
+    });
+}, 'Test AnimationNode.replace() replaces given node by several nodes, duplicate nodes are ignored');
+
+test(function() {
+    var test = this;
+    var parents = [AnimationGroup, AnimationSequence];
+    parents.forEach(function(parentCtor) {
+        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        nodes.forEach(function(node2) {
+            var node1 = newAnimation(createDiv(test));
+            var node3 = newAnimation(createDiv(test));
+            var node4 = newAnimation(createDiv(test));
+            var parent = new parentCtor([node1, node2]);
+
+            node2.replace(node3, node4, node3);
+
+            assert_array_equals(parent.children, [node1, node4, node3], type(node2) + '.replace() ' +
+                'should replace the current node by ones passed in arguments');
+            assert_equals(node1.nextSibling, node4, 'nextSibling attribute should be updated');
+            assert_equals(node4.previousSibling, node1, 'Inserted node previousSibling attribute ' +
+                'should be updated');
+            assert_equals(node4.nextSibling, node3, 'Inserted node nextSibling attribute ' +
+                'should be updated');
+            assert_equals(node4.parent, parent, 'Parent group of the inserted node should be changed');
+            assert_equals(node3.previousSibling, node4, 'Inserted node previousSibling attribute ' +
+                'should be updated');
+            assert_equals(node3.nextSibling, null, 'Inserted node nextSibling attribute ' +
+                'should be updated');
+            assert_equals(node3.parent, parent, 'Parent group of the second inserted node ' +
+                'should be changed');
+            assert_equals(node2.parent, null, 'Replaced node parent group should be changed');
+            assert_equals(node2.previousSibling, null,
+                'Replaced node previousSibling attribute should be updated');
+            assert_equals(node2.nextSibling, null, 'Replaced node nextSibling attribute ' +
+                'should be updated');
+        });
+    });
+}, 'Test AnimationNode.replace() replaces given node by several nodes, check replacement order');
 
 test(function() {
     var test = this;

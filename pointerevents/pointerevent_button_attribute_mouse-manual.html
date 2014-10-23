@@ -30,13 +30,12 @@
                 // If pointerType is "mouse" and no mouse button is depressed, then the button attribute of the pointermove event must be -1 and the buttons attribute must be 0.
                 // TA: 5.8
                 on_event(target0, "pointerover", function (event) {
+                    detected_pointertypes[event.pointerType] = true;
                     if(event.pointerType != "mouse") {
                         alert("Use mouse for this test please!");
                         return;
                     }
                     if (eventTested == false) {
-                        detected_pointertypes[event.pointerType] = true;
-
                         test(function() {
                             assert_true(event.button == -1, "If mouse buttons are released button attribute is -1")
                         }, "If mouse buttons are released button attribute is -1");

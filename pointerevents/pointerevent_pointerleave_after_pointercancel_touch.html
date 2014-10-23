@@ -29,6 +29,7 @@
                 var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointercancel", function (event) {
+                    detected_pointertypes[event.pointerType] = true;
                     pointercancel_event = event;
                 });
 
@@ -36,7 +37,6 @@
                 // TA: 4.3.1
                 on_event(target0, "pointerleave", function (event) {
                     if(event.pointerType == 'touch') {
-                        detected_pointertypes[event.pointerType] = true;
                         if(pointercancel_event != null) {
                             if(eventTested == false) {
                                 test_pointerleave.step(function() {

@@ -91,7 +91,7 @@
                 on_event(btnComplete, 'click', function(event) {
                     detected_pointertypes[event.pointerType] = true;
                     test_touchaction.step(function() {
-                        assert_equals(target0.scrollLeft, 0, "scroll x offset should not be 0 in the end of the test");
+                        assert_equals(target0.scrollLeft, 0, "scroll x offset should be 0 in the end of the test");
                         assert_not_equals(target0.scrollTop, 0, "scroll y offset should not be 0 in the end of the test");
                     });
                     test_touchaction.done();

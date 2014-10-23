@@ -22,13 +22,12 @@
             add_completion_callback(showPointerTypes);
 
             function eventHandler(event) {
+                detected_pointertypes[event.pointerType] = true;
                 if(!eventTested) {
                     check_PointerEvent(event);
                     test_pointerEvent.step(function () {
                         assert_equals(event.pointerType, "mouse", "Verify event.pointerType is 'mouse'.");
                     });
-                    detected_pointertypes[event.pointerType] = true;
-
                     eventTested = true;
                 }
                 if (event.type == "pointerup") {

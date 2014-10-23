@@ -22,8 +22,7 @@
     t2.done();
   });
 
-  var states = [document.readyState],
-  loop = true;
+  var states = [document.readyState];
   document.onreadystatechange = t3.step_func(function(){
     states.push(document.readyState);
     if (document.readyState === "complete") {

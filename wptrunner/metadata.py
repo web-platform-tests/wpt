@@ -154,7 +154,7 @@ def update_from_logs(manifests, *log_filenames, **kwargs):
                     subtest.coalesce_expected()
                 test.coalesce_expected()
 
-    return expected_map_by_manifest
+    return expected_map
 
 
 def write_changes(metadata_path, expected_map):

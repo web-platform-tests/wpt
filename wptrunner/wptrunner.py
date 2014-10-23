@@ -145,8 +145,8 @@ class TestEnvironment(object):
             if url == "/":
                 continue
 
-            url = url.strip("/")
             path = paths["tests_path"]
+            url = "/%s/" % url.strip("/")
 
             for (method,
                  suffix,
@@ -159,7 +159,7 @@ class TestEnvironment(object):
                                   (b"GET",
                                    "*",
                                    serve.handlers.FileHandler)]:
-                route = (method, b"/%s/%s" % (str(url), str(suffix)), handler_cls(path))
+                route = (method, b"%s%s" % (str(url), str(suffix)), handler_cls(path, url_base=url))
                 serve.routes.insert(-3, route)
 
         if "/" not in self.test_paths:

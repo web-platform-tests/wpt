@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml"
 	 xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="testmeta">
-	<title>CSS Masking: &lt;mask> with negative scale target</title>
+	<title>CSS Masking: mask with negative scale target</title>
 	<html:link rel="author" title="Dirk Schulze" href="mailto:dschulze@adobe.com"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#svg-masks"/>
 	<html:link rel="help" href="http://www.w3.org/TR/css-masking-1/#MaskElement"/>

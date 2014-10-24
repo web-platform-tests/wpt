@@ -38,7 +38,6 @@
             var eventRcvd = false;
             var isAsync = false;
 
-            var detected_pointertypes = {};
             add_completion_callback(showPointerTypes);
 
             var target0 = document.getElementById('target0');
@@ -46,7 +45,7 @@
 
             function run() {
                 on_event(captureButton, 'pointerdown', function(e) {
-                    detected_pointertypes[ event.pointerType ] = true;
+                    detected_pointertypes[event.pointerType] = true;
                     pointerdown_event = e;
                     if(isPointerCapture == false) {
                         isPointerCapture = true;
@@ -89,8 +88,6 @@
                                 assert_false(eventRcvd, "no other events should be received before lostpointercapture." + eventsRcvd_str);
                                 assert_equals(event.pointerId, pointerdown_event.pointerId, "pointerID is same for pointerdown and lostpointercapture");
                             });
-
-                            detected_pointertypes[event.pointerType] = true;
                             test_pointerEvent.done(); // complete test
                         }
                         else {

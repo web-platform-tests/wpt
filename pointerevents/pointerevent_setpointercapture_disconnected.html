@@ -11,12 +11,17 @@
             var test_setPointerCapture = async_test("setPointerCapture: DOMException InvalidStateError");
 
             function run() {
+
+                var detected_pointertypes = {};
+                add_completion_callback(showPointerTypes);
+
                 var target0 = document.getElementById("target0");
                 var target1 = document.getElementById("target1");
 
                 target1.parentNode.removeChild(target1);
 
                 on_event(target0, "pointerdown", function (event) {
+                    detected_pointertypes[ event.pointerType ] = true;
                     try {
                         target1.setPointerCapture(event.pointerId);
 
@@ -44,6 +49,9 @@
             Use the mouse, touch or pen to contact this box.
         </div>
         <div id="target1"></div>
+        <div id="complete-notice">
+            <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+        </div>
         <div id="log"></div>
     </body>
 </html>

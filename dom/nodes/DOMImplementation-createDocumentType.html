@@ -12,27 +12,27 @@
 <script>
 test(function() {
   var tests = [
-        ["foo", "", "", null],
-        ["1foo", "", "", "INVALID_CHARACTER_ERR"],
-        ["foo1", "", "", null],
-        ["f1oo", "", "", null],
-        ["@foo", "", "", "INVALID_CHARACTER_ERR"],
-        ["foo@", "", "", "INVALID_CHARACTER_ERR"],
-        ["f@oo", "", "", "INVALID_CHARACTER_ERR"],
-        ["f:oo", "", "", null],
-        [":foo", "", "", "NAMESPACE_ERR"],
-        ["foo:", "", "", "NAMESPACE_ERR"],
-        ["foo", "foo", "", null],
-        ["foo", "", "foo", null],
-        ["foo", "f'oo", "", null],
-        ["foo", "", "f'oo", null],
-        ["foo", 'f"oo', "", null],
-        ["foo", "", 'f"oo', null],
-        ["foo", "f'o\"o", "", null],
-        ["foo", "", "f'o\"o", null],
-        ["foo", "foo>", "", null],
-        ["foo", "", "foo>", null]
-     ]
+    ["foo", "", "", null],
+    ["1foo", "", "", "INVALID_CHARACTER_ERR"],
+    ["foo1", "", "", null],
+    ["f1oo", "", "", null],
+    ["@foo", "", "", "INVALID_CHARACTER_ERR"],
+    ["foo@", "", "", "INVALID_CHARACTER_ERR"],
+    ["f@oo", "", "", "INVALID_CHARACTER_ERR"],
+    ["f:oo", "", "", null],
+    [":foo", "", "", "NAMESPACE_ERR"],
+    ["foo:", "", "", "NAMESPACE_ERR"],
+    ["foo", "foo", "", null],
+    ["foo", "", "foo", null],
+    ["foo", "f'oo", "", null],
+    ["foo", "", "f'oo", null],
+    ["foo", 'f"oo', "", null],
+    ["foo", "", 'f"oo', null],
+    ["foo", "f'o\"o", "", null],
+    ["foo", "", "f'o\"o", null],
+    ["foo", "foo>", "", null],
+    ["foo", "", "foo>", null]
+  ]
 
   var doc = document.implementation.createHTMLDocument("title");
   var doTest = function(aDocument, aQualifiedName, aPublicId, aSystemId) {

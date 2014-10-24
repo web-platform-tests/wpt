@@ -53,7 +53,7 @@ test(function() {
 }, 'AnimationNode.replace() does nothing if node has no parent animation group');
 
 // Step 2. If any of the animation nodes in nodes is an inclusive ancestor
-// of this animation node throw a HierarchyRequestError exception and terminate these steps.
+// of the parent animation group throw a HierarchyRequestError exception and terminate these steps.
 test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
@@ -66,6 +66,10 @@ test(function() {
                 node.replace(node);
             }, 'HierarchyRequestError should be thrown if ' + type(node) +
                 ' replaces itself');
+            assert_equals(node.parent, parent, type(node) + '.replace() should not change ' +
+                'parent attribute before throwing HierarchyRequestError');
+            assert_array_equals(parent.children, [node], type(node) + '.replace() ' +
+                'should not change parent children before throwing HierarchyRequestError');
         });
     });
 }, 'HierarchyRequestError is thrown if the node replaces itself');
@@ -82,6 +86,10 @@ test(function() {
                 node.replace(parent);
             }, 'HierarchyRequestError should be thrown if ' + type(node) +
                 ' is replaced by its parent ' + parentCtor.name);
+            assert_equals(node.parent, parent, type(node) + '.replace() should not change ' +
+                'parent attribute before throwing HierarchyRequestError');
+            assert_array_equals(parent.children, [node], type(node) + '.replace() ' +
+                'should not change parent children before throwing HierarchyRequestError');
         });
     });
 }, 'HierarchyRequestError is thrown if the node is replaced by its parent');
@@ -98,9 +106,17 @@ test(function() {
             var parent4 = new parentCtor([parent3]);
 
             assert_throws('HierarchyRequestError', function() {
-                node.replace(parent4);
+                node.replace(parent3);
             }, 'HierarchyRequestError should be thrown if ' + type(node) +
                 ' is replaced by its inclusive ancestor' + parentCtor.name);
+            assert_equals(node.parent, parent1, type(node) + '.replace() should not change ' +
+                'parent attribute before throwing HierarchyRequestError');
+            assert_array_equals(parent1.children, [node], type(node) + '.replace() ' +
+                'should not change parent children before throwing HierarchyRequestError');
+            assert_equals(parent3.parent, parent4, type(node) + '.replace() should not change ' +
+                'parent attribute of replacement node before throwing HierarchyRequestError');
+            assert_array_equals(parent4.children, [parent3], type(node) + '.replace() ' +
+                'should not change replacement node parent children before throwing HierarchyRequestError');
         });
     });
 }, 'HierarchyRequestError is thrown if the node is replaced by its inclusive ancestor');
@@ -116,18 +132,31 @@ test(function() {
             var parent3 = new parentCtor([parent2]);
             var parent4 = new parentCtor([parent3]);
             var node2 = newAnimation(createDiv(test));
+            var parent5 = new parentCtor([node2]);
 
             assert_throws('HierarchyRequestError', function() {
-                node1.replace(node2, parent4);
+                node1.replace(node2, parent3);
             }, 'HierarchyRequestError should be thrown if ' + type(node1) +
                 ' is replaced by its inclusive ancestor' + parentCtor.name);
+            assert_equals(node1.parent, parent1, type(node1) + '.replace() should not change ' +
+                'parent attribute before throwing HierarchyRequestError');
+            assert_array_equals(parent1.children, [node1], type(node1) + '.replace() ' +
+                'should not change parent children before throwing HierarchyRequestError');
+            assert_equals(parent3.parent, parent4, type(node1) + '.replace() should not change ' +
+                'parent attribute of replacement node before throwing HierarchyRequestError');
+            assert_array_equals(parent4.children, [parent3], type(node1) + '.replace() ' +
+                'should not change replacement node parent children before throwing HierarchyRequestError');
+            assert_equals(node2.parent, parent5, type(node1) + '.replace() should not change ' +
+                'parent attribute of replacement node before throwing HierarchyRequestError');
+            assert_array_equals(parent5.children, [node2], type(node1) + '.replace() ' +
+                'should not change replacement node parent children before throwing HierarchyRequestError');
         });
     });
 }, 'HierarchyRequestError is thrown if node is replaced by its inclusive ancestor. ' +
     'Test several arguments in replace() call');
 
 // Step 3. Let reference child be the next sibling of this animation node not in nodes.
-// Step 4. Insert nodes before reference child.
+// Step 4. Remove this animation node from its parent animation group.
 test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
@@ -146,6 +175,29 @@ test(function() {
     });
 }, 'AnimationNode.replace() without arguments removes the node from the parent ' +
     'animation group');
+
+test(function() {
+    var test = this;
+    var parents = [AnimationGroup, AnimationSequence];
+    parents.forEach(function(parentCtor) {
+        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        nodes.forEach(function(node1) {
+            var node2 = newAnimation(createDiv(test));
+            var parent = new parentCtor([node1]);
+
+            node1.replace(node2);
+
+            assert_array_equals(parent.children, [node2], type(node1) +
+                ' node should be removed its parent group');
+            assert_equals(node1.parent, null, type(node1) +
+                ' node should be removed from its parent group');
+            assert_equals(node1.previousSibling, null, type(node1) +
+                ' node previousSibling attribute should be updated');
+            assert_equals(node1.nextSibling, null, type(node1) +
+                ' node nextSibling attribute should be updated');
+        });
+    });
+}, 'AnimationNode.replace() removes the node from its parent animation group');
 
 test(function() {
     var test = this;
@@ -176,6 +228,7 @@ test(function() {
 }, 'AnimationNode.replace(next sibling) removes the node from its parent ' +
     'animation group');
 
+// Step 5. Insert nodes before reference child.
 test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
@@ -187,7 +240,7 @@ test(function() {
 
             node1.replace(node2);
 
-            assert_array_equals(parent.children, [node2], type(node2) +
+            assert_array_equals(parent.children, [node2], type(node1) +
                 ' node should be replaced');
             assert_equals(node2.parent, parent,
                 'Replacement node should be assigned to a parent group');

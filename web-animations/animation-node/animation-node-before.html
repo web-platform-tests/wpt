@@ -63,8 +63,13 @@ test(function() {
 
             assert_throws('HierarchyRequestError', function() {
                 node.before(node);
-            }, 'HierarchyRequestError should be thrown if inserting node ' +
-                'before itself');
+            }, type(node) + '.before() should throw HierarchyRequestError ' +
+                'if inserting node before itself');
+            assert_equals(node.parent, parent, type(node) + '.before() should not change ' +
+                'parent attribute before throwing HierarchyRequestError');
+            assert_array_equals(parent.children, [node], type(node) + '.before() ' +
+                'should not change parent children before throwing HierarchyRequestError');
+
         });
     });
 }, 'HierarchyRequestError is thrown if node is inserted before itself');
@@ -76,10 +81,15 @@ test(function() {
         var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
         nodes.forEach(function(node) {
             var parent = new parentCtor([node]);
-                assert_throws('HierarchyRequestError', function() {
-                    node.before(parent);
-                }, 'HierarchyRequestError should be thrown if inserting ' +
-                    'node\'s parent');
+
+            assert_throws('HierarchyRequestError', function() {
+                node.before(parent);
+            }, type(node) + '.before() should throw HierarchyRequestError ' +
+                'if inserting node\'s parent');
+            assert_equals(node.parent, parent, type(node) + '.before() should not change ' +
+                'parent attribute before throwing HierarchyRequestError');
+            assert_array_equals(parent.children, [node], type(node) + '.before() ' +
+                'should not change parent children before throwing HierarchyRequestError');
         });
     });
 }, 'HierarchyRequestError is thrown if direct parent is inserted before the node');
@@ -94,10 +104,19 @@ test(function() {
             var parent2 = new parentCtor([parent1]);
             var parent3 = new parentCtor([parent2]);
             var parent4 = new parentCtor([parent3]);
-                assert_throws('HierarchyRequestError', function() {
-                    node.before(parent4);
-                }, 'HierarchyRequestError should be thrown if inserting ' +
-                    'node\'s parent');
+
+            assert_throws('HierarchyRequestError', function() {
+                node.before(parent4);
+            }, type(node) + '.before() should throw HierarchyRequestError ' +
+                'if inserting node\'s ancestor');
+            assert_equals(node.parent, parent1, type(node) + '.before() should not change ' +
+                'parent attribute before throwing HierarchyRequestError');
+            assert_array_equals(parent1.children, [node], type(node) + '.before() ' +
+                'should not change parent children before throwing HierarchyRequestError');
+            assert_equals(parent3.parent, parent4, type(node) + '.before() should not change ' +
+                'parent attribute of inserted node before throwing HierarchyRequestError');
+            assert_array_equals(parent4.children, [parent3], type(node) + '.before() ' +
+                'should not change inserted node parent children before throwing HierarchyRequestError');
         });
     });
 }, 'HierarchyRequestError is thrown if an inclusive ancestor is inserted before the node');
@@ -110,12 +129,28 @@ test(function() {
         nodes.forEach(function(node1) {
             var node2 = newAnimation(createDiv(test));
             var node3 = newAnimation(createDiv(test));
-            var parent = new parentCtor([node1, node2]);
+            var parent1 = new parentCtor([node1, node2]);
+            var parent2 = new parentCtor([parent1]);
+            var parent3 = new parentCtor([parent2]);
+            var parent4 = new parentCtor([parent3]);
+            var parent5 = new ParentCtor([node3]);
 
             assert_throws('HierarchyRequestError', function() {
-                node1.before(node3, parent);
-            }, 'HierarchyRequestError should be thrown if inserting ' +
-                'an inclusive ancestor');
+                node1.before(node3, parent3);
+            }, type(node1) + '.before() should throw HierarchyRequestError ' +
+                'if inserting node\'s parent');
+            assert_equals(node1.parent, parent1, type(node1) + '.before() should not change ' +
+                'parent attribute before throwing HierarchyRequestError');
+            assert_array_equals(parent1.children, [node1, node2], type(node1) + '.before() ' +
+                'should not change parent children before throwing HierarchyRequestError');
+            assert_equals(parent3.parent, parent4, type(node1) + '.before() should not change ' +
+                'parent attribute of inserted node before throwing HierarchyRequestError');
+            assert_array_equals(parent4.children, [parent3], type(node1) + '.before() ' +
+                'should not change inserted node parent children before throwing HierarchyRequestError');
+            assert_equals(node3.parent, parent5, type(node1) + '.before() should not change ' +
+                'parent attribute of inserted node before throwing HierarchyRequestError');
+            assert_array_equals(parent5.children, [node3], type(node1) + '.before() ' +
+                'should not change inserted node parent children before throwing HierarchyRequestError');
         });
     });
 }, 'HierarchyRequestError is thrown if an inclusive ancestor is inserted before the node. ' +

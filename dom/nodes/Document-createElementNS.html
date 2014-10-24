@@ -15,6 +15,21 @@ test(function() {
      *   the expected exception, or null if none
      */
     ["", "", "INVALID_CHARACTER_ERR"],
+    [null, null, null],
+    [null, "", "INVALID_CHARACTER_ERR"],
+    [undefined, null, null],
+    [undefined, undefined, null],
+    [undefined, "", "INVALID_CHARACTER_ERR"],
+    ["http://example.com/", null, null],
+    ["http://example.com/", "", "INVALID_CHARACTER_ERR"],
+    ["/", null, null],
+    ["/", "", "INVALID_CHARACTER_ERR"],
+    ["http://www.w3.org/XML/1998/namespace", null, null],
+    ["http://www.w3.org/XML/1998/namespace", "", "INVALID_CHARACTER_ERR"],
+    ["http://www.w3.org/2000/xmlns/", null, "NAMESPACE_ERR"],
+    ["http://www.w3.org/2000/xmlns/", "", "INVALID_CHARACTER_ERR"],
+    ["foo:", null, null],
+    ["foo:", "", "INVALID_CHARACTER_ERR"],
   ])
 
   tests.forEach(function(t, i) {

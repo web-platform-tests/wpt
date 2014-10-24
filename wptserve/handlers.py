@@ -28,17 +28,14 @@ def guess_content_type(path):
 
 
 
-def filesystem_path(base_path, request):
+def filesystem_path(base_path, request, url_base="/"):
     if base_path is None:
         base_path = request.doc_root
 
-    if "*" in request.route_match:
-        path = request.route_match["*"]
-    else:
-        path = request.url_parts.path
+    path = request.url_parts.path
 
-    if path.startswith("/"):
-        path = path[1:]
+    if path.startswith(url_base):
+        path = path[len(url_base):]
 
     if ".." in path:
         raise HTTPException(500)
@@ -47,11 +44,12 @@ def filesystem_path(base_path, request):
 
 
 class DirectoryHandler(object):
-    def __init__(self, base_path=None):
+    def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
+        self.url_base = url_base
 
     def __call__(self, request, response):
-        path = filesystem_path(self.base_path, request)
+        path = filesystem_path(self.base_path, request, self.url_base)
 
         assert os.path.isdir(path)
 
@@ -95,12 +93,13 @@ directory_handler = DirectoryHandler()
 
 
 class FileHandler(object):
-    def __init__(self, base_path=None):
+    def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
+        self.url_base = url_base
         self.directory_handler = DirectoryHandler(self.base_path)
 
     def __call__(self, request, response):
-        path = filesystem_path(self.base_path, request)
+        path = filesystem_path(self.base_path, request, self.url_base)
 
         if os.path.isdir(path):
             return self.directory_handler(request, response)
@@ -199,11 +198,12 @@ file_handler = FileHandler()
 
 
 class PythonScriptHandler(object):
-    def __init__(self, base_path=None):
+    def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
+        self.url_base = url_base
 
     def __call__(self, request, response):
-        path = filesystem_path(self.base_path, request)
+        path = filesystem_path(self.base_path, request, self.url_base)
 
         try:
             environ = {"__file__": path}
@@ -263,11 +263,12 @@ def json_handler(func):
 
 
 class AsIsHandler(object):
-    def __init__(self, base_path=None):
+    def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
+        self.url_base = url_base
 
     def __call__(request, response):
-        path = filesystem_path(self.base_path, request)
+        path = filesystem_path(self.base_path, request, self.url_base)
 
         try:
             with open(path) as f:

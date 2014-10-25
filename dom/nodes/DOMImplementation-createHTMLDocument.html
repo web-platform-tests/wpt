@@ -10,9 +10,10 @@
 <link rel=help href="http://dom.spec.whatwg.org/#dom-document-documentelement">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="DOMImplementation-createHTMLDocument.js"></script>
 <div id="log"></div>
 <script>
-function checkDoc(doc, expectedtitle, normalizedtitle) {
+createHTMLDocuments(function(doc, expectedtitle, normalizedtitle) {
   assert_equals(doc.doctype.name, "html")
   assert_equals(doc.doctype.publicId, "")
   assert_equals(doc.doctype.systemId, "")
@@ -28,31 +29,7 @@ function checkDoc(doc, expectedtitle, normalizedtitle) {
   }
   assert_equals(doc.documentElement.lastChild.localName, "body")
   assert_equals(doc.documentElement.lastChild.childNodes.length, 0)
-}
-
-var tests = [
-  ["", "", ""],
-  [null, "null", "null"],
-  [undefined, "", ""],
-  ["foo  bar baz", "foo  bar baz", "foo bar baz"],
-  ["foo\t\tbar baz", "foo\t\tbar baz", "foo bar baz"],
-  ["foo\n\nbar baz", "foo\n\nbar baz", "foo bar baz"],
-  ["foo\f\fbar baz", "foo\f\fbar baz", "foo bar baz"],
-  ["foo\r\rbar baz", "foo\r\rbar baz", "foo bar baz"],
-]
-
-tests.forEach(function(t, i) {
-  var title = t[0], expectedtitle = t[1], normalizedtitle = t[2]
-  test(function() {
-    var doc = document.implementation.createHTMLDocument(title);
-    checkDoc(doc, expectedtitle, normalizedtitle)
-  }, "createHTMLDocument test " + i + ": " + t.map(function(el) { return format_value(el) }))
 })
-
-test(function() {
-  var doc = document.implementation.createHTMLDocument();
-  checkDoc(doc, undefined, "")
-}, "Missing title argument");
 
 test(function() {
   var doc = document.implementation.createHTMLDocument("test");

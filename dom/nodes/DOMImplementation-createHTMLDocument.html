@@ -14,7 +14,15 @@
 <div id="log"></div>
 <script>
 createHTMLDocuments(function(doc, expectedtitle, normalizedtitle) {
+  assert_true(doc instanceof Document, "Should be a Document")
+  assert_true(doc instanceof Node, "Should be a Node")
+  assert_equals(doc.childNodes.length, 2,
+                "Document should have two child nodes")
+
   var doctype = doc.doctype
+  assert_true(doctype instanceof DocumentType,
+              "Doctype should be a DocumentType")
+  assert_true(doctype instanceof Node, "Doctype should be a Node")
   assert_equals(doctype.name, "html")
   assert_equals(doctype.publicId, "")
   assert_equals(doctype.systemId, "")
@@ -25,22 +33,33 @@ createHTMLDocuments(function(doc, expectedtitle, normalizedtitle) {
   assert_equals(documentElement.childNodes.length, 2,
                 "Document element should have two child nodes")
   assert_equals(documentElement.localName, "html")
+  assert_equals(documentElement.tagName, "HTML")
 
   var head = documentElement.firstChild
+  assert_true(head instanceof HTMLHeadElement,
+              "Head should be a HTMLHeadElement")
   assert_equals(head.localName, "head")
+  assert_equals(head.tagName, "HEAD")
 
   if (expectedtitle !== undefined) {
     assert_equals(head.childNodes.length, 1)
 
     var title = head.firstChild
+    assert_true(title instanceof HTMLTitleElement,
+                "Title should be a HTMLTitleElement")
     assert_equals(title.localName, "title")
+    assert_equals(title.tagName, "TITLE")
+    assert_equals(title.childNodes.length, 1)
     assert_equals(title.firstChild.data, expectedtitle)
   } else {
     assert_equals(head.childNodes.length, 0)
   }
 
   var body = documentElement.lastChild
+  assert_true(body instanceof HTMLBodyElement,
+              "Body should be a HTMLBodyElement")
   assert_equals(body.localName, "body")
+  assert_equals(body.tagName, "BODY")
   assert_equals(body.childNodes.length, 0)
 })
 

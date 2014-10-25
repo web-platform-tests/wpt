@@ -1738,6 +1738,14 @@ function do_interface_attribute_asserts(obj, member)
     {
         assert_equals(typeof desc.set, "function", "setter must be function for PutForwards, Replaceable, or non-readonly attributes");
         assert_equals(desc.set.length, 1, "setter length must be 1");
+        if (!member.has_extended_attribute("LenientThis")) {
+            assert_throws(new TypeError(), function() {
+                desc.set.call({});
+            }.bind(this), "calling setter on wrong object type must throw TypeError");
+        } else {
+            assert_equals(desc.set.call({}), undefined,
+                          "calling setter on wrong object type must return undefined");
+        }
     }
 }
 //@}

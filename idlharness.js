@@ -1266,10 +1266,14 @@ IdlInterface.prototype.test_member_attribute = function(member)
                 "The prototype object must have a property " +
                 format_value(member.name));
 
-            // TODO: Needs to test for LenientThis.
-            assert_throws(new TypeError(), function() {
-                window[this.name].prototype[member.name];
-            }.bind(this), "getting property on prototype object must throw TypeError");
+            if (!member.has_extended_attribute("LenientThis")) {
+                assert_throws(new TypeError(), function() {
+                    window[this.name].prototype[member.name];
+                }.bind(this), "getting property on prototype object must throw TypeError");
+            } else {
+                assert_equals(window[this.name].prototype[member.name], undefined,
+                              "getting property on prototype object must return undefined");
+            }
             do_interface_attribute_asserts(window[this.name].prototype, member);
         }
     }.bind(this), this.name + " interface: attribute " + member.name);
@@ -1705,11 +1709,14 @@ function do_interface_attribute_asserts(obj, member)
     // value 0."
     assert_equals(typeof desc.get, "function", "getter must be Function");
     assert_equals(desc.get.length, 0, "getter length must be 0");
-    // TODO: Account for LenientThis
-    assert_throws(new TypeError(), function()
-    {
-        desc.get.call({});
-    }.bind(this), "calling getter on wrong object type must throw TypeError");
+    if (!member.has_extended_attribute("LenientThis")) {
+        assert_throws(new TypeError(), function() {
+            desc.get.call({});
+        }.bind(this), "calling getter on wrong object type must throw TypeError");
+    } else {
+        assert_equals(desc.get.call({}), undefined,
+                      "calling getter on wrong object type must return undefined");
+    }
 
     // TODO: Test calling setter on the interface prototype (should throw
     // TypeError in most cases).

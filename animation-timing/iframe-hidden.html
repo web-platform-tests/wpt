@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <title>requestAnimationFrame and Page Visibility interactions</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <h1>requestAnimationFrame and hidden interactions</h1>
+    <div id="log"></div>
+    <p>iframe1 is not visible:</p>
+    <iframe id='frame1' src='/common/sample.html' style='display: block'>
+    </iframe>
+    <p>iframe2 is visible:</p>
+    <iframe id='frame2' src='/common/sample.html' style='display: none'>
+    </iframe>
+    <script>
+      var iframe = new Array(2);
+      setup(function () {
+        iframe[0] = document.getElementById("frame1");
+        iframe[1] = document.getElementById("frame2");
+      });
+      function iFrameTest(iframeIndex) {
+        var ifa = iframe[iframeIndex];
+        var ift = "iframe" + (iframeIndex + 1);
+        async_test(function (t) {
+          t.step(function() {
+            var idoc = ifa.contentDocument;
+            assert_false(idoc.hidden,
+                         ".document.hidden must not be true");
+            t.done();
+          });
+        }, ift + ".hidden is false");
+        async_test(function (t) {
+          var iwin = ifa.contentWindow;
+          iwin.requestAnimationFrame(function () {
+            t.step(function() { t.done(); });
+          });
+          window.setTimeout(function () {
+            t.step(function() {
+              assert_unreached("requestAnimationFrame was not invoked");
+              t.done();
+            });
+          }, 1000); // wait before declaring victory
+        }, ift + ".requestAnimationFrame callback must be invoked");
+      }
+      iFrameTest(0);
+      iFrameTest(1);
+    </script>
+  </body>
+</html>

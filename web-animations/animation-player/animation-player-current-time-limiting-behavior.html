@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test animation player limiting behavior of currentTime attribute</title>
+<meta name="assert" content="Test current time limiting behavior">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-currentTime">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimation(animationTarget) {
+    animationTarget.style.width = '300px';
+    return new Animation(animationTarget, [
+	    {width: '10px', offset: 0},
+	    {width: '100px', offset: 1/2},
+	    {width: '200px', offset: 1}], 1000);
+}
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.currentTime, 0, 'The value of AnimationPlayer.currentTime ' +
+        'attribute should be 0');
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be true');
+}, 'Test limiting behavior of animation player without source');
+
+test(function() {
+    var player = document.timeline.play(new Animation(createDiv(this), [], 0));
+
+    assert_equals(player.currentTime, 0, 'The value of AnimationPlayer.currentTime ' +
+        'attribute should be 0');
+    assert_true(player.finished, 'The value of AnimationPlayer.finished attribute should be true');
+}, 'Test limiting behavior of animation player with zero length source');
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    var pointsToTest = [
+        {time: -100, finished: true},
+        {time: -1, finished: true},
+        {time: 0, finished: true},
+        {time: 1, finished: false},
+        {time: 500, finished: false},
+        {time: player.source.endTime - 1, finished: false},
+        {time: player.source.endTime, finished: true},
+        {time: player.source.endTime + 1, finished: true},
+        {time: player.source.endTime + 100, finished: true}];
+
+	pointsToTest.forEach(function (pointToTest) {
+        player.currentTime = pointToTest.time;
+
+        assert_equals(player.currentTime, pointToTest.time,
+            'The value of AnimationPlayer.currentTime attribute should be set to the new value');
+        assert_equals(player.finished, pointToTest.finished,
+            'The value of AnimationPlayer.finished attribute should match time ' +
+            pointToTest.time);
+    });
+}, 'Test limiting behavior of AnimationPlayer.currentTime attribute ' +
+    'when player playback rate is 1');
+
+async_test(function(t) {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.currentTime = 990;
+    setTimeout(function() {
+        t.step(function () {
+            assert_equals(player.currentTime, player.source.endTime,
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'hold on content end time');
+            assert_true(player.finished, 'The value of AnimationPlayer.finished attribute ' +
+                'should be true');
+            t.done();
+        });
+    }, 50);
+}, 'Test limiting behavior of AnimationPlayer.currentTime attribute. ' +
+    'Wait for some time before checking the value when playback rate is 1');
+
+async_test(function(t) {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.currentTime = 10;
+    player.playbackRate = -1;
+    setTimeout(function() {
+        t.step(function () {
+            assert_equals(player.currentTime, 0,
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'hold on content end time');
+            assert_true(player.finished, 'The value of AnimationPlayer.finished attribute ' +
+                'should be true');
+            t.done();
+        });
+    }, 50);
+}, 'Test limiting behavior of AnimationPlayer.currentTime attribute. ' +
+    'Wait for some time before checking the value when playback rate is -1');
+
+async_test(function(t) {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+    player.currentTime = 990;
+    setTimeout(function() {
+        t.step(function () {
+            var curTime =  player.currentTime;
+            assert_equals(curTime, player.source.endTime,
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'hold on content end time');
+            assert_true(player.finished, 'The value of AnimationPlayer.finished attribute ' +
+                'should be true');
+            animation.timing.playbackRate = 0.8;
+            setTimeout(function() {
+                t.step(function() {
+                    assert_greater_than(player.currentTime, curTime,
+                        'The value of AnimationPlayer.currentTime attribute should go on ' +
+                        'increasing');
+                    assert_false(player.finished, 'The value of AnimationPlayer.finished attribute ' +
+                        'should be false');
+                    t.done();
+                });
+            }, 50);
+        });
+    }, 50);
+}, 'Test that AnimationPlayer.currentTime attribute goes on increasing if animation ' +
+    'length is increased by changing animation.timing.playbackRate');
+
+async_test(function(t) {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+    player.currentTime = 500;
+    setTimeout(function() {
+        t.step(function () {
+            assert_greater_than(player.currentTime, 500,
+                'The value of AnimationPlayer.currentTime attribute should be ' +
+                'hold on content end time');
+            assert_false(player.finished, 'The value of AnimationPlayer.finished attribute ' +
+                'should be true');
+            animation.timing.playbackRate = 2;
+            setTimeout(function() {
+                t.step(function() {
+                    assert_equals(player.currentTime, player.source.endTime,
+                        'The value of AnimationPlayer.currentTime attribute should go on ' +
+                        'increasing');
+                    assert_true(player.finished, 'The value of AnimationPlayer.finished ' +
+                        'attribute should be false');
+                    t.done();
+                });
+            }, 50);
+        });
+    }, 50);
+}, 'Test that AnimationPlayer.currentTime attribute stops increasing if animation ' +
+    'length is shortened by changing animation.timing.playbackRate');
+</script>
+</body>

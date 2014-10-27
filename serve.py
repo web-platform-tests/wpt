@@ -370,9 +370,7 @@ def merge_json(base_obj, override_obj):
 
 def get_ssl_environment(config):
     implementation_type = config["ssl"]["type"]
-    cls = {"none": sslutils.NoSSLEnvironment,
-           "openssl": sslutils.OpenSSLEnvironment,
-           "pregenerated": sslutils.PregeneratedSSLEnvironment}[implementation_type]
+    sslutils.environments[implementation_type]
     kwargs = config["ssl"][implementation_type].copy()
     return cls(logger, **kwargs)
 

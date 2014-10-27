@@ -20,3 +20,7 @@ class NoSSLEnvironment(object):
 
     def ca_cert_path(self):
         return None
+
+environments = {"none": NoSSLEnvironment,
+                "openssl": OpenSSLEnvironment,
+                "pregenerated": PregeneratedSSLEnvironment}

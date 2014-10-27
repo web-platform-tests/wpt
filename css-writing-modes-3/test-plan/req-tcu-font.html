@@ -3,13 +3,12 @@
 <head>
 <title>Requirements for fonts for testing text-combine-upright</title>
 <meta charset='utf-8'>
-<script src='http://www.w3.org/Tools/respec/respec-w3c-common' async class='remove'></script>
 <script class='remove'>
 var respecConfig = {
   specStatus: "unofficial",
   shortName: "req-tcu-font",
   editors: [ { name: "Masataka Yakura", url: "https://google.com/+MasatakaYakura" } ],
-  publishDate:  "2014-08-29",
+  publishDate:  "2014-10-27",
 };
 </script>
 <style>
@@ -74,14 +73,14 @@ code.prettyprint { color: inherit; }
 <body>
 
 <section id="abstract">
-<p>The <a href="http://dev.w3.org/csswg/css-writing-modes/">CSS Writing Modes</a> specification defines a property <code>text-combine-upright</code> which enables <i>tate-chu-yoko</i> (<span lang="ja">縦中横</span>) effect by combining a short run of text in vertical writing modes horizontally.
+<p>The <a href="http://dev.w3.org/csswg/css-writing-modes/">CSS Writing Modes</a> specification defines a property <code>text-combine-upright</code> which enables a <i>tate-chu-yoko</i> (<span lang="ja">縦中横</span>) effect; applying the property to a span of text will combine the text inside it horizontally so that it looks a single character in vertical writing modes.
 
-<p>While invesitigating the specification for developing test suite, test authors found the need for a new font specifically designed to test the property. This document gives some basic understanding of testing <code>text-combine-upright</code> and lists the requiremnts of the font needed to test the property.
+<p>While invesitigating the specification for developing test suite, test authors found the need for a new font specifically designed to test the property. This document gives a fairly basic guide to CSS testing and testing <code>text-combine-upright</code> specifically, and lists the requiremnts of the font needed to test the property.
 </section>
 
 <section>
 <h2>CSS testing terminology</h2>
-<p>Before getting into the requirements, let me explain some terms specific to CSS testing.
+<p>Before getting into the requirements of fonts, let me explain some terms specific to CSS testing.
 
 <section>
 <h3>Reftests (reference tests)</h3>
@@ -95,7 +94,7 @@ code.prettyprint { color: inherit; }
 
 <section>
 <h3>The Ahem font</h3>
-<p>In order to test CSS features, it is required to install the <a href="http://www.w3.org/Style/CSS/Test/Fonts/Ahem/">Ahem font</a> in a testing system. The Ahem font only contains geometric glyphs which are handy to craft reftests. Here's a design specification of Ahem quoting from the README file:
+<p>In order to test CSS features, it is required to install the <a href="http://www.w3.org/Style/CSS/Test/Fonts/Ahem/">Ahem font</a> in a testing system. The Ahem font only contains simple geometric glyphs such as a square and rectangles. With those simple glyphs it is easy to craft references and test cases. Here's a design specification of Ahem quoting from the README file:
 <blockquote cite="http://www.w3.org/Style/CSS/Test/Fonts/Ahem/">
 <pre>The font's em square is exactly square.
 Its ascent and descent is exactly the size of the em square. This
@@ -127,12 +126,12 @@ Most other US-ASCII characters in the font have the same glyph as X.</pre>
 
 <section>
 <h2>Testing <code>text-combine-upright</code></h2>
-<p>The <a href="http://dev.w3.org/csswg/css-writing-modes/#text-combine-upright"><code>text-combine-upright</code></a> property makes a short run of text in vertical writing modes combine horizontally. This effect is called <i>tate-chu-yoko</i> (<span lang="ja">縦中横</span>, sometimes abbreviated as <abbr>TCY</abbr>) and used for short digits in vertical Japanese layout.
+<p>The <a href="http://dev.w3.org/csswg/css-writing-modes/#text-combine-upright"><code>text-combine-upright</code></a> property combines a short run of text horizontally in vertical writing modes. The resulting effect is called <i>tate-chu-yoko</i> (<span lang="ja">縦中横</span>, sometimes abbreviated as <abbr>TCY</abbr> in CSSWG mailing lists) and used for short digits in vertical Japanese layout.
 <figure class="example">
 <img src="http://dev.w3.org/csswg/css-writing-modes/tate-chu-yoko.png">
-<figcaption>Example of tate-chu-yoko. The digits "20" and "16" are aligned horizontally even in vertical writing modes. Also the digit "4" is rotated upright even it looks an ASCII digit; this is because "4" is also composed and thus rotated per spec.</figcaption>
+<figcaption>Example of tate-chu-yoko (borrowed from the Writing Modes spec). The digits "20" and "16" are aligned horizontally. Also the digit "4" is rotated upright even it looks an ASCII digit; this is because "4" is also composed thus rotated.</figcaption>
 </figure>
-<p>In order to make reftests, it needs a font which contains geometric glyphs designed so that horizontally combined glyphs and the original glyph would look the same (e.g. a 1em &times; 1em square glyph). With such font, a test can be written as follows:
+<p>In order to make reftests, it needs a font which contains geometric glyphs designed so that horizontally-combined glyphs and the reference would look the same (e.g. a 1em &times; 1em square glyph). With such font, a test can be written as follows:
 <pre class="highlight"><code>&lt;style&gt;
 .test {
   writing-mode: vertical-rl;
@@ -152,10 +151,10 @@ Most other US-ASCII characters in the font have the same glyph as X.</pre>
 <p>In conforming user agent with the font installed on the system, the span "123" will be combined horizontally thus rendered as a single square, resulting to match the reference. In non-conforming user agents the span will neither be combined nor be compressed as a single square, it will thus not match the reference rendering.
 <figure class="example">
 <img src="img/figure-rendering-tcu.svg" width="480">
-<figcaption>An illustration of output from 1) no-tcu-support UA, 2) conforming UA, 3) reference file</figcaption>
+<figcaption>An illustration of output from ① no-tcu-support UA, ② conforming UA, ③ reference file</figcaption>
 </figure>
 
-<p>The above example uses Ahem; some tests can be written using Ahem. However, many features of <code>text-combine-upright</code> cannot be tested with a black rectangle glyph. Also the spec requires UAs with OpenType support must use particular OpenType features; to test this, the font must be an OpenType font with required fetures in it.
+<p>The above example uses Ahem; some tests can be written using Ahem. However, many features of <code>text-combine-upright</code> cannot be tested with only a black square glyph. Also the spec requires UAs with OpenType support to use OpenType features on rendering particular properties; to test this, the font must be an OpenType font with required fetures.
 </section>
 
 
@@ -229,7 +228,7 @@ When combining text as for text-combine-upright: all, the glyphs of the combined
 <blockquote>
 For other text layout purposes, e.g. emphasis marks, text-decoration, spacing, etc. the resulting composition is treated as a single glyph representing the Object Replacement Character U+FFFC.
 </blockquote>
-<p>So we need to test if user agents ignore spacing, emphasis marks, decorations applied to <em>each</em> character inside the composition but rather apply those effects to the composition treated as a single character.
+<p>So we need to test if user agents ignore spacing, emphasis marks, decorations applied to <em>each</em> character inside the composition but rather apply those effects to the resulting composition, treating as if it were a single characeter.
 <p>The test should be written to check if there is no emphasis mark or ruby character inside the composition. To make this easy to observe, we need a glyph where:
 <ul>
 <li>it does not overlap ruby text, emphasis mark, or any decoration
@@ -276,8 +275,9 @@ The effective size of the composition is assumed to be 1em square; anything outs
 <figure>
 <img src="img/heavy_h.svg" width="200">
 <!-- <img src="img/heavy_h_rotated.svg" width="200"> -->
-<figcaption>The "Heavy H". The dashed region in the center of the glyph indicates the 1em square and the lines besides the square has the length of 3em and the thickness of 1em. Note that the width and the height are both set to 1em, mapping to the dashed region so the character before and after the character mapped to this glyph overlap.</figcaption>
+<figcaption>The "Heavy H". The dashed region in the center of the glyph indicates the 1em square and the lines besides the square has the length of 3em and the thickness of 1em.</figcaption>
 </figure>
+<p>By using this glyph with two square glyphs we can make a 3em square.
 <figure>
 <pre class="highlight"><code>&lt;style&gt;
 body {
@@ -297,7 +297,7 @@ body {
   &lt;p&gt;x&lt;span class="tcy"&gt;H&lt;/span&gt;x&lt;/p&gt;
   &lt;p class="reference"&gt;x&lt;/p&gt;
 &lt;/div&gt;</code></pre>
-<figcaption>The test code might look like this: assuming a black square glyph mapping to <code>x</code> and the "Heavy H" glyph mapping to <code>H</code></figcaption>
+<figcaption>The test code might look like this: it assumes that a black square glyph maps to <code>x</code> and the "Heavy H" glyph maps to <code>H</code></figcaption>
 </figure>
 </section>
 
@@ -307,7 +307,7 @@ body {
 <blockquote>
 The UA should center the glyphs horizontally and vertically within the measured 1em square.
 </blockquote>
-<p class="issue">work in progress
+<p class="issue">work in progress. test authors are struggling with the look of shape(s) to use to create a reftest
 <!--
 <p>
 <ul>
@@ -323,7 +323,7 @@ The UA should center the glyphs horizontally and vertically within the measured 
 
 
 <section>
-<h3>Glyphs to check whether particular OpenType features are used</h3>
+<h3>Glyphs to check whether <code><var>n</var>wid</code> OpenType features are used</h3>
 <p>In <a href="http://dev.w3.org/csswg/css-writing-modes/#text-combine-compression">9.1.3 Compression Rules</a> the spec says:
 <blockquote>
 OpenType implementations must use width-specific variants (OpenType features hwid/twid/qwid; other glyph-width features such as fwid or pwid are not included) to compress text in cases where those variants are available for all characters in the composition.
@@ -388,7 +388,7 @@ In some fonts, the ideographic glyphs are given a compressed design such that th
 
 <p>This section describes which glyph should map to which codepoints.
 
-<p>TBD
+<p class="issue">TBD
 </section>
 
 
@@ -398,3 +398,5 @@ In some fonts, the ideographic glyphs are given a compressed design such that th
 <p>Kawabata-san, fantasai, Koji, Murakami-san, CSS WG discussions
 </section>
 -->
+
+<script src='http://www.w3.org/Tools/respec/respec-w3c-common' async class='remove'></script>

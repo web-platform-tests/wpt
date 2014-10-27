@@ -17,10 +17,10 @@
     client.upload.onprogress = test.step_func(function() {
       test.done();
     });
-    client.onreadystatechange = test.step_func(function() {
-      if (client.readyState === 4) assert_unreached("onprogress not called.");
+    client.onload = test.step_func(function() {
+      assert_unreached("onprogress not called.");
     });
     client.open("POST", "http://{{domains[www2]}}:{{ports[http][0]}}/XMLHttpRequest/resources/corsenabled.py");
-    client.send((new Array(20000)).join("This is a test string."));
+    client.send("This is a test string.");
   });
 </script>

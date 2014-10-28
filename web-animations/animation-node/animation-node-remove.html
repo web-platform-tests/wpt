@@ -179,7 +179,7 @@ test(function() {
             node2.remove();
 
             assert_equals(player.source, parent, type(node2) +
-                ' node should be disassociated from the player');
+                ' parent node should remain associated with the player');
         });
     });
 }, 'AnimationNode.remove() keeps parent direct association with the player');
@@ -209,22 +209,22 @@ test(function() {
                 ' node parent attribute should be updated');
             assert_array_equals(node9.children, [node1, group1, node2, sequence1],
                 'Removed ' + type(node9) + ' node children should not be changed');
-            node9.children.forEach(function(node) {
-                assert_equals(node.parent, node9, 'Removed ' + type(node9) +
-                    ' node children parent attribute should not be changed');
-            });
+            for (var i = 0; i < node9.children.length; i++) {
+                assert_equals(node9.children[i].parent, node9, 'Removed ' + type(node9) +
+                    ' node children parent attribute should not be changed for child ' + i);
+            }
             assert_array_equals(group1.children, [node3, node5],
                 'Removed ' + type(node9) + ' node grand children should not be changed');
-            group1.children.forEach(function(node) {
-                assert_equals(node.parent, group1, 'Removed ' + type(node9) +
-                    ' node grand children parent attribute should not be changed');
-            });
+            for (var i = 0; i < group1.children.length; i++) {
+                assert_equals(group1.children[i].parent, group1, 'Removed ' + type(node9) +
+                    ' node grand children parent attribute should not be changed for child ' + i);
+            }
             assert_array_equals(sequence1.children, [node7,node8],
                 'Removed ' + type(node9) + ' node grand children should not be changed');
-            sequence1.children.forEach(function(node) {
-                assert_equals(node.parent, sequence1, 'Removed ' + type(node9) +
-                    ' node grand children parent attribute should not be changed');
-            });
+            for (var i = 0; i < sequence1.children.length; i++) {
+                assert_equals(sequence1.children[i].parent, sequence1, 'Removed ' + type(node9) +
+                    ' node grand children parent attribute should not be changed for child ' + i);
+            }
             assert_array_equals(node5.children, [node4],
                 'Removed ' + type(node9) + ' node grand children should not be changed');
             assert_equals(node4.parent, node5, 'Removed ' + type(node9) +
@@ -235,6 +235,6 @@ test(function() {
                 ' node grand children parent attribute should not be changed');
         });
     });
-}, 'AnimationNode.remove() on the root of a non-trivial tree do not change child structure');
+}, 'AnimationNode.remove() on the root of a non-trivial tree does not change child structure');
 </script>
 </body>

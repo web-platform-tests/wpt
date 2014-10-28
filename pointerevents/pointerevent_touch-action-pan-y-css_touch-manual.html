@@ -77,14 +77,12 @@
         <input type="button" id="btnComplete" value="Complete test">
         <script type='text/javascript'>
             var detected_pointertypes = {};
-
+            var test_touchaction = async_test("touch-action attribute test");
             add_completion_callback(showPointerTypes);
 
             function run() {
                 var target0 = document.getElementById("target0");
                 var btnComplete = document.getElementById("btnComplete");
-
-                var test_touchaction = async_test("touch-action attribute test");
 
                 // Check if "touch-action: pan-y" attribute works properly
                 //TA: 15.4

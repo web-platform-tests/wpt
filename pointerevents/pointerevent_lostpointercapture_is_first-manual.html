@@ -74,7 +74,9 @@
                             isPointerCapture = false;
 
                             // TA: 11.2
-                            assert_true(isAsync, "lostpointercapture must be fired asynchronously");
+                            test_pointerEvent.step(function () {
+                                assert_true(isAsync, "lostpointercapture must be fired asynchronously");
+                             });
 
                             // if any events have been received with same pointerId before lostpointercapture, then fail
                             var eventsRcvd_str = "";

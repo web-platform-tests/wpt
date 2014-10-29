@@ -115,9 +115,10 @@ function poll_for_stylesheet_load(expected_entry) {
     function inner() {
         for(var i=0; i<document.styleSheets.length; i++) {
             var sheet = document.styleSheets[i];
-            console.log(sheet.href);;
             if (sheet.href === expected_entry.name) {
-                resource_load(expected_entry);
+                setTimeout(function() {
+                    resource_load(expected_entry);
+                }, 200);
                 return;
             }
         }

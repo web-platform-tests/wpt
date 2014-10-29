@@ -26,14 +26,14 @@
     var datalist = document.getElementById('numbers'),
         labels = [],
         values = [];
-    assert_equals(datalist.options.length, 3, "The datalist has 3 options. Disabled and empty value options aren't taken into account");
+    assert_equals(datalist.options.length, 5);
 
     for (var i = 0, len = datalist.options.length; i < len; i++) {
       labels.push(datalist.options[i].label);
       values.push(datalist.options[i].value);
     }
-    assert_array_equals(labels, ["zero", "one", "two"]);
-    assert_array_equals(values, ["0", "1", "2"]);
+    assert_array_equals(labels, ["zero", "one", "two", "three", ""]);
+    assert_array_equals(values, ["0", "1", "2", "3", ""]);
   }, "options label/value");
 
   test(function(){

@@ -60,8 +60,8 @@ test(function() {
   ])
 
   tests.forEach(function(t, i) {
+    var namespace = t[0], qualifiedName = t[1], doctype = t[2], expected = t[3]
     test(function() {
-      var namespace = t[0], qualifiedName = t[1], doctype = t[2], expected = t[3]
       if (expected != null) {
         assert_throws(expected, function() { document.implementation.createDocument(namespace, qualifiedName, doctype) })
       } else {
@@ -97,6 +97,19 @@ test(function() {
         assert_equals(doc.childNodes.length, !omitRootElement + !!doctype)
       }
     }, "createDocument test " + i + ": " + t.map(function(el) { return format_value(el) }))
+
+    if (expected === null) {
+      test(function() {
+        var doc = document.implementation.createDocument(namespace, qualifiedName, doctype)
+        assert_equals(doc.compatMode, "CSS1Compat")
+        // XXX Spec says "utf-8", browsers do "UTF-8".
+        assert_equals(doc.characterSet.toUpperCase(), "UTF-8")
+        assert_equals(doc.contentType, "application/xml")
+        assert_equals(doc.URL, "about:blank")
+        assert_equals(doc.documentURI, "about:blank")
+      }, "createDocument test " + i + ": metadata for " +
+      [namespace, qualifiedName, doctype].map(function(el) { return format_value(el) }))
+    }
   })
 })
 </script>

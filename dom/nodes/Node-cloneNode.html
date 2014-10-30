@@ -37,4 +37,10 @@ test(function() {
   assert_equal_node(el, c);
   assert_equals(c.childNodes.length, 0);
 })
+
+test(function() {
+  var el = document.createElementNS("http://www.w3.org/1999/xhtml", "foo:div");
+  var c = el.cloneNode(false);
+  assert_equal_node(el, c);
+})
 </script>

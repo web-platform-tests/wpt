@@ -10,6 +10,7 @@ test(function() {
   assert_equals(document.createElementNS(HTMLNS, "i").tagName, "I")
   assert_equals(document.createElementNS(HTMLNS, "x:b").tagName, "X:B")
 }, "tagName should upper-case for HTML elements in HTML documents.")
+
 test(function() {
   var SVGNS = "http://www.w3.org/2000/svg"
   assert_equals(document.createElementNS(SVGNS, "svg").tagName, "svg")
@@ -17,6 +18,7 @@ test(function() {
   assert_equals(document.createElementNS(SVGNS, "s:svg").tagName, "s:svg")
   assert_equals(document.createElementNS(SVGNS, "s:SVG").tagName, "s:SVG")
 }, "tagName should not upper-case for SVG elements in HTML documents.")
+
 test(function() {
   if ("DOMParser" in window) {
     var xmlel = new DOMParser()

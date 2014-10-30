@@ -243,7 +243,7 @@ function buildInsetTests(unit1, unit2, type) {
         validInsets.forEach(function(test) {
             var testCase = [], name, actual, expected;
 
-            name = setUnit(test[0], false, unit1, unit2) +' - '+ type; 
+            name = setUnit(test[0], false, unit1, unit2) +' - '+ type;
             actual = 'inset(' + setUnit(test[1], convert, unit1, unit2) +')';
             expected = actual;
 

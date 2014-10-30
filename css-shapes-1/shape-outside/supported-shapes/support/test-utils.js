@@ -14,7 +14,7 @@ function verifyTextPoints(shape, numLines, tolerance, side) {
        var actual = line.getBoundingClientRect().left;
        if (side === "right")
             actual = shape.containerWidth - (actual + line.getBoundingClientRect().width);
-       
+
         if( Math.abs( (actual - expected[i])) > tolerance ){
             line.style.setProperty('color', 'red');
             console.log('diff: ' + Math.abs(actual - expected[i]));

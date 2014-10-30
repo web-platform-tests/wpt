@@ -1,4 +1,4 @@
-function ellipseXIntercept(yi, rx, ry) 
+function ellipseXIntercept(yi, rx, ry)
 {
     return rx * Math.sqrt(1 - (yi * yi) / (ry * ry));
 }
@@ -39,10 +39,10 @@ function genLeftRoundedRectFloatShapeOutsideRefTest(args)
 {
     var leftRoundedRect = args.roundedRect;
     var leftRoundedRectIntervals = scanConvertRoundedRectangleOutside(leftRoundedRect, args.containerHeight, args.lineHeight, args.corner);
-    var leftFloatDivs = leftRoundedRectIntervals.map(function(interval) { 
+    var leftFloatDivs = leftRoundedRectIntervals.map(function(interval) {
         var width = SubPixelLayout.snapToLayoutUnit(interval.right);
         var cls = "left-" + args.floatElementClassSuffix;
-        return '<div class="' + cls + '" style="width:' + width + 'px"></div>'; 
+        return '<div class="' + cls + '" style="width:' + width + 'px"></div>';
     });
     document.getElementById("left-" + args.insertElementIdSuffix).insertAdjacentHTML('afterend', leftFloatDivs.join("\n"));
     return leftFloatDivs;
@@ -52,9 +52,9 @@ function getRoundedRectLeftEdge(args)
 {
     var leftRoundedRect = args.roundedRect;
     var leftRoundedRectIntervals = scanConvertRoundedRectangleOutside(leftRoundedRect, args.containerHeight, args.lineHeight, args.corner);
-    var leftSidePoints = leftRoundedRectIntervals.map(function(interval) { 
+    var leftSidePoints = leftRoundedRectIntervals.map(function(interval) {
         var width = SubPixelLayout.snapToLayoutUnit(interval.right);
-        return width; 
+        return width;
     });
     return leftSidePoints;
 }
@@ -64,10 +64,10 @@ function genRightRoundedRectFloatShapeOutsideRefTest(args)
     var rightRoundedRect = Object.create(args.roundedRect);
     rightRoundedRect.x = args.containerWidth - args.roundedRect.width;
     var rightRoundedRectIntervals = scanConvertRoundedRectangleOutside(rightRoundedRect, args.containerHeight, args.lineHeight, args.corner);
-    var rightFloatDivs = rightRoundedRectIntervals.map(function(interval) { 
+    var rightFloatDivs = rightRoundedRectIntervals.map(function(interval) {
         var width = args.containerWidth - SubPixelLayout.snapToLayoutUnit(interval.left);
         var cls = "right-" + args.floatElementClassSuffix;
-        return '<div class="' + cls + '" style="width:' + width + 'px"></div>'; 
+        return '<div class="' + cls + '" style="width:' + width + 'px"></div>';
     });
     document.getElementById("right-" + args.insertElementIdSuffix).insertAdjacentHTML('afterend', rightFloatDivs.join("\n"));
 }

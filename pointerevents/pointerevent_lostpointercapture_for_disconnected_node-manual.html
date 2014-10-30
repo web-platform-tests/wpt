@@ -37,9 +37,9 @@
             var test_lostpointercapture = async_test("lostpointercapture event received");
 
             window.onload = function() {
-                on_event(captureButton, 'pointerdown', function(e) {
-                    detected_pointertypes[ event.pointerType ] = true;
-                    sPointerCapture(e);
+                on_event(captureButton, 'pointerdown', function(event) {
+                    detected_pointertypes[event.pointerType] = true;
+                    sPointerCapture(event);
                 });
 
                 on_event(target0, 'gotpointercapture', function(e) {

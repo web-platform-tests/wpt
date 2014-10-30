@@ -7,15 +7,17 @@
 <div id=log></div>
 <script>
 function assert_equal_node(nodeA, nodeB) {
-  assert_true(nodeB.attributes != nodeA.attributes);
-  assert_true(nodeB.attributes !== nodeA.attributes);
-  assert_equals(nodeB.attributes.length, nodeA.attributes.length);
-  for (var i = 0, il = nodeA.attributes.length; i < il; ++i) {
-    assert_not_equals(nodeB.attributes[i], nodeA.attributes[i]);
-    assert_equals(nodeB.attributes[i].name, nodeA.attributes[i].name);
-    assert_equals(nodeB.attributes[i].prefix, nodeA.attributes[i].prefix);
-    assert_equals(nodeB.attributes[i].namespaceURI, nodeA.attributes[i].namespaceURI);
-    assert_equals(nodeB.attributes[i].value, nodeA.attributes[i].value);
+  if (nodeA.nodeType === Node.ELEMENT_NODE) {
+    assert_true(nodeB.attributes != nodeA.attributes);
+    assert_true(nodeB.attributes !== nodeA.attributes);
+    assert_equals(nodeB.attributes.length, nodeA.attributes.length);
+    for (var i = 0, il = nodeA.attributes.length; i < il; ++i) {
+      assert_not_equals(nodeB.attributes[i], nodeA.attributes[i]);
+      assert_equals(nodeB.attributes[i].name, nodeA.attributes[i].name);
+      assert_equals(nodeB.attributes[i].prefix, nodeA.attributes[i].prefix);
+      assert_equals(nodeB.attributes[i].namespaceURI, nodeA.attributes[i].namespaceURI);
+      assert_equals(nodeB.attributes[i].value, nodeA.attributes[i].value);
+    }
   }
 }
 

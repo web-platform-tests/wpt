@@ -353,4 +353,37 @@ test(function() {
   el.removeAttributeNS("", "foo")
   el.removeAttributeNS("xx", "foo")
 }, "First set attribute is returned with mapped attribute set later")
+
+test(function() {
+  var el = document.createElementNS("http://www.example.com", "foo")
+  el.setAttribute("A", "test")
+  assert_equals(el.hasAttribute("A"), true)
+  assert_equals(el.hasAttributeNS("", "A"), true)
+  assert_equals(el.hasAttributeNS(null, "A"), true)
+  assert_equals(el.hasAttributeNS(undefined, "A"), true)
+  assert_equals(el.hasAttributeNS("foo", "A"), false)
+
+  assert_equals(el.getAttribute("A"), "test")
+  assert_equals(el.getAttributeNS("", "A"), "test")
+  assert_equals(el.getAttributeNS(null, "A"), "test")
+  assert_equals(el.getAttributeNS(undefined, "A"), "test")
+  assert_equals(el.getAttributeNS("foo", "A"), null)
+}, "Non-HTML element with upper-case attribute")
+
+test(function() {
+  var el = document.createElement("div")
+  el.setAttribute("pre:fix", "value 1")
+  el.setAttribute("fix", "value 2")
+
+  var prefixed = el.attributes[0]
+  assert_equals(prefixed.localName, "pre:fix")
+  assert_equals(prefixed.namespaceURI, null)
+
+  var unprefixed = el.attributes[1]
+  assert_equals(unprefixed.localName, "fix")
+  assert_equals(unprefixed.namespaceURI, null)
+
+  el.removeAttributeNS(null, "pre:fix")
+  assert_equals(el.attributes[0], unprefixed)
+}, "Attribute with prefix in local name")
 </script>

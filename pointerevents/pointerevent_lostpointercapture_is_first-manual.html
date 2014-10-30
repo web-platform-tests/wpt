@@ -44,13 +44,13 @@
             var captureButton = document.getElementById('btnCapture');
 
             function run() {
-                on_event(captureButton, 'pointerdown', function(e) {
+                on_event(captureButton, 'pointerdown', function(event) {
                     detected_pointertypes[event.pointerType] = true;
-                    pointerdown_event = e;
+                    pointerdown_event = event;
                     if(isPointerCapture == false) {
                         isPointerCapture = true;
                         captureButton.value = 'Release Capture';
-                        sPointerCapture(e);
+                        sPointerCapture(event);
                     }
                 });
 

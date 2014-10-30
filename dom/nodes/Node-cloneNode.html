@@ -43,4 +43,10 @@ test(function() {
   var c = el.cloneNode(false);
   assert_equal_node(el, c);
 })
+
+test(function() {
+  var el = document.createElementNS("http://www.example.com/", "foo:div");
+  var c = el.cloneNode(false);
+  assert_equal_node(el, c);
+})
 </script>

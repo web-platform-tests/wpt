@@ -17,7 +17,7 @@ logger = logging.getLogger("wptserve")
 
 __all__ = ["file_handler", "python_script_handler",
            "FunctionHandler", "handler", "json_handler",
-           "as_is_handler", "ErrorHandler"]
+           "as_is_handler", "ErrorHandler", "BasicAuthHandler"]
 
 
 def guess_content_type(path):
@@ -281,12 +281,9 @@ class AsIsHandler(object):
 as_is_handler = AsIsHandler()
 
 class BasicAuthHandler(object):
-    def __init__(self, credentials=None):
-        if credentials:
-            self._user, self._password = credentials
-        else:
-            self._user = None
-            self._password = None
+    def __init__(self, user=None, password=None):
+        self.user = user
+        self.password = password
 
     def __call__(self, request, response):
         if "authorization" not in request.headers:
@@ -295,7 +292,7 @@ class BasicAuthHandler(object):
             return response
         else:
             auth = Authentication(request.headers)
-            if self._user and (self._user != auth.username or self._password != auth.password):
+            if self.user and (self.user != auth.username or self.password != auth.password):
                 response.set_error(403, "Invalid username or password")
                 return response
             return file_handler(request, response)

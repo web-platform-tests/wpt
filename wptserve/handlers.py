@@ -306,7 +306,7 @@ class BasicAuthHandler(object):
                 return response
             return self.handler(request, response)
 
-basic_auth_handler = BasicAuthHandler()
+basic_auth_handler = BasicAuthHandler(file_handler, None, None)
 
 class ErrorHandler(object):
     def __init__(self, status):

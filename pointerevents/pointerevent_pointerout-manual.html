@@ -27,8 +27,8 @@
                 var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointerout", function (event) {
+                    detected_pointertypes[event.pointerType] = true;
                     if (eventTested == false) {
-                        detected_pointertypes[event.pointerType] = true;
                         eventTested = true;
                         check_PointerEvent(event);
                         test_pointerEvent.done();

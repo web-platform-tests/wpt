@@ -31,6 +31,9 @@
             var isPointeroverGot = false;
             var count=0;
 
+            var detected_pointertypes = {};
+            add_completion_callback(showPointerTypes);
+
             var target0 = document.getElementById('target0');
             var target1 = document.getElementById('target1');
             var captureButton = document.getElementById('btnCapture');
@@ -76,6 +79,7 @@
                 });
 
                 on_event(target1, "pointerover", function (event) {
+                    detected_pointertypes[ event.pointerType ] = true;
                     if(!isPointeroverGot) {
                         test(function() {
                             assert_true(isPointerCapture==false, "pointerover shouldn't trigger for this target when capture is enabled");

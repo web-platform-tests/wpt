@@ -36,8 +36,6 @@
                 // TA: 9.1
                 on_event(target0, "pointerleave", function (event) {
                     if (eventTested == false) {
-                        detected_pointertypes[event.pointerType] = true;
-
                         test_pointerleave.done();
                         eventTested = true;
                     }

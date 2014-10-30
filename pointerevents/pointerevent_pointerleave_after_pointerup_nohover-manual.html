@@ -30,6 +30,7 @@
                 var target0 = document.getElementById("target0");
 
                 on_event(target0, "pointerup", function (event) {
+                    detected_pointertypes[event.pointerType] = true;
                     pointerup_event = event;
                 });
 
@@ -37,7 +38,6 @@
                 // TA: 3.6
                 on_event(target0, "pointerleave", function (event) {
                     if(event.pointerType == 'touch') {
-                        detected_pointertypes[event.pointerType] = true;
                         if(pointerup_event != null) {
                             if(eventTested == false) {
                                 eventTested = true;

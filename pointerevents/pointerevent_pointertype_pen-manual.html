@@ -21,12 +21,12 @@
             add_completion_callback(showPointerTypes);
 
             function eventHandler(event) {
+                detected_pointertypes[event.pointerType] = true;
                 if(!eventTested) {
                     check_PointerEvent(event);
                     test_pointerEvent.step(function () {
                         assert_equals(event.pointerType, "pen", "Verify event.pointerType is 'pen'.");
                     });
-                    detected_pointertypes[event.pointerType] = true;
                     eventTested = true;
                 }
                 if (event.type == "pointerup") {

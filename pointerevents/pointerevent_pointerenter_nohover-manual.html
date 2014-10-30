@@ -41,6 +41,7 @@ or one of its descendants as a result of a pointerdown event, the pointerenter e
                 });
 
                 on_event(target0, "pointerenter", function (event) {
+                    detected_pointertypes[event.pointerType] = true;
                     if(event.pointerType == 'touch') {
                         pointerenter_event = event;
                         check_PointerEvent(event);
@@ -48,7 +49,6 @@ or one of its descendants as a result of a pointerdown event, the pointerenter e
                             assert_equals(event.type, "pointerenter", "pointer event received: " + event.type);
                         });
                         f_pointerenter_rcvd = true;
-                        detected_pointertypes[event.pointerType] = true;
                     }
                 });
             }

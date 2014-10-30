@@ -38,11 +38,14 @@
             var eventRcvd = false;
             var isAsync = false;
 
+            add_completion_callback(showPointerTypes);
+
             var target0 = document.getElementById('target0');
             var captureButton = document.getElementById('btnCapture');
 
             function run() {
                 on_event(captureButton, 'pointerdown', function(e) {
+                    detected_pointertypes[event.pointerType] = true;
                     pointerdown_event = e;
                     if(isPointerCapture == false) {
                         isPointerCapture = true;
@@ -87,8 +90,6 @@
                                 assert_false(eventRcvd, "no other events should be received before lostpointercapture." + eventsRcvd_str);
                                 assert_equals(event.pointerId, pointerdown_event.pointerId, "pointerID is same for pointerdown and lostpointercapture");
                             });
-
-                            detected_pointertypes[event.pointerType] = true;
                             test_pointerEvent.done(); // complete test
                         }
                         else {
@@ -103,9 +104,7 @@
         </script>
         <h1>Pointer Events Capture Test</h1>
         <div id="complete-notice">
-            <p>Test complete: Scroll to Summary to view Pass/Fail Results.</p>
             <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
-            <p>Refresh the page to run the tests again with a different pointer type.</p>
         </div>
         <div id="log"></div>
     </body>

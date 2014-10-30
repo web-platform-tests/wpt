@@ -357,17 +357,17 @@ test(function() {
 test(function() {
   var el = document.createElementNS("http://www.example.com", "foo")
   el.setAttribute("A", "test")
-  assert_equals(el.hasAttribute("A"), true)
-  assert_equals(el.hasAttributeNS("", "A"), true)
-  assert_equals(el.hasAttributeNS(null, "A"), true)
-  assert_equals(el.hasAttributeNS(undefined, "A"), true)
-  assert_equals(el.hasAttributeNS("foo", "A"), false)
+  assert_equals(el.hasAttribute("A"), true, "hasAttribute()")
+  assert_equals(el.hasAttributeNS("", "A"), true, "el.hasAttributeNS(\"\")")
+  assert_equals(el.hasAttributeNS(null, "A"), true, "el.hasAttributeNS(null)")
+  assert_equals(el.hasAttributeNS(undefined, "A"), true, "el.hasAttributeNS(undefined)")
+  assert_equals(el.hasAttributeNS("foo", "A"), false, "el.hasAttributeNS(\"foo\")")
 
-  assert_equals(el.getAttribute("A"), "test")
-  assert_equals(el.getAttributeNS("", "A"), "test")
-  assert_equals(el.getAttributeNS(null, "A"), "test")
-  assert_equals(el.getAttributeNS(undefined, "A"), "test")
-  assert_equals(el.getAttributeNS("foo", "A"), null)
+  assert_equals(el.getAttribute("A"), "test", "getAttribute()")
+  assert_equals(el.getAttributeNS("", "A"), "test", "el.getAttributeNS(\"\")")
+  assert_equals(el.getAttributeNS(null, "A"), "test", "el.getAttributeNS(null)")
+  assert_equals(el.getAttributeNS(undefined, "A"), "test", "el.getAttributeNS(undefined)")
+  assert_equals(el.getAttributeNS("foo", "A"), null, "el.getAttributeNS(\"foo\")")
 }, "Non-HTML element with upper-case attribute")
 
 test(function() {
@@ -376,12 +376,12 @@ test(function() {
   el.setAttribute("fix", "value 2")
 
   var prefixed = el.attributes[0]
-  assert_equals(prefixed.localName, "pre:fix")
-  assert_equals(prefixed.namespaceURI, null)
+  assert_equals(prefixed.localName, "pre:fix", "prefixed local name")
+  assert_equals(prefixed.namespaceURI, null, "prefixed namespace")
 
   var unprefixed = el.attributes[1]
-  assert_equals(unprefixed.localName, "fix")
-  assert_equals(unprefixed.namespaceURI, null)
+  assert_equals(unprefixed.localName, "fix", "unprefixed local name")
+  assert_equals(unprefixed.namespaceURI, null, "unprefixed namespace")
 
   el.removeAttributeNS(null, "pre:fix")
   assert_equals(el.attributes[0], unprefixed)

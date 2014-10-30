@@ -281,7 +281,7 @@ class AsIsHandler(object):
 as_is_handler = AsIsHandler()
 
 class BasicAuthHandler(object):
-    def __init__(self, user=None, password=None):
+    def __init__(self, user, password):
         self.user = user
         self.password = password
 
@@ -292,7 +292,7 @@ class BasicAuthHandler(object):
             return response
         else:
             auth = Authentication(request.headers)
-            if self.user and (self.user != auth.username or self.password != auth.password):
+            if self.user is not None and (self.user != auth.username or self.password != auth.password):
                 response.set_error(403, "Invalid username or password")
                 return response
             return file_handler(request, response)

@@ -7,7 +7,14 @@
 <div id=log></div>
 <script>
 function assert_equal_node(nodeA, nodeB) {
+  assert_equals(nodeB.nodeType, nodeA.nodeType, "nodeType");
+  assert_equals(nodeB.nodeName, nodeA.nodeName, "nodeName");
+
   if (nodeA.nodeType === Node.ELEMENT_NODE) {
+    assert_equals(nodeB.prefix, nodeA.prefix);
+    assert_equals(nodeB.namespaceURI, nodeA.namespaceURI);
+    assert_equals(nodeB.localName, nodeA.localName);
+    assert_equals(nodeB.tagName, nodeA.tagName);
     assert_true(nodeB.attributes != nodeA.attributes);
     assert_true(nodeB.attributes !== nodeA.attributes);
     assert_equals(nodeB.attributes.length, nodeA.attributes.length);

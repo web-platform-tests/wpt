@@ -281,9 +281,18 @@ class AsIsHandler(object):
 as_is_handler = AsIsHandler()
 
 class BasicAuthHandler(object):
-    def __init__(self, user, password):
+    def __init__(self, handler, user, password):
+        """
+         A Basic Auth handler
+
+         :Args:
+         - handler: a secondary handler for the request after authentication is successful (example file_handler)
+         - user: string of the valid user name or None if any / all credentials are allowed
+         - password: string of the password required
+        """
         self.user = user
         self.password = password
+        self.handler = handler
 
     def __call__(self, request, response):
         if "authorization" not in request.headers:
@@ -295,7 +304,7 @@ class BasicAuthHandler(object):
             if self.user is not None and (self.user != auth.username or self.password != auth.password):
                 response.set_error(403, "Invalid username or password")
                 return response
-            return file_handler(request, response)
+            return self.handler(request, response)
 
 basic_auth_handler = BasicAuthHandler()
 

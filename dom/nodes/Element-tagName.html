@@ -29,4 +29,22 @@ test(function() {
     assert_equals(htmlel.tagName, "DIV", "tagName should be uppercase in HTML")
   }
 }, "tagName should be updated when changing ownerDocument")
+
+test(function() {
+  var xmlel = document.implementation
+    .createDocument("http://www.w3.org/1999/xhtml", "div", null)
+    .documentElement;
+  assert_equals(xmlel.tagName, "div", "tagName should be lowercase in XML")
+  var htmlel = document.importNode(xmlel, true)
+  assert_equals(htmlel.tagName, "DIV", "tagName should be uppercase in HTML")
+}, "tagName should be updated when changing ownerDocument (createDocument without prefix)")
+
+test(function() {
+  var xmlel = document.implementation
+    .createDocument("http://www.w3.org/1999/xhtml", "foo:div", null)
+    .documentElement;
+  assert_equals(xmlel.tagName, "foo:div", "tagName should be lowercase in XML")
+  var htmlel = document.importNode(xmlel, true)
+  assert_equals(htmlel.tagName, "FOO:DIV", "tagName should be uppercase in HTML")
+}, "tagName should be updated when changing ownerDocument (createDocument with prefix)")
 </script>

@@ -4,11 +4,12 @@ import os
 import sys
 import unittest
 
-from wptserve import server
 from network import get_lan_ip
 
 repo_root = os.path.abspath(os.path.join(__file__, "../.."))
 sys.path.insert(1, os.path.join(repo_root, "tools", "webdriver"))
+sys.path.insert(1, os.path.join(repo_root, "tools", "wptserve"))
+from wptserve import server
 from webdriver.driver import WebDriver
 
 

@@ -15,8 +15,7 @@ function assert_equal_node(nodeA, nodeB) {
     assert_equals(nodeB.namespaceURI, nodeA.namespaceURI);
     assert_equals(nodeB.localName, nodeA.localName);
     assert_equals(nodeB.tagName, nodeA.tagName);
-    assert_true(nodeB.attributes != nodeA.attributes);
-    assert_true(nodeB.attributes !== nodeA.attributes);
+    assert_not_equals(nodeB.attributes != nodeA.attributes);
     assert_equals(nodeB.attributes.length, nodeA.attributes.length);
     for (var i = 0, il = nodeA.attributes.length; i < il; ++i) {
       assert_not_equals(nodeB.attributes[i], nodeA.attributes[i]);

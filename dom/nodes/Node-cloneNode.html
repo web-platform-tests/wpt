@@ -35,17 +35,17 @@ test(function() {
   var c = el.cloneNode(false);
   assert_equal_node(el, c);
   assert_equals(c.childNodes.length, 0);
-})
+}, "Unprefixed HTML element")
 
 test(function() {
   var el = document.createElementNS("http://www.w3.org/1999/xhtml", "foo:div");
   var c = el.cloneNode(false);
   assert_equal_node(el, c);
-})
+}, "Prefixed HTML element")
 
 test(function() {
   var el = document.createElementNS("http://www.example.com/", "foo:div");
   var c = el.cloneNode(false);
   assert_equal_node(el, c);
-})
+}, "Prefixed non-HTML element")
 </script>

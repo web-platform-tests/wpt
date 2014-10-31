@@ -13,20 +13,17 @@ whether they meet the recognized standard.
    your system.
    Install it using either `<sudo> easy_install virtualenv`, `<sudo> pip
    install virtualenv`, or `<sudo> apt-get install python-virtualenv`
-2. Create and enter the directory for your Python virtual environment. This 
+2. Create and enter the directory for your Python virtual environment. This
    directory can be anywhere. It is recommended that you keep it separate
    from the webdriver tests folder, to avoid confusion with source control
-2a. Go to the directory where you store Python virtual environments. 
+2a. Go to the directory where you store Python virtual environments.
    For example `cd ~; mkdir python-virtualenv; cd python-virtualenv`
 2b. Create a virtual env configuration and directory: `virtualenv webdriver-tests`
-2c. Enter the directory: `cd webdriver-tests`
+2c. Enter the directory: `cd webdriver-tests` (don't forget to update submodules)
 3. `source bin/activate` to activate the local Python installation
-4. Install wptserver: `pip install wptserve` or `easy_install wptserve`
-  Alternatively clone the repo: https://github.com/w3c/wptserve and run
-  `python setup.py install`
-5. Go to the WebDriver tests: `cd _WEBDRIVER_TEST_ROOT_`
-6. Run the tests: `python runtests.py`
-7. Run the test against a different config specified in webdriver.cfg:
+4. Go to the WebDriver tests: `cd _WEBDRIVER_TEST_ROOT_`
+5. Run the tests: `python runtests.py`
+6. Run the test against a different config specified in webdriver.cfg:
    `WD_BROWSER=chrome python runtests.py`
 
 To be run a specific test file you can just run `python test_file.py`

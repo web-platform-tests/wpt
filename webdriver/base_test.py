@@ -10,7 +10,6 @@ from network import get_lan_ip
 repo_root = os.path.abspath(os.path.join(__file__, "../.."))
 sys.path.insert(1, os.path.join(repo_root, "tools", "webdriver"))
 from webdriver.driver import WebDriver
-from webdriver import exceptions, wait
 
 
 class WebDriverBaseTest(unittest.TestCase):

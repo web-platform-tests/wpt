@@ -6,6 +6,7 @@ import ConfigParser
 sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
 from webserver import Httpd
+from webdriver import exceptions
 
 
 class WebDriverAuthTest(unittest.TestCase):

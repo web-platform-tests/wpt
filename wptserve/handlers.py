@@ -9,6 +9,7 @@ import urlparse
 from constants import content_types
 from pipes import Pipeline, template
 from ranges import RangeParser
+from request import Authentication
 from response import MultipartContent
 from utils import HTTPException
 
@@ -16,7 +17,7 @@ logger = logging.getLogger("wptserve")
 
 __all__ = ["file_handler", "python_script_handler",
            "FunctionHandler", "handler", "json_handler",
-           "as_is_handler", "ErrorHandler"]
+           "as_is_handler", "ErrorHandler", "BasicAuthHandler"]
 
 
 def guess_content_type(path):
@@ -279,6 +280,33 @@ class AsIsHandler(object):
 
 as_is_handler = AsIsHandler()
 
+class BasicAuthHandler(object):
+    def __init__(self, handler, user, password):
+        """
+         A Basic Auth handler
+
+         :Args:
+         - handler: a secondary handler for the request after authentication is successful (example file_handler)
+         - user: string of the valid user name or None if any / all credentials are allowed
+         - password: string of the password required
+        """
+        self.user = user
+        self.password = password
+        self.handler = handler
+
+    def __call__(self, request, response):
+        if "authorization" not in request.headers:
+            response.status = 401
+            response.headers.set("WWW-Authenticate", "Basic")
+            return response
+        else:
+            auth = Authentication(request.headers)
+            if self.user is not None and (self.user != auth.username or self.password != auth.password):
+                response.set_error(403, "Invalid username or password")
+                return response
+            return self.handler(request, response)
+
+basic_auth_handler = BasicAuthHandler(file_handler, None, None)
 
 class ErrorHandler(object):
     def __init__(self, status):

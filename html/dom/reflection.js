@@ -705,12 +705,7 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         }
         try {
             domObj.setAttribute(domName, domTests[i]);
-            // setAttribute() followed by getAttribute() should always return
-            // the same thing.  TODO: Except that null should be cast to "" not
-            // "null", but that's not specced, so let's just not test it.
-            if (domTests[i] !== null) {
-                ReflectionHarness.test(domObj.getAttribute(domName), domTests[i] + "", "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
-            }
+            ReflectionHarness.test(domObj.getAttribute(domName), domTests[i] + "", "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
             ReflectionHarness.test(idlObj[idlName], domExpected[i], "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by IDL get");
             if (ReflectionHarness.catchUnexpectedExceptions) {
                 ReflectionHarness.success();

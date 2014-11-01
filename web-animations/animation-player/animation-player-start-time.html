@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Animation player startTime attribute test</title>
+<meta name="assert" content="Returns the start time of this player. Setting this attribute updates the player start time using the procedure defined in section 3.5.2.6 Updating the player start time.">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-startTime">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimation(animationTarget) {
+    animationTarget.style.width = '1200px';
+    return new Animation(animationTarget, [
+	    {width: '0px', offset: 0},
+	    {width: '500px', offset: 1/2},
+	    {width: '1000px', offset: 1}], 1000);
+}
+
+
+function newAnimationPlayer(animationTarget) {
+    return document.timeline.play(newAnimation(animationTarget));
+}
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    assert_not_equals(player.startTime, null,
+        'The value of AnimationPlayer.startTime attribute should not be of type null');
+}, 'The value of AnimationPlayer.startTime attribute should not be null');
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    var newStartTime = player.startTime + 100;
+    player.startTime = newStartTime;
+
+    assert_equals(player.startTime, newStartTime,
+        'The value of AnimationPlayer.startTime attribute should be set to the new value');
+	// TODO Is there a way to test the following "2. Set the hold time to null."?
+}, 'Test setting value of AnimationPlayer.startTime attribute. Player is not paused');
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    var newStartTime = player.startTime + 100;
+    player.pause();
+    player.startTime = newStartTime;
+
+    var expectedTime = player.timeline.currentTime - newStartTime * player.playbackRate;
+    assert_equals(player.startTime, expectedTime,
+        'The value of AnimationPlayer.startTime attribute should be set to ' +
+        'hod time value');
+}, 'Test setting value of AnimationPlayer.startTime attribute. Player is paused');
+
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+
+    assert_equals(window.getComputedStyle(animation.target).width, 0,
+        'Animation effect of the AnimationPlayer object should ' +
+        'correspond player start time');
+}, 'The AnimationPlayer start time animation effect test. Start time is default');
+
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+    player.startTime = 0;
+
+    assert_equals(window.getComputedStyle(animation.target).width, 0,
+        'Animation effect of the AnimationPlayer object should ' +
+        'correspond player start time');
+}, 'The AnimationPlayer start time animation effect test. Start time is zero');
+
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+    player.startTime = 500;
+
+    assert_equals(window.getComputedStyle(animation.target).width, 500,
+        'Animation effect of the AnimationPlayer object should ' +
+        'correspond player start time');
+}, 'The AnimationPlayer start time animation effect test. Start time is not default');
+
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+    player.startTime = 1000;
+
+    assert_equals(window.getComputedStyle(animation.target).width, 1000,
+        'Animation effect of the AnimationPlayer object should ' +
+        'correspond player start time');
+}, 'The AnimationPlayer start time animation effect test. Start time is set to end time');
+</script>
+</body>

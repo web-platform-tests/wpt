@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Animation player paused attribute test</title>
+<meta name="assert" content="A boolean value that is true if the player is currently paused. The paused state is initially false.">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-paused">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(animationTarget) {
+    var animation = new Animation(animationTarget, [], 100);
+    return document.timeline.play(animation);
+}
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    assert_false(player.paused, 'The value of AnimationPlayer.paused attribute should be ' +
+        'initially false');
+}, 'The value of AnimationPlayer.paused attribute should be initially false');
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    player.currentTime = 99;
+    assert_false(player.paused, 'The value of AnimationPlayer.paused attribute should be ' +
+        'false if player is not paused');
+
+    player.currentTime = 101;
+    assert_false(player.paused, 'The value of AnimationPlayer.paused attribute should be ' +
+        'false if player is not paused but seek time is greater than content end');
+}, 'The value of AnimationPlayer.paused attribute should be false if player is not paused');
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    player.pause();
+    assert_true(player.paused, 'AnimationPlayer should be paused');
+
+    player.play();
+    assert_false(player.paused, 'AnimationPlayer should not be paused');
+
+    player.pause();
+    assert_true(player.paused, 'AnimationPlayer should be paused again');
+}, 'Test true value of AnimationPlayer.paused attribute');
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    assert_readonly(player, 'paused', 'AnimationPlayer.paused attribute should be readonly');
+}, 'AnimationPlayer.paused attribute readonly test');
+</script>
+</body>

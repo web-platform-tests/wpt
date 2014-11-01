@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test sort order of the sequence returned by AnimationTimeline.getAnimationPlayers() method</title>
+<meta name="assert" content="The list returned by AnimationTimeline.getAnimationPlayers() is sorted in increasing order by player sequence number">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [], 5);
+    return doc.timeline.play(animation);
+}
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player1 = newAnimationPlayer(doc);
+    var player2 = newAnimationPlayer(doc);
+    var player3 = newAnimationPlayer(doc);
+
+    assert_array_equals(document.timeline.getAnimationPlayers(), [player1, player2, player3],
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should be ordered by player sequence number');
+}, 'Test set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+    'is ordered by player sequence number');
+
+
+test(function() {
+    var doc1 = newHTMLDocument();
+    var player1 = newAnimationPlayer(doc1);
+    var player2 = newAnimationPlayer(doc1);
+
+    var doc2 = newHTMLDocument();
+    var player3 = newAnimationPlayer(doc2);
+    var player4 = newAnimationPlayer(doc2);
+
+    assert_array_equals(doc1.timeline.getAnimationPlayers(), [player1, player2],
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should be ordered by player sequence number');
+    assert_array_equals(doc2.timeline.getAnimationPlayers(), [player3, player4],
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should be ordered by player sequence number');
+}, 'Test set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+    'of different timelines is ordered by player sequence number');
+</script>
+</body>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Animation player timeline attribute test</title>
+<meta name="assert" content="Timeline attribute is of type AnimationTimeline, readonly">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-source">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(animationTarget) {
+    var animation = new Animation(animationTarget, [], 5);
+    return document.timeline.play(animation);
+}
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    assert_class_string(player.timeline, 'AnimationTimeline,',
+        'The value of AnimationPlayer.timeline attribute should be of type ' +
+        'AnimationTimeline');
+}, 'The value of AnimationPlayer.timeline attribute is of type AnimationTimeline');
+
+
+test(function() {
+    var player = newAnimationPlayer(createDiv(this));
+
+    assert_readonly(player, 'timeline', 'AnimationPlayer.timeline attribute should ' +
+        'be readonly');
+}, 'The that AnimationPlayer.timeline attribute is readonly');
+</script>
+</body>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Animation player cancel method test</title>
+<meta name="assert" content="Set source to null and clears all effects associated with the previous source content">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-cancel-void">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimation(animationTarget) {
+    animationTarget.style.width = '300px';
+    return new Animation(animationTarget, [
+	    {width: '10px', offset: 0},
+	    {width: '100px', offset: 1/2},
+	    {width: '200px', offset: 1}], 1000);
+}
+
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+    player.cancel();
+
+    assert_equals(player.source, null, 'Value of AnimationPlayer.source attribute ' +
+        'should be null');
+}, 'Test that value of the AnimationPlayer.source attribute is null after ' +
+    'AnimationPlayer.cancel() call');
+
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+
+    player.currentTime = 500;
+    assert_equals(window.getComputedStyle(animation.target).width, 100,
+        'Animation effect should take place');
+
+    player.cancel();
+    assert_equals(window.getComputedStyle(animation.target).width, 300,
+        'Animation effect should be cleared');
+}, 'Test that animation effect is cleared by AnimationPlayer.cancel() call');
+</script>
+</body>

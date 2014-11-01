@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Web Animations API: AnimationPlayer tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+<div id="log"></div>
+<div id="animation-target" style="width: 300px"></div>
+<script type="text/plain" id="untested-IDL">
+interface EventTarget {
+};
+
+interface AnimationNode {
+};
+
+interface AnimationTimeline {
+};
+</script>
+<script type="text/plain" id="AnimationPlayer-IDL">
+interface AnimationPlayer : EventTarget {
+             attribute AnimationNode?    source;
+    readonly attribute AnimationTimeline timeline;
+             attribute double            startTime;
+             attribute double            currentTime;
+             attribute double            playbackRate;
+    readonly attribute boolean           paused;
+    readonly attribute boolean           finished;
+    void cancel();
+    void finish();
+    void play();
+    void pause();
+    void reverse();
+             attribute EventHandler      onfinish;
+};
+</script>
+<script>
+'use strict';
+
+var animationTarget = document.querySelector('#animation-target');
+var animation = new Animation(animationTarget, [
+    {width: '0px', offset: 0},
+    {width: '100px', offset: 1/2},
+    {width: '200px', offset: 1}], 1000);
+var player = document.timeline.play(animation);
+
+var idlArray;
+test(function() {
+    idlArray = new IdlArray();
+    idlArray.add_untested_idls(document.getElementById('untested-IDL').textContent);
+    idlArray.add_idls(document.getElementById('AnimationPlayer-IDL').textContent);
+    idlArray.add_objects( { AnimationPlayer: ['player'] } );
+});
+idlArray.test();
+
+</script>

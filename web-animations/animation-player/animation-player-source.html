@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Animation player source attribute test. Test that attribute is of type AnimationNode and nullable</title>
+<meta name="assert" content="Source attribute is of type AnimationNode and nullable">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationPlayer-source">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimation(animationTarget) {
+    document.body.appendChild(animationTarget);
+    return new Animation(animationTarget, [], 5);
+}
+
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.source, null, 'Value of AnimationPlayer.source attribute ' +
+        'should be null');
+}, 'Test that value of the AnimationPlayer.source attribute is null if player ' +
+    'is created by AnimationTimeline.play(null) call');
+
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+
+    assert_not_equals(player.source, null, 'Value of AnimationPlayer.source attribute ' +
+        'should not be null');
+}, 'Test that value of the AnimationPlayer.source attribute is not null if player ' +
+    'is created by AnimationTimeline.play(animation) call');
+
+
+test(function() {
+    var player = document.timeline.play(newAnimation(createDiv(this)));
+
+    assert_true(hasAncestorClassString(player.source, 'AnimationNode'), 'Value of ' +
+        'AnimationPlayer.source attribute should be of type AnimationNode');
+}, 'Test that value of the AnimationPlayer.source attribute is of type AnimationNode');
+
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+
+    assert_equals(player.source, animation, 'Value of AnimationPlayer.source ' +
+        'attribute should be value of AnimationTimeline.play() call');
+}, 'Test that value of the AnimationPlayer.source attribute is ' +
+    'value of AnimationTimeline.play() call');
+</script>
+</body>

@@ -127,4 +127,10 @@ test(function() {
   get_elements(document);
   assert_array_equals(actual, expected);
 }, "getElementsByTagNameNS('*', '*')")
+
+test(function() {
+  assert_array_equals(document.getElementsByTagNameNS("**", "*"), []);
+  assert_array_equals(document.getElementsByTagNameNS(null, "0"), []);
+  assert_array_equals(document.getElementsByTagNameNS(null, "div"), []);
+}, "Empty lists")
 </script>

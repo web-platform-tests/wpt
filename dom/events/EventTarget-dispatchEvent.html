@@ -13,6 +13,10 @@ setup({
   "allow_uncaught_exception": true,
 })
 
+test(function() {
+  assert_throws(new TypeError(), function() { document.dispatchEvent(null) })
+}, "Calling dispatchEvent(null).")
+
 aliases.forEach(function(alias) {
   test(function() {
     var e = document.createEvent(alias[0])

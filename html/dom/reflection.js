@@ -685,26 +685,28 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         idlIdlExpected = idlIdlExpected.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
     }
 
-    for (var i = 0; i < domTests.length; i++) {
-        if (domExpected[i] === null) {
-            // If you follow all the complicated logic here, you'll find that
-            // this will only happen if there's no expected value at all (like
-            // for tabIndex, where the default is too complicated).  So skip
-            // the test.
-            continue;
-        }
-        try {
-            domObj.setAttribute(domName, domTests[i]);
-            ReflectionHarness.test(domObj.getAttribute(domName), domTests[i] + "", "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
-            ReflectionHarness.test(idlObj[idlName], domExpected[i], "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by IDL get");
-            if (ReflectionHarness.catchUnexpectedExceptions) {
-                ReflectionHarness.success();
+    if (!data.customGetter) {
+        for (var i = 0; i < domTests.length; i++) {
+            if (domExpected[i] === null) {
+                // If you follow all the complicated logic here, you'll find that
+                // this will only happen if there's no expected value at all (like
+                // for tabIndex, where the default is too complicated).  So skip
+                // the test.
+                continue;
             }
-        } catch (err) {
-            if (ReflectionHarness.catchUnexpectedExceptions) {
-                ReflectionHarness.failure("Exception thrown during tests with setAttribute() to " + ReflectionHarness.stringRep(domTests[i]));
-            } else {
-                throw err;
+            try {
+                domObj.setAttribute(domName, domTests[i]);
+                ReflectionHarness.test(domObj.getAttribute(domName), domTests[i] + "", "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
+                ReflectionHarness.test(idlObj[idlName], domExpected[i], "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by IDL get");
+                if (ReflectionHarness.catchUnexpectedExceptions) {
+                    ReflectionHarness.success();
+                }
+            } catch (err) {
+                if (ReflectionHarness.catchUnexpectedExceptions) {
+                    ReflectionHarness.failure("Exception thrown during tests with setAttribute() to " + ReflectionHarness.stringRep(domTests[i]));
+                } else {
+                    throw err;
+                }
             }
         }
     }

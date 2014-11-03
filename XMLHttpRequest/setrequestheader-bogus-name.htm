@@ -27,14 +27,15 @@
         test(function() {
           var client = new XMLHttpRequest()
           client.open("GET", "...")
-          assert_throws("SyntaxError", function() { client.setRequestHeader(name, 'x-value') }, "setRequestHeader should throw with header name " +
-           format_value(invalid_headers[i]) + ".")
-        })
+          assert_throws("SyntaxError", function() { client.setRequestHeader(name, 'x-value') })
+        }, "setRequestHeader should throw with header name " + format_value(invalid_headers[i]) + ".")
       }
       var invalid_headers = ["(", ")", "<", ">", "@", ",", ";", ":", "\\",
                              "\"", "/", "[", "]", "?", "=", "{", "}", " ",
                              /* HT already tested in the loop below */
-                             "\u007f", "ﾃｽﾄ", "", "t\rt", "t\nt", "t: t", "t:t", "t<t", "t t", " tt", ":tt", "\ttt", "\vtt", "t\0t", "t\"t", "t,t", "t;t", "()[]{}", "a?B", "X-ﾃｽﾄ", "a=B"]
+                             "\u007f", "ﾃｽﾄ", "", "t\rt", "t\nt", "t: t", "t:t",
+                             "t<t", "t t", " tt", ":tt", "\ttt", "\vtt", "t\0t",
+                             "t\"t", "t,t", "t;t", "()[]{}", "a?B", "X-ﾃｽﾄ", "a=B"]
       for (var i = 0; i < 32; ++i) {
         invalid_headers.push(String.fromCharCode(i))
       }

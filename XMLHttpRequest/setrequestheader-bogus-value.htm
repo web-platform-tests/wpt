@@ -20,11 +20,11 @@
       try_value("t\rt")
       try_value("t\nt")
       try_value("ﾃｽﾄ")
-      // Omitted value argument
+
       test(function() {
         var client = new XMLHttpRequest()
         client.open("GET", "...")
-        assert_throws(new "SyntaxError", function() { client.setRequestHeader("x-test") })
+        assert_throws(new "TypeError", function() { client.setRequestHeader("x-test") })
       }, 'Omitted value argument')
     </script>
   </body>

@@ -61,4 +61,11 @@ test(function() {
   the_frag.nodeValue = "foo";
   assert_equals(the_frag.nodeValue, null);
 }, "DocumentFragment.nodeValue");
+
+test(function() {
+  var the_doctype = document.doctype;
+  assert_equals(the_doctype.nodeValue, null);
+  the_doctype.nodeValue = "foo";
+  assert_equals(the_doctype.nodeValue, null);
+}, "DocumentType.nodeValue");
 </script>

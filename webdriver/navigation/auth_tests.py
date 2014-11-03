@@ -5,8 +5,7 @@ import ConfigParser
 
 sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
-from client.exceptions import TimeoutException
-from network import get_lan_ip
+from webdriver import exceptions
 from wptserve import server
 from wptserve.router import any_method
 from wptserve.handlers import basic_auth_handler

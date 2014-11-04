@@ -322,6 +322,9 @@ class Manifest(object):
                 for test in tests:
                     out_items[test.item_type].append(test.to_json())
 
+        for tests in out_items.itervalues():
+            tests.sort()
+
         rv = {"url_base": self.url_base,
               "rev": self.rev,
               "local_changes": self.local_changes.to_json(),

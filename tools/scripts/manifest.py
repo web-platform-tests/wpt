@@ -316,14 +316,14 @@ class Manifest(object):
         self.url_base = url_base
 
     def to_json(self):
-        out_items = defaultdict(list)
-        for item_type, items in self._data.iteritems():
-            for path, tests in items.iteritems():
-                for test in tests:
-                    out_items[test.item_type].append(test.to_json())
-
-        for tests in out_items.itervalues():
-            tests.sort()
+        out_items = {
+            item_type: sorted(
+                test.to_json()
+                for _, tests in items.iteritems()
+                for test in tests
+            )
+            for item_type, items in self._data.iteritems()
+        }
 
         rv = {"url_base": self.url_base,
               "rev": self.rev,

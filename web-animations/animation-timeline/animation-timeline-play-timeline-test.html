@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>Animation timeline play() method test. Test timeline of newly-created AnimationPlayer</title>
+<meta name="assert" content="AnimationPlayer object created by play() method is associated with this timeline that is scheduled to start at currentTime">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [], 5);
+    return doc.timeline.play(animation);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_equals(player.timeline, doc.timeline,
+        'The timeline attribute of the newly-created AnimationPlayer object ' +
+        'should be set to this timeline object');
+}, 'The timeline attribute of the newly-created AnimationPlayer object ' +
+    'should be set to this timeline object');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = newAnimationPlayer(doc);
+
+    assert_equals(player.startTime, doc.timeline.currentTime,
+        'Start time of the newly-created AnimationPlayer object should be set ' +
+        'to the value of this object\'s currentTime attribute');
+}, 'The newly-created AnimationPlayer start time test');
+</script>
+</body>

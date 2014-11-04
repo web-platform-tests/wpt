@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<title>Animation timeline getAnimationPlayers() method test</title>
+<meta name="assert" content="Animation timeline getAnimationPlayers() method returns the set of AnimationPlayer objects associated with this timeline that have associated source content which is current">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+function newAnimationPlayer(doc) {
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [], 5);
+    return doc.timeline.play(animation);
+}
+
+
+test(function() {
+    var doc = newHTMLDocument();
+
+    assert_not_equals(doc.timeline.getAnimationPlayers(), null,
+        'AnimationTimeline.getAnimationPlayers() method shouldn\'t return null');
+    assert_equals(doc.timeline.getAnimationPlayers().length, 0,
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should be empty');
+}, 'Test set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+    'when there is no players associated');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    newAnimationPlayer(doc);
+
+    assert_not_equals(doc.timeline.getAnimationPlayers(), null,
+        'AnimationTimeline.getAnimationPlayers() method should not return null');
+    assert_equals(doc.timeline.getAnimationPlayers().length, 1,
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should contain one element');
+}, 'Test set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+    'when there is one associated player');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player1 = newAnimationPlayer(doc);
+    var player2 = newAnimationPlayer(doc);
+
+    assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should contain two elements');
+}, 'Test set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+    'when there are more than one associated player');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player1 = newAnimationPlayer(doc);
+    var player2 = newAnimationPlayer(doc);
+    var players = doc.timeline.getAnimationPlayers();
+
+    players.forEach(function (player) {
+        assert_true(isCurrent(player.source),
+            'Source content of the AnimationPlayer returned by ' +
+            'AnimationTimeline.getAnimationPlayers() should be current');
+    });
+}, 'Test that source content of the AnimationPlayer returned by ' +
+    'AnimationTimeline.getAnimationPlayers() is current');
+</script>
+</body>

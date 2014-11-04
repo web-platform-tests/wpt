@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Animation timeline play() method test. Test source parameter</title>
+<meta name="assert" content="The source attribute of the created AnimationPlayer is set to source parameter value">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var doc = newHTMLDocument();
+    var animationTarget = doc.createElement('div');
+    doc.body.appendChild(animationTarget);
+    var animation = new Animation(animationTarget, [], 2000);
+    var player = doc.timeline.play(animation);
+
+    assert_equals(player.source, animation, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+}, 'Test that the source attribute of the created AnimationPlayer is set to source ' +
+    'parameter value');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play(null);
+
+    assert_equals(player.source, null, 'The source attribute of the created ' +
+        'AnimationPlayer should be null if source parameter value is null');
+}, 'Test that the source attribute of the created AnimationPlayer is null if source ' +
+    'parameter value is null');
+
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play();
+
+    assert_equals(player.source, null, 'The source attribute of the created ' +
+        'AnimationPlayer should be null if source parameter value is not specified');
+}, 'Test that the source attribute of the created AnimationPlayer is null if source ' +
+    'parameter value is not specified');
+</script>
+</body>

@@ -27,10 +27,10 @@ http://f:\s21\s/\sb\s?\sd\s#\se\s
 :/  s:http h:example.org p:/foo/:/
 :\\  s:http h:example.org p:/foo/:/
 :#  s:http h:example.org p:/foo/: f:#
-#  s:http h:example.org p:/foo/bar f:#
-#/  s:http h:example.org p:/foo/bar f:#/
-#\\  s:http h:example.org p:/foo/bar f:#\\
-#;?  s:http h:example.org p:/foo/bar f:#;?
+\#  s:http h:example.org p:/foo/bar f:#
+\#/  s:http h:example.org p:/foo/bar f:#/
+\#\\  s:http h:example.org p:/foo/bar f:#\\
+\#;?  s:http h:example.org p:/foo/bar f:#;?
 ?  s:http h:example.org p:/foo/bar q:?
 /  s:http h:example.org p:/
 :23  s:http h:example.org p:/foo/:23
@@ -91,7 +91,7 @@ mailto:example.com/  s:mailto p:example.com/
 /a/\s/c  s:http h:example.org p:/a/%20/c
 /a%2fc  s:http h:example.org p:/a%2fc
 /a/%2f/c  s:http h:example.org p:/a/%2f/c
-#\u03B2  s:http h:example.org p:/foo/bar f:#\u03B2
+\#\u03B2  s:http h:example.org p:/foo/bar f:#\u03B2
 data:text/html,test#test  s:data p:text/html,test f:#test
 
 # Based on http://trac.webkit.org/browser/trunk/LayoutTests/fast/url/file.html

@@ -26,7 +26,7 @@
             var expect = ["loadstart", 4, "load", "loadend"];
             var actual = [];
 
-            xhr.onreadystatechange = function()
+            xhr.onreadystatechange = test.step_func(function()
             {
                 test.step(function()
                 {
@@ -39,15 +39,15 @@
                         actual.push(xhr.readyState);
                     }
                 });
-            };
+            });
 
-            xhr.onloadstart        = function(e){ actual.push(e.type); };
-            xhr.onload             = function(e){ actual.push(e.type); };
-            xhr.onloadend          = function(e){ actual.push(e.type); VerifyResult()};
+            xhr.onloadstart        = test.step_func(function(e){ actual.push(e.type); });
+            xhr.onload             = test.step_func(function(e){ actual.push(e.type); });
+            xhr.onloadend          = test.step_func(function(e){ actual.push(e.type); VerifyResult()});
 
-            xhr.upload.onloadstart = function(e){ assert_unreached('upload.'+e.type); };
-            xhr.upload.onload      = function(e){ assert_unreached('upload.'+e.type); };
-            xhr.upload.onloadend   = function(e){ assert_unreached('upload.'+e.type); };
+            xhr.upload.onloadstart = test.step_func(function(e){ assert_unreached('upload.'+e.type); });
+            xhr.upload.onload      = test.step_func(function(e){ assert_unreached('upload.'+e.type); });
+            xhr.upload.onloadend   = test.step_func(function(e){ assert_unreached('upload.'+e.type); });
 
             function VerifyResult()
             {

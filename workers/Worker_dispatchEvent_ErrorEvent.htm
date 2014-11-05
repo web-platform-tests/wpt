@@ -30,9 +30,12 @@
 
         function TestErrorEvent(evt)
         {
-            var ExpectedResult = [EVENT, MESSAGE, FILENAME, LINENO, COLNO, ERROR];
-            var ActualResult = [evt.type, evt.message, evt.filename, evt.lineno, evt.colno, evt.error];
-            assert_array_equals(ActualResult, ExpectedResult);
+            assert_equals(evt.type, EVENT, 'type');
+            assert_equals(evt.message, MESSAGE, 'message');
+            assert_equals(evt.filename, FILENAME, 'filename');
+            assert_equals(evt.lineno, LINENO, 'lineno');
+            assert_equals(evt.colno, COLNO, 'colno');
+            assert_equals(evt.error, ERROR, 'error');
             t.done();
         }
     });

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Grid Layout Module Level 1 Test Plan</title>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <!--
+      === NOTA BENE ===
+      For the three scripts below, if your spec resides on dev.w3 you can check them
+      out in the same tree and use relative links so that they'll work offline,
+     -->
+    <script src='http://www.w3.org/Tools/respec/respec-w3c-common' class='remove' async></script>
+    <script class='remove'>
+      var respecConfig = {
+          publishDate: "2014-10-30",
+          shortName: "css-grid-1-test-plan",
+          specStatus: "unofficial",
+          editors: [
+            {
+              name: "Manuel Rego Casasnovas", mailto: "rego@igalia.com",
+              company: "Igalia, S.L.", companyURL: "http://www.igalia.com/"
+            },
+          ],
+          // FIXME: testSuiteURI doesn't work.
+          testSuiteURI: "http://test.csswg.org/suites/css3-grid/nightly-unstable/",
+      };
+    </script>
+    <style>
+    a.bibref,
+    #references dt {
+      text-transform: uppercase;
+    }
+    </style>
+  </head>
+  <body>
+    <section id='abstract'>
+      <p>
+        This document is intended to be used as a guideline for the testing
+        activities related to the CSS Grid Layout Level 1 spec
+        [[!css3-grid-layout]]. Its main goal is to provide an overview of the
+        general testing areas, possible caveats and testing aspects not
+        immediately apparent from the spec. Also, it provides a means of
+        tracking the progress of the CSS Grid Layout spec testing.
+      </p>
+      <p>
+        This document is not meant to replace the spec in determining the
+        normative and non-normative assertions to be tested, but rather
+        complement it.
+      </p>
+    </section>
+
+    <section>
+      <h2>Introduction</h2>
+      <p>
+        As CSS moved away from the monolithic development of CSS 2.1 to the
+        modular development of CSS 3, the number of proposed new features and
+        the complexity of the layout landscape have increased dramatically.
+        While this directly translates to increased flexibility and agility in
+        adopting and implementing new CSS features, it also increases the
+        complexity of testing CSS features and the need for coordinating the
+        testing efforts. Also, the need for testing coordination increases as
+        crowd-sourcing efforts like
+        <a href="http://testthewebforward.org/" target="_blank">Test the Web
+        Forward</a> present people less familiar with the processes and
+        policies of the W3C with the opportunity to contribute new tests.
+      </p>
+      <p>
+        Except when defining new behaviors or redefining old behaviors, the
+        implicit assumption for new CSS modules is that they play nicely with
+        other modules or properties defined in CSS 2.1 [[!CSS21]]. As CSS Grid
+        Layout is a spec that touches many aspects of layout, styling and
+        CSSOM, it's not unreasonable to want to test the spec against these
+        implicit assumptions, too.
+      </p>
+      <p>
+        This testing strategy document is meant to complement the CSS Grid
+        Layout spec and the existing test suite by providing an overview of
+        the testing areas (especially the less apparent ones) and tracking
+        the progress of the testing activities against these test areas.
+      </p>
+    </section>
+
+    <section>
+      <h2>Goals</h2>
+      <p>
+        To ensure a comprehensive test suite with useful, high quality tests,
+        a number of goals are proposed. They range from process goals (how to
+        conduct testing) to implementation goals (how to write good tests).
+      </p>
+      <section>
+        <h3>Enabling easy test contribution</h3>
+        <p>
+          An important vector in successfully testing CSS Grid Layout is to
+          enable easy test contributions, both from W3C partners and from
+          non-W3C members that wish to contribute. This is achieved by clearly
+          marking and explaining the areas that need testing, linking to
+          existing tests, and general testing progress.
+        </p>
+      </section>
+      <section>
+        <h3>Providing guidance on testing</h3>
+        <p>
+          In order to increase the quality of the test contributions, this
+          document offers a set of guidelines for conducting testing (see
+          <a href="#approach" class="sectionRef"></a>) and a testing progress
+          tracker to increase the surface coverage of tests (see
+          <a href="#test-progress-tracking" class="sectionRef"></a>).
+        </p>
+      </section>
+      <section>
+        <h3>Creating automation-friendly tests</h3>
+        <p>
+          In terms of actual tests produced for the CSS Grid Layout
+          specification, the main goal is to ensure that most tests are
+          automatable (i.e. they're either reftests or use
+          <code>testharness.js</code>). Even where manual tests are absolutely
+          necessary they should be written so that they can be easily
+          automated &ndash; as there are ongoing efforts to make WebDriver
+          [[webdriver]] automated tests a first class citizen in W3C testing.
+          This means that even if a manual test requires user interaction,
+          the validation or PASS/FAIL conditions should still be clear enough
+          as to allow automatic validation if said interaction is later
+          automated.
+        </p>
+      </section>
+    </section>
+    <section>
+		<h2>Approach</h2>
+		<p>
+            As spec testing cannot be realistically separated from testing a
+            particular implementation (except for the very simple cases), the
+            approach proposed for testing is one that tries to first cover as
+            many areas as possible, instead of deep diving on a certain
+            feature or aspect of the spec first. A side benefit of this
+            approach is that the spec tests can be used at any time to gauge
+            the level of support of a certain implementation.
+        </p>
+        <p>
+            Having this <em>breadth-first</em> approach in mind, tests will be
+            created for the testing areas listed in <a href="#testing-areas"
+            class="sectionRef"></a>. Testing will be done in multiple passes,
+            each aimed at covering more specific edge-cases.
+        </p>
+	</section>
+	<section>
+      <h2>Testing areas</h2>
+      <section>
+        <h3>Explicit testing areas</h3>
+        <p>
+          These are testing areas normatively defined by the spec. They cover
+          things explicitly or implicitly defined in the CSS Grid Layout spec.
+          Please note that while detailed, this list is not necessarily
+          exhaustive and normative behaviors may not be contained in it.
+          When in doubt, consult the CSS Grid Layout spec or ask a question on
+          the <a href="http://lists.w3.org/Archives/Public/www-style/">mailing
+          list</a> adding <kbd>[css-grid]</kbd> to the subject.
+        </p>
+        <section>
+          <h4>Grid Containers (<kbd>grid-model</kbd>)</h4>
+          <ul>
+            <li><code>display: grid</code>.</li>
+            <li><code>display: inline-grid</code>.</li>
+            <li>
+              <code>column-*</code> properties have no effect on a grid
+              container.
+            </li>
+            <li>
+              <code>float</code> and <code>clear</code> have no effect on a
+              grid item.
+            </li>
+            <li>
+              <code>float</code> affects to the computed value of display on
+              grid items.
+            </li>
+            <li><code>vertical-align</code> has no effect on a grid item.</li>
+            <li>
+              <code>first-line</code> and <code>first-letter</code> do not
+              apply to grid containers.
+            </li>
+            <li>Sizing grid containers.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Grid Items (<kbd>grid-items</kbd>)</h4>
+          <ul>
+            <li>Each child of a grid container becomes a grid item.</li>
+            <li>
+              Each contiguous run of text that is directly contained inside
+              grid container is wrapped in an anonymous grid item.
+            </li>
+            <li>
+              <code>visibility</code> property.
+              <div class="note">Still undefined in the spec.</div>
+            </li>
+            <li><code>order</code> property.</li>
+            <li>Static position.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>The Explicit Grid (<kbd>grid-definition</kbd>)</h4>
+          <ul>
+            <li>
+              Track sizing:
+              <ul>
+                <li>
+                  <code>grid-template-columns</code> and
+                  <code>grid-template-rows</code> properties.
+                </li>
+                <li>
+                  <kbd>&lt;track-size&gt;</kbd>: <code>length</code>,
+                  <code>percentage</code>, <code>max-content</code>,
+                  <code>min-content</code>, <code>minmax(min, max)</code>,
+                  <code>auto</code>.
+                </li>
+                <li>Named grid lines (<kbd>&lt;custom-ident&gt;</kbd>).</li>
+                <li><code>repeat()</code> notation.</li>
+                <li>Flexible lengths: <code>fr</code> unit.</li>
+                <li>
+                  <code>subgrid</code> keyword.
+                  <div class="note">Subgrid feature is currently at-risk.</div>
+                </li>
+                <li>Resolved values.</li>
+              </ul>
+            </li>
+            <li>
+              Named areas:
+              <ul>
+                <li><code>grid-template-areas</code> property.</li>
+                <li>Implicit named grid lines.</li>
+                <li>Implicit named areas.</li>
+              </ul>
+            </li>
+            <li>
+              Explicit grid shorthand:
+              <ul>
+                <li><code>grid-template</code> property.</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h4>The Implicit Grid (<kbd>implicit-grids</kbd>)</h4>
+          <ul>
+            <li>
+              <code>grid-auto-rows</code> and <code>grid-auto-columns</code>
+              properties.
+            </li>
+            <li>
+              <code>grid-auto-flow</code> property.
+              <div class="note">
+                Syntax is still under discussion on CSS WG.
+              </div>
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h4>Grid Definition Shorthand (<kbd>grid-shorthand</kbd>)</h4>
+          <ul>
+            <li><code>grid</code> property.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Placing Grid Items (<kbd>placement</kbd>)</h4>
+          <ul>
+            <li>
+              Common patterns:
+              <ul>
+                <li>Named areas.</li>
+                <li>Numeric indexes and spans.</li>
+                <li>Named lines and spans.</li>
+                <li>Auto placement.</li>
+                <li>
+                  Auto sizing siblings.
+                  <div class="note">Subgrid feature is currently at-risk.</div>
+                </li>
+              </ul>
+            </li>
+            <li>
+              Line-based placement:
+              <ul>
+                <li>
+                  <code>grid-row-start</code>, <code>grid-column-start</code>,
+                  <code>grid-row-end</code> and <code>grid-column-end</code>
+                  properties.
+                </li>
+                <li>Grid placement conflict handling.</li>
+              </ul>
+            </li>
+            <li>
+              Placement shorthands:
+              <ul>
+                <li>
+                  <code>grid-column</code>, <code>grid-row</code> and
+                  <code>grid-area</code> properties.
+                </li>
+              </ul>
+            </li>
+            <li>Absolutely-positioned grid items.</li>
+            <li>Grid item placement algorithm.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Alignment (<kbd>alignment</kbd>)</h4>
+          <ul>
+            <li>Aligning with auto margins.</li>
+            <li>
+              Row-axis alignment:
+              <ul>
+                <li>
+                  <code>justify-self</code> and <code>justify-items</code>
+                  properties.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Column-axis alignment:
+              <ul>
+                <li>
+                  <code>align-self</code> and <code>align-items</code>
+                  properties.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Aligning the grid:
+              <ul>
+                <li>
+                  <code>justify-content</code> and <code>align-content</code>
+                  properties.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Z-axis ordering:
+              <ul>
+                <li><code>z-index</code> property.</li>
+              </ul>
+            </li>
+            <li>Grid baselines.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Track Sizing Algorithm (<kbd>layout-algorithm</kbd>)</h4>
+          <ul>
+            <li>Content-based track sizing.</li>
+            <li>Grow tracks using free space.</li>
+            <li>Flexible tracks.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Fragmenting Grid Layout (<kbd>pagination</kbd>)</h4>
+          <ul>
+            <li>Fragmentation algorithm.</li>
+          </ul>
+        </section>
+      </section>
+      <section>
+        <h3>Implicit testing areas</h3>
+        <p>
+          These are testing areas either normatively defined in other specs
+          that explicitly refer to the CSS Grid Layout spec or simply not
+          explicitly defined, but implied by various aspects of the spec.
+          Please note that while detailed, this list is not necessarily
+          exhaustive and normative behaviors may not be contained in it. When
+          in doubt, consult the CSS Grid Layout spec or ask a question on the
+          <a href="http://lists.w3.org/Archives/Public/www-style/">mailing
+          list</a> adding <kbd>[css-grid]</kbd> to the subject.
+        </p>
+        <p>
+          Below is the list of implicit testing areas:
+        </p>
+        <ul>
+          <li>
+            CSS Grid Layout and other layout models:
+            <ul>
+              <li>Floats [[!CSS21]].</li>
+              <li>Positioned elements [[!css3-positioning]].</li>
+              <li>CSS Flexbox [[!css3-flexbox]].</li>
+              <li>CSS Multicolumn [[!css3-multicol]].</li>
+              <li>CSS Regions [[!css3-regions]].</li>
+              <li>CSS Shapes [[!css-shapes-1]].</li>
+            </ul>
+          </li>
+          <li>
+            CSS Grid Layout and different type of elements [[!html5]]:
+            <ul>
+              <li><code>img</code>.</li>
+              <li><code>video</code>.</li>
+              <li><code>iframe</code>.</li>
+              <li><code>canvas</code>.</li>
+              <li><code>table</code>.</li>
+            </ul>
+          </li>
+          <li>
+            Dynamic content:
+            <ul>
+              <li>Changing the content of the grid items at runtime.</li>
+              <li>
+                Interactive content <code>contentEditable</code>,
+                <code>designMode</code> and input elements [[!html5]].
+              </li>
+            </ul>
+          </li>
+          <li>Writing modes [[!css3-writing-modes]].</li>
+          <li>Transforms [[!css3-transforms]].</li>
+          <li>
+            Transitions [[!css3-transitions]] and animations
+            [[!css3-animations]].
+          </li>
+          <li>Pseudo-elements in grid items [[!CSS21]].</li>
+        </ul>
+      </section>
+    </section>
+    <section>
+      <h2>People and responsibilities</h2>
+      <p>
+        Below is a list of people you should reach out to if you have any
+        questions related to this document or testing CSS Grid Layout in
+        general:
+      </p>
+      <ul>
+        <li>Manuel Rego &ndash; Test Coordinator for CSS Grid Layout</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Test progress tracking</h2>
+      <p>
+        Currently test progress tracking is done via GitHub
+        <a href="https://github.com/w3c/csswg-test/issues?labels=spec%3Agrid&amp;milestone=&amp;page=1&amp;state=open">
+        milestones and issues</a>.
+        <!--
+          FIXME: This link doesn't work yet.
+          TODO:
+          * Label "spec:grid" has to be created
+            (https://github.com/w3c/csswg-test/labels)
+          * Milestone "css-grid-1_dev" has to be created
+            https://github.com/w3c/csswg-test/milestones
+          * Once issues are created, add references from the different
+            sections.
+        -->
+      </p>
+    </section>
+  </body>
+</html>

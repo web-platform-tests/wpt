@@ -51,10 +51,10 @@ function compare_Object(callback, callback_is_async) {
   }
 }
 
-function enumerate_props(compare_func) {
+function enumerate_props(compare_func, test_obj) {
   return function(actual, input) {
     for (var x in input) {
-      compare_func(actual[x], input[x]);
+      compare_func(actual[x], input[x], test_obj);
     }
   };
 }
@@ -339,41 +339,41 @@ function func_Blob_NUL() {
 check('Blob NUL', func_Blob_NUL, compare_Blob);
 
 async_test(function(test_obj) {
-  check(test_obj.name, [test_obj.step(func_Blob_basic)], compare_Array(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, [test_obj.step(func_Blob_basic)], compare_Array(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Array Blob object, Blob basic');
 async_test(function(test_obj) {
-  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xD800]))], compare_Array(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xD800]))], compare_Array(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Array Blob object, Blob unpaired high surrogate (invalid utf-8)');
 async_test(function(test_obj) {
-  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xDC00]))], compare_Array(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xDC00]))], compare_Array(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Array Blob object, Blob unpaired low surrogate (invalid utf-8)');
 async_test(function(test_obj) {
-  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xD800, 0xDC00]))], compare_Array(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, [test_obj.step(func_Blob_bytes([0xD800, 0xDC00]))], compare_Array(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Array Blob object, Blob paired surrogates (invalid utf-8)');
 async_test(function(test_obj) {
-  check(test_obj.name, [test_obj.step(func_Blob_empty)], compare_Array(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, [test_obj.step(func_Blob_empty)], compare_Array(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Array Blob object, Blob empty');
 async_test(function(test_obj) {
-  check(test_obj.name, [test_obj.step(func_Blob_NUL)], compare_Array(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, [test_obj.step(func_Blob_NUL)], compare_Array(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Array Blob object, Blob NUL');
 
 async_test(function(test_obj) {
-  check(test_obj.name, {'x':test_obj.step(func_Blob_basic)}, compare_Object(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, {'x':test_obj.step(func_Blob_basic)}, compare_Object(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Object Blob object, Blob basic');
 async_test(function(test_obj) {
-  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xD800]))}, compare_Object(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xD800]))}, compare_Object(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Object Blob object, Blob unpaired high surrogate (invalid utf-8)');
 async_test(function(test_obj) {
-  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xDC00]))}, compare_Object(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xDC00]))}, compare_Object(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Object Blob object, Blob unpaired low surrogate (invalid utf-8)');
 async_test(function(test_obj) {
-  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xD800, 0xDC00]))}, compare_Object(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, {'x':test_obj.step(func_Blob_bytes([0xD800, 0xDC00]))}, compare_Object(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Object Blob object, Blob paired surrogates (invalid utf-8)');
 async_test(function(test_obj) {
-  check(test_obj.name, {'x':test_obj.step(func_Blob_empty)}, compare_Object(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, {'x':test_obj.step(func_Blob_empty)}, compare_Object(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Object Blob object, Blob empty');
 async_test(function(test_obj) {
-  check(test_obj.name, {'x':test_obj.step(func_Blob_NUL)}, compare_Object(enumerate_props(compare_Blob), true), test_obj);
+  check(test_obj.name, {'x':test_obj.step(func_Blob_NUL)}, compare_Object(enumerate_props(compare_Blob, test_obj), true), test_obj);
 }, 'Object Blob object, Blob NUL');
 
 function compare_File(actual, input, test_obj) {

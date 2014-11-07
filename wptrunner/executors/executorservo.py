@@ -33,7 +33,8 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
 
 
         self.proc = ProcessHandler(self.command,
-                                   processOutputLine=[self.on_output])
+                                   processOutputLine=[self.on_output],
+                                   onFinish=self.on_finish)
         self.proc.run()
 
         timeout = test.timeout * self.timeout_multiplier
@@ -67,3 +68,6 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
                 self.logger.process_output(self.proc.pid,
                                            line,
                                            " ".join(self.command))
+
+    def on_finish(self):
+        self.result_flag.set()

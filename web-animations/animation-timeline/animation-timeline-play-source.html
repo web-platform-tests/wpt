@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test source attribute of AnimationPlayer created by AnimationTimeline.play()</title>
+<meta name="assert" content="The source attribute of the created AnimationPlayer is set to source parameter value">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationTimeline-play-AnimationPlayer-AnimationNode-source">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+
+    assert_equals(player.source, animation, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+}, 'Test that the source attribute of the created AnimationPlayer is set to source ' +
+    'parameter value');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.source, null, 'The source attribute of the created ' +
+        'AnimationPlayer should be null if source parameter value is null');
+}, 'Test that the source attribute of the created AnimationPlayer is null if source ' +
+    'parameter value is null');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_equals(player.source, null, 'The source attribute of the created ' +
+        'AnimationPlayer should be null if source parameter value is not specified');
+}, 'Test that the source attribute of the created AnimationPlayer is null if source ' +
+    'parameter value is not specified');
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player1 = document.timeline.play(animation);
+
+    assert_equals(player1.source, animation, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+    assert_equals(animation.player, player1, 'The AnimationNode object, specified ' +
+        'by source parameter should be associated with AnimationPlayer');
+
+    var player2 = document.timeline.play(animation);
+    assert_equals(player1.source, null, 'The AnimationNode object, specified ' +
+        'by source parameter should be disassociated with old AnimationPlayer');
+    assert_equals(animation.player, player2, 'The AnimationNode object, specified ' +
+        'by source parameter should be associated with new AnimationPlayer');
+    assert_equals(player2.source, animation, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+}, 'Test the AnimationNode object, specified by source parameter, is disassociated first ' +
+    'before being associated with the new AnimationPlayer');
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var animationGroup = new AnimationGroup([animation]);
+    var player = document.timeline.play(animation);
+
+    assert_equals(player.source, animation, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+    assert_equals(animation.player, player, 'The AnimationNode object, specified ' +
+        'by source parameter should be associated with AnimationPlayer');
+
+    assert_equals(animation.parent, null, 'The AnimationNode object, specified ' +
+        'by source parameter should be removed from its parent group');
+    assert_array_equals(animationGroup.children, [], 'The AnimationNode object, specified ' +
+        'by source parameter should be removed from its parent group');
+}, 'Test the AnimationNode object, specified by source parameter, is removed from ' +
+    'its parent group');
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var animationGroup1 = new AnimationGroup([animation]);
+    var animationGroup2 = new AnimationGroup([animationGroup1]);
+    var player = document.timeline.play(animationGroup1);
+
+    assert_equals(player.source, animationGroup1, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+    assert_equals(animationGroup1.player, player, 'The AnimationNode object, specified ' +
+        'by source parameter should be associated with AnimationPlayer');
+
+    assert_equals(animationGroup1.parent, null, 'The AnimationNode object, specified ' +
+        'by source parameter should be removed from its parent group');
+    assert_array_equals(animationGroup2.children, [], 'The AnimationNode object, specified ' +
+        'by source parameter should be removed from its parent group');
+}, 'Test the AnimationGroup object, specified by source parameter, is removed from ' +
+    'the parent group');
+</script>
+</body>

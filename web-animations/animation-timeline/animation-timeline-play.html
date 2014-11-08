@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>AnimationTimeline.play() method tests</title>
+<meta name="assert" content="AnimationTimeline.play() method creates a new AnimationPlayer object">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-animationtimeline-interface">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+
+    assert_not_equals(player, null, 'Player created by AnimationTimeline.play() ' +
+        'method should be not null');
+}, 'Player created by AnimationTimeline.play() method is not null');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_not_equals(player, null, 'Player created by AnimationTimeline.play(null) ' +
+        'method should be not null');
+}, 'Player created by AnimationTimeline.play(null) method is not null');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_not_equals(player, null, 'Player created by AnimationTimeline.play() ' +
+        'method without arguments should not be null');
+}, 'Player created by AnimationTimeline.play() method without arguments arguments is not null');
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+
+    assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
+        'AnimationTimeline.play() method should be AnimationPlayer object instance');
+}, 'Test AnimationTimeline.play() method creates a new AnimationPlayer object instance');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
+        'AnimationTimeline.play(null) method should be AnimationPlayer object instance');
+}, 'Test AnimationTimeline.play(null) method creates a new AnimationPlayer object instance');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
+        'AnimationTimeline.play() method without arguments ' +
+        'should be AnimationPlayer object instance');
+}, 'Test AnimationTimeline.play() method without arguments creates ' +
+    'a new AnimationPlayer object instance');
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var animationGroup = new AnimationGroup([animation]);
+    var player = document.timeline.play(animationGroup);
+
+    assert_equals(player.source, animationGroup, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+    assert_equals(animationGroup.player, player, 'The AnimationNode object, specified ' +
+        'by source parameter should be associated with AnimationPlayer');
+    assert_equals(animation.player, player, 'Child AnimationNode of the object, specified ' +
+        'by source parameter should be associated with AnimationPlayer');
+}, 'Test the Child AnimationNode of the object, specified by source parameter, ' +
+    'is associated with the player');
+
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var animationGroup1 = new AnimationGroup([animation]);
+    var animationGroup2 = new AnimationGroup([animationGroup1]);
+    var player = document.timeline.play(animationGroup2);
+
+    assert_equals(player.source, animationGroup2, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+    assert_equals(animationGroup2.player, player, 'The AnimationNode object, specified ' +
+        'by source parameter should be associated with AnimationPlayer');
+    assert_equals(animationGroup1.player, player, 'The AnimationNode object, specified ' +
+        'by source parameter should be associated with AnimationPlayer');
+    assert_equals(animation.player, player, 'Child AnimationNode of the object, specified ' +
+        'by source parameter should be associated with AnimationPlayer');
+}, 'Test the Child AnimationGroup of the object, specified by source parameter, ' +
+    'is associated with the player');
+</script>
+</body>

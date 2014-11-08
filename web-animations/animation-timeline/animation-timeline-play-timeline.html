@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test timeline attribute of AnimationPlayer created by AnimationTimeline.play()</title>
+<meta name="assert" content="AnimationPlayer object created by AnimationTimeline.play() method is associated with this timeline">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationTimeline-play-AnimationPlayer-AnimationNode-source">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+
+    assert_equals(player.timeline, document.timeline,
+        'The timeline attribute of the newly-created AnimationPlayer object ' +
+        'should be set to this timeline object');
+}, 'The timeline attribute of the newly-created AnimationPlayer object ' +
+    'should be set to this timeline object');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.timeline, document.timeline,
+        'The timeline attribute of the newly-created AnimationPlayer object ' +
+        'should be set to this timeline object');
+}, 'The timeline attribute of the newly-created AnimationPlayer object ' +
+    'should be set to this timeline object. Test player with null source content');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_equals(player.timeline, document.timeline,
+        'The timeline attribute of the newly-created AnimationPlayer object ' +
+        'should be set to this timeline object');
+}, 'The timeline attribute of the newly-created AnimationPlayer object ' +
+    'should be set to this timeline object. Test player with no source content');
+</script>
+</body>

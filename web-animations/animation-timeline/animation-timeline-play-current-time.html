@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test currentTime attribute of AnimationPlayer created by AnimationTimeline.play()</title>
+<meta name="assert" content="AnimationTimeline.play() creates AnimationPlayer object with attribute currentTime calculated as described in 'The current time of a player' section">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#widl-AnimationTimeline-play-AnimationPlayer-AnimationNode-source">
+<link rel="help" href="http://dev.w3.org/fxtf/web-animations/#the-current-time-of-a-player">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var animation = newAnimation(createDiv(this));
+    var player = document.timeline.play(animation);
+
+    assert_equals(player.currentTime, 0, 'Current time of the newly-created ' +
+        'AnimationPlayer object should be 0');
+}, 'Test currentTime attribute of newly-created AnimationPlayer object');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.currentTime, 0, 'Current time of the newly-created ' +
+        'AnimationPlayer object should be 0');
+}, 'Test currentTime attribute of newly-created AnimationPlayer object with null source');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_equals(player.currentTime, 0, 'Current time of the newly-created ' +
+        'AnimationPlayer object should be 0');
+}, 'Test currentTime attribute of newly-created AnimationPlayer without source parameter');
+</script>
+</body>

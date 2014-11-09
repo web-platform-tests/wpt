@@ -426,6 +426,8 @@ IdlArray.prototype.assert_type_is = function(value, type)
             return;
 
         case "DOMString":
+        case "ByteString":
+        case "USVString":
             assert_equals(typeof value, "string");
             return;
 

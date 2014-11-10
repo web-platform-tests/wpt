@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Animation node computedTiming attribute test</title>
+<meta name="assert" content="Returns the calculated timing properties for this animation node">
+<link rel="help" href="http://w3c.github.io/web-animations/#dom-animationnode-computedtiming">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var nodes = [new Animation(createDiv(this), []), new AnimationGroup([]),
+        new AnimationSequence([])];
+
+    nodes.forEach(function(node) {
+        assert_equals(node.computedTiming.delay, 0, 'Default value of ' +
+            type(node) + '.computedTiming.delay should be 0');
+        assert_equals(node.computedTiming.endDelay, 0, 'Default value of ' +
+            type(node) + '.computedTiming.endDelay should be 0');
+        assert_equals(node.computedTiming.iterationStart, 0, 'Default value of ' +
+            type(node) + '.computedTiming.iterationStart should be 0.0');
+        assert_equals(node.computedTiming.iterations, 1, 'Default value of ' +
+            type(node) + '.computedTiming.iterations should be 1.0');
+        assert_equals(node.computedTiming.playbackRate, 1, 'Default value of ' +
+            type(node) + '.computedTiming.playbackRate should be 1.0');
+        assert_equals(node.computedTiming.direction, 'normal', 'Default value of ' +
+            type(node) + '.computedTiming.direction should be \'normal\'');
+        assert_equals(node.computedTiming.easing, 'linear', 'Default value of ' +
+            type(node) + '.computedTiming.easing should be \'linear\'');
+    });
+
+}, 'Test AnimationNode.computedTiming calculated timing properties ' +
+    'for node with default timing values');
+
+test(function() {
+    var timing = {delay: 1,
+        endDelay: 1,
+        fill: 'none',
+        iterationStart: 1.1,
+        iterations: 2.0,
+        duration: 3,
+        playbackRate: -2,
+        playbackDirection: 'reverse',
+        direction: 'reverse',
+        easing: 'ease'};
+    var nodes = [new Animation(createDiv(this), [], timing), new AnimationGroup([], timing),
+        new AnimationSequence([], timing)];
+    nodes.forEach(function(node) {
+        assert_equals(node.computedTiming.delay, timing.delay, 'Value of ' +
+            type(node) + '.computedTiming.delay should be specified by AnimationTimingInput');
+        assert_equals(node.computedTiming.endDelay, timing.endDelay, 'Value of ' +
+            type(node) + '.computedTiming.endDelay should be specified by AnimationTimingInput');
+        assert_equals(node.computedTiming.fill, timing.fill, 'Value of ' +
+            type(node) + '.computedTiming.fill should be specified by AnimationTimingInput');
+        assert_equals(node.computedTiming.iterationStart, timing.iterationStart, 'Value of ' +
+            type(node) + '.computedTiming.iterationStart should be specified by AnimationTimingInput');
+        assert_equals(node.computedTiming.iterations, timing.iterations, 'Value of ' +
+            type(node) + '.computedTiming.iterations should be specified by AnimationTimingInput');
+        assert_equals(node.computedTiming.duration, timing.duration, 'Value of ' +
+            type(node) + '.computedTiming.duration should be specified by AnimationTimingInput');
+        assert_equals(node.computedTiming.playbackRate, timing.playbackRate, 'Value of ' +
+            type(node) + '.computedTiming.playbackRate should be specified by AnimationTimingInput');
+        assert_equals(node.computedTiming.direction, timing.direction, 'Value of ' +
+            type(node) + '.computedTiming.direction should be specified by AnimationTimingInput');
+        assert_equals(node.computedTiming.easing, timing.easing, 'Value of ' +
+            type(node) + '.computedTiming.easing should be specified by AnimationTimingInput');
+    });
+}, 'AnimationNode.computedTiming returns calculated input timing properties ' +
+    'for node with non default timing values');
+
+test(function() {
+    var timing = {easing: 'unsupported value'};
+    var nodes = [new Animation(createDiv(this), [], timing), new AnimationGroup([], timing),
+        new AnimationSequence([], timing)];
+    nodes.forEach(function(node) {
+        assert_equals(node.computedTiming.easing, 'linear', 'Unsupported value of ' +
+            type(node) + '.computedTiming.easing should be replaced by \'linear\'');
+    });
+}, 'Test AnimationNode.computedTiming.easing is equal to \'linear\' for nodes ' +
+    'with unsupported timing.easing value');
+</script>
+</body>

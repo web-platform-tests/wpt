@@ -332,3 +332,6 @@ http://\uff10\uff38\uff43\uff10\uff0e\uff10\uff12\uff15\uff10\uff0e\uff10\uff11 
 
 # Broken IPv6
 http://[google.com]
+
+# Misc Unicode
+http://foo:\uD83D\uDCA9@example.com/bar  s:http h:example.com p:/bar u:foo pass:%F0%9F%92%A9

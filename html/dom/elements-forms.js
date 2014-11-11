@@ -51,7 +51,7 @@ var formElements = {
 		placeholder: "string",
 		readOnly: "boolean",
 		required: "boolean",
-		// http://www.whatwg.org/html/#attr-input-size
+		// https://html.spec.whatwg.org/multipage/#attr-input-size
 		size: {type: "limited unsigned long", defaultVal: 20},
 		src: "url",
 		step: "string",

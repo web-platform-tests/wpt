@@ -115,7 +115,7 @@ function poll_for_stylesheet_load(expected_entry) {
     function inner() {
         for(var i=0; i<document.styleSheets.length; i++) {
             var sheet = document.styleSheets[i];
-            if (sheet.href === expected_entry.name) {
+            if (sheet.href === expected_entry.name && sheet.cssRules.length > 0) {
                 setTimeout(function() {
                     resource_load(expected_entry);
                 }, 200);

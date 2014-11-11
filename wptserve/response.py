@@ -8,10 +8,9 @@ import uuid
 import socket
 
 from constants import response_codes
+from logger import get_logger
 
-logger = logging.getLogger("wptserve")
 missing = object()
-
 
 class Response(object):
     """Object representing the response to a HTTP request
@@ -76,6 +75,8 @@ class Response(object):
         self._status = (200, None)
         self.headers = ResponseHeaders()
         self.content = []
+
+        self.logger = get_logger()
 
     @property
     def status(self):
@@ -213,7 +214,7 @@ class Response(object):
                         ("Content-Length", len(data))]
         self.content = data
         if code == 500:
-            logger.error(message)
+            self.logger.error(message)
 
 
 class MultipartContent(object):

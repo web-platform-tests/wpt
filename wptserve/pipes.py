@@ -7,8 +7,6 @@ import types
 import uuid
 from cStringIO import StringIO
 
-logger = logging.getLogger("wptserve")
-
 
 def resolve_content(response):
     rv = "".join(item for item in response.iter_content())

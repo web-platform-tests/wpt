@@ -10,7 +10,6 @@ import urlparse
 import stash
 from utils import HTTPException
 
-logger = logging.getLogger("wptserve")
 missing = object()
 
 

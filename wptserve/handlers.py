@@ -13,8 +13,6 @@ from request import Authentication
 from response import MultipartContent
 from utils import HTTPException
 
-logger = logging.getLogger("wptserve")
-
 __all__ = ["file_handler", "python_script_handler",
            "FunctionHandler", "handler", "json_handler",
            "as_is_handler", "ErrorHandler", "BasicAuthHandler"]

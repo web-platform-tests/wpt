@@ -3,8 +3,9 @@
 <title>XMLHttpRequest: passing objects that interfere with the XHR instance to send()</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-send()-method" data-tested-assertations="following::ul/li[4]" />
-<!-- TODO: stuff from the "extreme corner case" section, hard to find good references to spec text here -->
+<link rel="help" href="https://xhr.spec.whatwg.org/#the-send()-method" data-tested-assertations="following::ol/li[4]" />
+<link rel="help" href="https://heycam.github.io/webidl/#es-union" data-tested-assertations="following::ol/li[16]" />
+
 
 <div id="log"></div>
 
@@ -32,7 +33,7 @@
       assert_equals(client.statusText, 'second_open_wins')
       test2.done()
     })
-    client.open('POST', 'resources/content.py')
+    client.open('POST', 'resources/status.py?text=first_open_wins')
     client.send(objOpensOnStringification)
   });
 

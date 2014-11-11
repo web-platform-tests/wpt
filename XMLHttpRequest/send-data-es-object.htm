@@ -18,10 +18,10 @@
         test.done()
       });
       client.open('POST', 'resources/content.py')
-      if(expected.exception){
+      if (expected.exception) {
         assert_throws(expected.exception, function(){client.send(obj)})
         test.done()
-      }else{
+      } else {
         client.send(obj)
       }
     });
@@ -34,8 +34,8 @@
   do_test({toString:function(){return null}}, 'null', 'sending object that stringifies to null')
   var ancestor = {toString: function(){
     var ar=[]
-    for(var prop in this){
-      if(this.hasOwnProperty(prop)){
+    for (var prop in this) {
+      if (this.hasOwnProperty(prop)) {
         ar.push(prop+'='+this[prop])
       }
     };

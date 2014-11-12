@@ -169,7 +169,6 @@
            name = encoding.name
        frame.src = "resources/single-byte-raw.py?label=" + label
        frame.onload = function() {
-         var frame = this
          t.step(function() {
            assert_equals(frame.contentDocument.characterSet, name)
          })

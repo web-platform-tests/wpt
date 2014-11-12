@@ -8,13 +8,11 @@
    test(function() {
      var a = document.createElement("a") // <a> uses document encoding for URL's query
      a.href = "https://example.com/?" + input
-     var res = a.search.substr(1) // remove leading "?"
-     res = res.split("%1B").join("\x1B") // cannot use decodeURI since per https://url.spec.whatwg.org/#query-state % is not escaped
-     assert_equals(res, output)
+     assert_equals(a.search.substr(1), output) // remove leading "?"
    }, "iso-2022-jp encoder: " + desc)
  }
 
  encode("s", "s", "very basic")
- encode("\u00A5\u203Es\\\uFF90\u4F69", "\x1B(J\\~s\x1B(B\\\x1B$B%_PP\x1B(B", "basics")
+ encode("\u00A5\u203Es\\\uFF90\u4F69", "%1B(J\\~s%1B(B\\%1B$B%_PP%1B(B", "basics")
  encode("\x0E\x0F\x1Bx", "%0E%0F%1Bx", "SO/SI ESC")
 </script>

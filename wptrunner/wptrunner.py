@@ -18,7 +18,8 @@ from StringIO import StringIO
 
 from multiprocessing import Queue
 
-from mozlog.structured import commandline, stdadapter, get_default_logger, structuredlog, handlers, formatters
+from mozlog.structured import (commandline, stdadapter, get_default_logger,
+                               structuredlog, handlers, formatters)
 
 import products
 import testloader

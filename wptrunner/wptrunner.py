@@ -18,7 +18,8 @@ from StringIO import StringIO
 
 from multiprocessing import Queue
 
-from mozlog.structured import commandline, stdadapter
+from mozlog.structured import (commandline, stdadapter, get_default_logger,
+                               structuredlog, handlers, formatters)
 
 import products
 import testloader
@@ -108,11 +109,10 @@ class TestEnvironment(object):
 
     def __enter__(self):
         self.copy_required_files()
+        self.setup_server_logging()
         self.setup_routes()
         self.config = self.load_config()
         serve.set_computed_defaults(self.config)
-
-        serve.logger = serve.default_logger("info")
         self.external_config, self.servers = serve.start(self.config)
         return self
 
@@ -139,6 +139,18 @@ class TestEnvironment(object):
         config["doc_root"] = self.serve_path
 
         return config
+
+    def setup_server_logging(self):
+        server_logger = get_default_logger("serve")
+        assert server_logger is not None
+        handler = handlers.StreamHandler(open("server.log", "w"),
+                                         formatters.MachFormatter(disable_colors=True))
+        handler = handlers.LogLevelFilter(handler, "info")
+        server_logger.add_handler(handler)
+
+        serve.logger = server_logger
+        #Set as the default logger for wptserve
+        serve.set_logger(server_logger)
 
     def setup_routes(self):
         for url, paths in self.test_paths.iteritems():

@@ -105,6 +105,7 @@ class RequestRewriter(object):
 class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
     allow_reuse_address = True
     acceptable_errors = (errno.EPIPE, errno.ECONNABORTED)
+    request_queue_size = 2000
 
     # Ensure that we don't hang on shutdown waiting for requests
     daemon_threads = True

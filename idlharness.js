@@ -428,6 +428,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
         case "DOMString":
         case "ByteString":
         case "USVString":
+            // TODO: https://github.com/w3c/testharness.js/issues/92
             assert_equals(typeof value, "string");
             return;
 

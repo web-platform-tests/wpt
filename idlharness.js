@@ -1801,6 +1801,8 @@ function create_suitable_object(type)
             return 7;
 
         case "DOMString":
+        case "ByteString":
+        case "USVString":
             return "foo";
 
         case "object":

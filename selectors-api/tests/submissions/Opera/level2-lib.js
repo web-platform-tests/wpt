@@ -74,14 +74,6 @@ function interfaceCheckMatches(type, obj) {
 }
 
 /*
- * Check that the find, findAll and matches() methods exist on the given Node
- */
-function interfaceCheck(type, obj) {
-  interfaceCheckFind(type, obj);
-  interfaceCheckMatches(type, obj);
-}
-
-/*
  * Verify that the NodeList returned by findAll is static and and that a new list is created after
  * each call. A static list should not be affected by subsequent changes to the DOM.
  */
@@ -384,15 +376,6 @@ function runInvalidSelectorTestMatches(type, root, selectors) {
       }, type + ".matches: " + n + ": " + q);
     }
   }
-}
-
-/*
- * Execute queries with the specified invalid selectors for find(), findAll() and matches()
- * Only run these tests when errors are expected. Don't run for valid selector tests.
- */
-function runInvalidSelectorTest(type, root, selectors) {
-  runInvalidSelectorTestFind(type, root, selectors);
-  runInvalidSelectorTestMatches(type, root, selectors);
 }
 
 function runMatchesTest(type, root, selectors, testType, docType) {

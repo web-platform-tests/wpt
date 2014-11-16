@@ -50,12 +50,11 @@ function setupSpecialElements(parent) {
 function traverse(elem, fn) {
   if (elem.nodeType === elem.ELEMENT_NODE) {
     fn(elem);
-
-    elem = elem.firstChild;
-    while (elem) {
-      traverse(elem, fn);
-      elem = elem.nextSibling;
-    }
+  }
+  elem = elem.firstChild;
+  while (elem) {
+    traverse(elem, fn);
+    elem = elem.nextSibling;
   }
 }
 

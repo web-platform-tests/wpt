@@ -346,7 +346,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
  * Execute queries with the specified invalid selectors for both find() and findAll()
  * Only run these tests when errors are expected. Don't run for valid selector tests.
  */
-function runInvalidSelectorTest(type, root, selectors) {
+function runInvalidSelectorTestFind(type, root, selectors) {
   for (var i = 0; i < selectors.length; i++) {
     var s = selectors[i];
     var n = s["name"];
@@ -363,8 +363,20 @@ function runInvalidSelectorTest(type, root, selectors) {
         root.findAll(q)
       })
     }, type + ".findAll: " + n + ": " + q);
+  }
+}
 
-    if (root.nodeType === root.ELEMENT_NODE) {
+/*
+ * Execute queries with the specified invalid selectors for matches()
+ * Only run these tests when errors are expected. Don't run for valid selector tests.
+ */
+function runInvalidSelectorTestMatches(type, root, selectors) {
+  if (root.nodeType === root.ELEMENT_NODE) {
+    for (var i = 0; i < selectors.length; i++) {
+      var s = selectors[i];
+      var n = s["name"];
+      var q = s["selector"];
+
       test(function() {
         assert_throws("SyntaxError", function() {
           root.matches(q)
@@ -372,6 +384,15 @@ function runInvalidSelectorTest(type, root, selectors) {
       }, type + ".matches: " + n + ": " + q);
     }
   }
+}
+
+/*
+ * Execute queries with the specified invalid selectors for find(), findAll() and matches()
+ * Only run these tests when errors are expected. Don't run for valid selector tests.
+ */
+function runInvalidSelectorTest(type, root, selectors) {
+  runInvalidSelectorTestFind(type, root, selectors);
+  runInvalidSelectorTestMatches(type, root, selectors);
 }
 
 function runMatchesTest(type, root, selectors, testType, docType) {

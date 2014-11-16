@@ -11,7 +11,6 @@
 <div id="log">This test requires JavaScript.</div>
 
 <script>
-var testType = TEST_FIND;
 var docType  = "html"; // Only run tests suitable for HTML
 
 var frame = document.createElement("iframe"),
@@ -64,10 +63,10 @@ function init() {
   fragment.appendChild(element.cloneNode(true));
 
   // Setup Tests
-  interfaceCheckFind("Document", doc, testType);
-  interfaceCheckFind("Detached Element", detached, testType);
-  interfaceCheckFind("Fragment", fragment, testType);
-  interfaceCheckFind("In-document Element", element, testType);
+  interfaceCheckFind("Document", doc);
+  interfaceCheckFind("Detached Element", detached);
+  interfaceCheckFind("Fragment", fragment);
+  interfaceCheckFind("In-document Element", element);
 
   runSpecialSelectorTests("Document", doc);
   runSpecialSelectorTests("Detached Element", detached);
@@ -84,6 +83,6 @@ function init() {
   runInvalidSelectorTestFind("Fragment", fragment, invalidSelectors);
   runInvalidSelectorTestFind("In-document Element", element, invalidSelectors);
 
-  runValidSelectorTest("In-document", doc, scopedSelectors, testType, "html");
+  runValidSelectorTest("In-document", doc, scopedSelectors, "html");
 }
 </script>

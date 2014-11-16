@@ -11,7 +11,6 @@
 <div id="log">This test requires JavaScript.</div>
 
 <script>
-var testType = TEST_MATCH;
 var docType  = "html"; // Only run tests suitable for HTML
 
 var frame = document.createElement("iframe"),
@@ -64,10 +63,10 @@ function init() {
   fragment.appendChild(element.cloneNode(true));
 
   // Setup Tests
-  interfaceCheckMatches("Document", doc, testType);
-  interfaceCheckMatches("Detached Element", detached, testType);
-  interfaceCheckMatches("Fragment", fragment, testType);
-  interfaceCheckMatches("In-document Element", element, testType);
+  interfaceCheckMatches("Document", doc);
+  interfaceCheckMatches("Detached Element", detached);
+  interfaceCheckMatches("Fragment", fragment);
+  interfaceCheckMatches("In-document Element", element);
 
   runSpecialMatchesTests("DIV Element", element);
   runSpecialMatchesTests("NULL Element", document.createElement("null"));
@@ -78,10 +77,10 @@ function init() {
   runInvalidSelectorTestMatches("Fragment", fragment, invalidSelectors);
   runInvalidSelectorTestMatches("In-document Element", element, invalidSelectors);
 
-  runMatchesTest("In-document", doc, validSelectors, testType, "html");
-  runMatchesTest("Detached", detached, validSelectors, testType, "html");
-  runMatchesTest("Fragment", fragment, validSelectors, testType, "html");
+  runMatchesTest("In-document", doc, validSelectors, "html");
+  runMatchesTest("Detached", detached, validSelectors, "html");
+  runMatchesTest("Fragment", fragment, validSelectors, "html");
 
-  runMatchesTest("In-document", doc, scopedSelectors, testType, "html");
+  runMatchesTest("In-document", doc, scopedSelectors, "html");
 }
 </script>

@@ -172,24 +172,15 @@ function runSpecialMatchesTests(type, element) {
  * Execute queries with the specified valid selectors for both find() and findAll()
  * Only run these tests when results are expected. Don't run for syntax error tests.
  *
- * Where testType is TEST_FIND_BASELINE or TEST_FIND_ADDITIONAL:
- *
  * context.findAll(selector, refNodes)
  * context.findAll(selector)        // Only if refNodes is not specified
  * root.findAll(selector, context)  // Only if refNodes is not specified
  * root.findAll(selector, refNodes) // Only if context is not specified
  * root.findAll(selector)           // Only if neither context nor refNodes is specified
  *
- * Where testType is TEST_QSA_BASELINE or TEST_QSA_ADDITIONAL
- *
- * context.querySelectorAll(selector) // Only if refNodes is not specified
- * root.querySelectorAll(selector)    // Only if neither context nor refNodes is specified
- *
  * Equivalent tests will be run for .find() as well.
- * Note: Do not specify a testType of TEST_QSA_* where either implied :scope or explicit refNodes
- * are required.
  */
-function runValidSelectorTest(type, root, selectors, testType, docType) {
+function runValidSelectorTest(type, root, selectors, docType) {
   var nodeType = getNodeType(root);
 
   for (var i = 0; i < selectors.length; i++) {
@@ -205,7 +196,7 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
       //console.log("Running tests " + nodeType + ": " + s["testType"] + "&" + testType + "=" + (s["testType"] & testType) + ": " + JSON.stringify(s))
       var foundall, found, context, refNodes, refArray;
 
-      if (s["testType"] & testType & (TEST_FIND)) {
+      if (s["testType"] & TEST_FIND) {
 
 
         /*
@@ -318,16 +309,6 @@ function runValidSelectorTest(type, root, selectors, testType, docType) {
           }, type + ".find: " + n + " (with no refNodes): " + q);
         }
       }
-
-      if (s["testType"] & testType & (TEST_QSA)) {
-        if (ctx && !ref) {
-           // context.querySelectorAll(selector) // Only if refNodes is not specified
-        }
-
-        if (!ctx && !ref) {
-          // root.querySelectorAll(selector)    // Only if neither context nor refNodes is specified
-        }
-      }
     } else {
       //console.log("Excluding for " + nodeType + ": " + s["testType"] + "&" + testType + "=" + (s["testType"] & testType) + ": " + JSON.stringify(s))
     }
@@ -378,7 +359,7 @@ function runInvalidSelectorTestMatches(type, root, selectors) {
   }
 }
 
-function runMatchesTest(type, root, selectors, testType, docType) {
+function runMatchesTest(type, root, selectors, docType) {
   var nodeType = getNodeType(root);
 
   for (var i = 0; i < selectors.length; i++) {
@@ -392,7 +373,7 @@ function runMatchesTest(type, root, selectors, testType, docType) {
     var ref = s["ref"];
 
     if ((!s["exclude"] || (s["exclude"].indexOf(nodeType) === -1 && s["exclude"].indexOf(docType) === -1))
-     && (s["testType"] & testType & (TEST_MATCH)) ) {
+     && (s["testType"] & TEST_MATCH) ) {
 
       if (ctx && !ref) {
         test(function() {

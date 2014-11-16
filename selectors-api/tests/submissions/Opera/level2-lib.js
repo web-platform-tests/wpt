@@ -48,9 +48,9 @@ function setupSpecialElements(parent) {
 }
 
 /*
- * Check that the find, findAll and matches() methods exist on the given Node
+ * Check that the find and findAll methods exist on the given Node
  */
-function interfaceCheck(type, obj) {
+function interfaceCheckFind(type, obj) {
   test(function() {
     var q = typeof obj.find === "function";
     assert_true(q, type + " supports find.");
@@ -60,12 +60,25 @@ function interfaceCheck(type, obj) {
     var qa = typeof obj.findAll === "function";
     assert_true( qa, type + " supports findAll.");
   }, type + " supports findAll")
+}
 
+/*
+ * Check that the matches() method exists on the given Node
+ */
+function interfaceCheckMatches(type, obj) {
   if (obj.nodeType === obj.ELEMENT_NODE) {
     test(function() {
       assert_idl_attribute(obj, "matches", type + " supports matches");
     }, type + " supports matches")
   }
+}
+
+/*
+ * Check that the find, findAll and matches() methods exist on the given Node
+ */
+function interfaceCheck(type, obj) {
+  interfaceCheckFind(type, obj);
+  interfaceCheckMatches(type, obj);
 }
 
 /*

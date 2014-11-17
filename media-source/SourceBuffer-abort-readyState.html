@@ -49,7 +49,7 @@ function mediaTest(file, mime) {
                 sourceBuffer = mediaSource.addSourceBuffer(mime);
                 mediaSource.endOfStream();
             });
-            mediaSource.addEventListener('sourceclose', function(e) {
+            mediaSource.addEventListener('sourceended', function(e) {
                 assert_throws({name: 'InvalidStateError'}, function() {
                     sourceBuffer.abort();
                 });

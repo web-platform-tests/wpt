@@ -10,7 +10,6 @@
 <div id="log"></div>
 
 <script>
-var video = document.createElement('video');
 var contents = {'/media/white.webm': 'video/webm; codecs="vorbis,vp8"',
                 '/media/white.mp4' : 'video/mp4'};
 
@@ -56,6 +55,7 @@ function mediaTest(file, mime) {
                 });
                 t.done();
             });
+            var video = document.createElement('video');
             video.src = window.URL.createObjectURL(mediaSource);
         });
     }, 'SourceBuffer#abort() (' + mime + ') : If the readyState attribute ' +

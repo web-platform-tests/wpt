@@ -10,7 +10,6 @@
 <div id="log"></div>
 
 <script>
-var video = document.createElement('video');
 var mimes = ['video/webm; codecs="vorbis,vp8"', 'video/mp4'];
 
 //check the browser supports the MIME used in this test
@@ -42,6 +41,7 @@ function mediaTest(mime) {
             });
             t.done();
         }, false);
+        var video = document.createElement('video');
         video.src = window.URL.createObjectURL(mediaSource);
     }, 'SourceBuffer#abort (' + mime + ') : ' +
        'if this object has been removed from the sourceBuffers attribute of the parent media source, ' +

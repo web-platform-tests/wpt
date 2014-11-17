@@ -46,23 +46,19 @@ function mediaTest(file, mime) {
             var mediaSource = new MediaSource();
             var num_updateend = 0;
             var events = [];
-            mediaSource.addEventListener('sourceopen', function(e) {
+            mediaSource.addEventListener('sourceopen', t.step_func(function(e) {
                 var sourceBuffer = mediaSource.addSourceBuffer(mime);
-                t.step(function() {
-                    assert_equals(sourceBuffer.updating, false);
-                });
-                sourceBuffer.addEventListener('updatestart', function(e) {
+                assert_equals(sourceBuffer.updating, false);
+                sourceBuffer.addEventListener('updatestart', t.step_func(function(e) {
                     events.push('updatestart');
                     //abort when sourceBuffer#updating is true
                     sourceBuffer.abort();
 
-                    t.step(function() {
-                        assert_equals(sourceBuffer.updating, false,
-                                      'Check updating value after calling abort.');
-                        assert_equals(sourceBuffer.appendWindowStart, 0);
-                        assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY);
-                    });
-                });
+                    assert_equals(sourceBuffer.updating, false,
+                                  'Check updating value after calling abort.');
+                    assert_equals(sourceBuffer.appendWindowStart, 0);
+                    assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY);
+                }));
                 sourceBuffer.addEventListener('update', function(e) {
                     assert_unreached("Can't touch this");
                 });
@@ -77,15 +73,12 @@ function mediaTest(file, mime) {
                     assert_unreached("Can't touch this");
                 });
                 sourceBuffer.appendBuffer(data);
-            });
-            mediaSource.addEventListener('sourceended', function(e) {
-                t.step(function() {
-                    assert_array_equals(events,
-                                        ['updatestart', 'abort', 'updateend'],
-                                        'Check the sequence of fired events.');
-                });
-                t.done();
-            });
+            }));
+            mediaSource.addEventListener('sourceended', t.step_func_done(function(e) {
+                assert_array_equals(events,
+                                    ['updatestart', 'abort', 'updateend'],
+                                    'Check the sequence of fired events.');
+            }));
             var video = document.createElement('video');
             video.src = window.URL.createObjectURL(mediaSource);
         });

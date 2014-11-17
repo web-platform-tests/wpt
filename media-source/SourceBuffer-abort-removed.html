@@ -29,18 +29,15 @@ function mediaTest(mime) {
             return;
         }
         var mediaSource = new MediaSource();
-        mediaSource.addEventListener('sourceopen', function(e) {
+        mediaSource.addEventListener('sourceopen', t.step_func_done(function(e) {
             var sourceBuffer = mediaSource.addSourceBuffer(mime);
             mediaSource.removeSourceBuffer(sourceBuffer);
-            t.step(function() {
-                assert_throws({name: 'InvalidStateError'},
-                              function() {
-                                  sourceBuffer.abort();
-                              },
-                              'SourceBuffer#abort() after removing the SourceBuffer object');
-            });
-            t.done();
-        }, false);
+            assert_throws({name: 'InvalidStateError'},
+                          function() {
+                              sourceBuffer.abort();
+                          },
+                          'SourceBuffer#abort() after removing the SourceBuffer object');
+        }), false);
         var video = document.createElement('video');
         video.src = window.URL.createObjectURL(mediaSource);
     }, 'SourceBuffer#abort (' + mime + ') : ' +

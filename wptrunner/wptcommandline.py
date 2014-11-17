@@ -175,7 +175,7 @@ def set_from_config(kwargs):
 
 
 def check_args(kwargs):
-    from mozrunner import cli
+    from mozrunner import debugger_arguments
 
     set_from_config(kwargs)
 
@@ -215,8 +215,8 @@ def check_args(kwargs):
             kwargs["chunk_type"] = "none"
 
     if kwargs["debugger"] is not None:
-        debug_args, interactive = cli.debugger_arguments(kwargs["debugger"],
-                                                         kwargs["debugger_args"])
+        debug_args, interactive = debugger_arguments(kwargs["debugger"],
+                                                     kwargs["debugger_args"])
         if interactive:
             require_arg(kwargs, "processes", lambda x: x == 1)
             kwargs["no_capture_stdio"] = True

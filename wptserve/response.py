@@ -2,7 +2,6 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 import Cookie
 import json
-import logging
 import types
 import uuid
 import socket
@@ -404,7 +403,7 @@ class ResponseWriter(object):
             self.write_default_headers()
 
         self.write("\r\n")
-        if not "content-length" in self._headers_seen:
+        if "content-length" not in self._headers_seen:
             self._response.close_connection = True
         if not self._response.explicit_flush:
             self.flush()

@@ -7,25 +7,35 @@ promotes clear, robust, tests.
 
 ## Basic Usage ##
 
-To use this file, import the script and the testharnessreport script into
-the test document:
+The test harness script can be used from HTML or SVG documents and web worker
+scripts.
+
+From an HTML or SVG document, start by importing both `testharness.js` and
+`testharnessreport.js` scripts into the document:
 
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 
-Within each file one may define one or more tests. Each test is atomic
-in the sense that a single test has a single result (`PASS`/`FAIL`/`TIMEOUT`).
-Within each test one may have a number of asserts. The test fails at the
-first failing assert, and the remainder of the test is (typically) not run.
+From a web worker script, import the `testharness.js` script:
+
+    importScripts("/resources/testharness.js");
+
+(Refer to the [Web Workers](#web-workers) section for details on testing within
+a web worker).
+
+Within each file one may define one or more tests. Each test is atomic in the
+sense that a single test has a single result (`PASS`/`FAIL`/`TIMEOUT`/`NOTRUN`).
+Within each test one may have a number of asserts. The test fails at the first
+failing assert, and the remainder of the test is (typically) not run.
 
 If the file containing the tests is a HTML file, a table containing the test
 results will be added to the document after all tests have run. By default this
-will be added to a div element with id=log if it exists, or a new div element
-appended to document.body if it does not.
+will be added to a `div` element with `id=log` if it exists, or a new `div`
+element appended to `document.body` if it does not.
 
 NOTE: By default tests must be created before the load event fires. For ways
 to create tests after the load event, see "Determining when all tests
-are complete", below
+are complete", below.
 
 ## Synchronous Tests ##
 
@@ -38,7 +48,7 @@ trivial passing test would be:
 
     test(function() {assert_true(true)}, "assert_true with true")
 
-The function passed in is run in the test() call.
+The function passed in is run in the `test()` call.
 
 `properties` is a javascript object for passing extra options to the
 test. Currently it is only used to provide test-specific
@@ -92,6 +102,53 @@ For asynchronous callbacks that should never execute, `unreached_func` can
 be used. For example:
 
     object.some_event = t.unreached_func("some_event should not fire");
+
+## Promise Tests ##
+
+`promise_test` can be used to test APIs that are based on Promises:
+
+    promise_test(test_function, name, properties)
+
+`test_function` is a function that receives a test as an argument and returns a
+promise. The test completes when the returned promise resolves. The test fails
+if the returned promise rejects.
+
+E.g.:
+
+    function foo() {
+      return Promise.resolve("foo");
+    }
+
+    promise_test(function() {
+      return foo()
+        .then(function(result) {
+          assert_equals(result, "foo", "foo should return 'foo'");
+        });
+    }, "Simple example");
+
+In the example above, `foo()` returns a Promise that resolves with the string
+"foo". The `test_function` passed into `promise_test` invokes `foo` and attaches
+a resolve reaction that verifies the returned value.
+
+Note that in the promise chain constructed in `test_function` assertions don't
+need to wrapped in `step` or `step_func` calls.
+
+Here's another example where the `test_function` uses the provided `test`
+parameter to test a Promise that is expected to reject. Note that it's important
+to handle all expected rejections since an unhandled rejection causes the test
+to fail.
+
+    function bar() {
+      return Promise.reject("bar");
+    }
+
+    promise_test(function(t) {
+      return bar()
+        .then(t.unreached_func("bar() should not accept"),
+              function(result) {
+                assert_equals(result, "bar", "bar should return 'bar'");
+              });
+    }, "Another example");
 
 ## Single Page Tests ##
 
@@ -186,7 +243,6 @@ func is a function to be run synchronously. `setup()` becomes a no-op once
 any tests have returned results. Properties are global properties of the test
 harness. Currently recognised properties are:
 
-
 `explicit_done` - Wait for an explicit call to done() before declaring all
 tests complete (see below; implicitly true for single page tests)
 
@@ -245,16 +301,19 @@ single object (used for all generated tests) or an array.
 
 ## Callback API ##
 
-The framework provides callbacks corresponding to 3 events:
+The framework provides callbacks corresponding to 4 events:
 
- * `start` - happens when the first Test is created
- * `result` - happens when a test result is recieved
- * `complete` - happens when all results are recieved
+ * `start` - triggered when the first Test is created
+ * `test_state` - triggered when a test state changes
+ * `result` - triggered when a test result is recieved
+ * `complete` - triggered when all results are recieved
 
 The page defining the tests may add callbacks for these events by calling
 the following methods:
 
   `add_start_callback(callback)` - callback called with no arguments
+
+  `add_test_state_callback(callback)` - callback called with a test argument
 
   `add_result_callback(callback)` - callback called with a test argument
 
@@ -263,11 +322,11 @@ the following methods:
 
 tests have the following properties:
 
-  * `status` - A status code. This can be compared to the `PASS`, `FAIL`, `TIMEOUT` and
-              `NOTRUN` properties on the test object
+  * `status` - A status code. This can be compared to the `PASS`, `FAIL`,
+               `TIMEOUT` and `NOTRUN` properties on the test object
 
   * `message` - A message indicating the reason for failure. In the future this
-               will always be a string
+                will always be a string
 
  The status object gives the overall status of the harness. It has the
  following properties:
@@ -283,6 +342,7 @@ harness will, when loaded in a nested browsing context, attempt to call
 certain functions in each ancestor and opener browsing context:
 
  * start - `start_callback`
+ * test\_state - `test_state_callback`
  * result - `result_callback`
  * complete - `completion_callback`
 
@@ -291,19 +351,85 @@ described above.
 
 ## External API through cross-document messaging ##
 
-Where supported, the test harness will also send messages using
-cross-document messaging to each ancestor and opener browsing context. Since
-it uses the wildcard keyword (*), cross-origin communication is enabled and
-script on different origins can collect the results.
+Where supported, the test harness will also send messages using cross-document
+messaging to each ancestor and opener browsing context. Since it uses the
+wildcard keyword (\*), cross-origin communication is enabled and script on
+different origins can collect the results.
 
 This API follows similar conventions as those described above only slightly
 modified to accommodate message event API. Each message is sent by the harness
-is passed a single vanilla object, available as the `data` property of the
-event object. These objects are structures as follows:
+is passed a single vanilla object, available as the `data` property of the event
+object. These objects are structures as follows:
 
  * start - `{ type: "start" }`
+ * test\_state - `{ type: "test_state", test: Test }`
  * result - `{ type: "result", test: Test }`
  * complete - `{ type: "complete", tests: [Test, ...], status: TestsStatus }`
+
+## Web Workers ##
+
+The `testharness.js` script can be used from within [dedicated workers, shared
+workers](https://html.spec.whatwg.org/multipage/workers.html) and [service
+workers](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/).
+
+Testing from a worker script is different from testing from an HTML document in
+several ways:
+
+* Workers have no UI since they are runing in the background. So
+  `testharness.js` script offers a method to communicate test results to a
+  client document via [cross-document
+  messaging](#external-api-through-cross-document-messaging). This is done
+  automatically and needs no additional action from the test author.
+
+* Shared and service workers do not have a unique client document. There could
+  be more than one document that communicates with a worker. So a client
+  document needs to explicitly connect to a worker and fetch test results from
+  it using `fetch_tests_from_worker`. This is true even for a dedicated worker.
+
+* The client document controls the timeout of the tests. All worker scripts act
+  as if they were started with the `explicit_timeout` option (see the [Harness
+  timeout](#harness-timeout) section).
+
+* Dedicated and shared workers don't have an equivalent of an `onload` event.
+  Thus the test harness has no way to know when all tests have completed (see
+  [Determining when all tests are
+  complete](#determining-when-all-tests-are-complete)). So all worker tests
+  behave as if they were started with the `explicit_done` option.
+
+Here's an example that uses a dedicated worker.
+
+`test_script.js`:
+
+    importScripts("/resources/testharness.js");
+
+    test(function(t) {
+      assert_true(true, "true is true");
+    }, "Simple test");
+
+    // done() is needed because the testharness is running as if explicit_done
+    // was specified.
+    done();
+
+`test.html`:
+
+    <!DOCTYPE html>
+    <title>Simple test</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <div id="log"></div>
+    <script>
+
+    fetch_tests_from_worker(new Worker("test_script.js"));
+
+    </script>
+
+The argument to the `fetch_tests_from_worker` function can be a
+[`Worker`](http://www.w3.org/TR/workers/#dedicated-workers-and-the-worker-interface),
+[`SharedWorker`](http://www.w3.org/TR/workers/#shared-workers-and-the-sharedworker-interface)
+or a
+[`ServiceWorker`](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/#service-worker-obj).
+Once called, the containing document fetches all the tests from the worker and
+behaves as if those tests were running in the containing document itself.
 
 ## List of Assertions ##
 

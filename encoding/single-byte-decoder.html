@@ -147,23 +147,22 @@
    var encoding = singleByteEncodings[i]
    for(var ii = 0, ll = encoding.labels.length; ii < ll; ii++) {
      var label = encoding.labels[ii]
+
      async_test(function(t) {
        var xhr = new XMLHttpRequest,
            name = encoding.name // need scoped variable
        xhr.open("GET", "resources/single-byte-raw.py?label=" + label)
        xhr.send(null)
-       xhr.onload = function() {
-         t.step(function() { assert_decode(xhr.responseText, name) })
-         t.done()
-       }
+       xhr.onload = t.step_func_done(function() { assert_decode(xhr.responseText, name) })
+     }, encoding.name + ": " + label + " (XMLHttpRequest)")
 
-     }, encoding.name + ": " + label)
      test(function() {
        var d = new TextDecoder(label),
            data = d.decode(view)
        assert_equals(d.encoding, encoding.name)
        assert_decode(data, encoding.name)
      }, encoding.name + ": " + label + " (TextDecoder)")
+
      async_test(function(t) {
        var frame = document.createElement("iframe"),
            name = encoding.name

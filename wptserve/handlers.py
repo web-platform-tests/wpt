@@ -1,6 +1,5 @@
 import cgi
 import json
-import logging
 import os
 import traceback
 import urllib
@@ -157,7 +156,8 @@ class FileHandler(object):
         except IOError:
             return []
         else:
-            data = template(request, data)
+            if use_sub:
+                data = template(request, data)
             return [tuple(item.strip() for item in line.split(":", 1))
                     for line in data.splitlines() if line]
 
@@ -226,7 +226,7 @@ def FunctionHandler(func):
     def inner(request, response):
         try:
             rv = func(request, response)
-        except:
+        except Exception:
             msg = traceback.format_exc()
             raise HTTPException(500, message=msg)
         if rv is not None:
@@ -271,7 +271,7 @@ class AsIsHandler(object):
         self.base_path = base_path
         self.url_base = url_base
 
-    def __call__(request, response):
+    def __call__(self, request, response):
         path = filesystem_path(self.base_path, request, self.url_base)
 
         try:

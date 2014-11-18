@@ -37,10 +37,15 @@ def filesystem_path(base_path, request, url_base="/"):
         path = path[len(url_base):]
 
     if ".." in path:
-        raise HTTPException(500)
+        raise HTTPException(404)
 
-    return os.path.join(base_path, path)
+    new_path = os.path.join(base_path, path)
 
+    # Otherwise setting path to / allows access outside the root directory
+    if not new_path.startswith(base_path):
+        raise HTTPException(404)
+
+    return new_path
 
 class DirectoryHandler(object):
     def __init__(self, base_path=None, url_base="/"):

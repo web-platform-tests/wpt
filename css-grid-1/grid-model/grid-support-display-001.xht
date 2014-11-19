@@ -1,11 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Grid Layout Test: Parsing 'grid' and 'inline-grid' 'display' values</title>
+        <title>CSS Grid Layout Test: DOM support for 'grid' and 'inline-grid' 'display' values</title>
         <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com" />
+        <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2014-11-18 -->
         <link rel="help" href="http://www.w3.org/TR/css-grid-1/#grid-containers" title="3.1 Establishing Grid Containers" />
         <meta name="flags" content="dom" />
-        <meta name="assert" content="This test checks that 'grid' and 'inline-grid' values for 'display' property are parsed correctly. It tests that they work as expected from style attribute, CSS and JavaScrit." />
+        <meta name="assert" content="This test checks that 'grid' and 'inline-grid' values for 'display' property are supported so that DOM methods, specifically getComputedValue(), and its associated CSS2Properties interface, can fetch such 'display' values." />
         <script src="/resources/testharness.js" type="text/javascript"></script>
         <script src="/resources/testharnessreport.js" type="text/javascript"></script>
         <style type="text/css"><![CDATA[

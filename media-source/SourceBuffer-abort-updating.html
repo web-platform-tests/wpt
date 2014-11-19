@@ -59,9 +59,9 @@ function mediaTest(file, mime) {
                     assert_equals(sourceBuffer.appendWindowStart, 0);
                     assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY);
                 }));
-                sourceBuffer.addEventListener('update', function(e) {
+                sourceBuffer.addEventListener('update', t.step_func(function(e) {
                     assert_unreached("Can't touch this");
-                });
+                }));
                 sourceBuffer.addEventListener('updateend', function(e) {
                     events.push('updateend');
                     mediaSource.endOfStream();
@@ -69,9 +69,9 @@ function mediaTest(file, mime) {
                 sourceBuffer.addEventListener('abort', function(e) {
                     events.push('abort');
                 });
-                sourceBuffer.addEventListener('error', function(e) {
+                sourceBuffer.addEventListener('error', t.step_func(function(e) {
                     assert_unreached("Can't touch this");
-                });
+                }));
                 sourceBuffer.appendBuffer(data);
             }));
             mediaSource.addEventListener('sourceended', t.step_func_done(function(e) {

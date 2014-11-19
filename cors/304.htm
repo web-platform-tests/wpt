@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>CORS - 304 Responses</title>
+<meta name=author title="Mark Nottingham" href="mailto:mnot@mnot.net">
+
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=support.js?pipe=sub></script>
+
+<h1>304 Responses</h1>
+<div id=log></div>
+<script>
+
+
+/*
+ * 304 Responses
+ */
+
+test(function() {
+    var rand = Date.now()
+    var url = CROSSDOMAIN + 'resources/304.py?' + rand
+
+    var client1 = new XMLHttpRequest()
+    client1.open('GET', url, false)
+    // yes, Content-Language.
+    client1.setRequestHeader('content-language', '1')
+    client1.send()
+    
+    var client2 = new XMLHttpRequest()
+    client2.open('GET', url, false)
+    client2.setRequestHeader('content-language', '2')
+    client2.send()
+
+    assert_true(client1.status != 299, client1.responseText)
+    assert_true(client2.status != 299, client2.responseText)
+    assert_equals(client1.response, "Success", "didn't get correct response")
+    assert_equals(client1.response, client2.response, "different responses")
+
+}, "304Response: update CORS headers from cached response upon a 304")
+
+
+</script>

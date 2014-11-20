@@ -14,7 +14,11 @@
 <div id="log"></div>
 <script>
 test(function() {
-    var nodes = [newAnimation(createDiv(this)), new AnimationGroup([]), new AnimationSequence([])];
+    var nodes = [
+        newAnimation(createDiv(this)),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
     nodes.forEach(function(node) {
         assert_equals(node.previousSibling, null, type(node) + '.previousSibling should be null');
     });
@@ -245,11 +249,11 @@ test(function() {
 
             node3.after(node1);
 
-            assert_equals(node1.previousSibling, null, type(node3) + '.after() should update ' +
+            assert_equals(node1.previousSibling, node3, type(node3) + '.after() should update ' +
                 'previous sibling of animation node');
             assert_equals(node2.previousSibling, null, type(node3) + '.after() should update ' +
                 'previous sibling of animation node');
-            assert_equals(node3.previousSibling, node1, type(node3) + '.after() should update ' +
+            assert_equals(node3.previousSibling, null, type(node3) + '.after() should update ' +
                 'previous sibling of animation node');
         });
     });

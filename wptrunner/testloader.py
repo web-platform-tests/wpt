@@ -219,6 +219,8 @@ class ManifestLoader(object):
         self.test_paths = test_paths
         self.force_manifest_update = force_manifest_update
         self.logger = structured.get_default_logger()
+        if self.logger is None:
+            self.logger = structured.structuredlog.StructuredLogger("ManifestLoader")
 
     def load(self):
         rv = {}

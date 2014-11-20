@@ -1,0 +1,255 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Worker Origin Test</title>
+    <link rel="stylesheet" href="sandbox.css"/>
+</head>
+<body>
+    <h1>Worker Origin Test</h1>
+    <h2>Content-Security-Policy: sandbox allow-scripts allow-same-origin</h2>
+    
+    <p id="uastring"></p>
+    
+    <table id='results'>
+        <tr>
+            <th>Context</th>
+            <th>document.origin</th>
+            <th>origin of URL</th>
+            <th>location.origin</th>
+            <th>event.origin</th>
+        </tr>
+        <tr>
+            <td>page</td>
+            <td id="page.documentOrigin"></td>
+            <td id="page.urlOrigin"></td>
+            <td id="page.locationOrigin"></td>
+            <td id="page.eventOrigin"></td>
+        </tr>
+         <tr>
+             <td>http Worker</td>
+             <td id="httpWorker.documentOrigin" class="na">N/A</td>
+             <td id="httpWorker.urlOrigin" class="na"></td>
+             <td id="httpWorker.locationOrigin" class="na"></td>
+             <td id="httpWorker.eventOrigin" class="na"></td>
+         </tr>
+         <tr>
+             <td>http sub-Worker</td>
+            <td id="httpSubWorker.documentOrigin" class="na">N/A</td>
+             <td id="httpSubWorker.urlOrigin" class="na">N/A</td>
+             <td id="httpSubWorker.locationOrigin" class="na">N/A</td>
+             <td id="httpSubWorker.eventOrigin" class="na">N/A</td>
+         </tr>
+         <tr>
+             <td>blob Worker</td>
+             <td id="blobWorker.documentOrigin" class="na">N/A</td>
+             <td id="blobWorker.urlOrigin"></td>
+             <td id="blobWorker.locationOrigin"></td>
+             <td id="blobWorker.eventOrigin"></td>
+         </tr>
+         <tr>
+             <td>blob sub-Worker</td>
+             <td id="blobSubWorker.documentOrigin" class="na">N/A</td>
+             <td id="blobSubWorker.urlOrigin" class="na">N/A</td>
+             <td id="blobSubWorker.locationOrigin" class="na">N/A</td>
+             <td id="blobSubWorker.eventOrigin" class="na">N/A</td>
+         </tr>
+         <tr>
+             <td>data Worker</td>
+             <td id="dataWorker.documentOrigin" class="na">N/A</td>
+             <td id="dataWorker.urlOrigin"></td>
+             <td id="dataWorker.locationOrigin"></td>
+             <td id="dataWorker.eventOrigin"></td>
+        </tr>
+         <tr>
+             <td>data sub-Worker</td>
+             <td id="dataSubWorker.documentOrigin" class="na">N/A</td>
+             <td id="dataSubWorker.urlOrigin" class="na">N/A</td>
+             <td id="dataSubWorker.locationOrigin" class="na">N/A</td>
+             <td id="dataSubWorker.eventOrigin" class="na">N/A</td>
+        </tr>
+    </table>
+    
+      <script>
+        
+        document.getElementById("uastring").textContent = navigator.userAgent;  
+          
+        var baseOrigin = location.origin;
+        
+    	function disambig(inString) { 
+            if(inString === null) { return 'null'; }  
+            if(inString === undefined) { return 'undefined'; }  
+		    return inString; 
+	    } 
+  
+          
+        function testWorker(worker) {
+            worker.onmessage = function(oEvent) {   
+                
+                console.log(JSON.stringify(oEvent.data));
+                
+                updateTable(oEvent.data.context, "locationOrigin", oEvent.data.locationOrigin);
+                
+                if(oEvent.data.context.indexOf("SubWorker") > -1
+                && oEvent.data.locationOrigin.indexOf("Error") > -1) {
+                    updateTable(oEvent.data.context, "eventOrigin", "N/A");   
+                } else {
+                    updateTable(oEvent.data.context, "eventOrigin", disambig(oEvent.data.origin));
+                }
+    
+                if(oEvent.data.context.indexOf("SubWorker") == -1) {
+                   updateTable("page", "eventOrigin", disambig(oEvent.data.eventOrigin));   
+                } else {
+                   updateTable(oEvent.data.context, "urlOrigin", disambig(oEvent.data.urlOrigin));   
+                }
+            }
+        
+            worker.postMessage(location.origin);
+        }
+          
+        function updateTable(context, originType, originValue) {
+            var cell = document.getElementById(context + "." + originType);
+            
+            if(originValue === null || originValue == "null") {
+                originValue = "null";
+                cell.classList.add("null");
+            }
+            
+            if(originValue === undefined || originValue == "undefined") {
+                originValue = "undefined";
+                cell.classList.add("undefined");
+            }
+            
+            if(originValue == "") {
+                originValue = "\"\"";
+                cell.classList.add("emptyString");
+            }
+            
+            if(originValue == "N/A") {
+                cell.classList.add("na");
+                cell.textContent = originValue;
+                return;
+            }
+            
+            if(originValue.indexOf("Error") > -1) {
+                cell.classList.add("error");
+                cell.textContent = originValue;
+                return;
+            }
+            
+            else if(originValue == baseOrigin) {
+                cell.classList.add("agreement");
+            } else {
+                cell.classList.add("disagreement");
+            }
+            
+            cell.textContent = originValue;
+        }
+            
+        updateTable("page", "urlOrigin", disambig(new URL(location.href).origin));  
+        updateTable("page", "locationOrigin", disambig(location.origin));
+        updateTable("page", "documentOrigin", disambig(document.origin));
+        
+        var workerURL = new URL('worker.js', document.baseURI);
+          
+         try {
+            updateTable("httpWorker", "urlOrigin", disambig(workerURL.origin));
+            worker = new Worker('worker.js');
+            testWorker(worker);     
+        } catch(e) {
+            console.log(e);
+            var errStr = e.name + ': ' + e.message;
+            updateTable("httpWorker", "locationOrigin", errStr.substring(0, 40) + "...");
+        }  
+          
+          
+        var blob = new Blob(["onmessage = function (oEvent) {  console.log('blobWorker received event from origin: ' + oEvent.origin);  function disambig(inString) { if(inString === null) { return 'null'; }  if(inString === undefined) { return 'undefined'; }  return inString; } postMessage({'context': 'blobWorker', 'locationOrigin': disambig(location.origin), 'eventOrigin': disambig(oEvent.origin)}); var blob2 = new Blob([\"onmessage = function (oEvent) { function disambig(inString) { if(inString === null) { return 'null'; }  if(inString === undefined) { return 'undefined'; }  return inString; } postMessage({ context: 'blobSubWorker', 'locationOrigin': disambig(location.origin), 'eventOrigin': disambig(oEvent.origin), 'urlOrigin': disambig(oEvent.data) }); }\"]); try{ var worker2URL = self.URL.createObjectURL(blob2); var subworker = new Worker(worker2URL); subworker.onmessage = function(oEvent) { postMessage(oEvent.data); }; subworker.postMessage(disambig(new URL(worker2URL).origin)); } catch(e) {  var errStr = e.name + ': ' + e.message; postMessage({ 'context': 'blobSubWorker', 'locationOrigin': errStr, 'eventOrigin': errStr, 'urlOrigin': disambig(new URL(worker2URL).origin) }); } };"]);
+                
+        var blobURL = self.URL.createObjectURL(blob);  
+          
+        updateTable("blobWorker", "urlOrigin", disambig(new URL(blobURL).origin));
+        
+        try {
+            var worker = new Worker(blobURL);
+            testWorker(worker);
+        } catch(e) {
+            var errStr = e.name + ': ' + e.message;
+            updateTable("blobWorker", "locationOrigin", errStr);
+            console.log(e);
+        }
+        
+          
+///////////////////
+// Contents of data worker url
+//
+//onmessage = function (oEvent) {  
+//	function disambig(inString) { 
+//		if(inString === null) { return 'null'; }  
+//		if(inString === undefined) { return 'undefined'; }  
+//		return inString; 
+//	} 
+//
+//	postMessage({
+//		'context': 'dataWorker',
+//                'locationOrigin': disambig(location.origin), 
+//		'eventOrigin': disambig(oEvent.origin)
+//	});  
+//
+//	try { 
+//		var worker2URL = new URL('data:application/javascript;charset=utf-8;base64,b25tZXNzYWdlID0gZnVuY3Rpb24gKG9FdmVudCkgeyANCglmdW5jdGlvbiBkaXNhbWJpZyhpblN0cmluZykgeyANCgkJaWYoaW5TdHJpbmcgPT09IG51bGwpIHsgcmV0dXJuICdudWxsJzsgfSAgDQoJCWlmKGluU3RyaW5nID09PSB1bmRlZmluZWQpIHsgcmV0dXJuICd1bmRlZmluZWQnOyB9ICANCgkJcmV0dXJuIGluU3RyaW5nOyANCgl9IA0KDQoJcG9zdE1lc3NhZ2UoeyANCgkJJ2NvbnRleHQnOiAnZGF0YVN1YldvcmtlcicsIA0KCQknbG9jYXRpb25PcmlnaW4nOiBkaXNhbWJpZyhsb2NhdGlvbi5vcmlnaW4pLCANCgkJJ2V2ZW50T3JpZ2luJzogZGlzYW1iaWcob0V2ZW50Lm9yaWdpbiksDQoJCSd1cmxPcmlnaW4nOiBkaXNhbWJpZyhvRXZlbnQuZGF0YSkNCgl9KTsgDQp9'); 
+//		var subworker = new Worker(worker2URL); 
+//		subworker.onmessage = function(oEvent) { 
+//			postMessage(oEvent.data); 
+//		}; 
+//
+//		subworker.postMessage(disambig(worker2URL.origin)); 
+//	} catch(e) {  
+//		var errStr = e.name + ': ' + e.message; 
+//		postMessage({ 
+//			'context': 'dataSubWorker', 
+//			'locationOrigin': errStr, 
+//			'eventOrigin': errStr, 
+//			'urlOrigin': disambig(worker2URL.origin) 
+//		}); 
+//	} 
+//};
+//
+//////////////////
+// Contents of data sub worker url         
+//
+//onmessage = function (oEvent) { 
+//	function disambig(inString) { 
+//		if(inString === null) { return 'null'; }  
+//		if(inString === undefined) { return 'undefined'; }  
+//		return inString; 
+//	} 
+//
+//	postMessage({ 
+//		'context': 'dataSubWorker', 
+//		'locationOrigin': disambig(location.origin), 
+//		'eventOrigin': disambig(oEvent.origin),
+//		'urlOrigin': disambig(oEvent.data)
+//	}); 
+//}          
+//          
+//          
+///////////////////
+          
+       
+        var dataWorkerURL = new URL('data:application/javascript;charset=utf-8;base64,b25tZXNzYWdlID0gZnVuY3Rpb24gKG9FdmVudCkgeyAgDQoJZnVuY3Rpb24gZGlzYW1iaWcoaW5TdHJpbmcpIHsgDQoJCWlmKGluU3RyaW5nID09PSBudWxsKSB7IHJldHVybiAnbnVsbCc7IH0gIA0KCQlpZihpblN0cmluZyA9PT0gdW5kZWZpbmVkKSB7IHJldHVybiAndW5kZWZpbmVkJzsgfSAgDQoJCXJldHVybiBpblN0cmluZzsgDQoJfSANCg0KCXBvc3RNZXNzYWdlKHsNCgkJJ2NvbnRleHQnOiAnZGF0YVdvcmtlcicsDQogICAgICAgICAgICAgICAgJ2xvY2F0aW9uT3JpZ2luJzogZGlzYW1iaWcobG9jYXRpb24ub3JpZ2luKSwgDQoJCSdldmVudE9yaWdpbic6IGRpc2FtYmlnKG9FdmVudC5vcmlnaW4pDQoJfSk7ICANCg0KCXRyeSB7IA0KCQl2YXIgd29ya2VyMlVSTCA9IG5ldyBVUkwoJ2RhdGE6YXBwbGljYXRpb24vamF2YXNjcmlwdDtjaGFyc2V0PXV0Zi04O2Jhc2U2NCxiMjV0WlhOellXZGxJRDBnWm5WdVkzUnBiMjRnS0c5RmRtVnVkQ2tnZXlBTkNnbG1kVzVqZEdsdmJpQmthWE5oYldKcFp5aHBibE4wY21sdVp5a2dleUFOQ2drSmFXWW9hVzVUZEhKcGJtY2dQVDA5SUc1MWJHd3BJSHNnY21WMGRYSnVJQ2R1ZFd4c0p6c2dmU0FnRFFvSkNXbG1LR2x1VTNSeWFXNW5JRDA5UFNCMWJtUmxabWx1WldRcElIc2djbVYwZFhKdUlDZDFibVJsWm1sdVpXUW5PeUI5SUNBTkNna0pjbVYwZFhKdUlHbHVVM1J5YVc1bk95QU5DZ2w5SUEwS0RRb0pjRzl6ZEUxbGMzTmhaMlVvZXlBTkNna0pKMk52Ym5SbGVIUW5PaUFuWkdGMFlWTjFZbGR2Y210bGNpY3NJQTBLQ1FrbmJHOWpZWFJwYjI1UGNtbG5hVzRuT2lCa2FYTmhiV0pwWnloc2IyTmhkR2x2Ymk1dmNtbG5hVzRwTENBTkNna0pKMlYyWlc1MFQzSnBaMmx1SnpvZ1pHbHpZVzFpYVdjb2IwVjJaVzUwTG05eWFXZHBiaWtzRFFvSkNTZDFjbXhQY21sbmFXNG5PaUJrYVhOaGJXSnBaeWh2UlhabGJuUXVaR0YwWVNrTkNnbDlLVHNnRFFwOScpOyANCgkJdmFyIHN1YndvcmtlciA9IG5ldyBXb3JrZXIod29ya2VyMlVSTCk7IA0KCQlzdWJ3b3JrZXIub25tZXNzYWdlID0gZnVuY3Rpb24ob0V2ZW50KSB7IA0KCQkJcG9zdE1lc3NhZ2Uob0V2ZW50LmRhdGEpOyANCgkJfTsgDQoNCgkJc3Vid29ya2VyLnBvc3RNZXNzYWdlKGRpc2FtYmlnKHdvcmtlcjJVUkwub3JpZ2luKSk7IA0KCX0gY2F0Y2goZSkgeyAgDQoJCXZhciBlcnJTdHIgPSBlLm5hbWUgKyAnOiAnICsgZS5tZXNzYWdlOyANCgkJcG9zdE1lc3NhZ2UoeyANCgkJCSdjb250ZXh0JzogJ2RhdGFTdWJXb3JrZXInLCANCgkJCSdsb2NhdGlvbk9yaWdpbic6IGVyclN0ciwgDQoJCQknZXZlbnRPcmlnaW4nOiBlcnJTdHIsIA0KCQkJJ3VybE9yaWdpbic6IGRpc2FtYmlnKHdvcmtlcjJVUkwub3JpZ2luKSANCgkJfSk7IA0KCX0gDQp9Ow==');
+          
+        updateTable("dataWorker", "urlOrigin", disambig(dataWorkerURL.origin));
+          
+        try {      
+            worker = new Worker(dataWorkerURL);     
+            testWorker(worker);
+        } catch(e) {
+            var errStr = (e.name + ': ' + e.message).substring(0, 40) + "...";
+            updateTable("dataWorker", "locationOrigin", errStr);
+            updateTable("dataWorker", "eventOrigin", "N/A");
+            console.log(e);   
+        }
+        
+    </script>
+    
+</body>
+</html>

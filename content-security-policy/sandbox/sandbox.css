@@ -1,0 +1,93 @@
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+th, td {
+    padding: 0.4em;
+}
+
+
+
+td.emptyString {
+    font-style: italic;
+}
+
+td.na {
+    background-color: #acacac;
+}
+
+td.agreement {
+    background: rgba(0, 255, 0, 0.2);
+}
+
+td.disagreement {
+    background: rgba(255, 180, 0, 0.3);
+}
+
+td.error {
+    background: rgba(255, 0, 0, 0.3);
+    color: rgb(150, 0, 0);
+}
+
+td.undefined {
+    background: repeating-linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.1) 10px,
+        rgba(0, 0, 0, 0.2) 10px,
+        rgba(0, 0, 0, 0.2) 20px
+    )
+}
+
+td.undefined.agreement {
+    background: repeating-linear-gradient(
+        135deg,
+        rgba(0, 255, 0, 0.1),
+        rgba(0, 255, 0, 0.1) 10px,
+        rgba(0, 255, 0, 0.2) 10px,
+        rgba(0, 255, 0, 0.2) 20px
+    )
+}
+
+td.undefined.disagreement {
+    background: repeating-linear-gradient(
+        135deg,
+        rgba(255, 180, 0, 0.15),
+        rgba(255, 180, 0, 0.15) 10px,
+        rgba(255, 180, 0, 0.3) 10px,
+        rgba(255, 180, 0, 0.3) 20px
+    )
+}
+
+td.null {
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.1) 10px,
+        rgba(0, 0, 0, 0.2) 10px,
+        rgba(0, 0, 0, 0.2) 20px
+    )
+}
+
+td.null.agreement {
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(0, 255, 0, 0.1),
+        rgba(0, 255, 0, 0.1) 10px,
+        rgba(0, 255, 0, 0.2) 10px,
+        rgba(0, 255, 0, 0.2) 20px
+    )
+}
+
+td.null.disagreement {
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255, 180, 0, 0.15),
+        rgba(255, 180, 0, 0.15) 10px,
+        rgba(255, 180, 0, 0.3) 10px,
+        rgba(255, 180, 0, 0.3) 20px
+    )
+}

@@ -169,7 +169,7 @@ class Builder(object):
                     sectionData.append((baseURL + anchor['uri'], anchor['name'],
                                         anchor['title'] if 'title' in anchor else 'Untitled'))
                 else:
-                    sectionData.append((baseURL + anchor['uri'], parentSectionName + '.' + anchor['name'], None))
+                    sectionData.append((baseURL + anchor['uri'], parentSectionName + '.#' + anchor['name'], None))
                 if ('children' in anchor):
                     self._findSections(baseURL, anchor['children'], sectionData, anchor['name'])
         return sectionData

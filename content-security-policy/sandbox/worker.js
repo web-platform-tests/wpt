@@ -6,7 +6,12 @@ onmessage = function (oEvent) {
   //console.log(location.href);    
   //console.log(worker2href);    
     
-  var worker2URL = new URL(worker2href);    
+  
+  var worker2URL = worker2href;
+    
+  try {
+      worker2URL = new URL(worker2href);    
+  } catch(e) {}
     
   function disambig(inString) {
      if(inString === null) { return 'null'; }
@@ -24,14 +29,14 @@ onmessage = function (oEvent) {
         subworker.onmessage = function(oEvent) {
                 postMessage(oEvent.data);
         }
-        subworker.postMessage(worker2URL.origin);
+        subworker.postMessage(typeof worker2URL == 'string' ? 'N/A' : disambig(worker2URL.origin));
    } catch(e) {
        var errStr = e.name + ": " + e.message;
        postMessage({
            context: 'httpSubWorker',
            locationOrigin: errStr,
            eventOrigin: errStr,
-           urlOrigin: worker2URL.origin
+           urlOrigin: disambig(worker2URL.origin)
         });
    }
 };

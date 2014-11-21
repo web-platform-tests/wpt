@@ -157,42 +157,72 @@
         <section>
           <h4>Grid Containers (<kbd>grid-model</kbd>)</h4>
           <ul>
-            <li><code>display: grid</code>.</li>
-            <li><code>display: inline-grid</code>.</li>
+            <li>
+              <code>grid</code> and <code>inline-grid</code> values for
+              <code>display</code> property
+              [<a href="https://github.com/w3c/csswg-test/issues/627">#627</a>].
+            </li>
+            <li>
+              Grid container’s margins do not collapse with the margins of its
+              contents
+              [<a href="https://github.com/w3c/csswg-test/issues/661">#661</a>].
+            </li>
             <li>
               <code>column-*</code> properties have no effect on a grid
-              container.
+              container
+              [<a href="https://github.com/w3c/csswg-test/issues/628">#628</a>].
             </li>
             <li>
               <code>float</code> and <code>clear</code> have no effect on a
-              grid item.
+              grid item
+              [<a href="https://github.com/w3c/csswg-test/issues/629">#629</a>].
             </li>
             <li>
               <code>float</code> affects to the computed value of display on
-              grid items.
+              grid items
+              [<a href="https://github.com/w3c/csswg-test/issues/630">#630</a>].
             </li>
-            <li><code>vertical-align</code> has no effect on a grid item.</li>
+            <li>
+              <code>vertical-align</code> has no effect on a grid item
+              [<a href="https://github.com/w3c/csswg-test/issues/631">#631</a>].
+            </li>
             <li>
               <code>first-line</code> and <code>first-letter</code> do not
-              apply to grid containers.
+              apply to grid containers
+              [<a href="https://github.com/w3c/csswg-test/issues/632">#632</a>].
             </li>
-            <li>Sizing grid containers.</li>
+            <li>
+              Sizing grid containers
+              [<a href="https://github.com/w3c/csswg-test/issues/638">#638</a>].
+            </li>
           </ul>
         </section>
         <section>
           <h4>Grid Items (<kbd>grid-items</kbd>)</h4>
           <ul>
-            <li>Each child of a grid container becomes a grid item.</li>
+            <li>
+              Each child of a grid container becomes a grid item
+              [<a href="https://github.com/w3c/csswg-test/issues/639">#639</a>].
+            </li>
             <li>
               Each contiguous run of text that is directly contained inside
-              grid container is wrapped in an anonymous grid item.
+              grid container is wrapped in an anonymous grid item
+              [<a href="https://github.com/w3c/csswg-test/issues/640">#640</a>].
             </li>
             <li>
               <code>visibility</code> property.
               <div class="note">Still undefined in the spec.</div>
             </li>
-            <li><code>order</code> property.</li>
-            <li>Static position.</li>
+            <li>
+              <code>order</code> property
+              [<a href="https://github.com/w3c/csswg-test/issues/641">#641</a>].
+            </li>
+            <li>
+              Static position
+              [<a href="https://github.com/w3c/csswg-test/issues/642">#642</a>
+              &amp;
+              <a href="https://github.com/w3c/csswg-test/issues/643">#643</a>].
+            </li>
           </ul>
         </section>
         <section>
@@ -203,7 +233,8 @@
               <ul>
                 <li>
                   <code>grid-template-columns</code> and
-                  <code>grid-template-rows</code> properties.
+                  <code>grid-template-rows</code> properties
+                  [<a href="https://github.com/w3c/csswg-test/issues/644">#644</a>].
                 </li>
                 <li>
                   <kbd>&lt;track-size&gt;</kbd>: <code>length</code>,
@@ -211,28 +242,52 @@
                   <code>min-content</code>, <code>minmax(min, max)</code>,
                   <code>auto</code>.
                 </li>
-                <li>Named grid lines (<kbd>&lt;custom-ident&gt;</kbd>).</li>
-                <li><code>repeat()</code> notation.</li>
-                <li>Flexible lengths: <code>fr</code> unit.</li>
+                <li>
+                  Named grid lines (<kbd>&lt;custom-ident&gt;</kbd>)
+                  [<a href="https://github.com/w3c/csswg-test/issues/645">#645</a>].
+                </li>
+                <li>
+                  <code>repeat()</code> notation
+                  [<a href="https://github.com/w3c/csswg-test/issues/646">#646</a>].
+                </li>
+                <li>
+                  Flexible lengths: <code>fr</code> unit
+                  [<a href="https://github.com/w3c/csswg-test/issues/647">#647</a>].
+                </li>
                 <li>
                   <code>subgrid</code> keyword.
                   <div class="note">Subgrid feature is currently at-risk.</div>
                 </li>
-                <li>Resolved values.</li>
+                <li>
+                  Resolved values
+                  [<a href="https://github.com/w3c/csswg-test/issues/648">#648</a>].
+                </li>
               </ul>
             </li>
             <li>
               Named areas:
               <ul>
-                <li><code>grid-template-areas</code> property.</li>
-                <li>Implicit named grid lines.</li>
-                <li>Implicit named areas.</li>
+                <li>
+                  <code>grid-template-areas</code> property
+                  [<a href="https://github.com/w3c/csswg-test/issues/649">#649</a>].
+                </li>
+                <li>
+                  Implicit named grid lines
+                  [<a href="https://github.com/w3c/csswg-test/issues/650">#650</a>].
+                </li>
+                <li>
+                  Implicit named areas
+                  [<a href="https://github.com/w3c/csswg-test/issues/651">#651</a>].
+                </li>
               </ul>
             </li>
             <li>
               Explicit grid shorthand:
               <ul>
-                <li><code>grid-template</code> property.</li>
+                <li>
+                  <code>grid-template</code> property
+                  [<a href="https://github.com/w3c/csswg-test/issues/652">#652</a>].
+                </li>
               </ul>
             </li>
           </ul>
@@ -242,10 +297,12 @@
           <ul>
             <li>
               <code>grid-auto-rows</code> and <code>grid-auto-columns</code>
-              properties.
+              properties
+              [<a href="https://github.com/w3c/csswg-test/issues/662">#662</a>].
             </li>
             <li>
-              <code>grid-auto-flow</code> property.
+              <code>grid-auto-flow</code> property
+              [<a href="https://github.com/w3c/csswg-test/issues/663">#663</a>].
               <div class="note">
                 Syntax is still under discussion on CSS WG.
               </div>
@@ -255,7 +312,10 @@
         <section>
           <h4>Grid Definition Shorthand (<kbd>grid-shorthand</kbd>)</h4>
           <ul>
-            <li><code>grid</code> property.</li>
+            <li>
+              <code>grid</code> property
+              [<a href="https://github.com/w3c/csswg-test/issues/664">#664</a>].
+            </li>
           </ul>
         </section>
         <section>
@@ -264,10 +324,22 @@
             <li>
               Common patterns:
               <ul>
-                <li>Named areas.</li>
-                <li>Numeric indexes and spans.</li>
-                <li>Named lines and spans.</li>
-                <li>Auto placement.</li>
+                <li>
+                  Named areas
+                  [<a href="https://github.com/w3c/csswg-test/issues/665">#665</a>].
+                </li>
+                <li>
+                  Numeric indexes and spans
+                  [<a href="https://github.com/w3c/csswg-test/issues/666">#666</a>].
+                </li>
+                <li>
+                  Named lines and spans
+                  [<a href="https://github.com/w3c/csswg-test/issues/667">#667</a>].
+                </li>
+                <li>
+                  Auto placement
+                  [<a href="https://github.com/w3c/csswg-test/issues/668">#668</a>].
+                </li>
                 <li>
                   Auto sizing siblings.
                   <div class="note">Subgrid feature is currently at-risk.</div>
@@ -280,9 +352,13 @@
                 <li>
                   <code>grid-row-start</code>, <code>grid-column-start</code>,
                   <code>grid-row-end</code> and <code>grid-column-end</code>
-                  properties.
+                  properties
+                  [<a href="https://github.com/w3c/csswg-test/issues/669">#669</a>].
                 </li>
-                <li>Grid placement conflict handling.</li>
+                <li>
+                  Grid placement conflict handling
+                  [<a href="https://github.com/w3c/csswg-test/issues/670">#670</a>].
+                </li>
               </ul>
             </li>
             <li>
@@ -290,24 +366,35 @@
               <ul>
                 <li>
                   <code>grid-column</code>, <code>grid-row</code> and
-                  <code>grid-area</code> properties.
+                  <code>grid-area</code> properties
+                  [<a href="https://github.com/w3c/csswg-test/issues/671">#671</a>].
                 </li>
               </ul>
             </li>
-            <li>Absolutely-positioned grid items.</li>
-            <li>Grid item placement algorithm.</li>
+            <li>
+              Absolutely-positioned grid items
+              [<a href="https://github.com/w3c/csswg-test/issues/672">#672</a>].
+            </li>
+            <li>
+              Grid item placement algorithm
+              [<a href="https://github.com/w3c/csswg-test/issues/683">#683</a>].
+            </li>
           </ul>
         </section>
         <section>
           <h4>Alignment (<kbd>alignment</kbd>)</h4>
           <ul>
-            <li>Aligning with auto margins.</li>
+            <li>
+              Aligning with auto margins
+              [<a href="https://github.com/w3c/csswg-test/issues/673">#673</a>].
+            </li>
             <li>
               Row-axis alignment:
               <ul>
                 <li>
                   <code>justify-self</code> and <code>justify-items</code>
                   properties.
+                  [<a href="https://github.com/w3c/csswg-test/issues/674">#674</a>].
                 </li>
               </ul>
             </li>
@@ -316,7 +403,8 @@
               <ul>
                 <li>
                   <code>align-self</code> and <code>align-items</code>
-                  properties.
+                  properties
+                  [<a href="https://github.com/w3c/csswg-test/issues/675">#675</a>].
                 </li>
               </ul>
             </li>
@@ -325,31 +413,50 @@
               <ul>
                 <li>
                   <code>justify-content</code> and <code>align-content</code>
-                  properties.
+                  properties
+                  [<a href="https://github.com/w3c/csswg-test/issues/676">#676</a>].
                 </li>
               </ul>
             </li>
             <li>
               Z-axis ordering:
               <ul>
-                <li><code>z-index</code> property.</li>
+                <li>
+                  <code>z-index</code> property
+                  [<a href="https://github.com/w3c/csswg-test/issues/677">#677</a>].
+                </li>
               </ul>
             </li>
-            <li>Grid baselines.</li>
+            <li>
+              Grid baselines
+              [<a href="https://github.com/w3c/csswg-test/issues/678">#678</a>].
+            </li>
           </ul>
         </section>
         <section>
           <h4>Track Sizing Algorithm (<kbd>layout-algorithm</kbd>)</h4>
           <ul>
-            <li>Content-based track sizing.</li>
-            <li>Grow tracks using free space.</li>
-            <li>Flexible tracks.</li>
+            <li>
+              Content-based track sizing
+              [<a href="https://github.com/w3c/csswg-test/issues/679">#679</a>].
+            </li>
+            <li>
+              Grow tracks using free space
+              [<a href="https://github.com/w3c/csswg-test/issues/680">#680</a>].
+            </li>
+            <li>
+              Flexible tracks
+              [<a href="https://github.com/w3c/csswg-test/issues/681">#681</a>].
+            </li>
           </ul>
         </section>
         <section>
           <h4>Fragmenting Grid Layout (<kbd>pagination</kbd>)</h4>
           <ul>
-            <li>Fragmentation algorithm.</li>
+            <li>
+              Fragmentation algorithm
+              [<a href="https://github.com/w3c/csswg-test/issues/682">#682</a>].
+            </li>
           </ul>
         </section>
       </section>

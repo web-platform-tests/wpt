@@ -5,7 +5,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<pre id="x"></pre>
 <script>
 // TODO: getElementsByTagName("*")
 test(function() {
@@ -58,6 +57,10 @@ test(function() {
 }, "Should be able to set expando shadowing a proto prop (namedItem)")
 
 test(function() {
+  var t = document.body.appendChild(document.createElement("pre"));
+  t.id = "x";
+  this.add_cleanup(function() {document.body.removeChild(t)});
+
   var list = document.getElementsByTagName('pre');
   var pre = list[0];
   assert_equals(pre.id, "x");

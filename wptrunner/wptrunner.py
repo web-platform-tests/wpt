@@ -93,6 +93,29 @@ class TestEnvironmentError(Exception):
     pass
 
 
+class LogLevelRewriter(object):
+    """Filter that replaces log messages at specified levels with messages
+    at a different level.
+
+    This can be used to e.g. downgrade log messages from ERROR to WARNING
+    in some component where ERRORs are not critical.
+
+    :param inner: Handler to use for messages that pass this filter
+    :param from_levels: List of levels which should be affected
+    :param to_level: Log level to set for the affected messages
+    """
+    def __init__(self, inner, from_levels, to_level):
+        self.inner = inner
+        self.from_levels = [item.upper() for item in from_levels]
+        self.to_level = to_level.upper()
+
+    def __call__(self, data):
+        if data["action"] == "log" and data["level"].upper() in self.from_levels:
+            data = data.copy()
+            data["level"] = self.to_level
+        return self.inner(data)
+
+
 class TestEnvironment(object):
     def __init__(self, serve_path, test_paths, options):
         """Context manager that owns the test environment i.e. the http and
@@ -141,12 +164,12 @@ class TestEnvironment(object):
         return config
 
     def setup_server_logging(self):
-        server_logger = get_default_logger("serve")
+        server_logger = get_default_logger(component="wptserve")
         assert server_logger is not None
-        handler = handlers.StreamHandler(open("server.log", "w"),
-                                         formatters.MachFormatter(disable_colors=True))
-        handler = handlers.LogLevelFilter(handler, "info")
-        server_logger.add_handler(handler)
+        log_filter = handlers.LogLevelFilter(handler, "info")
+        # Downgrade errors to warnings for the server
+        log_filter = LogLevelRewriter(log_filter, ["error"], "warning")
+        server_logger.component_filter = log_filter
 
         serve.logger = server_logger
         #Set as the default logger for wptserve

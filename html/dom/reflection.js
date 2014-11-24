@@ -711,6 +711,10 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         }
     }
 
+    this.testSetter(data, domObj, domName, idlObj, idlName, idlTests, idlDomExpected, idlIdlExpected);
+};
+
+ReflectionTests.testSetter = function(data, domObj, domName, idlObj, idlName, idlTests, idlDomExpected, idlIdlExpected) {
     for (var i = 0; i < idlTests.length; i++) {
         if (idlDomExpected[i] === null && data.type != "enum") {
             ReflectionHarness.testException("INDEX_SIZE_ERR", function() {

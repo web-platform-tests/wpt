@@ -224,7 +224,7 @@ class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                     latency = self.server.latency()
                 else:
                     latency = self.server.latency
-                logger.debug("Sleeping %i ms" % latency)
+                logger.warning("Latency enabled. Sleeping %i ms" % latency)
                 time.sleep(latency / 1000.)
 
             if handler is None:

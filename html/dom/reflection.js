@@ -685,6 +685,12 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         idlIdlExpected = idlIdlExpected.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
     }
 
+    this.testGetter(data, domObj, domName, domTests, domExpected, idlObj, idlName);
+
+    this.testSetter(data, domObj, domName, idlObj, idlName, idlTests, idlDomExpected, idlIdlExpected);
+};
+
+ReflectionTests.testGetter = function(data, domObj, domName, domTests, domExpected, idlObj, idlName) {
     if (!data.customGetter) {
         for (var i = 0; i < domTests.length; i++) {
             if (domExpected[i] === null) {
@@ -710,8 +716,6 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
             }
         }
     }
-
-    this.testSetter(data, domObj, domName, idlObj, idlName, idlTests, idlDomExpected, idlIdlExpected);
 };
 
 ReflectionTests.testSetter = function(data, domObj, domName, idlObj, idlName, idlTests, idlDomExpected, idlIdlExpected) {

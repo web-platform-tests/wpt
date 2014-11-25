@@ -621,12 +621,8 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 
         case "enum":
         // Whee, enum is complicated.
-        if (typeof data.invalidVal == "undefined") {
-            data.invalidVal = defaultVal;
-        }
-        if (typeof data.nonCanon == "undefined") {
-            data.nonCanon = {};
-        }
+        var invalidVal = (typeof data.invalidVal == "undefined") ? defaultVal : data.invalidVal;
+        var nonCanon = (typeof data.nonCanon == "undefined") ? {} : data.nonCanon;
         for (var i = 0; i < data.keywords.length; i++) {
             if (data.keywords[i] != "") {
                 domTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
@@ -656,10 +652,10 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         domExpected = [];
         idlIdlExpected = [];
         for (var i = 0; i < domTests.length; i++) {
-            domExpected.push(this.enumExpected(data.keywords, data.nonCanon, data.invalidVal, domTests[i]));
+            domExpected.push(this.enumExpected(data.keywords, nonCanon, invalidVal, domTests[i]));
         }
         for (var i = 0; i < idlTests.length; i++) {
-            idlIdlExpected.push(this.enumExpected(data.keywords, data.nonCanon, data.invalidVal, idlTests[i]));
+            idlIdlExpected.push(this.enumExpected(data.keywords, nonCanon, invalidVal, idlTests[i]));
         }
         break;
 

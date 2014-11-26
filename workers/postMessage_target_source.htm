@@ -9,7 +9,7 @@ async_test(function(t) {
   var source = channel.port1;
   var target = channel.port2;
   target.start();
-  target.addEventListener("message", t.step_func_done(function (e) {
+  target.addEventListener("message", t.step_func_done(function(e) {
     assert_equals(e.target, target);
     assert_not_equals(e.target, source);
   }), true);

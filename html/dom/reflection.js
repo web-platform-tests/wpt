@@ -669,17 +669,6 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         }
         break;
     }
-    if (domObj.tagName.toLowerCase() == "canvas" && (domName == "width" || domName == "height")) {
-        // Opera tries to allocate a canvas with the given width and height, so
-        // it OOMs when given excessive sizes.  This is permissible under the
-        // hardware-limitations clause, so cut out those checks.  TODO: Must be
-        // a way to make this more succinct.
-        domTests = domTests.filter(function(element, index, array) { return domExpected[index] < 1000; });
-        domExpected = domExpected.filter(function(element, index, array) { return element < 1000; });
-        idlTests = idlTests.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
-        idlDomExpected = idlDomExpected.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
-        idlIdlExpected = idlIdlExpected.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
-    }
 
     this.testGetter(data, domObj, domName, domTests, domExpected, idlObj, idlName);
 

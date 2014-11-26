@@ -20,10 +20,11 @@
 
     var t = async_test(description);
 
+    var PORT = "{{ports[http][0]}}" !== "80" ? ":{{ports[http][0]}}" : "";
     var TARGET1 = document.querySelectorAll("iframe")[0];
     var TARGET2 = document.querySelectorAll("iframe")[1];
-    var XORIGIN = "http://{{domains[www]}}:{{ports[http][0]}}";
-    var SORIGIN = "http://{{host}}:{{ports[http][0]}}";
+    var XORIGIN = "http://{{domains[www]}}" + PORT;
+    var SORIGIN = "http://{{host}}" + PORT;
     var ExpectedResult = ["#1", XORIGIN, "#2", SORIGIN];
     var ActualResult = [];
     var loaded = 0;

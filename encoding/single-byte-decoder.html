@@ -121,8 +121,8 @@
  }
 
  // For TextDecoder tests
- var buffer = ArrayBuffer(255),
-     view = Uint8Array(buffer)
+ var buffer = new ArrayBuffer(255),
+     view = new Uint8Array(buffer)
  for(var i = 0, l = view.byteLength; i < l; i++) {
    view[i] = i
  }

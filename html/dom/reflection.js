@@ -649,14 +649,12 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         idlDomExpected = idlTests.slice(0);
 
         // Now we have the fun of calculating what the expected IDL values are.
-        domExpected = [];
-        idlIdlExpected = [];
-        for (var i = 0; i < domTests.length; i++) {
-            domExpected.push(this.enumExpected(data.keywords, nonCanon, invalidVal, domTests[i]));
-        }
-        for (var i = 0; i < idlTests.length; i++) {
-            idlIdlExpected.push(this.enumExpected(data.keywords, nonCanon, invalidVal, idlTests[i]));
-        }
+        domExpected = domTests.map(function(t) {
+            return this.enumExpected(data.keywords, nonCanon, invalidVal, t);
+        });
+        idlIdlExpected = idlTests.map(function(t) {
+            return this.enumExpected(data.keywords, nonCanon, invalidVal, t);
+        });
         break;
 
         case "string":

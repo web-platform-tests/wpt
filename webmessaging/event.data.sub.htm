@@ -20,7 +20,7 @@
 
     var t = async_test(description);
 
-    var PORT = "{{location[port]}}" !== "80" ? ":{{location[port]}}" : "";
+    var PORT = location.port !== "" ? ":" + location.port : "";
     var DATA = "STRING";
     var TYPE = "string";
     var TARGET1 = document.querySelectorAll("iframe")[0];

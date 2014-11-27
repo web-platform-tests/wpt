@@ -20,7 +20,7 @@
 
     var t = async_test(description);
 
-    var PORT = "{{location[port]}}" !== "80" ? ":{{location[port]}}" : "";
+    var PORT = location.port !== "" ? ":" + location.port : "";
     var TARGET1 = document.querySelectorAll("iframe")[0];
     var TARGET2 = document.querySelectorAll("iframe")[1];
     var XORIGIN = "{{location[scheme]}}://{{domains[www]}}" + PORT;

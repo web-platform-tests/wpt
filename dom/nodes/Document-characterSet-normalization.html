@@ -341,6 +341,16 @@ Object.keys(encodingMap).forEach(function(name) {
   }
 });
 
+function expected_case(encoding_label) {
+  if (encoding_label === 'big5') {
+    return 'Big5';
+  }
+  if (encoding_label === 'shift_jis') {
+    return 'Shift_JIS';
+  }
+  return encoding_label.toUpperCase();
+}
+
 Object.keys(encodingMap).forEach(function(name) {
   encodingMap[name].forEach(function(label) {
     var iframe = document.createElement("iframe");
@@ -355,10 +365,10 @@ Object.keys(encodingMap).forEach(function(name) {
     iframe.src = "encoding.py?label=" + label;
     iframe.onload = function() {
       t.step(function() {
-        assert_equals(iframe.contentDocument.characterSet.toLowerCase(), name);
+        assert_equals(iframe.contentDocument.characterSet, expected_case(name));
       });
       t2.step(function() {
-        assert_equals(iframe.contentDocument.inputEncoding.toLowerCase(), name);
+        assert_equals(iframe.contentDocument.inputEncoding, expected_case(name));
       });
       document.body.removeChild(iframe);
       t.done();

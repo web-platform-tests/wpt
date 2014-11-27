@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<title>IDBObjectStore.get() - calling get() when transaction is not active </title>
+<link rel="author" title="YuichiNukiyama" href="https://github.com/YuichiNukiyama">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    var db,
+      t = async_test(),
+      record = { key: 1, property: "data" };
+
+    var open_rq = createdb(t);
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result;
+        db.createObjectStore("store", { keyPath: "key" })
+    }
+
+    open_rq.onsuccess = function(e) {
+        assert_throws("TransactionInactiveError", function () {
+            var store = db.transaction("store")
+                     .objectStore("store");
+            store.transaction.abort();
+            store.get(1);
+        }, "Calling get() when transaction is inactive should throw TransactionInactiveError.");
+            t.done();
+    }
+</script>
+
+<div id="log"></div>

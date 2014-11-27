@@ -9,7 +9,7 @@
 <div id=log></div>
 
 <div style="display:none">
-    <iframe width="70%" onload="PostMessageTest()" src="http://{{domains[www1]}}:{{ports[http][0]}}/webmessaging/support/ChildWindowPostMessage.htm"></iframe>
+    <iframe width="70%" onload="PostMessageTest()" src="{{location[scheme]}}://{{domains[www1]}}:{{location[port]}}/webmessaging/support/ChildWindowPostMessage.htm"></iframe>
 </div>
 
 <script>
@@ -18,10 +18,10 @@
 
     var t = async_test(description);
 
-    var PORT = "{{ports[http][0]}}" !== "80" ? ":{{ports[http][0]}}" : "";
+    var PORT = "{{location[port]}}" !== "80" ? ":{{location[port]}}" : "";
     var DATA = "foo";
     var TARGET = document.querySelector("iframe");
-    var XORIGIN = "http://{{domains[www1]}}" + PORT;
+    var XORIGIN = "{{location[scheme]}}://{{domains[www1]}}" + PORT;
     var ExpectedResult = [XORIGIN, "AccessCookieDenied"];
     var ActualResult = [];
 

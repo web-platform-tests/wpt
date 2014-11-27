@@ -8,8 +8,7 @@
 
 <script>
     var db,
-      t = async_test(),
-      record = { key: 1, property: "data" };
+      t = async_test();
 
     var open_rq = createdb(t);
     open_rq.onupgradeneeded = function(e) {
@@ -18,12 +17,12 @@
     }
 
     open_rq.onsuccess = function(e) {
+        var store = db.transaction("store")
+                      .objectStore("store")
         assert_throws("DataError", function () {
-            var rq = db.transaction("store")
-                     .objectStore("store")
-                     .get(null)
+            store.get(null)
         }, "Calling get() with argument with null should throw DataError.");
-            t.done();
+        t.done();
     }
 </script>
 

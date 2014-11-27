@@ -461,6 +461,7 @@ def get_reference_links(root):
 
 def get_file(base_path, rel_path, use_committed):
     if use_committed:
+        git = get_git_func(os.path.dirname(__file__))
         blob = git("show", "HEAD:%s" % rel_path)
         file_obj = ContextManagerStringIO(blob)
     else:

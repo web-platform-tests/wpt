@@ -1,5 +1,5 @@
 <!doctype html>
-<title>document.characterSet normalization tests</title>
+<title>document.characterSet and inputEncoding normalization tests</title>
 <link rel=author title="Aryeh Gregor" href=ayg@aryeh.name>
 <meta name=timeout content=long>
 <div id=log></div>
@@ -346,7 +346,9 @@ Object.keys(encodingMap).forEach(function(name) {
   encodingMap[name].forEach(function(label) {
     var iframe = document.createElement("iframe");
     var t = async_test("Name " + format_value(name) +
-                       " has label " + format_value(label));
+                       " has label " + format_value(label) + " (characterSet)");
+    var t2 = async_test("Name " + format_value(name) +
+                       " has label " + format_value(label) + " (inputEncoding)");
     /*
     iframe.src = "data:text/html,<!doctype html>" +
                  '<meta charset="' + label + '">';
@@ -356,8 +358,12 @@ Object.keys(encodingMap).forEach(function(name) {
       t.step(function() {
         assert_equals(iframe.contentDocument.characterSet.toLowerCase(), name);
       });
+      t2.step(function() {
+        assert_equals(iframe.contentDocument.inputEncoding.toLowerCase(), name);
+      });
       document.body.removeChild(iframe);
       t.done();
+      t2.done();
     };
     document.body.appendChild(iframe);
   });

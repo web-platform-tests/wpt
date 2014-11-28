@@ -22,7 +22,6 @@ function cors(desc, scheme, subdomain, port) {
         }
         var url = scheme + "://" + (subdomain ? subdomain + "." : "") + location.hostname + ":" + port + dirname(location.pathname)
     }
-    console.log(url)
     async_test(desc).step(function() {
         var client = new XMLHttpRequest();
         this.count = counter++;

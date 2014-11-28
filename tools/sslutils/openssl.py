@@ -87,19 +87,15 @@ def make_subject(common_name,
 
 def make_alt_names(hosts):
     rv = []
-    for i, name in enumerate(hosts):
-        rv.append("DNS.%i = %s" % (i+1, name))
-    return "\n".join(rv)
+    for name in hosts:
+        rv.append("DNS:%s" % name)
+    return ",".join(rv)
 
 def get_config(root_dir, hosts, duration=30):
     if hosts is None:
         san_line = ""
-        san_section = ""
     else:
-        san_line = "subjectAltName = @alt_name"
-        san_section = "[ alt_name ]\n%s\n" % make_alt_names(hosts)
-
-    print san_line, san_section
+        san_line = "subjectAltName = %s" % make_alt_names(hosts)
 
     return """[ ca ]
 default_ca = CA_default
@@ -125,6 +121,7 @@ default_crl_days = 1
 default_md = sha256
 preserve = no
 policy = policy_anything
+copy_extensions = copy
 
 [ policy_anything ]
 countryName = optional
@@ -175,18 +172,15 @@ authorityKeyIdentifier=keyid,issuer
 [ v3_req ]
 basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
 %(san_line)s
 
 [ v3_ca ]
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
 basicConstraints = CA:true
-#crlDistributionPoints = URI:http://web-platform.test:8000/wpt_ca.crl
-
-%(san_section)s
 """ % {"root_dir": root_dir,
        "san_line": san_line,
-       "san_section": san_section,
        "duration": duration}
 
 class OpenSSLEnvironment(object):

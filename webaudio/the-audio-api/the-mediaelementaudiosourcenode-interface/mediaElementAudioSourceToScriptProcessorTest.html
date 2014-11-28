@@ -84,7 +84,11 @@ Somewhat similiar to a test from Mozilla:
    processor.disconnect();
 
    // firefox seems to process events after disconnect
-   processor.removeEventListener('audioprocess')
+   processor.removeEventListener('audioprocess',
+                                   (function (e) {
+                                       actualBufferArrayC0 = concatTypedArray(actualBufferArrayC0, e.inputBuffer.getChannelData(0));
+                                       actualBufferArrayC1 = concatTypedArray(actualBufferArrayC1, e.inputBuffer.getChannelData(1));
+                                   }));
 
    var expectedBuffer = expected[0];
 

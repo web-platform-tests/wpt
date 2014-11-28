@@ -111,6 +111,17 @@ def add_license(dest):
         f.write(bsd_license)
 
 
+def get_unique_name(existing, initial):
+    logger.debug(existing)
+    logger.debug(initial)
+    if initial not in existing:
+        return initial
+    for i in xrange(len(existing) + 1):
+        test = "%s_%s" % (initial, i + 1)
+        if test not in existing:
+            return test
+    assert False
+
 class NoVCSTree(object):
     name = "non-vcs"
 
@@ -512,16 +523,13 @@ class State(object):
 class LoadConfig(Step):
     provides = ["sync", "paths", "metadata_path", "tests_path"]
     def create(self, state):
-        cfg = state.kwargs["config"]
-        paths = wptcommandline.get_test_paths(cfg)
+        state.sync = {"remote_url": state.kwargs["remote_url"],
+                      "branch": state.kwargs["branch"],
+                      "path": state.kwargs["sync_path"]}
 
-        state.sync = {"remote_url": cfg["web-platform-tests"]["remote_url"],
-                      "branch": cfg["web-platform-tests"]["branch"],
-                      "path": cfg["web-platform-tests"]["sync_path"]}
-
-        state.paths = paths
-        state.tests_path = paths["/"]["tests_path"]
-        state.metadata_path = paths["/"]["metadata_path"]
+        state.paths = state.kwargs["test_paths"]
+        state.tests_path = state.paths["/"]["tests_path"]
+        state.metadata_path = state.paths["/"]["metadata_path"]
 
         assert state.tests_path.startswith("/")
 
@@ -549,6 +557,7 @@ class SyncFromUpstream(Step):
 
         substate = state.substate("from_upstream",
                                   ["sync", "paths", "metadata_path", "tests_path", "local_tree", "sync_tree"])
+        substate.target_rev = state.kwargs["rev"]
         runner = SyncFromUpstreamRunner(substate)
         runner.run()
         state.remove_substate("from_upstream")
@@ -563,6 +572,21 @@ class UpdateCheckout(Step):
         sync_tree.update(state.sync["remote_url"],
                          state.sync["branch"],
                          state.local_branch)
+
+
+class GetSyncTargetCommit(Step):
+    provides = ["sync_commit"]
+
+    def create(self, state):
+        if state.target_rev is None:
+            #Use upstream branch HEAD as the base commit
+            state.sync_commit = state.sync_tree.get_remote_sha1(state.sync["remote_url"],
+                                                                state.sync["branch"])
+        else:
+            state.sync_commit = Commit(sync_tree, state.rev)
+
+        state.sync_tree.checkout(state.sync_commit.sha1, state.local_branch, force=True)
+        logger.debug("New base commit is %s" % state.sync_commit.sha1)
 
 
 class LoadManifest(Step):
@@ -665,6 +689,7 @@ class UpdateRunner(StepRunner):
 
 class SyncFromUpstreamRunner(StepRunner):
     steps = [UpdateCheckout,
+             GetSyncTargetCommit,
              LoadManifest,
              UpdateManifest,
              CopyWorkTree,
@@ -682,8 +707,7 @@ class WPTUpdate(object):
     def __init__(self, runner_cls=UpdateRunner, **kwargs):
         self.runner_cls = runner_cls
         if kwargs["serve_root"] is None:
-            paths = wptcommandline.get_test_paths(kwargs["config"])
-            kwargs["serve_root"] = paths["/"]["tests_path"]
+            kwargs["serve_root"] = kwargs["test_paths"]["/"]["tests_path"]
 
         #This must be before we try to reload state
         do_delayed_imports(kwargs["serve_root"])

@@ -192,6 +192,7 @@ def set_from_config(kwargs):
             kwargs["test_paths"]["/"] = {}
         kwargs["test_paths"]["/"]["metadata_path"] = kwargs["metadata_root"]
 
+
 def get_test_paths(config):
     # Set up test_paths
     test_paths = OrderedDict()
@@ -207,11 +208,11 @@ def get_test_paths(config):
     return test_paths
 
 
-
 def exe_path(name):
     path = find_executable(name)
     if os.access(path, os.X_OK):
         return path
+
 
 def check_args(kwargs):
     from mozrunner import debugger_arguments

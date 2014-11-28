@@ -333,16 +333,14 @@ def sync_tests(paths, local_tree, wpt, bug):
                             "metadata_path": paths["sync_dest"]["metadata_path"]}}
 
         manifest_loader = testloader.ManifestLoader(sync_paths)
-        initial_manifest = manifest_loader.load()
-        wpt.copy_work_tree(paths["sync_dest"]["test_path"])
-        new_manifest = metadata.update_manifest(paths["sync"],
-                                                paths["sync_dest"]["metadata_path"])
+        initial_manifests = manifest_loader.load()
+        wpt.copy_work_tree(paths["sync_dest"]["tests_path"])
 
         local_tree.create_patch("web-platform-tests_update_%s" % wpt.rev,
                                 "Update web-platform-tests to revision %s" % wpt.rev)
-        local_tree.add_new(os.path.relpath(paths["sync_dest"]["test_path"],
+        local_tree.add_new(os.path.relpath(paths["sync_dest"]["tests_path"],
                                            local_tree.root))
-        local_tree.update_patch(include=[paths["sync_dest"]["test_path"],
+        local_tree.update_patch(include=[paths["sync_dest"]["tests_path"],
                                          paths["sync_dest"]["metadata_path"]])
     except Exception as e:
         #bug.comment("Update failed with error:\n %s" % traceback.format_exc())
@@ -351,7 +349,7 @@ def sync_tests(paths, local_tree, wpt, bug):
     finally:
         pass  # wpt.clean()
 
-    return initial_manifest, new_manifest
+    return initial_manifests
 
 
 def update_metadata(paths, local_tree, initial_rev, bug, log_files, ignore_existing,
@@ -381,8 +379,11 @@ def update_metadata(paths, local_tree, initial_rev, bug, log_files, ignore_exist
             pass
 
         if not local_tree.is_clean():
-            local_tree.add_new(os.path.relpath(paths["metadata"], local_tree.root))
-            local_tree.update_patch(include=[paths["metadata"]])
+            metadata_paths = [manifest_path["metadata_path"]
+                              for manifest_path in paths["test_paths"].itervalues()]
+            for path in metadata_paths:
+                local_tree.add_new(os.path.relpath(path, local_tree.root))
+            local_tree.update_patch(include=metadata_paths)
 
     except Exception as e:
         #bug.comment("Update failed with error:\n %s" % traceback.format_exc())
@@ -439,8 +440,12 @@ expected data."""
         wpt_repo = WebPlatformTests(config["web-platform-tests"]["remote_url"],
                                     paths["sync"],
                                     rev=rev)
-        initial_manifest, new_manifest = sync_tests(paths, local_tree, wpt_repo, bug)
-        initial_rev = initial_manifest.rev
+        initial_manifests = sync_tests(paths, local_tree, wpt_repo, bug)
+        initial_rev = None
+        for manifest, path_data in initial_manifests.iteritems():
+            if path_data["url_base"] == "/":
+                initial_rev = manifest.rev
+                break
 
     if kwargs["run_log"]:
         update_metadata(paths,

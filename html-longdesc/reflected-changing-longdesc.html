@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Longdesc test: Reflection when longdesc changes</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+  <img src="picture.png" alt="the image" longdesc="fail.html">
+  <script>
+    var newValue = '<img src="picture.png" alt="the image" longdesc="http://example.org/pass.html">';
+    document.querySelector('img').outerHTML = newValue;
+    
+    assert_equals(document.querySelector("img[longdesc]").longDesc, "http://example.org/pass.html", "Longdesc value got updated");
+    done()
+  </script>
+ </body>
+</html>

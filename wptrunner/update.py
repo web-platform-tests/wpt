@@ -2,25 +2,30 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import cPickle as pickle
+import json
 import os
+import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import traceback
 import uuid
 
-from mozlog.structured import commandline
+from mozlog.structured import structuredlog, commandline
 
+import config
 import vcs
 from vcs import git, hg
-manifest = None
 import metadata
 import testloader
 import wptcommandline
 
+manifest = None
 logger = None
 
-base_path = os.path.abspath(os.path.split(__file__)[0])
+here = os.path.abspath(os.path.split(__file__)[0])
 
 bsd_license = """W3C 3-clause BSD License
 
@@ -70,104 +75,40 @@ def setup_logging(args, defaults):
 
     return logger
 
-class RepositoryError(Exception):
-    pass
 
+def copy_wpt_tree(tree, dest):
+    if os.path.exists(dest):
+        assert os.path.isdir(dest)
 
-class WebPlatformTests(object):
-    def __init__(self, remote_url, repo_path, rev="origin/master"):
-        self.remote_url = remote_url
-        self.repo_path = repo_path
-        self.target_rev = rev
-        self.local_branch = uuid.uuid4().hex
-
-    def update(self):
-        if not os.path.exists(self.repo_path):
-            os.makedirs(self.repo_path)
-        if not vcs.is_git_root(self.repo_path):
-            git("clone", self.remote_url, ".", repo=self.repo_path)
-            git("checkout", "-b", self.local_branch, self.target_rev, repo=self.repo_path)
-            assert vcs.is_git_root(self.repo_path)
+    for sub_path in os.listdir(dest):
+        path = os.path.join(dest, sub_path)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
         else:
-            if git("status", "--porcelain", repo=self.repo_path):
-                raise RepositoryError("Repository in %s not clean" % self.repo_path)
+            os.remove(path)
 
-            git("fetch",
-                self.remote_url,
-                "%s:%s" % (self.target_rev,
-                           self.local_branch),
-                repo=self.repo_path)
-            git("checkout", self.local_branch, repo=self.repo_path)
-        git("submodule", "init", repo=self.repo_path)
-        git("submodule", "update", "--init", "--recursive", repo=self.repo_path)
+    for tree_path in tree.paths():
+        source_path = os.path.join(tree.root, tree_path)
+        dest_path = os.path.join(dest, tree_path)
 
-    @property
-    def rev(self):
-        if vcs.is_git_root(self.repo_path):
-            return git("rev-parse", "HEAD", repo=self.repo_path).strip()
-        else:
-            return None
-
-    def clean(self):
-        git("checkout", self.rev, repo=self.repo_path)
-        git("branch", "-D", self.local_branch, repo=self.repo_path)
-
-    def _tree_paths(self):
-        repo_paths = [self.repo_path] +  [os.path.join(self.repo_path, path)
-                                          for path in self._submodules()]
-
-        rv = []
-
-        for repo_path in repo_paths:
-            paths = git("ls-tree", "-r", "--name-only", "HEAD", repo=repo_path).split("\n")
-            rel_path = os.path.relpath(repo_path, self.repo_path)
-            rv.extend([os.path.join(rel_path, item.strip()) for item in paths if item.strip()])
-
-        return rv
-
-    def _submodules(self):
-        output = git("submodule", "status", "--recursive", repo=self.repo_path)
-        rv = []
-        for line in output.split("\n"):
-            line = line.strip()
-            if not line:
-                continue
-            parts = line.split(" ")
-            rv.append(parts[1])
-        return rv
-
-    def copy_work_tree(self, dest):
-        if os.path.exists(dest):
-            assert os.path.isdir(dest)
-
-        for sub_path in os.listdir(dest):
-            path = os.path.join(dest, sub_path)
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-            else:
-                os.remove(path)
-
-        for tree_path in self._tree_paths():
-            source_path = os.path.join(self.repo_path, tree_path)
-            dest_path = os.path.join(dest, tree_path)
-
-            dest_dir = os.path.split(dest_path)[0]
-            if not os.path.isdir(source_path):
-                if not os.path.exists(dest_dir):
-                    os.makedirs(dest_dir)
-                shutil.copy2(source_path, dest_path)
-
-        for source, destination in [("testharness_runner.html", ""),
-                                    ("testharnessreport.js", "resources/")]:
-            source_path = os.path.join(base_path, source)
-            dest_path = os.path.join(dest, destination, os.path.split(source)[1])
+        dest_dir = os.path.split(dest_path)[0]
+        if not os.path.isdir(source_path):
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
             shutil.copy2(source_path, dest_path)
 
-        self.add_license(dest)
+    for source, destination in [("testharness_runner.html", ""),
+                                ("testharnessreport.js", "resources/")]:
+        source_path = os.path.join(here, source)
+        dest_path = os.path.join(dest, destination, os.path.split(source)[1])
+        shutil.copy2(source_path, dest_path)
 
-    def add_license(self, dest):
-        with open(os.path.join(dest, "LICENSE"), "w") as f:
-            f.write(bsd_license)
+    add_license(dest)
+
+
+def add_license(dest):
+    with open(os.path.join(dest, "LICENSE"), "w") as f:
+        f.write(bsd_license)
 
 
 class NoVCSTree(object):
@@ -182,6 +123,7 @@ class NoVCSTree(object):
     def is_type(cls, path):
         return True
 
+    @property
     def is_clean(self):
         return True
 
@@ -207,6 +149,15 @@ class HgTree(object):
         self.root = root
         self.hg = vcs.bind_to_repo(hg, self.root)
 
+    def __getstate__(self):
+        rv = self.__dict__.copy()
+        del rv['hg']
+        return rv
+
+    def __setstate__(self, dict):
+        self.__dict__.update(dict)
+        self.hg = vcs.bind_to_repo(vcs.hg, self.root)
+
     @classmethod
     def is_type(cls, path):
         try:
@@ -215,6 +166,7 @@ class HgTree(object):
             return False
         return True
 
+    @property
     def is_clean(self):
         return self.hg("status").strip() == ""
 
@@ -265,6 +217,15 @@ class GitTree(object):
         self.git = vcs.bind_to_repo(git, self.root)
         self.message = None
 
+    def __getstate__(self):
+        rv = self.__dict__.copy()
+        del rv['git']
+        return rv
+
+    def __setstate__(self, dict):
+        self.__dict__.update(dict)
+        self.git = vcs.bind_to_repo(vcs.git, self.root)
+
     @classmethod
     def is_type(cls, path):
         try:
@@ -273,6 +234,14 @@ class GitTree(object):
             return False
         return True
 
+    @property
+    def rev(self):
+        if vcs.is_git_root(self.root):
+            return self.git("rev-parse", "HEAD").strip()
+        else:
+            return None
+
+    @property
     def is_clean(self):
         return self.git("status").strip() == ""
 
@@ -300,164 +269,475 @@ class GitTree(object):
     def commit_patch(self):
         pass
 
+    def init(self):
+        self.git("init")
+        assert vcs.is_git_root(self.root)
 
-class Runner(object):
-    def __init__(self, bug, **kwargs):
-        self.bug = bug
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
+    def checkout(self, rev, branch=None, force=False):
+        args = []
+        if branch:
+            branches = [ref[len("refs/heads/"):] for sha1, ref in self.list_refs()
+                        if ref.startswith("refs/heads/")]
+            branch = get_unique_name(branches, branch)
 
-    def __enter__(self):
-        return self
+            args += ["-b", branch]
 
-    def __exit__(self, *args, **kwargs):
-        self.cleanup()
+        if force:
+            args.append("-f")
+        args.append(rev)
+        self.git("checkout", *args)
 
-    def cleanup(self):
-        pass
+    def update(self, remote, remote_branch, local_branch):
+        if not vcs.is_git_root(self.root):
+            self.init()
+        self.git("clean", "-xdf")
+        self.git("fetch", remote, "%s:%s" % (remote_branch, local_branch))
+        self.checkout(local_branch)
+        self.git("submodule", "update", "--init", "--recursive")
+
+    def clean(self):
+        self.git("checkout", self.rev)
+        self.git("branch", "-D", self.local_branch)
+
+    def paths(self):
+        repo_paths = [self.root] +  [os.path.join(self.root, path)
+                                     for path in self.submodules()]
+
+        rv = []
+
+        for repo_path in repo_paths:
+            paths = vcs.git("ls-tree", "-r", "--name-only", "HEAD", repo=repo_path).split("\n")
+            rel_path = os.path.relpath(repo_path, self.root)
+            rv.extend([os.path.join(rel_path, item.strip()) for item in paths if item.strip()])
+
+        return rv
+
+    def submodules(self):
+        output = self.git("submodule", "status", "--recursive")
+        rv = []
+        for line in output.split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split(" ")
+            rv.append(parts[1])
+        return rv
+
+class CommitMessage(object):
+    def __init__(self, text):
+        self.text = text
+        self._parse_message()
+
+    def __str__(self):
+        return self.text
+
+    def _parse_message(self):
+        lines = self.text.split("\n")
+        self.full_summary = lines[0]
+        self.body = "\n".join(lines[1:])
 
 
-def ensure_exists(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
+class Commit(object):
+    msg_cls = CommitMessage
+
+    _sha1_re = re.compile("^[0-9a-f]{40}$")
+
+    def __init__(self, tree, sha1):
+        assert self._sha1_re.match(sha1)
+
+        self.tree = tree
+        self.git = tree.git
+        self.sha1 = sha1
+        self.author, self.email, self.message = self._get_meta()
+
+    def __getstate__(self):
+        rv = self.__dict__.copy()
+        del rv['git']
+        return rv
+
+    def __setstate__(self, dict):
+        self.__dict__.update(dict)
+        self.git = self.tree.git
+
+    def _get_meta(self):
+        author, email, message = self.git("show", "-s", "--format=format:%an\n%ae\n%B", self.sha1).split("\n", 2)
+        return author, email, self.msg_cls(message)
 
 
-def sync_tests(paths, local_tree, wpt, bug):
-    wpt.update()
+class Step(object):
+    provides = []
 
-    do_delayed_imports(paths["sync"])
+    def run(self, step_index, state):
+        name = self.__class__.__name__
 
-    try:
-        #bug.comment("Updating to %s" % wpt.rev)
-        sync_paths = {"/": {"tests_path": paths["sync"],
-                            "metadata_path": paths["sync_dest"]["metadata_path"]}}
-
-        manifest_loader = testloader.ManifestLoader(sync_paths)
-        initial_manifests = manifest_loader.load()
-        wpt.copy_work_tree(paths["sync_dest"]["tests_path"])
-
-        local_tree.create_patch("web-platform-tests_update_%s" % wpt.rev,
-                                "Update web-platform-tests to revision %s" % wpt.rev)
-        local_tree.add_new(os.path.relpath(paths["sync_dest"]["tests_path"],
-                                           local_tree.root))
-        local_tree.update_patch(include=[paths["sync_dest"]["tests_path"],
-                                         paths["sync_dest"]["metadata_path"]])
-    except Exception as e:
-        #bug.comment("Update failed with error:\n %s" % traceback.format_exc())
-        sys.stderr.write(traceback.format_exc())
-        raise
-    finally:
-        pass  # wpt.clean()
-
-    return initial_manifests
-
-
-def update_metadata(paths, local_tree, initial_rev, bug, log_files, ignore_existing,
-                    wpt_repo=None):
-    try:
         try:
-            if wpt_repo is not None:
-                name = "web-platform-tests_update_%s_metadata" % wpt_repo.rev
-                message = "Update web-platform-tests expected data to revision %s" % wpt_repo.rev
+            stored_step = state.steps[step_index]
+        except IndexError:
+            stored_step = None
+
+        if stored_step == name:
+            self.restore(state)
+        elif stored_step is None:
+            self.create(state)
+            assert set(self.provides).issubset(set(state.keys()))
+            state.steps = state.steps + [name]
+        else:
+            raise ValueError("Expected a %s step, got a %s step" % (self.__class__.__name__, stored_step))
+
+    def create(self, data):
+        raise NotImplementedError
+
+    def restore(self, state):
+        logger.debug("Using stored state")
+        for key in self.provides:
+            assert key in state
+
+
+exit_unclean = object()
+exit_clean = object()
+
+class StepRunner(object):
+    steps = []
+
+    def __init__(self, state):
+        self.state = state
+        if "steps" not in state:
+            state.steps = []
+
+    def run(self):
+        rv = None
+        for step_index, step in enumerate(self.steps):
+            logger.debug("Starting step %s" % step.__name__)
+            rv = step().run(step_index, self.state)
+            if rv in (exit_clean, exit_unclean):
+                break
+
+        if rv in (exit_clean, None):
+            self.state.clear()
+
+        return rv
+
+class State(object):
+    fn = os.path.join(here, ".wpt-update.lock")
+
+    def __new__(cls, parent=None):
+        if parent is None:
+            rv = cls.load()
+            if rv is not None:
+                logger.debug("Existing state found")
+                return rv
             else:
-                name = "web-platform-tests_update_metadata"
-                message = "Update web-platform-tests expected data"
+                logger.debug("No existing state found")
 
-            local_tree.create_patch(name, message)
-        except subprocess.CalledProcessError:
-            # Patch with that name already exists, probably
-            pass
-        needs_human = metadata.update_expected(paths["test_paths"],
-                                               paths["serve"],
-                                               log_files,
-                                               rev_old=initial_rev,
-                                               ignore_existing=ignore_existing,
-                                               sync_root=paths.get("sync", None))
+        return object.__new__(cls, parent)
 
-        if needs_human:
-            #TODO: List all the files that should be checked carefully for changes.
-            pass
+    def __init__(self, parent=None):
+        if hasattr(self, "_data"):
+            return
 
-        if not local_tree.is_clean():
+        self._parent = parent
+        self._children = {}
+        self._data = {}
+
+    @classmethod
+    def load(cls):
+        try:
+            with open(cls.fn) as f:
+                try:
+                    rv = pickle.load(f)
+                    logger.debug("Loading data %r" % (rv._data,))
+                    return rv
+                except EOFError:
+                    logger.warning("Found empty state file")
+        except IOError:
+            logger.debug("IOError")
+            return
+
+    def substate(self, name, init_values):
+        if name not in self._children:
+            new_state = State(parent=self)
+            for key in init_values:
+                setattr(new_state, key, self._data[key])
+            self._children[name] = new_state
+        return self._children[name]
+
+    def remove_substate(self, name):
+        del self._children[name]
+
+    def save(self):
+        if self._parent:
+            self._parent.save()
+        else:
+            with open(self.fn, "w") as f:
+                pickle.dump(self, f)
+
+    def is_empty(self):
+        return self._data == {} and self._children == {}
+
+    def clear(self):
+        if self._parent is None:
+            try:
+                os.unlink(self.fn)
+            except OSError:
+                pass
+        else:
+            self._data = {}
+            self._parent.save()
+
+    def __setattr__(self, key, value):
+        if key.startswith("_"):
+            object.__setattr__(self, key, value)
+        else:
+            self._data[key] = value
+            self.save()
+
+    def __getattr__(self, key):
+        if key.startswith("_"):
+            raise AttributeError
+        try:
+            return self._data[key]
+        except KeyError:
+            raise AttributeError
+
+    def __contains__(self, key):
+        return key in self._data
+
+    def update(self, items):
+        self._data.update(items)
+        self.save()
+
+    def keys(self):
+        return self._data.keys()
+
+class LoadConfig(Step):
+    provides = ["sync", "paths", "metadata_path", "tests_path"]
+    def create(self, state):
+        cfg = state.kwargs["config"]
+        paths = wptcommandline.get_test_paths(cfg)
+
+        state.sync = {"remote_url": cfg["web-platform-tests"]["remote_url"],
+                      "branch": cfg["web-platform-tests"]["branch"],
+                      "path": cfg["web-platform-tests"]["sync_path"]}
+
+        state.paths = paths
+        state.tests_path = paths["/"]["tests_path"]
+        state.metadata_path = paths["/"]["metadata_path"]
+
+        assert state.tests_path.startswith("/")
+
+class LoadTrees(Step):
+    provides = ["local_tree", "sync_tree"]
+
+    def create(self, state):
+        if os.path.exists(state.sync["path"]):
+            sync_tree = GitTree(root=state.sync["path"])
+        else:
+            sync_tree = None
+
+        state.update({"local_tree": GitTree(),
+                      "sync_tree": sync_tree})
+
+
+class SyncFromUpstream(Step):
+    def create(self, state):
+        if not state.kwargs["sync"]:
+            return
+
+        if not state.sync_tree:
+            os.mkdir(state.sync["path"])
+            state.sync_tree = GitTree(root=state.sync["path"])
+
+        substate = state.substate("from_upstream",
+                                  ["sync", "paths", "metadata_path", "tests_path", "local_tree", "sync_tree"])
+        runner = SyncFromUpstreamRunner(substate)
+        runner.run()
+        state.remove_substate("from_upstream")
+
+
+class UpdateCheckout(Step):
+    provides = ["local_branch"]
+
+    def create(self, state):
+        sync_tree = state.sync_tree
+        state.local_branch = uuid.uuid4().hex
+        sync_tree.update(state.sync["remote_url"],
+                         state.sync["branch"],
+                         state.local_branch)
+
+
+class LoadManifest(Step):
+    provides = ["test_manifest"]
+
+    def create(self, state):
+        state.test_manifest = testloader.ManifestLoader(state.tests_path).load_manifest(
+            state.tests_path, state.metadata_path,
+        )
+
+
+class UpdateManifest(Step):
+    provides = ["initial_rev"]
+    def create(self, state):
+        test_manifest = state.test_manifest
+        state.initial_rev = test_manifest.rev
+        manifest.update(state.sync["path"], "/", test_manifest)
+        manifest.write(test_manifest, os.path.join(state.metadata_path, "MANIFEST.json"))
+
+
+class CopyWorkTree(Step):
+    def create(self, state):
+        copy_wpt_tree(state.sync_tree,
+                      state.tests_path)
+
+
+class CreateSyncPatch(Step):
+    def create(self, state):
+        local_tree = state.local_tree
+        sync_tree = state.sync_tree
+
+        local_tree.create_patch("web-platform-tests_update_%s" % sync_tree.rev,
+                                "Update web-platform-tests to revision %s" % sync_tree.rev)
+        local_tree.add_new(os.path.relpath(state.tests_path,
+                                           local_tree.root))
+        local_tree.update_patch(include=[state.tests_path,
+                                         state.metadata_path])
+
+
+class UpdateMetadata(Step):
+    def create(self, state):
+        if not state.kwargs["run_log"]:
+            return
+
+        substate = state.substate("update_metadata",
+                                  ["local_tree", "sync_tree", "paths"])
+        substate.run_log = state.kwargs["run_log"]
+        substate.serve_root = state.kwargs["serve_root"]
+        substate.ignore_existing = state.kwargs["ignore_existing"]
+        runner = MetadataUpdateRunner(substate )
+        runner.run()
+        state.remove_substate("update_metadata")
+
+
+class UpdateExpected(Step):
+    provides = ["needs_human"]
+
+    def create(self, state):
+        if state.sync_tree is not None:
+            sync_root = state.sync_tree.root
+        else:
+            sync_root = None
+
+        state.needs_human = metadata.update_expected(state.paths,
+                                                        state.serve_root,
+                                                        state.run_log,
+                                                        rev_old=None,
+                                                        ignore_existing=state.ignore_existing,
+                                                        sync_root=sync_root)
+
+
+class CreateMetadataPatch(Step):
+    def create(self, state):
+        local_tree = state.local_tree
+        sync_tree = state.sync_tree
+
+        if sync_tree is not None:
+            name = "web-platform-tests_update_%s_metadata" % sync_tree.rev
+            message = "Update web-platform-tests expected data to revision %s" % sync_tree.rev
+        else:
+            name = "web-platform-tests_update_metadata"
+            message = "Update web-platform-tests expected data"
+
+        local_tree.create_patch(name, message)
+
+        if not local_tree.is_clean:
             metadata_paths = [manifest_path["metadata_path"]
-                              for manifest_path in paths["test_paths"].itervalues()]
+                              for manifest_path in state.paths.itervalues()]
             for path in metadata_paths:
                 local_tree.add_new(os.path.relpath(path, local_tree.root))
             local_tree.update_patch(include=metadata_paths)
 
-    except Exception as e:
-        #bug.comment("Update failed with error:\n %s" % traceback.format_exc())
-        sys.stderr.write(traceback.format_exc())
-        raise
+
+class UpdateRunner(StepRunner):
+    steps = [LoadConfig,
+             LoadTrees,
+             SyncFromUpstream,
+             UpdateMetadata]
+
+
+class SyncFromUpstreamRunner(StepRunner):
+    steps = [UpdateCheckout,
+             LoadManifest,
+             UpdateManifest,
+             CopyWorkTree,
+             CreateSyncPatch]
+
+
+class MetadataUpdateRunner(StepRunner):
+    steps = [
+        UpdateExpected,
+        CreateMetadataPatch
+    ]
+
+
+class WPTUpdate(object):
+    def __init__(self, runner_cls=UpdateRunner, **kwargs):
+        self.runner_cls = runner_cls
+        if kwargs["serve_root"] is None:
+            paths = wptcommandline.get_test_paths(kwargs["config"])
+            kwargs["serve_root"] = paths["/"]["tests_path"]
+
+        #This must be before we try to reload state
+        do_delayed_imports(kwargs["serve_root"])
+
+        self.state = State()
+        self.kwargs = kwargs
+
+    def run(self, **kwargs):
+        if self.kwargs["abort"]:
+            self.abort()
+            return exit_clean
+
+        if not self.kwargs["continue"] and not self.state.is_empty():
+            logger.error("Found existing state. Run with --continue to resume or --abort to clear state")
+            return exit_unclean
+
+        if self.kwargs["continue"]:
+            if self.state.is_empty():
+                logger.error("No sync in progress?")
+                return exit_clean
+
+            self.kwargs = self.state.kwargs
+        else:
+            self.state.kwargs = self.kwargs
+
+        update_runner = self.runner_cls(self.state)
+        return update_runner.run()
+
+    def abort(self):
+        self.state.clear()
 
 
 def run_update(**kwargs):
-    config = kwargs["config"]
+    updater = WPTUpdate(**kwargs)
+    return updater.run()
 
-    paths = {}
-    paths["test_paths"] = kwargs["test_paths"]
-
-    if kwargs["sync"]:
-        paths["sync_dest"] = kwargs["test_paths"]["/"]
-        paths["sync"] = kwargs["sync_path"]
-
-
-    paths["serve"] = kwargs["serve_root"] if kwargs["serve_root"] else paths["test_paths"]["/"]["tests_path"]
-
-#    for path in paths.itervalues():
-#        ensure_exists(path)
-
-    if not kwargs["sync"] and not kwargs["run_log"]:
-        print """Nothing to do.
-
-Specify --sync to checkout latest upstream or one or more log files to update
-expected data."""
-
-    if kwargs["patch"]:
-        for tree_cls in [HgTree, GitTree, NoVCSTree]:
-            if tree_cls.is_type(os.path.abspath(os.curdir)):
-                local_tree = tree_cls()
-                print "Updating into a %s tree" % local_tree.name
-                break
-    else:
-        local_tree = NoVCSTree()
-
-    if not local_tree.is_clean():
-        sys.stderr.write("Working tree is not clean\n")
-        if not kwargs["no_check_clean"]:
-            sys.exit(1)
-
-    rev = kwargs.get("rev")
-    if rev is None:
-        rev = config["web-platform-tests"].get("branch", "master")
-
-    bug = None
-
-    initial_rev = None
-    wpt_repo = None
-
-    if kwargs["sync"]:
-        wpt_repo = WebPlatformTests(config["web-platform-tests"]["remote_url"],
-                                    paths["sync"],
-                                    rev=rev)
-        initial_manifests = sync_tests(paths, local_tree, wpt_repo, bug)
-        initial_rev = None
-        for manifest, path_data in initial_manifests.iteritems():
-            if path_data["url_base"] == "/":
-                initial_rev = manifest.rev
-                break
-
-    if kwargs["run_log"]:
-        update_metadata(paths,
-                        local_tree,
-                        initial_rev,
-                        bug,
-                        kwargs["run_log"],
-                        kwargs["ignore_existing"],
-                        wpt_repo=wpt_repo)
-
+def remove_logging_args(args):
+    for name in args.keys():
+        if name.startswith("log_"):
+            args.pop(name)
 
 def main():
+    global logger
     args = wptcommandline.parse_args_update()
-    success = run_update(**args)
+    logger = commandline.setup_logging("wptsync", args)
+    remove_logging_args(args)
+    assert structuredlog.get_default_logger() is not None
+    try:
+        success = run_update(**args)
+    except (KeyboardInterrupt, SystemExit, subprocess.CalledProcessError):
+        pass
+    except:
+        import pdb
+        import traceback
+        print traceback.format_exc()
+        pdb.post_mortem()
     sys.exit(0 if success else 1)

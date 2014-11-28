@@ -301,6 +301,8 @@ def check_args(kwargs):
 
 
 def create_parser_update():
+    from mozlog.structured import commandline
+
     parser = argparse.ArgumentParser("web-platform-tests-update",
                                      description="Update script for web-platform-tests tests.")
     parser.add_argument("--config", action="store", type=abs_path, help="Path to config file")
@@ -325,9 +327,12 @@ def create_parser_update():
     parser.add_argument("--sync", dest="sync", action="store_true", default=False,
                         help="Sync the tests with the latest from upstream")
     parser.add_argument("--ignore-existing", action="store_true", help="When updating test results only consider results from the logfiles provided, not existing expectations.")
+    parser.add_argument("--continue", action="store_true", help="Continue a previously started run of the update script")
+    parser.add_argument("--abort", action="store_true", help="Clear state from a previous incomplete run of the update script")
     # Should make this required iff run=logfile
     parser.add_argument("run_log", nargs="*", type=abs_path,
                         help="Log file from run of tests")
+    commandline.add_logging_group(parser)
     return parser
 
 

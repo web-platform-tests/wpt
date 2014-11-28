@@ -143,3 +143,12 @@ mediaSource.addEventListener("sourceopen", function () {
   sourceBuffer.appendBuffer(new ArrayBuffer());
 });
 </script>
+<body class="show_output">
+<h1>Note:</h1>
+<p class="output">If error == "MediaSource is not defined" and using Mozilla Firefox (33.0):</p>
+<ol id="d">
+<li>Go to about:config
+<li>Search for media.mediasource.enabled (should be set to false)
+<li>Double-click on it (set to true)
+<li>Try again, and you will get error NS_ERROR_FAILURE, which seems to be related to Firefox not allowing XSS (Cross-site scripting)
+</ol>

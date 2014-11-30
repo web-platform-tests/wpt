@@ -326,7 +326,7 @@ def load_config(default_path, override_path=None, **kwargs):
     if kwargs.get("config_path"):
       other_path = os.path.abspath(os.path.expanduser(kwargs.get("config_path")))
       if os.path.exists(other_path):
-        base_obj =rv
+        base_obj = rv
         with open(other_path) as f:
             override_obj = json.load(f)
         rv = merge_json(base_obj, override_obj)

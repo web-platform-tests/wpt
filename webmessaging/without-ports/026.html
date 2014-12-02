@@ -1,0 +1,17 @@
+<!doctype html>
+<title>Cloning objects with getter properties</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+async_test(function() {
+   var obj = {};
+   Object.defineProperty(obj, "field", { get: this.step_func(function(){ assert_unreached(); })});
+
+   postMessage(obj, '*');
+   onmessage = this.step_func(function(e) {
+     assert_not_exists(e.data, "field");
+     this.done();
+  });
+});
+</script>

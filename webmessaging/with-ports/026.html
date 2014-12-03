@@ -5,9 +5,9 @@
 <div id=log></div>
 <script>
 test(function() {
-  assert_throws(new TypeError(), function() {
-  	postMessage('', '*', {length:1});
-  });
+   assert_throws(new TypeError(), function() {
+      postMessage('', '*', {length:1});
+   });
 });
 </script>
 

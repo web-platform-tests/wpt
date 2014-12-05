@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>  ClipboardEvent - integration with execCommand, events are syncronous  - cut on 'iframe.contentWindow'</title>
+    <title>  ClipboardEvent - integration with execCommand, events are syncronous  - copy on 'iframe.contentWindow'</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -27,13 +27,19 @@ function onTestSetupReady( eventType ){
 		sel.removeAllRanges();
 		sel.addRange(rng);
 	}
+}
+function triggerTestManually(eventType){
 	try{
+        var ifr=document.getElementById('iframe');
 		window.afterExecCommand=false;
-		ifr.contentDocument.execCommand(window.eventType, false, false);
+		var execSucceeded = ifr.contentDocument.execCommand(eventType, false, false);
 		window.afterExecCommand=true;
-	}catch(e){
-		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
-	}
+        if(!execSucceeded){
+            result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+        }
+    }catch(e){
+        result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+    }
 }
 
     </script>
@@ -47,7 +53,7 @@ function onTestSetupReady( eventType ){
     var dataToPaste='';
     var externalPassCondition=null;
     var eventTarget='iframe.contentWindow';
-    var eventType='cut';
+    var eventType='copy';
     window.onload=function(){
         setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
     }

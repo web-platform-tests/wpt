@@ -307,18 +307,18 @@
         {input:'"111a"'},
         {input:'"1111a"'},
         {input:'"11111a"'},
-        {input:"url(a)", svg:'url(', submatch:true},
-        {input:"url(aa)", svg:'url(', submatch:true},
-        {input:"url(aaa)", svg:'url(', submatch:true},
-        {input:"url(aaaa)", svg:'url(', submatch:true},
-        {input:"url(aaaaa)", svg:'url(', submatch:true},
-        {input:"url(aaaaaa)", svg:'url(', submatch:true},
-        {input:"url('a')", svg:'url(', submatch:true},
-        {input:"url('aa')", svg:'url(', submatch:true},
-        {input:"url('aaa')", svg:'url(', submatch:true},
-        {input:"url('aaaa')", svg:'url(', submatch:true},
-        {input:"url('aaaaa')", svg:'url(', submatch:true},
-        {input:"url('aaaaaa')", svg:'url(', submatch:true},
+        {input:"url(a)", svg:'url(a)'},
+        {input:"url(aa)", svg:'url(aa)'},
+        {input:"url(aaa)", svg:'url(aaa)'},
+        {input:"url(aaaa)", svg:'url(aaaa)'},
+        {input:"url(aaaaa)", svg:'url(aaaaa)'},
+        {input:"url(aaaaaa)", svg:'url(aaaaaa)'},
+        {input:"url('a')", svg:'url(a)'},
+        {input:"url('aa')", svg:'url(aa)'},
+        {input:"url('aaa')", svg:'url(aaa)'},
+        {input:"url('aaaa')", svg:'url(aaaa)'},
+        {input:"url('aaaaa')", svg:'url(aaaaa)'},
+        {input:"url('aaaaaa')", svg:'url(aaaaaa)'},
         {input:"#a"},
         {input:"#aa"},
         {input:"#aaaa"},
@@ -342,15 +342,15 @@
         {input:"calc(123)"},
         {input:"rgb(119, 255, 255)", q:"#7ff", s:"#7ff", svg:"#7ff"},
         {input:"rgba(119, 255, 255, 001)", q:"#7ff", s:"#7ff", svg:"#7ff"},
-        {input:"hsl(100, 100%, 50%)", q:"#5f0", s:"#5f0", svg:"#5f0"},
-        {input:"hsla(100, 100%, 50%, 001)", q:"#5f0", s:"#5f0", svg:"#5f0"},
-        {input:"rgb(calc(100 + 019), 255, 255)", q:"#7ff", s:"#7ff", svg:"#7ff"},
-        {input:"rgba(calc(100 + 019), 255, 255, 001)", q:"#7ff", s:"#7ff", svg:"#7ff"},
-        {input:"hsl(calc(050 + 050), 100%, 50%)", q:"#5f0", s:"#5f0", svg:"#5f0"},
-        {input:"hsla(calc(050 + 050), 100%, 50%, 001)", q:"#5f0", s:"#5f0", svg:"#5f0"},
-        {input:"rgb(/**/119, 255, 255)", q:"#7ff", s:"#7ff", svg:"#7ff"},
-        {input:"rgb(/**/119/**/, /**/255/**/, /**/255/**/)", q:"#7ff", s:"#7ff", svg:"#7ff"},
-        {input:"rgb(calc(/**/100/**/ + /**/019/**/), 255, 255)", q:"#7ff", s:"#7ff", svg:"#7ff"},
+        {input:"hsl(100, 100%, 100%)", q:"#fff", s:"#fff", svg:"#fff"},
+        {input:"hsla(100, 100%, 100%, 001)", q:"#fff", s:"#fff", svg:"#fff"},
+        {input:"rgb(calc(100 + 155), 255, 255)", q:"#fff", s:"#fff", svg:"#fff"},
+        {input:"rgba(calc(100 + 155), 255, 255, 001)", q:"#fff", s:"#fff", svg:"#fff"},
+        {input:"hsl(calc(050 + 050), 100%, 100%)", q:"#fff", s:"#fff", svg:"#fff"},
+        {input:"hsla(calc(050 + 050), 100%, 100%, 001)", q:"#fff", s:"#fff", svg:"#fff"},
+        {input:"rgb(/**/255, 255, 255)", q:"#fff", s:"#fff", svg:"#fff"},
+        {input:"rgb(/**/255/**/, /**/255/**/, /**/255/**/)", q:"#fff", s:"#fff", svg:"#fff"},
+        {input:"rgb(calc(/**/100/**/ + /**/155/**/), 255, 255)", q:"#fff", s:"#fff", svg:"#fff"},
         {input:"#123 123 abc 12a", q:"#123 #000123 #abc #00012a", shorthand:true},
         {input:"rgb(119, 255, 255) 123", q:"#7ff #000123", shorthand:true},
         {input:"123 rgb(119, 255, 255)", q:"#000123 #7ff", shorthand:true},
@@ -451,15 +451,18 @@
                     q.svg.setAttribute('fill', t.input);
                     a.svg.setAttribute('fill', t.input);
                     s.svg.setAttribute('fill', t.input);
-                    if (t.submatch) {
-                        assert_true(q.getComputedStyle(q.svg).fill.indexOf(t.svg) > -1, 'SVG fill="" in quirks mode');
-                        assert_true(a.getComputedStyle(a.svg).fill.indexOf(t.svg) > -1, 'SVG fill="" in almost standards mode');
-                        assert_true(s.getComputedStyle(s.svg).fill.indexOf(t.svg) > -1, 'SVG fill="" in standards mode');
+                    if (t.svg) {
+                        q.svg_ref.setAttribute('fill', t.svg);
+                        a.svg_ref.setAttribute('fill', t.svg);
+                        s.svg_ref.setAttribute('fill', t.svg);
                     } else {
-                        assert_equals(q.getComputedStyle(q.svg).fill, t.svg ? t.svg : q.getComputedStyle(q.svg_ref).fill, 'SVG fill="" in quirks mode');
-                        assert_equals(a.getComputedStyle(a.svg).fill, t.svg ? t.svg : a.getComputedStyle(a.svg_ref).fill, 'SVG fill="" in almost standards mode');
-                        assert_equals(s.getComputedStyle(s.svg).fill, t.svg ? t.svg : s.getComputedStyle(s.svg_ref).fill, 'SVG fill="" in standards mode');
+                        q.svg_ref.removeAttribute('fill');
+                        a.svg_ref.removeAttribute('fill');
+                        s.svg_ref.removeAttribute('fill');
                     }
+                    assert_equals(q.getComputedStyle(q.svg).fill, q.getComputedStyle(q.svg_ref).fill, 'SVG fill="" in quirks mode');
+                    assert_equals(a.getComputedStyle(a.svg).fill, a.getComputedStyle(a.svg_ref).fill, 'SVG fill="" in almost standards mode');
+                    assert_equals(s.getComputedStyle(s.svg).fill, s.getComputedStyle(s.svg_ref).fill, 'SVG fill="" in standards mode');
                 });
             }
             test_q.done();

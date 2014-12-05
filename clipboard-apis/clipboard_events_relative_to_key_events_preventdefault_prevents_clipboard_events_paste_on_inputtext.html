@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - clipboard events relative to key events - preventDefault prevents clipboard events   - paste on 'input_text'</title>
+    <title>  ClipboardEvent - clipboard events relative to key events - preventDefault prevents clipboard events   - paste on 'input_text'</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -13,8 +13,8 @@
 
 var eventsFired=[], timeout;
 function logEvent(e){
-    eventsFired.push(e.type);
-    if(e.type==='keydown')e.preventDefault(); // no clipboard events should fire if preventDefault() is called here
+	eventsFired.push(e.type);
+	if(e.type==='keydown')e.preventDefault(); // no clipboard events should fire if preventDefault() is called here
 };
 document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('input_text').addEventListener( 'keydown', logEvent, false );
@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('input_text').addEventListener( 'paste', logEvent, false );
 },false);
 document.onkeyup = function(){
-    if(timeout)clearTimeout(timeout);
-    setTimeout(test, 500);
+	if(timeout)clearTimeout(timeout);
+	setTimeout(test, 500);
 }
 function clipboard_api_test(e){
   if(e)logEvent(e);
-    setTimeout(function(){
+	setTimeout(function(){
     var passed = eventsFired.join(',') === 'keydown,keydown,keyup,keyup' ;
     result( passed, 'Got: '+eventsFired.join(',') );
   }, 500);
@@ -45,11 +45,11 @@ function clipboard_api_test(e){
     <div id="log"></div>
     <script>
     var dataToPaste='';
-    var extPassCond=null;
+    var externalPassCondition=null;
     var eventTarget='input_text';
     var eventType='paste';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

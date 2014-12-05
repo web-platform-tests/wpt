@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - ClipboardEvent interface - synthetic paste event does not insert text/html payload data into INPUT   - paste on document</title>
+    <title>  ClipboardEvent - ClipboardEvent interface - synthetic paste event does not insert text/html payload data into INPUT   - paste on document</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -13,12 +13,16 @@
 /* Targets: document */
 function clipboard_api_test(e){ }
 function onTestSetupReady(type){
-    var evt = new ClipboardEvent(type);
-    evt.clipboardData.items.add('<em>synthetic event text</em>', 'text/html');
-    document.getElementsByTagName('input')[0].dispatchEvent(evt);
-    setTimeout(function(){
-        result(document.getElementsByTagName('input')[0].value.indexOf('synthetic event text') === -1);
-    }, 50);
+	try{
+		var evt = new ClipboardEvent(type, { bubbles:true, cancellable: true, dataType: 'text/html', data:'<em>synthetic event text</em>' });
+		document.getElementsByTagName('input')[0].dispatchEvent(evt);
+		setTimeout(function(){
+			result(document.getElementsByTagName('input')[0].value.indexOf('synthetic event text') === -1);
+		}, 50);
+	}catch(e){
+		result('Unexpected Exception when initiating ClipboardEvent: '+e);
+		return;
+	}
 }
 
     </script>
@@ -30,11 +34,11 @@ function onTestSetupReady(type){
     <div id="log"></div>
     <script>
     var dataToPaste="clipboard text" ;
-    var extPassCond=null;
+    var externalPassCondition=null;
     var eventTarget=document;
     var eventType='paste';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

@@ -27,13 +27,19 @@ function onTestSetupReady( eventType ){
 		sel.removeAllRanges();
 		sel.addRange(rng);
 	}
+}
+function triggerTestManually(eventType){
 	try{
+        var ifr=document.getElementById('iframe');
 		window.afterExecCommand=false;
-		ifr.contentDocument.execCommand(window.eventType, false, false);
+		var execSucceeded = ifr.contentDocument.execCommand(eventType, false, false);
 		window.afterExecCommand=true;
-	}catch(e){
-		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
-	}
+        if(!execSucceeded){
+            result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+        }
+    }catch(e){
+        result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+    }
 }
 
     </script>

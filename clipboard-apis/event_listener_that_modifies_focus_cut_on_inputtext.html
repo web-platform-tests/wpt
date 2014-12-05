@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - event listener that modifies focus  - cut on 'input_text'</title>
+    <title>  ClipboardEvent - event listener that modifies focus  - cut on 'input_text'</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -13,7 +13,7 @@
 /* External pass condition - clipboard data: "input 2" */
 
 function clipboard_api_test(e){
-    document.getElementById('second').focus();
+	document.getElementById('second').focus();
 }
 
 
@@ -26,11 +26,11 @@ function clipboard_api_test(e){
     <div id="log"></div>
     <script>
     var dataToPaste='';
-    var extPassCond="input 2" ;
+    var externalPassCondition="input 2" ;
     var eventTarget='input_text';
     var eventType='cut';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

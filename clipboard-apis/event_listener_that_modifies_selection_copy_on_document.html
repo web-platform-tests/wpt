@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - event listener that modifies selection  - copy on document</title>
+    <title>  ClipboardEvent - event listener that modifies selection  - copy on document</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -13,7 +13,7 @@
 /* External pass condition - clipboard data: "This is demo text" */
 
 function clipboard_api_test(e){
-    var range=document.createRange();
+	var range=document.createRange();
   range.selectNodeContents(document.getElementsByTagName('div')[0]);
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);
@@ -29,11 +29,11 @@ function clipboard_api_test(e){
     <div id="log"></div>
     <script>
     var dataToPaste='';
-    var extPassCond="This is demo text" ;
+    var externalPassCondition="This is demo text" ;
     var eventTarget=document;
     var eventType='copy';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

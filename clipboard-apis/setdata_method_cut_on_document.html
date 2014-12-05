@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - setData() method  - cut on document</title>
+    <title>  ClipboardEvent - setData() method  - cut on document</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -12,9 +12,9 @@
 /* paste data: "pasted text" */
 /* External pass condition - clipboard data: "modified text" */
 function clipboard_api_test(e){
-    var passed = false;
-    e.clipboardData.setData('text/plain', 'modified text');
-    e.preventDefault();
+	var passed = false;
+	e.clipboardData.setData('text/plain', 'modified text');
+	e.preventDefault();
 }
 /* TODO: should this (and similar) tests only work if we have "preflight" events? */
 /*
@@ -27,17 +27,15 @@ document.onbeforecut = function(){return false;}
 <body>
 
     <p>FAILED (This TC requires JavaScript enabled)</p>
-    <form>
-<input id="input_text" autofocus onfocus="this.select()" value="copied text">
-</form>
+    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
     <div id="log"></div>
     <script>
     var dataToPaste="pasted text" ;
-    var extPassCond="modified text" ;
+    var externalPassCondition="modified text" ;
     var eventTarget=document;
     var eventType='cut';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

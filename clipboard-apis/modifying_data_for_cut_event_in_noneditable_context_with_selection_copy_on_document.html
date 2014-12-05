@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - modifying data for cut event in non-editable context with selection  - copy on document</title>
+    <title>  ClipboardEvent - modifying data for cut event in non-editable context with selection  - copy on document</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -13,7 +13,7 @@
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "cut text" */
 function clipboard_api_test(e){
-    e.clipboardData.setData('text/plain', 'cut text');
+	e.clipboardData.setData('text/plain', 'cut text');
    e.preventDefault(); /* this event's default action is a NOOP since the selection can not be removed. */
 }
 
@@ -26,11 +26,11 @@ function clipboard_api_test(e){
     <div id="log"></div>
     <script>
     var dataToPaste="clipboard text" ;
-    var extPassCond="cut text" ;
+    var externalPassCondition="cut text" ;
     var eventTarget=document;
     var eventType='copy';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

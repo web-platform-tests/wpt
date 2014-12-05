@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - clipboard events relative to other input events   - cut on 'input_text'</title>
+    <title>  ClipboardEvent - clipboard events relative to other input events   - cut on 'input_text'</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -26,7 +26,7 @@ function clipboard_api_test(e){
     e.target.blur(); // causes change event
     e.target.form.checkValidity(); // causes invalid event
   }, 10);
-    setTimeout(function(){
+	setTimeout(function(){
     var evString = eventsFired.join(',')
     var passed =  evString === 'cut,cut handler done,input,change,invalid'; // Issue: should textInput fire? Chrome doesn't but I don't know if it's on purpose
     result( passed, 'Got: '+evString );
@@ -43,11 +43,11 @@ function clipboard_api_test(e){
     <div id="log"></div>
     <script>
     var dataToPaste='';
-    var extPassCond=null;
+    var externalPassCondition=null;
     var eventTarget='input_text';
     var eventType='cut';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

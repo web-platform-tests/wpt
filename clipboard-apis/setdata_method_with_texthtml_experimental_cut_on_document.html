@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - setData() method with text/html (experimental)  - cut on document</title>
+    <title>  ClipboardEvent - setData() method with text/html (experimental)  - cut on document</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -24,10 +24,10 @@ If the script tries to place text/html data on the clipboard, a conforming imple
 Note: IE throws for this test. Presumably it would use just "html", not "text/html" for the format argument if it supported this.
 */
 function clipboard_api_test(e){
-    var passed = false;
-    e.clipboardData.setData('text/html', '<p>copycut <b>modified</b> text</p>');
-    e.clipboardData.setData('text/plain', 'copycut modified text');
-    e.preventDefault();
+	var passed = false;
+	e.clipboardData.setData('text/html', '<p>copycut <b>modified</b> text</p>');
+	e.clipboardData.setData('text/plain', 'copycut modified text');
+	e.preventDefault();
 }
 
     </script>
@@ -35,17 +35,15 @@ function clipboard_api_test(e){
 <body>
 
     <p>FAILED (This TC requires JavaScript enabled)</p>
-    <form>
-<input id="input_text" autofocus onfocus="this.select()" value="copied text">
-</form>
+    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
     <div id="log"></div>
     <script>
     var dataToPaste='';
-    var extPassCond="{'text/html': '<p>copycut <b>modified</b> text</p>', 'text/plain':'copycut modified text'}" ;
+    var externalPassCondition="{'text/html': '<p>copycut <b>modified</b> text</p>', 'text/plain':'copycut modified text'}" ;
     var eventTarget=document;
     var eventType='cut';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

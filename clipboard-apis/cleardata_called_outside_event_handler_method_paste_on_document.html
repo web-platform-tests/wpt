@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - clearData() called outside event handler method  - paste on document</title>
+    <title>  ClipboardEvent - clearData() called outside event handler method  - paste on document</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -11,11 +11,10 @@
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "clipboard text" */
 function clipboard_api_test(e){
-    var cbData=e.clipboardData;
-    setTimeout( function(){
-        cbData.clearData();
-    }, 1 );
-    e.preventDefault();
+	var cbData=e.clipboardData;
+	setTimeout( function(){
+		cbData.clearData();
+	}, 1 );
 }
 
     </script>
@@ -23,17 +22,15 @@ function clipboard_api_test(e){
 <body>
 
     <p>FAILED (This TC requires JavaScript enabled)</p>
-    <form>
-<input id="input_text" autofocus onfocus="this.select()" value="copied text">
-</form>
+    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
     <div id="log"></div>
     <script>
     var dataToPaste="clipboard text" ;
-    var extPassCond="clipboard text" ;
+    var externalPassCondition="clipboard text" ;
     var eventTarget=document;
     var eventType='paste';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

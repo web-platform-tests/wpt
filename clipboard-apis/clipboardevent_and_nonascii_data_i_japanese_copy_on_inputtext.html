@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - ClipboardEvent and non-ASCII data I - Japanese  - copy on 'input_text'</title>
+    <title>  ClipboardEvent - ClipboardEvent and non-ASCII data I - Japanese  - copy on 'input_text'</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
@@ -13,8 +13,8 @@
 /* External pass condition - clipboard data: "テスト" */
 
 function clipboard_api_test(e){
-    e.clipboardData.setData( 'text/plain', 'テスト' );
-    e.preventDefault();
+	e.clipboardData.setData( 'text/plain', 'テスト' );
+	e.preventDefault();
 }
 
     </script>
@@ -26,11 +26,11 @@ function clipboard_api_test(e){
     <div id="log"></div>
     <script>
     var dataToPaste='';
-    var extPassCond="テスト" ;
+    var externalPassCondition="テスト" ;
     var eventTarget='input_text';
     var eventType='copy';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    window.onload=function(){
+        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
+    }
     </script>
 </body></html>

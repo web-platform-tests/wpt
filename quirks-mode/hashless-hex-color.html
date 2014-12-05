@@ -307,18 +307,18 @@
         {input:'"111a"'},
         {input:'"1111a"'},
         {input:'"11111a"'},
-        {input:"url(a)", svg:'url("a")'},
-        {input:"url(aa)", svg:'url("aa")'},
-        {input:"url(aaa)", svg:'url("aaa")'},
-        {input:"url(aaaa)", svg:'url("aaaa")'},
-        {input:"url(aaaaa)", svg:'url("aaaaa")'},
-        {input:"url(aaaaaa)", svg:'url("aaaaaa")'},
-        {input:"url('a')", svg:'url("a")'},
-        {input:"url('aa')", svg:'url("aa")'},
-        {input:"url('aaa')", svg:'url("aaa")'},
-        {input:"url('aaaa')", svg:'url("aaaa")'},
-        {input:"url('aaaaa')", svg:'url("aaaaa")'},
-        {input:"url('aaaaaa')", svg:'url("aaaaaa")'},
+        {input:"url(a)", svg:'url(', submatch:true},
+        {input:"url(aa)", svg:'url(', submatch:true},
+        {input:"url(aaa)", svg:'url(', submatch:true},
+        {input:"url(aaaa)", svg:'url(', submatch:true},
+        {input:"url(aaaaa)", svg:'url(', submatch:true},
+        {input:"url(aaaaaa)", svg:'url(', submatch:true},
+        {input:"url('a')", svg:'url(', submatch:true},
+        {input:"url('aa')", svg:'url(', submatch:true},
+        {input:"url('aaa')", svg:'url(', submatch:true},
+        {input:"url('aaaa')", svg:'url(', submatch:true},
+        {input:"url('aaaaa')", svg:'url(', submatch:true},
+        {input:"url('aaaaaa')", svg:'url(', submatch:true},
         {input:"#a"},
         {input:"#aa"},
         {input:"#aaaa"},
@@ -451,9 +451,15 @@
                     q.svg.setAttribute('fill', t.input);
                     a.svg.setAttribute('fill', t.input);
                     s.svg.setAttribute('fill', t.input);
-                    assert_equals(q.getComputedStyle(q.svg).fill, t.svg ? t.svg : q.getComputedStyle(q.svg_ref).fill, 'SVG fill="" in quirks mode');
-                    assert_equals(a.getComputedStyle(a.svg).fill, t.svg ? t.svg : a.getComputedStyle(a.svg_ref).fill, 'SVG fill="" in almost standards mode');
-                    assert_equals(s.getComputedStyle(s.svg).fill, t.svg ? t.svg : s.getComputedStyle(s.svg_ref).fill, 'SVG fill="" in standards mode');
+                    if (t.submatch) {
+                        assert_true(q.getComputedStyle(q.svg).fill.indexOf(t.svg) > -1, 'SVG fill="" in quirks mode');
+                        assert_true(a.getComputedStyle(a.svg).fill.indexOf(t.svg) > -1, 'SVG fill="" in almost standards mode');
+                        assert_true(s.getComputedStyle(s.svg).fill.indexOf(t.svg) > -1, 'SVG fill="" in standards mode');
+                    } else {
+                        assert_equals(q.getComputedStyle(q.svg).fill, t.svg ? t.svg : q.getComputedStyle(q.svg_ref).fill, 'SVG fill="" in quirks mode');
+                        assert_equals(a.getComputedStyle(a.svg).fill, t.svg ? t.svg : a.getComputedStyle(a.svg_ref).fill, 'SVG fill="" in almost standards mode');
+                        assert_equals(s.getComputedStyle(s.svg).fill, t.svg ? t.svg : s.getComputedStyle(s.svg_ref).fill, 'SVG fill="" in standards mode');
+                    }
                 });
             }
             test_q.done();

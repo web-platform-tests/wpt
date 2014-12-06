@@ -176,6 +176,7 @@ everything that we can.
 If you wish to contribute actively, you're very welcome to join the
 public-test-infra@w3.org mailing list (low traffic) by
 [signing up to our mailing list](mailto:public-test-infra-request@w3.org?subject=subscribe).
+The mailing list is [archived][mailarchive].
 
 Join us on irc #testing ([irc.w3.org][ircw3org], port 6665). The channel
 is [archived][ircarchive].
@@ -183,6 +184,7 @@ is [archived][ircarchive].
 [contributing]: https://github.com/w3c/web-platform-tests/blob/master/CONTRIBUTING.md
 [ircw3org]: https://www.w3.org/wiki/IRC
 [ircarchive]: http://krijnhoetmer.nl/irc-logs/testing/
+[mailarchive]: http://lists.w3.org/Archives/Public/public-test-infra/
 
 Documentation
 -------------

@@ -14,6 +14,7 @@ import _env
 import manifest
 import html5lib
 
+here = os.path.abspath(os.path.split(__file__)[0])
 repo_root = _env.repo_root
 
 def git(command, *args):

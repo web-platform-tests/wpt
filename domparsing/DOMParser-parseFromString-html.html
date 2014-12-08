@@ -1,0 +1,39 @@
+<!doctype html>
+<title>DOMParser basic test of HTML parsing</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// |expected| should be an object indicating the expected type of node.
+function assert_node(actual, expected)
+{
+    assert_true(actual instanceof expected.type,
+                'Node type mismatch: actual = ' + actual.nodeType + ', expected = ' + expected.nodeType);
+    if (typeof(expected.id) !== 'undefined')
+        assert_equals(actual.id, expected.id);
+    if (typeof(expected.nodeValue) !== 'undefined')
+        assert_equals(actual.nodeValue, expected.nodeValue);
+}
+
+var doc;
+setup(function() {
+    var parser = new DOMParser();
+    var input = '<html id="root"><head></head><body></body></html>';
+    doc = parser.parseFromString(input, 'text/html');
+});
+
+test(function() {
+    var root = doc.documentElement;
+    assert_node(root, { type: Element, id: 'root' });
+}, 'Test that id attribute parsed corectly');
+
+test(function() {
+    assert_equals(document.documentURI, doc.documentURI,
+                  'The document must have a URL value equal to the URL of the active document.');
+}, 'Test that URL equals the URL of the active document');
+
+test(function() {
+    assert_equals(doc.location, null,
+                  'The document must have a location value of null.');
+}, 'Test that location equals null');
+
+</script>

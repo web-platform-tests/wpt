@@ -247,6 +247,7 @@ class GitTree(object):
 
     @property
     def rev(self):
+        """Current HEAD revision"""
         if vcs.is_git_root(self.root):
             return self.git("rev-parse", "HEAD").strip()
         else:
@@ -257,6 +258,11 @@ class GitTree(object):
         return self.git("status").strip() == ""
 
     def add_new(self, prefix=None):
+        """Add files to the staging area.
+
+        :param prefix: None to include all files or a path prefix to
+                       add all files under that path.
+        """
         if prefix is None:
             args = ("-a",)
         else:
@@ -268,6 +274,12 @@ class GitTree(object):
         self.message = message
 
     def update_patch(self, include=None):
+        """Commit the staged changes, or changes to listed files.
+
+        :param include: Either None, to commit staged changes, or a list
+                        of filenames (which must already be in the repo)
+                        to commit
+        """
         assert self.message is not None
 
         if include is not None:
@@ -285,6 +297,12 @@ class GitTree(object):
         assert vcs.is_git_root(self.root)
 
     def checkout(self, rev, branch=None, force=False):
+        """Checkout a particular revision, optionally into a named branch.
+
+        :param rev: Revision identifier (e.g. SHA1) to checkout
+        :param branch: Branch name to use
+        :param force: Force-checkout
+        """
         args = []
         if branch:
             branches = [ref[len("refs/heads/"):] for sha1, ref in self.list_refs()
@@ -299,6 +317,12 @@ class GitTree(object):
         self.git("checkout", *args)
 
     def update(self, remote, remote_branch, local_branch):
+        """Fetch from the remote and checkout into a local branch.
+
+        :param remote: URL to the remote repository
+        :param remote_branch: Branch on the remote repository to check out
+        :param local_branch: Local branch name to check out into
+        """
         if not vcs.is_git_root(self.root):
             self.init()
         self.git("clean", "-xdf")
@@ -311,6 +335,7 @@ class GitTree(object):
         self.git("branch", "-D", self.local_branch)
 
     def paths(self):
+        """List paths in the tree"""
         repo_paths = [self.root] +  [os.path.join(self.root, path)
                                      for path in self.submodules()]
 
@@ -324,6 +349,7 @@ class GitTree(object):
         return rv
 
     def submodules(self):
+        """List submodule directories"""
         output = self.git("submodule", "status", "--recursive")
         rv = []
         for line in output.split("\n"):
@@ -354,6 +380,11 @@ class Commit(object):
     _sha1_re = re.compile("^[0-9a-f]{40}$")
 
     def __init__(self, tree, sha1):
+        """Object representing a commit in a specific GitTree.
+
+        :param tree: GitTree to which this commit belongs.
+        :param sha1: Full sha1 string for the commit
+        """
         assert self._sha1_re.match(sha1)
 
         self.tree = tree
@@ -379,6 +410,16 @@ class Step(object):
     provides = []
 
     def run(self, step_index, state):
+        """Base class for state-creating steps.
+
+        When a Step is run() the current state is checked to see
+        if the state from this step has already been created. If it
+        has the restore() method is invoked. Otherwise the create()
+        method is invoked with the state object. This is expected to
+        add items with all the keys in __class__.provides to the state
+        object.
+        """
+
         name = self.__class__.__name__
 
         try:
@@ -411,6 +452,7 @@ class StepRunner(object):
     steps = []
 
     def __init__(self, state):
+        """Class that runs a specified series of Steps with a common State"""
         self.state = state
         if "steps" not in state:
             state.steps = []
@@ -443,6 +485,18 @@ class State(object):
         return object.__new__(cls, parent)
 
     def __init__(self, parent=None):
+        """Object containing state variables created when running Steps.
+
+        On write the state is serialized to disk, such that it can be restored in
+        the event that the program is interrupted before all steps are complete.
+        Note that this only works well if the values are immutable; mutating an
+        existing value will not cause the data to be serialized.
+
+        Variables are set and get as attributes i.e. state_obj.spam = "eggs".
+
+        :param parent: Parent State object or None if this is the root object.
+        """
+
         if hasattr(self, "_data"):
             return
 
@@ -452,6 +506,7 @@ class State(object):
 
     @classmethod
     def load(cls):
+        """Load saved state from a file"""
         try:
             with open(cls.fn) as f:
                 try:
@@ -465,6 +520,12 @@ class State(object):
             return
 
     def substate(self, name, init_values):
+        """Create a new state object with this as the parent.
+
+        :parm name: Name of the new state object
+        :param init_values: List of variable names in the current state to copy
+                            into the substate."""
+
         if name not in self._children:
             new_state = State(parent=self)
             for key in init_values:
@@ -473,9 +534,11 @@ class State(object):
         return self._children[name]
 
     def remove_substate(self, name):
+        """Remove a named substate"""
         del self._children[name]
 
     def save(self):
+        """Write the state to disk"""
         if self._parent:
             self._parent.save()
         else:
@@ -486,6 +549,7 @@ class State(object):
         return self._data == {} and self._children == {}
 
     def clear(self):
+        """Remove all state and delete the stored copy."""
         if self._parent is None:
             try:
                 os.unlink(self.fn)
@@ -514,6 +578,7 @@ class State(object):
         return key in self._data
 
     def update(self, items):
+        """Add a dictionary of {name: value} pairs to the state"""
         self._data.update(items)
         self.save()
 
@@ -521,7 +586,10 @@ class State(object):
         return self._data.keys()
 
 class LoadConfig(Step):
+    """Step for loading configuration from the ini file and kwargs."""
+
     provides = ["sync", "paths", "metadata_path", "tests_path"]
+
     def create(self, state):
         state.sync = {"remote_url": state.kwargs["remote_url"],
                       "branch": state.kwargs["branch"],
@@ -534,6 +602,9 @@ class LoadConfig(Step):
         assert state.tests_path.startswith("/")
 
 class LoadTrees(Step):
+    """Step for creating a Tree for the local copy and a GitTree for the
+    upstream sync."""
+
     provides = ["local_tree", "sync_tree"]
 
     def create(self, state):
@@ -547,6 +618,8 @@ class LoadTrees(Step):
 
 
 class SyncFromUpstream(Step):
+    """Step that synchronises a local copy of the code with upstream."""
+
     def create(self, state):
         if not state.kwargs["sync"]:
             return
@@ -564,6 +637,8 @@ class SyncFromUpstream(Step):
 
 
 class UpdateCheckout(Step):
+    """Pull changes from upstream into the local sync tree."""
+
     provides = ["local_branch"]
 
     def create(self, state):
@@ -575,6 +650,8 @@ class UpdateCheckout(Step):
 
 
 class GetSyncTargetCommit(Step):
+    """Find the commit that we will sync to."""
+
     provides = ["sync_commit"]
 
     def create(self, state):
@@ -590,6 +667,8 @@ class GetSyncTargetCommit(Step):
 
 
 class LoadManifest(Step):
+    """Load the test manifest"""
+
     provides = ["test_manifest"]
 
     def create(self, state):
@@ -599,6 +678,8 @@ class LoadManifest(Step):
 
 
 class UpdateManifest(Step):
+    """Update the manifest to match the tests in the sync tree checkout"""
+
     provides = ["initial_rev"]
     def create(self, state):
         test_manifest = state.test_manifest
@@ -608,12 +689,16 @@ class UpdateManifest(Step):
 
 
 class CopyWorkTree(Step):
+    """Copy the sync tree over to the destination in the local tree"""
+
     def create(self, state):
         copy_wpt_tree(state.sync_tree,
                       state.tests_path)
 
 
 class CreateSyncPatch(Step):
+    """Add the updated test files to a commit/patch in the local tree."""
+
     def create(self, state):
         local_tree = state.local_tree
         sync_tree = state.sync_tree
@@ -627,6 +712,8 @@ class CreateSyncPatch(Step):
 
 
 class UpdateMetadata(Step):
+    """Update the expectation metadata from a set of run logs"""
+
     def create(self, state):
         if not state.kwargs["run_log"]:
             return
@@ -642,6 +729,8 @@ class UpdateMetadata(Step):
 
 
 class UpdateExpected(Step):
+    """Do the metadata update on the local checkout"""
+
     provides = ["needs_human"]
 
     def create(self, state):
@@ -659,6 +748,8 @@ class UpdateExpected(Step):
 
 
 class CreateMetadataPatch(Step):
+    """Create a patch/commit for the metadata checkout"""
+
     def create(self, state):
         local_tree = state.local_tree
         sync_tree = state.sync_tree
@@ -681,6 +772,7 @@ class CreateMetadataPatch(Step):
 
 
 class UpdateRunner(StepRunner):
+    """Runner for doing an overall update."""
     steps = [LoadConfig,
              LoadTrees,
              SyncFromUpstream,
@@ -688,6 +780,7 @@ class UpdateRunner(StepRunner):
 
 
 class SyncFromUpstreamRunner(StepRunner):
+    """(Sub)Runner for doing an upstream sync"""
     steps = [UpdateCheckout,
              GetSyncTargetCommit,
              LoadManifest,
@@ -697,6 +790,7 @@ class SyncFromUpstreamRunner(StepRunner):
 
 
 class MetadataUpdateRunner(StepRunner):
+    """(Sub)Runner for updating metadata"""
     steps = [
         UpdateExpected,
         CreateMetadataPatch
@@ -705,6 +799,12 @@ class MetadataUpdateRunner(StepRunner):
 
 class WPTUpdate(object):
     def __init__(self, runner_cls=UpdateRunner, **kwargs):
+        """Object that controls the running of a whole wptupdate.
+
+        :param runner_cls: Runner subclass holding the overall list of
+                           steps to run.
+        :param kwargs: Command line arguments
+        """
         self.runner_cls = runner_cls
         if kwargs["serve_root"] is None:
             kwargs["serve_root"] = kwargs["test_paths"]["/"]["tests_path"]
@@ -755,13 +855,5 @@ def main():
     logger = commandline.setup_logging("wptsync", args)
     remove_logging_args(args)
     assert structuredlog.get_default_logger() is not None
-    try:
-        success = run_update(**args)
-    except (KeyboardInterrupt, SystemExit, subprocess.CalledProcessError):
-        pass
-    except:
-        import pdb
-        import traceback
-        print traceback.format_exc()
-        pdb.post_mortem()
+    success = run_update(**args)
     sys.exit(0 if success else 1)

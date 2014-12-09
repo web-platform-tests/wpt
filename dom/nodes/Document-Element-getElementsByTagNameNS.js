@@ -1,17 +1,17 @@
-function test_getElementsByTagNameNS() {
+function test_getElementsByTagNameNS(context, element) {
   test(function() {
-    assert_false(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") instanceof NodeList, "NodeList")
-    assert_true(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") instanceof HTMLCollection, "HTMLCollection")
-    var firstCollection = document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html"),
-        secondCollection = document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html")
+    assert_false(context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") instanceof NodeList, "NodeList")
+    assert_true(context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") instanceof HTMLCollection, "HTMLCollection")
+    var firstCollection = context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html"),
+        secondCollection = context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html")
     assert_true(firstCollection !== secondCollection || firstCollection === secondCollection,
                 "Caching is allowed.")
   })
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("test", "body"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    var actual = document.getElementsByTagNameNS("*", "body");
+    var t = element.appendChild(document.createElementNS("test", "body"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    var actual = context.getElementsByTagNameNS("*", "body");
     var expected = [];
     var get_elements = function(node) {
       for (var i = 0; i < node.childNodes.length; i++) {
@@ -24,70 +24,70 @@ function test_getElementsByTagNameNS() {
         }
       }
     }
-    get_elements(document);
+    get_elements(context);
     assert_array_equals(actual, expected);
   }, "getElementsByTagNameNS('*', 'body')")
 
   test(function() {
-    assert_array_equals(document.getElementsByTagNameNS("", "*"), []);
-    var t = document.body.appendChild(document.createElementNS("", "body"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    assert_array_equals(document.getElementsByTagNameNS("", "*"), [t]);
+    assert_array_equals(context.getElementsByTagNameNS("", "*"), []);
+    var t = element.appendChild(document.createElementNS("", "body"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    assert_array_equals(context.getElementsByTagNameNS("", "*"), [t]);
   }, "Empty string namespace")
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("test", "body"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    assert_array_equals(document.getElementsByTagNameNS("test", "body"), [t]);
+    var t = element.appendChild(document.createElementNS("test", "body"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    assert_array_equals(context.getElementsByTagNameNS("test", "body"), [t]);
   }, "body element in test namespace, no prefix")
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("test", "test:body"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    assert_array_equals(document.getElementsByTagNameNS("test", "body"), [t]);
+    var t = element.appendChild(document.createElementNS("test", "test:body"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    assert_array_equals(context.getElementsByTagNameNS("test", "body"), [t]);
   }, "body element in test namespace, prefix")
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("test", "BODY"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    assert_array_equals(document.getElementsByTagNameNS("test", "BODY"), [t]);
-    assert_array_equals(document.getElementsByTagNameNS("test", "body"), []);
+    var t = element.appendChild(document.createElementNS("test", "BODY"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    assert_array_equals(context.getElementsByTagNameNS("test", "BODY"), [t]);
+    assert_array_equals(context.getElementsByTagNameNS("test", "body"), []);
   }, "BODY element in test namespace, no prefix")
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "abc"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    assert_array_equals(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "abc"), [t]);
-   assert_array_equals(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "ABC"), []);
-    assert_array_equals(document.getElementsByTagNameNS("test", "ABC"), []);
+    var t = element.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "abc"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    assert_array_equals(context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "abc"), [t]);
+   assert_array_equals(context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "ABC"), []);
+    assert_array_equals(context.getElementsByTagNameNS("test", "ABC"), []);
   }, "abc element in html namespace")
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "ABC"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    assert_array_equals(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "abc"), []);
-    assert_array_equals(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "ABC"), [t]);
+    var t = element.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "ABC"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    assert_array_equals(context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "abc"), []);
+    assert_array_equals(context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "ABC"), [t]);
   }, "ABC element in html namespace")
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "AÇ"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    assert_array_equals(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "AÇ"), [t]);
-    assert_array_equals(document.getElementsByTagNameNS("test", "aÇ"), []);
-    assert_array_equals(document.getElementsByTagNameNS("test", "aç"), []);
+    var t = element.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "AÇ"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    assert_array_equals(context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "AÇ"), [t]);
+    assert_array_equals(context.getElementsByTagNameNS("test", "aÇ"), []);
+    assert_array_equals(context.getElementsByTagNameNS("test", "aç"), []);
   }, "AÇ, case sensitivity")
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("test", "test:BODY"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    assert_array_equals(document.getElementsByTagNameNS("test", "BODY"), [t]);
-    assert_array_equals(document.getElementsByTagNameNS("test", "body"), []);
+    var t = element.appendChild(document.createElementNS("test", "test:BODY"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    assert_array_equals(context.getElementsByTagNameNS("test", "BODY"), [t]);
+    assert_array_equals(context.getElementsByTagNameNS("test", "body"), []);
   }, "BODY element in test namespace, prefix")
 
   test(function() {
-    var t = document.body.appendChild(document.createElementNS("test", "test:test"))
-    this.add_cleanup(function() {document.body.removeChild(t)})
-    var actual = document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "*");
+    var t = element.appendChild(document.createElementNS("test", "test:test"))
+    this.add_cleanup(function() {element.removeChild(t)})
+    var actual = context.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "*");
     var expected = [];
     var get_elements = function(node) {
       for (var i = 0; i < node.childNodes.length; i++) {
@@ -100,12 +100,12 @@ function test_getElementsByTagNameNS() {
         }
       }
     }
-    get_elements(document);
+    get_elements(context);
     assert_array_equals(actual, expected);
   }, "getElementsByTagNameNS('http://www.w3.org/1999/xhtml', '*')")
 
   test(function() {
-    var actual = document.getElementsByTagNameNS("*", "*");
+    var actual = context.getElementsByTagNameNS("*", "*");
     var expected = [];
     var get_elements = function(node) {
       for (var i = 0; i < node.childNodes.length; i++) {
@@ -116,13 +116,13 @@ function test_getElementsByTagNameNS() {
         }
       }
     }
-    get_elements(document);
+    get_elements(context);
     assert_array_equals(actual, expected);
   }, "getElementsByTagNameNS('*', '*')")
 
   test(function() {
-    assert_array_equals(document.getElementsByTagNameNS("**", "*"), []);
-    assert_array_equals(document.getElementsByTagNameNS(null, "0"), []);
-    assert_array_equals(document.getElementsByTagNameNS(null, "div"), []);
+    assert_array_equals(context.getElementsByTagNameNS("**", "*"), []);
+    assert_array_equals(context.getElementsByTagNameNS(null, "0"), []);
+    assert_array_equals(context.getElementsByTagNameNS(null, "div"), []);
   }, "Empty lists")
 }

@@ -13,3 +13,6 @@
 [submodule "html5lib"]
 	path = tools/html5lib
 	url = https://github.com/html5lib/html5lib-python.git
+[submodule "tools/six"]
+	path = tools/six
+	url = https://github.com/jgraham/six.git

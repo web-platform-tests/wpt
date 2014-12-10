@@ -324,14 +324,14 @@ def load_config(default_path, override_path=None, **kwargs):
     rv = merge_json(base_obj, override_obj)
 
     if kwargs.get("config_path"):
-      other_path = os.path.abspath(os.path.expanduser(kwargs.get("config_path")))
-      if os.path.exists(other_path):
-        base_obj = rv
-        with open(other_path) as f:
-            override_obj = json.load(f)
-        rv = merge_json(base_obj, override_obj)
-      else:
-        raise ValueError("Config path %s does not exist" % other_path)
+        other_path = os.path.abspath(os.path.expanduser(kwargs.get("config_path")))
+        if os.path.exists(other_path):
+            base_obj = rv
+            with open(other_path) as f:
+                override_obj = json.load(f)
+            rv = merge_json(base_obj, override_obj)
+        else:
+            raise ValueError("Config path %s does not exist" % other_path)
 
     set_computed_defaults(rv)
     return rv

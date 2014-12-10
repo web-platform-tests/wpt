@@ -14,6 +14,8 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import defaultdict
 from fnmatch import fnmatch
 
+import _env
+import html5lib
 
 def get_git_func(repo_path):
     def git(cmd, *args):

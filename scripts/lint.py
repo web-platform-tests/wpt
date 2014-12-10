@@ -10,13 +10,12 @@ try:
 except ImportError:
     from xml.etree import ElementTree
 
+import _env
+import manifest
 import html5lib
 
-import manifest
-
-here = os.path.split(__file__)[0]
-
-repo_root = os.path.abspath(os.path.join(here, "..", ".."))
+here = os.path.abspath(os.path.split(__file__)[0])
+repo_root = _env.repo_root
 
 def git(command, *args):
     args = list(args)

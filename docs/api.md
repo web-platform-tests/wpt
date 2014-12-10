@@ -16,12 +16,8 @@ From an HTML or SVG document, start by importing both `testharness.js` and
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 
-From a web worker script, import the `testharness.js` script:
-
-    importScripts("/resources/testharness.js");
-
-(Refer to the [Web Workers](#web-workers) section for details on testing within
-a web worker).
+Refer to the [Web Workers](#web-workers) section for details and an example on
+testing within a web worker.
 
 Within each file one may define one or more tests. Each test is atomic in the
 sense that a single test has a single result (`PASS`/`FAIL`/`TIMEOUT`/`NOTRUN`).
@@ -272,6 +268,13 @@ true in a call to `setup()`. If `explicit_done` is true, the test harness will
 not assume it is done until the global `done()` function is called. Once `done()`
 is called, the two conditions above apply like normal.
 
+Dedicated and shared workers don't have an event that corresponds to the `load`
+event in a document. Therefore these worker tests always behave as if the
+`explicit_done` property is set to true. Service workers depend on the
+[install](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-install-event)
+event which is fired following the completion of [running the
+worker](https://html.spec.whatwg.org/multipage/workers.html#run-a-worker).
+
 ## Generating tests ##
 
 There are scenarios in which is is desirable to create a large number of
@@ -375,16 +378,17 @@ workers](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/).
 Testing from a worker script is different from testing from an HTML document in
 several ways:
 
-* Workers have no UI since they are runing in the background. So
-  `testharness.js` script offers a method to communicate test results to a
-  client document via [cross-document
-  messaging](#external-api-through-cross-document-messaging). This is done
-  automatically and needs no additional action from the test author.
+* Workers have no reporting capability since they are runing in the background.
+  Hence they rely on `testharness.js` running in a companion client HTML document
+  for reporting.
 
-* Shared and service workers do not have a unique client document. There could
-  be more than one document that communicates with a worker. So a client
-  document needs to explicitly connect to a worker and fetch test results from
-  it using `fetch_tests_from_worker`. This is true even for a dedicated worker.
+* Shared and service workers do not have a unique client document since there
+  could be more than one document that communicates with these workers. So a
+  client document needs to explicitly connect to a worker and fetch test results
+  from it using `fetch_tests_from_worker`. This is true even for a dedicated
+  worker. Once connected, the individual tests running in the worker (or those
+  that have already run to completion) will be automatically reflected in the
+  client document.
 
 * The client document controls the timeout of the tests. All worker scripts act
   as if they were started with the `explicit_timeout` option (see the [Harness
@@ -393,12 +397,15 @@ several ways:
 * Dedicated and shared workers don't have an equivalent of an `onload` event.
   Thus the test harness has no way to know when all tests have completed (see
   [Determining when all tests are
-  complete](#determining-when-all-tests-are-complete)). So all worker tests
-  behave as if they were started with the `explicit_done` option.
+  complete](#determining-when-all-tests-are-complete)). So these worker tests
+  behave as if they were started with the `explicit_done` option. Service
+  workers depend on the
+  [oninstall](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-install-event)
+  event and don't require an explicit `done` call.
 
 Here's an example that uses a dedicated worker.
 
-`test_script.js`:
+`worker.js`:
 
     importScripts("/resources/testharness.js");
 
@@ -419,15 +426,14 @@ Here's an example that uses a dedicated worker.
     <div id="log"></div>
     <script>
 
-    fetch_tests_from_worker(new Worker("test_script.js"));
+    fetch_tests_from_worker(new Worker("worker.js"));
 
     </script>
 
 The argument to the `fetch_tests_from_worker` function can be a
-[`Worker`](http://www.w3.org/TR/workers/#dedicated-workers-and-the-worker-interface),
-[`SharedWorker`](http://www.w3.org/TR/workers/#shared-workers-and-the-sharedworker-interface)
-or a
-[`ServiceWorker`](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/#service-worker-obj).
+[`Worker`](https://html.spec.whatwg.org/multipage/workers.html#dedicated-workers-and-the-worker-interface),
+a [`SharedWorker`](https://html.spec.whatwg.org/multipage/workers.html#shared-workers-and-the-sharedworker-interface)
+or a [`ServiceWorker`](https://slightlyoff.github.io/ServiceWorker/spec/service_worker/#service-worker-obj).
 Once called, the containing document fetches all the tests from the worker and
 behaves as if those tests were running in the containing document itself.
 

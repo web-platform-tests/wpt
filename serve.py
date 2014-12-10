@@ -13,14 +13,12 @@ import uuid
 from collections import defaultdict
 from multiprocessing import Process, Event
 
-repo_root = os.path.abspath(os.path.split(__file__)[0])
-
-sys.path.insert(1, os.path.join(repo_root, "tools", "wptserve"))
+from tools.scripts import _env
+repo_root = _env.repo_root
 from wptserve import server as wptserve, handlers
 from wptserve.router import any_method
 from wptserve.logger import set_logger
 
-sys.path.insert(1, os.path.join(repo_root, "tools", "pywebsocket", "src"))
 from mod_pywebsocket import standalone as pywebsocket
 
 routes = [("GET", "/tools/runner/*", handlers.file_handler),

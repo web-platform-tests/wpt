@@ -318,7 +318,7 @@ class Manifest(object):
         self.local_changes = LocalChanges(self)
 
         local_paths = set()
-        for rel_path, status in local_changes:
+        for rel_path, status in local_changes.iteritems():
             local_paths.add(rel_path)
 
             if status == "modified":
@@ -749,7 +749,7 @@ class NoVCSTree(TestTree):
                 if is_blacklisted(rel_path_to_url(rel_path, self.url_base)):
                     continue
                 rv.append((rel_path, "modified"))
-        return rv
+        return dict(rv)
 
     def committed_changes(self, base_rev=None):
         return None

@@ -65,13 +65,17 @@ def do_delayed_imports(serve_root):
     import manifest
 
 
+def remove_logging_args(args):
+    for name in args.keys():
+        if name.startswith("log_"):
+            args.pop(name)
+
+
 def setup_logging(args, defaults):
     global logger
     logger = commandline.setup_logging("web-platform-tests-update", args, defaults)
 
-    for name in args.keys():
-        if name.startswith("log_"):
-            args.pop(name)
+    remove_logging_args(args)
 
     return logger
 
@@ -131,7 +135,7 @@ class NoVCSTree(object):
         self.root = root
 
     @classmethod
-    def is_type(cls, path):
+    def is_type(cls, path=None):
         return True
 
     @property
@@ -170,9 +174,12 @@ class HgTree(object):
         self.hg = vcs.bind_to_repo(vcs.hg, self.root)
 
     @classmethod
-    def is_type(cls, path):
+    def is_type(cls, path=None):
+        kwargs = {"log_error": False}
+        if path is not None:
+            kwargs["repo"] = path
         try:
-            hg("root", repo=path)
+            hg("root", **kwargs)
         except:
             return False
         return True
@@ -190,7 +197,7 @@ class HgTree(object):
 
     def create_patch(self, patch_name, message):
         try:
-            self.hg("qinit")
+            self.hg("qinit", log_error=False)
         except subprocess.CalledProcessError:
             pass
 
@@ -238,9 +245,12 @@ class GitTree(object):
         self.git = vcs.bind_to_repo(vcs.git, self.root)
 
     @classmethod
-    def is_type(cls, path):
+    def is_type(cls, path=None):
+        kwargs = {"log_error": False}
+        if path is not None:
+            kwargs["repo"] = path
         try:
-            git("rev-parse", "--show-toplevel", repo=path)
+            git("rev-parse", "--show-toplevel", **kwargs)
         except:
             return False
         return True
@@ -613,7 +623,14 @@ class LoadTrees(Step):
         else:
             sync_tree = None
 
-        state.update({"local_tree": GitTree(),
+        if GitTree.is_type():
+            local_tree = GitTree()
+        elif HgTree.is_type():
+            local_tree = HgTree()
+        else:
+            local_tree = NoVCSTree()
+
+        state.update({"local_tree": local_tree,
                       "sync_tree": sync_tree})
 
 
@@ -844,16 +861,11 @@ def run_update(**kwargs):
     updater = WPTUpdate(**kwargs)
     return updater.run()
 
-def remove_logging_args(args):
-    for name in args.keys():
-        if name.startswith("log_"):
-            args.pop(name)
 
 def main():
     global logger
     args = wptcommandline.parse_args_update()
-    logger = commandline.setup_logging("wptsync", args)
-    remove_logging_args(args)
+    setup_logging(args, {})
     assert structuredlog.get_default_logger() is not None
     success = run_update(**args)
     sys.exit(0 if success else 1)

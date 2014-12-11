@@ -34,13 +34,10 @@ def md5_uri(content):
 
 def main():
   for file in js_files():
-    print "Generating content for %s" % file
     base = path.splitext(path.basename(file))[0]
     var_name = re.sub(r"[^a-z]", "_", base)
     content = "%s=true;" % var_name
     with open(file, "w") as f: f.write(content)
-    print "\tSHA256 integrity: %s" % sha256_uri(content)
-    print "\tMD5 integrity:    %s" % md5_uri(content)
 
 if __name__ == "__main__":
   main()

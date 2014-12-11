@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Audio element src attribute must match src list - positive test</title>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+</head>
+<body onLoad="audio_loaded()">
+    <h1>Audio element src attribute must match src list - positive test</h1>
+    <div id='log'></div>
+
+    
+
+  <script>
+    var audio_test = async_test("ASync Audio Load Test"); 
+    var relativeMediaURL = "/../media/sound_5.mp3";
+    var pageURL = window.location.toString();
+    var fullUrl = pageURL.split("//");
+    var temp2 = fullUrl[1].substring (0, fullUrl[1].lastIndexOf("/media-src/"));
+    
+    var mediaURL = "http://" + temp2 + relativeMediaURL;
+    var htmlStr = "<audio id=\"audioObject\" controls><source src=\"" + mediaURL + "\" type=\"audio/mpeg\" onerror=\"audio_test.step(audio_error_handler)\"></audio>";
+    htmlStr += "<audio controls src=\"" + mediaURL + "\" onerror=\"audio_test.step(audio_error_handler)\"></audio>";
+    document.write (htmlStr);
+  </script>
+
+  <script>  
+    function audio_loaded() {      
+      audio_test.done();
+    }
+    
+    function audio_error_handler() {
+      assert_unreached("Audio error handler should be triggered for non-allowed domain.");
+    }
+  </script>
+  <script async defer src='../support/checkReport.sub.js?reportExists=false'></script>
+
+</body>
+</html>

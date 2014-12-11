@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Video element src attribute must match src list - negative test</title>
+    <script src='/resources/testharness.js'></script>
+    <script src='/resources/testharnessreport.js'></script>
+</head>
+<body onLoad="media_loaded()">
+    <h1>Video element src attribute must match src list - negative test</h1>
+    <div id='log'></div>
+
+    
+
+  <script>
+    var media_test = async_test("ASync Video Load Test"); 
+    var relativeMediaURL = "/../media/white.mp4";
+    var pageURL = window.location.toString();
+    var temp1 = pageURL.split("//");
+    var temp2 = temp1[1].substring (0, temp1[1].lastIndexOf("/media-src/"));
+    // See if there is a subdomain...
+    var splitDomains = temp2.split(".");
+    if(splitDomains.length > 1) {
+      splitDomains.shift();
+      temp2 = splitDomains.join(".");
+    }
+    var mediaURL = "http://www2." + temp2 + relativeMediaURL;
+    var htmlStr = "<video id=\"videoObject\" width=\"320\" height=\"240\" controls><source id=\"videoSourceObject\" src=\"" + mediaURL + "\" type=\"video/mp4\" onerror=\"media_test.step(media_error_handler)\"></video>";
+    htmlStr += "<video width=\"320\" height=\"240\" controls src=\"" + mediaURL + "\" onerror=\"media_test.step(media_error_handler)\">";
+    document.write (htmlStr);
+  </script>
+
+  <script>  
+    function media_loaded() {      
+      media_test.done();
+    }
+    
+    function media_error_handler() {
+      assert_true(true, "Media error handler should be triggered for non-allowed domain.");
+    }
+  </script>
+    
+
+    <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=media-src%20%27self%27'></script>
+
+</body>
+</html>

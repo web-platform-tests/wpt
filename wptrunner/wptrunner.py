@@ -183,7 +183,7 @@ class TestEnvironment(object):
 
         host = self.options.get("certificate_domain", config["host"])
         hosts = [host]
-        hosts.extend("%s.%s" % (item, host) for item in serve.get_subdomains(host).values())
+        hosts.extend("%s.%s" % (item[0], host) for item in serve.get_subdomains(host).values())
         key_file, certificate = self.ssl_env.host_cert_path(hosts)
 
         config["key_file"] = key_file
@@ -346,9 +346,14 @@ def list_disabled(serve_root, test_paths, test_types, product, **kwargs):
 
 def get_ssl_kwargs(**kwargs):
     if kwargs["ssl_type"] == "openssl":
-        return {"openssl_binary": kwargs["openssl_binary"]}
+        args = {"openssl_binary": kwargs["openssl_binary"]}
     elif kwargs["ssl_type"] == "pregenerated":
-        raise NotImplementedError
+        args = {"host_key_path": kwargs["host_key_path"],
+                "host_cert_path": kwargs["host_cert_path"],
+                 "ca_cert_path": kwargs["ca_cert_path"]}
+    else:
+        args = {}
+    return args
 
 
 def run_tests(config, serve_root, test_paths, product, **kwargs):

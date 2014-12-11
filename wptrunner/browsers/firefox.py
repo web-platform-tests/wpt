@@ -190,6 +190,7 @@ class FirefoxBrowser(Browser):
         # Create a new certificate db
         certutil("-N", "-d", cert_db_path, "-f", pw_path)
 
-        root, ext = os.path.splitext(os.path.split(self.ca_certificate_path)[1])
-        certutil("-A", "-d", cert_db_path, "-f", pw_path, "-n", root, "-t", "CT,,",
-                 "-i", self.ca_certificate_path)
+        certutil("-A", "-d", cert_db_path, "-f", pw_path, "-t", "CT,,",
+                 "-n", "web-platform-tests", "-i", self.ca_certificate_path)
+
+        print certutil("-L", "-d", cert_db_path)

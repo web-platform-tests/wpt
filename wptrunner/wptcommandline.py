@@ -124,13 +124,23 @@ def create_parser(product_choices=None):
     parser.add_argument("--stackwalk-binary", action="store", type=abs_path,
                         help="Path to stackwalker program used to analyse minidumps.")
 
-    parser.add_argument("--ssl-type", action="store", default="openssl",
+    parser.add_argument("--ssl-type", action="store", default=None,
                         choices=["openssl", "pregenerated", "none"],
                         help="Type of ssl support to enable (running without ssl may lead to spurious errors)")
+
     parser.add_argument("--openssl-binary", action="store",
                         help="Path to openssl binary", default="openssl")
     parser.add_argument("--certutil-binary", action="store",
                         help="Path to certutil binary for use with Firefox + ssl")
+
+
+    parser.add_argument("--ca-cert-path", action="store", type=abs_path,
+                        help="Path to ca certificate when using pregenerated ssl certificates")
+    parser.add_argument("--host-key-path", action="store", type=abs_path,
+                        help="Path to host private key when using pregenerated ssl certificates")
+    parser.add_argument("--host-cert-path", action="store", type=abs_path,
+                        help="Path to host certificate when using pregenerated ssl certificates")
+
 
     parser.add_argument("--b2g-no-backup", action="store_true", default=False,
                         help="Don't backup device before testrun with --product=b2g")
@@ -153,15 +163,20 @@ def set_from_config(kwargs):
                       ("run_info", "run_info", True)],
             "web-platform-tests": [("remote_url", "remote_url", False),
                                    ("branch", "branch", False),
-                                   ("sync_path", "sync_path", True)]}
+                                   ("sync_path", "sync_path", True)],
+            "SSL": [("openssl_binary", "openssl_binary", True),
+                    ("certutil_binary", "certutil_binary", True),
+                    ("ca_cert_path", "ca_cert_path", True),
+                    ("host_cert_path", "host_cert_path", True),
+                    ("host_key_path", "host_key_path", True)]}
 
     for section, values in keys.iteritems():
         for config_value, kw_value, is_path in values:
             if kw_value in kwargs and kwargs[kw_value] is None:
                 if not is_path:
-                    new_value = kwargs["config"].get(section, {}).get(config_value)
+                    new_value = kwargs["config"].get(section, config.ConfigDict({})).get(config_value)
                 else:
-                    new_value = kwargs["config"].get(section, {}).get_path(config_value)
+                    new_value = kwargs["config"].get(section, config.ConfigDict({})).get_path(config_value)
                 kwargs[kw_value] = new_value
 
     kwargs["test_paths"] = get_test_paths(kwargs["config"])
@@ -190,6 +205,20 @@ def get_test_paths(config):
 
     return test_paths
 
+
+
+def exe_path(name):
+    def is_executable(path):
+        return os.path.isfile(path) and os.access(path, os.X_OK)
+
+    if os.path.isabs(name):
+        return name if is_executable(name) else None
+
+    for path_dir in os.environ["PATH"].split(os.pathsep):
+        path_dir = path_dir.strip("\"")
+        path = os.path.join(path_dir, name)
+        if is_executable(path):
+            return path
 
 
 def check_args(kwargs):
@@ -248,6 +277,25 @@ def check_args(kwargs):
         if not os.path.exists(kwargs["binary"]):
             print >> sys.stderr, "Binary path %s does not exist" % kwargs["binary"]
             sys.exit(1)
+
+    if kwargs["ssl_type"] is None:
+        if None not in (kwargs["ca_cert_path"], kwargs["host_cert_path"], kwargs["host_key_path"]):
+            kwargs["ssl_type"] = "pregenerated"
+        elif exe_path(kwargs["openssl_binary"]) is not None:
+            kwargs["ssl_type"] = "openssl"
+        else:
+            kwargs["ssl_type"] = "none"
+
+    if kwargs["ssl_type"] == "pregenerated":
+        require_arg(kwargs, "ca_cert_path", lambda x:os.path.exists(x))
+        require_arg(kwargs, "host_cert_path", lambda x:os.path.exists(x))
+        require_arg(kwargs, "host_key_path", lambda x:os.path.exists(x))
+
+    elif kwargs["ssl_type"] == "openssl":
+            require_arg(kwargs, "openssl_binary", lambda x:exe_path(x) is not None)
+
+    if kwargs["ssl_type"] != "none" and kwargs["product"] == "firefox":
+        require_arg(kwargs, "certutil_binary", lambda x:exe_path(x) is not None)
 
     return kwargs
 

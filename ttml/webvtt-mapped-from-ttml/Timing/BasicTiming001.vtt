@@ -1,0 +1,10 @@
+WEBVTT
+language: en
+title: Timing Test - Basic 001
+description: Testing basic time expressions  on par
+copyright: Copyright (C) 2008 W3C (MIT, ERCIM, Keio).
+
+
+00:00:10.000 --> 00:00:20.000
+This text must appear at 10 seconds
+and be remain visible to 20 seconds.

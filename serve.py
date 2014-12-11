@@ -85,7 +85,7 @@ class ServerProc(object):
     def create_daemon(self, init_func, host, port, paths, bind_hostname, external_config, ssl_config,
                       **kwargs):
         try:
-            self.daemon = init_func(host, port, paths, bind_hostname, external_config, 
+            self.daemon = init_func(host, port, paths, bind_hostname, external_config,
                                     ssl_config, **kwargs)
         except socket.error:
             print >> sys.stderr, "Socket error on port %s" % port

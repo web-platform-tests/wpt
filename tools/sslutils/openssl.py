@@ -97,7 +97,7 @@ def get_config(root_dir, hosts, duration=30):
     else:
         san_line = "subjectAltName = %s" % make_alt_names(hosts)
 
-    return """[ ca ]
+    rv = """[ ca ]
 default_ca = CA_default
 
 [ CA_default ]
@@ -176,12 +176,15 @@ extendedKeyUsage = serverAuth
 %(san_line)s
 
 [ v3_ca ]
+basicConstraints = CA:true
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
-basicConstraints = CA:true
+keyUsage = keyCertSign
 """ % {"root_dir": root_dir,
        "san_line": san_line,
        "duration": duration}
+
+    return rv
 
 class OpenSSLEnvironment(object):
     ssl_enabled = True

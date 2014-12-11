@@ -4,7 +4,8 @@
     <title>ProgressEvent: security consideration</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="http://dvcs.w3.org/hg/progress/raw-file/tip/Overview.html#security-considerations" data-tested-assertations="/following-sibling::p" />
+    <link rel="help" href="https://xhr.spec.whatwg.org/#security-considerations" data-tested-assertations="/following-sibling::p" />
+    <link rel="help" href="https://fetch.spec.whatwg.org/#http-fetch" data-tested-assertations="/following-sibling::ol[1]/li[3]/ol[1]/li[6]" />
   </head>
   <body>
     <div id="log"></div>
@@ -21,7 +22,7 @@
           assert_equals(pe.total, 0, "total is zero.");
         });
         xhr.onloadend = this.step_func_done();
-        xhr.open("GET", "http://{{host}}:{{ports[http][1]}}/progress-events/tests/submissions/Samsung/resources/img.jpg", true);
+        xhr.open("GET", "http://{{host}}:{{ports[http][1]}}/XMLHttpRequest/resources/img.jpg", true);
         xhr.send(null);
       })
     </script>

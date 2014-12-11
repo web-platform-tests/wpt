@@ -14,7 +14,7 @@
         var t2 = async_test("window.setInterval()");
 
         onload = function() {t1.done(); t2.done()}
-        
+
         window.setTimeout('t1.step(function() {assert_unreached("window.setTimeout() ran without unsafe-eval.")})',0);
         window.setInterval('t2.step(function() {assert_unreached("window.setInterval() ran without unsafe-eval.")})',0);
 

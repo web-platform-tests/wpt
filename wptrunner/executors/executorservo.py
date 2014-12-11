@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import threading
 import urlparse
+import uuid
 from collections import defaultdict
 
 from mozprocess import ProcessHandler
@@ -75,19 +76,20 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
     def on_finish(self):
         self.result_flag.set()
 
+
 class TempFilename(object):
-    def __init__(self):
+    def __init__(self, directory):
+        self.directory = directory
         self.path = None
 
     def __enter__(self):
-        fd, self.path = tempfile.mkstemp()
-        os.close(fd)
+        self.path = os.path.join(self.directory, str(uuid.uuid4()))
         return self.path
 
     def __exit__(self, *args, **kwargs):
         try:
             os.unlink(self.path)
-        except IOError:
+        except OSError:
             pass
 
 
@@ -98,6 +100,11 @@ class ServoReftestExecutor(ProcessTestExecutor):
         ProcessTestExecutor.__init__(self, *args, **kwargs)
         self.ref_hashes = {}
         self.ref_urls_by_hash = defaultdict(set)
+        self.tempdir = tempfile.mkdtemp()
+
+    def teardown(self):
+        os.rmdir(self.tempdir)
+        ProcessTestExecutor.teardown(self)
 
     def run_test(self, test):
         test_url, ref_type, ref_url = test.url, test.ref_type, test.ref_url
@@ -110,7 +117,7 @@ class ServoReftestExecutor(ProcessTestExecutor):
             if hashes[url_type] is None:
                 full_url = urlparse.urljoin(self.http_server_url, url)
 
-                with TempFilename() as output_path:
+                with TempFilename(self.tempdir) as output_path:
                     self.command = [self.binary, "--cpu", "--hard-fail", "--exit",
                                     "--output=%s" % output_path, full_url]
 
@@ -119,18 +126,20 @@ class ServoReftestExecutor(ProcessTestExecutor):
                                                processOutputLine=[self.on_output])
                     self.proc.run()
                     rv = self.proc.wait(timeout=timeout)
+
                     if rv is None:
                         status = "EXTERNAL-TIMEOUT"
                         self.proc.kill()
                         break
-                    elif rv < 0:
+
+                    if rv < 0:
                         status = "CRASH"
                         break
-                    else:
-                        with open(output_path) as f:
-                            # Might need to strip variable headers or something here
-                            data = f.read()
-                            hashes[url_type] = hashlib.sha1(data).hexdigest()
+
+                    with open(output_path) as f:
+                        # Might need to strip variable headers or something here
+                        data = f.read()
+                        hashes[url_type] = hashlib.sha1(data).hexdigest()
 
         if status is None:
             self.ref_urls_by_hash[hashes["ref"]].add(ref_url)

@@ -1,8 +1,3 @@
-def get_kwargs(kwargs):
-    return {"ca_cert_path": kwargs["ca_cert_path"],
-            "host_key_path": kwargs["host_key_path"],
-            "host_cert_path": kwargs["host_cert_path"]}
-
 class PregeneratedSSLEnvironment(object):
     """SSL environment to use with existing key/certificate files
     e.g. when running on a server with a public domain name

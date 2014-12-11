@@ -1,7 +1,6 @@
 from os import path, listdir
 from hashlib import sha256, md5
 from base64 import urlsafe_b64encode
-from urllib import quote
 import re
 
 JS_DIR = path.normpath(path.join(__file__, "..", ".."))

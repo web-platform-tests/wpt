@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Animation timeline getAnimationPlayers() method tests</title>
+<meta name="assert" content="Animation timeline getAnimationPlayers() method returns the set of AnimationPlayer objects associated with this timeline that have associated source content which is current">
+<link rel="help" href="http://w3c.github.io/web-animations/#dom-animationtimeline-getanimationplayers">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+test(function() {
+    var players = document.timeline.getAnimationPlayers();
+    assert_true(players === null || players.length === 0,
+        'AnimationTimeline.getAnimationPlayers() method should return either null ' +
+        'or empty set if there are no players');
+}, 'Test AnimationTimeline.getAnimationPlayers() returns null or empty sequence, ' +
+    'if there are no players associated with timeline');
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player = doc.timeline.play(newAnimation(createDiv(this, doc)));
+
+    assert_not_equals(doc.timeline.getAnimationPlayers(), null,
+        'AnimationTimeline.getAnimationPlayers() method should not return null');
+    assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should contain one element');
+}, 'Test AnimationTimeline.getAnimationPlayers() returns sequence of single player, ' +
+    'if there is only one associated player');
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player1 = doc.timeline.play(newAnimation(createDiv(this, doc)));
+    var player2 = doc.timeline.play(newAnimation(createDiv(this, doc)));
+
+    assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should contain two elements');
+}, 'Test AnimationTimeline.getAnimationPlayers() returns sequence of players, ' +
+    'if there are several associated players');
+
+test(function() {
+    var doc = newHTMLDocument();
+    var player1 = doc.timeline.play(newAnimation(createDiv(this, doc)));
+    var player2 = doc.timeline.play(newAnimation(createDiv(this, doc)));
+    var player3 = doc.timeline.play(null);
+
+    assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should contain two elements');
+
+    player2.source = null;
+    assert_array_equals(doc.timeline.getAnimationPlayers(), [player1],
+        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+        'should contain one element');
+}, 'Test AnimationTimeline.getAnimationPlayers() returns only players, ' +
+    'which have associated source content');
+</script>
+</body>

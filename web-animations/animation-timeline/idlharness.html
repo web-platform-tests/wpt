@@ -3,24 +3,29 @@
 <title>Web Animations API: AnimationTimeline tests</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/webidl2/lib/webidl2.js"></script>
 <script src="/resources/idlharness.js"></script>
 <div id="log"></div>
+<script type="text/plain" id="untested-IDL">
+interface AnimationPlayer {
+};
+
+interface AnimationNode {
+};
+</script>
 <script type="text/plain" id="AnimationTimeline-IDL">
 interface AnimationTimeline {
-  readonly attribute double? currentTime;
+    readonly attribute double? currentTime;
+    AnimationPlayer           play (optional AnimationNode? source = null);
+    sequence<AnimationPlayer> getAnimationPlayers ();
 };
 </script>
 <script>
 'use strict';
 
-var idlArray;
-test(function() {
-  idlArray = new IdlArray();
-  idlArray.add_idls(
-    document.getElementById('AnimationTimeline-IDL').textContent);
-  idlArray.add_objects( { AnimationTimeline: ['document.timeline'] } );
-});
+var idlArray = new IdlArray();
+idlArray.add_untested_idls(document.getElementById('untested-IDL').textContent);
+idlArray.add_idls(document.getElementById('AnimationTimeline-IDL').textContent);
+idlArray.add_objects( { AnimationTimeline: ['document.timeline'] } );
 idlArray.test();
-
 </script>

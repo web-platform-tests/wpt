@@ -27,6 +27,11 @@ var KEYFRAMES = [ {
     offset : 1
 } ];
 
+// Creates and returns new HTML document
+function newHTMLDocument() {
+    return document.implementation.createHTMLDocument('Test Document');
+}
+
 // creates new animation for given target
 function newAnimation(animationTarget) {
     animationTarget.style.top = ANIMATION_TOP_DEFAULT + 'px';

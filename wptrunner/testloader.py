@@ -243,7 +243,8 @@ class ManifestLoader(object):
         json_data = None
         if not recreate:
             try:
-                json_data = json.load(open(manifest_path))
+                with open(manifest_path) as f:
+                    json_data = json.load(f)
             except IOError:
                 #If the existing file doesn't exist just create one from scratch
                 pass

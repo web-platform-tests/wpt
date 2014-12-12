@@ -66,12 +66,24 @@ def do_delayed_imports(serve_root):
 
 
 def remove_logging_args(args):
+    """Take logging args out of the dictionary of command line arguments so
+    they are not passed in as kwargs to the update code. This is particularly
+    necessary here because the arguments are often of type file, which cannot
+    be serialized.
+
+    :param args: Dictionary of command line arguments.
+    """
     for name in args.keys():
         if name.startswith("log_"):
             args.pop(name)
 
 
 def setup_logging(args, defaults):
+    """Use the command line arguments to set up the logger.
+
+    :param args: Dictionary of command line arguments.
+    :param defaults: Dictionary of {formatter_name: stream} to use if
+                     no command line logging is specified"""
     global logger
     logger = commandline.setup_logging("web-platform-tests-update", args, defaults)
 
@@ -81,6 +93,10 @@ def setup_logging(args, defaults):
 
 
 def copy_wpt_tree(tree, dest):
+    """Copy the working copy of a Tree to a destination directory.
+
+    :param tree: The Tree to copy.
+    :param dest: The destination directory"""
     if os.path.exists(dest):
         assert os.path.isdir(dest)
 
@@ -111,11 +127,20 @@ def copy_wpt_tree(tree, dest):
 
 
 def add_license(dest):
+    """Write the bsd license string to a LICENSE file.
+
+    :param dest: Directory in which to place the LICENSE file."""
     with open(os.path.join(dest, "LICENSE"), "w") as f:
         f.write(bsd_license)
 
 
 def get_unique_name(existing, initial):
+    """Get a name either equal to initial or of the form initial_N, for some
+    integer N, that is not in the set existing.
+
+
+    :param existing: Set of names that must not be chosen.
+    :param initial: Name, or name prefix, to use"""
     logger.debug(existing)
     logger.debug(initial)
     if initial not in existing:
@@ -808,10 +833,8 @@ class SyncFromUpstreamRunner(StepRunner):
 
 class MetadataUpdateRunner(StepRunner):
     """(Sub)Runner for updating metadata"""
-    steps = [
-        UpdateExpected,
-        CreateMetadataPatch
-    ]
+    steps = [UpdateExpected,
+             CreateMetadataPatch]
 
 
 class WPTUpdate(object):

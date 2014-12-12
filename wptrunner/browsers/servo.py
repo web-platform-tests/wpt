@@ -24,7 +24,7 @@ def check_args(**kwargs):
     require_arg(kwargs, "binary")
 
 
-def browser_kwargs(test_environment, **kwargs):
+def browser_kwargs(**kwargs):
     return {"binary": kwargs["binary"],
             "debug_args": kwargs["debug_args"],
             "interactive": kwargs["interactive"]}

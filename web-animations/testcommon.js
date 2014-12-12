@@ -10,6 +10,11 @@ policies and contribution forms [3].
 
 "use strict";
 
+// Epsilon value for assert_approx_equals(). Used for time measurements
+var TIME_EPSILON = 5;
+// Precision (in px) for expected style at the moment and the one returned by getComputedStyle()
+var COMPUTED_STYLE_EPSILON = 5;
+
 var ANIMATION_END_TIME = 1000;
 var ANIMATION_TOP_DEFAULT = 300;
 var ANIMATION_TOP_0 = 10;
@@ -60,4 +65,13 @@ function removeElement(element) {
 // Returns the type name of given object
 function type(object) {
     return Object.prototype.toString.call(object).slice(8, -1);
+}
+
+// Returns expected top of the target element at currentTime
+function getExpectedTop(currentTime, endTime) {
+    if (!endTime) {
+        endTime = ANIMATION_END_TIME;
+    }
+    return ANIMATION_TOP_0 + (ANIMATION_TOP_1 - ANIMATION_TOP_0)
+        * (currentTime % endTime);
 }

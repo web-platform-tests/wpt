@@ -20,44 +20,304 @@ test(function() {
 }, 'Test AnimationTimeline.getAnimationPlayers() returns null or empty sequence, ' +
     'if there are no players associated with timeline');
 
-test(function() {
+async_test(function(t) {
     var doc = newHTMLDocument();
     var player = doc.timeline.play(newAnimation(createDiv(this, doc)));
 
-    assert_not_equals(doc.timeline.getAnimationPlayers(), null,
-        'AnimationTimeline.getAnimationPlayers() method should not return null');
-    assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
-        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
-        'should contain one element');
+    player.ready.then(t.step_func(function() {
+        assert_not_equals(doc.timeline.getAnimationPlayers(), null,
+            'AnimationTimeline.getAnimationPlayers() method should not return null');
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+            'should contain one element');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
 }, 'Test AnimationTimeline.getAnimationPlayers() returns sequence of single player, ' +
     'if there is only one associated player');
 
-test(function() {
+async_test(function(t) {
     var doc = newHTMLDocument();
     var player1 = doc.timeline.play(newAnimation(createDiv(this, doc)));
     var player2 = doc.timeline.play(newAnimation(createDiv(this, doc)));
 
-    assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
-        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
-        'should contain two elements');
+    Promise.all([player1.ready, player2.ready]).then(t.step_func(function() {
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
+            'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+            'should contain two elements');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
 }, 'Test AnimationTimeline.getAnimationPlayers() returns sequence of players, ' +
     'if there are several associated players');
 
-test(function() {
+async_test(function(t) {
     var doc = newHTMLDocument();
     var player1 = doc.timeline.play(newAnimation(createDiv(this, doc)));
     var player2 = doc.timeline.play(newAnimation(createDiv(this, doc)));
     var player3 = doc.timeline.play(null);
 
-    assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
-        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
-        'should contain two elements');
-
-    player2.source = null;
-    assert_array_equals(doc.timeline.getAnimationPlayers(), [player1],
-        'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
-        'should contain one element');
+    Promise.all([player1.ready, player2.ready]).then(t.step_func(function() {
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
+            'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+            'should contain two elements');
+        player2.source = null;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player1],
+            'Set of objects returned by AnimationTimeline.getAnimationPlayers() method ' +
+            'should contain one element');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
 }, 'Test AnimationTimeline.getAnimationPlayers() returns only players, ' +
     'which have associated source content');
+
+async_test(function(t) {
+	var doc = newHTMLDocument();
+    var player1 = doc.timeline.play(newAnimation(createDiv(t, doc)));
+    var player2 = doc.timeline.play(newAnimation(createDiv(t, doc)));
+    var player3 = doc.timeline.play(newAnimation(createDiv(t, doc)));
+
+    Promise.all([player1.ready, player2.ready, player3.ready]).then(t.step_func(function() {
+        assert_array_equals(doc.timeline.getAnimationPlayers(),
+            [player1, player2, player3], 'Set of objects returned by ' +
+            'AnimationTimeline.getAnimationPlayers() ' +
+            'method should contain three elements');
+        player1.currentTime = ANIMATION_END_TIME / 2;
+        player2.currentTime = ANIMATION_END_TIME + 10;
+        player3.currentTime = -10;
+
+        assert_array_equals(doc.timeline.getAnimationPlayers(),
+            [player1, player3], 'Set of objects returned by ' +
+            'AnimationTimeline.getAnimationPlayers() ' +
+            'method should contain two elements');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns only players ' +
+    'whose source content is current (they are in before or active phase)');
+
+async_test(function(t) {
+	var doc = newHTMLDocument();
+	var timing = {fill: 'forwards', duration: ANIMATION_END_TIME};
+    var player1 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+    var player2 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+    var player3 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+
+    Promise.all([player1.ready, player2.ready, player3.ready]).then(t.step_func(function() {
+        assert_array_equals(doc.timeline.getAnimationPlayers(),
+            [player1, player2, player3], 'Set of objects returned by ' +
+            'AnimationTimeline.getAnimationPlayers() ' +
+            'method should contain three elements');
+        player1.currentTime = ANIMATION_END_TIME / 2;
+        player2.currentTime = ANIMATION_END_TIME + 10;
+        player3.currentTime = -10;
+
+        assert_array_equals(doc.timeline.getAnimationPlayers(),
+            [player1, player2, player3], 'Set of objects returned by ' +
+            'AnimationTimeline.getAnimationPlayers() ' +
+            'method should contain three elements');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns only players ' +
+    'whose source content is current. Animation nodes are in before, active ' +
+    'or after phases and fill mode is \'forwards\'');
+
+async_test(function(t) {
+	var doc = newHTMLDocument();
+	var timing = {fill: 'backwards', duration: ANIMATION_END_TIME};
+    var player1 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+    var player2 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+    var player3 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+
+    Promise.all([player1.ready, player2.ready, player3.ready]).then(t.step_func(function() {
+        assert_array_equals(doc.timeline.getAnimationPlayers(),
+            [player1, player2, player3], 'Set of objects returned by ' +
+            'AnimationTimeline.getAnimationPlayers() ' +
+            'method should contain three elements');
+        player1.currentTime = ANIMATION_END_TIME / 2;
+        player2.currentTime = ANIMATION_END_TIME + 10;
+        player3.currentTime = -10;
+
+        assert_array_equals(doc.timeline.getAnimationPlayers(),
+            [player1, player3], 'Set of objects returned by ' +
+            'AnimationTimeline.getAnimationPlayers() ' +
+            'method should contain two elements');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns only players ' +
+    'whose source content is current. Animation nodes are in before or active ' +
+    'phases and fill mode is \'backwards\'');
+
+async_test(function(t) {
+	var doc = newHTMLDocument();
+	var timing = {fill: 'both', duration: ANIMATION_END_TIME};
+    var player1 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+    var player2 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+    var player3 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
+
+    Promise.all([player1.ready, player2.ready, player3.ready]).then(t.step_func(function() {
+        assert_array_equals(doc.timeline.getAnimationPlayers(),
+            [player1, player2, player3], 'Set of objects returned by ' +
+            'AnimationTimeline.getAnimationPlayers() ' +
+            'method should contain three elements');
+        player1.currentTime = ANIMATION_END_TIME / 2;
+        player2.currentTime = ANIMATION_END_TIME + 10;
+        player3.currentTime = -10;
+
+        assert_array_equals(doc.timeline.getAnimationPlayers(),
+            [player1, player2, player3], 'Set of objects returned by ' +
+            'AnimationTimeline.getAnimationPlayers() ' +
+            'method should contain three elements');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns only players ' +
+    'whose source content is current. Animation nodes are in before, active ' +
+    'or after phases and fill mode is \'both\'');
+
+async_test(function(t) {
+	var doc = newHTMLDocument();
+    var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
+        {delay: 50, duration: ANIMATION_END_TIME});
+	var player = doc.timeline.play(animationGroup);
+
+    player.ready.then(t.step_func(function() {
+        player.currentTime = -10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = 10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = 110;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = ANIMATION_END_TIME + 10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns players ' +
+    'whose source content is current. Test player playing animation group ' +
+    'in default (both) fill mode in before, active and after phases');
+
+async_test(function(t) {
+	var doc = newHTMLDocument();
+    var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
+        {delay: 50, duration: ANIMATION_END_TIME, fill: 'none'});
+	var player = doc.timeline.play(animationGroup);
+
+    player.ready.then(t.step_func(function() {
+        player.currentTime = -10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = 10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = 110;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = ANIMATION_END_TIME + 10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [],
+            'AnimationTimeline.getAnimationPlayers() method should not ' +
+            'return players whose source content is not current and not active');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns players ' +
+    'whose source content is current. Test player playing animation group ' +
+    'in none fill mode in before, active and after phases');
+
+async_test(function(t) {
+	var doc = newHTMLDocument();
+    var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
+        {delay: 50, duration: ANIMATION_END_TIME, fill: 'forwards'});
+	var player = doc.timeline.play(animationGroup);
+
+    player.ready.then(t.step_func(function() {
+        player.currentTime = -10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = 10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = 110;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = ANIMATION_END_TIME + 10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns players ' +
+    'whose source content is current. Test player playing animation group ' +
+    'in forwards fill mode in before, active and after phases');
+
+async_test(function(t) {
+	var doc = newHTMLDocument();
+    var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
+        {delay: 50, duration: ANIMATION_END_TIME, fill: 'backwards'});
+	var player = doc.timeline.play(animationGroup);
+
+    player.ready.then(t.step_func(function() {
+        player.currentTime = -10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = 10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = 110;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return players whose source content is current');
+        player.currentTime = ANIMATION_END_TIME + 10;
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [],
+            'AnimationTimeline.getAnimationPlayers() method should not' +
+            'return players whose source content is not current and not active');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns players ' +
+    'whose source content is current. Test player playing animation group ' +
+    'in backwards fill mode in before, active and after phases');
+
+async_test(function(t) {
+    var doc = newHTMLDocument();
+    var animationGroup = new AnimationGroup([
+        newAnimation(createDiv(t, doc)),
+        newAnimation(createDiv(t, doc))
+    ]);
+	var player = doc.timeline.play(animationGroup);
+
+    player.ready.then(t.step_func(function() {
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return only one player');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns single player for ' +
+    'animation group containing several child nodes');
+
+async_test(function(t) {
+    var doc = newHTMLDocument();
+    var animationSequence = new AnimationSequence([
+        newAnimation(createDiv(t, doc)),
+        newAnimation(createDiv(t, doc))
+    ]);
+	var player = doc.timeline.play(animationSequence);
+
+    player.ready.then(t.step_func(function() {
+        assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
+            'AnimationTimeline.getAnimationPlayers() method should ' +
+            'return only one player');
+        t.done();
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.getAnimationPlayers() returns single player for ' +
+    'animation sequence containing several child nodes');
 </script>
 </body>

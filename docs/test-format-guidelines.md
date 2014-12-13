@@ -148,7 +148,7 @@ new tests. Any of these rules may be broken if the test demands it:
 
  * No trailing whitespace
 
- * Use tabs rather than spaces for indentation
+ * Use spaces rather than tabs for indentation
 
  * Use UNIX-style line endings (i.e. no CR characters at EOL).
 

@@ -100,12 +100,8 @@ def copy_wpt_tree(tree, dest):
     if os.path.exists(dest):
         assert os.path.isdir(dest)
 
-    for sub_path in os.listdir(dest):
-        path = os.path.join(dest, sub_path)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        else:
-            os.remove(path)
+    shutil.rmtree(dest)
+    os.mkdir(dest)
 
     for tree_path in tree.paths():
         source_path = os.path.join(tree.root, tree_path)
@@ -377,7 +373,7 @@ class GitTree(object):
         for repo_path in repo_paths:
             paths = vcs.git("ls-tree", "-r", "--name-only", "HEAD", repo=repo_path).split("\n")
             rel_path = os.path.relpath(repo_path, self.root)
-            rv.extend([os.path.join(rel_path, item.strip()) for item in paths if item.strip()])
+            rv.extend(os.path.join(rel_path, item.strip()) for item in paths if item.strip())
 
         return rv
 
@@ -504,7 +500,7 @@ class StepRunner(object):
         return rv
 
 class State(object):
-    fn = os.path.join(here, ".wpt-update.lock")
+    filename = os.path.join(here, ".wpt-update.lock")
 
     def __new__(cls, parent=None):
         if parent is None:
@@ -525,7 +521,7 @@ class State(object):
         Note that this only works well if the values are immutable; mutating an
         existing value will not cause the data to be serialized.
 
-        Variables are set and get as attributes i.e. state_obj.spam = "eggs".
+        Variables are set and get as attributes e.g. state_obj.spam = "eggs".
 
         :param parent: Parent State object or None if this is the root object.
         """
@@ -541,7 +537,7 @@ class State(object):
     def load(cls):
         """Load saved state from a file"""
         try:
-            with open(cls.fn) as f:
+            with open(cls.filename) as f:
                 try:
                     rv = pickle.load(f)
                     logger.debug("Loading data %r" % (rv._data,))
@@ -555,7 +551,7 @@ class State(object):
     def substate(self, name, init_values):
         """Create a new state object with this as the parent.
 
-        :parm name: Name of the new state object
+        :param name: Name of the new state object
         :param init_values: List of variable names in the current state to copy
                             into the substate."""
 
@@ -575,7 +571,7 @@ class State(object):
         if self._parent:
             self._parent.save()
         else:
-            with open(self.fn, "w") as f:
+            with open(self.filename, "w") as f:
                 pickle.dump(self, f)
 
     def is_empty(self):
@@ -585,7 +581,7 @@ class State(object):
         """Remove all state and delete the stored copy."""
         if self._parent is None:
             try:
-                os.unlink(self.fn)
+                os.unlink(self.filename)
             except OSError:
                 pass
         else:
@@ -780,11 +776,11 @@ class UpdateExpected(Step):
             sync_root = None
 
         state.needs_human = metadata.update_expected(state.paths,
-                                                        state.serve_root,
-                                                        state.run_log,
-                                                        rev_old=None,
-                                                        ignore_existing=state.ignore_existing,
-                                                        sync_root=sync_root)
+                                                     state.serve_root,
+                                                     state.run_log,
+                                                     rev_old=None,
+                                                     ignore_existing=state.ignore_existing,
+                                                     sync_root=sync_root)
 
 
 class CreateMetadataPatch(Step):

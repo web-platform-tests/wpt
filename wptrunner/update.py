@@ -141,8 +141,6 @@ def get_unique_name(existing, initial):
 
     :param existing: Set of names that must not be chosen.
     :param initial: Name, or name prefix, to use"""
-    logger.debug(existing)
-    logger.debug(initial)
     if initial not in existing:
         return initial
     for i in xrange(len(existing) + 1):

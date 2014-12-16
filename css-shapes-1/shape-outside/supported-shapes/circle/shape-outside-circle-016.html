@@ -19,8 +19,9 @@
         margin: 0;
     }
     #container {
-        position: absolute;
-        top: 50px;
+        position: relative;
+    }
+    #test-container {
         font: 40px/1 Ahem, sans-serif;
         width: 300px;
         height: 200px;
@@ -37,8 +38,7 @@
     }
     #line {
         position: absolute;
-        height
-        top: 50px;
+        top: 0px;
         left: 168px;
         width: 2px;
         height: 200px;
@@ -46,7 +46,7 @@
     }
     #failure {
         position: absolute;
-        top: 130px;
+        top: 80px;
         left: 170px;
         width: 40px;
         height: 40px;
@@ -57,13 +57,15 @@
     <body>
     <p>The test passes if there is a green square to the right of the blue line. There should be no red.</p>
     <div id="container">
-        <div id="test-shape"></div>
-        <br/>
-        <br/>
-        X
+        <div id="test-container">
+            <div id="test-shape"></div>
+            <br/>
+            <br/>
+            X
+        </div>
+        <div id="line"></div>
+        <div id="failure"></div>
     </div>
-    <div id="line"></div>
-    <div id="failure"></div>
     </body>
 </html>
 

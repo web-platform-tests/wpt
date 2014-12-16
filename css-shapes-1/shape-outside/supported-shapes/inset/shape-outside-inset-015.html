@@ -14,8 +14,10 @@
     </head>
     <style>
         #container {
-            position: absolute;
-            left: 25px;
+            position: relative;
+            margin-left: 25px;
+        }
+        #test-container {
             width: 200px;
             height: 200px;
             font-family: Ahem;
@@ -34,8 +36,8 @@
         }
         #static-shape {
             position: absolute;
-            top: 100px;
-            left: 25px;
+            top: 50px;
+            left: 0px;
             width: 100px;
             height: 100px;
             background-color: green;
@@ -44,9 +46,11 @@
     <body>
         <p>The test passes if there is a green square and no red.</p>
         <div id="container">
-            <div id="test-shape"></div>
-            XXXXXXXX XXXXXXXX XXXX XXXX XXXX XXXX XXXXXXXX XXXXXXXX
+            <div id="test-container">
+                <div id="test-shape"></div>
+                XXXXXXXX XXXXXXXX XXXX XXXX XXXX XXXX XXXXXXXX XXXXXXXX
+            </div>
+            <div id="static-shape"></div>
         </div>
-        <div id="static-shape"></div>
     </body>
 </html>

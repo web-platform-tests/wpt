@@ -1,8 +1,9 @@
-syntax: glob
-*.pyc
-dist
+*#
+*.py[co]
+*.sw[po]
+*~
 MANIFEST
 documentation/_build
+\#*
 .tox
-.gitignore
 six.egg-info

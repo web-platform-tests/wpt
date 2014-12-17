@@ -9,7 +9,12 @@
         var link = document.createElement('link');
         link.setAttribute('rel', 'stylesheet');
         link.setAttribute('type', 'text/css');
-        link.setAttribute('href', 'http://www1.web-platform.test:' + location.port + '/content-security-policy/style-src/3_3.css');
+        link.setAttribute('href', location.protocol +
+                            '//www1.' +
+                            location.hostname +
+                            ':' +
+                            location.port +
+                            '/content-security-policy/style-src/3_3.css');
         head.appendChild(link);
 
        onload = function doTest() {

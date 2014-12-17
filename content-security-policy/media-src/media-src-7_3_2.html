@@ -1,47 +1,53 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Track element src attribute must match src list - negative test</title>
+    <title>Video track src attribute must match src list - negative test</title>
     <script src='/resources/testharness.js'></script>
     <script src='/resources/testharnessreport.js'></script>
 </head>
-<body onLoad="audio_loaded()">
-    <h1>Track element src attribute must match src list - negative test</h1>
+<body>
+    <h1>Video track src attribute must match src list - negative test</h1>
     <div id='log'></div>
 
-    
-
   <script>
-    var track_test = async_test("ASync Audio Load Test"); 
-    var relativeMediaURL = "/../media/sound_5.mp3";
-    var pageURL = window.location.toString();
-    var fullUrl = pageURL.split("//");
-    var temp2 = fullUrl[1].substring (0, fullUrl[1].lastIndexOf("/media-src/"));
-    var originalUrl = temp2;
-    // See if there is a subdomain...
-    var splitDomains = temp2.split(".");
-    if(splitDomains.length > 1) {
-      splitDomains.shift();
-      temp2 = splitDomains.join(".");
+    var source_test = async_test("Disallowed track element");
+
+      var trackURL = location.protocol +
+        "//www." +
+        location.hostname +
+        ":" +
+        location.port +
+        "/media/foo.vtt";
+
+    function media_loaded(t) {
+     t.step( function () {
+          assert_unreached("Disllowed track source loaded.");
+      });
+      t.done();
     }
-    var mediaURL = "http://" + originalUrl + relativeMediaURL;
-    var trackUrl = "http://www2." + temp2 + "/../webvtt/rendering/cues-with-video/processing-model/support/foo.vtt";
-    var htmlStr = "<audio id=\"audioObject\" controls><source src=\"" + mediaURL + "\" type=\"audio/mpeg\">" + 
-      "<track src=\"" + trackUrl + "\" kind=\"subtitles\" srclang=\"en\" label=\"English\" onerror=\"track_test.step(track_error_handler)\">" + 
-      "</audio>";
-    document.write (htmlStr);
+
+    function media_error_handler(t) {
+      t.done();
+    }
   </script>
 
-  <script>  
-    function audio_loaded() {      
-      track_test.done();
-    }
-    
-    function track_error_handler() {
-      assert_true(true, "Track error handler should be triggered for non-allowed domain.");
-    }
+    <video id="videoObject" width="320" height="240" controls
+           onloadeddata="media_loaded(source_test)" crossorigin>
+        <source id="audioSourceObject"
+                type="audio/mpeg"
+                src="/media/white.mp4">
+        <track id="trackObject"
+               kind="subtitles"
+               srclang="en"
+               label="English"
+               onerror="media_error_handler(source_test)">
+    </video>
+    <script>
+        document.getElementById("trackObject").src = trackURL;
+    </script>
+
+  <script async defer src="../support/checkReport.sub.js?reportField=violated-directive&reportValue=media-src%20%27self%27">
   </script>
-    <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=media-src%20%27self%27'></script>
 
 </body>
 </html>

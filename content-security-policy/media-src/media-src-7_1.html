@@ -26,14 +26,14 @@
   </script>
 
     <video id="videoObject" width="320" height="240" controls
-           onerror="media_error_handler(source_test)"
-           onloadstart="media_loaded(source_test)">
+           onloadeddata="media_loaded(source_test)">
         <source id="videoSourceObject"
-                src="../../media/white.mp4" type="video/mp4">
+                type="video/mp4"
+                onerror="media_error_handler(source_test)">
     </video>
-    <video width="320" height="240" controls src="../../media/white.mp4"
+    <video id="videoObject2" width="320" height="240" controls
            onerror="media_error_handler(src_test)"
-           onloadstart="media_loaded(src_test)">
+           onloadeddata="media_loaded(src_test)">
 
   <script async defer src="../support/checkReport.sub.js?reportExists=false">
   </script>

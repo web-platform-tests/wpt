@@ -5,35 +5,38 @@
     <script src='/resources/testharness.js'></script>
     <script src='/resources/testharnessreport.js'></script>
 </head>
-<body onLoad="media_loaded()">
+<body>
     <h1>Video element src attribute must match src list - positive test</h1>
     <div id='log'></div>
 
-    
-
   <script>
-    var media_test = async_test("ASync Video Load Test"); 
-    var relativeMediaURL = "/../media/white.mp4";
-    var pageURL = window.location.toString();
-    var fullUrl = pageURL.split("//");
-    var temp2 = fullUrl[1].substring (0, fullUrl[1].lastIndexOf("/media-src/"));
-    
-    var mediaURL = "http://" + temp2 + relativeMediaURL;
-    var htmlStr = "<video id=\"videoObject\" width=\"320\" height=\"240\" controls><source id=\"videoSourceObject\" src=\"" + mediaURL + "\" type=\"video/mp4\" onerror=\"media_test.step(media_error_handler)\"></video>";
-    htmlStr += "<video width=\"320\" height=\"240\" controls src=\"" + mediaURL + "\" onerror=\"media_test.step(media_error_handler)\">";
-    document.write (htmlStr);
+    var src_test = async_test("In-policy async video src");
+    var source_test = async_test("In-policy async video source element");
+
+    function media_loaded(t) {
+      t.done();
+    }
+
+    function media_error_handler(t) {
+      t.step( function () {
+          assert_unreached("Media error handler should be triggered for non-allowed domain.");
+      });
+      t.done();
+    }
   </script>
 
-  <script>  
-    function media_loaded() {      
-      media_test.done();
-    }
-    
-    function media_error_handler() {
-      assert_unreached("Media error handler should be triggered for non-allowed domain.");
-    }
+    <video id="videoObject" width="320" height="240" controls
+           onerror="media_error_handler(source_test)"
+           onloadstart="media_loaded(source_test)">
+        <source id="videoSourceObject"
+                src="../../media/white.mp4" type="video/mp4">
+    </video>
+    <video width="320" height="240" controls src="../../media/white.mp4"
+           onerror="media_error_handler(src_test)"
+           onloadstart="media_loaded(src_test)">
+
+  <script async defer src="../support/checkReport.sub.js?reportExists=false">
   </script>
-  <script async defer src='../support/checkReport.sub.js?reportExists=false'></script>
 
 </body>
 </html>

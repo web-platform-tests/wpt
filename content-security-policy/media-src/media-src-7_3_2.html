@@ -10,7 +10,7 @@
     <div id='log'></div>
 
   <script>
-    var source_test = async_test("Disallowed track element");
+    var source_test = async_test("Disallowed track element onerror handler fires.");
 
       var trackURL = location.protocol +
         "//www." +
@@ -31,8 +31,8 @@
     }
   </script>
 
-    <video id="videoObject" width="320" height="240" controls
-           onloadeddata="media_loaded(source_test)" crossorigin>
+    <video id="videoObject" width="320" height="240" controls crossorigin
+           onerror="media_error_handler(source_test)">
         <source id="audioSourceObject"
                 type="audio/mpeg"
                 src="/media/white.mp4">
@@ -40,7 +40,8 @@
                kind="subtitles"
                srclang="en"
                label="English"
-               onerror="media_error_handler(source_test)">
+               onerror="media_error_handler(source_test)"
+               onload="media_loaded(source_test)">
     </video>
     <script>
         document.getElementById("trackObject").src = trackURL;

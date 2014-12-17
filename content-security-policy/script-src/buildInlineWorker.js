@@ -1,5 +1,6 @@
-(function () 
-{ 
+(function ()
+{
+ var test = new async_test("test inline worker");
  var workerSource = document.getElementById('inlineWorker');
 
  var blob = new Blob([workerSource.textContent]);
@@ -10,9 +11,10 @@
  var worker = new Worker(url);
 
  worker.addEventListener('message', function(e) {
-    test(function () { 
- 	assert_not_equals(e.data, 'fail', 'inline script ran'); 
-	})
+    test.step(function () {
+        assert_not_equals(e.data, 'fail', 'inline script ran');
+        test.done();
+    })
  }, false);
 
  worker.postMessage('');

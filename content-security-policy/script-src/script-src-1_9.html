@@ -9,13 +9,13 @@
     <h1>Worker created from inline text and loaded via blob URI should not run with policy default-src *</h1>
     <div id='log'></div>
 
-	<script id="inlineWorker" type="app/worker">
-	  addEventListener('message', function() {
-	      postMessage('fail');
-	    }, false);
-	</script>
+    <script id="inlineWorker" type="app/worker">
+    addEventListener('message', function() {
+        postMessage('fail');
+    }, false);
+    </script>
 
-        <script src="buildInlineWorker.js"></script>
+    <script src="buildInlineWorker.js"></script>
     <script async defer src='../support/checkReport.sub.js?reportField=violated-directive&reportValue=default-src%20*'></script>
 
 </body>

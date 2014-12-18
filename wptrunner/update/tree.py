@@ -119,11 +119,10 @@ class HgTree(object):
             args = ()
 
         self.hg("qrefresh", *args)
-        self.commit_patch()
         return True
 
     def commit_patch(self):
-        self.hg("qfinish", repo=self.repo_root)
+        self.hg("qfinish")
 
 
 class GitTree(object):

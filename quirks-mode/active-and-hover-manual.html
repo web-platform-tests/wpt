@@ -118,7 +118,21 @@ o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=
       });
       done();
 
+      function active_should_match(elm) {
+        if ((elm.tagName === 'A' || elm.tagName === 'AREA' || elm.tagName === 'LINK') && elm.hasAttribute('href') ||
+            elm.tagName === 'BUTTON' && !elm.disabled ||
+            elm.tagName === 'INPUT' && (elm.type === 'submit' || elm.type === 'image' || elm.type === 'reset' || elm.type === 'button') ||
+            elm.tagName === 'MENUITEM' && !elm.hasAttribute('disabled') ||
+            elm.hasAttribute('tabindex') && elm.tabIndex > -1) {
+          return true;
+        }
+        return false;
+      }
+
       function check_matches(win, elm, t, expectMatch) {
+        if (t.input.indexOf(':active') > -1) {
+          expectMatch = expectMatch && active_should_match(elm);
+        }
         if (!t.pseudoElt) {
           assert_equals(elm.matches(t.input), expectMatch, t.input + ' matches()');
         }

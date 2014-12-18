@@ -135,7 +135,7 @@ o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=
             var win = elm.ownerDocument.defaultView;
             if (win.mode === 'quirks') {
               links_only.forEach(function(t) {
-                var elmIsLink = elm.matches(':link, :visited');
+                var elmIsLink = elm.matches('a[href], area[href], link[href]');
                 check_matches(win, elm, t, elmIsLink);
               });
             } else {

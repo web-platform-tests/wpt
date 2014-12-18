@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+ <head>
+  <title>The :active and :hover quirk</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <style> iframe { width:100%; height:200px; } </style>
+ </head>
+ <body>
+  <p>Click on the boxes below. <button onclick="timeout()">Abort and show results</button></p>
+  <div id=log></div>
+  <iframe id=quirks></iframe>
+  <iframe id=almost></iframe>
+  <iframe id=standards></iframe>
+  <script type="text/plain" id=html_tmpl>
+<html id=html class=x lang=en>
+<style>
+.t:not(area), img { display:inline-block; vertical-align:middle; width:50px; height:50px; background-color:#eee; margin:0 0.5em }
+.done.done { background-color:lime }
+link::before { content:'' }
+table, tbody, tr, td { display:inline }
+</style>
+<style id=style>{style}</style>
+<body id=body class=x>
+a<a href=# data-match=a id=a class=t></a>
+b<a id=b class=t></a>
+c<map name=map1 class=x><area href=# coords=0,0,50,50 data-match=c id=c class=t></map><img usemap=#map1 src=/images/transparent.png>
+d<map name=map2 class=x><area coords=0,0,50,50 id=d class=t></map><img usemap=#map2 src=/images/transparent.png>
+e<link href=# data-match=e id=e class=t>
+f<link rel=stylesheet href=# data-match=f id=f class=t>
+g<link id=g class=t>
+h<button id=h class=t></button>
+i<input type=submit id=i class=t value>
+j<input type=image id=j class=t alt>
+k<input type=reset id=k class=t value>
+l<input type=button id=l class=t value>
+m<menuitem id=m class=t></menuitem>
+n<img tabindex=0 id=n class=t src=/images/transparent.png>
+o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x><tr id=tr class=x><td id=td class=x><a href=# data-match=o id=o class=t></a></table></a>
+</script>
+  <script>
+    setup({explicit_done:true, explicit_timeout:true});
+    onload = function() {
+
+      var links_only = [
+      {input:':active', prop:'background-attachment', value:'fixed'},
+      {input:':hover', prop:'background-position', value:'1px 2px'},
+      {input:':hover:active', prop:'background-repeat', value:'repeat-x'},
+      {input:':active:active', prop:'border-collapse', value:'collapse'},
+      {input:':hover:hover', prop:'border-spacing', value:'1px 2px'},
+      {input:'*:active', prop:'border-top-style', value:'dotted'},
+      {input:'*:hover', prop:'border-right-style', value:'dotted'},
+      ];
+
+      var any_elm = [
+      // type selector
+      {input:'a:active, area:active, link:active, button:active, input:active, menuitem:active, img:active, table:active, tbody:active, tr:active, td:active, body:active, html:active', prop:'top', value:'1px'},
+      {input:'a:hover, area:hover, link:hover, button:hover, input:hover, menuitem:hover, img:hover, table:hover, tbody:hover, tr:hover, td:hover, body:hover, html:hover', prop:'right', value:'1px'},
+      // attribute selector
+      {input:'[id]:active', prop:'bottom', value:'1px'},
+      {input:'[id]:hover', prop:'left', value:'1px'},
+      // id selector
+      {input:'#a:active, #b:active, #c:active, #d:active, #e:active, #f:active, #g:active, #h:active, #i:active, #j:active, #k:active, #l:active, #m:active, #n:active, #o:active, #a_ancestor:active, #table:active, #tbody:active, #tr:active, #td:active, #body:active, #html:active', prop:'caption-side', value:'bottom'},
+      {input:'#a:hover, #b:hover, #c:hover, #d:hover, #e:hover, #f:hover, #g:hover, #h:hover, #i:hover, #j:hover, #k:hover, #l:hover, #m:hover, #n:hover, #o:hover, #a_ancestor:hover, #table:hover, #tbody:hover, #tr:hover, #td:hover, #body:hover, #html:hover', prop:'clear', value:'left'},
+      // class selector
+      {input:'.t:active, .x:active', prop:'cursor', value:'move'},
+      {input:'.t:hover, .x:hover', prop:'empty-cells', value:'hide'},
+      // pseudo-class selector
+      {input:':lang(en):active', prop:'font-style', value:'italic'},
+      {input:':lang(en):hover', prop:'font-variant', value:'small-caps'},
+      // pseudo-element selector
+      {input:':active::after', prop:'font-style', value:'italic', pseudoElt:'::after'},
+      {input:':hover::after', prop:'font-variant', value:'small-caps', pseudoElt:'::after'},
+      ];
+
+      var stylesheet = '';
+      function serialize(t) {
+        return t.input + '{' + t.prop + ':' + t.value + '}';
+      }
+
+      links_only.concat(any_elm).forEach(function(t) {
+        stylesheet += serialize(t);
+      });
+      var html = document.getElementById('html_tmpl').textContent.replace('{style}', stylesheet);
+      var a_doctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
+      var s_doctype = '<!DOCTYPE HTML>';
+      var q = document.getElementById('quirks').contentWindow;
+      var a = document.getElementById('almost').contentWindow;
+      var s = document.getElementById('standards').contentWindow;
+      q.document.open();
+      q.document.write(html);
+      q.document.close();
+      a.document.open();
+      a.document.write(a_doctype + html);
+      a.document.close();
+      s.document.open();
+      s.document.write(s_doctype + html);
+      s.document.close();
+      q.mode = 'quirks';
+      a.mode = 'almost';
+      s.mode = 'standards';
+      [q, a, s].forEach(function(win) {
+          win.style = win.document.getElementById('style');
+          [].forEach.call(win.document.querySelectorAll('.t'), function(elm) {
+              elm.test = async_test(elm.outerHTML + ' ' + win.mode);
+              elm.test.add_cleanup(function() {
+                  if (elm.tagName != 'AREA') {
+                    elm.classList.add('done');
+                  } else {
+                    elm.parentNode.nextSibling.classList.add('done');
+                  }
+              });
+          });
+          win.onmousedown = win.onmouseup = run_tests;
+      });
+      done();
+
+      function check_matches(win, elm, t, expectMatch) {
+        if (!t.pseudoElt) {
+          assert_equals(elm.matches(t.input), expectMatch, t.input + ' matches()');
+        }
+        assert_equals(win.getComputedStyle(elm, t.pseudoElt).getPropertyValue(t.prop) === t.value, expectMatch, t.input + ' getComputedStyle()');
+      }
+
+      function run_tests(e) {
+        var elm = e.target;
+        if (elm.classList.contains('t') && !elm.classList.contains('done')) {
+          elm.test.step(function() {
+            // different browsers have different idea about when :active matches relative to mousedown/mouseup events.
+            // http://software.hixie.ch/utilities/js/live-dom-viewer/saved/3341
+            // elm.matches('.t:active') seems to always return false in Gecko.
+            // but not in http://software.hixie.ch/utilities/js/live-dom-viewer/saved/3342 !?
+            if (!elm.matches('.t:active')) {
+              return;
+            }
+            var win = elm.ownerDocument.defaultView;
+            if (win.mode === 'quirks') {
+              links_only.forEach(function(t) {
+                var elmIsLink = elm.matches(':link, :visited');
+                check_matches(win, elm, t, elmIsLink);
+              });
+            } else {
+              links_only.forEach(function(t) {
+                check_matches(win, elm, t, true);
+              });
+            }
+            any_elm.forEach(function(t) {
+              check_matches(win, elm, t, true);
+            });
+            elm.test.done();
+          });
+        }
+        e.preventDefault();
+      }
+    }
+  </script>
+ </body>
+</html>

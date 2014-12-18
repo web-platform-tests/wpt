@@ -320,6 +320,7 @@ class GitTree(object):
             rv.append(parts[1])
         return rv
 
+
 class CommitMessage(object):
     def __init__(self, text):
         self.text = text

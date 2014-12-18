@@ -72,8 +72,13 @@ o<a href=# id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x
       {input:':lang(en):active', prop:'font-style', value:'italic'},
       {input:':lang(en):hover', prop:'font-variant', value:'small-caps'},
       // pseudo-element selector
-      {input:':active::after', prop:'font-style', value:'italic', pseudoElt:'::after'},
-      {input:':hover::after', prop:'font-variant', value:'small-caps', pseudoElt:'::after'},
+      {input:':active::before', prop:'top', value:'1px', pseudoElt:'::before'},
+      {input:':hover::before', prop:'right', value:'1px', pseudoElt:'::before'},
+      {input:':active::after', prop:'bottom', value:'1px', pseudoElt:'::after'},
+      {input:':hover::after', prop:'left', value:'1px', pseudoElt:'::after'},
+      // as argument
+      {input:':matches(:active)', prop:'font-weight', value:'bold'},
+      {input:':matches(:hover)', prop:'list-style-position', value:'inside'},
       ];
 
       var stylesheet = '';

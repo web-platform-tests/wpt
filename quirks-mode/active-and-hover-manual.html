@@ -9,8 +9,11 @@
  <body>
   <p>Click on the boxes below. <button onclick="timeout()">Abort and show results</button></p>
   <div id=log></div>
+  <p>quirks:
   <iframe id=quirks></iframe>
+  <p>almost:
   <iframe id=almost></iframe>
+  <p>standards:
   <iframe id=standards></iframe>
   <script type="text/plain" id=html_tmpl>
 <html id=html class=x lang=en>
@@ -22,12 +25,12 @@ table, tbody, tr, td { display:inline }
 </style>
 <style id=style>{style}</style>
 <body id=body class=x>
-a<a href=# data-match=a id=a class=t></a>
+a<a href=# id=a class=t></a>
 b<a id=b class=t></a>
-c<map name=map1 class=x><area href=# coords=0,0,50,50 data-match=c id=c class=t></map><img usemap=#map1 src=/images/transparent.png>
-d<map name=map2 class=x><area coords=0,0,50,50 id=d class=t></map><img usemap=#map2 src=/images/transparent.png>
-e<link href=# data-match=e id=e class=t>
-f<link rel=stylesheet href=# data-match=f id=f class=t>
+c<map id=map1 name=map1 class=x><area href=# coords=0,0,50,50 id=c class=t></map><img id=img1 usemap=#map1 src=/images/transparent.png>
+d<map id=map2 name=map2 class=x><area coords=0,0,50,50 id=d class=t></map><img id=img2 usemap=#map2 src=/images/transparent.png>
+e<link href=# id=e class=t>
+f<link rel=stylesheet href=# id=f class=t>
 g<link id=g class=t>
 h<button id=h class=t></button>
 i<input type=submit id=i class=t value>
@@ -36,7 +39,7 @@ k<input type=reset id=k class=t value>
 l<input type=button id=l class=t value>
 m<menuitem id=m class=t></menuitem>
 n<img tabindex=0 id=n class=t src=/images/transparent.png>
-o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x><tr id=tr class=x><td id=td class=x><a href=# data-match=o id=o class=t></a></table></a>
+o<a href=# id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x><tr id=tr class=x><td id=td class=x><a href=# id=o class=t></a></table></a>
 </script>
   <script>
     setup({explicit_done:true, explicit_timeout:true});
@@ -101,22 +104,13 @@ o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=
       s.mode = 'standards';
       [q, a, s].forEach(function(win) {
           win.style = win.document.getElementById('style');
-          [].forEach.call(win.document.querySelectorAll('.t'), function(elm) {
-              elm.test = async_test(elm.outerHTML + ' ' + win.mode);
-              elm.test.add_cleanup(function() {
-                  if (elm.tagName != 'AREA') {
-                    elm.classList.add('done');
-                  } else {
-                    elm.parentNode.nextSibling.classList.add('done');
-                  }
-              });
-          });
           win.onmousedown = win.onmouseup = run_tests;
           win.onclick = function(e) {
             e.preventDefault();
           };
       });
-      done();
+      var test_count = 0;
+      var total_test_count = q.document.querySelectorAll('.t').length * 3;
 
       function active_should_match(elm) {
         if ((elm.tagName === 'A' || elm.tagName === 'AREA' || elm.tagName === 'LINK') && elm.hasAttribute('href') ||
@@ -129,39 +123,53 @@ o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=
         return false;
       }
 
-      function check_matches(win, elm, t, expectMatch) {
+      function check_matches(id, win, elm, t, expectMatch) {
+        var prefix = 'Test ' + id + ', ' + win.mode + ': ';
         if (t.input.indexOf(':active') > -1) {
           expectMatch = expectMatch && active_should_match(elm);
         }
         if (!t.pseudoElt) {
-          assert_equals(elm.matches(t.input), expectMatch, t.input + ' matches()');
+          test(function() {
+            assert_equals(elm.matches(t.input), expectMatch);
+          }, prefix + elm.id + '.matches("' + t.input + '")');
         }
-        assert_equals(win.getComputedStyle(elm, t.pseudoElt).getPropertyValue(t.prop) === t.value, expectMatch, t.input + ' getComputedStyle()');
+        test(function() {
+          assert_equals(win.getComputedStyle(elm, t.pseudoElt).getPropertyValue(t.prop) === t.value, expectMatch);
+        }, prefix + 'getComputedStyle(' + elm.id + ') with selector ' + t.input);
       }
 
       function run_tests(e) {
         var elm = e.target;
         if (elm.classList.contains('t') && !elm.classList.contains('done')) {
-          elm.test.step(function() {
-            if (!elm.matches('.t:active')) {
-              return;
-            }
-            var win = elm.ownerDocument.defaultView;
+          if (!elm.matches('.t:active')) {
+            return;
+          }
+          if (elm.tagName != 'AREA') {
+            elm.classList.add('done');
+          } else {
+            elm.parentNode.nextSibling.classList.add('done');
+          }
+          var id = elm.id;
+          var win = elm.ownerDocument.defaultView;
+          do {
             if (win.mode === 'quirks') {
               links_only.forEach(function(t) {
                 var elmIsLink = elm.matches('a[href], area[href], link[href]');
-                check_matches(win, elm, t, elmIsLink);
+                check_matches(id, win, elm, t, elmIsLink);
               });
             } else {
               links_only.forEach(function(t) {
-                check_matches(win, elm, t, true);
+                check_matches(id, win, elm, t, true);
               });
             }
             any_elm.forEach(function(t) {
-              check_matches(win, elm, t, true);
+              check_matches(id, win, elm, t, true);
             });
-            elm.test.done();
-          });
+          } while (elm = elm.parentElement);
+          test_count++;
+          if (test_count === total_test_count) {
+            done();
+          }
         }
       }
     }

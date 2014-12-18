@@ -112,6 +112,9 @@ o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=
               });
           });
           win.onmousedown = win.onmouseup = run_tests;
+          win.onclick = function(e) {
+            e.preventDefault();
+          };
       });
       done();
 
@@ -126,10 +129,6 @@ o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=
         var elm = e.target;
         if (elm.classList.contains('t') && !elm.classList.contains('done')) {
           elm.test.step(function() {
-            // different browsers have different idea about when :active matches relative to mousedown/mouseup events.
-            // http://software.hixie.ch/utilities/js/live-dom-viewer/saved/3341
-            // elm.matches('.t:active') seems to always return false in Gecko.
-            // but not in http://software.hixie.ch/utilities/js/live-dom-viewer/saved/3342 !?
             if (!elm.matches('.t:active')) {
               return;
             }
@@ -150,7 +149,6 @@ o<a href=# data-match=o id=a_ancestor class=x><table id=table class=x><tbody id=
             elm.test.done();
           });
         }
-        e.preventDefault();
       }
     }
   </script>

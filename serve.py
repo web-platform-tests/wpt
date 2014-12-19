@@ -203,6 +203,7 @@ def start_https_server(host, port, paths, bind_hostname, external_config, ssl_co
                                  use_ssl=True,
                                  key_file=ssl_config["key_path"],
                                  certificate=ssl_config["cert_path"],
+                                 encrypt_after_connect=ssl_config["encrypt_after_connect"],
                                  latency=kwargs.get("latency"))
 
 
@@ -253,7 +254,7 @@ class WebSocketDaemon(object):
         self.server = None
 
 
-def start_ws_server(host, port, paths, bind_hostname, external_config, ssl_config, 
+def start_ws_server(host, port, paths, bind_hostname, external_config, ssl_config,
                     **kwargs):
     return WebSocketDaemon(host,
                            str(port),
@@ -305,10 +306,11 @@ def normalise_config(config, ports):
             "ports": ports_}
 
 
-def get_ssl_config(external_domains, ssl_environment):
+def get_ssl_config(config, external_domains, ssl_environment):
     key_path, cert_path = ssl_environment.host_cert_path(external_domains)
     return {"key_path": key_path,
-            "cert_path": cert_path}
+            "cert_path": cert_path,
+            "encrypt_after_connect": config["ssl"]["encrypt_after_connect"]}
 
 
 def start(config, ssl_environment, **kwargs):
@@ -322,7 +324,7 @@ def start(config, ssl_environment, **kwargs):
 
     external_config = normalise_config(config, ports)
 
-    ssl_config = get_ssl_config(external_config["domains"].values(), ssl_environment)
+    ssl_config = get_ssl_config(config, external_config["domains"].values(), ssl_environment)
 
     if config["check_subdomains"]:
         check_subdomains(host, paths, bind_hostname, ssl_config)

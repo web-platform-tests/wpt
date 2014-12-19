@@ -7,6 +7,7 @@
  "log_level":"debug",
  "bind_hostname": true,
  "ssl": {"type": "openssl",
+         "encrypt_after_connect": false,
          "openssl": {
              "openssl_binary": "openssl",
              "base_path": "_certs",

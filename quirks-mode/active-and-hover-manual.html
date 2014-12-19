@@ -119,14 +119,18 @@ o<a href=# id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x
 
       function check_matches(id, win, elm, t, expectMatch) {
         var prefix = 'Test ' + id + ', ' + win.mode + ': ';
+
+        // .getComputedStyle can be checked both for pseudo-elements and normal elements
+        test(function() {
+          assert_equals(win.getComputedStyle(elm, t.pseudoElt).getPropertyValue(t.prop) === t.value, expectMatch);
+        }, prefix + 'getComputedStyle(' + elm.id + ') with selector ' + t.input);
+
+        // .matches doesn't work with pseudo-elements
         if (!t.pseudoElt) {
           test(function() {
             assert_equals(elm.matches(t.input), expectMatch);
           }, prefix + elm.id + '.matches("' + t.input + '")');
         }
-        test(function() {
-          assert_equals(win.getComputedStyle(elm, t.pseudoElt).getPropertyValue(t.prop) === t.value, expectMatch);
-        }, prefix + 'getComputedStyle(' + elm.id + ') with selector ' + t.input);
       }
 
       function run_tests(e) {

@@ -138,7 +138,11 @@ o<a href=# id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x
           if (elm.tagName != 'AREA') {
             elm.classList.add('done');
           } else {
-            elm.parentNode.nextSibling.classList.add('done');
+            // For <area> we want to style the <img> instead.
+            if (elm.parentNode.nextElementSibling.tagName != 'IMG') {
+              throw new Error("<area>'s parent's next element sibling wasn't an <img>");
+            }
+            elm.parentNode.nextElementSibling.classList.add('done');
           }
           var id = elm.id;
           var win = elm.ownerDocument.defaultView;

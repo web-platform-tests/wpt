@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Writing Modes Test: inline replaced element and 'vertical-rl'</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
+  <link rel="match" href="inline-replaced-wm-rl-002-ref.xht" />
+
+  <meta content="ahem image" name="flags" />
+  <meta content="This test checks that the content of an inline replaced element does not rotate due to the writing mode." name="assert" />
+
+  <style type="text/css"><![CDATA[
+  div#wrapper
+  {
+  font: 9.375em/1 Ahem; /* computes to 150px/150px */
+  /*
+  We want the white gap on the left of the cat to be exactly 52px wide:
+    150px
+  -  98px  : intrinsic width of cat image
+  ========
+     52px
+  */
+  height: 1em;
+  writing-mode: vertical-rl;
+  }
+
+  div#blue-right { border-right: blue solid 1em; }
+
+  img {vertical-align: top;}
+
+  /* cat.png has an intrinsic height of 99px and an intrinsic width of 98px */
+
+  div#orange-left { border-left: orange solid 1em; }
+  ]]></style>
+ </head>
+
+ <body>
+
+  <p>Test passes if there is, from left to right, an orange square then a cat image (<strong>the cat image must not be rotated</strong>) and then a blue square and if the tip of the tail of the cat image is touching the left edge of the blue square.</p>
+
+  <div id="wrapper">
+    <div id="blue-right"></div>
+    <img src="support/cat.png" alt="Image download support must be enabled" />
+    <div id="orange-left"></div>
+  </div>
+
+ </body>
+</html>

@@ -4,38 +4,46 @@
 
  <head>
 
-  <title>CSS Writing-mode Test: vertical-rl - block progression of block-level boxes</title>
+  <title>CSS Writing Modes Test: position absolute and 'vertical-rl' - block flow direction of block-level boxes</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
-  <link rel="match" href="wm-block-progression-002-ref.xht" />
+  <link rel="match" href="../css-multicol-1/multicol-count-002-ref.xht" />
 
   <meta content="ahem" name="flags" />
-  <meta content="This test checks that block-level boxes in a block formating context with 'writing-mode' set to 'vertical-rl' are laid out one after the other with the first beginning at the right-hand side of its containing block; they are ordered from right to left meaning that the 1st block box is the rightmost one and then the 2nd block is juxtaposed to its left-hand side, the 3rd block is juxtaposed to the 2nd block on its left-hand side, etc... " name="assert" />
+  <meta content="This test checks that an absolutely positioned box with its 'writing-mode' set to 'vertical-rl' establishes a block formating context with a right-to-left block flow direction." name="assert" />
 
   <style type="text/css"><![CDATA[
   body
   {
   color: yellow;
   font: 1.25em/1 Ahem;
+  }
+
+  div#abs-pos
+  {
   height: 9em;
+  left: auto;
+  position: absolute;
   writing-mode: vertical-rl;
   }
 
-  div
+  div#abs-pos > div
   {
   background-color: black;
   border-bottom: black solid 1em;
   border-top: black solid 1em;
   }
 
-  div.right-border {border-right: black solid 1em;}
+  div.right-border { border-right: black solid 1em; }
 
-  div#left-border {border-left: black solid 1em;}
+  div#left-border { border-left: black solid 1em; }
   ]]></style>
  </head>
 
  <body>
+
+  <div id="abs-pos">
 
 <!-- The right-most line of right-most "S" --> <div class="right-border">A&nbsp; BBBB</div>
 
@@ -74,6 +82,8 @@
 <!-- The 3rd right-most line of "P" --> <div>h&nbsp; j&nbsp;&nbsp; </div>
 
 <!-- The 4th right-most line of "P" --> <div id="left-border">kkkkkkk</div>
+
+  </div>
 
  </body>
 </html>

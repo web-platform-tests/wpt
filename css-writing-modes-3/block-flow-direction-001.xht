@@ -4,22 +4,29 @@
 
  <head>
 
-  <title>CSS Writing-mode Test: horizontal-tb - block progression of block-level boxes</title>
+  <title>CSS Writing Modes Test: horizontal-tb - block flow direction of block-level boxes</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
   <link rel="match" href="../css-multicol-1/multicol-count-002-ref.xht" />
 
   <meta content="ahem" name="flags" />
-  <meta content="This test checks that block-level boxes in a 'horizontal-tb' writing mode are laid out one after the other, vertically, with the first beginning at the top of a containing block; they are ordered from top to bottom meaning that the 1st block box is the topmost one and then the 2nd block is juxtaposed to its bottom, the 3rd block is juxtaposed to the 2nd block on its left-hand side, etc..." name="assert" />
+  <meta content="This test checks that block-level boxes in a 'horizontal-tb' writing mode are laid out one after the other, vertically, with the first beginning at the top of a containing block; they are ordered from top to bottom meaning that the 1st block box is the topmost one, then the 2nd block is juxtaposed at its bottom, then the 3rd block is juxtaposed to the 2nd block at its bottom, etc..." name="assert" />
 
   <style type="text/css"><![CDATA[
+  html { writing-mode: horizontal-tb; }
+  /*
+  "
+  The principal writing mode of the document is determined by the writing-mode
+  and direction values specified on the root element.
+  "
+  */
+
   body
   {
   color: yellow;
   font: 1.25em/1 Ahem;
   width: 21em;
-  writing-mode: horizontal-tb;
   }
 
   div
@@ -29,9 +36,9 @@
   border-right: black solid 1em;
   }
 
-  div#top-border {border-top: black solid 1em;}
+  div#top-border { border-top: black solid 1em; }
 
-  div#bottom-border {border-bottom: black solid 1em;}
+  div#bottom-border { border-bottom: black solid 1em; }
   ]]></style>
  </head>
 

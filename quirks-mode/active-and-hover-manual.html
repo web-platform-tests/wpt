@@ -23,7 +23,7 @@
 link::before { content:'' }
 table, tbody, tr, td { display:inline }
 </style>
-<style id=style>{style}</style>
+<style>{style}</style>
 <body id=body class=x>
 a<a href=# id=a class=t></a>
 b<a id=b class=t></a>
@@ -108,7 +108,6 @@ o<a href=# id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x
       a.mode = 'almost';
       s.mode = 'standards';
       [q, a, s].forEach(function(win) {
-          win.style = win.document.getElementById('style');
           win.onmousedown = win.onmouseup = run_tests;
           win.onclick = function(e) {
             e.preventDefault();

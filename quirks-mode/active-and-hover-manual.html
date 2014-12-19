@@ -7,7 +7,7 @@
   <style> iframe { width:100%; height:200px; } </style>
  </head>
  <body>
-  <p>Click on the boxes below. <button onclick="timeout()">Abort and show results</button></p>
+  <p>Click on the boxes below (using a pointing device). <button onclick="timeout()">Abort and show results</button></p>
   <div id=log></div>
   <p>quirks:
   <iframe id=quirks></iframe>
@@ -117,22 +117,8 @@ o<a href=# id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x
       var test_count = 0;
       var total_test_count = q.document.querySelectorAll('.t').length * 3;
 
-      function active_should_match(elm) {
-        if ((elm.tagName === 'A' || elm.tagName === 'AREA' || elm.tagName === 'LINK') && elm.hasAttribute('href') ||
-            elm.tagName === 'BUTTON' && !elm.disabled ||
-            elm.tagName === 'INPUT' && (elm.type === 'submit' || elm.type === 'image' || elm.type === 'reset' || elm.type === 'button') ||
-            elm.tagName === 'MENUITEM' && !elm.hasAttribute('disabled') ||
-            elm.hasAttribute('tabindex') && elm.tabIndex > -1) {
-          return true;
-        }
-        return false;
-      }
-
       function check_matches(id, win, elm, t, expectMatch) {
         var prefix = 'Test ' + id + ', ' + win.mode + ': ';
-        if (t.input.indexOf(':active') > -1) {
-          expectMatch = expectMatch && active_should_match(elm);
-        }
         if (!t.pseudoElt) {
           test(function() {
             assert_equals(elm.matches(t.input), expectMatch);

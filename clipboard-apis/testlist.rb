@@ -2,138 +2,138 @@
 describe "Clipboard events testsuite" do
   before(:all) do
     @browser = OperaWatir::Browser.new
-    $base = 'file://localhost/d:/projects/spec-dev/copy-paste/W3C-repo/clipops/testsuite/'
+    $base = '/web-platform-tests/clipboard-apis/testsuite/'
   end
 
-	it "1 ClipboardEvent - events fire on INPUT " do
+	it "1 Using beforecopy to enable 'copy' UI that would otherwise be disabled " do
 		doSingleTest 1
 	end
 
-	it "5 ClipboardEvent - events fire on TEXTAREA " do
-		doSingleTest 5
+	it "2 Using beforecut to enable 'cut' UI that would otherwise be disabled " do
+		doSingleTest 2
 	end
 
-	it "9 setData() method " do
-		doSingleTest 9
+	it "3 Using beforepaste to enable 'paste' UI that would otherwise be disabled " do
+		doSingleTest 3
 	end
 
-	it "11 copy event when there is no selection and script uses setData()  " do
-		doSingleTest 11
+	it "4 ClipboardEvent - events fire on INPUT " do
+		doSingleTest 4
 	end
 
-	it "13 cancelling default action, basic test  " do
-		doSingleTest 13
+	it "8 ClipboardEvent - events fire on TEXTAREA " do
+		doSingleTest 8
 	end
 
-	it "17 copy event does not modify selection  " do
-		doSingleTest 17
+	it "12 setData() method " do
+		doSingleTest 12
 	end
 
-	it "19 default action of event when there is no selection is noop " do
-		doSingleTest 19
+	it "14 copy event when there is no selection and script uses setData()  " do
+		doSingleTest 14
 	end
 
-	it "21 default action of cut event when there is no selection - no text change " do
-		doSingleTest 21
+	it "16 cancelling default action, basic test  " do
+		doSingleTest 16
 	end
 
-	it "22 getData() method in cut and copy events should return an empty string " do
+	it "20 copy event does not modify selection  " do
+		doSingleTest 20
+	end
+
+	it "22 default action of event when there is no selection is noop " do
 		doSingleTest 22
 	end
 
-	it "24 getData() method when type is unsupported should return an empty string " do
+	it "24 default action of cut event when there is no selection - no text change " do
 		doSingleTest 24
 	end
 
-	it "25 cancelling default action of cut prevents removal of text from editable context  " do
+	it "25 getData() method in cut and copy events should return an empty string " do
 		doSingleTest 25
 	end
 
-	it "27 no default action for cut in non-editable context " do
+	it "27 getData() method when type is unsupported should return an empty string " do
 		doSingleTest 27
 	end
 
-	it "28 setData() in cut event without preventDefault() has no effect when default action is noop " do
+	it "28 cancelling default action of cut prevents removal of text from editable context  " do
 		doSingleTest 28
 	end
 
-	it "29 cut fires before text is removed  " do
-		doSingleTest 29
+	it "30 cut fires before text is removed  " do
+		doSingleTest 30
 	end
 
-	it "31 cut collapses selection  " do
-		doSingleTest 31
-	end
-
-	it "32 modifying data for cut event in non-editable context with selection " do
+	it "32 cut collapses selection  " do
 		doSingleTest 32
 	end
 
-	it "34 setData() method without preventing events's default action " do
+	it "33 no default action for cut in non-editable context " do
+		doSingleTest 33
+	end
+
+	it "34 setData() in cut event without preventDefault() has no effect when default action is noop " do
 		doSingleTest 34
 	end
 
-	it "36 events fire on INPUT " do
-		doSingleTest 36
+	it "35 modifying data for cut event in non-editable context with selection " do
+		doSingleTest 35
 	end
 
-	it "38 events fire on TEXTAREA " do
-		doSingleTest 38
+	it "37 setData() method without preventing events's default action " do
+		doSingleTest 37
 	end
 
-	it "40 paste event fires before data is inserted " do
-		doSingleTest 40
+	it "39 events fire on INPUT " do
+		doSingleTest 39
 	end
 
-	it "42 preventing default action  " do
-		doSingleTest 42
+	it "41 events fire on TEXTAREA " do
+		doSingleTest 41
 	end
 
-	it "44 paste event fires even in non-editable context " do
-		doSingleTest 44
+	it "43 paste event fires before data is inserted " do
+		doSingleTest 43
 	end
 
-	it "45 setData() does not modify text that is about to be inserted in a paste event " do
+	it "45 preventing default action  " do
 		doSingleTest 45
 	end
 
-	it "46 setData() doesn't modify text on the clipboard when called from a paste event " do
-		doSingleTest 46
-	end
-
-	it "47 getData() method in paste event retrieving plain text " do
+	it "47 paste event fires even in non-editable context " do
 		doSingleTest 47
 	end
 
-	it "48 getData() method when called outside event handler should return an empty string " do
+	it "48 setData() does not modify text that is about to be inserted in a paste event " do
 		doSingleTest 48
 	end
 
-	it "49 getData() method with wrong number of arguments " do
+	it "49 setData() doesn't modify text on the clipboard when called from a paste event " do
 		doSingleTest 49
 	end
 
-	it "50 getData() method supports legacy 'text' argument " do
+	it "50 getData() method in paste event retrieving plain text " do
 		doSingleTest 50
 	end
 
-	it "51 getData() supports legacy 'url' argument " do
+	it "51 getData() method when called outside event handler should return an empty string " do
 		doSingleTest 51
 	end
 
-	it "52 getData() method's type argument not case sensitive " do
+	it "52 getData() method with wrong number of arguments " do
 		doSingleTest 52
 	end
 
-	it "53 Using beforecopy to enable 'copy' UI that would otherwise be disabled " do
+	it "53 getData() method supports legacy 'text' argument " do
 		doSingleTest 53
 	end
 
-	it "54 Using beforecut to enable 'cut' UI that would otherwise be disabled " do
+	it "54 getData() supports legacy 'url' argument " do
 		doSingleTest 54
 	end
 
-	it "55 Using beforepaste to enable 'paste' UI that would otherwise be disabled " do
+	it "55 getData() method's type argument not case sensitive " do
 		doSingleTest 55
 	end
 
@@ -197,28 +197,28 @@ describe "Clipboard events testsuite" do
 		doSingleTest 96
 	end
 
-	it "97 setData() followed by clearData() in same event handler " do
+	it "97 clearData() method without arguments " do
 		doSingleTest 97
 	end
 
-	it "99 clearData() followed by setData() in same event handler " do
+	it "99 clearData() method with text/html argument " do
 		doSingleTest 99
 	end
 
-	it "101 clipboard modification when script uses both clearData() and setData()  " do
+	it "101 setData() followed by clearData() in same event handler " do
 		doSingleTest 101
 	end
 
-	it "103 reading clipboard data from looping script  " do
+	it "103 clearData() followed by setData() in same event handler " do
 		doSingleTest 103
 	end
 
-	it "104 clearData() method without arguments " do
-		doSingleTest 104
+	it "105 clipboard modification when script uses both clearData() and setData()  " do
+		doSingleTest 105
 	end
 
-	it "106 clearData() method with text/html argument " do
-		doSingleTest 106
+	it "107 reading clipboard data from looping script  " do
+		doSingleTest 107
 	end
 
 	it "108 ClipboardEvent interface - synthetic events with new ClipboardEvent constructor  " do
@@ -257,39 +257,39 @@ describe "Clipboard events testsuite" do
 		doSingleTest 118
 	end
 
-	it "119 integration with execCommand, events are syncronous " do
+	it "119 integration with execCommand - returns false when not allowed to write to clipboard " do
 		doSingleTest 119
 	end
 
-	it "122 integration with execCommand, can prevent default action " do
-		doSingleTest 122
+	it "121 integration with execCommand, events are syncronous " do
+		doSingleTest 121
 	end
 
 	it "124 integration with execCommand, can prevent default action " do
 		doSingleTest 124
 	end
 
-	it "125 clipboard events relative to key events  " do
-		doSingleTest 125
+	it "126 integration with execCommand, can prevent default action " do
+		doSingleTest 126
 	end
 
-	it "128 clipboard events relative to key events - preventDefault prevents clipboard events  " do
-		doSingleTest 128
+	it "127 clipboard events relative to key events  " do
+		doSingleTest 127
 	end
 
-	it "131 clipboard events relative to other input events  " do
-		doSingleTest 131
+	it "130 clipboard events relative to key events - preventDefault prevents clipboard events  " do
+		doSingleTest 130
 	end
 
-	it "132 clipboard events relative to other input events  " do
-		doSingleTest 132
-	end
-
-	it "133 copy operation does not dispatch other events  " do
+	it "133 clipboard events relative to other input events  " do
 		doSingleTest 133
 	end
 
-	it "135 event listener that modifies focus " do
+	it "134 clipboard events relative to other input events  " do
+		doSingleTest 134
+	end
+
+	it "135 copy operation does not dispatch other events  " do
 		doSingleTest 135
 	end
 
@@ -297,64 +297,68 @@ describe "Clipboard events testsuite" do
 		doSingleTest 137
 	end
 
-	it "138 event listener that modifies selection " do
-		doSingleTest 138
-	end
-
-	it "139 setData() called outside event handler method " do
+	it "139 event listener that modifies focus " do
 		doSingleTest 139
 	end
 
-	it "142 items.add() called outside event handler method " do
-		doSingleTest 142
+	it "140 event listener that modifies selection " do
+		doSingleTest 140
 	end
 
-	it "145 clearData() called outside event handler method " do
-		doSingleTest 145
+	it "141 setData() called outside event handler method " do
+		doSingleTest 141
 	end
 
-	it "148 ClipboardEvent and non-ASCII data I - Japanese " do
-		doSingleTest 148
+	it "144 items.add() called outside event handler method " do
+		doSingleTest 144
+	end
+
+	it "147 clearData() called outside event handler method " do
+		doSingleTest 147
 	end
 
 	it "150 ClipboardEvent and non-ASCII data I - Japanese " do
 		doSingleTest 150
 	end
 
-	it "151 ClipboardEvent and non-ASCII data II - random Unicode symbols " do
-		doSingleTest 151
+	it "152 ClipboardEvent and non-ASCII data I - Japanese " do
+		doSingleTest 152
 	end
 
-	it "153 events fire inside SVG content  " do
+	it "153 ClipboardEvent and non-ASCII data II - random Unicode symbols " do
 		doSingleTest 153
 	end
 
-	it "159 events fire inside editable SVG content  " do
-		doSingleTest 159
+	it "155 events fire inside SVG content  " do
+		doSingleTest 155
 	end
 
-	it "165 events fire inside SVG content in contentEditable " do
-		doSingleTest 165
+	it "161 events fire inside editable SVG content  " do
+		doSingleTest 161
 	end
 
-	it "171 types property - all implementations must return 'text/plain' as one of the .types entries when there is plain text on the clipboard " do
-		doSingleTest 171
+	it "167 events fire inside SVG content in contentEditable " do
+		doSingleTest 167
 	end
 
-	it "172 setData() method does not throw when implementation does not know the type " do
-		doSingleTest 172
+	it "173 types property - all implementations must return 'text/plain' as one of the .types entries when there is plain text on the clipboard " do
+		doSingleTest 173
 	end
 
-	it "174 setData() method with text/html (experimental) " do
+	it "174 setData() method does not throw when implementation does not know the type " do
 		doSingleTest 174
 	end
 
-	it "176 clearData() method is noop in paste event " do
+	it "176 setData() method with text/html (experimental) " do
 		doSingleTest 176
 	end
 
-	it "177 clearData() method without preventing events's default action " do
-		doSingleTest 177
+	it "178 clearData() method is noop in paste event " do
+		doSingleTest 178
+	end
+
+	it "179 clearData() method without preventing events's default action " do
+		doSingleTest 179
 	end
 
 end

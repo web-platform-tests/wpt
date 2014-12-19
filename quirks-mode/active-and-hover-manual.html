@@ -118,7 +118,7 @@ o<a href=# id=a_ancestor class=x><table id=table class=x><tbody id=tbody class=x
       var total_test_count = q.document.querySelectorAll('.t').length * 3;
 
       function check_matches(id, win, elm, t, expectMatch) {
-        var prefix = 'Test ' + id + ', ' + win.mode + ': ';
+        var prefix = id + ', ' + win.mode + ': ';
 
         // .getComputedStyle can be checked both for pseudo-elements and normal elements
         test(function() {

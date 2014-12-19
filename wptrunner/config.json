@@ -3,4 +3,5 @@
           "https":[8443],
           "ws":[8888]},
  "check_subdomains":false,
- "bind_hostname":%(bind_hostname)s}
+ "bind_hostname":%(bind_hostname)s,
+ "ssl":{}}

@@ -52,11 +52,12 @@ def executor_kwargs(http_server_url, **kwargs):
 
 
 def env_options():
-    return {"host": "localhost",
+    return {"host": "127.0.0.1",
             "external_host": "web-platform.test",
-            "bind_hostname": "true",
+            "bind_hostname": "false",
             "required_files": required_files,
-            "certificate_domain": "web-platform.test"}
+            "certificate_domain": "web-platform.test",
+            "encrypt_after_connect": True}
 
 
 class FirefoxBrowser(Browser):

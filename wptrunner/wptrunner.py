@@ -44,7 +44,6 @@ The runner has several design goals:
 The upstream repository has the facility for creating a test manifest in JSON
 format. This manifest is used directly to determine which tests exist. Local
 metadata files are used to store the expected test results.
-
 """
 
 logger = None
@@ -74,8 +73,6 @@ def do_delayed_imports(serve_root):
     sys.path.insert(0, str(os.path.join(serve_root, "tools")))
     sys.path.insert(0, str(os.path.join(serve_root, "tools", "scripts")))
     failed = []
-
-    print sys.path
 
     try:
         import serve
@@ -172,6 +169,7 @@ class TestEnvironment(object):
         #TODO: allow non-default configuration for ssl
 
         local_config["external_host"] = self.options.get("external_host", None)
+        local_config["ssl"]["encrypt_after_connect"] = self.options.get("encrypt_after_connect", False)
 
         config = serve.merge_json(default_config, local_config)
         config["doc_root"] = self.serve_path

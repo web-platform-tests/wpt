@@ -79,8 +79,8 @@ async_test(function(t) {
             [player1, player2, player3], 'Set of objects returned by ' +
             'AnimationTimeline.getAnimationPlayers() ' +
             'method should contain three elements');
-        player1.currentTime = ANIMATION_END_TIME / 2;
-        player2.currentTime = ANIMATION_END_TIME + 10;
+        player1.currentTime = ANIMATION_DURATION / 2;
+        player2.currentTime = ANIMATION_DURATION + 10;
         player3.currentTime = -10;
 
         assert_array_equals(doc.timeline.getAnimationPlayers(),
@@ -94,7 +94,7 @@ async_test(function(t) {
 
 async_test(function(t) {
 	var doc = newHTMLDocument();
-	var timing = {fill: 'forwards', duration: ANIMATION_END_TIME};
+	var timing = {fill: 'forwards', duration: ANIMATION_DURATION};
     var player1 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
     var player2 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
     var player3 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
@@ -104,8 +104,8 @@ async_test(function(t) {
             [player1, player2, player3], 'Set of objects returned by ' +
             'AnimationTimeline.getAnimationPlayers() ' +
             'method should contain three elements');
-        player1.currentTime = ANIMATION_END_TIME / 2;
-        player2.currentTime = ANIMATION_END_TIME + 10;
+        player1.currentTime = ANIMATION_DURATION / 2;
+        player2.currentTime = ANIMATION_DURATION + 10;
         player3.currentTime = -10;
 
         assert_array_equals(doc.timeline.getAnimationPlayers(),
@@ -120,7 +120,7 @@ async_test(function(t) {
 
 async_test(function(t) {
 	var doc = newHTMLDocument();
-	var timing = {fill: 'backwards', duration: ANIMATION_END_TIME};
+	var timing = {fill: 'backwards', duration: ANIMATION_DURATION};
     var player1 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
     var player2 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
     var player3 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
@@ -130,8 +130,8 @@ async_test(function(t) {
             [player1, player2, player3], 'Set of objects returned by ' +
             'AnimationTimeline.getAnimationPlayers() ' +
             'method should contain three elements');
-        player1.currentTime = ANIMATION_END_TIME / 2;
-        player2.currentTime = ANIMATION_END_TIME + 10;
+        player1.currentTime = ANIMATION_DURATION / 2;
+        player2.currentTime = ANIMATION_DURATION + 10;
         player3.currentTime = -10;
 
         assert_array_equals(doc.timeline.getAnimationPlayers(),
@@ -146,7 +146,7 @@ async_test(function(t) {
 
 async_test(function(t) {
 	var doc = newHTMLDocument();
-	var timing = {fill: 'both', duration: ANIMATION_END_TIME};
+	var timing = {fill: 'both', duration: ANIMATION_DURATION};
     var player1 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
     var player2 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
     var player3 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, timing));
@@ -156,8 +156,8 @@ async_test(function(t) {
             [player1, player2, player3], 'Set of objects returned by ' +
             'AnimationTimeline.getAnimationPlayers() ' +
             'method should contain three elements');
-        player1.currentTime = ANIMATION_END_TIME / 2;
-        player2.currentTime = ANIMATION_END_TIME + 10;
+        player1.currentTime = ANIMATION_DURATION / 2;
+        player2.currentTime = ANIMATION_DURATION + 10;
         player3.currentTime = -10;
 
         assert_array_equals(doc.timeline.getAnimationPlayers(),
@@ -173,7 +173,7 @@ async_test(function(t) {
 async_test(function(t) {
 	var doc = newHTMLDocument();
     var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
-        {delay: 50, duration: ANIMATION_END_TIME});
+        {delay: 50, duration: ANIMATION_DURATION});
 	var player = doc.timeline.play(animationGroup);
 
     player.ready.then(t.step_func(function() {
@@ -189,7 +189,7 @@ async_test(function(t) {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
             'AnimationTimeline.getAnimationPlayers() method should ' +
             'return players whose source content is current');
-        player.currentTime = ANIMATION_END_TIME + 10;
+        player.currentTime = ANIMATION_DURATION + 10;
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
             'AnimationTimeline.getAnimationPlayers() method should ' +
             'return players whose source content is current');
@@ -202,7 +202,7 @@ async_test(function(t) {
 async_test(function(t) {
 	var doc = newHTMLDocument();
     var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
-        {delay: 50, duration: ANIMATION_END_TIME, fill: 'none'});
+        {delay: 50, duration: ANIMATION_DURATION, fill: 'none'});
 	var player = doc.timeline.play(animationGroup);
 
     player.ready.then(t.step_func(function() {
@@ -218,7 +218,7 @@ async_test(function(t) {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
             'AnimationTimeline.getAnimationPlayers() method should ' +
             'return players whose source content is current');
-        player.currentTime = ANIMATION_END_TIME + 10;
+        player.currentTime = ANIMATION_DURATION + 10;
         assert_array_equals(doc.timeline.getAnimationPlayers(), [],
             'AnimationTimeline.getAnimationPlayers() method should not ' +
             'return players whose source content is not current and not active');
@@ -231,7 +231,7 @@ async_test(function(t) {
 async_test(function(t) {
 	var doc = newHTMLDocument();
     var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
-        {delay: 50, duration: ANIMATION_END_TIME, fill: 'forwards'});
+        {delay: 50, duration: ANIMATION_DURATION, fill: 'forwards'});
 	var player = doc.timeline.play(animationGroup);
 
     player.ready.then(t.step_func(function() {
@@ -247,7 +247,7 @@ async_test(function(t) {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
             'AnimationTimeline.getAnimationPlayers() method should ' +
             'return players whose source content is current');
-        player.currentTime = ANIMATION_END_TIME + 10;
+        player.currentTime = ANIMATION_DURATION + 10;
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
             'AnimationTimeline.getAnimationPlayers() method should ' +
             'return players whose source content is current');
@@ -260,7 +260,7 @@ async_test(function(t) {
 async_test(function(t) {
 	var doc = newHTMLDocument();
     var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
-        {delay: 50, duration: ANIMATION_END_TIME, fill: 'backwards'});
+        {delay: 50, duration: ANIMATION_DURATION, fill: 'backwards'});
 	var player = doc.timeline.play(animationGroup);
 
     player.ready.then(t.step_func(function() {
@@ -276,7 +276,7 @@ async_test(function(t) {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player],
             'AnimationTimeline.getAnimationPlayers() method should ' +
             'return players whose source content is current');
-        player.currentTime = ANIMATION_END_TIME + 10;
+        player.currentTime = ANIMATION_DURATION + 10;
         assert_array_equals(doc.timeline.getAnimationPlayers(), [],
             'AnimationTimeline.getAnimationPlayers() method should not' +
             'return players whose source content is not current and not active');

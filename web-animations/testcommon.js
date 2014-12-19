@@ -15,7 +15,7 @@ var TIME_EPSILON = 5;
 // Precision (in px) for expected style at the moment and the one returned by getComputedStyle()
 var COMPUTED_STYLE_EPSILON = 5;
 
-var ANIMATION_END_TIME = 1000;
+var ANIMATION_DURATION = 1000;
 var ANIMATION_TOP_DEFAULT = 300;
 var ANIMATION_TOP_0 = 10;
 var ANIMATION_TOP_0_5 = 100;
@@ -40,7 +40,7 @@ function newHTMLDocument() {
 // creates new animation for given target
 function newAnimation(animationTarget) {
     animationTarget.style.top = ANIMATION_TOP_DEFAULT + 'px';
-    return new Animation(animationTarget, KEYFRAMES, ANIMATION_END_TIME);
+    return new Animation(animationTarget, KEYFRAMES, ANIMATION_DURATION);
 }
 
 // creates div element, appends it to the document body and
@@ -70,7 +70,7 @@ function type(object) {
 // Returns expected top of the target element at currentTime
 function getExpectedTop(currentTime, endTime) {
     if (!endTime) {
-        endTime = ANIMATION_END_TIME;
+        endTime = ANIMATION_DURATION;
     }
     return ANIMATION_TOP_0 + (ANIMATION_TOP_1 - ANIMATION_TOP_0)
         * (currentTime % endTime);

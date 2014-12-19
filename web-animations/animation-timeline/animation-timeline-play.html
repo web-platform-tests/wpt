@@ -137,13 +137,54 @@ async_test(function(t) {
     var player = document.timeline.play(newAnimation(createDiv(t)));
 
     player.ready.then(t.step_func(function() {
-        setTimeout(function() {
+        setTimeout(t.step_func(function() {
             assert_approx_equals(player.currentTime, 50, TIME_EPSILON, 'AnimationTimeline.play() ' +
                 'should run play a player procedure');
             assert_equals(player.playState, 'running', 'Play state should be in running state');
             t.done();
-        }, 50);
+        }), 50);
     }), t.unreached_func('Player ready promise should not be rejected'));
 }, 'Test AnimationTimeline.play() runs play a player procedure');
+
+async_test(function(t) {
+    var doc = newHTMLDocument();
+    var target1 = createDiv(t, doc);
+    var target2 = createDiv(t, doc);
+    var animationGroup = new AnimationGroup(
+        [newAnimation(target1), newAnimation(target2)]);
+	var player = doc.timeline.play(animationGroup);
+
+    player.ready.then(t.step_func(function() {
+        setTimeout(t.step_func(function() {
+            assert_approx_equals(window.getComputedStyle(target1).top,
+                getExpectedTop(50), COMPUTED_STYLE_EPSILON,
+                'Animation 1 should be running');
+            assert_approx_equals(window.getComputedStyle(target2).top,
+                getExpectedTop(50), COMPUTED_STYLE_EPSILON,
+                'Animation 2 should be running');
+            t.done();
+        }), 50);
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.play() plays animation group');
+
+async_test(function(t) {
+    var doc = newHTMLDocument();
+    var target1 = createDiv(t, doc);
+    var target2 = createDiv(t, doc);
+    var animationSequence = new AnimationSequence(
+        [newAnimation(target1), newAnimation(target2)]);
+	var player = doc.timeline.play(animationSequence);
+
+    player.ready.then(t.step_func(function() {
+        setTimeout(t.step_func(function() {
+            assert_approx_equals(window.getComputedStyle(target1).top,
+                getExpectedTop(50), COMPUTED_STYLE_EPSILON,
+                'Animation 1 should be running');
+            assert_equals(window.getComputedStyle(target2).top,
+                ANIMATION_TOP_DEFAULT, 'Animation 2 should not be running');
+            t.done();
+        }), 50);
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.play() plays animation sequence');
 </script>
 </body>

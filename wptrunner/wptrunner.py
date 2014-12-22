@@ -174,9 +174,7 @@ class TestEnvironment(object):
         config = serve.merge_json(default_config, local_config)
         config["doc_root"] = self.serve_path
 
-        if self.ssl_env.ssl_enabled:
-            config["ports"]["https"] = [8443]
-        else:
+        if not self.ssl_env.ssl_enabled:
             config["ports"]["https"] = [None]
 
         host = self.options.get("certificate_domain", config["host"])

@@ -7,6 +7,7 @@ import ast
 import os
 import sys
 from collections import OrderedDict
+from distutils.spawn import find_executable
 
 import config
 
@@ -208,18 +209,9 @@ def get_test_paths(config):
 
 
 def exe_path(name):
-    def is_executable(path):
-        return os.path.isfile(path) and os.access(path, os.X_OK)
-
-    if os.path.isabs(name):
-        return name if is_executable(name) else None
-
-    for path_dir in os.environ["PATH"].split(os.pathsep):
-        path_dir = path_dir.strip("\"")
-        path = os.path.join(path_dir, name)
-        if is_executable(path):
-            return path
-
+    path = find_executable(name)
+    if os.access(path, os.X_OK):
+        return path
 
 def check_args(kwargs):
     from mozrunner import debugger_arguments

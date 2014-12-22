@@ -175,15 +175,18 @@ class FirefoxBrowser(Browser):
                              test=test)
 
     def setup_ssl(self):
+        """Create a certificate database to use in the test profile. This is configured
+        to trust the CA Certificate that has signed the web-platform.test server
+        certificate."""
+
         self.logger.info("Setting up ssl")
         def certutil(*args):
-            binary = os.path.join(self.certutil_binary)
-            cmd = [str(item) for item in [binary] + list(args)]
-            print cmd
+            cmd = [self.certutil_binary] + list(args)
             return subprocess.check_call(cmd)
 
         pw_path = os.path.join(self.profile.profile, ".crtdbpw")
         with open(pw_path, "w") as f:
+            # Use empty password for certificate db
             f.write("\n")
 
         cert_db_path = self.profile.profile
@@ -191,7 +194,9 @@ class FirefoxBrowser(Browser):
         # Create a new certificate db
         certutil("-N", "-d", cert_db_path, "-f", pw_path)
 
+        # Add the CA certificate to the database and mark as trusted to issue server certs
         certutil("-A", "-d", cert_db_path, "-f", pw_path, "-t", "CT,,",
                  "-n", "web-platform-tests", "-i", self.ca_certificate_path)
 
-        print certutil("-L", "-d", cert_db_path)
+        # List all certs in the database
+        self.logger.debug(certutil("-L", "-d", cert_db_path))

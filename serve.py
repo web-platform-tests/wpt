@@ -373,7 +373,10 @@ def merge_json(base_obj, override_obj):
 def get_ssl_environment(config):
     implementation_type = config["ssl"]["type"]
     cls = sslutils.environments[implementation_type]
-    kwargs = config["ssl"][implementation_type].copy()
+    try:
+        kwargs = config["ssl"][implementation_type].copy()
+    except KeyError:
+        raise ValueError("%s is not a vaid ssl type." % implementation_type)
     return cls(logger, **kwargs)
 
 

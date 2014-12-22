@@ -6,7 +6,7 @@ import tempfile
 from datetime import datetime
 
 class OpenSSL(object):
-    def __init__(self, logger, binary, base_path, conf_path, hosts):
+    def __init__(self, logger, binary, base_path, conf_path, hosts, duration):
         """Context manager for interacting with OpenSSL.
         Creates a config file for the duration of the context.
 
@@ -15,7 +15,8 @@ class OpenSSL(object):
         :param base_path: path for storing certificates
         :param conf_path: path for storing configuration data
         :param hosts: list of hosts to include in configuration (or None if not
-                      generating host certificates)"""
+                      generating host certificates)
+        :param duration: Certificate duration in days"""
 
         self.base_path = base_path
         self.binary = binary
@@ -24,10 +25,11 @@ class OpenSSL(object):
         self.proc = None
         self.cmd = []
         self.hosts = hosts
+        self.duration = duration
 
     def __enter__(self):
         with open(self.conf_path, "w") as f:
-            f.write(get_config(self.base_path, self.hosts))
+            f.write(get_config(self.base_path, self.hosts, self.duration))
         return self
 
     def __exit__(self, *args, **kwargs):
@@ -117,7 +119,7 @@ x509_extensions = usr_cert
 name_opt        = ca_default
 cert_opt        = ca_default
 default_days = %(duration)d
-default_crl_days = 1
+default_crl_days = %(duration)d
 default_md = sha256
 preserve = no
 policy = policy_anything
@@ -190,7 +192,8 @@ class OpenSSLEnvironment(object):
     ssl_enabled = True
 
     def __init__(self, logger, openssl_binary="openssl", base_path=None,
-                 password="web-platform-tests", force_regenerate=False):
+                 password="web-platform-tests", force_regenerate=False,
+                 duration=30):
         """SSL environment that creates a local CA and host certificate using OpenSSL.
 
         By default this will look in base_path for existing certificates that are still
@@ -214,6 +217,7 @@ class OpenSSLEnvironment(object):
         self.base_path = os.path.abspath(base_path)
         self.password = password
         self.force_regenerate = force_regenerate
+        self.duration = duration
 
         self.path = None
         self.binary = openssl_binary
@@ -244,7 +248,8 @@ class OpenSSLEnvironment(object):
 
     def _config_openssl(self, hosts):
         conf_path = self.path("openssl.cfg")
-        return OpenSSL(self.logger, self.binary, self.base_path, conf_path, hosts)
+        return OpenSSL(self.logger, self.binary, self.base_path, conf_path, hosts,
+                       self.duration)
 
     def ca_cert_path(self):
         """Get the path to the CA certificate file, generating a
@@ -303,7 +308,6 @@ class OpenSSLEnvironment(object):
             openssl("ca",
                     "-batch",
                     "-create_serial",
-                    "-days", "1",
                     "-keyfile", key_path,
                     "-passin", "pass:%s" % self.password,
                     "-selfsign",

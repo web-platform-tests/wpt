@@ -921,6 +921,8 @@ function myInsertNode(range, node) {
  * this to testharness.js?
  */
 function assertNodesEqual(actual, expected, msg) {
+    // actual.normalize();
+    // expected.normalize();
     if (!actual.isEqualNode(expected)) {
         msg = "Actual and expected mismatch for " + msg + ".  ";
 
@@ -930,7 +932,7 @@ function assertNodesEqual(actual, expected, msg) {
                 && actual.nodeValue === expected.nodeValue
                 && actual.childNodes.length === expected.childNodes.length,
                 "First differing node: expected " + format_value(expected)
-                + ", got " + format_value(actual));
+                + ", got " + format_value(actual) + " [" + msg + "]");
             actual = nextNode(actual);
             expected = nextNode(expected);
         }

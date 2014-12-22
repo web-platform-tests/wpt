@@ -12,8 +12,8 @@ class OpenSSL(object):
 
         :param logger: stdlib logger or python structured logger
         :param binary: path to openssl binary
-        :param base_path: path for storing certificates
-        :param conf_path: path for storing configuration data
+        :param base_path: path to directory for storing certificates
+        :param conf_path: path for configuration file storing configuration data
         :param hosts: list of hosts to include in configuration (or None if not
                       generating host certificates)
         :param duration: Certificate duration in days"""

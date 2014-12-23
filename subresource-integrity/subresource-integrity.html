@@ -15,9 +15,6 @@
   var loads_scripts_with_weak_digest_algorithms;
 </script>
 
-<!-- Shouldn't load. Correct URI is ni:///sha-256;ME12ZWwv8POIkFVSgWFgW3sbnHh0DB-Fyb57zYQAFhs -->
-<script src="loads-scripts-with-badly-encoded-digest.js" integrity="ni:///sha-256;ME12ZWwv8POIkFVSgWFgW3sbnHh0DB+Fyb57zYQAFhs"></script>
-
 <!-- Should load -->
 <script src="loads-scripts-with-correct-content-type.js" integrity="ni:///sha-256;ZrrvOG-Kjz4R-FDFrfSQCQC_oMDfc0kQ3DJNd5URlrY?ct=application/javascript"></script>
 
@@ -36,14 +33,17 @@
 <!-- Shouldn't load. MD5 is considered to be a weak algorithm -->
 <script src="loads-scripts-with-weak-digest-algorithms.js" integrity="ni:///md5;XHzXKrCo5jhDN4BvNhs-4A"></script>
 
+<!-- Should load -->
+<script src="loads-scripts-with-base64-encoded-sha-digests.js" integrity="ni:///sha-256;+xc7GxEqWw6VtSIsI5W90RQtOrfjeGD+6WFgxZgiuOw="></script>
+
+<!-- Should load -->
+<script src="loads-scripts-with-unhyphenated-digest-name.js" integrity="ni:///sha256;ZR6E3E_G_B3WNdop4bYFtnXaj5bH02S3znD__KOC8Io"></script>
+
+
 <script>
   function assert_undefined(actual) {
     assert_equals(actual, undefined, "Should be undefined.");
   }
-
-  test(function() {
-    assert_undefined(loads_scripts_with_badly_encoded_digest)
-  }, "Doesn't load scripts with badly encoded digests");
 
   test(function() {
     assert_true(loads_scripts_with_correct_content_type)
@@ -68,4 +68,12 @@
   test(function() {
     assert_undefined(loads_scripts_with_weak_digest_algorithms)
   }, "Doesn't load scripts using weak digest algorithm");
+
+  test(function() {
+    assert_true(loads_scripts_with_base64_encoded_sha_digests)
+  }, "Loads scripts with base64 encoded sha digests");
+
+  test(function() {
+    assert_true(loads_scripts_with_unhyphenated_digest_name)
+  }, "Loads scripts with unhyphenated digest names");
 </script>

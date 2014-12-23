@@ -1,1 +1,0 @@
-loads_scripts_with_badly_encoded_digest=true;

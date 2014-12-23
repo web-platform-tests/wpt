@@ -921,8 +921,6 @@ function myInsertNode(range, node) {
  * this to testharness.js?
  */
 function assertNodesEqual(actual, expected, msg) {
-    // actual.normalize();
-    // expected.normalize();
     if (!actual.isEqualNode(expected)) {
         msg = "Actual and expected mismatch for " + msg + ".  ";
 

@@ -15,11 +15,10 @@
 <img srcset="/images/green-256x256.png 256w" sizes="1px" data-expect="1">
 <img srcset="/images/green-256x256.png 256w" sizes="0px" data-expect="0">
 <script>
-setup({explicit_done:true});
 onload = function() {
   [].forEach.call(document.images, function(img) {
-    var expected = parseFloat(img.dataset.expect);
     test(function() {
+      var expected = parseFloat(img.dataset.expect);
       assert_equals(img.width, expected, 'width');
       assert_equals(img.height, expected, 'height');
       assert_equals(img.clientWidth, expected, 'clientWidth');
@@ -28,6 +27,5 @@ onload = function() {
       assert_equals(img.naturalHeight, 256, 'naturalHeight');
     }, img.outerHTML);
   });
-  done();
 };
 </script>

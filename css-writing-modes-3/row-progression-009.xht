@@ -4,7 +4,7 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: vertical-lr - table rows progression</title>
+  <title>CSS Writing Modes Test: vertical-lr - table rows progression (thead, 2 tbodies, tfoot)</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
@@ -45,17 +45,33 @@
 
   <table>
 
+    <thead>
+
 <!-- The "P" -->
-  <tr><td class="left-most-cell">AAA B&nbsp; C&nbsp; DDD</td><td class="left-most-cell">EE F G H</td><td class="left-most-cell">JJ &nbsp; &nbsp; &nbsp;</td></tr>
+      <tr><td class="left-most-cell">AAA B&nbsp; C&nbsp; DDD</td><td class="left-most-cell">EE F G H</td><td class="left-most-cell">JJ &nbsp; &nbsp; &nbsp;</td></tr>
 
-<!-- The "A" -->
-  <tr><td>KKK L&nbsp; M&nbsp; NNN</td><td>OO Q R SS</td><td>TT &nbsp; &nbsp; UU</td></tr>
+    </thead>
 
-<!-- The left-most "S" -->
-  <tr><td>VVV W&nbsp; X&nbsp; Y&nbsp;</td><td>a b c dd</td><td>&nbsp;e &nbsp;f &nbsp;g hh</td></tr>
+    <tfoot>
 
 <!-- The right-most "S" -->
-  <tr><td>jjj k&nbsp; m&nbsp; n&nbsp;</td><td>q r s tt</td><td>&nbsp;u &nbsp;v &nbsp;w xx</td></tr>
+      <tr><td>jjj k&nbsp; m&nbsp; n&nbsp;</td><td>q r s tt</td><td>&nbsp;u &nbsp;v &nbsp;w xx</td></tr>
+
+    </tfoot>
+
+    <tbody>
+
+<!-- The "A" -->
+      <tr><td>KKK L&nbsp; M&nbsp; NNN</td><td>OO Q R SS</td><td>TT &nbsp; &nbsp; UU</td></tr>
+
+    </tbody>
+
+    <tbody>
+
+<!-- The left-most "S" -->
+      <tr><td>VVV W&nbsp; X&nbsp; Y&nbsp;</td><td>a b c dd</td><td>&nbsp;e &nbsp;f &nbsp;g hh</td></tr>
+
+    </tbody>
 
   </table>
 

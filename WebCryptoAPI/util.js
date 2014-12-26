@@ -50,8 +50,8 @@ function exists(x) {
 
 function hasFields(object, fields) {
   return fields
-          .map(x => exists(object[x]))
-          .reduce((x,y) => (x && y));
+          .map(function(x) {return exists(object[x])})
+          .reduce(function(x,y) {return (x && y)});
 }
 
 function hasKeyFields(x) {

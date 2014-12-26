@@ -464,6 +464,12 @@ policies and contribution forms [3].
                 }));
     }
 
+    function promise_rejects(test, expected, promise) {
+        return promise.then(test.unreached_func("Should have rejected.")).catch(function(e) {
+            assert_throws(expected, function() { throw e });
+        });
+    }
+
     function setup(func_or_properties, maybe_properties)
     {
         var func = null;
@@ -511,6 +517,7 @@ policies and contribution forms [3].
     expose(test, 'test');
     expose(async_test, 'async_test');
     expose(promise_test, 'promise_test');
+    expose(promise_rejects, 'promise_rejects');
     expose(generate_tests, 'generate_tests');
     expose(setup, 'setup');
     expose(done, 'done');

@@ -1036,7 +1036,10 @@ policies and contribution forms [3].
             var required_props = { code: name_code_map[name] };
 
             if (required_props.code === 0 ||
-               ("name" in e && e.name !== e.name.toUpperCase() && e.name !== "DOMException")) {
+               (typeof e == "object" &&
+                "name" in e &&
+                e.name !== e.name.toUpperCase() &&
+                e.name !== "DOMException")) {
                 // New style exception: also test the name property.
                 required_props.name = name;
             }

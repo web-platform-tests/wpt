@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Diffie-Hellman</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="util.js"></script>
+<script src="test-vectors.js"></script>
+<div id=log></div>
+<script>
+"use strict";
+
+promise_test(function() {
+  var alg = {
+    name: "DH",
+    prime: tv.dh.prime,
+    generator: new Uint8Array([0x02])
+  };
+
+  return crypto.subtle.generateKey(alg, false, ["deriveKey", "deriveBits"]).then(function(x) {
+    assert_equals(x.publicKey.algorithm.name, alg.name);
+    assert_true(util.memcmp(x.publicKey.algorithm.prime, alg.prime));
+    assert_true(util.memcmp(x.publicKey.algorithm.generator, alg.generator));
+    assert_equals(x.publicKey.type, "public");
+    assert_true(x.publicKey.extractable);
+    assert_equals(x.publicKey.usages.length, 0);
+
+    assert_equals(x.privateKey.algorithm.name, alg.name);
+    assert_true(util.memcmp(x.privateKey.algorithm.prime, alg.prime));
+    assert_true(util.memcmp(x.privateKey.algorithm.generator, alg.generator));
+    assert_equals(x.privateKey.type, "private")
+    assert_false(x.privateKey.extractable);
+    assert_array_equals(x.privateKey.usages, ["deriveKey", "deriveBits"]);
+  });
+}, "Generate a DH key");
+
+promise_test(function() {
+  var alg = {
+    name: "DH",
+    prime: tv.dh.prime,
+    generator: new Uint8Array([0x02])
+  };
+
+  return crypto.subtle.generateKey(alg, false, ["deriveBits"]).then(function(x) {
+    var alg = {
+      name: "DH",
+      public: x.publicKey
+    };
+    return crypto.subtle.deriveBits(alg, x.privateKey, 128);
+  }).then(function(x) {
+    assert_equals(x.byteLength, 16);
+  });
+}, "Derive bits from a DH key");
+
+promise_test(function() {
+  var alg1 = {
+    name: "DH",
+    prime: tv.dh.prime,
+    generator: new Uint8Array([0x02])
+  };
+  var alg2 = {
+    name: "RSA-OAEP",
+    hash: "SHA-256",
+    modulusLength: 2048,
+    publicExponent: new Uint8Array([0x01, 0x00, 0x01])
+  };
+
+  return promise_rejects(this, "InvalidAccessError",
+    Promise.all([
+      crypto.subtle.generateKey(alg1, false, ["deriveBits"]),
+      crypto.subtle.generateKey(alg2, false, ["encrypt"])
+    ]).then(function(values) {
+      var privKey = values[0].privateKey;
+      var pubKey = values[1].publicKey;
+      var alg = {name: "DH", public: pubKey};
+      return crypto.subtle.deriveBits(alg, privKey, 128);
+    }));
+}, "Test that DH deriveBits() fails when the public key is not a DH key");
+
+promise_test(function() {
+  var alg1 = {
+    name: "DH",
+    prime: tv.dh.prime,
+    generator: new Uint8Array([0x02])
+  };
+  var alg2 = {
+    name: "DH",
+    prime: tv.dh.prime2,
+    generator: new Uint8Array([0x02])
+  };
+
+  return promise_rejects(this, "DataError",
+    Promise.all([
+      crypto.subtle.generateKey(alg1, false, ["deriveBits"]),
+      crypto.subtle.generateKey(alg2, false, ["deriveBits"])
+    ]).then(function(values) {
+      var privKey = values[0].privateKey;
+      var pubKey = values[1].publicKey;
+      var alg = {name: "DH", public: pubKey};
+      return crypto.subtle.deriveBits(alg, privKey, 128);
+    }));
+}, "Test that DH deriveBits() fails when the given keys' primes don't match");
+
+promise_test(function() {
+  var alg1 = {
+    name: "DH",
+    prime: tv.dh.prime,
+    generator: new Uint8Array([0x02])
+  };
+  var alg2 = {
+    name: "DH",
+    prime: tv.dh.prime,
+    generator: new Uint8Array([0x03])
+  };
+
+  return promise_rejects(this, "DataError",
+    Promise.all([
+      crypto.subtle.generateKey(alg1, false, ["deriveBits"]),
+      crypto.subtle.generateKey(alg2, false, ["deriveBits"])
+    ]).then(function(values) {
+      var privKey = values[0].privateKey;
+      var pubKey = values[1].publicKey;
+      var alg = {name: "DH", public: pubKey};
+      return crypto.subtle.deriveBits(alg, privKey, 128);
+    }));
+}, "Test that DH deriveBits() fails when the given keys' bases don't match");
+
+promise_test(function() {
+  var alg = {
+    name: "DH",
+    prime: tv.dh_nist.prime,
+    generator: tv.dh_nist.gen
+  };
+
+  return crypto.subtle.importKey("raw", tv.dh_nist.raw, alg, true,
+                                 ["deriveBits"]).then(function(x) {
+    return crypto.subtle.exportKey("raw", x);
+  }).then(function(x) {
+    assert_true(util.memcmp(x, tv.dh_nist.raw));
+  });
+}, "Raw import/export of a public DH key");
+
+promise_test(function() {
+  var alg = {
+    name: "DH",
+    prime: tv.dh_nist.prime,
+    generator: tv.dh_nist.gen
+  };
+
+  return Promise.all([
+    crypto.subtle.generateKey(alg, false, ["deriveBits"]),
+    crypto.subtle.importKey("raw", tv.dh_nist.raw, alg, true, ["deriveBits"])
+  ]).then(function(values) {
+    var privKey = values[0].privateKey;
+    var pubKey = values[1];
+    var alg = {name: "DH", public: pubKey};
+    return crypto.subtle.deriveBits(alg, privKey, 128);
+  }).then(function(x) {
+    assert_equals(x.byteLength, 16);
+  });
+}, "Derive bits from an imported public and a generated private DH key");
+
+promise_test(function() {
+  return crypto.subtle.importKey("spki", tv.dh_nist.spki, "DH", true,
+                                 ["deriveBits"]).then(function(x) {
+    return crypto.subtle.exportKey("spki", x);
+  }).then(function(x) {
+    assert_true(util.memcmp(x, tv.dh_nist.spki));
+  });
+}, "SPKI import/export of a public DH key");
+</script>

@@ -20,19 +20,25 @@
   font: 1.25em/1 Ahem;
   }
 
-  div
+  div#inline-block
   {
-  border-bottom: black solid 1em;
+  background-color: black;
   border-right: black solid 1em;
   border-top: black solid 1em;
   display: inline-block;
-  height: 7em; /* Each line box has an inline-size of 7em */
+  height: 8em; /* Each line box has an inline-size of 8em */
+  vertical-align: top;
+  /*
+  Why 'vertical-align: top' ?
+  See
+  http://lists.w3.org/Archives/Public/public-css-testsuite/2014Dec/0013.html
+  for explanations
+  */
   writing-mode: vertical-rl;
   }
 
   span
   {
-  background-color: black;
   border-left: black solid 1em;
   display: block;
   }
@@ -43,6 +49,8 @@
 
   <div>
 
+    <div id="inline-block">
+
 <!-- The right-most "S" --> <span>A&nbsp; BBBB C&nbsp; D&nbsp; E F&nbsp; G&nbsp; H JJJJ&nbsp; K</span>
 
 <!-- The left-most "S" --> <span>L&nbsp; MMMM Q&nbsp; R&nbsp; S T&nbsp; U&nbsp; V WWWW&nbsp; X</span>
@@ -50,6 +58,8 @@
 <!-- The "A" --> <span>YYYYYYY Z&nbsp; a&nbsp;&nbsp; b&nbsp; c&nbsp;&nbsp; ddddddd</span>
 
 <!-- The "P" --> <span>eeee&nbsp;&nbsp; f&nbsp; g&nbsp;&nbsp; h&nbsp; j&nbsp;&nbsp; kkkkkkk</span>
+
+    </div>
 
   </div>
 

@@ -22,20 +22,22 @@
 
   div.inline-block
   {
+  background-color: black;
   border-right: black solid 1em;
+  border-top: black solid 1em;
   display: inline-block;
-  height: 9em;
+  height: 8em;
   vertical-align: top;
+  /*
+  Why 'vertical-align: top' ?
+  See
+  http://lists.w3.org/Archives/Public/public-css-testsuite/2014Dec/0013.html
+  for explanations
+  */
   writing-mode: vertical-rl;
   }
 
-  span
-  {
-  background-color: black;
-  border-bottom: black solid 1em;
-  border-top: black solid 1em;
-  display: block;
-  }
+  span { display: block; }
 
   span#left-border { border-left: black solid 1em; }
   ]]></style>

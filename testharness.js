@@ -1021,12 +1021,15 @@ policies and contribution forms [3].
                 InvalidNodeTypeError: 24,
                 DataCloneError: 25,
 
+                EncodingError: 0,
+                NotReadableError: 0,
                 UnknownError: 0,
                 ConstraintError: 0,
                 DataError: 0,
                 TransactionInactiveError: 0,
                 ReadOnlyError: 0,
-                VersionError: 0
+                VersionError: 0,
+                OperationError: 0,
             };
 
             if (!(name in name_code_map)) {

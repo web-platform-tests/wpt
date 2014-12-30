@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBObjectStore.get() - calling get() when transaction is not active </title>
+<title>IDBObjectStore.get() - throw TransactionInactiveError on aborted transaction </title>
 <link rel="author" title="YuichiNukiyama" href="https://github.com/YuichiNukiyama">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -22,7 +22,7 @@
         store.transaction.abort();
         assert_throws("TransactionInactiveError", function () {
             store.get(1);
-        }, "Calling get() when transaction is inactive should throw TransactionInactiveError.");
+        }, "throw TransactionInactiveError on aborted transaction.");
         t.done();
     }
 </script>

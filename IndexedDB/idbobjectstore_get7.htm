@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html>
 <meta charset="utf-8">
-<title>IDBObjectStore.get() - calling get() with argument null </title>
+<title>IDBObjectStore.get() - throw DataError when using invalid key </title>
 <link rel="author" title="YuichiNukiyama" href="https://github.com/YuichiNukiyama">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -21,7 +21,7 @@
                       .objectStore("store")
         assert_throws("DataError", function () {
             store.get(null)
-        }, "Calling get() with argument with null should throw DataError.");
+        }, "throw DataError when using invalid key.");
         t.done();
     }
 </script>

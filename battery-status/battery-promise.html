@@ -8,7 +8,7 @@
     function returnBattery() {
         return navigator.getBattery();
     }
-    
+
     promise_test(function () {
         return returnBattery()
           .then(function (result) {

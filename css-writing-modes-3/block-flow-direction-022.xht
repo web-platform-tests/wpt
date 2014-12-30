@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
-  <link rel="match" href="../css-multicol-1/multicol-count-002-ref.xht" />
+  <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem image" name="flags" />
   <meta content="This test checks that block-level boxes in a block formating context with 'writing-mode' set to 'vertical-lr' are laid out one after the other with the first beginning at the left-hand side of its containing block; they are ordered from left to right meaning that the 1st block box is the leftmost one and then the 2nd block is juxtaposed to the right-hand side of 1st block, the 3rd block is juxtaposed to the 2nd block on its right-hand side, etc... " name="assert" />
@@ -34,16 +34,16 @@
 
   ul
   {
-  background-color: black;
-  border-bottom: black solid 1em;
-  list-style: none outside url("support/black1x1.png");
+  background-color: blue;
+  border-bottom: blue solid 1em;
+  list-style: none outside url("support/blue1x1.png");
   margin: 0em;
   padding-top: 1em; /* overriding default 40px in several browsers */
   }
 
-  ul.left-border { border-left: black solid 1em; }
+  ul.left-border { border-left: blue solid 1em; }
 
-  ul#right-border { border-right: black solid 1em; }
+  ul#right-border { border-right: blue solid 1em; }
   ]]></style>
  </head>
 

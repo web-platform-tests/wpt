@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
-  <link rel="match" href="../css-multicol-1/multicol-count-002-ref.xht" />
+  <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
   <meta content="This test checks that rows of a table element with in a 'vertical-lr' writing mode are laid out one after the other, rightwardedly, with the first beginning at the leftmost side of the table box; table rows are ordered from left to right meaning that the 1st row is the leftmost one and then the 2nd row is juxtaposed to its right-hand side, the 3rd row is juxtaposed to the 2nd row on its right-hand side, etc..." name="assert" />
@@ -22,9 +22,9 @@
 
   table
   {
-  background-color: black;
+  background-color: blue;
   border-spacing: 0em;
-  border: black solid 1em;
+  border: blue solid 1em;
   height: 7em;
   writing-mode: vertical-lr;
   }

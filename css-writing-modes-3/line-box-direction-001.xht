@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
-  <link rel="match" href="../css-multicol-1/multicol-count-002-ref.xht" />
+  <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
   <meta content="This test checks that line boxes of a block box in a 'horizontal-tb' writing mode are laid out one after the other, vertically, with the first beginning at the top of the block box; they are ordered from top to bottom meaning that the 1st line box is the topmost one and then the 2nd block is juxtaposed to its bottom, the 3rd block is juxtaposed to the 2nd block on its left-hand side, etc..." name="assert" />
@@ -22,8 +22,8 @@
 
   div
   {
-  background-color: black;
-  border: black solid 1em;
+  background-color: blue;
+  border: blue solid 1em;
   width: 19em; /* Each line box has an inline-size of 19em */
   writing-mode: horizontal-tb;
   }

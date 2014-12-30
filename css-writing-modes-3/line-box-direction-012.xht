@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
-  <link rel="match" href="../css-multicol-1/multicol-count-002-ref.xht" />
+  <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
   <meta content="This test checks that lines boxes of descendant block boxes of inline-blocks with 'writing-mode' set to 'vertical-rl' are ordered from right to left." name="assert" />
@@ -22,9 +22,9 @@
 
   div.inline-block
   {
-  background-color: black;
-  border-right: black solid 1em;
-  border-top: black solid 1em;
+  background-color: blue;
+  border-right: blue solid 1em;
+  border-top: blue solid 1em;
   display: inline-block;
   height: 8em;
   vertical-align: top;
@@ -39,7 +39,7 @@
 
   span { display: block; }
 
-  span#left-border { border-left: black solid 1em; }
+  span#left-border { border-left: blue solid 1em; }
   ]]></style>
  </head>
 

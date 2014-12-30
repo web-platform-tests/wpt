@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
-  <link rel="match" href="../css-multicol-1/multicol-count-002-ref.xht" />
+  <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
   <meta content="This test checks that line boxes of a block box in a 'vertical-rl' writing mode are laid out one after the other, leftwardedly, with the first beginning at the rightmost line of the block box; they are ordered from right to left meaning that the 1st line box is the rightmost one and then the 2nd line box is juxtaposed to its left-hand side, the 3rd block is juxtaposed to the 2nd line box on its left-hand side, etc..." name="assert" />
@@ -22,8 +22,8 @@
 
   div
   {
-  background-color: black;
-  border: black solid 1em;
+  background-color: blue;
+  border: blue solid 1em;
   height: 7em; /* Each line box has an inline-size of 7em */
   writing-mode: vertical-rl;
   }

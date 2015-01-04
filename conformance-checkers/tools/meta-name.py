@@ -16,7 +16,7 @@ for line in f:
       mixed += c
     odd = not odd
   template += '<meta name="%s" content>\n' % mixed
-o = open("elements/meta/names-registered-isvalid.html", 'wb')
+o = open("html/elements/meta/names-registered-isvalid.html", 'wb')
 o.write(template)
 o.close()
 
@@ -35,6 +35,6 @@ for key in errors.keys():
   template = "<!DOCTYPE html>\n<meta charset=utf-8>\n"
   template += "<title>name-%s</title>" % key
   template += '<meta name="%s" content>\n' % errors[key]
-  o = open("elements/meta/name-%s-novalid.html" % key, 'wb')
+  o = open("html/elements/meta/name-%s-novalid.html" % key, 'wb')
   o.write(template)
   o.close()

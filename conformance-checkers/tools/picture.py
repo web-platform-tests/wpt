@@ -347,11 +347,11 @@ for key in errors.keys():
   template_error = template
   template_error += '<title>invalid %s</title>\n' % key
   template_error += errors[key]
-  file = open("%s-novalid.html" % key, 'wb')
+  file = open("html/elements/picture/%s-novalid.html" % key, 'wb')
   file.write(template_error)
   file.close()
 
-file = open("picture-isvalid.html", 'wb')
+file = open("html/elements/picture/picture-isvalid.html", 'wb')
 file.write(template + '<title>valid picture</title>\n')
 for key in non_errors_in_head.keys():
   file.write('%s <!-- %s -->\n' % (non_errors_in_head[key], key))

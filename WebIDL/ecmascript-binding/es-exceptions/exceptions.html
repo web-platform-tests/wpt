@@ -72,6 +72,9 @@ function testException(exception, global, desc) {
 		if (exception.hasOwnProperty("message")) {
 			// Can't test anything more specific, since it's implementation-defined :(
 			assert_equals(typeof exception.message, "string");
+		} else {
+			// Error.prototype.message
+			assert_equals(exception.message, "");
 		}
 	}, desc + "typeof exception.message === \"string\"");
 

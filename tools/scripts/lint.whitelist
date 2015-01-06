@@ -59,3 +59,4 @@ PRINT STATEMENT:serve.py
 PRINT STATEMENT:tools/runner/report.py
 PRINT STATEMENT:tools/scripts/lint.py
 PRINT STATEMENT:tools/scripts/update_html5lib_tests.py
+PRINT STATEMENT:subresource-integrity/tools/generate_javascript.py

@@ -24,6 +24,7 @@ from mod_pywebsocket import standalone as pywebsocket
 routes = [("GET", "/tools/runner/*", handlers.file_handler),
           ("POST", "/tools/runner/update_manifest.py", handlers.python_script_handler),
           (any_method, "/tools/*", handlers.ErrorHandler(404)),
+          (any_method, "{spec}/tools/*", handlers.ErrorHandler(404)),
           (any_method, "/serve.py", handlers.ErrorHandler(404)),
           (any_method, "*.py", handlers.python_script_handler),
           ("GET", "*.asis", handlers.as_is_handler),

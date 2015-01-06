@@ -180,9 +180,20 @@ class FirefoxBrowser(Browser):
         certificate."""
 
         self.logger.info("Setting up ssl")
+
+        # Make sure the certutil libraries from the source tree are loaded when using a
+        # local copy of certutil
+        # TODO: Maybe only set this if certutil won't launch?
+        env = os.environ.copy()
+        env["LD_LIBRARY_PATH"] = os.path.dirname(self.binary)
+
         def certutil(*args):
             cmd = [self.certutil_binary] + list(args)
-            return subprocess.check_call(cmd)
+            self.logger.process_output("certutil",
+                                       subprocess.check_output(cmd,
+                                                               env=env,
+                                                               stderr=subprocess.STDOUT),
+                                       " ".join(cmd))
 
         pw_path = os.path.join(self.profile.profile, ".crtdbpw")
         with open(pw_path, "w") as f:
@@ -199,4 +210,4 @@ class FirefoxBrowser(Browser):
                  "-n", "web-platform-tests", "-i", self.ca_certificate_path)
 
         # List all certs in the database
-        self.logger.debug(certutil("-L", "-d", cert_db_path))
+        certutil("-L", "-d", cert_db_path)

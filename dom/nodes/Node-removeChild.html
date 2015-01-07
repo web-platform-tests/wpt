@@ -6,32 +6,44 @@
 <div id="log"></div>
 <iframe src=about:blank></iframe>
 <script>
-var doc = frames[0].document;
-for (var p in creators) {
-  var creator = creators[p];
-  test(function() {
-    var s = doc[creator]("a")
-    assert_equals(s.ownerDocument, doc)
-    assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
-    assert_equals(s.ownerDocument, doc)
-  }, "Passing a detached " + p + " with a different node document to removeChild should not affect it.")
+var documents = [
+  [function() { return frames[0].document }, "a frame document"],
+];
 
-  test(function() {
-    var s = doc[creator]("b")
-    doc.body.appendChild(s)
-    assert_equals(s.ownerDocument, doc)
-    assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
-    assert_equals(s.ownerDocument, doc)
-  }, "Passing a non-detached " + p + " with a different node document to removeChild should not affect it.")
+documents.forEach(function(d) {
+  var get = d[0], description = d[1]
+  for (var p in creators) {
+    var creator = creators[p];
+    test(function() {
+      var doc = get();
+      var s = doc[creator]("a")
+      assert_equals(s.ownerDocument, doc)
+      assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
+      assert_equals(s.ownerDocument, doc)
+    }, "Passing a detached " + p + " from " + description +
+       " to removeChild should not affect it.")
 
-  test(function() {
-    var s = doc[creator]("test")
-    doc.body.appendChild(s)
-    assert_equals(s.ownerDocument, doc)
-    assert_throws("NOT_FOUND_ERR", function() { s.removeChild(doc) })
-    assert_throws("NOT_FOUND_ERR", function() { s.removeChild(document) })
-  }, "Calling removeChild on a " + p + " with no children should throw NOT_FOUND_ERR.")
-}
+    test(function() {
+      var doc = get();
+      var s = doc[creator]("b")
+      doc.body.appendChild(s)
+      assert_equals(s.ownerDocument, doc)
+      assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
+      assert_equals(s.ownerDocument, doc)
+    }, "Passing a non-detached " + p + " from " + description +
+       " to removeChild should not affect it.")
+
+    test(function() {
+      var doc = get();
+      var s = doc[creator]("test")
+      doc.body.appendChild(s)
+      assert_equals(s.ownerDocument, doc)
+      assert_throws("NOT_FOUND_ERR", function() { s.removeChild(doc) })
+      assert_throws("NOT_FOUND_ERR", function() { s.removeChild(document) })
+    }, "Calling removeChild on a " + p + " from " + description +
+       " with no children should throw NOT_FOUND_ERR.")
+  }
+});
 
 test(function() {
   assert_throws(new TypeError(), function() { document.body.removeChild(null) })

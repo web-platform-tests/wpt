@@ -6,29 +6,29 @@
 <div id="log"></div>
 <iframe src=about:blank></iframe>
 <script>
-var frameDoc = frames[0].document;
+var doc = frames[0].document;
 for (var p in creators) {
   var creator = creators[p];
   test(function() {
-    var s = frameDoc[creator]("a")
-    assert_equals(s.ownerDocument, frameDoc)
+    var s = doc[creator]("a")
+    assert_equals(s.ownerDocument, doc)
     assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
-    assert_equals(s.ownerDocument, frameDoc)
+    assert_equals(s.ownerDocument, doc)
   }, "Passing a detached " + p + " with a different node document to removeChild should not affect it.")
 
   test(function() {
-    var s = frameDoc[creator]("b")
-    frameDoc.body.appendChild(s)
-    assert_equals(s.ownerDocument, frameDoc)
+    var s = doc[creator]("b")
+    doc.body.appendChild(s)
+    assert_equals(s.ownerDocument, doc)
     assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
-    assert_equals(s.ownerDocument, frameDoc)
+    assert_equals(s.ownerDocument, doc)
   }, "Passing a non-detached " + p + " with a different node document to removeChild should not affect it.")
 
   test(function() {
-    var s = frameDoc[creator]("test")
-    frameDoc.body.appendChild(s)
-    assert_equals(s.ownerDocument, frameDoc)
-    assert_throws("NOT_FOUND_ERR", function() { s.removeChild(frameDoc) })
+    var s = doc[creator]("test")
+    doc.body.appendChild(s)
+    assert_equals(s.ownerDocument, doc)
+    assert_throws("NOT_FOUND_ERR", function() { s.removeChild(doc) })
     assert_throws("NOT_FOUND_ERR", function() { s.removeChild(document) })
   }, "Calling removeChild on a " + p + " with no children should throw NOT_FOUND_ERR.")
 }

@@ -7,7 +7,10 @@
 <iframe src=about:blank></iframe>
 <script>
 var documents = [
+  [function() { return document }, "the main document"],
   [function() { return frames[0].document }, "a frame document"],
+  [function() { return document.implementation.createHTMLDocument() },
+   "a synthetic document"],
 ];
 
 documents.forEach(function(d) {
@@ -26,7 +29,7 @@ documents.forEach(function(d) {
     test(function() {
       var doc = get();
       var s = doc[creator]("b")
-      doc.body.appendChild(s)
+      doc.documentElement.appendChild(s)
       assert_equals(s.ownerDocument, doc)
       assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
       assert_equals(s.ownerDocument, doc)
@@ -39,7 +42,6 @@ documents.forEach(function(d) {
       doc.body.appendChild(s)
       assert_equals(s.ownerDocument, doc)
       assert_throws("NOT_FOUND_ERR", function() { s.removeChild(doc) })
-      assert_throws("NOT_FOUND_ERR", function() { s.removeChild(document) })
     }, "Calling removeChild on a " + p + " from " + description +
        " with no children should throw NOT_FOUND_ERR.")
   }

@@ -185,7 +185,9 @@ class FirefoxBrowser(Browser):
         # local copy of certutil
         # TODO: Maybe only set this if certutil won't launch?
         env = os.environ.copy()
-        env["LD_LIBRARY_PATH"] = os.path.dirname(self.binary)
+        certutil_dir = os.path.dirname(self.binary)
+        env["LD_LIBRARY_PATH"] = certutil_dir
+        env["PATH"] = os.path.pathsep.join([certutil_dir, env["PATH"]])
 
         def certutil(*args):
             cmd = [self.certutil_binary] + list(args)

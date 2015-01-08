@@ -284,10 +284,18 @@ def check_args(kwargs):
         require_arg(kwargs, "host_key_path", lambda x:os.path.exists(x))
 
     elif kwargs["ssl_type"] == "openssl":
-            require_arg(kwargs, "openssl_binary", lambda x:exe_path(x) is not None)
+        path = exe_path(kwargs["openssl_binary"])
+        if path is None:
+            print >> sys.stderr, "openssl-binary argument missing or not a valid executable"
+            sys.exit(1)
+        kwargs["openssl_binary"] = path
 
     if kwargs["ssl_type"] != "none" and kwargs["product"] == "firefox":
-        require_arg(kwargs, "certutil_binary", lambda x:exe_path(x) is not None)
+        path = exe_path(kwargs["certutil_binary"])
+        if path is None:
+            print >> sys.stderr, "certutil-binary argument missing or not a valid executable"
+            sys.exit(1)
+        kwargs["certutil_binary"] = path
 
     return kwargs
 

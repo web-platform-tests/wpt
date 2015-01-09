@@ -35,7 +35,7 @@ def workers_handler(request, response):
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-fetch_tests_from_worker(new Worker("%s");
+fetch_tests_from_worker(new Worker("%s"));
 </script>
 """ % (worker_path,)
 

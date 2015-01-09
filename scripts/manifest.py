@@ -304,7 +304,7 @@ class Manifest(object):
                remove_missing_local=False):
 
         if local_changes is None:
-            local_changes = []
+            local_changes = {}
 
         if committed_changes is not None:
             for rel_path, status in committed_changes:

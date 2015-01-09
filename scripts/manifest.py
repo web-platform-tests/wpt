@@ -532,6 +532,9 @@ def get_manifest_items(tests_root, rel_path, url_base, use_committed=False):
     if name.lower().endswith("-manual"):
         return [ManualTest(url)]
 
+    if filename.endswith(".worker.js"):
+        return [TestharnessTest(url[:-3])]
+
     ref_list = []
 
     for suffix in ref_suffixes:

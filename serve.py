@@ -27,7 +27,7 @@ import sslutils
 
 @handlers.handler
 def workers_handler(request, response):
-    worker_path = request.url_parts.path.replace(".html", ".js")
+    worker_path = request.url_parts.path.replace(".worker", ".worker.js")
     return """
 <!doctype html>
 <meta charset=utf-8>
@@ -48,7 +48,7 @@ routes = [("GET", "/tools/runner/*", handlers.file_handler),
           (any_method, "/serve.py", handlers.ErrorHandler(404)),
           (any_method, "*.py", handlers.python_script_handler),
           ("GET", "*.asis", handlers.as_is_handler),
-          ("GET", "*-worker.html", workers_handler),
+          ("GET", "*.worker", workers_handler),
           ("GET", "*", handlers.file_handler),
           ]
 

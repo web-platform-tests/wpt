@@ -2,13 +2,12 @@
 <title>img viewport change</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
 <style>
 .narrow { width:50px }
 .wide { width:1000px }
 </style>
 <div id=log></div>
-<iframe class="narrow" src="iframed.html"></iframe>
-<iframe class="wide" src="iframed.html"></iframe>
 <script>
 setup({explicit_done:true});
 
@@ -21,6 +20,15 @@ function resolve(url) {
   return a.href;
 }
 
+function insertIframe(className) {
+  var iframe = document.createElement('iframe');
+  iframe.className = className;
+  iframe.src = 'iframed.sub.html?id=' + token();
+  document.body.appendChild(iframe);
+}
+insertIframe('narrow');
+insertIframe('wide');
+
 var start_date = new Date();
 
 onload = function() {
@@ -31,7 +39,7 @@ onload = function() {
       var expected = {wide:resolve(img.dataset.wide), narrow:resolve(img.dataset.narrow)};
       var current = iframe.className;
       var next = current === 'wide' ? 'narrow' : 'wide';
-      var expect_change = expected[next].indexOf('data:') !== 0;
+      var expect_change = expected[next].indexOf('broken.png') !== 0;
       if ('noChange' in img.dataset) {
         expect_change = false;
       }

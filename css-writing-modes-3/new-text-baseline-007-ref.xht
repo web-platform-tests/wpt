@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>CSS Reftest Reference</title>
+  <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+  <style type="text/css"><![CDATA[
+    div#outer
+    {
+      padding-right: 0.3em; /* 1.5em * 0.2 */
+      width: 1.2em; /* 1.5em * 0.8 */
+      font: 3.75em/1.5 Ahem; /* computes to 60px/90px */
+    }
+
+    div#small
+    {
+      float: right;
+      background-color: fuchsia;
+      height: 0.5em;
+      width: 0.4em; /* 0.5em * 0.8 */
+    }
+    div#big
+    {
+      float: right;
+      background-color: fuchsia;
+      height: 1.5em;
+      width: 1.2em; /* 1.5em * 0.8 */
+    }
+
+    div#normal
+    {
+      float: right;
+      background-color: fuchsia;
+      height: 1em;
+      width: 0.8em; /* 1em * 0.8 */
+    }
+    ]]></style>
+
+  </head>
+
+  <body>
+
+  <p>Test passes if there is a pink polygon and if its right vertical edge is straight, uniform and unbroken.</p>
+
+  <div id="outer"><div id="small"></div><div id="big"></div><div id="normal"></div></div>
+
+  </body>
+</html>

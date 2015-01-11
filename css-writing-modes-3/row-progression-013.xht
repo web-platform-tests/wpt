@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Writing Modes Test: vertical-rl - table rows progression and colspan</title>
+
+  <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
+  <link rel="match" href="block-flow-direction-001-ref.xht" />
+
+  <meta content="ahem" name="flags" />
+  <meta content="This test checks that colspanned cells in a table are handled according to a top-to-bottom inline flow direction." name="assert" />
+
+  <style type="text/css"><![CDATA[
+  body
+  {
+  color: yellow;
+  font: 1.25em/1 Ahem;
+  }
+
+  table
+  {
+  background-color: blue;
+  border-spacing: 0em;
+  border: blue solid 1em;
+  height: 7em;
+  direction: rtl;
+  writing-mode: vertical-rl;
+  }
+
+  td
+  {
+  unicode-bidi: bidi-override;
+  padding-bottom: 0em;
+  padding-left: 1em;
+  padding-right: 0em;
+  padding-top: 0em;
+  }
+
+  td.left-most-cell { padding-left: 0em; }
+  ]]></style>
+ </head>
+
+ <body>
+
+  <table>
+
+   <!-- The right-most "S" -->
+   <tr><td>AA B&nbsp; C&nbsp; D</td><td>EE &nbsp;F &nbsp;G &nbsp;H</td><td>&nbsp;&nbsp;I &nbsp;&nbsp;J &nbsp;&nbsp;K LLL</td></tr>
+
+   <!-- The left-most "S" -->
+   <tr><td colspan="2">MMMM N&nbsp;&nbsp;N O&nbsp;&nbsp;O P&nbsp;&nbsp;P</td><td>&nbsp;&nbsp;Q &nbsp;&nbsp;R &nbsp;&nbsp;S TTT</td></tr>
+
+   <!-- The "A" -->
+   <tr><td>UU &nbsp;&nbsp; &nbsp;&nbsp; VV</td><td colspan="2">WWWWW &nbsp;X&nbsp;&nbsp;X &nbsp;Y&nbsp;&nbsp;Y ZZZZZ</td></tr>
+
+   <!-- The "P" -->
+   <tr><td class="left-most-cell">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; aa</td><td class="left-most-cell">&nbsp;b &nbsp;c &nbsp;d ee</td><td class="left-most-cell">fff &nbsp;&nbsp;g &nbsp;&nbsp;h iii</td></tr>
+
+  </table>
+
+ </body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>WebCryptoAPI</title>
+  <link rel='author' title='Sunil Yoo' href='mailto:usuanday83@gmail.com'>
+  <meta name='assert' content='Check that the getRandomValues() method is working.'>
+  <link rel="help" href="http://www.w3.org/TR/WebCryptoAPI/#RandomSource-method-getRandomValues">
+  <link rel="help" href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/0a08958cf50f/spec/Overview.html#RandomSource-method-getRandomValues">
+  <link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+ </head>
+ <body>
+    <h1>Test for window.crypto.getRandomValues</h1>
+    <div id="log"></div>
+    
+    <script src="/resources/testharness.js"></script>
+  	<script src="/resources/testharnessreport.js"></script>
+  	<script src='/common/vendor-prefix.js' data-prefixed-objects='[{"ancestors":["window"], "name":"crypto"}]'></script>
+  	
+    <script>
+        test(function() {
+        	   assert_equals(window.crypto.getRandomValues(new Int8Array(8)).constructor
+            		, Int8Array, "crypto.getRandomValues(new Int8Array(8))")
+            assert_equals(window.crypto.getRandomValues(new Uint8Array(8)).constructor
+            		, Uint8Array, "crypto.getRandomValues(new Uint8Array(8))")
+            		
+            assert_equals(window.crypto.getRandomValues(new Int16Array(8)).constructor
+            		, Int16Array, "crypto.getRandomValues(new Int16Array(8))")
+            assert_equals(window.crypto.getRandomValues(new Uint16Array(8)).constructor
+            		, Uint16Array, "crypto.getRandomValues(new Uint16Array(8))")
+            		
+            assert_equals(window.crypto.getRandomValues(new Int32Array(8)).constructor
+            		, Int32Array, "crypto.getRandomValues(new Int32Array(8))")
+            assert_equals(window.crypto.getRandomValues(new Uint32Array(8)).constructor
+            		, Uint32Array, "crypto.getRandomValues(new Uint32Array(8))")
+            		
+            assert_throws({ name: "QuotaExceededError"},
+            			function () { window.crypto.getRandomValues(new Int8Array(65537))},
+            			"crypto.getRandomValues length over 65536")
+
+        }, "window.crypto.getRandomValue test")
+    </script>
+ </body>
+</html>

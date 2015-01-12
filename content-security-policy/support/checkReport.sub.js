@@ -32,7 +32,7 @@
   }
 
   // give tests where a report is expected additional time
-  // but don't wait forever for ones where no report is 
+  // but don't wait forever for ones where no report is
   // expected or the full suite will take forever to run
   var timeout = reportExists == "false" ? 1 : 5;
 

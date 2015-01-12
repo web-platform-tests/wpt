@@ -10,6 +10,8 @@ request.onload = function() {
   idlArray.add_idls(idls);
   idlArray.add_objects({
     DedicatedWorkerGlobalScope: ['self'],
+    WorkerNavigator: ['self.navigator'],
+    WorkerLocation: ['self.location'],
   });
   idlArray.test();
   done();

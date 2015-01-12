@@ -31,7 +31,12 @@
     }
   }
 
-  var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=1&reportID=" + reportID;
+  // give tests where a report is expected additional time
+  // but don't wait forever for ones where no report is 
+  // expected or the full suite will take forever to run
+  var timeout = reportExists == "false" ? 1 : 5;
+
+  var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=take&timeout=" + timeout + "&reportID=" + reportID;
 
   var reportTest = async_test("Violation report status OK.");
   reportTest.step(function () {

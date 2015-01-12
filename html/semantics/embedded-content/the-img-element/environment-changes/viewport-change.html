@@ -39,13 +39,12 @@ onload = function() {
       var expected = {wide:resolve(img.dataset.wide), narrow:resolve(img.dataset.narrow)};
       var current = iframe.className;
       var next = current === 'wide' ? 'narrow' : 'wide';
-      var expect_change = expected[next].indexOf('broken.png') !== 0;
-      if ('noChange' in img.dataset) {
-        expect_change = false;
-      }
+      var expect_change = expected[next].indexOf('broken.png') !== 0 && !('noChange' in img.dataset);
+
       test(function() {
         assert_equals(img.currentSrc, expected[current]);
       }, img.dataset.desc + ', onload, ' + current);
+
       async_test(function() {
         img.onload = this.unreached_func('Got unexpected load event');
         img.onerror = this.unreached_func('Got unexpected error event');

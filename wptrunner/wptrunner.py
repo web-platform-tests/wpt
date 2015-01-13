@@ -482,7 +482,7 @@ def run_tests(config, serve_root, test_paths, product, **kwargs):
                 logging_thread.join(10)
             logging_queue.close()
 
-    return manager_group.unexpected_count() == 0
+    return unexpected_total == 0
 
 
 def main():

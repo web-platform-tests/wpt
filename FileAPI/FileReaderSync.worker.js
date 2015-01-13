@@ -18,7 +18,6 @@ test(function() {
 test(function() {
   var data = readerSync.readAsDataURL(blob);
   assert_equals(data.indexOf("data:"), 0);
-  assert_true(data.indexOf("base64") > 0);
 }, "readAsDataURL");
 
 test(function() {

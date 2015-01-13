@@ -37,12 +37,6 @@ function newHTMLDocument() {
     return document.implementation.createHTMLDocument('Test Document');
 }
 
-// creates new animation for given target
-function newAnimation(animationTarget) {
-    animationTarget.style.top = ANIMATION_TOP_DEFAULT + 'px';
-    return new Animation(animationTarget, KEYFRAMES, ANIMATION_DURATION);
-}
-
 // creates div element, appends it to the document body and
 // add removing of the created element to test cleanup
 function createDiv(test, doc) {
@@ -51,6 +45,7 @@ function createDiv(test, doc) {
     }
     var div = doc.createElement('div');
     doc.body.appendChild(div);
+    div.style.top = ANIMATION_TOP_DEFAULT + 'px';
     test.add_cleanup(function() {
         removeElement(div);
     });

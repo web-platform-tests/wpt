@@ -22,7 +22,7 @@ test(function() {
 
 async_test(function(t) {
     var doc = newHTMLDocument();
-    var player = doc.timeline.play(newAnimation(createDiv(this, doc)));
+    var player = doc.timeline.play(new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
 
     player.ready.then(t.step_func(function() {
         assert_not_equals(doc.timeline.getAnimationPlayers(), null,
@@ -37,8 +37,8 @@ async_test(function(t) {
 
 async_test(function(t) {
     var doc = newHTMLDocument();
-    var player1 = doc.timeline.play(newAnimation(createDiv(this, doc)));
-    var player2 = doc.timeline.play(newAnimation(createDiv(this, doc)));
+    var player1 = doc.timeline.play(new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
+    var player2 = doc.timeline.play(new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
 
     Promise.all([player1.ready, player2.ready]).then(t.step_func(function() {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2],
@@ -51,8 +51,8 @@ async_test(function(t) {
 
 async_test(function(t) {
     var doc = newHTMLDocument();
-    var player1 = doc.timeline.play(newAnimation(createDiv(this, doc)));
-    var player2 = doc.timeline.play(newAnimation(createDiv(this, doc)));
+    var player1 = doc.timeline.play(new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
+    var player2 = doc.timeline.play(new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
     var player3 = doc.timeline.play(null);
 
     Promise.all([player1.ready, player2.ready]).then(t.step_func(function() {
@@ -70,9 +70,9 @@ async_test(function(t) {
 
 async_test(function(t) {
 	var doc = newHTMLDocument();
-    var player1 = doc.timeline.play(newAnimation(createDiv(t, doc)));
-    var player2 = doc.timeline.play(newAnimation(createDiv(t, doc)));
-    var player3 = doc.timeline.play(newAnimation(createDiv(t, doc)));
+    var player1 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION));
+    var player2 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION));
+    var player3 = doc.timeline.play(new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION));
 
     Promise.all([player1.ready, player2.ready, player3.ready]).then(t.step_func(function() {
         assert_array_equals(doc.timeline.getAnimationPlayers(),
@@ -172,7 +172,7 @@ async_test(function(t) {
 
 async_test(function(t) {
 	var doc = newHTMLDocument();
-    var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
+    var animationGroup = new AnimationGroup([new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION)],
         {delay: 50, duration: ANIMATION_DURATION});
 	var player = doc.timeline.play(animationGroup);
 
@@ -201,7 +201,7 @@ async_test(function(t) {
 
 async_test(function(t) {
 	var doc = newHTMLDocument();
-    var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
+    var animationGroup = new AnimationGroup([new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION)],
         {delay: 50, duration: ANIMATION_DURATION, fill: 'none'});
 	var player = doc.timeline.play(animationGroup);
 
@@ -230,7 +230,7 @@ async_test(function(t) {
 
 async_test(function(t) {
 	var doc = newHTMLDocument();
-    var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
+    var animationGroup = new AnimationGroup([new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION)],
         {delay: 50, duration: ANIMATION_DURATION, fill: 'forwards'});
 	var player = doc.timeline.play(animationGroup);
 
@@ -259,7 +259,7 @@ async_test(function(t) {
 
 async_test(function(t) {
 	var doc = newHTMLDocument();
-    var animationGroup = new AnimationGroup([newAnimation(createDiv(t, doc))],
+    var animationGroup = new AnimationGroup([new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION)],
         {delay: 50, duration: ANIMATION_DURATION, fill: 'backwards'});
 	var player = doc.timeline.play(animationGroup);
 
@@ -289,8 +289,8 @@ async_test(function(t) {
 async_test(function(t) {
     var doc = newHTMLDocument();
     var animationGroup = new AnimationGroup([
-        newAnimation(createDiv(t, doc)),
-        newAnimation(createDiv(t, doc))
+        new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION),
+        new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION)
     ]);
 	var player = doc.timeline.play(animationGroup);
 
@@ -306,8 +306,8 @@ async_test(function(t) {
 async_test(function(t) {
     var doc = newHTMLDocument();
     var animationSequence = new AnimationSequence([
-        newAnimation(createDiv(t, doc)),
-        newAnimation(createDiv(t, doc))
+        new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION),
+        new Animation(createDiv(t, doc), KEYFRAMES, ANIMATION_DURATION)
     ]);
 	var player = doc.timeline.play(animationSequence);
 

@@ -14,9 +14,9 @@
 <script>
 async_test(function(t) {
     var doc = newHTMLDocument();
-    var player1 = doc.timeline.play(newAnimation(createDiv(this, doc)));
-    var player2 = doc.timeline.play(newAnimation(createDiv(this, doc)));
-    var player3 = doc.timeline.play(newAnimation(createDiv(this, doc)));
+    var player1 = doc.timeline.play(new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
+    var player2 = doc.timeline.play(new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
+    var player3 = doc.timeline.play(new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
 
     Promise.all([player1.ready, player2.ready, player3.ready]).then(t.step_func(function() {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2, player3],
@@ -29,9 +29,12 @@ async_test(function(t) {
 
 async_test(function(t) {
     var doc = newHTMLDocument();
-    var player1 = new AnimationPlayer(newAnimation(createDiv(this, doc)), doc.timeline);
-    var player2 = new AnimationPlayer(newAnimation(createDiv(this, doc)), doc.timeline);
-    var player3 = new AnimationPlayer(newAnimation(createDiv(this, doc)), doc.timeline);
+    var player1 = new AnimationPlayer(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION), doc.timeline);
+    var player2 = new AnimationPlayer(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION), doc.timeline);
+    var player3 = new AnimationPlayer(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION), doc.timeline);
 
     Promise.all([player1.ready, player2.ready, player3.ready]).then(t.step_func(function() {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2, player3],
@@ -44,12 +47,16 @@ async_test(function(t) {
 
 async_test(function(t) {
     var doc1 = newHTMLDocument();
-    var player1 = doc1.timeline.play(newAnimation(createDiv(this, doc1)));
-    var player2 = doc1.timeline.play(newAnimation(createDiv(this, doc1)));
+    var player1 = doc1.timeline.play(
+        new Animation(createDiv(this, doc1), KEYFRAMES, ANIMATION_DURATION));
+    var player2 = doc1.timeline.play(
+        new Animation(createDiv(this, doc1), KEYFRAMES, ANIMATION_DURATION));
 
     var doc2 = newHTMLDocument();
-    var player3 = doc2.timeline.play(newAnimation(createDiv(this, doc2)));
-    var player4 = doc2.timeline.play(newAnimation(createDiv(this, doc2)));
+    var player3 = doc2.timeline.play(
+        new Animation(createDiv(this, doc2), KEYFRAMES, ANIMATION_DURATION));
+    var player4 = doc2.timeline.play(
+        new Animation(createDiv(this, doc2), KEYFRAMES, ANIMATION_DURATION));
 
     Promise.all([player1.ready, player2.ready, player3.ready, player4.ready]).then(t.step_func(function() {
         assert_array_equals(doc1.timeline.getAnimationPlayers(), [player1, player2],
@@ -65,10 +72,14 @@ async_test(function(t) {
 
 async_test(function(t) {
     var doc = newHTMLDocument();
-    var player1 = new AnimationPlayer(newAnimation(createDiv(this, doc)), doc.timeline);
-    var player2 = new AnimationPlayer(newAnimation(createDiv(this, doc)), document.timeline);
-    var player3 = new AnimationPlayer(newAnimation(createDiv(this, doc)), doc.timeline);
-    var player4 = new AnimationPlayer(newAnimation(createDiv(this, doc)), doc.timeline);
+    var player1 = new AnimationPlayer(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION), doc.timeline);
+    var player2 = new AnimationPlayer(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION), document.timeline);
+    var player3 = new AnimationPlayer(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION), doc.timeline);
+    var player4 = new AnimationPlayer(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION), doc.timeline);
 
     Promise.all([player1.ready, player2.ready, player3.ready, player4.ready]).then(t.step_func(function() {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player3, player4],
@@ -86,12 +97,16 @@ async_test(function(t) {
 
 async_test(function(t) {
     var doc1 = newHTMLDocument();
-    var player1 = new AnimationPlayer(newAnimation(createDiv(this, doc1)), doc1.timeline);
-    var player2 = new AnimationPlayer(newAnimation(createDiv(this, doc1)), doc1.timeline);
+    var player1 = new AnimationPlayer(
+        new Animation(createDiv(this, doc1), KEYFRAMES, ANIMATION_DURATION), doc1.timeline);
+    var player2 = new AnimationPlayer(
+        new Animation(createDiv(this, doc1), KEYFRAMES, ANIMATION_DURATION), doc1.timeline);
 
     var doc2 = newHTMLDocument();
-    var player3 = new AnimationPlayer(newAnimation(createDiv(this, doc2)), doc2.timeline);
-    var player4 = new AnimationPlayer(newAnimation(createDiv(this, doc2)), doc2.timeline);
+    var player3 = new AnimationPlayer(
+        new Animation(createDiv(this, doc2), KEYFRAMES, ANIMATION_DURATION), doc2.timeline);
+    var player4 = new AnimationPlayer(
+        new Animation(createDiv(this, doc2), KEYFRAMES, ANIMATION_DURATION), doc2.timeline);
 
     Promise.all([player1.ready, player2.ready, player3.ready, player4.ready]).then(t.step_func(function() {
         assert_array_equals(doc1.timeline.getAnimationPlayers(), [player1, player2],
@@ -116,9 +131,12 @@ async_test(function(t) {
 
 async_test(function(t) {
     var doc = newHTMLDocument();
-    var player1 = doc.timeline.play(newAnimation(createDiv(this, doc)));
-    var player2 = doc.timeline.play(newAnimation(createDiv(this, doc)));
-    var player3 = doc.timeline.play(newAnimation(createDiv(this, doc)));
+    var player1 = doc.timeline.play(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
+    var player2 = doc.timeline.play(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
+    var player3 = doc.timeline.play(
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION));
 
     Promise.all([player1.ready, player2.ready, player3.ready]).then(t.step_func(function() {
         assert_array_equals(doc.timeline.getAnimationPlayers(), [player1, player2, player3],

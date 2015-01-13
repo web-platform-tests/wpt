@@ -13,7 +13,7 @@
 <div id="log"></div>
 <script>
 test(function() {
-    var animation = newAnimation(createDiv(this));
+    var animation = new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION);
     var player = document.timeline.play(animation);
 
     assert_not_equals(player, null, 'Player created by AnimationTimeline.play() ' +
@@ -35,7 +35,7 @@ test(function() {
 }, 'Player created by AnimationTimeline.play() method without arguments arguments is not null');
 
 test(function() {
-    var animation = newAnimation(createDiv(this));
+    var animation = new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION);
     var player = document.timeline.play(animation);
 
     assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
@@ -59,7 +59,7 @@ test(function() {
     'a new AnimationPlayer object instance');
 
 test(function() {
-    var animation = newAnimation(createDiv(this));
+    var animation = new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION);
     var player = document.timeline.play(animation);
 
     assert_equals(player.source, animation, 'The source attribute of the created ' +
@@ -84,7 +84,11 @@ test(function() {
     'parameter value is not specified');
 
 test(function() {
-    var animationNodes = [newAnimation(createDiv(this)), new AnimationGroup([]), new AnimationSequence([])];
+    var animationNodes = [
+        new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
     animationNodes.forEach(function(node) {
         var player = document.timeline.play(node);
         assert_equals(player.source, node, 'The source attribute of the created ' +
@@ -97,7 +101,11 @@ test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
-        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
         nodes.forEach(function(node) {
             var parent = new parentCtor([node]);
             var player = document.timeline.play(node);
@@ -113,7 +121,11 @@ test(function() {
 }, 'Test AnimationTimeline.play(source) method remove AnimationNode source from its parent');
 
 test(function() {
-    var animationNodes = [newAnimation(createDiv(this)), new AnimationGroup([]), new AnimationSequence([])];
+    var animationNodes = [
+        new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
     animationNodes.forEach(function(node, index) {
         var player = document.timeline.play(node);
         assert_equals(player.timeline, document.timeline, 'Node ' + index + ': AnimationPlayer, ' +
@@ -124,7 +136,11 @@ test(function() {
 
 test(function() {
     var doc = newHTMLDocument();
-    var animationNodes = [newAnimation(createDiv(this, doc)), new AnimationGroup([]), new AnimationSequence([])];
+    var animationNodes = [
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
     animationNodes.forEach(function(node, index) {
         var player = doc.timeline.play(node);
         assert_equals(player.timeline, doc.timeline, 'Node ' + index +
@@ -134,7 +150,7 @@ test(function() {
     'with timeline instance used to call method play(). Using timeline of another document');
 
 async_test(function(t) {
-    var player = document.timeline.play(newAnimation(createDiv(t)));
+    var player = document.timeline.play(new Animation(createDiv(t), KEYFRAMES, ANIMATION_DURATION));
 
     player.ready.then(t.step_func(function() {
         setTimeout(t.step_func(function() {
@@ -150,8 +166,10 @@ async_test(function(t) {
     var doc = newHTMLDocument();
     var target1 = createDiv(t, doc);
     var target2 = createDiv(t, doc);
-    var animationGroup = new AnimationGroup(
-        [newAnimation(target1), newAnimation(target2)]);
+    var animationGroup = new AnimationGroup([
+        new Animation(target1, KEYFRAMES, ANIMATION_DURATION),
+        new Animation(target2, KEYFRAMES, ANIMATION_DURATION)
+    ]);
 	var player = doc.timeline.play(animationGroup);
 
     player.ready.then(t.step_func(function() {
@@ -171,8 +189,10 @@ async_test(function(t) {
     var doc = newHTMLDocument();
     var target1 = createDiv(t, doc);
     var target2 = createDiv(t, doc);
-    var animationSequence = new AnimationSequence(
-        [newAnimation(target1), newAnimation(target2)]);
+    var animationSequence = new AnimationSequence([
+        new Animation(target1, KEYFRAMES, ANIMATION_DURATION),
+        new Animation(target2, KEYFRAMES, ANIMATION_DURATION)
+    ]);
 	var player = doc.timeline.play(animationSequence);
 
     player.ready.then(t.step_func(function() {

@@ -13,7 +13,11 @@
 <div id="log"></div>
 <script>
 test(function() {
-    var nodes = [newAnimation(createDiv(this)), new AnimationGroup([]), new AnimationSequence([])];
+    var nodes = [
+        new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
     nodes.forEach(function(node) {
         assert_equals(node.parent, null, type(node) + '.parent should be null');
     });
@@ -23,7 +27,11 @@ test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
-        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
         nodes.forEach(function(node) {
             var parent = new parentCtor([node]);
 
@@ -37,7 +45,11 @@ test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
-        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
         var parent = new parentCtor([nodes[0], nodes[1], nodes[2]]);
         nodes.forEach(function(node) {
             assert_equals(node.parent, parent, type(node) + '.parent should return ' +

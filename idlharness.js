@@ -951,9 +951,11 @@ IdlInterface.prototype.test_self = function()
 {
     test(function()
     {
-        // This function tests WebIDL as of 2012-11-28.
+        // This function tests WebIDL as of 2015-01-13.
+        // TODO: Consider [Exposed].
 
-        // "For every interface that:
+        // "For every interface that is exposed in a given ECMAScript global
+        // environment and:
         // * is a callback interface that has constants declared on it, or
         // * is a non-callback interface that is not declared with the
         //   [NoInterfaceObject] extended attribute,
@@ -991,28 +993,53 @@ IdlInterface.prototype.test_self = function()
         // "If an object is defined to be a function object, then it has
         // characteristics as follows:"
 
-        // "* Its [[Prototype]] internal property is the Function prototype
-        //    object."
-        assert_equals(Object.getPrototypeOf(self[this.name]), Function.prototype,
-                      "prototype of self's property " + format_value(this.name) + " is not Function.prototype");
+        // Its [[Prototype]] internal property is otherwise specified (see
+        // below).
 
         // "* Its [[Get]] internal property is set as described in ECMA-262
-        //    section 15.3.5.4."
+        //    section 9.1.8."
         // Not much to test for this.
 
         // "* Its [[Construct]] internal property is set as described in
-        //    ECMA-262 section 13.2.2."
+        //    ECMA-262 section 19.2.2.3."
         // Tested below if no constructor is defined.  TODO: test constructors
         // if defined.
 
-        // "* Its [[HasInstance]] internal property is set as described in
-        //    ECMA-262 section 15.3.5.3, unless otherwise specified."
+        // "* Its @@hasInstance property is set as described in ECMA-262
+        //    section 19.2.3.8, unless otherwise specified."
         // TODO
 
-        // "* Its [[NativeBrand]] internal property is “Function”."
-        // String() returns something implementation-dependent, because it calls
-        // Function#toString.
+        // ES6 (rev 30) 19.1.3.6:
+        // "Else, if O has a [[Call]] internal method, then let builtinTag be
+        // "Function"."
         assert_class_string(self[this.name], "Function", "class string of " + this.name);
+
+        // "The [[Prototype]] internal property of an interface object for a
+        // non-callback interface is determined as follows:"
+        var prototype = Object.getPrototypeOf(self[this.name]);
+        if (this.base) {
+            // "* If the interface inherits from some other interface, the
+            //    value of [[Prototype]] is the interface object for that other
+            //    interface."
+            var has_interface_object =
+                !this.array
+                     .members[this.base]
+                     .has_extended_attribute("NoInterfaceObject");
+            if (has_interface_object) {
+                assert_own_property(self, this.base,
+                                    'should inherit from ' + this.base +
+                                    ', but self has no such property');
+                assert_equals(prototype, self[this.base],
+                              'prototype of ' + this.name + ' is not ' +
+                              this.base);
+            }
+        } else {
+            // "If the interface doesn't inherit from any other interface, the
+            // value of [[Prototype]] is %FunctionPrototype% ([ECMA-262],
+            // section 6.1.7.4)."
+            assert_equals(prototype, Function.prototype,
+                          "prototype of self's property " + format_value(this.name) + " is not Function.prototype");
+        }
 
         if (!this.has_extended_attribute("Constructor")) {
             // "The internal [[Call]] method of the interface object behaves as

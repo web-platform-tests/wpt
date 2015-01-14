@@ -5,22 +5,6 @@
 <script>
 
 test(function() {
-
-    // TODO: Add idlharness-based test
-    assert_true('TextEncoder' in window);
-    assert_true('TextDecoder' in window);
-
-    assert_true('encoding' in new TextEncoder);
-    assert_true('encoding' in new TextDecoder);
-    assert_equals(typeof (new TextEncoder).encoding, 'string');
-    assert_equals(typeof (new TextDecoder).encoding, 'string');
-
-    assert_true('encode' in new TextEncoder);
-    assert_true('decode' in new TextDecoder);
-
-    assert_equals(typeof (new TextEncoder).encode, 'function');
-    assert_equals(typeof (new TextDecoder).decode, 'function');
-
     assert_equals((new TextEncoder).encoding, 'utf-8', 'default encoding is utf-8');
     assert_equals((new TextDecoder).encoding, 'utf-8', 'default encoding is utf-8');
 

@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>requestAnimationFrame and Page Visibility interactions</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <iframe id='frame1' src='/common/sample.html' style='display: block'>
+    </iframe>
+    <iframe id='frame2' src='/common/sample.html' style='display: none'>
+    </iframe>
+    <div id="log"></div>
+
+    <script>
+
+  var iframe1 = document.getElementById("frame1");
+  var iframe2 = document.getElementById("frame2");
+
+  async_test(function (t) {
+    iframe1.contentWindow.requestAnimationFrame(t.step_func(function() { t.done(); }));
+    window.setTimeout(t.unreached_func("requestAnimationFrame was not invoked"), 2000);
+  }, "iframe1.contentWindow.requestAnimationFrame callback must be invoked");
+
+  async_test(function (t) {
+    iframe2.contentWindow.requestAnimationFrame(t.unreached_func("requestAnimationFrame was invoked"));
+    window.setTimeout(t.step_func(function() { t.done(); }), 1000);
+  }, "iframe2.contentWindow.requestAnimationFrame callback must not be invoked" );
+
+    </script>
+
+  </body>
+</html>

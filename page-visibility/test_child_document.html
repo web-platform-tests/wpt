@@ -36,7 +36,8 @@
 
                 var frames = document.getElementsByTagName("iframe");
                 var doc, doc_name;
-
+                var hidden = false;
+                var state = VISIBILITY_STATES.VISIBLE;
                 for (var i = 0; i < frames.length; i++)
                 {
                     doc = frames[i].contentDocument;
@@ -46,11 +47,20 @@
                     {
                         test_feature_exists(doc, " for frame with " + frames[i].id);
                     });
-
-                    test_equals(doc.visibilityState, VISIBILITY_STATES.VISIBLE,
-                                "document.visibilityState for frame with " +
-                                frames[i].id + " == " +
-                                VISIBILITY_STATES.VISIBLE);
+                    if (i > 0) {
+                        state = VISIBILITY_STATES.HIDDEN;
+                        hidden = true;
+                    }
+                    test(function () {
+                        assert_equals(doc.hidden, hidden);
+                      }, "document.hidden for frame with " +
+                         frames[i].id + " == " +
+                         state);
+                    test(function () {
+                        assert_equals(doc.visibilityState, state);
+                      }, "document.visibilityState for frame with " +
+                         frames[i].id + " == " +
+                         state);
                 }
 
                 done();

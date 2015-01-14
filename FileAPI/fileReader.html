@@ -30,12 +30,13 @@
             assert_equals(fileReader.readyState, 1);
             assert_equals(fileReader.readyState, FileReader.LOADING);
 
-            fileReader.abort();
             fileReader.onabort = this.step_func(function(e) {
                 assert_equals(fileReader.readyState, 2);
                 assert_equals(fileReader.readyState, FileReader.DONE);
                 t_abort.done();
             });
+            fileReader.abort();
+            fileReader.onabort = this.unreached_func("abort event should fire sync")
         });
 
         var t_event = async_test("FileReader States -- events");
@@ -51,8 +52,8 @@
             });
 
             fileReader.onprogress = this.step_func(function(e) {
-                assert_equals(fileReader.readyState, 2);
-                assert_equals(fileReader.readyState, FileReader.DONE);
+                assert_equals(fileReader.readyState, 1);
+                assert_equals(fileReader.readyState, FileReader.LOADING);
             });
 
             fileReader.onloadend = this.step_func(function(e) {

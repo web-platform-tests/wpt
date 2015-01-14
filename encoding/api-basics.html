@@ -7,10 +7,14 @@
 test(function() {
     assert_equals((new TextEncoder).encoding, 'utf-8', 'default encoding is utf-8');
     assert_equals((new TextDecoder).encoding, 'utf-8', 'default encoding is utf-8');
+}, 'Default encodings');
 
+test(function() {
     assert_array_equals(new TextEncoder().encode(), [], 'input default should be empty string')
     assert_array_equals(new TextEncoder().encode(undefined), [], 'input default should be empty string')
+}, 'Default inputs');
 
+test(function() {
     function testEncodeDecodeSample(encoding, string, bytes) {
         var encoded = new TextEncoder(encoding).encode(string);
         assert_array_equals([].slice.call(encoded), bytes);
@@ -43,6 +47,6 @@ test(function() {
         sample,
         [0x7A, 0x00, 0xA2, 0x00, 0x34, 0x6C, 0x34, 0xD8, 0x1E, 0xDD, 0xFF, 0xF8, 0xFF, 0xDB, 0xFD, 0xDF, 0xFE, 0xFF]
     );
-}, 'Encoding API basics');
+}, 'Encode/decode round-trip with UTF encodings');
 
 </script>

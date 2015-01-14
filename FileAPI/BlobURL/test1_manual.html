@@ -37,7 +37,7 @@
             var testCount = 10000;
 
             test(function() {
-                
+
                 var list = [], file = fileChooser.files[0];
 
                 for (var i = 0; i <= testCount; i++) {
@@ -78,7 +78,7 @@
 
                 var url = URL.createObjectURL(fileChooser.files[0]);
                 var expected_run_result = "test1_OK";
-                
+
                 //expected file content:
                 //   var test_result = 'test1_OK';
 
@@ -108,7 +108,7 @@
                         return;
                     }
                 });
-                
+
                 xhr.send();
 
             }, 'Check whether revokeObjectURL works well');

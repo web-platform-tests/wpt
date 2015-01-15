@@ -8,20 +8,28 @@
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
 </head>
-<body onbeforeunload="myReaction.push('beforeunload')" 
-      onblur="myReaction.push('blur')" 
-      onerror="myReaction.push('error')" 
-      onfocus="myReaction.push('focus')" 
-      onhashchange="myReaction.push('hashchange')" 
-      onload="myReaction.push('load')" 
-      onmessage="myReaction.push('message')"  
-      onpagehide="myReaction.push('pagehide')" 
-      onpageshow="myReaction.push('pageshow')" 
-      onpopstate="myReaction.push('popstate')" 
-      onresize="myReaction.push('resize')" 
-      onscroll="myReaction.push('scroll')" 
-      onstorage="myReaction.push('storage')" 
-      onunload="myReaction.push('unload')">
+<body
+  onblur="myReaction = 'blur'"
+  onerror="myReaction = 'error'"
+  onfocus="myReaction = 'focus'"
+  onload="myReaction = 'load'"
+  onresize="myReaction = 'resize'"
+  onscroll="myReaction = 'scroll'"
+
+  onafterprint="myReaction = 'afterprint'"
+  onbeforeprint="myReaction = 'beforeprint'"
+  onbeforeunload="myReaction = 'beforeunload'"
+  onhashchange="myReaction = 'hashchange'"
+  onlanguagechange="myReaction = 'languagechange'"
+  onmessage="myReaction = 'message'"
+  onoffline="myReaction = 'offline'"
+  ononline="myReaction = 'online'"
+  onpagehide="myReaction = 'pagehide'"
+  onpageshow="myReaction = 'pageshow'"
+  onpopstate="myReaction = 'popstate'"
+  onstorage="myReaction = 'storage'"
+  onunload="myReaction = 'unload'"
+>
 
     <h1>Description</h1>
     <p>This test validates that all automatable body element content attribute event handlers react to relevant events.</p>
@@ -35,53 +43,56 @@
 
         // Verify that all the content attributes that allow body to react to certain events actually do react to those events
 
-        var myReaction = [], num = 0, strEvent="", myEvent = {};
-        var myEvents = [["error", true, false],
-                        ["hashchange", true, false], 
-                        ["resize", true, false], 
-                        ["scroll", true, false],  
-                        ["blur", false, false], 
-                        ["focus", false, false], 
-                        ["pagehide", false, false], 
-                        ["pageshow", false, false], 
-                        ["popstate", false, false], 
-                        ["storage", false, false],
-                        ["beforeunload", false, true],
-                        ["unload", false, false],
-                        ["load", false, false]];
-                        // message is handled separately
+        setup({ explicit_done: true, allow_uncaught_exception: true });
 
-        function runTests() {
-            for (num = 0; num < myEvents.length; num++) {
-                strEvent = myEvents[num][0];
-                test(function() {
-                    // check that content attribute's event handler fired
-                    assert_in_array(strEvent, myReaction, "on" + strEvent + " content attribute failed: ");            	
-                }, "Body's on" + strEvent + " content attribute responds to event.");
-            }
+        var myReaction = "";
+
+        var windowEvents = [
+            // Table 2.
+            "blur",
+            "error",
+            "focus",
+            "load",
+            "resize",
+            "scroll",
+
+            // Table 3.
+            "afterprint",
+            "beforeprint",
+            "beforeunload",
+            "hashchange",
+            "languagechange",
+            "message",
+            "offline",
+            "online",
+            "pagehide",
+            "pageshow",
+            "popstate",
+            "storage",
+            "unload",
+        ];
+        windowEvents.forEach(function(type) {
             test(function() {
-                // check that content attribute's event handler fired
-                assert_in_array("message", myReaction, "onmessage content attribute failed: ");            	
-            }, "Body's onmessage content attribute responds to event.");
+                assert_true(document.body.hasAttribute("on" + type),
+                            "Should have the attribute set on the body.");
 
-            done();
-        }
+                myReaction = "";
+                window.dispatchEvent(new Event(type));
+                assert_equals(myReaction, type,
+                              "Event handler should have been triggered");
+            }, "Body.on" + type + " (fired on window)");
 
-        setup(function() { 
-            for (num = 0; num < myEvents.length; num++) {
+            test(function() {
+                assert_true(document.body.hasAttribute("on" + type),
+                            "Should have the attribute set on the body.");
 
-                // create and cause the event
-                myEvent = document.createEvent("Event");
-                myEvent.initEvent(myEvents[num][0], myEvents[num][1], myEvents[num][2]);
-                document.body.dispatchEvent(myEvent);
-            }
-            // shoot off windows message, too
-            window.postMessage("message_here", "*");
-
-         }, {explicit_done: true, explicit_timeout: true } );
-
-         setTimeout(runTests, 10000);
-
+                myReaction = "";
+                document.body.dispatchEvent(new Event(type));
+                assert_equals(myReaction, "",
+                              "Event handler should not have been triggered");
+            }, "Body.on" + type + " (fired on body)");
+        });
+        done();
     </script>
 
 </body>

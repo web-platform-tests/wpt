@@ -63,7 +63,7 @@
             // shoot off windows message, too
             window.postMessage("message_here", "*");
 
-         }, {explicit_done: true, explicit_timeout: true } );
+         }, {explicit_done: true, explicit_timeout: true, allow_uncaught_exception: true } );
 
         function runTests() {
             for (num = 0; num < myEvents.length; num++) {

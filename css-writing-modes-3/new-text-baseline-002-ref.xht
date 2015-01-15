@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>CSS Reftest Reference</title>
+  <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+  <style type="text/css"><![CDATA[
+    div#outer
+    {
+      color: orange;
+      font: 3.75em/1.5 Ahem; /* computes to 60px/90px */
+      width: 1.5em;
+      text-align: center;
+    }
+
+    div {
+      line-height: 1em;
+    }
+    div#blue90
+    {
+      color: blue;
+      font-size: 1.5em; /* computes to 90px */
+    }
+
+    div#orange30
+    {
+      font-size: 0.5em; /* computes to 30px */
+    }
+    ]]></style>
+
+  </head>
+
+  <body>
+
+  <p>Test passes if 2 orange squares are centered with respect to a blue square.</p>
+
+  <div id="outer"><div>A</div><div id="blue90">B</div><div id="orange30">O</div></div>
+
+  </body>
+</html>

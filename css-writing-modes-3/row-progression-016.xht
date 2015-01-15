@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Writing Modes Test: vertical-lr - table rows progression and rowspan</title>
+
+  <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
+  <link rel="match" href="block-flow-direction-001-ref.xht" />
+
+  <meta content="ahem" name="flags" />
+  <meta content="This test checks that rowspanned cells in a table are handled according to a left-to-right direction." name="assert" />
+
+  <style type="text/css"><![CDATA[
+  body
+  {
+  color: yellow;
+  font: 1.25em/1 Ahem;
+  }
+
+  table
+  {
+  background-color: blue;
+  border-spacing: 0em;
+  border: blue solid 1em;
+  height: 7em;
+  direction: rtl;
+  writing-mode: vertical-lr;
+  }
+
+  td
+  {
+  unicode-bidi: bidi-override;
+  padding-bottom: 0em;
+  padding-left: 1em;
+  padding-right: 0em;
+  padding-top: 0em;
+  }
+
+  td.left-most-cell { padding-left: 0em; }
+  ]]></style>
+ </head>
+
+ <body>
+
+  <table>
+
+   <!-- The "P" -->
+   <tr><td class="left-most-cell">AA &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;</td><td class="left-most-cell">BB &nbsp;C &nbsp;D &nbsp;E</td><td class="left-most-cell" rowspan="2">FFF &nbsp;&nbsp;G &nbsp;&nbsp;H III &nbsp;&nbsp;&nbsp; JJJ &nbsp;&nbsp;L &nbsp;&nbsp;M NNN</td></tr>
+
+   <!-- The "A" -->
+   <tr><td>OO &nbsp;&nbsp; &nbsp;&nbsp; PP</td><td>QQ &nbsp;R &nbsp;S TT</td></tr>
+
+   <!-- The left-most "S" -->
+   <tr><td>U&nbsp; V&nbsp; W&nbsp; XX</td><td rowspan="2">&nbsp;Y &nbsp;Z &nbsp;a bb &nbsp;&nbsp; &nbsp;c &nbsp;d &nbsp;e ff</td><td>ggg &nbsp;&nbsp;h &nbsp;&nbsp;i &nbsp;&nbsp;j</td></tr>
+
+   <!-- The right-most "S" -->
+   <tr><td>k&nbsp; l&nbsp; m&nbsp; nn</td><td>ooo &nbsp;&nbsp;q &nbsp;&nbsp;r &nbsp;&nbsp;s</td></tr>
+
+  </table>
+
+ </body>
+</html>

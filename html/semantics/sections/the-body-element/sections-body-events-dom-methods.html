@@ -23,33 +23,22 @@
         // Verify that all body's IDL event handlers actually do react to those events
 
         var myReaction = [], num = 0, strEvent="", myEvent = {};
-        var myEvents = [["error", true, false],
-                        ["hashchange", true, false], 
-                        ["resize", true, false], 
-                        ["scroll", true, false],  
-                        ["blur", false, false], 
-                        ["focus", false, false], 
+        var myEvents = [["hashchange", true, false],
                         ["pagehide", false, false], 
                         ["pageshow", false, false], 
                         ["popstate", false, false], 
                         ["storage", false, false],
                         ["beforeunload", false, true],
-                        ["unload", false, false],
-                        ["load", false, false]];
+                        ["unload", false, false]];
                         // message is handled separately
 
         setup(function() { 
             // create event handlers
-            document.body.onload = function() { myReaction.push("load"); console.log("load"); }; 
-            document.body.onscroll = function() { myReaction.push("scroll"); console.log("scroll"); };
-            document.body.onblur = function() { myReaction.push("blur"); console.log("blur"); };
-            document.body.onfocus = function() { myReaction.push("focus"); console.log("focus"); };
             document.body.onhashchange = function() { myReaction.push("hashchange"); console.log("hashchange"); };
             document.body.onpagehide = function() { myReaction.push("pagehide"); console.log("pagehide"); };
             document.body.onpageshow = function() { myReaction.push("pageshow"); console.log("pageshow"); };
             document.body.onmessage = function() { myReaction.push("message"); console.log("message"); };
             document.body.onstorage = function() { myReaction.push("storage"); console.log("storage"); };
-            document.body.onerror = function() { myReaction.push("error"); console.log("error"); };
             document.body.onpopstate = function() { myReaction.push("popstate"); console.log("popstate"); };
             document.body.onbeforeunload = function() { myReaction.push("beforeunload"); console.log("beforeunload"); };
             document.body.onunload = function() { myReaction.push("unload"); console.log("unload"); };
@@ -64,6 +53,33 @@
             window.postMessage("message_here", "*");
 
          }, {explicit_done: true, explicit_timeout: true, allow_uncaught_exception: true } );
+
+        var windowEvents = [
+            // Table 2.
+            "blur",
+            "error",
+            "focus",
+            "load",
+            "resize",
+            "scroll",
+        ];
+        windowEvents.forEach(function(type) {
+            test(function() {
+                var triggered = false;
+                document.body["on" + type] = function() { triggered = true };
+                window.dispatchEvent(new Event(type));
+                assert_true(triggered,
+                            "Event handler should have been triggered");
+            }, "Body.on" + type + " (fired on window)");
+
+            test(function() {
+                var triggered = false;
+                document.body["on" + type] = function() { triggered = true };
+                document.body.dispatchEvent(new Event(type));
+                assert_false(triggered,
+                             "Event handler should not have been triggered");
+            }, "Body.on" + type + " (fired on body)");
+        });
 
         function runTests() {
             for (num = 0; num < myEvents.length; num++) {

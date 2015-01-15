@@ -9,12 +9,6 @@
     <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-
-    <h1>Description</h1>
-    <p>This test validates that all automatable body element IDL event handlers react to relevant events.</p>
-    <p>Please be patient - there is a 10 second delay between events being fired and the tests being run.</p>
-    <p>For this round of tests, events are fired via DOM createEvent and dispatchEvent methods.</p>
-
     <div id="log"></div>
 
     <script>
@@ -22,37 +16,7 @@
 
         // Verify that all body's IDL event handlers actually do react to those events
 
-        var myReaction = [], num = 0, strEvent="", myEvent = {};
-        var myEvents = [["hashchange", true, false],
-                        ["pagehide", false, false], 
-                        ["pageshow", false, false], 
-                        ["popstate", false, false], 
-                        ["storage", false, false],
-                        ["beforeunload", false, true],
-                        ["unload", false, false]];
-                        // message is handled separately
-
-        setup(function() { 
-            // create event handlers
-            document.body.onhashchange = function() { myReaction.push("hashchange"); console.log("hashchange"); };
-            document.body.onpagehide = function() { myReaction.push("pagehide"); console.log("pagehide"); };
-            document.body.onpageshow = function() { myReaction.push("pageshow"); console.log("pageshow"); };
-            document.body.onmessage = function() { myReaction.push("message"); console.log("message"); };
-            document.body.onstorage = function() { myReaction.push("storage"); console.log("storage"); };
-            document.body.onpopstate = function() { myReaction.push("popstate"); console.log("popstate"); };
-            document.body.onbeforeunload = function() { myReaction.push("beforeunload"); console.log("beforeunload"); };
-            document.body.onunload = function() { myReaction.push("unload"); console.log("unload"); };
-
-            for (num = 0; num < myEvents.length; num++) {
-                // create and cause the event
-                myEvent = document.createEvent("Event");
-                myEvent.initEvent(myEvents[num][0], myEvents[num][1], myEvents[num][2]);
-                document.body.dispatchEvent(myEvent);
-            }
-            // shoot off windows message, too
-            window.postMessage("message_here", "*");
-
-         }, {explicit_done: true, explicit_timeout: true, allow_uncaught_exception: true } );
+        setup({ explicit_done: true, allow_uncaught_exception: true });
 
         var windowEvents = [
             // Table 2.
@@ -62,6 +26,21 @@
             "load",
             "resize",
             "scroll",
+
+            // Table 3.
+            "afterprint",
+            "beforeprint",
+            "beforeunload",
+            "hashchange",
+            "languagechange",
+            "message",
+            "offline",
+            "online",
+            "pagehide",
+            "pageshow",
+            "popstate",
+            "storage",
+            "unload",
         ];
         windowEvents.forEach(function(type) {
             test(function() {
@@ -80,26 +59,7 @@
                              "Event handler should not have been triggered");
             }, "Body.on" + type + " (fired on body)");
         });
-
-        function runTests() {
-            for (num = 0; num < myEvents.length; num++) {
-                strEvent = myEvents[num][0];
-                test(function() {
-                    // check that event handler fired
-                    assert_in_array(strEvent, myReaction, "on" + strEvent + " IDL method failed: ");            	
-                }, "Body's on" + strEvent + " IDL method responds to event.");
-             }
-             test(function() {
-                 // check that message event handler fired
-                 assert_in_array("message", myReaction, "onmessage IDL method failed: ");            	
-             }, "Body's onmessage IDL method responds to event.");
-
-            done();
-        }
-
-        setTimeout(runTests, 10000);
-
-
+        done();
     </script>
 
 </body>

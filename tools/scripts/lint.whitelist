@@ -13,7 +13,6 @@ INDENT TABS: app-uri/*
 INDENT TABS: conformance-checkers/*
 INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
-INDENT TABS: dom/*
 INDENT TABS: DOMEvents/*
 INDENT TABS: eventsource/*
 INDENT TABS: html/*
@@ -38,7 +37,6 @@ TRAILING WHITESPACE: battery-status/*
 TRAILING WHITESPACE: conformance-checkers/*
 TRAILING WHITESPACE: content-security-policy/*
 TRAILING WHITESPACE: custom-elements/*
-TRAILING WHITESPACE: dom/*
 TRAILING WHITESPACE: DOMEvents/*
 TRAILING WHITESPACE: fonts/*
 TRAILING WHITESPACE: html/*

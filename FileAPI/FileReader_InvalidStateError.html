@@ -1,22 +1,18 @@
 ﻿<!DOCTYPE html>
 <title>FileAPI Test: FileReader InvalidStateError Exception</title>
 <link rel="author" title="Yinkan Li" href="mailto:liyinkan.biz@gmail.com">
-<link rel="help" href="http://www.w3.org/TR/FileAPI/#MultipleReads">
+<link rel="help" href="http://dev.w3.org/2006/webapi/FileAPI/#MultipleReads">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link rel="stylesheet" href="/resources/testharness.css">
 <div id="log"></div>
 <script>
-
-
 test(function() {
 	var blob_1 = new Blob(['TEST000000001'])
 	var blob_2 = new Blob(['TEST000000002'])
 	var reader = new FileReader();
-	assert_true(reader !== undefined && reader !== null);
 	reader.readAsText(blob_1)
 	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
-	assert_throws("InvalidStateError", function () { 
+	assert_throws("InvalidStateError", function () {
 		reader.readAsText(blob_2)
 	}, "InvalidStateError DOM exception.")
 }, 'test FileReader InvalidStateError exception for readAsText');
@@ -25,10 +21,9 @@ test(function() {
 	var blob_1 = new Blob(['TEST000000001'])
 	var blob_2 = new Blob(['TEST000000002'])
 	var reader = new FileReader();
-	assert_true(reader !== undefined && reader !== null);
 	reader.readAsDataURL(blob_1)
 	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
-	assert_throws("InvalidStateError", function () { 
+	assert_throws("InvalidStateError", function () {
 		reader.readAsDataURL(blob_2)
 	}, "InvalidStateError DOM exception.")
 }, 'test FileReader InvalidStateError exception for readAsDataURL');
@@ -37,39 +32,39 @@ test(function() {
 	var blob_1 = new Blob(['TEST000000001'])
 	var blob_2 = new Blob(['TEST000000002'])
 	var reader = new FileReader();
-	assert_true(reader !== undefined && reader !== null);
 	reader.readAsArrayBuffer(blob_1)
 	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
-	assert_throws("InvalidStateError", function () { 
+	assert_throws("InvalidStateError", function () {
 		reader.readAsArrayBuffer(blob_2)
 	}, "InvalidStateError DOM exception.")
 }, 'test FileReader InvalidStateError exception for readAsArrayBuffer');
 
-test(function() {
+async_test(function() {
 	var blob_1 = new Blob(['TEST000000001'])
 	var blob_2 = new Blob(['TEST000000002'])
 	var reader = new FileReader();
-	assert_true(reader !== undefined && reader !== null);
-	reader.onloadstart = function() {
-		assert_throws("InvalidStateError", function () { 
-			reader.readAsArrayBuffer(blob_2)		
+	reader.onloadstart = this.step_func_done(function() {
+		assert_equals(reader.readyState, FileReader.LOADING,
+		              "readyState must be LOADING")
+		assert_throws("InvalidStateError", function () {
+			reader.readAsArrayBuffer(blob_2)
 		}, "InvalidStateError DOM exception.")
-	}
+	});
 	reader.readAsArrayBuffer(blob_1)
 	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
 }, 'test FileReader InvalidStateError exception in onloadstart event for readAsArrayBuffer');
 
-test(function() {
+async_test(function() {
 	var blob_1 = new Blob(['TEST000000001'])
 	var blob_2 = new Blob(['TEST000000002'])
 	var reader = new FileReader();
-	assert_true(reader !== undefined && reader !== null);
-	reader.onloadend = function(){
+	reader.onloadend = this.step_func_done(function() {
+		assert_equals(reader.readyState, FileReader.LOADING,
+		              "readyState must be LOADING")
 		reader.readAsArrayBuffer(blob_2)
 		assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
-	}
+	});
 	reader.readAsArrayBuffer(blob_1)
 	assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
 }, 'test FileReader no InvalidStateError exception in onloadstart event for readAsArrayBuffer');
-
 </script>

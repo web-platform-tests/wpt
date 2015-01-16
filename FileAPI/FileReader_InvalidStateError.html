@@ -43,7 +43,10 @@ async_test(function() {
   var blob_1 = new Blob(['TEST000000001'])
   var blob_2 = new Blob(['TEST000000002'])
   var reader = new FileReader();
+  var triggered = false;
   reader.onloadstart = this.step_func_done(function() {
+    assert_false(triggered, "Only one loadstart event should be dispatched");
+    triggered = true;
     assert_equals(reader.readyState, FileReader.LOADING,
                   "readyState must be LOADING")
     assert_throws("InvalidStateError", function () {

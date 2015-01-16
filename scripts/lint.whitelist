@@ -27,8 +27,6 @@ INDENT TABS: vibration/*
 INDENT TABS: web-animations/*
 INDENT TABS: webaudio/*
 INDENT TABS: webdriver/*
-INDENT TABS: websockets/*
-INDENT TABS: webstorage/*
 INDENT TABS: webvtt/*
 INDENT TABS: XMLHttpRequest/*
 
@@ -51,10 +49,7 @@ TRAILING WHITESPACE: tools/*
 TRAILING WHITESPACE: webaudio/*
 TRAILING WHITESPACE: webdriver/*
 TRAILING WHITESPACE: WebIDL/*
-TRAILING WHITESPACE: websockets/*
-TRAILING WHITESPACE: webstorage/*
 TRAILING WHITESPACE: webvtt/*
-TRAILING WHITESPACE: workers/*
 TRAILING WHITESPACE: XMLHttpRequest/*
 
 ## File types that should never be checked ##

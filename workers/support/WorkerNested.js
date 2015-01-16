@@ -8,7 +8,7 @@ try
 
     worker1.onmessage = function(evt)
     {
-        result = evt.data; 
+        result = evt.data;
         self.postMessage(result);
         worker1.terminate();
     }

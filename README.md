@@ -1,6 +1,8 @@
 Description
 ===========
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/w3c/web-platform-tests?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is the test suites from a number of W3C Working Groups, including the HTML
 Working Group, the Web Apps Working Group, the Device APIs Working Group, and
 the Web Apps Security Working Group.

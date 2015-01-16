@@ -118,7 +118,7 @@ function assert_object_equals_(observed, expected, msg)
   for (var i = 0; i < tests.length; ++i) {
     postMessage(tests[i], '*', []);
   }
-  
+
   var test_undefined = async_test('undefined');
   var test_null = async_test('null');
   var test_false = async_test('false');
@@ -156,10 +156,10 @@ function assert_object_equals_(observed, expected, msg)
         test_error.step(function() { assert_equals(e.data, null, 'new Error()'); this.done(); });
         setTimeout(test_unreached.step_func(function() { assert_equals(j, 14); this.done(); }), 50);
         break;
-      default: test_unreached.step(function() { assert_unreached('got an unexpected message event ('+i+')'); }); 
+      default: test_unreached.step(function() { assert_unreached('got an unexpected message event ('+i+')'); });
     };
     j++;
   }
 
-  
+
 </script>

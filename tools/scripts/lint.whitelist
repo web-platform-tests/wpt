@@ -14,7 +14,6 @@ INDENT TABS: conformance-checkers/*
 INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
 INDENT TABS: DOMEvents/*
-INDENT TABS: eventsource/*
 INDENT TABS: html/*
 INDENT TABS: media-source/*
 INDENT TABS: old-tests/*
@@ -22,13 +21,10 @@ INDENT TABS: pointerlock/*
 INDENT TABS: shadow-dom/*
 INDENT TABS: tools/*
 INDENT TABS: touch-events/*
-INDENT TABS: url/*
 INDENT TABS: vibration/*
 INDENT TABS: web-animations/*
 INDENT TABS: webaudio/*
 INDENT TABS: webdriver/*
-INDENT TABS: websockets/*
-INDENT TABS: webstorage/*
 INDENT TABS: webvtt/*
 INDENT TABS: XMLHttpRequest/*
 
@@ -45,17 +41,12 @@ TRAILING WHITESPACE: media-source/*
 TRAILING WHITESPACE: microdata/*
 TRAILING WHITESPACE: old-tests/*
 TRAILING WHITESPACE: pointerevents/*
-TRAILING WHITESPACE: progress-events/*
 TRAILING WHITESPACE: shadow-dom/*
 TRAILING WHITESPACE: tools/*
 TRAILING WHITESPACE: webaudio/*
 TRAILING WHITESPACE: webdriver/*
 TRAILING WHITESPACE: WebIDL/*
-TRAILING WHITESPACE: webmessaging/*
-TRAILING WHITESPACE: websockets/*
-TRAILING WHITESPACE: webstorage/*
 TRAILING WHITESPACE: webvtt/*
-TRAILING WHITESPACE: workers/*
 TRAILING WHITESPACE: XMLHttpRequest/*
 
 ## File types that should never be checked ##

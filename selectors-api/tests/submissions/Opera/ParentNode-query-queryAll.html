@@ -6,7 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/dom/nodes/selectors.js"></script>
 <script src="/dom/nodes/ParentNode-querySelector-All.js"></script>
-<script src="ParentNode-find-findAll.js"></script>
+<script src="ParentNode-query-queryAll.js"></script>
 <style>iframe { visibility: hidden; position: absolute; }</style>
 
 <div id="log">This test requires JavaScript.</div>
@@ -64,10 +64,10 @@ function init() {
   fragment.appendChild(element.cloneNode(true));
 
   // Setup Tests
-  interfaceCheckFind("Document", doc);
-  interfaceCheckFind("Detached Element", detached);
-  interfaceCheckFind("Fragment", fragment);
-  interfaceCheckFind("In-document Element", element);
+  interfaceCheckQuery("Document", doc);
+  interfaceCheckQuery("Detached Element", detached);
+  interfaceCheckQuery("Fragment", fragment);
+  interfaceCheckQuery("In-document Element", element);
 
   runSpecialSelectorTests("Document", doc);
   runSpecialSelectorTests("Detached Element", detached);
@@ -79,10 +79,10 @@ function init() {
   verifyStaticList("Fragment", fragment);
   verifyStaticList("In-document Element", element);
 
-  runInvalidSelectorTestFind("Document", doc, invalidSelectors);
-  runInvalidSelectorTestFind("Detached Element", detached, invalidSelectors);
-  runInvalidSelectorTestFind("Fragment", fragment, invalidSelectors);
-  runInvalidSelectorTestFind("In-document Element", element, invalidSelectors);
+  runInvalidSelectorTestQuery("Document", doc, invalidSelectors);
+  runInvalidSelectorTestQuery("Detached Element", detached, invalidSelectors);
+  runInvalidSelectorTestQuery("Fragment", fragment, invalidSelectors);
+  runInvalidSelectorTestQuery("In-document Element", element, invalidSelectors);
 
   runValidSelectorTest("In-document", doc, scopedSelectors, "html");
 }

@@ -20,6 +20,35 @@
               }
           };
 
+          test(function() {
+            assert_throws(null,function () {
+                                MediaSource.isTypeSupported()
+                              }, 'supported');
+          }, 'Test that providing no argument throws an exception');
+
+          test(function() {
+            assert_throws(null,function () {
+                                MediaSource.isTypeSupported(null)
+                              }, 'supported');
+          }, 'Test that providing a null argument throws an exception');
+
+          test_type_support([
+              'video',                  /* missing '/' */
+              'video/',                 /* missing sub-type */
+              'video/x-my-video;',      /* extra semi-column */
+              'video/x-my-video;foo=',  /* error in syntax for hypothetical 'foo' parameter (missing value)*/
+              'video/x-my-video;foo="', /* error in syntax for hypothetical 'foo' parameter (missing closing quote)*/
+          ], false, 'Test syntactically invalid MIME format');
+
+          test_type_support([
+              '', 
+              'video/x-my-video',         /* this hypothetical video format shall not be supported as it is not in the byte stream format registry */
+              'audio/x-my-audio',         /* this hypothetical audio format shall not be supported as it is not in the byte stream format registry */
+              'text/plain',               /* this format shall not be supported as it is not in the byte stream format registry and does not represent packetized & timestamped media data */
+              'application/octet-stream', /* the format does not represent packetized & timestamped media data and shall not be supported */
+          ], false, 'Test unsupported valid MIME format');
+
+          /* WebM-specific tests */
           test_type_support([
               'video',
               'video/',
@@ -30,28 +59,21 @@
               'video/webm;codecs="',
               'video/webm;codecs=""',
               'video/webm;codecs=","',
-          ], false, 'Test invalid MIME format');
+          ], false, 'Test invalid WebM MIME format');
+
+          test_type_support([
+              'audio/webm;codecs="myOwnCodec"',
+              'video/webm;codecs="myOwnCodec"',
+          ], false, 'Test non-supported codecs value for WebM data');
 
           test_type_support([
               'audio/webm;codecs="vp8"',
-              'audio/mp4;codecs="avc1.4d001e"',
-          ], false, 'Test invalid mismatch between major type and codec ID');
+          ], false, 'Test invalid mismatch between major type and codecs parameter for WebM data');
 
           test_type_support([
-              'audio/mp4;codecs="vorbis"',
               'audio/webm;codecs="mp4a.40.2"',
-              'video/mp4;codecs="vp8"',
               'video/webm;codecs="mp4a.40.2"',
-              'video/mp4;codecs="vorbis"',
-              'video/webm;codecs="mp4a.40.2"',
-          ], false, 'Test invalid mismatch between minor type and codec ID');
-
-          test_type_support([
-              'audio/mp4;codecs="mp4a"',
-              'audio/mp4;codecs="mp4a.40"',
-              'audio/mp4;codecs="mp4a.40."',
-              'audio/mp4;codecs="mp4a.67.3"'
-          ], false, 'Test invalid codec ID');
+          ], false, 'Test invalid mismatch between minor type and codecs parameter for WebM data');
 
           test_type_support([
               'video/webm;codecs="vp8"',
@@ -61,17 +83,138 @@
               'audio/webm;codecs="vorbis"',
           ], true, 'Test valid WebM type');
 
+          /* ISOBMFF-specific tests */
           test_type_support([
-              'video/mp4;codecs="avc1.4d001e"', // H.264 Main Profile level 3.0
-              'video/mp4;codecs="avc1.42001e"', // H.264 Baseline Profile level 3.0
+              'audio/mp4;codecs="myOwnCodec"',
+              'video/mp4;codecs="myOwnCodec"',
+          ], false, 'Test non-supported codecs value for ISOBMFF data');
+
+          test_type_support([
+              'audio/mp4;codecs="avc1.4d001e"',
+          ], false, 'Test invalid mismatch between major type and codecs parameter for ISOBMFF data');
+
+          test_type_support([
+              'audio/mp4;codecs="vorbis"',
+              'video/mp4;codecs="vp8"',
+              'video/mp4;codecs="vorbis"',
+          ], false, 'Test invalid mismatch between minor type and codecs parameter for ISOBMFF data');
+
+          test_type_support([
+              'audio/mp4;codecs="mp4a."',
+              'audio/mp4;codecs="mp4a.40."',
+          ], false, 'Test invalid codecs parameter for ISOBMFF data');
+
+          test_type_support([
+
+              /* Types from the MP4 Registration Authority http://mp4ra.org/codecs.html */
+              /* audio track types */
+              /* MPEG AAC related types */
+              'audio/mp4;codecs="mp4a"',        // the codecs parameter allows not specifying the full 'depth' (here missing the object type indication)
+              'audio/mp4;codecs="mp4a.40"',     // the codecs parameter allows not specifying the full 'depth' (here missing the number of channels)
               'audio/mp4;codecs="mp4a.40.2"',   // MPEG4 AAC-LC
               'audio/mp4;codecs="mp4a.40.5"',   // MPEG4 HE-AAC
               'audio/mp4;codecs="mp4a.67"',     // MPEG2 AAC-LC
-              'video/mp4;codecs="mp4a.40.2"',
-              'video/mp4;codecs="avc1.4d001e,mp4a.40.2"',
-              'video/mp4;codecs="mp4a.40.2 , avc1.4d001e "',
-              'video/mp4;codecs="avc1.4d001e,mp4a.40.5"',
-          ], true, 'Test valid MP4 type');
+              'video/mp4;codecs="mp4a.40.2"',   // audio-only in video/mp4
+
+              'audio/mp4;codecs="mp4a.E1"',     // MPEG-4 13K voice (from https://tools.ietf.org/html/rfc6381)
+              'video/mp4;codecs="ac-3"',
+              'video/mp4;codecs="ac-4"',
+              'video/mp4;codecs="alac"',
+              'video/mp4;codecs="alaw"',
+              'video/mp4;codecs="dra1"',
+              'video/mp4;codecs="dtsc"',
+              'video/mp4;codecs="dtse"',
+              'video/mp4;codecs="dtsh"',
+              'video/mp4;codecs="dtsl"',
+              'video/mp4;codecs="dts+"',
+              'video/mp4;codecs="dts-"',
+              'video/mp4;codecs="ec-3"',
+              'video/mp4;codecs="enca"', /* encrypted audio */
+              'video/mp4;codecs="g719"',
+              'video/mp4;codecs="g726"',
+              'video/mp4;codecs="m4ae"',
+              'video/mp4;codecs="mjp2"',
+              'video/mp4;codecs="mlpa"',
+              'video/mp4;codecs="raw "',
+              'video/mp4;codecs="samr"',
+              'video/mp4;codecs="sawb"',
+              'video/mp4;codecs="sawp"',
+              'video/mp4;codecs="sevc"',
+              'video/mp4;codecs="sqcp"',
+              'video/mp4;codecs="ssmv"',
+              'video/mp4;codecs="twos"',
+              'video/mp4;codecs="ulaw"',
+
+              /* video track types */
+              /* AVC|H.264 related video types */
+              'video/mp4;codecs="avc1"',        // the codecs parameter allows not specifying the full 'depth' (here missing the AVC OTI)
+              'video/mp4;codecs="avc1.4d001e"', // H.264 Main Profile level 3.0
+              'video/mp4;codecs=avc1.4d001e',   // the codecs parameter allows not surrounding its values by quotes
+              'video/mp4;codecs="avc1.42001e"', // H.264 Baseline Profile level 3.0
+              'video/mp4;codecs="avc2"',
+              'video/mp4;codecs="avc3"',
+              'video/mp4;codecs="avc4"',
+              'video/mp4;codecs="mvc1"',
+              'video/mp4;codecs="mvc2"',
+              'video/mp4;codecs="mvc3"',
+              'video/mp4;codecs="mvc4"',
+              'video/mp4;codecs="avcp"',
+              'video/mp4;codecs="svc1"',
+              'video/mp4;codecs="svc2"',
+
+              /* Non-AVC|H.264 video types */
+              'video/mp4;codecs="mp4v"',
+              'video/mp4;codecs="mp4v.20"',
+              'video/mp4;codecs="mp4v.20.9"',
+              'video/mp4;codecs="drac"',
+              'video/mp4;codecs="encv"', /* encrypted video */
+              'video/mp4;codecs="resv"',
+              'video/mp4;codecs="s263"',
+              'video/mp4;codecs="vc-1"',
+
+              /* text/subtitles track types */
+              'video/mp4;codecs="enct"',
+              'video/mp4;codecs="stpp"',
+              'video/mp4;codecs="wvtt"',
+              'video/mp4;codecs="tx3g"',
+
+              /* metadata track types */
+              'application/mp4;codecs="3gvo"',
+              'application/mp4;codecs="encs"',
+              'application/mp4;codecs="ixse"',
+              'application/mp4;codecs="mett"',
+              'application/mp4;codecs="metx"',
+              'application/mp4;codecs="urim"',
+              'application/mp4;codecs="mlix"',
+              'video/mp4;codecs="mp4s"',
+              'video/mp4;codecs="oksd"',
+              'video/mp4;codecs="svcM"',
+              'video/mp4;codecs="tc64"',
+              'video/mp4;codecs="tmcd"',
+
+
+              /* hint track types */
+              'video/mp4;codecs="fdp "',
+              'video/mp4;codecs="m2ts"',
+              'video/mp4;codecs="pm2t"',
+              'video/mp4;codecs="prtp"',
+              'video/mp4;codecs="rm2t"',
+              'video/mp4;codecs="rrtp"',
+              'video/mp4;codecs="rsrp"',
+              'video/mp4;codecs="rtp "',
+              'video/mp4;codecs="sm2t"',
+              'video/mp4;codecs="srtp"',
+
+              'video/mp4;codecs="avc1.4d001e,mp4a.40.2"', // multiple tracks in a video/mp4 file
+              'video/mp4;codecs="mp4a.40.2 , avc1.4d001e "', // spaces around the comma
+              'video/mp4;codecs="avc1.4d001e,mp4a.40.2,wvtt"', // audio, video and subtitle tracks in a video/mp4 file
+              'video/mp4;codecs="avc1.4d001e,mp4a.40.2,stpp,stpp,stpp"', // audio, video and multiple subtitle tracks in a video/mp4 file
+              'video/mp4;codecs="wvtt,stpp,tx3g,text"', // multiple text tracks in a video/mp4 file without audio and video data
+              
+              'audio/mp4', // codecs parameter is optional 
+              'video/mp4', // codecs parameter is optional 
+              'application/mp4' // codecs parameter is optional, ISOBMFF allows the use of the 'application' major type
+          ], true, 'Test valid ISOBMFF types');
         </script>
     </body>
 </html>

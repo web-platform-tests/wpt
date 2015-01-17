@@ -37,32 +37,48 @@ for (var element_type = 0; element_type < types.length; element_type++) {
   "Test ["+types[element_type]+"]: verify disabled acts as boolean attribute");
 
   test(function() {
-    root.innerHTML = "<"+types[element_type]+" id='elem'></"+types[element_type]+"><input id='other' value='pass'></input>";
+    root.innerHTML = "<"+types[element_type]+" id='elem'></"+types[element_type]+"><input id='other' value='no event dispatched'></input>";
     var elem = document.getElementById("elem"),
       other = document.getElementById("other");
 
-    assert_equals(other.value, "pass");
+    assert_equals(other.value, "no event dispatched");
 
-    var disabled_status = elem.disabled;
     elem.disabled = true;
     assert_true(elem.disabled);
 
     elem.onclick = function () {
       // change value of other element, to avoid *.value returning "" for disabled elements
-      document.getElementById("other").value = "fail";
+      document.getElementById("other").value = "event dispatched";
     };
-
-    // Check if queued event is dispatched
-    elem.click();
-    assert_equals(other.value, "pass");
 
     // Check if dispatched event executes
     var evObj = document.createEvent('Events');
     evObj.initEvent("click", true, false);
     elem.dispatchEvent(evObj);
-    assert_not_equals(other.value, "pass");
+    assert_equals(other.value, "event dispatched");
   },
-  "Test ["+types[element_type]+"]: dispatched click event should succeed and queued prevented");
+  "Test ["+types[element_type]+"]: synthetic click events should be dispatched");
+
+  test(function() {
+    root.innerHTML = "<"+types[element_type]+" id='elem'></"+types[element_type]+"><input id='other' value='no event dispatched'></input>";
+    var elem = document.getElementById("elem"),
+      other = document.getElementById("other");
+
+    assert_equals(other.value, "no event dispatched");
+
+    elem.disabled = true;
+    assert_true(elem.disabled);
+
+    elem.onclick = function () {
+      // change value of other element, to avoid *.value returning "" for disabled elements
+      document.getElementById("other").value = "event dispatched";
+    };
+
+    // Check that click() on a disabled element doesn't dispatch a click event.
+    elem.click();
+    assert_equals(other.value, "no event dispatched");
+  },
+  "Test ["+types[element_type]+"]: click() should not dispatch a click event");
 }
 root.innerHTML = "";
 </script>

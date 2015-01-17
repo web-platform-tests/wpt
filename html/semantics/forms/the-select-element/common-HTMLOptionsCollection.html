@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title id='title'>HTMLOptionsCollection 2.8.3.2</title>
+<title id='title'>HTMLOptionsCollection</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -14,43 +14,38 @@
 </select>
 
 <script>
+var selly;
+setup(function() {
+    selly = document.getElementById('selly');
+});
+
 test(function () {
-    /* Responding to notes from Ms2ger
-      Mutation events removed, other items fixed. Would it be better to do a separate async test with mutation observers to cover requirement that mutation events fire?
-      */
-    var selly = document.getElementById('selly');
+    assert_equals(selly.length, 4);
+}, "On getting, the length attribute must return the number of nodes represented by the collection.");
 
-    test(function () {
-        assert_equals(selly.length, 4);
-    }, "On getting, the length attribute must return the number of nodes represented by the collection.");
-
+test(function () {
     selly.length = 7;
-    test(function () {
-        assert_equals(selly.length, 7);
-    }, "Changing the length adds new nodes; The number of new nodes = new length minus old length");
+    assert_equals(selly.length, 7);
+}, "Changing the length adds new nodes; The number of new nodes = new length minus old length");
 
+test(function () {
     var elarray = [];
     for (var i = 0; i < selly.length; i++) {
         elarray.push(selly[i].value);
     }
+    assert_array_equals(elarray, ["1", "2", "3", "4", "", "", ""]);
+}, "New nodes have no value");
 
-    test(function () {
-        assert_array_equals(elarray, ["1", "2", "3", "4", "", "", ""]);
-    }, "New nodes have no value");
-
+test(function () {
     selly.length = 7;
-    test(function () {
-        assert_equals(selly.length, 7);
-    }, "Setting a length equal to existing length changes nothing");
+    assert_equals(selly.length, 7);
+}, "Setting a length equal to existing length changes nothing");
 
-
+test(function () {
     selly.length = 4;
-    test(function () {
-        assert_equals(selly[6], undefined);
-    }, "Setting a length lower than the old length trims nodes from the end (checking that previously set node is now undefined)");
-
-    test(function () {
-        assert_equals(selly.length, 4);
-    }, "Number of nodes in collection is correctly changed");
-});
+    assert_equals(selly[6], undefined,
+                  "previously set node is now undefined");
+    assert_equals(selly.length, 4,
+                  "Number of nodes in collection is correctly changed");
+}, "Setting a length lower than the old length trims nodes from the end");
 </script>

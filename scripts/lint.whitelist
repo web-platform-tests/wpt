@@ -8,7 +8,6 @@
 ## Whitespace rules that we can't enforce yet ##
 
 INDENT TABS: .gitmodules
-INDENT TABS: 2dcontext/*
 INDENT TABS: app-uri/*
 INDENT TABS: conformance-checkers/*
 INDENT TABS: content-security-policy/*

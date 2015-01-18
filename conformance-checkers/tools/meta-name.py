@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
+ccdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 template = """<!DOCTYPE html>
 <meta charset=utf-8>
 <title>Registered extensions to the predefined set of metadata names</title>
 """
-f = open("tools/meta-extensions", 'r')
+f = open(os.path.join(ccdir, "tools/meta-extensions"), 'r')
 for line in f:
     template += '<meta name="%s" content>\n' % line.rstrip('\n')
     template += '<meta name="%s" content>\n' % line.upper().rstrip('\n')
@@ -16,7 +18,7 @@ for line in f:
             mixed += c
         odd = not odd
     template += '<meta name="%s" content>\n' % mixed
-o = open("html/elements/meta/names-registered-isvalid.html", 'wb')
+o = open(os.path.join(ccdir, "html/elements/meta/names-registered-isvalid.html"), 'wb')
 o.write(template)
 o.close()
 
@@ -35,7 +37,7 @@ for key in errors.keys():
     template = "<!DOCTYPE html>\n<meta charset=utf-8>\n"
     template += "<title>name-%s</title>" % key
     template += '<meta name="%s" content>\n' % errors[key]
-    o = open("html/elements/meta/name-%s-novalid.html" % key, 'wb')
+    o = open(os.path.join(ccdir, "html/elements/meta/name-%s-novalid.html" % key), 'wb')
     o.write(template)
     o.close()
 # vim: ts=4:sw=4

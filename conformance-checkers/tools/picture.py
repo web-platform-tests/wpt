@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+ccdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 template = """<!DOCTYPE html>
 <meta charset=utf-8>
 """
@@ -347,11 +349,11 @@ for key in errors.keys():
     template_error = template
     template_error += '<title>invalid %s</title>\n' % key
     template_error += errors[key]
-    file = open("html/elements/picture/%s-novalid.html" % key, 'wb')
+    file = open(os.path.join(ccdir, "html/elements/picture/%s-novalid.html" % key), 'wb')
     file.write(template_error)
     file.close()
 
-file = open("html/elements/picture/picture-isvalid.html", 'wb')
+file = open(os.path.join(ccdir, "html/elements/picture/picture-isvalid.html"), 'wb')
 file.write(template + '<title>valid picture</title>\n')
 for key in non_errors_in_head.keys():
     file.write('%s <!-- %s -->\n' % (non_errors_in_head[key], key))

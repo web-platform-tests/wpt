@@ -1,17 +1,18 @@
-Description
-===========
+The Web Platform Tests Project [![IRC chat](https://goo.gl/6nCIks)](http://irc.w3.org/?channels=testing)
+==============================
 
-This is the test suites from a number of W3C Working Groups, including the HTML
-Working Group, the Web Apps Working Group, the Device APIs Working Group, and
-the Web Apps Security Working Group.
+These are test suites for 60+ Web-platform specifications, along
+with test-infrastructure code for running the tests.
 
 Running the Tests
 =================
 
-The tests are designed to be run from your local computer. The test environment
-requires Python 2.7+ (but not Python 3.x).
+The tests are designed to be run from your local computer. The test
+environment requires Python 2.7+ (but not Python 3.x). You will also
+need a copy of OpenSSL. For users on Windows this is available from
+[the openssl website](https://www.openssl.org/related/binaries.html).
 
-To get the tests running, you need to set up the test domains in your 
+To get the tests running, you need to set up the test domains in your
 [`hosts` file](http://en.wikipedia.org/wiki/Hosts_%28file%29%23Location_in_the_file_system). The following entries are required:
 
 ```
@@ -50,6 +51,15 @@ to some port of your choice e.g.
 
 ```
 "http":[1234, "auto"]
+```
+
+If you installed OpenSSL in such a way that running `openssl` at a
+command line doesn't work, you also need to adjust the path to the
+OpenSSL binary. This can be done by adding a section to `config.json`
+like:
+
+```
+"ssl": {"openssl": {"binary": "/path/to/openssl"}}
 ```
 
 Test Runner

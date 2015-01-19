@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<title>FileAPI Test: FileReader InvalidStateError Exception</title>
+<title>FileReader: starting new reads while one is in progress</title>
 <link rel="author" title="Yinkan Li" href="mailto:liyinkan.biz@gmail.com">
 <link rel="help" href="http://dev.w3.org/2006/webapi/FileAPI/#MultipleReads">
 <script src="/resources/testharness.js"></script>
@@ -14,7 +14,7 @@ test(function() {
   assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
   assert_throws("InvalidStateError", function () {
     reader.readAsText(blob_2)
-  }, "InvalidStateError DOM exception.")
+  })
 }, 'test FileReader InvalidStateError exception for readAsText');
 
 test(function() {
@@ -25,7 +25,7 @@ test(function() {
   assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
   assert_throws("InvalidStateError", function () {
     reader.readAsDataURL(blob_2)
-  }, "InvalidStateError DOM exception.")
+  })
 }, 'test FileReader InvalidStateError exception for readAsDataURL');
 
 test(function() {
@@ -36,7 +36,7 @@ test(function() {
   assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")
   assert_throws("InvalidStateError", function () {
     reader.readAsArrayBuffer(blob_2)
-  }, "InvalidStateError DOM exception.")
+  })
 }, 'test FileReader InvalidStateError exception for readAsArrayBuffer');
 
 async_test(function() {
@@ -51,7 +51,7 @@ async_test(function() {
                   "readyState must be LOADING")
     assert_throws("InvalidStateError", function () {
       reader.readAsArrayBuffer(blob_2)
-    }, "InvalidStateError DOM exception.")
+    })
   });
   reader.readAsArrayBuffer(blob_1)
   assert_equals(reader.readyState, FileReader.LOADING, "readyState Must be LOADING")

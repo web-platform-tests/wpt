@@ -1186,6 +1186,10 @@ IdlInterface.prototype.test_self = function()
 
     test(function()
     {
+        if (this.is_callback() && !this.has_constants()) {
+            return;
+        }
+
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
@@ -1222,6 +1226,10 @@ IdlInterface.prototype.test_member_const = function(member)
 {
     test(function()
     {
+        if (this.is_callback() && !this.has_constants()) {
+            return;
+        }
+
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
@@ -1247,6 +1255,10 @@ IdlInterface.prototype.test_member_const = function(member)
     // exist on the interface prototype object."
     test(function()
     {
+        if (this.is_callback() && !this.has_constants()) {
+            return;
+        }
+
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
@@ -1278,6 +1290,10 @@ IdlInterface.prototype.test_member_attribute = function(member)
 {
     test(function()
     {
+        if (this.is_callback() && !this.has_constants()) {
+            return;
+        }
+
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
         assert_own_property(self[this.name], "prototype",
@@ -1313,6 +1329,10 @@ IdlInterface.prototype.test_member_operation = function(member)
 {
     test(function()
     {
+        if (this.is_callback() && !this.has_constants()) {
+            return;
+        }
+
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
@@ -1408,6 +1428,10 @@ IdlInterface.prototype.test_member_stringifier = function(member)
 {
     test(function()
     {
+        if (this.is_callback() && !this.has_constants()) {
+            return;
+        }
+
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 

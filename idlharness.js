@@ -166,7 +166,8 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
         switch(parsed_idl.type)
         {
         case "interface":
-            this.members[parsed_idl.name] = new IdlInterface(parsed_idl);
+            this.members[parsed_idl.name] =
+                new IdlInterface(parsed_idl, /* is_callback = */ false);
             break;
 
         case "exception":
@@ -193,8 +194,8 @@ IdlArray.prototype.internal_add_idls = function(parsed_idls)
             break;
 
         case "callback interface":
-            // TODO
-            console.log("callback interface not yet supported");
+            this.members[parsed_idl.name] =
+                new IdlInterface(parsed_idl, /* is_callback = */ true);
             break;
 
         default:

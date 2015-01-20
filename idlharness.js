@@ -928,12 +928,16 @@ IdlException.prototype.test_object = function(desc)
 //@}
 
 /// IdlInterface ///
-function IdlInterface(obj) { IdlExceptionOrInterface.call(this, obj); }
+function IdlInterface(obj, is_callback) {
+    IdlExceptionOrInterface.call(this, obj);
+
+    this._is_callback = is_callback;
+}
 IdlInterface.prototype = Object.create(IdlExceptionOrInterface.prototype);
 IdlInterface.prototype.is_callback = function()
 //@{
 {
-    return this.has_extended_attribute("Callback");
+    return this._is_callback;
 };
 //@}
 
@@ -1078,7 +1082,7 @@ IdlInterface.prototype.test_self = function()
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
-        if (this.has_extended_attribute("Callback")) {
+        if (this.is_callback()) {
             assert_false("prototype" in self[this.name],
                          this.name + ' should not have a "prototype" property');
             return;
@@ -1166,7 +1170,7 @@ IdlInterface.prototype.test_self = function()
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
-        if (this.has_extended_attribute("Callback")) {
+        if (this.is_callback()) {
             assert_false("prototype" in self[this.name],
                          this.name + ' should not have a "prototype" property');
             return;
@@ -1227,7 +1231,7 @@ IdlInterface.prototype.test_member_const = function(member)
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
-        if (this.has_extended_attribute("Callback")) {
+        if (this.is_callback()) {
             assert_false("prototype" in self[this.name],
                          this.name + ' should not have a "prototype" property');
             return;
@@ -1293,7 +1297,7 @@ IdlInterface.prototype.test_member_operation = function(member)
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
-        if (this.has_extended_attribute("Callback")) {
+        if (this.is_callback()) {
             assert_false("prototype" in self[this.name],
                          this.name + ' should not have a "prototype" property');
             return;
@@ -1388,7 +1392,7 @@ IdlInterface.prototype.test_member_stringifier = function(member)
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
-        if (this.has_extended_attribute("Callback")) {
+        if (this.is_callback()) {
             assert_false("prototype" in self[this.name],
                          this.name + ' should not have a "prototype" property');
             return;

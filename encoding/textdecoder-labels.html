@@ -5,22 +5,6 @@
 <script src="resources/encodings.js"></script>
 <script>
 
-test(function() {
-    var encodings = [
-        { label: 'utf-8', encoding: 'utf-8' },
-        { label: 'utf-16', encoding: 'utf-16le' },
-        { label: 'utf-16le', encoding: 'utf-16le' },
-        { label: 'utf-16be', encoding: 'utf-16be' },
-        { label: 'ascii', encoding: 'windows-1252' },
-        { label: 'iso-8859-1', encoding: 'windows-1252' }
-    ];
-
-    encodings.forEach(function(t) {
-        assert_equals(new TextDecoder(t.label.toLowerCase()).encoding, t.encoding);
-        assert_equals(new TextDecoder(t.label.toUpperCase()).encoding, t.encoding);
-    });
-}, 'Encoding labels are case-insensitive');
-
 encodings_table.forEach(function(section) {
     section.encodings.filter(function(encoding) {
         return encoding.name !== 'replacement';
@@ -28,8 +12,12 @@ encodings_table.forEach(function(section) {
         var name = encoding.name;
         encoding.labels.forEach(function(label) {
             test(function(){
-                assert_equals(new TextDecoder(label).encoding, encoding.name);
-                }, 'name=' + name + ' label=' + label);
+              assert_equals(new TextDecoder(label).encoding, encoding.name,
+                            'label for encoding should match');
+              assert_equals(new TextDecoder(label.toUpperCase()).encoding,
+                            encoding.name,
+                            'label matching should be case-insensitive');
+            }, 'name=' + name + ' label=' + label);
         });
     });
 });

@@ -4,14 +4,15 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: vertical-rl - table rows progression</title>
+  <title>CSS Writing Modes Test: 'direction: rtl' - table columns order and vertical-rl</title>
 
   <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
-  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
+  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#direction" title="2.1 Specifying Directionality: the direction property" />
+  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#vertical-layout" title="7.1 Principles of Layout in Vertical Writing Modes" />
   <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
-  <meta content="This test checks that rows of a table element with in a 'vertical-rl' writing mode are laid out one after the other, leftwardedly, with the first beginning at the rightmost side of the table box; table rows are ordered from right to left meaning that the 1st row is the rightmost one and then the 2nd row is juxtaposed to its left-hand side, the 3rd row is juxtaposed to the 2nd row on its left-hand side, etc..." name="assert" />
+  <meta content="This test checks that a table with 'writing-mode' set to 'vertical-rl' and with 'direction' set to 'rtl' will have its column displayed from bottom (1st column) to top (last column). The inline base direction is still from top to bottom." name="assert" />
 
   <style type="text/css"><![CDATA[
   body
@@ -22,17 +23,16 @@
 
   table
   {
-   background-color: blue;
-   border-spacing: 0em;
-   border: blue solid 1em;
-   height: 7em;
-   direction: rtl;
-   writing-mode: vertical-rl;
+  background-color: blue;
+  border-spacing: 0em;
+  border: blue solid 1em;
+  height: 7em;
+  direction: rtl;
+  writing-mode: vertical-rl;
   }
 
   td
   {
-  unicode-bidi: bidi-override;
   padding-bottom: 0em;
   padding-left: 1em;
   padding-right: 0em;
@@ -44,21 +44,20 @@
  </head>
 
  <body>
-  <table>
+ <table>
 
-   <!-- The right-most "S" -->
-   <tr><td>AA B&nbsp; C&nbsp; D</td><td>EE &nbsp;F &nbsp;G &nbsp;H</td><td>&nbsp;&nbsp;I &nbsp;&nbsp;J &nbsp;&nbsp;K LLL</td></tr>
+  <!-- The right-most "S" -->
+  <tr><td><!-- bottommost column -->AA &nbsp;B &nbsp;C D&nbsp;</td><td>EE F&nbsp; G&nbsp; H&nbsp;</td><td><!-- topmost column -->J &nbsp; K &nbsp; L &nbsp; MMM</td></tr>
 
-   <!-- The left-most "S" -->
-   <tr><td>MM N&nbsp; O&nbsp; P</td><td>QQ &nbsp;R &nbsp;S &nbsp;T</td><td>&nbsp;&nbsp;U &nbsp;&nbsp;V &nbsp;&nbsp;W XXX</td></tr>
+  <!-- The left-most "S" -->
+  <tr><td><!-- bottommost column -->NN O Q R</td><td>SS T&nbsp; U&nbsp; V&nbsp;</td><td><!-- topmost column -->W &nbsp; X &nbsp; Y &nbsp; ZZZ</td></tr>
 
-   <!-- The "A" -->
-   <tr><td>YY &nbsp;&nbsp; &nbsp;&nbsp; ZZ</td><td>aa &nbsp;b &nbsp;c dd</td><td>eee &nbsp;&nbsp;g &nbsp;&nbsp;h iii</td></tr>
+  <!-- The "A" -->
+  <tr><td><!-- bottommost column -->aa &nbsp;&nbsp; &nbsp;&nbsp; bb</td><td>ee f&nbsp; g&nbsp; hh</td><td><!-- topmost column -->jjj k &nbsp; l &nbsp; mmm</td></tr>
 
-   <!-- The "P" -->
-   <tr><td class="left-most-cell">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; jj</td><td class="left-most-cell">&nbsp;k &nbsp;l &nbsp;m nn</td><td class="left-most-cell">ooo &nbsp;&nbsp;q &nbsp;&nbsp;r sss</td></tr>
+  <!-- The "P" -->
+  <tr><td class="left-most-cell"><!-- bottommost column -->&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; nn</td><td class="left-most-cell">r&nbsp; s&nbsp; t&nbsp; uu</td><td class="left-most-cell"><!-- topmost column -->vvv w &nbsp; x &nbsp; yyy</td></tr>
 
-  </table>
-
+ </table>
  </body>
 </html>

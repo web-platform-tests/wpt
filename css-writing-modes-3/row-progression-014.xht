@@ -4,10 +4,11 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: vertical-lr - table rows progression and colspan</title>
+  <title>CSS Writing Modes Test: 'direction: rtl' - table columns order and vertical-lr</title>
 
   <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
-  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
+  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#direction" title="2.1 Specifying Directionality: the direction property" />
+  <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#vertical-layout" title="7.1 Principles of Layout in Vertical Writing Modes" />
   <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
@@ -32,7 +33,6 @@
 
   td
   {
-  unicode-bidi: bidi-override;
   padding-bottom: 0em;
   padding-left: 1em;
   padding-right: 0em;
@@ -48,16 +48,16 @@
   <table>
 
    <!-- The "P" -->
-   <tr><td class="left-most-cell">AA &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;</td><td class="left-most-cell">BB &nbsp;C &nbsp;D &nbsp;E</td><td class="left-most-cell">FFF &nbsp;&nbsp;G &nbsp;&nbsp;H III</td></tr>
+   <tr><td class="left-most-cell"><!-- bottommost column -->AA &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;</td><td class="left-most-cell">BB C&nbsp; D&nbsp; E&nbsp;</td><td class="left-most-cell"><!-- topmost column -->FFF G &nbsp; H &nbsp; III</td></tr>
 
    <!-- The "A" -->
-   <tr><td colspan="2">JJJJ &nbsp;&nbsp;&nbsp;K &nbsp;&nbsp;&nbsp;L MMMM</td><td>NNN &nbsp;&nbsp;O &nbsp;&nbsp;P QQQ</td></tr>
+   <tr><td colspan="2"><!-- bottommost column -->JJJJ K&nbsp; &nbsp; L&nbsp; &nbsp; MMMM</td><td><!-- topmost column -->NNN O &nbsp; P &nbsp; QQQ</td></tr>
 
    <!-- The left-most "S" -->
-   <tr><td>R S&nbsp; T&nbsp; UU</td><td colspan="2">&nbsp;VVVV &nbsp;W&nbsp;&nbsp;W &nbsp;X&nbsp;&nbsp;X YY&nbsp;&nbsp;Y</td></tr>
+   <tr><td><!-- bottommost column --> R &nbsp;S &nbsp;T UU</td><td colspan="2"><!-- topmost column -->VVVV&nbsp; W &nbsp;X&nbsp; Y &nbsp;Z&nbsp; a&nbsp;&nbsp;bb</td></tr>
 
    <!-- The right-most "S" -->
-   <tr><td>Z a&nbsp; b&nbsp; cc</td><td>&nbsp;d &nbsp;e &nbsp;f gg</td><td>hhh &nbsp;&nbsp;i &nbsp;&nbsp;j &nbsp;&nbsp;k</td></tr>
+   <tr><td><!-- bottommost column --> c &nbsp;d &nbsp;b cc</td><td>d&nbsp; e&nbsp; f&nbsp; gg</td><td><!-- topmost column -->hhh i &nbsp; j &nbsp; k&nbsp;&nbsp;</td></tr>
 
   </table>
 

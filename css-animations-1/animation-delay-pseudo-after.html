@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS3 Animations Test: animation-delay - ::after</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/css3-animations/#animation-delay-property">
+<meta name="flags" content="">
+<meta name="assert" content="Check if animation-delay value impacts the after pseudo element">
+<style>
+  #test::after {
+    content: "::after"
+  }
+  #test {
+    position: relative;
+    -webkit-animation-name: sample;
+    -webkit-animation-duration: 5s;
+    -webkit-animation-delay: 1s;
+    -moz-animation-name: sample;
+    -moz-animation-duration: 5s;
+    -moz-animation-delay: 1s;
+    animation-name: sample;
+    animation-duration: 5s;
+    animation-delay: 1s;
+  }
+  @-webkit-keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+  @-moz-keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+  @keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if the 'animation-delay::after' moves from right to left.</p>
+  <div id="test">animation-delay</div>
+</body>
+

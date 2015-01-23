@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTMLTableRowElement.sectionRowIndex</title>
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+	<div id="log"></div>
+	<table>
+		<thead>
+			<tr id="ht1"></tr>
+		</thead>
+		<tr id="t1"></tr>
+		<tr id="t2">
+			<td>
+				<table>
+					<thead>
+						<tr id="nht1"></tr>
+					</thead>
+					<tr></tr>
+					<tr id="nt1"></tr>
+					<tbody>
+						<tr id="nbt1"></tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		<tbody>
+			<tr></tr>
+			<tr id="bt1"></tr>
+		</tbody>
+		<tfoot>
+			<tr></tr>
+			<tr></tr>
+			<tr id="ft1"></tr>
+		</tfoot>
+	</table>
+</body>
+<script>
+
+/* html element test */
+var tHeadRow=document.getElementById('ht1');
+var tRow1=document.getElementById('t1');
+var tRow2=document.getElementById('t2');
+var tBodyRow=document.getElementById('bt1');
+var tFootRow=document.getElementById('ft1');
+var childHeadRow=document.getElementById('nht1');
+var childRow=document.getElementById('nt1');
+var childBodyRow=document.getElementById('nbt1');
+
+test(function(){ assert_equals(tHeadRow.sectionRowIndex,     0); }, "[HTML]tHead section row index");
+test(function(){ assert_equals(tRow1.sectionRowIndex,        0); }, "[HTML]It is sectionRowIndex if omitted the tbody");
+test(function(){ assert_equals(tRow2.sectionRowIndex,        1); }, "[HTML]It is sectionRowIndex is row 2 if omitted the tbody");
+test(function(){ assert_equals(tBodyRow.sectionRowIndex,     1); }, "[HTML]tBody section row index");
+test(function(){ assert_equals(tFootRow.sectionRowIndex,     2); }, "[HTML]tFoot section row index");
+test(function(){ assert_equals(childHeadRow.sectionRowIndex, 0); }, "[HTML]It is make sure of tHead section row index in the child table this");
+test(function(){ assert_equals(childRow.sectionRowIndex,     1); }, "[HTML]It is make sure of section row index if omitted tbody in the child table this");
+test(function(){ assert_equals(childBodyRow.sectionRowIndex, 0); }, "[HTML]It is make sure of tBody section row index in the child table this");
+
+/* script create element test */
+var mkTrElm = function(elst){
+	var elm=document.createElement("table");
+	elst.forEach(function(item){
+		elm=elm.appendChild(document.createElement(item));
+	});
+	return elm.appendChild(document.createElement("tr"));
+};
+
+test(function(){ assert_equals(mkTrElm([]).sectionRowIndex, -1); }, "[MAKE ELEMENT IN THE SCRIPT]omitted tbody on tr element");
+test(function(){ assert_equals(mkTrElm(["div"]).sectionRowIndex, -1); }, "[MAKE ELEMENT IN THE SCRIPT]div child tr element");
+test(function(){ assert_equals(mkTrElm(["thead"]).sectionRowIndex, 0); }, "[MAKE ELEMENT IN THE SCRIPT]tHead child tr element");
+test(function(){ assert_equals(mkTrElm(["tbody"]).sectionRowIndex, 0); }, "[MAKE ELEMENT IN THE SCRIPT]tBody child tr element");
+test(function(){ assert_equals(mkTrElm(["tfoot"]).sectionRowIndex, 0); }, "[MAKE ELEMENT IN THE SCRIPT]tFoot child tr element");
+
+test(function(){ assert_equals(mkTrElm(["tbody","tr"]).sectionRowIndex,                     -1); } , "[MAKE ELEMENT IN THE SCRIPT] It is make sure of section row index in the tr tr");
+test(function(){ assert_equals(mkTrElm(["tbody","tr","td"]).sectionRowIndex,                -1); } , "[MAKE ELEMENT IN THE SCRIPT] It is make sure of section row index in the table tr td tr");
+test(function(){ assert_equals(mkTrElm(["tbody","tr","td","table"]).sectionRowIndex,        -1); } , "[MAKE ELEMENT IN THE SCRIPT] It is make sure of section row index in the child table this");
+test(function(){ assert_equals(mkTrElm(["tbody","tr","td","table","thead"]).sectionRowIndex, 0); } , "[MAKE ELEMENT IN THE SCRIPT] It is make sure of tHead section row index in the child table this");
+test(function(){ assert_equals(mkTrElm(["tbody","tr","td","table","tBody"]).sectionRowIndex, 0); } , "[MAKE ELEMENT IN THE SCRIPT] It is make sure of tBody section row index in the child table this");
+test(function(){ assert_equals(mkTrElm(["tbody","tr","td","table","tfoot"]).sectionRowIndex, 0); } , "[MAKE ELEMENT IN THE SCRIPT] It is make sure of tFoot section row index in the child table this");
+
+</script>
+</html>

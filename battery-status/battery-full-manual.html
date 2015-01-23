@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Battery Status Test: BatteryManager - level (full)</title>
+<title>Battery Status Test: BatteryManager - full</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="http://www.w3.org/TR/battery-status/">
 <meta name="flags" content="interact">
-<meta name="assert" content="The level attribute must be set to the value 1.0 if the battery is full">
+<meta name="assert" content="All of the navigator.battery attributes exist and are set to their correct values when battery is full">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
@@ -23,7 +23,10 @@
 async_test(function (t) {
   navigator.getBattery().then(function (battery) {
       t.step(function () {
-        assert_equals(battery.level, 1.0);
+        assert_true(battery.charging, 'The BatteryManager.charging must be set to true');
+        assert_equals(battery.chargingTime, 0, 'The BatteryManager.chargingTime');
+        assert_equals(battery.dischargingTime, Infinity, 'The BatteryManager.dischargingTime');
+        assert_equals(battery.level, 1.0, 'The BatteryManager.level');
       });
       t.done();
     }, function (error) {

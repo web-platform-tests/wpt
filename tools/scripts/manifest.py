@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+
 import argparse
 import json
 import logging
@@ -7,20 +9,22 @@ import os
 import re
 import subprocess
 import sys
-import urlparse
 
-from StringIO import StringIO
+from io import StringIO
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import defaultdict
 from fnmatch import fnmatch
 
 import _env
 import html5lib
+import six
+from six.moves import range
+from six.moves.urllib import parse as urlparse
 
 def get_git_func(repo_path):
     def git(cmd, *args):
         full_cmd = ["git", cmd] + list(args)
-        return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT)
+        return subprocess.check_output(full_cmd, cwd=repo_path, stderr=subprocess.STDOUT).decode()
     return git
 
 
@@ -60,7 +64,7 @@ def rel_path_to_url(rel_path, url_base="/"):
 def url_to_rel_path(url, url_base):
     url_path = urlparse.urlsplit(url).path
     if not url_path.startswith(url_base):
-        raise ValueError, url
+        raise ValueError(url)
     url_path = url_path[len(url_base):]
     return url_path
 
@@ -75,9 +79,7 @@ def is_blacklisted(url):
     return False
 
 
-class ManifestItem(object):
-    __metaclass__ = ABCMeta
-
+class ManifestItem(six.with_metaclass(ABCMeta, object)):
     item_type = None
 
     def __init__(self):
@@ -161,7 +163,7 @@ class RefTest(URLManifestItem):
     def __init__(self, url, ref_url, ref_type, url_base="/", timeout=None):
         URLManifestItem.__init__(self, url, url_base=url_base)
         if ref_type not in ["==", "!="]:
-            raise ValueError, "Unrecognised ref_type %s" % ref_type
+            raise ValueError("Unrecognised ref_type %s" % ref_type)
         self.ref_url = ref_url
         self.ref_type = ref_type
         self.timeout = timeout
@@ -242,7 +244,7 @@ class Manifest(object):
         for item_type in include_types:
             paths = self._data[item_type].copy()
             for local_types, local_paths in self.local_changes.itertypes(item_type):
-                for path, items in local_paths.iteritems():
+                for path, items in six.iteritems(local_paths):
                     paths[path] = items
                 for path in self.local_changes.iterdeleted():
                     if path in paths:
@@ -285,13 +287,13 @@ class Manifest(object):
 
     def _committed_with_path(self, rel_path):
         rv = set()
-        for paths_items in self._data.itervalues():
+        for paths_items in six.itervalues(self._data):
             rv |= paths_items.get(rel_path, set())
         return rv
 
     def _committed_paths(self):
         rv = set()
-        for paths_items in self._data.itervalues():
+        for paths_items in six.itervalues(self._data):
             rv |= set(paths_items.keys())
         return rv
 
@@ -320,7 +322,7 @@ class Manifest(object):
         self.local_changes = LocalChanges(self)
 
         local_paths = set()
-        for rel_path, status in local_changes.iteritems():
+        for rel_path, status in six.iteritems(local_changes):
             local_paths.add(rel_path)
 
             if status == "modified":
@@ -344,13 +346,20 @@ class Manifest(object):
         self.url_base = url_base
 
     def to_json(self):
+        def key(t):
+            if "url" in t:
+                return t["url"]
+            if "path" in t:
+                return t["path"]
+            raise ValueError("Unexpected object: %s" % t)
+
         out_items = {
-            item_type: sorted(
+            item_type: sorted((
                 test.to_json()
-                for _, tests in items.iteritems()
+                for _, tests in six.iteritems(items)
                 for test in tests
-            )
-            for item_type, items in self._data.iteritems()
+            ), key=key)
+            for item_type, items in six.iteritems(self._data)
         }
 
         rv = {"url_base": self.url_base,
@@ -363,7 +372,7 @@ class Manifest(object):
     def from_json(cls, obj):
         self = cls(git_rev=obj["rev"],
                    url_base=obj.get("url_base", "/"))
-        if not hasattr(obj, "iteritems"):
+        if not hasattr(obj, "items"):
             raise ManifestError
 
         item_classes = {"testharness": TestharnessTest,
@@ -373,7 +382,7 @@ class Manifest(object):
                         "stub": Stub,
                         "wdspec": WebdriverSpecTest}
 
-        for k, values in obj["items"].iteritems():
+        for k, values in six.iteritems(obj["items"]):
             if k not in item_types:
                 raise ManifestError
             for v in values:
@@ -419,8 +428,8 @@ class LocalChanges(object):
 
         rv["deleted"].extend(self._deleted)
 
-        for test_type, paths in self._data.iteritems():
-            for path, tests in paths.iteritems():
+        for test_type, paths in six.iteritems(self._data):
+            for path, tests in six.iteritems(paths):
                 rv["items"][test_type][path] = [test.to_json() for test in tests]
 
         return rv
@@ -428,7 +437,7 @@ class LocalChanges(object):
     @classmethod
     def from_json(cls, url_base, obj):
         self = cls(url_base)
-        if not hasattr(obj, "iteritems"):
+        if not hasattr(obj, "items"):
             raise ManifestError
 
         item_classes = {"testharness": TestharnessTest,
@@ -438,8 +447,8 @@ class LocalChanges(object):
                         "stub": Stub,
                         "wdspec": WebdriverSpecTest}
 
-        for test_type, paths in obj["items"].iteritems():
-            for path, tests in paths.iteritems():
+        for test_type, paths in six.iteritems(obj["items"]):
+            for path, tests in six.iteritems(paths):
                 for test in tests:
                     manifest_item = item_classes[test_type].from_json(self.manifest, test)
                     self.add(manifest_item)

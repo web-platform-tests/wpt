@@ -3,37 +3,36 @@
 <head>
   <title>CSS Reftest Reference</title>
   <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+  <meta name="flags" content="image" />
   <style type="text/css"><![CDATA[
-    div#outer
+    img
     {
-      color: orange;
-      font: 3.75em/1.5 Ahem; /* computes to 60px/90px */
-      width: 1.5em;
-      text-align: center;
+      vertical-align: top;
     }
 
-    div {
-      line-height: 1em;
-    }
-    div#blue90
+    img
     {
-      color: blue;
-      font-size: 1.5em; /* computes to 90px */
+      padding-left: 60px;
     }
 
-    div#orange30
+    img + br + img
     {
-      font-size: 0.5em; /* computes to 30px */
+      padding-left: 30px;
     }
-    ]]></style>
 
-  </head>
+    img + br + img + br + img
+    {
+      padding-left: 75px;
+    }
+  ]]></style>
 
-  <body>
+</head>
 
-  <p>Test passes if 2 orange squares are centered with respect to a blue square.</p>
+<body>
 
-  <div id="outer"><div>A</div><div id="blue90">B</div><div id="orange30">O</div></div>
+<p>Test passes if 2 orange squares are centered with respect to a blue square.</p>
 
-  </body>
+<div><img src="support/swatch-orange.png" width="60" height="60" alt="Image download support must be enabled" /><br /><img src="support/swatch-blue.png" width="120" height="120" alt="Image download support must be enabled" /><br /><img src="support/swatch-orange.png" width="30" height="30" alt="Image download support must be enabled" /></div>
+
+</body>
 </html>

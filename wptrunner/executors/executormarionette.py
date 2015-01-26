@@ -32,7 +32,7 @@ def do_delayed_imports():
     global marionette
     try:
         import marionette
-    except:
+    except ImportError:
         import marionette_driver.marionette as marionette
 
 

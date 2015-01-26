@@ -28,7 +28,7 @@ enum IDBCursorDirection {
 };
 
 dictionary IDBObjectStoreParameters {
-    (DOMString or sequence)? keyPath = null;
+    (DOMString or sequence<DOMString>)? keyPath = null;
     boolean                             autoIncrement = false;
 };
 
@@ -80,7 +80,7 @@ interface IDBDatabase : EventTarget {
     readonly    attribute DOMStringList      objectStoreNames;
     IDBObjectStore createObjectStore (DOMString name, optional IDBObjectStoreParameters optionalParameters);
     void           deleteObjectStore (DOMString name);
-    IDBTransaction transaction ((DOMString or sequence) storeNames, optional IDBTransactionMode mode = "readonly");
+    IDBTransaction transaction ((DOMString or sequence<DOMString>) storeNames, optional IDBTransactionMode mode = "readonly");
     void           close ();
                 attribute EventHandler       onabort;
                 attribute EventHandler       onerror;
@@ -99,7 +99,7 @@ interface IDBObjectStore {
     IDBRequest get (any key);
     IDBRequest clear ();
     IDBRequest openCursor (optional any range, optional IDBCursorDirection direction = "next");
-    IDBIndex   createIndex (DOMString name, (DOMString or sequence) keyPath, optional IDBIndexParameters optionalParameters);
+    IDBIndex   createIndex (DOMString name, (DOMString or sequence<DOMString>) keyPath, optional IDBIndexParameters optionalParameters);
     IDBIndex   index (DOMString name);
     void       deleteIndex (DOMString indexName);
     IDBRequest count (optional any key);

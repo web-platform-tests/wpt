@@ -20,7 +20,7 @@
     }
 
     function color() {
-      var colors = ['black', 'red', 'rgb(50, 75, 100)', 'rgba(5, 7, 10, 0.9)'];
+      var colors = ['black', 'red', 'rgb(50, 75, 100)', 'rgba(5, 7, 10, 0.5)'];
       return iterable(colors);
     }
 
@@ -29,8 +29,19 @@
       return iterable(values);
     }
 
+    function negative_percentage() {
+      var values = ["-5%", {actual: "-.5%", serialized: "-0.5%"}];
+      return iterable(values);
+    }
+
     function length() {
-      var values = ["1px", {actual: ".1em", serialized: "0.1em"}];
+      var values = ["0px", "1px", {actual: ".1em", serialized: "0.1em"}];
+      return iterable(values);
+    }
+
+    function negative_length() {
+      var values = [{actual: "-0px", serialized: "0px"},
+                    "-1px", {actual: "-.1em", serialized: "-0.1em"}];
       return iterable(values);
     }
 
@@ -48,12 +59,23 @@
 
     function border_style() {
       var values = ['none', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge',
-        'inset', 'outset'];
+                    'inset', 'outset'];
+      return iterable(values);
+    }
+
+    function border_style_without_hidden() {
+      var values = ['none', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge',
+                    'inset', 'outset'];
       return iterable(values);
     }
 
     function integer() {
       var values = ['0', '101', '-51'];
+      return iterable(values);
+    }
+
+    function nonzero_positive_integer() {
+      var values = ['101'];
       return iterable(values);
     }
 
@@ -68,7 +90,9 @@
     }
 
     function counter() {
-      var values = ['counter(par-num)', 'counter(par-num, upper-roman)'];
+      var values = [{actual: 'counter(par-num)',
+                     serialized: 'counter(par-num, decimal)'},
+                    'counter(par-num, upper-roman)'];
       return iterable(values);
     }
 
@@ -78,7 +102,7 @@
     }
 
     function family_name() {
-      var values = ['Gill,', '"Lucida" Grande,', 'Red/Black,'];
+      var values = ['Arial', {actual: "'Lucida Grande'", serialized: '"Lucida Grande"'}];
       return iterable(values);
     }
 
@@ -102,13 +126,22 @@
       return iterable(values);
     }
 
+    function positive_number() {
+      var values = ['0', {'actual': '-0', serialized: '0'}, '1000', '0.9'];
+      return iterable(values);
+    }
+
     function generate_inline_style(name, value) {
       if (value) {
-        return {'declaration': name + ": " + value,
-                'value': value,
-                'result': value};
+        return {'declaration': name + ": " + value.actual,
+                'value': value.actual,
+                'result': value.expected};
       }
       return null;
+    }
+
+    function create_result(actual, expected) {
+      return {actual: actual, expected: expected}
     }
 
     function all_values(values) {
@@ -119,47 +152,52 @@
           var f = value();
           var result;
           while ((result = f()) != null) {
-      if (typeof result == "object" && 'serialized' in result) {
-        results.push(result.serialized); // push actual and expect serialized
-      } else {
-        results.push(result);
-      }
+            if (typeof result == "object" && 'serialized' in result) {
+              results.push(create_result(result.actual, result.serialized));
+            } else {
+              results.push(create_result(result, result));
+            }
           }
         } else if (typeof value == "string") {
-          results.push(value);
+          results.push(create_result(value, value));
         } else if (value instanceof Array) {
           var subresults = [];
           for (var j = 0; j < value.length; j++) {
-      var subresult = all_values(value[j], true);
-      if (!(subresult instanceof Array)) {
-        subresult = [subresult];
-      }
-      subresults.push(subresult);
+            var subresult = all_values(value[j], true);
+            if (!(subresult instanceof Array)) {
+              subresult = [subresult];
+            }
+            subresults.push(subresult);
           }
           if (subresults.length > 1) {
-      function choose_slices(vecs) {
-        if (vecs.length == 1) {
-          return vecs[0].map(function(v) { return [v]; });
-        }
-        var slice_results = [];
-        var rest = choose_slices(vecs.slice(1, vecs.length));
-        for (var a = 0; a < vecs[0].length; a++) {
-          for (var b = 0; b < rest.length; b++) {
-            slice_results.push([vecs[0][a]].concat(rest[b]));
-          }
-        }
-        return slice_results;
-      }
+            function choose_slices(vecs) {
+              if (vecs.length == 1) {
+                return vecs[0].map(function(v) { return [v]; });
+              }
+              var slice_results = [];
+              var rest = choose_slices(vecs.slice(1, vecs.length));
+              for (var a = 0; a < vecs[0].length; a++) {
+                for (var b = 0; b < rest.length; b++) {
+                  var result = vecs[0][a];
+                  slice_results.push([result].concat(rest[b]));
+                }
+              }
+              return slice_results;
+            }
 
-      subresults = choose_slices(subresults).map(function (a) { return a.join(' ') });
+            subresults = choose_slices(subresults).map(function (a) {
+              var actual = a.map(function(a) { return a.actual });
+              var expected = a.map(function(a) { return a.expected });
+              return create_result(actual.join(' '), expected.join(' '))
+            });
           }
           for (var j = 0; j < subresults.length; j++) {
-      results = results.concat(subresults[j]);
+            results = results.concat(subresults[j]);
           }
         } else if (value instanceof Object && 'serialized' in value) {
-          results.push(value.serialized); //XXXjdm push actual and expect serialized
+          results.push(create_result(value.actual, value.serialized));
         } else if (typeof value == "number") {
-          results.push(value.toString());
+          results.push(create_result(value.toString(), value.toString()));
         } else {
           throw "unexpected value type: " + typeof(value);
         }
@@ -173,25 +211,31 @@
     }
 
     function to_idl(property) {
-      return property.replace(/-\w/g, function(x){return x.toUpperCase()}).split('-').join('');
+      return property.replace(/-\w/g, function(x){return x[1].toUpperCase()});
     }
 
-    function run_individual_test(property, generator) {
+    function run_individual_test(property, generator, initial) {
       var elem = document.createElement('div');
       document.getElementById('parent').appendChild(elem);
-      var style = generate_inline_style(property, generator());
+      var test_data = generator();
+      var style = generate_inline_style(property, test_data);
       if (!style) {
         return false;
       }
-
       var t = async_test(style.declaration);
+
+      t.cleanup(function() {
+        document.getElementById('parent').removeChild(elem);
+      });
+
       t.step(function() {
         elem.setAttribute('style', style.declaration);
-        assert_equals(elem.style[to_idl(property)], style.result, property + ' raw inline style declaration');
+        var expected = style.result;
+        var serialized = elem.style[to_idl(property)];
+        assert_equals(serialized, expected, property + ' raw inline style declaration');
         elem.setAttribute('style', '');
         elem.style[to_idl(property)] = style.value;
-        assert_equals(elem.style[to_idl(property)], style.result, property + ' style property');
-        document.getElementById('parent').removeChild(elem);
+        assert_equals(elem.style[to_idl(property)], expected, property + ' style property');
       });
       t.done();
       return true;
@@ -199,7 +243,7 @@
 
     function test_property(property) {
       var generator = create_value_generator(property[1]);
-      while (run_individual_test(property[0], generator)) {
+      while (run_individual_test(property[0], generator, property[1].initial)) {
       }
     }
 
@@ -217,10 +261,10 @@
         'initial': 'none',
       }],
       ['background-position', {
-        'values': [[[percentage, length, 'left', 'center', 'right'],
-                    [percentage, length, 'top', 'center', 'bottom']],
-                   [['left', 'center', 'right'],
-                    ['top', 'center', 'bottom']],
+        'values': [[[percentage, negative_percentage, length, negative_length,
+                     'left', 'center', 'right'],
+                    [percentage, negative_percentage, length, negative_length,
+                     'top', 'center', 'bottom']],
                    'inherit'],
         'initial': '0% 0%',
       }],
@@ -343,7 +387,7 @@
         'property': 'cssFloat',
       }],
       ['font-family', {
-        'values': [[family_name, generic_family], 'inherit'],
+        'values': [family_name, generic_family, 'inherit'],
         'initial': 'sans-serif', //FIXME depends on user agent
       }],
       ['font-size', {
@@ -359,7 +403,7 @@
         'initial': 'normal',
       }],
       ['font-weight', {
-        'values': ['normal', 'bold', 'bolder', 'lighter', 100, 200, 300, 300, 400, 500, 600,
+        'values': ['normal', 'bold', 'bolder', 'lighter', 100, 200, 300, 400, 500, 600,
                    700, 800, 900, 'inherit'],
         'initial': 'normal',
       }],
@@ -377,7 +421,7 @@
         'initial': 'normal',
       }],
       ['line-height', {
-        'values': ['normal', number, length, percentage, 'inherit'],
+        'values': ['normal', positive_number, length, percentage, 'inherit'],
         'initial': 'normal',
       }],
       ['list-style-image', {
@@ -429,7 +473,7 @@
         'initial': 0,
       }],
       ['orphans', {
-        'values': [integer, 'inherit'],
+        'values': [nonzero_positive_integer, 'inherit'],
         'initial': 2,
       }],
       ['outline-color', {
@@ -437,7 +481,7 @@
         'initial': 'invert',
       }],
       ['outline-style', {
-        'values': [border_style, 'inherit'],
+        'values': [border_style_without_hidden, 'inherit'],
         'initial': 'none',
       }],
       ['outline-width', {
@@ -529,7 +573,7 @@
         'initial': 'normal',
       }],
       ['widows', {
-        'values': [integer, 'inherit'],
+        'values': [nonzero_positive_integer, 'inherit'],
         'initial': 2,
       }],
       ['width', {

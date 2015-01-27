@@ -23,7 +23,9 @@ function run_test() {
   }, "product");
 
   test(function() {
-    assert_false(navigator.taintEnabled());
+    if ("taintEnabled" in navigator) {
+      assert_false(navigator.taintEnabled());
+    }
   }, "taintEnabled");
 
   test(function() {

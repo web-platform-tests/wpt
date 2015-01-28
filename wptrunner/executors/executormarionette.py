@@ -30,7 +30,10 @@ required_files = [("testharness_runner.html", "", False),
 
 def do_delayed_imports():
     global marionette
-    import marionette
+    try:
+        import marionette
+    except ImportError:
+        import marionette_driver.marionette as marionette
 
 
 class MarionetteTestExecutor(TestExecutor):

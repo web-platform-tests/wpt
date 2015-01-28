@@ -7,32 +7,32 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-var test1 = async_test(function() {
+async_test(function() {
   var currentUrl = 'http://' + window.location.host + '/';
-  var win1 = window.open(currentUrl, '', 'height=1,width=1');
-  win1.onload = this.step_func_done(function () {
-    assert_equals(win1.location.href, currentUrl, 'should be equal to result url');
-    win1.close();
+  var win = window.open(currentUrl, '', 'height=1,width=1');
+  this.add_cleanup(function() { win.close(); });
+  win.onload = this.step_func_done(function () {
+    assert_equals(win.location.href, currentUrl, 'should be equal to result url');
   });
-}, 'creating browsing context first argument test 1');
+}, 'first argument: absolute url');
 
 test(function() {
-  var win2 = window.open('', '', 'height=1,width=1');
-  assert_equals(win2.window.location.href, 'about:blank', 'should be equal to "about:blank"');
-  win2.close();
-}, 'creating browsing context first argument test 2');
+  var win = window.open('', '', 'height=1,width=1');
+  this.add_cleanup(function() { win.close(); });
+  assert_equals(win.location.href, 'about:blank', 'win.location.href');
+}, 'first argument: empty url');
 
 test(function () {
-  var win3 = window.open('', 'testWindow', 'height=1,width=1');
-  win3.close();
-  assert_equals(win3.name, 'testWindow', 'should have a browser context name');
-}, 'creating browsing context second argument test 3');
+  var win = window.open('', 'testWindow', 'height=1,width=1');
+  win.close();
+  assert_equals(win.name, 'testWindow', 'should have a browsing context name');
+}, 'second argument: passing a non-empty name');
 
 test(function () {
-  var win4 = window.open('', '', 'height=1,width=1');
-  assert_equals(win4.name, '', 'window should have a name');
-  win4.name = 'testWindow';
-  assert_equals(win4.name, 'testWindow', 'should be equal to ""');
-  win4.close();
-}, 'creating browsing context second argument test 4');
+  var win = window.open('', '', 'height=1,width=1');
+  this.add_cleanup(function() { win.close(); });
+  assert_equals(win.name, '', 'window should not have a name');
+  win.name = 'testWindow';
+  assert_equals(win.name, 'testWindow', 'window should have a name');
+}, 'second argument: setting name after opening');
 </script>

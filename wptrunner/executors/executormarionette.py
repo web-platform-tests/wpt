@@ -38,7 +38,7 @@ class MarionetteTestExecutor(TestExecutor):
                  browser,
                  http_server_url,
                  timeout_multiplier=1,
-                 debug_args={},
+                 debug_args=None,
                  close_after_done=True):
         do_delayed_imports()
 

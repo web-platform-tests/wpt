@@ -10,9 +10,9 @@ def error(msg):
 def main(request, response):
     headers = []
 
-    
+
     inm = request.headers.get('if-none-match', None)
-    raw_req_num = request.headers.get('content-language', None)    
+    raw_req_num = request.headers.get('content-language', None)
     if raw_req_num == None:
         return error("no req_num header in request")
     else:
@@ -22,7 +22,7 @@ def main(request, response):
 
     headers.append(("A", req_num))
     headers.append(("B", req_num))
-    
+
     if inm == etag:
         # A request with an If-None-Match header matching the stored etag
         if req_num == 1:

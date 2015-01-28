@@ -16,27 +16,41 @@
  * 304 Responses
  */
 
+function req(url, num) {
+  var client = new XMLHttpRequest()
+  client.open('GET', url, false)
+  client.setRequestHeader('content-language', num)
+  client.send()
+  return client
+}
+
+  var rand = Date.now()
+  var url = CROSSDOMAIN + 'resources/304.py?' + rand
+
+  var client1 = req(url, 1)
+  var client2 = req(url, 2)
+  var client3 = req(url, 3)
+
 test(function() {
-    var rand = Date.now()
-    var url = CROSSDOMAIN + 'resources/304.py?' + rand
-
-    var client1 = new XMLHttpRequest()
-    client1.open('GET', url, false)
-    // yes, Content-Language.
-    client1.setRequestHeader('content-language', '1')
-    client1.send()
-    
-    var client2 = new XMLHttpRequest()
-    client2.open('GET', url, false)
-    client2.setRequestHeader('content-language', '2')
-    client2.send()
-
     assert_true(client1.status != 299, client1.responseText)
     assert_true(client2.status != 299, client2.responseText)
-    assert_equals(client1.response, "Success", "didn't get correct response")
+    assert_equals(client1.response, "Success", "didn't get successful response")
     assert_equals(client1.response, client2.response, "different responses")
+    assert_equals(client1.getResponseHeader("A"), null, "'A' header exposed without permission")
+}, "304Response: a 304 response with no CORS headers inherits from the stored response")
 
-}, "304Response: update CORS headers from cached response upon a 304")
+test(function() {
+    assert_true(client2.status != 299, client2.responseText)
+    assert_equals(client2.getResponseHeader("A"), "2", "1st 304 didn't expose 'A' header;")
+    assert_equals(client2.getResponseHeader("B"), "2", "1st 304 didn't expose 'B' header;")
+}, "304Response: a 304 can expand Access-Control-Expose-Headers")
+
+test(function() {
+    assert_true(client3.status != 299, client3.responseText)
+    assert_equals(client1.response, client3.response, "different responses")
+    assert_equals(client3.getResponseHeader("A"), "3", "2nd 304 didn't expose 'A' header;")
+    assert_equals(client3.getResponseHeader("B"), null, "2nd 304 exposed 'B' header;")
+}, "304Response: a 304 can contract Access-Control-Expose-Headers")
 
 
 </script>

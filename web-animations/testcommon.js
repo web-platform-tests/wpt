@@ -62,11 +62,17 @@ function type(object) {
     return Object.prototype.toString.call(object).slice(8, -1);
 }
 
-// Returns expected top of the target element at currentTime
-function getExpectedTop(currentTime, endTime) {
-    if (!endTime) {
-        endTime = ANIMATION_DURATION;
+//Returns expected top of the target element at currentTime
+function getExpectedTop(currentTime, iterationDuration) {
+    if (!iterationDuration) {
+        iterationDuration = ANIMATION_DURATION;
     }
-    return ANIMATION_TOP_0 + (ANIMATION_TOP_1 - ANIMATION_TOP_0)
-        * (currentTime % endTime);
+    var iterationFraction = (currentTime / iterationDuration) % 1;
+    if (iterationFraction <= 0.5) {
+        return ANIMATION_TOP_0 + (ANIMATION_TOP_0_5 - ANIMATION_TOP_0) *
+            iterationFraction * 2;
+    } else {
+        return ANIMATION_TOP_0_5 + (ANIMATION_TOP_1 - ANIMATION_TOP_0_5) *
+            (iterationFraction - 0.5) * 2;
+    }
 }

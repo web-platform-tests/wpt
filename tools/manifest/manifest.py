@@ -43,9 +43,12 @@ class Manifest(object):
         if item is None:
             return
 
+        is_reference = False
         if isinstance(item, RefTest):
             self.reftest_nodes[item.url] = item
-        else:
+            is_reference = item.is_reference
+
+        if not is_reference:
             self._data[item.item_type][item.path].add(item)
         item.manifest = self
 
@@ -74,6 +77,13 @@ class Manifest(object):
             if path in paths:
                 return paths[path]
         raise KeyError
+
+    def get_reference(self, url):
+        if url in self.local_changes.reftest_nodes:
+            return self.local_changes.reftest_nodes
+
+        if url in self.reftest_nodes:
+            return self.reftest_nodes[url]
 
     def _committed_with_path(self, rel_path):
         rv = set()
@@ -220,10 +230,15 @@ class LocalChanges(object):
     def add(self, item):
         if item is None:
             return
+
+        is_reference = False
         if isinstance(item, RefTest):
             self.reftest_nodes[item.url] = item
-        else:
+            is_reference = item.is_reference
+
+        if not is_reference:
             self._data[item.item_type][item.path].add(item)
+
         item.manifest = self.manifest
 
     def extend(self, items):

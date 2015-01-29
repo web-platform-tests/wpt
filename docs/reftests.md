@@ -32,13 +32,13 @@ only passes if the *test* and *reference* have pixel-perfect identical
 rendering. `rel="mismatch"` inverts this so the test only passes when
 the renderings differ.
 
-In general the files used in a reftest should follow the follow the
+In general the files used in a reftest should follow the
 [format][format] and [style][style] guidelines. The *test* should also
 be [self-describing][selfdesc], to allow a human to determine whether
 the the rendering is as expected.
 
 Note that references can be shared between tests; this is strongly
-encouraged since it permits optimisations when running tests.
+encouraged since it permits optimizations when running tests.
 
 ## Controlling When Comparison Occurs
 

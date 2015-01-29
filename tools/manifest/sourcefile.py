@@ -89,29 +89,31 @@ class SourceFile(object):
             ext = ext[1:]
         if ext in ["html", "htm"]:
             return "html"
-        elif ext in ["xhtml", "xht"]:
+        if ext in ["xhtml", "xht"]:
             return "xhtml"
-        elif ext == "svg":
+        if ext == "svg":
             return "svg"
         return None
 
     @cached_property
     def root(self):
-        if self.markup_type:
-            parser = self.parsers[self.markup_type]
+        if not self.markup_type:
+            return None
 
-            with self.open() as f:
-                try:
-                    tree = parser(f)
-                except Exception:
-                    return None
+        parser = self.parsers[self.markup_type]
 
-            if hasattr(tree, "getroot"):
-                root = tree.getroot()
-            else:
-                root = tree
+        with self.open() as f:
+            try:
+                tree = parser(f)
+            except Exception:
+                return None
 
-            return root
+        if hasattr(tree, "getroot"):
+            root = tree.getroot()
+        else:
+            root = tree
+
+        return root
 
     @cached_property
     def timeout_nodes(self):
@@ -139,15 +141,15 @@ class SourceFile(object):
 
     @cached_property
     def reftest_nodes(self):
+        if not self.root:
+            return []
+
         match_links = self.root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='match']")
         mismatch_links = self.root.findall(".//{http://www.w3.org/1999/xhtml}link[@rel='mismatch']")
         return match_links + mismatch_links
 
     @cached_property
     def references(self):
-        if not self.root:
-            return []
-
         rv = []
         rel_map = {"match": "==", "mismatch": "!="}
         for item in self.reftest_nodes:
@@ -159,9 +161,6 @@ class SourceFile(object):
 
     @cached_property
     def content_is_ref_node(self):
-        if not self.root:
-            return False
-
         return bool(self.references)
 
     def manifest_items(self):

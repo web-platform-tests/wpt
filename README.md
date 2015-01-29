@@ -135,14 +135,14 @@ which you've noted an interoperability bug in a browser.
 
 The way to contribute is just as usual:
 
-* fork this repository (and make sure you're still relatively in sync
-  with it if you forked a while ago);
-* create a branch for your changes:
+* Fork this repository (and make sure you're still relatively in sync
+  with it if you forked a while ago)
+* Create a branch for your changes:
   `git checkout -b your-name/topic`;
-* make your changes;
+* Make your changes
 * Run the lint script described below
-* Commit locally push that to your repo;
-* and send in a pull request based on the above.
+* Commit locally and push that to your repo
+* Send in a pull request based on the above.
 
 A lint is available to test for common mistakes in testcases. It can
 be run with:
@@ -162,7 +162,7 @@ Adding command-line scripts ("tools" subdirs)
 
 Sometimes you may want to add a script to the repository that's meant
 to be used from the command line, not from a browser (e.g., a script
-for generating test files). If you want to ensure (e.g., or security
+for generating test files). If you want to ensure (e.g., for security
 reasons) that such scripts won't be handled by the HTTP server, but
 will instead only be usable from the command line, then place them in
 either:

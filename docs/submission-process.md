@@ -20,7 +20,7 @@ on, e.g. `git checkout -b topic-name`
 
 * Push your local branch to your GitHub repository
 
-* Using the GitHub UI create a PUll Request for your branch.
+* Using the GitHub UI create a Pull Request for your branch.
 
 * When you get review comments, make more commits to your branch to
   address the comments (**note**: Do *not* rewrite existing commits using

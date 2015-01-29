@@ -5,13 +5,8 @@ import sys
 import fnmatch
 
 from collections import defaultdict
-try:
-    from xml.etree import cElementTree as ElementTree
-except ImportError:
-    from xml.etree import ElementTree
 
 from .. import localpaths
-import html5lib
 from manifest.sourcefile import SourceFile
 
 here = os.path.abspath(os.path.split(__file__)[0])

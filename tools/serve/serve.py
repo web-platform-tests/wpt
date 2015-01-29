@@ -1,6 +1,5 @@
  # -*- coding: utf-8 -*-
 import argparse
-import imp
 import json
 import os
 import signal

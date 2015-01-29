@@ -36,7 +36,9 @@
 				assert_equals(port, url, "port attribute is not correct.");
 			});*/
 			test(function() {
-				assert_equals(port, "", "port attribute is not correct.");
+				//assert_equals(port, "", "port attribute is not correct.");
+                                // the port should match four digit number or empty string
+                                assert_regexp_match(port, /^\d{4}$|^\s*$/, "port attribute is not correct.")
 			});
 		} else {
 			test(function() {

@@ -8,7 +8,7 @@ var respecConfig = {
   specStatus: "unofficial",
   shortName: "req-tcu-font",
   editors: [ { name: "Masataka Yakura", url: "https://google.com/+MasatakaYakura" } ],
-  publishDate:  "2014-10-27",
+  publishDate:  "2015-01-28",
 };
 </script>
 <style>
@@ -68,7 +68,6 @@ code.prettyprint { color: inherit; }
 .pln{color:#000}@media screen{.str{color:#080}.kwd{color:#008}.com{color:#800}.typ{color:#606}.lit{color:#066}.pun,.opn,.clo{color:#660}.tag{color:#008}.atn{color:#606}.atv{color:#080}.dec,.var{color:#606}.fun{color:red}}@media print,projection{.str{color:#060}.kwd{color:#006;font-weight:bold}.com{color:#600;font-style:italic}.typ{color:#404;font-weight:bold}.lit{color:#044}.pun,.opn,.clo{color:#440}.tag{color:#006;font-weight:bold}.atn{color:#404}.atv{color:#060}}ol.linenums{margin-top:0;margin-bottom:0}li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}
 </style>
 <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/w3c-unofficial">
-<!--[if lt IE 9]><script src='https://www.w3.org/2008/site/js/html5shiv.js'></script><![endif]-->
 </head>
 <body>
 
@@ -177,6 +176,8 @@ Most other US-ASCII characters in the font have the same glyph as X.</pre>
 <img src="img/square_black.svg" width="300">
 <img src="img/square_blank.svg" width="300">
 </figure>
+
+<p class="note">It might be okay with just using Ahem if tests needing black square only contain codepoints in ASCII-range.
 </section>
 
 
@@ -384,19 +385,118 @@ In some fonts, the ideographic glyphs are given a compressed design such that th
 
 
 <section>
-<h2>CMap</h2>
+<h2>Glyph mappings</h2>
 
-<p>This section describes which glyph should map to which codepoints.
+<p>This section describes which glyph should map to which code points.
 
-<p class="issue">TBD
+<p class="note">This section is work-in-progress.</p>
+
+<section>
+<h3>Font A <span class="issue">TODO: Name</span></h3>
+
+<p>Font A contains all glyphs except ones for checking <a href="#glyphs-to-check-whether-nwid-opentype-features-are-used">width-related features</a>.</p>
+
+<p class="note">Unless otherwise specified, glyphs are mapped to both in horizontal and in vetical (using the <code>vert</code> feature) modes.</p>
+
+<table class="simple" border>
+<tr>
+<th>Code Point
+<th>Glyph
+<th>Note
+
+<tr>
+<td>x (U+0078)
+<td>Black
+<td>
+
+<tr>
+<td>SPACE (U+0020)
+<td>Blank
+<td>
+
+<tr>
+<td>R (U+0052)
+<td>Pointing Right
+<td>
+
+<tr>
+<td>U (U+0055)
+<td>Pointing Up
+<td>
+
+<tr>
+<td>O (U+004F)
+<td>Overline+Underline
+<td>
+
+<tr>
+<td>h (U+0048)
+<td>Heavy H
+<td>
+
+<tr>
+<td>r (U+072)
+<td>Pointing Right and Pointing Up
+<td>
+default: Pointing Right<br>
+vert: Pointing Up
+</table>
+
+</section>
+
+<section>
+<h3>Fonts to test width-variant features</h3>
+
+<p>These fonts test the <a href="#glyphs-to-check-whether-nwid-opentype-features-are-used">width-related features</a>. One font contains only <code>hwid</code> feature, and another contains all the five features (<code>hwid</code>, <code>twid</code>, <code>qwid</code>, <code>fwid</code>, and <code>pwid</code>).</p>
+
+<p>Below is a table for the latter font; the former (only contains <code>hwid</code> feature) lacks other four features.</p>
+
+<table class="simple" border>
+<tr>
+<th>Code Point
+<th>Glyph
+<th>Note
+
+<tr>
+<td>a (U+0078)
+<td>Double Stripe<br>Triple Stripe<br>Quadruple Stripe<br>Black
+<td>
+hwid: Double Stripe<br>
+twid: Triple Stripe<br>
+qwid: Quadruple Stripe<br>
+fwid: Black<br>
+pwid: Black<br>
+
+<tr>
+<td>H (U+0078)
+<td>Double Stripe
+<td>
+Used in reference
+
+<tr>
+<td>T (U+0078)
+<td>Triple Stripe
+<td>
+Used in reference
+
+<tr>
+<td>Q (U+0078)
+<td>Quadruple Stripe
+<td>
+Used in reference
+</table>
+
+</section>
+
 </section>
 
 
-<!--
+
 <section>
 <h2>Acknowledgements</h2>
-<p>Kawabata-san, fantasai, Koji, Murakami-san, CSS WG discussions
+<p>Special thnks goes to the current and former editors of the Writing Modes specification: fantasai, Koji Ishii, and Shinyu Murakami
+<p>In addition to the editors, this work wouldn't have been possible without help from: Taichi Kawabata
 </section>
--->
+
 
 <script src='http://www.w3.org/Tools/respec/respec-w3c-common' async class='remove'></script>

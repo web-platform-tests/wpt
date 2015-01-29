@@ -13,8 +13,8 @@
       color: fuchsia;
       font: 3.75em/1.5 Ahem; /* computes to 60px/90px */
       height: 3em;
-      -webkit-writing-mode: vertical-rl;
-      -webkit-text-orientation: sideways;
+      writing-mode: vertical-rl;
+      text-orientation: sideways;
     }
 
     span#fuchsia120
@@ -32,7 +32,7 @@
 
   <body>
 
-  <p>Test passes if there is a pink polygon and if its left vertical edge is straight, uniform and unbroken.</p>
+  <p>Test passes if the <strong>left edge</strong> of an irregular polygon is straight and unbroken.</p>
 
   <div id="rl-sideways">É<span id="fuchsia120">É</span><span id="fuchsia30">É</span></div>
 

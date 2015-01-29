@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS3 Animations Test: animation-direction - alternate-reverse impacts ::after</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/css3-animations/#animation-direction-property">
+<meta name="flags" content="">
+<meta name="assert" content="Check if animation-direction value: alternate-reverse impacts the after pseudo element">
+<style>
+  #test::after {
+    content: "::after"
+  }
+  #test {
+    position: relative;
+    animation-name: sample;
+    animation-duration: 5s;
+    animation-direction: alternate-reverse;
+  }
+  @keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if the 'animation-direction-alternate-reverse::after' moves from left to right.</p>
+  <div id="test">animation-direction-alternate-reverse</div>
+</body>
+

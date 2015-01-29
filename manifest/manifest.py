@@ -2,14 +2,14 @@ import json
 import os
 from collections import defaultdict
 
-from item import ManualTest, WebdriverSpecTest, Stub, RefTest, TestharnessTest
+from item import item_types, ManualTest, WebdriverSpecTest, Stub, RefTest, TestharnessTest
 from log import get_logger
 from sourcefile import SourceFile
+
 
 class ManifestError(Exception):
     pass
 
-item_types = ["testharness", "reftest", "manual", "stub", "wdspec"]
 
 class Manifest(object):
     def __init__(self, git_rev=None, url_base="/"):

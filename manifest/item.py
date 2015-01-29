@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 
 from utils import url_to_rel_path
 
+item_types = ["testharness", "reftest", "manual", "stub", "wdspec"]
+
 class ManifestItem(object):
     __metaclass__ = ABCMeta
 

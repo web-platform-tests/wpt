@@ -20,6 +20,15 @@ class SourceFile(object):
                "svg":ElementTree.parse}
 
     def __init__(self, tests_root, rel_path, url_base, use_committed=False):
+        """Object representing a file in a source tree.
+
+        :param tests_root: Path to the root of the source tree
+        :param rel_path: File path relative to tests_root
+        :param url_base: Base URL used when converting file paths to urls
+        :param use_comitted: Work with the last comitted version of the file
+                             rather than the on-disk version.
+        """
+
         self.tests_root = tests_root
         self.rel_path = rel_path
         self.url_base = url_base
@@ -32,12 +41,22 @@ class SourceFile(object):
         self.name, self.ext = os.path.splitext(self.filename)
 
     def name_prefix(self, prefix):
+        """Check if the filename start with a given prefix
+
+        :param prefix: The prefix to check"""
         return self.name.startswith(prefix)
 
     def name_suffix(self, suffix):
+        """Check if the filename excluding extension ends with a given suffix
+
+        :param suffix: The suffix to check"""
         return self.name.endswith(suffix)
 
     def open(self):
+        """Return a File object opened for reading the file contents,
+        or the contents of the file when last committed, if
+        use_comitted is true."""
+
         if self.use_committed:
             git = vcs.get_git_func(os.path.dirname(__file__))
             blob = git("show", "HEAD:%s" % self.rel_path)
@@ -48,6 +67,8 @@ class SourceFile(object):
 
     @property
     def name_is_non_test(self):
+        """Check if the file name matches the conditions for the file to
+        be a non-test file"""
         return (os.path.isdir(self.rel_path) or
                 self.name_prefix("MANIFEST") or
                 self.filename.startswith(".") or
@@ -55,18 +76,26 @@ class SourceFile(object):
 
     @property
     def name_is_stub(self):
+        """Check if the file name matches the conditions for the file to
+        be a stub file"""
         return self.name_prefix("stub-")
 
     @property
     def name_is_manual(self):
+        """Check if the file name matches the conditions for the file to
+        be a manual test file"""
         return self.name_suffix("-manual")
 
     @property
     def name_is_worker(self):
+        """Check if the file name matches the conditions for the file to
+        be a worker js test file"""
         return self.filename.endswith(".worker.js")
 
     @property
     def name_is_webdriver(self):
+        """Check if the file name matches the conditions for the file to
+        be a webdriver spec test file"""
         # wdspec tests are in subdirectories of /webdriver excluding __init__.py
         # files.
         rel_dir_tree = self.rel_path.split(os.path.sep)
@@ -77,10 +106,14 @@ class SourceFile(object):
 
     @property
     def name_is_reference(self):
+        """Check if the file name matches the conditions for the file to
+        be a reference file (not a reftest)"""
         return self.name_suffix("-ref") or self.name_suffix("-notref")
 
     @property
     def markup_type(self):
+        """Return the type of markup contained in a file, based on its extension,
+        or None if it doesn't contain markup"""
         ext = self.ext
 
         if not ext:
@@ -97,6 +130,8 @@ class SourceFile(object):
 
     @cached_property
     def root(self):
+        """Return an ElementTree Element for the root node of the file if it contains
+        markup, or None if it does not"""
         if not self.markup_type:
             return None
 
@@ -117,10 +152,14 @@ class SourceFile(object):
 
     @cached_property
     def timeout_nodes(self):
+        """List of ElementTree Elements corresponding to nodes in a test that
+        specify timeouts"""
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='timeout']")
 
     @cached_property
     def timeout(self):
+        """The timeout of a test or reference file. "long" if the file has an extended timeout
+        or None otherwise"""
         if not self.root:
             return
 
@@ -131,16 +170,22 @@ class SourceFile(object):
 
     @cached_property
     def testharness_nodes(self):
+        """List of ElementTree Elements corresponding to nodes representing a
+        testharness.js script"""
         return self.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharness.js']")
 
     @cached_property
     def content_is_testharness(self):
+        """Boolean indicating whether the file content represents a
+        testharness.js test"""
         if not self.root:
             return None
         return bool(self.testharness_nodes)
 
     @cached_property
     def reftest_nodes(self):
+        """List of ElementTree Elements corresponding to nodes corresponding
+        to a reftest <link>"""
         if not self.root:
             return []
 
@@ -150,6 +195,8 @@ class SourceFile(object):
 
     @cached_property
     def references(self):
+        """List of (ref_url, relation) tuples for any reftest references specified in
+        the file"""
         rv = []
         rel_map = {"match": "==", "mismatch": "!="}
         for item in self.reftest_nodes:
@@ -161,9 +208,15 @@ class SourceFile(object):
 
     @cached_property
     def content_is_ref_node(self):
+        """Boolean indicating whether the file is a non-leaf node in a reftest
+        graph (i.e. if it contains any <link rel=[mis]match>"""
         return bool(self.references)
 
     def manifest_items(self):
+        """List of manifest items corresponding to the file. There is typically one
+        per test, but in the case of reftests a node may have corresponding manifest
+        items without being a test itself."""
+
         if self.name_is_non_test:
             rv = []
 

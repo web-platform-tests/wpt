@@ -9,7 +9,7 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#dimension-mapping" title="7.2 Dimension Mapping" />
   <link rel="help" href="http://www.w3.org/TR/2011/REC-CSS2-20110607/tables.html#separated-borders" title="17.6.1 The separated borders model" />
-  <link rel="match" href="../css21/reference/ref-filled-green-100px-square.xht" />
+  <link rel="match" href="border-spacing-wm-002-ref.xht" />
 
   <meta content="ahem" name="flags" />
   <meta content="This test checks that second value of 'border-spacing' represents, from right to left, a) spacing between logical table top padding (physical table right padding) and topmost cells and b) inter-row spacing and c) between bottommost cells and logical table bottom padding (physical table left padding)." name="assert" />
@@ -17,7 +17,6 @@
   <style type="text/css"><![CDATA[
   table
     {
-      background-color: red;
       border-spacing: 0em 0.5em; /* computes to logical vertical border-spacing: 10px */
       font: 1.25em/1 Ahem; /* computes to 20px/20px */
       padding: 0em 1.25em; /* computes to padding-left: 25px and padding-right: 25px */
@@ -70,16 +69,45 @@ px|                |        |        |        |        |        |              |
       position: absolute;
       width: 6.25em;
     }
+
+  div#reference-overlapped-red
+    {
+      background-color: red;
+      height: 6.25em;
+      position: absolute;
+      width: 6.25em;
+      z-index: -1;
+    }
+
+  table#test-overlapped-red
+    {
+      background-color: red;
+    }
+
+  table#test-overlapping-green
+    {
+      background-color: green;
+    }
   ]]></style>
  </head>
 
  <body>
 
-  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+  <p>Test passes if there is a filled green rectangle and <strong>no red</strong>.</p>
 
   <div id="reference-overlapping-green"></div>
 
-  <table>
+  <table id="test-overlapped-red">
+
+    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+
+    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+
+  </table>
+
+  <div id="reference-overlapped-red"></div>
+
+  <table id="test-overlapping-green">
 
     <tr><td></td><td></td><td></td><td></td><td></td></tr>
 

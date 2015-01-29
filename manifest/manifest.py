@@ -49,8 +49,12 @@ class Manifest(object):
             is_reference = item.is_reference
 
         if not is_reference:
-            self._data[item.item_type][item.path].add(item)
+            self._add(item)
+
         item.manifest = self
+
+    def _add(self, item):
+        self._data[item.item_type][item.path].add(item)
 
     def extend(self, items):
         for item in items:
@@ -80,7 +84,7 @@ class Manifest(object):
 
     def get_reference(self, url):
         if url in self.local_changes.reftest_nodes:
-            return self.local_changes.reftest_nodes
+            return self.local_changes.reftest_nodes[url]
 
         if url in self.reftest_nodes:
             return self.reftest_nodes[url]
@@ -153,14 +157,8 @@ class Manifest(object):
         reftest_nodes.update(self.local_changes.reftest_nodes)
 
         #TODO: remove locally deleted files
-        #TODO: detect cycles containing a test
 
         tests = set(item for item in reftest_nodes.values() if not item.is_reference)
-
-        for item in tests:
-            for ref, _ in item.references:
-                if not os.path.splitext(ref)[0].endswith("-ref"):
-                    print item.url, ref
 
         has_inbound = set()
         for url, item in reftest_nodes.iteritems():
@@ -216,7 +214,11 @@ class Manifest(object):
                 raise ManifestError
             for v in values:
                 manifest_item = item_classes[k].from_json(self, v)
-                self.add(manifest_item)
+                self._add(manifest_item)
+
+        for url, data in obj["reftest_nodes"].iteritems():
+            self.reftest_nodes[url] = RefTest.from_json(self, data)
+
         self.local_changes = LocalChanges.from_json(self, obj["local_changes"])
         return self
 
@@ -237,9 +239,12 @@ class LocalChanges(object):
             is_reference = item.is_reference
 
         if not is_reference:
-            self._data[item.item_type][item.path].add(item)
+            self._add(item)
 
         item.manifest = self.manifest
+
+    def _add(self, item):
+        self._data[item.item_type][item.path].add(item)
 
     def extend(self, items):
         for item in items:
@@ -294,6 +299,9 @@ class LocalChanges(object):
                 for test in tests:
                     manifest_item = item_classes[test_type].from_json(self.manifest, test)
                     self.add(manifest_item)
+
+        for url, data in obj["reftest_nodes"].iteritems():
+            self.reftest_nodes[url] = RefTest.from_json(self.manifest, data)
 
         for item in obj["deleted"]:
             self.add_deleted(item)

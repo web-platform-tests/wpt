@@ -1,3 +1,4 @@
+import urlparse
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 from utils import url_to_rel_path
@@ -7,8 +8,8 @@ class ManifestItem(object):
 
     item_type = None
 
-    def __init__(self):
-        self.manifest = None
+    def __init__(self, manifest=None):
+        self.manifest = manifest
 
     @abstractmethod
     def key(self):
@@ -36,14 +37,18 @@ class ManifestItem(object):
 
 
 class URLManifestItem(ManifestItem):
-    def __init__(self, url, url_base="/"):
-        ManifestItem.__init__(self)
-        self.url = url
+    def __init__(self, url, url_base="/", manifest=None):
+        ManifestItem.__init__(self, manifest=manifest)
+        self._url = url
         self.url_base = url_base
 
     @property
     def id(self):
         return self.url
+
+    @property
+    def url(self):
+        return urlparse.urljoin(self.url_base, self._url)
 
     def key(self):
         return self.item_type, self.url
@@ -53,20 +58,21 @@ class URLManifestItem(ManifestItem):
         return url_to_rel_path(self.url, self.url_base)
 
     def to_json(self):
-        rv = {"url": self.url}
+        rv = {"url": self._url}
         return rv
 
     @classmethod
     def from_json(cls, manifest, obj):
         return cls(obj["url"],
-                   url_base=manifest.url_base)
+                   url_base=manifest.url_base,
+                   manifest=manifest)
 
 
 class TestharnessTest(URLManifestItem):
     item_type = "testharness"
 
-    def __init__(self, url, url_base="/", timeout=None):
-        URLManifestItem.__init__(self, url, url_base=url_base)
+    def __init__(self, url, url_base="/", timeout=None, manifest=None):
+        URLManifestItem.__init__(self, url, url_base=url_base, manifest=manifest)
         self.timeout = timeout
 
     def to_json(self):
@@ -79,14 +85,16 @@ class TestharnessTest(URLManifestItem):
     def from_json(cls, manifest, obj):
         return cls(obj["url"],
                    url_base=manifest.url_base,
-                   timeout=obj.get("timeout"))
+                   timeout=obj.get("timeout"),
+                   manifest = manifest)
 
 
 class RefTest(URLManifestItem):
     item_type = "reftest"
 
-    def __init__(self, url, references, url_base="/", timeout=None, is_reference=False):
-        URLManifestItem.__init__(self, url, url_base=url_base)
+    def __init__(self, url, references, url_base="/", timeout=None, is_reference=False,
+                 manifest=None):
+        URLManifestItem.__init__(self, url, url_base=url_base, manifest=manifest)
         for _, ref_type in references:
             if ref_type not in ["==", "!="]:
                 raise ValueError, "Unrecognised ref_type %s" % ref_type
@@ -113,7 +121,8 @@ class RefTest(URLManifestItem):
         return cls(obj["url"],
                    obj["references"],
                    url_base=manifest.url_base,
-                   timeout=obj.get("timeout"))
+                   timeout=obj.get("timeout"),
+                   manifest=manifest)
 
 
 class ManualTest(URLManifestItem):
@@ -125,8 +134,8 @@ class Stub(URLManifestItem):
 class WebdriverSpecTest(ManifestItem):
     item_type = "wdspec"
 
-    def __init__(self, path):
-        ManifestItem.__init__(self)
+    def __init__(self, path, manifest=None):
+        ManifestItem.__init__(self, manifest=manifest)
         self.path = path
 
     @property

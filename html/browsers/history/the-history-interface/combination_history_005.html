@@ -14,15 +14,13 @@
     var fired = false;
     t.step(function () {
       window.history.pushState(1, document.title, '?x=1');
-      console.log("1")
       window.history.pushState(2, document.title, '?x=2');
-      console.log("2")
       last = window.history.length;
 
       window.history.back();
     });
 
-    window.addEventListener('popstate', t.step_func(function(e) {console.log("11")
+    window.addEventListener('popstate', t.step_func(function(e) {
       if(fired) {
         assert_equals(e.state, 2, "state");
         assert_equals(window.history.length, last, "last");

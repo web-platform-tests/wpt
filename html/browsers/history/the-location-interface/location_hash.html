@@ -1,35 +1,26 @@
 <!DOCTYPE HTML>
 <html>
- <head>
-  <title>Session History</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
- </head>
- <body>
-	<p>
-		<h3>location_hash</h3>
-	</p>
-	
-	<hr>
+  <head>
+    <title>location_hash</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+    if (('location' in window) && window.location != null
+      && ('location' in document) && document.location != null){
+      window.history.pushState(1, document.title, '#x=1');
+      var hash = location.hash;
 
-	<div id="log"></div>
-
-	<script>
-		
-		if (('location' in window) && window.location != null
-			&& ('location' in document) && document.location != null){
-			window.history.pushState(1, document.title, '#x=1');
-			var hash = location.hash;
-
-			test(function() {
-				assert_equals(hash, "#x=1", "hash attribute is not correct.");
-			});
-		} else {
-			test(function() {
-				assert_unreached("location interface is not supported.");
-			});
-		}
-
-	</script>
- </body>
+      test(function() {
+        assert_equals(hash, "#x=1", "hash attribute is not correct.");
+      });
+    } else {
+      test(function() {
+        assert_unreached("location interface is not supported.");
+      });
+    }
+    </script>
+  </body>
 </html>

@@ -1,45 +1,36 @@
 <!DOCTYPE HTML>
 <html>
- <head>
-  <title>Session History</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
- </head>
- <body>
-	<p>
-		<h3>history_state</h3>
-	</p>
-	
-	<hr>
+  <head>
+    <title>history_state</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+    var first;
+    var second;
 
-	<div id="log"></div>
+    first = window.history.state;
 
-	<script>
-		
-		var first;
-		var second;
+    try {
+      window.history.pushState(1, document.title, '?x=1');
 
-		first = window.history.state;
-
-		try {
-			window.history.pushState(1, document.title, '?x=1');
-
-			second = window.history.state;
-			if ((first == null || first == undefined) && second == 1) {
-				test(function() {
-					assert_true(true, "The state of session history is not correct.");
-				});
-			} else {
-				test(function() {
-					assert_unreached("The state of session history is not correct.");
-				});
-			}
-		} catch (e) {
-			test(function() {
-				assert_unreached("call of pushState method is failed.");
-			});
-		}
-
-	</script>
- </body>
+      second = window.history.state;
+      if ((first == null || first == undefined) && second == 1) {
+        test(function() {
+          assert_true(true, "The state of session history is not correct.");
+        });
+      } else {
+        test(function() {
+          assert_unreached("The state of session history is not correct.");
+        });
+      }
+    } catch (e) {
+      test(function() {
+        assert_unreached("call of pushState method is failed.");
+      });
+    }
+    </script>
+  </body>
 </html>

@@ -8,7 +8,7 @@
   <body>
     <div id="log"></div>
     <script>
-    try {
+    test(function () {
       var first;
       var second;
       var third;
@@ -18,20 +18,9 @@
       window.history.replaceState(2, document.title, '?x=2');
       third = window.history.length;
 
-      if ((second - first) == 1 && second == third) {
-        test(function() {
-          assert_true(true, "combination test is failed.");
-        });
-      } else {
-        test(function() {
-          assert_unreached("combination test is failed.");
-        });
-      }
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of pushState method is failed.");
-      });
-    }
+      assert_equals(second - first, 1, "second - first");
+      assert_equals(third, second, "third");
+    }, "After calling of pushState and replaceState methods, check length");
     </script>
   </body>
 </html>

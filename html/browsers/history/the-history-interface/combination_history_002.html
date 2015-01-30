@@ -8,21 +8,15 @@
   <body>
     <div id="log"></div>
     <script>
-    try {
+    test(function () {
       var first;
       var second;
       first = window.history.length;
       window.history.pushState(1, document.title, '?x=1');
       second = window.history.length;
 
-      test(function() {
-        assert_equals(second - first, 1, "combination test is failed.");
-      });
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of pushState method is failed.");
-      });
-    }
+      assert_equals(second - first, 1, "second - first");
+    }, "After calling of pushState method, check length");
     </script>
   </body>
 </html>

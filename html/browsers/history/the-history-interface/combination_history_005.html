@@ -8,42 +8,29 @@
   <body>
     <div id="log"></div>
     <script>
-    function onPopstateEvent(e) {
-      if (e.state == 2 && last == window.history.length) {
-        test(function() {
-          assert_true(true, "combination test is failed.");
-        });
-      }
-    }
-
-    if (window.addEventListener) {
-      window.addEventListener('popstate', onPopstateEvent, false);
-    }
-    else if (window.attachEvent) {
-      window.attachEvent("onpopstate", onPopstateEvent);
-    }
-    else {
-      test(function() {
-        assert_unreached("DOM event subscribtion is not supported.");
-      });
-    }
+    var t = async_test("After calling of forward method, check length");
 
     var last;
-    try {
+    var fired = false;
+    t.step(function () {
       window.history.pushState(1, document.title, '?x=1');
+      console.log("1")
       window.history.pushState(2, document.title, '?x=2');
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of pushState method is failed.");
-      });
-    }
-    last = window.history.length;
+      console.log("2")
+      last = window.history.length;
 
-    window.history.back();
+      window.history.back();
+    });
 
-    setTimeout(function(){
+    window.addEventListener('popstate', t.step_func(function(e) {console.log("11")
+      if(fired) {
+        assert_equals(e.state, 2, "state");
+        assert_equals(window.history.length, last, "last");
+        t.done();
+      }
+      fired = true;
       window.history.forward();
-    }, 500);
+    }), false);
     </script>
   </body>
 </html>

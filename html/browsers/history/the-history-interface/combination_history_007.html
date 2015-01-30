@@ -8,43 +8,25 @@
   <body>
     <div id="log"></div>
     <script>
-    function onPopstateEvent(e) {
-      if (e.state == 1 && last == window.history.length) {
-        window.history.pushState(3, document.title, '?x=3');
-        test(function() {
-          assert_equals(last, window.history.length, "combination test is failed.");
-        });
-      } else {
-        test(function() {
-          assert_unreached("combination test is failed.");
-        });
-      }
-    }
-
-    if (window.addEventListener) {
-      window.addEventListener('popstate', onPopstateEvent, false);
-    }
-    else if (window.attachEvent) {
-      window.attachEvent("onpopstate", onPopstateEvent);
-    }
-    else {
-      test(function() {
-        assert_unreached("DOM event subscribtion is not supported.");
-      });
-    }
+    var t = async_test("After calling of back and pushState method, check length");
 
     var last;
-    try {
+    t.step(function () {
       window.history.pushState(1, document.title, '?x=1');
       window.history.pushState(2, document.title, '?x=2');
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of pushState method is failed.");
-      });
-    }
-    last = window.history.length;
 
-    window.history.back();
+      last = window.history.length;
+
+      window.history.back();
+    });
+
+    window.addEventListener('popstate', t.step_func(function(e) {
+      assert_equals(e.state, 1, "state");
+      assert_equals(window.history.length, last, "last");
+      window.history.pushState(3, document.title, '?x=3');
+      assert_equals(window.history.length, last, "last");
+      t.done();
+    }), false);
     </script>
   </body>
 </html>

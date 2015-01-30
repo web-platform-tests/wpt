@@ -8,28 +8,13 @@
   <body>
     <div id="log"></div>
     <script>
-    try {
-      var first;
-      var second;
+    test(function () {
       window.history.pushState(1, document.title, '?x=1');
-      first = window.history.state;
-      window.history.replaceState(2, document.title, '?x=1');
-      second = window.history.state;
+      assert_equals(history.state, 1, "first");
 
-      if (first == 1 && second == 2) {
-        test(function() {
-          assert_true(true, "combination test is failed.");
-        });
-      } else {
-        test(function() {
-          assert_unreached("combination test is failed.");
-        });
-      }
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of pushState method is failed.");
-      });
-    }
+      window.history.replaceState(2, document.title, '?x=1');
+      assert_equals(history.state, 2, "second")
+    }, "Combine pushState and replaceSate methods");
     </script>
   </body>
 </html>

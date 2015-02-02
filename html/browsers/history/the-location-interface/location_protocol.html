@@ -8,8 +8,7 @@
   <body>
     <div id="log"></div>
     <script>
-    if (('location' in window) && window.location != null
-      && ('location' in document) && document.location != null){
+    test(function () {
       var protocol = location.protocol;
       var url = location.href;
 
@@ -18,14 +17,9 @@
         url = url.substr(0, pos);
       }
 
-      test(function() {
-        assert_equals(protocol, url, "protocol attribute is not correct.");
-      });
-    } else {
-      test(function() {
-        assert_unreached("location interface is not supported.");
-      });
-    }
+      assert_equals(protocol, url, "protocol");
+
+    }, "location protocol");
     </script>
   </body>
 </html>

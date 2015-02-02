@@ -8,20 +8,13 @@
   <body>
     <div id="log"></div>
     <script>
-    if (('location' in window) && window.location != null
-      && ('location' in document) && document.location != null){
-
+    test(function () {
       var href = location.href;
       location.assign('#x');
 
-      test(function() {
-        assert_equals((href + "#x"), location.href, "Calling of assign method is failed.");
-      });
-    } else {
-      test(function() {
-        assert_unreached("location interface is not supported.");
-      });
-    }
+      assert_equals((href + "#x"), location.href, "location href");
+
+    }, "location assign");
     </script>
   </body>
 </html>

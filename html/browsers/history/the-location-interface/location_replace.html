@@ -8,21 +8,13 @@
   <body>
     <div id="log"></div>
     <script>
-    if (('location' in window) && window.location != null
-      && ('location' in document) && document.location != null){
-
+    test(function () {
       var href = location.href;
       location.replace('#x');
 
-      test(function() {
-        assert_equals((href + "#x"), location.href, "Calling of replace method is failed.");
-      });
+      assert_equals((href + "#x"), location.href, "location href");
 
-    } else {
-      test(function() {
-        assert_unreached("location interface is not supported.");
-      });
-    }
+    }, "location replace");
     </script>
   </body>
 </html>

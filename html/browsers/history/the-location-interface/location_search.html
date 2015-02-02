@@ -8,19 +8,13 @@
   <body>
     <div id="log"></div>
     <script>
-    if (('location' in window) && window.location != null
-      && ('location' in document) && document.location != null){
+    test(function () {
       window.history.pushState(1, document.title, '?x=1');
       var search = location.search;
 
-      test(function() {
-        assert_equals(search, "?x=1", "search attribute is not correct.");
-      });
-    } else {
-      test(function() {
-        assert_unreached("location interface is not supported.");
-      });
-    }
+      assert_equals(search, "?x=1", "search");
+
+    }, "location search");
     </script>
   </body>
 </html>

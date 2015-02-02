@@ -8,19 +8,13 @@
   <body>
     <div id="log"></div>
     <script>
-    try {
+    test(function () {
       window.history.replaceState(1, document.title, '?x=1');
 
       var second;
       second = window.history.state;
-      test(function() {
-        assert_equals(second, 1, "replaceState method is failed.");
-      });
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of replaceState method is failed.");
-      });
-    }
+      assert_equals(second, 1, "history state");
+    }, "history replaceState");
     </script>
   </body>
 </html>

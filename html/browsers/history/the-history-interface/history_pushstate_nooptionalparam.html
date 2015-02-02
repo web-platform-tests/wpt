@@ -8,20 +8,13 @@
   <body>
     <div id="log"></div>
     <script>
-    try {
+    test(function () {
       window.history.pushState(1, document.title);
 
       var state;
       state = window.history.state;
-      test(function() {
-        assert_equals(state, 1, "pushState method is failed.");
-      });
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of pushState method is failed.");
-      });
-    }
-
+      assert_equals(state, 1, "history state");
+    }, "history pushState NoOptionalParam");
     </script>
   </body>
 </html>

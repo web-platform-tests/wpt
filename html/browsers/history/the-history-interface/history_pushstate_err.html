@@ -8,13 +8,11 @@
   <body>
     <div id="log"></div>
     <script>
-    try {
-      window.history.pushState(1, document.title, 'http://www.microsoft.com/test.html');
-    } catch (e) {
-      test(function() {
-        assert_equals(e.code, e["SECURITY_ERR"], "SECURITY_ERR is not raised.");
+    test(function () {
+      assert_throws({name: "SecurityError"}, function () {
+        window.history.pushState(1, document.title, 'http://www.microsoft.com/test.html');
       });
-    }
+    }, "history pushState SECURITY_ERR");
     </script>
  </body>
 </html>

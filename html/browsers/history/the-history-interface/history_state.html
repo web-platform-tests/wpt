@@ -8,29 +8,17 @@
   <body>
     <div id="log"></div>
     <script>
-    var first;
-    var second;
+    test(function () {
+      var first;
+      var second;
 
-    first = window.history.state;
-
-    try {
+      first = window.history.state;
       window.history.pushState(1, document.title, '?x=1');
 
       second = window.history.state;
-      if ((first == null || first == undefined) && second == 1) {
-        test(function() {
-          assert_true(true, "The state of session history is not correct.");
-        });
-      } else {
-        test(function() {
-          assert_unreached("The state of session history is not correct.");
-        });
-      }
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of pushState method is failed.");
-      });
-    }
+      assert_equals(first, null, "first");
+      assert_equals(second, 1, "second");
+    }, "history state");
     </script>
   </body>
 </html>

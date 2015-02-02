@@ -8,34 +8,20 @@
   <body>
     <div id="log"></div>
     <script>
-    function onPopstateEvent(e) {
-      test(function() {
-        assert_equals(e.state, 1, "Current page state is not 1.");
-      });
-    }
+    var t = async_test("history back");
 
-    if (window.addEventListener) {
-      window.addEventListener('popstate', onPopstateEvent, false);
-    }
-    else if (window.attachEvent) {
-      window.attachEvent("onpopstate", onPopstateEvent);
-    }
-    else {
-      test(function() {
-        assert_unreached("DOM event subscribtion is not supported.");
-      });
-    }
-
-    try {
+    t.step(function () {
       window.history.pushState(1, document.title, '?x=1');
       window.history.pushState(2, document.title, '?x=2');
-    } catch (e) {
-      test(function() {
-        assert_unreached("call of pushState method is failed.");
-      });
-    }
 
-    window.history.back();
+      window.history.back();
+    });
+
+    window.addEventListener('popstate', t.step_func(function(e) {
+      assert_equals(e.state, 1, "history state");
+
+      t.done();
+    }), false);
     </script>
   </body>
 </html>

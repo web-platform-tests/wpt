@@ -321,7 +321,10 @@ def get_loader(test_paths, product, debug=False, **kwargs):
     test_loader = testloader.TestLoader(test_manifests,
                                         kwargs["test_types"],
                                         test_filter,
-                                        run_info)
+                                        run_info,
+                                        chunk_type=kwargs["chunk_type"],
+                                        total_chunks=kwargs["total_chunks"],
+                                        chunk_number=kwargs["this_chunk"])
     return run_info, test_loader
 
 def list_test_groups(test_paths, product, **kwargs):
@@ -332,7 +335,7 @@ def list_test_groups(test_paths, product, **kwargs):
                                        force_manifest_update=False,
                                        **kwargs)
 
-    for item in sorted(test_loader.groups(test_types)):
+    for item in sorted(test_loader.groups(kwargs["test_types"])):
         print item
 
 
@@ -340,7 +343,7 @@ def list_disabled(test_paths, product, **kwargs):
     do_delayed_imports(serve_path(test_paths))
     rv = []
 
-    run_info, test_loader = get_loader(test_paths, test_types, product,
+    run_info, test_loader = get_loader(test_paths, product,
                                        force_manifest_update=False,
                                        **kwargs)
 

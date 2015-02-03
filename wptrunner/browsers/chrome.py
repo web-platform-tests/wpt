@@ -4,13 +4,17 @@
 
 from .base import Browser, ExecutorBrowser, require_arg
 from .webdriver import ChromedriverLocalServer
-from ..executors.executorselenium import SeleniumTestharnessExecutor, required_files
+from ..executors import executor_kwargs as base_executor_kwargs
+from ..executors.executorselenium import (SeleniumTestharnessExecutor,
+                                          SeleniumRefTestExecutor,
+                                          required_files)
 
 
 __wptrunner__ = {"product": "chrome",
                  "check_args": "check_args",
                  "browser": "ChromeBrowser",
-                 "executor": {"testharness": "SeleniumTestharnessExecutor"},
+                 "executor": {"testharness": "SeleniumTestharnessExecutor",
+                              "reftest": "SeleniumRefTestExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_options": "env_options"}
@@ -25,19 +29,16 @@ def browser_kwargs(**kwargs):
             "webdriver_binary": kwargs["webdriver_binary"]}
 
 
-def executor_kwargs(http_server_url, **kwargs):
+def executor_kwargs(test_type, http_server_url, **kwargs):
     from selenium.webdriver import DesiredCapabilities
 
-    timeout_multiplier = kwargs["timeout_multiplier"]
-    if timeout_multiplier is None:
-        timeout_multiplier = 1
-    binary = kwargs["binary"]
-    capabilities = dict(DesiredCapabilities.CHROME.items() +
-                        {"chromeOptions": {"binary": binary}}.items())
+    executor_kwargs = base_executor_kwargs(test_type, http_server_url, **kwargs)
+    executor_kwargs["close_after_done"] = True
+    executor_kwargs["capabilities"] = dict(DesiredCapabilities.CHROME.items() +
+                                           {"chromeOptions":
+                                            {"binary": kwargs["binary"]}}.items())
 
-    return {"http_server_url": http_server_url,
-            "capabilities": capabilities,
-            "timeout_multiplier": timeout_multiplier}
+    return executor_kwargs
 
 
 def env_options():

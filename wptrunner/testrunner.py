@@ -328,6 +328,7 @@ class TestRunnerManager(threading.Thread):
             # remote control method
             if self.debug_args is None:
                 self.init_timer = threading.Timer(self.browser.init_timeout, init_failed)
+
             test_queue = self.test_source.get_queue()
             if test_queue is None:
                 self.logger.info("No more tests")
@@ -507,7 +508,8 @@ class TestRunnerManager(threading.Thread):
         self.logger.test_end(test.id,
                              status,
                              message=file_result.message,
-                             expected=expected)
+                             expected=expected,
+                             extra=file_result.extra)
 
         self.test = None
 

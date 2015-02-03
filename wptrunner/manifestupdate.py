@@ -116,26 +116,18 @@ class TestNode(ManifestItem):
         :param test_type: The type of the test
         :param test_id: The id of the test"""
 
-        if test_type == "reftest":
-            url = test_id[0]
-        else:
-            url = test_id
+        url = test_id
         name = url.split("/")[-1]
         node = DataNode(name)
         self = cls(node)
 
         self.set("type", test_type)
-        if test_type == "reftest":
-            self.set("reftype", test_id[1])
-            self.set("refurl", test_id[2])
         self._from_file = False
         return self
 
     @property
     def is_empty(self):
         required_keys = set(["type"])
-        if self.test_type == "reftest":
-            required_keys |= set(["reftype", "refurl"])
         if set(self._data.keys()) != required_keys:
             return False
         return all(child.is_empty for child in self.children)
@@ -149,11 +141,7 @@ class TestNode(ManifestItem):
     @property
     def id(self):
         """The id of the test represented by this TestNode"""
-        url = urlparse.urljoin(self.parent.url, self.name)
-        if self.test_type == "reftest":
-            return (url, self.get("reftype", None), self.get("refurl", None))
-        else:
-            return url
+        return urlparse.urljoin(self.parent.url, self.name)
 
     def disabled(self, run_info):
         """Boolean indicating whether this test is disabled when run in an

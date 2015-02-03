@@ -439,7 +439,8 @@ def run_tests(config, test_paths, product, **kwargs):
                         logger.test_end(test.id, status="SKIP")
 
                     executor_cls = executor_classes.get(test_type)
-                    executor_kwargs = get_executor_kwargs(base_server,
+                    executor_kwargs = get_executor_kwargs(test_type,
+                                                          base_server,
                                                           **kwargs)
 
                     if executor_cls is None:

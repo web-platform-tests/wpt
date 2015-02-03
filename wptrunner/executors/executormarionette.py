@@ -144,7 +144,7 @@ class MarionetteRun(object):
                 # We just want it to never time out, really, but marionette doesn't
                 # make that possible. It also seems to time out immediately if the
                 # timeout is set too high. This works at least.
-                self.marionette.set_script_timeout(2**24)
+                self.marionette.set_script_timeout(2**31 - 1)
         except IOError, errors.InvalidResponseException:
             self.logger.error("Lost marionette connection before starting test")
             return Stop
@@ -234,8 +234,6 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
                                 "timeout_multiplier": self.timeout_multiplier,
                                 "timeout": timeout_ms,
                                 "explicit_timeout": timeout is None}
-
-        self.logger.debug(script)
 
         return marionette.execute_async_script(script, new_sandbox=False)
 

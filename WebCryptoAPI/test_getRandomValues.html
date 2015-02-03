@@ -3,8 +3,8 @@
 <title>WebCryptoAPI: getRandomValues()</title>
 <link rel="author" title="Sunil Yoo" href="mailto:usuanday83@gmail.com">
 <link rel="help" href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html#dfn-Crypto-method-getRandomValues">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
 // Step 1.
@@ -39,9 +39,51 @@ test(function() {
                   Int32Array, "crypto.getRandomValues(new Int32Array(8))")
     assert_equals(window.crypto.getRandomValues(new Uint32Array(8)).constructor,
                   Uint32Array, "crypto.getRandomValues(new Uint32Array(8))")
-
-    assert_throws("QuotaExceededError", function() {
-        window.crypto.getRandomValues(new Int8Array(65537))
-    }, "crypto.getRandomValues length over 65536")
+    assert_equals(window.crypto.getRandomValues(new Uint8ClampedArray(8)).constructor,
+                  Uint8ClampedArray, "crypto.getRandomValues(new Uint8ClampedArray(8))")
 })
+
+var quota = 65536;
+
+function makeArrs(excedeMax) {
+  var n = (excedeMax) ? 1 : 0;
+
+  var arrs = {
+    "Int8Array"         : new Int8Array(quota + n),
+    "Uint8Array"        : new Uint8Array(quota + n),
+    "Int16Array"        : new Int16Array(quota/2 + n),
+    "Uint16Array"       : new Uint16Array(quota/2 + n),
+    "Int32Array"        : new Int32Array(quota/4 + n),
+    "UInt32Array"       : new Uint32Array(quota/4 + n),
+    "Uint8ClampedArray" : new Uint8ClampedArray(quota + n)
+  };
+  return arrs;
+}
+
+test(function () {
+  arrs = makeArrs(true);
+  for (var key in arrs) {
+    if (arrs[key].length != arrs[key].byteLength) {
+      assert_true( arrs[key].length <= quota, key );
+    }
+    assert_throws("QuotaExceededError", function () {
+      window.crypto.getRandomValues(arrs[key]);
+    }, key);
+  }
+}, "QuotaExceededError is thrown for all types of arguments, " +
+   "and is based on the byteLength, not the size");
+
+
+test(function () {
+  var arrayA = new Int8Array(10);
+  arrayB = window.crypto.getRandomValues(arrayA);
+  assert_true( arrayA == arrayB, "arrays match");
+}, "Returned view is the same object as is passed to the function");
+
+
+test(function () {
+  var array = new Int8Array(0);
+  array = window.crypto.getRandomValues(array);
+  assert_equals( array.length, 0, "array is length 0");
+}, "Zero-size arrays are handled correctly");
 </script>

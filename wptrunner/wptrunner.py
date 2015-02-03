@@ -4,6 +4,7 @@
 
 from __future__ import unicode_literals
 
+import imp
 import json
 import logging
 import os
@@ -67,21 +68,17 @@ def setup_stdlib_logger():
 
 
 def do_delayed_imports(serve_root):
-    global serve, manifest, sslutils
+    global serve, sslutils
 
     sys.path.insert(0, serve_root)
-    sys.path.insert(0, str(os.path.join(serve_root, "tools")))
-    sys.path.insert(0, str(os.path.join(serve_root, "tools", "scripts")))
+
     failed = []
 
     try:
-        import serve
+        from tools.serve import serve
     except ImportError:
         failed.append("serve")
-    try:
-        import manifest
-    except ImportError:
-        failed.append("manifest")
+
     try:
         import sslutils
     except ImportError:
@@ -123,10 +120,9 @@ class LogLevelRewriter(object):
 
 
 class TestEnvironment(object):
-    def __init__(self, serve_path, test_paths, ssl_env, options):
+    def __init__(self, test_paths, ssl_env, options):
         """Context manager that owns the test environment i.e. the http and
         websockets servers"""
-        self.serve_path = serve_path
         self.test_paths = test_paths
         self.ssl_env = ssl_env
         self.server = None
@@ -156,7 +152,7 @@ class TestEnvironment(object):
                 server.kill()
 
     def load_config(self):
-        default_config_path = os.path.join(self.serve_path, "config.default.json")
+        default_config_path = os.path.join(serve_path(self.test_paths), "config.default.json")
         local_config_path = os.path.join(here, "config.json")
 
         with open(default_config_path) as f:
@@ -172,7 +168,7 @@ class TestEnvironment(object):
         local_config["ssl"]["encrypt_after_connect"] = self.options.get("encrypt_after_connect", False)
 
         config = serve.merge_json(default_config, local_config)
-        config["doc_root"] = self.serve_path
+        config["doc_root"] = serve_path(self.test_paths)
 
         if not self.ssl_env.ssl_enabled:
             config["ports"]["https"] = [None]
@@ -195,9 +191,13 @@ class TestEnvironment(object):
         log_filter = LogLevelRewriter(log_filter, ["error"], "warning")
         server_logger.component_filter = log_filter
 
-        serve.logger = server_logger
-        #Set as the default logger for wptserve
-        serve.set_logger(server_logger)
+        try:
+            #Set as the default logger for wptserve
+            serve.set_logger(server_logger)
+            serve.logger = server_logger
+        except Exception:
+            # This happens if logging has already been set up for wptserve
+            pass
 
     def setup_routes(self):
         for url, paths in self.test_paths.iteritems():
@@ -228,7 +228,7 @@ class TestEnvironment(object):
         logger.info("Placing required files in server environment.")
         for source, destination, copy_if_exists in self.required_files:
             source_path = os.path.join(here, source)
-            dest_path = os.path.join(self.serve_path, destination, os.path.split(source)[1])
+            dest_path = os.path.join(serve_path(self.test_paths), destination, os.path.split(source)[1])
             dest_exists = os.path.exists(dest_path)
             if not dest_exists or copy_if_exists:
                 if dest_exists:
@@ -308,31 +308,41 @@ class LoggingWrapper(StringIO):
     def flush(self):
         pass
 
-def list_test_groups(serve_root, test_paths, test_types, product, **kwargs):
+def get_loader(test_paths, product, debug=False, **kwargs):
+    run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=debug)
 
-    do_delayed_imports(serve_root)
+    test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=False).load()
 
-    run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=False)
     test_filter = testloader.TestFilter(include=kwargs["include"],
                                         exclude=kwargs["exclude"],
-                                        manifest_path=kwargs["include_manifest"])
-    test_loader = testloader.TestLoader(test_paths,
-                                        test_types,
+                                        manifest_path=kwargs["include_manifest"],
+                                        test_manifests=test_manifests)
+
+    test_loader = testloader.TestLoader(test_manifests,
+                                        kwargs["test_types"],
                                         test_filter,
                                         run_info)
+    return run_info, test_loader
+
+def list_test_groups(test_paths, product, **kwargs):
+
+    do_delayed_imports(serve_path(test_paths))
+
+    run_info, test_loader = get_loader(test_paths, product,
+                                       force_manifest_update=False,
+                                       **kwargs)
 
     for item in sorted(test_loader.groups(test_types)):
         print item
 
 
-def list_disabled(serve_root, test_paths, test_types, product, **kwargs):
-    do_delayed_imports(serve_root)
+def list_disabled(test_paths, product, **kwargs):
+    do_delayed_imports(serve_path(test_paths))
     rv = []
-    run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=False)
-    test_loader = testloader.TestLoader(test_paths,
-                                        test_types,
-                                        testloader.TestFilter(),
-                                        run_info)
+
+    run_info, test_loader = get_loader(test_paths, test_types, product,
+                                       force_manifest_update=False,
+                                       **kwargs)
 
     for test_type, tests in test_loader.disabled_tests.iteritems():
         for test in tests:
@@ -351,8 +361,10 @@ def get_ssl_kwargs(**kwargs):
         args = {}
     return args
 
+def serve_path(test_paths):
+    return test_paths["/"]["tests_path"]
 
-def run_tests(config, serve_root, test_paths, product, **kwargs):
+def run_tests(config, test_paths, product, **kwargs):
     logging_queue = None
     logging_thread = None
     original_stdio = (sys.stdout, sys.stderr)
@@ -366,9 +378,7 @@ def run_tests(config, serve_root, test_paths, product, **kwargs):
             sys.stderr = LoggingWrapper(logging_queue, prefix="STDERR")
             logging_thread.start()
 
-        do_delayed_imports(serve_root)
-
-        run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=False)
+        do_delayed_imports(serve_path(test_paths))
 
         (check_args,
          browser_cls, get_browser_kwargs,
@@ -383,19 +393,12 @@ def run_tests(config, serve_root, test_paths, product, **kwargs):
         unexpected_total = 0
 
         if "test_loader" in kwargs:
+            run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=False)
             test_loader = kwargs["test_loader"]
         else:
-            test_filter = testloader.TestFilter(include=kwargs["include"],
-                                                exclude=kwargs["exclude"],
-                                                manifest_path=kwargs["include_manifest"])
-            test_loader = testloader.TestLoader(test_paths,
-                                                kwargs["test_types"],
-                                                test_filter,
-                                                run_info,
-                                                kwargs["chunk_type"],
-                                                kwargs["total_chunks"],
-                                                kwargs["this_chunk"],
-                                                kwargs["manifest_update"])
+            run_info, test_loader = get_loader(test_paths, product,
+                                               force_manifest_update=False,
+                                               **kwargs)
 
         if kwargs["run_by_dir"] is False:
             test_source_cls = testloader.SingleTestSource
@@ -407,8 +410,7 @@ def run_tests(config, serve_root, test_paths, product, **kwargs):
 
         logger.info("Using %i client processes" % kwargs["processes"])
 
-        with TestEnvironment(serve_root,
-                             test_paths,
+        with TestEnvironment(test_paths,
                              ssl_env,
                              env_options) as test_environment:
             try:
@@ -482,22 +484,28 @@ def run_tests(config, serve_root, test_paths, product, **kwargs):
             if logging_thread is not None:
                 logging_thread.join(10)
             logging_queue.close()
+            logger.info("queue closed")
 
     return unexpected_total == 0
 
 
 def main():
     """Main entry point when calling from the command line"""
-    kwargs = wptcommandline.parse_args()
+    try:
+        kwargs = wptcommandline.parse_args()
 
-    if kwargs["prefs_root"] is None:
-        kwargs["prefs_root"] = os.path.abspath(os.path.join(here, "prefs"))
+        if kwargs["prefs_root"] is None:
+            kwargs["prefs_root"] = os.path.abspath(os.path.join(here, "prefs"))
 
-    setup_logging(kwargs, {"raw": sys.stdout})
+        setup_logging(kwargs, {"raw": sys.stdout})
 
-    if kwargs["list_test_groups"]:
-        list_test_groups(**kwargs)
-    elif kwargs["list_disabled"]:
-        list_disabled(**kwargs)
-    else:
-        return run_tests(**kwargs)
+        if kwargs["list_test_groups"]:
+            list_test_groups(**kwargs)
+        elif kwargs["list_disabled"]:
+            list_disabled(**kwargs)
+        else:
+            return run_tests(**kwargs)
+    except Exception:
+        import pdb, traceback
+        print traceback.format_exc()
+        pdb.post_mortem()

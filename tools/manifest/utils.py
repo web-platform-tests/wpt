@@ -12,15 +12,6 @@ def rel_path_to_url(rel_path, url_base="/"):
         url_base += "/"
     return url_base + rel_path.replace(os.sep, "/")
 
-
-def url_to_rel_path(url, url_base):
-    url_path = urlparse.urlsplit(url).path
-    if not url_path.startswith(url_base):
-        raise ValueError, url
-    url_path = url_path[len(url_base):]
-    return url_path
-
-
 def is_blacklisted(url):
     for item in blacklist:
         if item == "/":

@@ -221,22 +221,22 @@ class SourceFile(object):
             rv = []
 
         elif self.name_is_stub:
-            rv = [Stub(self.url)]
+            rv = [Stub(self.rel_path, self.url)]
 
         elif self.name_is_manual:
-            rv = [ManualTest(self.url)]
+            rv = [ManualTest(self.rel_path, self.url)]
 
         elif self.name_is_worker:
-            rv = [TestharnessTest(self.url[:-3])]
+            rv = [TestharnessTest(self.rel_path, self.url[:-3])]
 
         elif self.name_is_webdriver:
             rv = [WebdriverSpecTest(self.rel_path)]
 
         elif self.content_is_testharness:
-            rv = [TestharnessTest(self.url, timeout=self.timeout)]
+            rv = [TestharnessTest(self.rel_path, self.url, timeout=self.timeout)]
 
         elif self.content_is_ref_node:
-            rv = [RefTest(self.url, self.references,
+            rv = [RefTest(self.rel_path, self.url, self.references,
                           timeout=self.timeout, is_reference=self.name_is_reference)]
 
         else:

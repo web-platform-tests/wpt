@@ -1,8 +1,6 @@
 import urlparse
 from abc import ABCMeta, abstractmethod, abstractproperty
 
-from utils import url_to_rel_path
-
 item_types = ["testharness", "reftest", "manual", "stub", "wdspec"]
 
 class ManifestItem(object):
@@ -10,8 +8,9 @@ class ManifestItem(object):
 
     item_type = None
 
-    def __init__(self, manifest=None):
+    def __init__(self, path, manifest=None):
         self.manifest = manifest
+        self.path = path
 
     @abstractmethod
     def key(self):
@@ -25,9 +24,8 @@ class ManifestItem(object):
     def __hash__(self):
         return hash(self.key())
 
-    @abstractmethod
     def to_json(self):
-        raise NotImplementedError
+        return {"path": self.path}
 
     @classmethod
     def from_json(self, manifest, obj):
@@ -39,8 +37,8 @@ class ManifestItem(object):
 
 
 class URLManifestItem(ManifestItem):
-    def __init__(self, url, url_base="/", manifest=None):
-        ManifestItem.__init__(self, manifest=manifest)
+    def __init__(self, path, url, url_base="/", manifest=None):
+        ManifestItem.__init__(self, path, manifest=manifest)
         self._url = url
         self.url_base = url_base
 
@@ -55,17 +53,15 @@ class URLManifestItem(ManifestItem):
     def key(self):
         return self.item_type, self.url
 
-    @property
-    def path(self):
-        return url_to_rel_path(self.url, self.url_base)
-
     def to_json(self):
-        rv = {"url": self._url}
+        rv = ManifestItem.to_json(self)
+        rv["url"] = self._url
         return rv
 
     @classmethod
     def from_json(cls, manifest, obj):
-        return cls(obj["url"],
+        return cls(obj["path"],
+                   obj["url"],
                    url_base=manifest.url_base,
                    manifest=manifest)
 
@@ -73,19 +69,20 @@ class URLManifestItem(ManifestItem):
 class TestharnessTest(URLManifestItem):
     item_type = "testharness"
 
-    def __init__(self, url, url_base="/", timeout=None, manifest=None):
-        URLManifestItem.__init__(self, url, url_base=url_base, manifest=manifest)
+    def __init__(self, path, url, url_base="/", timeout=None, manifest=None):
+        URLManifestItem.__init__(self, path, url, url_base=url_base, manifest=manifest)
         self.timeout = timeout
 
     def to_json(self):
-        rv = {"url": self.url}
+        rv = URLManifestItem.to_json(self)
         if self.timeout is not None:
             rv["timeout"] = self.timeout
         return rv
 
     @classmethod
     def from_json(cls, manifest, obj):
-        return cls(obj["url"],
+        return cls(obj["path"],
+                   obj["url"],
                    url_base=manifest.url_base,
                    timeout=obj.get("timeout"),
                    manifest = manifest)
@@ -94,9 +91,9 @@ class TestharnessTest(URLManifestItem):
 class RefTest(URLManifestItem):
     item_type = "reftest"
 
-    def __init__(self, url, references, url_base="/", timeout=None, is_reference=False,
+    def __init__(self, path, url, references, url_base="/", timeout=None, is_reference=False,
                  manifest=None):
-        URLManifestItem.__init__(self, url, url_base=url_base, manifest=manifest)
+        URLManifestItem.__init__(self, path, url, url_base=url_base, manifest=manifest)
         for _, ref_type in references:
             if ref_type not in ["==", "!="]:
                 raise ValueError, "Unrecognised ref_type %s" % ref_type
@@ -112,15 +109,16 @@ class RefTest(URLManifestItem):
         return self.item_type, self.url
 
     def to_json(self):
-        rv = {"url": self.url,
-              "references": self.references}
+        rv = URLManifestItem.to_json(self)
+        rv["references"] = self.references
         if self.timeout is not None:
             rv["timeout"] = self.timeout
         return rv
 
     @classmethod
     def from_json(cls, manifest, obj):
-        return cls(obj["url"],
+        return cls(obj["path"],
+                   obj["url"],
                    obj["references"],
                    url_base=manifest.url_base,
                    timeout=obj.get("timeout"),
@@ -136,20 +134,14 @@ class Stub(URLManifestItem):
 class WebdriverSpecTest(ManifestItem):
     item_type = "wdspec"
 
-    def __init__(self, path, manifest=None):
-        ManifestItem.__init__(self, manifest=manifest)
-        self.path = path
-
     @property
     def id(self):
         return self.path
-
-    def to_json(self):
-        return {"path": self.path}
 
     def key(self):
         return self.path
 
     @classmethod
     def from_json(cls, manifest, obj):
-        return cls(path=obj["path"])
+        return cls(obj["path"],
+                   manifest=manifest)

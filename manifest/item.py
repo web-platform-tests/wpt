@@ -26,13 +26,19 @@ class ManifestItem(object):
         self.manifest = manifest
         self.source_file = source_file
 
+    @abstractmethod
+    def id(self):
+        pass
+
     @property
     def path(self):
         return self.source_file.rel_path
 
-    @abstractmethod
     def key(self):
-        pass
+        return (self.item_type, self.id)
+
+    def meta_key(self):
+        return ()
 
     def __eq__(self, other):
         if not hasattr(other, "key"):
@@ -40,7 +46,7 @@ class ManifestItem(object):
         return self.key() == other.key()
 
     def __hash__(self):
-        return hash(self.key())
+        return hash(self.key() + self.meta_key())
 
     def to_json(self):
         return {"path": self.path}
@@ -68,9 +74,6 @@ class URLManifestItem(ManifestItem):
     def url(self):
         return urlparse.urljoin(self.url_base, self._url)
 
-    def key(self):
-        return self.item_type, self.url
-
     def to_json(self):
         rv = ManifestItem.to_json(self)
         rv["url"] = self._url
@@ -91,6 +94,9 @@ class TestharnessTest(URLManifestItem):
     def __init__(self, source_file, url, url_base="/", timeout=None, manifest=None):
         URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
         self.timeout = timeout
+
+    def meta_key(self):
+        return (self.timeout,)
 
     def to_json(self):
         rv = URLManifestItem.to_json(self)
@@ -121,15 +127,11 @@ class RefTest(URLManifestItem):
         self.timeout = timeout
 
     @property
-    def id(self):
-        return self.url
-
-    @property
     def is_reference(self):
         return self.source_file.name_is_reference
 
-    def key(self):
-        return self.item_type, self.url
+    def meta_key(self):
+        return (self.timeout,)
 
     def to_json(self):
         rv = URLManifestItem.to_json(self)
@@ -160,9 +162,6 @@ class WebdriverSpecTest(ManifestItem):
 
     @property
     def id(self):
-        return self.path
-
-    def key(self):
         return self.path
 
     @classmethod

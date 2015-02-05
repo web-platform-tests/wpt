@@ -198,11 +198,6 @@ def set_from_config(kwargs):
             kwargs["test_paths"]["/"] = {}
         kwargs["test_paths"]["/"]["metadata_path"] = kwargs["metadata_root"]
 
-    if kwargs["test_list"]:
-        if kwargs["include"] is not None:
-            kwargs["include"].extend(kwargs["test_list"])
-        else:
-            kwargs["include"] = kwargs["test_list"]
 
 def get_test_paths(config):
     # Set up test_paths
@@ -248,6 +243,12 @@ def check_args(kwargs):
             if not os.path.isdir(path):
                 print "Fatal: %s path %s is not a directory" % (name, path)
                 sys.exit(1)
+
+    if kwargs["test_list"]:
+        if kwargs["include"] is not None:
+            kwargs["include"].extend(kwargs["test_list"])
+        else:
+            kwargs["include"] = kwargs["test_list"]
 
     if kwargs["run_info"] is None:
         kwargs["run_info"] = kwargs["config_path"]

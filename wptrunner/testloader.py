@@ -255,7 +255,7 @@ class ManifestLoader(object):
         if not json_data:
             manifest_file = manifest.Manifest(None, url_base)
         else:
-            manifest_file = manifest.Manifest.from_json(json_data)
+            manifest_file = manifest.Manifest.from_json(tests_path, json_data)
 
         manifest_update.update(tests_path, url_base, manifest_file)
         manifest.write(manifest_file, manifest_path)
@@ -265,7 +265,7 @@ class ManifestLoader(object):
         if (not os.path.exists(manifest_path) or
             self.force_manifest_update):
             self.update_manifest(manifest_path, tests_path, url_base)
-        manifest_file = manifest.load(manifest_path)
+        manifest_file = manifest.load(tests_path, manifest_path)
         if manifest_file.url_base != url_base:
             self.logger.info("Updating url_base in manifest from %s to %s" % (manifest_file.url_base,
                                                                               url_base))

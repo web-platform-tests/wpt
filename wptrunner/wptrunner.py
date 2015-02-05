@@ -311,7 +311,7 @@ class LoggingWrapper(StringIO):
 def get_loader(test_paths, product, debug=False, **kwargs):
     run_info = wpttest.get_run_info(kwargs["run_info"], product, debug=debug)
 
-    test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=False).load()
+    test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"]).load()
 
     test_filter = testloader.TestFilter(include=kwargs["include"],
                                         exclude=kwargs["exclude"],
@@ -332,7 +332,6 @@ def list_test_groups(test_paths, product, **kwargs):
     do_delayed_imports(serve_path(test_paths))
 
     run_info, test_loader = get_loader(test_paths, product,
-                                       force_manifest_update=False,
                                        **kwargs)
 
     for item in sorted(test_loader.groups(kwargs["test_types"])):
@@ -344,7 +343,6 @@ def list_disabled(test_paths, product, **kwargs):
     rv = []
 
     run_info, test_loader = get_loader(test_paths, product,
-                                       force_manifest_update=False,
                                        **kwargs)
 
     for test_type, tests in test_loader.disabled_tests.iteritems():
@@ -400,7 +398,6 @@ def run_tests(config, test_paths, product, **kwargs):
             test_loader = kwargs["test_loader"]
         else:
             run_info, test_loader = get_loader(test_paths, product,
-                                               force_manifest_update=False,
                                                **kwargs)
 
         if kwargs["run_by_dir"] is False:

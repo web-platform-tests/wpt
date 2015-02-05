@@ -9,11 +9,12 @@ from metadata import MetadataUpdateRunner
 from sync import SyncFromUpstreamRunner
 from tree import GitTree, HgTree, NoVCSTree
 
+from .. import wptrunner
 from base import Step, StepRunner, exit_clean, exit_unclean
 from state import State
 
 def setup_paths(serve_root):
-    sys.path.insert(0, os.path.join(serve_root, "tools", "scripts"))
+    wptrunner.do_delayed_imports(serve_root)
 
 class LoadConfig(Step):
     """Step for loading configuration from the ini file and kwargs."""

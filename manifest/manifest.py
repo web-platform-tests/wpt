@@ -181,10 +181,6 @@ class Manifest(object):
         else:
             target = self
 
-        if target == self.local_changes:
-            import pdb
-            pdb.set_trace()
-
         #TODO: Warn if there exist unreachable reftest nodes
 
         for path, items in reftest_nodes.iteritems():

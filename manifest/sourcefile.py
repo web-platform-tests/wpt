@@ -221,23 +221,22 @@ class SourceFile(object):
             rv = []
 
         elif self.name_is_stub:
-            rv = [Stub(self.rel_path, self.url)]
+            rv = [Stub(self, self.url)]
 
         elif self.name_is_manual:
-            rv = [ManualTest(self.rel_path, self.url)]
+            rv = [ManualTest(self, self.url)]
 
         elif self.name_is_worker:
-            rv = [TestharnessTest(self.rel_path, self.url[:-3])]
+            rv = [TestharnessTest(self, self.url[:-3])]
 
         elif self.name_is_webdriver:
-            rv = [WebdriverSpecTest(self.rel_path)]
+            rv = [WebdriverSpecTest(self)]
 
         elif self.content_is_testharness:
-            rv = [TestharnessTest(self.rel_path, self.url, timeout=self.timeout)]
+            rv = [TestharnessTest(self, self.url, timeout=self.timeout)]
 
         elif self.content_is_ref_node:
-            rv = [RefTest(self.rel_path, self.url, self.references,
-                          timeout=self.timeout, is_reference=self.name_is_reference)]
+            rv = [RefTest(self, self.url, self.references, timeout=self.timeout)]
 
         else:
             # If nothing else it's a helper file, which we don't have a specific type for

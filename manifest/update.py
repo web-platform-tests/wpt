@@ -37,7 +37,7 @@ def update_from_cli(**kwargs):
     path = kwargs["path"]
     assert tests_root is not None
     if not kwargs.get("rebuild", False):
-        m = manifest.load(path)
+        m = manifest.load(tests_root, path)
     else:
         m = manifest.Manifest(None)
 

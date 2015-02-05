@@ -3,14 +3,32 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 
 item_types = ["testharness", "reftest", "manual", "stub", "wdspec"]
 
+def get_source_file(source_files, tests_root, manifest, path):
+    def make_new():
+        from sourcefile import SourceFile
+
+        return SourceFile(tests_root, path, manifest.url_base)
+
+    if source_files is None:
+        return make_new()
+
+    if path not in source_files:
+        source_files[path] = make_new()
+
+    return source_files[path]
+
 class ManifestItem(object):
     __metaclass__ = ABCMeta
 
     item_type = None
 
-    def __init__(self, path, manifest=None):
+    def __init__(self, source_file, manifest=None):
         self.manifest = manifest
-        self.path = path
+        self.source_file = source_file
+
+    @property
+    def path(self):
+        return self.source_file.rel_path
 
     @abstractmethod
     def key(self):
@@ -28,7 +46,7 @@ class ManifestItem(object):
         return {"path": self.path}
 
     @classmethod
-    def from_json(self, manifest, obj):
+    def from_json(self, manifest, tests_root, obj, source_files=None):
         raise NotImplementedError
 
     @abstractproperty
@@ -37,8 +55,8 @@ class ManifestItem(object):
 
 
 class URLManifestItem(ManifestItem):
-    def __init__(self, path, url, url_base="/", manifest=None):
-        ManifestItem.__init__(self, path, manifest=manifest)
+    def __init__(self, source_file, url, url_base="/", manifest=None):
+        ManifestItem.__init__(self, source_file, manifest=manifest)
         self._url = url
         self.url_base = url_base
 
@@ -59,8 +77,9 @@ class URLManifestItem(ManifestItem):
         return rv
 
     @classmethod
-    def from_json(cls, manifest, obj):
-        return cls(obj["path"],
+    def from_json(cls, manifest, tests_root, obj, source_files=None):
+        source_file = get_source_file(source_files, tests_root, manifest, obj["path"])
+        return cls(source_file,
                    obj["url"],
                    url_base=manifest.url_base,
                    manifest=manifest)
@@ -69,8 +88,8 @@ class URLManifestItem(ManifestItem):
 class TestharnessTest(URLManifestItem):
     item_type = "testharness"
 
-    def __init__(self, path, url, url_base="/", timeout=None, manifest=None):
-        URLManifestItem.__init__(self, path, url, url_base=url_base, manifest=manifest)
+    def __init__(self, source_file, url, url_base="/", timeout=None, manifest=None):
+        URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
         self.timeout = timeout
 
     def to_json(self):
@@ -80,8 +99,9 @@ class TestharnessTest(URLManifestItem):
         return rv
 
     @classmethod
-    def from_json(cls, manifest, obj):
-        return cls(obj["path"],
+    def from_json(cls, manifest, tests_root, obj, source_files=None):
+        source_file = get_source_file(source_files, tests_root, manifest, obj["path"])
+        return cls(source_file,
                    obj["url"],
                    url_base=manifest.url_base,
                    timeout=obj.get("timeout"),
@@ -91,19 +111,22 @@ class TestharnessTest(URLManifestItem):
 class RefTest(URLManifestItem):
     item_type = "reftest"
 
-    def __init__(self, path, url, references, url_base="/", timeout=None, is_reference=False,
+    def __init__(self, source_file, url, references, url_base="/", timeout=None,
                  manifest=None):
-        URLManifestItem.__init__(self, path, url, url_base=url_base, manifest=manifest)
+        URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
         for _, ref_type in references:
             if ref_type not in ["==", "!="]:
                 raise ValueError, "Unrecognised ref_type %s" % ref_type
         self.references = tuple(references)
         self.timeout = timeout
-        self.is_reference = is_reference
 
     @property
     def id(self):
         return self.url
+
+    @property
+    def is_reference(self):
+        return self.source_file.name_is_reference
 
     def key(self):
         return self.item_type, self.url
@@ -116,8 +139,9 @@ class RefTest(URLManifestItem):
         return rv
 
     @classmethod
-    def from_json(cls, manifest, obj):
-        return cls(obj["path"],
+    def from_json(cls, manifest, tests_root, obj, source_files=None):
+        source_file = get_source_file(source_files, tests_root, manifest, obj["path"])
+        return cls(source_file,
                    obj["url"],
                    obj["references"],
                    url_base=manifest.url_base,
@@ -142,6 +166,6 @@ class WebdriverSpecTest(ManifestItem):
         return self.path
 
     @classmethod
-    def from_json(cls, manifest, obj):
-        return cls(obj["path"],
-                   manifest=manifest)
+    def from_json(cls, manifest, tests_root, obj, source_files=None):
+        source_file = get_source_file(source_files, tests_root, manifest, obj["path"])
+        return cls(source_file, manifest=manifest)

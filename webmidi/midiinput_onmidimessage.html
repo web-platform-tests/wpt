@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Web MIDI API Test: onmessage()</title>
+    <link rel="author" title="Ryoya KAWAI" href="mailto:ryoya.kawai@gmail.com">
+    <link rel="help" href="http://webaudio.github.io/web-midi-api/#obtaining-access-to-midi-devices">
+    <link rel="match" href="reference/REFERENCE-FILE-NAME">
+    <meta name="assert" content="Return true when test success in inputs().">
+    <meta name="assert" content="Success when obtain over <span id='ulimit'></span> MIDI messages of noteOn or noteOff over onmidimessage().">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <style type="text/css">
+    /* ADD STYLE BLOCK HERE (PREFERRABLE TO INLINE STYLES) */
+    body { font-family:arial;}
+    </style>
+  </head>
+  <body>
+    <p>Success when be obtained over <span id="ulimit"></span> MIDI messages of noteOn or noteOff over onmidimessage() in <span id="timeout"></span> seconds.</p>
+    <div id="selectdevice"></div>
+    <p>Selected Device: <span id="inputdevice" style="border:1px solid #afafaf; border-radius:4px; padding:2px 4px;"></span></p>
+    <p id="msgstatus">Now <span id="msgcnt">0 message</span> accepted.</p>
+    <div id="accept" style="color:red;"></div>
+    <div id="warning" style="color:red;"></div>
+    <div id="warning2" style="color:red;"></div>
+
+    <div id="log"></div>
+
+    <!-- PAGE CONTENT -->
+    <script type="text/javascript">
+    var timeout=10000;
+    var MIDI;
+    var timerId={ };
+    var getPort={ };
+    var uLimit=8;
+    var inputCount=0;
+    var accept=null;
+    var inputs;
+
+    document.getElementById("timeout").innerHTML=timeout/1000;
+    document.getElementById("ulimit").innerHTML=uLimit;
+    document.getElementById("msgcnt").innerHTML=inputCount + "/" + uLimit +  " messages";
+
+    var test_inputs = async_test(
+        "onmidimessage (attribute of MIDIInput) test",
+        {timeout: timeout} //msec
+    );
+    navigator.requestMIDIAccess().then( successCallback, errorCallback );
+    function successCallback(access) {
+        MIDI = access;
+        test_inputs.step(function() {
+            var inputs=[];
+            if(typeof MIDI.inputs==="function") {
+                document.getElementById("warning").innerHTML= "This browser seems the implementation of the API, Web MIDI API, is followed old spec.";
+                inputs=MIDI.inputs();
+            } else {
+                var inputIterator=MIDI.inputs.values();
+                for(var o=inputIterator.next(); !o.done; o=inputIterator.next()) {
+                    inputs.push(o.value);
+                }
+            }
+            console.log("[InputDevices] ", inputs);
+            if(inputs.length==0) {
+                document.getElementById("warning").innerHTML="Your Computer looks no <b><u>MIDI INPUT</u></b> devices are pluged-in.<br> Please plug-in at least one <b><u>MIDI INPUT</u></b> device before run this Test.";
+                assert_false(true, "[No MIDI input devices are connected.]");
+                test_inputs.done();
+            } else {
+                var input = document.createElement("input");
+                input.type="button"; input.id="selectinput"; input.value="Select & Run";
+                var select = document.createElement("select");
+                select.id="midiin";
+                for(var i=0; i<inputs.length; i++) {
+                    select.options[i]=new Option(inputs[i]["name"]+" ("+inputs[i]["id"]+")", i);
+                }
+                document.getElementById("selectdevice").appendChild(select);
+                document.getElementById("selectdevice").appendChild(input);
+            }
+
+            document.getElementById("selectinput").addEventListener("click", function() {
+                //disableButton()
+                var selIdx=document.getElementById("midiin").selectedIndex;
+                var i = inputs[selIdx];
+                assert_true(inputs instanceof Object);
+                document.getElementById("inputdevice").innerHTML=inputs[selIdx]["name"]+" ("+inputs[selIdx]["id"]+")";
+
+                i.onmidimessage=function(event) {
+                    if(inputCount<uLimit) {
+                        test(function(){
+                            assert_true(event.constructor.name=="MIDIMessageEvent");
+                        }, "MIDIMessageEvent Interface name test. (#"+inputCount+")");
+                        test(function(){
+                            assert_true(event.data.constructor.name=="Uint8Array");
+                            assert_true(event.receivedTime.constructor.name=="Number");
+                        }, "MIDIMessageEvent Interface attribute test. (#"+inputCount+")");
+                        console.log(event.data[0].toString(16) + " " + event.data[1].toString(16) + " " + event.data[2].toString(16));
+                    }
+                    document.getElementById("msgcnt").innerHTML=inputCount + "/" + uLimit +  " messages";
+                    if(event.data[0].toString(16).substr(0,1)==9 || event.data[0].toString(16).substr(0,1)==8) inputCount++;
+                    if(inputCount>uLimit) {
+                        document.getElementById("msgstatus").style.setProperty("display", "none");
+                        disableButton();
+                        test_inputs.done();
+                    }
+                };
+
+            });
+
+        });
+
+        // automatic
+        if(typeof inputs=="object" && inputs.length>0) {
+            var type="click";
+            var e=document.createEvent('MouseEvent');
+            var b=document.getElementById("selectinput");
+            e.initEvent(type, true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+            b.dispatchEvent(e);
+        }
+
+    }
+    function errorCallback(message) {
+        test_inputs.step(function() {
+            assert_true(false);
+            test_inputs.done();
+        });
+    }
+    function disableButton() {
+        document.getElementById("midiin").setAttribute("disabled", "disabled");
+        document.getElementById("selectinput").setAttribute("disabled", "disabled");
+    }
+
+
+    </script>
+
+  </body>
+</html>

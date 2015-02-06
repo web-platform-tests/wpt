@@ -4,15 +4,14 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: 'text-align: center' - 'vertical-lr' and 'direction: rtl'</title>
+  <title>CSS Writing Modes Test: 'text-align: center' - 'vertical-rl' and 'direction: ltr'</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#vertical-layout" title="7.1 Principles of Layout in Vertical Writing Modes" />
-  <link rel="match" href="text-align-vert-lr-009-ref.xht" />
-
+  <link rel="match" href="text-align-vrl-008-ref.xht" />
 
   <meta content="ahem image" name="flags" />
-  <meta content="This test checks that 'text-align: center' centers an inline box within a line box with respect to the line box's logical left and right sides (line-left and line-right sides)." name="assert" />
+  <meta content="This test checks that 'text-align: center' centers an inline box within a line box with respect to such line box's logical left and right sides (line-left and line-right sides)." name="assert" />
 
   <style type="text/css"><![CDATA[
   p
@@ -35,10 +34,10 @@
 
   div
     {
-      background: red url("support/left-center-200x300.png");
-      direction: rtl;
+      background: red url("support/right-center-200x300.png");
+      direction: ltr;
       text-align: center;
-      writing-mode: vertical-lr;
+      writing-mode: vertical-rl;
     }
   ]]></style>
  </head>

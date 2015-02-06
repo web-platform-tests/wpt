@@ -28,19 +28,27 @@
     </ol>
     <div id="log"></div>
     <script>
-    (function() {
-      test(function() {
-        var b = navigator.battery;
-        assert_true(b.charging === true, 'charging must be set to true');
-        assert_true(b.chargingTime === 0, 'chargingTime must be set to 0');
-        assert_true(b.level === 1.0, 'level must be set to 1.0');
-        assert_true(b.dischargingTime === Infinity, 'dischargingTime must be set to Infinity');
 
-      }, 'When a BatteryManager object is created, charging must be set to true, ' +
+    async_test(function (t) {
+      navigator.getBattery().then(function (battery) {
+        t.step(function () {
+          assert_true(battery.charging, 'The BatteryManager.charging must be set to true');
+          assert_equals(battery.chargingTime, 0, 'The BatteryManager.chargingTime');
+          assert_equals(battery.dischargingTime, Infinity, 'The BatteryManager.dischargingTime');
+          assert_equals(battery.level, 1.0, 'The BatteryManager.level');
+        });
+        t.done();
+      }, function (error) {
+        t.step(function () {
+          assert_unreached(error.message);
+        });
+        t.done();
+      });
+    }, 'When a BatteryManager object is created, charging must be set to true, ' +
       'chargingTime to 0, level to 1.0 and dischargingTime to the value positive ' +
       'Infinity, if the implementation is unable to report the battery\'s charging ' +
       'state, charging time, level or remaining time respectively.');
-      })();
+
     </script>
   </body>
 </html>

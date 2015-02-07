@@ -2,13 +2,12 @@
 <html  lang="en" >
 <head>
 <meta charset="utf-8"/>
-<title>lower-roman, 3000-3999</title>
+<title>lower-roman, straddling range, 3000-4001</title>
 <link rel='author' title='Richard Ishida' href='mailto:ishida@w3.org'>
 <link rel='author' title='Chris Lilley' href='mailto:chris@w3.org'>
-<link rel='help' href='http://www.w3.org/TR/css-counter-styles-3/#simple-numeric'>
-<link rel="reviewer" title="Chris Lilley" href="mailto:chris@w3.org" />
+<link rel='help' href='http://www.w3.org/TR/css-counter-styles-3/#descdef-counter-style-range'>
 <meta name='flags' content='font'>
-<meta name="assert" content="Setting list-style-type to lower-roman will produce list of up to 9 items in the range range: 1 to 3999.">
+<meta name="assert" content="	If a counter style is used to represent a counter value outside of its ranges, the counter style instead drops down to its fallback counter style.">
 <style type='text/css'>
 .test { font-size: 25px; }
 ol { margin: 0; padding-left: 8em; }
@@ -23,6 +22,7 @@ ol li { list-style-type: lower-roman;  }
 <ol start='3555'><li title='3555'>mmmdlv.</li></ol>
 <ol start='3998'><li title='3998'>mmmcmxcviii.</li></ol>
 <ol start='3999'><li title='3999'>mmmcmxcix.</li></ol>
+<ol start='4001'><li title='4001'>4001.</li></ol>
 </div>
 
 

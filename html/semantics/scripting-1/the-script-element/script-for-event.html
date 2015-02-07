@@ -5,7 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-var run = [false, false, false, false, false, false, false, false];
+var run = [false, false, false, false, false, false, false, false, false, false, false, false];
 </script>
 <script for="w&#x130;ndow" event="onload">
 run[0] = true;
@@ -30,6 +30,18 @@ run[6] = true;
 </script>
 <script for="" event="">
 run[7] = true;
+</script>
+<script for="&#xa0;window" event="onload">
+run[8] = true;
+</script>
+<script for="window&#xa0;" event="onload">
+run[9] = true;
+</script>
+<script for="window" event="&#xa0;onload">
+run[10] = true;
+</script>
+<script for="window" event="onload&#xa0;">
+run[11] = true;
 </script>
 <script>
 test(function() {

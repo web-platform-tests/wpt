@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Web MIDI API Test: onmessage()</title>
+    <title>EventHandler of onmessage() in MIDIInput interface | Web MIDI API Test</title>
     <link rel="author" title="Ryoya KAWAI" href="mailto:ryoya.kawai@gmail.com">
-    <link rel="help" href="http://webaudio.github.io/web-midi-api/#obtaining-access-to-midi-devices">
+    <link rel="help" href="http://webaudio.github.io/web-midi-api/#midimessageevent-interface"> <!7.>
     <link rel="match" href="reference/REFERENCE-FILE-NAME">
     <meta name="assert" content="Return true when test success in inputs().">
     <meta name="assert" content="Success when obtain over <span id='ulimit'></span> MIDI messages of noteOn or noteOff over onmidimessage().">
@@ -31,11 +31,8 @@
     <script type="text/javascript">
     var timeout=10000;
     var MIDI;
-    var timerId={ };
-    var getPort={ };
     var uLimit=8;
     var inputCount=0;
-    var accept=null;
     var inputs;
 
     document.getElementById("timeout").innerHTML=timeout/1000;
@@ -49,16 +46,12 @@
     navigator.requestMIDIAccess().then( successCallback, errorCallback );
     function successCallback(access) {
         MIDI = access;
+
         test_inputs.step(function() {
             var inputs=[];
-            if(typeof MIDI.inputs==="function") {
-                document.getElementById("warning").innerHTML= "This browser seems the implementation of the API, Web MIDI API, is followed old spec.";
-                inputs=MIDI.inputs();
-            } else {
-                var inputIterator=MIDI.inputs.values();
-                for(var o=inputIterator.next(); !o.done; o=inputIterator.next()) {
-                    inputs.push(o.value);
-                }
+            var inputIterator=MIDI.inputs.values();
+            for(var o=inputIterator.next(); !o.done; o=inputIterator.next()) {
+                inputs.push(o.value);
             }
             console.log("[InputDevices] ", inputs);
             if(inputs.length==0) {
@@ -86,17 +79,21 @@
 
                 i.onmidimessage=function(event) {
                     if(inputCount<uLimit) {
+                        // 7. MIDIMessageEvent Interface Event name Test
                         test(function(){
                             assert_true(event.constructor.name=="MIDIMessageEvent");
-                        }, "MIDIMessageEvent Interface name test. (#"+inputCount+")");
+                        }, "7. MIDIMessageEvent Interface Event name Test (#"+inputCount+")");
                         test(function(){
                             assert_true(event.data.constructor.name=="Uint8Array");
                             assert_true(event.receivedTime.constructor.name=="Number");
-                        }, "MIDIMessageEvent Interface attribute test. (#"+inputCount+")");
+                        }, "7.1 Attributes Test (MIDIMessageEvent Interface) (#"+inputCount+")");
                         console.log(event.data[0].toString(16) + " " + event.data[1].toString(16) + " " + event.data[2].toString(16));
                     }
                     document.getElementById("msgcnt").innerHTML=inputCount + "/" + uLimit +  " messages";
-                    if(event.data[0].toString(16).substr(0,1)==9 || event.data[0].toString(16).substr(0,1)==8) inputCount++;
+                    var sb_1=event.data[0].toString(16).substr(0,1).toLowerCase();
+                    if(sb_1=="9" || sb_1=="8" ||
+                       sb_1=="a" || sb_1=="b" || sb_1=="c" || sb_1=="d" || sb_1=="e" ||  sb_1=="f"
+                       ) { inputCount++; }
                     if(inputCount>uLimit) {
                         document.getElementById("msgstatus").style.setProperty("display", "none");
                         disableButton();
@@ -107,16 +104,7 @@
             });
 
         });
-
-        // automatic
-        if(typeof inputs=="object" && inputs.length>0) {
-            var type="click";
-            var e=document.createEvent('MouseEvent');
-            var b=document.getElementById("selectinput");
-            e.initEvent(type, true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-            b.dispatchEvent(e);
-        }
-
+        
     }
     function errorCallback(message) {
         test_inputs.step(function() {

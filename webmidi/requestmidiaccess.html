@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Web MIDI API Test: requestMIDIAccess()</title>
     <link rel="author" title="Ryoya KAWAI" href="mailto:ryoya.kawai@gmail.com">
-    <link rel="help" href="http://webaudio.github.io/web-midi-api/#requestmidiaccess">
+    <link rel="help" href="http://webaudio.github.io/web-midi-api/#requestmidiaccess"> <!4.1>
+    <link rel="help" href="http://webaudio.github.io/web-midi-api/#midiaccess-interface"> <!5>
     <link rel="match" href="reference/REFERENCE-FILE-NAME">
     <meta name="assert" content="Return true when test success in requestMIDIAccess().">
     <script src="/resources/testharness.js"></script>
@@ -20,22 +21,26 @@
     <div id="log"></div>
 
     <!-- PAGE CONTENT -->
-    <!--script type="text/javascript" src="webmidiapi_01_request.js"></script-->
     <script type="text/javascript">
     var MIDI;
 
     var test_requestMIDIAccess = async_test("requestMIDIAccess({sysex: flase})");
     function testWMA() {
         var ret=navigator.requestMIDIAccess({sysex:false}).then( successCallback, errorCallback );
+
+        // 4.1 requestMIDIAccess() (in { sysex:false })
         test(function(){
             assert_true(ret.constructor.name=="Promise");
         }, "Return type in {sysex:false}");
         function successCallback(access) {
             MIDI=access;
+            // 5. MIDIAccess Interface
             test_requestMIDIAccess.step(function() {
                 test(function(){
                     assert_true(MIDI.constructor.name=="MIDIAccess");
                 }, "MIDIAccess Interface name test in {sysex:false}");
+
+                // 5.1 Attributes
                 test(function(){
                     assert_true(MIDI.inputs.constructor.name=="MIDIInputMap");
                     assert_true(typeof MIDI.onconnect=="object");
@@ -60,15 +65,21 @@
     var test_requestMIDIAccess02 = async_test("requestMIDIAccess({sysex: true}) - W3C Spec: Web MIDI API");
     function testWMA02() {
         var ret02=navigator.requestMIDIAccess({sysex:true}).then( successCallback, errorCallback );
+
+        // 4.1 requestMIDIAccess() (in { sysex:true })
         test(function(){
             assert_true(ret02.constructor.name=="Promise");
         }, "Return type test in sysex:true");
+
         function successCallback(access) {
             MIDI=access;
+            // 5. MIDIAccess Interface
             test_requestMIDIAccess02.step(function() {
                 test(function(){
                     assert_true(MIDI.constructor.name=="MIDIAccess");
                 }, "MIDIAccess interface name test in {sysex:true}");
+
+                // 5.1 Attributes
                 test(function(){
                     assert_true(MIDI.inputs.constructor.name=="MIDIInputMap");
                     assert_true(typeof MIDI.onconnect=="object");

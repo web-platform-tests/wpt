@@ -8,12 +8,13 @@
 <link rel='help' href='http://www.w3.org/TR/CSS21/syndata.html#charset' />
 <link rel='alternate' href='http://www.w3.org/International/tests/tests-html-css/tests-character-encoding/generate?test=35' />
 <meta name='flags' content='http' />
-<meta name="assert" content="When a stylesheet has a @charset declaration with an unknown value, the stylesheet should be ignored." />
+<meta name="assert" content="When a stylesheet has a @charset declaration with an unknown value, the declaration should be ignored." />
 <style type='text/css'>
 /* the CSS below is not part of the test */
 .test { font-size: 40px; }
 .test img { vertical-align: middle;  }
 .test td { padding-right: 60px; }
+.hello { background-color: #FF0000; color: #FF0000; }
 </style>
 <link rel="stylesheet" type="text/css" href="support/charset-unknown.css" />
 </head>
@@ -21,7 +22,7 @@
 <p class='instructions'>Test passes if there is a green rectangle below.</p>
 
 
-<div class="test"><span style="background-color: #00FF00; color: #00FF00;"><span class="hello">text</span></span></div>
+<div class="test"><span class="hello">text</span></div>
 
 
 <!--p class="notes">Notes: <br />The HTML page is served as UTF-8.  The CSS starts a @charset rule for an encoding that is not in the IANA list.</p-->

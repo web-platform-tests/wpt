@@ -1,7 +1,7 @@
 @charset "xxxunknownEncodingxxx";
 .hello {
-	background-color: #FF0000;
+	background-color: #00FF00;
 	font-weight: bold;
-	color: red;
+	color: #00FF00;
 	font-family: Arial, Helvetica, sans-serif; 
 	}

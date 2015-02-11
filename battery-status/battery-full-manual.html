@@ -25,10 +25,10 @@
 async_test(function (t) {
   navigator.getBattery().then(function (battery) {
     t.step(function () {
-      assert_true(battery.charging, 'The BatteryManager.charging must be set to true');
-      assert_equals(battery.chargingTime, 0, 'The BatteryManager.chargingTime');
-      assert_equals(battery.dischargingTime, Infinity, 'The BatteryManager.dischargingTime');
-      assert_equals(battery.level, 1.0, 'The BatteryManager.level');
+      assert_true(battery.charging, 'charging must be set to true');
+      assert_equals(battery.chargingTime, 0, 'chargingTime must be set to 0');
+      assert_equals(battery.dischargingTime, Infinity, 'dischargingTime must be set to Infinity');
+      assert_equals(battery.level, 1.0, 'level must be set to 1.0');
     });
     t.done();
   }, function (error) {

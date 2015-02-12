@@ -8,13 +8,13 @@
     <script src="/resources/idlharness.js"></script>
     <script type="text/plain" class="untested">
     interface Navigator { };
-    
+
     interface EventTarget {
       void addEventListener(DOMString type, EventListener? callback, optional boolean capture);
       void removeEventListener(DOMString type, EventListener? callback, optional boolean capture);
       boolean dispatchEvent(Event event);
     };
-    
+
     [Callback]
     interface EventListener {
       void handleEvent(Event event);
@@ -22,9 +22,9 @@
     </script>
     <script type="text/plain">
     partial interface Navigator {
-        readonly attribute BatteryManager battery;
+        Promise<BatteryManager> getBattery ();
     };
-    
+
     interface BatteryManager : EventTarget {
         readonly attribute boolean             charging;
         readonly attribute unrestricted double chargingTime;
@@ -45,7 +45,7 @@
       idls = node.textContent.replace('EventHandler', 'Function?', 'g').replace('unrestricted double', 'double', 'g');
       idl_array[(node.className === 'untested') ? 'add_untested_idls' : 'add_idls'](idls);
     });
-    idl_array.add_objects({Navigator: ['navigator'], BatteryManager: ['navigator.battery']});
+    idl_array.add_objects({Navigator: ['navigator'], BatteryManager: ['navigator.getBattery()']});
     idl_array.test();
     </script>
   </head>

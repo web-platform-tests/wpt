@@ -47,23 +47,23 @@
   var onlevelchange_test = async_test('When the device is plugged in and the battery level is updated, must set the level attribute\'s value and fire a levelchange event.');
 
   var batterySuccess = function (battery) {
-    battery.onchargingchange = onchargingchange_test.step_func(function (e) {
+    battery.onchargingchange = onchargingchange_test.step_func(function () {
       assert_true(battery.charging, 'The charging attribute must be set to true.');
       onchargingchange_test.done();
     });
 
     var battery_chargingtime = battery.chargingTime;
-    battery.onchargingtimechange = onchargingtimechange_test.step_func(function (e) {
+    battery.onchargingtimechange = onchargingtimechange_test.step_func(function () {
       assert_less_than(battery.chargingTime, battery_chargingtime, 'The value of the chargingTime attribute must decrease.');
       onchargingtimechange_test.done();
     });
 
-    battery.ondischargingtimechange = ondischargingtimechange_test.step_func(function (e) {
+    battery.ondischargingtimechange = ondischargingtimechange_test.step_func(function () {
       assert_equals(battery.dischargingTime, Infinity, 'The value of the dischargingTime attribute must be set to Infinity.');
       ondischargingtimechange_test.done();
     });
 
-    battery.onlevelchange = onlevelchange_test.step_func(function (e) {
+    battery.onlevelchange = onlevelchange_test.step_func(function () {
       assert_greater_than(battery.level, 0);
       assert_less_than(battery.level, 1.0);
       onlevelchange_test.done();

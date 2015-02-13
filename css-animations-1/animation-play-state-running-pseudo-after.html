@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS3 Animations Test: animation-play-state - running impacts ::after</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/css3-animations/#animation-play-state">
+<meta name="flags" content="">
+<meta name="assert" content="Check if animation-play-state value: running impacts the after pseudo element">
+<style>
+  #content {
+    border: 1px solid black;
+    width: 150px;
+  }
+  #test::after {
+    content: "::after";
+  }
+  #test {
+    position: relative;
+    animation-name: sample;
+    animation-duration: 5s;
+    animation-play-state: running;
+  }
+  @keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if the '::after' moves from right to left.</p>
+  <div id="test"></div>
+</body>
+

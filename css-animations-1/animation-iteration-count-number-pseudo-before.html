@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS3 Animations Test: animation-iteration-count - number impacts ::before</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/css3-animations/#animation-iteration-count-property">
+<meta name="flags" content="">
+<meta name="assert" content="Check if animation-iteration-count value: number impacts the before pseudo element">
+<style>
+  #test::before {
+    content: "before::"
+  }
+  #test {
+    position: relative;
+    animation-name: sample;
+    animation-duration: 5s;
+    animation-iteration-count: 2;
+  }
+  @keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if the 'before::animation-iteration-count' moves from right to left and repeats two times.</p>
+  <div id="test">animation-iteration-count</div>
+</body>
+

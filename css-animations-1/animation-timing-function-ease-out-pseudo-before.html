@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS3 Animations Test: animation-timing-function - ease-out impacts ::before</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/css3-animations/#animation-timing-function">
+<meta name="flags" content="">
+<meta name="assert" content="Check if animation-timing-function value: ease-out impacts the before pseudo element">
+<style>
+  #test::before {
+    content: "before::";
+  }
+  #test {
+    position: relative;
+    animation-name: sample;
+    animation-duration: 5s;
+    animation-timing-function: ease-out;
+  }
+  @keyframes sample {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 150px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if the 'before::' moves to right in the speed by order: fast => slow.</p>
+  <div id="test"></div>
+</body>
+

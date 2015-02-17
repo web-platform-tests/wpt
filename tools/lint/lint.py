@@ -21,7 +21,7 @@ def git(command, *args):
 
     try:
         return subprocess.check_output(command_line, **proc_kwargs)
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         raise
 
 

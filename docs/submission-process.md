@@ -18,7 +18,7 @@ on, e.g. `git checkout -b topic-name`
 
 * Commit your changes.
 
-* Push your local branch to your GitHub repository
+* Push your local branch to your GitHub repository.
 
 * Using the GitHub UI create a Pull Request for your branch.
 

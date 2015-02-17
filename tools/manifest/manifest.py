@@ -92,6 +92,8 @@ class Manifest(object):
         if url in self.reftest_nodes_by_url:
             return self.reftest_nodes_by_url[url]
 
+        return None
+
     def _committed_with_path(self, rel_path):
         rv = set()
 

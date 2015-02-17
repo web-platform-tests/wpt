@@ -22,7 +22,7 @@ class TestTree(object):
     def local_changes(self):
         pass
 
-    def comitted_changes(self, base_rev=None):
+    def committed_changes(self, base_rev=None):
         pass
 
 
@@ -148,7 +148,7 @@ class NoVCSTree(TestTree):
 
     def local_changes(self):
         # Put all files into local_changes and rely on Manifest.update to de-dupe
-        # changes that in fact comitted at the base rev.
+        # changes that in fact committed at the base rev.
 
         rv = []
         for dir_path, dir_names, filenames in os.walk(self.tests_root):

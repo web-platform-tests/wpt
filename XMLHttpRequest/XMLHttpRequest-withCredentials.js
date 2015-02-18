@@ -38,7 +38,13 @@ function test_withCredentials(worker) {
         this.done()
       }
     })
-  }, "setting withCredentials when not in UNSENT, OPENED state")
+  }, "setting withCredentials when not in UNSENT, OPENED state (asynchronous)")
+
+  test(function() {
+    var client = new XMLHttpRequest()
+    client.open("GET", "resources/delay.py?ms=1000", false)
+    assert_throws("InvalidStateError", function() { client.withCredentials = true })
+  }, "setting withCredentials when in DONE state (synchronous)")
 
   done()
 }

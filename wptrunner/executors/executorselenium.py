@@ -155,7 +155,8 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
                                      timeout_multiplier=timeout_multiplier,
                                      debug_args=debug_args)
         self.protocol = SeleniumProtocol(self, browser, http_server_url, capabilities)
-        self.script = open(os.path.join(here, "testharness_webdriver.js")).read()
+        with open(os.path.join(here, "testharness_webdriver.js")) as f:
+            self.script = f.read()
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
 
@@ -231,9 +232,6 @@ class SeleniumRefTestExecutor(RefTestExecutor):
         webdriver.get(full_url)
 
         webdriver.execute_async_script(self.wait_script)
-
-        # XXX I have no idea...
-        # time.sleep(5)
 
         screenshot = webdriver.get_screenshot_as_base64()
 

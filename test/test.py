@@ -35,8 +35,11 @@ class ResultHandler(BaseHandler):
 
     def __call__(self, data):
         if self.product is not None and data["action"] in ["suite_start", "suite_end"]:
-            # Hack: don't count these suite_* events for the purposes of figuring out if
-            # events are balanced
+            # Hack: mozlog sets some internal state to prevent multiple suite_start or
+            # suite_end messages. We actually want that here (one from the metaharness
+            # and one from the individual test type harness), so override that internal
+            # state (a better solution might be to not share loggers, but this works well
+            # enough)
             self.logger._state.suite_started = True
             return
 
@@ -70,7 +73,9 @@ def read_config():
     # This only allows one product per whatever for now
     for product in parser.sections():
         if product != "general":
-            rv["products"][product] = dict(parser.items(product))
+            dest = rv["products"][product] = {}
+            for key, value in parser.items(product):
+                rv["products"][product][key] = value
 
     return rv
 
@@ -97,21 +102,8 @@ def set_from_args(settings, args):
     if args.test:
         settings["include"] = args.test
 
-def get_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--verbose", action="store_true", default=False,
-                        help="verbose log output")
-    parser.add_argument("--product", action="append",
-                        help="Specific product to include in test run")
-    parser.add_argument("test", nargs="*", type=wptcommandline.slash_prefixed,
-                        help="Specific tests to include in test run")
-    return parser
-
-def main():
-    config = read_config()
-
-    args = get_parser().parse_args()
-
+def run(config, args):
+    print "args", args
     logger = structuredlog.StructuredLogger("web-platform-tests")
     logger.add_handler(ResultHandler(logger=logger, verbose=args.verbose))
     setup_wptrunner_logging(logger)
@@ -140,10 +132,31 @@ def main():
     logger.send_message("wptrunner-test", "set-product", None)
     logger.suite_end()
 
-if __name__ == "__main__":
-    import pdb, traceback
+def get_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true", default=False,
+                        help="verbose log output")
+    parser.add_argument("--product", action="append",
+                        help="Specific product to include in test run")
+    parser.add_argument("--pdb", action="store_true",
+                        help="Invoke pdb on uncaught exception")
+    parser.add_argument("test", nargs="*", type=wptcommandline.slash_prefixed,
+                        help="Specific tests to include in test run")
+    return parser
+
+def main():
+    config = read_config()
+
+    args = get_parser().parse_args()
+
     try:
-        main()
+        run(config, args)
     except Exception:
-        print traceback.format_exc()
-        pdb.post_mortem()
+        if args.pdb:
+            import pdb, traceback
+            print traceback.format_exc()
+            pdb.post_mortem()
+
+
+if __name__ == "__main__":
+    main()

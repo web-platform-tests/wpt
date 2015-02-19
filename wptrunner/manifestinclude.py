@@ -74,7 +74,7 @@ class IncludeManifest(ManifestItem):
         if os.path.exists(maybe_path):
             for manifest, data in test_manifests.iteritems():
                 rel_path = os.path.relpath(maybe_path, data["tests_path"])
-                if ".." not in rel_path:
+                if ".." not in rel_path.split(os.sep):
                     url = rel_path
 
         assert direction in ("include", "exclude")

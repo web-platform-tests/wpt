@@ -164,7 +164,7 @@ class RefTestImplementation(object):
         # screenshot is None, but we set this value if a test fails
         # and the screenshot was taken from the cache so that we may
         # retrieve the screenshot from the cache directly in the future
-        self.cache = executor.screenshot_cache
+        self.screenshot_cache = self.executor.screenshot_cache
         self.message = None
 
     @property
@@ -174,7 +174,7 @@ class RefTestImplementation(object):
     def get_hash(self, url, timeout):
         timeout = timeout * self.timeout_multiplier
 
-        if url not in self.cache:
+        if url not in self.screenshot_cache:
             success, data = self.executor.screenshot(url, timeout)
 
             if not success:
@@ -183,11 +183,11 @@ class RefTestImplementation(object):
             screenshot = data
             hash_value = hashlib.sha1(screenshot).hexdigest()
 
-            self.cache[url] = (hash_value, None)
+            self.screenshot_cache[url] = (hash_value, None)
 
             rv = True, (hash_value, screenshot)
         else:
-            rv = True, self.cache[url]
+            rv = True, self.screenshot_cache[url]
 
         self.message.append("%s %s" % (url, rv[1][0]))
         return rv
@@ -214,7 +214,7 @@ class RefTestImplementation(object):
             for i, node in enumerate(nodes):
                 success, data = self.get_hash(node.url, node.timeout)
                 if success is False:
-                    return {"status":data[0], "message": data[1]}
+                    return {"status": data[0], "message": data[1]}
 
                 hashes[i], screenshots[i] = data
 
@@ -245,8 +245,8 @@ class RefTestImplementation(object):
         if not success:
             return False, data
 
-        hash_val, _ = self.cache[node.url]
-        self.cache[node.url] = hash_val, data
+        hash_val, _ = self.screenshot_cache[node.url]
+        self.screenshot_cache[node.url] = hash_val, data
         return True, data
 
 class Protocol(object):

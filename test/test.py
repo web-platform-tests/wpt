@@ -103,7 +103,6 @@ def set_from_args(settings, args):
         settings["include"] = args.test
 
 def run(config, args):
-    print "args", args
     logger = structuredlog.StructuredLogger("web-platform-tests")
     logger.add_handler(ResultHandler(logger=logger, verbose=args.verbose))
     setup_wptrunner_logging(logger)

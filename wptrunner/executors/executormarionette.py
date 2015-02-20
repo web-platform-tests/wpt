@@ -35,8 +35,7 @@ def do_delayed_imports():
         import marionette
         from marionette import errors
     except ImportError:
-        from marionette_driver import marionette
-        from marionette_driver import errors
+        from marionette_driver import marionette, errors
 
 
 class MarionetteTestExecutor(TestExecutor):

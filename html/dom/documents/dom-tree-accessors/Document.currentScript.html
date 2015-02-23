@@ -17,9 +17,9 @@ var tests = {};
 expected.forEach(function(id) {
   tests[id] = async_test("Script " + id);
 });
-function verifyScript(n) {
-  tests[n].step(function() {
-    assert_equals(document.currentScript, document.getElementById(n));
+function verifyScript(id) {
+  tests[id].step(function() {
+    assert_equals(document.currentScript, document.getElementById(id));
     this.done();
   });
 }

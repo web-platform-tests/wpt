@@ -7,10 +7,21 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
+var expected = [
+  "parse-inline",
+  "parse-ext",
+  "dom-inline",
+  "dom-ext",
+];
+var tests = {};
+expected.forEach(function(id) {
+  tests[id] = async_test("Script " + id);
+});
 function verifyScript(n) {
-  test(function() {
+  tests[n].step(function() {
     assert_equals(document.currentScript, document.getElementById(n));
-  }, "Script " + n);
+    this.done();
+  });
 }
 </script>
 

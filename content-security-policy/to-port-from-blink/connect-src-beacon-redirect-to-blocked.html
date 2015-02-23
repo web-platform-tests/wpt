@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="connect-src http://127.0.0.1:8000">
+<script src="/js-test-resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description("Verify that a CSP connect-src directive blocks redirects.");
+window.jsTestIsAsync = true;
+
+shouldBeTrue('navigator.sendBeacon("resources/redir.php?url=http://127.0.0.1:8080/navigation/resources/save-beacon.php%3Fname%3Dcsp-redirect-blocked", "ping");');
+
+function checkForBeacon() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://127.0.0.1:8000/navigation/resources/check-beacon.php?name=csp-redirect-blocked&retries=100", true);
+    xhr.onload = function () {
+        var lines = xhr.responseText.split("\n");
+        for (var i in lines)
+            testPassed(lines[i]);
+        finishJSTest();
+    };
+    xhr.onerror = function () {
+        testFailed("Unable to fetch beacon status");
+        finishJSTest();
+    };
+    xhr.send();
+}
+setTimeout(checkForBeacon, 1000);
+</script>
+</body>
+</html>

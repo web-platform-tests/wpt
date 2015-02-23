@@ -1,0 +1,7 @@
+CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "style-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-JoOXycn65NWevqnYP4bWv2kUYtndRvELR1lwjplqWBE='), or a nonce ('nonce-...') is required to enable inline execution.
+
+CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "style-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-YPha-h5Ju1jLGet9Z1UtYlcjA8foA1NdOh6M6EZwTG0='), or a nonce ('nonce-...') is required to enable inline execution.
+
+PASS 1/2
+PASS 2/2
+0

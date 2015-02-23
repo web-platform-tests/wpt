@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<iframe src="resources/sandbox.php?sandbox=allow-top-navigation"></iframe>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+window.onload = function() {
+    var frame = document.getElementsByTagName("iframe")[0];
+    try {
+        frame.contentDocument;
+        alert("FAIL: Iframe was not in a unique origin");
+    } catch (e) {
+        alert("PASS: Iframe was in a unique origin");
+    }
+};
+</script>

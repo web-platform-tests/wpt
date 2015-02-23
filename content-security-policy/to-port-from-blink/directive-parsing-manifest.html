@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+}
+if (window.internals)
+    internals.settings.setExperimentalContentSecurityPolicyFeaturesEnabled(false);
+</script>
+<meta http-equiv="Content-Security-Policy" content="manifest-src 'self'"/>
+</head>
+<body>
+<p>This page disables CSP2, but uses a CSP2 manifest directive. It should log an informative message to the console: not an error, showing that the directive is parsed correctly but experimental.</p>
+</body>
+</html>
+

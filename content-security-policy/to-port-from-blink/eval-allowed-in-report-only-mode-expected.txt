@@ -1,0 +1,5 @@
+CONSOLE ERROR: line 10: The Content Security Policy 'script-src 'self' 'unsafe-inline'' was delivered in report-only mode, but does not specify a 'report-uri'; the policy will have no effect. Please either add a 'report-uri' directive, or deliver the policy via the 'Content-Security-Policy' header.
+CONSOLE ERROR: [Report Only] Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'".
+
+ALERT: PASS: eval() executed as expected.
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self';">
+    <script src="/js-test-resources/js-test.js"></script>
+    <script>
+        window.onload = function () {
+            debug("This test ensures that styles can be set by object.cloneNode()");
+
+            window.nodes = document.getElementById('nodes');
+            window.node1 = document.getElementById('node1');
+            window.node1.style.background = "yellow";
+            window.node1.style.color = "red";
+            window.node2 = document.getElementById('node1').cloneNode(true);
+            window.node2.id =  "node2";
+            window.node3 = document.getElementById('node3');
+            window.node3.style.background = "blue";
+            window.node3.style.color = "green";
+            window.node4 = document.getElementById('node3').cloneNode(false);
+            window.node4.id =  "node4";
+            window.node4.innerHTML = "Node #4";
+
+            nodes.appendChild(node1);
+            nodes.appendChild(node2);
+            nodes.appendChild(node3);
+            nodes.appendChild(node4);
+
+            shouldBeEqualToString("node1.style.background", "yellow");
+            shouldBeEqualToString("node2.style.background", "yellow");
+            shouldBeEqualToString("node3.style.background", "blue");
+            shouldBeEqualToString("node4.style.background", "blue");
+  
+            shouldBeEqualToString("node1.style.color", "red");
+            shouldBeEqualToString("node2.style.color", "red");
+            shouldBeEqualToString("node3.style.color", "green");
+            shouldBeEqualToString("node4.style.color", "green");
+
+            shouldBe("window.getComputedStyle(node1).background", "window.getComputedStyle(node2).background");
+            shouldBe("window.getComputedStyle(node3).background", "window.getComputedStyle(node4).background");
+
+            shouldBe("window.getComputedStyle(node1).color", "window.getComputedStyle(node2).color");
+            shouldBe("window.getComputedStyle(node3).color", "window.getComputedStyle(node4).color");
+
+            window.ops = document.getElementById('ops');
+            ops.style.color = 'red';
+            window.clonedOps = ops.cloneNode(true);
+            window.violetOps = document.getElementById('violetOps');
+
+            violetOps.style.background = 'rgb(238, 130, 238)';
+            document.getElementsByTagName('body')[0].appendChild(clonedOps);
+
+            shouldBeEqualToString("ops.style.background", "");
+            debug("getComputedStyle(clonedOps).background: " + window.getComputedStyle(ops).background);
+            shouldBeEqualToString("ops.style.color", "red");
+            shouldBeEqualToString("clonedOps.style.background", "");
+            shouldBeEqualToString("violetOps.style.background", "rgb(238, 130, 238)");
+
+            shouldBe("window.getComputedStyle(clonedOps).background", "window.getComputedStyle(ops).background");
+            shouldBe("window.getComputedStyle(clonedOps).color", "window.getComputedStyle(ops).color");
+            debug("getComputedStyle(violetOps).background: " + window.getComputedStyle(violetOps).background);
+            shouldNotBe("window.getComputedStyle(ops).background", "window.getComputedStyle(violetOps).background");
+            shouldNotBe("window.getComputedStyle(clonedOps).background", "window.getComputedStyle(violetOps).background");
+
+            shouldBeEqualToString("ops.id", "ops");
+            shouldBe("ops.id", "clonedOps.id");
+       };
+    </script>
+</head>
+<body>
+
+    <div id="nodes">
+	This is a div (nodes)
+        <div id="node1"> This is a div. (node 1 or 2)</div>
+        <div id="node3"> This is a div. (node 3 or 4)</div>
+    </div>
+
+    <div id="ops" style="background: rgb(238, 130, 238)">
+         Yet another div.
+    </div>
+
+    <div id="violetOps">
+         Yet another div.
+    </div>
+
+</body>
+</html>

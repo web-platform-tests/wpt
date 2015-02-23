@@ -1,0 +1,10 @@
+CONSOLE ERROR: line 4: The XSS Auditor blocked access to 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?csp=block&q=%3Cscript%3Ealert(String.fromCharCode(0x58,0x53,0x53))%3C/script%3E' because the source code of a script was found within the request. The server sent a 'Content-Security-Policy' header requesting this behavior.
+ALERT: URL mismatch: '[Location object access threw exception]' vs. 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?csp=block&q=%3Cscript%3Ealert(String.fromCharCode(0x58,0x53,0x53))%3C/script%3E'
+Tests that 'Content-Security-Policy: reflected-xss block;' enables the XSSAuditor. This test passes if a console message is generated, and the page is blocked. There should be no content in the IFrame below:
+
+
+
+--------
+Frame: 'frame'
+--------
+

@@ -1,0 +1,9 @@
+CONSOLE ERROR: line 3: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-2jEXxWe_uIoRJGbfoW7Bd11qhRclP9IuS5ZXCbhCUnM='), or a nonce ('nonce-...') is required to enable inline execution.
+
+PingLoader dispatched to 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/save-report.php?test=report-uri.html'.
+CSP report received:
+CONTENT_TYPE: application/csp-report
+HTTP_REFERER: http://127.0.0.1:8000/security/contentSecurityPolicy/report-uri.html
+REQUEST_METHOD: POST
+=== POST DATA ===
+{"csp-report":{"document-uri":"http://127.0.0.1:8000/security/contentSecurityPolicy/report-uri.html","referrer":"","violated-directive":"script-src 'self'","effective-directive":"script-src","original-policy":"script-src 'self'; report-uri resources/save-report.php?test=report-uri.html","blocked-uri":"","status-code":200}}

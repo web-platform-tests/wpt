@@ -1,0 +1,11 @@
+CONSOLE WARNING: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check http://xhr.spec.whatwg.org/.
+CONSOLE ERROR: line 18: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "img-src 'none'".
+
+PingLoader dispatched to 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/save-report.php?test=report-same-origin-with-cookies.html'.
+CSP report received:
+CONTENT_TYPE: application/csp-report
+Cookie: cspViolationReportCookie=sameOrigin
+HTTP_REFERER: http://127.0.0.1:8000/security/contentSecurityPolicy/report-same-origin-with-cookies.html
+REQUEST_METHOD: POST
+=== POST DATA ===
+{"csp-report":{"document-uri":"http://127.0.0.1:8000/security/contentSecurityPolicy/report-same-origin-with-cookies.html","referrer":"","violated-directive":"img-src 'none'","effective-directive":"img-src","original-policy":"img-src 'none'; report-uri /security/contentSecurityPolicy/resources/save-report.php?test=report-same-origin-with-cookies.html","blocked-uri":"http://127.0.0.1:8000/security/resources/abe.png","status-code":200}}

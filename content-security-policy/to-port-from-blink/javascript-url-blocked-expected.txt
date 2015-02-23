@@ -1,0 +1,6 @@
+CONSOLE ERROR: The 'allow' directive has been replaced with 'default-src'. Please use that directive instead, as 'allow' has no effect.
+CONSOLE ERROR: The 'allow' directive has been replaced with 'default-src'. Please use that directive instead, as 'allow' has no effect.
+CONSOLE ERROR: The 'allow' directive has been replaced with 'default-src'. Please use that directive instead, as 'allow' has no effect.
+CONSOLE ERROR: line 1: Refused to execute JavaScript URL because it violates the following Content Security Policy directive: "script-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.
+
+

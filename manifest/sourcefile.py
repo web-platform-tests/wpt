@@ -25,8 +25,8 @@ class SourceFile(object):
         :param tests_root: Path to the root of the source tree
         :param rel_path: File path relative to tests_root
         :param url_base: Base URL used when converting file paths to urls
-        :param use_comitted: Work with the last comitted version of the file
-                             rather than the on-disk version.
+        :param use_committed: Work with the last committed version of the file
+                              rather than the on-disk version.
         """
 
         self.tests_root = tests_root
@@ -41,7 +41,7 @@ class SourceFile(object):
         self.name, self.ext = os.path.splitext(self.filename)
 
     def name_prefix(self, prefix):
-        """Check if the filename start with a given prefix
+        """Check if the filename starts with a given prefix
 
         :param prefix: The prefix to check"""
         return self.name.startswith(prefix)
@@ -184,7 +184,7 @@ class SourceFile(object):
 
     @cached_property
     def reftest_nodes(self):
-        """List of ElementTree Elements corresponding to nodes corresponding
+        """List of ElementTree Elements corresponding to nodes representing a
         to a reftest <link>"""
         if not self.root:
             return []

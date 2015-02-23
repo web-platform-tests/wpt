@@ -26,18 +26,23 @@ class ManifestItem(object):
         self.manifest = manifest
         self.source_file = source_file
 
-    @abstractmethod
+    @abstractproperty
     def id(self):
+        """The test's id (usually its url)"""
         pass
 
     @property
     def path(self):
+        """The test path relative to the test_root"""
         return self.source_file.rel_path
 
     def key(self):
+        """A unique identifier for the test"""
         return (self.item_type, self.id)
 
     def meta_key(self):
+        """Extra metadata that doesn't form part of the test identity, but for
+        which changes mean regenerating the manifest (e.g. the test timeout."""
         return ()
 
     def __eq__(self, other):
@@ -54,10 +59,6 @@ class ManifestItem(object):
     @classmethod
     def from_json(self, manifest, tests_root, obj, source_files=None):
         raise NotImplementedError
-
-    @abstractproperty
-    def id(self):
-        pass
 
 
 class URLManifestItem(ManifestItem):
@@ -111,7 +112,7 @@ class TestharnessTest(URLManifestItem):
                    obj["url"],
                    url_base=manifest.url_base,
                    timeout=obj.get("timeout"),
-                   manifest = manifest)
+                   manifest=manifest)
 
 
 class RefTest(URLManifestItem):

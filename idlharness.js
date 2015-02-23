@@ -528,11 +528,8 @@ function IdlDictionary(obj)
 //@}
 IdlDictionary.prototype = Object.create(IdlObject.prototype);
 
-/// IdlExceptionOrInterface ///
-// Code sharing!
-function IdlExceptionOrInterface(obj)
-//@{
-{
+/// IdlInterface ///
+function IdlInterface(obj, is_callback) {
     /**
      * obj is an object produced by the WebIDLParser.js "exception" or
      * "interface" production, as appropriate.
@@ -562,11 +559,37 @@ function IdlExceptionOrInterface(obj)
      * none.
      */
     this.base = obj.inheritance;
+
+    this._is_callback = is_callback;
 }
- 
+IdlInterface.prototype = Object.create(IdlObject.prototype);
+IdlInterface.prototype.is_callback = function()
+//@{
+{
+    return this._is_callback;
+};
 //@}
-IdlExceptionOrInterface.prototype = Object.create(IdlObject.prototype);
-IdlExceptionOrInterface.prototype.test = function()
+
+IdlInterface.prototype.has_constants = function()
+//@{
+{
+    return this.members.some(function(member) {
+        return member.type === "const";
+    });
+};
+//@}
+
+IdlInterface.prototype.is_global = function()
+//@{
+{
+    return this.extAttrs.some(function(attribute) {
+        return attribute.name === "Global" ||
+               attribute.name === "PrimaryGlobal";
+    });
+};
+//@}
+
+IdlInterface.prototype.test = function()
 //@{
 {
     if (this.has_extended_attribute("NoInterfaceObject"))
@@ -591,40 +614,6 @@ IdlExceptionOrInterface.prototype.test = function()
     // members will be marked as untested, but the members added by the partial
     // interface are still tested.
     this.test_members();
-};
-
-//@}
-
-/// IdlInterface ///
-function IdlInterface(obj, is_callback) {
-    IdlExceptionOrInterface.call(this, obj);
-
-    this._is_callback = is_callback;
-}
-IdlInterface.prototype = Object.create(IdlExceptionOrInterface.prototype);
-IdlInterface.prototype.is_callback = function()
-//@{
-{
-    return this._is_callback;
-};
-//@}
-
-IdlInterface.prototype.has_constants = function()
-//@{
-{
-    return this.members.some(function(member) {
-        return member.type === "const";
-    });
-};
-//@}
-
-IdlInterface.prototype.is_global = function()
-//@{
-{
-    return this.extAttrs.some(function(attribute) {
-        return attribute.name === "Global" ||
-               attribute.name === "PrimaryGlobal";
-    });
 };
 //@}
 

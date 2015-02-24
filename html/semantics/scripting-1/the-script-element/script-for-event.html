@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <title>Scripts with for and event attributes</title>
+<link rel="author" title="Matheus Kerschbaum" href="mailto:matjk7@gmail.com">
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#prepare-a-script">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -17,6 +19,9 @@ var expected = [
   false,
   false,
   false,
+  false,
+  true,
+  true,
   false,
 ];
 var run = expected.map(function() { return false });
@@ -56,6 +61,15 @@ run[10] = true;
 </script>
 <script for="window" event="onload&#xa0;">
 run[11] = true;
+</script>
+<script for=" window " event=" onload ">
+run[12] = true;
+</script>
+<script for=" window " event=" onload() ">
+run[13] = true;
+</script>
+<script for="object" event="handler">
+run[14] = true;
 </script>
 <script>
 test(function() {

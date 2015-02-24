@@ -10,6 +10,7 @@ if (window.opener && "timeout_multiplier" in window.opener) {
 if (window.opener && window.opener.explicit_timeout) {
     props["explicit_timeout"] = window.opener.explicit_timeout;
 }
+
 setup(props);
 add_completion_callback(function() {
     add_completion_callback(function(tests, status) {

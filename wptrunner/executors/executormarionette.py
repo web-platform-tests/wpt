@@ -145,7 +145,7 @@ class MarionetteRun(object):
                 # make that possible. It also seems to time out immediately if the
                 # timeout is set too high. This works at least.
                 self.marionette.set_script_timeout(2**31 - 1)
-        except IOError, errors.InvalidResponseException:
+        except (IOError, errors.InvalidResponseException):
             self.logger.error("Lost marionette connection before starting test")
             return Stop
 

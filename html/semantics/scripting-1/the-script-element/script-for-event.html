@@ -83,7 +83,10 @@ run[16] = true;
 test(function() {
   for (var i = 0; i < run.length; ++i) {
     test(function() {
-      assert_equals(run[i], expected[i]);
+      var script = document.querySelectorAll("script[for], script[event]")[i];
+      assert_equals(run[i], expected[i],
+                    "script for=" + format_value(script.getAttribute("for")) +
+                    " event=" + format_value(script.getAttribute("event")));
     }, "Script " + i);
   }
 });

@@ -7,9 +7,15 @@ from log import get_logger
 from sourcefile import SourceFile
 
 
+CURRENT_VERSION = 2
+
+
 class ManifestError(Exception):
     pass
 
+
+class ManifestVersionMismatch(ManifestError):
+    pass
 
 class Manifest(object):
     def __init__(self, git_rev=None, url_base="/"):
@@ -208,11 +214,16 @@ class Manifest(object):
               "rev": self.rev,
               "local_changes": self.local_changes.to_json(),
               "items": out_items,
-              "reftest_nodes": reftest_nodes}
+              "reftest_nodes": reftest_nodes,
+              "version": CURRENT_VERSION}
         return rv
 
     @classmethod
     def from_json(cls, tests_root, obj):
+        version = obj.get("version")
+        if version != CURRENT_VERSION:
+            raise ManifestVersionMismatch
+
         self = cls(git_rev=obj["rev"],
                    url_base=obj.get("url_base", "/"))
         if not hasattr(obj, "iteritems"):

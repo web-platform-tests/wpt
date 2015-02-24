@@ -5,7 +5,21 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-var run = [false, false, false, false, false, false, false, false, false, false, false, false];
+var expected = [
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+];
+var run = expected.map(function() { return false });
 </script>
 <script for="w&#x130;ndow" event="onload">
 run[0] = true;
@@ -47,7 +61,7 @@ run[11] = true;
 test(function() {
   for (var i = 0; i < run.length; ++i) {
     test(function() {
-      assert_false(run[i]);
+      assert_equals(run[i], expected[i]);
     }, "Script " + i);
   }
 });

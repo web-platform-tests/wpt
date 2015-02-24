@@ -6,10 +6,8 @@
 <div id=log></div>
 <script>
 async_test(function() {
-  var event_type = "DOMContentLoaded";
-
   var event;
-  document.addEventListener(event_type, this.step_func(function(e) {
+  document.addEventListener("DOMContentLoaded", this.step_func(function(e) {
     assert_true(e.isTrusted, "Should be trusted when first handled");
     event = e;
   }), true);
@@ -17,7 +15,7 @@ async_test(function() {
   window.onload = this.step_func_done(function() {
     var received = 0;
     var target = document.createElement("span");
-    target.addEventListener(event_type, this.step_func(function(e) {
+    target.addEventListener("DOMContentLoaded", this.step_func(function(e) {
       assert_false(e.isTrusted, "Should not be trusted during redispatching");
       ++received;
     }), true);

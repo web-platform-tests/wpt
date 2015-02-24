@@ -36,12 +36,23 @@ def update_from_cli(**kwargs):
     tests_root = kwargs["tests_root"]
     path = kwargs["path"]
     assert tests_root is not None
+
+    m = None
+    logger = get_logger()
+
     if not kwargs.get("rebuild", False):
-        m = manifest.load(tests_root, path)
-    else:
+        try:
+            m = manifest.load(tests_root, path)
+        except manifest.ManifestVersionMismatch:
+            logger.info("Manifest version changed, rebuilding")
+            m = None
+        else:
+            logger.info("Updating manifest")
+
+    if m is None:
         m = manifest.Manifest(None)
 
-    get_logger().info("Updating manifest")
+
     update(tests_root,
            kwargs["url_base"],
            m,

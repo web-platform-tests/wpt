@@ -6,8 +6,7 @@ from .base import Browser, ExecutorBrowser, require_arg
 from .webdriver import ChromedriverLocalServer
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executorselenium import (SeleniumTestharnessExecutor,
-                                          SeleniumRefTestExecutor,
-                                          required_files)
+                                          SeleniumRefTestExecutor)
 
 
 __wptrunner__ = {"product": "chrome",
@@ -43,8 +42,7 @@ def executor_kwargs(test_type, http_server_url, **kwargs):
 
 def env_options():
     return {"host": "web-platform.test",
-            "bind_hostname": "true",
-            "required_files": required_files}
+            "bind_hostname": "true"}
 
 
 class ChromeBrowser(Browser):

@@ -27,9 +27,6 @@ here = os.path.join(os.path.split(__file__)[0])
 webdriver = None
 exceptions = None
 
-required_files = [("testharness_runner.html", "", False),
-                  ("testharnessreport.js", "resources/", True)]
-
 extra_timeout = 5
 
 def do_delayed_imports():

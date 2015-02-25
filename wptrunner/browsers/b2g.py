@@ -18,7 +18,7 @@ from marionette.wait import Wait
 from mozprofile import FirefoxProfile, Preferences
 
 from .base import get_free_port, BrowserError, Browser, ExecutorBrowser
-from ..executors.executormarionette import MarionetteTestharnessExecutor, required_files
+from ..executors.executormarionette import MarionetteTestharnessExecutor
 from ..hosts import HostsFile, HostsLine
 
 here = os.path.split(__file__)[0]
@@ -55,8 +55,7 @@ def executor_kwargs(http_server_url, **kwargs):
 def env_options():
     return {"host": "web-platform.test",
             "bind_hostname": "false",
-            "test_server_port": False,
-            "required_files": required_files}
+            "test_server_port": False}
 
 
 class B2GBrowser(Browser):

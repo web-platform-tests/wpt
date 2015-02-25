@@ -124,8 +124,11 @@ def run_tests(config, test_paths, product, **kwargs):
 
         unexpected_total = 0
 
+        pause_after_test = get_pause_after_test(test_loader, **kwargs)
+
         with env.TestEnvironment(test_paths,
                                  ssl_env,
+                                 pause_after_test,
                                  env_options) as test_environment:
             try:
                 test_environment.ensure_started()
@@ -171,6 +174,7 @@ def run_tests(config, test_paths, product, **kwargs):
                                       browser_kwargs,
                                       executor_cls,
                                       executor_kwargs,
+                                      pause_after_test,
                                       kwargs["pause_on_unexpected"],
                                       kwargs["debug_args"]) as manager_group:
                         try:

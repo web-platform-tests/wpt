@@ -4,7 +4,6 @@
 
 import json
 import os
-import shutil
 import socket
 import sys
 import time
@@ -70,8 +69,23 @@ class TestEnvironmentError(Exception):
     pass
 
 
+def static_handler(path, format_args, content_type, **headers):
+    with open(path) as f:
+        data = f.read() % format_args
+
+    resp_headers = [("Content-Type", content_type)]
+    for k, v in headers.iteritems():
+        resp_headers.append((k.replace("_", "-"), v))
+
+    @serve.handlers.handler
+    def func(request, response):
+        return resp_headers, data
+
+    return func
+
+
 class TestEnvironment(object):
-    def __init__(self, test_paths, ssl_env, options):
+    def __init__(self, test_paths, ssl_env, pause_after_test, options):
         """Context manager that owns the test environment i.e. the http and
         websockets servers"""
         self.test_paths = test_paths
@@ -79,14 +93,12 @@ class TestEnvironment(object):
         self.server = None
         self.config = None
         self.external_config = None
+        self.pause_after_test = pause_after_test
         self.test_server_port = options.pop("test_server_port", True)
         self.options = options if options is not None else {}
-        self.required_files = options.pop("required_files", [])
-        self.files_to_restore = []
 
     def __enter__(self):
         self.ssl_env.__enter__()
-        self.copy_required_files()
         self.setup_server_logging()
         self.setup_routes()
         self.config = self.load_config()
@@ -97,7 +109,6 @@ class TestEnvironment(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.ssl_env.__exit__(exc_type, exc_val, exc_tb)
 
-        self.restore_files()
         for scheme, servers in self.servers.iteritems():
             for port, server in servers:
                 server.kill()
@@ -151,6 +162,13 @@ class TestEnvironment(object):
             pass
 
     def setup_routes(self):
+        for path, format_args, content_type, route in [
+                ("testharness_runner.html", {}, "text/html", b"/testharness_runner.html"),
+                ("testharnessreport.js", {"output": self.pause_after_test},
+                 "text/javascript", b"/resources/testharnessreport.js")]:
+            handler = static_handler(os.path.join(here, path), format_args, content_type)
+            serve.routes.insert(0, (b"GET", route, handler))
+
         for url, paths in self.test_paths.iteritems():
             if url == "/":
                 continue
@@ -175,21 +193,6 @@ class TestEnvironment(object):
         if "/" not in self.test_paths:
             serve.routes = serve.routes[:-3]
 
-    def copy_required_files(self):
-        logger.info("Placing required files in server environment.")
-        for source, destination, copy_if_exists in self.required_files:
-            source_path = os.path.join(here, source)
-            dest_path = os.path.join(serve_path(self.test_paths), destination, os.path.split(source)[1])
-            dest_exists = os.path.exists(dest_path)
-            if not dest_exists or copy_if_exists:
-                if dest_exists:
-                    backup_path = dest_path + ".orig"
-                    logger.info("Backing up %s to %s" % (dest_path, backup_path))
-                    self.files_to_restore.append(dest_path)
-                    shutil.copy2(dest_path, backup_path)
-                logger.info("Copying %s to %s" % (source_path, dest_path))
-                shutil.copy2(source_path, dest_path)
-
     def ensure_started(self):
         # Pause for a while to ensure that the server has a chance to start
         time.sleep(2)
@@ -207,9 +210,3 @@ class TestEnvironment(object):
 
                 if not server.is_alive():
                     raise EnvironmentError("%s server on port %d failed to start" % (scheme, port))
-
-    def restore_files(self):
-        for path in self.files_to_restore:
-            os.unlink(path)
-            if os.path.exists(path + ".orig"):
-                os.rename(path + ".orig", path)

@@ -872,7 +872,7 @@ policies and contribution forms [3].
                {type_actual:typeof actual});
 
         assert(actual <= expected,
-               "assert_less_than", description,
+               "assert_less_than_equal", description,
                "expected a number less than or equal to ${expected} but got ${actual}",
                {expected:expected, actual:actual});
     }

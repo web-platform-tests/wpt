@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <title>beforescriptexecute for DOM-inserted external script</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    targets = [];
+    var t = async_test();
+    document.addEventListener("beforescriptexecute", function(e) {targets.push(e.target);}, false);
+    var script = document.createElement("script");
+    script.src =  "include-1.js";
+    document.body.appendChild(script);
+ </script>
+

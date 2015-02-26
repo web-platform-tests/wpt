@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <title>afterscriptexecute for document.write script</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    events = [];
+    var t = async_test();
+    document.addEventListener("afterscriptexecute", 
+      function x(e) {
+        events.push(e.target);
+      }, false);
+    document.write("<script src='include-4.js'><\/script>")
+ </script>
+ <script>
+   t.step(function(){assert_array_equals(events, [document.getElementsByTagName("script")[2],
+                                                  "next script ran", document.getElementsByTagName("script")[3]])});
+   t.done();
+ </script>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <title>Cancelling onbeforescriptexecute for defer external script</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    targets = [];
+    var t = async_test();
+    document.addEventListener("beforescriptexecute", 
+      function x(e) {
+       targets.push(e.target);
+       e.preventDefault();
+       document.removeEventListener("beforescriptexecute", x);
+    }, false);
+    document.addEventListener("DOMContentLoaded", function() {
+      t.step(function(){assert_array_equals(targets, [document.getElementsByTagName("script")[3]])});
+      t.done();
+    });
+ </script>
+ <script defer src="include-2.js"></script>

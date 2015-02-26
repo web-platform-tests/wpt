@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <title>Order of beforescripexecute, afterscriptexecute and script load event</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    events = [];
+    var t = async_test();
+
+    var script = document.createElement("script");
+    
+    script.addEventListener("beforescriptexecute", 
+      function() {
+        events.push("beforescriptexecute");
+      }, false);
+
+    script.addEventListener("afterscriptexecute", 
+      function() {
+        events.push("afterscriptexecute");
+      }, false);
+
+    script.addEventListener("load", function() {events.push("load");}, false);
+    script.src = "include-5.js";
+    document.body.appendChild(script);
+
+    onload = t.step_func(function() {
+      assert_array_equals(events, ["beforescriptexecute", "afterscriptexecute", "load"]);
+      t.done();
+    });
+ </script>

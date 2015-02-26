@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <title>Creating more scripts in beforescriptexecute</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    targets = [];
+    seq = [];
+    var t = async_test();
+    var a = 0;
+    document.addEventListener("beforescriptexecute", 
+      function x(e) {
+       targets.push(e.target);
+       if (a <= 1000) {
+         document.write("<script src='include-3.js'><\/script>");
+       } else {
+         document.removeEventListener("beforescriptexecute", x);
+       }
+    }, false);
+ </script>
+ <script>var a = 1</script>
+ <script>
+setTimeout(t.step_func(function(){
+   var_expected = [];
+   for (var i=0; i<=1000; i++) {expected.push(i);}
+   assert_equals(seq, expected);
+   t.done();
+ }), 500);
+ </script>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <title>Cancelling onbeforescriptexecute for async external script</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    targets = [];
+    var t = async_test();
+    document.addEventListener("beforescriptexecute", 
+      function x(e) {
+       targets.push(e.target);
+       e.preventDefault();
+       document.removeEventListener("beforescriptexecute", x);
+    }, false);
+    setTimeout(function() {
+      t.step(function(){assert_array_equals(targets, [document.getElementsByTagName("script")[3]])});
+      t.done();
+    }, 500);
+ </script>
+ <script async src="include-2.js"></script>

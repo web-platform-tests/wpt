@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <title>no onbeforescriptexecute content attribute</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    var t = async_test();
+
+    script_ran = false;
+ </script>
+ <script onbeforescriptexecute="t.step(function(){assert_unreached()});">script_ran = true</script>
+ <script>
+t.step(function(){assert_true(script_ran)});
+t.done();
+ </script>

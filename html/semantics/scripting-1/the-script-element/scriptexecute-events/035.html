@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <title>Changing src of cancelled script</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    events = [];
+    var t = async_test();
+    var run_count = 0;
+
+    document.addEventListener("beforescriptexecute", 
+      function(e) {
+       e.preventDefault();
+        setTimeout(t.step_func(function() {
+                     assert_equals(0, run_count);
+                     document.getElementsByTagName("script")[3].textContent = "t.step(function() {assert_unreached()})"
+                     setTimeout(t.step_func(function() {t.done()}), 100);
+                   }), 100);
+      }, false);
+ </script>
+
+ <script>
+   run_count++
+ </script>

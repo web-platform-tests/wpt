@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <title>Changing script src in beforescriptexecute</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    targets = [];
+    var t = async_test();
+    document.addEventListener("beforescriptexecute", 
+      function(e) {
+       targets.push(e.target);
+       e.target.src = "include-2.js";
+    }, false);
+ </script>
+ <script src="include-1.js"></script>

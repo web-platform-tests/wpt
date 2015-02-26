@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <title>No onafterscriptexecute content attribute</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    events = [];
+    var t = async_test();
+    
+    var script = document.createElement("script");
+    script.textContent = ""
+    
+   script.onafterscriptexecute =  function x(e) {
+                                    events.push(e.target);
+                                  };
+   document.body.appendChild(script);
+ </script>
+ <script onafterscriptexecute="t.step(function(){assert_unreached()})">
+   events.push('next script ran'); 
+   setTimeout(t.step_func(function() {assert_array_equals(events, ['next script ran']); t.done()}), 500)
+</script>

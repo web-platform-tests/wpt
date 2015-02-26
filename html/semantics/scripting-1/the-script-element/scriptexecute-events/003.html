@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <title>no beforescriptexecute on innerHTML-inserted inline script</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <div id="test"></div>
+  <script>
+    targets = [];
+    document.addEventListener("beforescriptexecute", function(e) {targets.push(e.target);}, false);
+    var t = async_test();
+
+    var script = "<script>t.step(function() {assert_unreached()});<\/script>";
+    document.getElementById("test").innerHTML = script;
+ </script>
+ <script>
+   t.step(function() {assert_array_equals(targets, [document.getElementsByTagName("script")[4]]);})
+   t.done();
+ </script>

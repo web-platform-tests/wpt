@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <title>Changing script text in beforescriptexecute</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <div id="log"></div>
+  <script>
+    targets = [];
+    var t = async_test();
+    document.addEventListener("beforescriptexecute", 
+      function(e) {
+       targets.push(e.target);
+       e.target.textContent = t.step(function(){assert_unreached()})
+    }, false);
+ </script>
+ <script>t.step(function(){assert_array_equals(targets, [document.getElementsByTagName("script")[3]])}); t.done();</script>

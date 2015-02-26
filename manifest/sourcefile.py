@@ -183,6 +183,26 @@ class SourceFile(object):
         return bool(self.testharness_nodes)
 
     @cached_property
+    def variant_nodes(self):
+        """List of ElementTree Elements corresponding to nodes representing a
+        test variant"""
+        return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='variant']")
+
+    @cached_property
+    def test_variants(self):
+        rv = []
+        for element in self.variant_nodes:
+            if "content" in element.attrib:
+                variant = element.attrib["content"]
+                assert variant == "" or variant[0] in ["#", "?"]
+                rv.append(variant)
+
+        if not rv:
+            rv = [""]
+
+        return rv
+
+    @cached_property
     def reftest_nodes(self):
         """List of ElementTree Elements corresponding to nodes representing a
         to a reftest <link>"""
@@ -233,7 +253,10 @@ class SourceFile(object):
             rv = [WebdriverSpecTest(self)]
 
         elif self.content_is_testharness:
-            rv = [TestharnessTest(self, self.url, timeout=self.timeout)]
+            rv = []
+            for variant in self.test_variants:
+                url = self.url + variant
+                rv.append(TestharnessTest(self, url, timeout=self.timeout))
 
         elif self.content_is_ref_node:
             rv = [RefTest(self, self.url, self.references, timeout=self.timeout)]

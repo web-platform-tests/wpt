@@ -121,5 +121,3 @@ class CaptureIO(object):
                     self.logging_thread.join(10)
                 self.logging_queue.close()
                 self.logger.info("queue closed")
-
-        

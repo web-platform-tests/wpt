@@ -4,26 +4,52 @@
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
 <link rel="help" title="5 API" href="http://www.w3.org/TR/notifications/">
-<meta name="flags" content="">
+<meta name="flags" content="interact">
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <p>Test step:</p>
-<ul>
-  <li>Close the notification in 10 seconds.</lu>
-</ul>
+<ol>
+  <li>Click the "Notify me!" button.</lu>
+  <li>Click the "Close me!" button in 60 seconds.</lu>
+</ol>
+<input value="Notify me!" type="button" onclick="notifyMe();"/>
+<input value="Close me!" type="button" onclick="closeMe();"/>
 <div id="log"></div>
 <script>
   t = async_test("the notification.onclose event can be invoked");
 
-  var notification;
   t.step(function () {
-    notification = new Notification("New notification", {
-      body: "close me"
-    });
+    assert_true("Notification" in window, "Notification exists");  
   });
 
-  notification.onclose = t.step_func(function(e) {
-    t.done();
-  });
+  var notification;
+  function notifyMe() {
+    if(Notification.permission === "granted") {
+      notification = new Notification("New notification", {
+        body: "hello"
+      });
+    } else if(Notification.permission !== 'denied') {
+      Notification.requestPermission(function (permission) {
+        if (!('permission' in Notification)) {
+          Notification.permission = permission;
+        }
+
+        if (permission === "granted") {
+          notification = new Notification("New notification", {
+            body: "hello"
+          });
+        }
+      });
+    }
+  }
+
+  function closeMe() {
+    notification.close();
+    notification.onclose = t.step_func(function(e) {
+      t.done();
+    });
+  }
+
 </script>
 

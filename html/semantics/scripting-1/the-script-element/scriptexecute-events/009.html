@@ -10,7 +10,7 @@
     document.addEventListener("beforescriptexecute", 
       function(e) {
        targets.push(e.target);
-       e.target.parentNode.removeChild(target);
+       e.target.parentNode.removeChild(e.target);
     }, false);
  </script>
  <script>t.step(function(){assert_array_equals(targets, [document.getElementsByTagName("script")[3]])}); t.done();</script>

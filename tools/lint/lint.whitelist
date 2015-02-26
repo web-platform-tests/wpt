@@ -14,7 +14,12 @@ INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
 INDENT TABS: DOMEvents/*
 INDENT TABS: eventsource/*
-INDENT TABS: html/*
+INDENT TABS: html/browsers/*
+INDENT TABS: html/dom/*
+INDENT TABS: html/editing/dnd/*
+INDENT TABS: html/semantics/*
+INDENT TABS: html/syntax/*
+INDENT TABS: html/webappapis/*
 INDENT TABS: media-source/*
 INDENT TABS: old-tests/*
 INDENT TABS: pointerlock/*

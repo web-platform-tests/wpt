@@ -9,7 +9,7 @@
     seq = [];
     var t = async_test();
     var a = 0;
-    document.addEventListener("beforescriptexecute", 
+    document.addEventListener("beforescriptexecute",
       function x(e) {
        targets.push(e.target);
        if (a <= 1000) {

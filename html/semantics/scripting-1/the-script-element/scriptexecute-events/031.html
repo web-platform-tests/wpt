@@ -7,10 +7,10 @@
   <script>
     events = [];
     var t = async_test();
-    
+
     var script = document.createElement("script");
     script.textContent = "events.push('next script ran'); setTimeout(t.step_func(function() {assert_array_equals(events, ['next script ran']); t.done()}), 500)"
-    
+
    script.onafterscriptexecute =  t.step_func(function() {assert_unreached()});
    document.body.appendChild(script);
  </script>

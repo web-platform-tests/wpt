@@ -9,7 +9,7 @@
     var t = async_test();
     var run_count = 0;
 
-    document.addEventListener("beforescriptexecute", 
+    document.addEventListener("beforescriptexecute",
       function(e) {
        e.preventDefault();
         setTimeout(t.step_func(function() {

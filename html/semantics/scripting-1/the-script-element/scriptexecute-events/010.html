@@ -7,7 +7,7 @@
   <script>
     targets = [];
     var t = async_test();
-    document.addEventListener("beforescriptexecute", 
+    document.addEventListener("beforescriptexecute",
       function(e) {
        targets.push(e.target);
        e.target.textContent = "t.step(function(){assert_unreached()})"

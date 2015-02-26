@@ -9,13 +9,13 @@
     var t = async_test();
 
     var script = document.createElement("script");
-    
-    script.addEventListener("beforescriptexecute", 
+
+    script.addEventListener("beforescriptexecute",
       function() {
         events.push("beforescriptexecute");
       }, false);
 
-    script.addEventListener("afterscriptexecute", 
+    script.addEventListener("afterscriptexecute",
       function() {
         events.push("afterscriptexecute");
       }, false);

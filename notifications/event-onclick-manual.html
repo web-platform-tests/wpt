@@ -16,7 +16,7 @@
 <input value="Notify me!" type="button" onclick="notifyMe();"/>
 <div id="log"></div>
 <script>
-  t = async_test("the notification.onclick event can be invoked");
+  var t = async_test("the notification.onclick event can be invoked");
 
   t.step(function () {
     assert_true("Notification" in window, "Notification exists");  

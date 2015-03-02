@@ -17,7 +17,7 @@
 <input value="Close me!" type="button" onclick="closeMe();"/>
 <div id="log"></div>
 <script>
-  t = async_test("the notification.onclose event can be invoked");
+  var t = async_test("the notification.onclose event can be invoked");
 
   t.step(function () {
     assert_true("Notification" in window, "Notification exists");  

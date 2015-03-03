@@ -14,7 +14,7 @@ from mozcrash import mozcrash
 
 from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg
 from ..executors import executor_kwargs as base_executor_kwargs
-from ..executors.executormarionette import MarionetteTestharnessExecutor, MarionetteRefTestExecutor, required_files
+from ..executors.executormarionette import MarionetteTestharnessExecutor, MarionetteRefTestExecutor
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -55,7 +55,6 @@ def env_options():
     return {"host": "127.0.0.1",
             "external_host": "web-platform.test",
             "bind_hostname": "false",
-            "required_files": required_files,
             "certificate_domain": "web-platform.test",
             "encrypt_after_connect": True}
 

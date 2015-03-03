@@ -108,6 +108,12 @@ def create_parser(product_choices=None):
     debugging_group.add_argument('--debugger',
                                  help="run under a debugger, e.g. gdb or valgrind")
     debugging_group.add_argument('--debugger-args', help="arguments to the debugger")
+
+    debugging_group.add_argument('--pause-after-test', action="store_true", default=None,
+                                 help="Halt the test runner after each test (this happens by default if only a single test is run)")
+    debugging_group.add_argument('--no-pause-after-test', dest="pause_after_test", action="store_false",
+                                 help="Don't halt the test runner irrespective of the number of tests run")
+
     debugging_group.add_argument('--pause-on-unexpected', action="store_true",
                                  help="Halt the test runner when an unexpected result is encountered")
 

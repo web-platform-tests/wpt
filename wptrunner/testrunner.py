@@ -162,8 +162,8 @@ class TestRunnerManager(threading.Thread):
     init_lock = threading.Lock()
 
     def __init__(self, suite_name, test_queue, test_source_cls, browser_cls, browser_kwargs,
-                 executor_cls, executor_kwargs, stop_flag, pause_on_unexpected=False,
-                 debug_args=None):
+                 executor_cls, executor_kwargs, stop_flag, pause_after_test=False,
+                 pause_on_unexpected=False, debug_args=None):
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -199,6 +199,7 @@ class TestRunnerManager(threading.Thread):
         self.parent_stop_flag = stop_flag
         self.child_stop_flag = multiprocessing.Event()
 
+        self.pause_after_test = pause_after_test
         self.pause_on_unexpected = pause_on_unexpected
         self.debug_args = debug_args
 
@@ -513,8 +514,9 @@ class TestRunnerManager(threading.Thread):
 
         self.test = None
 
-        if self.pause_on_unexpected and (subtest_unexpected or is_unexpected):
-            self.logger.info("Got an unexpected result, pausing until the browser exits")
+        if (self.pause_after_test or
+            (self.pause_on_unexpected and (subtest_unexpected or is_unexpected))):
+            self.logger.info("Pausing until the browser exits")
             self.browser.runner.process_handler.wait()
 
         # Handle starting the next test, with a runner restart if required
@@ -573,7 +575,9 @@ class TestQueue(object):
 class ManagerGroup(object):
     def __init__(self, suite_name, size, test_source_cls, test_source_kwargs,
                  browser_cls, browser_kwargs,
-                 executor_cls, executor_kwargs, pause_on_unexpected=False,
+                 executor_cls, executor_kwargs,
+                 pause_after_test=False,
+                 pause_on_unexpected=False,
                  debug_args=None):
         """Main thread object that owns all the TestManager threads."""
         self.suite_name = suite_name
@@ -584,6 +588,7 @@ class ManagerGroup(object):
         self.browser_kwargs = browser_kwargs
         self.executor_cls = executor_cls
         self.executor_kwargs = executor_kwargs
+        self.pause_after_test = pause_after_test
         self.pause_on_unexpected = pause_on_unexpected
         self.debug_args = debug_args
 
@@ -621,6 +626,7 @@ class ManagerGroup(object):
                                             self.executor_cls,
                                             self.executor_kwargs,
                                             self.stop_flag,
+                                            self.pause_after_test,
                                             self.pause_on_unexpected,
                                             self.debug_args)
                 manager.start()

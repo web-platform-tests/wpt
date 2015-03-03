@@ -31,10 +31,6 @@ from ..testrunner import Stop
 # should force a timeout
 extra_timeout = 5 # seconds
 
-required_files = [("testharness_runner.html", "", False),
-                  ("testharnessreport.js", "resources/", True)]
-
-
 def do_delayed_imports():
     global marionette
     global errors

@@ -18,7 +18,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 def setup_wptrunner_logging(logger):
     structuredlog.set_default_logger(logger)
     wptrunner.logger = logger
-    wptrunner.setup_stdlib_logger()
+    wptrunner.wptlogging.setup_stdlib_logger()
 
 class ResultHandler(BaseHandler):
     def __init__(self, verbose=False, logger=None):
@@ -155,7 +155,8 @@ def main():
             import pdb, traceback
             print traceback.format_exc()
             pdb.post_mortem()
-
+        else:
+            raise
 
 if __name__ == "__main__":
     main()

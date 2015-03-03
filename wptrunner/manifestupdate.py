@@ -68,13 +68,13 @@ class ExpectedManifest(ManifestItem):
 
     def append(self, child):
         ManifestItem.append(self, child)
+        if child.id in self.child_map:
+            print "Warning: Duplicate heading %s" % child.id
         self.child_map[child.id] = child
-        assert len(self.child_map) == len(self.children)
 
     def _remove_child(self, child):
         del self.child_map[child.id]
         ManifestItem._remove_child(self, child)
-        assert len(self.child_map) == len(self.children)
 
     def get_test(self, test_id):
         """Return a TestNode by test id, or None if no test matches

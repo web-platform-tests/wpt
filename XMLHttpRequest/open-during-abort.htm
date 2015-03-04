@@ -13,10 +13,8 @@
         var client = new XMLHttpRequest(),
             abort_flag = false,
             result = [],
-            expected_4 = [1, 1, 4, 1], // open() => 1, send() => 1,
-                                       // abort => 4, open => 1
-            // abort might be preempted and never get to call readystatechange with DONE
-            expected_3 = [1, 1, 1]
+            expected = [1, 1, 4, 1] // open() => 1, send() => 1,
+                                    // abort => 4, open => 1
 
         client.onreadystatechange = function() {
           test.step(function() {
@@ -31,10 +29,7 @@
         client.send(null)
         abort_flag = true
         client.abort()
-        if (result.length == 4)
-            assert_array_equals(result, expected_4)
-        else
-            assert_array_equals(result, expected_3)
+        assert_array_equals(result, expected)
       })
       test.done()
     </script>

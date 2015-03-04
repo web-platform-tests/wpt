@@ -8,30 +8,26 @@
   <body>
     <div id="log"></div>
     <script>
-      var test = async_test()
-      test.step(function() {
+      test(function() {
         var client = new XMLHttpRequest(),
             abort_flag = false,
             result = [],
             expected = [1, 1, 4, 1] // open() => 1, send() => 1,
                                     // abort => 4, open => 1
 
-        client.onreadystatechange = function() {
-          test.step(function() {
-            result.push(client.readyState)
-            if(abort_flag) {
-              abort_flag = false
-              client.open("GET", "...")
-            }
-          })
-        }
+        client.onreadystatechange = this.step_func(function() {
+          result.push(client.readyState)
+          if (abort_flag) {
+            abort_flag = false
+            client.open("GET", "...")
+          }
+        })
         client.open("GET", "resources/well-formed.xml")
         client.send(null)
         abort_flag = true
         client.abort()
         assert_array_equals(result, expected)
       })
-      test.done()
     </script>
   </body>
 </html>

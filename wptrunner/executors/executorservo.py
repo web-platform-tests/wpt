@@ -68,7 +68,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             else:
                 self.proc.kill()
                 result = (test.result_cls("TIMEOUT", None), [])
-        self.runner.send_message("test_ended", test, result)
+        return result
 
     def on_output(self, line):
         prefix = "ALERT: RESULT: "

@@ -164,8 +164,9 @@ class TestEnvironment(object):
     def setup_routes(self):
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", b"/testharness_runner.html"),
-                ("testharnessreport.js", {"output": self.pause_after_test},
-                 "text/javascript", b"/resources/testharnessreport.js")]:
+                (self.options.get("testharnessreport", "testharnessreport.js"),
+                 {"output": self.pause_after_test}, "text/javascript",
+                 b"/resources/testharnessreport.js")]:
             handler = static_handler(os.path.join(here, path), format_args, content_type)
             serve.routes.insert(0, (b"GET", route, handler))
 

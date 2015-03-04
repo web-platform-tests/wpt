@@ -41,7 +41,7 @@ def browser_kwargs(test_environment, **kwargs):
             "no_backup": kwargs.get("b2g_no_backup", False)}
 
 
-def executor_kwargs(http_server_url, **kwargs):
+def executor_kwargs(test_type, http_server_url, **kwargs):
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 2

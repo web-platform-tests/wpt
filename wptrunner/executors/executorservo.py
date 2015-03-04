@@ -25,10 +25,12 @@ from .process import ProcessTestExecutor
 class ServoTestharnessExecutor(ProcessTestExecutor):
     convert_result = testharness_result_converter
 
-    def __init__(self, browser, http_server_url, timeout_multiplier=1, debug_args=None):
+    def __init__(self, browser, http_server_url, timeout_multiplier=1, debug_args=None,
+                 pause_after_test=False):
         ProcessTestExecutor.__init__(self, browser, http_server_url,
                                      timeout_multiplier=timeout_multiplier,
                                      debug_args=debug_args)
+        self.pause_after_test = pause_after_test
         self.result_data = None
         self.result_flag = None
         self.protocol = Protocol(self, browser, http_server_url)
@@ -39,6 +41,9 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
 
         self.command = [self.binary, "--cpu", "--hard-fail", "-z",
                         urlparse.urljoin(self.http_server_url, test.url)]
+
+        if self.pause_after_test:
+            self.command.remove("-z")
 
         if self.debug_args:
             self.command = list(self.debug_args) + self.command
@@ -52,22 +57,30 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         timeout = test.timeout * self.timeout_multiplier
 
         # Now wait to get the output we expect, or until we reach the timeout
-        if self.debug_args is None:
+        if self.debug_args is None and not self.pause_after_test:
             wait_timeout = timeout + 5
         else:
             wait_timeout = None
         self.result_flag.wait(wait_timeout)
 
+        proc_is_running = True
         if self.result_flag.is_set() and self.result_data is not None:
             self.result_data["test"] = test.url
             result = self.convert_result(test, self.result_data)
-            self.proc.kill()
         else:
             if self.proc.proc.poll() is not None:
                 result = (test.result_cls("CRASH", None), [])
+                proc_is_running = False
+            else:
+                result = (test.result_cls("TIMEOUT", None), [])
+
+        if proc_is_running:
+            if self.pause_after_test:
+                self.logger.info("Pausing until the browser exits")
+                self.proc.wait()
             else:
                 self.proc.kill()
-                result = (test.result_cls("TIMEOUT", None), [])
+
         return result
 
     def on_output(self, line):
@@ -108,7 +121,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
     convert_result = reftest_result_converter
 
     def __init__(self, browser, http_server_url, binary=None, timeout_multiplier=1,
-                 screenshot_cache=None, debug_args=None):
+                 screenshot_cache=None, debug_args=None, pause_after_test=False):
         ProcessTestExecutor.__init__(self,
                                      browser,
                                      http_server_url,

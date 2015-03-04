@@ -9,22 +9,20 @@
 log('inline script #1');
 var t = async_test()
 
-function test() {
+onload = t.step_func(function() {
   log('onload handler');
   document.getElementById("log").textContent = 'please wait...';
   window.location='javascript:log("javascript: URL")';
-  setTimeout( function(){
+  setTimeout(t.step_func(function(){
     log('timeout');
     assert_array_equals(eventOrder, ['inline script #1', 'onload handler', 'onload ends', 'javascript: URL', 'timeout']);
     t.done();
-  }, 200);
+  }), 200);
   log('onload ends');
-
-};
-onload = t.step_func(test)
+});
 </script>
 </head>
 <body>
 <div id="log">FAILED (This TC requires JavaScript enabled)</div>
 </body>
-</html*>
+</html>

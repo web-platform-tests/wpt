@@ -7,7 +7,6 @@ import json
 import os
 import traceback
 from abc import ABCMeta, abstractmethod
-from multiprocessing import Manager
 
 from ..testrunner import Stop
 

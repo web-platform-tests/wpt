@@ -113,6 +113,11 @@ class Browser(object):
         in the browser, or an empty list if no crashes occurred"""
         self.logger.crash(process, test)
 
+    @abstractmethod
+    def wait(self):
+        """Wait for the browser process to exit"""
+        pass
+
 class NullBrowser(Browser):
     def start(self):
         """No-op browser to use in scenarios where the TestRunnerManager shouldn't
@@ -131,6 +136,9 @@ class NullBrowser(Browser):
 
     def on_output(self, line):
         raise NotImplementedError
+
+    def wait(self):
+        pass
 
 class ExecutorBrowser(object):
     def __init__(self, **kwargs):

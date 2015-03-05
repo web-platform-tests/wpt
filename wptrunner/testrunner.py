@@ -86,7 +86,8 @@ class TestRunner(object):
         the associated methods"""
         self.setup()
         commands = {"run_test": self.run_test,
-                    "stop": self.stop}
+                    "stop": self.stop,
+                    "wait": self.wait}
         while True:
             command, args = self.command_queue.get()
             try:
@@ -122,6 +123,10 @@ class TestRunner(object):
         except Exception:
             self.logger.critical(traceback.format_exc())
             raise
+
+    def wait(self):
+        self.executor.protocol.wait()
+        self.send_message("after_test_ended", True)
 
     def send_message(self, command, *args):
         self.result_queue.put((command, args))
@@ -249,6 +254,7 @@ class TestRunnerManager(threading.Thread):
                                 "init_failed": self.init_failed,
                                 "test_start": self.test_start,
                                 "test_ended": self.test_ended,
+                                "after_test_ended": self.after_test_ended,
                                 "restart_runner": self.restart_runner,
                                 "runner_teardown": self.runner_teardown,
                                 "log": self.log,
@@ -514,14 +520,19 @@ class TestRunnerManager(threading.Thread):
 
         self.test = None
 
+        restart_before_next = (file_result.status in ("CRASH", "EXTERNAL-TIMEOUT") or
+                               subtest_unexpected or is_unexpected)
+
         if (self.pause_after_test or
             (self.pause_on_unexpected and (subtest_unexpected or is_unexpected))):
             self.logger.info("Pausing until the browser exits")
-            self.browser.runner.process_handler.wait()
+            self.send_message("wait")
+        else:
+            self.after_test_ended(restart_before_next)
 
+    def after_test_ended(self, restart_before_next):
         # Handle starting the next test, with a runner restart if required
-        if (file_result.status in ("CRASH", "EXTERNAL-TIMEOUT") or
-            subtest_unexpected or is_unexpected):
+        if restart_before_next:
             return self.restart_runner()
         else:
             return self.start_next_test()

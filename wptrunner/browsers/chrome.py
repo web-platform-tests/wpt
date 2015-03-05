@@ -76,3 +76,6 @@ class ChromeBrowser(Browser):
 
     def executor_browser(self):
         return ExecutorBrowser, {"webdriver_url": self.driver.url}
+
+    def wait(self):
+        self.driver.wait()

@@ -99,6 +99,20 @@ class SeleniumProtocol(Protocol):
         self.webdriver.execute_script("document.title = '%s'" %
                                       threading.current_thread().name.replace("'", '"'))
 
+    def wait(self):
+        while True:
+            try:
+                self.webdriver.execute_async_script("");
+            except exceptions.TimeoutException:
+                pass
+            except (socket.timeout, exceptions.NoSuchWindowException,
+                    exceptions.ErrorInResponseException, IOError):
+                break
+            except Exception as e:
+                self.logger.error(traceback.format_exc(e))
+                break
+
+
 class SeleniumRun(object):
     def __init__(self, func, webdriver, url, timeout):
         self.func = func

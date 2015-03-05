@@ -10,7 +10,7 @@
     document.addEventListener("beforescriptexecute",
       function(e) {
        targets.push(e.target);
-       e.target.src = null;
+       e.target.removeAttribute("src");
        e.target.textContent = "t.step(function() {assert_unreached()});";
     }, false);
  </script>

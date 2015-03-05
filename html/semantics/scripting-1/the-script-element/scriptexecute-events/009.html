@@ -5,12 +5,17 @@
   <script src="/resources/testharnessreport.js"></script>
   <div id="log"></div>
   <script>
-    targets = [];
-    var t = async_test();
-    document.addEventListener("beforescriptexecute",
-      function(e) {
-       targets.push(e.target);
-       e.target.parentNode.removeChild(e.target);
-    }, false);
- </script>
- <script>t.step(function(){assert_array_equals(targets, [document.getElementsByTagName("script")[3]])}); t.done();</script>
+    var targets = [];
+    var t = async_test(function() {
+      document.addEventListener("beforescriptexecute", this.step_func(function(e) {
+        targets.push(e.target.id);
+        e.target.parentNode.removeChild(e.target);
+      }), false);
+    });
+  </script>
+  <script id=last>
+    t.step(function() {
+      assert_array_equals(targets, ["last"]);
+    });
+    t.done();
+  </script>

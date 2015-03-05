@@ -220,6 +220,3 @@ class FirefoxBrowser(Browser):
 
         # List all certs in the database
         certutil("-L", "-d", cert_db_path)
-
-    def wait(self):
-        self.runner.process_handler.wait()

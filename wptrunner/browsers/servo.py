@@ -30,8 +30,9 @@ def browser_kwargs(**kwargs):
             "interactive": kwargs["interactive"]}
 
 
-def executor_kwargs(test_type, http_server_url, **kwargs):
-    rv = base_executor_kwargs(test_type, http_server_url, **kwargs)
+def executor_kwargs(test_type, http_server_url, cache_manager, **kwargs):
+    rv = base_executor_kwargs(test_type, http_server_url,
+                              cache_manager, **kwargs)
     rv["pause_after_test"] = kwargs["pause_after_test"]
     return rv
 

@@ -4,6 +4,7 @@
 
 import json
 import os
+import multiprocessing
 import socket
 import sys
 import time
@@ -97,8 +98,11 @@ class TestEnvironment(object):
         self.test_server_port = options.pop("test_server_port", True)
         self.options = options if options is not None else {}
 
+        self.cache_manager = multiprocessing.Manager()
+
     def __enter__(self):
         self.ssl_env.__enter__()
+        self.cache_manager.__enter__()
         self.setup_server_logging()
         self.setup_routes()
         self.config = self.load_config()
@@ -107,6 +111,7 @@ class TestEnvironment(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.cache_manager.__exit__(exc_type, exc_val, exc_tb)
         self.ssl_env.__exit__(exc_type, exc_val, exc_tb)
 
         for scheme, servers in self.servers.iteritems():

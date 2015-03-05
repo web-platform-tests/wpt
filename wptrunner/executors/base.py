@@ -264,3 +264,6 @@ class Protocol(object):
 
     def teardown(self):
         pass
+
+    def wait(self):
+        pass

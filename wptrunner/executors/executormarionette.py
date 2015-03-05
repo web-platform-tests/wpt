@@ -120,6 +120,19 @@ class MarionetteProtocol(Protocol):
         self.marionette.execute_script(
             "document.title = '%s'" % threading.current_thread().name.replace("'", '"'))
 
+    def wait(self):
+        while True:
+            try:
+                self.marionette.execute_async_script("");
+            except errors.ScriptTimeoutException:
+                pass
+            except (socket.timeout, errors.InvalidResponseException, IOError):
+                break
+            except Exception as e:
+                self.logger.error(traceback.format_exc(e))
+                break
+
+
 class MarionetteRun(object):
     def __init__(self, logger, func, marionette, url, timeout):
         self.logger = logger

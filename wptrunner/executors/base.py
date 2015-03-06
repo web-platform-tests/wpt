@@ -7,15 +7,13 @@ import json
 import os
 import traceback
 from abc import ABCMeta, abstractmethod
-from multiprocessing import Manager
 
 from ..testrunner import Stop
 
 here = os.path.split(__file__)[0]
 
-cache_manager = Manager()
 
-def executor_kwargs(test_type, http_server_url, **kwargs):
+def executor_kwargs(test_type, http_server_url, cache_manager, **kwargs):
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 1

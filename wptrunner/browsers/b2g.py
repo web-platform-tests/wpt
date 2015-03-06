@@ -41,7 +41,7 @@ def browser_kwargs(test_environment, **kwargs):
             "no_backup": kwargs.get("b2g_no_backup", False)}
 
 
-def executor_kwargs(test_type, http_server_url, **kwargs):
+def executor_kwargs(test_type, http_server_url, cache_manager, **kwargs):
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 2
@@ -49,6 +49,10 @@ def executor_kwargs(test_type, http_server_url, **kwargs):
     executor_kwargs = {"http_server_url": http_server_url,
                        "timeout_multiplier": timeout_multiplier,
                        "close_after_done": False}
+
+    if test_type == "reftest":
+        executor_kwargs["cache_manager"] = cache_manager
+
     return executor_kwargs
 
 

@@ -152,7 +152,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
                 self.proc.kill()
                 return False, ("EXTERNAL-TIMEOUT", None)
 
-            if rv < 0:
+            if rv != 0 or not os.path.exists(output_path):
                 return False, ("CRASH", None)
 
             with open(output_path) as f:

@@ -1159,6 +1159,7 @@ policies and contribution forms [3].
         }
 
         this.message = null;
+        this.stack = null;
 
         this.steps = [];
 
@@ -1195,6 +1196,7 @@ policies and contribution forms [3].
         }
         this._structured_clone.status = this.status;
         this._structured_clone.message = this.message;
+        this._structured_clone.stack = this.stack;
         this._structured_clone.index = this.index;
         return this._structured_clone;
     };
@@ -1228,14 +1230,9 @@ policies and contribution forms [3].
                 return;
             }
             var message = String((typeof e === "object" && e !== null) ? e.message : e);
-            if (typeof e.stack != "undefined") {
-                //Try to make it more informative for some exceptions, at least
-                //in Gecko and WebKit.  This results in a stack dump instead of
-                //just errors like "Cannot read property 'parentNode' of null"
-                //or "root is null".  Makes it a lot longer, of course.
-                message += "(stack: " + e.stack + ")";
-            }
-            this.set_status(this.FAIL, message);
+            var stack = e.stack ? e.stack : null;
+
+            this.set_status(this.FAIL, message, stack);
             this.phase = this.phases.HAS_RESULT;
             this.done();
         }
@@ -1301,10 +1298,11 @@ policies and contribution forms [3].
         }
     };
 
-    Test.prototype.set_status = function(status, message)
+    Test.prototype.set_status = function(status, message, stack)
     {
         this.status = status;
         this.message = message;
+        this.stack = stack ? stack : null;
     };
 
     Test.prototype.timeout = function()
@@ -1377,6 +1375,7 @@ policies and contribution forms [3].
     RemoteTest.prototype.update_state_from = function(clone) {
         this.status = clone.status;
         this.message = clone.message;
+        this.stack = clone.stack;
         if (this.phase === this.phases.INITIAL) {
             this.phase = this.phases.STARTED;
         }
@@ -1436,7 +1435,8 @@ policies and contribution forms [3].
         this.worker_done({
             status: {
                 status: tests.status.ERROR,
-                message: "Error in worker" + filename + ": " + message
+                message: "Error in worker" + filename + ": " + message,
+                stack: e.stack
             }
         });
         error.preventDefault();
@@ -1464,6 +1464,7 @@ policies and contribution forms [3].
             data.status.status !== data.status.OK) {
             tests.status.status = data.status.status;
             tests.status.message = data.status.message;
+            tests.status.stack = data.status.stack;
         }
         this.running = false;
         this.worker = null;
@@ -1486,6 +1487,7 @@ policies and contribution forms [3].
     {
         this.status = null;
         this.message = null;
+        this.stack = null;
     }
 
     TestsStatus.statuses = {
@@ -1503,7 +1505,8 @@ policies and contribution forms [3].
             msg = msg ? String(msg) : msg;
             this._structured_clone = merge({
                 status:this.status,
-                message:msg
+                message:msg,
+                stack:this.stack
             }, TestsStatus.statuses);
         }
         return this._structured_clone;
@@ -1593,6 +1596,7 @@ policies and contribution forms [3].
             } catch (e) {
                 this.status.status = this.status.ERROR;
                 this.status.message = String(e);
+                this.status.stack = e.stack ? e.stack : null;
             }
         }
         this.set_timeout();
@@ -1950,6 +1954,9 @@ policies and contribution forms [3].
 
                                     if (harness_status.status === harness_status.ERROR) {
                                         rv[0].push(["pre", {}, harness_status.message]);
+                                        if (harness_status.stack) {
+                                            rv[0].push(["pre", {}, harness_status.stack]);
+                                        }
                                     }
                                     return rv;
                                 },
@@ -2047,6 +2054,9 @@ policies and contribution forms [3].
                 "</td><td>" +
                 (assertions ? escape_html(get_assertion(tests[i])) + "</td><td>" : "") +
                 escape_html(tests[i].message ? tests[i].message : " ") +
+                (tests[i].stack ? "<pre>" +
+                 escape_html(tests[i].stack) +
+                 "</pre>": "") +
                 "</td></tr>";
         }
         html += "</tbody></table>";
@@ -2242,11 +2252,26 @@ policies and contribution forms [3].
     function AssertionError(message)
     {
         this.message = message;
+        this.stack = this.get_stack();
     }
 
-    AssertionError.prototype.toString = function() {
-        return this.message;
-    };
+    AssertionError.prototype = Object.create(Error.prototype);
+
+    AssertionError.prototype.get_stack = function() {
+        var lines = new Error().stack.split("\n");
+        var rv = [];
+        var re = /\/resources\/testharness\.js/;
+        var i = 0;
+        // Fire remove any preamble that doesn't match the regexp
+        while (!re.test(lines[i])) {
+            i++
+        }
+        // Then remove top frames in testharness.js itself
+        while (re.test(lines[i])) {
+            i++
+        }
+        return lines.slice(i).join("\n");
+    }
 
     function make_message(function_name, description, error, substitutions)
     {
@@ -2385,14 +2410,14 @@ policies and contribution forms [3].
             if (test.phase >= test.phases.HAS_RESULT) {
                 return;
             }
-            var message = e.message;
-            test.set_status(test.FAIL, message);
+            test.set_status(test.FAIL, e.message, e.stack);
             test.phase = test.phases.HAS_RESULT;
             test.done();
             done();
         } else if (!tests.allow_uncaught_exception) {
             tests.status.status = tests.status.ERROR;
             tests.status.message = e.message;
+            tests.status.stack = e.stack;
         }
     });
 

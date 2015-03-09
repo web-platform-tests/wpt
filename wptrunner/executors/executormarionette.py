@@ -110,6 +110,7 @@ class MarionetteProtocol(Protocol):
         self.load_runner("http")
 
     def load_runner(self, protocol):
+        # Check if we previously had a test window open, and if we did make sure it's closed
         self.marionette.execute_script("if (window.wrappedJSObject.win) {window.wrappedJSObject.win.close()}")
         url = urlparse.urljoin(self.executor.server_url(protocol), "/testharness_runner.html")
         self.logger.debug("Loading %s" % url)

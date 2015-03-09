@@ -30,6 +30,13 @@ def executor_kwargs(test_type, server_config, cache_manager, **kwargs):
 
 
 def strip_server(url):
+    """Remove the scheme and netloc from a url, leaving only the path and any query
+    or fragment.
+
+    url - the url to strip
+
+    e.g. http://example.org:8000/tests?id=1#2 becomes /tests?id=1#2"""
+
     url_parts = list(urlparse.urlsplit(url))
     url_parts[0] = ""
     url_parts[1] = ""
@@ -81,8 +88,8 @@ class TestExecutor(object):
 
         :param browser: ExecutorBrowser instance providing properties of the
                         browser that will be tested.
-        :param server_config: Base url of the http server on which the tests
-                                are running.
+        :param server_config: Dictionary of wptserve server configuration of the
+                              form stored in TestEnvironment.external_config
         :param timeout_multiplier: Multiplier relative to base timeout to use
                                    when setting test timeout.
         """
@@ -271,7 +278,6 @@ class RefTestImplementation(object):
         if not success:
             return False, data
 
-        print self.screenshot_cache.keys()
         hash_val, _ = self.screenshot_cache[node.url]
         self.screenshot_cache[node.url] = hash_val, data
         return True, data

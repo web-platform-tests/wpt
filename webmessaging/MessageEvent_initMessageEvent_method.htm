@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> initMessageEvent() method in the MessageEvent interface </title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id=log></div>
+
+<div style="display:none">
+    <iframe width="70%" onload="PostMessageTest()" src="./support/ChildWindowPostMessage.htm"></iframe>
+</div>
+
+<script>
+
+    var description = "Test Description: " +
+            "Create an event that uses the MessageEvent interface, check if it has the initMessageEvent() method in the prototype";
+
+    var t = async_test(description);
+
+    var DATA = "foo";
+    var TARGET = document.querySelector("iframe");
+
+    function PostMessageTest()
+    {
+        TARGET.contentWindow.postMessage(DATA, "*");
+    }
+
+    window.addEventListener("message", t.step_func(function(e)
+    {
+        assert_idl_attribute(e, "initMessageEvent", "initMessageEvent() method in MessageEvent interface");
+
+        t.done();
+
+    }), false);
+
+</script>
+</body>
+</html>

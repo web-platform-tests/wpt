@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+	<head>
+		<title>HTML 5 details element API</title>
+		<style>#one, #two { visibility: hidden; }</style>
+		<script src="/resources/testharness.js"></script>
+		<script src="/resources/testharnessreport.js"></script>
+		<script src="testharness.js"></script>
+		<script src="testharnessreport.js"></script>
+	</head>
+	<body>
+
+		<noscript><p>Enable JavaScript and reload</p></noscript>
+		<div id="log"></div>
+
+		<!-- Used in parsing tests -->
+		<div id='one'><details></details><details></details></div>
+		<div id='two'><p><details></details></div>
+
+		<script type="text/javascript">
+
+function makeDetails (open) {
+	var detailsEl = document.createElement('details');
+  if (open) {
+		detailsEl.setAttribute('open',open);
+	}
+	return detailsEl;
+}
+
+
+// <details>
+test(function () {
+	var times = document.getElementById('one').getElementsByTagName('details');
+	assert_equals( times.length, 2 );
+}, 'HTML parsing should locate 2 details elements in this document');
+test(function () {
+	assert_equals( document.getElementById('two').getElementsByTagName('p')[0].innerHTML, '' );
+}, 'HTML parsing should close an unclosed <p> before <details>');
+test(function () {
+	assert_true( !!window.HTMLDetailsElement );
+}, 'HTMLDetailsElement should be exposed for prototyping');
+test(function () {
+	assert_true( makeDetails() instanceof window.HTMLDetailsElement);
+}, 'a dynamically created details element should be instanceof HTMLDetailsElement');
+test(function () {
+	assert_true( document.getElementById('one').getElementsByTagName('details')[0] instanceof window.HTMLDetailsElement);
+}, 'a details element from the parser should be instanceof HTMLDetailsElement');
+
+
+// <details open>
+
+// Awaiting addition of assert_idl_attribute to the test framework
+//test(function () {
+//	assert_idl_attribute( makeDetails().open );
+//	assert_idl_attribute( !makeDetails().cheese );
+//}, 'HTMLDetailsElement should have an .open property');
+
+test(function () {
+	assert_true( makeDetails(true).open );
+	assert_false( makeDetails().open );
+}, 'the open attribute should be reflected by the .open property');
+test(function () {
+	assert_false( makeDetails().open );
+}, 'the default value of the .open property should be false');
+test(function () {
+	assert_true( makeDetails('cheese').open );
+}, 'open="cheese" should be interpreted as true');
+test(function () {
+	assert_true( makeDetails('false').open );
+}, 'open="false" should be interpreted as true');
+test(function () {
+	assert_true( makeDetails('').open );
+}, 'open="" should be interpreted as true');
+
+/*Currently crashes Opera:
+
+test(function () {
+  var detailsEl = makeDetails();
+	assert_false(detailsEl.open);
+  detailsEl.open = true;
+	assert_true(detailsEl.open);
+}, 'the .open property should be writable');*/
+		</script>
+
+	</body>
+</html>

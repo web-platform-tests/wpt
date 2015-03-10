@@ -22,7 +22,11 @@ test(function(){ assert_equals(document.all.tags("script").length,3)}, "Test for
 
 test(function(){ assert_equals(document.all.item("picture").nodeName,"IMG")}, "Test lookup IMG by name");
 
+test(function(){ assert_equals(document.all.item("noexist"), null)}, "HTMLAllCollection.item(name) if there are no nodes in the collection that have either an id attribute or a name attribute equal to name, then return null");
+
 test(function(){ assert_equals(document.all.namedItem("picture").nodeName,"IMG")}, "Test lookup IMG by namedItem ");
+
+test(function(){ assert_equals(document.all.namedItem("noexist"), null)},"HTMLAllCollection.namedItem(name) if there are no nodes in the collection that have either an id attribute or a name attribute equal to name, then return null");
 
 test(function(){ assert_equals(document.all("picture").nodeName,"IMG")}, "Test lookup IMG in collection using ()");
 

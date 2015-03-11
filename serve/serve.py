@@ -141,7 +141,7 @@ def check_subdomains(host, paths, bind_hostname, ssl_config):
     subdomains = get_subdomains(host)
 
     wrapper = ServerProc()
-    wrapper.start(start_http_server, host, port, paths, default_routes(), bind_hostname, 
+    wrapper.start(start_http_server, host, port, paths, default_routes(), bind_hostname,
                   None, ssl_config)
 
     connected = False

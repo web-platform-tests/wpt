@@ -190,7 +190,7 @@ class TestEnvironment(object):
 
             for (method,
                  suffix,
-                 handler_cls) in [(serve.any_method,
+                 handler_cls) in [(b"*",
                                    b"*.py",
                                    serve.handlers.PythonScriptHandler),
                                   (b"GET",

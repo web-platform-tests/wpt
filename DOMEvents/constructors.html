@@ -8,7 +8,7 @@
 function assert_props(iface, event, defaults) {
   assert_true(event instanceof self[iface]);
   expected[iface].properties.forEach(function(p) {
-    var property = p[0], value = p[1 + !defaults];
+    var property = p[0], value = p[defaults ? 1 : 2];
     assert_true(property in event,
                 "Event " + format_value(event) + " should have a " +
                 property + " property");
@@ -128,13 +128,13 @@ Object.keys(expected).forEach(function(iface) {
 
   test(function() {
     function fill_in(iface, dictionary) {
+      if ("parent" in expected[iface]) {
+        fill_in(expected[iface].parent, dictionary)
+      }
       expected[iface].properties.forEach(function(p) {
         var property = p[0], value = p[2];
         dictionary[property] = value;
       });
-      if ("parent" in expected[iface]) {
-        fill_in(expected[iface].parent, dictionary)
-      }
     }
 
     var dictionary = {};

@@ -256,8 +256,11 @@ class JsonHandler(object):
     def __init__(self, func):
         self.func = func
 
-    def __call__(self, func):
-        rv = FunctionHandler(self.func)(request, response)
+    def __call__(self, request, response):
+        return FunctionHandler(self.handle_request)(request, response)
+
+    def handle_request(self, request, response):
+        rv = self.func(request, response)
         response.headers.set("Content-Type", "application/json")
         enc = json.dumps
         if isinstance(rv, tuple):

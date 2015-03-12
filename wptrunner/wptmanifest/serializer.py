@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from node import NodeVisitor, ValueNode, BinaryExpressionNode
+from node import NodeVisitor, ValueNode, ListNode, BinaryExpressionNode
 from parser import precedence
 
 named_escapes = set(["\a", "\b", "\f", "\n", "\r", "\t", "\v"])
@@ -55,7 +55,7 @@ class ManifestSerializer(NodeVisitor):
         rv = [escape(node.data, ":") + ":"]
         indent = " " * self.indent
 
-        if len(node.children) == 1 and isinstance(node.children[0], ValueNode):
+        if len(node.children) == 1 and isinstance(node.children[0], (ValueNode, ListNode)):
             rv[0] += " %s" % self.visit(node.children[0])[0]
         else:
             for child in node.children:
@@ -63,8 +63,15 @@ class ManifestSerializer(NodeVisitor):
 
         return rv
 
+    def visit_ListNode(self, node):
+        rv = ["["]
+        rv.extend(", ". join(self.visit(child)[0] for child in node.children))
+        rv.append("]")
+        return ["".join(rv)]
+
     def visit_ValueNode(self, node):
-        if "#" in node.data:
+        if "#" in node.data or (isinstance(node.parent, ListNode) and
+                                ("," in node.data or "]" in node.data)):
             if "\"" in node.data:
                 quote = "'"
             else:

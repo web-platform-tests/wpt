@@ -55,7 +55,7 @@ def precedence(operator_node):
 
 class TokenTypes(object):
     def __init__(self):
-        for type in ["group_start", "group_end", "paren", "separator", "ident", "string", "number", "eof"]:
+        for type in ["group_start", "group_end", "paren", "list_start", "list_end", "separator", "ident", "string", "number", "eof"]:
             setattr(self, type, type)
 
 token_types = TokenTypes()
@@ -200,8 +200,77 @@ class Tokenizer(object):
         elif c == eol:
             self.next_state = self.expr_or_value_state
             self.state = self.eol_state
+        elif c == "[":
+            self.state = self.list_start_state
         else:
             self.state = self.value_state
+
+    def list_start_state(self):
+        yield (token_types.list_start, "[")
+        self.consume()
+        self.state = self.list_value_start_state
+
+    def list_value_start_state(self):
+        self.skip_whitespace()
+        if self.char() == "]":
+            self.state = self.list_end_state
+        elif self.char() in ("'", '"'):
+            quote_char = self.char()
+            self.consume()
+            yield (token_types.string, self.consume_string(quote_char))
+            self.skip_whitespace()
+            if self.char() == "]":
+                self.state = self.list_end_state
+            elif self.char() != ",":
+                raise ParseError(self.filename, self.line_number, "Junk after quoted string")
+            self.consume()
+        elif self.char() == "#":
+            self.state = self.comment_state
+            self.next_line_state = self.list_value_start_state
+        elif self.char() == eol:
+            self.next_line_state = self.list_value_start_state
+            self.state = self.eol_state
+        elif self.char() == ",":
+            raise ParseError(self.filename, self.line_number, "List item started with seperator")
+        else:
+            self.state = self.list_value_state
+
+    def list_value_state(self):
+        rv = ""
+        spaces = 0
+        while True:
+            c = self.char()
+            if c == "\\":
+                escape = self.consume_escape()
+                rv += escape
+            elif c == eol:
+                raise ParseError(self.filename, self.line_number, "EOL in list value")
+            elif c == "#":
+                raise ParseError(self.filename, self.line_number, "EOL in list value (comment)")
+            elif c == ",":
+                self.state = self.list_value_start_state
+                self.consume()
+                break
+            elif c == " ":
+                spaces += 1
+                self.consume()
+            elif c == "]":
+                self.state = self.list_end_state
+                self.consume()
+                break
+            else:
+                rv += " " * spaces
+                spaces = 0
+                rv += c
+                self.consume()
+
+        if rv:
+            yield (token_types.string, decode(rv))
+
+    def list_end_state(self):
+        self.consume()
+        yield (token_types.list_end, "]")
+        self.state = self.line_end_state
 
     def value_state(self):
         self.skip_whitespace()
@@ -471,7 +540,10 @@ class Parser(object):
             self.expect(token_types.group_end)
 
     def value_block(self):
-        if self.token[0] == token_types.string:
+        if self.token[0] == token_types.list_start:
+            self.consume()
+            self.list_value()
+        elif self.token[0] == token_types.string:
             self.value()
         elif self.token[0] == token_types.group_start:
             self.consume()
@@ -481,6 +553,13 @@ class Parser(object):
             self.eof_or_end_group()
         else:
             raise ParseError
+
+    def list_value(self):
+        self.tree.append(ListNode())
+        while self.token[0] == token_types.string:
+            self.value()
+        self.expect(token_types.list_end)
+        self.tree.pop()
 
     def expression_values(self):
         while self.token == (token_types.ident, "if"):

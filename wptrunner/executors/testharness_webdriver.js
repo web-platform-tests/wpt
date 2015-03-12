@@ -14,7 +14,7 @@ window.done = function(tests, status) {
             tests:test_results,
             status: status.status,
             message: status.message,
-            stack: x.stack});
+            stack: status.stack});
 }
 
 window.win = window.open("%(abs_url)s", "%(window_id)s");

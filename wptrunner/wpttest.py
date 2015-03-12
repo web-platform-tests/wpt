@@ -27,8 +27,8 @@ class SubtestResult(object):
             raise ValueError("Unrecognised status %s" % status)
         self.status = status
         self.message = message
-        self.expected = expected
         self.stack = stack
+        self.expected = expected
 
 
 class TestharnessResult(Result):

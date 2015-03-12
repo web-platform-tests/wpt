@@ -255,9 +255,13 @@ class ManifestLoader(object):
         if not json_data:
             manifest_file = manifest.Manifest(None, url_base)
         else:
-            manifest_file = manifest.Manifest.from_json(tests_path, json_data)
+            try:
+                manifest_file = manifest.Manifest.from_json(tests_path, json_data)
+            except manifest.ManifestVersionMismatch:
+                manifest_file = manifest.Manifest(None, url_base)
 
-        manifest_update.update(tests_path, url_base, manifest_file)
+            manifest_update.update(tests_path, url_base, manifest_file)
+
         manifest.write(manifest_file, manifest_path)
 
     def load_manifest(self, tests_path, metadata_path, url_base="/"):

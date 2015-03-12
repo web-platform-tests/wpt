@@ -223,11 +223,10 @@ class PythonScriptHandler(object):
 python_script_handler = PythonScriptHandler()
 
 class FunctionHandler(object):
-    def __call__(self, func):
+    def __init__(self, func):
         self.func = func
-        return self.handle_request
 
-    def handle_request(self, request, response):
+    def __call__(self, request, response):
         try:
             rv = self.func(request, response)
         except Exception:
@@ -250,13 +249,15 @@ class FunctionHandler(object):
 
 #The generic name here is so that this can be used as a decorator
 def handler(func):
-    return FunctionHandler()(func)
+    return FunctionHandler(func)
 
 
 class JsonHandler(object):
-    def __call__(self, func):
+    def __init__(self, func):
         self.func = func
-        return FunctionHandler(self.handle_request)
+
+    def __call__(self, request, response):
+        return FunctionHandler(self.handle_request)(request, response)
 
     def handle_request(self, request, response):
         rv = self.func(request, response)
@@ -273,7 +274,7 @@ class JsonHandler(object):
         return value
 
 def json_handler(func):
-    return JsonHandler()(func)
+    return JsonHandler(func)
 
 class AsIsHandler(object):
     def __init__(self, base_path=None, url_base="/"):

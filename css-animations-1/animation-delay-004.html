@@ -3,14 +3,24 @@
 <title>CSS Animations Test: animation-delay - ::after</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-delay">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<meta name="flags" content="animated">
 <meta name="assert" content="Check if animation-delay value impacts the after pseudo element">
 <style>
-  div::after {
-    content: "pseudoElement";
+  #testDiv::after {
+    content: "Filler Text 1";
     position: relative;
     animation-name: sample;
-    animation-duration: 5s;
-    animation-delay: 2s;
+    animation-duration: 10s;
+    animation-delay: 1s;
+  }
+  #refDiv::after {
+    content: "Filler Text 2";
+    position: relative;
+    animation-name: sample;
+    animation-duration: 10s;
+    animation-delay: 0s;
   }
   @keyframes sample {
     from {
@@ -22,7 +32,8 @@
   }
 </style>
 <body>
-  <p>Test passes if the 'pseudoElement' moves towards right after 2 seconds when the page is loaded.</p>
-  <div></div>
+  <p>Test passes if 'Filler Text 1' move behind 'Filler Text 2' from left to right.</p>
+  <div id="testDiv"></div>
+  <div id="refDiv"></div>
 </body>
 

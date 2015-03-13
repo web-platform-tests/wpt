@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: animation-delay - 0s</title>
+<link rel="author" title="Nokia Inc." href="http://www.nokia.com">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-delay">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<meta name="flags" content="animated">
+<meta name="assert" content="Check if animation-delay is set to 0s (zero seconds), animation will execution as soon as it is applied">
+<style>
+  div {
+    position: relative;
+    animation-name: sample;
+    animation-duration: 10s;
+    animation-delay: 0s;
+  }
+  @keyframes sample {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 150px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if 'Filler Text' move from left to right immediately.</p>
+  <div id="testDiv">Filler Text</div>
+</body>
+

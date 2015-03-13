@@ -60,7 +60,7 @@ class TestharnessResultConverter(object):
         harness_result = test.result_cls(self.harness_codes[result["status"]], result["message"])
         return (harness_result,
                 [test.subtest_result_cls(subtest["name"], self.test_codes[subtest["status"]],
-                                         subtest["message"]) for subtest in result["tests"]])
+                                         subtest["message"], subtest.get("stack", None)) for subtest in result["tests"]])
 testharness_result_converter = TestharnessResultConverter()
 
 

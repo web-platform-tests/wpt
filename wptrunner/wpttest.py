@@ -21,12 +21,13 @@ class Result(object):
 
 
 class SubtestResult(object):
-    def __init__(self, name, status, message, expected=None):
+    def __init__(self, name, status, message, stack=None, expected=None):
         self.name = name
         if status not in self.statuses:
             raise ValueError("Unrecognised status %s" % status)
         self.status = status
         self.message = message
+        self.stack = stack
         self.expected = expected
 
 

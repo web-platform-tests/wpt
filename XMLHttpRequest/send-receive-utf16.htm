@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>XMLHttpRequest: The send() method: receive data which is UTF-16 encoded with BOM</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+    <link rel="help" href="https://xhr.spec.whatwg.org/#document-response" data-tested-assertations="following::ol/li[9]" />
+<div id="log"></div>
+
+<script>
+  var test = async_test();
+  test.step(function() {
+    var client = new XMLHttpRequest();
+    client.onload = test.step_func(function(e) {
+      assert_equals(e.responseText, 'æøå\nテスト\n')
+      test.done();
+    });
+    client.open("GET", "resources/utf16.txt");
+    client.send(null);
+  });
+</script>

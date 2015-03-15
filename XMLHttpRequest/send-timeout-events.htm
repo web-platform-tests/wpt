@@ -19,7 +19,7 @@
         test.step(function()
         {
             var xhr = new XMLHttpRequest();
-            var expect = [4, "", "upload.timeout", "upload.loadend", "timeout", loadend""];
+            var expect = [4, "", "upload.timeout", "upload.loadend", "timeout", "loadend"];
             var actual = [];
 
             xhr.onreadystatechange = function()
@@ -34,7 +34,9 @@
             {
                 assert_equals(e.loaded, 0);
                 assert_equals(e.total, 0);
-                actual.push(e.type); VerifyResult()
+                actual.push(e.type);
+                assert_array_equals(actual, expect);
+                test.done();
             });
 
             xhr.ontimeout          = test.step_func(function(e)
@@ -59,15 +61,6 @@
                 actual.push("upload." + e.type);
             });
 
-
-            function VerifyResult()
-            {
-                test.step(function()
-                {
-                    assert_array_equals(actual, expect);
-                    test.done();
-                });
-            };
 
             var content = "";
             for (var i = 0; i < 121026; i++)

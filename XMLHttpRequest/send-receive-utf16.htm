@@ -11,7 +11,7 @@
   test.step(function() {
     var client = new XMLHttpRequest();
     client.onload = test.step_func(function(e) {
-      assert_equals(e.responseText, 'æøå\nテスト\n')
+      assert_equals(client.responseText, 'æøå\nテスト\n')
       test.done();
     });
     client.open("GET", "resources/utf16.txt");

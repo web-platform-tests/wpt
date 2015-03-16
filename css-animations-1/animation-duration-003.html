@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: animation-duration - Negative value</title>
+<link rel="author" title="Nokia Inc." href="http://www.nokia.com">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<meta name="assert" content="Check if animation-duration is set to a negative value, it is invalid">
+<style>
+  #testDiv {
+    position: relative;
+    animation-name: sample;
+    animation-duration: -1s;
+  }
+  #refDiv {
+    position: relative;
+    animation-name: sample;
+    animation-duration: 10s;
+  }
+  @keyframes sample {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 150px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if 'Filler Text 1' does not move, and 'Filler Text 2' move from left to right.</p>
+  <div id="testDiv">Filler Text 1</div>
+  <div id="refDiv">Filler Text 2</div>
+</body>
+

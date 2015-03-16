@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: animation-duration - ::before</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<meta name="flags" content="animated">
+<meta name="assert" content="Check if animation-duration value impacts the before pseudo element">
+<style>
+  div::before {
+    content: "Filler Text";
+    position: relative;
+    animation-name: sample;
+    animation-duration: 10s;
+  }
+  @keyframes sample {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 150px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if 'Filler Text' move from left to right in about 10 senconds (<span></span>).
+  <div></div>
+  <script>
+    var timeId, sec = 0;
+    var div = document.getElementsByTagName("div");
+    div[0].addEventListener("animationstart", animationStart, true);
+    div[0].addEventListener("animationend", animationEnd, true);
+
+    function animationStart() {
+      timeId = setInterval("showAnimationDuration()", 10);
+    }
+    function animationEnd() {
+      clearInterval(timeId);
+    }
+    function showAnimationDuration() {
+      sec += 0.01;
+      document.getElementsByTagName("span")[0].innerHTML = sec.toFixed(2) +"s";
+    }
+  </script>
+</body>
+

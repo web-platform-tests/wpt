@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: animation-iteration-count - ::before</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-iteration-count">
+<meta name="assert" content="Check if animation-iteration-count value impacts the before pseudo element.">
+<style>
+  div::before  {
+    content: "Filler Text";
+    position: relative;
+    animation-name: sample;
+    animation-duration: 10s;
+    animation-iteration-count: 1;
+  }
+  @keyframes sample {
+    from {
+      left: 0px;
+    }
+    to {
+      left: 150px;
+    }
+  }
+</style>
+<body>
+  <p>Test passes if 'Filler Text' move left to right once.</p>
+  <div></div>
+</body>
+

@@ -1,38 +1,67 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Animations Test: animation-delay - Negative value</title>
+<title>CSS Animations Test: animation-delay - negative value</title>
 <link rel="author" title="Nokia Inc." href="http://www.nokia.com">
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-03-18 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-delay">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <meta name="flags" content="animated">
-<meta name="assert" content="Check if animation-delay is set to a negative time offset, animation will execute the moment it is applied">
+<meta name="assert" content="When animation-delay is set to a negative time offset,
+                             animation will execute as soon as it is applied
+                             but act as if the animation had started the specified
+                             time in the past.">
 <style>
-  #testDiv {
+  div {
+    animation-timing-function: linear;
+
+    height: 100px;
+    width: 100px;
     position: relative;
-    animation-name: sample;
-    animation-duration: 10s;
-    animation-delay: -1s;
   }
-  #refDiv {
-    position: relative;
-    animation-name: sample;
+
+  #test-negative-delay {
+    animation-name: test-negative-delay;
     animation-duration: 10s;
-    animation-delay: 0s;
+    animation-delay: -5s;
+
+    background-color: blue;
   }
-  @keyframes sample {
+
+  #ref-no-delay {
+    animation-name: ref-no-delay;
+    animation-duration: 5s;
+
+    background-color: yellow;
+  }
+
+  @keyframes test-negative-delay {
     from {
-      left: 0px;
+      left: 150px;
     }
     to {
-      left: 150px;
+      left: 0px;
+    }
+  }
+
+  @keyframes ref-no-delay {
+    from {
+      left: 75px;
+    }
+    to {
+      left: 0px;
     }
   }
 </style>
 <body>
-  <p>Test passes if 'Filler Text 1' move behind 'Filler Text 2' from left to right.</p>
-  <div id="refDiv">Filler Text 1</div>
-  <div id="testDiv">Filler Text 2</div>
+  <p>
+    Test passes if there are a filled blue square with 'Filler Text'
+    and a filled yellow square with 'Filler Text', and if the two squares
+    start moving together from right to left as soon as the page loads.
+  </p>
+  <div id="test-negative-delay">Filler Text</div>
+  <div id="ref-no-delay">Filler Text</div>
 </body>
 

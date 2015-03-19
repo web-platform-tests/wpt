@@ -83,11 +83,14 @@
                 for( var j=0; j<inputs.length; j++ ) {
                     // 6. MIDIPort Interface (input)
                     test(function() {
-                        assert_own_property(inputs[j], "id");
-                        assert_own_property(inputs[j], "manufacturer");
-                        assert_own_property(inputs[j], "name");
-                        assert_own_property(inputs[j], "type");
-                        assert_own_property(inputs[j], "version");
+                        assert_idl_attribute(inputs[j], "id");
+                        assert_idl_attribute(inputs[j], "manufacturer");
+                        assert_idl_attribute(inputs[j], "name");
+                        assert_idl_attribute(inputs[j], "type");
+                        assert_idl_attribute(inputs[j], "version");
+                        assert_idl_attribute(inputs[j], "state");
+                        assert_idl_attribute(inputs[j], "connection");
+                        assert_idl_attribute(inputs[j], "onstatechange");
                     }, "6.1 MIDIPort Interface Attributes Name Test (input)" + " (#"+j+")");
 
                     test(function() {
@@ -96,13 +99,15 @@
                         assert_readonly(inputs[j], "name");
                         assert_readonly(inputs[j], "type");
                         assert_readonly(inputs[j], "version");
+                        assert_readonly(inputs[j], "state");
+                        assert_readonly(inputs[j], "connection");
 
                         assert_equals( "string", typeof inputs[j]["id"], "[Type of \"id\": String] " );
                         assert_true( typeof inputs[j]["manufacturer"]=="string" || inputs[j]["manufacturer"]==null, "[Type of \"manufacturer\": String or null] " );
                         assert_true( typeof inputs[j]["name"]=="string" || inputs[j]["name"]==null, "[Type of \"name\": String or null] " );
                         assert_in_array( inputs[j]["type"], ["input", "output"], "[Type of \"type\": input or output] " );
                         assert_true( typeof inputs[j]["version"]=="string" || inputs[j]["version"]==null, "[Type of \"version\": String or null] " );
-                        //assert_equals("object", typeof inputs[j]["onstatechange"]);
+                        assert_equals("object", typeof inputs[j]["onstatechange"]);
                         assert_equals("MIDIInput", inputs[j].constructor.name);
                     }, "6.1 MIDIPort Interface Attributes Type Test (input)" + " (#"+j+")");
 
@@ -111,7 +116,7 @@
                         assert_equals("object", typeof inputs[j].onmidimessage);
                     }, "6.2.2 MIDIInput Attribute Type Test" + " (#"+j+")");
                     test(function() {
-                        assert_own_property(inputs[j], "onmidimessage");
+                        assert_idl_attribute(inputs[j], "onmidimessage");
                     }, "6.2.2 MIDIInput Attribute Name Test" + " (#"+j+")");
                 }
             }

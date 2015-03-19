@@ -43,18 +43,20 @@
                     assert_idl_attribute(MIDI, "outputs");
                     assert_idl_attribute(MIDI, "onstatachange");
                     assert_idl_attribute(MIDI, "sysexEnabled");
+                assert_false(true);
                 }, "5.1 MIDIAccess interface attribute name test in {sysex:false}.");
+                test_requestMIDIAccess.done();
             });
-            test_requestMIDIAccess.done();
         }
-        function errorCallback() {
+        function errorCallback(message) {
             test_requestMIDIAccess.step(function() {
-                assert_unreached();
+                assert_equals("SecurityError", message.name);
                 test_requestMIDIAccess.done();
             });
         }
     }
     testWMA();
+
     MIDI="";
     var test_requestMIDIAccess02 = async_test("requestMIDIAccess({sysex: true}) - W3C Spec: Web MIDI API");
     function testWMA02() {
@@ -89,8 +91,7 @@
         }
         function errorCallback(message) {
             test_requestMIDIAccess02.step(function() {
-                console.log(message);
-                assert_unreached("Called errorCallback in Promise of requestMIDIAccess");
+                assert_equals("SecurityError", message.name, "");
                 test_requestMIDIAccess02.done();
             });
         }

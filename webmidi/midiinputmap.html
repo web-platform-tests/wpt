@@ -35,7 +35,7 @@
             } else {
                 // 4.3 MIDIInputMap Interface
                 test(function() {
-                    assert_equals("MIDIInputMap", MIDI.inputs.constructor.name);
+                    assert_class_string(MIDI.inputs, "MIDIInputMap");
                 }, "4.3 MIDIInputMap Interface Constructor name Test");
                 // 4.3.2 Attributes Test
                 test(function() {
@@ -45,26 +45,26 @@
                 test(function() {
                     assert_equals("function", typeof MIDI.inputs.entries);
                     var tmp=MIDI.inputs.entries()
-                    assert_equals("Iterator", tmp.constructor.name);
+                    assert_class_string(tmp, "Iterator");
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : entries()");
                 /*
                 test(function() {
                 assert_equals("function", typeof MIDI.inputs.forEach);
                 var tmp=MIDI.inputs.forEach();
-                assert_equals("undefined", tmp.constructor.name);
+                assert_class_string(tmp, "undefined");
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : forEach()");
                  */
                 test(function() {
                     assert_equals("function", typeof MIDI.inputs.keys);
                     var tmp=MIDI.inputs.keys();
-                    assert_equals("Iterator", tmp.constructor.name);
+                    assert_class_string(tmp, "Iterator");
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : keys()");
                 test(function() {
                     assert_equals("function", typeof MIDI.inputs.get);
                     var keyIterator=MIDI.inputs.keys();
                     for(var itr=keyIterator.next(); !itr.done; itr=keyIterator.next()) {
                         var tmp=MIDI.inputs.get(itr.value);
-                        assert_equals("MIDIInput", tmp.constructor.name);
+                        assert_class_string(tmp, "MIDIInput");
                     }
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : get()");
                 test(function() {
@@ -72,13 +72,13 @@
                     var keyIterator=MIDI.inputs.keys();
                         for(var itr=keyIterator.next(); !itr.done; itr=keyIterator.next()) {
                             var tmp=MIDI.inputs.has(itr.value);
-                            assert_equals("Boolean", tmp.constructor.name);
+                            assert_class_string(tmp, "Boolean");
                         }
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : has()");
                 test(function() {
                     assert_equals("function", typeof MIDI.inputs.values);
                     var tmp=MIDI.inputs.values();
-                    assert_equals("Iterator", tmp.constructor.name);
+                    assert_class_string(tmp, "Iterator");
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : values()");
                 for( var j=0; j<inputs.length; j++ ) {
                     // 6. MIDIPort Interface (input)
@@ -108,7 +108,7 @@
                         assert_in_array( inputs[j]["type"], ["input", "output"], "[Type of \"type\": input or output] " );
                         assert_true( typeof inputs[j]["version"]=="string" || inputs[j]["version"]==null, "[Type of \"version\": String or null] " );
                         assert_equals("object", typeof inputs[j]["onstatechange"]);
-                        assert_equals("MIDIInput", inputs[j].constructor.name);
+                        assert_class_string(inputs[j], "MIDIInput");
                     }, "6.1 MIDIPort Interface Attributes Type Test (input)" + " (#"+j+")");
 
                     // 6.2 MIDIInput Interface

@@ -22,22 +22,28 @@
         // 4.1 requestMIDIAccess() (in { sysex:false })
         test(function(){
             assert_equals("Promise", ret.constructor.name);
-        }, "Return type in {sysex:false}");
+        }, "4.1 Return type in {sysex:false}");
         function successCallback(access) {
             MIDI=access;
             // 5. MIDIAccess Interface
             test_requestMIDIAccess.step(function() {
                 test(function(){
-                    assert_equals("MIDIAccess", MIDI.constructor.name);
-                }, "MIDIAccess Interface name test in {sysex:false}");
+                    assert_class_string(MIDI, "MIDIAccess");
+                }, "5 MIDIAccess Interface name test in {sysex:false}");
                 // 5.1 Attributes
                 test(function(){
                     assert_equals("MIDIInputMap", MIDI.inputs.constructor.name);
-                    assert_equals("object", typeof MIDI.onconnect);
-                    assert_equals("object", typeof MIDI.ondisconnect);
                     assert_equals("MIDIOutputMap", MIDI.outputs.constructor.name);
+                    assert_equals("object", typeof MIDI.onstatechange);
+                    assert_equals("boolean", typeof MIDI.sysexEnabled);
                     assert_false(MIDI.sysexEnabled);
-                }, "MIDIAccess interface attribute test in {sysex:false}.");
+                }, "5.1 MIDIAccess interface attribute type test in {sysex:false}.");
+                test(function(){
+                    assert_idl_attribute(MIDI, "inputs");
+                    assert_idl_attribute(MIDI, "outputs");
+                    assert_idl_attribute(MIDI, "onstatachange");
+                    assert_idl_attribute(MIDI, "sysexEnabled");
+                }, "5.1 MIDIAccess interface attribute name test in {sysex:false}.");
             });
             test_requestMIDIAccess.done();
         }
@@ -62,23 +68,29 @@
             // 5. MIDIAccess Interface
             test_requestMIDIAccess02.step(function() {
                 test(function(){
-                    assert_equals("MIDIAccess", MIDI.constructor.name);
+                    assert_class_string(MIDI, "MIDIAccess");
                 }, "MIDIAccess interface name test in {sysex:true}");
                 // 5.1 Attributes
                 test(function(){
                     assert_equals("MIDIInputMap", MIDI.inputs.constructor.name);
-                    assert_equals("object", typeof MIDI.onconnect);
-                    assert_equals("object", typeof MIDI.ondisconnect);
                     assert_equals("MIDIOutputMap", MIDI.outputs.constructor.name);
+                    assert_equals("object", typeof MIDI.onstatechange);
+                    assert_equals("boolean", typeof MIDI.sysexEnabled);
                     assert_true(MIDI.sysexEnabled);
-                }, "MIDIAccess interface attribute test in {sysex:true}.");
-                assert_true(true);
+                }, "5.1 MIDIAccess interface attribute type test in {sysex:true}.");
+                test(function(){
+                    assert_idl_attribute(MIDI, "inputs");
+                    assert_idl_attribute(MIDI, "outputs");
+                    assert_idl_attribute(MIDI, "onstatachange");
+                    assert_idl_attribute(MIDI, "sysexEnabled");
+                }, "5.1 MIDIAccess interface attribute name test in {sysex:true}.");
             });
             test_requestMIDIAccess02.done();
         }
-        function errorCallback() {
+        function errorCallback(message) {
             test_requestMIDIAccess02.step(function() {
-                assert_false(true);
+                console.log(message);
+                assert_unreached("Called errorCallback in Promise of requestMIDIAccess");
                 test_requestMIDIAccess02.done();
             });
         }

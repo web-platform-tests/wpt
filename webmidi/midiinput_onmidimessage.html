@@ -69,11 +69,11 @@
                     if(inputCount<uLimit) {
                         // 7. MIDIMessageEvent Interface Event name Test
                         test(function(){
-                            assert_equals("MIDIMessageEvent", event.constructor.name);
+                            assert_class_string(event, "MIDIMessageEvent");
                         }, "7. MIDIMessageEvent Interface Event name Test (#"+inputCount+")");
                         test(function(){
-                            assert_equals("Uint8Array", event.data.constructor.name);
-                            assert_equals("Number", event.receivedTime.constructor.name);
+                            assert_class_string(event.data, "Uint8Array");
+                            assert_class_string(event.receivedTime, "Number");
                         }, "7.1 Attributes Test (MIDIMessageEvent Interface) (#"+inputCount+")");
                         console.log(event.data[0].toString(16) + " " + event.data[1].toString(16) + " " + event.data[2].toString(16));
                     }

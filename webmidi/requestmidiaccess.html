@@ -44,7 +44,7 @@
         }
         function errorCallback() {
             test_requestMIDIAccess.step(function() {
-                assert_false(true);
+                assert_unreached();
                 test_requestMIDIAccess.done();
             });
         }

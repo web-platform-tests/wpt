@@ -46,7 +46,7 @@
             console.log("[InputDevices] ", inputs);
             if(inputs.length==0) {
                 document.getElementById("warning").innerHTML="Your Computer looks no <b><u>MIDI INPUT</u></b> devices are pluged-in.<br> Please plug-in at least one <b><u>MIDI INPUT</u></b> device before run this Test.";
-                assert_false(true, "[No MIDI input devices are connected.]");
+                assert_unreached("No MIDI INPUT devices are pluged-in");
                 test_inputs.done();
             } else {
                 var input = document.createElement("input");
@@ -69,11 +69,11 @@
                     if(inputCount<uLimit) {
                         // 7. MIDIMessageEvent Interface Event name Test
                         test(function(){
-                            assert_true(event.constructor.name=="MIDIMessageEvent");
+                            assert_equals("MIDIMessageEvent", event.constructor.name);
                         }, "7. MIDIMessageEvent Interface Event name Test (#"+inputCount+")");
                         test(function(){
-                            assert_true(event.data.constructor.name=="Uint8Array");
-                            assert_true(event.receivedTime.constructor.name=="Number");
+                            assert_equals("Uint8Array", event.data.constructor.name);
+                            assert_equals("Number", event.receivedTime.constructor.name);
                         }, "7.1 Attributes Test (MIDIMessageEvent Interface) (#"+inputCount+")");
                         console.log(event.data[0].toString(16) + " " + event.data[1].toString(16) + " " + event.data[2].toString(16));
                     }
@@ -93,7 +93,7 @@
     }
     function errorCallback(message) {
         test_inputs.step(function() {
-            assert_true(false);
+            assert_unreached("Called errorCallback in Promise of requestMIDIAccess");
             test_inputs.done();
         });
     }

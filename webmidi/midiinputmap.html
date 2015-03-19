@@ -30,70 +30,89 @@
             console.log("[InputDevices] ", inputs);
             if(inputs.length==0) {
                 document.getElementById("warning").innerHTML="Your Computer looks no <b><u>MIDI INPUT</u></b> devices are pluged-in.<br> Please plug-in at least one <b><u>MIDI INPUT</u></b> device before run this Test.";
-                assert_false(true);
+                assert_unreached("No MIDI INPUT devices are pluged-in");
                 test_midiInputMap.done();
             } else {
                 // 4.3 MIDIInputMap Interface
                 test(function() {
-                    assert_true(MIDI.inputs.constructor.name=="MIDIInputMap");
+                    assert_equals("MIDIInputMap", MIDI.inputs.constructor.name);
                 }, "4.3 MIDIInputMap Interface Constructor name Test");
                 // 4.3.2 Attributes Test
                 test(function() {
-                    assert_true(typeof MIDI.inputs.size=="number");
+                    assert_equals("number", typeof MIDI.inputs.size);
                 }, "4.3.2 Attributes Test (MIDIInputMap Interface)");
                 // 4.3.3 Methods Test
                 test(function() {
-                    assert_true(typeof MIDI.inputs.entries=="function");
+                    assert_equals("function", typeof MIDI.inputs.entries);
                     var tmp=MIDI.inputs.entries()
-                    assert_true(tmp.constructor.name=="Iterator");
+                    assert_equals("Iterator", tmp.constructor.name);
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : entries()");
                 /*
                 test(function() {
-                assert_true(typeof MIDI.inputs.forEach=="function");
+                assert_equals("function", typeof MIDI.inputs.forEach);
                 var tmp=MIDI.inputs.forEach();
-                assert_true(tmp.constructor.name=="undefined");
+                assert_equals("undefined", tmp.constructor.name);
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : forEach()");
                  */
                 test(function() {
-                    assert_true(typeof MIDI.inputs.keys=="function");
+                    assert_equals("function", typeof MIDI.inputs.keys);
                     var tmp=MIDI.inputs.keys();
-                    assert_true(tmp.constructor.name=="Iterator");
+                    assert_equals("Iterator", tmp.constructor.name);
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : keys()");
                 test(function() {
-                    assert_true(typeof MIDI.inputs.get=="function");
+                    assert_equals("function", typeof MIDI.inputs.get);
                     var keyIterator=MIDI.inputs.keys();
                     for(var itr=keyIterator.next(); !itr.done; itr=keyIterator.next()) {
                         var tmp=MIDI.inputs.get(itr.value);
-                        assert_true(tmp.constructor.name=="MIDIInput");
+                        assert_equals("MIDIInput", tmp.constructor.name);
                     }
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : get()");
                 test(function() {
-                    assert_true(typeof MIDI.inputs.has=="function");
+                    assert_equals("function", typeof MIDI.inputs.has);
                     var keyIterator=MIDI.inputs.keys();
                         for(var itr=keyIterator.next(); !itr.done; itr=keyIterator.next()) {
                             var tmp=MIDI.inputs.has(itr.value);
-                            assert_true(tmp.constructor.name=="Boolean");
+                            assert_equals("Boolean", tmp.constructor.name);
                         }
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : has()");
                 test(function() {
-                    assert_true(typeof MIDI.inputs.values=="function");
+                    assert_equals("function", typeof MIDI.inputs.values);
                     var tmp=MIDI.inputs.values();
-                    assert_true(tmp.constructor.name=="Iterator");
+                    assert_equals("Iterator", tmp.constructor.name);
                 }, "4.3.3 Methods Test (MIDIInputMap Interface) : values()");
                 for( var j=0; j<inputs.length; j++ ) {
                     // 6. MIDIPort Interface (input)
                     test(function() {
-                        assert_true( typeof inputs[j]["id"]=="string", "[Type of \"id\": String] " );
-                        assert_true( typeof inputs[j]["manufactuerer"]=="string" || inputs[j]["manufactuerer"]==null, "[Type of \"manufactuerer\": String or null] " );
+                        assert_own_property(inputs[j], "id");
+                        assert_own_property(inputs[j], "manufacturer");
+                        assert_own_property(inputs[j], "name");
+                        assert_own_property(inputs[j], "type");
+                        assert_own_property(inputs[j], "version");
+                    }, "6.1 MIDIPort Interface Attributes Name Test (input)" + " (#"+j+")");
+
+                    test(function() {
+                        assert_readonly(inputs[j], "id");
+                        assert_readonly(inputs[j], "manufacturer");
+                        assert_readonly(inputs[j], "name");
+                        assert_readonly(inputs[j], "type");
+                        assert_readonly(inputs[j], "version");
+
+                        assert_equals( "string", typeof inputs[j]["id"], "[Type of \"id\": String] " );
+                        assert_true( typeof inputs[j]["manufacturer"]=="string" || inputs[j]["manufacturer"]==null, "[Type of \"manufacturer\": String or null] " );
                         assert_true( typeof inputs[j]["name"]=="string" || inputs[j]["name"]==null, "[Type of \"name\": String or null] " );
                         assert_in_array( inputs[j]["type"], ["input", "output"], "[Type of \"type\": input or output] " );
                         assert_true( typeof inputs[j]["version"]=="string" || inputs[j]["version"]==null, "[Type of \"version\": String or null] " );
-                        assert_true(inputs[j].constructor.name=="MIDIInput");
-                    }, "6.1 MIDIPort Interface Attributes Test (input)" + " (#"+j+")");
+                        //assert_equals("object", typeof inputs[j]["onstatechange"]);
+                        assert_equals("MIDIInput", inputs[j].constructor.name);
+                    }, "6.1 MIDIPort Interface Attributes Type Test (input)" + " (#"+j+")");
+
                     // 6.2 MIDIInput Interface
                     test(function() {
-                        assert_true( typeof inputs[j].onmidimessage=="object");
-                    }, "6.2.2 MIDIInput Attribute Test" + " (#"+j+")");
+                        assert_equals("object", typeof inputs[j].onmidimessage);
+                    }, "6.2.2 MIDIInput Attribute Type Test" + " (#"+j+")");
+                    test(function() {
+                        assert_own_property(inputs[j], "onmidimessage");
+                    }, "6.2.2 MIDIInput Attribute Name Test" + " (#"+j+")");
                 }
             }
             test_midiInputMap.done();
@@ -102,7 +121,7 @@
     function errorCallback(message) {
         test_midiInputMap.step(function() {
             console.log(message);
-            assert_true(false);
+            assert_unreached("Called errorCallback in Promise of requestMIDIAccess");
             test_midiInputMap.done();
         });
     }

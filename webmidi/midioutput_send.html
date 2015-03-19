@@ -36,7 +36,7 @@
             console.log("[OutputDevices] ", outputs.length);
             if(outputs.length==0) {
                 document.getElementById("warning").innerHTML="Your Computer looks no <b><u>MIDI OUTPUT</u></b> devices are pluged-in.<br> Please plug-in at least one <b><u>MIDI OUTPUT</u></b> device before run this Test.";
-                assert_false(true);
+                assert_unreached("No MIDI OUTPUT devices are pluged-in");
                 disableButton()
                 test_outputs.done();
             } else {
@@ -72,7 +72,7 @@
 
                         if(msg.length<=count) {
                             clearInterval(timerId);
-                            assert_true(true);
+                            assert_unreached("Timeout");
                             disableButton();
                             test_outputs.done();
                         }
@@ -83,7 +83,7 @@
     }
     function errorCallback(message) {
         test_outputs.step(function() {
-            assert_true(false);
+            assert_unreached("Called errorCallback in Promise of requestMIDIAccess");
             disableButton()
             test_outputs.done();
         });

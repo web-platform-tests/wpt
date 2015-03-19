@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>history-traversal Test: event - hashchange</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<meta name="assert" content="Check if event hashchange is fired When the hash is changed.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="log"></div>
+
+<script>
+
+async_test(function (t) {
+  
+  window.onhashchange = t.step_func(function (e) {
+    t.done();
+  });
+  window.location.hash = "#newHash";
+}, document.title);
+
+</script>

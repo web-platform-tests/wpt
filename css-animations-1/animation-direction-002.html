@@ -3,29 +3,41 @@
 <title>CSS Animations Test: animation-direction - normal</title>
 <link rel="author" title="Nokia Inc." href="http://www.nokia.com">
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-direction">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
-<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-direction">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-iteration-count">
 <meta name="flags" content="animated">
-<meta name="assert" content="Check if animation-direction is set to normal, all iterations of the animation are played as specified">
+<meta name="assert" content="When animation-direction is set to normal,
+                             all iterations of animation are played as specified.">
 <style>
   div {
-    position: relative;
     animation-name: sample;
     animation-duration: 10s;
     animation-direction: normal;
+    animation-iteration-count: infinite;
+   
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+    position: relative;
   }
+
   @keyframes sample {
     from {
-      left: 0px;
+      left: 150px;
     }
     to {
-      left: 150px;
+      left: 0px;
     }
   }
 </style>
 <body>
-  <p>Test passes if 'Filler Text' move from left to right.</p>
+  <p>
+    Test passes if there is a filled color square with 'Filler Text',
+    which starts moving from right to left, then back to right again and moves from
+    right to left. This cycle gets repeated.
+  </p>
   <div>Filler Text</div>
 </body>
 

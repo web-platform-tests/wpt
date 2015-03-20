@@ -22,24 +22,23 @@
             var expect = [4, "", "upload.timeout", "upload.loadend", "timeout", "loadend"];
             var actual = [];
 
-            xhr.onreadystatechange = function()
+            xhr.onreadystatechange = test.step_func(function()
             {
                 if (xhr.readyState == 4)
                 {
                     actual.push(xhr.readyState, xhr.response);
                 }
-            };
+            });
 
-            xhr.onloadend          = test.step_func(function(e)
+            xhr.onloadend = test.step_func_done(function(e)
             {
                 assert_equals(e.loaded, 0);
                 assert_equals(e.total, 0);
                 actual.push(e.type);
                 assert_array_equals(actual, expect);
-                test.done();
             });
 
-            xhr.ontimeout          = test.step_func(function(e)
+            xhr.ontimeout = test.step_func(function(e)
             {
                 assert_equals(e.loaded, 0);
                 assert_equals(e.total, 0);
@@ -47,14 +46,14 @@
             });
 
 
-            xhr.upload.onloadend   = test.step_func(function(e)
+            xhr.upload.onloadend = test.step_func(function(e)
             {
                 assert_equals(e.loaded, 0);
                 assert_equals(e.total, 0);
                 actual.push("upload." + e.type);
             });
 
-            xhr.upload.ontimeout   = test.step_func(function(e)
+            xhr.upload.ontimeout = test.step_func(function(e)
             {
                 assert_equals(e.loaded, 0);
                 assert_equals(e.total, 0);

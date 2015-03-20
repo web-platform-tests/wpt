@@ -3,7 +3,7 @@
 <title>XMLHttpRequest: The send() method: receive data which is UTF-16 encoded with BOM</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="https://xhr.spec.whatwg.org/#document-response" data-tested-assertations="following::ol/li[9]" />
+    <link rel="help" href="https://xhr.spec.whatwg.org/#text-response" data-tested-assertations="following::ol/li[9]" />
 <div id="log"></div>
 
 <script>
@@ -14,5 +14,24 @@
     });
     client.open("GET", "resources/utf16.txt");
     client.send(null);
-  });
+  }, 'UTF-16 with BOM, no encoding in content-type');
+
+  async_test(function() {
+    var client = new XMLHttpRequest();
+    client.onload = this.step_func_done(function(e) {
+      assert_equals(client.responseText, 'æøå\nテスト\n')
+    });
+    client.open("GET", "resources/status.py?code=200&type=text%2Fplain%3Bcharset%3DUTF-16&content=%E6%00%F8%00%E5%00%0A%00%C6%30%B9%30%C8%30%0A%00");
+    client.send(null);
+  }, 'UTF-16 without BOM, with charset label in content-type');
+
+  async_test(function() {
+    var client = new XMLHttpRequest();
+    client.onload = this.step_func_done(function(e) {
+      // plenty of EF BF BD Replacement Character in this invalid input..
+      assert_equals(encodeURIComponent(client.responseText), '%EF%BF%BD%00%EF%BF%BD%00%EF%BF%BD%00%0A%00%EF%BF%BD0%EF%BF%BD0%EF%BF%BD0%0A%00')
+    });
+    client.open("GET", "resources/status.py?code=200&type=text%2Fplain%3Bcharset%3DUTF-8&content=%E6%00%F8%00%E5%00%0A%00%C6%30%B9%30%C8%30%0A%00");
+    client.send(null);
+  }, 'UTF-16 without BOM, mislabelled as UTF-8 in content-type');
 </script>

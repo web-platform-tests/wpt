@@ -2,15 +2,18 @@
 <title>CSS Basic User Interface Test: Cursor property, url value, no fallback</title>
 <link rel="author" title="Chris Lilley" href="mailto:chris@w3.org">
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#cursor">
-<meta name="flags" content="interact">
-<meta name="assert" content="Test checks that a custom image cursor is supported.">
-<meta name="assert" content="Test checks that a fallback cursor is not required.">
+<meta name="flags" content="interact image invalid">
+<meta charset="UTF-8">
+<meta name="assert" content="Test checks that a fallback cursor is required.">
 <style>
-	.test{background: #7D6; border: 2px solid #555; 
-	cursor:url(support/cursors/woolly-64.png) 41 32; width :8em; height: 8em}
+	div.test{background: #D2B48C; border: 2px solid #555; 
+	cursor:url(support/cursors/fail.cur); 
+	width: 128px; height: 128px}
 </style>
 <body>
-  <p>The test passes if, when moved inside the pale green rectangle,  the cursor looks like a sheep.</p>
-  <p class="test"> </p>
-  <p>PNG image with css-supplied hotspot, relative URL, no fallback.</p>
+  <p>The test passes if, when moved inside the the colored rectangle, the
+  cursor does not change.</p>
+  <p>If inside the rectangle the cursor changes to the word "FAIL" on a red 
+  background, the test fails.</p>
+  <div class="test"> </div>
 </body>

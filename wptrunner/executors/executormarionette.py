@@ -141,18 +141,17 @@ class MarionetteProtocol(Protocol):
         #Unset all the old prefs
         for name, _ in old_environment.get("prefs", []):
             value = self.executor.original_pref_values[name]
-            self.logger.debug("Unsetting pref %s (%s)" % (name, value))
             if value is None:
                 self.clear_user_pref(name)
             else:
                 self.set_pref(name, value)
 
         for name, value in new_environment.get("prefs", []):
-            self.logger.debug("Setting pref %s (%s)" % (name, value))
             self.executor.original_pref_values[name] = self.get_pref(name)
             self.set_pref(name, value)
 
     def set_pref(self, name, value):
+        self.logger.info("Setting pref %s (%s)" % (name, value))
         self.marionette.set_context(self.marionette.CONTEXT_CHROME)
         script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]
@@ -176,6 +175,7 @@ class MarionetteProtocol(Protocol):
         self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
 
     def clear_user_pref(self, name):
+        self.logger.info("Clearing pref %s" % (name))
         self.marionette.set_context(self.marionette.CONTEXT_CHROME)
         script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]

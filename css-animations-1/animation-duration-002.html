@@ -1,45 +1,38 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Animations Test: animation-duration - Finite value</title>
+<title>CSS Animations Test: animation-duration - finite value</title>
 <link rel="author" title="Nokia Inc." href="http://www.nokia.com">
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
-<meta name="assert" content="Check if animation-duration is set a finite value, animation takes the specifies time to complete one cycle">
+<meta name="flags" content="animated">
+<meta name="assert" content="When animation-duration is set a finite time offset,
+                             animation takes the specifies time to complete one cycle.">
 <style>
   div {
-    position: relative;
     animation-name: sample;
     animation-duration: 10s;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+    position: relative;
   }
+
   @keyframes sample {
     from {
-      left: 0px;
+      left: 150px;
     }
     to {
-      left: 150px;
+      left: 0px;
     }
   }
 </style>
 <body>
-  <p>Test passes if 'Filler Text' move from left to right in about 10 senconds (<span></span>).
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which starts moving from right to left upon page load and lasts for a span of 10 seconds.
+  </p>
   <div>Filler Text</div>
-  <script>
-    var timeId, sec = 0;
-    var div = document.getElementsByTagName("div");
-    div[0].addEventListener("animationstart", animationStart, true);
-    div[0].addEventListener("animationend", animationEnd, true);
-
-    function animationStart() {
-      timeId = setInterval("showAnimationDuration()", 10);
-    }
-    function animationEnd() {
-      clearInterval(timeId);
-    }
-    function showAnimationDuration() {
-      sec += 0.01;
-      document.getElementsByTagName("span")[0].innerHTML = sec.toFixed(2) +"s";
-    }
-  </script>
 </body>
 

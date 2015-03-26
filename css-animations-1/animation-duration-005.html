@@ -5,18 +5,30 @@
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-fill-mode">
-<meta name="assert" content="Check if animation-duration is set to 0s, and 'animation-fill-mode' is set to 'forwards' or 'both',  the last frame of the animation will be displayed">
+<meta name="flags" content="animated">
+<meta name="assert" content="When animation-duration is set to 0s (zero seconds),
+                             and 'animation-fill-mode' is set to 'forwards' or 'both',
+                             the last frame of the animation will be displayed.">
 <style>
-  #testDiv {
+  div {
+    height: 100px;
+    width: 100px;
     position: relative;
+  }
+
+  #test {
     animation-name: sample;
     animation-duration: 0s;
     animation-fill-mode: forwards;
+
+    background-color: blue;
   }
-  #refDiv {
-    position: relative;
+
+  #ref {
+    background-color: yellow;
     left: 150px;
   }
+
   @keyframes sample {
     from {
       left: 0px;
@@ -27,8 +39,12 @@
   }
 </style>
 <body>
-  <p>Test passes if 'Filler Text 1' has same position with 'Filler Text 2'.</p>
-  <div id="testDiv">Filler Text 1</div>
-  <div id="refDiv">Filler Text 2</div>
+  <p>
+    Test passes if there is a filled blue with 'Filler Text'
+    and a filled yellow square with 'Filler Text', and if the two squares
+    have same left position.
+  </p>
+  <div id="test">Filler Text</div>
+  <div id="ref">Filler Text</div>
 </body>
 

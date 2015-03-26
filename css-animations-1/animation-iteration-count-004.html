@@ -1,37 +1,49 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Animations Test: animation-iteration-count - Non-integer value</title>
+<title>CSS Animations Test: animation-iteration-count - non-integer value</title>
 <link rel="author" title="Nokia Inc." href="http://www.nokia.com">
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-iteration-count">
-<meta name="assert" content="Check if animation-iteration-count is set to non-integer count, the animation will end partway through its last cycle.">
+<meta name="flags" content="animated">
+<meta name="assert" content="When animation-iteration-count is set to non-integer,
+                             animation will end partway through its last cycle.">
 <style>
-  #testDiv {
-    position: relative;
+  #test-iteration-count {
     animation-name: sample;
     animation-duration: 10s;
-    animation-iteration-count: 0.5;
-  }
-  #refDiv {
+    animation-iteration-count: 2.1;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
     position: relative;
-    animation-name: sample;
-    animation-duration: 10s;
-    animation-iteration-count: 0;
   }
+
+  #ref-path {
+    background-color: yellow;
+    height: 10px;
+    width: 250px;
+    position: relative;
+  }
+
   @keyframes sample {
     from {
-      left: 0px;
+      left: 150px;
     }
     to {
-      left: 150px;
+      left: 0px;
     }
   }
 </style>
 <body>
-  <p>Test passes if 'Filler Text 1' move from left to right, and 'Filler Text 2' does not move.</p>
-  <div id="testDiv">Filler Text 1</div>
-  <div id="refDiv">Filler Text 2</div>
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which starts moving from right to left along the yellow bar twice and for the third time
+    it ends partway and immediately positions itself to left.
+  </p>
+  <div id="test-iteration-count">Filler Text</div>
+  <div id="ref-path"></div>
 </body>
 

@@ -6,31 +6,43 @@
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-iteration-count">
-<meta name="assert" content="Check if animation-iteration-count is set to 0 (zero), no animation is seen.">
+<meta name="flags" content="animated">
+<meta name="assert" content="When animation-iteration-count is set to 0 (zero), no animation is seen.">
 <style>
-  #testDiv {
-    position: relative;
+  div {
     animation-name: sample;
     animation-duration: 10s;
-    animation-iteration-count: 0;
-  }
-  #refDiv {
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
     position: relative;
-    animation-name: sample;
-    animation-duration: 10s;
   }
+
   @keyframes sample {
     from {
-      left: 0px;
+      left: 150px;
     }
     to {
-      left: 150px;
+      left: 0px;
     }
   }
 </style>
 <body>
-  <p>Test passes if 'Filler Text 1' does not move, and 'Filler Text 2' move from left to right once.</p>
-  <div id="testDiv">Filler Text 1</div>
-  <div id="refDiv">Filler Text 2</div>
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which starts staying left for about 2 seconds upon page load,
+    then moves from right to left once.
+  </p>
+  <div>Filler Text</div>
+  <script>
+    var div = document.getElementsByTagName("div");
+    div[0].style.animationIterationCount = 0;
+    setTimeout(setAnimationDuration, 2000);
+
+    function setAnimationDuration() {
+      div[0].style.animationIterationCount = 1;
+    }
+  </script>
 </body>
 

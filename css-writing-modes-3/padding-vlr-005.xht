@@ -38,14 +38,6 @@
       height: 50px; /* necessary, otherwise inner blocks will grow as tall as the height of viewport */
     }
 
-  img
-    {
-    vertical-align: bottom;
-    /* Not necessary but because Chrome 40 does not centrally baseline-align
-    inline replaced element in vertical writing-mode with 'text-orientation: mixed'
-    or with 'text-orientation: upright', we do this to avoid a false negative. */
-    }
-
   .foo
     {
       padding-bottom: 5px;

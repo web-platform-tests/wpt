@@ -204,6 +204,8 @@ def set_from_config(kwargs):
             kwargs["test_paths"]["/"] = {}
         kwargs["test_paths"]["/"]["metadata_path"] = kwargs["metadata_root"]
 
+    kwargs["suite_name"] = kwargs["config"].get("web-platform-tests", {}).get("name", "web-platform-tests")
+
 
 def get_test_paths(config):
     # Set up test_paths

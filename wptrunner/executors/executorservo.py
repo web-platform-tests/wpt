@@ -73,7 +73,8 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
 
         self.proc = ProcessHandler(self.command,
                                    processOutputLine=[self.on_output],
-                                   onFinish=self.on_finish)
+                                   onFinish=self.on_finish,
+                                   env=env)
         self.proc.run()
 
         timeout = test.timeout * self.timeout_multiplier
@@ -176,7 +177,8 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             env["HOST_FILE"] = self.hosts_path
 
             self.proc = ProcessHandler(self.command,
-                                       processOutputLine=[self.on_output])
+                                       processOutputLine=[self.on_output],
+                                       env=env)
             self.proc.run()
             rv = self.proc.wait(timeout=test.timeout)
             if rv is None:

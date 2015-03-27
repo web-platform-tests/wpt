@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import base64
 import hashlib
 import json
 import os
@@ -202,7 +203,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             with open(output_path) as f:
                 # Might need to strip variable headers or something here
                 data = f.read()
-                return True, data
+                return True, base64.b64encode(data)
 
     def do_test(self, test):
         result = self.implementation.run_test(test)

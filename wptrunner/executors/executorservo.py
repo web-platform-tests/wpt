@@ -75,34 +75,39 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
                                    processOutputLine=[self.on_output],
                                    onFinish=self.on_finish,
                                    env=env)
-        self.proc.run()
 
-        timeout = test.timeout * self.timeout_multiplier
+        try:
+            self.proc.run()
 
-        # Now wait to get the output we expect, or until we reach the timeout
-        if self.debug_args is None and not self.pause_after_test:
-            wait_timeout = timeout + 5
-        else:
-            wait_timeout = None
-        self.result_flag.wait(wait_timeout)
+            timeout = test.timeout * self.timeout_multiplier
 
-        proc_is_running = True
-        if self.result_flag.is_set() and self.result_data is not None:
-            self.result_data["test"] = test.url
-            result = self.convert_result(test, self.result_data)
-        else:
-            if self.proc.proc.poll() is not None:
-                result = (test.result_cls("CRASH", None), [])
-                proc_is_running = False
+            # Now wait to get the output we expect, or until we reach the timeout
+            if self.debug_args is None and not self.pause_after_test:
+                wait_timeout = timeout + 5
             else:
-                result = (test.result_cls("TIMEOUT", None), [])
+                wait_timeout = None
+            self.result_flag.wait(wait_timeout)
 
-        if proc_is_running:
-            if self.pause_after_test:
-                self.logger.info("Pausing until the browser exits")
-                self.proc.wait()
+            proc_is_running = True
+            if self.result_flag.is_set() and self.result_data is not None:
+                self.result_data["test"] = test.url
+                result = self.convert_result(test, self.result_data)
             else:
-                self.proc.kill()
+                if self.proc.proc.poll() is not None:
+                    result = (test.result_cls("CRASH", None), [])
+                    proc_is_running = False
+                else:
+                    result = (test.result_cls("TIMEOUT", None), [])
+
+            if proc_is_running:
+                if self.pause_after_test:
+                    self.logger.info("Pausing until the browser exits")
+                    self.proc.wait()
+                else:
+                    self.proc.kill()
+        except KeyboardInterrupt:
+            self.proc.kill()
+            raise
 
         return result
 
@@ -179,8 +184,14 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             self.proc = ProcessHandler(self.command,
                                        processOutputLine=[self.on_output],
                                        env=env)
-            self.proc.run()
-            rv = self.proc.wait(timeout=test.timeout)
+
+            try:
+                self.proc.run()
+                rv = self.proc.wait(timeout=test.timeout)
+            except KeyboardInterrupt:
+                self.proc.kill()
+                raise
+
             if rv is None:
                 self.proc.kill()
                 return False, ("EXTERNAL-TIMEOUT", None)

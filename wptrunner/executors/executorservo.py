@@ -21,6 +21,19 @@ from .base import (ExecutorException,
                    reftest_result_converter)
 from .process import ProcessTestExecutor
 
+hosts_text = """127.0.0.1 web-platform.test
+127.0.0.1 www.web-platform.test
+127.0.0.1 www1.web-platform.test
+127.0.0.1 www2.web-platform.test
+127.0.0.1 xn--n8j6ds53lwwkrqhv28a.web-platform.test
+127.0.0.1 xn--lve-6lad.web-platform.test
+"""
+
+def make_hosts_file():
+    hosts_fd, hosts_path = tempfile.mkstemp()
+    with os.fdopen(hosts_fd, "w") as f:
+        f.write(hosts_text)
+    return hosts_path
 
 class ServoTestharnessExecutor(ProcessTestExecutor):
     convert_result = testharness_result_converter
@@ -34,6 +47,14 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         self.result_data = None
         self.result_flag = None
         self.protocol = Protocol(self, browser)
+        self.hosts_path = make_hosts_file()
+
+    def teardown(self):
+        try:
+            os.unlink(self.hosts_path)
+        except OSError:
+            pass
+        ProcessTestExecutor.teardown(self)
 
     def do_test(self, test):
         self.result_data = None
@@ -47,6 +68,8 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         if self.debug_args:
             self.command = list(self.debug_args) + self.command
 
+        env = os.environ.copy()
+        env["HOST_FILE"] = self.hosts_path
 
         self.proc = ProcessHandler(self.command,
                                    processOutputLine=[self.on_output],
@@ -121,6 +144,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
 
     def __init__(self, browser, server_config, binary=None, timeout_multiplier=1,
                  screenshot_cache=None, debug_args=None, pause_after_test=False):
+
         ProcessTestExecutor.__init__(self,
                                      browser,
                                      server_config,
@@ -131,8 +155,13 @@ class ServoRefTestExecutor(ProcessTestExecutor):
         self.screenshot_cache = screenshot_cache
         self.implementation = RefTestImplementation(self)
         self.tempdir = tempfile.mkdtemp()
+        self.hosts_path = make_hosts_file()
 
     def teardown(self):
+        try:
+            os.unlink(self.hosts_path)
+        except OSError:
+            pass
         os.rmdir(self.tempdir)
         ProcessTestExecutor.teardown(self)
 
@@ -142,6 +171,9 @@ class ServoRefTestExecutor(ProcessTestExecutor):
         with TempFilename(self.tempdir) as output_path:
             self.command = [self.binary, "--cpu", "--hard-fail", "--exit",
                             "--output=%s" % output_path, full_url]
+
+            env = os.environ.copy()
+            env["HOST_FILE"] = self.hosts_path
 
             self.proc = ProcessHandler(self.command,
                                        processOutputLine=[self.on_output])

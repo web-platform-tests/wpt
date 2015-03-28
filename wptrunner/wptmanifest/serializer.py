@@ -15,7 +15,7 @@ def escape(string, extras=""):
         elif c == "\\":
             rv += "\\\\"
         elif c < '\x20':
-            rv += "\\x" + hex(ord(c))[2:].rjust(2, "0")
+            rv += "\\x%02x" % ord(c)
         elif c in extras:
             rv += "\\" + c
         else:
@@ -65,7 +65,7 @@ class ManifestSerializer(NodeVisitor):
 
     def visit_ListNode(self, node):
         rv = ["["]
-        rv.extend(", ". join(self.visit(child)[0] for child in node.children))
+        rv.extend(", ".join(self.visit(child)[0] for child in node.children))
         rv.append("]")
         return ["".join(rv)]
 

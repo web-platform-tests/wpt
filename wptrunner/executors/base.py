@@ -159,7 +159,7 @@ class TestExecutor(object):
         :param test: The test to run."""
         pass
 
-    def on_protocol_change(self, new_protocol):
+    def on_environment_change(self, new_environment):
         pass
 
     def result_from_exception(self, test, e):

@@ -231,7 +231,7 @@ class Tokenizer(object):
             self.next_line_state = self.list_value_start_state
             self.state = self.eol_state
         elif self.char() == ",":
-            raise ParseError(self.filename, self.line_number, "List item started with seperator")
+            raise ParseError(self.filename, self.line_number, "List item started with separator")
         else:
             self.state = self.list_value_state
 
@@ -448,13 +448,6 @@ class Tokenizer(object):
             raise ParseError(self.filename, self.line_number, "EOL in escape")
         else:
             return c
-
-
-    def byte_escape(self):
-        return self.decode_escape(2)
-
-    def unicode_escape(self):
-        return self.decode_escape(4, 6)
 
     def decode_escape(self, length):
         value = 0

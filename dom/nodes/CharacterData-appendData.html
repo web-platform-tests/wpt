@@ -12,9 +12,9 @@ function testNode(create, type) {
     var node = create()
     assert_equals(node.data, "test")
 
-    node.appendData("test")
-    assert_equals(node.data, "testtest")
-  }, type + ".appendData()")
+    node.appendData("bar")
+    assert_equals(node.data, "testbar")
+  }, type + ".appendData('bar')")
 }
 
 testNode(function() { return document.createTextNode("test") }, "Text")

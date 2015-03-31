@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: animation events - animationiteration</title>
+<link rel="author" title="Nokia Inc." href="http://www.nokia.com">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-iteration-count">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#events">
+<meta name="flags" content="animated">
+<meta name="assert" content="Check that animationiteration event occurs at the end of
+                             each iteration of an animation for which animation-iteration-count
+                             is greater than one.">
+<style>
+  div {
+    animation-name: sample;
+    animation-duration: 10s;
+    animation-iteration-count: 3;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+    position: relative;
+  }
+
+  @keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>
+    Test passes if there is a filled square,
+    which moves from right to left three times; the first time with number 0,
+    the second time with number 1, the third time wiht number 2.
+  </p>
+  <div></div>
+  <script>
+    var count = 0;
+    var div = document.getElementsByTagName("div");
+    div[0].innerHTML = count;
+    div[0].addEventListener("animationiteration", animationIteration, true);
+
+    function animationIteration() {
+      count += 1;
+      div[0].innerHTML = count;
+    }
+  </script>
+</body>
+

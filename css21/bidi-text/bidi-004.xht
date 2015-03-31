@@ -3,18 +3,17 @@
  <head>
   <title>CSS Test: The bidi algorithm and inlines in CSS</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2012-07-01 -->
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/inline/bidi/004.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#bidi-box-model"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#direction"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model"/>
   <link rel="help" href="http://unicode.org/reports/tr9/"/>
+  <link rel="help" href="http://www.w3.org/TR/html5/rendering.html#phrasing-content-0"/> <!-- <br> is a bidi paragraph separator -->
   <link rel="match" href="bidi-004-ref.xht" />
 
-  <meta name="flags" content="may"/>
-
+  <meta name="flags" content="may21 ahem"/>
   <style type="text/css">
-   div p { float: left; clear: left; border: solid; margin: 1em; padding: 0.5em; background: #FFFFCC; color: black; }
+   div p { width: 28em; border: solid; margin: 1em; padding: 0.5em; background: #FFFFCC; color: black; font: 1em/1 Ahem; }
    .test { border: solid; padding: 0.4em 1em; line-height: 3em; }
    .control { line-height: 3em; }
    .control.start { border-style: solid none solid solid; padding: 0.4em 0 0.4em 1em;  }
@@ -28,16 +27,14 @@
   <p> The following two blocks should be identical, including overflow. (Force bidi: &#x05D0;) </p>
   <div>
    <p>
-    <span class="control a start"> aaa bbb ccc ddd eee </span> <br/>
-    <span class="control b start"> fff                 </span>
-                                   ggg hhh iii
-    <span class="control a end">   jjj                 </span> <br/>
-    <span class="control b end">   kkk lll mmm nnn ooo </span>
+    <span class="control a start">pppp&nbsp;pppX&nbsp;ppXp&nbsp;ppXX&nbsp;pXpp</span><br
+   /><span class="control b start">pXpX</span>&nbsp;pXXp&nbsp;pXXX&nbsp;Xppp<span class="control a end">&nbsp;XppX</span><br
+   /><span class="control b end">XpXp&nbsp;XpXX&nbsp;XXpp&nbsp;XXpX&nbsp;XXXp</span>
    </p>
    <p>
-    <span class="test a"> aaa         bbb          ccc &#x202E; eee                       ddd         <br/>
-                          jjj </span> iii          hhh          ggg <span class="test b"> fff         <br/>
-                          lll         kkk &#x202C; mmm          nnn                       ooo </span>
+    <!-- (note that everything between the RLO to the PDF is backwards) -->
+                          <!-- line 1...................--> <!-- line 2........................................--> <!-- line 3...................-->
+    <span class="test a"> pppp pppX ppXp &#x202E; ppXp XXpp XppX </span> pppX XXXp pXXp <span class="test b"> XpXp ppXX XXpX pXpX &#x202C; XXpX XXXp </span>
    </p>
   </div>
  </body>

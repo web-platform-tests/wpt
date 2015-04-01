@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Animations Test: @keyframe - timing funcitons</title>
+<title>CSS Animations Test: @keyframe - animation-timing-function</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#keyframes">
 <meta name="flags" content="animated">
-<meta name="assert" content="Check that a keyframe style may alse declare the timing function
-                             that is to be used as the animation moves to the next keyframe.">
+<meta name="assert" content="Check taht @keyframe accpet the 'animation-timing-function' property
+                             used as the animation moves to the next keyframe.">
 <style>
   div {
     animation-name: sample;
@@ -21,19 +21,11 @@
 
   @keyframes sample {
     from {
-      left: 160px;
-      animation-timing-function: linear;
-    }
-    25% {
-      left: 120px;
+      left: 150px;
       animation-timing-function: linear;
     }
     50% {
-      left: 80px;
-      animation-timing-function: linear;
-    }
-    75% {
-      left: 40px;
+      left: 75px;
       animation-timing-function: linear;
     }
     to {

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: @keyframe - timing funcitons</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#keyframes">
+<meta name="flags" content="animated">
+<meta name="assert" content="Check that a keyframe style may alse declare the timing function
+                             that is to be used as the animation moves to the next keyframe.">
+<style>
+  div {
+    animation-name: sample;
+    animation-duration: 10s;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+    position: relative;
+  }
+
+  @keyframes sample {
+    from {
+      left: 160px;
+      animation-timing-function: linear;
+    }
+    25% {
+      left: 120px;
+      animation-timing-function: linear;
+    }
+    50% {
+      left: 80px;
+      animation-timing-function: linear;
+    }
+    75% {
+      left: 40px;
+      animation-timing-function: linear;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which moves from right to left with constant speed.
+  </p>
+  <div>Filler Text</div>
+</body>
+

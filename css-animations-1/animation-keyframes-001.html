@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: @keyframes - from, to, percentages</title>
+<link rel="author" title="Nokia Inc." href="http://www.nokia.com">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#keyframes">
+<meta name="flags" content="animated">
+<meta name="assert" content="Check that @keyframes using from/to/percentages keywords
+                             are used to specify background at various points
+                             during the animation.">
+<style>
+  div {
+    animation-name: sample;
+    animation-duration: 10s;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+  }
+
+  @keyframes sample {
+    from {
+      background-color: blue;
+    }
+    30% {
+      background-color: green;
+    }
+    60% {
+      background-color: yellow;
+    }
+    to {
+      background-color: blue;
+    }
+  }
+</style>
+<body>
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which background changes in order(blue -> green -> yellow > blue).
+  </p>
+  <div>Filler Text</div>
+</body>
+

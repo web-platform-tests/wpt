@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: @keyframes - negative percentage and larger than 100%</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#keyframes">
+<meta name="flags" content="animated">
+<meta name="assert" content="Check that a keyframe selector specifies negative percentage values
+                             or values higher than 100%, the keyframe will be ignored.">
+<style>
+  div {
+    animation-name: sample;
+    animation-duration: 10s;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+  }
+
+  @keyframes sample {
+    -100% {
+      background-color: red;
+    }
+    0% {
+      background-color: blue;
+    }
+    30% {
+      background-color: green;
+    }
+    60% {
+      background-color: yellow;
+    }
+    100% {
+      background-color: blue;
+    }
+    200% {
+      background-color: red;
+    }
+  }
+</style>
+<body>
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which background changes in order(blue -> green -> yellow -> blue);
+    There is No red visible for whole animation.
+  </p>
+  <div>Filler Text</div>
+</body>
+

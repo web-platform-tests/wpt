@@ -536,6 +536,7 @@ policies and contribution forms [3].
 
         return this;
     }
+    expose(EventWatcher, 'EventWatcher');
 
     function setup(func_or_properties, maybe_properties)
     {

@@ -7,24 +7,38 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-function testNode(node) {
+// TODO: Non-ASCII strings.
+function testNode(create, type) {
+  // Step 2.
   test(function() {
-    assert_throws("INDEX_SIZE_ERR", function() { node.replaceData(5, 1, "x") })
-    assert_throws("INDEX_SIZE_ERR", function() { node.replaceData(5, 0, "") })
+    var node = create()
+    assert_equals(node.data, "test")
+
+    assert_throws("IndexSizeError", function() { node.replaceData(5, 1, "x") })
+    assert_throws("IndexSizeError", function() { node.replaceData(5, 0, "") })
+    assert_equals(node.data, "test")
+  }, type + ".replaceData() with invalid offset")
+
+  // Step 3.
+  test(function() {
+    var node = create()
+    assert_equals(node.data, "test")
+
     node.replaceData(2, 10, "yo")
     assert_equals(node.data, "teyo")
-  })
+  }, type + ".replaceData() with clamped count")
+
   test(function() {
-    node.data = "test"
+    var node = create()
     assert_equals(node.data, "test")
+
     node.replaceData(1, 1, "waddup")
     assert_equals(node.data, "twaddupst")
     node.replaceData(1, 1, "yup")
     assert_equals(node.data, "tyupaddupst")
-  })
+  }, type + ".replaceData() in the middle")
 }
-test(function() {
-  testNode(document.createTextNode("test"))
-  testNode(document.createComment("test"))
-})
+
+testNode(function() { return document.createTextNode("test") }, "Text")
+testNode(function() { return document.createComment("test") }, "Comment")
 </script>

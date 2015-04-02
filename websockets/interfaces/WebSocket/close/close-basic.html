@@ -13,7 +13,7 @@ async_test(function(t) {
     e.wasClean = true;
     assert_equals(e.wasClean, false, 'e.wasClean = true');
     delete e.wasClean;
-    assert_equals(e.wasClean, false, 'delete e.wasClean');
+    assert_equals(e.wasClean, undefined, 'delete e.wasClean');
     t.done();
   });
   ws.close();

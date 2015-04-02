@@ -3,14 +3,15 @@ function log(w) { this.postMessage(w) }
 function f() { log("FAIL") }
 function p() { log("PASS") }
 
-["js.py", "js.py?type=", "js.py?type=x", "js.py?type=x/x"].forEach(function(url) {
+["", "?type=", "?type=x", "?type=x/x"].forEach(function(urlpart) {
   try {
-    importScripts(url)
+    importScripts("resources/js.py" + urlpart)
   } catch(e) {
-    (e.name == "NetworkError") ? p() : f()
+    (e.name == "NetworkError") ? p() : log("FAIL (no NetworkError exception): " + urlpart)
   }
 
 })
-importScripts("js.py?type=text/javascript&outcome=p")
-importScripts("js.py?type=text/ecmascript&outcome=p")
+importScripts("resources/js.py?type=text/javascript&outcome=p")
+importScripts("resources/js.py?type=text/ecmascript&outcome=p")
+importScripts("resources/js.py?type=text/ecmascript;blah&outcome=p")
 log("END")

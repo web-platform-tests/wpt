@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: animation-delay - initial keyword</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-delay">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#values">
+<meta name="flags" content="animated">
+<meta name="assert" content="Check that animation-delay property accepts 'initial' keyword
+                             as property value.">
+<style>
+  body > div {
+    animation-delay: 5s;
+  }
+
+  div > div {
+    animation-name: sample;
+    animation-duration: 10s;
+    animation-delay: initial;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+    position: relative;
+  }
+
+  @keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which starts moving from right to left as soon as the page loads.
+  </p>
+  <div>
+    <div>Filler Text</div>
+  </div>
+</body>
+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: animation - display</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animations">
+<meta name="flags" content="animated">
+<meta name="assert" content="When setting 'display' property to 'none' will terminate
+                             any running animation applied to the element,
+                             updating 'display' to a value other than 'none' will start
+                             all animations applied to the element.">
+<style>
+  div {
+    animation-name: sample;
+    animation-duration: 10s;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+    position: relative;
+  }
+
+  @keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which moves from right to left twice.
+  </p>
+  <div>Filler Text</div>
+  <script>
+    var div = document.getElementsByTagName("div");
+    
+    setTimeout(function() {
+      div[0].style.display = "none";
+    }, 1000);
+
+    setTimeout(function() {
+      div[0].style.display = "block";
+    }, 2000);
+  </script>
+</body>
+

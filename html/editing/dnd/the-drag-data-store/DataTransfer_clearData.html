@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>DataTransfer Test: clearData()</title>
+<meta name="flags" content="interact">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<p><div id="button" draggable=true style="width:100px;height:100px;background-color:green"></div></p>
+<p><div id="button2" draggable=true style="width:100px;height:100px;background-color:black"></div></p>
+
+<h2>Test steps:</h2>
+
+<p>
+  <ol>
+    <li>Drag the green square and then drop anywhere</li>
+    <li>Drag the black square and then drop anywhere</li>
+  </ol>
+</p>
+
+<script>
+
+var button = document.getElementById("button");
+var button2 = document.getElementById("button2");
+var expectedValue = "TEST";
+var type = "text/plain";
+var drag = document.getElementById("drag");
+var completed = 0;
+
+setup({explicit_done: true});
+setup({explicit_timeout: true});
+
+on_event(button, "dragstart", function (evt) {
+  evt.dataTransfer.setData(type, expectedValue);
+});
+
+on_event(button2, "dragstart", function (evt) {
+  evt.dataTransfer.setData(type, expectedValue);
+  evt.dataTransfer.clearData(type);
+});
+
+on_event(button, "dragend", function (evt) {
+  var length = evt.dataTransfer.items.length;
+  test(function () {
+    assert_equals(length, 1);
+  }, "Check if the data stored when setData method invoked");
+
+  completed++;
+
+  if (completed == 2) {
+    done();
+   }
+});
+
+on_event(button2, "dragend", function (evt) {
+  var length = evt.dataTransfer.items.length;
+  test(function () {
+    assert_equals(length, 0);
+}, "Check if the data cleared when clearData method invoked");
+
+completed++;
+
+if (completed == 2) {
+  done();
+}
+});
+
+</script>
+
+<div id="log"></div>

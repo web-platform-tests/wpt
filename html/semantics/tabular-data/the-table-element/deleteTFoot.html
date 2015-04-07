@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTMLTableElement Test: deleteTFoot()</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<table id="testTable">
+  <tfoot><tr><td>test</td></tr></tfoot>
+  <tfoot><tr><td>1234</td></tr></tfoot>
+</table>
+
+<script>
+test(function () {
+  var table = document.getElementById("testTable");
+  var tfoot = table.tFoot;
+  table.deleteTFoot();
+  assert_not_equals(tfoot, table.tFoot);
+}, document.title);
+
+</script>
+
+<div id ="log"></div>

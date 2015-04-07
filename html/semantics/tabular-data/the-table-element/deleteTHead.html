@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTMLTableElement Test: deleteTHead()</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<table id="testTable">
+  <thead><tr><td>test</td></tr></thead>
+  <thead><tr><td>1234</td></tr></thead>
+</table>
+
+<script>
+
+test(function () {
+  var table = document.getElementById("testTable");
+  var thead = table.tHead;
+  table.deleteTHead();
+  assert_not_equals(delhead, table.tHead);
+ }, document.title);
+
+</script>
+
+<div id ="log"></div>

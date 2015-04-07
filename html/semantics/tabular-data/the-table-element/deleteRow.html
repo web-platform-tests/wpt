@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTMLTableElement Test: deleteRow()</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id ="log"></div>
+
+<table id="testTable">
+  <tr><td></td></tr>
+  <tr><td></td></tr>
+</table>
+
+<script>
+
+var table = document.getElementById("testTable");
+
+test(function () {
+  table.deleteRow(-1);
+  assert_equals(table.rows.length, 1);
+}, document.title);
+
+test(function () {
+  assert_throws("IndexSizeError", function () {
+    table.deleteRow(-2);
+  });
+}, "Check if HTMLTableElement.deleteRow must throw an IndexSizeError exception if index is less than zero, or greater than or equal to the number of elements in the rows collection");
+
+</script>

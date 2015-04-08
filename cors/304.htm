@@ -30,6 +30,7 @@ function req(url, num) {
   var client1 = req(url, 1)
   var client2 = req(url, 2)
   var client3 = req(url, 3)
+  var client4 = req(url, 4)
 
 test(function() {
     assert_true(client1.status != 299, client1.responseText)
@@ -51,6 +52,11 @@ test(function() {
     assert_equals(client3.getResponseHeader("A"), "3", "2nd 304 didn't expose 'A' header;")
     assert_equals(client3.getResponseHeader("B"), null, "2nd 304 exposed 'B' header;")
 }, "304Response: a 304 can contract Access-Control-Expose-Headers")
+
+test(function() {
+    assert_true(client4.status != 299, client3.responseText)
+    assert_not_equals(client1.response, client4.response, "Access granted even though 304 updated it to disallow.")
+}, "304Response: a 304 can change Access-Control-Allow-Origin")
 
 
 </script>

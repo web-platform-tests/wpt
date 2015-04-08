@@ -31,6 +31,8 @@ def main(request, response):
             headers.append(("Access-Control-Expose-Headers", "a, b"))
         elif req_num == 3:
             headers.append(("Access-Control-Expose-Headers", "a"))
+        elif req_num == 3:
+            headers.append(("Access-Control-Allow-Origin", "other.origin.example"))
         status = 304, "Not Modified"
         return status, headers, ""
     else:

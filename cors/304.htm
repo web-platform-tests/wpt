@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>CORS - 304 Responses</title>
+<meta name=author title="Mark Nottingham" href="mailto:mnot@mnot.net">
+
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=support.js?pipe=sub></script>
+
+<h1>304 Responses</h1>
+<div id=log></div>
+<script>
+
+
+/*
+ * 304 Responses
+ */
+
+function req(url, num) {
+  var client = new XMLHttpRequest()
+  client.open('GET', url, false)
+  client.setRequestHeader('content-language', num)
+  client.send()
+  return client
+}
+
+  var rand = Date.now()
+  var url = CROSSDOMAIN + 'resources/304.py?' + rand
+
+  var client1 = req(url, 1)
+  var client2 = req(url, 2)
+  var client3 = req(url, 3)
+
+test(function() {
+    assert_true(client1.status != 299, client1.responseText)
+    assert_true(client2.status != 299, client2.responseText)
+    assert_equals(client1.response, "Success", "didn't get successful response")
+    assert_equals(client1.response, client2.response, "different responses")
+    assert_equals(client1.getResponseHeader("A"), null, "'A' header exposed without permission")
+}, "304Response: a 304 response with no CORS headers inherits from the stored response")
+
+test(function() {
+    assert_true(client2.status != 299, client2.responseText)
+    assert_equals(client2.getResponseHeader("A"), "2", "1st 304 didn't expose 'A' header;")
+    assert_equals(client2.getResponseHeader("B"), "2", "1st 304 didn't expose 'B' header;")
+}, "304Response: a 304 can expand Access-Control-Expose-Headers")
+
+test(function() {
+    assert_true(client3.status != 299, client3.responseText)
+    assert_equals(client1.response, client3.response, "different responses")
+    assert_equals(client3.getResponseHeader("A"), "3", "2nd 304 didn't expose 'A' header;")
+    assert_equals(client3.getResponseHeader("B"), null, "2nd 304 exposed 'B' header;")
+}, "304Response: a 304 can contract Access-Control-Expose-Headers")
+
+
+</script>

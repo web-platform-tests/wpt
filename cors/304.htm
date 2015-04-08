@@ -76,20 +76,20 @@ async_test(function(t) {
     assert_equals(client1.response, client2.response, "responses were different;")
     assert_equals(client1.getResponseHeader("A"), null, "'A' header exposed without permission;")
   })
-}, "304Response: a 304 response with no CORS headers inherits from the stored response")
+}, "A 304 response with no CORS headers inherits from the stored response")
 
 async_test(function(t) {
   two_reqs('3', '4', true, t, function(client1, client2) {
     assert_equals(client2.getResponseHeader("A"), "4", "304 didn't expose 'A' header, even though allowed;")
     assert_equals(client2.getResponseHeader("B"), "4", "304 didn't expose 'B' header even though allowed;")
   })
-}, "304Response: a 304 can expand Access-Control-Expose-Headers")
+}, "A 304 can expand Access-Control-Expose-Headers")
 
 async_test(function(t) {
   two_reqs('5', '6', true, t, function(client1, client2) {
     assert_equals(client2.getResponseHeader("B"), null, "2nd 304 exposed 'B' header;")
   })
-}, "304Response: a 304 can contract Access-Control-Expose-Headers")
+}, "A 304 can contract Access-Control-Expose-Headers")
 
 async_test(function(t) {
   two_reqs('7', '8', false, t, function(client1, client2) {
@@ -97,7 +97,7 @@ async_test(function(t) {
       assert_not_equals(client1.response, client2.response, "Access granted even though 304 updated it to disallow;")
     }
   })
-}, "304Response: a 304 can change Access-Control-Allow-Origin")
+}, "A 304 can change Access-Control-Allow-Origin")
 
 
 </script>

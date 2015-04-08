@@ -16,46 +16,87 @@
  * 304 Responses
  */
 
-function req(url, num) {
+function req(url, id, t, ready) {
+  console.log('starting request ' + id)
   var client = new XMLHttpRequest()
-  client.open('GET', url, false)
-  client.setRequestHeader('content-language', num)
-  client.send()
+  client.error_caught = false
+  try {
+    client.open('GET', url, true)
+    client.setRequestHeader('content-language', id)
+    client.send()
+  } catch (e) {
+    client.error_caught = e
+  }
+  client.onreadystatechange = function() {
+    if (client.readyState == client.DONE) {
+      console.log('finished request ' + id)
+      t.step(function() {
+        assert_true(client.status != 299, "req " + id + " server says: " + client.responseText)
+      })
+      ready(client)
+    }
+  }
   return client
 }
 
+function two_reqs(id1, id2, should_have_same_body, t, done) {
   var rand = Date.now()
-  var url = CROSSDOMAIN + 'resources/304.py?' + rand
+  var url = CROSSDOMAIN + 'resources/304.py?id=' + id1 + '&r=%s' + rand
 
-  var client1 = req(url, 1)
-  var client2 = req(url, 2)
-  var client3 = req(url, 3)
-  var client4 = req(url, 4)
+  var client1 = req(url, id1, t, function(client1) {
+    t.step(function() {
+      assert_equals(client1.response, "Success", "didn't get successful 1st response;")
+      assert_equals(client1.getResponseHeader('Content-Language'), id1, "1st response didn't come from server;")
+    })
 
-test(function() {
-    assert_true(client1.status != 299, client1.responseText)
-    assert_true(client2.status != 299, client2.responseText)
-    assert_equals(client1.response, "Success", "didn't get successful response")
-    assert_equals(client1.response, client2.response, "different responses")
-    assert_equals(client1.getResponseHeader("A"), null, "'A' header exposed without permission")
+    setTimeout(function() {
+      req(url, id2, t, function(client2) {
+        t.step(function() {
+          var res_id2 = client2.getResponseHeader('Content-Language')
+          if (should_have_same_body) {
+            assert_equals(client1.response, client2.response, "response bodies were different;")
+            assert_not_equals(res_id2, id1, "2nd response doesn't appear to have updated cached headers;")
+            if (res_id2 != id1) {
+              assert_equals(res_id2, id2, "2nd response is associated with a different request (!);")
+            }
+          } else {
+            assert_not_equals(client1.response, client2.response, "response bodies were the same;")
+          }
+          done(client1, client2)
+        })
+        console.log('finished checking ' + id1)
+        t.done()
+      })
+    }, 5000)
+  })
+}
+
+async_test(function(t) {
+  two_reqs('1', '2', true, t, function(client1, client2) {
+    assert_equals(client1.response, client2.response, "responses were different;")
+    assert_equals(client1.getResponseHeader("A"), null, "'A' header exposed without permission;")
+  })
 }, "304Response: a 304 response with no CORS headers inherits from the stored response")
 
-test(function() {
-    assert_true(client2.status != 299, client2.responseText)
-    assert_equals(client2.getResponseHeader("A"), "2", "1st 304 didn't expose 'A' header;")
-    assert_equals(client2.getResponseHeader("B"), "2", "1st 304 didn't expose 'B' header;")
+async_test(function(t) {
+  two_reqs('3', '4', true, t, function(client1, client2) {
+    assert_equals(client2.getResponseHeader("A"), "4", "304 didn't expose 'A' header, even though allowed;")
+    assert_equals(client2.getResponseHeader("B"), "4", "304 didn't expose 'B' header even though allowed;")
+  })
 }, "304Response: a 304 can expand Access-Control-Expose-Headers")
 
-test(function() {
-    assert_true(client3.status != 299, client3.responseText)
-    assert_equals(client1.response, client3.response, "different responses")
-    assert_equals(client3.getResponseHeader("A"), "3", "2nd 304 didn't expose 'A' header;")
-    assert_equals(client3.getResponseHeader("B"), null, "2nd 304 exposed 'B' header;")
+async_test(function(t) {
+  two_reqs('5', '6', true, t, function(client1, client2) {
+    assert_equals(client2.getResponseHeader("B"), null, "2nd 304 exposed 'B' header;")
+  })
 }, "304Response: a 304 can contract Access-Control-Expose-Headers")
 
-test(function() {
-    assert_true(client4.status != 299, client4.responseText)
-    assert_not_equals(client1.response, client4.response, "Access granted even though 304 updated it to disallow.")
+async_test(function(t) {
+  two_reqs('7', '8', false, t, function(client1, client2) {
+    if (! client2.error_caught) {
+      assert_not_equals(client1.response, client2.response, "Access granted even though 304 updated it to disallow;")
+    }
+  })
 }, "304Response: a 304 can change Access-Control-Allow-Origin")
 
 

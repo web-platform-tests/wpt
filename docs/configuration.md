@@ -6,6 +6,7 @@ the web-platform-tests repository.
 
  * [git](http://git-scm.com/)
  * [Python 2.7](http://python.org)
+ * [OpenSSL](https://www.openssl.org)
 
 ## Hosts configuration
 
@@ -48,7 +49,7 @@ your operating system.
 
 The test environment can be started using
 
-    python serve.py
+    ./serve
 
 This will start HTTP servers on two ports and a websockets server on
 one port. By default one web server starts on port 8000 and the other
@@ -65,4 +66,13 @@ to some port of your choice e.g.
 
 ```
 "http": [1234, "auto"]
+```
+
+If you installed OpenSSL in such a way that running `openssl` at a
+command line doesn't work, you also need to adjust the path to the
+OpenSSL binary. This can be done by adding a section to `config.json`
+like:
+
+```
+"ssl": {"openssl": {"binary": "/path/to/openssl"}}
 ```

@@ -17,7 +17,7 @@ def main(request, response):
         return error("no req_num header in request")
     else:
         req_num = int(raw_req_num)
-        if req_num > 3:
+        if req_num > 4:
             return error("req_num %s out of range" % req_num)
 
     headers.append(("A", req_num))
@@ -31,7 +31,7 @@ def main(request, response):
             headers.append(("Access-Control-Expose-Headers", "a, b"))
         elif req_num == 3:
             headers.append(("Access-Control-Expose-Headers", "a"))
-        elif req_num == 3:
+        elif req_num == 4:
             headers.append(("Access-Control-Allow-Origin", "other.origin.example"))
         status = 304, "Not Modified"
         return status, headers, ""

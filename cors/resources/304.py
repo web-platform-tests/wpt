@@ -27,7 +27,7 @@ def main(request, response):
     if req_num % 2:  # odd requests are the first in a test pair
         if inm:
             # what are you doing here? This should be a fresh request.
-            return error("If-None-Match on first request")            
+            return error("If-None-Match on first request")
         else:
             status = 200, "OK"
             headers.append(("Access-Control-Allow-Origin", "*"))

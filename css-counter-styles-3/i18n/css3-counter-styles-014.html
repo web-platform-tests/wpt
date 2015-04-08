@@ -7,27 +7,23 @@
 <link rel='help' href='http://www.w3.org/TR/css-counter-styles-3/#simple-numeric'>
 <link rel="reviewer" title="Chris Lilley" href="mailto:chris@w3.org" />
 <meta name='flags' content='font'>
-<meta name="assert" content="Setting list-style-type to georgian will produce a suffix as described in the CSS3 Counter Styles module.">
+<meta name="assert" content="list-style-type: georgian produces a suffix per the spec.">
 <style type='text/css'>
+ol li { list-style-type: georgian;  }
+/* the following CSS is not part of the test */
 .test { font-size: 25px; }
 ol { margin: 0; padding-left: 8em; }
-ol li { list-style-type: georgian;  }
 </style>
 </head>
 <body>
-<p class="instructions">Test passes if the suffix in each of the two columns is the same, ignoring the actual numbers.</p>
-
-
-<div class="test"><ol start='1'><li title='1'>ა.</li></ol>
+<p class="instructions">Test passes if the numbers AND the suffix in each of the two columns is the same.</p>
+<div class="test">
+<ol start='1'><li title='1'>ა.</li></ol>
+<ol start='2'><li title='2'>ბ.</li></ol>
 </div>
-
-
 <!--Notes:
 You will need an appropriate font to run this test.
-
 To see the ASCII decimal number associated with a row, mouse over it and the number will pop up in a tooltip.
 -->
-
-
 </body>
 </html>

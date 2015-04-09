@@ -50,9 +50,9 @@ class SourceFile(object):
         # Remove computed properties if we pickle this class
         rv = self.__dict__.copy()
         for key in rv.keys():
-            if key in rv["__cached__"]:
+            if key in rv["__cached_properties__"]:
                 del rv[key]
-        del rv["__cached__"]
+        del rv["__cached_properties__"]
         return rv
 
     def name_prefix(self, prefix):

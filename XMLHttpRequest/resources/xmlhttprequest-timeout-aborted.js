@@ -1,4 +1,4 @@
-sif (this.document === undefined)
+if (this.document === undefined)
   importScripts("xmlhttprequest-timeout.js");
 /*
 This sets up three requests:

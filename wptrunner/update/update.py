@@ -117,7 +117,9 @@ class WPTUpdate(object):
         if not kwargs["sync"]:
             setup_paths(self.serve_root)
         else:
-            setup_paths(kwargs["sync_path"])
+            if os.path.exists(kwargs["sync_path"]):
+                # If the sync path doesn't exist we defer this until it does
+                setup_paths(kwargs["sync_path"])
 
         self.state = State(logger)
         self.kwargs = kwargs

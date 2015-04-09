@@ -14,7 +14,7 @@ from base import Step, StepRunner, exit_clean, exit_unclean
 from state import State
 
 def setup_paths(sync_path):
-    sys.path.insert(0, sync_path)
+    sys.path.insert(0, os.path.abspath(sync_path))
     from tools import localpaths
 
 class LoadConfig(Step):

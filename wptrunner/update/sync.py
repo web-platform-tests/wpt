@@ -100,7 +100,7 @@ class UpdateCheckout(Step):
             setup_paths(sync_path)
 
     def restore(self, state):
-        assert os.path.abspath(sync_tree.root) in sys.path
+        assert os.path.abspath(state.sync_tree.root) in sys.path
         Step.restore(self, state)
 
 

@@ -49,10 +49,12 @@ class SourceFile(object):
     def __getstate__(self):
         # Remove computed properties if we pickle this class
         rv = self.__dict__.copy()
+        cached_properties = rv.get("__cached_properties__", set())
         for key in rv.keys():
-            if key in rv["__cached_properties__"]:
+            if key in cached_properties:
                 del rv[key]
-        del rv["__cached_properties__"]
+        if "__cached_properties__" in rv:
+            del rv["__cached_properties__"]
         return rv
 
     def name_prefix(self, prefix):

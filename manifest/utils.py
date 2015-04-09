@@ -40,4 +40,7 @@ class cached_property(object):
 
         if self.name not in obj.__dict__:
             obj.__dict__[self.name] = self.func(obj)
+            if "__cached__" not in obj.__dict__:
+                obj.__dict__["__cached__"] = set()
+            obj.__dict__["__cached__"].add(self.name)
         return obj.__dict__[self.name]

@@ -46,6 +46,15 @@ class SourceFile(object):
 
         self.meta_flags = self.name.split(".")[1:]
 
+    def __getstate__(self):
+        # Remove computed properties if we pickle this class
+        rv = self.__dict__.copy()
+        for key in rv.keys():
+            if key in rv["__cached_properties__"]:
+                del rv[key]
+        del rv["__cached_properties__"]
+        return rv
+
     def name_prefix(self, prefix):
         """Check if the filename starts with a given prefix
 

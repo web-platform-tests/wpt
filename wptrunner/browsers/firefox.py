@@ -15,6 +15,7 @@ from mozcrash import mozcrash
 from .base import get_free_port, Browser, ExecutorBrowser, require_arg, cmd_arg, browser_command
 from ..executors import executor_kwargs as base_executor_kwargs
 from ..executors.executormarionette import MarionetteTestharnessExecutor, MarionetteRefTestExecutor
+from ..environment import hostnames
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -52,8 +53,7 @@ def executor_kwargs(test_type, server_config, cache_manager, **kwargs):
 
 
 def env_options():
-    return {"host": "127.0.0.1",
-            "external_host": "web-platform.test",
+    return {"host": "web-platform.test",
             "bind_hostname": "false",
             "certificate_domain": "web-platform.test",
             "encrypt_after_connect": True,
@@ -94,11 +94,11 @@ class FirefoxBrowser(Browser):
                  "ws": "8888"}
 
         self.profile = FirefoxProfile(locations=locations,
-                                      proxy=ports,
                                       preferences=preferences)
         self.profile.set_preferences({"marionette.defaultPrefs.enabled": True,
                                       "marionette.defaultPrefs.port": self.marionette_port,
-                                      "dom.disable_open_during_load": False})
+                                      "dom.disable_open_during_load": False,
+                                      "network.dns.localDomains": ",".join(hostnames)})
 
         if self.ca_certificate_path is not None:
             self.setup_ssl()

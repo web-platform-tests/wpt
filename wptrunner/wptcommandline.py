@@ -105,7 +105,7 @@ def create_parser(product_choices=None):
                                       help="Path to manifest listing tests to include")
 
     debugging_group = parser.add_argument_group("Debugging")
-    debugging_group.add_argument('--debugger',
+    debugging_group.add_argument('--debugger', const="__default__", nargs="?",
                                  help="run under a debugger, e.g. gdb or valgrind")
     debugging_group.add_argument('--debugger-args', help="arguments to the debugger")
 
@@ -233,8 +233,6 @@ def exe_path(name):
 
 
 def check_args(kwargs):
-    from mozrunner import debugger_arguments
-
     set_from_config(kwargs)
 
     for test_paths in kwargs["test_paths"].itervalues():
@@ -278,16 +276,17 @@ def check_args(kwargs):
         kwargs["processes"] = 1
 
     if kwargs["debugger"] is not None:
-        debug_args, interactive = debugger_arguments(kwargs["debugger"],
-                                                     kwargs["debugger_args"])
-        if interactive:
+        import mozdebug
+        if kwargs["debugger"] == "__default__":
+            kwargs["debugger"] = mozdebug.get_default_debugger_name()
+        debug_info = mozdebug.get_debugger_info(kwargs["debugger"],
+                                                kwargs["debugger_args"])
+        if debug_info.interactive:
             require_arg(kwargs, "processes", lambda x: x == 1)
             kwargs["no_capture_stdio"] = True
-        kwargs["interactive"] = interactive
-        kwargs["debug_args"] = debug_args
+        kwargs["debug_info"] = debug_info
     else:
-        kwargs["interactive"] = False
-        kwargs["debug_args"] = None
+        kwargs["debug_info"] = None
 
     if kwargs["binary"] is not None:
         if not os.path.exists(kwargs["binary"]):

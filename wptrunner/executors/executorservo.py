@@ -21,7 +21,7 @@ from .base import (ExecutorException,
                    testharness_result_converter,
                    reftest_result_converter)
 from .process import ProcessTestExecutor
-from ..executors.base import browser_command
+from ..browsers.base import browser_command
 
 hosts_text = """127.0.0.1 web-platform.test
 127.0.0.1 www.web-platform.test
@@ -191,7 +191,8 @@ class ServoRefTestExecutor(ProcessTestExecutor):
 
             try:
                 self.proc.run()
-                rv = self.proc.wait(timeout=test.timeout)
+                timeout = test.timeout * self.timeout_multiplier + 5
+                rv = self.proc.wait(timeout=timeout)
             except KeyboardInterrupt:
                 self.proc.kill()
                 raise

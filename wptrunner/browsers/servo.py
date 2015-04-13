@@ -26,8 +26,7 @@ def check_args(**kwargs):
 
 def browser_kwargs(**kwargs):
     return {"binary": kwargs["binary"],
-            "debug_info": kwargs["debug_info"],
-            "interactive": kwargs["interactive"]}
+            "debug_info": kwargs["debug_info"]}
 
 
 def executor_kwargs(test_type, server_config, cache_manager, **kwargs):

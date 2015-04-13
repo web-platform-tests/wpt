@@ -168,7 +168,7 @@ class TestRunnerManager(threading.Thread):
 
     def __init__(self, suite_name, test_queue, test_source_cls, browser_cls, browser_kwargs,
                  executor_cls, executor_kwargs, stop_flag, pause_after_test=False,
-                 pause_on_unexpected=False, debug_args=None):
+                 pause_on_unexpected=False, debug_info=None):
         """Thread that owns a single TestRunner process and any processes required
         by the TestRunner (e.g. the Firefox binary).
 
@@ -206,7 +206,7 @@ class TestRunnerManager(threading.Thread):
 
         self.pause_after_test = pause_after_test
         self.pause_on_unexpected = pause_on_unexpected
-        self.debug_args = debug_args
+        self.debug_info = debug_info
 
         self.manager_number = next_manager_number()
 
@@ -333,7 +333,7 @@ class TestRunnerManager(threading.Thread):
         with self.init_lock:
             # Guard against problems initialising the browser or the browser
             # remote control method
-            if self.debug_args is None:
+            if self.debug_info is None:
                 self.init_timer = threading.Timer(self.browser.init_timeout, init_failed)
 
             test_queue = self.test_source.get_queue()
@@ -590,7 +590,7 @@ class ManagerGroup(object):
                  executor_cls, executor_kwargs,
                  pause_after_test=False,
                  pause_on_unexpected=False,
-                 debug_args=None):
+                 debug_info=None):
         """Main thread object that owns all the TestManager threads."""
         self.suite_name = suite_name
         self.size = size
@@ -602,7 +602,7 @@ class ManagerGroup(object):
         self.executor_kwargs = executor_kwargs
         self.pause_after_test = pause_after_test
         self.pause_on_unexpected = pause_on_unexpected
-        self.debug_args = debug_args
+        self.debug_info = debug_info
 
         self.pool = set()
         # Event that is polled by threads so that they can gracefully exit in the face
@@ -640,7 +640,7 @@ class ManagerGroup(object):
                                             self.stop_flag,
                                             self.pause_after_test,
                                             self.pause_on_unexpected,
-                                            self.debug_args)
+                                            self.debug_info)
                 manager.start()
                 self.pool.add(manager)
             self.wait()

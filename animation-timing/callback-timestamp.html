@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>AnimationTiming Test: FrameRequestCallback - timestamp argument</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/TR/animation-timing/#Window-interface-extensions">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+
+  async_test(function(t) {
+    var requestAnimation = window.webkitRequestAnimationFrame ||
+                           window.mozRequestAnimationFrame ||
+                           window.requestAnimationFrame;
+
+    requestAnimation(callback);
+
+    function callback(timestamp) {
+      t.step(function() {
+        assert_equals(typeof timestamp, "number", "callback contains a number argument");
+      });
+      t.done();
+    };
+  }, "Check FrameRequestCallback has a DOMHighResTimeStamp argument");
+
+</script>

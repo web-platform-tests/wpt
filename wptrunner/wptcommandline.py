@@ -25,12 +25,6 @@ def url_or_path(path):
     else:
         return abs_path(path)
 
-def slash_prefixed(url):
-    if not url.startswith("/"):
-        url = "/" + url
-    return url
-
-
 def require_arg(kwargs, name, value_func=None):
     if value_func is None:
         value_func = lambda x: x is not None
@@ -97,9 +91,9 @@ def create_parser(product_choices=None):
                                       nargs="*", default=["testharness", "reftest"],
                                       choices=["testharness", "reftest"],
                                       help="Test types to run")
-    test_selection_group.add_argument("--include", action="append", type=slash_prefixed,
+    test_selection_group.add_argument("--include", action="append",
                                       help="URL prefix to include")
-    test_selection_group.add_argument("--exclude", action="append", type=slash_prefixed,
+    test_selection_group.add_argument("--exclude", action="append",
                                       help="URL prefix to exclude")
     test_selection_group.add_argument("--include-manifest", type=abs_path,
                                       help="Path to manifest listing tests to include")

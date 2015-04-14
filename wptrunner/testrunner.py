@@ -560,7 +560,6 @@ class TestQueue(object):
         self.test_type = test_type
         self.tests = tests
         self.kwargs = kwargs
-        self.queue = None
 
     def __enter__(self):
         if not self.tests[self.test_type]:

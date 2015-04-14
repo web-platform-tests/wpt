@@ -53,7 +53,8 @@ def executor_kwargs(test_type, server_config, cache_manager, **kwargs):
 
 
 def env_options():
-    return {"host": "web-platform.test",
+    return {"host": "127.0.0.1",
+            "external_host": "web-platform.test",
             "bind_hostname": "false",
             "certificate_domain": "web-platform.test",
             "encrypt_after_connect": True,
@@ -88,10 +89,6 @@ class FirefoxBrowser(Browser):
         locations = ServerLocations(filename=os.path.join(here, "server-locations.txt"))
 
         preferences = self.load_prefs()
-
-        ports = {"http": "8000",
-                 "https": "8443",
-                 "ws": "8888"}
 
         self.profile = FirefoxProfile(locations=locations,
                                       preferences=preferences)

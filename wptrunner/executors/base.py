@@ -153,7 +153,7 @@ class TestExecutor(object):
 
     @abstractmethod
     def do_test(self, test):
-        """Test-type and protocol specific implmentation of running a
+        """Test-type and protocol specific implementation of running a
         specific test.
 
         :param test: The test to run."""

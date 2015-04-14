@@ -57,7 +57,6 @@ def env_options():
             "external_host": "web-platform.test",
             "bind_hostname": "false",
             "certificate_domain": "web-platform.test",
-            "encrypt_after_connect": True,
             "supports_debugger": True}
 
 

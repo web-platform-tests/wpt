@@ -553,6 +553,11 @@ function IdlInterface(obj, is_callback) {
 
     /** An array of IdlInterfaceMembers. */
     this.members = obj.members.map(function(m){return new IdlInterfaceMember(m); });
+    if (this.has_extended_attribute("Unforgeable")) {
+        this.members
+            .filter(m => !m["static"] && (m.type == "attribute" || m.type == "operation"))
+            .forEach(m => m.isUnforgeable = true);
+    }
 
     /**
      * The name (as a string) of the type we inherit from, or null if there is
@@ -1096,8 +1101,7 @@ IdlInterface.prototype.test_member_operation = function(member)
 IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject, member)
 //@{
 {
-    var operationUnforgeable = (member.has_extended_attribute("Unforgeable") ||
-                                this.has_extended_attribute("Unforgeable"))
+    var operationUnforgeable = member.isUnforgeable;
     var desc = Object.getOwnPropertyDescriptor(memberHolderObject, member.name);
     // "The property has attributes { [[Writable]]: B,
     // [[Enumerable]]: true, [[Configurable]]: B }, where B is false if the
@@ -1188,8 +1192,7 @@ IdlInterface.prototype.test_member_stringifier = function(member)
         assert_own_property(self[this.name].prototype, "toString",
                 "interface prototype object missing non-static operation");
 
-        var stringifierUnforgeable = (member.has_extended_attribute("Unforgeable") ||
-                                      this.has_extended_attribute("Unforgeable"))
+        var stringifierUnforgeable = member.isUnforgeable;
         var desc = Object.getOwnPropertyDescriptor(interfacePrototypeObject, "toString");
         // "The property has attributes { [[Writable]]: B,
         // [[Enumerable]]: true, [[Configurable]]: B }, where B is false if the
@@ -1245,8 +1248,7 @@ IdlInterface.prototype.test_members = function()
         case "attribute":
             // For unforgeable attributes, we do the checks in
             // test_interface_of instead.
-            if (!member.has_extended_attribute("Unforgeable") &&
-                !this.has_extended_attribute("Unforgeable"))
+            if (!member.isUnforgeable)
             {
                 this.test_member_attribute(member);
             }
@@ -1258,8 +1260,7 @@ IdlInterface.prototype.test_members = function()
             // For unforgeable operations, we do the checks in
             // test_interface_of instead.
             if (member.name) {
-                if (!member.has_extended_attribute("Unforgeable") &&
-                    !this.has_extended_attribute("Unforgeable"))
+                if (!member.isUnforgeable)
                 {
                     this.test_member_operation(member);
                 }
@@ -1371,9 +1372,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
     for (var i = 0; i < this.members.length; i++)
     {
         var member = this.members[i];
-        if (member.type == "attribute" &&
-            (member.has_extended_attribute("Unforgeable") ||
-             this.has_extended_attribute("Unforgeable")))
+        if (member.type == "attribute" && member.isUnforgeable)
         {
             test(function()
             {
@@ -1384,8 +1383,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
         }
         else if (member.type == "operation" &&
                  member.name &&
-                 (member.has_extended_attribute("Unforgeable") ||
-                  this.has_extended_attribute("Unforgeable")))
+                 member.isUnforgeable)
         {
             test(function()
             {
@@ -1452,9 +1450,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                 assert_equals(exception, null, "Unexpected exception when evaluating object");
                 assert_equals(typeof obj, expected_typeof, "wrong typeof object");
                 if (!member["static"]) {
-                    if (!this.is_global() &&
-                        !this.has_extended_attribute("Unforgeable") &&
-                        !member.has_extended_attribute("Unforgeable")) {
+                    if (!this.is_global() && !member.isUnforgeable) {
                         assert_inherits(obj, member.name);
                     } else {
                         assert_own_property(obj, member.name);
@@ -1528,8 +1524,7 @@ IdlInterface.prototype.do_interface_attribute_asserts = function(obj, member)
     assert_false("value" in desc, 'property descriptor has value but is supposed to be accessor');
     assert_false("writable" in desc, 'property descriptor has "writable" field but is supposed to be accessor');
     assert_true(desc.enumerable, "property is not enumerable");
-    if (member.has_extended_attribute("Unforgeable") ||
-        this.has_extended_attribute("Unforgeable"))
+    if (member.isUnforgeable)
     {
         assert_false(desc.configurable, "[Unforgeable] property must not be configurable");
     }
@@ -1623,6 +1618,8 @@ function IdlInterfaceMember(obj)
     {
         this.extAttrs = [];
     }
+
+    this.isUnforgeable = this.has_extended_attribute("Unforgeable");
 }
 
 //@}

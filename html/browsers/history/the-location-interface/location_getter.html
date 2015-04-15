@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>location_getter</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+    test(function () {
+      var iframe = document.createElement("iframe");
+      document.body.appendChild(iframe);
+      
+     var win = iframe.contentWindow;
+     assert_not_equals(win.location, null);
+     assert_equals(win.location, win.document.location);
+
+     document.body.removeChild(iframe);
+     assert_equals(win.location, null);
+     assert_equals(win.document.location, null);
+    }, "location getter");
+    </script>
+  </body>
+</html>

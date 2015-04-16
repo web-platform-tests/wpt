@@ -1513,7 +1513,7 @@ policies and contribution forms [3].
             status: {
                 status: tests.status.ERROR,
                 message: "Error in worker" + filename + ": " + message,
-                stack: e.stack
+                stack: error.stack
             }
         });
         error.preventDefault();

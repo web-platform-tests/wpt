@@ -23,8 +23,18 @@ function run_test() {
   }, "product");
 
   test(function() {
-    if ("taintEnabled" in navigator) {
-      assert_false(navigator.taintEnabled());
+    if ("window" in self) {
+      // If you identify as WebKit, taintEnabled should not exist.
+      if (navigator.userAgent.indexOf("WebKit") != -1) {
+        assert_false("taintEnabled" in navigator);
+      }
+      // Otherwise it should exist and return false.
+      else {
+        assert_false(navigator.taintEnabled());
+      }
+    } else {
+      // taintEnabled should not exist in workers.
+      assert_false("taintEnabled" in navigator);
     }
   }, "taintEnabled");
 

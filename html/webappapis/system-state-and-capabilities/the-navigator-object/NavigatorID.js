@@ -23,6 +23,7 @@ function run_test() {
   }, "product");
 
   test(function() {
+    // See https://www.w3.org/Bugs/Public/show_bug.cgi?id=22555
     if ("window" in self) {
       // If you identify as WebKit, taintEnabled should not exist.
       if (navigator.userAgent.indexOf("WebKit") != -1) {

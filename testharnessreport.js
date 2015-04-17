@@ -373,9 +373,26 @@ var metadata_generator = {
         add_completion_callback(
             function (tests, harness_status) {
                 metadata_generator.process(tests, harness_status);
+                dump_test_results(tests, harness_status);
             });
     }
 };
+
+function dump_test_results(tests, status) {
+    var results_element = document.createElement("script");
+    results_element.type = "text/json";
+    results_element.id = "__testharness__results__";
+    var test_results = tests.map(function(x) {
+        return {name:x.name, status:x.status, message:x.message, stack:x.stack}
+    });
+    data = {test:window.location.href,
+            tests:test_results,
+            status: status.status,
+            message: status.message,
+            stack: status.stack};
+    results_element.textContent = JSON.stringify(data);
+    document.documentElement.lastChild.appendChild(results_element);
+}
 
 metadata_generator.setup();
 

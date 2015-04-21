@@ -6,6 +6,7 @@
 <script>
 var tests = [];
 setup(function() {
+  var whitespace = [' ', '\t', '\n', '\f', '\r'];
   encodings_table.forEach(function(section) {
     section.encodings.filter(function(encoding) {
       return encoding.name !== 'replacement';
@@ -13,6 +14,11 @@ setup(function() {
       var name = encoding.name;
       encoding.labels.forEach(function(label) {
         tests.push([label, encoding.name]);
+        whitespace.forEach(function(ws) {
+          tests.push([ws + label, encoding.name]);
+          tests.push([label + ws, encoding.name]);
+          tests.push([ws + label + ws, encoding.name]);
+        });
       });
     });
   });

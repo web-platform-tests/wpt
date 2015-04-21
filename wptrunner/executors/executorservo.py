@@ -91,7 +91,7 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
             timeout = test.timeout * self.timeout_multiplier
 
             # Now wait to get the output we expect, or until we reach the timeout
-            if self.debug_info is None and not self.pause_after_test:
+            if not self.interactive and not self.pause_after_test:
                 wait_timeout = timeout + 5
                 self.result_flag.wait(wait_timeout)
             else:
@@ -221,7 +221,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
 
     def on_output(self, line):
         line = line.decode("utf8", "replace")
-        if self.debug_info.interactive:
+        if self.interactive:
             print line
         else:
             self.logger.process_output(self.proc.pid,

@@ -50,5 +50,4 @@ class ServoBrowser(NullBrowser):
 
     def executor_browser(self):
         return ExecutorBrowser, {"binary": self.binary,
-                                 "debug_info": self.debug_info,
-                                 "interactive": self.debug_info.interactive if self.debug_info else False}
+                                 "debug_info": self.debug_info}

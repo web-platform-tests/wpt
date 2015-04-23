@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Writing Modes Test: Test orientation of characters with various 'text-orientation' values.</title>
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
+<meta name="flags" content="dom">
+<meta name="assert" content="Test orientation of characters with various 'text-orientation' values.">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+@font-face {
+    font-family: "orientation";
+    src: url("../fonts/adobe-fonts/CSSHWOrientationTest.otf");
+}
+.block {
+    font-family: "orientation";
+    font-size: 16px;
+    white-space: pre;
+    -webkit-writing-mode: vertical-rl;
+}
+.U {
+    -webkit-text-orientation: upright;
+}
+.R {
+    -webkit-text-orientation: sideways-right;
+}
+</style>
+<div id="log"></div>
+<div id="details"></div>
+<div id="container"><div class="block">
+<div>、。ぁぃぅぇぉっゃゅょゎゕゖ゛゜ァィゥェォッャュョヮヵヶㄧㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ㌀㌁㌂㌃㌄㌅㌆㌇㌈㌉㌊㌋㌌㌍㌎㌏㌐㌑㌒</div>
+<div>㌓㌔㌕㌖㌗㌘㌙㌚㌛㌜㌝㌞㌟㌠㌡㌢㌣㌤㌥㌦㌧㌨㌩㌪㌫㌬㌭㌮㌯㌰㌱㌲㌳㌴㌵㌶㌷㌸㌹㌺㌻㌼㌽㌾㌿㍀㍁㍂㍃㍄㍅㍆㍇㍈㍉㍊㍋㍌㍍㍎㍏㍐㍑㍒</div>
+<div>㍓㍔㍕㍖㍗㍻㍼㍽㍾㍿﹐﹑﹒！，．？</div>
+</div>
+</div>
+<script>var vo = "Tu";</script>
+<script src="support/text-orientation.js"></script>

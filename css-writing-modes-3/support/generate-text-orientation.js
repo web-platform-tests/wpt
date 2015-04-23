@@ -92,7 +92,11 @@ function generate(rangesByVO, gc) {
 }
 
 function writeHtml(value, ranges, template, gc) {
-    template = template.map(function (text) { return text.replace('vo = "R";', 'vo = "' + value + '";'); });
+    template = template.map(function (text) {
+        return text
+            .replace("<!--META-->", '<meta name="assert" content="Test orientation of characters where vo=' + value + '.">')
+            .replace('vo = "R";', 'vo = "' + value + '";');
+    });
     var path = "../text-orientation-script-" + value + "-001.html";
     console.log("Writing " + path);
     var output = fs.openSync(path, "w");

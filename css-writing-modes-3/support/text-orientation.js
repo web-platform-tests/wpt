@@ -120,11 +120,19 @@
     setup({explicit_done:true, explicit_timeout:true});
     var runner = new Runner();
     window.onload = function () {
-        log("Loaded, waiting test fonts to load");
+        if (window.location.hash == "#wait") {
+            log("Waiting for 5 secs");
+            return setTimeout(run, 5000);
+        }
+        run();
+    }
+
+    function run() {
         onFontReady("16px orientation", function () { runner.run(); });
     }
 
     function onFontReady(font, func) {
+        log("Waiting test fonts to load");
         if (document.fonts) {
             if ('load' in document.fonts)
                 return document.fonts.load(font).then(func);

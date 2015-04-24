@@ -98,7 +98,7 @@ function writeHtml(value, ranges, template, gc) {
             '<meta name="assert" content="Test orientation of characters where vo=' + value + '.">')
         .replace('vo = "R";', 'vo = "' + value + '";');
     });
-    var path = "../text-orientation-script-" + value.toLowerCase() + "-001.html";
+    var path = "../../text-orientation-script-" + value.toLowerCase() + "-001.html";
     console.log("Writing " + path);
     var output = fs.openSync(path, "w");
     fs.writeSync(output, template[0]);

@@ -18,7 +18,16 @@ var TestingUtils = (function() {
         }, "'" + gridId + "' with: grid-template-columns: " + columnsStyle  + "; and grid-template-rows: " + rowsStyle + ";");
     }
 
+    function testGridTemplateAreas(gridId, style, value) {
+        test(function() {
+            var grid = document.getElementById(gridId);
+            grid.style.gridTemplateAreas = style;
+            assert_equals(getComputedStyle(grid).gridTemplateAreas, value, "gridTemplateAreas");
+        }, "'" + gridId + "' with: grid-template-areas: " + style + ";");
+    }
+
     return {
-        testGridTemplateColumnsRows: testGridTemplateColumnsRows
+        testGridTemplateColumnsRows: testGridTemplateColumnsRows,
+        testGridTemplateAreas: testGridTemplateAreas
     }
 })();

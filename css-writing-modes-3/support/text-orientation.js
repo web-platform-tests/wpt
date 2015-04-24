@@ -120,9 +120,9 @@
     setup({explicit_done:true, explicit_timeout:true});
     var runner = new Runner();
     window.onload = function () {
-        log("onload");
+        log("Loaded, waiting test fonts to load");
         if (document.fonts) {
-            document.fonts.load("16px orientation")
+            document.fonts.ready
                 .then(function () { runner.run(); });
         } else {
             document.offsetTop;

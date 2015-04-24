@@ -121,13 +121,18 @@
     var runner = new Runner();
     window.onload = function () {
         log("Loaded, waiting test fonts to load");
+        onFontReady("16px orientation", function () { runner.run(); });
+    }
+
+    function onFontReady(font, func) {
         if (document.fonts) {
-            document.fonts.ready
-                .then(function () { runner.run(); });
-        } else {
-            document.offsetTop;
-            runner.run();
+            if ('load' in document.fonts)
+                return document.fonts.load(font).then(func);
+            if ('ready' in document.fonts)
+                return document.fonts.ready.then(func);
         }
+        document.offsetTop; // last resort to load @font-face
+        func();
     }
 
     function stringFromUnicode(code) {

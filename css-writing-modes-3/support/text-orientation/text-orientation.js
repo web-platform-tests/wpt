@@ -42,8 +42,10 @@
                 range.setEnd(node, ich + 1);
                 rect = range.getBoundingClientRect();
                 if (rect.width == 16) {
-                    if (rect.height == this.advanceExpected)
+                    if (rect.height == this.advanceExpected) {
+                        this.results.passCount++;
                         continue;
+                    }
                     //log("U+" + stringFromUnicode(code) + " " + rect.width + "x" + rect.height);
                     if (rect.height == this.advanceFailed) {
                         this.results.failed(this, code);
@@ -57,6 +59,7 @@
     function Results(name) {
         appendChildElement(details, "h3", name);
         this.list = appendChildElement(details, "ol");
+        this.passCount = 0;
         this.failCount = 0;
         this.inconclusiveCount = 0;
     }
@@ -114,6 +117,7 @@
             if (results.inconclusiveCount)
                 test.name += " (" + results.inconclusiveCount + " inconclusive)";
             assert_equals(results.failCount, 0, "Fail count");
+            assert_greater_than(results.passCount, 0, "Pass count");
             test.done();
         }});
 

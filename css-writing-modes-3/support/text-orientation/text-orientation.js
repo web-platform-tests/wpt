@@ -32,7 +32,7 @@
                 return;
             }
 
-            var range = new Range();
+            var range = document.createRange();
             var text = node.textContent;
             for (var ich = 0; ich < text.length; ich++) {
                 var code = text.charCodeAt(ich);

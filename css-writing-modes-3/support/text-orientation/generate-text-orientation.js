@@ -95,15 +95,14 @@ function writeHtml(value, ranges, template, gc) {
     template = template.map(function (text) { return text
         .replace("<!--META-->",
             '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
-            '<meta name="assert" content="Test orientation of characters where vo=' + value + '.">')
-        .replace('vo = "R";', 'vo = "' + value + '";');
+            '<meta name="assert" content="Test orientation of characters where vo=' + value + '.">');
     });
     var path = "../../text-orientation-script-" + value.toLowerCase() + "-001.html";
     console.log("Writing " + path);
     var output = fs.openSync(path, "w");
     fs.writeSync(output, template[0]);
     var chars = [];
-    fs.writeSync(output, '<div class="block">\n');
+    fs.writeSync(output, '<div data-vo="' + value + '"><div class="test">\n');
     var linesInBlock = 0;
     for (var i = 0; i < ranges.length; i += 2) {
         var code = ranges[i];
@@ -124,7 +123,7 @@ function writeHtml(value, ranges, template, gc) {
                 writeLine(output, chars);
                 chars = [];
                 if (++linesInBlock >= 64) {
-                    fs.writeSync(output, '</div><div class="block">\n');
+                    fs.writeSync(output, '</div><div class="test">\n');
                     linesInBlock  = 0;
                 }
             }
@@ -132,7 +131,7 @@ function writeHtml(value, ranges, template, gc) {
     }
     if (chars.length)
         writeLine(output, chars);
-    fs.writeSync(output, "</div>\n");
+    fs.writeSync(output, "</div></div>\n");
     fs.writeSync(output, template[1]);
     fs.closeSync(output);
 }

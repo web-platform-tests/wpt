@@ -80,17 +80,32 @@
         }});
 
     function Runner() {
-        this.tester = new OrientationTester(container, vo);
-        this.test = async_test("Default orientation for vo=" + vo);
+        var nodes = document.querySelectorAll("div[data-vo]");
+        this.testers = [];
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            var vo = node.dataset.vo;
+            var tester = new OrientationTester(node, vo);
+            tester.test = async_test("Default orientation for vo=" + vo);
+            this.testers.push(tester);
+        }
         this.testU = async_test("Orientation=Upright");
         this.testR = async_test("Orientation=Rotated");
     }
     extend(Runner.prototype, {
         run: function () {
             log("Started");
-            var start = new Date
+            var start = new Date;
+            var me = this;
 
-            this.runCore(this.test);
+            for (var tester of this.testers) {
+                var test = tester.test;
+                test.step(function () {
+                    var results = new Results(test.name);
+                    me.runCore(tester, test, results);
+                    me.done(test, results);
+                });
+            }
             this.runOrientation(this.testU, "U");
             this.runOrientation(this.testR, "R");
 
@@ -99,18 +114,21 @@
         },
         runOrientation: function (test, orientation) {
             container.classList.add(orientation);
-            this.tester.setOrientation(orientation);
-            this.runCore(test);
-            container.classList.remove(orientation);
-        },
-        runCore: function (test) {
-            var tester = this.tester;
+            var results = new Results(test.name);
             var me = this;
             test.step(function () {
-                var results = new Results(test.name);
-                tester.results = results;
-                tester.measure();
+                for (var tester of me.testers) {
+                    tester.setOrientation(orientation);
+                    me.runCore(tester, test, results);
+                }
                 me.done(test, results);
+            })
+            container.classList.remove(orientation);
+        },
+        runCore: function (tester, test, results) {
+            tester.results = results;
+            test.step(function () {
+                tester.measure();
             });
         },
         done: function (test, results) {

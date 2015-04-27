@@ -98,7 +98,8 @@
             var start = new Date;
             var me = this;
 
-            for (var tester of this.testers) {
+            for (var i = 0; i < this.testers.length; i++) {
+                var tester = this.testers[i];
                 var test = tester.test;
                 test.step(function () {
                     var results = new Results(test.name);
@@ -117,7 +118,8 @@
             var results = new Results(test.name);
             var me = this;
             test.step(function () {
-                for (var tester of me.testers) {
+                for (var i = 0; i < me.testers.length; i++) {
+                    var tester = me.testers[i];
                     tester.setOrientation(orientation);
                     me.runCore(tester, test, results);
                 }
@@ -143,7 +145,7 @@
     var runner = new Runner();
     window.onload = function () {
         if (window.location.hash == "#wait") {
-            log("Waiting for 5 secs");
+            log("Sleeping for 5 secs for debug purpose");
             return setTimeout(run, 5000);
         }
         run();

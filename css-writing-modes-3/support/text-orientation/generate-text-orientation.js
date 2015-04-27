@@ -137,6 +137,8 @@ function writeHtml(value, ranges, template, gc) {
 }
 
 function writeLine(output, chars) {
-    var line = String.fromCharCode.apply(String, chars);
+    var line = String.fromCharCode.apply(String, chars)
+        .replace(/&/, "&amp;")
+        .replace(/</, "&lt;");
     fs.writeSync(output, "<div>" + line + "</div>\n");
 }

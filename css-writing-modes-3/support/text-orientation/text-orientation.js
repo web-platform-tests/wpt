@@ -14,10 +14,9 @@
                 this.advanceFailed = 8;
             }
         },
-        measure: function () {
-            var nodes = this.container.childNodes;
-            for (var i = 0; i < nodes.length; i++)
-                this._measureNode(nodes[i]);
+        measure: function (results) {
+            this.results = results;
+            this._measureNode(this.container);
         },
         _measureNode: function (node) {
             switch (node.nodeType) {
@@ -77,6 +76,13 @@
             if (message)
                 text += message;
             appendChildElement(this.list, "li", text);
+        },
+        done: function (test) {
+            if (this.inconclusiveCount)
+                test.name += " (" + this.inconclusiveCount + " inconclusive)";
+            assert_equals(this.failCount, 0, "Fail count");
+            assert_greater_than(this.passCount, 0, "Pass count");
+            test.done();
         }});
 
     function Runner() {
@@ -96,15 +102,14 @@
         run: function () {
             log("Started");
             var start = new Date;
-            var me = this;
 
             for (var i = 0; i < this.testers.length; i++) {
                 var tester = this.testers[i];
                 var test = tester.test;
                 test.step(function () {
                     var results = new Results(test.name);
-                    me.runCore(tester, test, results);
-                    me.done(test, results);
+                    tester.measure(results);
+                    results.done(test);
                 });
             }
             this.runOrientation(this.testU, "U");
@@ -121,24 +126,11 @@
                 for (var i = 0; i < me.testers.length; i++) {
                     var tester = me.testers[i];
                     tester.setOrientation(orientation);
-                    me.runCore(tester, test, results);
+                    tester.measure(results);
                 }
-                me.done(test, results);
+                results.done(test);
             })
             container.classList.remove(orientation);
-        },
-        runCore: function (tester, test, results) {
-            tester.results = results;
-            test.step(function () {
-                tester.measure();
-            });
-        },
-        done: function (test, results) {
-            if (results.inconclusiveCount)
-                test.name += " (" + results.inconclusiveCount + " inconclusive)";
-            assert_equals(results.failCount, 0, "Fail count");
-            assert_greater_than(results.passCount, 0, "Pass count");
-            test.done();
         }});
 
     setup({explicit_done:true, explicit_timeout:true});

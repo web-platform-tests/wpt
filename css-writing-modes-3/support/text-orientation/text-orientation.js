@@ -6,13 +6,6 @@
     extend(OrientationTester.prototype, {
         setOrientation: function (orientation) {
             this.orientation = orientation;
-            if (orientation == "R") {
-                this.advanceExpected = 8;
-                this.advanceFailed = 4;
-            } else {
-                this.advanceExpected = 4;
-                this.advanceFailed = 8;
-            }
         },
         measure: function (results) {
             this.results = results;
@@ -31,6 +24,14 @@
                 return;
             }
 
+            if (this.orientation == "R") {
+                var advanceExpected = 8;
+                var advanceFailed = 4;
+            } else {
+                advanceExpected = 4;
+                advanceFailed = 8;
+            }
+
             var range = document.createRange();
             var text = node.textContent;
             for (var ich = 0; ich < text.length; ich++) {
@@ -41,12 +42,12 @@
                 range.setEnd(node, ich + 1);
                 rect = range.getBoundingClientRect();
                 if (rect.width == 16) {
-                    if (rect.height == this.advanceExpected) {
+                    if (rect.height == advanceExpected) {
                         this.results.passCount++;
                         continue;
                     }
                     //log("U+" + stringFromUnicode(code) + " " + rect.width + "x" + rect.height);
-                    if (rect.height == this.advanceFailed) {
+                    if (rect.height == advanceFailed) {
                         this.results.failed(this, code);
                         continue;
                     }
@@ -56,8 +57,11 @@
         }});
 
     function Results(name) {
-        appendChildElement(details, "h3", name);
-        this.list = appendChildElement(details, "ol");
+        var block = document.createElement("details");
+        this.summary = appendChildElement(block, "summary");
+        this.summary.textContent = name;
+        this.list = appendChildElement(block, "ol");
+        details.appendChild(block);
         this.passCount = 0;
         this.failCount = 0;
         this.inconclusiveCount = 0;
@@ -78,8 +82,11 @@
             appendChildElement(this.list, "li", text);
         },
         done: function (test) {
-            if (this.inconclusiveCount)
-                test.name += " (" + this.inconclusiveCount + " inconclusive)";
+            if (this.inconclusiveCount) {
+                this.summary.textContent += " (" + this.passCount + " passes, " +
+                    this.failCount + " fails, " +
+                    this.inconclusiveCount + " inconclusives)";
+            }
             assert_equals(this.failCount, 0, "Fail count");
             assert_greater_than(this.passCount, 0, "Pass count");
             test.done();

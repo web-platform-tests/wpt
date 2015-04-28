@@ -120,7 +120,8 @@ function writeHtml(value, codePoints, template) {
         var max = Math.min(index + pageSize, codePoints.length);
         var path = "../../text-orientation-script-" + value.toLowerCase() + "-" + padZero(page, 3) + ".html";
         var rangeText = " (#" + page + "/" + pages +
-            ", U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[max-1]) + ")";
+            ", " + (max - index) + " code points in U+" +
+            toHex(codePoints[index]) + "-" + toHex(codePoints[max-1]) + ")";
         var title = "Test orientation of characters where vo=" + value + rangeText;
         console.log("Writing " + path + rangeText);
         var output = fs.openSync(path, "w");

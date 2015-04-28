@@ -82,11 +82,9 @@
             appendChildElement(this.list, "li", text);
         },
         done: function (test) {
-            if (this.inconclusiveCount) {
-                this.summary.textContent += " (" + this.passCount + " passes, " +
-                    this.failCount + " fails, " +
-                    this.inconclusiveCount + " inconclusives)";
-            }
+            this.summary.textContent += " (" + this.passCount + " passes, " +
+                this.failCount + " fails, " +
+                this.inconclusiveCount + " inconclusives)";
             assert_equals(this.failCount, 0, "Fail count");
             assert_greater_than(this.passCount, 0, "Pass count");
             test.done();

@@ -103,6 +103,8 @@ Promise.all([
     unicodeData.get(unicodeData.url.gc),
 ]).then(function (results) {
     generate(results[0], results[1]);
+}).catch(function (e) {
+    console.log(e);
 });
 
 function generate(rangesByVO, gc) {
@@ -117,35 +119,44 @@ function writeHtml(value, codePoints, template) {
     var pages = Math.floor(codePoints.length / pageSize) + 1;
     var index = 0;
     for (var page = 1; index < codePoints.length; page++) {
-        var max = Math.min(index + pageSize, codePoints.length);
-        var path = "../../text-orientation-script-" + value.toLowerCase() + "-" + padZero(page, 3) + ".html";
-        var rangeText = " (#" + page + "/" + pages +
-            ", " + (max - index) + " code points in U+" +
-            toHex(codePoints[index]) + "-" + toHex(codePoints[max-1]) + ")";
-        var title = "Test orientation of characters where vo=" + value + rangeText;
-        console.log("Writing " + path + rangeText);
-        var output = fs.openSync(path, "w");
-        fs.writeSync(output, template[0]
-            .replace("<!--META-->",
-                '<title>CSS Writing Modes Test: ' + title + '.</title>\n' +
-                '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
-                '<meta name="assert" content="' + title + '">'));
-        fs.writeSync(output, '<div data-vo="' + value + '" class="test">\n');
-        var line = [];
-        for (; index < max; index++) {
-            var code = codePoints[index];
-            line.push(code);
-            if (line.length >= 64) {
-                writeLine(output, line);
-                line = [];
-            }
-        }
-        if (line.length)
-            writeLine(output, line);
-        fs.writeSync(output, "</div>\n");
-        fs.writeSync(output, template[1]);
-        fs.closeSync(output);
+        var lim = Math.min(index + pageSize, codePoints.length);
+        index = writeHtmlPage(value, codePoints, template, index, lim, page, pages);
     }
+}
+
+function writeHtmlPage(value, codePoints, template, index, lim, page, pages) {
+    var path = "../../text-orientation-script-" + value.toLowerCase();
+    var rangeText = (lim - index) + " code points in U+" +
+        toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
+    if (page) {
+        path += "-" + padZero(page, 3);
+        rangeText = "#" + page + "/" + pages + ", " + rangeText;
+    }
+    path += ".html";
+    rangeText = " (" + rangeText + ")";
+    var title = "Test orientation of characters where vo=" + value + rangeText;
+    console.log("Writing " + path + rangeText);
+    var output = fs.openSync(path, "w");
+    fs.writeSync(output, template[0].replace("<!--META-->",
+        '<title>CSS Writing Modes Test: ' + title + '.</title>\n' +
+        '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
+        '<meta name="assert" content="' + title + '">'));
+    fs.writeSync(output, '<div data-vo="' + value + '" class="test">\n');
+    var line = [];
+    for (; index < lim; index++) {
+        var code = codePoints[index];
+        line.push(code);
+        if (line.length >= 64) {
+            writeLine(output, line);
+            line = [];
+        }
+    }
+    if (line.length)
+        writeLine(output, line);
+    fs.writeSync(output, "</div>\n");
+    fs.writeSync(output, template[1]);
+    fs.closeSync(output);
+    return index;
 }
 
 function writeLine(output, line) {

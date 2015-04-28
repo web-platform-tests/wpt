@@ -94,7 +94,9 @@ This test uses no media, and thus does not require fake media devices.
         gSecondConnection.iceConnectionState == 'connected') {
       test.done()
     }
-    // Note: This should have been as below.
+    // Note: This test should have been as below, but second connection
+    // does not reach "completed". This is noted as an issue in the spec.
+    // https://github.com/w3c/webrtc-pc/issues/224
     if (gFirstConnection.iceConnectionState == 'completed' &&
         gSecondConnection.iceConnectionState == 'completed') {
       test.done()

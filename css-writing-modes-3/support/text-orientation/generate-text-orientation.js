@@ -117,14 +117,16 @@ function generate(rangesByVO, gc) {
 function writeHtml(value, codePoints, template) {
     var pageSize = 64 * 64;
     var pages = Math.floor(codePoints.length / pageSize) + 1;
+    if (pages > 1)
+        writeHtmlPage(value, codePoints, template, "combo dom font", 0, codePoints.length);
     var index = 0;
     for (var page = 1; index < codePoints.length; page++) {
         var lim = Math.min(index + pageSize, codePoints.length);
-        index = writeHtmlPage(value, codePoints, template, index, lim, page, pages);
+        index = writeHtmlPage(value, codePoints, template, "dom font", index, lim, page, pages);
     }
 }
 
-function writeHtmlPage(value, codePoints, template, index, lim, page, pages) {
+function writeHtmlPage(value, codePoints, template, flags, index, lim, page, pages) {
     var path = "../../text-orientation-script-" + value.toLowerCase();
     var rangeText = (lim - index) + " code points in U+" +
         toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
@@ -140,7 +142,8 @@ function writeHtmlPage(value, codePoints, template, index, lim, page, pages) {
     fs.writeSync(output, template[0].replace("<!--META-->",
         '<title>CSS Writing Modes Test: ' + title + '.</title>\n' +
         '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
-        '<meta name="assert" content="' + title + '">'));
+        '<meta name="assert" content="' + title + '">\n' +
+        '<meta name="flags" content="' + flags + '">'));
     fs.writeSync(output, '<div data-vo="' + value + '" class="test">\n');
     var line = [];
     for (; index < lim; index++) {

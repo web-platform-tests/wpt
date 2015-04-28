@@ -1,0 +1,130 @@
+<!doctype html>
+<!--
+This test uses no media, and thus does not require fake media devices.
+-->
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>RTCPeerConnection No-Media Connection Test</title>
+</head>
+<body>
+  <div id="log"></div>
+  <div>
+    <video id="local-view" autoplay="autoplay"></video>
+    <video id="remote-view" autoplay="autoplay"/>
+    </video>
+  </div>
+
+  <!-- These files are in place when executing on W3C. -->
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/vendor-prefix.js"
+          data-prefixed-objects=
+              '[{"ancestors":["navigator"], "name":"getUserMedia"},
+                {"ancestors":["window"], "name":"RTCPeerConnection"},
+                {"ancestors":["window"], "name":"RTCSessionDescription"},
+                {"ancestors":["window"], "name":"RTCIceCandidate"}]'
+          data-prefixed-prototypes=
+               '[{"ancestors":["HTMLMediaElement"],"name":"srcObject"}]'>
+  </script>
+  <script type="text/javascript">
+  var test = async_test('Can set up a basic WebRTC call with no data.',
+                        {timeout: 5000});
+
+  var gFirstConnection = null;
+  var gSecondConnection = null;
+
+  var onOfferCreated = test.step_func(function(offer) {
+    gFirstConnection.setLocalDescription(offer);
+
+    // This would normally go across the application's signaling solution.
+    // In our case, the "signaling" is to call this function.
+    receiveCall(offer.sdp);
+  });
+
+  function receiveCall(offerSdp) {
+
+    var parsedOffer = new RTCSessionDescription({ type: 'offer',
+                                                  sdp: offerSdp });
+    gSecondConnection.setRemoteDescription(parsedOffer);
+
+    gSecondConnection.createAnswer(onAnswerCreated,
+                                   failed('createAnswer'));
+  };
+
+  var onAnswerCreated = test.step_func(function(answer) {
+    gSecondConnection.setLocalDescription(answer);
+
+    // Similarly, this would go over the application's signaling solution.
+    handleAnswer(answer.sdp);
+  });
+
+  function handleAnswer(answerSdp) {
+    var parsedAnswer = new RTCSessionDescription({ type: 'answer',
+                                                   sdp: answerSdp });
+    gFirstConnection.setRemoteDescription(parsedAnswer);
+  };
+
+  // Note: the ice candidate handlers are special. We can not wrap them in test
+  // steps since that seems to cause some kind of starvation that prevents the
+  // call of being set up. Unfortunately we cannot report errors in here.
+  var onIceCandidateToFirst = function(event) {
+    // If event.candidate is null = no more candidates.
+    if (event.candidate) {
+      var candidate = new RTCIceCandidate(event.candidate);
+      gSecondConnection.addIceCandidate(candidate);
+    }
+  };
+
+  var onIceCandidateToSecond = function(event) {
+    if (event.candidate) {
+      var candidate = new RTCIceCandidate(event.candidate);
+      gFirstConnection.addIceCandidate(candidate);
+    }
+  };
+
+  var onRemoteStream = test.step_func(function(event) {
+    assert_unreached('WebRTC received a stream when there was none');
+  });
+
+  function onIceConnectionStateChange(event) {
+    assert_equals(event.type, 'iceconnectionstatechange');
+    if (gFirstConnection.iceConnectionState == 'completed' &&
+        gSecondConnection.iceConnectionState == 'connected') {
+      test.done()
+    }
+    // Note: This should have been as below.
+    if (gFirstConnection.iceConnectionState == 'completed' &&
+        gSecondConnection.iceConnectionState == 'completed') {
+      test.done()
+    }
+  }
+
+  // Returns a suitable error callback.
+  function failed(function_name) {
+    return test.step_func(function() {
+      assert_unreached('WebRTC called error callback for ' + function_name);
+    });
+  }
+
+  // This function starts the test.
+  test.step(function() {
+    gFirstConnection = new RTCPeerConnection(null, null);
+    gFirstConnection.onicecandidate = onIceCandidateToFirst;
+    gFirstConnection.oniceconnectionstatechange = onIceConnectionStateChange;
+
+    gSecondConnection = new RTCPeerConnection(null, null);
+    gSecondConnection.onicecandidate = onIceCandidateToSecond;
+    gSecondConnection.onaddstream = onRemoteStream;
+    gSecondConnection.oniceconnectionstatechange = onIceConnectionStateChange;
+
+    // The offerToReceiveVideo is necessary and sufficient to make
+    // an actual connection.
+    gFirstConnection.createOffer(onOfferCreated, failed('createOffer'),
+        {offerToReceiveVideo: true});
+  });
+</script>
+
+</body>
+</html>

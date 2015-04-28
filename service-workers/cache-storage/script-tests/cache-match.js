@@ -103,14 +103,6 @@ var vary_entries = [
     request: new Request('http://example.com/c'),
     response: new Response('',
                            {headers: {'Vary': 'Cookies'}})
-  },
-
-  {
-    name: 'vary_wildcard',
-    request: new Request('http://example.com/c',
-                         {headers: {'Cookies': 'x', 'X-Key': '1'}}),
-    response: new Response('',
-                           {headers: {'Vary': '*'}})
   }
 ];
 
@@ -337,7 +329,6 @@ prepopulated_cache_test(vary_entries, function(cache, entries) {
           assert_array_equivalent(
             result,
             [
-              entries.vary_wildcard.response,
               entries.vary_cookie_absent.response
             ],
             'Cache.matchAll should exclude matches if a vary header is ' +
@@ -354,7 +345,6 @@ prepopulated_cache_test(vary_entries, function(cache, entries) {
           assert_array_equivalent(
             result,
             [
-              entries.vary_wildcard.response
             ],
             'Cache.matchAll should exclude matches if a vary header is ' +
             'missing in the cached request, but is present in the query ' +
@@ -381,7 +371,6 @@ prepopulated_cache_test(vary_entries, function(cache, entries) {
           assert_object_in_array(
             result,
             [
-              entries.vary_wildcard.response,
               entries.vary_cookie_absent.response
             ],
             'Cache.match should honor "Vary" header.');
@@ -398,7 +387,6 @@ prepopulated_cache_test(vary_entries, function(cache, entries) {
               entries.vary_cookie_is_cookie.response,
               entries.vary_cookie_is_good.response,
               entries.vary_cookie_absent.response,
-              entries.vary_wildcard.response
             ],
             'Cache.matchAll should honor "ignoreVary" parameter.');
         });

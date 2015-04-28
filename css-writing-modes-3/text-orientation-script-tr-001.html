@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>CSS Writing Modes Test: Test orientation of characters where vo=Tr (#1/1, U+2329-FFE3).</title>
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
+<meta name="assert" content="Test orientation of characters where vo=Tr (#1/1, U+2329-FFE3)">
 <title>CSS Writing Modes Test: Test orientation of characters with various 'text-orientation' values.</title>
 <link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
 <meta name="flags" content="dom font">
-<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
-<meta name="assert" content="Test orientation of characters where vo=Tr.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -27,8 +28,8 @@
 </style>
 <div id="log"></div>
 <div id="details"></div>
-<div id="container"><div data-vo="Tr"><div class="test">
+<div id="container"><div data-vo="Tr" class="test">
 <div>〈〉〈〉《》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰゠ー﹙﹚﹛﹜﹝﹞（）：；［］＿｛｜｝～｟｠￣</div>
-</div></div>
+</div>
 </div>
 <script src="support/text-orientation/text-orientation.js"></script>

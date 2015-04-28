@@ -75,6 +75,27 @@ var unicodeData = {
         }
         return array;
     },
+    codePointsFromRanges: function (ranges, gc) {
+        var codePoints = [];
+        for (var i = 0; i < ranges.length; i += 2) {
+            var code = ranges[i];
+            var to = ranges[i+1];
+            for (; code <= to; code++) {
+                // TODO: non-BMP not supported yet
+                if (code > 0xFFFF)
+                    break;
+                // CJK Unified Ideographs (Han) is omitted except the first and the last to make smaller
+                if (code > 0x4E00 && code < 0x9FCC)
+                    continue;
+                var gc0 = gc[code][0];
+                // General Category M* and C* are omitted as they're likely to not render well
+                if (gc0 == "M" || gc0 == "C")
+                    continue;
+                codePoints.push(code);
+            }
+        }
+        return codePoints;
+    },
 };
 
 Promise.all([
@@ -88,57 +109,56 @@ function generate(rangesByVO, gc) {
     var template = fs.readFileSync("text-orientation-template.html", {encoding:"utf-8"})
         .split("INSERT-DATA-HERE");
     for (var value in rangesByVO)
-        writeHtml(value, rangesByVO[value], template, gc);
+        writeHtml(value, unicodeData.codePointsFromRanges(rangesByVO[value], gc), template);
 }
 
-function writeHtml(value, ranges, template, gc) {
-    template = template.map(function (text) { return text
-        .replace("<!--META-->",
-            '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
-            '<meta name="assert" content="Test orientation of characters where vo=' + value + '.">');
-    });
-    var path = "../../text-orientation-script-" + value.toLowerCase() + "-001.html";
-    console.log("Writing " + path);
-    var output = fs.openSync(path, "w");
-    fs.writeSync(output, template[0]);
-    var chars = [];
-    fs.writeSync(output, '<div data-vo="' + value + '"><div class="test">\n');
-    var linesInBlock = 0;
-    for (var i = 0; i < ranges.length; i += 2) {
-        var code = ranges[i];
-        var to = ranges[i+1];
-        for (; code <= to; code++) {
-            // TODO: non-BMP not supported yet
-            if (code > 0xFFFF)
-                break;
-            // CJK Unified Ideographs (Han) is omitted except the first and the last to make smaller
-            if (code > 0x4E00 && code < 0x9FCC)
-                continue;
-            var gc0 = gc[code][0];
-            // General Category M* and C* are omitted as they're likely to not render well
-            if (gc0 == "M" || gc0 == "C")
-                continue;
-            chars.push(code);
-            if (chars.length >= 64) {
-                writeLine(output, chars);
-                chars = [];
-                if (++linesInBlock >= 64) {
-                    fs.writeSync(output, '</div><div class="test">\n');
-                    linesInBlock  = 0;
-                }
+function writeHtml(value, codePoints, template) {
+    var pageSize = 64 * 64;
+    var pages = Math.floor(codePoints.length / pageSize) + 1;
+    var index = 0;
+    for (var page = 1; index < codePoints.length; page++) {
+        var max = Math.min(index + pageSize, codePoints.length);
+        var path = "../../text-orientation-script-" + value.toLowerCase() + "-" + padZero(page, 3) + ".html";
+        var rangeText = " (#" + page + "/" + pages +
+            ", U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[max-1]) + ")";
+        var title = "Test orientation of characters where vo=" + value + rangeText;
+        console.log("Writing " + path + rangeText);
+        var output = fs.openSync(path, "w");
+        fs.writeSync(output, template[0]
+            .replace("<!--META-->",
+                '<title>CSS Writing Modes Test: ' + title + '.</title>\n' +
+                '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
+                '<meta name="assert" content="' + title + '">'));
+        fs.writeSync(output, '<div data-vo="' + value + '" class="test">\n');
+        var line = [];
+        for (; index < max; index++) {
+            var code = codePoints[index];
+            line.push(code);
+            if (line.length >= 64) {
+                writeLine(output, line);
+                line = [];
             }
         }
+        if (line.length)
+            writeLine(output, line);
+        fs.writeSync(output, "</div>\n");
+        fs.writeSync(output, template[1]);
+        fs.closeSync(output);
     }
-    if (chars.length)
-        writeLine(output, chars);
-    fs.writeSync(output, "</div></div>\n");
-    fs.writeSync(output, template[1]);
-    fs.closeSync(output);
 }
 
-function writeLine(output, chars) {
-    var line = String.fromCharCode.apply(String, chars)
+function writeLine(output, line) {
+    line = String.fromCharCode.apply(String, line)
         .replace(/&/, "&amp;")
         .replace(/</, "&lt;");
     fs.writeSync(output, "<div>" + line + "</div>\n");
+}
+
+function toHex(value) {
+    return padZero(value.toString(16).toUpperCase(), 4);
+}
+
+function padZero(value, digits) {
+    value = "0000" + value;
+    return value.substr(value.length - digits);
 }

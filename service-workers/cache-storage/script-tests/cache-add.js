@@ -137,8 +137,8 @@ cache_test(function(cache) {
     var request = new Request('../resources/simple.txt');
     return assert_promise_rejects(
       cache.addAll([request, request]),
-      new TypeError(),
-      'Cache.addAll should throw TypeError if the same request is added ' +
+      'InvalidStateError',
+      'Cache.addAll should throw InvalidStateError if the same request is added ' +
       'twice.');
   }, 'Cache.addAll called with the same Request object specified twice');
 

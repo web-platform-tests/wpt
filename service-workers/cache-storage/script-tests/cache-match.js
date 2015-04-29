@@ -442,8 +442,8 @@ prepopulated_cache_test(simple_entries, function(cache, entries) {
     var request = new Request(entries.a.request, { method: 'POST' });
     return cache.match(request)
       .then(function(result) {
-          assert_object_equals(result, undefined,
-                               'Cache.match should not find a match');
+          assert_equals(result, undefined,
+                        'Cache.match should not find a match');
         });
   }, 'Cache.match with POST Request');
 

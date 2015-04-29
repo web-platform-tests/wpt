@@ -22,8 +22,8 @@ cache_test(function(cache) {
 cache_test(function(cache) {
     return assert_promise_rejects(
       cache.add('javascript://this-is-not-http-mmkay'),
-      'NetworkError',
-      'Cache.add should throw a NetworkError for non-HTTP/HTTPS URLs.');
+      new TypeError(),
+      'Cache.add should throw a TypeError for non-HTTP/HTTPS URLs.');
   }, 'Cache.add called with non-HTTP/HTTPS URL');
 
 cache_test(function(cache) {

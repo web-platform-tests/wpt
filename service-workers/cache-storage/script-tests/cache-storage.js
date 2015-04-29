@@ -130,9 +130,9 @@ promise_test(function(t) {
           return Promise.all([cache.keys(), result.keys()]);
         })
       .then(function(results) {
-          var expectedUrls = results[0].map(function(r) { return r.url });
-          var actualUrls = results[1].map(function(r) { return r.url });
-          assert_array_equals(actualUrls, expectedUrls,
+          var expected_urls = results[0].map(function(r) { return r.url });
+          var actual_urls = results[1].map(function(r) { return r.url });
+          assert_array_equals(actual_urls, expected_urls,
                               'CacheStorage.open should return a new Cache ' +
                               'object for the same backing store.');
         })

@@ -1,12 +1,11 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>CSS Grid Layout: display: grid</title>
+  <title>CSS3 Grid Layout: Flexible Lenght</title>
   <link rel="author" title="swain" href="mailto:swainet@126.com"/>
-  <link rel="reviewer" title="Dayang Shen" href="mailto:shendayang@baidu.com"/> <!-- 2013-09-17 -->
-  <link rel="help" href="http://www.w3.org/TR/css-grid-1/#grid-containers"/>
-  <link rel="match" href="reference/display-grid-ref.html">
-  <meta name="assert" content="'display: grid' causes an element to generate a block-level grid container box."/>
+  <link rel="reviewer" title="Dayang Shen" href="mailto:shendayang@baidu.com"/> <!-- 2013-09-22 -->
+  <link rel="help" href="http://www.w3.org/TR/css-grid-1/#fr-unit"/>
+  <link rel="match" href="../reference/fr-unit-with-percentage-ref.html">
   <style type="text/css">
     #container {
       position:relative;
@@ -16,37 +15,33 @@
 
     #grid {
       display:grid;
-      grid-template-columns:100px 300px;
-      grid-template-rows:70px 30px;
+      grid-template-columns:1fr 75%;
+      grid-template-rows:1fr 70%;
+      width:100%;
       height:100%;
     }
 
     #cell1 {
       grid-column:1;
       grid-row:1;
-      background-color:green;
-      height:70px;
     }
 
     #cell2 {
       grid-column:2;
       grid-row:1;
-      background-color:limegreen;
-      height:70px;
     }
 
     #cell3 {
       grid-column:1;
       grid-row:2;
-      background-color:limegreen;
-      height:30px;
+      height:100%;
     }
 
     #cell4 {
       grid-column:2;
       grid-row:2;
       background-color:green;
-      height:30px;
+      height:100%;
     }
 
     .error {
@@ -73,13 +68,13 @@
       width:100px;
     }
 
-    #table tr:last-child td {
+    #table tr:first-child td {
       height:30px;
     }
   </style>
 </head>
 <body>
-<p>Test passes if there are 4 green rectangles and no red.</p>
+<p>Test passes if there is a green square and no red.</p>
 
 <div id="container">
   <div id="grid">
@@ -92,12 +87,12 @@
     <table id="table">
       <tbody>
       <tr>
-        <td style="background-color:#f00">cell1</td>
-        <td style="background-color:#e00">cell2</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
       </tr>
       <tr>
-        <td style="background-color:#e00">cell3</td>
-        <td style="background-color:#f00">cell4</td>
+        <td>&nbsp;</td>
+        <td style="background-color:red">&nbsp;</td>
       </tr>
       </tbody>
     </table>

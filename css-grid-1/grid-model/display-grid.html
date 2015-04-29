@@ -1,23 +1,24 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>CSS Grid Layout: display: inline-grid</title>
+  <title>CSS Grid Layout: display: grid</title>
   <link rel="author" title="swain" href="mailto:swainet@126.com"/>
   <link rel="reviewer" title="Dayang Shen" href="mailto:shendayang@baidu.com"/> <!-- 2013-09-17 -->
   <link rel="help" href="http://www.w3.org/TR/css-grid-1/#grid-containers"/>
-  <link rel="match" href="reference/display-inline-grid-ref.html">
-  <meta name="assert" content="'display: inline-grid' causes an element to generate an inline-level grid container box." />
+  <link rel="match" href="../reference/display-grid-ref.html">
+  <meta name="assert" content="'display: grid' causes an element to generate a block-level grid container box."/>
   <style type="text/css">
     #container {
       position:relative;
+      width:400px;
+      height:100px;
     }
 
     #grid {
-      display:inline-grid;
+      display:grid;
       grid-template-columns:100px 300px;
       grid-template-rows:70px 30px;
-      width:400px;
-      height:100px;
+      height:100%;
     }
 
     #cell1 {
@@ -52,8 +53,8 @@
       position:absolute;
       top:0;
       left:0;
-      height:100px;
-      width:400px;
+      height:100%;
+      width:100%;
       z-index:-1;
     }
 
@@ -75,10 +76,6 @@
     #table tr:last-child td {
       height:30px;
     }
-
-    span {
-      vertical-align:top;
-    }
   </style>
 </head>
 <body>
@@ -91,7 +88,6 @@
     <div id="cell3">cell3</div>
     <div id="cell4">cell4</div>
   </div>
-  <span>Inline</span>
   <div class="error">
     <table id="table">
       <tbody>

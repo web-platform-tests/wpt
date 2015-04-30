@@ -146,6 +146,7 @@
         }});
 
     setup({explicit_done:true, explicit_timeout:true});
+    var blocks = arrayFromRangesByValue(rangesByBlock);
     var runner = new Runner();
     window.onload = function () {
         if (window.location.hash == "#wait") {
@@ -171,13 +172,26 @@
         func();
     }
 
+    function arrayFromRangesByValue(dict) {
+        var array = [];
+        for (var value in dict) {
+            var ranges = dict[value];
+            for (var i = 0; i < ranges.length; i += 2) {
+                var to = ranges[i+1];
+                for (var code = ranges[i]; code <= to; code++)
+                    array[code] = value;
+            }
+        }
+        return array;
+    };
+
     function stringFromUnicode(code) {
         var hex = code.toString(16).toUpperCase();
         if (hex.length < 4) {
             hex = "0000" + hex;
             hex = hex.substr(hex.length - 4);
         }
-        return hex + ' "' + String.fromCharCode(code) + '"';
+        return blocks[code] + ": " + hex + ' "' + String.fromCharCode(code) + '"';
     }
 
     function appendChildElement(parent, tag, text) {

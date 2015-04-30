@@ -6,6 +6,7 @@ var fs = require("fs"),
 
 var unicodeData = {
     url: {
+        blocks: "http://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt",
         gc: "http://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt",
         vo: "http://www.unicode.org/Public/vertical/revision-13/VerticalOrientation-13.txt",
     },
@@ -106,8 +107,15 @@ var unicodeData = {
 Promise.all([
     unicodeData.get(unicodeData.url.vo, unicodeData.formatAsRangesByValue),
     unicodeData.get(unicodeData.url.gc),
+    unicodeData.get(unicodeData.url.blocks, unicodeData.formatAsRangesByValue),
 ]).then(function (results) {
     generate(results[0], results[1]);
+    console.log("Writing unicode-data.js");
+    var output = fs.openSync("unicode-data.js", "w");
+    fs.writeSync(output, "var rangesByBlock = ");
+    fs.writeSync(output, JSON.stringify(results[2], null, "\t"));
+    fs.writeSync(output, ";\n");
+    fs.closeSync(output);
 }).catch(function (e) {
     console.log(e);
 });

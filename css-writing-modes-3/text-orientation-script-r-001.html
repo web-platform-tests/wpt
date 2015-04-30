@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Writing Modes Test: Test orientation of characters where vo=R (#1/3, 4096 code points in U+0020-1B4A).</title>
+<title>CSS Writing Modes Test: Test orientation of characters where vo=R (#1/4, 4096 code points in U+0020-1B4A).</title>
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
-<meta name="assert" content="Test orientation of characters where vo=R (#1/3, 4096 code points in U+0020-1B4A)">
+<meta name="assert" content="Test orientation of characters where vo=R (#1/4, 4096 code points in U+0020-1B4A)">
 <meta name="flags" content="dom font">
 <link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
 <script src="/resources/testharness.js"></script>
@@ -24,10 +24,13 @@
 .R {
     text-orientation: sideways-right;
 }
+#details {
+    margin: 1em .5em;
+}
 summary {
-    padding-top: .5em;
     font-size: 1.2em;
     font-weight: bold;
+    margin-top: .5em;
 }
 </style>
 <div id="log"></div>

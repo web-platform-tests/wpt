@@ -39,6 +39,13 @@
                 if (code == 10 || code == 13)
                     continue;
                 range.setStart(node, ich);
+                if (code >= 0xD800 && code <= 0xDBFF) {
+                    var next = text.charCodeAt(ich+1);
+                    if (next >= 0xDC00 && next <= 0xDFFF) {
+                        ich++;
+                        code = ((code & 0x3FF) << 10) + (next & 0x3FF) + 0x10000;
+                    }
+                }
                 range.setEnd(node, ich + 1);
                 rect = range.getBoundingClientRect();
                 if (rect.width == 16) {
@@ -165,8 +172,11 @@
     }
 
     function stringFromUnicode(code) {
-        var hex = "0000" + code.toString(16).toUpperCase();
-        hex = hex.substr(hex.length - 4);
+        var hex = code.toString(16).toUpperCase();
+        if (hex.length < 4) {
+            hex = "0000" + hex;
+            hex = hex.substr(hex.length - 4);
+        }
         return hex + ' "' + String.fromCharCode(code) + '"';
     }
 

@@ -81,12 +81,17 @@ var unicodeData = {
             var code = ranges[i];
             var to = ranges[i+1];
             for (; code <= to; code++) {
-                // TODO: non-BMP not supported yet
-                if (code > 0xFFFF)
-                    break;
-                // CJK Unified Ideographs (Han) is omitted except the first and the last to make smaller
-                if (code > 0x4E00 && code < 0x9FCC)
+                if (code >= 0xD800 && code <= 0xDFFF) { // Surrogate Pairs
                     continue;
+                }
+                // To make tests smaller, omit some obvious ranges except the first and the last
+                if (code > 0x3400 && code < 0x4DB5 || // CJK Unified Ideographs Extension A
+                    code > 0x4E00 && code < 0x9FCC || // CJK Unified Ideographs (Han)
+                    code > 0x20000 && code < 0x2A6D6 || // CJK Unified Ideographs Extension B
+                    code > 0x2A700 && code < 0x2B734 || // CJK Unified Ideographs Extension C
+                    code > 0x2B740 && code < 0x2B81D) { // CJK Unified Ideographs Extension D
+                    continue;
+                }
                 var gc0 = gc[code][0];
                 // General Category M* and C* are omitted as they're likely to not render well
                 if (gc0 == "M" || gc0 == "C")
@@ -148,6 +153,11 @@ function writeHtmlPage(value, codePoints, template, flags, index, lim, page, pag
     var line = [];
     for (; index < lim; index++) {
         var code = codePoints[index];
+        if (code >= 0x10000) {
+            code -= 0x10000;
+            line.push(code >>> 10 & 0x3FF | 0xD800);
+            code = 0xDC00 | code & 0x3FF;
+        }
         line.push(code);
         if (line.length >= 64) {
             writeLine(output, line);
@@ -174,6 +184,8 @@ function toHex(value) {
 }
 
 function padZero(value, digits) {
+    if (value.length >= digits)
+        return value;
     value = "0000" + value;
     return value.substr(value.length - digits);
 }

@@ -368,15 +368,20 @@ policies and contribution forms [3].
         self.addEventListener("message",
                 function(event) {
                     if (event.data.type && event.data.type === "connect") {
-                      // MessageChannel mode
-                      if (event.ports && event.ports[0]) {
-                        this_obj._add_message_port(event.ports[0]);
-                        event.ports[0].start();
-
-                      // ServiceWorker.postMessage mode
-                      } else {
-                        this_obj._add_message_port(event.source);
-                      }
+                        if (event.ports && event.ports[0]) {
+                            // If a MessageChannel was passed, then use it to
+                            // send results back to the main window.  This
+                            // allows the tests to work even if the browser
+                            // does not fully support MessageEvent.source in
+                            // ServiceWorkers yet.
+                            this_obj._add_message_port(event.ports[0]);
+                            event.ports[0].start();
+                        } else {
+                            // If there is no MessageChannel, then attempt to
+                            // use the MessageEvent.source to send results
+                            // back to the main window.
+                            this_obj._add_message_port(event.source);
+                        }
                     }
                 });
 
@@ -1483,23 +1488,23 @@ policies and contribution forms [3].
         var message_port;
 
         if (is_service_worker(worker)) {
-            // The ServiceWorker's implicit MessagePort is currently not
-            // reliably accessible from the ServiceWorkerGlobalScope due to
-            // Blink setting MessageEvent.source to null for messages sent via
-            // ServiceWorker.postMessage(). Until that's resolved, create an
-            // explicit MessageChannel and pass one end to the worker.
             if (window.MessageChannel) {
-              var message_channel = new MessageChannel();
-              message_port = message_channel.port1;
-              message_port.start();
-              worker.postMessage({type: "connect"}, [message_channel.port2]);
-
-            // If MessageChannel is not available, then try the
-            // ServiceWorker.postMessage() approach using MessageEvent.source
-            // on the other end.
+                // The ServiceWorker's implicit MessagePort is currently not
+                // reliably accessible from the ServiceWorkerGlobalScope due to
+                // Blink setting MessageEvent.source to null for messages sent
+                // via ServiceWorker.postMessage(). Until that's resolved,
+                // create an explicit MessageChannel and pass one end to the
+                // worker.
+                var message_channel = new MessageChannel();
+                message_port = message_channel.port1;
+                message_port.start();
+                worker.postMessage({type: "connect"}, [message_channel.port2]);
             } else {
-              message_port = navigator.serviceWorker;
-              worker.postMessage({type: "connect"});
+                // If MessageChannel is not available, then try the
+                // ServiceWorker.postMessage() approach using MessageEvent.source
+                // on the other end.
+                message_port = navigator.serviceWorker;
+                worker.postMessage({type: "connect"});
             }
         } else if (is_shared_worker(worker)) {
             message_port = worker.port;

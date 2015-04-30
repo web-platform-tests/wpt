@@ -88,6 +88,7 @@ var unicodeData = {
                 // To make tests smaller, omit some obvious ranges except the first and the last
                 if (code > 0x3400 && code < 0x4DB5 || // CJK Unified Ideographs Extension A
                     code > 0x4E00 && code < 0x9FCC || // CJK Unified Ideographs (Han)
+                    code > 0xAC00 && code < 0xD7A3 || // Hangul Syllables
                     code > 0x20000 && code < 0x2A6D6 || // CJK Unified Ideographs Extension B
                     code > 0x2A700 && code < 0x2B734 || // CJK Unified Ideographs Extension C
                     code > 0x2B740 && code < 0x2B81D) { // CJK Unified Ideographs Extension D

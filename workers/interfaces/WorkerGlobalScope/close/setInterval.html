@@ -18,8 +18,6 @@ var interval2 = setInterval(function() {
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-setup({allow_uncaught_exception: true});
-
 var worker = new Worker('#');
 worker.onmessage = function(e) {
   assert_unreached("Got message");

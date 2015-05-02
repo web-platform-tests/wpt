@@ -149,8 +149,8 @@
     var blocks = arrayFromRangesByValue(rangesByBlock);
     var runner = new Runner();
     window.onload = function () {
-        if (window.location.hash == "#wait") {
-            log("Sleeping for 5 secs for debug purpose");
+        if (window.location.search == "?wait") {
+            log("Sleeping 5 secs for debug purpose");
             return setTimeout(run, 5000);
         }
         run();

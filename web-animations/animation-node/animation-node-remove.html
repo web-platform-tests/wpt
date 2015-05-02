@@ -14,7 +14,11 @@
 <div id="log"></div>
 <script>
 test(function() {
-    var nodes = [newAnimation(createDiv(this)), new AnimationGroup([]), new AnimationSequence([])];
+    var nodes = [
+        new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
     nodes.forEach(function(node) {
         node.remove();
 
@@ -26,7 +30,11 @@ test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
-        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
         nodes.forEach(function(node) {
             var parent = new parentCtor([node]);
             node.remove();
@@ -44,9 +52,13 @@ test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
-        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
         nodes.forEach(function(node1) {
-            var node2 = newAnimation(createDiv(test));
+            var node2 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var parent = new parentCtor([node1, node2]);
 
             node1.remove();
@@ -70,9 +82,13 @@ test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
-        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
         nodes.forEach(function(node2) {
-            var node1 = newAnimation(createDiv(test));
+            var node1 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var parent = new parentCtor([node1, node2]);
 
             node2.remove();
@@ -96,10 +112,14 @@ test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
-        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
         nodes.forEach(function(node2) {
-            var node1 = newAnimation(createDiv(test));
-            var node3 = newAnimation(createDiv(test));
+            var node1 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
+            var node3 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var parent = new parentCtor([node1, node2, node3]);
 
             node2.remove();
@@ -126,11 +146,11 @@ test(function() {
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
         parents.forEach(function(nodeCtor) {
-            var node1 = newAnimation(createDiv(test));
-            var node2 = newAnimation(createDiv(test));
-            var node3 = newAnimation(createDiv(test));
+            var node1 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
+            var node2 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
+            var node3 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var node4 = new nodeCtor([node1, node2]);
-            var node5 = newAnimation(createDiv(test));
+            var node5 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var parent = new parentCtor([node3, node4, node5]);
 
             node4.remove();
@@ -154,7 +174,11 @@ test(function() {
 }, 'Test removing a node that has children');
 
 test(function() {
-    var nodes = [newAnimation(createDiv(this)), new AnimationGroup([]), new AnimationSequence([])];
+    var nodes = [
+        new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
     nodes.forEach(function(node) {
         var player = document.timeline.play(node);
         node.remove();
@@ -169,10 +193,14 @@ test(function() {
     var test = this;
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
-        var nodes = [newAnimation(createDiv(test)), new AnimationGroup([]), new AnimationSequence([])];
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
         nodes.forEach(function(node2) {
-            var node1 = newAnimation(createDiv(test));
-            var node3 = newAnimation(createDiv(test));
+            var node1 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
+            var node3 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var parent = new parentCtor([node1, node2, node3]);
             var player = document.timeline.play(parent);
 
@@ -189,18 +217,18 @@ test(function() {
     var parents = [AnimationGroup, AnimationSequence];
     parents.forEach(function(parentCtor) {
         parents.forEach(function(nodeCtor) {
-            var node1 = newAnimation(createDiv(test));
-            var node2 = newAnimation(createDiv(test));
-            var node3 = newAnimation(createDiv(test));
-            var node4 = newAnimation(createDiv(test));
+            var node1 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
+            var node2 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
+            var node3 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
+            var node4 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var node5 = new parentCtor([node4]);
             var group1 = new AnimationGroup([node3, node5]);
-            var node6 = newAnimation(createDiv(test));
+            var node6 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var node7 = new parentCtor([node6]);
-            var node8 = newAnimation(createDiv(test));
+            var node8 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var sequence1 = new AnimationSequence([node7,node8]);
             var node9 = new nodeCtor([node1, group1, node2, sequence1]);
-            var node10 = newAnimation(createDiv(test));
+            var node10 = new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION);
             var parent = new parentCtor([node9, node10]);
 
             node9.remove();

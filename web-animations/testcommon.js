@@ -10,7 +10,12 @@ policies and contribution forms [3].
 
 "use strict";
 
-var ANIMATION_END_TIME = 1000;
+// Epsilon value for assert_approx_equals(). Used for time measurements
+var TIME_EPSILON = 5;
+// Precision (in px) for expected style at the moment and the one returned by getComputedStyle()
+var COMPUTED_STYLE_EPSILON = 5;
+
+var ANIMATION_DURATION = 1000;
 var ANIMATION_TOP_DEFAULT = 300;
 var ANIMATION_TOP_0 = 10;
 var ANIMATION_TOP_0_5 = 100;
@@ -27,10 +32,9 @@ var KEYFRAMES = [ {
     offset : 1
 } ];
 
-// creates new animation for given target
-function newAnimation(animationTarget) {
-    animationTarget.style.top = ANIMATION_TOP_DEFAULT + 'px';
-    return new Animation(animationTarget, KEYFRAMES, ANIMATION_END_TIME);
+// Creates and returns new HTML document
+function newHTMLDocument() {
+    return document.implementation.createHTMLDocument('Test Document');
 }
 
 // creates div element, appends it to the document body and
@@ -41,6 +45,7 @@ function createDiv(test, doc) {
     }
     var div = doc.createElement('div');
     doc.body.appendChild(div);
+    div.style.top = ANIMATION_TOP_DEFAULT + 'px';
     test.add_cleanup(function() {
         removeElement(div);
     });
@@ -55,4 +60,19 @@ function removeElement(element) {
 // Returns the type name of given object
 function type(object) {
     return Object.prototype.toString.call(object).slice(8, -1);
+}
+
+//Returns expected top of the target element at currentTime
+function getExpectedTop(currentTime, iterationDuration) {
+    if (!iterationDuration) {
+        iterationDuration = ANIMATION_DURATION;
+    }
+    var iterationFraction = (currentTime / iterationDuration) % 1;
+    if (iterationFraction <= 0.5) {
+        return ANIMATION_TOP_0 + (ANIMATION_TOP_0_5 - ANIMATION_TOP_0) *
+            iterationFraction * 2;
+    } else {
+        return ANIMATION_TOP_0_5 + (ANIMATION_TOP_1 - ANIMATION_TOP_0_5) *
+            (iterationFraction - 0.5) * 2;
+    }
 }

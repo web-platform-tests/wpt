@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>AnimationTimeline.play() method tests</title>
+<meta name="assert" content="Creates a new AnimationPlayer object associated with this timeline that begins playback as soon as it is ready. The new AnimationPlayer object is created using the the AnimationPlayer constructor passing this AnimationTimeline object as the timeline parameter and source as the source parameter. Following construction of the AnimationPlayer object, the procedure to play a player is performed on the newly constructed object">
+<link rel="help" href="http://w3c.github.io/web-animations/#dom-animationtimeline-play">
+<link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
+<link rel="author" title="Aleksei Yu. Semenov" href="mailto:a.semenov@unipro.ru">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+<body>
+<div id="log"></div>
+<script>
+var TIMEOUT = ANIMATION_DURATION / 20;
+
+test(function() {
+    var animation = new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION);
+    var player = document.timeline.play(animation);
+
+    assert_not_equals(player, null, 'Player created by AnimationTimeline.play() ' +
+        'method should be not null');
+}, 'Player created by AnimationTimeline.play() method is not null');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_not_equals(player, null, 'Player created by AnimationTimeline.play(null) ' +
+        'method should be not null');
+}, 'Player created by AnimationTimeline.play(null) method is not null');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_not_equals(player, null, 'Player created by AnimationTimeline.play() ' +
+        'method without arguments should not be null');
+}, 'Player created by AnimationTimeline.play() method without arguments arguments is not null');
+
+test(function() {
+    var animation = new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION);
+    var player = document.timeline.play(animation);
+
+    assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
+        'AnimationTimeline.play() method should be AnimationPlayer object instance');
+}, 'Test AnimationTimeline.play() method creates a new AnimationPlayer object instance');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
+        'AnimationTimeline.play(null) method should be AnimationPlayer object instance');
+}, 'Test AnimationTimeline.play(null) method creates a new AnimationPlayer object instance');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_class_string(player, 'AnimationPlayer', 'Player created by ' +
+        'AnimationTimeline.play() method without arguments ' +
+        'should be AnimationPlayer object instance');
+}, 'Test AnimationTimeline.play() method without arguments creates ' +
+    'a new AnimationPlayer object instance');
+
+test(function() {
+    var animation = new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION);
+    var player = document.timeline.play(animation);
+
+    assert_equals(player.source, animation, 'The source attribute of the created ' +
+        'AnimationPlayer should be set to source parameter value');
+}, 'Test that the source attribute of the created AnimationPlayer is set to source ' +
+    'parameter value');
+
+test(function() {
+    var player = document.timeline.play(null);
+
+    assert_equals(player.source, null, 'The source attribute of the created ' +
+        'AnimationPlayer should be null if source parameter value is null');
+}, 'Test that the source attribute of the created AnimationPlayer is null if source ' +
+    'parameter value is null');
+
+test(function() {
+    var player = document.timeline.play();
+
+    assert_equals(player.source, null, 'The source attribute of the created ' +
+        'AnimationPlayer should be null if source parameter value is not specified');
+}, 'Test that the source attribute of the created AnimationPlayer is null if source ' +
+    'parameter value is not specified');
+
+test(function() {
+    var animationNodes = [
+        new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
+    animationNodes.forEach(function(node) {
+        var player = document.timeline.play(node);
+        assert_equals(player.source, node, 'The source attribute of the created ' +
+            'AnimationPlayer should be set to the source ' + type(node) + ' object');
+    });
+}, 'Test AnimationTimeline.play(source) method associate the AnimationNode source ' +
+    'with the returned player');
+
+test(function() {
+    var test = this;
+    var parents = [AnimationGroup, AnimationSequence];
+    parents.forEach(function(parentCtor) {
+        var nodes = [
+            new Animation(createDiv(test), KEYFRAMES, ANIMATION_DURATION),
+            new AnimationGroup([]),
+            new AnimationSequence([])
+        ];
+        nodes.forEach(function(node) {
+            var parent = new parentCtor([node]);
+            var player = document.timeline.play(node);
+
+            assert_equals(player.source, node, 'The source attribute of the created ' +
+                'AnimationPlayer should be set to source parameter ' + type(node) + ' object');
+            assert_equals(node.parent, null, type(node) + ' object, specified ' +
+                'by source parameter should be removed from its parent');
+            assert_array_equals(parent.children, [], type(node) + ' object, specified ' +
+                'by source parameter should be removed from its parent');
+        });
+    });
+}, 'Test AnimationTimeline.play(source) method remove AnimationNode source from its parent');
+
+test(function() {
+    var animationNodes = [
+        new Animation(createDiv(this), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
+    animationNodes.forEach(function(node, index) {
+        var player = document.timeline.play(node);
+        assert_equals(player.timeline, document.timeline, 'Node ' + index + ': AnimationPlayer, ' +
+            'created by play() method should be accociated with this timeline');
+    });
+}, 'Test AnimationTimeline.play() method accociates returned AnimationPlayer ' +
+    'with timeline instance used to call method play()');
+
+test(function() {
+    var doc = newHTMLDocument();
+    var animationNodes = [
+        new Animation(createDiv(this, doc), KEYFRAMES, ANIMATION_DURATION),
+        new AnimationGroup([]),
+        new AnimationSequence([])
+    ];
+    animationNodes.forEach(function(node, index) {
+        var player = doc.timeline.play(node);
+        assert_equals(player.timeline, doc.timeline, 'Node ' + index +
+            ': AnimationTimeline.play() should associate AnimationPlayer with this timeline');
+    });
+}, 'Test AnimationTimeline.play() method accociates returned AnimationPlayer ' +
+    'with timeline instance used to call method play(). Using timeline of another document');
+
+async_test(function(t) {
+    var player = document.timeline.play(new Animation(createDiv(t), KEYFRAMES, ANIMATION_DURATION));
+
+    player.ready.then(t.step_func(function() {
+        setTimeout(t.step_func(function() {
+            assert_approx_equals(player.currentTime, TIMEOUT, TIME_EPSILON, 'AnimationTimeline.play() ' +
+                'should run play a player procedure');
+            assert_equals(player.playState, 'running', 'Play state should be in running state');
+            t.done();
+        }), TIMEOUT);
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.play() runs play a player procedure');
+
+async_test(function(t) {
+    var doc = newHTMLDocument();
+    var target1 = createDiv(t, doc);
+    var target2 = createDiv(t, doc);
+    var animationGroup = new AnimationGroup([
+        new Animation(target1, KEYFRAMES, ANIMATION_DURATION),
+        new Animation(target2, KEYFRAMES, ANIMATION_DURATION)
+    ]);
+	var player = doc.timeline.play(animationGroup);
+
+    player.ready.then(t.step_func(function() {
+        setTimeout(t.step_func(function() {
+            assert_approx_equals(window.getComputedStyle(target1).top,
+                getExpectedTop(TIMEOUT), COMPUTED_STYLE_EPSILON,
+                'Animation 1 should be running');
+            assert_approx_equals(window.getComputedStyle(target2).top,
+                getExpectedTop(TIMEOUT), COMPUTED_STYLE_EPSILON,
+                'Animation 2 should be running');
+            t.done();
+        }), TIMEOUT);
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.play() plays animation group');
+
+async_test(function(t) {
+    var doc = newHTMLDocument();
+    var target1 = createDiv(t, doc);
+    var target2 = createDiv(t, doc);
+    var animationSequence = new AnimationSequence([
+        new Animation(target1, KEYFRAMES, ANIMATION_DURATION),
+        new Animation(target2, KEYFRAMES, ANIMATION_DURATION)
+    ]);
+	var player = doc.timeline.play(animationSequence);
+
+    player.ready.then(t.step_func(function() {
+        setTimeout(t.step_func(function() {
+            assert_approx_equals(window.getComputedStyle(target1).top,
+                getExpectedTop(TIMEOUT), COMPUTED_STYLE_EPSILON,
+                'Animation 1 should be running');
+            assert_equals(window.getComputedStyle(target2).top,
+                ANIMATION_TOP_DEFAULT, 'Animation 2 should not be running');
+            t.done();
+        }), TIMEOUT);
+    }), t.unreached_func('Player ready promise should not be rejected'));
+}, 'Test AnimationTimeline.play() plays animation sequence');
+</script>
+</body>

@@ -141,16 +141,19 @@ function writeHtml(value, codePoints, template) {
 }
 
 function writeHtmlPage(value, codePoints, template, flags, index, lim, page, pages) {
-    var path = "../../text-orientation-script-" + value.toLowerCase();
-    var rangeText = (lim - index) + " code points in U+" +
-        toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
+    var path = "../../text-orientation-script-";
+    var title = "Test orientation of characters";
+    var rangeText = (lim - index) + " code points in U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
+    if (value) {
+        path += "-" + value.toLowerCase();
+        title += " where vo=" + value;
+    }
     if (page) {
         path += "-" + padZero(page, 3);
         rangeText = "#" + page + "/" + pages + ", " + rangeText;
     }
     path += ".html";
-    rangeText = " (" + rangeText + ")";
-    var title = "Test orientation of characters where vo=" + value + rangeText;
+    title += " (" + rangeText + ")";
     console.log("Writing " + path + rangeText);
     var output = fs.openSync(path, "w");
     fs.writeSync(output, template[0].replace("<!--META-->",
@@ -158,6 +161,14 @@ function writeHtmlPage(value, codePoints, template, flags, index, lim, page, pag
         '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
         '<meta name="assert" content="' + title + '">\n' +
         '<meta name="flags" content="' + flags + '">'));
+    index = writeValueBlock(value, codePoints, index, lim);
+    fs.writeSync(output, template[1]);
+    fs.closeSync(output);
+    return index;
+}
+
+function writeValueBlock(value, codePoints, index, lim) {
+{
     fs.writeSync(output, '<div data-vo="' + value + '" class="test">\n');
     var line = [];
     for (; index < lim; index++) {
@@ -176,8 +187,6 @@ function writeHtmlPage(value, codePoints, template, flags, index, lim, page, pag
     if (line.length)
         writeLine(output, line);
     fs.writeSync(output, "</div>\n");
-    fs.writeSync(output, template[1]);
-    fs.closeSync(output);
     return index;
 }
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<title>CSS Writing Modes Test: Parent's min-content width when orthogonal inline in inline-block</title>
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#orthogonal-flows">
+<meta name="assert" content="Parent's min-content width in orthorgonal flows">
+<meta name="flags" content="ahem">
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.test {
+    font:25px Ahem;
+    margin-top:.2em;
+}
+.target {
+    color:blue;
+    -webkit-writing-mode:vertical-rl;
+}
+.border {
+    border-right:blue solid 1em;
+}
+.next {
+    color:orange;
+}
+.inline-block {
+    display:inline-block;
+}
+table {
+    border-spacing:0px;
+}
+td {
+    padding:0px;
+}
+</style>
+<div id="container">
+<p>Test passes if the <b>left</b> edge of orange box touch the <b>right</b> edge of blue box.
+    There should be no spaces nor overlaps.
+<p>If script is enabled, there should be one or more PASS and no FAIL.
+<div class="test" title="Orthogonal inline in inline-block">
+    <div class="inline-block"><span class="target">XX</span></div><span class="next">YY</span>
+</div>
+</div>
+<script>
+var nodes = document.querySelectorAll(".test");
+for (var i = 0; i < nodes.length; i++) {
+    var node = nodes[i];
+    test(function () {
+        var targetNode = node.querySelector(".target");
+        var targetBounds = targetNode.getBoundingClientRect();
+        var nextNode = node.querySelector(".next");
+        var nextBounds = nextNode.getBoundingClientRect();
+        assert_equals(nextBounds.left - targetBounds.right, 0);
+    }, node.title);
+}
+
+if (window.testRunner)
+    container.style.display = "none";
+</script>

@@ -7,7 +7,7 @@
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-fill-mode">
 <meta name="flags" content="animated">
 <meta name="assert" content="When animation-duration is set to 0s (zero seconds),
-                             and 'animation-fill-mode' is set to 'forwards',
+                             and 'animation-fill-mode' is set to 'both',
                              the last frame of the animation will be displayed.">
 <style>
   div {
@@ -19,7 +19,7 @@
   #test {
     animation-name: sample;
     animation-duration: 0s;
-    animation-fill-mode: forwards;
+    animation-fill-mode: both;
 
     background-color: blue;
   }

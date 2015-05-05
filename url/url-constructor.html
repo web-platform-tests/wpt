@@ -1,5 +1,4 @@
 <!doctype html>
-<base id=base>
 <meta charset=utf-8>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -17,10 +16,6 @@ setup.step(function() {
     setup.done()
   })
 })
-
-function setBase(base) {
-  document.getElementById("base").href = base
-}
 
 function bURL(url, base) {
   return new URL(url, base || "about:blank");

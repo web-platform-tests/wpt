@@ -9,6 +9,9 @@ import os
 
 import mozinfo
 
+from wptmanifest.parser import atoms
+
+atom_reset = atoms["Reset"]
 
 class Result(object):
     def __init__(self, status, message, expected=None, extra=None):
@@ -88,26 +91,24 @@ class Test(object):
     subtest_result_cls = None
     test_type = None
 
-    def __init__(self, url, expected_metadata, timeout=DEFAULT_TIMEOUT, path=None,
+    def __init__(self, url, inherit_metadata, test_metadata, timeout=DEFAULT_TIMEOUT, path=None,
                  protocol="http"):
         self.url = url
-        self._expected_metadata = expected_metadata
+        self._inherit_metadata = inherit_metadata
+        self._test_metadata = test_metadata
         self.timeout = timeout
         self.path = path
-        if expected_metadata:
-            prefs = expected_metadata.prefs()
-        else:
-            prefs = []
-        self.environment = {"protocol": protocol, "prefs": prefs}
+        self.environment = {"protocol": protocol, "prefs": self.prefs}
 
     def __eq__(self, other):
         return self.id == other.id
 
     @classmethod
-    def from_manifest(cls, manifest_item, expected_metadata):
+    def from_manifest(cls, manifest_item, inherit_metadata, test_metadata):
         timeout = LONG_TIMEOUT if manifest_item.timeout == "long" else DEFAULT_TIMEOUT
         return cls(manifest_item.url,
-                   expected_metadata,
+                   inherit_metadata,
+                   test_metadata,
                    timeout=timeout,
                    path=manifest_item.path,
                    protocol="https" if hasattr(manifest_item, "https") and manifest_item.https else "http")
@@ -121,30 +122,57 @@ class Test(object):
     def keys(self):
         return tuple()
 
-    def _get_metadata(self, subtest):
-        if self._expected_metadata is None:
-            return None
-
-        if subtest is not None:
-            metadata = self._expected_metadata.get_subtest(subtest)
+    def _get_metadata(self, subtest=None):
+        if self._test_metadata is not None and subtest is not None:
+            return self._test_metadata.get_subtest(subtest)
         else:
-            metadata = self._expected_metadata
-        return metadata
+            return self._test_metadata
+
+    def itermeta(self, subtest=None):
+        for metadata in self._inherit_metadata:
+            yield metadata
+
+        if self._test_metadata is not None:
+            yield self._get_metadata()
+            if subtest is not None:
+                subtest_meta = self._get_metadata(subtest)
+                if subtest_meta is not None:
+                    yield subtest_meta
+
 
     def disabled(self, subtest=None):
-        metadata = self._get_metadata(subtest)
-        if metadata is None:
-            return False
+        for meta in self.itermeta(subtest):
+            disabled = meta.disabled
+            if disabled is not None:
+                return disabled
+        return None
 
-        return metadata.disabled()
-
+    @property
     def tags(self):
-        tags = set(["dir:%s" % self.id.lstrip("/").split("/")[0]])
-        metadata = self._get_metadata(None)
-        if metadata is None:
-            return tags
+        tags = set()
+        for meta in self.itermeta():
+            meta_tags = meta.tags
+            if atom_reset in meta_tags:
+                tags = meta_tags.copy()
+                tags.remove(atom_reset)
+            else:
+                tags |= meta_tags
 
-        return tags | metadata.tags()
+        tags.add("dir:%s" % self.id.lstrip("/").split("/")[0])
+
+        return tags
+
+    @property
+    def prefs(self):
+        prefs = {}
+        for meta in self.itermeta():
+            meta_prefs = meta.prefs
+            if atom_reset in prefs:
+                prefs = meta_prefs.copy()
+                del prefs[atom_reset]
+            else:
+                prefs.update(meta_prefs)
+        return prefs
 
     def expected(self, subtest=None):
         if subtest is None:
@@ -184,8 +212,8 @@ class ReftestTest(Test):
     result_cls = ReftestResult
     test_type = "reftest"
 
-    def __init__(self, url, expected, references, timeout=DEFAULT_TIMEOUT, path=None, protocol="http"):
-        Test.__init__(self, url, expected, timeout, path, protocol)
+    def __init__(self, url, inherit_metadata, test_metadata, references, timeout=DEFAULT_TIMEOUT, path=None, protocol="http"):
+        Test.__init__(self, url, inherit_metadata, test_metadata, timeout, path, protocol)
 
         for _, ref_type in references:
             if ref_type not in ("==", "!="):
@@ -196,7 +224,8 @@ class ReftestTest(Test):
     @classmethod
     def from_manifest(cls,
                       manifest_test,
-                      expected_metadata,
+                      inherit_metadata,
+                      test_metadata,
                       nodes=None,
                       references_seen=None):
 
@@ -210,7 +239,8 @@ class ReftestTest(Test):
         url = manifest_test.url
 
         node = cls(manifest_test.url,
-                   expected_metadata,
+                   inherit_metadata,
+                   test_metadata,
                    [],
                    timeout=timeout,
                    path=manifest_test.path,
@@ -235,11 +265,12 @@ class ReftestTest(Test):
             manifest_node = manifest_test.manifest.get_reference(ref_url)
             if manifest_node:
                 reference = ReftestTest.from_manifest(manifest_node,
+                                                      [],
                                                       None,
                                                       nodes,
                                                       references_seen)
             else:
-                reference = ReftestTest(ref_url, None, [])
+                reference = ReftestTest(ref_url, [], None, [])
 
             node.references.append((reference, ref_type))
 
@@ -259,7 +290,7 @@ manifest_test_cls = {"reftest": ReftestTest,
                      "manual": ManualTest}
 
 
-def from_manifest(manifest_test, expected_metadata):
+def from_manifest(manifest_test, inherit_metadata, test_metadata):
     test_cls = manifest_test_cls[manifest_test.item_type]
 
-    return test_cls.from_manifest(manifest_test, expected_metadata)
+    return test_cls.from_manifest(manifest_test, inherit_metadata, test_metadata)

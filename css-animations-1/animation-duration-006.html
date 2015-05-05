@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Animations Test: animation-duration - 0s</title>
+<title>CSS Animations Test: animation-duration - 0s, animation-fill-mode - both</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-05-05 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-fill-mode">
@@ -41,9 +42,9 @@
 <body>
   <p>
     Test passes if there is a filled blue with 'Filler Text',
-    and no animation, no visible red.
+    and without animation, and if there is no red.
   </p>
-  <div id="ref">Filler Text</div>
+  <div id="ref"></div>
   <div id="test">Filler Text</div>
 </body>
 

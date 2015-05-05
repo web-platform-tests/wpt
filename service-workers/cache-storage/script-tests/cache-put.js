@@ -283,12 +283,17 @@ cache_test(function(cache) {
                  '[https://fetch.spec.whatwg.org/#dom-body-bodyused] ' +
                  'Response.bodyUsed should be initially false.');
     return response.text().then(function() {
-      assert_false(
+      assert_true(
         response.bodyUsed,
         '[https://fetch.spec.whatwg.org/#concept-body-consume-body] ' +
-          'The text() method should not set "body passed" flag.');
-      return cache.put(new Request(test_url), response);
-    });
+          'The text() method should set "body used" flag.');
+      return assert_promise_rejects(
+        cache.put(new Request(test_url), response),
+        new TypeError,
+        '[https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#cache-put] ' +
+        'Cache put should reject with TypeError when Response ' +
+        'body is already used.');
+      });
   }, 'Cache.put with a used response body');
 
 cache_test(function(cache) {

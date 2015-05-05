@@ -332,7 +332,7 @@ ReflectionTests.typeMap = {
                      undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
                      -Infinity, "\0",
                      {toString:function() {return 2;}, valueOf: null},
-                     {valueOf:function() {return 3;}}],
+                     {toString: null, valueOf: function() {return 3;}}],
         "domExpected": function(val) {
             var parsed = ReflectionTests.parseInt(String(val));
             if (parsed === false || parsed > maxInt || parsed < minInt) {
@@ -371,9 +371,9 @@ ReflectionTests.typeMap = {
                      undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
                      -Infinity, "\0",
                      {toString:function() {return 2;}, valueOf: null},
-                     {valueOf:function() {return 3;}}],
+                     {toString: null, valueOf: function() {return 3;}}],
         "domExpected": function(val) {
-            var parsed = ReflectionTests.parseNonneg(val + "");
+            var parsed = ReflectionTests.parseNonneg(String(val));
             if (parsed === false || parsed > maxInt || parsed < minInt) {
                 return null;
             }
@@ -407,9 +407,9 @@ ReflectionTests.typeMap = {
                      " " + binaryString + " foo ", undefined, 1.5, true, false,
                      {"test": 6}, NaN, +Infinity, -Infinity, "\0",
                      {toString:function() {return 2;}, valueOf: null},
-                     {valueOf:function() {return 3;}}],
+                     {toString: null, valueOf: function() {return 3;}}],
         "domExpected": function(val) {
-            var parsed = ReflectionTests.parseNonneg(val + "");
+            var parsed = ReflectionTests.parseNonneg(String(val));
             // Note maxInt, not maxUnsigned.
             if (parsed === false || parsed < 0 || parsed > maxInt) {
                 return null;
@@ -448,9 +448,9 @@ ReflectionTests.typeMap = {
                      " " + binaryString + " foo ", undefined, 1.5, true, false,
                      {"test": 6}, NaN, +Infinity, -Infinity, "\0",
                      {toString:function() {return 2;}, valueOf: null},
-                     {valueOf:function() {return 3;}}],
+                     {toString: null, valueOf: function() {return 3;}}],
         "domExpected": function(val) {
-            var parsed = ReflectionTests.parseNonneg(val + "");
+            var parsed = ReflectionTests.parseNonneg(String(val));
             // Note maxInt, not maxUnsigned.
             if (parsed === false || parsed < 1 || parsed > maxInt) {
                 return null;
@@ -497,7 +497,7 @@ ReflectionTests.typeMap = {
             " " + binaryString + " foo ", undefined, 1.5, true, false,
             {"test": 6}, NaN, +Infinity, -Infinity, "\0",
             {toString:function() {return 2;}, valueOf: null},
-            {valueOf:function() {return 3;}}],
+            {toString: null, valueOf: function() {return 3;}}],
         "domExpected": [minInt - 1, minInt, -36, -1, 0, 1, maxInt,
                         maxInt + 1, maxUnsigned, maxUnsigned + 1, null,
                         // Leading whitespace tests

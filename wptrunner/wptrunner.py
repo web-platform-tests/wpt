@@ -45,15 +45,22 @@ def get_loader(test_paths, product, ssl_env, debug=None, **kwargs):
 
     test_manifests = testloader.ManifestLoader(test_paths, force_manifest_update=kwargs["manifest_update"]).load()
 
-    test_filter = testloader.TestFilter(include=kwargs["include"],
-                                        exclude=kwargs["exclude"],
-                                        manifest_path=kwargs["include_manifest"],
-                                        test_manifests=test_manifests)
+    manifest_filters = []
+    meta_filters = []
+
+    if kwargs["include"] or kwargs["exclude"] or kwargs["include_manifest"]:
+        manifest_filters.append(testloader.TestFilter(include=kwargs["include"],
+                                                      exclude=kwargs["exclude"],
+                                                      manifest_path=kwargs["include_manifest"],
+                                                      test_manifests=test_manifests))
+    if kwargs["tags"]:
+        meta_filters.append(testloader.TagFilter(tags=kwargs["tags"]))
 
     test_loader = testloader.TestLoader(test_manifests,
                                         kwargs["test_types"],
-                                        test_filter,
                                         run_info,
+                                        manifest_filters=manifest_filters,
+                                        meta_filters=meta_filters,
                                         chunk_type=kwargs["chunk_type"],
                                         total_chunks=kwargs["total_chunks"],
                                         chunk_number=kwargs["this_chunk"],

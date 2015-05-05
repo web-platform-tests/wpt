@@ -86,6 +86,7 @@ class B2GRunInfo(RunInfo):
 class Test(object):
     result_cls = None
     subtest_result_cls = None
+    test_type = None
 
     def __init__(self, url, expected_metadata, timeout=DEFAULT_TIMEOUT, path=None,
                  protocol="http"):
@@ -137,6 +138,14 @@ class Test(object):
 
         return metadata.disabled()
 
+    def tags(self):
+        tags = set(["dir:%s" % self.id.lstrip("/").split("/")[0]])
+        metadata = self._get_metadata(None)
+        if metadata is None:
+            return tags
+
+        return tags | metadata.tags()
+
     def expected(self, subtest=None):
         if subtest is None:
             default = self.result_cls.default_expected
@@ -156,6 +165,7 @@ class Test(object):
 class TestharnessTest(Test):
     result_cls = TestharnessResult
     subtest_result_cls = TestharnessSubtestResult
+    test_type = "testharness"
 
     @property
     def id(self):
@@ -163,6 +173,8 @@ class TestharnessTest(Test):
 
 
 class ManualTest(Test):
+    test_type = "manual"
+
     @property
     def id(self):
         return self.url
@@ -170,6 +182,7 @@ class ManualTest(Test):
 
 class ReftestTest(Test):
     result_cls = ReftestResult
+    test_type = "reftest"
 
     def __init__(self, url, expected, references, timeout=DEFAULT_TIMEOUT, path=None, protocol="http"):
         Test.__init__(self, url, expected, timeout, path, protocol)

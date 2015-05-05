@@ -107,6 +107,16 @@ class TestNode(ManifestItem):
         except KeyError:
             return False
 
+    def tags(self):
+        """Set of tags that have been applied to the test"""
+        try:
+            value = self.get("tags")
+            if isinstance(value, (str, unicode)):
+                return {value}
+            return set(value)
+        except KeyError:
+            return set()
+
     def prefs(self):
         try:
             prefs = self.get("prefs")

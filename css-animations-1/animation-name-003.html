@@ -3,12 +3,14 @@
 <title>CSS Animations Test: animation-name - none</title>
 <link rel="author" title="Nokia Inc." href="http://www.nokia.com">
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-05-06 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <meta name="flags" content="animated">
 <meta name="assert" content="Check that animation-name is set to none, there will be no animation.">
 <style>
   div {
+    animation-name: none;
     animation-duration: 8s;
 
     background-color: blue;
@@ -33,11 +35,10 @@
   </p>
   <div>Filler Text</div>
   <script>
-    var div = document.getElementsByTagName("div");
-    div[0].style.animationName = "none";
     setTimeout(setAnimationName, 2000);
 
     function setAnimationName () {
+      var div = document.getElementsByTagName("div");
       div[0].style.animationName = "sample";
     }
   </script>

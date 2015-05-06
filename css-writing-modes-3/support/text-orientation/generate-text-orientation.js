@@ -111,6 +111,7 @@ Promise.all([
     unicodeData.get(unicodeData.url.blocks, unicodeData.formatAsRangesByValue),
 ]).then(function (results) {
     generate(results[0], results[1]);
+
     console.log("Writing unicode-data.js");
     var output = fs.openSync("unicode-data.js", "w");
     fs.writeSync(output, "var rangesByBlock = ");
@@ -124,51 +125,65 @@ Promise.all([
 function generate(rangesByVO, gc) {
     var template = fs.readFileSync("text-orientation-template.html", {encoding:"utf-8"})
         .split("INSERT-DATA-HERE");
-    for (var value in rangesByVO)
-        writeHtml(value, unicodeData.codePointsFromRanges(rangesByVO[value], gc), template);
-}
 
-function writeHtml(value, codePoints, template) {
+    var codePointsByVO = {};
+    for (var value in rangesByVO)
+        codePointsByVO[value] = unicodeData.codePointsFromRanges(rangesByVO[value], gc);
+
+    // single version
+    writeHtmlPage(codePointsByVO, template, "combo dom font");
+
+    // by-vo versions
     var pageSize = 64 * 64;
-    var pages = Math.floor(codePoints.length / pageSize) + 1;
-    if (pages > 1)
-        writeHtmlPage(value, codePoints, template, "combo dom font", 0, codePoints.length);
-    var index = 0;
-    for (var page = 1; index < codePoints.length; page++) {
-        var lim = Math.min(index + pageSize, codePoints.length);
-        index = writeHtmlPage(value, codePoints, template, "dom font", index, lim, page, pages);
+    for (value in codePointsByVO) {
+        var codePoints = codePointsByVO[value];
+        var pages = Math.floor(codePoints.length / pageSize) + 1;
+        if (pages > 1) // by-vo combo versions
+            writeHtmlPage(codePoints, template, "combo dom font", value, 0, codePoints.length);
+        // by-vo paged versions
+        var index = 0;
+        for (var page = 1; index < codePoints.length; page++) {
+            var lim = Math.min(index + pageSize, codePoints.length);
+            index = writeHtmlPage(codePoints, template, "dom font", value, index, lim, page, pages);
+        }
     }
 }
 
-function writeHtmlPage(value, codePoints, template, flags, index, lim, page, pages) {
-    var path = "../../text-orientation-script-";
+function writeHtmlPage(codePoints, template, flags, value, index, lim, page, pages) {
+    var path = "../../text-orientation-script";
     var title = "Test orientation of characters";
-    var rangeText = (lim - index) + " code points in U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
     if (value) {
         path += "-" + value.toLowerCase();
         title += " where vo=" + value;
-    }
-    if (page) {
-        path += "-" + padZero(page, 3);
-        rangeText = "#" + page + "/" + pages + ", " + rangeText;
+        var rangeText = (lim - index) + " code points in U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
+        if (page) {
+            path += "-" + padZero(page, 3);
+            rangeText = "#" + page + "/" + pages + ", " + rangeText;
+        }
+        title += " (" + rangeText + ")";
     }
     path += ".html";
-    title += " (" + rangeText + ")";
-    console.log("Writing " + path + rangeText);
+    console.log("Writing " + path + ": " + title);
     var output = fs.openSync(path, "w");
     fs.writeSync(output, template[0].replace("<!--META-->",
         '<title>CSS Writing Modes Test: ' + title + '.</title>\n' +
         '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
         '<meta name="assert" content="' + title + '">\n' +
         '<meta name="flags" content="' + flags + '">'));
-    index = writeValueBlock(value, codePoints, index, lim);
+    if (value) {
+        index = writeValueBlock(output, value, codePoints, index, lim);
+    } else {
+        for (value in codePoints) {
+            var codePointsOfValue = codePoints[value];
+            writeValueBlock(output, value, codePointsOfValue, 0, codePointsOfValue.length);
+        }
+    }
     fs.writeSync(output, template[1]);
     fs.closeSync(output);
     return index;
 }
 
-function writeValueBlock(value, codePoints, index, lim) {
-{
+function writeValueBlock(output, value, codePoints, index, lim) {
     fs.writeSync(output, '<div data-vo="' + value + '" class="test">\n');
     var line = [];
     for (; index < lim; index++) {

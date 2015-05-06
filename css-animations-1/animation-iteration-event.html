@@ -3,6 +3,7 @@
 <title>CSS Animations Test: animation events - animationiteration</title>
 <link rel="author" title="Nokia Inc." href="http://www.nokia.com">
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-05-06 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-iteration-count">
@@ -16,6 +17,11 @@
     animation-name: sample;
     animation-duration: 10s;
     animation-iteration-count: 3;
+
+    color: yellow;
+    font-weight: bolder;
+    font-size: xx-large;
+    text-align: center;
 
     background-color: blue;
     height: 100px;
@@ -34,13 +40,13 @@
 </style>
 <body>
   <p>
-    Test passes if there is a filled square,
-    which moves from right to left three times; the first time with number 0,
-    the second time with number 1, the third time wiht number 2.
+    Test passes if there is a filled blue square, which moves from right to left
+    three times; and if the square contains digit 1 for the first animation,
+    digit 2 for the second, and 3 for the third animation.
   </p>
   <div></div>
   <script>
-    var count = 0;
+    var count = 1;
     var div = document.getElementsByTagName("div");
     div[0].innerHTML = count;
     div[0].addEventListener("animationiteration", animationIteration, true);

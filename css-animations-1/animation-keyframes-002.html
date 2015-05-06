@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Animations Test: @keyframes - negative percentage and larger than 100%</title>
+<title>CSS Animations Test: @keyframes - negative percentage and higher than 100%</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-05-06 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#keyframes">
@@ -28,7 +29,7 @@
     30% {
       background-color: green;
     }
-    60% {
+    65% {
       background-color: yellow;
     }
     100% {
@@ -41,9 +42,10 @@
 </style>
 <body>
   <p>
-    Test passes if there is a filled blue square with 'Filler Text',
-    which background changes in order(blue -> green -> yellow -> blue);
-    There is No red visible for whole animation.
+    Test passes if there is a filled blue square with 'Filler Text'
+    initially on page load, if the color of the square gradully changes
+    in order: BLUE to GREEN to YELLOW and back to BLUE in 10 seconds,
+    and if there is no red.
   </p>
   <div>Filler Text</div>
 </body>

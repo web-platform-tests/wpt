@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Animations Test: @keyframe - animation-timing-function</title>
+<title>CSS Animations Test: @keyframes - animation-timing-function</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-05-06 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#keyframes">
 <meta name="flags" content="animated">
-<meta name="assert" content="Check taht @keyframe accpet the 'animation-timing-function' property
-                             used as the animation moves to the next keyframe.">
+<meta name="assert" content="Check that @keyframes rule accpets 'animation-timing-function'
+                             property used as the animation moves to the next keyframe.">
 <style>
   div {
     animation-name: sample;
@@ -36,7 +37,7 @@
 <body>
   <p>
     Test passes if there is a filled blue square with 'Filler Text',
-    which moves from right to left with constant speed.
+    which starts moving from right to left in a constant speed in 10 seconds.
   </p>
   <div>Filler Text</div>
 </body>

@@ -2,13 +2,14 @@
 <meta charset="utf-8">
 <title>CSS Animations Test: animation-timing-function - steps with parameters (<number>, start)</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-05-07 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-fill-mode">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-timing-function">
 <meta name="flags" content="animated">
 <meta name="assert" content="When animation-timing-function is set to steps with paramenters
-                             (<number>, start), animation will be defined by the number that divdes
+                             (<number>, start), animation will be defined by the number that divides
                              the domain of operation into equally size intervals, evey time the changes
                              happens at the start of the interval.">
 <style>
@@ -55,8 +56,8 @@
 <body>
   <p>
     Test passes if there are a filled square with 'Filler Text',
-    which moves three times and covers respectively the yellow square,
-    the green square and the red square.
+    which jumps three times from right to left and orderly overrides
+    the filled YELLOW, GREEN and RED squares.
   </p>
   <div id="ref-1"></div>
   <div id="ref-2"></div>

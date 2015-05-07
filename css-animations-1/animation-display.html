@@ -2,14 +2,14 @@
 <meta charset="utf-8">
 <title>CSS Animations Test: animation - display</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-05-07 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animations">
 <meta name="flags" content="animated">
-<meta name="assert" content="When setting 'display' property to 'none' will terminate
-                             any running animation applied to the element,
-                             updating 'display' to a value other than 'none' will start
-                             all animations applied to the element.">
+<meta name="assert" content="Check that setting 'display' property to 'none' terminates
+                             running animation applied to the element, and updating 'display'
+                             property to a value other than 'none' will start the animation.">
 <style>
   div {
     animation-name: sample;
@@ -41,11 +41,11 @@
     
     setTimeout(function() {
       div[0].style.display = "none";
-    }, 1000);
+    }, 5000);
 
     setTimeout(function() {
       div[0].style.display = "block";
-    }, 2000);
+    }, 8000);
   </script>
 </body>
 

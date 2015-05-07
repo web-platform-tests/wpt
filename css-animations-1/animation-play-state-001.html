@@ -3,6 +3,7 @@
 <title>CSS Animations Test: animation-play-state - paused</title>
 <link rel="author" title="Nokia Inc." href="http://www.nokia.com">
 <link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="reviewer" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2015-05-07 -->
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-play-state">
@@ -41,15 +42,15 @@
   <p>
     Test passes if there is a filled blue square with 'Filler Text',
     which starts moving right to left along the yellow bar, 
-    then pauses the middle of yellow bar.
+    and pauses in the middle after about 2 seconds' animation.
   </p>
   <div id="test-animation-paused">Filler Text</div>
   <div id="ref-path"></div>
   <script>
-    var div = document.getElementsByTagName("div");
     setTimeout(setAnimationRunning, 2000);
 
     function setAnimationRunning() {
+      var div = document.getElementsByTagName("div");
       div[0].style.animationPlayState = "paused";
     }
   </script>

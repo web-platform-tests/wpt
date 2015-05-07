@@ -4,10 +4,12 @@
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation">
 <meta name="flags" content="animated">
-<meta name="assert" content="Check that animation shorthand applies to the ::before pseudo element.">
+<meta name="assert" content="Check that animation shorthand applies to the ::before pseudo element
+                             and accepts time values for animation-duration and animation-delay
+                             in order.">
 <style>
   div::before {
-    animation: 10s linear 2s sample;
+    animation: 10s 2s sample;
 
     background-color: blue;
     content: "Filler Text";
@@ -29,7 +31,8 @@
 <body>
   <p>
     Test passes if there is a filled blue square with 'Filler Text',
-    which starts moving from right to left with constant speed after about 2 seconds.
+    which starts staying left about 2 seconds, and then moves from right to left
+    in about 10 seconds.
   </p>
   <div></div>
 </body>

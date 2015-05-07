@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Animations Test: animation-play-state - paused</title>
+<link rel="author" title="Nokia Inc." href="http://www.nokia.com">
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-name">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-duration">
+<link rel="help" href="http://dev.w3.org/csswg/css-animations-1/#animation-play-state">
+<meta name="flags" content="animated">
+<meta name="assert" content="When animation-play-state is set to paused,
+                             animation is paused where the progress it had made
+                             before being paused.">
+<style>
+  #test-animation-paused {
+    animation-name: sample;
+    animation-duration: 10s;
+
+    background-color: blue;
+    height: 100px;
+    width: 100px;
+    position: relative;
+  }
+
+  #ref-path {
+    background-color: yellow;
+    height: 10px;
+    width: 250px;
+    position: relative;
+  }
+
+  @keyframes sample {
+    from {
+      left: 150px;
+    }
+    to {
+      left: 0px;
+    }
+  }
+</style>
+<body>
+  <p>
+    Test passes if there is a filled blue square with 'Filler Text',
+    which starts moving right to left along the yellow bar, 
+    then pauses the middle of yellow bar.
+  </p>
+  <div id="test-animation-paused">Filler Text</div>
+  <div id="ref-path"></div>
+  <script>
+    var div = document.getElementsByTagName("div");
+    setTimeout(setAnimationRunning, 2000);
+
+    function setAnimationRunning() {
+      div[0].style.animationPlayState = "paused";
+    }
+  </script>
+</body>
+

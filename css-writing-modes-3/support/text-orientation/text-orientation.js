@@ -67,7 +67,9 @@
         var block = document.createElement("details");
         this.summary = appendChildElement(block, "summary");
         this.summary.textContent = name;
-        this.list = appendChildElement(block, "ol");
+        var typeList = appendChildElement(block, "ul");
+        this.failList = appendChildElement(appendChildElement(typeList, "li", "Failures"), "ol");
+        this.inconclusiveList = appendChildElement(appendChildElement(typeList, "li", "Inconclusives"), "ol");
         details.appendChild(block);
         this.passCount = 0;
         this.failCount = 0;
@@ -76,17 +78,17 @@
     extend(Results.prototype, {
         failed: function (test, code) {
             this.failCount++;
-            this.append(test, code);
+            this.append(this.failList, test, code);
         },
         inconclusive: function (test, code, rect) {
             this.inconclusiveCount++;
-            this.append(test, code, " but inconclusive (rendered as " + rect.width + "x" + rect.height + ")");
+            this.append(this.inconclusiveList, test, code, " but inconclusive (rendered as " + rect.width + "x" + rect.height + ")");
         },
-        append: function (test, code, message) {
+        append: function (list, test, code, message) {
             var text = stringFromUnicode(code) + " should be " + test.orientation;
             if (message)
                 text += message;
-            appendChildElement(this.list, "li", text);
+            appendChildElement(list, "li", text);
         },
         done: function (test) {
             this.summary.textContent += " (" + this.passCount + " passes, " +

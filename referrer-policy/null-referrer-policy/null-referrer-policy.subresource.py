@@ -2,7 +2,7 @@ import os, json
 
 def main(request, response):
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    template_basename = "no-referrer-policy.subresource.template.html"
+    template_basename = "null-referrer-policy.subresource.template.html"
     template_filename = os.path.join(script_directory, template_basename);
 
     with open(template_filename) as f:

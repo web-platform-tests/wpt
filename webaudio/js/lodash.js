@@ -3355,7 +3355,7 @@
       thisArg = this;
 
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(delayed, wait);
+      timeoutId = step_timeout(delayed, wait);
 
       if (isImmediate) {
         result = func.apply(thisArg, args);
@@ -3374,7 +3374,7 @@
    * @param {Function} func The function to delay.
    * @param {Number} wait The number of milliseconds to delay execution.
    * @param {Mixed} [arg1, arg2, ...] Arguments to invoke the function with.
-   * @returns {Number} Returns the `setTimeout` timeout id.
+   * @returns {Number} Returns the `step_timeout` timeout id.
    * @example
    *
    * var log = _.bind(console.log, console);
@@ -3383,7 +3383,7 @@
    */
   function delay(func, wait) {
     var args = slice.call(arguments, 2);
-    return setTimeout(function() { func.apply(undefined, args); }, wait);
+    return step_timeout(function() { func.apply(undefined, args); }, wait);
   }
 
   /**
@@ -3395,7 +3395,7 @@
    * @category Functions
    * @param {Function} func The function to defer.
    * @param {Mixed} [arg1, arg2, ...] Arguments to invoke the function with.
-   * @returns {Number} Returns the `setTimeout` timeout id.
+   * @returns {Number} Returns the `step_timeout` timeout id.
    * @example
    *
    * _.defer(function() { alert('deferred'); });
@@ -3403,7 +3403,7 @@
    */
   function defer(func) {
     var args = slice.call(arguments, 1);
-    return setTimeout(function() { func.apply(undefined, args); }, 1);
+    return step_timeout(function() { func.apply(undefined, args); }, 1);
   }
 
   /**
@@ -3534,7 +3534,7 @@
         result = func.apply(thisArg, args);
       }
       else if (!timeoutId) {
-        timeoutId = setTimeout(trailingCall, remaining);
+        timeoutId = step_timeout(trailingCall, remaining);
       }
       return result;
     };

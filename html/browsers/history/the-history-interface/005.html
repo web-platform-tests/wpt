@@ -12,7 +12,7 @@ var readyForPop = false, bodypop = false, inlinepop = false;
 setup({explicit_done:true});
 
 //use a timeout to avoid "popstate fires onload" from setting the variables too early
-setTimeout(step1,1000);
+step_timeout(step1,1000);
 function step1() {
   readyForPop = true;
   test(function () {
@@ -20,7 +20,7 @@ function step1() {
     history.pushState('','');
   }, 'history.pushState support is needed for this testcase');
   history.go(-1);
-  setTimeout(step2,50); //.go is queued to end of thread
+  step_timeout(step2,50); //.go is queued to end of thread
 }
 function step2() {
   test(function () {
@@ -28,7 +28,7 @@ function step2() {
   }, '<body onpopstate="..."> should register a listener for the popstate event');
   window.onpopstate = function () { inlinepop = true; };
   history.go(-1);
-  setTimeout(step3,50); //.go is queued to end of thread
+  step_timeout(step3,50); //.go is queued to end of thread
 }
 function step3() {
   test(function () {

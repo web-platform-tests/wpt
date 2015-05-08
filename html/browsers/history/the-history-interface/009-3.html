@@ -17,7 +17,7 @@ parent.test(function () {
         parent.assert_equals( document.referrer, lastUrl );
 }, 'document.referrer should use the pushed state');
 window.onload = function () {
-        setTimeout(function () {
+        parent.step_timeout(function () {
                 try { history.pushState('','','009-4.html?2345'); } catch(e) {}
                 location.href = '009-5.html?pipe=sub';
         },10);

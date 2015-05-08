@@ -9,7 +9,7 @@
 async_test(function(t) {
   var v = document.querySelector('video');
   v.play();
-  setTimeout(t.step_func(function() {
+  step_timeout(t.step_func(function() {
     assert_equals(v.networkState, v.NETWORK_EMPTY,
                   'networkState after stable state');
     assert_false(v.paused, 'paused after stable state');

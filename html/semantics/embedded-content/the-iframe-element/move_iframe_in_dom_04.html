@@ -11,7 +11,7 @@ onload = function(){
   ifr.contentDocument.open();
   ifr.contentDocument.write('Modified document');
   ifr.contentDocument.close();
-  setTimeout(function() {
+  step_timeout(function() {
     ifr.onload = function () {
       assert_equals(ifr.contentDocument.body.textContent.indexOf('Modified'), -1);
       done();

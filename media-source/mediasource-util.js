@@ -86,7 +86,7 @@
 
             expectations.shift(1);
             if (t.waitCallbacks_.length > 0)
-                setTimeout(waitHandler, 0);
+                step_timeout(waitHandler, 0);
         });
         object.addEventListener(eventName, eventHandler);
     };
@@ -94,7 +94,7 @@
     EventExpectationsManager.prototype.waitForExpectedEvents = function(callback)
     {
         this.waitCallbacks_.push(callback);
-        setTimeout(this.test_.step_func(this.handleWaitCallback_.bind(this)), 0);
+        step_timeout(this.test_.step_func(this.handleWaitCallback_.bind(this)), 0);
     };
 
     EventExpectationsManager.prototype.expectingEvents = function()

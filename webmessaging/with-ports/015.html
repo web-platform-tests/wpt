@@ -9,7 +9,7 @@ async_test(function() {
   onmessage = this.step_func(function(e) {
     assert_unreached();
   });
-  setTimeout(this.step_func(function(){ this.done(); }), 50);
+  step_timeout(this.step_func(function(){ this.done(); }), 50);
 });
 </script>
 

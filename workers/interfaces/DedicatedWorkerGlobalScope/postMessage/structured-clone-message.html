@@ -40,7 +40,7 @@ var tests = [
       {test:wrapper_test, check:function(e) { assert_unreached(); }}
 ];
 // make wrapper_test pass after 500ms
-setTimeout(tests[tests.length-1].test.step_func(function() {
+step_timeout(tests[tests.length-1].test.step_func(function() {
   this.done();
 }), 500);
 

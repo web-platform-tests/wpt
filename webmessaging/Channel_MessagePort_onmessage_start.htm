@@ -21,7 +21,7 @@
 
     channel.port1.postMessage("ping");
 
-    setTimeout(t.step_func(VerifyResult), 100);
+    step_timeout(t.step_func(VerifyResult), 100);
 
     function TestMessageEvent(evt)
     {

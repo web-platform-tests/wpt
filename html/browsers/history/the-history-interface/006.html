@@ -21,7 +21,7 @@ window.onload = function () {
     assert_equals( history.state, null );
   }, 'history.state should still be null onload');
   popfired = false;
-  setTimeout(function () {
+  step_timeout(function () {
     test(function () {
       assert_false( popfired );
     }, 'popstate event should not fire after onload fires');

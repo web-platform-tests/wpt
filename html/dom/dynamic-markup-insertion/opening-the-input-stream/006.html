@@ -14,6 +14,6 @@ onload = t.step_func(function() {
   img.src = "missing";
   iframe.contentDocument.body.appendChild(img);
   iframe.contentDocument.open()
-  setTimeout(function() {t.done();}, 500);
+  step_timeout(function() {t.done();}, 500);
 });
 </script>

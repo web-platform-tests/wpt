@@ -15,14 +15,14 @@
         box.style.border = '1px solid black';
         box.style.margin = '5px';
 
-        window.setTimeout(function() {
+        window.step_timeout(function() {
           document.body.appendChild(box);
         }, 1000);
       }
 
       function reveal() {
         var elem = document.getElementById('revealed');
-        window.setTimeout(function() {
+        window.step_timeout(function() {
           elem.style.display = '';
         }, 1000);
       }

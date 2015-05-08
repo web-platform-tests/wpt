@@ -101,3 +101,28 @@ PARSE-FAILED:ext-xhtml-pubid/the-xhtml-syntax/parsing-xhtml-documents/xhtml-pubi
 
 # Test generation files containing print statements
 PRINT STATEMENT:dom/nodes/Document-createElement-namespace-tests/generate.py
+
+SET TIMEOUT:*-manual.*
+SET TIMEOUT:common/*
+SET TIMEOUT:conformance-checkers/*
+SET TIMEOUT:html/editing/dnd/*
+SET TIMEOUT:webvtt/rendering/*
+SET TIMEOUT:html/dom/dynamic-markup-insertion/opening-the-input-stream/005.html
+SET TIMEOUT:html/dom/interfaces.html
+SET TIMEOUT:html/webappapis/scripting/processing-model-2/compile-error-in-setTimeout.html
+SET TIMEOUT:html/webappapis/scripting/processing-model-2/runtime-error-in-setTimeout.html
+SET TIMEOUT:html/webappapis/scripting/processing-model-2/support/syntax-error-in-setTimeout.js
+SET TIMEOUT:html/webappapis/scripting/processing-model-2/support/undefined-variable-in-setTimeout.js
+SET TIMEOUT:old-tests/submission/Opera/script_scheduling/101.html
+SET TIMEOUT:webmessaging/with-ports/020.html
+SET TIMEOUT:webmessaging/with-ports/021.html
+SET TIMEOUT:webmessaging/without-ports/020.html
+SET TIMEOUT:webmessaging/without-ports/021.html
+SET TIMEOUT:websockets/unload-a-document/001-1.html
+SET TIMEOUT:webvtt/webvtt-file-format-parsing/webvtt-cue-text-parsing-rules/common.js
+SET TIMEOUT:workers/WorkerGlobalScope_setTimeout.htm
+SET TIMEOUT:workers/constructors/Worker/terminate.html
+SET TIMEOUT:workers/interfaces/WorkerGlobalScope/close/setTimeout.html
+SET TIMEOUT:workers/interfaces/WorkerUtils/WindowTimers/001.html
+SET TIMEOUT:workers/interfaces/WorkerUtils/WindowTimers/002.html
+SET TIMEOUT:workers/support/Timer.js

@@ -86,7 +86,7 @@
       loop = true;
     }
   });
-  setTimeout(t6.step_func(function() {
+  step_timeout(t6.step_func(function() {
     assert_true(loop);
     t6.done();
   }), 0);

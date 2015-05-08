@@ -20,7 +20,7 @@
           assert_equals(client.readyState, 1);
           test.done();
         });
-        setTimeout(test.step_func(function () {
+        step_timeout(test.step_func(function () {
           assert_unreached("onloadstart not called after 500 ms");
         }), 500);
         client.open("GET", "resources/well-formed.xml");

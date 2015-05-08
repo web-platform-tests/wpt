@@ -17,7 +17,7 @@ t.step(function() {
     var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
     ws.onopen = t.step_func(function(e) {
 
-      setTimeout(t.step_func(function() {
+      step_timeout(t.step_func(function() {
         assert_equals(ws.readyState, ws.CLOSED, 'ws.readyState');
         t.done();
       }), 4000);

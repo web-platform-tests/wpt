@@ -74,7 +74,7 @@ Somewhat similiar to a test from Mozilla:
  // When media playback ended, save the begin to compare with expected buffer
  audio.addEventListener("ended", function(e) {
    // Setting a timeout since we need audioProcess event to run for all samples
-   window.setTimeout(loadExpectedBuffer, 50);
+   window.step_timeout(loadExpectedBuffer, 50);
  });
 
  audio.play();

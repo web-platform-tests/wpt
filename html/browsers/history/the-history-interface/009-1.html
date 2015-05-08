@@ -9,7 +9,7 @@
     <div id="log"></div>
     <script type="text/javascript">
 window.onload = function () {
-  setTimeout(function () {
+  parent.step_timeout(function () {
     try { history.pushState('','','009-2.html?1234'); } catch(e) {}
     location.href = '009-3.html?pipe=sub';
   },10);

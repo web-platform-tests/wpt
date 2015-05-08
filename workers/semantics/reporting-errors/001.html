@@ -24,7 +24,7 @@ onerror = function(a,b,c,d,e) {
 }
 onconnect = function (e) {
   port = e.ports[0];
-  timeout = setTimeout(function() { port.postMessage('self.onerror was not invoked'); }, 250);
+  timeout = step_timeout(function() { port.postMessage('self.onerror was not invoked'); }, 250);
   throw 42; // will "report the error"
 }
 

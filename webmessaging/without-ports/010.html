@@ -102,7 +102,7 @@
       case 12: test_object.step(function() { assert_object_equals_(e.data, cloned_object, 'object'); this.done(); }); break;
       case 13:
         test_error.step(function() { assert_equals(e.data, null, 'new Error()'); this.done(); });
-        setTimeout(test_unreached.step_func(function() { assert_equals(j, 14); this.done(); }), 50);
+        step_timeout(test_unreached.step_func(function() { assert_equals(j, 14); this.done(); }), 50);
         break;
       default: test_unreached.step(function() { assert_unreached('got an unexpected message event ('+i+')'); });
     };

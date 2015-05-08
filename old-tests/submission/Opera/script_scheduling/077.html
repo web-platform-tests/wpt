@@ -26,7 +26,7 @@
                                 if(script3) {
                                     head.removeChild(script3);
                                 }
-                                setTimeout(t.step_func(function(){
+                                step_timeout(t.step_func(function(){
                                                assert_array_equals(eventOrder, ['Script #2 ran', 'Script #1 ran', 'Script #3 ran','Script #4 ran']);
                                                t.done();
                                            }), 400);

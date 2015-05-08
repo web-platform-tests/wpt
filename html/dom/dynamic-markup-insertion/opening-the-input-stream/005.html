@@ -11,6 +11,6 @@ onload = t.step_func(function() {
   var iframe = document.getElementsByTagName("iframe")[0];
   iframe.contentWindow.setTimeout(t.step_func(function() {assert_unreached()}), 100);
   iframe.contentDocument.open()
-  setTimeout(function() {t.done();}, 200);
+  step_timeout(function() {t.done();}, 200);
 });
 </script>

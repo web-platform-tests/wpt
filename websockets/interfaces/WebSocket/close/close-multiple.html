@@ -14,7 +14,7 @@ async_test(function(t) {
   ws.close();
   ws.close();
   ws.close();
-  setTimeout(t.step_func(function() {
+  step_timeout(t.step_func(function() {
     assert_equals(i, 1);
     t.done()
   }), 50);

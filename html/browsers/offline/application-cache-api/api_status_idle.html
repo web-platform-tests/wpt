@@ -11,7 +11,7 @@
       var t = async_test("idle status test"),
           cache = window.applicationCache;
 
-      setTimeout(function(){
+      step_timeout(function(){
         t.step(function() {
           assert_equals(cache.status, cache.IDLE, "cache.status should equals cache.IDLE");
         });

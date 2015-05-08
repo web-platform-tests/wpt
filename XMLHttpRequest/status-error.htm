@@ -24,7 +24,7 @@
 
             if (client.readyState == client.DONE)
               /* Give extra time for a bogus error event to pop up */
-              setTimeout(test.step_func(function() { test.done() } ), 100)
+              step_timeout(test.step_func(function() { test.done() } ), 100)
           })
           client.onerror = test.step_func(function() {
             assert_unreached("HTTP error should not throw error event")

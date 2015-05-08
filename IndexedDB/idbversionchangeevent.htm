@@ -38,7 +38,7 @@
             db.onerror = fail(t, "db.error");
             db.onabort = fail(t, "db.abort");
 
-            setTimeout(t.step_func(deleteDB), 10);
+            step_timeout(t.step_func(deleteDB), 10);
         });
 
         // Errors
@@ -55,7 +55,7 @@
             assert_equals(e.newVersion, null, "new version (delete.success)");
             assert_true(e instanceof IDBVersionChangeEvent, "delete.success instanceof IDBVersionChangeEvent");
 
-            setTimeout(function() { t.done(); }, 10);
+            step_timeout(function() { t.done(); }, 10);
         });
 
         // Errors

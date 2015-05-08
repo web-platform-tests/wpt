@@ -16,7 +16,7 @@ async_test(function(t){
     assert_equals(e.data, 'null');
     ws.onclose = t.step_func(function(e) {
       ws.onclose = t.step_func(function() {assert_unreached()});
-      setTimeout(function() {t.done()}, 50);
+      step_timeout(function() {t.done()}, 50);
     })
     ws.close();
   });

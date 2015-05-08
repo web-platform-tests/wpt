@@ -13,7 +13,7 @@ onload = t.step_func(function() {
   log('onload handler');
   document.getElementById("log").textContent = 'please wait...';
   window.location='javascript:log("javascript: URL")';
-  setTimeout(t.step_func(function(){
+  step_timeout(t.step_func(function(){
     log('timeout');
     assert_array_equals(eventOrder, ['inline script #1', 'onload handler', 'onload ends', 'javascript: URL', 'timeout']);
     t.done();

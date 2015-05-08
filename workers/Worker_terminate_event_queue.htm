@@ -12,7 +12,7 @@ async_test(function() {
     if (testResult >= 10000) {
       worker.terminate();
       worker.onmessage = this.unreached_func('Unexpected message event');
-      setTimeout(this.step_func_done(function() {
+      step_timeout(this.step_func_done(function() {
         assert_equals(testResult, 10000);
       }), 100);
     }

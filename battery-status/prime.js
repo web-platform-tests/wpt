@@ -27,7 +27,7 @@ function run(n) {
   }
   if (n === limit) {
     // wait for the UI thread to update itself
-    setTimeout(function(start_time) {
+    step_timeout(function(start_time) {
       // resume prime computation at n
       run(n);
     }, 150);

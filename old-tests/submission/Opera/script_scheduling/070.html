@@ -34,7 +34,7 @@
 
     function test() {
       if(!window.include6Loaded) {
-            return setTimeout(t.step_func(test),200);
+            return step_timeout(t.step_func(test),200);
       }
       assert_array_equals(eventOrder, ['calling document.write', 'inline script #1', 'inline script #2', 'calling document.close', 'external script (#foo found? YES)']);
       t.done();

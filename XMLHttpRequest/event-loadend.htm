@@ -23,7 +23,7 @@
         });
         client.onreadystatechange = function() {
           if (client.readyState !== 4) return;
-          setTimeout(test.step_func(function() {
+          step_timeout(test.step_func(function() {
             assert_unreached("onloadend not called after 100 ms");
           }), 100);
         };

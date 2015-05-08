@@ -21,12 +21,12 @@
         lastEventType = event.type;
         readyStateAtLastEvent = es.readyState;
       };
-      setTimeout(function () {
+      step_timeout(function () {
         if (typeof window.stop === "function") {
           window.stop();
         }
       }, 100);
-      setTimeout(function () {
+      step_timeout(function () {
         test.step(function () {
           var isActive = ((new Date()).getTime() - lastEventTime) < 2500;
           if (es.readyState === EventSource.CLOSED) {

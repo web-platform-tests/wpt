@@ -24,7 +24,7 @@
             t.done();
         }
 
-        var timer = setTimeout(callback, 4000);
+        var timer = step_timeout(callback, 4000);
         window.addEventListener("message", callback, false);
     </script>
     <iframe src="iframe_sandbox_028.htm" sandbox="allow-scripts" style="display:none"></iframe>

@@ -10,7 +10,7 @@ if (sessionStorage.testHasBeenLoadedBefore) {
   worker.onmessage = function(e) {
     p.textContent = 'PASS';
   }
-  setTimeout(function(){
+  step_timeout(function(){
     if (p.textContent != 'PASS')
       p.textContent = 'FAIL (got no message from worker)';
   }, 250);

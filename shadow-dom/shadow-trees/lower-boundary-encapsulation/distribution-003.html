@@ -47,7 +47,7 @@ distributionTest.step(function () {
     var content = shadowRoot.querySelector('content');
 
     // Let the rendering happen.
-    window.setTimeout(distributionTest.step_func(function () {
+    window.step_timeout(distributionTest.step_func(function () {
         assert_equals(host1.textContent, 'host 1');
         assert_equals(host2.textContent, 'host 2');
         assert_equals(shadow1.textContent, 'shadow 1');

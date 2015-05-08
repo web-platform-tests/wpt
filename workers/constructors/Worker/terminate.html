@@ -23,7 +23,7 @@ t.step(function() {
     i++;
   });
 
-  setTimeout(t.step_func(function() {
+  t.step_timeout(function() {
     expected = i;
     start_time = Date.now();
     //Hang the main thread for a bit to give the worker the chance to post some more messages
@@ -32,12 +32,12 @@ t.step(function() {
     }
     worker.terminate();
 
-    setTimeout(t.step_func(function() {
+    t.step_timeout(function() {
       assert_equals(i, expected);
       t.done();
-    }), 100);
+    }, 100);
 
-  }), 100);
+  }, 100);
 });
 </script>
 <!--

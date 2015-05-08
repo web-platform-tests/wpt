@@ -19,7 +19,7 @@
         });
         client.open("GET", "resources/delay.py?ms=3000", true);
         client.send(null);
-        setTimeout(function(){
+        step_timeout(function(){
           test.step(function(){
             assert_equals(abortFired, true);
             test.done();

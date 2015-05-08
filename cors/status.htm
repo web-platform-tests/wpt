@@ -37,7 +37,7 @@
                     assert_unreached("load event")
 
                 /* Allow spurious error events to fire */
-                setTimeout(this.step_func(function() {
+                step_timeout(this.step_func(function() {
                     assert_equals(client.status, status, "status")
                     this.done()
                 }), 10)

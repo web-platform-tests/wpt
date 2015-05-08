@@ -20,7 +20,7 @@
 	log( 'inline script #2' );
 
 	onload = function() {
-          setTimeout(
+          step_timeout(
             t.step_func(function() {
               assert_any(assert_array_equals, eventOrder, [['inline script #1', 'end script #1', 'external script #1', 'inline script #2'],
                                                            ['inline script #1', 'end script #1', 'inline script #2', 'external script #1']]);

@@ -15,7 +15,7 @@
       test.step(function() {
         client = new XMLHttpRequest()
         client.open("GET", "folder.txt", false)
-        setTimeout(function() { test.step(function() { hasrun = true }) }, 0)
+        step_timeout(function() { test.step(function() { hasrun = true }) }, 0)
         client.onreadystatechange = function() {
           test.step(function() {
             assert_equals(client.readyState, 4)

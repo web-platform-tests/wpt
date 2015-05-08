@@ -27,7 +27,7 @@
 				var script3 = createScript(url);
 				head.removeChild(script3);
 
-				setTimeout(t.step_func(function() {
+				step_timeout(t.step_func(function() {
                                                done();
 					       assert_array_equals(eventOrder, ['Script #2 ran', 'external script #1', 'external script #2']);
 					       t.done();

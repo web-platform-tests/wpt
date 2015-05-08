@@ -35,7 +35,7 @@
 
   var t = async_test("Date returned by lastModified is current after timeout.");
 
-  setTimeout(function() {
+  step_timeout(function() {
     t.step(function() {
       var new_modified = Date.parse(document.lastModified) / 1000;
       var new_expected = Math.round(new Date() / 1000);

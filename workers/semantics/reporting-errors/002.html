@@ -30,7 +30,7 @@ addEventListener('error', function(e) {
 }, false);
 onconnect = function (e) {
   port = e.ports[0];
-  timeout = setTimeout(function() { port.postMessage('No error event fired'); }, 250);
+  timeout = step_timeout(function() { port.postMessage('No error event fired'); }, 250);
   throw 42; // will "report the error"
 }
 

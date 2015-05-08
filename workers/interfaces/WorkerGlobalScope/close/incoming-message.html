@@ -20,7 +20,7 @@ worker.onerror = function(e) {
   assert_unreached("Got error");
 };
 worker.postMessage(1);
-setTimeout(done, 2000);
+step_timeout(done, 2000);
 </script>
 <!--
 */

@@ -11,7 +11,7 @@ async_test(function(t) {
   ws.onopen = t.step_func(function(e) {
     ws.onclose = t.step_func(function(e) {
       ws.onclose = t.step_func(function(e) {assert_unreached(e.type)});
-      setTimeout(t.step_func(function() {t.done();}), 50);
+      step_timeout(t.step_func(function() {t.done();}), 50);
     })
     ws.close();
   })

@@ -12,7 +12,7 @@ async_test(function(t) {
     assert_equals(ws.protocol, 'foobar');
     ws.onclose = t.step_func(function(e) {
       ws.onclose = t.step_func(function() {assert_unreached()});
-      setTimeout(t.step_func(function() {t.done()}), 50);
+      step_timeout(t.step_func(function() {t.done()}), 50);
     })
     ws.close();
   })

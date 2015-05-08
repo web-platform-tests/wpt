@@ -22,7 +22,7 @@ function iframe_loaded() {
 function check_result() {
   //timeout to allow for extra, unexpected, messages to arrive
   if (i == 3 && load_count == 2) {
-    setTimeout(function() {
+    step_timeout(function() {
       assert_equals(load_count, 2);
       assert_equals(i, 3);
       done();

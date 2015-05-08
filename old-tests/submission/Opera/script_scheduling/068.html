@@ -20,7 +20,7 @@
 
            function test() {
               if(!window.findFooLoaded) {
-                  return setTimeout(t.step_func(test),200);
+                  return step_timeout(t.step_func(test),200);
               }
               assert_array_equals(eventOrder, ['inline script #1', 'end script #1', 'found #foo element: NO']);
               t.done();

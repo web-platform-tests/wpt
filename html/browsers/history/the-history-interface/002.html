@@ -24,7 +24,7 @@ window.onload = function () {
         document.getElementsByTagName('p')[0].innerHTML += '<br>WARNING: Browsers may intentionally fail to update history.length when pages are loaded over HTTPS, as a privacy restriction. If possible, load this page over HTTP.';
     }
     //use a timeout, because some browsers intentionally do not add history entries for URL changes in the onload thread
-    setTimeout(testinit,100);
+    step_timeout(testinit,100);
 };
 function testinit() {
     atstep = 1;
@@ -50,7 +50,7 @@ function reportload() {
         }, 'initial history.state should be null');
         iframe.contentWindow.location.hash = 'test2';
         history.back();
-        setTimeout(tests2,50); //.go is queued to end of thread
+        step_timeout(tests2,50); //.go is queued to end of thread
     }
     function tests2() {
         test(function () {
@@ -73,14 +73,14 @@ function reportload() {
             assert_equals( iframe.contentWindow.location.hash.replace(/^#/,''), 'test3' );
         }, 'hash should change when replaceState is called with a URL');
         history.go(-1);
-        setTimeout(tests3,50); //.go is queued to end of thread
+        step_timeout(tests3,50); //.go is queued to end of thread
     }
     function tests3() {
         test(function () {
             assert_equals( iframe.contentWindow.location.hash.replace(/^#/,''), '' );
         }, 'replaceState must replace the existing state and not add an extra one');
         history.go(2);
-        setTimeout(tests4,50); //.go is queued to end of thread
+        step_timeout(tests4,50); //.go is queued to end of thread
     }
     function tests4() {
         test(function () {
@@ -118,7 +118,7 @@ function reportload() {
             iframe.contentWindow.history.replaceState('','',iframe.contentWindow.location.pathname+'#test5');
         } catch(unsuperr2) {}
         //allow the browser to run the .go
-        setTimeout(tests5,50);
+        step_timeout(tests5,50);
     }
     function tests5() {
         test(function () {
@@ -126,7 +126,7 @@ function reportload() {
         }, 'replaceState must not remove any tasks queued by the history traversal task source');
         //Safari 5.0.3 fails here - it navigates *this* document to the *iframe's* location, instead of just navigating the iframe
         history.go(1);
-        setTimeout(tests6,50); //.go is queued to end of thread
+        step_timeout(tests6,50); //.go is queued to end of thread
     }
     function tests6() {
         test(function () {
@@ -138,7 +138,7 @@ function reportload() {
             //push a state that changes the hash
             iframe.contentWindow.history.replaceState('','',iframe.contentWindow.location.pathname+'#test6');
         } catch(unsuperr) {}
-        setTimeout(tests7,50); //allow the hashchange event to process, if the browser has mistakenly fired it
+        step_timeout(tests7,50); //allow the hashchange event to process, if the browser has mistakenly fired it
     }
     function tests7() {
         test(function () {
@@ -205,10 +205,10 @@ function reportload() {
             assert_false( cloneobj === iframe.contentWindow.history.state );
         }, 'history.state should be a clone of the original object, not a reference to it');
         history.go(-1);
-        setTimeout(tests8,50); //.go is queued to end of thread
+        step_timeout(tests8,50); //.go is queued to end of thread
     }
     function tests8() {
-        var eventtime = setTimeout(function () { tests9(false); },500); //should be cleared by the event handler long before it has a chance to fire
+        var eventtime = step_timeout(function () { tests9(false); },500); //should be cleared by the event handler long before it has a chance to fire
         iframe.contentWindow.addEventListener('popstate',function (e) { clearTimeout(eventtime); tests9(true,e); },false);
         history.forward();
     }
@@ -258,7 +258,7 @@ function reportload() {
         } catch(unsuperr) {}
         //it's already cached, so this should be very fast if the browser mistakenly loads it
         //it should not need to load at all, since it's just a pushed state
-        setTimeout(tests10,1000);
+        step_timeout(tests10,1000);
     }
     function tests10() {
         test(function () {
@@ -266,7 +266,7 @@ function reportload() {
         }, 'replaceState should not actually load the new URL');
         atstep = 3;
         iframe.contentWindow.location.reload(); //load the real URL
-        lasttimer = setTimeout(function () { tests11(false); },3000); //should be cleared by the onload handler long before it has a chance to fire
+        lasttimer = step_timeout(function () { tests11(false); },3000); //should be cleared by the onload handler long before it has a chance to fire
     }
     function tests11(passed) {
         test(function () {
@@ -281,7 +281,7 @@ function reportload() {
         //blank2 has loaded
         atstep = 2;
         //use a timeout, because some browsers intentionally do not add history entries for URL changes in an onload thread
-        setTimeout(tests1,100);
+        step_timeout(tests1,100);
     } else if( atstep == 3 ) {
         //blank3 should now have loaded after the .reload() command
         atstep = 4;

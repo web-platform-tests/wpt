@@ -35,7 +35,7 @@
             };
             xhr_async.send()
 
-            setTimeout(function(){
+            step_timeout(function(){
                 var xhr_sync = new XMLHttpRequest();
                 xhr_sync.open('GET', 'resources/delay.py?ms=2000', false) // here's a sync request that will take 2 seconds to finish
                 xhr_sync.onreadystatechange = function()

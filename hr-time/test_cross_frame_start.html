@@ -13,7 +13,7 @@
             setup({explicit_done: true});
 
             function start_test() {
-              setTimeout(function() {
+              step_timeout(function() {
                 var iframe = document.createElement('iframe');
                 iframe.id = 'frameContext';
                 iframe.onload = finish_test;

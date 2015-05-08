@@ -42,7 +42,7 @@
       document.getElementById("obj").removeAttribute("data");
       assert_equals(window.length, 3, "The top browsing context should have 3 child browsing contexts.");
 
-      setTimeout(function () {
+      step_timeout(function () {
         assert_equals(window.length, 2, "The top browsing context should have 2 child browsing contexts.");
       }, 1);
     });

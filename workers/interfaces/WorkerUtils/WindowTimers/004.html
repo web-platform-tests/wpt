@@ -15,7 +15,7 @@ async_test(function() {
   var worker = new Worker('#');
   var i = 0;
   worker.onmessage = function() { i++; }
-  setTimeout(this.step_func(function() { assert_equals(i, 0); this.done(); }), 100);
+  this.step_timeout(function() { assert_equals(i, 0); this.done(); }, 100);
 });
 </script>
 <!--

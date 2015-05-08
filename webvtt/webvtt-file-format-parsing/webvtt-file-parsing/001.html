@@ -65,7 +65,7 @@ function startTests() {
 function trackLoaded(e) {
     var track = e.target;
     var video = track.parentNode;
-    setTimeout(removeElm, 0, video);
+    step_timeout(removeElm, 0, video);
     var cues = video.textTracks[0].cues;
     var file = track.src.substr(track.src.lastIndexOf('/') + 1);
     assert_equals(cues.length, cueCounts[file], 'number of cues');
@@ -83,7 +83,7 @@ function trackLoaded(e) {
 function trackError(e) {
     var track = e.target;
     var video = track.parentNode;
-    setTimeout(removeElm, 0, video);
+    step_timeout(removeElm, 0, video);
     var file = track.src.substr(track.src.lastIndexOf('/') + 1);
     assert_equals('error', cueCounts[file], 'got unexpected error event');
     this.done();

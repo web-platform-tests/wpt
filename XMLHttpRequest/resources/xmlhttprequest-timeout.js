@@ -30,8 +30,12 @@ try {
   inWorker = true;
 }
 
-if (!inWorker)
+if (!inWorker) {
   STALLED_REQUEST_URL = "resources/" + STALLED_REQUEST_URL;
+  set_timeout = step_timeout;
+} else {
+  set_timeout = setTimeout;
+}
 
 function message(obj) {
   if (inWorker)
@@ -109,7 +113,7 @@ RequestTracker.prototype = {
 
     if (this.mustReset) {
       var resetTo = this.resetTo;
-      self.setTimeout(function() {
+      set_timeout(function() {
         req.timeout = resetTo;
       }, this.resetAfter);
     }
@@ -202,7 +206,7 @@ AbortedRequest.prototype = {
     }
 
     if (!this.shouldAbort) {
-      self.setTimeout(function() {
+      set_timeout(function() {
         try {
           _this.noEventsFired();
         }
@@ -219,7 +223,7 @@ AbortedRequest.prototype = {
         abortReq();
       }
       else {
-        self.setTimeout(abortReq, this.abortDelay);
+        set_timeout(abortReq, this.abortDelay);
       }
     }
   },
@@ -302,7 +306,7 @@ var TestRequests = [];
 var TestCounter = {
   testComplete: function() {
     // Allow for the possibility there are other events coming.
-    self.setTimeout(function() {
+    set_timeout(function() {
       TestCounter.next();
     }, TIME_NORMAL_LOAD);
   },

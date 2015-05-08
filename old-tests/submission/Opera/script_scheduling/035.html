@@ -28,7 +28,7 @@
 		try{
 			document.body.appendChild(document.importNode( top.frames[0].document.getElementsByTagName('script')[0], true ));
 		}catch(e){ log('ERROR - tested functionality not supported'); }
-		setTimeout(t.step_func(test), 200);
+		step_timeout(t.step_func(test), 200);
 	});
 	</script>
 

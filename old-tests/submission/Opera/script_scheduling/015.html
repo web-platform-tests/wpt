@@ -22,7 +22,7 @@
 
         ///XXX I think the spec allows this case to race
 	onload = function(){
-          setTimeout(t.step_func(
+          step_timeout(t.step_func(
             function() {
               assert_any(assert_array_equals, eventOrder, [['inline script #1', 'head script #1', 'head script #2', 'end script #1', 'external script #1', 'inline script #2'],
                                                            ['inline script #1', 'head script #1', 'head script #2', 'end script #1', 'inline script #2', 'external script #1']]);

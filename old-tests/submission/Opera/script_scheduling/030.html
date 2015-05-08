@@ -26,7 +26,7 @@
 	var t = async_test()
 
         var w = window;
-	onload = function() {setTimeout(
+	onload = function() {step_timeout(
           t.step_func(function() {
             w.assert_any(w.assert_array_equals, w.eventOrder,
                       [['inline script #1', 'click event', 'end script #1', 'JS URL', 'inline script #2'],

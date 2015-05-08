@@ -25,7 +25,7 @@
         }
 	onload = t.step_func(function(){
 		script.src='scripts/include-2.js'; // needs to be ignored, script already "is executed"
-		setTimeout(t.step_func(test), 100);
+		step_timeout(t.step_func(test), 100);
 	})
 	</script>
 

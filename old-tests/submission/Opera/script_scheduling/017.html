@@ -22,7 +22,7 @@
 
         //The order of the external script vs the second inline script is undefined because the added script is async by default
         //But we expect most UAs to have the second order
-	onload = function() {setTimeout(t.step_func(function() {
+	onload = function() {step_timeout(t.step_func(function() {
           assert_any(assert_array_equals, eventOrder, [
                     ['inline script #1', 'body script #1', 'body script #2', 'end script #1', 'external script #1', 'inline script #2'],
                     ['inline script #1', 'body script #1', 'body script #2', 'end script #1', 'inline script #2', 'external script #1']]);

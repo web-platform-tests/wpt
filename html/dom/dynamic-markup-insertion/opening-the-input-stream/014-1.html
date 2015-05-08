@@ -1,9 +1,9 @@
 <script>
 onload = parent.t.step_func(function() {
-  setTimeout(parent.t.step_func(function() {
+  parent.t.step_timeout(function() {
     document.open()
-    setTimeout(parent.t.step_func(function() {parent.t.done()}), 0);
+    parent.t.step_timeout(function() {parent.t.done()}, 0);
     document.close();
-  }), 100)
+  }, 100)
 });
 </script>

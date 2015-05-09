@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Interaction of step_timeout and WebIDL</title>
+<title>Interaction of setTimeout and WebIDL</title>
 <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch">
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-windowtimers-settimeout">
@@ -16,8 +16,8 @@ function finishTest() {
 var log = '';
 function logger(s) { log += s + ' '; }
 
-step_timeout({ toString: function () {
-  step_timeout("logger('ONE')", 100);
+setTimeout({ toString: function () {
+  setTimeout("logger('ONE')", 100);
   return "logger('TWO'); t.step(finishTest)";
 } }, 100);
 </script>

@@ -40,7 +40,7 @@
                      until after the load event has finished firing */
                     step_timeout(do_test, 0);
                 }
-                step_timeout("reload_the_frame();", 100);
+                step_timeout(reload_the_frame, 100);
             }
 
             function reload_the_frame()

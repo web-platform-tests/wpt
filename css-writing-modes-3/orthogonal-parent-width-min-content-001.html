@@ -32,7 +32,7 @@ td {
 }
 </style>
 <div id="container">
-<p>Test passes if the <b>left</b> edge of orange box touch the <b>right</b> edge of blue box.
+<p>Test passes if the <b>left</b> edge of the orange box <b>touches</b> the <b>right</b> edge of the blue box.
     There should be no spaces nor overlaps.
 <p>If script is enabled, there should be one or more PASS and no FAIL.
 <div class="test" title="Orthogonal block in inline-block">
@@ -40,18 +40,28 @@ td {
 </div>
 </div>
 <script>
-var nodes = document.querySelectorAll(".test");
-for (var i = 0; i < nodes.length; i++) {
-    var node = nodes[i];
-    test(function () {
-        var targetNode = node.querySelector(".target");
-        var targetBounds = targetNode.getBoundingClientRect();
-        var nextNode = node.querySelector(".next");
-        var nextBounds = nextNode.getBoundingClientRect();
-        assert_equals(nextBounds.left - targetBounds.right, 0);
-    }, node.title);
+function runTests() {
+    Array.prototype.forEach.call(document.querySelectorAll(".test"), function (node) {
+        test(function () {
+            var targetNode = node.querySelector(".target");
+            var targetBounds = targetNode.getBoundingClientRect();
+            var border = parseFloat(getComputedStyle(targetNode).borderRightWidth);
+            assert_equals(targetBounds.height, (targetBounds.width - border) * 2, "writing-mode is vertical")
+            var nextNode = node.querySelector(".next");
+            var nextBounds = nextNode.getBoundingClientRect();
+            assert_equals(nextBounds.left - targetBounds.right, 0, "the left edge of the orange box touches the right edge of the blue box");
+        }, node.title);
+    });
+    if (window.testRunner)
+        container.style.display = "none";
+    done();
 }
 
-if (window.testRunner)
-    container.style.display = "none";
+if (window.location.search == "?wait") {
+    console.log("Sleeping 5 secs for debug");
+    setup({explicit_done:true});
+    window.setTimeout(runTests, 5000);
+} else {
+    runTests();
+}
 </script>

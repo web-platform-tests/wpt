@@ -1456,13 +1456,12 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                 {
                     assert_false(member.name in obj);
                 }
+
+                var minLength = minOverloadLength(this.members.filter(function(m) {
+                    return m.type == "operation" && m.name == member.name;
+                }));
                 var args = [];
-                for (var i = 0; i < member.arguments.length; i++)
-                {
-                    if (member.arguments[i].optional)
-                    {
-                        break;
-                    }
+                for (var i = 0; i < minLength; i++) {
                     assert_throws(new TypeError(), function()
                     {
                         obj[member.name].apply(obj, args);

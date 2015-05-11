@@ -144,14 +144,14 @@ function generate(rangesByVO, gc) {
     var pageSize = 64 * 64;
     var fileIndex = 0;
     for (value in codePointsByVO) {
-        fileIndex++;
         var codePoints = codePointsByVO[value];
         var pages = Math.floor(codePoints.length / pageSize) + 1;
-        if (pages > 1) // by-vo combo versions
-            writeHtmlPage(codePoints, template, fileIndex, value, 0, codePoints.length);
+        // if (pages > 1) // by-vo combo versions
+        //     writeHtmlPage(codePoints, template, value, 0, codePoints.length);
         // by-vo paged versions
         var index = 0;
         for (var page = 1; index < codePoints.length; page++) {
+            fileIndex++;
             var lim = Math.min(index + pageSize, codePoints.length);
             index = writeHtmlPage(codePoints, template, fileIndex, value, index, lim, page, pages);
         }
@@ -159,20 +159,20 @@ function generate(rangesByVO, gc) {
 }
 
 function writeHtmlPage(codePoints, template, fileIndex, value, index, lim, page, pages) {
-    var path = "../../text-orientation-script";
+    var path = "../../text-orientation-script-001";
     var title = "Test orientation of characters";
     var flags = "dom font";
+    // if (fileIndex)
+    //     path += "-" + padZero(fileIndex, 3);
     if (fileIndex)
-        path += "-" + padZero(fileIndex, 3);
-    if (!pages)
+        path += String.fromCharCode('a'.charCodeAt(0) + fileIndex - 1);
+    else
         flags += " combo";
     if (value) {
         title += " where vo=" + value;
         var rangeText = (lim - index) + " code points in U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
-        if (page && pages > 1) {
-            path += String.fromCharCode('a'.charCodeAt(0) + page - 1);
+        if (page && pages > 1)
             rangeText = "#" + page + "/" + pages + ", " + rangeText;
-        }
         title += " (" + rangeText + ")";
     }
     path += ".html";

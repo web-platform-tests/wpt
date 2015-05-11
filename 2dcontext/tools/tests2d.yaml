@@ -1030,7 +1030,7 @@
         # name               Cm
         ('normal',           '(RA, GA, BA)'),
         ('multiply',         '(RA*RB, GA*GB, BA*BB)'),
-        ('screen',           '(1-((1-RA)*(1-RB)), 1-((1-GA)*(1-GB)), 1-((1-BA)*(1-BB)))'),
+        ('screen',           '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
        #('overlay',          'TODO'),
        #('darken',           'TODO'),
        #('lighten',          'TODO'),
@@ -1074,12 +1074,13 @@
 
         return (RO, GO, BO, aO)
 
+    # Blends using source-over.
     def calc_blend_output((RA, GA, BA, aA), (RB, GB, BB, aB), Cm_code):
-        r, g, b = eval(Cm_code)
-        rO = (1 - aB) * RA + aB * r
-        gO = (1 - aB) * GA + aB * g
-        bO = (1 - aB) * BA + aB * b
-        aO = aA + aB * (1 - aA)
+        rO, gO, bO = eval(Cm_code)
+        rO = (aA * (1 - aB) * RA) + (aA * aB * rO) + ((1 - aA) * aB * RB)
+        gO = (aA * (1 - aB) * GA) + (aA * aB * gO) + ((1 - aA) * aB * GB)
+        bO = (aA * (1 - aB) * BA) + (aA * aB * bO) + ((1 - aA) * aB * BB)
+        aO = ((1 - aB) * aA) + aB
 
         rO = min(255, rO)
         gO = min(255, gO)
@@ -1098,6 +1099,84 @@
         return '%d,%d,%d,%d' % (round(r), round(g), round(b), round(a*255))
     def to_cairo((r,g,b,a)):
         return '%f,%f,%f,%f' % (r/255., g/255., b/255., a)
+
+
+    # START DEBUG
+    for (name, src, dest) in [
+        ('solid', (255, 255, 0, 1.0), (0, 255, 255, 1.0)),
+        ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
+            # catches the atop, xor and lighter bugs in Opera 9.10
+    ]:
+        for op, Cm_code in blend_ops:
+            expected = calc_blend_output(src, dest, Cm_code)
+            tests.append( {
+                'name': '2d.composite.%s.%s' % (name, op),
+                'testing': [ '2d.composite.%s' % op ],
+                'code': """
+    ctx.fillStyle = 'rgba%s';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.globalCompositeOperation = '%s';
+    ctx.fillStyle = 'rgba%s';
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 ==~ %s +/- 5;
+    """ % (dest, op, src, to_test(expected)),
+                'expected': """size 100 50
+    cr.set_source_rgba(%s)
+    cr.rectangle(0, 0, 100, 50)
+    cr.fill()
+    """ % to_cairo(expected),
+            } )
+    # END DEBUG
+
+    for (name, src, dest) in [
+        ('solid', (255, 255, 0, 1.0), (0, 255, 255, 1.0)),
+        ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
+            # catches the atop, xor and lighter bugs in Opera 9.10
+    ]:
+        for op, FA_code, FB_code in ops:
+            expected = calc_output(src, dest, FA_code, FB_code)
+            tests.append( {
+                'name': '2d.composite.%s.%s' % (name, op),
+                'testing': [ '2d.composite.%s' % op ],
+                'code': """
+    ctx.fillStyle = 'rgba%s';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.globalCompositeOperation = '%s';
+    ctx.fillStyle = 'rgba%s';
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 ==~ %s +/- 5;
+    """ % (dest, op, src, to_test(expected)),
+                'expected': """size 100 50
+    cr.set_source_rgba(%s)
+    cr.rectangle(0, 0, 100, 50)
+    cr.fill()
+    """ % to_cairo(expected),
+            } )
+
+    for (name, src, dest) in [
+        ('solid', (255, 255, 0, 1.0), (0, 255, 255, 1.0)),
+        ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
+            # catches the atop, xor and lighter bugs in Opera 9.10
+    ]:
+        for op, FA_code, FB_code in ops:
+            expected = calc_output(src, dest, FA_code, FB_code)
+            tests.append( {
+                'name': '2d.composite.%s.%s' % (name, op),
+                'testing': [ '2d.composite.%s' % op ],
+                'code': """
+    ctx.fillStyle = 'rgba%s';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.globalCompositeOperation = '%s';
+    ctx.fillStyle = 'rgba%s';
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 ==~ %s +/- 5;
+    """ % (dest, op, src, to_test(expected)),
+                'expected': """size 100 50
+    cr.set_source_rgba(%s)
+    cr.rectangle(0, 0, 100, 50)
+    cr.fill()
+    """ % to_cairo(expected),
+            } )
 
     for (name, src, dest) in [
         ('solid', (255, 255, 0, 1.0), (0, 255, 255, 1.0)),

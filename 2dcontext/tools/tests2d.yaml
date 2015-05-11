@@ -1023,6 +1023,28 @@
         ('copy',             '1',    '0'),
         ('lighter',          '1',    '1'),
     ]
+    
+    # Blend operations tests
+    # <http://www.w3.org/TR/compositing-1/#blending>
+    blend_ops = [
+        # name               Cm
+        ('normal',           '(RA, GA, BA)'),
+        ('multiply',         '(RA*RB, GA*GB, BA*BB)'),
+        ('screen',           '(1-((1-RA)*(1-RB)), 1-((1-GA)*(1-GB)), 1-((1-BA)*(1-BB)))'),
+       #('overlay',          'TODO'),
+       #('darken',           'TODO'),
+       #('lighten',          'TODO'),
+       #('color-dodge',      'TODO'),
+       #('color-burn',       'TODO'),
+       #('hard-light',       'TODO'),
+       #('soft-light',       'TODO'),
+        ('difference',       '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
+        ('exclusion',        '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),
+       #('hue',              'TODO'),
+       #('saturation',       'TODO'),
+       #('color',            'TODO'),
+       #('luminosity',       'TODO'),
+    ]
 
     # The ones that change the output when src = (0,0,0,0):
     ops_trans = [ 'source-in', 'destination-in', 'source-out', 'destination-atop', 'copy' ];
@@ -1038,6 +1060,26 @@
         gO = gA*FA + gB*FB
         bO = bA*FA + bB*FB
         aO = aA*FA + aB*FB
+
+        rO = min(255, rO)
+        gO = min(255, gO)
+        bO = min(255, bO)
+        aO = min(1, aO)
+
+        if aO:
+            RO = rO / aO
+            GO = gO / aO
+            BO = bO / aO
+        else: RO = GO = BO = 0
+
+        return (RO, GO, BO, aO)
+
+    def calc_blend_output((RA, GA, BA, aA), (RB, GB, BB, aB), Cm_code):
+        r, g, b = eval(Cm_code)
+        rO = (1 - aB) * RA + aB * r
+        gO = (1 - aB) * GA + aB * g
+        bO = (1 - aB) * BA + aB * b
+        aO = aA + aB * (1 - aA)
 
         rO = min(255, rO)
         gO = min(255, gO)

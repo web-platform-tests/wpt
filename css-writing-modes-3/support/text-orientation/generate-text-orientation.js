@@ -2,7 +2,8 @@
 var fs = require("fs"),
     http = require("http"),
     path = require("path"),
-    stream = require("stream");
+    stream = require("stream"),
+    url = require("url");
 
 var unicodeData = {
     url: {
@@ -10,7 +11,7 @@ var unicodeData = {
         gc: "http://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt",
         vo: "http://www.unicode.org/Public/vertical/revision-13/VerticalOrientation-13.txt",
     },
-    get: function (url, formatter) {
+    get: function (source, formatter) {
         formatter = formatter || this.formatAsArray;
         var defer = Promise.defer();
         var buffer = "";
@@ -25,9 +26,15 @@ var unicodeData = {
                 results = unicodeData.parseLine(line, formatter, results);
             defer.resolve(results);
         });
-        http.get(url, function (res) {
-            res.pipe(parser);
-        });
+        var basename = path.basename(url.parse(source).path);
+        if (fs.existsSync(basename)) {
+            fs.createReadStream(basename)
+                .pipe(parser);
+        } else {
+            http.get(source, function (res) {
+                res.pipe(parser);
+            });
+        }
         return defer.promise;
     },
     parseLine: function (line, formatter, results) {
@@ -131,33 +138,39 @@ function generate(rangesByVO, gc) {
         codePointsByVO[value] = unicodeData.codePointsFromRanges(rangesByVO[value], gc);
 
     // single version
-    writeHtmlPage(codePointsByVO, template, "combo dom font");
+    writeHtmlPage(codePointsByVO, template);
 
     // by-vo versions
     var pageSize = 64 * 64;
+    var fileIndex = 0;
     for (value in codePointsByVO) {
+        fileIndex++;
         var codePoints = codePointsByVO[value];
         var pages = Math.floor(codePoints.length / pageSize) + 1;
         if (pages > 1) // by-vo combo versions
-            writeHtmlPage(codePoints, template, "combo dom font", value, 0, codePoints.length);
+            writeHtmlPage(codePoints, template, fileIndex, value, 0, codePoints.length);
         // by-vo paged versions
         var index = 0;
         for (var page = 1; index < codePoints.length; page++) {
             var lim = Math.min(index + pageSize, codePoints.length);
-            index = writeHtmlPage(codePoints, template, "dom font", value, index, lim, page, pages);
+            index = writeHtmlPage(codePoints, template, fileIndex, value, index, lim, page, pages);
         }
     }
 }
 
-function writeHtmlPage(codePoints, template, flags, value, index, lim, page, pages) {
+function writeHtmlPage(codePoints, template, fileIndex, value, index, lim, page, pages) {
     var path = "../../text-orientation-script";
     var title = "Test orientation of characters";
+    var flags = "dom font";
+    if (fileIndex)
+        path += "-" + padZero(fileIndex, 3);
+    if (!pages)
+        flags += " combo";
     if (value) {
-        path += "-" + value.toLowerCase();
         title += " where vo=" + value;
         var rangeText = (lim - index) + " code points in U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
-        if (page) {
-            path += "-" + padZero(page, 3);
+        if (page && pages > 1) {
+            path += String.fromCharCode('a'.charCodeAt(0) + page - 1);
             rangeText = "#" + page + "/" + pages + ", " + rangeText;
         }
         title += " (" + rangeText + ")";

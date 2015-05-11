@@ -6,74 +6,240 @@
 <div id="log"></div>
 
 <script>
-  var loads_scripts_with_badly_encoded_digest;
-  var loads_scripts_with_correct_content_type;
-  var loads_scripts_with_improper_integrity_uri_scheme;
-  var loads_scripts_with_incorrect_content_type;
-  var loads_scripts_with_matching_digest;
-  var loads_scripts_with_non_matching_digest;
-  var loads_scripts_with_weak_digest_algorithms;
+  var xorigin_anon = location.protocol
+    + '//www1.' + location.hostname + ':' + location.port 
+    + '/subresource-integrity/crossorigin-anon.js';
+
+  var xorigin_creds = location.protocol
+    + '//www1.' + location.hostname + ':' + location.port 
+    + '/subresource-integrity/crossorigin-creds.js';
+    
+  var xorigin_ineligible = location.protocol
+    + '//www1.' + location.hostname + ':' + location.port 
+    + '/subresource-integrity/crossorigin-ineligible.js';
 </script>
 
-<!-- Should load -->
-<script src="loads-scripts-with-correct-content-type.js" integrity="ni:///sha-256;ZrrvOG-Kjz4R-FDFrfSQCQC_oMDfc0kQ3DJNd5URlrY?ct=application/javascript"></script>
-
-<!-- Shouldn't load. Correct URI is ni:///sha-256;J9PNsSFLX168LnQhGZeryaLZDmTLy_fMdx4pO-LhjW4 -->
-<script src="loads-scripts-with-improper-integrity-uri-scheme.js" integrity="wrong:///sha-256;J9PNsSFLX168LnQhGZeryaLZDmTLy_fMdx4pO-LhjW4"></script>
-
-<!-- Shouldn't load. Correct URI is ni:///sha-256;LiWoBTgUHmhVG6gn0dO9R0lBEItHgny2pnvLtBOc0tI?ct=application/javascript -->
-<script src="loads-scripts-with-incorrect-content-type.js" integrity="ni:///sha-256;LiWoBTgUHmhVG6gn0dO9R0lBEItHgny2pnvLtBOc0tI?ct=text/plain"></script>
-
-<!-- Should load -->
-<script src="loads-scripts-with-matching-digest.js" integrity="ni:///sha-256;EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT_E"></script>
-
-<!-- Shouldn't load. Correct URI is ni:///sha-256;mmx3g0H5KnIi_lnkuMJzYK7q6ss-Wnp-7zoGvgiQVtU -->
-<script src="loads-scripts-with-non-matching-digest.js" integrity="ni:///sha-256;EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT_E"></script>
-
-<!-- Shouldn't load. MD5 is considered to be a weak algorithm -->
-<script src="loads-scripts-with-weak-digest-algorithms.js" integrity="ni:///md5;XHzXKrCo5jhDN4BvNhs-4A"></script>
-
-<!-- Should load -->
-<script src="loads-scripts-with-base64-encoded-sha-digests.js" integrity="ni:///sha-256;+xc7GxEqWw6VtSIsI5W90RQtOrfjeGD+6WFgxZgiuOw="></script>
-
-<!-- Should load -->
-<script src="loads-scripts-with-unhyphenated-digest-name.js" integrity="ni:///sha256;ZR6E3E_G_B3WNdop4bYFtnXaj5bH02S3znD__KOC8Io"></script>
-
+<!--
+  TODO: how well can we test cache-poisoning?
+-->
 
 <script>
-  function assert_undefined(actual) {
-    assert_equals(actual, undefined, "Should be undefined.");
-  }
 
-  test(function() {
-    assert_true(loads_scripts_with_correct_content_type)
-  }, "Loads scripts with correct content type");
+    var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue) {
+        this.pass = pass;
+        this.name = name;
+        this.src = src;
+        this.integrityValue = integrityValue;
+        this.crossoriginValue = crossoriginValue;
+    }
+    
+    SRIScriptTest.prototype.execute = function() {
+        var test = async_test(this.name);
+        var e = document.createElement("script");
+        e.src = this.src;
+        e.setAttribute("integrity", this.integrityValue);
+        if(this.crossoriginValue) {
+            e.setAttribute("crossorigin", crossoriginValue);
+        }
+        if(this.pass) {
+            e.addEventListener("load", function() {test.done()});
+            e.addEventListener("error", function() {
+                test.step(function(){ assert_unreached() })
+            });
+        } else {
+           e.addEventListener("load", function() {
+                test.step(function() { assert_unreached() })
+            });
+           e.addEventListener("error", function() {test.done()});
+        }
+        document.body.appendChild(e);
+    };
+    
+    var t1 = new SRIScriptTest(
+        false,
+        "Same-origin script with incorrect hash.",
+        "loads-scripts-with-non-matching-digest.js",
+        "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
+    ).execute();
 
-  test(function() {
-    assert_undefined(loads_scripts_with_improper_integrity_uri_scheme)
-  }, "Doesn't load scripts with improper integrity URI scheme");
-
-  test(function() {
-    assert_undefined(loads_scripts_with_incorrect_content_type)
-  }, "Doesn't load scripts with incorrect content-type");
-
-  test(function() {
-    assert_true(loads_scripts_with_matching_digest)
-  }, "Loads scripts with matching digest");
-
-  test(function() {
-    assert_undefined(loads_scripts_with_non_matching_digest)
-  }, "Doesn't load scripts with non-matching digest");
-
-  test(function() {
-    assert_undefined(loads_scripts_with_weak_digest_algorithms)
-  }, "Doesn't load scripts using weak digest algorithm");
-
-  test(function() {
-    assert_true(loads_scripts_with_base64_encoded_sha_digests)
-  }, "Loads scripts with base64 encoded sha digests");
-
-  test(function() {
-    assert_true(loads_scripts_with_unhyphenated_digest_name)
-  }, "Loads scripts with unhyphenated digest names");
+        
+    var t1 = new SRIScriptTest(
+        true,
+        "Same-origin script with correct hash.",
+        "loads-scripts-with-matching-digest.js",
+        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
+    ).execute();
+    
 </script>
+
+<!--
+<script>
+    var so_test = async_test("Same-origin script with matching hash.");
+    var so = document.createElement("script");
+    so.setAttribute("integrity", "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E=");
+    so.src = "loads-scripts-with-matching-digest.js";
+    so.addEventListener(
+        "load",
+        function() {
+            so_test.done();
+        }
+    );
+    so.addEventListener(
+        "error",
+        function() {
+            so_test.step(function() {assert_unreached('Failed to load.')})
+        }
+    );
+    document.body.appendChild(so);
+
+    var sob_test = async_test("Same-origin script with broken hash.");
+    var sob = document.createElement("script");
+    sob.setAttribute("integrity", "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead");
+    sob.src = "loads-scripts-with-matching-digest.js";
+    sob.addEventListener(
+        "load",
+        function() {
+            sob_test.step(function() {assert_unreached('Loaded.')})
+        }
+    );
+    sob.addEventListener(
+        "error",
+        function() {
+            sob_test.done();
+        }
+    );
+    document.body.appendChild(sob);
+
+    var xa_test = async_test("Crossorigin anonymous script with matching hash.");
+    var xa = document.createElement("script");
+    xa.setAttribute("integrity", "sha256-r6KBpvzfcSLlbFZCj1OACLxTxVck2TOrBTEdUbwz1yU=");
+    xa.setAttribute("crossorigin", "anonymous");
+    xa.src = xorigin_anon;
+    xa.addEventListener(
+        "load",
+        function() {
+            xa_test.done();
+        }
+    );
+    xa.addEventListener(
+        "error",
+        function() {
+            xa_test.step(function() {assert_unreached('Failed to load.')})
+        }
+    );
+    document.body.appendChild(xa);
+
+    var xa2_test = async_test("Crossorigin script with matching hash, no crossorigin attribute.");
+    var xa2 = document.createElement("script");
+    xa2.setAttribute("integrity", "sha256-r6KBpvzfcSLlbFZCj1OACLxTxVck2TOrBTEdUbwz1yU=");
+    xa2.src = xorigin_anon;
+    xa2.addEventListener(
+        "load",
+        function() {
+            xa2_test.step(function() {assert_unreached('Loaded ineligible resource (non-CORS mode).')})
+        }
+    );
+    xa2.addEventListener(
+        "error",
+        function() {
+            xa2_test.done();
+        }
+    );
+    document.body.appendChild(xa2);
+
+    var xab_test = async_test("Crossorigin anonymous script with broken hash.");
+    var xab = document.createElement("script");
+    xab.setAttribute("integrity", "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead");
+    xab.setAttribute("crossorigin", "anonymous");
+    xab.src = xorigin_anon;
+    xab.addEventListener(
+        "load",
+        function() {
+            xab_test.step(function() {assert_unreached('Loaded.')})
+        }
+    );
+    xab.addEventListener(
+        "error",
+        function() {
+            xab_test.done();
+        }
+    );
+    document.body.appendChild(xab);
+
+    var xc_test = async_test("Crossorigin credentialed script with matching hash.");
+    var xc = document.createElement("script");
+    xc.setAttribute("integrity", "sha256-sPICZvGN2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=");
+    xc.setAttribute("crossorigin", "use-credentials");
+    xc.src = xorigin_creds;
+    xc.addEventListener(
+        "load",
+        function() {
+            xc_test.done();
+        }
+    );
+    xc.addEventListener(
+        "error",
+        function() {
+            xc_test.step(function() {assert_unreached('Failed to load.')})
+        }
+    );
+    document.body.appendChild(xc);
+
+    var xcb_test = async_test("Crossorigin credentialed script with broken hash.");
+    var xcb = document.createElement("script");
+    xcb.setAttribute("integrity", "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead");
+    xcb.setAttribute("crossorigin", "use-credentials");
+    xcb.src = xorigin_creds;
+    xcb.addEventListener(
+        "load",
+        function() {
+            xcb_test.step(function() {assert_unreached('Loaded.')})
+        }
+    );
+    xcb.addEventListener(
+        "error",
+        function() {
+            xcb_test.done();
+        }
+    );
+    document.body.appendChild(xcb);
+
+    var xi_test = async_test("Crossorigin ineligible script with matching hash. (crossorigin=\"anonymous\")");
+    var xi = document.createElement("script");
+    xi.setAttribute("integrity", "sha256-sPICZvGN2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=");
+    xi.setAttribute("crossorigin", "anonymous");
+    xi.src = xorigin_ineligible;
+    xi.addEventListener(
+        "load",
+        function() {
+            xi_test.step(function() {assert_unreached('Loaded.')})
+        }
+    );
+    xi.addEventListener(
+        "error",
+        function() {
+            xi_test.done();
+        }
+    );
+    document.body.appendChild(xi);
+    
+    var xi2_test = async_test("Crossorigin ineligible script with matching hash (no crossorigin attribute).");
+    var xi2 = document.createElement("script");
+    xi2.setAttribute("integrity", "sha256-sPICZvGN2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=");
+    xi2.src = xorigin_ineligible;
+    xi2.addEventListener(
+        "load",
+        function() {
+            xi2_test.step(function() {assert_unreached('Loaded.')})
+        }
+    );
+    xi2.addEventListener(
+        "error",
+        function() {
+            xi2_test.done();
+        }
+    );
+    document.body.appendChild(xi2);
+    
+    // TODO test without setting crossorigin attribute
+</script>-->

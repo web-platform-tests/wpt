@@ -1029,19 +1029,19 @@
         ('normal',           '1',    '1-aA', '(RA, GA, BA)'),
         ('multiply',         '1',    '1-aA', '(RA*RB, GA*GB, BA*BB)'),
         ('screen',           '1',    '1-aA', '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
-        ('overlay',          '1',    '1-aA', 'overlay((RA, GA, BA, aA), (RB, GB, BB, aB))'),
+        ('overlay',          '1',    '1-aA', 'overlay((RA, GA, BA), (RB, GB, BB))'),
         ('darken',           '1',    '1-aA', '(min(RA, RB), min(GA, GB), min(BA, BB))'),
         ('lighten',          '1',    '1-aA', '(max(RA, RB), max(GA, GB), max(BA, BB))'),
-        ('color-dodge',      '1',    '1-aA', 'color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB))'),
-        ('color-burn',       '1',    '1-aA', 'color_burn((RA, GA, BA, aA), (RB, GB, BB, aB))'),
-        ('hard-light',       '1',    '1-aA', 'hard_light((RA, GA, BA, aA), (RB, GB, BB, aB))'),
-       #('soft-light',       '1',    '1-aA', 'TODO'),
+        ('color-dodge',      '1',    '1-aA', 'color_dodge((RA, GA, BA), (RB, GB, BB))'),
+        ('color-burn',       '1',    '1-aA', 'color_burn((RA, GA, BA), (RB, GB, BB))'),
+        ('hard-light',       '1',    '1-aA', 'hard_light((RA, GA, BA), (RB, GB, BB))'),
+        ('soft-light',       '1',    '1-aA', 'soft_light((RA, GA, BA), (RB, GB, BB))'),
         ('difference',       '1',    '1-aA', '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
         ('exclusion',        '1',    '1-aA', '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),
-        ('hue',              '1',    '1-aA', 'SetLum(SetSat((RA, GA, BA), Sat((RB, GB, BB))), Lum((RB, GB, BB)))'),
-        ('saturation',       '1',    '1-aA', 'SetLum(SetSat((RB, GB, BB), Sat((RA, GA, BA))), Lum((RB, GB, BB)))'),
-        ('color',            '1',    '1-aA', 'SetLum((RA, GA, BA), Lum((RB, GB, BB)))'),
-        ('luminosity',       '1',    '1-aA', 'SetLum((RB, GB, BB), Lum((RA, GA, BA)))'),
+        ('hue',              '1',    '1-aA', 'set_lum(set_sat((RA, GA, BA), sat((RB, GB, BB))), lum((RB, GB, BB)))'),
+        ('saturation',       '1',    '1-aA', 'set_lum(set_sat((RB, GB, BB), sat((RA, GA, BA))), lum((RB, GB, BB)))'),
+        ('color',            '1',    '1-aA', 'set_lum((RA, GA, BA), lum((RB, GB, BB)))'),
+        ('luminosity',       '1',    '1-aA', 'set_lum((RB, GB, BB), lum((RA, GA, BA)))'),
     ]
 
     # The ones that change the output when src = (0,0,0,0):
@@ -1056,35 +1056,31 @@
         BB = float(BB)/255.0
 
         # Blend helpers
-        def Lum((r, g, b)):
+        def lum((r, g, b)):
             return (0.3 * r) + (0.59 * g) + (0.11 * b)
 
-        def ClipColor((r, g, b)):
-            L = Lum((r, g, b))
+        def clip_color((r, g, b)):
+            L = lum((r, g, b))
             n = min(r, g, b)
             x = max(r, g, b)
             if n < 0:
-                return (L + (((r - L) * L) / (L - n)),
-                        L + (((g - L) * L) / (L - n)),
-                        L + (((b - L) * L) / (L - n)))
+                return map(lambda c: L + (((c - L) * L) / (L - n)), (r, g, b))
             if x > 1:
-                return (L + (((r - L) * (1 - L)) / (x - L)),
-                        L + (((g - L) * (1 - L)) / (x - L)),
-                        L + (((b - L) * (1 - L)) / (x - L)))
+                return map(lambda c: L + (((c - L) * (1 - L)) / (x - L)), (r, g, b))
 
             return (r, g, b)
 
-        def SetLum((r, g, b), l):
-            d = l - Lum((r, g, b))
+        def set_lum((r, g, b), l):
+            d = l - lum((r, g, b))
             r = r + d
             g = g + d
             b = b + d
-            return ClipColor((r, g, b))
+            return clip_color((r, g, b))
 
-        def Sat((r, g, b)):
+        def sat((r, g, b)):
             return max(r, g, b) - min(r, g, b)
 
-        def SetSat(C, s):
+        def set_sat(C, s):
             C_list = list(C) # make components mutable
             i_max = reduce(lambda i, j:  i if C[i] > C[j] else j, [1,2], 0)
             i_min = reduce(lambda i, j:  i if C[i] < C[j] else j, [1,2], 0)
@@ -1098,75 +1094,50 @@
             C_list[i_min] = 0
             return tuple(C_list)
 
-        def color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB)):
-            if RB == 0:
-                OR = 0
-            elif RA == 1:
-                OR = 1 
-            else:
-                OR = min(1.0, float(RB)/float(1.0 - RA))
+        def color_dodge(Ca, Cb):
+            def blend((a, b)):
+                if b == 0:
+                    return 0
+                elif a == 1:
+                    return 1
+                else:
+                    return min(1.0, float(b)/float(1.0 - a))
+            return map(blend, zip(Ca, Cb))
 
-            if GB == 0:
-                OG = 0
-            elif GA == 1:
-                OG = 1 
-            else:
-                OG = min(1.0, float(GB)/float(1.0 - GA))
+        def color_burn(Ca, Cb):
+            def blend((a, b)):
+                if b == 1:
+                    return 1
+                elif a == 0:
+                    return 0
+                else:
+                    return 1 - min(1.0, float(1.0 - b)/float(a))
+            return map(blend, zip(Ca, Cb))
 
-            if BB == 0:
-                OB = 0
-            elif BA == 1:
-                OB = 1 
-            else:
-                OB = min(1.0, float(BB)/float(1.0 - BA))
+        def overlay (Ca, Cb):
+            return hard_light(Cb, Ca)
 
-            return (OR, OG, OB)
+        def hard_light(Ca, Cb):
+            def blend((a, b)):
+                if a <= 0.5:
+                    return 2.0 * b * a
+                else:
+                    return (1.0 - 2.0 * (1.0 - b) * (1.0 - a))
+            return map(blend, zip(Ca, Cb))
 
-        def color_burn((RA, GA, BA, aA), (RB, GB, BB, aB)):
-            if RB == 1:
-                OR = 1
-            elif RA == 0:
-                OR = 0
-            else:
-                OR = 1 - min(1.0, float(1.0 - RB)/float(RA))
-
-            if GB == 1:
-                OG = 1
-            elif GA == 0:
-                OG = 0
-            else:
-                OG = 1 - min(1.0, float(1.0 - GB)/float(GA))
-
-            if BB == 1:
-                OB = 1
-            elif BA == 0:
-                OB = 0
-            else:
-                OB = 1 - min(1.0, float(1.0 - BB)/float(BA))
-
-            return (OR, OG, OB)
-
-        def overlay ((RA, GA, BA, aA), (RB, GB, BB, aB)):
-            return hard_light((RB, GB, BB, aB), (RA, GA, BA, aA))
-
-        def hard_light((RA, GA, BA, aA), (RB, GB, BB, aB)):
-            if RA <= 0.5:
-                OR = 2.0 * RB * RA
-            else:
-                OR = (1.0 - 2.0 * (1.0 - RB) * (1.0 - RA))
-
-            if GA <= 0.5:
-                OG = 2.0 * GB * GA
-            else:
-                OG = (1.0 - 2.0 * (1.0 - GB) * (1.0 - GA))
-
-            if BA <= 0.5:
-                OB = 2.0 * BB * BA
-            else:
-                OB = (1.0 - 2.0 * (1.0 - BB) * (1.0 - BA))
-
-            return (OR, OG, OB);
-
+        def soft_light(Ca, Cb):
+            def blend((a, b)):
+                from math import sqrt
+                if b <= 0.25:
+                    d = ((16 * b - 12) * b + 4) * b
+                else:
+                    d = sqrt(b)
+                if a <= 0.5:
+                    return b - (1 - 2 * a) * b * (1 - b)
+                else:
+                    return b + (2 * a - 1) * (d - b)
+            return map(blend, zip(Ca, Cb))
+                
         FA = eval(FA_code)
         FB = eval(FB_code)
         (Rm, Gm, Bm) = eval(blend_code)

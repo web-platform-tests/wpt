@@ -1059,6 +1059,48 @@
         GB = float(GB)/255.0
         BB = float(BB)/255.0
 
+        # Blend helpers
+        def Lum((r, g, b)):
+            return (0.3 * r) + (0.59 * g) + (0.11 * b)
+
+        def ClipColor((r, g, b)):
+            L = Lum((r, g, b))
+            n = min(r, g, b)
+            x = max(r, g, b)
+            if n < 0:
+                return (L + (((r - L) * L) / (L - n)),
+                        L + (((g - L) * L) / (L - n)),
+                        L + (((b - L) * L) / (L - n)))
+            if x > 1:
+                return (L + (((r - L) * L) / (L - n)),
+                        L + (((g - L) * L) / (L - n)),
+                        L + (((b - L) * L) / (L - n)))
+
+            return (r, g, b)
+
+        def SetLum((r, g, b), l):
+            d = l - Lum((r, g, b))
+            r = r + d
+            g = g + d
+            b = b + d
+            return ClipColor((r, g, b))
+
+        def Sat((r, g, b)):
+            return max(r, g, b) - min(r, g, b)
+
+        def SetSat(C, s):
+            i_max = reduce(lambda i, j:  i if C[i] > C[j] else j, [1,2], 0)
+            i_min = reduce(lambda i, j:  i if C[i] < C[j] else j, [1,2], 0)
+            i_mid = filter(lambda i: i != min_index and i != max_index, [0,2])
+
+            if C[i_max] > C[i_min]:
+                C[i_mid] = (((C[i_mid] - C[i_min]) * s) / (C[i_max] - C[i_min]))
+                C[i_max] = s
+            else:
+                C[i_mid] = C[i_max] = 0
+            C[i_min] = 0
+            return C
+
         def color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB)):
             if RB == 0:
                 OR = 0

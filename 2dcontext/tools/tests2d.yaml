@@ -1029,16 +1029,12 @@
         ('normal',           '1',    '1-aA', '(RA, GA, BA)'),
         ('multiply',         '1',    '1-aA', '(RA*RB, GA*GB, BA*BB)'),
         ('screen',           '1',    '1-aA', '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
-        ('overlay',          '1',    '1-aA', '((2.0 * RA * RB) if (RB < 0.5) else (1.0 - 2.0 * (1.0 - RA) * (1.0 - RB)),\
-                                               (2.0 * GA * GB) if (GB < 0.5) else (1.0 - 2.0 * (1.0 - GA) * (1.0 - GB)),\
-                                               (2.0 * BA * BB) if (BB < 0.5) else (1.0 - 2.0 * (1.0 - BA) * (1.0 - BB)))'),
+        ('overlay',          '1',    '1-aA', 'overlay((RA, GA, BA, aA), (RB, GB, BB, aB))'),
         ('darken',           '1',    '1-aA', '(min(RA, RB), min(GA, GB), min(BA, BB))'),
         ('lighten',          '1',    '1-aA', '(max(RA, RB), max(GA, GB), max(BA, BB))'),
         ('color-dodge',      '1',    '1-aA', 'color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB))'),
         ('color-burn',       '1',    '1-aA', 'color_burn((RA, GA, BA, aA), (RB, GB, BB, aB))'),
-        ('hard-light',       '1',    '1-aA', '((2.0 * RB * RA) if (RA < 0.5) else (1.0 - 2.0 * (1.0 - RB) * (1.0 - RA)),\
-                                               (2.0 * GB * GA) if (GA < 0.5) else (1.0 - 2.0 * (1.0 - GB) * (1.0 - GA)),\
-                                               (2.0 * BB * BA) if (BA < 0.5) else (1.0 - 2.0 * (1.0 - BB) * (1.0 - BA)))'),
+        ('hard-light',       '1',    '1-aA', 'hard_light((RA, GA, BA, aA), (RB, GB, BB, aB))'),
        #('soft-light',       '1',    '1-aA', 'TODO'),
         ('difference',       '1',    '1-aA', '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
         ('exclusion',        '1',    '1-aA', '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),
@@ -1058,6 +1054,27 @@
         RB = float(RB)/255.0
         GB = float(GB)/255.0
         BB = float(BB)/255.0
+
+        def overlay ((RA, GA, BA, aA), (RB, GB, BB, aB)):
+            return hard_light((RB, GB, BB, aB), (RA, GA, BA, aA))
+
+        def hard_light((RA, GA, BA, aA), (RB, GB, BB, aB)):
+            if RA <= 0.5:
+                OR = 2.0 * RB * RA
+            else:
+                OR = (1.0 - 2.0 * (1.0 - RB) * (1.0 - RA))
+
+            if GA <= 0.5:
+                OG = 2.0 * GB * GA
+            else:
+                OG = (1.0 - 2.0 * (1.0 - GB) * (1.0 - GA))
+
+            if BA <= 0.5:
+                OB = 2.0 * BB * BA
+            else:
+                OB = (1.0 - 2.0 * (1.0 - BB) * (1.0 - BA))
+
+            return (OR, OG, OB);
 
         def color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB)):
             if RB == 0:

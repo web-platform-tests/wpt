@@ -1008,10 +1008,9 @@
 
 - meta: |
     ops = [
-        # name               FA      FB      Blend
-        
         # Composite operation tests
         # <http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2007-March/010608.html>
+        # name               FA      FB      Blend
         ('source-over',      '1',    '1-aA', '(RA, GA, BA)'),
         ('destination-over', '1-aB', '1',    '(RA, GA, BA)'),
         ('source-in',        'aB',   '0',    '(RA, GA, BA)'),
@@ -1026,6 +1025,7 @@
 
         # Blend operations tests
         # <http://www.w3.org/TR/compositing-1/#blending>
+        # name               FA      FB      Blend
         ('normal',           '1',    '1-aA', '(RA, GA, BA)'),
         ('multiply',         '1',    '1-aA', '(RA*RB, GA*GB, BA*BB)'),
         ('screen',           '1',    '1-aA', '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),

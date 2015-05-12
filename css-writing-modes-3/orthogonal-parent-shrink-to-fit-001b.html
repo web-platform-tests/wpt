@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>CSS Writing Modes Test: Parent's min-content width when orthogonal inline in inline-block</title>
+<title>CSS Writing Modes Test: Orthogonal parent shrink-to-fit: Orthogonal inline in inline-block</title>
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#orthogonal-flows">
 <meta name="assert" content="Parent's min-content width in orthorgonal flows">
 <meta name="flags" content="ahem">
@@ -9,6 +9,7 @@
 <style>
 .test {
     font:25px Ahem;
+    clear:both;
     margin-top:.2em;
 }
 .target {
@@ -23,6 +24,9 @@
 }
 .inline-block {
     display:inline-block;
+}
+.float {
+    float:left;
 }
 table {
     border-spacing:0px;
@@ -65,3 +69,4 @@ if (window.location.search == "?wait") {
     runTests();
 }
 </script>
+

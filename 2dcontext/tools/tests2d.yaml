@@ -1042,10 +1042,10 @@
        #('soft-light',       '1',    '1-aA', 'TODO'),
         ('difference',       '1',    '1-aA', '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
         ('exclusion',        '1',    '1-aA', '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),
-       #('hue',              '1',    '1-aA', 'SetLum(SetSat((RA, GA, BA), Sat((RB, GB, BB))), Lum((RB, GB, BB)))'),
-       #('saturation',       '1',    '1-aA', 'TODO'),
+        ('hue',              '1',    '1-aA', 'SetLum(SetSat((RA, GA, BA), Sat((RB, GB, BB))), Lum((RB, GB, BB)))'),
+        ('saturation',       '1',    '1-aA', 'SetLum(SetSat((RB, GB, BB), Sat((RA, GA, BA))), Lum((RB, GB, BB)))'),
         ('color',            '1',    '1-aA', 'SetLum((RA, GA, BA), Lum((RB, GB, BB)))'),
-       #('luminosity',       '1',    '1-aA', 'TODO'),
+        ('luminosity',       '1',    '1-aA', 'SetLum((RB, GB, BB), Lum((RA, GA, BA)))'),
     ]
 
     # The ones that change the output when src = (0,0,0,0):
@@ -1089,17 +1089,18 @@
             return max(r, g, b) - min(r, g, b)
 
         def SetSat(C, s):
+            C_list = list(C) # make components mutable
             i_max = reduce(lambda i, j:  i if C[i] > C[j] else j, [1,2], 0)
             i_min = reduce(lambda i, j:  i if C[i] < C[j] else j, [1,2], 0)
-            i_mid = filter(lambda i: i != i_max and i != i_min, [0,2])[0]
+            i_mid = filter(lambda i: i != i_max and i != i_min, range(0, 2))[0]
 
             if C[i_max] > C[i_min]:
-                C[i_mid] = (((C[i_mid] - C[i_min]) * s) / (C[i_max] - C[i_min]))
-                C[i_max] = s
+                C_list[i_mid] = (((C[i_mid] - C[i_min]) * s) / (C[i_max] - C[i_min]))
+                C_list[i_max] = s
             else:
-                C[i_mid] = C[i_max] = 0
-            C[i_min] = 0
-            return C
+                C_list[i_mid] = C[i_max] = 0
+            C_list[i_min] = 0
+            return tuple(C_list)
 
         def color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB)):
             if RB == 0:

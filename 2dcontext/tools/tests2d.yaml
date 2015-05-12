@@ -1133,7 +1133,7 @@
                 else:
                     return b + (2 * a - 1) * (d - b)
             return map(blend, zip(Ca, Cb))
-                
+
         FA = eval(FA_code)
         FB = eval(FB_code)
         (Rm, Gm, Bm) = eval(blend_code)

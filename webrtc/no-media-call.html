@@ -20,7 +20,8 @@ This test uses no media, and thus does not require fake media devices.
   <script src="/common/vendor-prefix.js"
           data-prefixed-objects=
               '[{"ancestors":["window"], "name":"RTCPeerConnection"},
-                {"ancestors":["window"], "name":"RTCSessionDescription"}]'
+                {"ancestors":["window"], "name":"RTCSessionDescription"},
+                {"ancestors":["window"], "name":"RTCIceCandidate"}]'
     >
   </script>
   <script type="text/javascript">
@@ -31,7 +32,7 @@ This test uses no media, and thus does not require fake media devices.
 
   var onOfferCreated = test.step_func(function(offer) {
     // TODO: Switch to promise-based interface.
-    gFirstConnection.setLocalDescription(offer, null,
+    gFirstConnection.setLocalDescription(offer, ignoreSuccess,
                                          failed('setLocalDescription first'));
 
     // This would normally go across the application's signaling solution.
@@ -54,7 +55,7 @@ This test uses no media, and thus does not require fake media devices.
   };
 
   var onAnswerCreated = test.step_func(function(answer) {
-    gSecondConnection.setLocalDescription(answer, null,
+    gSecondConnection.setLocalDescription(answer, ignoreSuccess,
                                           failed('setLocalDescription second'));
 
     // Similarly, this would go over the application's signaling solution.
@@ -64,7 +65,7 @@ This test uses no media, and thus does not require fake media devices.
   function handleAnswer(answerSdp) {
     var parsedAnswer = new RTCSessionDescription({ type: 'answer',
                                                    sdp: answerSdp });
-    gFirstConnection.setRemoteDescription(parsedAnswer, null,
+    gFirstConnection.setRemoteDescription(parsedAnswer, ignoreSuccess,
                                           failed('setRemoteDescription first'));
   };
 
@@ -95,6 +96,7 @@ This test uses no media, and thus does not require fake media devices.
     // Note: All these combinations are legal states indicating that the
     // call has connected. All browsers should end up in completed/completed,
     // but as of this moment, we've chosen to terminate the test early.
+    // TODO: Revise test to ensure completed/completed is reached.
     if (gFirstConnection.iceConnectionState == 'connected' &&
         gSecondConnection.iceConnectionState == 'connected') {
       test.done()
@@ -107,9 +109,6 @@ This test uses no media, and thus does not require fake media devices.
         gSecondConnection.iceConnectionState == 'connected') {
       test.done()
     }
-    // Note: This test should have been as below, but second connection
-    // does not reach "completed". This is noted as an issue in the spec.
-    // https://github.com/w3c/webrtc-pc/issues/224
     if (gFirstConnection.iceConnectionState == 'completed' &&
         gSecondConnection.iceConnectionState == 'completed') {
       test.done()
@@ -121,6 +120,10 @@ This test uses no media, and thus does not require fake media devices.
     return test.step_func(function() {
       assert_unreached('WebRTC called error callback for ' + function_name);
     });
+  }
+
+  // Returns a suitable do-nothing.
+  function ignoreSuccess(function_name) {
   }
 
   // This function starts the test.

@@ -1038,9 +1038,9 @@
        #('soft-light',       '1',    '1-aA', 'TODO'),
         ('difference',       '1',    '1-aA', '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
         ('exclusion',        '1',    '1-aA', '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),
-       #('hue',              '1',    '1-aA', 'TODO'),
+       #('hue',              '1',    '1-aA', 'SetLum(SetSat((RA, GA, BA), Sat((RB, GB, BB))), Lum((RB, GB, BB)))'),
        #('saturation',       '1',    '1-aA', 'TODO'),
-       #('color',            '1',    '1-aA', 'TODO'),
+        ('color',            '1',    '1-aA', 'SetLum((RA, GA, BA), Lum((RB, GB, BB)))'),
        #('luminosity',       '1',    '1-aA', 'TODO'),
     ]
 
@@ -1055,6 +1055,7 @@
         GB = float(GB)/255.0
         BB = float(BB)/255.0
 
+<<<<<<< HEAD
         def overlay ((RA, GA, BA, aA), (RB, GB, BB, aB)):
             return hard_light((RB, GB, BB, aB), (RA, GA, BA, aA))
 
@@ -1075,6 +1076,49 @@
                 OB = (1.0 - 2.0 * (1.0 - BB) * (1.0 - BA))
 
             return (OR, OG, OB);
+=======
+        # Blend helpers
+        def Lum((r, g, b)):
+            return (0.3 * r) + (0.59 * g) + (0.11 * b)
+
+        def ClipColor((r, g, b)):
+            L = Lum((r, g, b))
+            n = min(r, g, b)
+            x = max(r, g, b)
+            if n < 0:
+                return (L + (((r - L) * L) / (L - n)),
+                        L + (((g - L) * L) / (L - n)),
+                        L + (((b - L) * L) / (L - n)))
+            if x > 1:
+                return (L + (((r - L) * (1 - L)) / (x - L)),
+                        L + (((g - L) * (1 - L)) / (x - L)),
+                        L + (((b - L) * (1 - L)) / (x - L)))
+
+            return (r, g, b)
+
+        def SetLum((r, g, b), l):
+            d = l - Lum((r, g, b))
+            r = r + d
+            g = g + d
+            b = b + d
+            return ClipColor((r, g, b))
+
+        def Sat((r, g, b)):
+            return max(r, g, b) - min(r, g, b)
+
+        def SetSat(C, s):
+            i_max = reduce(lambda i, j:  i if C[i] > C[j] else j, [1,2], 0)
+            i_min = reduce(lambda i, j:  i if C[i] < C[j] else j, [1,2], 0)
+            i_mid = filter(lambda i: i != i_max and i != i_min, [0,2])[0]
+
+            if C[i_max] > C[i_min]:
+                C[i_mid] = (((C[i_mid] - C[i_min]) * s) / (C[i_max] - C[i_min]))
+                C[i_max] = s
+            else:
+                C[i_mid] = C[i_max] = 0
+            C[i_min] = 0
+            return C
+>>>>>>> 99a3ac959432fc9d2b8d060d7921a59ebffa0dbc
 
         def color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB)):
             if RB == 0:

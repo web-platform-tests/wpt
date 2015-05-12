@@ -1010,24 +1010,24 @@
     # Composite operation tests
     # <http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2007-March/010608.html>
     ops = [
-        # name               FA      FB
-        ('source-over',      '1',    '1-aA'),
-        ('destination-over', '1-aB', '1'),
-        ('source-in',        'aB',   '0'),
-        ('destination-in',   '0',    'aA'),
-        ('source-out',       '1-aB', '0'),
-        ('destination-out',  '0',    '1-aA'),
-        ('source-atop',      'aB',   '1-aA'),
-        ('destination-atop', '1-aB', 'aA'),
-        ('xor',              '1-aB', '1-aA'),
-        ('copy',             '1',    '0'),
-        ('lighter',          '1',    '1'),
+        # name               FA      FB      Blend
+        ('source-over',      '1',    '1-aA', '(RB, GB, BB)'),
+        ('destination-over', '1-aB', '1',    '(RB, GB, BB)'),
+        ('source-in',        'aB',   '0',    '(RB, GB, BB)'),
+        ('destination-in',   '0',    'aA',   '(RB, GB, BB)'),
+        ('source-out',       '1-aB', '0',    '(RB, GB, BB)'),
+        ('destination-out',  '0',    '1-aA', '(RB, GB, BB)'),
+        ('source-atop',      'aB',   '1-aA', '(RB, GB, BB)'),
+        ('destination-atop', '1-aB', 'aA',   '(RB, GB, BB)'),
+        ('xor',              '1-aB', '1-aA', '(RB, GB, BB)'),
+        ('copy',             '1',    '0',    '(RB, GB, BB)'),
+        ('lighter',          '1',    '1',    '(RB, GB, BB)'),
     ]
     
     # Blend operations tests
     # <http://www.w3.org/TR/compositing-1/#blending>
     blend_ops = [
-        # name               Cm
+        # name               B(A,B)
         ('normal',           '(RA, GA, BA)'),
         ('multiply',         '(RA*RB, GA*GB, BA*BB)'),
         ('screen',           '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
@@ -1049,16 +1049,14 @@
     # The ones that change the output when src = (0,0,0,0):
     ops_trans = [ 'source-in', 'destination-in', 'source-out', 'destination-atop', 'copy' ];
 
-    def calc_output((RA, GA, BA, aA), (RB, GB, BB, aB), FA_code, FB_code):
-        rA, gA, bA = RA*aA, GA*aA, BA*aA
-        rB, gB, bB = RB*aB, GB*aB, BB*aB
-
+    def calc_output((RA, GA, BA, aA), (RB, GB, BB, aB), FA_code, FB_code, blend_code):
         FA = eval(FA_code)
         FB = eval(FB_code)
+        (RB, GB, BB) = eval(blend_code)
 
-        rO = rA*FA + rB*FB
-        gO = gA*FA + gB*FB
-        bO = bA*FA + bB*FB
+        rO = RA*aA*FA + RB*aB*FB
+        gO = GA*aA*FA + GB*aB*FB
+        bO = BA*aA*FA + BB*aB*FB
         aO = aA*FA + aB*FB
 
         rO = min(255, rO)
@@ -1075,25 +1073,25 @@
         return (RO, GO, BO, aO)
 
     # Blends using source-over.
-    def calc_blend_output((RA, GA, BA, aA), (RB, GB, BB, aB), Cm_code):
-        rO, gO, bO = eval(Cm_code)
-        rO = (aA * (1 - aB) * RA) + (aA * aB * rO) + ((1 - aA) * aB * RB)
-        gO = (aA * (1 - aB) * GA) + (aA * aB * gO) + ((1 - aA) * aB * GB)
-        bO = (aA * (1 - aB) * BA) + (aA * aB * bO) + ((1 - aA) * aB * BB)
-        aO = ((1 - aB) * aA) + aB
+    #   def calc_blend_output((RA, GA, BA, aA), (RB, GB, BB, aB), Cm_code):
+    #       rO, gO, bO = eval(Cm_code)
+    #       rO = (aA * (1 - aB) * RA) + (aA * aB * rO) + ((1 - aA) * aB * RB)
+    #       gO = (aA * (1 - aB) * GA) + (aA * aB * gO) + ((1 - aA) * aB * GB)
+    #       bO = (aA * (1 - aB) * BA) + (aA * aB * bO) + ((1 - aA) * aB * BB)
+    #       aO = ((1 - aB) * aA) + aB
 
-        rO = min(255, rO)
-        gO = min(255, gO)
-        bO = min(255, bO)
-        aO = min(1, aO)
+    #       rO = min(255, rO)
+    #       gO = min(255, gO)
+    #       bO = min(255, bO)
+    #       aO = min(1, aO)
 
-        if aO:
-            RO = rO / aO
-            GO = gO / aO
-            BO = bO / aO
-        else: RO = GO = BO = 0
+    #       if aO:
+    #           RO = rO / aO
+    #           GO = gO / aO
+    #           BO = bO / aO
+    #       else: RO = GO = BO = 0
 
-        return (RO, GO, BO, aO)
+    #       return (RO, GO, BO, aO)
 
     def to_test((r,g,b,a)):
         return '%d,%d,%d,%d' % (round(r), round(g), round(b), round(a*255))
@@ -1102,30 +1100,30 @@
 
 
     # START DEBUG
-    for (name, src, dest) in [
-        ('solid', (255, 255, 0, 1.0), (0, 255, 255, 1.0)),
-        ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
-            # catches the atop, xor and lighter bugs in Opera 9.10
-    ]:
-        for op, Cm_code in blend_ops:
-            expected = calc_blend_output(src, dest, Cm_code)
-            tests.append( {
-                'name': '2d.composite.%s.%s' % (name, op),
-                'testing': [ '2d.composite.%s' % op ],
-                'code': """
-    ctx.fillStyle = 'rgba%s';
-    ctx.fillRect(0, 0, 100, 50);
-    ctx.globalCompositeOperation = '%s';
-    ctx.fillStyle = 'rgba%s';
-    ctx.fillRect(0, 0, 100, 50);
-    @assert pixel 50,25 ==~ %s +/- 5;
-    """ % (dest, op, src, to_test(expected)),
-                'expected': """size 100 50
-    cr.set_source_rgba(%s)
-    cr.rectangle(0, 0, 100, 50)
-    cr.fill()
-    """ % to_cairo(expected),
-            } )
+    #   for (name, src, dest) in [
+    #       ('solid', (255, 255, 0, 1.0), (0, 255, 255, 1.0)),
+    #       ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
+    #           # catches the atop, xor and lighter bugs in Opera 9.10
+    #   ]:
+    #       for op, Cm_code in blend_ops:
+    #           expected = calc_blend_output(src, dest, Cm_code)
+    #           tests.append( {
+    #               'name': '2d.composite.%s.%s' % (name, op),
+    #               'testing': [ '2d.composite.%s' % op ],
+    #               'code': """
+    #   ctx.fillStyle = 'rgba%s';
+    #   ctx.fillRect(0, 0, 100, 50);
+    #   ctx.globalCompositeOperation = '%s';
+    #   ctx.fillStyle = 'rgba%s';
+    #   ctx.fillRect(0, 0, 100, 50);
+    #   @assert pixel 50,25 ==~ %s +/- 5;
+    #   """ % (dest, op, src, to_test(expected)),
+    #               'expected': """size 100 50
+    #   cr.set_source_rgba(%s)
+    #   cr.rectangle(0, 0, 100, 50)
+    #   cr.fill()
+    #   """ % to_cairo(expected),
+    #           } )
     # END DEBUG
 
     for (name, src, dest) in [
@@ -1133,8 +1131,8 @@
         ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
             # catches the atop, xor and lighter bugs in Opera 9.10
     ]:
-        for op, FA_code, FB_code in ops:
-            expected = calc_output(src, dest, FA_code, FB_code)
+        for op, FA_code, FB_code, blend_code in ops:
+            expected = calc_output(src, dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'testing': [ '2d.composite.%s' % op ],
@@ -1158,8 +1156,8 @@
         ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
             # catches the atop, xor and lighter bugs in Opera 9.10
     ]:
-        for op, FA_code, FB_code in ops:
-            expected = calc_output(src, dest, FA_code, FB_code)
+        for op, FA_code, FB_code, blend_code in ops:
+            expected = calc_output(src, dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'testing': [ '2d.composite.%s' % op ],
@@ -1183,8 +1181,8 @@
         ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
             # catches the atop, xor and lighter bugs in Opera 9.10
     ]:
-        for op, FA_code, FB_code in ops:
-            expected = calc_output(src, dest, FA_code, FB_code)
+        for op, FA_code, FB_code, blend_code in ops:
+            expected = calc_output(src, dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'testing': [ '2d.composite.%s' % op ],
@@ -1204,8 +1202,8 @@
             } )
 
     for (name, src, dest) in [ ('image', (255, 255, 0, 0.75), (0, 255, 255, 0.5)) ]:
-        for op, FA_code, FB_code in ops:
-            expected = calc_output(src, dest, FA_code, FB_code)
+        for op, FA_code, FB_code, blend_code in ops:
+            expected = calc_output(src, dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'testing': [ '2d.composite.%s' % op ],
@@ -1225,8 +1223,8 @@
             } )
 
     for (name, src, dest) in [ ('canvas', (255, 255, 0, 0.75), (0, 255, 255, 0.5)) ]:
-        for op, FA_code, FB_code in ops:
-            expected = calc_output(src, dest, FA_code, FB_code)
+        for op, FA_code, FB_code, blend_code in ops:
+            expected = calc_output(src, dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'testing': [ '2d.composite.%s' % op ],
@@ -1252,9 +1250,9 @@
 
 
     for (name, src, dest) in [ ('uncovered.fill', (0, 0, 255, 0.75), (0, 255, 0, 0.5)) ]:
-        for op, FA_code, FB_code in ops:
+        for op, FA_code, FB_code, blend_code in ops:
             if op not in ops_trans: continue
-            expected0 = calc_output((0,0,0,0.0), dest, FA_code, FB_code)
+            expected0 = calc_output((0,0,0,0.0), dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'desc': 'fill() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.',
@@ -1276,9 +1274,9 @@
             } )
 
     for (name, src, dest) in [ ('uncovered.image', (255, 255, 0, 1.0), (0, 255, 255, 0.5)) ]:
-        for op, FA_code, FB_code in ops:
+        for op, FA_code, FB_code, blend_code in ops:
             if op not in ops_trans: continue
-            expected0 = calc_output((0,0,0,0.0), dest, FA_code, FB_code)
+            expected0 = calc_output((0,0,0,0.0), dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'desc': 'drawImage() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.',
@@ -1300,9 +1298,9 @@
             } )
 
     for (name, src, dest) in [ ('uncovered.nocontext', (255, 255, 0, 1.0), (0, 255, 255, 0.5)) ]:
-        for op, FA_code, FB_code in ops:
+        for op, FA_code, FB_code, blend_code in ops:
             if op not in ops_trans: continue
-            expected0 = calc_output((0,0,0,0.0), dest, FA_code, FB_code)
+            expected0 = calc_output((0,0,0,0.0), dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'desc': 'drawImage() of a canvas with no context draws pixels as (0,0,0,0), and does not leave the pixels unchanged.',
@@ -1323,9 +1321,9 @@
             } )
 
     for (name, src, dest) in [ ('uncovered.pattern', (255, 255, 0, 1.0), (0, 255, 255, 0.5)) ]:
-        for op, FA_code, FB_code in ops:
+        for op, FA_code, FB_code, blend_code in ops:
             if op not in ops_trans: continue
-            expected0 = calc_output((0,0,0,0.0), dest, FA_code, FB_code)
+            expected0 = calc_output((0,0,0,0.0), dest, FA_code, FB_code, blend_code)
             tests.append( {
                 'name': '2d.composite.%s.%s' % (name, op),
                 'desc': 'Pattern fill() draws pixels not covered by the source object as (0,0,0,0), and does not leave the pixels unchanged.',
@@ -1346,7 +1344,7 @@
     """ % (to_cairo(expected0)),
             } )
 
-    for op, FA_code, FB_code in ops:
+    for op, FA_code, FB_code, blend_code in ops:
         tests.append( {
             'name': '2d.composite.clip.%s' % (op),
             'desc': 'fill() does not affect pixels outside the clip region.',

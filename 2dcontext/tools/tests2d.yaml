@@ -1007,10 +1007,11 @@
 
 
 - meta: |
-    # Composite operation tests
-    # <http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2007-March/010608.html>
     ops = [
         # name               FA      FB      Blend
+        
+        # Composite operation tests
+        # <http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2007-March/010608.html>
         ('source-over',      '1',    '1-aA', '(RA, GA, BA)'),
         ('destination-over', '1-aB', '1',    '(RA, GA, BA)'),
         ('source-in',        'aB',   '0',    '(RA, GA, BA)'),
@@ -1024,32 +1025,27 @@
         ('lighter',          '1',    '1',    '(RA, GA, BA)'),
 
         # Blend operations tests
+        # <http://www.w3.org/TR/compositing-1/#blending>
         ('normal',           '1',    '1-aA', '(RA, GA, BA)'),
         ('multiply',         '1',    '1-aA', '(RA*RB, GA*GB, BA*BB)'),
-    ]
-
-    # Blend operations tests
-    # <http://www.w3.org/TR/compositing-1/#blending>
-    blend_ops = [
-        # name               B(A,B)
-        ('screen',           '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
-        ('overlay',          '((2 * RA * RB) if (RA < 0.5) else (1 - 2 * (1 - RA) * (1 - RB)),\
-                              (2 * GA * GB) if (GA < 0.5) else (1 - 2 * (1 - GA) * (1 - GB)),\
-                              (2 * BA * BB) if (BA < 0.5) else (1 - 2 * (1 - BA) * (1 - BB)))'),
-        ('darken',           '(min(RA, RB), min(GA, GB), min(BA, BB))'),
-        ('lighten',          '(max(RA, RB), max(GA, GB), max(BA, BB))'),
-       #('color-dodge',      'TODO'),
-       #('color-burn',       'TODO'),
-        ('hard-light',       '((2 * RB * RA) if (RB < 0.5) else (1 - 2 * (1 - RB) * (1 - RA)),\
-                              (2 * GB * GA) if (GB < 0.5) else (1 - 2 * (1 - GB) * (1 - GA)),\
-                              (2 * BB * BA) if (BB < 0.5) else (1 - 2 * (1 - BB) * (1 - BA)))'),
-       #('soft-light',       'TODO'),
-        ('difference',       '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
-        ('exclusion',        '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),
-       #('hue',              'TODO'),
-       #('saturation',       'TODO'),
-       #('color',            'TODO'),
-       #('luminosity',       'TODO'),
+        ('screen',           '1',    '1-aA', '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
+        ('overlay',          '1',    '1-aA', '((2 * RA * RB) if (RA < 0.5) else (1 - 2 * (1 - RA) * (1 - RB)),\
+                                               (2 * GA * GB) if (GA < 0.5) else (1 - 2 * (1 - GA) * (1 - GB)),\
+                                               (2 * BA * BB) if (BA < 0.5) else (1 - 2 * (1 - BA) * (1 - BB)))'),
+        ('darken',           '1',    '1-aA', '(min(RA, RB), min(GA, GB), min(BA, BB))'),
+        ('lighten',          '1',    '1-aA', '(max(RA, RB), max(GA, GB), max(BA, BB))'),
+       #('color-dodge',      '1',    '1-aA', 'TODO'),
+       #('color-burn',       '1',    '1-aA', 'TODO'),
+        ('hard-light',       '1',    '1-aA', '((2 * RB * RA) if (RB < 0.5) else (1 - 2 * (1 - RB) * (1 - RA)),\
+                                               (2 * GB * GA) if (GB < 0.5) else (1 - 2 * (1 - GB) * (1 - GA)),\
+                                               (2 * BB * BA) if (BB < 0.5) else (1 - 2 * (1 - BB) * (1 - BA)))'),
+       #('soft-light',       '1',    '1-aA', 'TODO'),
+        ('difference',       '1',    '1-aA', '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
+        ('exclusion',        '1',    '1-aA', '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),
+       #('hue',              '1',    '1-aA', 'TODO'),
+       #('saturation',       '1',    '1-aA', 'TODO'),
+       #('color',            '1',    '1-aA', 'TODO'),
+       #('luminosity',       '1',    '1-aA', 'TODO'),
     ]
 
     # The ones that change the output when src = (0,0,0,0):
@@ -1082,59 +1078,10 @@
 
         return (RO, GO, BO, aO)
 
-    # Blends using source-over.
-    #   def calc_blend_output((RA, GA, BA, aA), (RB, GB, BB, aB), Cm_code):
-    #       rO, gO, bO = eval(Cm_code)
-    #       rO = (aA * (1 - aB) * RA) + (aA * aB * rO) + ((1 - aA) * aB * RB)
-    #       gO = (aA * (1 - aB) * GA) + (aA * aB * gO) + ((1 - aA) * aB * GB)
-    #       bO = (aA * (1 - aB) * BA) + (aA * aB * bO) + ((1 - aA) * aB * BB)
-    #       aO = ((1 - aB) * aA) + aB
-
-    #       rO = min(255, rO)
-    #       gO = min(255, gO)
-    #       bO = min(255, bO)
-    #       aO = min(1, aO)
-
-    #       if aO:
-    #           RO = rO / aO
-    #           GO = gO / aO
-    #           BO = bO / aO
-    #       else: RO = GO = BO = 0
-
-    #       return (RO, GO, BO, aO)
-
     def to_test((r,g,b,a)):
         return '%d,%d,%d,%d' % (round(r), round(g), round(b), round(a*255))
     def to_cairo((r,g,b,a)):
         return '%f,%f,%f,%f' % (r/255., g/255., b/255., a)
-
-
-    # START DEBUG
-    #   for (name, src, dest) in [
-    #       ('solid', (255, 255, 0, 1.0), (0, 255, 255, 1.0)),
-    #       ('transparent', (0, 0, 255, 0.75), (0, 255, 0, 0.5)),
-    #           # catches the atop, xor and lighter bugs in Opera 9.10
-    #   ]:
-    #       for op, Cm_code in blend_ops:
-    #           expected = calc_blend_output(src, dest, Cm_code)
-    #           tests.append( {
-    #               'name': '2d.composite.%s.%s' % (name, op),
-    #               'testing': [ '2d.composite.%s' % op ],
-    #               'code': """
-    #   ctx.fillStyle = 'rgba%s';
-    #   ctx.fillRect(0, 0, 100, 50);
-    #   ctx.globalCompositeOperation = '%s';
-    #   ctx.fillStyle = 'rgba%s';
-    #   ctx.fillRect(0, 0, 100, 50);
-    #   @assert pixel 50,25 ==~ %s +/- 5;
-    #   """ % (dest, op, src, to_test(expected)),
-    #               'expected': """size 100 50
-    #   cr.set_source_rgba(%s)
-    #   cr.rectangle(0, 0, 100, 50)
-    #   cr.fill()
-    #   """ % to_cairo(expected),
-    #           } )
-    # END DEBUG
 
     for (name, src, dest) in [
         ('solid', (255, 255, 0, 1.0), (0, 255, 255, 1.0)),

@@ -10,10 +10,8 @@ This test uses no media, and thus does not require fake media devices.
 </head>
 <body>
   <div id="log"></div>
-  <div>
-    <video id="local-view" autoplay="autoplay"></video>
-    <video id="remote-view" autoplay="autoplay"/>
-    </video>
+  <h2>iceConnectionState info</h2>
+  <div id="stateinfo">
   </div>
 
   <!-- These files are in place when executing on W3C. -->
@@ -21,7 +19,8 @@ This test uses no media, and thus does not require fake media devices.
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/vendor-prefix.js"
           data-prefixed-objects=
-              '[{"ancestors":["window"], "name":"RTCPeerConnection"}]'
+              '[{"ancestors":["window"], "name":"RTCPeerConnection"},
+                {"ancestors":["window"], "name":"RTCSessionDescription"}]'
     >
   </script>
   <script type="text/javascript">
@@ -46,10 +45,12 @@ This test uses no media, and thus does not require fake media devices.
                                                   sdp: offerSdp });
     // These functions use the legacy interface extensions to RTCPeerConnection.
     // TODO: Switch to promise-based interfaces.
-    gSecondConnection.setRemoteDescription(parsedOffer, null,
-        failed('setRemoteDescription second'));
-    gSecondConnection.createAnswer(onAnswerCreated,
-                                   failed('createAnswer'));
+    gSecondConnection.setRemoteDescription(parsedOffer,
+      function() {
+        gSecondConnection.createAnswer(onAnswerCreated,
+                                       failed('createAnswer'));
+      },
+      failed('setRemoteDescription second'));
   };
 
   var onAnswerCreated = test.step_func(function(answer) {
@@ -88,6 +89,20 @@ This test uses no media, and thus does not require fake media devices.
 
   var onIceConnectionStateChange = test.step_func(function(event) {
     assert_equals(event.type, 'iceconnectionstatechange');
+    var stateinfo = document.getElementById('stateinfo');
+    stateinfo.innerHTML = 'First: ' + gFirstConnection.iceConnectionState
+                        + '<br>Second: ' + gSecondConnection.iceConnectionState;
+    // Note: All these combinations are legal states indicating that the
+    // call has connected. All browsers should end up in completed/completed,
+    // but as of this moment, we've chosen to terminate the test early.
+    if (gFirstConnection.iceConnectionState == 'connected' &&
+        gSecondConnection.iceConnectionState == 'connected') {
+      test.done()
+    }
+    if (gFirstConnection.iceConnectionState == 'connected' &&
+        gSecondConnection.iceConnectionState == 'completed') {
+      test.done()
+    }
     if (gFirstConnection.iceConnectionState == 'completed' &&
         gSecondConnection.iceConnectionState == 'connected') {
       test.done()

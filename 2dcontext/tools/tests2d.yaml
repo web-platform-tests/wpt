@@ -1029,16 +1029,16 @@
         ('normal',           '1',    '1-aA', '(RA, GA, BA)'),
         ('multiply',         '1',    '1-aA', '(RA*RB, GA*GB, BA*BB)'),
         ('screen',           '1',    '1-aA', '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
-        ('overlay',          '1',    '1-aA', '((2 * RA * RB) if (RA < 0.5) else (1 - 2 * (1 - RA) * (1 - RB)),\
-                                               (2 * GA * GB) if (GA < 0.5) else (1 - 2 * (1 - GA) * (1 - GB)),\
-                                               (2 * BA * BB) if (BA < 0.5) else (1 - 2 * (1 - BA) * (1 - BB)))'),
+        ('overlay',          '1',    '1-aA', '((2.0 * RA * RB) if (RB < 0.5) else (1.0 - 2.0 * (1.0 - RA) * (1.0 - RB)),\
+                                               (2.0 * GA * GB) if (GB < 0.5) else (1.0 - 2.0 * (1.0 - GA) * (1.0 - GB)),\
+                                               (2.0 * BA * BB) if (BB < 0.5) else (1.0 - 2.0 * (1.0 - BA) * (1.0 - BB)))'),
         ('darken',           '1',    '1-aA', '(min(RA, RB), min(GA, GB), min(BA, BB))'),
         ('lighten',          '1',    '1-aA', '(max(RA, RB), max(GA, GB), max(BA, BB))'),
        #('color-dodge',      '1',    '1-aA', 'TODO'),
        #('color-burn',       '1',    '1-aA', 'TODO'),
-        ('hard-light',       '1',    '1-aA', '((2 * RB * RA) if (RB < 0.5) else (1 - 2 * (1 - RB) * (1 - RA)),\
-                                               (2 * GB * GA) if (GB < 0.5) else (1 - 2 * (1 - GB) * (1 - GA)),\
-                                               (2 * BB * BA) if (BB < 0.5) else (1 - 2 * (1 - BB) * (1 - BA)))'),
+        ('hard-light',       '1',    '1-aA', '((2.0 * RB * RA) if (RA < 0.5) else (1.0 - 2.0 * (1.0 - RB) * (1.0 - RA)),\
+                                               (2.0 * GB * GA) if (GA < 0.5) else (1.0 - 2.0 * (1.0 - GB) * (1.0 - GA)),\
+                                               (2.0 * BB * BA) if (BA < 0.5) else (1.0 - 2.0 * (1.0 - BB) * (1.0 - BA)))'),
        #('soft-light',       '1',    '1-aA', 'TODO'),
         ('difference',       '1',    '1-aA', '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
         ('exclusion',        '1',    '1-aA', '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),

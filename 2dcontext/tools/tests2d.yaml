@@ -1048,12 +1048,8 @@
     ops_trans = [ 'source-in', 'destination-in', 'source-out', 'destination-atop', 'copy' ];
 
     def calc_output((RA, GA, BA, aA), (RB, GB, BB, aB), FA_code, FB_code, blend_code):
-        RA = float(RA)/255.0
-        GA = float(GA)/255.0
-        BA = float(BA)/255.0
-        RB = float(RB)/255.0
-        GB = float(GB)/255.0
-        BB = float(BB)/255.0
+        RA, GA, BA = (float(RA)/255.0, float(GA)/255.0, float(BA)/255.0)
+        RB, GB, BB = (float(RB)/255.0, float(GB)/255.0, float(BB)/255.0)
 
         # Blend helpers
         def lum((r, g, b)):

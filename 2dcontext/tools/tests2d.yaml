@@ -1011,25 +1011,27 @@
     # <http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2007-March/010608.html>
     ops = [
         # name               FA      FB      Blend
-        ('source-over',      '1',    '1-aA', '(RB, GB, BB)'),
-        ('destination-over', '1-aB', '1',    '(RB, GB, BB)'),
-        ('source-in',        'aB',   '0',    '(RB, GB, BB)'),
-        ('destination-in',   '0',    'aA',   '(RB, GB, BB)'),
-        ('source-out',       '1-aB', '0',    '(RB, GB, BB)'),
-        ('destination-out',  '0',    '1-aA', '(RB, GB, BB)'),
-        ('source-atop',      'aB',   '1-aA', '(RB, GB, BB)'),
-        ('destination-atop', '1-aB', 'aA',   '(RB, GB, BB)'),
-        ('xor',              '1-aB', '1-aA', '(RB, GB, BB)'),
-        ('copy',             '1',    '0',    '(RB, GB, BB)'),
-        ('lighter',          '1',    '1',    '(RB, GB, BB)'),
+        ('source-over',      '1',    '1-aA', '(RA, GA, BA)'),
+        ('destination-over', '1-aB', '1',    '(RA, GA, BA)'),
+        ('source-in',        'aB',   '0',    '(RA, GA, BA)'),
+        ('destination-in',   '0',    'aA',   '(RA, GA, BA)'),
+        ('source-out',       '1-aB', '0',    '(RA, GA, BA)'),
+        ('destination-out',  '0',    '1-aA', '(RA, GA, BA)'),
+        ('source-atop',      'aB',   '1-aA', '(RA, GA, BA)'),
+        ('destination-atop', '1-aB', 'aA',   '(RA, GA, BA)'),
+        ('xor',              '1-aB', '1-aA', '(RA, GA, BA)'),
+        ('copy',             '1',    '0',    '(RA, GA, BA)'),
+        ('lighter',          '1',    '1',    '(RA, GA, BA)'),
+
+        # Blend operations tests
+        ('normal',           '1',    '1-aA', '(RA, GA, BA)'),
+        ('multiply',         '1',    '1-aA', '(RA*RB, GA*GB, BA*BB)'),
     ]
 
     # Blend operations tests
     # <http://www.w3.org/TR/compositing-1/#blending>
     blend_ops = [
         # name               B(A,B)
-        ('normal',           '(RA, GA, BA)'),
-        ('multiply',         '(RA*RB, GA*GB, BA*BB)'),
         ('screen',           '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
         ('overlay',          '((2 * RA * RB) if (RA < 0.5) else (1 - 2 * (1 - RA) * (1 - RB)),\
                               (2 * GA * GB) if (GA < 0.5) else (1 - 2 * (1 - GA) * (1 - GB)),\
@@ -1056,7 +1058,11 @@
     def calc_output((RA, GA, BA, aA), (RB, GB, BB, aB), FA_code, FB_code, blend_code):
         FA = eval(FA_code)
         FB = eval(FB_code)
-        (RB, GB, BB) = eval(blend_code)
+        (Rm, Gm, Bm) = eval(blend_code)
+
+        RA = (1 - aB)*RA + aB*Rm
+        GA = (1 - aB)*GA + aB*Gm
+        BA = (1 - aB)*BA + aB*Bm
 
         rO = RA*aA*FA + RB*aB*FB
         gO = GA*aA*FA + GB*aB*FB

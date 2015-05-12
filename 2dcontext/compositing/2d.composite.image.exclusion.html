@@ -24,7 +24,7 @@ ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
 ctx.fillRect(0, 0, 100, 50);
 ctx.globalCompositeOperation = 'exclusion';
 ctx.drawImage(document.getElementById('yellow75.png'), 0, 0);
-_assert(pixel 50,25 ==~ 219,-55371,146,223 +/- 5, "pixel 50,25 ==~ 219,-55371,146,223 +/- 5");
+_assertPixelApprox(canvas, 50,25, 219,146,146,223, "50,25", "219,146,146,223", 5);
 
 
 });

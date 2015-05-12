@@ -1052,6 +1052,13 @@
     ops_trans = [ 'source-in', 'destination-in', 'source-out', 'destination-atop', 'copy' ];
 
     def calc_output((RA, GA, BA, aA), (RB, GB, BB, aB), FA_code, FB_code, blend_code):
+        RA = float(RA)/255.0
+        GA = float(GA)/255.0
+        BA = float(BA)/255.0
+        RB = float(RB)/255.0
+        GB = float(GB)/255.0
+        BB = float(BB)/255.0
+
         FA = eval(FA_code)
         FB = eval(FB_code)
         (Rm, Gm, Bm) = eval(blend_code)
@@ -1065,9 +1072,9 @@
         bO = BA*aA*FA + BB*aB*FB
         aO = aA*FA + aB*FB
 
-        rO = min(255, rO)
-        gO = min(255, gO)
-        bO = min(255, bO)
+        rO = min(1, rO)
+        gO = min(1, gO)
+        bO = min(1, bO)
         aO = min(1, aO)
 
         if aO:
@@ -1076,7 +1083,7 @@
             BO = bO / aO
         else: RO = GO = BO = 0
 
-        return (RO, GO, BO, aO)
+        return (255*RO, 255*GO, 255*BO, aO)
 
     def to_test((r,g,b,a)):
         return '%d,%d,%d,%d' % (round(r), round(g), round(b), round(a*255))

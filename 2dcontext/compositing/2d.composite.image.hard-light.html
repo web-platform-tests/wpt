@@ -24,7 +24,7 @@ ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
 ctx.fillRect(0, 0, 100, 50);
 ctx.globalCompositeOperation = 'hard-light';
 ctx.drawImage(document.getElementById('yellow75.png'), 0, 0);
-_assert(pixel 50,25 ==~ 109,-55153,255,223 +/- 5, "pixel 50,25 ==~ 109,-55153,255,223 +/- 5");
+_assertPixelApprox(canvas, 50,25, 109,255,146,223, "50,25", "109,255,146,223", 5);
 
 
 });

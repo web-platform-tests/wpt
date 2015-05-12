@@ -1042,9 +1042,9 @@
        #('soft-light',       '1',    '1-aA', 'TODO'),
         ('difference',       '1',    '1-aA', '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
         ('exclusion',        '1',    '1-aA', '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),
-       #('hue',              '1',    '1-aA', 'TODO'),
+       #('hue',              '1',    '1-aA', 'SetLum(SetSat((RA, GA, BA), Sat((RB, GB, BB))), Lum((RB, GB, BB)))'),
        #('saturation',       '1',    '1-aA', 'TODO'),
-       #('color',            '1',    '1-aA', 'TODO'),
+        ('color',            '1',    '1-aA', 'SetLum((RA, GA, BA), Lum((RB, GB, BB)))'),
        #('luminosity',       '1',    '1-aA', 'TODO'),
     ]
 
@@ -1072,9 +1072,9 @@
                         L + (((g - L) * L) / (L - n)),
                         L + (((b - L) * L) / (L - n)))
             if x > 1:
-                return (L + (((r - L) * L) / (L - n)),
-                        L + (((g - L) * L) / (L - n)),
-                        L + (((b - L) * L) / (L - n)))
+                return (L + (((r - L) * (1 - L)) / (x - L)),
+                        L + (((g - L) * (1 - L)) / (x - L)),
+                        L + (((b - L) * (1 - L)) / (x - L)))
 
             return (r, g, b)
 
@@ -1091,7 +1091,7 @@
         def SetSat(C, s):
             i_max = reduce(lambda i, j:  i if C[i] > C[j] else j, [1,2], 0)
             i_min = reduce(lambda i, j:  i if C[i] < C[j] else j, [1,2], 0)
-            i_mid = filter(lambda i: i != min_index and i != max_index, [0,2])
+            i_mid = filter(lambda i: i != i_max and i != i_min, [0,2])[0]
 
             if C[i_max] > C[i_min]:
                 C[i_mid] = (((C[i_mid] - C[i_min]) * s) / (C[i_max] - C[i_min]))

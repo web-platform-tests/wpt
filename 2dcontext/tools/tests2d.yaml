@@ -1023,7 +1023,7 @@
         ('copy',             '1',    '0'),
         ('lighter',          '1',    '1'),
     ]
-    
+
     # Blend operations tests
     # <http://www.w3.org/TR/compositing-1/#blending>
     blend_ops = [
@@ -1031,12 +1031,16 @@
         ('normal',           '(RA, GA, BA)'),
         ('multiply',         '(RA*RB, GA*GB, BA*BB)'),
         ('screen',           '(RB + RA - (RB * RA), GB + GA - (GB * GA), BB + BA - (BB * BA))'),
-       #('overlay',          'TODO'),
-       #('darken',           'TODO'),
-       #('lighten',          'TODO'),
+        ('overlay',          '(2 * RA * RB) if (RA < 0.5) else (1 - 2 * (1 - RA) * (1 - RB)),\
+                              (2 * GA * GB) if (GA < 0.5) else (1 - 2 * (1 - GA) * (1 - GB)),\
+                              (2 * BA * BB) if (BA < 0.5) else (1 - 2 * (1 - BA) * (1 - BB))'),
+        ('darken',           '(min(RA, RB), min(GA, GB), min(BA, BB))'),
+        ('lighten',          '(max(RA, RB), max(GA, GB), max(BA, BB))'),
        #('color-dodge',      'TODO'),
        #('color-burn',       'TODO'),
-       #('hard-light',       'TODO'),
+        ('hard-light',       '(2 * RB * RA) if (RB < 0.5) else (1 - 2 * (1 - RB) * (1 - RA)),\
+                              (2 * GB * GA) if (GB < 0.5) else (1 - 2 * (1 - GB) * (1 - GA)),\
+                              (2 * BB * BA) if (BB < 0.5) else (1 - 2 * (1 - BB) * (1 - BA))'),
        #('soft-light',       'TODO'),
         ('difference',       '(abs(RB - RA), abs(GB - GA), abs(BB - BA))'),
         ('exclusion',        '(RB + RA - 2*RB*RA, GB + GA - 2*GB*GA, BB + BA - 2*BB*BA)'),

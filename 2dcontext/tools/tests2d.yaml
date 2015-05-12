@@ -1035,7 +1035,7 @@
         ('darken',           '1',    '1-aA', '(min(RA, RB), min(GA, GB), min(BA, BB))'),
         ('lighten',          '1',    '1-aA', '(max(RA, RB), max(GA, GB), max(BA, BB))'),
         ('color-dodge',      '1',    '1-aA', 'color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB))'),
-       #('color-burn',       '1',    '1-aA', 'TODO'),
+        ('color-burn',       '1',    '1-aA', 'color_burn((RA, GA, BA, aA), (RB, GB, BB, aB))'),
         ('hard-light',       '1',    '1-aA', '((2.0 * RB * RA) if (RA < 0.5) else (1.0 - 2.0 * (1.0 - RB) * (1.0 - RA)),\
                                                (2.0 * GB * GA) if (GA < 0.5) else (1.0 - 2.0 * (1.0 - GB) * (1.0 - GA)),\
                                                (2.0 * BB * BA) if (BA < 0.5) else (1.0 - 2.0 * (1.0 - BB) * (1.0 - BA)))'),
@@ -1050,30 +1050,6 @@
 
     # The ones that change the output when src = (0,0,0,0):
     ops_trans = [ 'source-in', 'destination-in', 'source-out', 'destination-atop', 'copy' ];
-
-    def color_dodge((RA, GA, BA, aA), (RB, GB, BB, aB)):
-        if RB == 0:
-            OR == 0
-        elif RA == 1:
-            OR == 1 
-        else:
-            OR == min(1.0, float(RB)/float(1.0 - RA))
-
-        if GB == 0:
-            OG == 0
-        elif GA == 1:
-            OG == 1 
-        else:
-            OG == min(1.0, float(GB)/float(1.0 - GA))
-
-        if BB == 0:
-            OB == 0
-        elif BA == 1:
-            OB == 1 
-        else:
-            OB == min(1.0, float(BB)/float(1.0 - BA))
-
-        return (OR, OG, OB);
 
     def calc_output((RA, GA, BA, aA), (RB, GB, BB, aB), FA_code, FB_code, blend_code):
         RA = float(RA)/255.0
@@ -1106,6 +1082,31 @@
                 OB = min(1.0, float(BB)/float(1.0 - BA))
 
             return (OR, OG, OB)
+
+        def color_burn((RA, GA, BA, aA), (RB, GB, BB, aB)):
+            if RB == 1:
+                OR = 1
+            elif RA == 0:
+                OR = 0
+            else:
+                OR = 1 - min(1.0, float(1.0 - RB)/float(RA))
+
+            if GB == 1:
+                OG = 1
+            elif GA == 0:
+                OG = 0
+            else:
+                OG = 1 - min(1.0, float(1.0 - GB)/float(GA))
+
+            if BB == 1:
+                OB = 1
+            elif BA == 0:
+                OB = 0
+            else:
+                OB = 1 - min(1.0, float(1.0 - BB)/float(BA))
+
+            return (OR, OG, OB)
+
 
         FA = eval(FA_code)
         FB = eval(FB_code)

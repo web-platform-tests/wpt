@@ -7,15 +7,15 @@
 
 <script>
   var xorigin_anon = location.protocol
-    + '//www1.' + location.hostname + ':' + location.port 
+    + '//www1.' + location.hostname + ':' + location.port
     + '/subresource-integrity/crossorigin-anon.js';
 
   var xorigin_creds = location.protocol
-    + '//www1.' + location.hostname + ':' + location.port 
+    + '//www1.' + location.hostname + ':' + location.port
     + '/subresource-integrity/crossorigin-creds.js';
 
   var xorigin_ineligible = location.protocol
-    + '//www1.' + location.hostname + ':' + location.port 
+    + '//www1.' + location.hostname + ':' + location.port
     + '/subresource-integrity/crossorigin-ineligible.js';
 
     var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue) {
@@ -75,7 +75,7 @@
         "matching-digest.js",
         "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
-    
+
     // TODO may need to change these to hash-source prefix, e.g. 'sha256' instead of 'SHA-256'
 
     test(function() {assert_equals(getPrioritizedHashFunction('SHA-512', 'SHA-256'), 'SHA-512')},

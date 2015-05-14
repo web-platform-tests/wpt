@@ -71,7 +71,6 @@ class FirefoxBrowser(Browser):
         self.binary = binary
         self.prefs_root = prefs_root
         self.marionette_port = None
-        self.used_ports.add(self.marionette_port)
         self.runner = None
         self.debug_info = debug_info
         self.profile = None
@@ -82,6 +81,7 @@ class FirefoxBrowser(Browser):
 
     def start(self):
         self.marionette_port = get_free_port(2828, exclude=self.used_ports)
+        self.used_ports.add(self.marionette_port)
 
         env = os.environ.copy()
         env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"] = "1"

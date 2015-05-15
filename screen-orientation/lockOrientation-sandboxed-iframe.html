@@ -18,6 +18,8 @@
             // FIXME: re-enable when mock screen orientation controller is
             // plugged to WebFrameTestProxy.
             // assert_equals(ev.data, "", "screen.lockOrientation() does not throw");
+            assert_equals(ev.data, "portrait-primary", "screen.orientation lock to portrait-primary");
+            screen.orientation.unlock();
             testAllowed.done();
         });
         var allowedIframe = document.getElementById("allowedIframe");

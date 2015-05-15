@@ -3,6 +3,7 @@
 <script>
     var msg = "";
     screen.orientation.lock("portrait-primary").then(function() {
+        msg = screen.orientation.type;
     }, function(error) {
         msg = error.name;
     });

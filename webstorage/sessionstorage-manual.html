@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebStorage Test: sessionStorage</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://w3c.github.io/webstorage/#the-localstorage-attribute">
+<body onload="loadSessionStorage()">
+  <span id="value" style="font-weight: bold;"></span>
+  <p>User name</P>
+  <input type="text" id="usrname" placeholder="Please enter value">
+  <input type="button" id="save" value="save"  onclick="saveSessionlStorage()">
+  <pre id="log" style="color: red;"></pre>
+  <div>
+    <p>Test steps:</p>
+    <ol>
+      <li>Input value of the textbox</li>
+      <li>Click 'Save' button.</li>
+      <li>Refresh the page.</li>
+      <li>
+        If the value after 'your user name is: ' equals the input value before,
+        it should be passed, otherwise it fail.
+      </li>
+    </ol>
+  </div>
+  <script>
+    var storage = window.sessionStorage;
+    var keyname = "username";
+
+    function loadSessionStorage() {
+      var value = document.getElementById("value");
+      value.innerHTML = "your user name is: " + storage.getItem(keyname);
+    }
+
+    function saveSessionlStorage() {
+      var username = document.getElementById("usrname");
+      storage.setItem(keyname, username.value);
+      var log = document.getElementById("log");
+      log.textContent = "save success";
+    }
+  </script>
+</body>
+

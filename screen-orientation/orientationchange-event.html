@@ -40,12 +40,12 @@ window.screen.orientation.addEventListener('change', function() {
 });
 
 function runNoChangeTest() {
-  window.testRunner.setMockScreenOrientation(orientations[currentIndex]);
+  screen.orientation.lock(orientations[currentIndex]).then(function() {}, function() {});
 
   noChangeTest.step(function() {
     assert_equals(screen.orientation.type, orientations[currentIndex]);
-    assert_equals(orientationChangeEventHandlerCalls, 4);
-    assert_equals(orientationChangeEventListenerCalls, 4);
+    assert_equals(orientationChangeEventHandlerCalls, orientations.length);
+    assert_equals(orientationChangeEventListenerCalls, orientations.length);
   });
 
   noChangeTest.done();
@@ -53,7 +53,7 @@ function runNoChangeTest() {
 
 var i = 0;
 function runChangeTest() {
-  window.testRunner.setMockScreenOrientation(orientations[getNextIndex()]);
+  screen.orientation.lock(orientations[getNextIndex()]).then(function() {}, function() {});
   currentIndex = getNextIndex();
 
   orientationChangeEventContinuation = function() {
@@ -64,7 +64,7 @@ function runChangeTest() {
     });
 
     ++i;
-    if (i == 4) {
+    if (i == orientations.length) {
       changeTest.done();
       runNoChangeTest();
     } else {

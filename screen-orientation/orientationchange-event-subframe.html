@@ -25,14 +25,14 @@
     }
 
     function changeOrientation() {
-        window.testRunner.setMockScreenOrientation(orientations[getNextIndex()]);
+        screen.orientation.lock(orientations[getNextIndex()]).then(function () {}, function () {});
         currentIndex = getNextIndex();
     }
 
     window.onmessage = test.step_func(function (ev) {
         assert_equals(ev.data, orientations[currentIndex], "subframe receives orientation change event");
         ++eventsReceived;
-        if (eventsReceived < 4)
+        if (eventsReceived < orientations.length)
             changeOrientation()
         else
             test.done();

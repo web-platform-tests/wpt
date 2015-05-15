@@ -15,7 +15,6 @@ INDENT TABS: custom-elements/*
 INDENT TABS: DOMEvents/*
 INDENT TABS: eventsource/*
 INDENT TABS: html/editing/dnd/*
-INDENT TABS: html/syntax/*
 INDENT TABS: media-source/*
 INDENT TABS: old-tests/*
 INDENT TABS: pointerlock/*

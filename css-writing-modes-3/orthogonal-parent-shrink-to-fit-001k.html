@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>CSS Writing Modes Test: Orthogonal parent shrink-to-fit: Orthogonal inline in inline-block</title>
+<title>CSS Writing Modes Test: Orthogonal parent shrink-to-fit: Orthogonal block with borders in table-cell</title>
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#orthogonal-flows">
 <meta name="assert" content="Parent's min-content width in orthorgonal flows">
 <meta name="flags" content="ahem">
@@ -40,8 +40,8 @@ td {
 <p>Test passes if the <b>left</b> edge of the orange box <b>touches</b> the <b>right</b> edge of the blue box.
     There should be no spaces nor overlaps.
 <p>If script is enabled, there should be one or more PASS and no FAIL.
-<div class="test" title="Orthogonal inline in inline-block">
-    <div class="inline-block"><span class="target">XX</span></div><span class="next">YY</span>
+<div class="test" title="Orthogonal block with borders in table-cell">
+    <table><tr><td><div class="target border">XXXX</div></td><td class="next">YY</td></tr></table>
 </div>
 </div>
 <script>

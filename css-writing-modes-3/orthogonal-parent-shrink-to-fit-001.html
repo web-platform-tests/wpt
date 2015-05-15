@@ -8,9 +8,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <style>
 .test {
-    font:25px Ahem;
+    border:thin solid;
+    font:25px/1 Ahem;
     clear:both;
-    margin-top:.2em;
+    margin:.2em;
 }
 .target {
     color:blue;
@@ -52,23 +53,28 @@ td {
     <div class="float"><div class="target">XX</div></div><span class="next">YY</span>
 </div>
 <div class="test" title="Orthogonal block in table-cell">
-    <table>
-        <tr>
-            <td><div class="target">XX</div></td>
-            <td class="next">YY</td>
-        </tr>
-    </table>
+    <table><tr><td><div class="target">XX</div></td><td class="next">YY</td></tr></table>
 </div>
 <div class="test" title="Orthogonal inline in table-cell">
-    <table>
-        <tr>
-            <td><span class="target">XX</span></td>
-            <td class="next">YY</td>
-        </tr>
-    </table>
+    <table><tr><td><span class="target">XX</span></td><td class="next">YY</td></tr></table>
 </div>
 <div class="test" title="Orthogonal block with borders in inline-block">
-    <div class="inline-block"><div class="target border">XX</div></div><span class="next">YY</span>
+    <div class="inline-block"><div class="target border">XXXX</div></div><span class="next">YY</span>
+</div>
+<div class="test" title="Orthogonal inline with borders in inline-block">
+    <div class="inline-block"><span class="target border">XXXX</span></div><span class="next">YY</span>
+</div>
+<div class="test" title="Orthogonal inline with borders in float">
+    <div class="float"><span class="target border">XXXX</span></div><span class="next">YY</span>
+</div>
+<div class="test" title="Orthogonal block with borders in float">
+    <div class="float"><div class="target border">XXXX</div></div><span class="next">YY</span>
+</div>
+<div class="test" title="Orthogonal block with borders in table-cell">
+    <table><tr><td><div class="target border">XXXX</div></td><td class="next">YY</td></tr></table>
+</div>
+<div class="test" title="Orthogonal inline with borders in table-cell">
+    <table><tr><td><span class="target border">XXXX</span></td><td class="next">YY</td></tr></table>
 </div>
 </div>
 <script>
@@ -77,8 +83,7 @@ function runTests() {
         test(function () {
             var targetNode = node.querySelector(".target");
             var targetBounds = targetNode.getBoundingClientRect();
-            var border = parseFloat(getComputedStyle(targetNode).borderRightWidth);
-            assert_equals(targetBounds.height, (targetBounds.width - border) * 2, "writing-mode is vertical")
+            assert_equals(targetBounds.height, targetBounds.width * 2, "writing-mode is vertical")
             var nextNode = node.querySelector(".next");
             var nextBounds = nextNode.getBoundingClientRect();
             assert_equals(nextBounds.left - targetBounds.right, 0, "the left edge of the orange box touches the right edge of the blue box");

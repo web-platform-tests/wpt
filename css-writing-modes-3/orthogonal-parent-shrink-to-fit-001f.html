@@ -8,9 +8,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <style>
 .test {
-    font:25px Ahem;
+    border:thin solid;
+    font:25px/1 Ahem;
     clear:both;
-    margin-top:.2em;
+    margin:.2em;
 }
 .target {
     color:blue;
@@ -40,12 +41,7 @@ td {
     There should be no spaces nor overlaps.
 <p>If script is enabled, there should be one or more PASS and no FAIL.
 <div class="test" title="Orthogonal inline in table-cell">
-    <table>
-        <tr>
-            <td><span class="target">XX</span></td>
-            <td class="next">YY</td>
-        </tr>
-    </table>
+    <table><tr><td><span class="target">XX</span></td><td class="next">YY</td></tr></table>
 </div>
 </div>
 <script>
@@ -54,8 +50,7 @@ function runTests() {
         test(function () {
             var targetNode = node.querySelector(".target");
             var targetBounds = targetNode.getBoundingClientRect();
-            var border = parseFloat(getComputedStyle(targetNode).borderRightWidth);
-            assert_equals(targetBounds.height, (targetBounds.width - border) * 2, "writing-mode is vertical")
+            assert_equals(targetBounds.height, targetBounds.width * 2, "writing-mode is vertical")
             var nextNode = node.querySelector(".next");
             var nextBounds = nextNode.getBoundingClientRect();
             assert_equals(nextBounds.left - targetBounds.right, 0, "the left edge of the orange box touches the right edge of the blue box");

@@ -13,7 +13,6 @@ INDENT TABS: conformance-checkers/*
 INDENT TABS: content-security-policy/*
 INDENT TABS: custom-elements/*
 INDENT TABS: DOMEvents/*
-INDENT TABS: eventsource/*
 INDENT TABS: html/editing/dnd/*
 INDENT TABS: media-source/*
 INDENT TABS: old-tests/*

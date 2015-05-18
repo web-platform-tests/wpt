@@ -1,12 +1,12 @@
 <!doctype html>
 <!--
-This test uses no media, and thus does not require fake media devices.
+This test uses data only, and thus does not require fake media devices.
 -->
 
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>RTCPeerConnection No-Media Connection Test</title>
+  <title>RTCPeerConnection Data-Only Connection Test with Promises</title>
 </head>
 <body>
   <div id="log"></div>
@@ -29,43 +29,6 @@ This test uses no media, and thus does not require fake media devices.
 
   var gFirstConnection = null;
   var gSecondConnection = null;
-
-  var onOfferCreated = test.step_func(function(offer) {
-    // TODO: Switch to promise-based interface.
-    gFirstConnection.setLocalDescription(offer)
-        .catch(failed('setLocalDescription first'));
-
-    // This would normally go across the application's signaling solution.
-    // In our case, the "signaling" is to call this function.
-    receiveCall(offer.sdp);
-  });
-
-  function receiveCall(offerSdp) {
-
-    var parsedOffer = new RTCSessionDescription({ type: 'offer',
-                                                  sdp: offerSdp });
-    gSecondConnection.setRemoteDescription(parsedOffer)
-       .then(function() {
-          gSecondConnection.createAnswer().then(onAnswerCreated,
-                                                failed('createAnswer'));
-      },
-      failed('setRemoteDescription second'));
-  };
-
-  var onAnswerCreated = test.step_func(function(answer) {
-    gSecondConnection.setLocalDescription(answer)
-        .catch(failed('setLocalDescription second'));
-
-    // Similarly, this would go over the application's signaling solution.
-    handleAnswer(answer.sdp);
-  });
-
-  function handleAnswer(answerSdp) {
-    var parsedAnswer = new RTCSessionDescription({ type: 'answer',
-                                                   sdp: answerSdp });
-    gFirstConnection.setRemoteDescription(parsedAnswer)
-       .catch(failed('setRemoteDescription first'));
-  };
 
   var onIceCandidateToFirst = test.step_func(function(event) {
     // If event.candidate is null = no more candidates.
@@ -113,17 +76,6 @@ This test uses no media, and thus does not require fake media devices.
     }
   });
 
-  // Returns a suitable error callback.
-  function failed(function_name) {
-    return test.step_func(function() {
-      assert_unreached('WebRTC called error callback for ' + function_name);
-    });
-  }
-
-  // Returns a suitable do-nothing.
-  function ignoreSuccess(function_name) {
-  }
-
   // This function starts the test.
   test.step(function() {
     gFirstConnection = new RTCPeerConnection(null);
@@ -135,12 +87,48 @@ This test uses no media, and thus does not require fake media devices.
     gSecondConnection.onaddstream = onRemoteStream;
     gSecondConnection.oniceconnectionstatechange = onIceConnectionStateChange;
 
-    // The offerToReceiveVideo is necessary and sufficient to make
-    // an actual connection.
-    // TODO: Use a promise-based API. This is legacy.
-    gFirstConnection.createOffer({offerToReceiveVideo: true})
-        .then(onOfferCreated, failed('createOffer'));
-       
+    // The createDataChannel is necessary and sufficient to make
+    // sure the ICE connection be attempted.
+    gFirstConnection.createDataChannel('channel');
+    
+    var atStep = 'createOffer first';
+    var offerSdp = null;
+    var answerSdp = null;
+
+    gFirstConnection.createOffer()
+    .then(function(offer) {
+      offerSdp = offer.sdp;
+      atStep = 'setLocalDescription first';
+      return gFirstConnection.setLocalDescription(offer);
+    })
+    .then(function() {
+      atStep = 'setRemoteDescription at second';
+      var parsedOffer = new RTCSessionDescription({ type: 'offer',
+                                                    sdp: offerSdp });
+      return gSecondConnection.setRemoteDescription(parsedOffer)
+    })
+    .then(function() {
+      atStep = 'createAnswer';
+      return gSecondConnection.createAnswer()
+    })
+    .then(function(answer) {
+      atStep = 'setLocalDescription second';
+      answerSdp = answer.sdp
+      return gSecondConnection.setLocalDescription(answer);
+    })
+    .then(function() {
+      var parsedAnswer = new RTCSessionDescription({ type: 'answer',
+                                                     sdp: answerSdp });
+      atStep = 'setRemoteDescription first';
+      return gFirstConnection.setRemoteDescription(parsedAnswer);
+    })
+    .then(function() {
+      atStep = 'negotiation completed';
+    })
+    .catch(test.step_func(function(e) {
+      assert_unreached('Error ' + e.name + ':' + e.message + 
+                       ' happened at step ' + atStep);
+    }));
   });
 </script>
 

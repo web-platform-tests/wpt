@@ -1,40 +1,43 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>WebStorage Test: sessionStorage</title>
+<title>WebStorage Test: sessionStorage - destory top-level browsing context</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="help" href="https://w3c.github.io/webstorage/#the-localstorage-attribute">
+<link rel="help" href="https://w3c.github.io/webstorage/#the-sessionstorage-attribute">
+<meta name="assert" content="When a top-level browsing context is destroyed,
+                             the data stored in its session storage areas can be
+                             discarded with it.">
 <body onload="loadSessionStorage()">
   <span id="value" style="font-weight: bold;"></span>
-  <p>User name</P>
-  <input type="text" id="usrname" placeholder="Please enter value">
+  <p>session storage data</P>
+  <input type="text" id="data">
   <input type="button" id="save" value="save"  onclick="saveSessionlStorage()">
-  <pre id="log" style="color: red;"></pre>
-  <div>
-    <p>Test steps:</p>
-    <ol>
-      <li>Input value of the textbox</li>
-      <li>Click 'Save' button.</li>
-      <li>Refresh the page.</li>
-      <li>
-        If the value after 'your user name is: ' equals the input value before,
-        it should be passed, otherwise it fail.
-      </li>
-    </ol>
-  </div>
+  <ol>
+    <li>
+      Input value of the textbox, click 'Save' button.
+    </li>
+    <li>
+      If the value after 'your session storage data: ' 
+      doesn't equal the input value, it stores fail.
+    </li>
+    <li>Close the page and reopen it.</li>
+    <li>
+      If the value after 'your session storage data: ' is null,
+      it should be passed, otherwise it fail.
+    </li>
+  </ol>
   <script>
     var storage = window.sessionStorage;
-    var keyname = "username";
+    var keyName = "storageKey";
 
     function loadSessionStorage() {
-      var value = document.getElementById("value");
-      value.innerHTML = "your user name is: " + storage.getItem(keyname);
+      var storageValue = document.getElementById("value");
+      storageValue.innerHTML = "your session storage data: " + storage.getItem(keyName);
     }
 
     function saveSessionlStorage() {
-      var username = document.getElementById("usrname");
-      storage.setItem(keyname, username.value);
-      var log = document.getElementById("log");
-      log.textContent = "save success";
+      var storageData = document.getElementById("data");
+      storage.setItem(keyName, storageData.value);
+      loadSessionStorage();
     }
   </script>
 </body>

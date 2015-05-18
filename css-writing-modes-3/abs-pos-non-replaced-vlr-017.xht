@@ -8,7 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#vertical-layout" title="7.1 Principles of Layout in Vertical Writing Modes" />
-  <link rel="match" href="abs-pos-non-replaced-vlr-003-ref.xht" />
+  <link rel="match" href="abs-pos-non-replaced-vlr-009-ref.xht" />
 
   <meta name="flags" content="ahem image" />
   <meta name="assert" content="When 'direction' is 'ltr' and 'left' and 'width' are 'auto' and 'right' is not 'auto', then the width becomes shrink-to-fit and then solve for 'left'." />
@@ -16,7 +16,7 @@
   <style type="text/css"><![CDATA[
   div#containing-block
     {
-      background: red url("support/bg-red-2col-3row-320x320.png");
+      background: red url("support/bg-red-2col-2row-320x320.png");
       color: transparent;
       direction: ltr;
       font: 80px/1 Ahem;
@@ -31,7 +31,7 @@
       color: green;
       left: auto;
       position: absolute;
-      right: auto;
+      right: 2em;
       width: auto;
       writing-mode: vertical-lr;
     }

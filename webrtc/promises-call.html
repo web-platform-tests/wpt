@@ -90,7 +90,7 @@ This test uses data only, and thus does not require fake media devices.
     // The createDataChannel is necessary and sufficient to make
     // sure the ICE connection be attempted.
     gFirstConnection.createDataChannel('channel');
-    
+
     var atStep = 'createOffer first';
     var offerSdp = null;
     var answerSdp = null;
@@ -126,7 +126,7 @@ This test uses data only, and thus does not require fake media devices.
       atStep = 'negotiation completed';
     })
     .catch(test.step_func(function(e) {
-      assert_unreached('Error ' + e.name + ':' + e.message + 
+      assert_unreached('Error ' + e.name + ':' + e.message +
                        ' happened at step ' + atStep);
     }));
   });

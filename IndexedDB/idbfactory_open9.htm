@@ -47,7 +47,8 @@ should_throw({
 /* Valid */
 
 function should_work(val) {
-    var t = async_test("Calling open() with version argument 1.5 should not throw.")
+    var name = format_value(val);
+    var t = async_test("Calling open() with version argument " + name + " should not throw.")
     var rq = createdb(t, val)
     rq.onupgradeneeded = function() {
         t.done()

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>WebStorage Test: Storage - key with empty string</title>
-<link rel="author" title="Intel" href="http://www.intel.com" >
-<link rel="help" href="https://w3c.github.io/webstorage/#the-storage-interface" >
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://w3c.github.io/webstorage/#the-storage-interface">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -12,10 +12,8 @@
       var storage = window[name];
       storage.clear();
 
-      storage.setItem("", "value");
-      var key = storage.key(0);
-      assert_equals(storage.getItem(key), "value");
-      assert_equals(key, "");
+      storage.setItem("", "empty string");
+      assert_equals(storage.getItem(""), "empty string");
 
     }, name + ": Check if Storage.key with empty string is valid");
   });

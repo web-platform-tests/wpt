@@ -194,7 +194,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 logger.info("Got %i unexpected results" % unexpected_count)
                 logger.suite_end()
 
-    return unexpected_total == 0
+    return unexpected_total != 0
 
 
 def main():

@@ -58,8 +58,11 @@ class RunInfo(dict):
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
         self["product"] = product
-        if not "debug" in self:
+        if debug is not None:
             self["debug"] = debug
+        elif "debug" not in self:
+            # Default to release
+            self["debug"] = False
 
     def _update_mozinfo(self, metadata_root):
         """Add extra build information from a mozinfo.json file in a parent

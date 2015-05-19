@@ -86,6 +86,14 @@ def create_parser(product_choices=None):
                         default=False,
                         help="List the tests that are disabled on the current platform")
 
+    build_type = parser.add_mutually_exclusive_group()
+    build_type.add_argument("--debug-build", dest="debug", action="store_true",
+                            default=None,
+                            help="Build is a debug build (overrides any mozinfo file)")
+    build_type.add_argument("--release-build", dest="debug", action="store_false",
+                            default=None,
+                            help="Build is a release (overrides any mozinfo file)")
+
     test_selection_group = parser.add_argument_group("Test Selection")
     test_selection_group.add_argument("--test-types", action="store",
                                       nargs="*", default=["testharness", "reftest"],

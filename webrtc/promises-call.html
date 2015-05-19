@@ -25,7 +25,7 @@ This test uses data only, and thus does not require fake media devices.
     >
   </script>
   <script type="text/javascript">
-  var test = async_test('Can set up a basic WebRTC call with no data using promises.');
+  var test = async_test('Can set up a basic WebRTC call with only data using promises.');
 
   var gFirstConnection = null;
   var gSecondConnection = null;
@@ -92,20 +92,16 @@ This test uses data only, and thus does not require fake media devices.
     gFirstConnection.createDataChannel('channel');
 
     var atStep = 'createOffer first';
-    var offerSdp = null;
-    var answerSdp = null;
 
     gFirstConnection.createOffer()
     .then(function(offer) {
-      offerSdp = offer.sdp;
       atStep = 'setLocalDescription first';
       return gFirstConnection.setLocalDescription(offer);
     })
     .then(function() {
       atStep = 'setRemoteDescription at second';
-      var parsedOffer = new RTCSessionDescription({ type: 'offer',
-                                                    sdp: offerSdp });
-      return gSecondConnection.setRemoteDescription(parsedOffer)
+      return gSecondConnection.setRemoteDescription(
+         gFirstConnection.localDescription)
     })
     .then(function() {
       atStep = 'createAnswer';
@@ -113,20 +109,18 @@ This test uses data only, and thus does not require fake media devices.
     })
     .then(function(answer) {
       atStep = 'setLocalDescription second';
-      answerSdp = answer.sdp
       return gSecondConnection.setLocalDescription(answer);
     })
     .then(function() {
-      var parsedAnswer = new RTCSessionDescription({ type: 'answer',
-                                                     sdp: answerSdp });
       atStep = 'setRemoteDescription first';
-      return gFirstConnection.setRemoteDescription(parsedAnswer);
+      return gFirstConnection.setRemoteDescription(
+          gSecondConnection.localDescription);
     })
     .then(function() {
       atStep = 'negotiation completed';
     })
     .catch(test.step_func(function(e) {
-      assert_unreached('Error ' + e.name + ':' + e.message +
+      assert_unreached('Error ' + e.name + ': ' + e.message +
                        ' happened at step ' + atStep);
     }));
   });

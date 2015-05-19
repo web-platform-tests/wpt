@@ -91,30 +91,22 @@ This test uses data only, and thus does not require fake media devices.
     // sure the ICE connection be attempted.
     gFirstConnection.createDataChannel('channel');
 
-    var atStep = 'createOffer first';
+    var atStep = 'Create offer';
 
     gFirstConnection.createOffer()
     .then(function(offer) {
-      atStep = 'setLocalDescription first';
-      return gFirstConnection.setLocalDescription(offer);
+      atStep = 'Handle offer';
+      return Promise.all([gFirstConnection.setLocalDescription(offer),
+                          gSecondConnection.setRemoteDescription(offer)])
     })
     .then(function() {
-      atStep = 'setRemoteDescription at second';
-      return gSecondConnection.setRemoteDescription(
-         gFirstConnection.localDescription)
-    })
-    .then(function() {
-      atStep = 'createAnswer';
+      atStep = 'Create answer';
       return gSecondConnection.createAnswer()
     })
     .then(function(answer) {
-      atStep = 'setLocalDescription second';
-      return gSecondConnection.setLocalDescription(answer);
-    })
-    .then(function() {
-      atStep = 'setRemoteDescription first';
-      return gFirstConnection.setRemoteDescription(
-          gSecondConnection.localDescription);
+      atStep = 'Handle answer';
+      return Promise.all([gSecondConnection.setLocalDescription(answer),
+                          gFirstConnection.setRemoteDescription(answer)])
     })
     .then(function() {
       atStep = 'negotiation completed';

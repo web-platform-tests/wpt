@@ -194,7 +194,7 @@ def run_tests(config, test_paths, product, **kwargs):
                 logger.info("Got %i unexpected results" % unexpected_count)
                 logger.suite_end()
 
-    return unexpected_total != 0
+    return unexpected_total == 0
 
 
 def main():
@@ -212,7 +212,7 @@ def main():
         elif kwargs["list_disabled"]:
             list_disabled(**kwargs)
         else:
-            return run_tests(**kwargs)
+            return not run_tests(**kwargs)
     except Exception:
         import pdb, traceback
         print traceback.format_exc()

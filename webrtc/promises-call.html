@@ -95,21 +95,29 @@ This test uses data only, and thus does not require fake media devices.
 
     gFirstConnection.createOffer()
     .then(function(offer) {
-      atStep = 'Handle offer';
-      return Promise.all([gFirstConnection.setLocalDescription(offer),
-                          gSecondConnection.setRemoteDescription(offer)])
+      atStep = 'Set local description at first';
+      return gFirstConnection.setLocalDescription(offer);
+    })
+    .then(function() {
+      atStep = 'Set remote description at second';
+      return gSecondConnection.setRemoteDescription(
+          gFirstConnection.localDescription);
     })
     .then(function() {
       atStep = 'Create answer';
       return gSecondConnection.createAnswer()
     })
     .then(function(answer) {
-      atStep = 'Handle answer';
-      return Promise.all([gSecondConnection.setLocalDescription(answer),
-                          gFirstConnection.setRemoteDescription(answer)])
+      atStep = 'Set local description at second';
+      return gSecondConnection.setLocalDescription(answer);
     })
     .then(function() {
-      atStep = 'negotiation completed';
+      atStep = 'Set remote description at first';
+      return gFirstConnection.setRemoteDescription(
+          gSecondConnection.localDescription);
+    })
+    .then(function() {
+      atStep = 'Negotiation completed';
     })
     .catch(test.step_func(function(e) {
       assert_unreached('Error ' + e.name + ': ' + e.message +

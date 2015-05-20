@@ -28,7 +28,8 @@ def browser_kwargs(**kwargs):
             "webdriver_binary": kwargs["webdriver_binary"]}
 
 
-def executor_kwargs(test_type, server_config, cache_manager, **kwargs):
+def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
+                    **kwargs):
     from selenium.webdriver import DesiredCapabilities
 
     executor_kwargs = base_executor_kwargs(test_type, server_config,

@@ -98,6 +98,11 @@ def generate_selection(selection, spec):
             raise ValueError('Not implemented delivery_method: ' \
                               + selection['delivery_method'])
 
+    # Obey the lint and pretty format.
+    if len(selection['meta_delivery_method']) > 0:
+        selection['meta_delivery_method'] = "\n    " + \
+                                            selection['meta_delivery_method']
+
     with open(test_filename, 'w') as f:
         f.write(test_html_template % selection)
 
@@ -109,7 +114,7 @@ def generate_test_source_files(spec_json):
     spec_json_js_template = get_template('spec_json.js.template')
     with open(generated_spec_json_filename, 'w') as f:
         f.write(spec_json_js_template
-                % {'spec_json': json.dumps(spec_json, indent = 2)})
+                % {'spec_json': json.dumps(spec_json)})
 
     # Create list of excluded tests.
     exclusion_dict = {}

@@ -219,6 +219,15 @@
       "referrer_url": "*"
     },
     {
+      "name": "area-tag",
+      "source_protocol": "*",
+      "target_protocol": "*",
+      "delivery_method": "*",
+      "origin": "*",
+      "subresource": "area-tag",
+      "referrer_url": "*"
+    },
+    {
       "name": "source-https-unsupported-by-web-platform-tests-built-in-runner",
       "source_protocol": "https",
       "target_protocol": "*",

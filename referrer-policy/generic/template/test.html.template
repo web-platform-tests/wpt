@@ -6,8 +6,7 @@ http://testthewebforward.org/docs/test-templates.html#script-test-with-metadata
 <html>
   <head>
     <title>Referrer-Policy: %(spec_title)s</title>
-    <meta name="description" content="%(spec_description)s">
-    %(meta_delivery_method)s
+    <meta name="description" content="%(spec_description)s">%(meta_delivery_method)s
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <!-- Common global functions for referrer-policy tests. -->

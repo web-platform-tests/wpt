@@ -3,6 +3,9 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<meta name='flags' content='interact'>
+<meta name="timeout" content="long">
+<p>Switch the page to background, then switch back.</p>
 <iframe src='about:blank'></iframe>
 <script>
 
@@ -28,13 +31,19 @@ window.frames[0].screen.orientation.addEventListener('change', function() {
     orientationChangeEventListenerCallsForFrame++;
 });
 
+document.addEventListener("visibilitychange", function () {
+    if(document.hidden)
+        runNoEventHiddenTest();
+    else
+        runOrientationUpdateVisibleTest();
+});
+
 function runEventVisibleTest() {
     eventVisibleTest.step(function() {
         assert_false(document.hidden);
     });
 
-    if (window.testRunner)
-        window.testRunner.setMockScreenOrientation("landscape-primary");
+    screen.orientation.lock("landscape-primary").then(function() {}, function() {});
 
     orientationChangeEventContinuation = function() {
         eventVisibleTest.step(function() {
@@ -43,20 +52,16 @@ function runEventVisibleTest() {
         });
         eventVisibleTest.done();
 
-        runNoEventHiddenTest();
     };
 }
 
 function runNoEventHiddenTest() {
-    if (window.testRunner)
-        testRunner.setPageVisibility("hidden");
 
     noEventHiddenTest.step(function() {
         assert_true(document.hidden);
     });
 
-    if (window.testRunner)
-        window.testRunner.setMockScreenOrientation("portrait-primary");
+    screen.orientation.lock("portrait-primary").then(function() {}, function() {});
 
     noEventHiddenTest.step(function() {
         assert_equals(orientationChangeEventListenerCalls, 1);
@@ -72,12 +77,9 @@ function runOrientationUnchangeHiddenTest() {
     });
     orientationUnchangeHiddenTest.done();
 
-    runOrientationUpdateVisibleTest();
 }
 
 function runOrientationUpdateVisibleTest() {
-    if (window.testRunner)
-        testRunner.setPageVisibility("visible");
 
     orientationChangeEventContinuation = function() {
         orientationUpdateVisibleTest.step(function() {

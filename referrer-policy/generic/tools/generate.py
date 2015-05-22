@@ -3,6 +3,8 @@
 import os, sys, json
 from common_paths import *
 import spec_validator
+import argparse
+
 
 def expand_test_expansion_pattern(spec_test_expansion, test_expansion_schema):
     expansion = {}
@@ -36,11 +38,13 @@ def permute_expansion(expansion, selection = {}, artifact_index = 0):
             yield next_selection
 
 
-def generate_selection(selection, spec):
+def generate_selection(selection, spec, subresource_path,
+                       test_html_template_basename):
     selection['spec_name'] = spec['name']
     selection['spec_title'] = spec['title']
     selection['spec_description'] = spec['description']
     selection['spec_specification_url'] = spec['specification_url']
+    selection['subresource_path'] = subresource_path
     # Oddball: it can be None, so in JS it's null.
     selection['referrer_policy_json'] = json.dumps(spec['referrer_policy'])
 
@@ -48,9 +52,8 @@ def generate_selection(selection, spec):
     test_directory = os.path.dirname(test_filename)
     full_path = os.path.join(spec_directory, test_directory)
 
-    test_html_template_basename = 'test.html.template'
-
     test_html_template = get_template(test_html_template_basename)
+    test_js_template = get_template("test.js.template")
     disclaimer_template = get_template('disclaimer.template')
 
     html_template_filename = os.path.join(template_directory,
@@ -62,6 +65,11 @@ def generate_selection(selection, spec):
            test_root_directory)}
 
     selection['generated_disclaimer'] = generated_disclaimer.rstrip()
+
+    # Adjust the template for the test invoking JS. Indent it to look nice.
+    indent = "\n" + " " * 6;
+    test_js_template = indent + test_js_template.replace("\n", indent);
+    selection['test_js'] = test_js_template % selection
 
     # Directory for the test files.
     try:
@@ -107,7 +115,7 @@ def generate_selection(selection, spec):
         f.write(test_html_template % selection)
 
 
-def generate_test_source_files(spec_json):
+def generate_test_source_files(spec_json, target):
     test_expansion_schema = spec_json['test_expansion_schema']
     specification = spec_json['specification']
 
@@ -115,6 +123,9 @@ def generate_test_source_files(spec_json):
     with open(generated_spec_json_filename, 'w') as f:
         f.write(spec_json_js_template
                 % {'spec_json': json.dumps(spec_json)})
+
+    # Choose a debug/release template depending on the target.
+    html_template = "test.%s.html.template" % target
 
     # Create list of excluded tests.
     exclusion_dict = {}
@@ -133,16 +144,27 @@ def generate_test_source_files(spec_json):
             for selection in permute_expansion(expansion):
                 selection_path = selection_pattern % selection
                 if not selection_path in exclusion_dict:
-                    generate_selection(selection, spec)
+                    subresource_path = \
+                        spec_json["subresource_path"][selection["subresource"]]
+                    generate_selection(selection,
+                                       spec,
+                                       subresource_path,
+                                       html_template)
                 else:
                     print 'Excluding selection:', selection_path
 
 
-def main():
+def main(target):
     spec_json = load_spec_json();
     spec_validator.assert_valid_spec_json(spec_json)
-    generate_test_source_files(spec_json)
+    generate_test_source_files(spec_json, target)
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Test suite generator utility')
+    parser.add_argument('-t', '--target', type = str,
+        choices = ("release", "debug"), default = "release",
+        help = 'Sets the appropriate template for generating tests')
+    # TODO(kristijanburnik): Add option for the spec_json file.
+    args = parser.parse_args()
+    main(args.target)

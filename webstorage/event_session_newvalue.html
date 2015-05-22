@@ -17,9 +17,10 @@
     <h1>event_session_newValue</h1>
     <div id="log"></div>
     <script>
+        var t = async_test("newvalue property test of session event");
+
         test(function() {
             sessionStorage.clear();
-            var t = async_test("newvalue property test of session event");
             var expected = ['user1', 'user2', null]
             function onStorageEvent(event) {
                 t.step(function() {

@@ -17,9 +17,10 @@
     <h1>event_local_key</h1>
     <div id="log"></div>
     <script>
+        var t = async_test("key property test of local event");
+
         test(function() {
             localStorage.clear();
-            var t = async_test("key property test of local event");
             var expected = ['name', null]
             function onStorageEvent(event) {
                 t.step(function() {

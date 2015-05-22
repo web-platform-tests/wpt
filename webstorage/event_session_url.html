@@ -17,9 +17,10 @@
     <h1>event_session_url</h1>
     <div id="log"></div>
     <script>
+        var t = async_test("url property test of session event");
+
         test(function() {
             sessionStorage.clear();
-            var t = async_test("url property test of session event");
             function onStorageEvent(event) {
                 t.step(function() {
                     var url = window.location.href;

@@ -17,8 +17,9 @@
     <h1>event_session_storageArea</h1>
     <div id="log"></div>
     <script>
+        var t = async_test("storageArea property test of session event");
+
         test(function() {
-            var t = async_test("storageArea property test of session event");
             function onStorageEvent(event) {
                 t.step(function() {
                     assert_equals(event.storageArea.length, 1);

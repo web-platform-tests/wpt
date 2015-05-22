@@ -17,9 +17,10 @@
     <h1>event_local_url</h1>
     <div id="log"></div>
     <script>
+        var t = async_test("url property test of local event");
+
         test(function() {
             localStorage.clear();
-            var t = async_test("url property test of local event");
             function onStorageEvent(event) {
                 t.step(function() {
                     var url = window.location.href;

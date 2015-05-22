@@ -17,9 +17,10 @@
     <h1>event_local_oldValue</h1>
     <div id="log"></div>
     <script>
+        var t = async_test("oldValue property test of local event");
+
         test(function() {
             localStorage.clear();
-            var t = async_test("oldValue property test of local event");
             var expected = [null, 'user1', null]
             function onStorageEvent(event) {
                 t.step(function() {

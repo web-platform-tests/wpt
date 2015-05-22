@@ -1,0 +1,2 @@
+var SERVER_REQUEST_HEADERS = %(headers)s;
+postMessage(SERVER_REQUEST_HEADERS);

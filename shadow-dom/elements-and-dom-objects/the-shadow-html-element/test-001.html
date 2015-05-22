@@ -30,7 +30,7 @@ test(unit(function (ctx) {
 	d.body.appendChild(host);
 
 	//Shadow root to play with
-	var s = createSR(host);
+	var s = host.createShadowRoot();
 
 	var div = d.createElement('div');
 	div.innerHTML = '' +
@@ -38,9 +38,29 @@ test(unit(function (ctx) {
 		'<shadow><span id="shadowId">This is a shadow fallback content</span></shadow>';
 	s.appendChild(div);
 
-	assert_true(s.querySelector('#shadowId').offsetTop > 0, 'Fallback content should be rendered');
+	assert_true(s.querySelector('#shadowId').offsetTop == 0, 'Shadow fallback content should not be rendered in this case');
 
 }), 'A_10_05_01_T01');
+
+test(unit(function (ctx) {
+
+	var d = newRenderedHTMLDocument(ctx);
+
+	var host = d.createElement('div');
+	d.body.appendChild(host);
+
+	//Shadow root to play with
+	var s = host.createShadowRoot();
+
+	var div = d.createElement('div');
+	div.innerHTML = '' +
+		'<span id="spandex">This is a shadow root content</span>' +
+		'<content><span id="contentId">This is a content fallback</span></content>';
+	s.appendChild(div);
+
+	assert_true(s.querySelector('#contentId').offsetTop > 0, 'Fallback content should be rendered');
+
+}), 'A_10_05_01_T02');
 </script>
 </body>
 </html>

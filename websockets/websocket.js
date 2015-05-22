@@ -1,8 +1,8 @@
 var __SERVER__NAME = "{{host}}";
 var __PORT = {{ports[ws][0]}};
-var __SECURE__PORT = {{ports[ws][0]}}; //Should be wss
+var __SECURE__PORT = null; //{{ports[ws][0]}}; //Should be wss
 var __NEW__PORT = __PORT; //All ports are non-default for now
-var __NEW_SECURE_PORT = __PORT; //All ports are non-default for now
+var __NEW__SECURE__PORT = __PORT; //All ports are non-default for now
 var __PATH = "echo";
 var __CONTROLPATH = "control";
 var __PROTOCOL = "echo";
@@ -74,6 +74,9 @@ function CreateWebSocketWithRepeatedProtocols() {
 function CreateWebSocket(isSecure, isProtocol, isProtocols) {
     IsWebSocket();
     if (isSecure) {
+        if (__SECURE__PORT === null) {
+            throw new Error("wss not yet supported");
+        }
         __URL = "wss://" + __SERVER__NAME + ":" + __SECURE__PORT + "/" + __PATH;
     }
     else {

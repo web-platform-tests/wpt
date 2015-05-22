@@ -12,10 +12,7 @@ var t = async_test(function(t) {
   assert_equals(v.networkState, v.NETWORK_NO_SOURCE);
   v.removeAttribute('src'); // will make resource selection algorithm revert to NETWORK_EMPTY and abort (in the sync section)
   assert_equals(v.networkState, v.NETWORK_NO_SOURCE);
-  window.onload = t.step_func(function() {
-    v.onloadstart = null;
-    t.done();
-  });
+  window.onload = t.step_func(function() { t.done(); });
 });
 </script>
 <script>

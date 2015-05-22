@@ -6,36 +6,36 @@
   <script src="../../resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>FieldSet_validationMessage</h3>
-	</p>
-	
-	<hr>
+  <p>
+    <h3>FieldSet_validationMessage</h3>
+  </p>
+  
+  <hr>
 
-	<div id="log"></div>
+  <div id="log"></div>
 
-	<form method="post"
-		  enctype="application/x-www-form-urlencoded"
-		  action="" 
-		  id="input_form">
-		<fieldset id="input_field">
- 		</fieldset>
-	</form>
-	<script>
+  <form method="post"
+      enctype="application/x-www-form-urlencoded"
+      action="" 
+      id="input_form">
+    <fieldset id="input_field">
+     </fieldset>
+  </form>
+  <script>
 
-		var field = document.getElementById("input_field");
+    var field = document.getElementById("input_field");
 
-		if (typeof(field.validationMessage) == "string") {
-			test(function() {
-				assert_equals(field.validationMessage, "", "validationMessage attribute is not correct.");
-			});
-		} else {
-			test(function() {
-				assert_unreached("validationMessage attribute is not exist.");
-			});
-		}
+    if (typeof(field.validationMessage) == "string") {
+      test(function() {
+        assert_equals(field.validationMessage, "", "validationMessage attribute is not correct.");
+      });
+    } else {
+      test(function() {
+        assert_unreached("validationMessage attribute is not exist.");
+      });
+    }
 
-	</script>
+  </script>
 
  </body>
 </html>

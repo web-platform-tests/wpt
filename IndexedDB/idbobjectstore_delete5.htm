@@ -1,51 +1,32 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-    <title> IDBObjectStore.delete() - removes all of the records in the range </title>
-    <script type="text/javascript" src="support.js"></script>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
-        var objectStoreName = "objectstore";
-        var db = null;
-        
-        var t = async_test();
-        
-        function RunTest() {
-            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
-            rqOpen.onupgradeneeded = t.step_func(function(event) {
-                db = event.target.result;
-                db.onerror = t.step_func(assert_database_error);
-                var objStore = db.createObjectStore(objectStoreName);
-                for(var i = 0; i < 10; i++) {
-                    objStore.add({property:"data"}, i);
-                }
-            });
-            rqOpen.onerror = t.step_func(assert_open_request_error);
-            rqOpen.onsuccess = t.step_func(DeleteRecordsAndVerifyCount);
-        }
-        
-        function DeleteRecordsAndVerifyCount() {
-            var txn = db.transaction(objectStoreName, "readwrite");
-            var objStore = txn.objectStore(objectStoreName);
-            objStore.delete(IDBKeyRange.bound(3,6));
-            var rqCount = objStore.count();
-            rqCount.onsuccess = t.step_func(function(event) {
-                assert_equals(event.target.result, 6, 'event.target.result');
-                t.done();
-            });
-        }
-        
-        add_completion_callback(function() { if(db) db.close(); });
-        
-        setup(function() {
-            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
-            rqDelete.onsuccess = t.step_func( RunTest );
-        });
-    </script>
-</head>
-<body>
-    <div id="log"></div>
-</body>
-</html>
+<title>IDBObjectStore.delete() - removes all of the records in the range</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=support.js></script>
+<script>
+    var db
+    var open_rq = createdb(async_test())
+
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result
+        var os = db.createObjectStore("store")
+
+        for(var i = 0; i < 10; i++)
+            os.add("data" + i, i)
+    }
+
+    open_rq.onsuccess = function (e) {
+        var os = db.transaction("store", "readwrite")
+                   .objectStore("store")
+
+        os.delete( IDBKeyRange.bound(3, 6) )
+        os.count().onsuccess = this.step_func(function(e)
+        {
+            assert_equals(e.target.result, 6, "Count after deleting 3-6 from 10");
+            this.done();
+        })
+    }
+</script>
+
+<div id=log></div>

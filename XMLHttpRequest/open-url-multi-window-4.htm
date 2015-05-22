@@ -18,6 +18,7 @@
       var test = async_test()
       function init() {
         test.step(function() {
+          var hasErrorEvent = false
           var client = new self[0].XMLHttpRequest()
           client.onreadystatechange = function() { 
             test.step(function() {
@@ -28,7 +29,13 @@
           }
           client.addEventListener('error', function(){
             test.step(function() {
+              hasErrorEvent = true
               assert_equals(client.readyState, 4, "readyState is 4 when error listener fires")
+            })
+          })
+          client.addEventListener('loadend', function(){
+            test.step(function() {
+              assert_true(hasErrorEvent, "should get an error event")
               test.done()
             })
           })

@@ -5,12 +5,15 @@
 <script src="../constants.js"></script>
 <div id="log"></div>
 <script>
-var objects = [
-  [Node, "Node interface object"],
-  [Node.prototype, "Node prototype object"],
-  [document.createElement("foo"), "Element object"],
-  [document.createTextNode("bar"), "Text object"]
-]
+var objects;
+setup(function() {
+  objects = [
+    [Node, "Node interface object"],
+    [Node.prototype, "Node prototype object"],
+    [document.createElement("foo"), "Element object"],
+    [document.createTextNode("bar"), "Text object"]
+  ]
+})
 testConstants(objects, [
   ["ELEMENT_NODE", 1],
   ["ATTRIBUTE_NODE", 2],

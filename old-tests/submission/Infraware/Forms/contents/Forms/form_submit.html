@@ -6,46 +6,46 @@
   <script src="../../resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>Form_submit</h3>
-	</p>
-	
-	<hr>
+  <p>
+    <h3>Form_submit</h3>
+  </p>
+  
+  <hr>
 
-	<div id="log"></div>
+  <div id="log"></div>
 
-	<form method="post"
-		  enctype="application/x-www-form-urlencoded"
-		  action="?x=1"
-		  id="input_form">
-	<p><input type=hidden name="custname"></p>
-	<p><input type=hidden name="custtel"></p>
-	<p><input type=hidden name="custemail"></p>
+  <form method="post"
+      enctype="application/x-www-form-urlencoded"
+      action="?x=1"
+      id="input_form">
+  <p><input type=hidden name="custname"></p>
+  <p><input type=hidden name="custtel"></p>
+  <p><input type=hidden name="custemail"></p>
  
-	</form>
-	<script>
+  </form>
+  <script>
 
-		var form = document.getElementById("input_form");
+    var form = document.getElementById("input_form");
 
-		try
-		{
-			var url = location.href;
-			pos = url.lastIndexOf("?x=1");
-			if (pos == -1) {
-				form.submit();
-			} else {
-				test(function() {
-					assert_true(true, "calling of submit method is successed.");
-				});
-			}
-		}
-		catch (e) {
-			test(function() {
-				assert_unreached("Error is raised.");
-			});
-		}
+    try
+    {
+      var url = location.href;
+      pos = url.lastIndexOf("?x=1");
+      if (pos == -1) {
+        form.submit();
+      } else {
+        test(function() {
+          assert_true(true, "calling of submit method is successed.");
+        });
+      }
+    }
+    catch (e) {
+      test(function() {
+        assert_unreached("Error is raised.");
+      });
+    }
 
-	</script>
+  </script>
 
  </body>
 </html>

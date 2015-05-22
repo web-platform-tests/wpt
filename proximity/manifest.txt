@@ -1,2 +1,0 @@
-ProximityEvent_tests.html							
-

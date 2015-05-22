@@ -1,32 +1,18 @@
 <!DOCTYPE html>
-<html>
-<head>  
-    <title>IDBFactory.open() - request has no source</title>
-    <script type="text/javascript" src="support.js"></script>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
-        var t = async_test(); 
-        
-        function RunTest() {
-            var rqOpen = window.indexedDB.open(databaseName);
-            rqOpen.onsuccess = t.step_func( function(event) {
-                assert_equals(event.target.source, null, "event.target.source")
-                t.done();
-            });
-            rqOpen.onerror = t.step_func( assert_open_request_error );
-        }
-        
-        add_completion_callback(function() { if(db) db.close(); });
-        
-        setup(function() {
-            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
-            rqDelete.onsuccess = t.step_func( RunTest );
-        });
-    </script>
-</head>
-<body>
-    <div id="log">
-    </div>
-</body>
-</html>
+<title>IDBFactory.open() - request has no source</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=support.js></script>
+
+<script>
+    var open_rq = createdb(async_test(), undefined, 9);
+
+    open_rq.onupgradeneeded = function(e) {};
+    open_rq.onsuccess = function(e) {
+        assert_equals(e.target.source, null, "source")
+        this.done();
+    }
+</script>
+
+<div id="log"> </div>

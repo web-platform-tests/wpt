@@ -3,7 +3,7 @@
   <head>
     <title>Hidden input element</title>
     <link rel="author" title="Kinuko Yasuda" href="mailto:kinuko@chromium.org">
-    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/forms.html#hidden-state-(type=hidden)">
+    <link rel="help" href="https://html.spec.whatwg.org/multipage/#hidden-state-(type=hidden)">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
@@ -65,6 +65,10 @@
         assert_throws("InvalidStateError", function() { el.stepUp(); }, "");
       }, "stepUp does not apply for hidden");
 
+    test(function(){
+      var el = document.getElementById("hidden");
+      assert_false(el.willValidate);
+    }, "input type=hidden is barred from constraint validation");
   </script>
   </body>
 </html>

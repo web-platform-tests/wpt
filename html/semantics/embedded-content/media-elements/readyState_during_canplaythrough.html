@@ -7,7 +7,7 @@
   <script src="/common/media.js"></script>
  </head>
  <body>
-  <p><a href="http://dev.w3.org/html5/spec/Overview.html#mediaevents">spec reference</a></p>
+  <p><a href="https://html.spec.whatwg.org/multipage/#mediaevents">spec reference</a></p>
   <audio id="a" autoplay controls>
   </audio>
   <video id="v" autoplay controls>
@@ -39,7 +39,7 @@ test(function() {
     t.done();
     v.pause();
   }, false);
-  v.src = getVideoURI("/media/movie_300") + "?" + new Date() + Math.random();
+  v.src = getVideoURI("/media/movie_5") + "?" + new Date() + Math.random();
 }, "video events - readyState property during canplaythrough");
   </script>
  </body>

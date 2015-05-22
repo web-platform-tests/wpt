@@ -1,17 +1,17 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Properties of the window object</title>
-<link rel="author" title="Ms2ger" href="ms2ger@gmail.com">
+<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
 <link rel="help" href="http://ecma-international.org/ecma-262/5.1/#sec-15.1">
-<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#interface-prototype-object">
-<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-attributes">
-<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-operations">
-<link rel="help" href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#eventtarget">
-<link rel="help" href="http://www.whatwg.org/html/#window">
-<link rel="help" href="http://www.whatwg.org/html/#windowtimers">
-<link rel="help" href="http://www.whatwg.org/html/#windowbase64">
-<link rel="help" href="http://www.whatwg.org/html/#windowsessionstorage">
-<link rel="help" href="http://www.whatwg.org/html/#windowlocalstorage">
+<link rel="help" href="https://heycam.github.io/webidl/#interface-prototype-object">
+<link rel="help" href="https://heycam.github.io/webidl/#es-attributes">
+<link rel="help" href="https://heycam.github.io/webidl/#es-operations">
+<link rel="help" href="https://dom.spec.whatwg.org/#eventtarget">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#window">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#windowtimers">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#windowbase64">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#windowsessionstorage">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#windowlocalstorage">
 <link rel="help" href="https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#dom-window-getselection">
 <link rel="help" href="http://dev.w3.org/csswg/cssom/#widl-def-Window">
 <link rel="help" href="http://dev.w3.org/csswg/cssom-view/#widl-def-Window">
@@ -28,8 +28,8 @@ function assert_data_propdesc(pd, Writable, Enumerable, Configurable) {
 function assert_accessor_propdesc(pd, hasSetter, Enumerable, Configurable) {
   assert_equals(typeof pd, "object");
   assert_equals(typeof pd.get, "function");
-  assert_equals("set" in pd, hasSetter,
-                "Should have a setter for writable and replaceable attributes");
+  assert_true("set" in pd,
+              "Should always have a setter property on the property descriptor");
   assert_equals(typeof pd.set, hasSetter ? "function" : "undefined");
   assert_equals(pd.enumerable, Enumerable);
   assert_equals(pd.configurable, Configurable);
@@ -42,7 +42,7 @@ var unforgeableAttributes = [
   "top"
 ];
 
-var replacableAttributes = [
+var replaceableAttributes = [
   "self",
   "locationbar",
   "menubar",
@@ -51,7 +51,23 @@ var replacableAttributes = [
   "statusbar",
   "toolbar",
   "frames",
-  "length"
+  "parent",
+  "external",
+  "length",
+
+  // CSSOM-View
+  "screen",
+  "scrollX",
+  "scrollY",
+  "pageXOffset",
+  "pageYOffset",
+  "innerWidth",
+  "innerHeight",
+  "screenX",
+  "screenY",
+  "outerWidth",
+  "outerHeight",
+  "devicePixelRatio",
 ];
 
 var methods = [
@@ -64,7 +80,7 @@ var methods = [
   "confirm",
   "prompt",
   "print",
-  "showModalDialog",
+  // See below: "showModalDialog",
   "postMessage",
 
   // WindowBase64
@@ -90,12 +106,16 @@ var methods = [
   "scrollBy"
 ];
 
+// We would like to remove showModalDialog from the platform,
+// see <https://www.w3.org/Bugs/Public/show_bug.cgi?id=26437>.
+if ("showModalDialog" in window) {
+  methods.push("showModalDialog");
+}
+
 var readonlyAttributes = [
   "history",
-  "parent",
   "frameElement",
   "navigator",
-  "external",
   "applicationCache",
 
   // WindowSessionStorage
@@ -103,19 +123,6 @@ var readonlyAttributes = [
 
   // WindowLocalStorage
   "localStorage",
-
-  // CSSOM-View
-  "screen",
-  "innerWidth",
-  "innerHeight",
-  "scrollX",
-  "pageXOffset",
-  "scrollY",
-  "pageYOffset",
-  "screenX",
-  "screenY",
-  "outerWidth",
-  "outerHeight"
 ];
 
 var writableAttributes = [
@@ -253,8 +260,7 @@ test(function() {
       assert_equals(window[id], EventTargetProto[id]);
       assert_data_propdesc(Object.getOwnPropertyDescriptor(EventTargetProto, id),
                            true, true, true);
-      assert_data_propdesc(Object.getOwnPropertyDescriptor(window, id),
-                           true, true, true);
+      assert_equals(Object.getOwnPropertyDescriptor(window, id), undefined);
     }, "EventTarget method: " + id);
   });
 }, "EventTarget interface");
@@ -297,7 +303,7 @@ test(function() {
                                id === "location", true, false);
     }, "Window unforgeable attribute: " + id);
   });
-  replacableAttributes.forEach(function(id) {
+  replaceableAttributes.forEach(function(id) {
     test(function() {
       var WindowProto = Window.prototype;
       assert_true(id in window, id + " in window");

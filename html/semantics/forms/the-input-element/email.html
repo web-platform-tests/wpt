@@ -1,127 +1,58 @@
 <!DOCTYPE html>
-<html>
-<head>
-        <title>Input Email</title>
-        <link rel="author" title="Kazuki Kanamori" href="mailto:yogurito@gmail.com">
-        <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#e-mail-state-(type=email)">
-        <script src="/resources/testharness.js"></script>
-        <script src="/resources/testharnessreport.js"></script>
-</head>
-<body>
-        <h1>Input email</h1>
-        <input type="email" id="single_email" value="user@example.com"/>
-        <input type="email" id="multiple_email" value="user1@example.com, user2@test.com" multiple/>
+<title>Input Email</title>
+<link rel="author" title="Kazuki Kanamori" href="mailto:yogurito@gmail.com">
+<link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#e-mail-state-(type=email)">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<input type="email" id="single_email" value="user@example.com"/>
+<input type="email" id="multiple_email" value="user1@example.com, user2@test.com" multiple/>
+<div id="log"></div>
 
-        <div id="log">
-        </div>
+<script type="text/javascript">
+  var single = document.getElementById('single_email'),
+      mult = document.getElementById('multiple_email'),
 
-        <script type="text/javascript">
-        // Regexp from http://www.w3.org/html/wg/drafts/html/master/forms.html#e-mail-state-(type=email)
-        var validEmailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-        test(function(){
-                assert_equals(document.getElementById('single_email').type, 'email')
-        }, 'email type supported on input element');
-        test(function(){
-                var attributes = document.getElementById('multiple_email').attributes;
-                assert_equals(attributes.length, 4);
-                for (var i = 0; i < attributes.length; i++) {
-                        if (attributes[i].name === 'multiple') {
-                                return;
-                        }
-                }
-                assert_unreached();
-        }, '"multiple" attribute supported for input:email element');
+  test(function(){
+    assert_false(single.multiple);
+  }, "single_email doesn't have the multiple attribute");
 
-        // When the multiple attribute is NOT specified on the element
-        var element = document.getElementsByTagName('input')[0];
-        test(function(){
-                element.value = '';
-                assert_equals(element.value, '');
-        }, 'User agents should allow the user to set the value to the empty string');
-        test(function(){
-                element.value = 'user2@example.com\u000A';
-                assert_equals(element.value, 'user2@example.com');
-        }, 'User agents must not allow users to insert "LF" (U+000A) character into the value');
-        test(function(){
-                element.value = 'user3@example.com\u000D';
-                assert_equals(element.value, 'user3@example.com');
-        }, 'User agents must not allow users to insert "CR" (U+000D) character into the value');
-        test(function(){
-                element.value = 'user4@example.com';
-                assert_true(validEmailRegexp.test(element.value));
-        }, 'The value attribute, if specified and not empty, must have a value that is a single valid e-mail address');
-        test(function(){
-                element.setAttribute('multiple', null);
-                element.value = '  user@example.com  , user2@example.com  ';
-                element.removeAttribute('multiple');
-                assert_equals(element.value, 'user@example.com');
-                assert_true(validEmailRegexp.test(element.value));
-        }, 'When the multiple attribute is removed, the user agent must run the value sanitization algorithm');
+  test(function(){
+    single.value = 'user2@example.com\u000A';
+    assert_equals(single.value, 'user2@example.com');
+    single.value = 'user3@example.com\u000D';
+    assert_equals(single.value, 'user3@example.com');
+  }, 'value should be sanitized: strip line breaks');
 
-        // When the mutiple attribute is specified on the element
-        element = document.getElementById('multiple_email');
-        test(function(){
-                var values = element.values;
-                assert_not_equals(typeof values, 'undefined', 'type of values');
-                assert_equals(values.length, 2);
-                assert_equals(values[0], 'user1@example.com');
-                assert_equals(values[1], 'user2@test.com');
-        }, 'The element\'s values are the result of splitting on commas the element\'s value.');
-        test(function(){
-                element.value = '';
-                var values = element.values;
-                assert_not_equals(typeof values, 'undefined', 'type of values');
-                values.push('user,@example.com');
-                assert_equals(values.length, 0);
-        }, 'User agents must not allow users to set any individual value to a string containing "," (U+002C) character');
-        test(function(){
-                element.value = '';
-                var values = element.values;
-                assert_not_equals(typeof values, 'undefined', 'type of values');
-                values.push('user@e\u000Axample.com');
-                assert_equals(values.length, 0);
-        }, 'User agents must not allow users to set any individual value to a string containing "LF" (U+000A) character');
-        test(function(){
-                element.value = '';
-                var values = element.values;
-                assert_not_equals(typeof values, 'undefined', 'type of values');
-                values.push('user@e\u000Dxample.com');
-                assert_equals(values.length, 0);
-        }, 'User agents must not allow users to set any individual value to a string containing "CR" (U+000D) character');
+  test(function(){
+    single.value = 'user4@example.com';
+    assert_true(single.validity.valid);
+    single.value = 'example.com';
+    assert_false(single.validity.valid);
+  }, 'Email address validity');
 
-        // Whenever the user changes the element\'s values, the user agent must run the following steps
-        test(function(){
-                element.value = '  user1@example.com  , user2@test.com, user3@test.com  ';
-                var values = element.values;
-                assert_not_equals(typeof values, 'undefined', 'type of values');
-                test(function(){
-                        assert_equals(values.length, 3);
-                }, 'Let latest values be a copy of the element\'s values.');
-                test(function(){
-                        assert_equals(values[0], 'user1@example.com');
-                        assert_equals(values[1], 'user2@test.com');
-                        assert_equals(values[2], 'user3@test.com');
-                }, 'Strip leading and trailing whitespace from each value in latest values')
-                test(function(){
-                        assert_equals(element.value, 'user1@example.com,user2@test.com,user3@test.com');
-                }, 'Let the element\'s value be the result of concatenating all the values in latest values, separating each value from the next by a single "," (U+002C) character, maintaining the list\'s order.');
-        });
+  test(function(){
+    single.setAttribute('multiple', true);
+    single.value = '  user@example.com  , user2@example.com  ';
+    assert_equals(single.value, 'user@example.com,user2@example.com');
+    single.removeAttribute('multiple');
+    assert_equals(single.value, 'user@example.com,user2@example.com');
+  }, 'When the multiple attribute is removed, the user agent must run the value sanitization algorithm');
 
-        // When the multiple attribute is set, the user agent must run the value sanitization algorithm
-        test(function(){
-                element.value = '  user1@example.com  , user2@test.com, user3@test.com  ';
-                var values = element.values;
-                assert_not_equals(typeof values, 'undefined', 'type of values');
-                test(function(){
-                        assert_equals(values[0], 'user1@example.com');
-                        assert_equals(values[1], 'user2@test.com');
-                        assert_equals(values[2], 'user3@test.com');
-                }, 'Split on commas the element\'s value, strip leading and trailing whitespace from each resulting token, if any, and let the element\'s values be the (possibly empty) resulting list of (possibly empty) tokens, maintaining the original order.');
-                test(function(){
-                        assert_equals(element.value, 'user1@example.com,user2@test.com,user3@test.com');
-                }, 'Let the element\'s value be the result of concatenating the element\'s values, separating each value from the next by a single "," (U+002C) character, maintaining the list\'s order');
-        });
-        </script>
+  test(function(){
+    assert_true(mult.multiple);
+  }, "multiple_email has the multiple attribute");
 
-</body>
-</html>
+  test(function(){
+    mult.value = '  user1@example.com  , user2@test.com, user3@test.com  ';
+    assert_equals(mult.value, 'user1@example.com,user2@test.com,user3@test.com');
+  }, "run the value sanitization algorithm after setting a new value");
+
+  test(function(){
+    mult.value = 'user1@example.com,user2@test.com,user3@test.com';
+    assert_true(mult.validity.valid);
+
+    mult.value = 'u,ser1@example.com,user2@test.com,user3@test.com';
+    assert_false(mult.validity.valid);
+  }, "valid value is a set of valid email addresses separated by a single ','");
+</script>

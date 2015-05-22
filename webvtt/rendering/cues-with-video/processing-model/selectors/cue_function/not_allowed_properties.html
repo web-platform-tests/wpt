@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <title>WebVTT rendering, ::cue(), properties that should not affect the cue</title>
+<link rel="match" href="not_allowed_properties-ref.html">
 <style>
 html { overflow:hidden }
 body { margin:0 }
@@ -34,13 +35,13 @@ body { margin:0 }
     word-spacing: 50px;
 }
 </style>
-<script src="../../support/refTestWait.js"></script>
+<script src="/common/reftest-wait.js"></script>
 <video width="1280" height="720" autoplay onplaying="this.onplaying = null; this.pause(); takeScreenshot();">
-    <source src="../../media/white.webm" type="video/webm">
-    <source src="../../media/white.mp4" type="video/mp4">
+    <source src="/media/white.webm" type="video/webm">
+    <source src="/media/white.mp4" type="video/mp4">
     <track src="../../support/test.vtt">
+    <script>
+    document.getElementsByTagName('track')[0].track.mode = 'showing';
+    </script>
 </video>
-<script>
-document.getElementsByTagName('track')[0].track.mode = 'showing';
-</script>
 </html>

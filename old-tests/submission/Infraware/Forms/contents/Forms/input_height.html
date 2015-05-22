@@ -6,37 +6,37 @@
   <script src="../../resources/testharnessreport.js"></script>
  </head>
  <body>
-	<p>
-		<h3>input_height</h3>
-	</p>
-	
-	<hr>
+  <p>
+    <h3>input_height</h3>
+  </p>
+  
+  <hr>
 
-	<div id="log"></div> 
+  <div id="log"></div> 
 
-	<form method="post"
-		  enctype="application/x-www-form-urlencoded"
-		  action=""
-		  name="input_form">
-	<p><input type='image' id='input_text'></p>
-	</form>
+  <form method="post"
+      enctype="application/x-www-form-urlencoded"
+      action=""
+      name="input_form">
+  <p><input type='image' id='input_text'></p>
+  </form>
 
-	<script>
-		
-		var input_text = document.getElementById("input_text");
-		input_text.height = 30;
+  <script>
+    
+    var input_text = document.getElementById("input_text");
+    input_text.height = 30;
 
-		if (typeof(input_text.height) == "number") {
-			test(function() {
-				assert_equals(input_text.height, 30, "formTarget attribute is not correct.");
-			});
-		} else {
-			test(function() {
-				assert_unreached("height attribute is not exist.");
-			});
-		}
+    if (typeof(input_text.height) == "number") {
+      test(function() {
+        assert_equals(input_text.height, 30, "formTarget attribute is not correct.");
+      });
+    } else {
+      test(function() {
+        assert_unreached("height attribute is not exist.");
+      });
+    }
 
-	</script>
+  </script>
 
  </body>
 </html>

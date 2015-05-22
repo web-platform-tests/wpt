@@ -10,7 +10,11 @@ repo_root = os.path.abspath(os.path.join(__file__, "../.."))
 sys.path.insert(1, os.path.join(repo_root, "tools", "webdriver"))
 sys.path.insert(1, os.path.join(repo_root, "tools", "wptserve"))
 from wptserve import server
+<<<<<<< HEAD
 from selenium import webdriver
+=======
+from webdriver.driver import WebDriver
+>>>>>>> upstream/master
 
 
 class WebDriverBaseTest(unittest.TestCase):
@@ -33,10 +37,16 @@ def create_driver():
     config = ConfigParser.ConfigParser()
     config.read('webdriver.cfg')
     section = os.environ.get("WD_BROWSER", 'firefox')
+<<<<<<< HEAD
     if config.has_option(section, 'url'):
         url = config.get(section, "url")
     else:
         url = 'http://127.0.0.1:4444/wd/hub'
+=======
+    url = 'http://127.0.0.1:4444/wd/hub'
+    if config.has_option(section, 'url'):
+        url = config.get(section, "url")
+>>>>>>> upstream/master
     capabilities = None
     if config.has_option(section, 'capabilities'):
         try:
@@ -46,6 +56,7 @@ def create_driver():
     mode = 'compatibility'
     if config.has_option(section, 'mode'):
         mode = config.get(section, 'mode')
+<<<<<<< HEAD
     if section == 'firefox':
         driver = webdriver.Firefox()
     elif section == 'chrome':
@@ -58,3 +69,7 @@ def create_driver():
         driver = webdriver.Android()
 
     return driver
+=======
+
+    return WebDriver(url, {}, capabilities, mode)
+>>>>>>> upstream/master

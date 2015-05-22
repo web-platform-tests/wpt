@@ -17,22 +17,31 @@
         objStore  = null,
         objStore2 = null;
 
+    function is_cloneable(o) {
+        try {
+            self.postMessage(o, '*');
+            return true;
+        } catch (ex) {
+            return false;
+        }
+    }
+
     function invalid_key(desc, key) {
         var t = async_test(document.title + " - " + desc);
 
         // set the current test, and run it
         db.setTest(t).onupgradeneeded = function(e) {
             objStore = objStore || e.target.result.createObjectStore("store");
-            try { objStore.add("value", key); } catch(e) { console.log(e) };
             assert_throws('DataError', function() {
                 objStore.add("value", key);
             });
 
-            objStore2 = objStore2 || e.target.result.createObjectStore("store2", { keyPath: ["x", "keypath"] });
-            assert_throws('DataError', function() {
-                objStore2.add({ x: "value", keypath: key });
-            });
-
+            if (is_cloneable(key)) {
+                objStore2 = objStore2 || e.target.result.createObjectStore("store2", { keyPath: ["x", "keypath"] });
+                assert_throws('DataError', function() {
+                    objStore2.add({ x: "value", keypath: key });
+                });
+            }
             this.done();
         };
     }
@@ -49,14 +58,14 @@
     // booleans
     invalid_key( 'true'  , true );
     invalid_key( 'false' , false );
-    
+
     // null/NaN/undefined
     invalid_key( 'null'      , null );
     invalid_key( 'NaN'       , NaN );
     invalid_key( 'undefined' , undefined );
     invalid_key( 'undefined2');
 
-    // functions 
+    // functions
     invalid_key( 'function() {}', function(){} );
 
     // objects
@@ -71,7 +80,7 @@
     invalid_key( 'new String()'                 , new String() );
     invalid_key( 'new Number()'                 , new Number() );
     invalid_key( 'new Boolean()'                , new Boolean() );
-    
+
     // arrays
     invalid_key( '[{}]'                     , [{}] );
     invalid_key( '[[], [], [], [[ Date ]]]' , [ [], [], [], [[ Date ]] ] );

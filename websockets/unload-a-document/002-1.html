@@ -6,18 +6,18 @@ var controller = opener || parent;
 var t = controller.t;
 var assert_equals = controller.asset_equals;
 var assert_unreached = controller.assert_unreached ;
+var uuid = controller.token;
+t.add_cleanup(function() {delete sessionStorage[uuid];});
 t.step(function() {
   // this test can fail if the document is unloaded on navigation e.g. due to OOM
-  if (sessionStorage.second_run) {
-    delete sessionStorage.second_run;
+  if (sessionStorage[uuid]) {
     assert_unreached('document was discarded');
   } else {
-    sessionStorage.second_run = 'true';
-    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/echo');
+    sessionStorage[uuid] = 'true';
+    var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
     ws.onopen = t.step_func(function(e) {
-      
+
       setTimeout(t.step_func(function() {
-        delete sessionStorage.second_run;
         assert_equals(ws.readyState, ws.CLOSED, 'ws.readyState');
         t.done();
       }), 4000);
@@ -26,7 +26,7 @@ t.step(function() {
         controller.navigate();
       });
     })
-    ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
+    ws.onerror = ws.onmessage = ws.onclose = t.step_func(function(e) {assert_unreached("Got unexpected event " + e.type)});
   }
 });
 </script>

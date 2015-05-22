@@ -55,7 +55,7 @@ assertions:
   - id: toDataURL.lowercase
     text: "User agents *must* convert the provided type to ASCII lowercase before establishing if they support that type<^>."
   - id: toDataURL.jpeg
-    previously: [ 0, "image/png", false ] 
+    previously: [ 0, "image/png", false ]
     text: "image/jpeg<^>"
   - id: toDataURL.jpeg.quality
     text: "The second argument, if it is a number in the range 0.0 to 1.0 inclusive, *must* be treated as the desired quality level<^>."
@@ -715,4 +715,3 @@ assertions:
     text: "Whenever the toDataURL() method of a canvas element whose origin-clean flag is set to false is called, the method *must* raise a SECURITY_ERR exception<^>."
   - id: security.getImageData
     text: "Whenever the getImageData() method of the 2D context of a canvas element whose origin-clean flag is set to false is called with otherwise correct arguments, the method *must* raise a SECURITY_ERR exception<^>."
-

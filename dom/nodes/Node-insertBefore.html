@@ -4,17 +4,19 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-function testLeafNode(node) {
+function testLeafNode(nodeName, createNodeFunction) {
   test(function() {
+    var node = createNodeFunction();
     assert_throws(new TypeError(), function() { node.insertBefore(null, null) })
-  }, "Calling insertBefore with a non-Node first argument on a leaf node " + format_value(node) + " must throw TypeError.")
+  }, "Calling insertBefore with a non-Node first argument on a leaf node " + nodeName + " must throw TypeError.")
   test(function() {
+    var node = createNodeFunction();
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(document.createTextNode("fail"), null) })
     // Would be step 2.
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(node, null) })
     // Would be step 3.
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(node, document.createTextNode("child")) })
-  }, "Calling insertBefore an a leaf node " + format_value(node) + " must throw HIERARCHY_REQUEST_ERR.")
+  }, "Calling insertBefore an a leaf node " + nodeName + " must throw HIERARCHY_REQUEST_ERR.")
 }
 
 test(function() {
@@ -24,13 +26,10 @@ test(function() {
   assert_throws(new TypeError(), function() { document.body.insertBefore({'a':'b'}, document.body.firstChild) })
 }, "Calling insertBefore with a non-Node first argument must throw TypeError.")
 
-test(function() {
-  // Step 1.
-  testLeafNode(document.doctype)
-  testLeafNode(document.createTextNode("Foo"))
-  testLeafNode(document.createComment("Foo"))
-  testLeafNode(document.createProcessingInstruction("foo", "bar"))
-}, "Must be able to create all leaf nodes in HTML documents.")
+testLeafNode("DocumentType", function () { return document.doctype; } )
+testLeafNode("Text", function () { return document.createTextNode("Foo") })
+testLeafNode("Comment", function () { return document.createComment("Foo") })
+testLeafNode("ProcessingInstruction", function () { return document.createProcessingInstruction("foo", "bar") })
 
 test(function() {
   // Step 2.

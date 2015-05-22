@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <title>drag &amp; drop - event sequence for cross-document drag</title>
-<script type="text/javascript" src="/resources/testharness.js"></script>
 <style type="text/css">
 	/* use margins instead of padding to make sure the body begins at the top of the page */
 	html, body {
@@ -24,9 +23,10 @@
     left: 158px;
   }
 </style>
+<link rel=stylesheet href=/resources/testharness.css>
 
 <script>
-setup(function () {},{explicit_done:true,explicit_timeout:true});
+parent.setup(function () {},{explicit_done:true,explicit_timeout:true});
 window.onload = function () {
 	var orange = document.querySelector('#orange')
 	var fuchsia = document.querySelector('#fuchsia')
@@ -87,8 +87,8 @@ window.onload = function () {
 		events = events.replace(/(-doc1\.orange\.ondrag-doc1\.bubble\.ondrag-doc1\.pink\.ondragover-doc1\.bubble\.ondragover){3,}/g,'$1$1');
 		events = events.split(/-/g);
 
-		test(function () {
-			assert_array_equals(events,
+		parent.test(function () {
+			parent.assert_array_equals(events,
 
 				['doc1.orange.onmousedown', //mouse down
 				'doc1.bubble.onmousedown',
@@ -188,8 +188,11 @@ window.onload = function () {
 
 			);
 		}, 'Overall sequence');
-
-		done();
+		var div = parent.document.createElement("div");
+		div.setAttribute("id", "log");
+		parent.document.documentElement.appendChild(div);
+		parent.done();
+		document.body.appendChild(parent.document.querySelector("div"));
 	}
 };
 </script>
@@ -201,5 +204,3 @@ window.onload = function () {
 
 <p>If you have already clicked on this page, reload it.</p>
 <p>Use your pointing device to slowly drag the orange square over the pink square, then the grey square, then the yellow square, then the blue square, and release it over the blue square (make sure the mouse remains over each square for at least 1 second, and over the gaps between squares for at least 1 second). Fail if no new text appears below.</p>
-
-<div id="log"></div>

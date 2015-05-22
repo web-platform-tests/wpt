@@ -10,9 +10,15 @@ class ForwardToNothingTest(base_test.WebDriverBaseTest):
     # Get a static page that must be the same upon refresh
     def test_forwardToNothing(self):
         self.driver.get(self.webserver.where_is('navigation/forwardStart.html'))
+<<<<<<< HEAD
         body = self.driver.find_element_by_css_selector("body").text
         self.driver.forward()
         currbody = self.driver.find_element_by_css_selector("body").text
+=======
+        body = self.driver.find_element_by_css("body").text
+        self.driver.go_forward()
+        currbody = self.driver.find_element_by_css("body").text
+>>>>>>> upstream/master
         self.assertEqual(body, currbody)
 
 

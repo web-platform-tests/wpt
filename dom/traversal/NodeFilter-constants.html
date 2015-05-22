@@ -5,9 +5,12 @@
 <script src="../constants.js"></script>
 <div id="log"></div>
 <script>
-var objects = [
-  [NodeFilter, "NodeFilter interface object"],
-]
+var objects;
+setup(function() {
+  objects = [
+    [NodeFilter, "NodeFilter interface object"],
+  ]
+})
 testConstants(objects, [
   ["FILTER_ACCEPT", 1],
   ["FILTER_REJECT", 2],

@@ -11,17 +11,17 @@
    request handlers.
  */
 
-var TIME_NORMAL_LOAD = 1000;
-var TIME_LATE_TIMEOUT = 800;
-var TIME_XHR_LOAD = 600;
-var TIME_REGULAR_TIMEOUT = 400;
-var TIME_SYNC_TIMEOUT = 200;
-var TIME_DELAY = 200;
+var TIME_NORMAL_LOAD = 5000;
+var TIME_LATE_TIMEOUT = 4000;
+var TIME_XHR_LOAD = 3000;
+var TIME_REGULAR_TIMEOUT = 2000;
+var TIME_SYNC_TIMEOUT = 1000;
+var TIME_DELAY = 1000;
 
 /*
  * This should point to a resource that responds with a text/plain resource after a delay of TIME_XHR_LOAD milliseconds.
  */
-var STALLED_REQUEST_URL = "resources/delay.py?ms=" + (TIME_XHR_LOAD);
+var STALLED_REQUEST_URL = "delay.py?ms=" + (TIME_XHR_LOAD);
 
 var inWorker = false;
 try {
@@ -29,6 +29,9 @@ try {
 } catch (e) {
   inWorker = true;
 }
+
+if (!inWorker)
+  STALLED_REQUEST_URL = "resources/" + STALLED_REQUEST_URL;
 
 function message(obj) {
   if (inWorker)

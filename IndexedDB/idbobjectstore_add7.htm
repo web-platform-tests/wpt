@@ -1,65 +1,47 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-    <title> IDBObjectStore.add() - autoIncrement and out-of-line keys </title>
-    <script type="text/javascript" src="support.js"></script>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
-        var objectStoreName = "objectstore";
-        var record = {property:"data"};
-        var db = null;
-        
-        var t = async_test();
-        
-        function RunTest() {
-            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
-            rqOpen.onupgradeneeded = t.step_func(function(event) {
-                db = event.target.result;
-                db.onerror = t.step_func(assert_database_error);
-                var objStore = db.createObjectStore(objectStoreName, {autoIncrement:true});
-                objStore.add(record);
-                objStore.add(record);
-                objStore.add(record);
-                objStore.add(record);
-            });
-            rqOpen.onerror = t.step_func(assert_open_request_error);
-            rqOpen.onsuccess = t.step_func(VerifyKeysAreCorrect);
-        }
-        
-        function VerifyKeysAreCorrect() {
-            var txn = db.transaction(objectStoreName, "readonly");
-            var objStore = txn.objectStore(objectStoreName);
-            
-            var previousValue = null;
-            var rqCursor = objStore.openCursor();
-            rqCursor.onsuccess = t.step_func(function(event) {
-                var cursor = this.result;
-                if (cursor) {
-                    if (null == previousValue) {
-                        previousValue = cursor.key;
-                        cursor.continue();
-                    } else {
-                        assert_equals(cursor.key, previousValue+1, 'cursor.key');
-                        previousValue++;
-                        cursor.continue();
-                    }
-                } else {
-                    t.done();
-                }
-            });
-        }
-        
-        add_completion_callback(function() { if(db) db.close(); });
-        
-        setup(function() {
-            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
-            rqDelete.onsuccess = t.step_func( RunTest );
+<meta charset="utf-8">
+<title>IDBObjectStore.add() - autoIncrement and out-of-line keys </title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    var db,
+      t = async_test(),
+      record = { property: "data" },
+      expected_keys = [ 1, 2, 3, 4 ];
+
+    var open_rq = createdb(t);
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result;
+        var objStore = db.createObjectStore("store", { autoIncrement: true });
+
+        objStore.add(record);
+        objStore.add(record);
+        objStore.add(record);
+        objStore.add(record);
+    };
+
+    open_rq.onsuccess = function(e) {
+        var actual_keys = [],
+          rq = db.transaction("store")
+                 .objectStore("store")
+                 .openCursor();
+
+        rq.onsuccess = t.step_func(function(e) {
+            var cursor = e.target.result;
+
+            if (cursor) {
+                actual_keys.push(cursor.key);
+                cursor.continue();
+            }
+            else {
+                assert_array_equals(actual_keys, expected_keys);
+                t.done();
+            }
         });
-    </script>
-</head>
-<body>
-    <div id="log"></div>
-</body>
-</html>
+    };
+</script>
+
+<div id="log"></div>

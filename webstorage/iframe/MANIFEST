@@ -1,7 +1,0 @@
-support local_change_item_iframe.html
-support local_security_iframe.html
-support local_set_item_clear_iframe.html
-support local_set_item_iframe.html
-support session_change_item_iframe.html
-support session_set_item_clear_iframe.html
-support session_set_item_iframe.html

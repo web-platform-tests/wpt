@@ -45,7 +45,7 @@ http://trac.webkit.org/browser/trunk/LayoutTests/storage/indexeddb/cursor-overlo
         checkCursorDirection("store.openCursor(IDBKeyRange.only(0), 'nextunique')", "nextunique");
         checkCursorDirection("store.openCursor(IDBKeyRange.only(0), 'prev')", "prev");
         checkCursorDirection("store.openCursor(IDBKeyRange.only(0), 'prevunique')", "prevunique");
-    
+
         checkCursorDirection("index.openCursor()", "next");
         checkCursorDirection("index.openCursor(0)", "next");
         checkCursorDirection("index.openCursor(0, 'next')", "next");

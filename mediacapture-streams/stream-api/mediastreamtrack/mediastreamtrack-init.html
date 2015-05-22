@@ -3,21 +3,25 @@
 <head>
 <title>getUserMedia({video:true}) creates a stream with a properly initialized video track</title>
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
-<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediastreamtrack">
+<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#idl-def-MediaStreamTrack">
+<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#life-cycle-and-media-flow">
+<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#widl-MediaStreamTrack-kind">
+<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#widl-MediaStreamTrack-enabled">
+<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#widl-MediaStreamTrack-readyState">
 <link rel='stylesheet' href='/resources/testharness.css' media='all'/>
 </head>
 <body>
-<p>When prompted, accept to share your video stream.</p>
-<h1>Description</h1>
-<p>This test checks that the video track of MediaStream object returned by the success callback in getUserMedia is correctly initialized.</p>
+<p class="instructions">When prompted, accept to share your video stream.</p>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks that the video track of MediaStream
+object returned by the success callback in getUserMedia is correctly initialized.</p>
 
 <div id='log'></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/resources/webidl2/lib/webidl2.js></script>
 <script src=/resources/idlharness.js></script>
-<script src=../../featuredetection.js></script>
-<script src=prefix.js></script>
+<script src="/common/vendor-prefix.js" data-prefixed-objects='[{"ancestors":["navigator"], "name":"getUserMedia"}]'></script>
 <script>
 var t = async_test("Tests that the video MediaStreamTrack objects are properly initialized", {timeout:10000});
 var track = null

@@ -2,8 +2,6 @@
 <meta charset="utf-8">
 <title>HTML Test: document base URL</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
-<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#document-base-url">
-<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#terminology-0">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -12,37 +10,43 @@
 <body onload="on_load()">
   <div id="log"></div>
   <script>
+    var t1 = async_test("The document base URL of a document containing one or more base elements with href attributes is the frozen base URL of the first base element in the document that has an href attribute, in tree order.");
 
-  var t1 = async_test("The document base URL must be the value of href attribute of the base element"),
-      t2 = async_test("The document base URL must be document base URL of the container's"),
-      t3 = async_test("The document base URL must be the base URL of the creator's");
+    function on_load() {
+      t1.step(function () {
+        var base = document.createElement("base");
+        base.setAttribute("href", "/foo/bar");
+        document.head.appendChild(base);
+        assert_equals(document.baseURI, base.href, "The document base URL should be URL of the first base element that has an href attribute.");
+      });
+      t1.done();
+    }
 
-  function on_load() {
-    t1.step(function () {
-      var base = document.createElement("base");
-      base.setAttribute("href", "http://www.example.com/");
-      document.head.appendChild(base);
-      assert_equals(base.href, "http://www.example.com/", "The base.href should be 'http://www.example.com/'.");
-      assert_equals(document.baseURI, base.href, "The document.baseURI should equal to base.href.");
-    });
-    t1.done();
+    async_test(function() {
+      var iframe = document.createElement("iframe");
+      iframe.onload = this.step_func_done(function () {
+        assert_equals(iframe.contentDocument.baseURI, iframe.contentDocument.location.href, "The document base URL should be the document's address.");
+      });
+      iframe.setAttribute("src", "/common/blank.html");
+      document.body.appendChild(iframe);
+    }, "The fallback base URL of a document containing no base element is the document's address.");
 
-    t2.step(function () {
-      var fr = document.createElement("iframe");
-      fr.setAttribute("src", "test.html");
-      document.body.appendChild(fr);
-      assert_equals(fr.contentDocument.baseURI, document.baseURI, "The baseURI should equal to the container's document base URL.");
-    });
-    t2.done();
+    async_test(function () {
+      var iframe = document.createElement("iframe");
+      iframe.onload = this.step_func_done(function () {
+        assert_equals(iframe.contentDocument.baseURI, document.baseURI, "The document base URL should be the creator document's base URL.");
+      });
+      iframe.setAttribute("src", "about:blank");
+      document.body.appendChild(iframe);
+    }, "The fallback base URL of a document whose address is about:blank is the document base URL of the creator document.");
 
-    t3.step(function () {
-      var fr = document.createElement("iframe");
-      fr.setAttribute("src", "about:blank");
-      document.body.appendChild(fr);
-      assert_equals(fr.contentDocument.baseURI, document.baseURI, "The baseURI should equal to the creator's base URL.");
-    });
-    t3.done();
-  }
-
+    async_test(function () {
+      var iframe = document.createElement("iframe");
+      iframe.onload = this.step_func_done(function () {
+        assert_equals(iframe.contentDocument.baseURI, document.baseURI, "The document base URL should be the containing document's base URL.");
+      });
+      iframe.setAttribute("srcdoc", "<p>foobar</p>");
+      document.body.appendChild(iframe);
+    }, "The fallback base URL of an iframe srcdoc document is the document base URL of the document's browsing context's browsing context container's document.");
   </script>
 </body>

@@ -36,7 +36,7 @@
 
     onload = t.step_func(test)
     /* onload doesn't fire in this test, a fallback.. */
-    setTimeout( test, 800 );
+    setTimeout(t.step_func(test), 800 );
 </script>
   </body>
 </html>

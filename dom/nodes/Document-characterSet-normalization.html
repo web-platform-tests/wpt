@@ -1,7 +1,7 @@
 <!doctype html>
-<title>document.characterSet normalization tests</title>
+<title>document.characterSet and inputEncoding normalization tests</title>
 <link rel=author title="Aryeh Gregor" href=ayg@aryeh.name>
-<meta name=timeout value=long>
+<meta name=timeout content=long>
 <div id=log></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -9,12 +9,17 @@
 <script>
 "use strict";
 
-// Taken straight from the encoding spec.
+// Taken straight from https://encoding.spec.whatwg.org/
 var encodingMap = {
   "utf-8": [
     "unicode-1-1-utf-8",
     "utf-8",
     "utf8",
+    // As we use <meta>, utf-16 will map to utf-8 per
+    // https://html.spec.whatwg.org/multipage/#documentEncoding
+    "utf-16",
+    "utf-16le",
+    "utf-16be",
   ],
   "ibm866": [
     "866",
@@ -195,6 +200,9 @@ var encodingMap = {
     "us-ascii",
     "windows-1252",
     "x-cp1252",
+    // As we use <meta>, x-user-defined will map to windows-1252 per
+    // https://html.spec.whatwg.org/multipage/#documentEncoding
+    "x-user-defined"
   ],
   "windows-1253": [
     "cp1253",
@@ -293,21 +301,11 @@ var encodingMap = {
     "ksc_5601",
     "windows-949",
   ],
-  "iso-2022-kr": [
+  "replacement": [
     "csiso2022kr",
+    "iso-2022-cn",
+    "iso-2022-cn-ext",
     "iso-2022-kr",
-  ],
-// """A meta tag was used to declare the character encoding as UTF-16. This was
-//    interpreted as an UTF-8 declaration instead."""
-//  "utf-16": [
-//    "utf-16",
-//    "utf-16le",
-//  ],
-//  "utf-16be": [
-//    "utf-16be",
-//  ],
-  "x-user-defined": [
-    "x-user-defined",
   ],
 };
 
@@ -343,22 +341,38 @@ Object.keys(encodingMap).forEach(function(name) {
   }
 });
 
+function expected_case(encoding_label) {
+  if (encoding_label === 'big5') {
+    return 'Big5';
+  }
+  if (encoding_label === 'shift_jis') {
+    return 'Shift_JIS';
+  }
+  return encoding_label.toUpperCase();
+}
+
 Object.keys(encodingMap).forEach(function(name) {
   encodingMap[name].forEach(function(label) {
     var iframe = document.createElement("iframe");
     var t = async_test("Name " + format_value(name) +
-                       " has label " + format_value(label));
+                       " has label " + format_value(label) + " (characterSet)");
+    var t2 = async_test("Name " + format_value(name) +
+                       " has label " + format_value(label) + " (inputEncoding)");
     /*
-    iframe.src = "data:text/html,<!doctype html>" + 
+    iframe.src = "data:text/html,<!doctype html>" +
                  '<meta charset="' + label + '">';
     */
     iframe.src = "encoding.py?label=" + label;
     iframe.onload = function() {
       t.step(function() {
-        assert_equals(iframe.contentDocument.characterSet.toLowerCase(), name);
+        assert_equals(iframe.contentDocument.characterSet, expected_case(name));
+      });
+      t2.step(function() {
+        assert_equals(iframe.contentDocument.inputEncoding, expected_case(name));
       });
       document.body.removeChild(iframe);
       t.done();
+      t2.done();
     };
     document.body.appendChild(iframe);
   });

@@ -7,7 +7,7 @@
   <script src="/common/media.js"></script>
  </head>
  <body>
-  <p><a href="http://dev.w3.org/html5/spec/Overview.html#mediaevents">spec reference</a></p>
+  <p><a href="https://html.spec.whatwg.org/multipage/#mediaevents">spec reference</a></p>
   <audio id="a" controls>
   </audio>
   <video id="v" controls>
@@ -29,7 +29,7 @@ test(function() {
   v.addEventListener("loadstart", function() {
     t.done();
   }, false);
-  v.src = getVideoURI("/media/movie_300") + "?" + new Date() + Math.random();
+  v.src = getVideoURI("/media/movie_5") + "?" + new Date() + Math.random();
 }, "video events - loadstart");
   </script>
  </body>

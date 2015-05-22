@@ -1,52 +1,32 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-    <title> IDBObjectStore.put() - Attempt to put a record where a value being indexed does not meet the constraints of a valid key </title>
-    <script type="text/javascript" src="support.js"></script>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
-        var objectStoreName = "objectstore";
-        var indexName = "index";
-        var records = [{indexedProperty:{property:"data"}},
-                       {indexedProperty:"string"},
-                       {indexedProperty:1},
-                       {indexedProperty:new Date()},
-                       {indexedProperty:new RegExp(/test/i)},
-                       {indexedProperty:[{property:"data"}]}];var record = {key:1, indexedProperty:{property:"data"}};
-        var db = null;
-        
-        var t = async_test();
-        
-        function RunTest() {
-            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
-            rqOpen.onupgradeneeded = t.step_func(function(event) {
-                db = event.target.result;
-                db.onerror = t.step_func(assert_database_error);
-                var objStore = db.createObjectStore(objectStoreName, {autoIncrement:true});
-                var index = objStore.createIndex(indexName, "indexedProperty");
-                for(var i = 0; i < records.length; i++) {
-                    objStore.put(records[i]);
-                }
-                var rqCount = index.count();
-                rqCount.onsuccess = t.step_func(function(event) {
-                    assert_equals(event.target.result, 3, 'event.target.result');
-                    t.done();
-                });
-            });
-            rqOpen.onerror = t.step_func(assert_open_request_error);
+<meta charset="utf-8">
+<title>IDBObjectStore.put() - Put a record where a value being indexed does not meet the constraints of a valid key </title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    var db,
+      t = async_test(),
+      record = { key: 1, indexedProperty: { property: "data" } };
+
+    var open_rq = createdb(t);
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result;
+
+        var rq,
+          objStore = db.createObjectStore("store", { keyPath: "key" });
+
+        objStore.createIndex("index", "indexedProperty");
+
+        rq = objStore.put(record);
+
+        assert_true(rq instanceof IDBRequest);
+        rq.onsuccess = function() {
+            t.done();
         }
-        
-        add_completion_callback(function() { if(db) db.close(); });
-        
-        setup(function() {
-            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
-            rqDelete.onsuccess = t.step_func( RunTest );
-        });
-    </script>
-</head>
-<body>
-    <div id="log"></div>
-</body>
-</html>
+    };
+</script>
+
+<div id="log"></div>

@@ -1,41 +1,24 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>IDBDatabase.transaction() - attempt to open a transaction with invalid scope</title>
-    <script type="text/javascript" src="support.js"></script>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
-        var objectStoreName = "objectstore";
-        var db = null;
+<title>IDBDatabase.transaction() - attempt to open a transaction with invalid scope</title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
 
-        var t = async_test(); 
-        function RunTest() {
-            var rqOpen = window.indexedDB.open(databaseName);
-            rqOpen.onsuccess = t.step_func( function (event) {
-                try {
-                    db = event.target.result;
-                    db.onerror = t.step_func( assert_database_error );
-                    db.transaction(objectStoreName);
-                } catch (ex) {
-                    assert_equals(ex.name, "NotFoundError", "ex.name") 
-                    t.done();
-                    return;
-                }
-                assert_expected_exception();
-            });
-            rqOpen.onerror = t.step_func( assert_open_request_error );
-        }
-        
-        add_completion_callback(function() { if(db) db.close(); });
-        
-        setup(function() {
-            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
-            rqDelete.onsuccess = t.step_func( RunTest );
-        });
-    </script>
-</head>
-<body>
-    <div id="log"></div>
-</body>
-</html>
+<script>
+
+var db,
+  t = async_test(),
+  open_rq = createdb(t);
+
+open_rq.onupgradeneeded = function() {};
+open_rq.onsuccess = function(e) {
+    db = e.target.result;
+
+    assert_throws('NotFoundError', function() { db.transaction('non-existing'); });
+    t.done();
+};
+
+</script>
+
+<div id="log"></div>

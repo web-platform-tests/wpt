@@ -6,7 +6,7 @@
   testing:
     - fallback
   code: |
-    @assert canvas.childNodes.length == 1;
+    @assert canvas.childNodes.length === 1;
 
 - name: fallback.multiple
   desc: Fallback content with multiple elements
@@ -14,7 +14,7 @@
     - fallback
   fallback: '<p class="fallback">FAIL</p><p class="fallback">FAIL</p>'
   code: |
-    @assert canvas.childNodes.length == 2;
+    @assert canvas.childNodes.length === 2;
 
 - name: fallback.nested
   desc: Fallback content containing another canvas (mostly testing parsers)
@@ -22,7 +22,7 @@
     - fallback
   fallback: '<canvas><p class="fallback">FAIL (fallback content)</p></canvas><p class="fallback">FAIL (fallback content)</p>'
   code: |
-    @assert canvas.childNodes.length == 2;
+    @assert canvas.childNodes.length === 2;
 
 - name: type.name
   desc: HTMLCanvasElement type and toString
@@ -198,7 +198,7 @@
         ("empty", "", None),
         ("onlyspace", "  ", None),
         ("space", "  100", 100),
-        ("whitespace", "\r\n\t\f100", 100),
+        ("whitespace", "\n\t\f100", 100),
         ("plus", "+100", 100),
         ("minus", "-100", None),
         ("octal", "0100", 100),
@@ -222,7 +222,7 @@
 
             # With "100%", Opera gets canvas.width = 100 but renders at 100% of the frame width,
             # so check the CSS display width
-            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") == "%spx";\n' % (exp, )
+            code += '@assert window.getComputedStyle(canvas, null).getPropertyValue("width") === "%spx";\n' % (exp, )
 
         code += "@assert canvas.getAttribute('width') === %r;\n" % string
         code += "@assert canvas.getAttribute('height') === %r;\n" % string
@@ -262,8 +262,8 @@
     - size.css
   canvas: 'width="50" height="30" style="width: 100px; height: 50px"'
   code: |
-    @assert canvas.width == 50;
-    @assert canvas.height == 30;
+    @assert canvas.width === 50;
+    @assert canvas.height === 30;
   expected: size 100 50
 
 - name: size.large
@@ -279,8 +279,8 @@
     var n = 2147483647; // 2^31 - 1, which should be supported by any sensible definition of "long"
     canvas.width = n;
     canvas.height = n;
-    @assert canvas.width == n;
-    @assert canvas.height == n;
+    @assert canvas.width === n;
+    @assert canvas.height === n;
 #  expected: size 2147483647 2147483647 # not a good idea to generate the expected image in this case...
 
 - name: initial.colour
@@ -609,7 +609,7 @@
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.drawImage(img, 0, 0);
         @assert pixel 12,20 == 255,255,0,255;
@@ -649,7 +649,7 @@
     ctx.fillRect(75, 0, 25, 25);
     var img = new Image();
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.drawImage(img, 0, 25);
         // (The alpha values do not really survive float->int conversion, so just
@@ -693,7 +693,7 @@
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.drawImage(img, 0, 0);
         @assert pixel 12,20 ==~ 255,255,0,255 +/- 8;
@@ -735,7 +735,7 @@
       ctx.fillRect(0, 0, 100, 50);
       var img = new Image();
       deferTest();
-      img.onload = wrapFunction(function ()
+      img.onload = t.step_func_done(function ()
       {
           ctx.drawImage(img, 0, 0);
           @assert pixel 50,25 ==~ 63,127,63,255 +/- 8;
@@ -772,7 +772,7 @@
       img_hi.onload = function ()
       {
           var img_lo = new Image();
-          img_lo.onload = wrapFunction(function ()
+          img_lo.onload = t.step_func_done(function ()
           {
               ctx.drawImage(img_hi, 0, 0, 50, 50, 0, 0, 50, 50);
               ctx.drawImage(img_lo, 0, 0, 50, 50, 50, 0, 50, 50);
@@ -842,7 +842,7 @@
 # TODO: work out what security exception should be thrown
 # TODO: test same-origin vs same-host
 
-- name: security.drawImage.image
+- name: security.drawImage.image.sub
   desc: drawImage of different-origin image makes the canvas origin-unclean
   mozilla: { disabled } # relies on external resources
   testing:
@@ -850,19 +850,19 @@
     - security.toDataURL
     - security.getImageData
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     ctx.drawImage(document.getElementById('yellow.png'), 0, 0);
     @assert throws SECURITY_ERR canvas.toDataURL();
     @assert throws SECURITY_ERR ctx.getImageData(0, 0, 1, 1);
 
-- name: security.drawImage.canvas
+- name: security.drawImage.canvas.sub
   desc: drawImage of unclean canvas makes the canvas origin-unclean
   mozilla: { disabled } # relies on external resources
   testing:
     - security.drawImage.canvas
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -873,26 +873,26 @@
     @assert throws SECURITY_ERR canvas.toDataURL();
     @assert throws SECURITY_ERR ctx.getImageData(0, 0, 1, 1);
 
-- name: security.pattern.create
+- name: security.pattern.create.sub
   desc: Creating an unclean pattern does not make the canvas origin-unclean
   mozilla: { disabled } # relies on external resources
   testing:
     - security.start
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     canvas.toDataURL();
     ctx.getImageData(0, 0, 1, 1);
     @assert true; // okay if there was no exception
 
-- name: security.pattern.cross
+- name: security.pattern.cross.sub
   desc: Using an unclean pattern makes the target canvas origin-unclean, not the pattern canvas
   mozilla: { disabled } # relies on external resources
   testing:
     - security.start
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -906,7 +906,7 @@
     canvas2.toDataURL();
     ctx2.getImageData(0, 0, 1, 1);
 
-- name: security.pattern.canvas.timing
+- name: security.pattern.canvas.timing.sub
   desc: Pattern safety depends on whether the source was origin-clean, not on whether it still is clean
   notes: Disagrees with spec on "is" vs "was"
   mozilla: { disabled } # relies on external resources
@@ -914,7 +914,7 @@
     - security.start
     - security.fillStyle.canvas
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -930,13 +930,13 @@
     ctx.getImageData(0, 0, 1, 1);
     @assert true; // okay if there was no exception
 
-- name: security.pattern.image.fillStyle
+- name: security.pattern.image.fillStyle.sub
   desc: Setting fillStyle to a pattern of a different-origin image makes the canvas origin-unclean
   mozilla: { disabled } # relies on external resources
   testing:
     - security.fillStyle.image
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     ctx.fillStyle = p;
@@ -944,13 +944,13 @@
     @assert throws SECURITY_ERR canvas.toDataURL();
     @assert throws SECURITY_ERR ctx.getImageData(0, 0, 1, 1);
 
-- name: security.pattern.canvas.fillStyle
+- name: security.pattern.canvas.fillStyle.sub
   desc: Setting fillStyle to a pattern of an unclean canvas makes the canvas origin-unclean
   mozilla: { bug: 354127, disabled } # relies on external resources
   testing:
     - security.fillStyle.canvas
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -963,13 +963,13 @@
     @assert throws SECURITY_ERR canvas.toDataURL();
     @assert throws SECURITY_ERR ctx.getImageData(0, 0, 1, 1);
 
-- name: security.pattern.image.strokeStyle
+- name: security.pattern.image.strokeStyle.sub
   desc: Setting strokeStyle to a pattern of a different-origin image makes the canvas origin-unclean
   mozilla: { disabled } # relies on external resources
   testing:
     - security.strokeStyle.image
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     ctx.strokeStyle = p;
@@ -977,13 +977,13 @@
     @assert throws SECURITY_ERR canvas.toDataURL();
     @assert throws SECURITY_ERR ctx.getImageData(0, 0, 1, 1);
 
-- name: security.pattern.canvas.strokeStyle
+- name: security.pattern.canvas.strokeStyle.sub
   desc: Setting strokeStyle to a pattern of an unclean canvas makes the canvas origin-unclean
   mozilla: { bug: 354127, disabled } # relies on external resources
   testing:
     - security.strokeStyle.canvas
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -1007,7 +1007,7 @@
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
     deferTest();
-    img.onload = wrapFunction(function ()
+    img.onload = t.step_func_done(function ()
     {
         ctx.drawImage(img, 0, 0);
         canvas.toDataURL(); // should be permitted
@@ -1016,17 +1016,16 @@
     img.src = data;
   expected: green
 
-- name: security.reset
+- name: security.reset.sub
   desc: Resetting the canvas state does not reset the origin-clean flag
   mozilla: { disabled } # relies on external resources
   testing:
     - initial.reset
   images:
-    - http://www2.w3c-test.org/html/tests/approved/images/yellow.png
+    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
   code: |
     canvas.width = 50;
     ctx.drawImage(document.getElementById('yellow.png'), 0, 0);
     @assert throws SECURITY_ERR canvas.toDataURL();
     canvas.width = 100;
     @assert throws SECURITY_ERR canvas.toDataURL();
-

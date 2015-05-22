@@ -161,31 +161,6 @@ test(function () {
     'document\'s getElementsByName() method.'
 );
 
-var currentScriptTest = async_test(
-    '<script> element in a shadow tree should not be accessible from ' +
-    'owner document\'s "currentScript" attribute, even if it is running.'
-);
-
-currentScriptTest.step(function () {
-    var div = document.createElement('div');
-    div.style.display = 'none';
-    document.body.appendChild(div);
-    var shadowRoot = div.createShadowRoot();
-    var script = document.createElement('script');
-    script.className = 'shadow';
-    script.text = [
-        'currentScriptTest.step(function () {',
-        '    assert_true(document.currentScript === null ||',
-        '                document.currentScript.className !== "shadow",',
-        '                "<script> element in a shadow tree is exposed " +',
-        '                "to document.currentScript");',
-        '});'
-    ].join('\n');
-    shadowRoot.appendChild(script);
-    document.body.removeChild(div);
-    currentScriptTest.done();
-});
-
 // ----------------------------------------------------------------------------
 // Tests for obsolete accessors
 

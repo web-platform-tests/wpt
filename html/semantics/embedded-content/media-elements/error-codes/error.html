@@ -8,7 +8,7 @@
 function error_test(tagName, src) {
   test(function() {
     assert_equals(document.createElement(tagName).error, null);
-  }, tagName + '.error is initially null');
+  }, tagName + '.error initial value');
 
   async_test(function(t) {
     var e = document.createElement(tagName);
@@ -17,7 +17,7 @@ function error_test(tagName, src) {
       assert_equals(e.error, null);
       t.done();
     });
-  }, tagName + '.error is null after resource load');
+  }, tagName + '.error after successful load');
 
   // TODO: MEDIA_ERR_ABORTED, MEDIA_ERR_NETWORK, MEDIA_ERR_DECODE
 
@@ -30,7 +30,7 @@ function error_test(tagName, src) {
       assert_equals(e.error.code, e.error.MEDIA_ERR_SRC_NOT_SUPPORTED);
       t.done();
     });
-  }, 'setting ' + tagName + '.src to the empty causes MEDIA_ERR_SRC_NOT_SUPPORTED');
+  }, tagName + '.error after setting src to the empty string');
 }
 
 error_test('audio', getAudioURI('/media/sound_5'));

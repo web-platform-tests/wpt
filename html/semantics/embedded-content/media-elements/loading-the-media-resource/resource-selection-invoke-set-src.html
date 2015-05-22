@@ -3,11 +3,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
-<video></video><!-- invokes load but sets networkState to NETWORK_EMPTY again without firing any events -->
+<video></video>
 <script>
 async_test(function(t) {
   var v = document.querySelector('video');
-  v.onloadstart = t.step_func(function() { window.onload = null; t.done(); });
+  v.onloadstart = t.step_func(function() { t.done(); });
   v.setAttribute('src', '');
   window.onload = t.step_func(function() { assert_unreached(); });
 });

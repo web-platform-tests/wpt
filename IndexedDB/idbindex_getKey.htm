@@ -1,52 +1,38 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-    <title> IDBIndex.getKey() - returns the record's primary key </title>
-    <script type="text/javascript" src="support.js"></script>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
-        var objectStoreName = "objectstore";
-        var indexName = "index";
-        var record = {key:1, indexedProperty:"data"};
-        var db = null;
-        
-        var t = async_test();
-        
-        function RunTest() {
-            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
-            rqOpen.onupgradeneeded = t.step_func(function(event) {
-                db = event.target.result;
-                db.onerror = t.step_func(assert_database_error);
-                var objStore = db.createObjectStore(objectStoreName, {keyPath:"key"});
-                var index = objStore.createIndex(indexName, "indexedProperty");
-                objStore.add(record);
-            });
-            rqOpen.onerror = t.step_func(assert_open_request_error);
-            rqOpen.onsuccess = t.step_func(GetRecordFromIndex);
-        }
-        
-        function GetRecordFromIndex() {
-            var txn = db.transaction(objectStoreName, "readonly");
-            var objStore = txn.objectStore(objectStoreName);
-            var index = objStore.index(indexName);
-            var rqGet = index.getKey(record.indexedProperty);
-            rqGet.onsuccess = t.step_func(function(event) {
-                assert_equals(event.target.result, record.key, 'event.target.result');
-                t.done();
-            });
-        }
-        
-        add_completion_callback(function() { if(db) db.close(); });
-        
-        setup(function() {
-            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
-            rqDelete.onsuccess = t.step_func( RunTest );
+<meta charset="utf-8">
+<title>IDBIndex.getKey() - returns the record's primary key </title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    var db,
+      t = async_test(),
+      record = { key:1, indexedProperty:"data" };
+
+    var open_rq = createdb(t);
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result;
+        var objStore = db.createObjectStore("test", { keyPath: "key" });
+        objStore.createIndex("index", "indexedProperty");
+
+        objStore.add(record);
+    };
+
+    open_rq.onsuccess = function(e) {
+        var rq = db.transaction("test")
+                   .objectStore("test");
+
+        rq = rq.index("index");
+
+        rq = rq.getKey("data");
+
+        rq.onsuccess = t.step_func(function(e) {
+            assert_equals(e.target.result, record.key);
+            t.done();
         });
-    </script>
-</head>
-<body>
-    <div id="log"></div>
-</body>
-</html>
+    };
+</script>
+
+<div id="log"></div>

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def main(request, response):
     last_event_id = request.headers.get("Last-Event-Id", "")
     ident = request.GET.first('ident', "test")
@@ -19,7 +21,8 @@ def main(request, response):
         data = "id: 1\nretry: 200\ndata: first %s\n\n" % cookie
     elif last_event_id == '1':
         headers.append(("Content-Type", "text/event-stream"))
-        response.set_cookie(ident, "COOKIE", expires="Fri, 27 Jul 2001 02:47:11 UTC")
+        long_long_time_ago = datetime.now().replace(year=2001, month=7, day=27)
+        response.set_cookie(ident, "COOKIE", expires=long_long_time_ago)
         data = "id: 2\ndata: second %s\n\n" % cookie
     else:
         headers.append(("Content-Type", "stop"))

@@ -5,23 +5,22 @@
 var controller = opener || parent;
 var t = controller.t;
 var assert_equals = controller.asset_equals;
-var assert_unreached = controller.assert_unreached ;
+var assert_unreached = controller.assert_unreached;
+var uuid = controller.uuid;
+t.add_cleanup(function() {delete sessionStorage[uuid];});
 t.step(function() {
-  if (sessionStorage.second_run) {
-    delete sessionStorage.second_run;
+  if (sessionStorage[uuid]) {
     t.done();
   } else {
-    sessionStorage.second_run = 'true';
-    var ws = new WebSocket(SCHEME_AND_DOMAIN+'/echo');
+    sessionStorage[uuid] = 'true';
+    var ws = new WebSocket(SCHEME_DOMAIN_PORT+'/echo');
     ws.onopen = t.step_func(function(e) {
-      
       setTimeout(t.step_func(function() {
-        delete sessionStorage.second_run;
         assert_unreached('document was not discarded');
       }), 1000);
       controller.navigate();
     })
-    ws.onerror = ws.onmessage = ws.onclose = t.step_func(function() {assert_unreached()});
+    ws.onerror = ws.onmessage = ws.onclose = t.step_func(function(e) {assert_unreached("Got unexpected event " + e.type)});
   }
 });
 </script>

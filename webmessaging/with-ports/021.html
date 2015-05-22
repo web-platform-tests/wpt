@@ -13,17 +13,18 @@ document.body.appendChild(iframe);
 </script>
 <div id=log></div>
 <script>
-var t = async_test();
-onload = t.step_func(function() {
+onload = function() {
   window[0].postMessage(1, '*', []);
   window[1].postMessage(2, '*', []);
   var i = 0;
-  onmessage = t.step_func(function(e) {
+  onmessage = function(e) {
     i++;
     assert_equals(e.data[0], i);
     assert_equals(e.data[1], location.protocol + '//' + location.host);
-  });
-  setTimeout(t.step_func(function() { assert_equals(i, 2); t.done(); }), 50);
-});
+    if (i === 2) {
+      done();
+    }
+  };
+};
 </script>
 

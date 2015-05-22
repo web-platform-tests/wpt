@@ -4,19 +4,18 @@
 <title>XMLHttpRequest: upload formdata</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata" data-tested-assertations="following::P[1]" />
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-formdata" data-tested-assertations=".. following::P[1]" />
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-formdata-append" data-tested-assertations=".. following::UL[1]/LI[1] following::UL[1]/LI[2] following::UL[1]/LI[3]" />
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-XMLHttpRequest-send-FormData" data-tested-assertations="following::DD[1]" />
+    <link rel="help" href="https://xhr.spec.whatwg.org/#interface-formdata" data-tested-assertations="following::P[1]" />
+    <link rel="help" href="https://xhr.spec.whatwg.org/#dom-formdata" data-tested-assertations=".. following::P[1]" />
+    <link rel="help" href="https://xhr.spec.whatwg.org/#dom-formdata-append" data-tested-assertations=".. following::UL[1]/LI[1] following::UL[1]/LI[2] following::UL[1]/LI[3]" />
+    <link rel="help" href="https://xhr.spec.whatwg.org/#dom-XMLHttpRequest-send-FormData" data-tested-assertations="following::DD[1]" />
 <div id="log"></div>
 <form id="form">
   <input type="hidden" name="key" value="value">
 </form>
 <script>
-  function do_test (name, creator, expected) {
+  function do_test (name, fd, expected) {
     var test = async_test(name);
     test.step(function() {
-      var fd = creator();
       var client = new XMLHttpRequest();
       client.onreadystatechange = test.step_func(function () {
         if (client.readyState !== 4) return;
@@ -28,36 +27,17 @@
     });
   }
 
-  do_test("empty formdata", function() {
-    return new FormData();
-  }, '\n');
-
-  do_test("formdata with string", function() {
+  function create_formdata () {
     var fd = new FormData();
-    fd.append('key', 'value');
+    for (var i = 0; i < arguments.length; i++) {
+      fd.append.apply(fd, arguments[i]);
+    };
     return fd;
-  }, 'key=value,\n');
+  }
 
-  do_test("formdata from form", function() {
-    return new FormData(document.getElementById('form'));
-  }, 'key=value,\n');
+  do_test("empty formdata", new FormData(), '\n');
+  do_test("formdata with string", create_formdata(['key', 'value']), 'key=value,\n');
+  do_test("formdata with named string", create_formdata(['key', new Blob(['value'], {type: 'text/plain'}), 'kv.txt']), '\nkey=kv.txt:text/plain:5,');
+  do_test("formdata from form", new FormData(document.getElementById('form')), 'key=value,\n');
 
-  do_test("formdata with blob", function() {
-    var fd = new FormData();
-    fd.append('key', new Blob(['value'], {type: 'text/x-value'}));
-    return fd;
-  }, '\nkey=blob:text/x-value:5,');
-
-  do_test("formdata with named blob", function() {
-    var fd = new FormData();
-    fd.append('key', new Blob(['value'], {type: 'text/x-value'}), 'blob.txt');
-    return fd;
-  }, '\nkey=blob.txt:text/x-value:5,');
-
-  test(function() {
-    var fd = new FormData();
-    assert_throws(new TypeError(), function() {
-      fd.append('a', 'b', 'c');
-    });
-  }, 'formdata.append() should throw if value is string and file name is given');
 </script>

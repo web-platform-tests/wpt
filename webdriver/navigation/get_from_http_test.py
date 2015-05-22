@@ -10,7 +10,11 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
     def testGetUrlWithNoRedirectionOverHttp(self):
         page = self.webserver.where_is('navigation/res/empty.html')
         self.driver.get(page)
+<<<<<<< HEAD
         url = self.driver.current_url
+=======
+        url = self.driver.get_current_url()
+>>>>>>> upstream/master
         self.assertEquals(page, url)
 
 
@@ -18,7 +22,11 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         page = self.webserver.where_is('navigation/redirect')
         self.driver.get(page)
         expected = self.webserver.where_is('navigation/res/empty.html')
+<<<<<<< HEAD
         url = self.driver.current_url
+=======
+        url = self.driver.get_current_url()
+>>>>>>> upstream/master
         self.assertEquals(expected, url)
 
 
@@ -26,7 +34,11 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         page = self.webserver.where_is('navigation/res/instant-meta-redirect.html')
         self.driver.get(page)
         expected = self.webserver.where_is('navigation/res/empty.html')
+<<<<<<< HEAD
         url = self.driver.current_url
+=======
+        url = self.driver.get_current_url()
+>>>>>>> upstream/master
         self.assertEquals(expected, url)
 
 
@@ -34,14 +46,22 @@ class GetFromHttpTest(base_test.WebDriverBaseTest):
         page = self.webserver.where_is('navigation/res/1s-meta-redirect.html')
         self.driver.get(page)
         expected = self.webserver.where_is('navigation/res/empty.html')
+<<<<<<< HEAD
         url = self.driver.current_url
+=======
+        url = self.driver.get_current_url()
+>>>>>>> upstream/master
         self.assertEquals(expected, url)
 
 
     def testGetWillNotFollowMetaRefreshThatRefreshesAfterMoreThanOneSecond(self):
         page = self.webserver.where_is('navigation/res/60s-meta-redirect.html')
         self.driver.get(page)
+<<<<<<< HEAD
         url = self.driver.current_url
+=======
+        url = self.driver.get_current_url()
+>>>>>>> upstream/master
         self.assertEquals(page, url)
 
 

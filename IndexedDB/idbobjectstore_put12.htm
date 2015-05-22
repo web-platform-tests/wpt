@@ -1,45 +1,29 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-    <title> IDBObjectStore.put() - Attempt to put a record where the record's in-line key is not defined </title>
-    <script type="text/javascript" src="support.js"></script>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script type="text/javascript">
-        var objectStoreName = "objectstore";
-        var record = {property:"data"};
-        var db = null;
-        
-        var t = async_test();
-        
-        function RunTest() {
-            var rqOpen = window.indexedDB.open(databaseName, databaseVersion);
-            rqOpen.onupgradeneeded = t.step_func(function(event) {
-                try {
-                    db = event.target.result;
-                    db.onerror = t.step_func(assert_database_error);
-                    var objStore = db.createObjectStore(objectStoreName, {keyPath:"key"});
-                    var rqPut = objStore.put(record);
-                } catch (ex) {
-                    assert_equals(ex.name, "DataError", 'ex.name');
-                    t.done();
-                    return;
-                }
-                assert_expected_exception();
-            });
-            rqOpen.onerror = t.step_func(assert_open_request_error);
-        }
-        
-        add_completion_callback(function() { if(db) db.close(); });
-        
-        setup(function() {
-            var rqDelete = window.indexedDB.deleteDatabase(databaseName);
-            rqDelete.onsuccess = t.step_func( RunTest );
-        });
-    </script>
-</head>
-<body>
-    <div id="log"></div>
-</body>
-</html>
+<meta charset="utf-8">
+<title>IDBObjectStore.put() - Attempt to put a record where the record's in-line key is not defined </title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+
+<script>
+    var db,
+      t = async_test(),
+      record = { property: "data" };
+
+    var open_rq = createdb(t);
+    open_rq.onupgradeneeded = function(e) {
+        db = e.target.result;
+
+        var rq,
+          objStore = db.createObjectStore("store", { keyPath: "key" });
+
+        assert_throws("DataError",
+            function() { rq = objStore.put(record); });
+
+        assert_equals(rq, undefined);
+        t.done();
+    };
+</script>
+
+<div id="log"></div>

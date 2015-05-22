@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Subresource Integrity</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+
+<script>
+  var xorigin_anon = location.protocol
+    + '//www1.' + location.hostname + ':' + location.port
+    + '/subresource-integrity/crossorigin-anon.js';
+
+  var xorigin_creds = location.protocol
+    + '//www1.' + location.hostname + ':' + location.port
+    + '/subresource-integrity/crossorigin-creds.js';
+
+  var xorigin_ineligible = location.protocol
+    + '//www1.' + location.hostname + ':' + location.port
+    + '/subresource-integrity/crossorigin-ineligible.js';
+
+    var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue) {
+        this.pass = pass;
+        this.name = name;
+        this.src = src;
+        this.integrityValue = integrityValue;
+        this.crossoriginValue = crossoriginValue;
+    }
+
+    SRIScriptTest.prototype.execute = function() {
+        var test = async_test(this.name);
+        var e = document.createElement("script");
+        e.src = this.src;
+        e.setAttribute("integrity", this.integrityValue);
+        if(this.crossoriginValue) {
+            e.setAttribute("crossorigin", this.crossoriginValue);
+        }
+        if(this.pass) {
+            e.addEventListener("load", function() {test.done()});
+            e.addEventListener("error", function() {
+                test.step(function(){ assert_unreached("Good load fired error handler.") })
+            });
+        } else {
+           e.addEventListener("load", function() {
+                test.step(function() { assert_unreached("Bad load succeeded.") })
+            });
+           e.addEventListener("error", function() {test.done()});
+        }
+        document.body.appendChild(e);
+    };
+
+    new SRIScriptTest(
+        true,
+        "Same-origin script with correct hash.",
+        "matching-digest.js",
+        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Same-origin script with incorrect hash.",
+        "non-matching-digest.js",
+        "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin script with multiple sha256 hashes, including correct.",
+        "matching-digest.js",
+        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin script with multiple sha256 hashes, including unknown algorithm.",
+        "matching-digest.js",
+        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
+    ).execute();
+
+    // TODO may need to change these to hash-source prefix, e.g. 'sha256' instead of 'SHA-256'
+
+    test(function() {assert_equals(getPrioritizedHashFunction('SHA-512', 'SHA-256'), 'SHA-512')},
+        "SHA-512 preferred to SHA-256.");
+
+    test(function() {assert_equals(getPrioritizedHashFunction('SHA-384', 'SHA-512'), 'SHA-512')},
+        "SHA-512 preferred to SHA-384.");
+
+    test(function() {assert_equals(getPrioritizedHashFunction('SHA-384', 'SHA-256'), 'SHA-384')},
+        "SHA-384 preferred to SHA-256.");
+
+    test(function() {assert_equals(getPrioritizedHashFunction('MD5', 'SHA-256'), 'SHA-256')},
+        "SHA-256 preferred to MD5.");
+
+    test(function() {assert_equals(getPrioritizedHashFunction('SHA-256', 'SHA-256'), '')},
+        "getPrioritizedHashFunction('SHA-256', 'SHA-256') returns empty string");
+
+    new SRIScriptTest(
+        true,
+        "Same-origin script with sha256 mismatch, sha512 match",
+        "matching-digest.js",
+        "sha512-geByvIIRspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Same-origin script with sha256 match, sha512 mismatch",
+        "matching-digest.js",
+        "sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "<crossorigin='anonymous'> with correct hash, ACAO: *",
+        xorigin_anon,
+        "sha256-r6KBpvzfcSLlbFZCj1OACLxTxVck2TOrBTEdUbwz1yU=",
+        "anonymous"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "<crossorigin='anonymous'> with incorrect hash, ACAO: *",
+        xorigin_anon,
+        "sha256-deadbeefcSLlbFZCj1OACLxTxVck2TOrBTEdUbwz1yU=",
+        "anonymous"
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "<crossorigin='use-credentials'> with correct hash, CORS-eligible",
+        xorigin_creds,
+        "sha256-sPICZvGN2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=",
+        "use-credentials"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "<crossorigin='use-credentials'> with incorrect hash CORS-eligible",
+        xorigin_creds,
+        "sha256-deadbeef2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=",
+        "use-credentials"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "<crossorigin='anonymous'> with CORS-ineligible resource",
+        xorigin_ineligible,
+        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E=",
+        "anonymous"
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Resource with Refresh header",
+        "refresh-header.js",
+        "sha256-ieQAXii4cMmZFLxSRnxfZ1KSyzCjOb+N2rQ6OaVBWyM="
+    ).execute();
+
+    new SRIScriptTest(
+        false,
+        "Resource with WWW-Authenticate header",
+        "www-authenticate-header.js",
+        "sha256-ztNCkGU1fBB5II5wihGTbFb9F2TIMaHldkbnMlp7G/M="
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin script with correct hash, options.",
+        "matching-digest.js",
+        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E=?foo=bar?spam=eggs"
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin script with unknown algorithm only.",
+        "matching-digest.js",
+        "foo666-foolUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
+    ).execute();
+
+</script>
+<!--TODO check cache-poisoned resources, transfer-encoding, 3xx redirect
+   to resource with matching hash, cross-origin leakage test as in sec5.3
+   and <link> tags -->

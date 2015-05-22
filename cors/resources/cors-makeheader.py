@@ -5,12 +5,12 @@ def main(request, response):
 
     if "check" in request.GET:
         token = request.GET.first("token")
-        try:
-            value = request.server.stash.take(token)
+        value = request.server.stash.take(token)
+        if value is not None:
             if request.GET.first("check", None) == "keep":
                 request.server.stash.put(token, value)
             body = "1"
-        except KeyError:
+        else:
             body = "0"
         return [("Content-Type", "text/plain")], body
 

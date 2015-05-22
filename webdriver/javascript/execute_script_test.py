@@ -4,10 +4,7 @@ import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
-<<<<<<< HEAD
 from selenium.webdriver.remote.webelement import WebElement
-=======
->>>>>>> upstream/master
 
 
 class ExecuteScriptTest(base_test.WebDriverBaseTest):

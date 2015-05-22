@@ -4,11 +4,7 @@ import unittest
 
 sys.path.insert(1, os.path.abspath(os.path.join(__file__, "../..")))
 import base_test
-<<<<<<< HEAD
 from selenium.common import exceptions
-=======
-from webdriver import exceptions
->>>>>>> upstream/master
 
 
 class PageLoadTimeoutTest(base_test.WebDriverBaseTest):

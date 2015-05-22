@@ -8,20 +8,12 @@ import base_test
 class ElementLocationTest(base_test.WebDriverBaseTest):
     def test_find_element_by_name(self):
         self.driver.get(self.webserver.where_is("element_location/res/elements.html"))
-<<<<<<< HEAD
         e = self.driver.find_element_by_name("name")
-=======
-        e = self.driver.find_element_by_css("*[name='name']")
->>>>>>> upstream/master
         self.assertEquals("name", e.text)
 
     def test_find_element_by_css_selector(self):
         self.driver.get(self.webserver.where_is("element_location/res/elements.html"))
-<<<<<<< HEAD
         e = self.driver.find_element_by_css_selector("#id")
-=======
-        e = self.driver.find_element_by_css("#id")
->>>>>>> upstream/master
         self.assertEquals("id", e.text)
 
     def test_find_element_by_link_text(self):
@@ -39,7 +31,6 @@ class ElementLocationTest(base_test.WebDriverBaseTest):
         e = self.driver.find_element_by_xpath("//*[@id='id']")
         self.assertEquals("id", e.text)
 
-<<<<<<< HEAD
     def test_find_elements_by_name(self):
         self.driver.get(self.webserver.where_is("element_location/res/elements.html"))
         e = self.driver.find_elements_by_name("name")
@@ -64,8 +55,6 @@ class ElementLocationTest(base_test.WebDriverBaseTest):
         self.driver.get(self.webserver.where_is("element_location/res/elements.html"))
         e = self.driver.find_elements_by_xpath("//*[@id='id']")
         self.assertEquals("id", e[0].text)
-=======
->>>>>>> upstream/master
 
 if __name__ == "__main__":
     unittest.main()

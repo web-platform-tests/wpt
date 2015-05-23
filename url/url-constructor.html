@@ -26,9 +26,14 @@ function runURLTests(raw) {
   for(var i = 0, l = urltests.length; i < l; i++) {
     var expected = urltests[i]
     test(function() {
+      if (expected.protocol === ':') {
+        assert_throws(null, function() {
+          bURL(expected.input, expected.base)
+        });
+        return;
+      }
+
       var url = bURL(expected.input, expected.base)
-      if(expected.protocol === ':' && url.protocol !== ':')
-        assert_unreached('Expected URL to fail parsing')
       assert_equals(url.protocol, expected.protocol, "scheme")
       assert_equals(url.hostname, expected.host, "host")
       assert_equals(url.port, expected.port, "port")

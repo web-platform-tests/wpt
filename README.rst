@@ -25,8 +25,14 @@ following are most significant:
 ``--product`` (defaults to `firefox`)
   The product to test against: `b2g`, `chrome`, `firefox`, or `servo`.
 
-``--binary`` (required)
+``--binary`` (required if product is `firefox`)
   The path to a binary file for the product (browser) to test against.
+
+``--webdriver_binary`` (required if product is `chrome`)
+  The path to a `*driver` binary; e.g., a `chromedriver` binary.
+
+``--certutil-binary`` (required if product is `firefox`)
+  The path to a `certutil` binary (for tests that must be run over https).
 
 ``--metadata`` (required)
   The path to a directory containing test metadata. [#]_
@@ -56,15 +62,16 @@ To test a Firefox Nightly build in an OS X environment, you might start
 wptrunner using something similar to the following example::
 
   wptrunner --metadata=~/web-platform-tests/ --tests=~/web-platform-tests/ \
-  --binary=~/mozilla-central/obj-x86_64-apple-darwin14.0.0/dist/Nightly.app/Contents/MacOS/firefox \
-  --prefs-root=~/mozilla-central/testing/profiles
+    --binary=~/mozilla-central/obj-x86_64-apple-darwin14.3.0/dist/Nightly.app/Contents/MacOS/firefox \
+    --certutil-binary=~/mozilla-central/obj-x86_64-apple-darwin14.3.0/security/nss/cmd/certutil/certutil \
+    --prefs-root=~/mozilla-central/testing/profiles
 
 And to test a Chromium build in an OS X environment, you might start
 wptrunner using something similar to the following example::
 
   wptrunner --metadata=~/web-platform-tests/ --tests=~/web-platform-tests/ \
-  --binary=~/chromium/src/out/Release/Chromium.app/Contents/MacOS/Chromium \
-  --product=chrome
+    --binary=~/chromium/src/out/Release/Chromium.app/Contents/MacOS/Chromium \
+    --webdriver-binary=/usr/local/bin/chromedriver --product=chrome
 
 -------------------------------------
 Example: How to run a subset of tests
@@ -74,8 +81,9 @@ To restrict a test run just to tests in a particular web-platform-tests
 subdirectory, use ``--include`` with the directory name; for example::
 
   wptrunner --metadata=~/web-platform-tests/ --tests=~/web-platform-tests/ \
-  --binary=/path/to/firefox --prefs-root=/path/to/testing/profiles \
-  --include=dom
+    --binary=/path/to/firefox --certutil-binary=/path/to/certutil \
+    --prefs-root=/path/to/testing/profiles \
+    --include=dom
 
 Output
 ~~~~~~
@@ -95,8 +103,9 @@ log to a file and a human-readable summary to stdout, you might start
 wptrunner using something similar to the following example::
 
   wptrunner --metadata=~/web-platform-tests/ --tests=~/web-platform-tests/ \
-  --binary=/path/to/firefox --prefs-root=/path/to/testing/profiles
-  --log-raw=output.log --log-mach=-
+    --binary=/path/to/firefox --certutil-binary=/path/to/certutil \
+    --prefs-root=/path/to/testing/profiles \
+    --log-raw=output.log --log-mach=-
 
 Expectation Data
 ~~~~~~~~~~~~~~~~

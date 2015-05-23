@@ -270,6 +270,10 @@ http://example\sexample.com
 # This should fail
 http://Goo%20\sgoo%7C|.com
 
+# This should fail
+http://[]
+http://[:]
+
 # U+3000 is mapped to U+0020 (space) which is disallowed
 http://GOO\u00a0\u3000goo.com
 

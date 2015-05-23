@@ -27,7 +27,7 @@ function runURLTests(raw) {
     var expected = urltests[i]
     test(function() {
       if (expected.protocol === ':') {
-        assert_throws(null, function() {
+        assert_throws(new TypeError(), function() {
           bURL(expected.input, expected.base)
         });
         return;

@@ -5,24 +5,23 @@
 window.wrappedJSObject.timeout_multiplier = %(timeout_multiplier)d;
 window.wrappedJSObject.explicit_timeout = %(explicit_timeout)d;
 
-window.wrappedJSObject.done = function(tests, status) {
+window.wrappedJSObject.addEventListener("message", function(event) {
+  var tests = event.data[0];
+  var status = event.data[1];
   clearTimeout(timer);
-  var test_results = tests.map(function(x) {
-    return {name:x.name, status:x.status, message:x.message, stack:x.stack}
-  });
   marionetteScriptFinished({test:"%(url)s",
-                            tests:test_results,
+                            tests: tests,
                             status: status.status,
                             message: status.message,
                             stack: status.stack});
-}
+}, false);
 
 window.wrappedJSObject.win = window.open("%(abs_url)s", "%(window_id)s");
 
 var timer = null;
 if (%(timeout)s) {
   timer = setTimeout(function() {
-      log("Timeout fired");
-      window.wrappedJSObject.win.timeout();
+    log("Timeout fired");
+    window.wrappedJSObject.win.timeout();
   }, %(timeout)s);
 }

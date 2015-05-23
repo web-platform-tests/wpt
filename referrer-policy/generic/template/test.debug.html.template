@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 %(generated_disclaimer)s
-<!-- TODO(kristijanburnik): Create a template for automated tests:
-http://testthewebforward.org/docs/test-templates.html#script-test-with-metadata
--->
 <html>
   <head>
-    <title>Referrer-Policy: %(spec_title)s</title>
-    <meta name="description" content="%(spec_description)s">%(meta_delivery_method)s
+    <title>Referrer-Policy: %(spec_title)s</title>%(meta_delivery_method)s
+    <meta name="description" content="%(spec_description)s">
+    <meta name="assert" content="The referrer URL is %(referrer_url)s when a
+        document served over %(source_protocol)s requires an %(target_protocol)s
+        sub-resource via %(subresource)s using the %(delivery_method)s
+        delivery method and when the target request is %(origin)s.">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <!-- Common global functions for referrer-policy tests. -->
     <script src="/referrer-policy/generic/common.js"></script>
     <!-- The original specification JSON for validating the scenario. -->
     <script src="/referrer-policy/spec_json.js"></script>
+    <!-- Internal checking of the tests -->
+    <script src="/referrer-policy/generic/sanity-checker.js"></script>
     <!-- Simple wrapper API for all referrer-policy test cases. -->
     <script src="/referrer-policy/generic/referrer-policy-test-case.js?pipe=sub"></script>
   </head>
@@ -20,10 +23,12 @@ http://testthewebforward.org/docs/test-templates.html#script-test-with-metadata
     <h1>%(spec_title)s</h1>
     <h2>%(spec_description)s</h2>
 
-    <p id="description">The referrer URL is %(referrer_url)s when a document
-      served over %(source_protocol)s requires an %(target_protocol)s
-      sub-resource via %(subresource)s using the %(delivery_method)s delivery
-      method and when the target request is %(origin)s.</p>
+    <p>
+      <script>
+        // Show the detailed assertion description of the test.
+        document.write(document.querySelector("meta[name=assert]").content);
+      </script>
+    </p>
 
     <p>See <a href="%(spec_specification_url)s" target="_blank">specification</a>
        details for this test.</p>
@@ -53,19 +58,7 @@ http://testthewebforward.org/docs/test-templates.html#script-test-with-metadata
       <tbody>
     </table>
 
-    <script>
-      var scenario = {
-        "referrer_policy": %(referrer_policy_json)s,
-        "delivery_method": "%(delivery_method)s",
-        "origin": "%(origin)s",
-        "source_protocol": "%(source_protocol)s",
-        "target_protocol": "%(target_protocol)s",
-        "subresource": "%(subresource)s",
-        "referrer_url": "%(referrer_url)s"
-      };
-      var description = document.getElementById("description").innerHTML;
-      ReferrerPolicyTestCase(scenario, description).start();
-    </script>
+    <script>%(test_js)s</script>
 
     <div id="log"></div>
   </body>

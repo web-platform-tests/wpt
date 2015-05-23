@@ -38,25 +38,25 @@ function loadImage(src, callback) {
 }
 
 function decodeImageData(rgba) {
-  // Remove alpha component.
-  var data = new Uint8ClampedArray(rgba.length);
-  var x = 0;
-  for (var i in rgba) {
-    if (i > 0 && i%4 == 3 || rgba[i] == 0)
+  var rgb = new Uint8ClampedArray(rgba.length);
+
+  // RGBA -> RGB.
+  var rgb_length = 0;
+  for (var i = 0; i < rgba.length; ++i) {
+    // Skip alpha component.
+    if (i % 4 == 3)
       continue;
 
-    data[x++] = rgba[i];
+    // Zero is the string terminator.
+    if (rgba[i] == 0)
+      break;
+
+    rgb[rgb_length++] = rgba[i];
   }
 
   // Remove trailing nulls from data.
-  var length = rgba.length;
-
-  for (var i = rgba.length - 1; data[i] == 0 && i > 0; i--) {
-    length--;
-  }
-
-  data = data.subarray(0, length);
-  var string_data = (new TextDecoder("ascii")).decode(data);
+  rgb = rgb.subarray(0, rgb_length);
+  var string_data = (new TextDecoder("ascii")).decode(rgb);
 
   return JSON.parse(string_data);
 }
@@ -74,6 +74,7 @@ function decodeImage(url, callback) {
 function normalizePort(targetPort) {
   var defaultPorts = [80, 443];
   var isDefaultPortForProtocol = (defaultPorts.indexOf(targetPort) >= 0);
+
   return (targetPort == "" || isDefaultPortForProtocol) ?
           "" : ":" + targetPort;
 }
@@ -109,15 +110,12 @@ function queryImage(url, callback) {
 function queryXhr(url, callback) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
-  console.log(url);
-
   xhr.onreadystatechange = function(e) {
     if (this.readyState == 4 && this.status == 200) {
       var headers = JSON.parse(this.responseText);
       callback(wrapResult(url, headers));
     }
   };
-
   xhr.send();
 }
 
@@ -175,9 +173,6 @@ function queryLink(url, callback, referrer_policy) {
 
 function queryAreaLink(url, callback, referrer_policy) {
   var area = document.createElement("area");
-  area.shape="rect"
-  area.coords="0,0,10,10"
-
   // TODO(kristijanburnik): Append to map and add image.
   document.body.appendChild(area);
   queryNavigable(area, url, callback, referrer_policy)
@@ -196,3 +191,8 @@ function queryScript(url, callback) {
 
   document.body.appendChild(script);
 }
+
+ // SanityChecker does nothing in release mode.
+function SanityChecker() {}
+SanityChecker.prototype.checkScenario = function() {};
+SanityChecker.prototype.checkSubresourceResult = function() {};

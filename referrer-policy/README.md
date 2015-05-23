@@ -27,12 +27,16 @@ The ```spec.src.json``` defines all the test scenarios for the referrer policy.
 
 Invoking ```./generic/tools/generate.py``` will parse the spec JSON and determine which tests to generate (or skip) while using templates.
 
+
 The spec can be validated by running ```./generic/tools/spec_validator.py```. This is specially important when you're making changes to  ```spec.src.json```. Make sure it's a valid JSON (no comments or trailing commas). The validator should be informative and very specific on any issues.
 
 For details about the spec JSON, see **Overview of the spec JSON** below.
 
 
-## Generating the tests
+## Generating and running the tests
+
+The repository already contains generated tests, so if you're making changes,
+see the **Removing all generated tests** section below, on how to remove them before you start generating tests which include your changes.
 
 Start from the command line:
 
@@ -58,6 +62,18 @@ Run tests under path: ```/referrer-policy```.
 
 Click start.
 
+
+## Options for generating tests
+
+The generator script ```./generic/tools/generate.py``` has two targets: ```release``` and ```debug```.
+
+* Using **release** for the target will produce tests using a template for optimizing size and performance. The release template is intended for the official web-platform-tests and possibly other test suites. No sanity checking is done in release mode. Use this option whenever you're checking into web-platform-tests.
+
+* When generating for ```debug```, the produced tests will contain more verbosity and sanity checks. Use this target to identify problems with the test suite when making changes locally. Make sure you don't check in tests generated with the debug target.
+
+Note that **release** is the default target when invoking ```generate.py```.
+
+
 ## Removing all generated tests
 
 ```bash
@@ -76,6 +92,7 @@ git add * && git commit -m "Remove generated tests"
 
 **Important:**
 The ```./generic/tools/clean.py``` utility will only work if there is a valid ```spec.src.json``` and previously generated directories match the specification requirement names. So make sure you run ```clean.py``` before you alter the specification section of the spec JSON.
+
 
 ## Updating the tests
 
@@ -124,6 +141,7 @@ git add * && git commit -m "Update generated tests"
 
 ```
 
+
 ## Overview of the spec JSON
 
 **Main sections:**
@@ -151,6 +169,7 @@ git add * && git commit -m "Update generated tests"
 
   A 1:1 mapping of a **subresource type** to the URL path of the sub-resource.
   When adding a new sub-resource, a path to an existing file for it also must be specified.
+
 
 ### Test Expansion Patterns
 
@@ -206,6 +225,7 @@ var scenario = {
   "source_protocol": "http",
   "target_protocol": "http",
   "subresource": "iframe-tag",
+  "subresource_path": "/referrer-policy/generic/subresource/document.py",
   "referrer_url": "origin"
 };
 ```
@@ -218,5 +238,4 @@ Taking the spec JSON, the generator follows this algorithm:
 * Expand all ```excluded_tests``` to create a blacklist of selections
 
 * For each specification requirement: Expand the ```test_expansion``` pattern into selections and check each against the blacklist, if not marked as suppresed, generate the test resources for the selection
-
 

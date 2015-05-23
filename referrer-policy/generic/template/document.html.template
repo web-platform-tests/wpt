@@ -2,13 +2,8 @@
 <html>
   <head>
     <title>This page reports back it's request details to the parent frame</title>
-    <!-- Common global functions for referrer-policy tests. -->
-    <script src="/referrer-policy/generic/common.js"></script>
   </head>
   <body>
-    <h2>This page reports back it's request details to the parent frame</h2>
-    <pre>%(headers)s</pre>
-
     <script>
       var SERVER_REQUEST_HEADERS = %(headers)s;
       var result = {
@@ -18,6 +13,5 @@
       };
       parent.postMessage(result, "*");
     </script>
-
   </body>
 </html>

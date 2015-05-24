@@ -8,6 +8,7 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#vertical-layout" title="7.1 Principles of Layout in Vertical Writing Modes" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height" title="10.6.4 Absolutely positioned, non-replaced elements" />
   <link rel="match" href="abs-pos-non-replaced-vrl-002-ref.xht" />
 
   <meta name="flags" content="ahem image" />
@@ -40,18 +41,10 @@
 
 /*
 "
-If none of the three is 'auto': If both 'margin-left' and 'margin-right' are 'auto', solve the equation under the extra constraint that the two margins get equal values, unless this would make them negative, in which case when direction of the containing block is 'ltr' ('rtl'), set 'margin-left' ('margin-right') to zero and solve for 'margin-right' ('margin-left'). If one of 'margin-left' or 'margin-right' is 'auto', solve the equation for that value. If the values are over-constrained, ignore the value for 'left' (in case the 'direction' property of the containing block is 'rtl') or 'right' (in case 'direction' is 'ltr') and solve for that value.
+If none of the three are 'auto': If both 'margin-top' and 'margin-bottom' are 'auto', solve the equation under the extra constraint that the two margins get equal values. If one of 'margin-top' or 'margin-bottom' is 'auto', solve the equation for that value. If the values are over-constrained, ignore the value for 'bottom' and solve for that value.
 "
 
-'left' + 'margin-left' + 'border-left-width' + 'padding-left' + 'width' + 'padding-right' + 'border-right-width' + 'margin-right' + 'right' = width of containing block
-CSS2.1, § 10.3.7 Absolutely positioned, non-replaced elements
-http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width
-
-"
-Layout rules that refer to the *-left and *-right box properties (border, margin, padding) use *-top and *-bottom instead, and vice versa. Which side of the box the property applies to doesn't change: only which values are inputs to which layout calculations changes.
-"
-7.1 Principles of Layout in Vertical Writing Modes
-http://www.w3.org/TR/css-writing-modes-3/#logical-direction-layout
+'top' + 'margin-top' + 'border-top-width' + 'padding-top' + 'height' + 'padding-bottom' + 'border-bottom-width' + 'margin-bottom' + 'bottom' = height of containing block
 
 So:
 
@@ -97,7 +90,7 @@ gives us:
     =====================
     320px : height of containing block
 
-And so computed bottom value must be 80px;
+And so computed bottom value must be 80px .
 */
 
   ]]></style>

@@ -31,6 +31,9 @@
 h3 {
     clear:both;
 }
+h3.fail {
+    color:red;
+}
 table {
     border-spacing:0px;
 }
@@ -61,12 +64,17 @@ function run() {
     Array.prototype.forEach.call(document.querySelectorAll(".test"), function (node) {
         var title = node.previousElementSibling.innerText;
         test(function () {
-            var targetNode = node.querySelector(".target");
-            var targetBounds = targetNode.getBoundingClientRect();
-            assert_approx_equals(targetBounds.height, targetBounds.width * 2, .01, "writing-mode is vertical")
-            var nextNode = node.querySelector(".next");
-            var nextBounds = nextNode.getBoundingClientRect();
-            assert_equals(nextBounds.left - targetBounds.right, 0, "the left edge of the orange box touches the right edge of the blue box");
+            try {
+                var targetNode = node.querySelector(".target");
+                var targetBounds = targetNode.getBoundingClientRect();
+                assert_approx_equals(targetBounds.height, targetBounds.width * 2, .01, "writing-mode is vertical")
+                var nextNode = node.querySelector(".next");
+                var nextBounds = nextNode.getBoundingClientRect();
+                assert_equals(nextBounds.left - targetBounds.right, 0, "the left edge of the orange box touches the right edge of the blue box");
+            } catch (e) {
+                node.previousElementSibling.classList.add("fail");
+                throw e;
+            }
         }, title);
     });
     if (window.testRunner)

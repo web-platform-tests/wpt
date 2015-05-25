@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>CSS Writing Modes Test: Orthogonal parent shrink-to-fit: Orthogonal inline with borders in float</title>
+<title>CSS Writing Modes Test: Orthogonal parent shrink-to-fit: Orthogonal block in inline-block in inline-block</title>
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#orthogonal-flows">
 <meta name="assert" content="Parent's min-content width in orthorgonal flows">
 <meta name="flags" content="ahem">
@@ -46,11 +46,11 @@ td {
     There should be no spaces nor overlaps.
 <p>The blue box must be <b>tall</b>, the height should be as twice as the width.
 <p>If script is enabled, there should be one or more PASS and no FAIL.
-<h3>Orthogonal inline with borders in float</h3>
-<div class="test">
-    <div class="float"><span class="target border">XXX</span></div><span class="next">YY</span>
-</div>
-</div>
+<h3>Orthogonal block in inline-block in inline-block</h3>
+    <div class="test">
+        <div class="inline-block"><div class="inline-block"><div class="target">XX</div></div></div><span class="next">YY</span>
+    </div>
+    </div>
 <script>
 if (window.location.search == "?wait") {
     console.log("Sleeping 5 secs for debug");

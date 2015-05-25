@@ -21,8 +21,9 @@ def expand_test_expansion_pattern(spec_test_expansion, test_expansion_schema):
 
 
 def permute_expansion(expansion, selection = {}, artifact_index = 0):
-    artifact_order = ['delivery_method', 'origin', 'source_protocol',
-                      'target_protocol', 'subresource', 'referrer_url', 'name']
+    artifact_order = ['delivery_method', 'redirection', 'origin',
+                      'source_protocol', 'target_protocol', 'subresource',
+                      'referrer_url', 'name']
 
     if artifact_index >= len(artifact_order):
         yield selection
@@ -55,16 +56,21 @@ def generate_selection(selection, spec, subresource_path,
     test_html_template = get_template(test_html_template_basename)
     test_js_template = get_template("test.js.template")
     disclaimer_template = get_template('disclaimer.template')
+    test_description_template = get_template("test_description.template")
 
     html_template_filename = os.path.join(template_directory,
                                           test_html_template_basename)
     generated_disclaimer = disclaimer_template \
         % {'generating_script_filename': os.path.relpath(__file__,
-           test_root_directory),
+                                                         test_root_directory),
            'html_template_filename': os.path.relpath(html_template_filename,
-           test_root_directory)}
+                                                     test_root_directory)}
 
+    # Adjust the template for the test invoking JS. Indent it to look nice.
     selection['generated_disclaimer'] = generated_disclaimer.rstrip()
+    test_description_template = \
+        test_description_template.rstrip().replace("\n", "\n" + " " * 33)
+    selection['test_description'] = test_description_template % selection
 
     # Adjust the template for the test invoking JS. Indent it to look nice.
     indent = "\n" + " " * 6;

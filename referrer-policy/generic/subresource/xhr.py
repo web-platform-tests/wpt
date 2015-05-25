@@ -1,13 +1,15 @@
-import json
+import os, sys, json
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import subresource
+
+def generate_payload(server_data):
+    data = ('{"headers": %(headers)s}') % server_data
+    return data
 
 def main(request, response):
-    response.add_required_headers = False
-    response.writer.write_status(200)
-    # Allow cross-origin access for XHR.
-    response.writer.write_header("access-control-allow-origin", "*")
-    response.writer.write_header("content-type", "application/json")
-    response.writer.write_header("cache-control", "no-cache; must-revalidate")
-    response.writer.end_headers()
+    subresource.respond(request,
+                        response,
+                        payload_generator = generate_payload,
+                        access_control_allow_origin = "*",
+                        content_type = "application/json")
 
-    headers_as_json = json.dumps(request.headers)
-    response.writer.write(headers_as_json)

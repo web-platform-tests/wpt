@@ -195,9 +195,11 @@ The following example shows how to restrict the expansion of ```referrer_url``` 
       "test_expansion": [
         {
           "name": "generic",
+          "expansion": "default",
           "source_protocol": "*",
           "target_protocol": "*",
           "delivery_method": "*",
+          "redirection": "*",
           "origin": "*",
           "subresource": "*",
           "referrer_url": "origin"
@@ -214,6 +216,7 @@ A single test expansion pattern, be it a requirement or a suppressed pattern, ge
 
 * Permute - Recursively enumerate all **selections** accross all fields
 
+Be aware that if there is more than one pattern expanding into a same selection (which also shares the same ```name``` field), the pattern appearing later in the spec JSON will overwrite a previously generated selection. To make sure this is not undetected when generating, set the value of the ```expansion``` field to ```default``` for an expansion appearing earlier and ```override``` for the one appearing later.
 
 A **selection** is a single **test instance** (scenario) with explicit values, for example:
 
@@ -221,6 +224,7 @@ A **selection** is a single **test instance** (scenario) with explicit values, f
 var scenario = {
   "referrer_policy": "origin-when-crossorigin",
   "delivery_method": "meta-referrer",
+  "redirection": "no-redirect",
   "origin": "cross-origin",
   "source_protocol": "http",
   "target_protocol": "http",

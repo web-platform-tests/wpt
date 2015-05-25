@@ -7,6 +7,11 @@
 <script>
 ["localStorage", "sessionStorage"].forEach(function(name) {
     test(function() {
+        assert_true(window[name] == window[name]);
+        assert_true(window[name] === window[name]);
+    }, "Uniqueness in " + name);
+
+    test(function() {
         var storage = window[name];
         storage.clear();
 

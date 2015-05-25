@@ -76,23 +76,6 @@
         "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
-    // TODO may need to change these to hash-source prefix, e.g. 'sha256' instead of 'SHA-256'
-
-    test(function() {assert_equals(getPrioritizedHashFunction('SHA-512', 'SHA-256'), 'SHA-512')},
-        "SHA-512 preferred to SHA-256.");
-
-    test(function() {assert_equals(getPrioritizedHashFunction('SHA-384', 'SHA-512'), 'SHA-512')},
-        "SHA-512 preferred to SHA-384.");
-
-    test(function() {assert_equals(getPrioritizedHashFunction('SHA-384', 'SHA-256'), 'SHA-384')},
-        "SHA-384 preferred to SHA-256.");
-
-    test(function() {assert_equals(getPrioritizedHashFunction('MD5', 'SHA-256'), 'SHA-256')},
-        "SHA-256 preferred to MD5.");
-
-    test(function() {assert_equals(getPrioritizedHashFunction('SHA-256', 'SHA-256'), '')},
-        "getPrioritizedHashFunction('SHA-256', 'SHA-256') returns empty string");
-
     new SRIScriptTest(
         true,
         "Same-origin script with sha256 mismatch, sha512 match",

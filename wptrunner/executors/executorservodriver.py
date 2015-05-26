@@ -175,8 +175,9 @@ class ServoWebDriverTestharnessExecutor(TestharnessExecutor):
                                "url": strip_server(url),
                                "timeout_multiplier": self.timeout_multiplier,
                                "timeout": timeout * 1000}))
-        if "test" not in result:
-            result["test"] = strip_server(url)
+        # Prevent leaking every page in history until Servo develops a more sane
+        # page cache
+        session.back()
         return result
 
 

@@ -56,13 +56,13 @@ takes multiple options, of which the following are most significant:
 ``--product`` (defaults to `firefox`)
   The product to test against: `b2g`, `chrome`, `firefox`, or `servo`.
 
-``--binary`` (required if product is `firefox`)
+``--binary`` (required if product is `firefox` or `servo`)
   The path to a binary file for the product (browser) to test against.
 
-``--webdriver_binary`` (required if product is `chrome`)
+``--webdriver-binary`` (required if product is `chrome`)
   The path to a `*driver` binary; e.g., a `chromedriver` binary.
 
-``--certutil-binary`` (required if product is `firefox`)
+``--certutil-binary`` (required if product is `firefox` [#]_)
   The path to a `certutil` binary (for tests that must be run over https).
 
 ``--metadata`` (required only when not `using default paths`_)
@@ -73,6 +73,9 @@ takes multiple options, of which the following are most significant:
 
 ``--prefs-root`` (required only when testing a Firefox binary)
   The path to a directory containing Firefox test-harness preferences. [#]_
+
+.. [#] The ``--certutil-binary`` option is required when the product is
+   ``firefox`` unless ``--ssl-type=none`` is specified.
 
 .. [#] The ``--metadata`` path is to a directory that contains:
 
@@ -112,12 +115,13 @@ Running test subsets
 --------------------
 
 To restrict a test run just to tests in a particular web-platform-tests
-subdirectory, use ``--include`` with the directory name; for example::
+subdirectory, specify the directory name in the positional arguments after
+the options; for example, run just the tests in the `dom` subdirectory::
 
   wptrunner --metadata=~/web-platform-tests/ --tests=~/web-platform-tests/ \
     --binary=/path/to/firefox --certutil-binary=/path/to/certutil \
     --prefs-root=/path/to/testing/profiles \
-    --include=dom
+    dom
 
 -------------------
 Running in parallel

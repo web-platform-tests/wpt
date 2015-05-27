@@ -177,25 +177,22 @@ class MarionetteProtocol(Protocol):
                     break;
             }
             """ % (name, value)
-        self.marionette.set_context(self.marionette.CONTEXT_CHROME)
-        self.marionette.execute_script(script)
-        self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
+        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
+            self.marionette.execute_script(script)
 
     def clear_user_pref(self, name):
         self.logger.info("Clearing pref %s" % (name))
-        self.marionette.set_context(self.marionette.CONTEXT_CHROME)
         script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]
                                           .getService(Components.interfaces.nsIPrefBranch);
             let pref = '%s';
             prefInterface.clearUserPref(pref);
             """ % name
-        self.marionette.execute_script(script)
-        self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
+        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
+            self.marionette.execute_script(script)
 
     def get_pref(self, name):
-        self.marionette.set_context(self.marionette.CONTEXT_CHROME)
-        self.marionette.execute_script("""
+        script = """
             let prefInterface = Components.classes["@mozilla.org/preferences-service;1"]
                                           .getService(Components.interfaces.nsIPrefBranch);
             let pref = '%s';
@@ -210,8 +207,9 @@ class MarionetteProtocol(Protocol):
                 case prefInterface.PREF_INVALID:
                     return null;
             }
-            """ % (name))
-        self.marionette.set_context(self.marionette.CONTEXT_CONTENT)
+            """ % name
+        with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
+            self.marionette.execute_script(script)
 
 class MarionetteRun(object):
     def __init__(self, logger, func, marionette, url, timeout):

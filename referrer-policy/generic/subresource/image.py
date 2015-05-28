@@ -1,4 +1,6 @@
-import array, Image, json, math, os, sys, cStringIO
+import os, sys, array, Image, json, math, cStringIO
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import subresource
 
 def encode_string_as_png_image(string_data):
     data_bytes = array.array("B", string_data)
@@ -30,15 +32,13 @@ def encode_string_as_png_image(string_data):
 
     return f.read()
 
-def main(request, response):
-    response.add_required_headers = False
-    response.writer.write_status(200)
-    # Allow cross-origin access to get pixel data via JS.
-    response.writer.write_header("access-control-allow-origin", "*")
-    response.writer.write_header("content-type", "image/png")
-    response.writer.write_header("cache-control", "no-cache; must-revalidate")
-    response.writer.end_headers()
+def generate_payload(server_data):
+    data = ('{"headers": %(headers)s}') % server_data
+    return encode_string_as_png_image(data)
 
-    headers_as_json = json.dumps(request.headers)
-    body = encode_string_as_png_image(str(headers_as_json))
-    response.writer.write(body)
+def main(request, response):
+    subresource.respond(request,
+                        response,
+                        payload_generator = generate_payload,
+                        content_type = "image/png",
+                        access_control_allow_origin = "*")

@@ -2,6 +2,7 @@ ReferrerPolicyTestCase(
   {
     "referrer_policy": %(referrer_policy_json)s,
     "delivery_method": "%(delivery_method)s",
+    "redirection": "%(redirection)s",
     "origin": "%(origin)s",
     "source_protocol": "%(source_protocol)s",
     "target_protocol": "%(target_protocol)s",

@@ -236,7 +236,7 @@ class WebSocketDaemon(object):
                     "-w", handlers_root,
                     "--log-level", log_level]
 
-        if ssl_config != None:
+        if ssl_config is not None:
             # This is usually done through pywebsocket.main, however we're
             # working around that to get the server instance and manually
             # setup the wss server.

@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var props = {output:%(output)d,
-             explicit_timeout: true};
+             explicit_timeout: true,
+             message_events: ["completion"]};
 
 if (window.opener && "timeout_multiplier" in window.opener) {
     props["timeout_multiplier"] = window.opener.timeout_multiplier;

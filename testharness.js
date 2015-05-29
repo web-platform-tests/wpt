@@ -1448,13 +1448,13 @@ policies and contribution forms [3].
     RemoteTest.prototype.structured_clone = function() {
         var clone = {};
         Object.keys(this).forEach(
-                function(key) {
+                (function(key) {
                     if (typeof(this[key]) === "object") {
                         clone[key] = merge({}, this[key]);
                     } else {
                         clone[key] = this[key];
                     }
-                });
+                }).bind(this));
         clone.phases = merge({}, this.phases);
         return clone;
     };

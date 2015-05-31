@@ -122,7 +122,7 @@ Promise.all([
     console.log("Writing unicode-data.js");
     var output = fs.openSync("unicode-data.js", "w");
     fs.writeSync(output, "var rangesByBlock = ");
-    fs.writeSync(output, JSON.stringify(results[2], null, "\t"));
+    fs.writeSync(output, JSON.stringify(results[2], null, "  "));
     fs.writeSync(output, ";\n");
     fs.closeSync(output);
 }).catch(function (e) {

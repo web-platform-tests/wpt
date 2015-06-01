@@ -1,9 +1,10 @@
 // This is a node.js program to generate text-orientation-script test files.
-var fs = require("fs"),
-    http = require("http"),
-    path = require("path"),
-    stream = require("stream"),
-    url = require("url");
+var ejs = require("ejs");
+var fs = require("fs");
+var http = require("http");
+var path = require("path");
+var stream = require("stream");
+var url = require("url");
 
 var unicodeData = {
     url: {
@@ -27,8 +28,9 @@ var unicodeData = {
             defer.resolve(results);
         });
         var basename = path.basename(url.parse(source).path);
-        if (fs.existsSync(basename)) {
-            fs.createReadStream(basename)
+        var local = "ucd/" + basename;
+        if (fs.existsSync(local)) {
+            fs.createReadStream(local)
                 .pipe(parser);
         } else {
             http.get(source, function (res) {
@@ -112,94 +114,76 @@ var unicodeData = {
     },
 };
 
-Promise.all([
-    unicodeData.get(unicodeData.url.vo, unicodeData.formatAsRangesByValue),
-    unicodeData.get(unicodeData.url.gc),
-    unicodeData.get(unicodeData.url.blocks, unicodeData.formatAsRangesByValue),
-]).then(function (results) {
-    generate(results[0], results[1]);
-
-    console.log("Writing unicode-data.js");
-    var output = fs.openSync("unicode-data.js", "w");
-    fs.writeSync(output, "var rangesByBlock = ");
-    fs.writeSync(output, JSON.stringify(results[2], null, "  "));
-    fs.writeSync(output, ";\n");
-    fs.closeSync(output);
-}).catch(function (e) {
-    console.log(e);
-});
-
-function generate(rangesByVO, gc) {
-    var template = fs.readFileSync("text-orientation-template.html", {encoding:"utf-8"})
-        .split("INSERT-DATA-HERE");
-
+var Generator = function () {
+    var template = fs.readFileSync("text-orientation.ejs", "utf-8");
+    this.template = ejs.compile(template);
+    this.charactersPerLine = 64;
+};
+Generator.prototype.generate = function (rangesByVO, gc, blocks) {
     var codePointsByVO = {};
     for (var value in rangesByVO)
         codePointsByVO[value] = unicodeData.codePointsFromRanges(rangesByVO[value], gc);
 
-    // single version
-    writeHtmlPage(codePointsByVO, template);
+    this.codePointsByVO = codePointsByVO;
+    this.generateFile(0, 0);
 
-    // by-vo versions
-    var pageSize = 64 * 64;
+    var pageSize = this.charactersPerLine * 64;
     var fileIndex = 0;
-    for (value in codePointsByVO) {
-        var codePoints = codePointsByVO[value];
-        var pages = Math.floor(codePoints.length / pageSize) + 1;
-        // if (pages > 1) // by-vo combo versions
-        //     writeHtmlPage(codePoints, template, value, 0, codePoints.length);
-        // by-vo paged versions
-        var index = 0;
-        for (var page = 1; index < codePoints.length; page++) {
-            fileIndex++;
-            var lim = Math.min(index + pageSize, codePoints.length);
-            index = writeHtmlPage(codePoints, template, fileIndex, value, index, lim, page, pages);
-        }
+    for (var vo in codePointsByVO) {
+        var codePoints = codePointsByVO[vo];
+        var limit = codePoints.length;
+        var pages = Math.ceil(limit / pageSize);
+        this.codePointsByVO = {};
+        this.codePointsByVO[vo] = codePoints;
+        for (var index = 0, page = 1; index < limit; ++page, ++fileIndex)
+            index = this.generateFile(index, Math.min(limit, index + pageSize), vo, fileIndex, page, pages);
     }
-}
 
-function writeHtmlPage(codePoints, template, fileIndex, value, index, lim, page, pages) {
+    console.log("Writing unicode-data.js");
+    var output = fs.openSync("../../support/unicode-data.js", "w");
+    fs.writeSync(output, "var rangesByBlock = ");
+    fs.writeSync(output, JSON.stringify(blocks, null, "  "));
+    fs.writeSync(output, ";\n");
+    fs.closeSync(output);
+};
+Generator.prototype.generateFile = function (index, limit, value, fileIndex, page, pages) {
     var path = "../../text-orientation-script-001";
-    var title = "Test orientation of characters";
-    var flags = "dom font";
+    this.title = "Test orientation of characters";
+    this.flags = "dom font";
     // if (fileIndex)
     //     path += "-" + padZero(fileIndex, 3);
-    if (fileIndex)
-        path += String.fromCharCode('a'.charCodeAt(0) + fileIndex - 1);
+    if (fileIndex === undefined)
+        this.flags += " combo";
     else
-        flags += " combo";
+        path += String.fromCharCode('a'.charCodeAt(0) + fileIndex);
     if (value) {
-        title += " where vo=" + value;
-        var rangeText = (lim - index) + " code points in U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[lim-1]);
+        this.title += " where vo=" + value;
+        var codePoints = this.codePointsByVO[value];
+        var rangeText = (limit - index) + " code points in U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[limit-1]);
         if (page && pages > 1)
             rangeText = "#" + page + "/" + pages + ", " + rangeText;
-        title += " (" + rangeText + ")";
+        this.title += " (" + rangeText + ")";
     }
     path += ".html";
-    console.log("Writing " + path + ": " + title);
+    console.log("Writing " + path + ": " + this.title);
     var output = fs.openSync(path, "w");
-    fs.writeSync(output, template[0].replace("<!--META-->",
-        '<title>CSS Writing Modes Test: ' + title + '.</title>\n' +
-        '<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">\n' +
-        '<meta name="assert" content="' + title + '">\n' +
-        '<meta name="flags" content="' + flags + '">'));
-    if (value) {
-        index = writeValueBlock(output, value, codePoints, index, lim);
-    } else {
-        for (value in codePoints) {
-            var codePointsOfValue = codePoints[value];
-            writeValueBlock(output, value, codePointsOfValue, 0, codePointsOfValue.length);
-        }
-    }
-    fs.writeSync(output, template[1]);
+    this.index = index;
+    this.limit = limit;
+    fs.writeSync(output, this.template(this));
     fs.closeSync(output);
-    return index;
-}
-
-function writeValueBlock(output, value, codePoints, index, lim) {
-    fs.writeSync(output, '<div data-vo="' + value + '" class="test">\n');
+    return this.index;
+};
+Generator.prototype.next = function (codePoints) {
+    var index = this.index;
+    var limit = this.limit;
+    // console.log("next: index=" + index + ", limit=" + limit);
+    if (!limit)
+        limit = codePoints.length;
+    if (index >= limit)
+        return null;
+    limit = Math.min(limit, index + this.charactersPerLine);
     var line = [];
-    for (; index < lim; index++) {
+    for (; index < limit; ++index) {
         var code = codePoints[index];
         if (code >= 0x10000) {
             code -= 0x10000;
@@ -207,23 +191,11 @@ function writeValueBlock(output, value, codePoints, index, lim) {
             code = 0xDC00 | code & 0x3FF;
         }
         line.push(code);
-        if (line.length >= 64) {
-            writeLine(output, line);
-            line = [];
-        }
     }
-    if (line.length)
-        writeLine(output, line);
-    fs.writeSync(output, "</div>\n");
-    return index;
-}
-
-function writeLine(output, line) {
-    line = String.fromCharCode.apply(String, line)
-        .replace(/&/, "&amp;")
-        .replace(/</, "&lt;");
-    fs.writeSync(output, "<div>" + line + "</div>\n");
-}
+    this.index = index;
+    // console.log("next done");
+    return String.fromCharCode.apply(String, line);
+};
 
 function toHex(value) {
     return padZero(value.toString(16).toUpperCase(), 4);
@@ -235,3 +207,14 @@ function padZero(value, digits) {
     value = "0000" + value;
     return value.substr(value.length - digits);
 }
+
+module.exports.generate = function () {
+    return Promise.all([
+        unicodeData.get(unicodeData.url.vo, unicodeData.formatAsRangesByValue),
+        unicodeData.get(unicodeData.url.gc),
+        unicodeData.get(unicodeData.url.blocks, unicodeData.formatAsRangesByValue),
+    ]).then(function (results) {
+        var generator = new Generator();
+        generator.generate(results[0], results[1], results[2]);
+    });
+};

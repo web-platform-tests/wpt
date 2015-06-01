@@ -13,8 +13,8 @@
     src: url("support/adobe-fonts/CSSHWOrientationTest.otf");
 }
 .test {
-    font-family: "orientation";
-    font-size: 16px;
+    font: 16px/1 "orientation";
+    width: 64em;
     height: 32em;
     white-space: pre;
     writing-mode: vertical-rl;
@@ -36,11 +36,12 @@ summary {
 </style>
 <div id="log"></div>
 <div id="details"></div>
-<div id="container"><div data-vo="Tu" class="test">
+<div id="container">
+<div data-vo="Tu" class="test">
 <div>、。ぁぃぅぇぉっゃゅょゎゕゖ゛゜ァィゥェォッャュョヮヵヶㄧㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ㌀㌁㌂㌃㌄㌅㌆㌇㌈㌉㌊㌋㌌㌍㌎㌏㌐㌑㌒</div>
 <div>㌓㌔㌕㌖㌗㌘㌙㌚㌛㌜㌝㌞㌟㌠㌡㌢㌣㌤㌥㌦㌧㌨㌩㌪㌫㌬㌭㌮㌯㌰㌱㌲㌳㌴㌵㌶㌷㌸㌹㌺㌻㌼㌽㌾㌿㍀㍁㍂㍃㍄㍅㍆㍇㍈㍉㍊㍋㍌㍍㍎㍏㍐㍑㍒</div>
 <div>㍓㍔㍕㍖㍗㍻㍼㍽㍾㍿﹐﹑﹒！，．？🈀🈁</div>
 </div>
 </div>
-<script src="support/text-orientation/unicode-data.js"></script>
-<script src="support/text-orientation/text-orientation.js"></script>
+<script src="support/unicode-data.js"></script>
+<script src="support/text-orientation.js"></script>

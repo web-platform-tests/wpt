@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<!--META-->
+<title>CSS Writing Modes Test: <%= title %>.</title>
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
+<meta name="assert" content="<%= title %>">
+<meta name="flags" content="<%= flags %>">
 <link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -10,8 +13,8 @@
     src: url("support/adobe-fonts/CSSHWOrientationTest.otf");
 }
 .test {
-    font-family: "orientation";
-    font-size: 16px;
+    font: 16px/1 "orientation";
+    width: 64em;
     height: 32em;
     white-space: pre;
     writing-mode: vertical-rl;
@@ -33,6 +36,17 @@ summary {
 </style>
 <div id="log"></div>
 <div id="details"></div>
-<div id="container">INSERT-DATA-HERE</div>
-<script src="support/text-orientation/unicode-data.js"></script>
-<script src="support/text-orientation/text-orientation.js"></script>
+<div id="container">
+<% for (var vo in codePointsByVO) {
+%><div data-vo="<%= vo %>" class="test">
+<%
+    var codePoints = codePointsByVO[vo];
+    var line;
+    while (line = next(codePoints)) {
+%><div><%= line %></div>
+<% }
+%></div>
+<% }
+%></div>
+<script src="support/unicode-data.js"></script>
+<script src="support/text-orientation.js"></script>

@@ -117,7 +117,7 @@ var unicodeData = {
 var Generator = function () {
     var template = fs.readFileSync("text-orientation.ejs", "utf-8");
     this.template = ejs.compile(template);
-    this.charactersPerLine = 64;
+    this.charactersPerLine = 32;
 };
 Generator.prototype.generate = function (rangesByVO, gc, blocks) {
     var codePointsByVO = {};

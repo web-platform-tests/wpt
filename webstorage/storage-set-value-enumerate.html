@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>WebStorage Test: Storage - set value with enumerate value</title>
+<title>WebStorage Test: Storage - set value with enumerate</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="help" href="https://w3c.github.io/webstorage/#the-storageevent-interface">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -25,7 +24,7 @@
           var value = storage.getItem("key" + i);
           assert_equals(value, "value" + i);
       }
-    }, name + ": Check if that can enumerate a Storage object with the key and get the values");
+    }, "enumerate a Storage object with the key and get the values");
   });
 </script>
 

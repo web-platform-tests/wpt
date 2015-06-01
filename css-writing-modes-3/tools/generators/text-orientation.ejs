@@ -37,12 +37,14 @@ summary {
 <div id="log"></div>
 <div id="details"></div>
 <div id="container">
-<% for (var vo in codePointsByVO) {
+<%
+var minSaved = min;
+for (var vo in codePointsByVO) {
 %><div data-vo="<%= vo %>" class="test">
 <%
-    var codePoints = codePointsByVO[vo];
+    setCodePoints(codePointsByVO[vo], minSaved);
     var line;
-    while (line = next(codePoints)) {
+    while (line = next()) {
 %><div><%= line %></div>
 <% }
 %></div>

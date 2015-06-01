@@ -146,7 +146,7 @@ Generator.prototype.generate = function (rangesByVO, gc, blocks) {
     fs.writeSync(output, ";\n");
     fs.closeSync(output);
 };
-Generator.prototype.generateFile = function (index, limit, value, fileIndex, page, pages) {
+Generator.prototype.generateFile = function (min, limit, value, fileIndex, page, pages) {
     var path = "../../text-orientation-script-001";
     this.title = "Test orientation of characters";
     this.flags = "dom font";
@@ -159,7 +159,7 @@ Generator.prototype.generateFile = function (index, limit, value, fileIndex, pag
     if (value) {
         this.title += " where vo=" + value;
         var codePoints = this.codePointsByVO[value];
-        var rangeText = (limit - index) + " code points in U+" + toHex(codePoints[index]) + "-" + toHex(codePoints[limit-1]);
+        var rangeText = (limit - min) + " code points in U+" + toHex(codePoints[min]) + "-" + toHex(codePoints[limit-1]);
         if (page && pages > 1)
             rangeText = "#" + page + "/" + pages + ", " + rangeText;
         this.title += " (" + rangeText + ")";
@@ -167,14 +167,19 @@ Generator.prototype.generateFile = function (index, limit, value, fileIndex, pag
     path += ".html";
     console.log("Writing " + path + ": " + this.title);
     var output = fs.openSync(path, "w");
-    this.index = index;
+    this.min = min;
     this.limit = limit;
     fs.writeSync(output, this.template(this));
     fs.closeSync(output);
-    return this.index;
+    return this.min;
 };
-Generator.prototype.next = function (codePoints) {
-    var index = this.index;
+Generator.prototype.setCodePoints = function (codePoints, min) {
+    this.codePoints = codePoints;
+    this.min = min;
+};
+Generator.prototype.next = function () {
+    var codePoints = this.codePoints;
+    var index = this.min;
     var limit = this.limit;
     // console.log("next: index=" + index + ", limit=" + limit);
     if (!limit)
@@ -192,7 +197,7 @@ Generator.prototype.next = function (codePoints) {
         }
         line.push(code);
     }
-    this.index = index;
+    this.min = index;
     // console.log("next done");
     return String.fromCharCode.apply(String, line);
 };

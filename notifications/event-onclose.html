@@ -14,14 +14,15 @@ var t = async_test("the notification.onclose event can be invoked", {timeout: 50
 Notification.requestPermission(t.step_func(function(permission) {
     assert_equals(permission, "granted", "notification permission");
 
-    var notification = new Notification("Please close on the notification.", {
-        body: "Please close on the notification please please."
+    var notification = new Notification("This notification will close.", {
+        body: "This notification will close."
     });
     notification.onshow = t.step_func(function(e) {
         e.target.close();
     });
     notification.onclose = t.step_func(function(e) {
         assert_equals(Object.prototype.toString.call(e), "[object Event]", "the type of event");
+        assert_equals(e.type, "close", "The event is the expected type.")
         t.done();
     });
 }));

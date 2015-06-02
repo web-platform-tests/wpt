@@ -18,6 +18,7 @@
        });
        notification.onerror = t.step_func(function(e) {
          assert_equals(Object.prototype.toString.call(e), "[object Event]", "the type of event");
+         assert_equals(e.type, "error", "The event is the expected type.")
          t.done();
        });
     }

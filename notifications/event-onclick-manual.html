@@ -19,6 +19,7 @@ Notification.requestPermission(t.step_func(function(permission) {
     });
     notification.onclick = t.step_func(function(e) {
         assert_equals(Object.prototype.toString.call(e), "[object Event]", "the type of event");
+        assert_equals(e.type, "click", "The event is the expected type.")
         t.done();
     });
 }));

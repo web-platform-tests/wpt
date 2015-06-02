@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <%
 var testlist = [];
-for (var outer of [
+var outers = [
     ["inline-block", '<div class="inline-block">', '</div><span class="next">YY</span>'],
     ["float", '<div class="float">', '</div><span class="next">YY</span>'],
-    ["table-cell", '<table><tr><td>', '</td><td class="next">YY</td></tr></table>']]) {
-    for (var middle of [
-        null,
-        ["inline-block", '<div class="inline-block">', '</div>']]) {
-        for (var target of [
-            ["block", '<div class="target">XX</div>'],
-            ["inline", '<span class="target">XX</span>'],
-            ["block with borders", '<div class="target border">XXX</div>'],
-            ["inline with borders", '<span class="target border">XXX</span>']]) {
+    ["table-cell", '<table><tr><td>', '</td><td class="next">YY</td></tr></table>']];
+var middles = [
+    null,
+    ["inline-block", '<div class="inline-block">', '</div>']];
+var targets = [
+    ["block", '<div class="target">XX</div>'],
+    ["inline", '<span class="target">XX</span>'],
+    ["block with borders", '<div class="target border">XXX</div>'],
+    ["inline with borders", '<span class="target border">XXX</span>']];
+for (var outer of outers) {
+    for (var middle of middles) {
+        for (var target of targets) {
             var title = target[0];
             var html = target[1];
             if (middle) {

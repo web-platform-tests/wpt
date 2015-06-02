@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<title>CSS Writing Modes Test: Orthogonal parent shrink-to-fit: Orthogonal block with borders in float</title>
+<title>CSS Writing Modes Test: Shrink to fit float with a child of orthogonal inline</title>
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#orthogonal-flows">
-<meta name="assert" content="Parent's min-content width in orthorgonal flows">
+<meta name="assert" content="Shrink to fit float with a child of orthogonal inline">
 <meta name="flags" content="ahem">
 <link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
 <script src="/resources/testharness.js"></script>
@@ -46,9 +46,9 @@ td {
     There should be no spaces nor overlaps.
 <p>The blue box must be <b>tall</b>, the height should be as twice as the width.
 <p>If script is enabled, there should be one or more PASS and no FAIL.
-<h3>Orthogonal block with borders in float</h3>
+<h3>10: Shrink to fit float with a child of orthogonal inline</h3>
 <div class="test">
-    <div class="float"><div class="target border">XXX</div></div><span class="next">YY</span>
+    <div class="float"><span class="target">XX</span></div><span class="next">YY</span>
 </div>
 </div>
 <script>

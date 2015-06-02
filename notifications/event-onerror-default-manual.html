@@ -12,7 +12,7 @@
     if (Notification.permission != "default") {
       document.getElementById("log").innerHTML = "Please clear your notification settings for web-platform.test and retry.";
     } else {
-    t = async_test("the notification.onerror event can be invoked", {timeout: 50000});
+      t = async_test("the notification.onerror event can be invoked", {timeout: 50000});
     var notification = new Notification("New Email Received", {
       body: "Room 101"
     });

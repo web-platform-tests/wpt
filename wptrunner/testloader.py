@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import urlparse
 from abc import ABCMeta, abstractmethod
 from Queue import Empty
@@ -343,6 +344,14 @@ class TestFilter(object):
             if include_tests:
                 yield test_path, include_tests
 
+class TagFilter(object):
+    def __init__(self, tags):
+        self.tags = set(tags)
+
+    def __call__(self, test_iter):
+        for test in test_iter:
+            if test.tags & self.tags:
+                yield test
 
 class ManifestLoader(object):
     def __init__(self, test_paths, force_manifest_update=False):
@@ -405,20 +414,30 @@ class ManifestLoader(object):
 
         return manifest_file
 
+def iterfilter(filters, iter):
+    for f in filters:
+        iter = f(iter)
+    for item in iter:
+        yield item
+
 class TestLoader(object):
     def __init__(self,
                  test_manifests,
                  test_types,
-                 test_filter,
                  run_info,
+                 manifest_filters=None,
+                 meta_filters=None,
                  chunk_type="none",
                  total_chunks=1,
                  chunk_number=1,
                  include_https=True):
 
         self.test_types = test_types
-        self.test_filter = test_filter
         self.run_info = run_info
+
+        self.manifest_filters = manifest_filters if manifest_filters is not None else []
+        self.meta_filters = meta_filters if meta_filters is not None else []
+
         self.manifests = test_manifests
         self.tests = None
         self.disabled_tests = None
@@ -434,6 +453,9 @@ class TestLoader(object):
                                                                     chunk_number)
 
         self._test_ids = None
+
+        self.directory_manifests = {}
+
         self._load_tests()
 
     @property
@@ -445,22 +467,39 @@ class TestLoader(object):
                     self._test_ids += [item.id for item in test_dict[test_type]]
         return self._test_ids
 
-    def get_test(self, manifest_test, expected_file):
-        if expected_file is not None:
-            expected = expected_file.get_test(manifest_test.id)
-        else:
-            expected = None
+    def get_test(self, manifest_test, inherit_metadata, test_metadata):
+        if test_metadata is not None:
+            inherit_metadata.append(test_metadata)
+            test_metadata = test_metadata.get_test(manifest_test.id)
 
-        return wpttest.from_manifest(manifest_test, expected)
+        return wpttest.from_manifest(manifest_test, inherit_metadata, test_metadata)
 
-    def load_expected_manifest(self, test_manifest, metadata_path, test_path):
-        return manifestexpected.get_manifest(metadata_path, test_path, test_manifest.url_base, self.run_info)
+    def load_dir_metadata(self, test_manifest, metadata_path, test_path):
+        rv = []
+        path_parts = os.path.dirname(test_path).split(os.path.sep)
+        for i in xrange(1,len(path_parts) + 1):
+            path = os.path.join(os.path.sep.join(path_parts[:i]), "__dir__.ini")
+            if path not in self.directory_manifests:
+                self.directory_manifests[path] = manifestexpected.get_dir_manifest(
+                    metadata_path, path, self.run_info)
+            manifest = self.directory_manifests[path]
+            if manifest is not None:
+                rv.append(manifest)
+        return rv
+
+    def load_metadata(self, test_manifest, metadata_path, test_path):
+        inherit_metadata = self.load_dir_metadata(test_manifest, metadata_path, test_path)
+        test_metadata = manifestexpected.get_manifest(
+            metadata_path, test_path, test_manifest.url_base, self.run_info)
+        return inherit_metadata, test_metadata
 
     def iter_tests(self):
         manifest_items = []
 
         for manifest in self.manifests.keys():
-            manifest_items.extend(self.test_filter(manifest.itertypes(*self.test_types)))
+            manifest_iter = iterfilter(self.manifest_filters,
+                                       manifest.itertypes(*self.test_types))
+            manifest_items.extend(manifest_iter)
 
         if self.chunker is not None:
             manifest_items = self.chunker(manifest_items)
@@ -468,12 +507,15 @@ class TestLoader(object):
         for test_path, tests in manifest_items:
             manifest_file = iter(tests).next().manifest
             metadata_path = self.manifests[manifest_file]["metadata_path"]
-            expected_file = self.load_expected_manifest(manifest_file, metadata_path, test_path)
+            inherit_metadata, test_metadata = self.load_metadata(manifest_file, metadata_path, test_path)
 
-            for manifest_test in tests:
-                test = self.get_test(manifest_test, expected_file)
-                test_type = manifest_test.item_type
-                yield test_path, test_type, test
+            for test in iterfilter(self.meta_filters,
+                                   self.iter_wpttest(inherit_metadata, test_metadata, tests)):
+                yield test_path, test.test_type, test
+
+    def iter_wpttest(self, inherit_metadata, test_metadata, tests):
+        for manifest_test in tests:
+            yield self.get_test(manifest_test, inherit_metadata, test_metadata)
 
     def _load_tests(self):
         """Read in the tests from the manifest file and add them to a queue"""

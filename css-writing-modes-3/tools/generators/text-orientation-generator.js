@@ -112,20 +112,40 @@ var unicodeData = {
         }
         return codePoints;
     },
+    splitCodePoints: function (codePoints, values) {
+        var results = [];
+        var currentCodePoints = [];
+        var currentValue = null;
+        for (var code of codePoints) {
+            var value = values[code];
+            if (value != currentValue) {
+                results.push([currentCodePoints, currentValue]);
+                currentValue = value;
+                currentCodePoints = [];
+            }
+            currentCodePoints.push(code);
+        }
+        if (currentCodePoints.length)
+            results.push([currentCodePoints, currentValue]);
+        return results.slice(1);
+    },
 };
 
-var Generator = function () {
+var Generator = function (rangesByVO, gc, blocks) {
+    this.rangesByVO = rangesByVO;
+    this.gc = gc;
+    this.blocks = blocks;
     var template = fs.readFileSync("text-orientation.ejs", "utf-8");
     this.template = ejs.compile(template);
     this.charactersPerLine = 32;
 };
-Generator.prototype.generate = function (rangesByVO, gc, blocks) {
+Generator.prototype.generate = function () {
     var codePointsByVO = {};
-    for (var value in rangesByVO)
-        codePointsByVO[value] = unicodeData.codePointsFromRanges(rangesByVO[value], gc);
+    for (var value in this.rangesByVO)
+        codePointsByVO[value] = unicodeData.codePointsFromRanges(this.rangesByVO[value], this.gc);
 
     this.codePointsByVO = codePointsByVO;
-    this.generateFile(0, 0);
+    this.generateFile();
 
     var pageSize = this.charactersPerLine * 64;
     var fileIndex = 0;
@@ -133,20 +153,16 @@ Generator.prototype.generate = function (rangesByVO, gc, blocks) {
         var codePoints = codePointsByVO[vo];
         var limit = codePoints.length;
         var pages = Math.ceil(limit / pageSize);
-        this.codePointsByVO = {};
-        this.codePointsByVO[vo] = codePoints;
-        for (var index = 0, page = 1; index < limit; ++page, ++fileIndex)
-            index = this.generateFile(index, Math.min(limit, index + pageSize), vo, fileIndex, page, pages);
+        for (var min = 0, page = 1; min < limit; ++page, ++fileIndex) {
+            var nextLimit = Math.min(limit, min + pageSize);
+            this.codePointsByVO = {};
+            this.codePointsByVO[vo] = codePoints.slice(min, nextLimit);
+            this.generateFile(vo, fileIndex, page, pages);
+            min = nextLimit;
+        }
     }
-
-    console.log("Writing unicode-data.js");
-    var output = fs.openSync("../../support/unicode-data.js", "w");
-    fs.writeSync(output, "var rangesByBlock = ");
-    fs.writeSync(output, JSON.stringify(blocks, null, "  "));
-    fs.writeSync(output, ";\n");
-    fs.closeSync(output);
 };
-Generator.prototype.generateFile = function (min, limit, value, fileIndex, page, pages) {
+Generator.prototype.generateFile = function (vo, fileIndex, page, pages) {
     var path = "../../text-orientation-script-001";
     this.title = "Test orientation of characters";
     this.flags = "dom font";
@@ -156,10 +172,10 @@ Generator.prototype.generateFile = function (min, limit, value, fileIndex, page,
         this.flags += " combo";
     else
         path += String.fromCharCode('a'.charCodeAt(0) + fileIndex);
-    if (value) {
-        this.title += " where vo=" + value;
-        var codePoints = this.codePointsByVO[value];
-        var rangeText = (limit - min) + " code points in U+" + toHex(codePoints[min]) + "-" + toHex(codePoints[limit-1]);
+    if (vo) {
+        this.title += " where vo=" + vo;
+        var codePoints = this.codePointsByVO[vo];
+        var rangeText = codePoints.length + " code points in U+" + toHex(codePoints[0]) + "-" + toHex(codePoints[codePoints.length - 1]);
         if (page && pages > 1)
             rangeText = "#" + page + "/" + pages + ", " + rangeText;
         this.title += " (" + rangeText + ")";
@@ -167,39 +183,30 @@ Generator.prototype.generateFile = function (min, limit, value, fileIndex, page,
     path += ".html";
     console.log("Writing " + path + ": " + this.title);
     var output = fs.openSync(path, "w");
-    this.min = min;
-    this.limit = limit;
     fs.writeSync(output, this.template(this));
     fs.closeSync(output);
-    return this.min;
 };
-Generator.prototype.setCodePoints = function (codePoints, min) {
-    this.codePoints = codePoints;
-    this.min = min;
+Generator.prototype.splitCodePointsByBlocks = function (codePoints) {
+    return unicodeData.splitCodePoints(codePoints, this.blocks);
 };
-Generator.prototype.next = function () {
-    var codePoints = this.codePoints;
-    var index = this.min;
-    var limit = this.limit;
-    // console.log("next: index=" + index + ", limit=" + limit);
-    if (!limit)
-        limit = codePoints.length;
-    if (index >= limit)
-        return null;
-    limit = Math.min(limit, index + this.charactersPerLine);
-    var line = [];
-    for (; index < limit; ++index) {
-        var code = codePoints[index];
-        if (code >= 0x10000) {
-            code -= 0x10000;
-            line.push(code >>> 10 & 0x3FF | 0xD800);
-            code = 0xDC00 | code & 0x3FF;
+Generator.prototype.linesFromCodePoints = function (codePoints) {
+    var lines = [];
+    var limit = codePoints.length;
+    for (var index = 0; index < limit; ) {
+        var lineLimit = Math.min(limit, index + this.charactersPerLine);
+        var line = [];
+        for (; index < lineLimit; ++index) {
+            var code = codePoints[index];
+            if (code >= 0x10000) {
+                code -= 0x10000;
+                line.push(code >>> 10 & 0x3FF | 0xD800);
+                code = 0xDC00 | code & 0x3FF;
+            }
+            line.push(code);
         }
-        line.push(code);
+        lines.push(String.fromCharCode.apply(String, line));
     }
-    this.min = index;
-    // console.log("next done");
-    return String.fromCharCode.apply(String, line);
+    return lines;
 };
 
 function toHex(value) {
@@ -217,9 +224,9 @@ module.exports.generate = function () {
     return Promise.all([
         unicodeData.get(unicodeData.url.vo, unicodeData.formatAsRangesByValue),
         unicodeData.get(unicodeData.url.gc),
-        unicodeData.get(unicodeData.url.blocks, unicodeData.formatAsRangesByValue),
+        unicodeData.get(unicodeData.url.blocks),
     ]).then(function (results) {
-        var generator = new Generator();
-        generator.generate(results[0], results[1], results[2]);
+        var generator = new Generator(results[0], results[1], results[2]);
+        generator.generate();
     });
 };

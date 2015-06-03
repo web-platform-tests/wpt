@@ -11,12 +11,15 @@
             this.results = results;
             this._measureNode(this.container);
         },
-        _measureNode: function (node) {
+        _measureNode: function (node, block) {
             switch (node.nodeType) {
             case Node.ELEMENT_NODE:
+                var blockOverride = node.dataset.block;
+                if (blockOverride)
+                    block = blockOverride;
                 var nodes = node.childNodes;
                 for (var i = 0; i < nodes.length; i++)
-                    this._measureNode(nodes[i]);
+                    this._measureNode(nodes[i], block);
                 return;
             case Node.TEXT_NODE:
                 break;
@@ -55,11 +58,11 @@
                     }
                     //log("U+" + stringFromUnicode(code) + " " + rect.width + "x" + rect.height);
                     if (rect.height == advanceFailed) {
-                        this.results.failed(this, code);
+                        this.results.failed(this, code, block);
                         continue;
                     }
                 }
-                this.results.inconclusive(this, code, rect);
+                this.results.inconclusive(this, code, block, rect);
             }
         }});
 
@@ -76,16 +79,18 @@
         this.inconclusiveCount = 0;
     }
     extend(Results.prototype, {
-        failed: function (test, code) {
+        failed: function (test, code, block) {
             this.failCount++;
-            this.append(this.failList, test, code);
+            this.append(this.failList, test, code, block);
         },
-        inconclusive: function (test, code, rect) {
+        inconclusive: function (test, code, block, rect) {
             this.inconclusiveCount++;
-            this.append(this.inconclusiveList, test, code, " but inconclusive (rendered as " + rect.width + "x" + rect.height + ")");
+            this.append(this.inconclusiveList, test, code, block, " but inconclusive (rendered as " + rect.width + "x" + rect.height + ")");
         },
-        append: function (list, test, code, message) {
+        append: function (list, test, code, block, message) {
             var text = stringFromUnicode(code) + " should be " + test.orientation;
+            if (block)
+                text = block + ": " + text;
             if (message)
                 text += message;
             appendChildElement(list, "li", text);
@@ -148,7 +153,6 @@
         }});
 
     setup({explicit_done:true, explicit_timeout:true});
-    var blocks = arrayFromRangesByValue(rangesByBlock);
     var runner = new Runner();
     window.onload = function () {
         if (window.location.search == "?wait") {
@@ -193,7 +197,7 @@
             hex = "0000" + hex;
             hex = hex.substr(hex.length - 4);
         }
-        return blocks[code] + ": " + hex + ' "' + String.fromCharCode(code) + '"';
+        return hex + ' "' + String.fromCharCode(code) + '"';
     }
 
     function appendChildElement(parent, tag, text) {

@@ -139,7 +139,7 @@ class MarionetteProtocol(Protocol):
 
     def on_environment_change(self, old_environment, new_environment):
         #Unset all the old prefs
-        for name, _ in old_environment.get("prefs", {}).iteritems():
+        for name in old_environment.get("prefs", {}).iterkeys():
             value = self.executor.original_pref_values[name]
             if value is None:
                 self.clear_user_pref(name)
@@ -151,11 +151,13 @@ class MarionetteProtocol(Protocol):
             self.set_pref(name, value)
 
     def set_pref(self, name, value):
-        if value not in ("true", "false"):
+        if value.lower() not in ("true", "false"):
             try:
                 int(value)
             except ValueError:
                 value = "'%s'" % value
+        else:
+            value = value.lower()
 
         self.logger.info("Setting pref %s (%s)" % (name, value))
 

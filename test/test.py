@@ -141,7 +141,7 @@ def get_parser():
                         help="Specific product to include in test run")
     parser.add_argument("--pdb", action="store_true",
                         help="Invoke pdb on uncaught exception")
-    parser.add_argument("--tag", action="append",
+    parser.add_argument("--tag", action="append", dest="tags",
                         help="tags to select tests")
     parser.add_argument("test", nargs="*",
                         help="Specific tests to include in test run")

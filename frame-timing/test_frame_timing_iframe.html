@@ -11,7 +11,7 @@
 
     <script type="text/javascript">
         // test data
-        var renderTestDelay = 100;
+        var testDelay = 100;
         var testThreshold = 5;
 
         var TEST_RENDER_EVENTS =
@@ -65,7 +65,7 @@
                 "This is content that is added in order to ensure a new PerformanceRenderTiming entry is fired.";
             TEST_RENDER_EVENTS[0].expectedStartTime = win.performance.now();
             TEST_RENDER_EVENTS[0].expectedName = win.location.href;
-            setTimeout(render_test_cb, renderTestDelay);
+            setTimeout(render_test_cb, testDelay);
         }
 
         function render_test_cb()
@@ -76,7 +76,7 @@
                 "ensures the previous render event is added to the timeline.";
             TEST_RENDER_EVENTS[1].expectedStartTime = win.performance.now();
             TEST_RENDER_EVENTS[1].expectedName = win.location.href;
-            setTimeout(render_test_cb_2, renderTestDelay);
+            setTimeout(render_test_cb_2, testDelay);
         }
 
         function render_test_cb_2()
@@ -86,7 +86,7 @@
                 "Some browsers don't add a PerformanceRenderTiming entry until another render occurs. This third render " +
                 "ensures the previous render event is added to the timeline. The entry for this rendering will not be tested.";
             entries = win.performance.getEntriesByType("render");
-            setTimeout(render_test_cb_3, renderTestDelay);
+            setTimeout(render_test_cb_3, testDelay);
         }
 
         function render_test_cb_3()

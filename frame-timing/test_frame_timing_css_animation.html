@@ -22,9 +22,7 @@
             // test for existance of Frame Timing and Performance Timeline interface
             if (window.performance.clearFrameTimings == undefined ||
                 window.performance.setFrameTimingBufferSize == undefined ||
-                window.performance.getEntriesByName == undefined ||
-                window.performance.getEntriesByType == undefined ||
-                window.performance.getEntries == undefined)
+                window.performance.getEntriesByType == undefined)
             {
                 test_true(false,
                           "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +

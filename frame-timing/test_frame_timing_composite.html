@@ -11,7 +11,7 @@
 
     <script type="text/javascript">
         // test data
-        var compositeTestDelay = 100;
+        var testDelay = 100;
 
         setup({explicit_done: true});
 
@@ -33,16 +33,18 @@
             }
             else
             {
-                setTimeout(initial_render_cb, compositeTestDelay);
+                setTimeout(initial_render_cb, testDelay);
             }
         }
 
         function initial_render_cb()
         {
+            // Modify the contents of the page in order to ensure render events are added to the timeline.
             document.getElementById("empty_p").innerHTML =
                 "This is content that is added in order to ensure a new PerformanceCompositeTiming entry is fired. Some browsers may not fire " +
                 "render events until the next render frame.";
-            setTimeout(composite_events_cb, compositeTestDelay);
+            // Wait some some to allow the frame timing events to be added to the timeline.
+            setTimeout(composite_events_cb, testDelay);
         }
 
         function composite_events_cb()
@@ -98,7 +100,6 @@
         {
             var testEntries = new Array();
 
-            // filter entryList
             for (var i in entryList)
             {
                 if (entryList[i].entryType == entryType)

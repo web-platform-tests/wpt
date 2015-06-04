@@ -35,6 +35,7 @@
                 document.getElementById("content").innerHTML =
                     "This is content that is added in order to ensure at least one PerformanceRenderTiming entry is fired. Some browsers may not fire " +
                     "render events until the next render frame.";
+                // Wait some some to allow the frame timing events to be added to the timeline.
                 setTimeout(clear_frame_timing_cb, testDelay);
             }
         }

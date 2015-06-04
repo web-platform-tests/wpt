@@ -32,6 +32,7 @@
             }
             else
             {
+                // Change the origin of the iframe such that it is not the same as the parent frame.
                 IFRAME = document.getElementById("cross_origin_iframe");
                 var url = document.createElement("a");
                 url.href = IFRAME.contentWindow.location.toString();
@@ -67,11 +68,7 @@
             done();
         }
 
-        if (window.addEventListener){
-            addEventListener("message", listener, false);
-        } else {
-            attachEvent("onmessage", listener);
-        }
+        addEventListener("message", listener, false);
 
         function get_cross_origin_hostname() {
             var hostName = window.location.hostname;
@@ -91,7 +88,7 @@
            ensure render and composite events are fired and added to the timeline.
         </p>
 
-        <iframe id="cross_origin_iframe" src="cross_domain_iframe.html"></iframe>
+        <iframe id="cross_origin_iframe" src="cross_origin_iframe.html"></iframe>
 
         <div id="log"></div>
     </body>

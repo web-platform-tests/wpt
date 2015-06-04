@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>window.performance Frame Timing onframetimingbufferfull fires when the buffer is full</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+        var bufferSize = 10;
+
+        function onload_test()
+        {
+            // test for existance of Frame Timing and Performance Timeline interface
+            if (window.performance.clearFrameTimings == undefined ||
+                window.performance.setFrameTimingBufferSize == undefined ||
+                window.performance.getEntriesByType == undefined)
+            {
+                test_true(false,
+                          "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                window.performance.setFrameTimingBufferSize(bufferSize);
+                window.performance.clearFrameTimings();
+
+                async_test(function(t) {
+                    window.performance.onframetimingbufferfull = t.step_func(function() {
+                        var combinedEntries = window.performance.getEntriesByType("render").concat(window.performance.getEntriesByType("composite"));
+                        test_equals(combinedEntries.length, bufferSize, "Only " + bufferSize + " frame timing enrties exist in the performance timeline.");
+                        t.done();
+                    });
+                });
+            }
+        }
+    </script>
+    <style>
+        demos {
+            display: flex;
+            flex-direction: row;
+            flex-flow: row wrap
+        }
+        #anim {
+            width:100px;
+            height:100px;
+            background-color: green;
+            -webkit-animation-duration: 10s;
+            -webkit-animation-timing-function: linear;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-name: rotate;
+        }
+
+        @-webkit-keyframes rotate {
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+    </style>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that onframetimingbufferfull fires when the buffer becomes full.</p>
+
+        <div id="anim"></div>
+
+        <div id="log"></div>
+    </body>
+</html>

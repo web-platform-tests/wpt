@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>iframe content used for cross-origin testing.</title>
+    <script type="text/javascript">
+        var contentModifiedCount = 0;
+
+        function modify_page_content()
+        {
+            contentModifiedCount++;
+            document.getElementById("content").innerHTML =
+                "The content of this paragraph has been modified " + contentModifiedCount + " times.";
+        }
+
+        function send_performance_data()
+        {
+            var hasRenderEvents = window.performance.getEntriesByType("render").length > 0;
+            var hasCompositeEvents = window.performance.getEntriesByType("composite").length > 0;
+            parent.postMessage([hasRenderEvents, hasCompositeEvents], "*");
+        }
+
+        function listener(event) {
+            var eventData = event.data;
+            if (eventData == "modify_page_content") {
+                modify_page_content();
+            } else if (eventData == "send_performance_data") {
+                send_performance_data();
+            }
+        }
+
+        addEventListener("message", listener, false);
+    </script>
+    </head>
+    <body>
+        This is an iframe that is used for testing the Performance Frame Timing API.
+        <p id="content"></p>
+    </body>
+</html>

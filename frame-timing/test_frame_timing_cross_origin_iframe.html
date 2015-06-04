@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>window.performance Frame Timing cross-origin iframe</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+        // test data
+        var renderTestDelay = 100;
+        var IFRAME = undefined;
+
+        setup({explicit_done: true});
+
+        test_namespace();
+
+        function onload_test()
+        {
+            // test for existance of Frame Timing and Performance Timeline interface
+            if (window.performance.clearFrameTimings == undefined ||
+                window.performance.getEntriesByType == undefined)
+            {
+                test_true(false,
+                          "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                IFRAME = document.getElementById("cross_origin_iframe");
+                var url = document.createElement("a");
+                url.href = IFRAME.contentWindow.location.toString();
+                url.hostname = get_cross_origin_hostname();
+                IFRAME.src = url;
+
+                setTimeout(modify_page_content_cb, renderTestDelay);
+            }
+        }
+
+        function modify_page_content_cb()
+        {
+            IFRAME.contentWindow.postMessage("modify_page_content", "*");
+            setTimeout(modify_page_content_cb_2, renderTestDelay);
+        }
+
+        function modify_page_content_cb_2()
+        {
+            IFRAME.contentWindow.postMessage("modify_page_content", "*");
+            setTimeout(modify_page_content_cb_3, renderTestDelay);
+        }
+
+        function modify_page_content_cb_3()
+        {
+            IFRAME.contentWindow.postMessage("send_performance_data", "*");
+        }
+
+        function listener(event)
+        {
+            var eventData = event.data;
+            test_true(eventData[0], "Cross-origin iframe has PerformanceRenderTiming entries.");
+            test_true(eventData[1], "Cross-origin iframe has PerformanceCompositeTiming entries.");
+            done();
+        }
+
+        if (window.addEventListener){
+            addEventListener("message", listener, false);
+        } else {
+            attachEvent("onmessage", listener);
+        }
+
+        function get_cross_origin_hostname() {
+            var hostName = window.location.hostname;
+            var hostParts = hostName.split('.');
+            if (hostParts.length == 2) {
+                return "www." + hostName;
+            }
+            hostParts[0] = hostParts[0] == "www" ? "www1" : "www";
+            return hostParts.join(".");
+        }
+    </script>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that PerformanceRenderTiming entries are properly added to the performance timeline when the content
+           is changed within a cross-origin iframe contained on the page. The content of the iframe is modified twice in order to
+           ensure render and composite events are fired and added to the timeline.
+        </p>
+
+        <iframe id="cross_origin_iframe" src="cross_domain_iframe.html"></iframe>
+
+        <div id="log"></div>
+    </body>
+</html>

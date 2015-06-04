@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>window.performance Frame Timing is working properly</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+        // test data
+        var testDelay = 200;
+        var testThreshold = 5;
+
+        setup({explicit_done: true});
+
+        test_namespace();
+
+        function onload_test()
+        {
+            // test for existance of Frame Timing and Performance Timeline interface
+            if (window.performance.clearFrameTimings == undefined ||
+                window.performance.setFrameTimingBufferSize == undefined ||
+                window.performance.getEntriesByName == undefined ||
+                window.performance.getEntriesByType == undefined ||
+                window.performance.getEntries == undefined)
+            {
+                test_true(false,
+                          "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                changeIframeContent("offpage_frame", "Initial change.");
+                changeIframeContent("btf_frame", "Initial change.");
+                setTimeout(composite_test_cb, testDelay);
+            }
+        }
+
+        function composite_test_cb()
+        {
+            var win = document.getElementById("offpage_frame").contentWindow;
+            var entries = win.performance.getEntriesByType("composite");
+            test_equals(entries.length, 0, "offpage_frame: No composite events when the frame is off-screen.");
+            var entries = win.performance.getEntriesByType("render");
+            test_greater_than(entries.length, 0, "offpage_frame: Render events are fired when the frame is off-screen.");
+
+            var win = document.getElementById("btf_frame").contentWindow;
+            var entries = win.performance.getEntriesByType("composite");
+            test_equals(entries.length, 0, "btf_frame: No composite events when the frame is off-screen.");
+            var entries = win.performance.getEntriesByType("render");
+            test_greater_than(entries.length, 0, "btf_frame: Render events are fired when the frame is off-screen.");
+
+            moveIframe("offpage_frame");
+            moveIframe("btf_frame");
+
+            // Move the iframe onto the screen.
+            setTimeout(composite_test_cb_2, testDelay);
+        }
+
+        function composite_test_cb_2()
+        {
+            changeIframeContent("offpage_frame", "Moved from top: -500px to top: 0px.");
+            changeIframeContent("btf_frame", "Moved from top: 10000px to top: 0px.");
+            setTimeout(composite_test_cb_3, testDelay);
+        }
+
+        function moveIframe(iframeId) {
+            var iframe = document.getElementById(iframeId);
+            iframe.style.top = "0px";
+        }
+
+        function changeIframeContent(iframeId, iframeMessage) {
+            var iframe = document.getElementById(iframeId);
+            iframe.contentDocument.getElementById("first_empty_p").innerHTML = iframeMessage;
+        }
+
+        function composite_test_cb_3()
+        {
+            var win = document.getElementById("offpage_frame").contentWindow;
+            var entries = win.performance.getEntriesByType("composite");
+            test_greater_than(entries.length, 0, "offpage_frame: Composite events should fire when the frame is on-screen.");
+
+            var win = document.getElementById("btf_frame").contentWindow;
+            var entries = win.performance.getEntriesByType("composite");
+            test_greater_than(entries.length, 0, "btf_frame: Composite events should fire when the frame is on-screen.");
+            done();
+        }
+    </script>
+    <style>
+      #offpage_frame {
+        position: relative;
+        top: -500px;
+        height: 250px;
+        width: 250px;
+      }
+      #btf_frame {
+        position: relative;
+        top: 10000px;
+        height: 250px;
+        width: 250px;
+      }
+    </style>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that PerformanceCompositeTiming entries are not added to the performance timeline for iframes that are
+           rendered outside of the viewport. After the iframe is moved onto the screen, composite events should be fired. Because some
+           browsers may not immediately fire composite events for static content, the content of the iframes are modified in order ensure
+           a composite event is fired.
+        </p>
+        <iframe id="offpage_frame" src="iframe.html"></iframe>
+        <iframe id="btf_frame" src="iframe.html"></iframe>
+
+    </body>
+</html>

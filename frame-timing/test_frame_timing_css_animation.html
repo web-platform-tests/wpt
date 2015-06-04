@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>window.performance Frame Timing CSS animation</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+        // test data
+        var testDelay = 200;
+
+        setup({explicit_done: true});
+
+        test_namespace();
+
+        function onload_test()
+        {
+            // test for existance of Frame Timing and Performance Timeline interface
+            if (window.performance.clearFrameTimings == undefined ||
+                window.performance.setFrameTimingBufferSize == undefined ||
+                window.performance.getEntriesByName == undefined ||
+                window.performance.getEntriesByType == undefined ||
+                window.performance.getEntries == undefined)
+            {
+                test_true(false,
+                          "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                window.performance.clearFrameTimings();
+                toggleAnimation();
+                setTimeout(start_anim_cb, testDelay);
+            }
+        }
+
+        function start_anim_cb()
+        {
+            window.performance.clearFrameTimings();
+            toggleAnimation();
+            setTimeout(stop_anim_cb, testDelay);
+        }
+
+        function stop_anim_cb()
+        {
+            toggleAnimation();
+            setTimeout(restart_anim_cb, testDelay);
+        }
+
+        function restart_anim_cb()
+        {
+            var renderEntries = window.performance.getEntriesByType("render");
+            var compositeEntries = window.performance.getEntriesByType("composite");
+            test_greater_than(renderEntries.length, 0,
+                              "Before clearFrameTimings(), window.performance.getEntriesByType(\"render\").length > 0");
+            test_greater_than(compositeEntries.length, 0,
+                              "Before clearFrameTimings(), window.performance.getEntriesByType(\"composite\").length > 0");
+
+            window.performance.clearFrameTimings();
+            setTimeout(after_clear_cb, testDelay);
+        }
+
+        function after_clear_cb()
+        {
+            var renderEntries = window.performance.getEntriesByType("render");
+            var compositeEntries = window.performance.getEntriesByType("composite");
+            test_equals(renderEntries.length, 0,
+                        "After clearFrameTimings(), window.performance.getEntriesByType(\"render\").length == 0");
+            test_greater_than(compositeEntries.length, 0,
+                              "After clearFrameTimings(), window.performance.getEntriesByType(\"composite\").length > 0");
+            done();
+        }
+
+        function toggleAnimation()
+        {
+            var animDiv = document.getElementById("anim")
+            animDiv.style.webkitAnimationName = animDiv.style.webkitAnimationName == "rotate" ? "" : "rotate";
+        }
+    </script>
+    <style>
+        demos {
+            display: flex;
+            flex-direction: row;
+            flex-flow: row wrap
+        }
+        #anim {
+            width:100px;
+            height:100px;
+            background-color: green;
+            -webkit-animation-duration: 10s;
+            -webkit-animation-timing-function: linear;
+            -webkit-animation-iteration-count: infinite;
+
+        }
+
+        @-webkit-keyframes rotate {
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+    </style>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that PerformanceRenderTiming entries and PerformanceCompositeEvents are properly added to the performance
+           timeline during CSS animation. CSS animation is started and the frame timinig events cleared from timeline. The animation is
+           then restarted which will trigger new render events. The frame timing events are again cleared from the timeline, after which
+           we expect no new render events to fire; however composite events should continue to fire.
+        </p>
+
+        <div id="anim"></div>
+        <p id="test"></p>
+    </body>
+</html>

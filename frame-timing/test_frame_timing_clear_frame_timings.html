@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>window.performance Frame Timing clearFrameTimings clears out entries</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+        // test data
+        var testDelay = 100;
+
+        setup({explicit_done: true});
+
+        test_namespace();
+
+        function onload_test()
+        {
+            // test for existance of Frame Timing and Performance Timeline interface
+            if (window.performance.setFrameTimingBufferSize == undefined ||
+                window.performance.getEntriesByType == undefined)
+            {
+                test_true(false,
+                          "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                // Modify the contents of the page in order to ensure render events are added to the timeline.
+                document.getElementById("content").innerHTML =
+                    "This is content that is added in order to ensure at least one PerformanceRenderTiming entry is fired. Some browsers may not fire " +
+                    "render events until the next render frame.";
+                setTimeout(clear_frame_timing_cb, testDelay);
+            }
+        }
+
+        function clear_frame_timing_cb()
+        {
+            test_greater_than(window.performance.getEntriesByType("render").length, 0, "At least one PerformanceRenderTiming entry exists.");
+            window.performance.clearFrameTimings();
+            test_equals(window.performance.getEntriesByType("composite").length, 0, "No PerformanceRenderTiming entries exist after clearFrameTimings.");
+            test_equals(window.performance.getEntriesByType("render").length, 0, "No PerformanceCompositeTiming entries exist after clearFrameTimings.");
+            done();
+        }
+    </script>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that clearFrameTimings clears out frame timing entries from the performance timeline.</p>
+
+        <p id="content"></p>
+
+        <div id="log"></div>
+    </body>
+</html>

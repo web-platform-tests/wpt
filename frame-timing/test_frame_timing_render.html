@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>window.performance Frame Timing render events generated correctly</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+        // test data
+        var renderTestDelay = 100;
+        var testThreshold = 5;
+
+        var TEST_RENDER_EVENTS =
+        [
+            {
+                expectedStartTime:      undefined,
+                expectedEntryType:      "render"
+            },
+            {
+                expectedStartTime:      undefined,
+                expectedEntryType:      "render"
+            }
+        ];
+
+        setup({explicit_done: true});
+
+        test_namespace();
+
+        function onload_test()
+        {
+            // test for existance of Frame Timing and Performance Timeline interface
+            if (window.performance.clearFrameTimings == undefined ||
+                window.performance.setFrameTimingBufferSize == undefined ||
+                window.performance.getEntriesByName == undefined ||
+                window.performance.getEntriesByType == undefined ||
+                window.performance.getEntries == undefined)
+            {
+                test_true(false,
+                          "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                setTimeout(initial_render_events_cb, renderTestDelay);
+            }
+        }
+
+        function initial_render_events_cb()
+        {
+            // This will trigger a new render frame.
+            document.getElementById("empty_p").innerHTML =
+                "This is content that is added in order to ensure a new PerformanceRenderTiming entry is fired.";
+            TEST_RENDER_EVENTS[0].expectedStartTime = window.performance.now();
+            setTimeout(render_test_cb, renderTestDelay);
+        }
+
+        function render_test_cb()
+        {
+            // This will trigger a new render frame.
+            document.getElementById("second_empty_p").innerHTML =
+                "Some browsers may not add a PerformanceRenderTiming entry until another render occurs. This second render " +
+                "ensures the previous render event is added to the timeline.";
+            TEST_RENDER_EVENTS[1].expectedStartTime = window.performance.now();
+            setTimeout(render_test_cb_2, renderTestDelay);
+        }
+
+        function render_test_cb_2()
+        {
+            // This will trigger a new render frame.
+            document.getElementById("third_empty_p").innerHTML =
+                "Some browsers may not add a PerformanceRenderTiming entry until another render occurs. This third render " +
+                "ensures the previous render event is added to the timeline. The entry for this rendering will not be tested.";
+            setTimeout(render_test_cb_3, renderTestDelay);
+        }
+
+        function render_test_cb_3()
+        {
+            test_render_entries(window.performance.getEntries(),
+                                "window.performance.getEntries()");
+            test_render_entries(window.performance.getEntriesByType("render"),
+                                "window.performance.getEntriesByType(\"render\")");
+            test_render_entries(window.performance.getEntriesByName(window.location.href),
+                                "window.performance.getEntriesByName(window.location.href)");
+            test_render_entries(window.performance.getEntriesByName(window.location.href, "render"),
+                                "window.performance.getEntriesByName(window.location.href, \"render\")");
+
+            done();
+        }
+
+        function find_render_entry_by_start_time(entries, startTime) {
+            for (var i in entries) {
+                var entry = entries[i];
+                if (Math.abs(entry.startTime - startTime) <= testThreshold) {
+                    return entry;
+                }
+            }
+            return undefined;
+        }
+
+        function test_render_entries(entries, entryCommand)
+        {
+            var renderEntries = get_test_entries(entries, "render");
+            test_render_entry(renderEntries, entryCommand, 0);
+            test_render_entry(renderEntries, entryCommand, 1);
+
+            var prevSourceFrame = -1;
+            for (var i in renderEntries) {
+                var entry = renderEntries[i];
+                if (prevSourceFrame != -1) {
+                    test_equals(entry.sourceFrame,
+                                prevSourceFrame + 1,
+                                entryCommand + ": Sequential source frames: " + prevSourceFrame + "->" + entry.sourceFrame);
+                }
+                prevSourceFrame = entry.sourceFrame;
+            }
+        }
+
+        function test_render_entry(entries, entryCommand, testRenderEventsIndex)
+        {
+            var entry = find_render_entry_by_start_time(entries, TEST_RENDER_EVENTS[testRenderEventsIndex].expectedStartTime);
+            test_not_equals(undefined,
+                            entry,
+                            entryCommand + ': PerformanceRenderTiming entry exists that matches TEST_RENDER_EVENTS[' + testRenderEventsIndex + '].expectedStartTime');
+            if (entry == undefined) {
+                return;
+            }
+            test_equals(entry.entryType,
+                        "render",
+                        entryCommand + ": entry.entryType == TEST_RENDER_EVENTS[" + testRenderEventsIndex + "].expectedEntryType");
+        }
+
+        function get_test_entries(entryList, entryType)
+        {
+            var testEntries = new Array();
+
+            // filter entryList
+            for (var i in entryList)
+            {
+                if (entryList[i].entryType == entryType)
+                {
+                    testEntries.push(entryList[i]);
+                }
+            }
+
+            return testEntries;
+        }
+    </script>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that PerformanceRenderTiming entries are properly added to the performance timeline.
+           After modifying the content of the page three times, the existence of the subsequent render events are checked
+           in performance.getEntriesByName() (both with and without the entryType parameter provided),
+           performance.getEntriesByType(), and performance.getEntries().
+        </p>
+
+        <p id="empty_p"></p>
+        <p id="second_empty_p"></p>
+        <p id="third_empty_p"></p>
+
+        <div id="log"></div>
+    </body>
+</html>

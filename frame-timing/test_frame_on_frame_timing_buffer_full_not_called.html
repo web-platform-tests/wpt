@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>window.performance Frame Timing onframetimingbufferfull doesn't fire</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+        var bufferSize = 10;
+
+        function onload_test()
+        {
+            // test for existance of Frame Timing and Performance Timeline interface
+            if (window.performance.clearFrameTimings == undefined ||
+                window.performance.setFrameTimingBufferSize == undefined)
+            {
+                test_true(false,
+                          "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                window.performance.setFrameTimingBufferSize(bufferSize);
+                window.performance.clearFrameTimings();
+
+                async_test(function(t) {
+                    window.performance.onframetimingbufferfull = t.unreached_func("onframetimingbufferfull should not fire");
+                    setTimeout(t.step_func_done(), 1000);
+                });
+            }
+        }
+    </script>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that onframetimingbufferfull doesn't fire when the buffer isn't full.</p>
+
+        <div id="log"></div>
+    </body>
+</html>

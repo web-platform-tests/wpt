@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>window.performance Frame Timing composite events generated correctly</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <script src="resources/webperftestharness.js"></script>
+
+    <script type="text/javascript">
+        // test data
+        var compositeTestDelay = 100;
+
+        setup({explicit_done: true});
+
+        test_namespace();
+
+        function onload_test()
+        {
+            // test for existance of Frame Timing and Performance Timeline interface
+            if (window.performance.clearFrameTimings == undefined ||
+                window.performance.getEntriesByName == undefined ||
+                window.performance.getEntriesByType == undefined ||
+                window.performance.getEntries == undefined)
+            {
+                test_true(false,
+                          "The Frame Timing and Performance Timeline interfaces, which are required for this test, " +
+                          "are defined.");
+
+                done();
+            }
+            else
+            {
+                setTimeout(initial_render_cb, compositeTestDelay);
+            }
+        }
+
+        function initial_render_cb()
+        {
+            document.getElementById("empty_p").innerHTML =
+                "This is content that is added in order to ensure a new PerformanceCompositeTiming entry is fired. Some browsers may not fire " +
+                "render events until the next render frame.";
+            setTimeout(composite_events_cb, compositeTestDelay);
+        }
+
+        function composite_events_cb()
+        {
+            test_composite_entries(window.performance.getEntries(),
+                                   "window.performance.getEntries()");
+            test_composite_entries(window.performance.getEntriesByType("composite"),
+                                   "window.performance.getEntriesByType(\"composite\")");
+            test_composite_entries(window.performance.getEntriesByName(window.location.href),
+                                   "window.performance.getEntriesByName(window.location.href)");
+            test_composite_entries(window.performance.getEntriesByName(window.location.href, "composite"),
+                                   "window.performance.getEntriesByName(window.location.href, \"composite\")");
+
+            done();
+        }
+
+        function test_composite_entries(entries, entryCommand)
+        {
+            var compositeEntries = get_test_entries(entries, "composite");
+            test_greater_than(compositeEntries.length, 0, entryCommand + " returns at least one PerformanceCompositeTiming entry.");
+            if (compositeEntries.length == 0) {
+                return;
+            }
+            var compositeEntry = compositeEntries[0];
+            test_equals(compositeEntry.duration, 0, entryCommand + ": PerformanceCompositeTiming.duration == 0.");
+
+            var renderEntry = get_render_entry(compositeEntry.sourceFrame);
+            test_not_equals(renderEntry, undefined, entryCommand + ": Corresponding PerformanceRenderTiming exists for PerformanceCompositeTiming.sourceFrame");
+            if (renderEntry == undefined) {
+                return;
+            }
+            test_greater_or_equals(compositeEntry.startTime,
+                                   renderEntry.startTime,
+                                   entryCommand + ": PerformanceCompositeTiming.startTime comes after PerformanceRenderTiming.startTime for the same sourceFrame.");
+            test_equals(compositeEntry.name,
+                        renderEntry.name,
+                        entryCommand + ": PerformanceCompositeTiming.name == PerformanceRenderTiming.startTime for the same sourceFrame.");
+        }
+
+        function get_render_entry(sourceFrame)
+        {
+            var renderEntries = window.performance.getEntriesByType("render");
+            for (var i in renderEntries) {
+                renderEntry = renderEntries[i];
+                if (renderEntry.sourceFrame == sourceFrame) {
+                    return renderEntry;
+                }
+            }
+            return undefined;
+        }
+
+        function get_test_entries(entryList, entryType)
+        {
+            var testEntries = new Array();
+
+            // filter entryList
+            for (var i in entryList)
+            {
+                if (entryList[i].entryType == entryType)
+                {
+                    testEntries.push(entryList[i]);
+                }
+            }
+            return testEntries;
+        }
+    </script>
+    </head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that PerformanceCompositeTiming entries are properly added to the performance timeline.
+           Composite events are checked for in performance.getEntriesByName() (both with and without the entryType parameter provided),
+           performance.getEntriesByType(), and performance.getEntries().
+        </p>
+
+        <p id="empty_p"></p>
+
+        <div id="log"></div>
+    </body>
+</html>

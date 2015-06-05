@@ -33,7 +33,7 @@
                 async_test(function(t) {
                     window.performance.onframetimingbufferfull = t.step_func(function() {
                         var combinedEntries = window.performance.getEntriesByType("render").concat(window.performance.getEntriesByType("composite"));
-                        test_equals(combinedEntries.length, bufferSize, "Only " + bufferSize + " frame timing enrties exist in the performance timeline.");
+                        test_equals(combinedEntries.length, bufferSize, "Only " + bufferSize + " frame timing entries exist in the performance timeline.");
                         t.done();
                     });
                 });

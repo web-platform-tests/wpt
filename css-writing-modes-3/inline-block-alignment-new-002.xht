@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Writing Modes Test: inline block alignment - central alignment with vertical layout</title>
+    <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+    <link rel="help" title="CSS3 Writing modes: 4.3. Atomic Inline Baseline" href="http://www.w3.org/TR/css-writing-modes-3/#replaced-baselines" />
+    <link rel="help" title="CSS2.1 9.2.2 Inline-level elements and inline boxes" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
+    <link rel="match" href="inline-block-alignment-new-002.xht" />
+    <meta name="assert" content="This test checks the generation of inline-block baseline. When 'writing-mode' is 'vertical-rl' and when 'text-orientation' is 'mixed', then the central baseline is used as the dominant baseline." />
+    <meta name="flags" content="ahem" />
+    <style type="text/css"><![CDATA[
+    div#rl-mixed
+    {
+      color: orange;
+      font: 3.75em Ahem; /* computes to 60px */
+      height: 4em;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+
+    span#blue120
+    {
+      display: inline-block;
+      padding-left: 1em; /* computes to 120px */
+      padding-right: 1em; /* computes to 120px */
+      color: blue;
+      font-size: 2em; /* computes to 120px */
+    }
+
+    span#orange30
+    {
+      display: inline-block;
+      padding-left: 1em; /* computes to 30px */
+      padding-right: 1em; /* computes to 30px */
+      font-size: 0.5em; /* computes to 30px */
+    }
+    ]]></style>
+
+  </head>
+
+  <body>
+
+  <p>Test passes if 2 orange squares are centered with respect to a blue square.</p>
+
+  <div id="rl-mixed">A<span id="blue120">B</span><span id="orange30">O</span></div>
+
+  </body>
+</html>

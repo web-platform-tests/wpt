@@ -391,10 +391,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                              timeout).run()
 
     def _screenshot(self, marionette, url, timeout):
-        try:
-            marionette.navigate(url)
-        except errors.MarionetteException:
-            raise ExecutorException("ERROR", "Failed to load url %s" % (url,))
+        marionette.navigate(url)
 
         marionette.execute_async_script(self.wait_script)
 

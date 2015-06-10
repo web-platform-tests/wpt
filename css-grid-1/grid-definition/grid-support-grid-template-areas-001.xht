@@ -35,12 +35,22 @@
             TestingUtils.testGridTemplateAreas('grid', '"a b" "a b"', '"a b" "a b"');
             TestingUtils.testGridTemplateAreas('grid', '"a a" "b b"', '"a a" "b b"');
             TestingUtils.testGridTemplateAreas('grid', '". a ." "b a c"', '". a ." "b a c"');
+            TestingUtils.testGridTemplateAreas('grid', '".. a ..." "b a c"', '". a ." "b a c"');
+            TestingUtils.testGridTemplateAreas('grid', '".a..." "b a c"', '". a ." "b a c"');
             TestingUtils.testGridTemplateAreas('grid', '"head head" "nav main" "foot ."', '"head head" "nav main" "foot ."');
+            TestingUtils.testGridTemplateAreas('grid', '"head head" "nav main" "foot ...."', '"head head" "nav main" "foot ."');
+            TestingUtils.testGridTemplateAreas('grid', '"head head" "nav main" "foot."', '"head head" "nav main" "foot ."');
             TestingUtils.testGridTemplateAreas('grid', '". header header ." "nav main main main" "nav footer footer ."', '". header header ." "nav main main main" "nav footer footer ."');
+            TestingUtils.testGridTemplateAreas('grid', '"... header header ...." "nav main main main" "nav footer footer ...."', '". header header ." "nav main main main" "nav footer footer ."');
+            TestingUtils.testGridTemplateAreas('grid', '"...header header...." "nav main main main" "nav footer footer...."', '". header header ." "nav main main main" "nav footer footer ."');
             TestingUtils.testGridTemplateAreas('grid', '"title stats" "score stats" "board board" "ctrls ctrls"', '"title stats" "score stats" "board board" "ctrls ctrls"');
             TestingUtils.testGridTemplateAreas('grid', '"title board" "stats board" "score ctrls"', '"title board" "stats board" "score ctrls"');
             TestingUtils.testGridTemplateAreas('grid', '". a" "b a" ". a"', '". a" "b a" ". a"');
+            TestingUtils.testGridTemplateAreas('grid', '".. a" "b a" "... a"', '". a" "b a" ". a"');
+            TestingUtils.testGridTemplateAreas('grid', '"..a" "b a" ".a"', '". a" "b a" ". a"');
             TestingUtils.testGridTemplateAreas('grid', '"a a a" "b b b"', '"a a a" "b b b"');
+            TestingUtils.testGridTemplateAreas('grid', '". ." "a a"', '". ." "a a"');
+            TestingUtils.testGridTemplateAreas('grid', '"... ...." "a a"', '". ." "a a"');
 
             // Reset values.
             document.getElementById('grid').style.gridTemplateAreas = '';

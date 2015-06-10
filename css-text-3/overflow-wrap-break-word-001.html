@@ -5,7 +5,7 @@
 <link rel="help" href="http://dev.w3.org/csswg/css-text-3/#valdef-overflow-wrap-break-word">
 <meta name="flags" content="ahem">
 <link rel="match" href="reftest/overflow-wrap-break-word-001-ref.html">
-<meta name="assert" content="An otherwise unbreakable sequence of characters may be broken at an arbitrary point if there are no otherwise-acceptable break points in the line.">
+<meta name="assert" content="sequences of nbsp characters that would cause overflow are expected to be broken when overflow-wrap is break-word">
 <style>
 div {
 	position: relative;

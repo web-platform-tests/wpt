@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<html>
+ <head>
+  <title>domparsing Test: XMLSerializer.serializeToString</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+    <h1>domparsing_XMLSerializer_serializeToStrin</h1>
+    <div id="log"></div>
+  <script>
+        function createXmlDoc(){
+            var input = '<?xml version="1.0" encoding="UTF-8"?><root><child1>value1</child1></root>';
+            var parser = new DOMParser();
+            doc = parser.parseFromString(input, 'text/xml');
+            return doc;
+        }
+        test(function() {
+            var serializer = new XMLSerializer ();
+            root = createXmlDoc().documentElement;
+            alert(root);
+            xmlString=serializer.serializeToString(root);
+           
+            assert_equals(xmlString, "<root><child1>value1</child1></root>");
+        }, 'check wether parsing xmldoc to string');
+  </script>
+
+
+ </body>
+</html>

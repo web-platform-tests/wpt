@@ -74,8 +74,8 @@
             TestingUtils.testGridTemplateColumnsRows("grid", "minmax(100px, 300px) 1fr", "minmax(100px, 200px) 1fr", "300px 500px", "200px 400px");
             TestingUtils.testGridTemplateColumnsRows("emptyGrid", "repeat(4, 1fr)", "repeat(4, 1fr)", ["200px 200px 200px 200px", "repeat(4, 200px)"], ["150px 150px 150px 150px", "repeat(4, 150px)"]);
             TestingUtils.testGridTemplateColumnsRows("grid", "repeat(4, 1fr)", "repeat(4, 1fr)", ["200px 200px 200px 200px", "repeat(4, 200px)"], ["150px 150px 150px 150px", "repeat(4, 150px)"]);
-            TestingUtils.testGridTemplateColumnsRows("emptyGrid", "(a) repeat(4, (b) 1fr (c)) (d)", "(z) repeat(4, (y) 1fr) (x)", ["(a b) 200px (c b) 200px (c b) 200px (c b) 200px (c d)", "(a) repeat(4, (b) 200px (c)) (d)"], ["(z y) 150px (y) 150px (y) 150px (y) 150px (x)", "(z) repeat(4, (y) 150px) (x)"]);
-            TestingUtils.testGridTemplateColumnsRows("grid", "(a) repeat(4, (b) 1fr (c)) (d)", "(z) repeat(4, (y) 1fr) (x)", ["(a b) 200px (c b) 200px (c b) 200px (c b) 200px (c d)", "(a) repeat(4, (b) 200px (c)) (d)"], ["(z y) 150px (y) 150px (y) 150px (y) 150px (x)", "(z) repeat(4, (y) 150px) (x)"]);
+            TestingUtils.testGridTemplateColumnsRows("emptyGrid", "[a] repeat(4, [b] 1fr [c]) [d]", "[z] repeat(4, [y] 1fr) [x]", ["[a b] 200px [c b] 200px [c b] 200px [c b] 200px [c d]", "[a] repeat(4, [b] 200px [c]) [d]"], ["[z y] 150px [y] 150px [y] 150px [y] 150px [x]", "[z] repeat(4, [y] 150px) [x]"]);
+            TestingUtils.testGridTemplateColumnsRows("grid", "[a] repeat(4, [b] 1fr [c]) [d]", "[z] repeat(4, [y] 1fr) [x]", ["[a b] 200px [c b] 200px [c b] 200px [c b] 200px [c d]", "[a] repeat(4, [b] 200px [c]) [d]"], ["[z y] 150px [y] 150px [y] 150px [y] 150px [x]", "[z] repeat(4, [y] 150px) [x]"]);
 
             // Reset values.
             document.getElementById("emptyGrid").style.gridTemplateColumns = "";

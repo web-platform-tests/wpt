@@ -8,20 +8,20 @@
 <meta name="assert" content="sequences of nbsp characters that would cause overflow are expected to be broken when overflow-wrap is break-word">
 <style>
 div {
-	position: relative;
-	width: 100px;
-	height: 100px;
-	font-family: ahem;
-	color: red;
-	overflow-wrap: break-word;
-	font-size: 25px;
-	line-height: 27px;
+  position: relative;
+  width: 100px;
+  height: 100px;
+  font-family: ahem;
+  color: red;
+  overflow-wrap: break-word;
+  font-size: 25px;
+  line-height: 27px;
 }
 div::after{
-	content: "";
-	position: absolute;
-	top: 0; left: 0; bottom: 0; right: 0;
-	background: green;
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: green;
 }
 </style>
 <body>

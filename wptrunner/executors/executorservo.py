@@ -99,15 +99,18 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
                 self.proc.wait()
 
             proc_is_running = True
-            if self.result_flag.is_set() and self.result_data is not None:
-                self.result_data["test"] = test.url
-                result = self.convert_result(test, self.result_data)
-            else:
-                if self.proc.poll() is not None:
+
+            if self.result_flag.is_set():
+                if self.result_data is not None:
+                    self.result_data["test"] = test.url
+                    result = self.convert_result(test, self.result_data)
+                else:
+                    self.proc.wait()
                     result = (test.result_cls("CRASH", None), [])
                     proc_is_running = False
-                else:
-                    result = (test.result_cls("TIMEOUT", None), [])
+            else:
+                result = (test.result_cls("TIMEOUT", None), [])
+
 
             if proc_is_running:
                 if self.pause_after_test:

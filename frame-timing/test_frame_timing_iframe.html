@@ -132,7 +132,7 @@
             var entry = find_render_entry_by_start_time(entries, TEST_RENDER_EVENTS[testRenderEventsIndex].expectedStartTime);
             test_true(true);
             test_not_equals(undefined,
-                            entry, entryCommand + ': PerformanceRenderTiming entry exists that matches TEST_RENDER_EVENTS[' + testRenderEventsIndex + '].expectedStartTime');
+                            entry, entryCommand + ": PerformanceRenderTiming entry exists that matches TEST_RENDER_EVENTS[" + testRenderEventsIndex + "].expectedStartTime");
             if (entry == undefined) {
                 return;
             }

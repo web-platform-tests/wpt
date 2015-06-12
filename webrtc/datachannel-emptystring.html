@@ -1,0 +1,174 @@
+<!doctype html>
+<!--
+This test creates a data channel between two local PeerConnection instances
+and ensures that an empty string sent by one is received by the second.
+-->
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>RTCPeerConnection Data Channel Empty String Test</title>
+</head>
+<body>
+  <div id="log"></div>
+  <h2>Messages exchanged</h2>
+  <div id="msg"></div>
+
+  <!-- These files are in place when executing on W3C. -->
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/vendor-prefix.js"
+          data-prefixed-objects=
+              '[{"ancestors":["window"], "name":"RTCPeerConnection"},
+                {"ancestors":["window"], "name":"RTCSessionDescription"},
+                {"ancestors":["window"], "name":"RTCIceCandidate"}]'
+    >
+  </script>
+  <script type="text/javascript">
+  var test = async_test('Can send empty strings across a WebrTC data channel.');
+
+  var gFirstConnection = null;
+  var gSecondConnection = null;
+  var sendChannel;
+  var receiveChannel;
+
+  var onOfferCreated = test.step_func(function (offer) {
+    // TODO: Switch to promise-based interface.
+    gFirstConnection.setLocalDescription(
+      offer,
+      ignoreSuccess,
+      failed('setLocalDescription first'));
+
+    // This would normally go across the application's signaling solution.
+    // In our case, the "signaling" is to call this function.
+    receiveCall(offer.sdp);
+  });
+
+  var receiveCall = function (offerSdp) {
+    var parsedOffer = new RTCSessionDescription({
+      type: 'offer',
+      sdp: offerSdp
+    });
+
+    // These functions use the legacy interface extensions to RTCPeerConnection.
+    // TODO: Switch to promise-based interfaces.
+    gSecondConnection.setRemoteDescription(
+      parsedOffer,
+      function () {
+        gSecondConnection.createAnswer(
+          onAnswerCreated,
+          failed('createAnswer'));
+      },
+      failed('setRemoteDescription second'));
+  };
+
+  var onAnswerCreated = test.step_func(function (answer) {
+    gSecondConnection.setLocalDescription(
+      answer,
+      ignoreSuccess,
+      failed('setLocalDescription second'));
+
+    // Similarly, this would go over the application's signaling solution.
+    handleAnswer(answer.sdp);
+  });
+
+  var handleAnswer = function (answerSdp) {
+    var parsedAnswer = new RTCSessionDescription({
+      type: 'answer',
+      sdp: answerSdp
+    });
+    gFirstConnection.setRemoteDescription(
+      parsedAnswer,
+      ignoreSuccess,
+      failed('setRemoteDescription first'));
+  };
+
+  var onIceCandidateToFirst = test.step_func(function (event) {
+    // If event.candidate is null = no more candidates.
+    if (event.candidate) {
+      var candidate = new RTCIceCandidate(event.candidate);
+      gSecondConnection.addIceCandidate(
+        candidate,
+        ignoreSuccess,
+        failed('addIceCandidate second'));
+    }
+  });
+
+  var onIceCandidateToSecond = test.step_func(function (event) {
+    if (event.candidate) {
+      var candidate = new RTCIceCandidate(event.candidate);
+      gFirstConnection.addIceCandidate(
+        candidate,
+        ignoreSuccess,
+        failed('addIceCandidate second'));
+    }
+  });
+
+  var onReceiveChannel = test.step_func(function (event) {
+    receiveChannel = event.channel;
+    receiveChannel.onmessage = onReceiveMessage;
+  });
+
+
+  // When the data channel is open, send an empty string message
+  // followed by a message that contains the string "done".
+  var onSendChannelOpen = test.step_func(function (event) {
+    var msgEl = document.getElementById('msg');
+    sendChannel.send('');
+    msgEl.innerHTML += 'Sent: [empty string]<br>';
+    sendChannel.send('done');
+    msgEl.innerHTML += 'Sent: "done"<br>';
+  });
+
+  // Check the messages received on the other side.
+  // There should be an empty string message followed by a message that
+  // contains the string "done".
+  // Pass/Fail the test according to the messages received
+  var emptyMessageReceived = false;
+  var onReceiveMessage = test.step_func(function (event) {
+    var msgEl = document.getElementById('msg');
+    msgEl.innerHTML += 'Received: ' +
+        (event.data ? '"' + event.data + '"' : '[empty string]') + '<br>';
+    if (emptyMessageReceived) {
+      assert_equals(event.data, 'done', 'The "done" message was not received');
+      test.done();
+    }
+    else {
+      assert_equals(event.data, '', 'Empty message not received');
+      emptyMessageReceived = true;
+    }
+  });
+
+  // Returns a suitable error callback.
+  var failed = function (function_name) {
+    return test.step_func(function() {
+      assert_unreached('WebRTC called error callback for ' + function_name);
+    });
+  };
+
+  // Returns a suitable do-nothing.
+  var ignoreSuccess = function (function_name) {};
+
+
+  // This function starts the test.
+  test.step(function () {
+    gFirstConnection = new RTCPeerConnection(null);
+    gFirstConnection.onicecandidate = onIceCandidateToFirst;
+
+    gSecondConnection = new RTCPeerConnection(null);
+    gSecondConnection.onicecandidate = onIceCandidateToSecond;
+    gSecondConnection.ondatachannel = onReceiveChannel;
+
+    // Note the data channel will preserve the order of messages
+    // exchanged over it by default.
+    sendChannel = gFirstConnection.createDataChannel('sendDataChannel');
+    sendChannel.onopen = onSendChannelOpen;
+
+    // TODO: Use a promise-based API. This is legacy.
+    gFirstConnection.createOffer(onOfferCreated, failed('createOffer'));
+  });
+</script>
+
+</body>
+</html>
+

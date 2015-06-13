@@ -62,8 +62,9 @@ class ServoTestharnessExecutor(ProcessTestExecutor):
         self.result_data = None
         self.result_flag = threading.Event()
 
-        debug_args, command = browser_command(self.binary, ["--cpu", "--hard-fail", "-z", self.test_url(test)],
-                                              self.debug_info)
+        debug_args, command = browser_command(self.binary,
+            ["--cpu", "--hard-fail", "-u", "Servo/wptrunner", "-z", self.test_url(test)],
+            self.debug_info)
 
         self.command = command
 
@@ -189,8 +190,8 @@ class ServoRefTestExecutor(ProcessTestExecutor):
 
         with TempFilename(self.tempdir) as output_path:
             self.command = [self.binary, "--cpu", "--hard-fail", "--exit",
-                            "-Z", "disable-text-aa", "--output=%s" % output_path,
-                            full_url]
+                            "-u", "Servo/wptrunner", "-Z", "disable-text-aa",
+                            "--output=%s" % output_path, full_url]
 
             env = os.environ.copy()
             env["HOST_FILE"] = self.hosts_path

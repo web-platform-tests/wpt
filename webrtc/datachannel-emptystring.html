@@ -19,18 +19,16 @@ and ensures that an empty string sent by one is received by the second.
   <script src="/resources/testharnessreport.js"></script>
   <script src="/common/vendor-prefix.js"
           data-prefixed-objects=
-              '[{"ancestors":["window"], "name":"RTCPeerConnection"},
-                {"ancestors":["window"], "name":"RTCSessionDescription"},
-                {"ancestors":["window"], "name":"RTCIceCandidate"}]'
+              '[{"ancestors":["window"], "name":"RTCPeerConnection"}]'
     >
   </script>
   <script type="text/javascript">
-  var test = async_test('Can send empty strings across a WebrTC data channel.');
+  var test = async_test('Can send empty strings across a WebRTC data channel.');
 
   var gFirstConnection = null;
   var gSecondConnection = null;
-  var sendChannel;
-  var receiveChannel;
+  var sendChannel = null;
+  var receiveChannel = null;
 
   var onReceiveChannel = function (event) {
     receiveChannel = event.channel;
@@ -70,7 +68,7 @@ and ensures that an empty string sent by one is received by the second.
   function exchangeIce(pc) {
      return function(e) {
        if (e.candidate) {
-          pc.addIceCandidate(new RTCIceCandidate(e.candidate));
+          pc.addIceCandidate(e.candidate);
        }
      };
   }
@@ -79,7 +77,6 @@ and ensures that an empty string sent by one is received by the second.
      return function() {
        return pc1.setRemoteDescription(pc2.localDescription);
      };
-
   }
 
   test.step(function() {
@@ -101,7 +98,7 @@ and ensures that an empty string sent by one is received by the second.
     .then(gFirstConnection.setLocalDescription.bind(gFirstConnection))
     .then(exchangeDescription(gSecondConnection, gFirstConnection))
     .then(function() {
-      return gSecondConnection.createAnswer()
+      return gSecondConnection.createAnswer();
     })
     .then(gSecondConnection.setLocalDescription.bind(gSecondConnection))
     .then(exchangeDescription(gFirstConnection, gSecondConnection))

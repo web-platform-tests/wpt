@@ -70,15 +70,13 @@ This test uses the legacy callback API with no media, and thus does not require 
   var onIceCandidateToFirst = test.step_func(function(event) {
     // If event.candidate is null = no more candidates.
     if (event.candidate) {
-      var candidate = new RTCIceCandidate(event.candidate);
-      gSecondConnection.addIceCandidate(candidate);
+      gSecondConnection.addIceCandidate(event.candidate);
     }
   });
 
   var onIceCandidateToSecond = test.step_func(function(event) {
     if (event.candidate) {
-      var candidate = new RTCIceCandidate(event.candidate);
-      gFirstConnection.addIceCandidate(candidate);
+      gFirstConnection.addIceCandidate(event.candidate);
     }
   });
 

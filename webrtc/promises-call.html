@@ -105,7 +105,7 @@ This test uses data only, and thus does not require fake media devices.
     })
     .then(function() {
       atStep = 'Create answer';
-      return gSecondConnection.createAnswer()
+      return gSecondConnection.createAnswer();
     })
     .then(function(answer) {
       atStep = 'Set local description at second';

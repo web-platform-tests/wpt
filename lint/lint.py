@@ -160,16 +160,16 @@ def check_parsed(path, f):
     if source_file.testharness_nodes:
         if len(source_file.testharness_nodes) > 1:
             errors.append(("MULTIPLE-TESTHARNESS",
-                           "%s more than one <script src='/resources/testharness.js>'" % path, None))
+                           "%s more than one <script src='/resources/testharness.js'>" % path, None))
 
         testharnessreport_nodes = source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src='/resources/testharnessreport.js']")
         if not testharnessreport_nodes:
             errors.append(("MISSING-TESTHARNESSREPORT",
-                           "%s missing <script src='/resources/testharnessreport.js>'" % path, None))
+                           "%s missing <script src='/resources/testharnessreport.js'>" % path, None))
         else:
             if len(testharnessreport_nodes) > 1:
                 errors.append(("MULTIPLE-TESTHARNESSREPORT",
-                               "%s more than one <script src='/resources/testharnessreport.js>'" % path, None))
+                               "%s more than one <script src='/resources/testharnessreport.js'>" % path, None))
 
         for element in source_file.variant_nodes:
             if "content" not in element.attrib:

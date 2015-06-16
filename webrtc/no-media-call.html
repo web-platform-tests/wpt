@@ -86,6 +86,8 @@ This test uses the legacy callback API with no media, and thus does not require 
 
   var onIceConnectionStateChange = test.step_func(function(event) {
     assert_equals(event.type, 'iceconnectionstatechange');
+    assert_not_equals(gFirstConnection.iceConnectionState, "failed", "iceConnectionState of first connection");
+    assert_not_equals(gSecondConnection.iceConnectionState, "failed", "iceConnectionState of second connection");
     var stateinfo = document.getElementById('stateinfo');
     stateinfo.innerHTML = 'First: ' + gFirstConnection.iceConnectionState
                         + '<br>Second: ' + gSecondConnection.iceConnectionState;

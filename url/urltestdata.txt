@@ -344,6 +344,12 @@ http://foo:\uD83D\uDCA9@example.com/bar  s:http h:example.com p:/bar u:foo pass:
 # resolving a relative reference against an unknown scheme results in an error
 x test:test
 
+# resolving a fragment against any scheme succeeds
+\# test:test s:test p:test f:#
+\#x mailto:x@x.com s:mailto p:x@x.com f:#x
+\#x data:, s:data p:, f:#x
+\#x about:blank s:about p:blank f:#x
+
 # Credentials in base
 /some/path http://user@example.org/smth s:http u:user h:example.org p:/some/path
  http://user:pass@example.org:21/smth s:http u:user pass:pass h:example.org port:21 p:/smth

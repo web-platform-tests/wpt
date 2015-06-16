@@ -350,6 +350,13 @@ x test:test
 \#x data:, s:data p:, f:#x
 \#x about:blank s:about p:blank f:#x
 
+# multiple @ in authority state
+https://@test@test@example:800/ http://doesnotmatter/ s:https u:%40test%40test h:example port:800 p:/
+https://@@@example  s:https u:%40%40 h:example p:/
+
+# non-az-09 characters
+http://`{}:`{}@h/`{}?`{}  s:http u:%60%7B%7D pass:%60%7B%7D h:h p:/%60%7B%7D q:?`{}
+
 # Credentials in base
 /some/path http://user@example.org/smth s:http u:user h:example.org p:/some/path
  http://user:pass@example.org:21/smth s:http u:user pass:pass h:example.org port:21 p:/smth

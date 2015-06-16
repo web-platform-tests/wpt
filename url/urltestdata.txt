@@ -349,6 +349,7 @@ x test:test
 \#x mailto:x@x.com s:mailto p:x@x.com f:#x
 \#x data:, s:data p:, f:#x
 \#x about:blank s:about p:blank f:#x
+\# test:test?test s:test p:test q:?test f:#
 
 # multiple @ in authority state
 https://@test@test@example:800/ http://doesnotmatter/ s:https u:%40test%40test h:example port:800 p:/

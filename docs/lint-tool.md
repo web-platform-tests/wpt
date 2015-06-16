@@ -68,6 +68,9 @@ Otherwise, use the details in this section to fix all errors reported.
   statement; **fix**: remove the `print` statement or replace it with
   something else that achieves the intended effect (e.g., a logging call).
 
+* **SET TIMEOUT**: Test-file line has `setTimeout(...)` call; **fix**:
+  replace all `setTimeout(...)` calls with `step_timeout(...)` calls.
+
 * **TRAILING WHITESPACE**: Test-file line has trailing whitespace; **fix**:
   remove trailing whitespace from all lines in the file.
 

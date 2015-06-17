@@ -21,7 +21,7 @@
 
     var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue) {
         this.pass = pass;
-        this.name = name;
+        this.name = "Script: " + name;
         this.src = src;
         this.integrityValue = integrityValue;
         this.crossoriginValue = crossoriginValue;
@@ -67,7 +67,7 @@
     // tests, and then executes them one at a time.
     var SRIStyleTest = function(queue, pass, name, href, integrityValue, crossoriginValue) {
         this.pass = pass;
-        this.name = name;
+        this.name = "Style: " + name;
         this.href = href;
         this.integrityValue = integrityValue;
         this.crossoriginValue = crossoriginValue;
@@ -124,28 +124,28 @@
 
     new SRIScriptTest(
         true,
-        "Same-origin script with correct hash.",
+        "Script: Same-origin with correct hash.",
         "matching-digest.js",
         "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
     ).execute();
 
     new SRIScriptTest(
         false,
-        "Same-origin script with incorrect hash.",
+        "Same-origin with incorrect hash.",
         "non-matching-digest.js",
         "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
     new SRIScriptTest(
         true,
-        "Same-origin script with multiple sha256 hashes, including correct.",
+        "Same-origin with multiple sha256 hashes, including correct.",
         "matching-digest.js",
         "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
     new SRIScriptTest(
         true,
-        "Same-origin script with multiple sha256 hashes, including unknown algorithm.",
+        "Same-origin with multiple sha256 hashes, including unknown algorithm.",
         "matching-digest.js",
         "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
@@ -169,14 +169,14 @@
 
     new SRIScriptTest(
         true,
-        "Same-origin script with sha256 mismatch, sha512 match",
+        "Same-origin with sha256 mismatch, sha512 match",
         "matching-digest.js",
         "sha512-geByvIIRspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
     new SRIScriptTest(
         false,
-        "Same-origin script with sha256 match, sha512 mismatch",
+        "Same-origin with sha256 match, sha512 mismatch",
         "matching-digest.js",
         "sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
     ).execute();
@@ -237,14 +237,14 @@
 
     new SRIScriptTest(
         true,
-        "Same-origin script with correct hash, options.",
+        "Same-origin with correct hash, options.",
         "matching-digest.js",
         "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E=?foo=bar?spam=eggs"
     ).execute();
 
     new SRIScriptTest(
         true,
-        "Same-origin script with unknown algorithm only.",
+        "Same-origin with unknown algorithm only.",
         "matching-digest.js",
         "foo666-foolUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
     ).execute();
@@ -264,7 +264,7 @@
     new SRIStyleTest(
         style_tests,
         true,
-        "Style: Same-origin style with correct hash",
+        "Same-origin with correct hash",
         "style.css",
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F-SPLT7YZk7gyCWUV4="
     );
@@ -272,7 +272,7 @@
     new SRIStyleTest(
         style_tests,
         false,
-        "Style: Same-origin style with incorrect hash.",
+        "Same-origin with incorrect hash.",
         "style.css",
         "sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     );
@@ -280,7 +280,7 @@
     new SRIStyleTest(
         style_tests,
         true,
-        "Style: Same-origin style with multiple sha256 hashes, including correct.",
+        "Same-origin with multiple sha256 hashes, including correct.",
         "style.css",
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F-SPLT7YZk7gyCWUV4= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     );
@@ -288,7 +288,7 @@
     new SRIStyleTest(
         style_tests,
         true,
-        "Style: Same-origin style with multiple sha256 hashes, including unknown algorithm.",
+        "Same-origin with multiple sha256 hashes, including unknown algorithm.",
         "style.css",
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F-SPLT7YZk7gyCWUV4= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     );
@@ -296,7 +296,7 @@
     new SRIStyleTest(
         style_tests,
         true,
-        "Style: Same-origin style with sha256 mismatch, sha512 match",
+        "Same-origin with sha256 mismatch, sha512 match",
         "style.css",
         "sha512-9wXDjd6Wq3H6nPAhI9zOvG7mJkUr03MTxaO+8ztTKnfJif42laL93Be/IF6YYZHHF4esitVYxiwpY2HSZX4l6w== sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     );
@@ -304,7 +304,7 @@
     new SRIStyleTest(
         style_tests,
         false,
-        "Style: Same-origin style with sha256 match, sha512 mismatch",
+        "Same-origin with sha256 match, sha512 mismatch",
         "style.css",
         "sha512-deadbeef9wXDjd6Wq3H6nPAhI9zOvG7mJkUr03MTxaO+8ztTKnfJif42laL93Be/IF6YYZHHF4esitVYxiwpY2== sha256-CzHgdJ7wOccM8L89n4bhcJMz3F-SPLT7YZk7gyCWUV4="
     );
@@ -312,7 +312,7 @@
     new SRIStyleTest(
         style_tests,
         true,
-        "Style: <crossorigin='anonymous'> style with correct hash, ACAO: *",
+        "<crossorigin='anonymous'> with correct hash, ACAO: *",
         xorigin_anon_style,
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4=",
         "anonymous"
@@ -321,7 +321,7 @@
     new SRIStyleTest(
         style_tests,
         false,
-        "Style: <crossorigin='anonymous'> style with incorrect hash, ACAO: *",
+        "<crossorigin='anonymous'> with incorrect hash, ACAO: *",
         xorigin_anon_style,
         "sha256-deadbeefCzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk=",
         "anonymous"
@@ -330,7 +330,7 @@
     new SRIStyleTest(
         style_tests,
         true,
-        "Style: <crossorigin='use-credentials'> style with correct hash, CORS-eligible",
+        "<crossorigin='use-credentials'> with correct hash, CORS-eligible",
         xorigin_creds_style,
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4=",
         "use-credentials"
@@ -339,7 +339,7 @@
     new SRIStyleTest(
         style_tests,
         false,
-        "Style: <crossorigin='use-credentials'> style with incorrect hash CORS-eligible",
+        "<crossorigin='use-credentials'> with incorrect hash CORS-eligible",
         xorigin_creds_style,
         "sha256-deadbeefCzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk=",
         "use-credentials"
@@ -348,7 +348,7 @@
     new SRIStyleTest(
         style_tests,
         false,
-        "Style: <crossorigin='anonymous'> style with CORS-ineligible resource",
+        "<crossorigin='anonymous'> with CORS-ineligible resource",
         xorigin_ineligible_style,
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4=",
         "anonymous"
@@ -357,7 +357,7 @@
     new SRIStyleTest(
         style_tests,
         true,
-        "Style: Same-origin style with correct hash, options.",
+        "Same-origin with correct hash, options.",
         "style.css",
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4=?foo=bar?spam=eggs"
     );
@@ -365,7 +365,7 @@
     new SRIStyleTest(
         style_tests,
         true,
-        "Style: Same-origin style with unknown algorithm only.",
+        "Same-origin with unknown algorithm only.",
         "style.css",
         "foo666-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4=?foo=bar?spam=eggs"
     );

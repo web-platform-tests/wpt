@@ -79,12 +79,12 @@ function normalizePort(targetPort) {
           "" : ":" + targetPort;
 }
 
-function wrapResult(url, headers) {
-  var result = {
+function wrapResult(url, server_data) {
+  return {
     location: url,
-    referrer: headers.referer,
-    headers:headers
-  };
+    referrer: server_data.headers.referer,
+    headers: server_data.headers
+  }
 
   return result;
 }
@@ -102,8 +102,8 @@ function queryIframe(url, callback) {
 }
 
 function queryImage(url, callback) {
-  decodeImage(url, function(headers) {
-    callback(wrapResult(url, headers));
+  decodeImage(url, function(server_data) {
+    callback(wrapResult(url, server_data), url);
   })
 }
 
@@ -112,8 +112,8 @@ function queryXhr(url, callback) {
   xhr.open('GET', url, true);
   xhr.onreadystatechange = function(e) {
     if (this.readyState == 4 && this.status == 200) {
-      var headers = JSON.parse(this.responseText);
-      callback(wrapResult(url, headers));
+      var server_data = JSON.parse(this.responseText);
+      callback(wrapResult(url, server_data), url);
     }
   };
   xhr.send();
@@ -122,15 +122,15 @@ function queryXhr(url, callback) {
 function queryWorker(url, callback) {
   var worker = new Worker(url);
   worker.onmessage = function(event) {
-    var headers = event.data;
-    callback(wrapResult(url, headers));
+    var server_data = event.data;
+    callback(wrapResult(url, server_data), url);
   };
 }
 
 function queryFetch(url, callback) {
   fetch(url).then(function(response) {
-      response.json().then(function(headers) {
-        callback(wrapResult(url, headers), url);
+      response.json().then(function(server_data) {
+        callback(wrapResult(url, server_data), url);
       });
     }
   );
@@ -183,8 +183,8 @@ function queryScript(url, callback) {
   script.src = url;
 
   var listener = function(event) {
-    var headers = event.data;
-    callback(wrapResult(url, headers), url);
+    var server_data = event.data;
+    callback(wrapResult(url, server_data), url);
     window.removeEventListener("message", listener);
   }
   window.addEventListener("message", listener);
@@ -196,3 +196,7 @@ function queryScript(url, callback) {
 function SanityChecker() {}
 SanityChecker.prototype.checkScenario = function() {};
 SanityChecker.prototype.checkSubresourceResult = function() {};
+
+// TODO(kristijanburnik): document.origin is supported since Chrome 41,
+// other browsers still don't support it. Remove once they do.
+document.origin = document.origin || (location.protocol + "//" + location.host);

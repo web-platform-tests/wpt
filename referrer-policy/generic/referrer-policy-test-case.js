@@ -29,8 +29,6 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
       return undefined;
     },
     "origin": function() {
-      // TODO(kristijanburnik): Reconsider using the trailing slash as the spec
-      // evolves.
       return document.origin + "/";
     },
     "stripped-referrer": function() {
@@ -63,7 +61,9 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
       t._subresourceUrl = t._scenario.target_protocol + "://" +
                           domainForOrigin[t._scenario.origin] +
                           normalizePort(targetPort) +
-                          t._scenario["subresource_path"];
+                          t._scenario["subresource_path"] +
+                          "?redirection=" + t._scenario["redirection"] +
+                          "&cache_destroyer=" + (new Date()).getTime();
     },
 
     _constructExpectedReferrerUrl: function() {

@@ -4,10 +4,7 @@
   <head>
     <title>Referrer-Policy: %(spec_title)s</title>%(meta_delivery_method)s
     <meta name="description" content="%(spec_description)s">
-    <meta name="assert" content="The referrer URL is %(referrer_url)s when a
-        document served over %(source_protocol)s requires an %(target_protocol)s
-        sub-resource via %(subresource)s using the %(delivery_method)s
-        delivery method and when the target request is %(origin)s.">
+    <meta name="assert" content="%(test_description)s">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <!-- Common global functions for referrer-policy tests. -->
@@ -38,16 +35,24 @@
       <tbody>
         <tr>
           <th>Delivery method</th>
-          <td>%(delivery_method)s</td></tr>
+          <td>%(delivery_method)s</td>
+        </tr>
+        <tr>
+          <th>Redirection</th>
+          <td>%(redirection)s</td>
+        </tr>
         <tr>
           <th>Origin transition</th>
-          <td>%(origin)s</td></tr>
+          <td>%(origin)s</td>
+        </tr>
         <tr>
           <th>Protocol transition</th>
-          <td>from %(source_protocol)s to %(target_protocol)s</td></tr>
+          <td>from %(source_protocol)s to %(target_protocol)s</td>
+        </tr>
         <tr>
           <th>Subresource type</th>
-          <td>%(subresource)s</td></tr>
+          <td>%(subresource)s</td>
+        </tr>
         <tr>
           <td colspan="2"><hr></td>
         </tr>

@@ -19,7 +19,7 @@ selection_pattern = '%(delivery_method)s/' + \
                     '%(subresource)s/'
 
 test_file_path_pattern = '%(spec_name)s/' + selection_pattern + \
-                         '%(name)s.%(source_protocol)s.html'
+                         '%(name)s.%(redirection)s.%(source_protocol)s.html'
 
 
 def get_template(basename):

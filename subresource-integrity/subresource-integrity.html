@@ -131,20 +131,6 @@
     ).execute();
 
     new SRIScriptTest(
-        false,
-        "Resource with Refresh header",
-        "refresh-header.js",
-        "sha256-ieQAXii4cMmZFLxSRnxfZ1KSyzCjOb+N2rQ6OaVBWyM="
-    ).execute();
-
-    new SRIScriptTest(
-        false,
-        "Resource with WWW-Authenticate header",
-        "www-authenticate-header.js",
-        "sha256-ztNCkGU1fBB5II5wihGTbFb9F2TIMaHldkbnMlp7G/M="
-    ).execute();
-
-    new SRIScriptTest(
         true,
         "Same-origin script with correct hash, options.",
         "matching-digest.js",

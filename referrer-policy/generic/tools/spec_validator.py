@@ -24,13 +24,13 @@ def assert_non_empty_dict(obj, field):
 def assert_contains(obj, field):
     assert field in obj, 'Must contain field "%s"' % field
 
-def assert_string_from(obj, field, items):
+def assert_value_from(obj, field, items):
    assert obj[field] in items, \
         'Field "%s" must be from: %s' % (field, str(items))
 
-def assert_string_or_list_items_from(obj, field, items):
-    if isinstance(obj[field], basestring):
-        assert_string_from(obj, field, items)
+def assert_atom_or_list_items_from(obj, field, items):
+    if isinstance(obj[field], basestring) or isinstance(obj[field], int):
+        assert_value_from(obj, field, items)
         return
 
     assert_non_empty_list(obj, field)
@@ -47,9 +47,9 @@ def assert_contains_only_fields(obj, expected_fields):
         assert actual_field in expected_fields, \
                 'Unexpected field "%s".' % actual_field
 
-def assert_string_unique_in(string, used_strings):
-    assert string not in used_strings, 'Duplicate string "%s"!' % string
-    used_strings[string] = True
+def assert_value_unique_in(value, used_values):
+    assert value not in used_values, 'Duplicate value "%s"!' % str(value)
+    used_values[value] = True
 
 
 def validate(spec_json, details):
@@ -89,7 +89,7 @@ def validate(spec_json, details):
         assert_non_empty_string(spec, 'title')
         assert_non_empty_string(spec, 'description')
         assert_non_empty_string(spec, 'specification_url')
-        assert_string_from(spec, 'referrer_policy', referrer_policy_schema)
+        assert_value_from(spec, 'referrer_policy', referrer_policy_schema)
         assert_non_empty_list(spec, 'test_expansion')
 
         # Validate spec's test expansion.
@@ -98,18 +98,22 @@ def validate(spec_json, details):
         for spec_exp in spec['test_expansion']:
             details['object'] = spec_exp
             assert_non_empty_string(spec_exp, 'name')
-            assert_string_unique_in(spec_exp['name'], used_spec_names)
+            # The name is unique in same expansion group.
+            assert_value_unique_in((spec_exp['expansion'], spec_exp['name']),
+                                     used_spec_names)
             assert_contains_only_fields(spec_exp, valid_test_expansion_fields)
 
             for artifact in test_expansion_schema:
                 details['test_expansion_field'] = artifact
-                assert_string_or_list_items_from(
+                assert_atom_or_list_items_from(
                     spec_exp, artifact, ['*'] + test_expansion_schema[artifact])
                 del details['test_expansion_field']
 
     # Validate the test_expansion schema members.
     details['object'] = test_expansion_schema
-    assert_contains_only_fields(test_expansion_schema, ['delivery_method',
+    assert_contains_only_fields(test_expansion_schema, ['expansion',
+                                                        'delivery_method',
+                                                        'redirection',
                                                         'origin',
                                                         'source_protocol',
                                                         'target_protocol',
@@ -120,6 +124,14 @@ def validate(spec_json, details):
     for excluded_test_expansion in excluded_tests:
         assert_contains_only_fields(excluded_test_expansion,
                                     valid_test_expansion_fields)
+        details['object'] = excluded_test_expansion
+        for artifact in test_expansion_schema:
+            details['test_expansion_field'] = artifact
+            assert_atom_or_list_items_from(
+                excluded_test_expansion,
+                artifact,
+                ['*'] + test_expansion_schema[artifact])
+            del details['test_expansion_field']
 
     # Validate subresource paths.
     details['object'] = subresource_path

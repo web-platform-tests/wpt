@@ -6,10 +6,7 @@
     <meta name="description" content="%(spec_description)s">%(meta_delivery_method)s
     <link rel="author" title="Kristijan Burnik" href="burnik@chromium.org">
     <link rel="help" href="%(spec_specification_url)s">
-    <meta name="assert" content="The referrer URL is %(referrer_url)s when a
-        document served over %(source_protocol)s requires an %(target_protocol)s
-        sub-resource via %(subresource)s using the %(delivery_method)s
-        delivery method and when the target request is %(origin)s.">
+    <meta name="assert" content="%(test_description)s">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <!-- TODO(kristijanburnik): Minify and merge both: -->

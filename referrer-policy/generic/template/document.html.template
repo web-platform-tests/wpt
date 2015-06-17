@@ -5,11 +5,10 @@
   </head>
   <body>
     <script>
-      var SERVER_REQUEST_HEADERS = %(headers)s;
       var result = {
         location: document.location.toString(),
         referrer: document.referrer.length > 0 ? document.referrer : undefined,
-        headers: SERVER_REQUEST_HEADERS
+        headers: %(headers)s
       };
       parent.postMessage(result, "*");
     </script>

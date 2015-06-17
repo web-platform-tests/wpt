@@ -7,17 +7,17 @@
 
 <div id="container"></div>
 <script>
-    var xorigin_anon = location.protocol
+    var xorigin_anon_script = location.protocol
       + '//www1.' + location.hostname + ':' + location.port
-      + '/subresource-integrity/crossorigin-anon.js';
+      + '/subresource-integrity/crossorigin-anon-script.js';
 
-    var xorigin_creds = location.protocol
+    var xorigin_creds_script = location.protocol
       + '//www1.' + location.hostname + ':' + location.port
-      + '/subresource-integrity/crossorigin-creds.js';
+      + '/subresource-integrity/crossorigin-creds-script.js';
 
-    var xorigin_ineligible = location.protocol
+    var xorigin_ineligible_script = location.protocol
       + '//www1.' + location.hostname + ':' + location.port
-      + '/subresource-integrity/crossorigin-ineligible.js';
+      + '/subresource-integrity/crossorigin-ineligible-script.js';
 
     var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue) {
         this.pass = pass;
@@ -184,7 +184,7 @@
     new SRIScriptTest(
         true,
         "<crossorigin='anonymous'> with correct hash, ACAO: *",
-        xorigin_anon,
+        xorigin_anon_script,
         "sha256-r6KBpvzfcSLlbFZCj1OACLxTxVck2TOrBTEdUbwz1yU=",
         "anonymous"
     ).execute();
@@ -192,7 +192,7 @@
     new SRIScriptTest(
         false,
         "<crossorigin='anonymous'> with incorrect hash, ACAO: *",
-        xorigin_anon,
+        xorigin_anon_script,
         "sha256-deadbeefcSLlbFZCj1OACLxTxVck2TOrBTEdUbwz1yU=",
         "anonymous"
     ).execute();
@@ -200,7 +200,7 @@
     new SRIScriptTest(
         true,
         "<crossorigin='use-credentials'> with correct hash, CORS-eligible",
-        xorigin_creds,
+        xorigin_creds_script,
         "sha256-sPICZvGN2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=",
         "use-credentials"
     ).execute();
@@ -208,7 +208,7 @@
     new SRIScriptTest(
         false,
         "<crossorigin='use-credentials'> with incorrect hash CORS-eligible",
-        xorigin_creds,
+        xorigin_creds_script,
         "sha256-deadbeef2S+pTRZgiw3DWrhC6JLDlt2zRyGpwH7unU8=",
         "use-credentials"
     ).execute();
@@ -216,7 +216,7 @@
     new SRIScriptTest(
         false,
         "<crossorigin='anonymous'> with CORS-ineligible resource",
-        xorigin_ineligible,
+        xorigin_ineligible_script,
         "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E=",
         "anonymous"
     ).execute();

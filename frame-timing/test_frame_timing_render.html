@@ -12,19 +12,6 @@
     <script type="text/javascript">
         // test data
         var renderTestDelay = 100;
-        var testThreshold = 5;
-
-        var TEST_RENDER_EVENTS =
-        [
-            {
-                expectedStartTime:      undefined,
-                expectedEntryType:      "render"
-            },
-            {
-                expectedStartTime:      undefined,
-                expectedEntryType:      "render"
-            }
-        ];
 
         setup({explicit_done: true});
 
@@ -56,7 +43,6 @@
             // This will trigger a new render frame.
             document.getElementById("empty_p").innerHTML =
                 "This is content that is added in order to ensure a new PerformanceRenderTiming entry is fired.";
-            TEST_RENDER_EVENTS[0].expectedStartTime = window.performance.now();
             setTimeout(render_test_cb, renderTestDelay);
         }
 
@@ -66,7 +52,6 @@
             document.getElementById("second_empty_p").innerHTML =
                 "Some browsers may not add a PerformanceRenderTiming entry until another render occurs. This second render " +
                 "ensures the previous render event is added to the timeline.";
-            TEST_RENDER_EVENTS[1].expectedStartTime = window.performance.now();
             setTimeout(render_test_cb_2, renderTestDelay);
         }
 
@@ -93,46 +78,31 @@
             done();
         }
 
-        function find_render_entry_by_start_time(entries, startTime) {
-            for (var i in entries) {
-                var entry = entries[i];
-                if (Math.abs(entry.startTime - startTime) <= testThreshold) {
-                    return entry;
-                }
-            }
-            return undefined;
-        }
-
         function test_render_entries(entries, entryCommand)
         {
             var renderEntries = get_test_entries(entries, "render");
-            test_render_entry(renderEntries, entryCommand, 0);
-            test_render_entry(renderEntries, entryCommand, 1);
 
-            var prevSourceFrame = -1;
+            var prevSourceFrameNumber = -1;
+            var prevStartTime = -1;
+
             for (var i in renderEntries) {
                 var entry = renderEntries[i];
-                if (prevSourceFrame != -1) {
-                    test_equals(entry.sourceFrame,
-                                prevSourceFrame + 1,
-                                entryCommand + ": Sequential source frames: " + prevSourceFrame + "->" + entry.sourceFrame);
-                }
-                prevSourceFrame = entry.sourceFrame;
-            }
-        }
 
-        function test_render_entry(entries, entryCommand, testRenderEventsIndex)
-        {
-            var entry = find_render_entry_by_start_time(entries, TEST_RENDER_EVENTS[testRenderEventsIndex].expectedStartTime);
-            test_not_equals(undefined,
-                            entry,
-                            entryCommand + ": PerformanceRenderTiming entry exists that matches TEST_RENDER_EVENTS[" + testRenderEventsIndex + "].expectedStartTime");
-            if (entry == undefined) {
-                return;
+                test_equals(entry.entryType, "render", entryCommand + ": renderEntries[" + i + "] == \"render\"");
+                test_equals(entry.name, window.location.href , entryCommand + ": renderEntries[" + i + "].name == window.location.href");
+                test_greater_than(entry.duration, 0, entryCommand + ": renderEntries[" + i + "].duration > 0");
+
+                if (i > 0) {
+                    test_equals(entry.sourceFrameNumber,
+                                prevSourceFrameNumber + 1,
+                                entryCommand + ": Incremental sourceFrameNumber for renderEntries[" + i + "]");
+                    test_greater_than(entry.startTime,
+                                      prevStartTime,
+                                      entryCommand + ": Increasing startTime for renderEntries[" + i + "]");
+                }
+                prevSourceFrameNumber = entry.sourceFrameNumber;
+                prevStartTime = entry.startTime;
             }
-            test_equals(entry.entryType,
-                        "render",
-                        entryCommand + ": entry.entryType == TEST_RENDER_EVENTS[" + testRenderEventsIndex + "].expectedEntryType");
         }
 
         function get_test_entries(entryList, entryType)

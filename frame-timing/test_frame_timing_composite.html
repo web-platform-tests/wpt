@@ -71,25 +71,25 @@
             var compositeEntry = compositeEntries[0];
             test_equals(compositeEntry.duration, 0, entryCommand + ": PerformanceCompositeTiming.duration == 0.");
 
-            var renderEntry = get_render_entry(compositeEntry.sourceFrame);
-            test_not_equals(renderEntry, undefined, entryCommand + ": Corresponding PerformanceRenderTiming exists for PerformanceCompositeTiming.sourceFrame");
+            var renderEntry = get_render_entry(compositeEntry.sourceFrameNumber);
+            test_not_equals(renderEntry, undefined, entryCommand + ": Corresponding PerformanceRenderTiming exists for PerformanceCompositeTiming.sourceFrameNumber");
             if (renderEntry == undefined) {
                 return;
             }
             test_greater_or_equals(compositeEntry.startTime,
                                    renderEntry.startTime,
-                                   entryCommand + ": PerformanceCompositeTiming.startTime comes after PerformanceRenderTiming.startTime for the same sourceFrame.");
+                                   entryCommand + ": PerformanceCompositeTiming.startTime comes after PerformanceRenderTiming.startTime for the same sourceFrameNumber.");
             test_equals(compositeEntry.name,
                         renderEntry.name,
-                        entryCommand + ": PerformanceCompositeTiming.name == PerformanceRenderTiming.startTime for the same sourceFrame.");
+                        entryCommand + ": PerformanceCompositeTiming.name == PerformanceRenderTiming.startTime for the same sourceFrameNumber.");
         }
 
-        function get_render_entry(sourceFrame)
+        function get_render_entry(sourceFrameNumber)
         {
             var renderEntries = window.performance.getEntriesByType("render");
             for (var i in renderEntries) {
                 renderEntry = renderEntries[i];
-                if (renderEntry.sourceFrame == sourceFrame) {
+                if (renderEntry.sourceFrameNumber == sourceFrameNumber) {
                     return renderEntry;
                 }
             }

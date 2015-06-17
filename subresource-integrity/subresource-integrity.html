@@ -7,6 +7,7 @@
 
 <div id="container"></div>
 <script>
+    // <script> tests
     var xorigin_anon_script = location.protocol
       + '//www1.' + location.hostname + ':' + location.port
       + '/subresource-integrity/crossorigin-anon-script.js';
@@ -61,10 +62,12 @@
       + '//www1.' + location.hostname + ':' + location.port
       + '/subresource-integrity/crossorigin-ineligible-style.css';
 
+    // <link> tests
     // Style tests must be done synchronously because they rely on the presence
-    // and absence of global style. Thus, instead of executing them one at a
-    // time, the style tests are implemented as a queue that builds up a list of
-    // tests, and then executes them one at a time.
+    // and absence of global style, which can affect later tests. Thus, instead
+    // of executing them one at a time, the style tests are implemented as a
+    // queue that builds up a list of tests, and then executes them one at a
+    // time.
     var SRIStyleTest = function(queue, pass, name, href, integrityValue, crossoriginValue) {
         this.pass = pass;
         this.name = "Style: " + name;
@@ -121,6 +124,18 @@
         container.appendChild(div);
         container.appendChild(e);
     };
+
+    var style_tests = [];
+    style_tests.execute = function() {
+        if (this.length > 0) {
+            this.shift().execute();
+        }
+    }
+    add_result_callback(function(res) {
+        if (res.name.startsWith("Style: ")) {
+          style_tests.execute();
+        }
+    });
 
     new SRIScriptTest(
         true,
@@ -248,18 +263,6 @@
         "matching-digest.js",
         "foo666-foolUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
     ).execute();
-
-    var style_tests = [];
-    style_tests.execute = function() {
-        if (this.length > 0) {
-            this.shift().execute();
-        }
-    }
-    add_result_callback(function(res) {
-        if (res.name.startsWith("Style: ")) {
-          style_tests.execute();
-        }
-    });
 
     new SRIStyleTest(
         style_tests,

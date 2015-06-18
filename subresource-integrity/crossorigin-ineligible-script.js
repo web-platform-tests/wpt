@@ -1,1 +1,1 @@
-crossorigin_ineligible=true;
+crossorigin_ineligible_script=true;

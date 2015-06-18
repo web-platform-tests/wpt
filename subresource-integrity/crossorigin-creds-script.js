@@ -1,1 +1,1 @@
-crossorigin_creds=true;
+crossorigin_creds_script=true;

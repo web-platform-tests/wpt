@@ -52,7 +52,7 @@
         true,
         "Same-origin script with correct hash.",
         "matching-digest.js",
-        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
+        "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
     ).execute();
 
     new SRIScriptTest(
@@ -66,32 +66,15 @@
         true,
         "Same-origin script with multiple sha256 hashes, including correct.",
         "matching-digest.js",
-        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
+        "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E= sha256-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin script with multiple sha256 hashes, including unknown algorithm.",
         "matching-digest.js",
-        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
+        "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E= foo666-deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdead"
     ).execute();
-
-    // TODO may need to change these to hash-source prefix, e.g. 'sha256' instead of 'SHA-256'
-
-    test(function() {assert_equals(getPrioritizedHashFunction('SHA-512', 'SHA-256'), 'SHA-512')},
-        "SHA-512 preferred to SHA-256.");
-
-    test(function() {assert_equals(getPrioritizedHashFunction('SHA-384', 'SHA-512'), 'SHA-512')},
-        "SHA-512 preferred to SHA-384.");
-
-    test(function() {assert_equals(getPrioritizedHashFunction('SHA-384', 'SHA-256'), 'SHA-384')},
-        "SHA-384 preferred to SHA-256.");
-
-    test(function() {assert_equals(getPrioritizedHashFunction('MD5', 'SHA-256'), 'SHA-256')},
-        "SHA-256 preferred to MD5.");
-
-    test(function() {assert_equals(getPrioritizedHashFunction('SHA-256', 'SHA-256'), '')},
-        "getPrioritizedHashFunction('SHA-256', 'SHA-256') returns empty string");
 
     new SRIScriptTest(
         true,
@@ -104,7 +87,7 @@
         false,
         "Same-origin script with sha256 match, sha512 mismatch",
         "matching-digest.js",
-        "sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
+        "sha512-deadbeefspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg== sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
     ).execute();
 
     new SRIScriptTest(
@@ -143,7 +126,7 @@
         false,
         "<crossorigin='anonymous'> with CORS-ineligible resource",
         xorigin_ineligible,
-        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E=",
+        "sha256-iGG+zk2pgwbMuuovdQzlSs7f+erXz7FMXXtbmvKqshw=",
         "anonymous"
     ).execute();
 
@@ -151,14 +134,14 @@
         true,
         "Same-origin script with correct hash, options.",
         "matching-digest.js",
-        "sha256-EKclUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E=?foo=bar?spam=eggs"
+        "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E=?foo=bar?spam=eggs"
     ).execute();
 
     new SRIScriptTest(
         true,
         "Same-origin script with unknown algorithm only.",
         "matching-digest.js",
-        "foo666-foolUXH9SRRUv3FmL7bIEV0z2s3EvzHFxzHKCnfHT/E="
+        "foo666-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
     ).execute();
 
 </script>

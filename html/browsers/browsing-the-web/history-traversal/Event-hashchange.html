@@ -11,11 +11,20 @@
 <script>
 
 async_test(function (t) {
-  
+  var oldURL = window.location.href;
+
   window.onhashchange = t.step_func(function (e) {
+    assert_true(e.isTrusted);
+    assert_equals(e.target, window);
+    assert_equals(e.type, "hashchange");
+    assert_true(e instanceof HashChangeEvent);
+    assert_equals(e.oldURL, oldURL);
+    assert_equals(e.newURL, window.location.href);
+    assert_true(e.bubbles);
+    assert_false(e.cancelable);
     t.done();
   });
   window.location.hash = "#newHash";
-}, document.title);
+});
 
 </script>

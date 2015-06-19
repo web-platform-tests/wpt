@@ -137,11 +137,33 @@
         }
     });
 
+    // Script tests
     new SRIScriptTest(
         true,
-        "Script: Same-origin with correct hash.",
+        "Same-origin with correct sha256 hash.",
         "matching-digest.js",
         "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin with correct sha384 hash.",
+        "matching-digest.js",
+        "sha384-BDRTPSywZFyxfLEAzaLcL4FfERBgJgXfEkuT0r04LG93Yqn1PWNYPZMomaqEfE3H"
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Same-origin with correct sha512 hash.",
+        "matching-digest.js",
+        "sha512-geByvIIRspbnUnwooKGNNCb39nvg+EW0O9hDScTXeo/9pVZztLSUYU3LNV6H0lZapo8bCJUpyPPLAzE9fDzpxg=="
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Smame-origin with empty integrity.",
+        "matching-digest.js",
+        ""
     ).execute();
 
     new SRIScriptTest(
@@ -221,6 +243,27 @@
 
     new SRIScriptTest(
         true,
+        "Cross-origin, not CORS request, with correct hash",
+        xorigin_anon_script,
+        "sha256-51AjITq701Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Cross-origin, not CORS request, with hash masmatch",
+        xorigin_anon_script,
+        "sha256-deadbeef01Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="
+    ).execute();
+
+    new SRIScriptTest(
+        true,
+        "Cross-origin, empty integrity",
+        xorigin_anon_script,
+        ""
+    ).execute();
+
+    new SRIScriptTest(
+        true,
         "Same-origin with correct hash, options.",
         "matching-digest.js",
         "sha256-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E=?foo=bar?spam=eggs"
@@ -233,12 +276,37 @@
         "foo666-U9WYDtBWkcHx13+9UKk/3Q5eoqDc4YGxYb07EPWzb9E="
     ).execute();
 
+    // Style tests
     new SRIStyleTest(
         style_tests,
         true,
-        "Same-origin with correct hash",
+        "Same-origin with correct sha256 hash",
         "style.css",
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F-SPLT7YZk7gyCWUV4="
+    );
+
+    new SRIStyleTest(
+        style_tests,
+        true,
+        "Same-origin with correct sha384 hash",
+        "style.css",
+        "sha384-wDAWxH4tOWBwAwHfBn9B7XuNmFxHTMeigAMwn0iVQ0zq3FtmYMLxihcGnU64CwcX"
+    );
+
+    new SRIStyleTest(
+        style_tests,
+        true,
+        "Same-origin with correct sha512 hash",
+        "style.css",
+        "sha512-9wXDjd6Wq3H6nPAhI9zOvG7mJkUr03MTxaO+8ztTKnfJif42laL93Be/IF6YYZHHF4esitVYxiwpY2HSZX4l6w=="
+    );
+
+    new SRIStyleTest(
+        style_tests,
+        true,
+        "Same-origin with empty integrity",
+        "style.css",
+        ""
     );
 
     new SRIStyleTest(
@@ -324,6 +392,30 @@
         xorigin_ineligible_style,
         "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4=",
         "anonymous"
+    );
+
+    new SRIStyleTest(
+        style_tests,
+        true,
+        "Cross-origin, not CORS request, with correct hash",
+        xorigin_anon_style,
+        "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4="
+    );
+
+    new SRIStyleTest(
+        style_tests,
+        true,
+        "Cross-origin, not CORS request, with hash masmatch",
+        xorigin_anon_style,
+        "sha256-deadbeefCzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk="
+    );
+
+    new SRIStyleTest(
+        style_tests,
+        true,
+        "Cross-origin, empty integrity",
+        xorigin_anon_style,
+        ""
     );
 
     new SRIStyleTest(

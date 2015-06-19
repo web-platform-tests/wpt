@@ -1,5 +1,5 @@
 from os import path, listdir
-from hashlib import sha512, sha256, md5
+from hashlib import sha512, sha384, sha256, md5
 from base64 import b64encode
 import re
 
@@ -26,6 +26,12 @@ def sha512_uri(content):
   return "sha512-%s" % format_digest(sha512(content).digest())
 
 '''
+Generate an encoded sha384 URI.
+'''
+def sha384_uri(content):
+  return "sha384-%s" % format_digest(sha384(content).digest())
+
+'''
 Generate an encoded sha256 URI.
 '''
 def sha256_uri(content):
@@ -43,6 +49,7 @@ def main():
     with open(file, "r") as content_file:
       content = content_file.read()
       print "\tSHA512 integrity: %s" % sha512_uri(content)
+      print "\tSHA384 integrity: %s" % sha384_uri(content)
       print "\tSHA256 integrity: %s" % sha256_uri(content)
       print "\tMD5 integrity:    %s" % md5_uri(content)
 

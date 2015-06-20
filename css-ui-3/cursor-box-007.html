@@ -4,17 +4,17 @@
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#cursor">
 <meta name="flags" content="interact">
 <meta charset="UTF-8">
-<meta name="assert" content="The cursor property is applied over the entire border box, even if the border is rounded.">
+<meta name="assert" content="The cursor property is only applied within the border-edge, which follows border-radius.">
 <style>
 #container {
   position: absolute;
   background: blue;
-  cursor: url("support/cursors/fail.png"), help;
+  cursor: crosshair;
 }
 #test {
   border: solid white 50px;
   border-radius: 50%;
-  cursor: crosshair;
+  cursor: default;
 }
 </style>
 <body>

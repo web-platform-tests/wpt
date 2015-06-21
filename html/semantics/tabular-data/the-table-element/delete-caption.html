@@ -19,6 +19,16 @@
 
   <table id="zero-captions"></table>
 
+  <table id="descendent-caption">
+    <tr>
+      <td>
+        <table>
+          <caption>Nested caption</caption>
+        </table>
+      </td>
+    </tr>
+  </table>
+
   <script>
   // The deleteCaption() method must remove the first caption element child of the table element, if any.
   // https://html.spec.whatwgorg/multipage/tables.html#dom-table-deletecaption
@@ -60,6 +70,32 @@
 
   }, 'deleteCaption() does not throw any exceptions when called on a table without a caption');
 
+  test(function() {
+    var table = document.getElementById( 'descendent-caption' );
+    table.deleteCaption();
+
+    assert_equals(table.getElementsByTagName('caption').length, 1, 'descendent caption was not deleted');
+  }, 'deleteCaption() does not delete captions in descendent tables');
+
+  test(function() {
+    var table = document.getElementById('zero-captions');
+    var caption;
+
+    caption = document.createElementNS('http://www.w3.org/1999/xhtml', 'caption');
+    table.insertBefore(caption, table.firstChild);
+    assert_equals(table.getElementsByTagName('caption').length, 1, 'XHTML:caption is created');
+
+    table.deleteCaption();
+    assert_equals(table.getElementsByTagName('caption').length, 0, 'XHTML:caption is deleted');
+
+    caption = document.createElementNS('http://www.w3.org/2000/svg', 'caption');
+    table.insertBefore(caption, table.firstChild);
+    assert_equals(table.getElementsByTagName('caption').length, 1, 'SVG:caption is created');
+
+    table.deleteCaption();
+    assert_equals(table.getElementsByTagName('caption').length, 1, 'SVG:caption is not deleted');
+
+  }, 'deleteCaption() handles captions from different namespaces');
 </script>
 </body>
 </html>

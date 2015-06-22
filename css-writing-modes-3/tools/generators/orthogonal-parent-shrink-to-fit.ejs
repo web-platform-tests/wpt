@@ -53,6 +53,7 @@ if (index < 0) {
 }
 .target {
     color:blue;
+    height:3em;
     writing-mode:vertical-rl;
 }
 .border {
@@ -108,8 +109,9 @@ function run() {
         test(function () {
             try {
                 var targetNode = node.querySelector(".target");
+                var fontSize = parseFloat(getComputedStyle(targetNode).fontSize);
                 var targetBounds = targetNode.getBoundingClientRect();
-                assert_approx_equals(targetBounds.height, targetBounds.width * 2, .01, "writing-mode is vertical")
+                assert_less_than_equal(targetBounds.width, fontSize * 2.01, "writing-mode is vertical")
                 var nextNode = node.querySelector(".next");
                 var nextBounds = nextNode.getBoundingClientRect();
                 assert_equals(nextBounds.left - targetBounds.right, 0, "the left edge of the orange box touches the right edge of the blue box");

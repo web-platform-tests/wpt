@@ -16,7 +16,7 @@ for (var template of templates) {
                 target += String.fromCharCode("a".charCodeAt(0) + i);
             gulp.src(name + ".ejs")
                 .pipe(ejs({ index: i }))
-                .pipe(rename(target))
+                .pipe(rename(target + ".html"))
                 .pipe(gulp.dest("../.."));
         }
     });

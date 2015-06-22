@@ -37,7 +37,7 @@ http://f:\s21\s/\sb\s?\sd\s#\se\s
 /:23  s:http h:example.org p:/:23
 ::  s:http h:example.org p:/foo/::
 ::23  s:http h:example.org p:/foo/::23
-foo://  s:foo p://
+foo://  s:foo h: p:/
 http://a:b@c:29/d  s:http u:a pass:b h:c port:29 p:/d
 http::@c:29  s:http h:example.org p:/foo/:@c:29
 http://&a:foo(b]c@d:2/  s:http u:&a pass:foo(b]c h:d port:2 p:/
@@ -48,9 +48,9 @@ http:\\\\foo.com\\  s:http h:foo.com p:/
 http:\\\\a\\b:c\\d@foo.com\\  s:http h:a p:/b:c/d@foo.com/
 foo:/  s:foo p:/
 foo:/bar.com/  s:foo p:/bar.com/
-foo://///////  s:foo p://///////
-foo://///////bar.com/  s:foo p://///////bar.com/
-foo:////://///  s:foo p:////://///
+foo://///////  s:foo h: p:///////
+foo://///////bar.com/  s:foo h: p:///////bar.com/
+foo:////://///  s:foo h: p://://///
 c:/foo  s:c p:/foo
 //foo/bar  s:http h:foo p:/bar
 http://foo/path;a??e#f#g  s:http h:foo p:/path;a q:??e f:#f#g

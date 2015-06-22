@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+<meta charset=utf-8>
 <title>IDL check of RTCPeerConnection</title>
 <link rel="author" title="Harald Alvestrand" href="mailto:hta@google.com"/>
 <link rel="help" href="http://w3c.github.io/webrtc-pc/#rtcpeerconnection-interface">
@@ -94,6 +95,8 @@ partial interface RTCPeerConnection {
                   function(node) {
                     idl_array.add_idls(node.textContent);
                   });
+  window.pc = new RTCPeerConnection(null);
+  idl_array.add_objects({"RTCPeerConnection": ["pc"]});
   idl_array.test();
   done();
 })();

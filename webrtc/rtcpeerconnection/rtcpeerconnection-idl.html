@@ -94,6 +94,8 @@ partial interface RTCPeerConnection {
                   function(node) {
                     idl_array.add_idls(node.textContent);
                   });
+  window.pc = new RTCPeerConnection(null);
+  idl_array.add_objects({"RTCPeerConnection": ["pc"]});
   idl_array.test();
   done();
 })();

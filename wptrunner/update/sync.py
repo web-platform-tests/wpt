@@ -127,9 +127,8 @@ class LoadManifest(Step):
     provides = ["test_manifest"]
 
     def create(self, state):
-        state.test_manifest = testloader.ManifestLoader(state.tests_path).load_manifest(
-            state.tests_path, state.metadata_path,
-        )
+        # Conservatively always rebuild the manifest when doing a sync
+        state.test_manifest = manifest.Manifest(None, "/")
 
 
 class UpdateManifest(Step):
@@ -138,9 +137,8 @@ class UpdateManifest(Step):
     provides = ["initial_rev"]
     def create(self, state):
         from manifest import manifest, update
-        test_manifest = state.test_manifest
         state.initial_rev = test_manifest.rev
-        update.update(state.sync["path"], "/", test_manifest)
+        update.update(state.sync["path"], "/", state.test_manifest)
         manifest.write(test_manifest, os.path.join(state.metadata_path, "MANIFEST.json"))
 
 

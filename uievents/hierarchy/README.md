@@ -1,5 +1,5 @@
-Verify the Class Hierarchy 
-==============================
+Verify the Class Hierarchy
+==========================
 
 Make sure the events inherit from the correct interfaces:
     e.g., UIEvent > MouseEvent

@@ -29,7 +29,7 @@ t1.step(function() {
 
 t2.step(function () {
   var obj2 = document.createElement("object");
-  obj2.setAttribute("data", "test2.html");
+  obj2.setAttribute("data", "support/test2.html");
   obj2.setAttribute("type", "text/plain");
   obj2.onload = t2.step_func( function () {
     assert_not_equals(obj2.contentDocument, null, "The test2.html should be loaded.");

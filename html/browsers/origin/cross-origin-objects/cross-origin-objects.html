@@ -18,7 +18,7 @@
  */
 
 setup({explicit_done: true});
-path = location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/frame.html';
+path = location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/support/frame.html';
 var B = document.getElementById('B').contentWindow;
 var C = document.getElementById('C').contentWindow;
 B.frameElement.uriToLoad = path;
@@ -317,7 +317,7 @@ function doDocumentDomainTest(cb) {
     win.close();
     cb();
   });
-  var win = window.open('win-documentdomain.html');
+  var win = window.open('support/win-documentdomain.html');
 }
 
 // We do a fresh load of the subframes for each test to minimize side-effects.

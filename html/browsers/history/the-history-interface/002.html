@@ -29,7 +29,7 @@ window.onload = function () {
 function testinit() {
     atstep = 1;
     histlength = history.length;
-    iframe = document.getElementsByTagName('iframe')[0].src = 'blank2.html';
+    iframe = document.getElementsByTagName('iframe')[0].src = 'support/blank2.html';
     //reportload will now be called by the onload handler for the iframe
 }
 function reportload() {
@@ -299,10 +299,10 @@ function reportload() {
         <noscript><p>Enable JavaScript and reload</p></noscript>
         <p>WARNING: This test should always be loaded in a new tab/window, to avoid browsers attempting to recover the state of frames, and history length. Do not reload the test.</p>
         <div id="log">Running test...</div>
-        <p><iframe onload="reportload();" src="blank.html"></iframe></p>
-        <p><iframe src="blank.html"></iframe></p>
-        <p><iframe src="blank2.html"></iframe></p>
-        <p><iframe src="blank3.html"></iframe></p>
+        <p><iframe onload="reportload();" src="support/blank.html"></iframe></p>
+        <p><iframe src="support/blank.html"></iframe></p>
+        <p><iframe src="support/blank2.html"></iframe></p>
+        <p><iframe src="support/blank3.html"></iframe></p>
 
     </body>
 </html>

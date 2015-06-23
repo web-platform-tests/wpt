@@ -32,8 +32,11 @@ test(function() {
 
 test(function() {
     assert_equals(doc.characterSet, "UTF-8")
+}, 'characterSet');
+
+test(function() {
     assert_equals(doc.inputEncoding, "UTF-8")
-}, 'characterSet and inputEncoding');
+}, 'inputEncoding');
 
 test(function() {
     var url = document.URL;

@@ -47,11 +47,11 @@ Otherwise, use the details in this section to fix all errors reported.
   test file contains `<script src='/resources/testharnessreport.js'>`.
 
 * **MULTIPLE-TESTHARNESS**: Test file with multiple instances of
-  `<script src='/resources/testharness.js'>`; ensure each test file has
-  only one `<script src='/resources/testharness.js'>` instance.
+  `<script src='/resources/testharness.js'>`; **fix**: ensure each test
+  has only one `<script src='/resources/testharness.js'>` instance.
 
 * **MULTIPLE-TESTHARNESSREPORT**: Test file with multiple instances of
-  `<script src='/resources/testharnessreport.js'>`; ensure each test file
+  `<script src='/resources/testharnessreport.js'>`; **fix**: ensure each test
   has only one `<script src='/resources/testharnessreport.js'>` instance.
 
 * **MULTIPLE-TIMEOUT**: Test file with multiple `<meta name="timeout"...>`

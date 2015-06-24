@@ -12,13 +12,13 @@
         function createXmlDoc(){
             var input = '<?xml version="1.0" encoding="UTF-8"?><root><child1>value1</child1></root>';
             var parser = new DOMParser();
-            doc = parser.parseFromString(input, 'text/xml');
+            var doc = parser.parseFromString(input, 'text/xml');
             return doc;
         }
         test(function() {
             var serializer = new XMLSerializer ();
-            root = createXmlDoc().documentElement;
-            xmlString=serializer.serializeToString(root);
+            var root = createXmlDoc().documentElement;
+            var xmlString=serializer.serializeToString(root);
             assert_equals(xmlString, "<root><child1>value1</child1></root>");
         }, 'check  XMLSerializer.serializeToString method could parsing xmldoc to string');
   </script>

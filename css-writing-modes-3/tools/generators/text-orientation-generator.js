@@ -85,27 +85,29 @@ var unicodeData = {
         }
         return array;
     },
-    codePointsFromRanges: function (ranges, gc) {
+    isSkipGeneralCategory: function (code, gc) {
+        var gc0 = gc[code][0];
+        // General Category M* and C* are omitted as they're likely to not render well
+        return gc0 == "M" || gc0 == "C";
+    },
+    isCJKMiddle: function (code) {
+        // To make tests smaller, omit some obvious ranges except the first and the last
+        return code > 0x3400 && code < 0x4DB5 || // CJK Unified Ideographs Extension A
+            code > 0x4E00 && code < 0x9FCC || // CJK Unified Ideographs (Han)
+            code > 0xAC00 && code < 0xD7A3 || // Hangul Syllables
+            code > 0x20000 && code < 0x2A6D6 || // CJK Unified Ideographs Extension B
+            code > 0x2A700 && code < 0x2B734 || // CJK Unified Ideographs Extension C
+            code > 0x2B740 && code < 0x2B81D; // CJK Unified Ideographs Extension D
+    },
+    codePointsFromRanges: function (ranges, skipFunc) {
         var codePoints = [];
         for (var i = 0; i < ranges.length; i += 2) {
             var code = ranges[i];
             var to = ranges[i+1];
             for (; code <= to; code++) {
-                if (code >= 0xD800 && code <= 0xDFFF) { // Surrogate Pairs
+                if (code >= 0xD800 && code <= 0xDFFF) // Surrogate Pairs
                     continue;
-                }
-                // To make tests smaller, omit some obvious ranges except the first and the last
-                if (code > 0x3400 && code < 0x4DB5 || // CJK Unified Ideographs Extension A
-                    code > 0x4E00 && code < 0x9FCC || // CJK Unified Ideographs (Han)
-                    code > 0xAC00 && code < 0xD7A3 || // Hangul Syllables
-                    code > 0x20000 && code < 0x2A6D6 || // CJK Unified Ideographs Extension B
-                    code > 0x2A700 && code < 0x2B734 || // CJK Unified Ideographs Extension C
-                    code > 0x2B740 && code < 0x2B81D) { // CJK Unified Ideographs Extension D
-                    continue;
-                }
-                var gc0 = gc[code][0];
-                // General Category M* and C* are omitted as they're likely to not render well
-                if (gc0 == "M" || gc0 == "C")
+                if (skipFunc && skipFunc(code))
                     continue;
                 codePoints.push(code);
             }
@@ -139,13 +141,22 @@ var Generator = function (rangesByVO, gc, blocks) {
     this.template = ejs.compile(template);
     this.charactersPerLine = 32;
 };
-Generator.prototype.generate = function () {
+Generator.prototype.generate = function (argv) {
     var codePointsByVO = {};
+    var gc = this.gc;
+    var skipFunc = argv.noskip ?
+        function (code) { return unicodeData.isSkipGeneralCategory(code, gc); } :
+        function (code) { return unicodeData.isCJKMiddle(code) || unicodeData.isSkipGeneralCategory(code, gc); };
     for (var value in this.rangesByVO)
-        codePointsByVO[value] = unicodeData.codePointsFromRanges(this.rangesByVO[value], this.gc);
+        codePointsByVO[value] = unicodeData.codePointsFromRanges(this.rangesByVO[value], skipFunc);
 
     this.codePointsByVO = codePointsByVO;
-    this.generateFile();
+    this.prefix = argv.prefix ? "-" + argv.prefix + "-" : "";
+
+    if (!argv.nocombo)
+        this.generateFile();
+    if (argv.nochild)
+        return;
 
     var pageSize = this.charactersPerLine * 64;
     var fileIndex = 0;
@@ -171,7 +182,7 @@ Generator.prototype.generateFile = function (vo, fileIndex, page, pages) {
     if (fileIndex === undefined)
         this.flags += " combo";
     else
-        path += String.fromCharCode('a'.charCodeAt(0) + fileIndex);
+        path += affixFromIndex(fileIndex);
     if (vo) {
         this.title += " where vo=" + vo;
         var codePoints = this.codePointsByVO[vo];
@@ -220,13 +231,21 @@ function padZero(value, digits) {
     return value.substr(value.length - digits);
 }
 
-module.exports.generate = function () {
+function affixFromIndex(index) {
+    if (index < 0)
+        return "";
+    if (index >= 26)
+        throw new Error("Affix index too large (" + index + ")");
+    return String.fromCharCode("a".charCodeAt(0) + index);
+}
+
+module.exports.generate = function (argv) {
     return Promise.all([
         unicodeData.get(unicodeData.url.vo, unicodeData.formatAsRangesByValue),
         unicodeData.get(unicodeData.url.gc),
         unicodeData.get(unicodeData.url.blocks),
     ]).then(function (results) {
         var generator = new Generator(results[0], results[1], results[2]);
-        generator.generate();
+        generator.generate(argv);
     });
 };

@@ -7,7 +7,7 @@
         <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
-        <script src="resources/webperftestharness.js"></script>
+        <script src="resources/frametimingtestharness.js"></script>
 
     <script type="text/javascript">
         // test data
@@ -31,13 +31,19 @@
             }
             else
             {
-                // Modify the contents of the page in order to ensure render events are added to the timeline.
-                document.getElementById("content").innerHTML =
-                    "This is content that is added in order to ensure at least one PerformanceRenderTiming entry is fired. Some browsers may not fire " +
-                    "render events until the next render frame.";
-                // Wait some some to allow the frame timing events to be added to the timeline.
-                setTimeout(clear_frame_timing_cb, testDelay);
+                // Give time for the initial render events to get added to the timeline.
+                setTimeout(initial_render_cb, testDelay);
             }
+        }
+
+        function initial_render_cb()
+        {
+            // Modify the contents of the page in order to ensure render events are added to the timeline.
+            document.getElementById("content").innerHTML =
+                "This is content that is added in order to ensure at least one PerformanceRenderTiming entry is fired. Some browsers may not fire " +
+                "render events until the next render frame.";
+            // Wait some some to allow the frame timing events to be added to the timeline.
+            setTimeout(clear_frame_timing_cb, testDelay);
         }
 
         function clear_frame_timing_cb()

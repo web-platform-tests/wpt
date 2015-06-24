@@ -7,7 +7,7 @@
         <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
-        <script src="resources/webperftestharness.js"></script>
+        <script src="resources/frametimingtestharness.js"></script>
 
     <script type="text/javascript">
         // test data
@@ -113,8 +113,8 @@
            browsers may not immediately fire composite events for static content, the content of the iframes are modified in order ensure
            a composite event is fired.
         </p>
-        <iframe id="offpage_frame" src="iframe.html"></iframe>
-        <iframe id="btf_frame" src="iframe.html"></iframe>
+        <iframe id="offpage_frame" src="resources/iframe.html"></iframe>
+        <iframe id="btf_frame" src="resources/iframe.html"></iframe>
 
     </body>
 </html>

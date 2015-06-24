@@ -7,7 +7,7 @@
         <link rel="help" href="http://www.w3.org/TR/frame-timing/#performancerendertiming"/>
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
-        <script src="resources/webperftestharness.js"></script>
+        <script src="resources/frametimingtestharness.js"></script>
 
     <script type="text/javascript">
         // test data
@@ -56,18 +56,18 @@
             width:100px;
             height:100px;
             background-color: green;
-            -webkit-animation-duration: 10s;
-            -webkit-animation-timing-function: linear;
-            -webkit-animation-iteration-count: infinite;
-            -webkit-animation-name: rotate;
+            animation-duration: 10s;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            animation-name: rotate;
         }
 
-        @-webkit-keyframes rotate {
+        @keyframes rotate {
             from {
-                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
             }
             to {
-                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
             }
         }
     </style>

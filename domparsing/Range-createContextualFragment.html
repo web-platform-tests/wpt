@@ -10,8 +10,8 @@
     <h1>domparsing_range_createContextualFragment</h1>
     <p id="p1">foo1</p>
  <script>
-	var range = document.createRange();
 	function docFragment(markupString){
+		var range = document.createRange();
         	var frag =range.createContextualFragment(markupString);
         	return frag;
   	}

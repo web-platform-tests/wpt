@@ -13,7 +13,7 @@
           var client = new XMLHttpRequest()
           client.open(method, "resources/echo-method.py", false)
           client.send()
-          assert_equals(client.responseText, method)
+          assert_equals(client.responseText, (method === "HEAD" ? "" : method))
         }, method)
       })
     </script>

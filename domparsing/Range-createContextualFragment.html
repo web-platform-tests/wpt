@@ -1,31 +1,31 @@
 <!DOCTYPE HTML>
 <meta charset=utf-8>
 <html>
- <head>
+<head>
   <title>domparsing Test: range.createContextualFragment</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
  </head>
- <body>
-    <h1>domparsing_range_createContextualFragment</h1>
-    <p id="p1">foo1</p>
- <script>
-	function docFragment(markupString){
-		var range = document.createRange();
-        	var frag =range.createContextualFragment(markupString);
-        	return frag;
-  	}
-	function appendDocFrag(startElementId,docFrag){
-		var el=document.getElementById(startElementId);
-	   	el.appendChild(docFrag);
-	} 
-	test(function() {
-		var markupStr = '<p id="p2">foo2</p>';
-    		var tags=document.getElementsByTagName("p");
-		appendDocFrag("p1",docFragment(markupStr));
-    		assert_equals(tags.length,"2");
-		assert_equals(document.getElementById("p2").textContent,"foo2");
-    	}, 'check create contextual fragment success');
-  </script>
- </body>
+<body>
+   <h1>domparsing_range_createContextualFragment</h1>
+   <p id="p1">foo1</p>
+<script>
+function docFragment(markupString) {
+  var range = document.createRange();
+  var frag = range.createContextualFragment(markupString);
+  return frag;
+}
+function appendDocFrag(startElementId, docFrag) {
+  var el = document.getElementById(startElementId);
+  el.appendChild(docFrag);
+} 
+test(function() {
+  var markupStr = '<p id="p2">foo2</p>';
+  var tags = document.getElementsByTagName("p");
+  appendDocFrag("p1", docFragment(markupStr));
+  assert_equals(tags.length, "2");
+  assert_equals(document.getElementById("p2").textContent, "foo2");
+}, 'check create contextual fragment success');
+</script>
+</body>
 </html>

@@ -280,7 +280,7 @@
         }
         sourceBuffer.addEventListener("update", onUpdate);
 
-        test.failOnEvent(sourceBuffer, "error");
+        sourceBuffer.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
 
         sourceBuffer.appendBuffer(data);
     };
@@ -308,14 +308,6 @@
 
     function addExtraTestMethods(test)
     {
-        test.failOnEvent = function(object, eventName)
-        {
-            object.addEventListener(eventName, test.step_func(function(event)
-            {
-                assert_unreached("Unexpected event '" + eventName + "'");
-            }));
-        };
-
         test.endOnEvent = function(object, eventName)
         {
             object.addEventListener(eventName, test.step_func(function(event) { test.done(); }));
@@ -401,7 +393,7 @@
                 return;
             }
 
-            test.failOnEvent(mediaElement, 'error');
+            mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
 
             var sourceBuffer = mediaSource.addSourceBuffer(segmentInfo.type);
             MediaSourceUtil.loadBinaryData(test, segmentInfo.url, function(mediaData)

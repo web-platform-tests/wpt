@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>CSS Writing Modes Test: text-combine-upright:all inherits</title>
+<link rel="help" href="http://dev.w3.org/csswg/css-writing-modes-3/#text-combine-upright">
+<link rel="match" href="reference/text-combine-upright-inherit-all-001.html">
+<meta name="assert" content="This test checks text-combine-upright:all inherits">
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<style>
+#container {
+    writing-mode:vertical-rl;
+    -webkit-writing-mode:vertical-rl;
+    font-size:50px;
+}
+.tcy {
+    text-combine-upright:all;
+    -webkit-text-combine:horizontal;
+}
+</style>
+<p>Test passes if the following two numbers are both <b>horizontal</b>.
+<div id=container>
+    <div><span class=tcy>66</span></div>
+    <div><span class=tcy><span>66</span></span></div>
+</div>

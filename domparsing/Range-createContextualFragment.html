@@ -7,25 +7,30 @@
   <script src="/resources/testharnessreport.js"></script>
  </head>
 <body>
-   <h1>domparsing_range_createContextualFragment</h1>
-   <p id="p1">foo1</p>
+   <h1>domparsing-range-createContextualFragment</h1>
 <script>
 function docFragment(markupString) {
   var range = document.createRange();
   var frag = range.createContextualFragment(markupString);
   return frag;
 }
-function appendDocFrag(startElementId, docFrag) {
-  var el = document.getElementById(startElementId);
-  el.appendChild(docFrag);
-} 
 test(function() {
-  var markupStr = '<p id="p2">foo2</p>';
-  var tags = document.getElementsByTagName("p");
-  appendDocFrag("p1", docFragment(markupStr));
-  assert_equals(tags.length, "2");
-  assert_equals(document.getElementById("p2").textContent, "foo2");
-}, 'check create contextual fragment success');
+	var docFrag = docFragment('<foo></foo>');
+	assert_equals(docFrag.baseURI, document.URL);
+	assert_equals(docFrag.nodeName, "#document-fragment");
+	assert_equals(docFrag.nodeType, document.DOCUMENT_FRAGMENT_NODE);
+	assert_equals(docFrag.nodeValue, null);
+}, 'check creatContextualFragment return a DocumentFragment');
+test(function() {
+	var docFrag = docFragment('<foo></foo>');
+	assert_equals(docFrag.ownerDocument, document);
+}, 'check createContextualFragment create an HTML document');
+test(function() {
+  var markupStr = '<foo1>test1</foo1><foo2>test2</foo2>';
+	var docFrag = docFragment(markupStr);
+	assert_equals(docFrag.childNodes.length, "2");
+	assert_equals(docFrag.textContent, "test1test2");
+}, 'check createContextualFragment include all markup tree nodes');
 </script>
 </body>
 </html>

@@ -503,7 +503,7 @@
                   assert_false(sourceBuffer.updating, "updating attribute is false");
                   sourceBuffer.abort();
                   assert_equals(sourceBuffer.appendWindowStart, 0, "appendWindowStart is reset to 0");
-                  assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY, 
+                  assert_equals(sourceBuffer.appendWindowEnd, Number.POSITIVE_INFINITY,
                       "appendWindowEnd is reset to +INFINITY");
                   test.done();
               });

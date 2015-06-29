@@ -35,7 +35,6 @@ TRAILING WHITESPACE: content-security-policy/*
 TRAILING WHITESPACE: custom-elements/*
 TRAILING WHITESPACE: DOMEvents/*
 TRAILING WHITESPACE: html-longdesc/*
-TRAILING WHITESPACE: media-source/*
 TRAILING WHITESPACE: microdata/*
 TRAILING WHITESPACE: old-tests/*
 TRAILING WHITESPACE: pointerevents/*

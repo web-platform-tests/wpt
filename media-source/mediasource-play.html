@@ -12,7 +12,7 @@
           mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {
               mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
-              test.endOnEvent(mediaElement, 'ended');
+              mediaElement.addEventListener('ended', test.step_func_done());
 
               test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
               test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');

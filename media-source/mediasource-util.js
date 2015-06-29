@@ -308,11 +308,6 @@
 
     function addExtraTestMethods(test)
     {
-        test.endOnEvent = function(object, eventName)
-        {
-            object.addEventListener(eventName, test.step_func(function(event) { test.done(); }));
-        };
-
         test.eventExpectations_ = new EventExpectationsManager(test);
         test.expectEvent = function(object, eventName, description)
         {

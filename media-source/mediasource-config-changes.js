@@ -73,9 +73,9 @@ function mediaSourceConfigChangeTest(directory, idA, idB, description)
                     test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
                     test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
                     test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
-		});
+                });
 
-		test.waitForExpectedEvents(function()
+                test.waitForExpectedEvents(function()
                 {
                     assert_false(sourceBuffer.updating, "updating");
 

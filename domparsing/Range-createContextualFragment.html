@@ -15,21 +15,21 @@ function docFragment(markupString) {
   return frag;
 }
 test(function() {
-	var docFrag = docFragment('<foo></foo>');
-	assert_equals(docFrag.baseURI, document.URL);
-	assert_equals(docFrag.nodeName, "#document-fragment");
-	assert_equals(docFrag.nodeType, document.DOCUMENT_FRAGMENT_NODE);
-	assert_equals(docFrag.nodeValue, null);
+  var docFrag = docFragment('<foo></foo>');
+  assert_equals(docFrag.baseURI, document.URL);
+  assert_equals(docFrag.nodeName, "#document-fragment");
+  assert_equals(docFrag.nodeType, document.DOCUMENT_FRAGMENT_NODE);
+  assert_equals(docFrag.nodeValue, null);
 }, 'check creatContextualFragment return a DocumentFragment');
 test(function() {
-	var docFrag = docFragment('<foo></foo>');
-	assert_equals(docFrag.ownerDocument, document);
+  var docFrag = docFragment('<foo></foo>');
+  assert_equals(docFrag.ownerDocument, document);
 }, 'check createContextualFragment create an HTML document');
 test(function() {
   var markupStr = '<foo1>test1</foo1><foo2>test2</foo2>';
-	var docFrag = docFragment(markupStr);
-	assert_equals(docFrag.childNodes.length, "2");
-	assert_equals(docFrag.textContent, "test1test2");
+  var docFrag = docFragment(markupStr);
+  assert_equals(docFrag.childNodes.length, "2");
+  assert_equals(docFrag.textContent, "test1test2");
 }, 'check createContextualFragment include all markup tree nodes');
 </script>
 </body>

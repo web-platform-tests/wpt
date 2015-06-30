@@ -9,7 +9,7 @@ testStorages(function(storageString) {
         assert_equals(storage.length, 0, "storage.length");
 
         iframe.onload = t.step_func(step1);
-        iframe.src = "iframe/event_setattribute_handler.html";
+        iframe.src = "resources/event_setattribute_handler.html";
 
         function step1(msg)
         {

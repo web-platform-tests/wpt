@@ -4,9 +4,9 @@ document.body.appendChild(iframe);
 iframe.contentWindow.document.body.innerText = "Nothing to see here.";
 
 storageEventList = new Array();
-iframe.contentWindow.onstorage = function (e) {
+iframe.contentWindow.addEventListener("storage", function(e) {
     window.parent.storageEventList.push(e);
-}
+});
 
 function runAfterNStorageEvents(callback, expectedNumEvents)
 {

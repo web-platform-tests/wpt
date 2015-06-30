@@ -1,11 +1,11 @@
-test(function() {
+async_test(function(t) {
     var name ;
-    testStorages(runTest);
+    testStorages(t.step_func(runTest));
 
     function runTest(storageString, callback)
     {
         name = storageString;
-        window.completionCallback = callback;
+        window.completionCallback = function() { t.done(); };
 
         assert_true(storageString in window, storageString + " exist");
         window.storage = eval(storageString);
@@ -14,7 +14,7 @@ test(function() {
         assert_equals(storage.length, 0, "storage.length");
         storage.foo = "test";
 
-        runAfterNStorageEvents(step1, 1);
+        runAfterNStorageEvents(t.step_func(step1), 1);
     }
 
     function step1(msg)
@@ -22,33 +22,28 @@ test(function() {
         storageEventList = new Array();
         storage.foo = "test";
 
-        runAfterNStorageEvents(step2, 0);
+        runAfterNStorageEvents(t.step_func(step2), 0);
     }
 
     function step2(msg)
     {
-        test(function() {
-            if(msg != undefined) {
-                assert_unreached(msg);
-            }
-            assert_equals(storageEventList.length, 0);
-        }, name + ": The key/value does not change, the event is not fired.");
+        if(msg != undefined) {
+            assert_unreached(msg);
+        }
+        assert_equals(storageEventList.length, 0);
 
         storage.foo = "TEST";
 
-        runAfterNStorageEvents(step3, 1);
+        runAfterNStorageEvents(t.step_func(step3), 1);
     }
 
     function step3(msg)
     {
-        test(function() {
-            if(msg != undefined) {
-                assert_unreached(msg);
-            }
-            assert_equals(storageEventList.length, 1);
-        }, name + ": The event is fired when the value case is changed.");
+        if(msg != undefined) {
+            assert_unreached(msg);
+        }
+        assert_equals(storageEventList.length, 1);
 
         completionCallback();
     }
 }, "storage events fire even when only the case of the value changes.");
-

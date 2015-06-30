@@ -1,11 +1,8 @@
 async_test(function(t) {
-    var name ;
     testStorages(runTest);
 
     function runTest(storageString, callback)
     {
-        name = storageString;
-
         assert_true(storageString in window, storageString + " exist");
         window.storage = eval(storageString);
 

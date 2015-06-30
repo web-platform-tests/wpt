@@ -35,19 +35,12 @@ function countStorageEvents(callback, expectedNumEvents, times)
 
 function testStorages(testCallback)
 {
-    // When we're done testing LocalStorage, this is run.
-    function allDone()
-    {
-        localStorage.clear();
-        sessionStorage.clear();
-    }
-
-    // When we're done testing with SessionStorage, this is run.
-    function runLocalStorage()
-    {
-        testCallback("localStorage", allDone);
-    }
-
-    // First run the test with SessionStorage.
-    testCallback("sessionStorage", runLocalStorage);
+    testCallback("sessionStorage");
+    var hit = false;
+    add_result_callback(function() {
+        if (!hit) {
+            hit = true;
+            testCallback("localStorage");
+        }
+    });
 }

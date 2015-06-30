@@ -26,20 +26,15 @@ async_test(function(t) {
         runAfterNStorageEvents(t.step_func(step2), 1);
     }
 
-    function shouldBeEqualToString(express, expectValue) {
-        assert_equals(typeof express, "string");
-        assert_equals(express, expectValue);
-    }
-
     function step2(msg)
     {
         if(msg != undefined) {
             assert_unreached(msg);
         }
         assert_equals(storageEventList.length, 1);
-        shouldBeEqualToString(storageEventList[0].key, "FOO");
+        assert_equals(storageEventList[0].key, "FOO");
         assert_equals(storageEventList[0].oldValue, null);
-        shouldBeEqualToString(storageEventList[0].newValue, "BAR");
+        assert_equals(storageEventList[0].newValue, "BAR");
 
         storage.setItem('FU', 'BAR');
         storage.setItem('a', '1');
@@ -55,21 +50,21 @@ async_test(function(t) {
             assert_unreached(msg);
         }
         assert_equals(storageEventList.length, 5);
-        shouldBeEqualToString(storageEventList[1].key, "FU");
+        assert_equals(storageEventList[1].key, "FU");
         assert_equals(storageEventList[1].oldValue, null);
-        shouldBeEqualToString(storageEventList[1].newValue, "BAR");
+        assert_equals(storageEventList[1].newValue, "BAR");
 
-        shouldBeEqualToString(storageEventList[2].key, "a");
+        assert_equals(storageEventList[2].key, "a");
         assert_equals(storageEventList[2].oldValue, null);
-        shouldBeEqualToString(storageEventList[2].newValue, "1");
+        assert_equals(storageEventList[2].newValue, "1");
 
-        shouldBeEqualToString(storageEventList[3].key, "b");
+        assert_equals(storageEventList[3].key, "b");
         assert_equals(storageEventList[3].oldValue, null);
-        shouldBeEqualToString(storageEventList[3].newValue, "2");
+        assert_equals(storageEventList[3].newValue, "2");
 
-        shouldBeEqualToString(storageEventList[4].key, "b");
-        shouldBeEqualToString(storageEventList[4].oldValue, "2");
-        shouldBeEqualToString(storageEventList[4].newValue, "3");
+        assert_equals(storageEventList[4].key, "b");
+        assert_equals(storageEventList[4].oldValue, "2");
+        assert_equals(storageEventList[4].newValue, "3");
 
         storage.removeItem('FOO');
 
@@ -82,8 +77,8 @@ async_test(function(t) {
             assert_unreached(msg);
         }
         assert_equals(storageEventList.length, 6);
-        shouldBeEqualToString(storageEventList[5].key, "FOO");
-        shouldBeEqualToString(storageEventList[5].oldValue, "BAR");
+        assert_equals(storageEventList[5].key, "FOO");
+        assert_equals(storageEventList[5].oldValue, "BAR");
         assert_equals(storageEventList[5].newValue, null);
 
         storage.removeItem('FU');
@@ -97,8 +92,8 @@ async_test(function(t) {
             assert_unreached(msg);
         }
         assert_equals(storageEventList.length, 7);
-        shouldBeEqualToString(storageEventList[6].key, "FU");
-        shouldBeEqualToString(storageEventList[6].oldValue, "BAR");
+        assert_equals(storageEventList[6].key, "FU");
+        assert_equals(storageEventList[6].oldValue, "BAR");
         assert_equals(storageEventList[6].newValue, null);
 
         storage.clear();

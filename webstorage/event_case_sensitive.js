@@ -5,7 +5,6 @@ async_test(function(t) {
     function runTest(storageString, callback)
     {
         name = storageString;
-        window.completionCallback = function() { t.done(); };
 
         assert_true(storageString in window, storageString + " exist");
         window.storage = eval(storageString);
@@ -44,6 +43,6 @@ async_test(function(t) {
         }
         assert_equals(storageEventList.length, 1);
 
-        completionCallback();
+        t.done();
     }
 }, "storage events fire even when only the case of the value changes.");

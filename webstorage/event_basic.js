@@ -5,7 +5,6 @@ async_test(function(t) {
     function runTest(storageString, callback)
     {
         name = storageString;
-        window.completionCallback = function() { t.done(); };
 
         assert_true(storageString in window, storageString + " exist");
         window.storage = eval(storageString);
@@ -110,7 +109,7 @@ async_test(function(t) {
         assert_equals(storageEventList[7].oldValue, null);
         assert_equals(storageEventList[7].newValue, null);
 
-        completionCallback();
+        t.done();
     }
 
 }, "DOM Storage mutations fire StorageEvents that are caught by the event listener set via window.onstorage.");

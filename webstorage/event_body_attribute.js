@@ -14,7 +14,7 @@ test(function() {
         assert_equals(storage.length, 0, "storage.length");
 
         iframe.onload = step1;
-        iframe.src = "iframe/event_body_handler.html";
+        iframe.src = "resources/event_body_handler.html";
     }
 
     function step1(msg)

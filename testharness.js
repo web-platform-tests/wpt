@@ -2429,7 +2429,7 @@ policies and contribution forms [3].
 
         // Create a pattern to match stack frames originating within testharness.js.  These include the
         // script URL, followed by the line/col (e.g., '/resources/testharness.js:120:21').
-        var re = new RegExp(get_script_url() + ":\\d+:\\d+");
+        var re = new RegExp((get_script_url() || "\\btestharness.js") + ":\\d+:\\d+");
 
         // Some browsers include a preamble that specifies the type of the error object.  Skip this by
         // advancing until we find the first stack frame originating from testharness.js.
@@ -2542,6 +2542,9 @@ policies and contribution forms [3].
     /** Returns the 'src' URL of the first <script> tag in the page to include the file 'testharness.js'. */
     function get_script_url()
     {
+        if (!('document' in self))
+            return undefined;
+
         var scripts = document.getElementsByTagName("script");
         for (var i = 0; i < scripts.length; i++) {
             var src;

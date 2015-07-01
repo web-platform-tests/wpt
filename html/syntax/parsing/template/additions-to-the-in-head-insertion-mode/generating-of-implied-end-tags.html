@@ -8,7 +8,7 @@
 <link rel="help" href="http://www.w3.org/TR/2013/WD-html-templates-20130214/#in-head-addition">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src='../../testcommon.js'></script>
+<script src="/html/semantics/scripting-1/the-template-element/testcommon.js"></script>
 <link rel="stylesheet" href="/resources/testharness.css">
 </head>
 <body>
@@ -103,7 +103,7 @@ test(function () {
 }, 'Generating of implied end tags. Test wrong end tag');
 
 
-testInIFrame('../../resources/head-template-contents-table-no-end-tag.html', function(context) {
+testInIFrame('/html/semantics/scripting-1/the-template-element/resources/head-template-contents-table-no-end-tag.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.head.querySelector('template');
@@ -121,7 +121,7 @@ testInIFrame('../../resources/head-template-contents-table-no-end-tag.html', fun
 }, 'Generating of implied end tags. Test table elements. Load HTML document from file');
 
 
-testInIFrame('../../resources/head-template-contents-div-no-end-tag.html', function(context) {
+testInIFrame('/html/semantics/scripting-1/the-template-element/resources/head-template-contents-div-no-end-tag.html', function(context) {
     var doc = context.iframes[0].contentDocument;
 
     var template = doc.head.querySelector('template');

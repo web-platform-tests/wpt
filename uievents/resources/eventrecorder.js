@@ -6,7 +6,7 @@
 //    static void configure(EventRecorderOptions options);
 // };
 // * getRecords
-//   * returns an array of EventRecord objects; the array represents the sequence of events captured at anytime after the last clear() 
+//   * returns an array of EventRecord objects; the array represents the sequence of events captured at anytime after the last clear()
 //             call, between when the recorder was started and stopped (including multiple start/stop pairs)
 // * configure
 //   * sets options that should apply to the recorder. If the recorder has any existing records, than this API throws an exception.
@@ -29,13 +29,13 @@
 //     2) The events' currentTarget is the same
 //   * The default is an empty list (no event types are merged).
 // * objectMap
-//   * Sets up a series 
+//   * Sets up a series
 
 // dictionary ObjectNamedMap {
 //    //<keys will be 'targetTestID' names, with values of the objects which they label>
 // };
 //   * targetTestID = the string identifier that the associated target object should be known as (for purposes of unique identification. This
-//                    need not be the same as the Node's id attribute if it has one. If no 'targetTestID' string mapping is provided via this 
+//                    need not be the same as the Node's id attribute if it has one. If no 'targetTestID' string mapping is provided via this
 //                    map, but is encountered later when recording specific events, a generic targetTestID of 'UNKNOWN_OBJECT' is used.
 
 // ----------------------
@@ -61,7 +61,7 @@
 // * interfaceType
 //   * The string indicating which Event object (or derived Event object type) the recorded event object instance is based on.
 // * event
-//   * Access to the recorded event properties for the event instance (not the actual event instance itself). A snapshot of the 
+//   * Access to the recorded event properties for the event instance (not the actual event instance itself). A snapshot of the
 //     enumerable properties of the event object instance at the moment the listener was first triggered.
 
 // ----------------------
@@ -82,7 +82,7 @@
 //    void removeRecordedEventListener(SupportedEventTypes type, EventListener? handler, optional boolean capturePhase = false);
 // };
 // Node implements EventRecorderRegistration;
-// 
+//
 // enum SupportedEventTypes = {
 //    "mousemove",
 //    etc...
@@ -95,15 +95,15 @@
 
 (function EventRecorderScope(global) {
    "use strict";
-   
+
    if (global.EventRecorder)
       return; // Already initialized.
-   
+
    // WeakMap polyfill
    if (!global.WeakMap) {
       throw new Error("EventRecorder depends on WeakMap! Please polyfill for completeness to run in this user agent!");
    }
-   
+
    // Globally applicable variables
    var allRecords = [];
    var recording = false;
@@ -111,16 +111,16 @@
    var mergeTypesTruthMap = {}; // format of { eventType: true, ... }
    var eventsInScope = []; // Tracks synchronous event dispatches
    var handlerMap = new WeakMap(); // Keeps original handlers (so that they can be used to un-register for events.
-   
+
    // Find all Event Object Constructors on the global and add them to the map along with their name (sans 'Event')
    var eventConstructorsNameMap = new WeakMap(); // format of key: hostObject, value: alias to use.
    var regex = /[A-Z][A-Za-z0-9]+Event$/;
    Object.getOwnPropertyNames(global).forEach(function (propName) {
-		if (regex.test(propName))
+        if (regex.test(propName))
          eventConstructorsNameMap.set(global[propName], propName);
    });
    var knownObjectsMap = eventConstructorsNameMap;
-   
+
    Object.defineProperty(global, "EventRecorder", {
       writable: true,
       configurable: true,
@@ -132,9 +132,9 @@
             enumerable: true, configurable: true, writable: true, value: function stop() { recording = false; }
          },
          clearRecords: {
-            enumerable: true, configurable: true, writable: true, value: function clearRecords() { 
+            enumerable: true, configurable: true, writable: true, value: function clearRecords() {
                rawOrder = 1;
-               allRecords = [];  
+               allRecords = [];
             }
          },
          getRecords: {
@@ -144,11 +144,11 @@
             enumerable: true, configurable: true, writable: true, value: function configure(options) {
                if (allRecords.length > 0)
                   throw new Error("Wrong time to call me: EventRecorder.configure must only be called when no recorded events are present. Try 'clearRecords' first.");
-               
+
                // Un-configure existing options by calling again with no options set...
                mergeTypesTruthMap = {};
                knownObjectsMap = eventConstructorsNameMap;
-               
+
                if (!(options instanceof Object))
                   return;
                // Sanitize the passed object (tease-out getter functions)
@@ -171,7 +171,7 @@
          }
       })
    });
-   
+
    function EventRecord(rawEvent) {
       this.chronologicalOrder = rawOrder++;
       this.sequentialOccurrences = 1;
@@ -181,7 +181,7 @@
          this.interfaceType = rawEvent.constructor.toString();
       this.event = new CloneObjectLike(rawEvent);
    }
-   
+
    // Only enumerable props including prototype-chain (non-recursive), w/no functions.
    function CloneObjectLike(object) {
       for (var prop in object) {
@@ -199,7 +199,7 @@
             this[prop] = val;
       }
    }
-   
+
    function CloneArray(array) {
       var dup = [];
       for (var i = 0, len = array.length; i < len; i++) {
@@ -231,12 +231,12 @@
          }
       }
    }
-   
+
    function recordedEventHandler(e) {
       if (recording)
          recordEvent(e);
    }
-   
+
    function recordEvent(e) {
       var record = new EventRecord(e);
       var recordList = allRecords;
@@ -257,7 +257,7 @@
       recordList.push(record);
       return record;
    }
-   
+
    Object.defineProperties(Node.prototype, {
       addRecordedEventListener: {
          enumerable: true, writable: true, configurable: true,

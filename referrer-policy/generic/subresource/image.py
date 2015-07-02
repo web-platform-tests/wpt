@@ -34,6 +34,7 @@ class Image:
                 self.img[i * 3: i * 3 + 3] = color_data[i][::-1]
 
     def save(self, f, type):
+        assert type == "BMP"
         # 54 bytes of preambule + image color data.
         filesize = 54 + 3 * self.width * self.height;
         # 14 bytes of header.
@@ -57,7 +58,7 @@ class Image:
             f.write(self.img[offset : offset + 3 * self.width])
             f.write(padding)
 
-def encode_string_as_png_image(string_data):
+def encode_string_as_bmp_image(string_data):
     data_bytes = array.array("B", string_data)
     num_bytes = len(data_bytes)
 
@@ -89,7 +90,7 @@ def encode_string_as_png_image(string_data):
 
 def generate_payload(server_data):
     data = ('{"headers": %(headers)s}') % server_data
-    return encode_string_as_png_image(data)
+    return encode_string_as_bmp_image(data)
 
 def main(request, response):
     subresource.respond(request,

@@ -17,6 +17,7 @@ from .. import localpaths
 
 import sslutils
 from wptserve import server as wptserve, handlers
+from wptserve import stash
 from wptserve.logger import set_logger
 from mod_pywebsocket import standalone as pywebsocket
 
@@ -356,6 +357,9 @@ def get_ssl_config(config, external_domains, ssl_environment):
             "cert_path": cert_path,
             "encrypt_after_connect": config["ssl"]["encrypt_after_connect"]}
 
+def start_stash_server(host, port, authkey):
+    stash.start_server(address=(host, port), authkey=authkey)
+    stash.store_env_config((host, port, authkey))
 
 def start(config, ssl_environment, routes, **kwargs):
     host = config["host"]
@@ -369,6 +373,9 @@ def start(config, ssl_environment, routes, **kwargs):
     external_config = normalise_config(config, ports)
 
     ssl_config = get_ssl_config(config, external_config["domains"].values(), ssl_environment)
+
+    # The stash server for all other servers to use.
+    start_stash_server(host, port=get_port(), authkey=str(uuid.uuid4()))
 
     if config["check_subdomains"]:
         check_subdomains(host, paths, bind_hostname, ssl_config)

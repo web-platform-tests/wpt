@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Notification.tag (two tags with same value)</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
+<p>Passes if a notification appears that contains the text "This is the
+body: Room 101" and it is replaced by a notification that contains the text
+"This is the body: Room 202".
+<script>
+if (Notification.permission != "granted") {
+    alert("TEST NOT RUN. Change your browser settings so that notifications"
+        + " for this origin are allowed, and then reload this page.")
+} else {
+    new Notification("New Email Received", {
+        body: "This is the body: Room 101",
+        tag: "Tom"
+    })
+    new Notification("New Email Received", {
+        body: "This is the body: Room 202",
+        tag: "Tom"
+    })
+}
+</script>

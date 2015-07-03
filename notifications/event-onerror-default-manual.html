@@ -9,7 +9,7 @@ if (Notification.permission != "default") {
     alert("TEST NOT RUN. Change your browser settings so that the notification"
         + " settings for this origin are completely cleared/removed, (so your"
         + " browser default settings are used for this origin), and then reload"
-        + " this page.)
+        + " this page.")
 } else {
     var notification = new Notification("New Email Received")
     notification.onerror = function(e) {

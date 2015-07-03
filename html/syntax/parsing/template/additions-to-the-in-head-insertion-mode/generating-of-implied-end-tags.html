@@ -75,7 +75,7 @@ test(function () {
     var div = template.content.querySelector('#dv');
 
     assert_not_equals( div, null, 'Template should contain DIV element');
-    assert_equals(div.innerText, 'Div content', 'Wrong template content inner text');
+    assert_equals(div.textContent, 'Div content', 'Wrong template content inner text');
 
 }, 'Generating of implied end tags. Test some text and DIV element');
 
@@ -97,7 +97,7 @@ test(function () {
 
     assert_not_equals(template.content.querySelector('#dv'), null,
             'Template should contain DIV element');
-    assert_equals(template.content.querySelector('#dv').innerText,
+    assert_equals(template.content.querySelector('#dv').textContent,
             'Div content', 'Wrong template content inner text');
 
 }, 'Generating of implied end tags. Test wrong end tag');
@@ -130,7 +130,7 @@ testInIFrame('/html/semantics/scripting-1/the-template-element/resources/head-te
 
     var div = template.content.querySelector('div');
     assert_not_equals(div, null, 'Template should contain div element');
-    assert_equals(div.innerText, 'Hello, template\n    ', 'Invalid div contents');
+    assert_equals(div.textContent, 'Hello, template\n    ', 'Invalid div contents');
 
 }, 'Generating of implied end tags. Test div element. Load HTML document from file');
 </script>

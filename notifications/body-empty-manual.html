@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Notification.body (empty string)</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
+<p>Passes if a notification appears containing the text "This is the title:
+New e-mail received" but containing no body text other than any boilerplate
+content the browser may automatically add to all notifications (for
+example, some browsers show the origin in the notification).
+<script>
+if (Notification.permission != "granted") {
+    alert("TEST NOT RUN. Change your browser settings so that notifications"
+        + " for this origin are allowed, and then reload this page.")
+} else {
+    new Notification("This is the title: New e-mail received", {
+        body: ""
+    });
+}
+</script>

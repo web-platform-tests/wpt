@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Writing Modes: line-breaking-rules</title>
+<link rel="author" title="Shinsuke Matsuki" href="shinsuke.matsuki@access-company.com">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-combine-upright">
+<link rel="match" href="reference/line-breaking-rules-001-ref.html">
+<meta name="assert" content="The bracket should be combined with following characters.">
+<style type="text/css">
+	.tcu-all {
+		writing-mode: vertical-rl;
+		font-size: 2.5em;
+	}
+</style>
+</head>
+<body>
+
+<p>Test passes two paragraphs look identical.</p>
+
+<div>あ「
+<span class="tcu-all">12</span></div>
+
+</body>
+</html>

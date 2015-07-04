@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Writing Modes: Layout rules of text-combine-upright</title>
+<link rel="author" title="Masataka Yakura" href="https://google.com/+MasatakaYakura">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-combine-layout">
+<link rel="match" href="reference/layout-rules-001-ref.html">
+<meta name="assert" content="Anything outside the 1em-composition does not affect layout.">
+<meta name="flags" content="font">
+<style>
+@font-face {
+  font-family: tcu-font;
+  src: url("../support/tcu-font.woff");
+}
+
+.test {
+  writing-mode: vertical-rl;
+  font-size: 3em;
+  font-family: tcu-font;
+  line-height: 160px;
+}
+
+.test > div {
+  margin-right: 16px;
+  line-height: 1em;
+}
+
+.tcy {
+  text-combine-upright: all;
+}
+
+.reference {
+  font-size: 3em;
+}
+</style>
+</head>
+<body>
+
+<p>Test passes if there are 2 <strong>identical</strong> rectangles.</p>
+
+<div class="test">
+  <div>0<br>0<span class="tcy">A</span>0<br>0</div>
+  <div class="reference">0</div>
+</div>
+
+</body>
+</html>

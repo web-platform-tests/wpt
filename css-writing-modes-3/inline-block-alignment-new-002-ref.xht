@@ -20,7 +20,12 @@
       padding-left: 120px; /* 120 px (padding-left) */
     }
 
-    img + br + img + br + img
+    img + br + img + img
+    {
+      padding-left: 0;
+    }
+
+    img + br + img + img + br + img
     {
       padding-left: 165px; /* 120 px (padding-left) + 45px (the position difference of box)
     }
@@ -32,7 +37,11 @@
 
 <p>Test passes if 2 orange squares are centered with respect to a blue square.</p>
 
-<div><img src="support/swatch-orange.png" width="60" height="60" alt="Image download support must be enabled" /><br /><img src="support/swatch-blue.png" width="120" height="120" alt="Image download support must be enabled" /><br /><img src="support/swatch-orange.png" width="30" height="30" alt="Image download support must be enabled" /></div>
+<div>
+   <img src="support/swatch-orange.png" width="60" height="60" alt="Image download support must be enabled" /><br /><!--
+--><img class="left" src="support/swatch-blue.png" width="120" height="120" alt="Image download support must be enabled" /><!--
+--><img class="right" src="support/swatch-yellow.png" width="120" height="120" alt="Image download support must be enabled" /><br /><!--
+--><img src="support/swatch-orange.png" width="30" height="30" alt="Image download support must be enabled" /></div>
 
 </body>
 </html>

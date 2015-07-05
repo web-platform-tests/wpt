@@ -12,18 +12,25 @@
     div#rl-sideways
     {
       color: fuchsia;
-      font: 3.75em Ahem; /* computes to 60px */
+      font: 3.75em/1em Ahem; /* computes to 60px */
       height: 4em;
       writing-mode: vertical-rl;
       text-orientation: sideways;
     }
 
-    span#fuchsia120
+    div#inline-block
     {
       display: inline-block;
       padding-left: 1em; /* computes to 120px */
       padding-right: 1em; /* computes to 120px */
+      color: fuchsia;
       font-size: 2em; /* computes to 120px */
+    }
+
+    span.block-descendant
+    {
+      display: block;
+      line-height: 1;
     }
 
     span#fuchsia30
@@ -41,7 +48,10 @@
 
   <p>Test passes if the <strong>left edge</strong> of an irregular polygon is straight and unbroken.</p>
 
-  <div id="rl-sideways">É<span id="fuchsia120">É</span><span id="fuchsia30">É</span></div>
+  <div id="rl-sideways">É<div id="inline-block">
+    <span class="block-descendant">B</span>
+    <span class="block-descendant last-line-box">É</span>
+  </div><span id="fuchsia30">É</span></div>
 
   </body>
 </html>

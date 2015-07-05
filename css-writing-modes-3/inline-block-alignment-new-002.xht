@@ -12,19 +12,35 @@
     div#rl-mixed
     {
       color: orange;
-      font: 3.75em Ahem; /* computes to 60px */
+      font: 3.75em/1em Ahem; /* computes to 60px */
       height: 4em;
       writing-mode: vertical-rl;
       text-orientation: mixed;
     }
 
-    span#blue120
+    div#inline-block
     {
       display: inline-block;
       padding-left: 1em; /* computes to 120px */
       padding-right: 1em; /* computes to 120px */
-      color: blue;
+      color: fuchsia;
       font-size: 2em; /* computes to 120px */
+    }
+
+    span.block-descendant
+    {
+      display: block;
+      line-height: 1;
+    }
+
+    span.block-descendant.first-line-box
+    {
+      color: yellow;
+    }
+
+    span.block-descendant.last-line-box
+    {
+      color: blue;
     }
 
     span#orange30
@@ -42,7 +58,10 @@
 
   <p>Test passes if 2 orange squares are centered with respect to a blue square.</p>
 
-  <div id="rl-mixed">A<span id="blue120">B</span><span id="orange30">O</span></div>
+  <div id="rl-mixed">A<div id="inline-block">
+    <span class="block-descendant first-line-box">I</span>
+    <span class="block-descendant last-line-box">B</span>
+  </div><span id="orange30">O</span></div>
 
   </body>
 </html>

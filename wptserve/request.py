@@ -1,6 +1,7 @@
 import base64
 import cgi
 import Cookie
+import os
 import StringIO
 import tempfile
 import urlparse
@@ -27,7 +28,9 @@ class Server(object):
     config = None
 
     def __init__(self, request):
-        self.stash = stash.Stash(request.url_parts.path)
+        host, port, authkey = stash.load_env_config()
+        address = (host, port)
+        self.stash = stash.Stash(request.url_parts.path, address, authkey)
 
 
 class InputFile(object):

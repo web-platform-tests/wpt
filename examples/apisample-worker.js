@@ -1,4 +1,4 @@
-importScripts("testharness.js");
+importScripts("../testharness.js");
 
 test(
     function(test) {

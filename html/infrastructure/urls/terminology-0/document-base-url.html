@@ -54,6 +54,19 @@
     async_test(function () {
       var iframe = document.createElement("iframe");
       iframe.onload = this.step_func_done(function () {
+        var doc = iframe.contentDocument;
+        var base = doc.body.appendChild(document.createElement("base"));
+        base.href = "sub/";
+        assert_resolve_url(doc, location.href.replace("/document-base-url.html", "/sub"));
+        assert_equals(doc.baseURI, document.baseURI);
+      });
+      iframe.setAttribute("src", "about:blank");
+      document.body.appendChild(iframe);
+    }, "about:blank with a base element.");
+
+    async_test(function () {
+      var iframe = document.createElement("iframe");
+      iframe.onload = this.step_func_done(function () {
         assert_resolve_url(iframe.contentDocument, location.href.replace("/document-base-url.html", ""));
         assert_equals(iframe.contentDocument.baseURI, document.baseURI, "The document base URL should be the containing document's base URL.");
       });

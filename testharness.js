@@ -2542,8 +2542,9 @@ policies and contribution forms [3].
     /** Returns the 'src' URL of the first <script> tag in the page to include the file 'testharness.js'. */
     function get_script_url()
     {
-        if (!('document' in self))
+        if (!('document' in self)) {
             return undefined;
+        }
 
         var scripts = document.getElementsByTagName("script");
         for (var i = 0; i < scripts.length; i++) {

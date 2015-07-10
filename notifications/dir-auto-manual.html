@@ -3,16 +3,26 @@
 <title>Notification.dir=auto</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
-<p>Passes if a notification appears and the direction of its text is left
-to right.
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
+<div id=passfail></div>
 <script>
-if (Notification.permission != "granted") {
-    alert("TEST NOT RUN. Change your browser settings so that notifications"
-        + " for this origin are allowed, and then reload this page.")
-} else {
-    new Notification("New Email Received", {
-        body: "Room 101",
-        dir: "auto"
+setup({ explicit_timeout: true })
+if (hasNotificationPermission()) {
+    async_test(function (t) {
+        t.step(function () {
+            var notification = null,
+                notifications = []
+            createPassFail("If a notification appears and the direction of its"
+                + " text is left to right",
+                t, closeNotifications, notifications)
+            notification = new Notification("New Email Received", {
+                body: "Room 101",
+                dir: "auto"
+            })
+            notifications.push(notification)
+        })
     })
 }
 </script>

@@ -4,19 +4,10 @@
 <link rel="author" title="Apple Inc." href="http://www.apple.com/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
 <script>
 setup({ explicit_timeout: true })
-Notification.requestPermission()
-if (Notification.permission != "granted") {
-    async_test(function (t) {
-        t.step(function () {
-            this.force_timeout()
-            t.set_status(this.NOTRUN, "You must allow notifications for this"
-                + " origin before running this test.")
-            t.done()
-        })
-    })
-} else {
+if (hasNotificationPermission()) {
     async_test(function (t) {
         t.step(function () {
             var notification =

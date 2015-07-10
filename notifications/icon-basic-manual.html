@@ -3,16 +3,26 @@
 <title>Notification.icon (basic)</title>
 <link rel="author" title="Intel" href="http://www.intel.com/">
 <link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
-<body>
-<p>Passes if a notification appears that contains an image of a cat.
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
+<div id=passfail></div>
 <script>
-if (Notification.permission != "granted") {
-    alert("TEST NOT RUN. Change your browser settings so that notifications"
-        + " for this origin are allowed, and then reload this page.")
-} else {
-    new Notification("New Email Received", {
-        body: "Room 101",
-        icon: "http://test.csswg.org/source/support/cat.png"
+setup({ explicit_timeout: true })
+if (hasNotificationPermission()) {
+    async_test(function (t) {
+        t.step(function () {
+            var notification = null,
+                notifications = []
+            createPassFail("If a notification appears containing"
+                + " an image of a cat",
+                t, closeNotifications, notifications)
+            notification = new Notification("New Email Received", {
+                body: "Room 101",
+                icon: "http://test.csswg.org/source/support/cat.png"
+            })
+            notifications.push(notification)
+        })
     })
 }
 </script>

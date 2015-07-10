@@ -5,13 +5,10 @@
 <link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
 <script>
 setup({ explicit_timeout: true })
-Notification.requestPermission()
-if (Notification.permission != "granted") {
-    alert("TEST NOT RUN. Change your browser settings so that notifications"
-        + " for this origin are allowed, and then reload this page.")
-} else {
+if (hasNotificationPermission()) {
     async_test(function (t) {
         t.step(function () {
             t.done()

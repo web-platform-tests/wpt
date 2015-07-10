@@ -28,9 +28,15 @@ class Server(object):
     config = None
 
     def __init__(self, request):
-        host, port, authkey = stash.load_env_config()
-        address = (host, port)
-        self.stash = stash.Stash(request.url_parts.path, address, authkey)
+        self._stash = None
+        self._request = request
+
+    @property
+    def stash(self):
+        if self._stash is None:
+            address, authkey = stash.load_env_config()
+            self._stash = stash.Stash(self._request.url_parts.path, address, authkey)
+        return self._stash
 
 
 class InputFile(object):

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Notification.requestPermission (permission=granted)</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
+<p id=pass style="color: green; font-weight: bold">
+<p>Confirm in your browser settings that notifications for this origin are
+allowed, and then reload this page.
+<script>
+Notification.requestPermission()
+if (Notification.permission != "granted") {
+    alert("TEST NOT RUN. Change your browser settings so that notifications"
+        + " for this origin are allowed, and then reload this page.")
+} else {
+    document.querySelector("#pass").innerHTML = "PASS"
+}
+</script>

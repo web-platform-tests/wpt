@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Notification.icon (empty string)</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
+<p>Passes if a notification appears and it contains no image.
+<script>
+new Notification("New Email Received", {
+    body: "Room 101",
+    icon: ""
+});
+</script>

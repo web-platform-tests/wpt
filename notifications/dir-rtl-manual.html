@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Notification.dir=rtl</title>
+<link rel="author" title="Intel" href="http://www.intel.com/">
+<link rel="author" title="Xin Liu" href="mailto:xinx.liu@intel.com">
+<p>Passes if a notification appears and the direction of its text is right
+to left.
+<script>
+if (Notification.permission != "granted") {
+    alert("TEST NOT RUN. Change your browser settings so that notifications"
+        + " for this origin are allowed, and then reload this page.")
+} else {
+    new Notification("New Email Received", {
+        body: "Room 101",
+        dir: "rtl"
+    });
+}
+</script>

@@ -357,10 +357,6 @@ def get_ssl_config(config, external_domains, ssl_environment):
             "cert_path": cert_path,
             "encrypt_after_connect": config["ssl"]["encrypt_after_connect"]}
 
-def start_stash_server(host, port, authkey):
-    stash.start_server(address=(host, port), authkey=authkey)
-    stash.store_env_config((host, port, authkey))
-
 def start(config, ssl_environment, routes, **kwargs):
     host = config["host"]
     domains = get_subdomains(host)
@@ -373,9 +369,6 @@ def start(config, ssl_environment, routes, **kwargs):
     external_config = normalise_config(config, ports)
 
     ssl_config = get_ssl_config(config, external_config["domains"].values(), ssl_environment)
-
-    # The stash server for all other servers to use.
-    start_stash_server(host, port=get_port(), authkey=str(uuid.uuid4()))
 
     if config["check_subdomains"]:
         check_subdomains(host, paths, bind_hostname, ssl_config)
@@ -492,12 +485,13 @@ def main():
 
     setup_logger(config["log_level"])
 
-    with get_ssl_environment(config) as ssl_env:
-        config_, servers = start(config, ssl_env, default_routes(), **kwargs)
+    with stash.StashServer((config["host"], get_port()), authkey=str(uuid.uuid4())):
+        with get_ssl_environment(config) as ssl_env:
+            config_, servers = start(config, ssl_env, default_routes(), **kwargs)
 
-        try:
-            while any(item.is_alive() for item in iter_procs(servers)):
-                for item in iter_procs(servers):
-                    item.join(1)
-        except KeyboardInterrupt:
-            logger.info("Shutting down")
+            try:
+                while any(item.is_alive() for item in iter_procs(servers)):
+                    for item in iter_procs(servers):
+                        item.join(1)
+            except KeyboardInterrupt:
+                logger.info("Shutting down")

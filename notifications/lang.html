@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Web Notifications Test: notification.lang</title>
+<title>Notification.lang</title>
 <link rel="author" title="Apple Inc." href="http://www.apple.com/">
-<link rel="help" title="5 API" href="http://www.w3.org/TR/notifications/">
-<meta name="flags" content="">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<body>
-  <div id="log"></div>
-  <script>
-
+<script>
 setup({ explicit_done: true });
 
 /* Validity and well-formedness was determined by using the BCP 47
@@ -37,6 +32,10 @@ var invalid_langs = ["en-", "en-\-", "foo-\-bar", "id-\-\-Java", "fr-x",
 function test_lang(language, should_passthrough) {
     var expected = should_passthrough ? language : "";
     test(function() {
+        if (Notification.permission != "granted") {
+            this.force_timeout()
+            this.set_status(this.NOTRUN, "You must allow notifications for this origin before running this test.")
+        }
         var notification = new Notification("This is a notification.", {
             lang: language
         });
@@ -48,26 +47,17 @@ function test_lang(language, should_passthrough) {
     "Roundtripping lang \"" + language + "\". Expecting \"" + expected + "\".");
 }
 
-var permission_test = async_test("We have permission to use the notifications API.");
+for (var i=0; i<valid_langs.length; i++) {
+    test_lang(valid_langs[i], true);
+}
 
-Notification.requestPermission(permission_test.step_func(function(permission) {
-    assert_equals(permission, "granted", "notification permission");
-    permission_test.done();
+for (var i=0; i<well_formed_langs.length; i++) {
+    test_lang(well_formed_langs[i], false);
+}
 
-    for (var i=0; i<valid_langs.length; i++) {
-        test_lang(valid_langs[i], true);
-    }
+for (var i=0; i<invalid_langs.length; i++) {
+    test_lang(invalid_langs[i], false);
+}
 
-    for (var i=0; i<well_formed_langs.length; i++) {
-        test_lang(well_formed_langs[i], false);
-    }
-
-    for (var i=0; i<invalid_langs.length; i++) {
-        test_lang(invalid_langs[i], false);
-    }
-
-    done();
-}));
-  </script>
-</body>
-
+done();
+</script>

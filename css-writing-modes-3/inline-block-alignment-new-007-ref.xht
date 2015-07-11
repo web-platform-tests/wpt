@@ -5,11 +5,24 @@
   <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
   <meta name="flags" content="image" />
   <style type="text/css"><![CDATA[
+  img
+  {
+   vertical-align: top;
+  }
 
   img
   {
-    padding-left: 60px; /* 60px (padding-left) + 24px (the left edge position of box) */
-    vertical-align: top;
+   padding-left: 228px; /* 60 px (padding-left) + 120px (first line-block width) + 48px (the position difference of box) */
+  }
+
+  img + br + img
+  {
+   padding-left: 60px; /* 60 px (padding-left) */
+  }
+
+  img + br + img + br + img
+  {
+   padding-left: 252px; /* 60 px (padding-left) + 120px (first line-block width) + 72px (the position difference of box) */
   }
   ]]></style>
 
@@ -17,7 +30,7 @@
 
   <body>
 
-  <p>Test passes if the <strong>left edge</strong> of an irregular polygon is straight and unbroken.</p>
+  <p>Test passes if the <strong>right edge</strong> of an irregular polygon is straight and unbroken.</p>
 
   <div>
     <img src="support/swatch-fuchsia.png" width="48" height="60" alt="Image download support must be enabled" /><br /><!--

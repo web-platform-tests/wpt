@@ -1,32 +1,57 @@
+import base64
+import json
+import os
 import uuid
 from multiprocessing import Process
-from multiprocessing.managers import SyncManager, DictProxy
-import os
-import json
+from multiprocessing.managers import BaseManager, DictProxy
 
+class ServerDictManager(BaseManager):
+    shared_data = {}
 
-WPT_STASH_CONFIG = "WPT_STASH_CONFIG"
+def _get_shared():
+    return ServerDictManager.shared_data
+
+ServerDictManager.register("get_dict",
+                           callable=_get_shared,
+                           proxytype=DictProxy)
+
+class ClientDictManager(BaseManager):
+    pass
+
+ClientDictManager.register("get_dict")
+
+class StashServer(object):
+    def __init__(self, address=None, authkey=None):
+        self.address = address
+        self.authkey = authkey
+        self.manager = None
+
+    def __enter__(self):
+        self.manager, self.address, self.authkey = start_server(self.address, self.authkey)
+        store_env_config(self.address, self.authkey)
+
+    def __exit__(self, *args, **kwargs):
+        if self.manager is not None:
+            self.manager.shutdown()
 
 def load_env_config():
-    return json.loads(os.environ[WPT_STASH_CONFIG])
+    address, authkey = json.loads(os.environ["WPT_STASH_CONFIG"])
+    if isinstance(address, list):
+        address = tuple(address)
+    else:
+        address = str(address)
+    authkey = base64.decodestring(authkey)
+    return address, authkey
 
-def store_env_config(config):
-    os.environ[WPT_STASH_CONFIG] = json.dumps(config)
+def store_env_config(address, authkey):
+    authkey = base64.encodestring(authkey)
+    os.environ["WPT_STASH_CONFIG"] = json.dumps((address, authkey))
 
 def start_server(address=None, authkey=None):
-    shared_data = {}
-    class DictManager(SyncManager):
-        pass
+    manager = ServerDictManager(address, authkey)
+    manager.start()
 
-    DictManager.register("get_dict",
-                         callable=lambda:shared_data,
-                         proxytype=DictProxy)
-    manager = DictManager(address, authkey)
-    server = manager.get_server()
-    server_process = Process(target=server.serve_forever)
-    server_process.start()
-
-    return (server_process, manager._address, manager._authkey)
+    return (manager, manager._address, manager._authkey)
 
 
 #TODO: Consider expiring values after some fixed time for long-running
@@ -66,11 +91,7 @@ class Stash(object):
             Stash._proxy = {}
 
         if Stash._proxy is None:
-            class DictManager(SyncManager):
-                pass
-
-            DictManager.register("get_dict")
-            manager = DictManager(address, authkey)
+            manager = ClientDictManager(address, authkey)
             manager.connect()
             Stash._proxy = manager.get_dict()
 

@@ -67,16 +67,20 @@ def main(request, response):
         elif action == "purge":
             value = stash.take(key=key)
             if content_type == "image/png":
-                response_data = open(os.path.join("images",
+                response_data = open(os.path.join(request.doc_root,
+                                                  "images",
                                                   "smiley.png")).read()
             elif content_type == "audio/mpeg":
-                response_data = open(os.path.join("media",
+                response_data = open(os.path.join(request.doc_root,
+                                                  "media",
                                                   "sound_5.oga")).read()
             elif content_type == "video/mp4":
-                response_data = open(os.path.join("media",
+                response_data = open(os.path.join(request.doc_root,
+                                                  "media",
                                                   "movie_5.mp4")).read()
             elif content_type == "application/javascript":
-                response_data = open(os.path.join("mixed-content",
+                response_data = open(os.path.join(request.doc_root,
+                                                  "mixed-content",
                                                   "generic",
                                                   "worker.js")).read()
             else:

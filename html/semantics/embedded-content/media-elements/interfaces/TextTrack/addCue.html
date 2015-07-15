@@ -60,7 +60,7 @@ t.step(function(){
     track.onerror = t.step_func(function() {
       assert_unreached('got error event');
     });
-    track.src= 'data:text/vtt,'+encodeURIComponent('WEBVTT\n\n00:00:00.000 --> 00:00:01.000\ntest\n');
+    track.src= '../resources/track.vtt';
     track.kind = 'subtitles';
     track.track.mode = 'hidden';
     video.appendChild(track);

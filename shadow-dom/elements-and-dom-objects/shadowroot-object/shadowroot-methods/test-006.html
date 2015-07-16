@@ -45,7 +45,7 @@ test(function () {
 
     var el = d.createElement('div');
 
-    var s = createSR(el);
+    var s = el.createShadowRoot();
     d.body.appendChild(el);
 
     if (typeof(s) == 'undefined' || typeof (s.elementFromPoint(1, 1)) != 'object') {

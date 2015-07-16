@@ -5,9 +5,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 if (Notification.permission != "granted") {
-    this.force_timeout()
-    this.set_status(this.NOTRUN, "You must allow notifications for this"
-        + " origin before running this test.")
+    test(function() {
+        this.force_timeout()
+        this.set_status(this.NOTRUN, "You must allow notifications for this"
+            + " origin before running this test.")
+    })
 } else {
     var n = new Notification("Radio check",
       {

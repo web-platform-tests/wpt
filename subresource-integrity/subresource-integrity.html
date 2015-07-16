@@ -68,12 +68,13 @@
     // of executing them one at a time, the style tests are implemented as a
     // queue that builds up a list of tests, and then executes them one at a
     // time.
-    var SRIStyleTest = function(queue, pass, name, href, integrityValue, crossoriginValue) {
+    var SRIStyleTest = function(queue, pass, name, href, integrityValue, crossoriginValue, rel) {
         this.pass = pass;
         this.name = "Style: " + name;
         this.href = href;
         this.integrityValue = integrityValue;
         this.crossoriginValue = crossoriginValue;
+        this.rel = rel;
 
         this.test = async_test(this.name);
 
@@ -92,7 +93,7 @@
         var div = document.createElement("div");
         div.className = "testdiv";
         var e = document.createElement("link");
-        e.rel = "stylesheet";
+        e.rel = this.rel ? this.rel : "stylesheet";
         e.href = this.href;
         e.setAttribute("integrity", this.integrityValue);
         if(this.crossoriginValue) {
@@ -432,6 +433,26 @@
         "Same-origin with unknown algorithm only.",
         "style.css",
         "foo666-CzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk7gyCWUV4=?foo=bar?spam=eggs"
+    );
+
+    new SRIStyleTest(
+        style_tests,
+        true,
+        "Same-origin with correct sha256 hash, rel='stylesheet license'",
+        "style.css",
+        "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F-SPLT7YZk7gyCWUV4=",
+        undefined,
+        "stylesheet license"
+    );
+
+    new SRIStyleTest(
+        style_tests,
+        true,
+        "Same-origin with correct sha256 hash, rel='license stylesheet'",
+        "style.css",
+        "sha256-CzHgdJ7wOccM8L89n4bhcJMz3F-SPLT7YZk7gyCWUV4=",
+        undefined,
+        "license stylesheet"
     );
 
     style_tests.execute();

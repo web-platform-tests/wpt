@@ -5,17 +5,17 @@
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
     <link rel="help" title="CSS3 Writing modes: 4.3. Atomic Inline Baseline" href="http://www.w3.org/TR/css-writing-modes-3/#replaced-baselines" />
     <link rel="help" title="CSS2.1 9.2.2 Inline-level elements and inline boxes" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
-    <link rel="match" href="inline-block-alignment-new-006-ref.xht" />
-    <meta name="assert" content="This test checks the generation of inline-block baseline. When 'writing-mode' is 'vertical-rl' and when 'text-orientation' is 'sideways-right', then the alphabetical baseline is used as the dominant baseline." />
+    <link rel="match" href="inline-block-alignment-010-ref.xht" />
+    <meta name="assert" content="This test checks the generation of inline-block baseline. When 'writing-mode' is 'vertical-rl' and when 'text-orientation' is 'sideways-left', then the alphabetical baseline is used as the dominant baseline." />
     <meta name="flags" content="ahem" />
     <style type="text/css"><![CDATA[
-    div#rl-sideways-right
+    div#rl-sideways-left
     {
       color: fuchsia;
       font: 3.75em/1 Ahem; /* computes to 60px */
       height: 4em;
       writing-mode: vertical-rl;
-      text-orientation: sideways-right;
+      text-orientation: sideways-left;
     }
 
     div#inline-block
@@ -51,10 +51,10 @@
 
   <p>Test passes if the <strong>left edge</strong> of an irregular polygon is straight and unbroken.</p>
 
-  <div id="rl-sideways-right">É<div id="inline-block">
+  <div id="rl-sideways-left">p<div id="inline-block">
     <span class="block-descendant">B</span>
-    <span class="block-descendant last-line-box">É</span>
-  </div><span id="fuchsia30">É</span></div>
+    <span class="block-descendant last-line-box">p</span>
+  </div><span id="fuchsia30">p</span></div>
 
   </body>
 </html>

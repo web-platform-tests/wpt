@@ -5,16 +5,16 @@
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
     <link rel="help" title="CSS3 Writing modes: 4.3. Atomic Inline Baseline" href="http://www.w3.org/TR/css-writing-modes-3/#replaced-baselines" />
     <link rel="help" title="CSS2.1 9.2.2 Inline-level elements and inline boxes" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
-    <link rel="match" href="inline-block-alignment-new-002-ref.xht" />
-    <meta name="assert" content="This test checks the generation of inline-block baseline. When 'writing-mode' is 'vertical-rl' and when 'text-orientation' is 'mixed', then the central baseline is used as the dominant baseline." />
+    <link rel="match" href="inline-block-alignment-003-ref.xht" />
+    <meta name="assert" content="This test checks the generation of inline-block baseline. When 'writing-mode' is 'vertical-lr' and when 'text-orientation' is 'mixed', then the central baseline is used as the dominant baseline." />
     <meta name="flags" content="ahem" />
     <style type="text/css"><![CDATA[
-    div#rl-mixed
+    div#lr-mixed
     {
       color: orange;
       font: 3.75em/1 Ahem; /* computes to 60px */
       height: 4em;
-      writing-mode: vertical-rl;
+      writing-mode: vertical-lr;
       text-orientation: mixed;
     }
 
@@ -61,7 +61,7 @@
 
   <p>Test passes if 2 orange squares are centered with respect to a blue square.</p>
 
-  <div id="rl-mixed">A<div id="inline-block">
+  <div id="lr-mixed">A<div id="inline-block">
     <span class="block-descendant" id="first-line-box">I</span>
     <span class="block-descendant" id="last-line-box">B</span>
   </div><span id="orange30">O</span></div>

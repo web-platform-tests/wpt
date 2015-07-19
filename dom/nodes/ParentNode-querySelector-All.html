@@ -61,7 +61,7 @@ function init() {
   var element = doc.getElementById("root");   // In-document Element Node tests
 
   //Setup the namespace tests
-  setupSpecialElements(element);
+  setupSpecialElements(doc, element);
 
   var outOfScope = element.cloneNode(true);   // Append this to the body before running the in-document
                                                // Element tests, but after running the Document tests. This
@@ -89,10 +89,10 @@ function init() {
   runSpecialSelectorTests("Fragment", fragment);
   runSpecialSelectorTests("In-document Element", element);
 
-  verifyStaticList("Document", doc);
-  verifyStaticList("Detached Element", detached);
-  verifyStaticList("Fragment", fragment);
-  verifyStaticList("In-document Element", element);
+  verifyStaticList("Document", doc, doc);
+  verifyStaticList("Detached Element", doc, detached);
+  verifyStaticList("Fragment", doc, fragment);
+  verifyStaticList("In-document Element", doc, element);
 
   runInvalidSelectorTest("Document", doc, invalidSelectors);
   runInvalidSelectorTest("Detached Element", detached, invalidSelectors);

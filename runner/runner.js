@@ -138,6 +138,18 @@ function VisualOutput(elem, runner) {
     this.runner.start_callbacks.push(this.on_start.bind(this));
     this.runner.result_callbacks.push(this.on_result.bind(this));
     this.runner.done_callbacks.push(this.on_done.bind(this));
+
+    this.display_filter_state = {};
+
+    var visual_output = this;
+    var display_filter_inputs = this.elem.querySelectorAll(".result-display-filter");
+    for (var i = 0; i < display_filter_inputs.length; ++i) {
+        var display_filter_input = display_filter_inputs[i];
+        this.display_filter_state[display_filter_input.value] = display_filter_input.checked;
+        display_filter_input.addEventListener("change", function(e) {
+            visual_output.apply_display_filter(e.target.value, e.target.checked);
+        })
+    }
 }
 
 VisualOutput.prototype = {
@@ -238,6 +250,7 @@ VisualOutput.prototype = {
             this.elem.querySelector("td." + status_arr[i]).textContent = this.result_count[status_arr[i]];
         }
 
+        this.apply_display_filter_to_result_row(row, this.display_filter_state[test_status]);
         this.results_table.tBodies[0].appendChild(row);
         this.update_meter(this.runner.progress(), this.runner.results.count(), this.runner.test_count());
     },
@@ -295,8 +308,19 @@ VisualOutput.prototype = {
         this.meter.setAttribute("aria-valuenow", count);
         this.meter.setAttribute("aria-valuemax", total);
         this.meter.textContent = this.meter.style.width = (progress * 100).toFixed(1) + "%";
-    }
+    },
 
+    apply_display_filter: function(test_status, display_state) {
+        this.display_filter_state[test_status] = display_state;
+        var result_cells = this.elem.querySelectorAll(".results > table tr td." + test_status);
+        for (var i = 0; i < result_cells.length; ++i) {
+            this.apply_display_filter_to_result_row(result_cells[i].parentNode, display_state)
+        }
+    },
+
+    apply_display_filter_to_result_row: function(result_row, display_state) {
+        result_row.style.display = display_state ? "" : "none";
+    }
 };
 
 function ManualUI(elem, runner) {

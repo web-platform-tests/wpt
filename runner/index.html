@@ -117,20 +117,34 @@
       <table class='table'>
         <thead>
           <tr>
-            <th>Passed
-            <th>Failed
-            <th>Timeouts
-            <th>Errors
+            <th></th>
+            <th>Passed</th>
+            <th>Failed</th>
+            <th>Timeouts</th>
+            <th>Errors</th>
             <th>Not Run</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class='PASS'>0
-            <td class='FAIL'>0
-            <td class='TIMEOUT'>0
-            <td class='ERROR'>0
-            <td class='NOTRUN'>0
+            <td></td>
+            <td class='PASS'>0</td>
+            <td class='FAIL'>0</td>
+            <td class='TIMEOUT'>0</td>
+            <td class='ERROR'>0</td>
+            <td class='NOTRUN'>0</td>
+          </tr>
+           <tr>
+            <td>
+              <label>
+                Display:
+              </label>
+              </td>
+            <td><input type=checkbox class="result-display-filter" value="PASS" checked></td>
+            <td><input type=checkbox class="result-display-filter" value="FAIL" checked></td>
+            <td><input type=checkbox class="result-display-filter" value="TIMEOUT" checked></td>
+            <td><input type=checkbox class="result-display-filter" value="ERROR" checked></td>
+            <td><input type=checkbox class="result-display-filter" value="NOTRUN" checked></td>
           </tr>
         </tbody>
       </table>

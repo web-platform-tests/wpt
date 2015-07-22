@@ -24,10 +24,10 @@ If the script tries to place text/html data on the clipboard, a conforming imple
 Note: IE throws for this test. Presumably it would use just "html", not "text/html" for the format argument if it supported this.
 */
 function clipboard_api_test(e){
-	var passed = false;
-	e.clipboardData.setData('text/html', '<p>copycut <b>modified</b> text</p>');
-	e.clipboardData.setData('text/plain', 'copycut modified text');
-	e.preventDefault();
+    var passed = false;
+    e.clipboardData.setData('text/html', '<p>copycut <b>modified</b> text</p>');
+    e.clipboardData.setData('text/plain', 'copycut modified text');
+    e.preventDefault();
 }
 
     </script>

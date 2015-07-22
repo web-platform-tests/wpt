@@ -10,13 +10,13 @@
 /* Events: paste */
 /* paste data: "the file 'support/test'" */
 /* Targets: document */
-/* 	Clipboard data type: file reference: ./support/test */
+/*     Clipboard data type: file reference: ./support/test */
 /* Test HTML: <p>To complete this test, copy the "./support/test" file from the OS file manager and paste into this page</p>*/
 
 function clipboard_api_test(e){
-	var passed = e.clipboardData.items && e.clipboardData.items.length === 1;
-	passed = passed && e.clipboardData.items[0].kind=='file' && ( /application\/octet-stream/.test(e.clipboardData.items[0].type) );
-	return passed;
+    var passed = e.clipboardData.items && e.clipboardData.items.length === 1;
+    passed = passed && e.clipboardData.items[0].kind=='file' && ( /application\/octet-stream/.test(e.clipboardData.items[0].type) );
+    return passed;
 }
 // TODO: figure out how to automate this test (i.e. find a better cross-platform clipboard library for JRuby..)
 

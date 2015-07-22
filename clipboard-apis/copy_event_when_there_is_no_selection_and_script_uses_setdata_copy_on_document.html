@@ -15,8 +15,8 @@
 /* External pass condition - clipboard data: "modified text" */
 function clipboard_api_test(e){
   e.clipboardData.setData('text/plain', 'modified text');
-	/* The default action is to do nothing (because there is no selection).
-	 *  We thus need to prevent the default 'NOOP' action to make the implementation update the clipboard */
+    /* The default action is to do nothing (because there is no selection).
+     *  We thus need to prevent the default 'NOOP' action to make the implementation update the clipboard */
   e.preventDefault();
 }
 

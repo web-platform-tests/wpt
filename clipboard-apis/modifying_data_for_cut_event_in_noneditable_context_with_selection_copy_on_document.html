@@ -13,7 +13,7 @@
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "cut text" */
 function clipboard_api_test(e){
-	e.clipboardData.setData('text/plain', 'cut text');
+    e.clipboardData.setData('text/plain', 'cut text');
    e.preventDefault(); /* this event's default action is a NOOP since the selection can not be removed. */
 }
 

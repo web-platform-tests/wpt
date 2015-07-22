@@ -9,11 +9,11 @@
 /** getData() method in cut and copy events should return an empty string  */
 /* Events: cut copy */
 function clipboard_api_test(e){
-	var passed = false;
-	if(e.clipboardData && e.clipboardData.getData){
-		if(e.clipboardData.getData('text/plain')==='')passed=true;
-	}
-	return passed;
+    var passed = false;
+    if(e.clipboardData && e.clipboardData.getData){
+        if(e.clipboardData.getData('text/plain')==='')passed=true;
+    }
+    return passed;
 }
 
     </script>

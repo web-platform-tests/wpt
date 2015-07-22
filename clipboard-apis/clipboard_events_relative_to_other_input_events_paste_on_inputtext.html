@@ -27,7 +27,7 @@ function clipboard_api_test(e){
     e.target.blur(); // causes change event
     e.target.form.checkValidity(); // causes invalid event
   }, 10);
-	setTimeout(function(){
+    setTimeout(function(){
     var evString = eventsFired.join(',')
     var passed =  evString ==='paste,paste handler done,textInput,input,change' || evString ==='paste,paste handler done,input,change' ;
     result( passed, 'Got: '+evString );

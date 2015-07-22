@@ -11,9 +11,9 @@
 /* Test HTML: <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>*/
 /* Targets: document 'input_text' */
 function clipboard_api_test(e){
-	e.preventDefault();
-	var theTarget=e.target;
-	setTimeout( function(){ var passed = theTarget.value === theTarget.defaultValue; result(passed);   }, 10 );
+    e.preventDefault();
+    var theTarget=e.target;
+    setTimeout( function(){ var passed = theTarget.value === theTarget.defaultValue; result(passed);   }, 10 );
 }
 
     </script>

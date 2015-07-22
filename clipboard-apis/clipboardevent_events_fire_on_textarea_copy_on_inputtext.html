@@ -11,9 +11,9 @@
 /* Test HTML: <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>*/
 /* Targets: document 'input_text' */
 function clipboard_api_test(e){
-	var passed = e.type === window.eventType;
-	passed = passed && e.target.id==='input_text';
-	return passed;
+    var passed = e.type === window.eventType;
+    passed = passed && e.target.id==='input_text';
+    return passed;
 }
 
     </script>

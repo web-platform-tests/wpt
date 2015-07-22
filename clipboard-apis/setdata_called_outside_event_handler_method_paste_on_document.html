@@ -11,10 +11,10 @@
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "clipboard text" */
 function clipboard_api_test(e){
-	var cbData=e.clipboardData;
-	setTimeout( function(){
-		cbData.setData('text/plain', 'Test failed');
-	}, 1 );
+    var cbData=e.clipboardData;
+    setTimeout( function(){
+        cbData.setData('text/plain', 'Test failed');
+    }, 1 );
 }
 
     </script>

@@ -9,12 +9,12 @@
 /** Clipboard event's clipboardData API  */
 /* Events: cut copy paste */
 function clipboard_api_test(e){
-	var passed = typeof e.clipboardData === 'object';
-	passed = passed && typeof  e.clipboardData.clearData === 'function';
-	passed = passed && typeof  e.clipboardData.setData === 'function';
-	passed = passed && typeof  e.clipboardData.getData === 'function';
-	passed = passed && typeof  e.clipboardData.types != 'undefined'; // TODO...
-	return passed;
+    var passed = typeof e.clipboardData === 'object';
+    passed = passed && typeof  e.clipboardData.clearData === 'function';
+    passed = passed && typeof  e.clipboardData.setData === 'function';
+    passed = passed && typeof  e.clipboardData.getData === 'function';
+    passed = passed && typeof  e.clipboardData.types != 'undefined'; // TODO...
+    return passed;
 }
 
     </script>

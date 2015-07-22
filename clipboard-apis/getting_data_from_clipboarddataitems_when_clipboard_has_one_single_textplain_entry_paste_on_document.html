@@ -11,9 +11,9 @@
 /* paste data: "pasted text" */
 
 function clipboard_api_test(e){
-	e.clipboardData.items[0].getAsString( function(s){
-		result( s==='pasted text' );
-	} );
+    e.clipboardData.items[0].getAsString( function(s){
+        result( s==='pasted text' );
+    } );
 }
 
     </script>

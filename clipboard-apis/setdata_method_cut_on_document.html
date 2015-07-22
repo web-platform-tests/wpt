@@ -12,9 +12,9 @@
 /* paste data: "pasted text" */
 /* External pass condition - clipboard data: "modified text" */
 function clipboard_api_test(e){
-	var passed = false;
-	e.clipboardData.setData('text/plain', 'modified text');
-	e.preventDefault();
+    var passed = false;
+    e.clipboardData.setData('text/plain', 'modified text');
+    e.preventDefault();
 }
 /* TODO: should this (and similar) tests only work if we have "preflight" events? */
 /*

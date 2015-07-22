@@ -35,10 +35,10 @@ function triggerTestManually(eventType){
 		var execSucceeded = ifr.contentDocument.execCommand(eventType, false, false);
 		window.afterExecCommand=true;
         if(!execSucceeded){
-            result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+            result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard access in preferences for '+location.hostname+' before running this test)');
         }
     }catch(e){
-        result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+        result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard access in preferences for '+location.hostname+' before running this test)');
     }
 }
 

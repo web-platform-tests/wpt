@@ -233,7 +233,7 @@ describe "Clipboard events testsuite" do
 		doSingleTest 110
 	end
 
-	it "112 ClipboardEvent interface - events triggered from document.execCommand() inside trusted events do affect system clipboard " do
+	it "112 ClipboardEvent interface - execCommand() inside trusted event affects clipboard " do
 		doSingleTest 112
 	end
 
@@ -341,7 +341,7 @@ describe "Clipboard events testsuite" do
 		doSingleTest 167
 	end
 
-	it "173 types property - all implementations must return 'text/plain' as one of the .types entries when there is plain text on the clipboard " do
+	it "173 types property - 'text/plain' in .types entries when there is plain text on the clipboard " do
 		doSingleTest 173
 	end
 

@@ -32,7 +32,7 @@ function triggerTestManually(){
 		doc.execCommand(window.eventType, false, false);
     // result(doc.body.innerHTML=='<p>This is filler text</p>'); // sorry, pass condition here is external
 	}catch(e){
-		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard accesss in preferences for '+location.hostname+' before running this test)');
+		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard access in preferences for '+location.hostname+' before running this test)');
 	}
 }
 

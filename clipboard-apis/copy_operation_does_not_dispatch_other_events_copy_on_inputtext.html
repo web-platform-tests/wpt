@@ -14,7 +14,7 @@ function clipboard_api_test(e){
   var otherEventsFired=[];
   var events=[ 'input', 'textInput', 'change' ];
   for( var i=0,ev; ev=events[i];i++ )e.currentTarget.addEventListener(ev, function(e){ otherEventsFired.push(e.type); }, false);
-	setTimeout(function(){
+    setTimeout(function(){
     var passed = otherEventsFired.length===0;
     result(passed);
   }, 50);

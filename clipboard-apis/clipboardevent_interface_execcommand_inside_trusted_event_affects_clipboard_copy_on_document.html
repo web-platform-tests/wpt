@@ -11,27 +11,27 @@
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "modified text" */
 function clipboard_api_test(e){
-	e.clipboardData.setData('text/plain', 'modified text');
-	e.preventDefault();
+    e.clipboardData.setData('text/plain', 'modified text');
+    e.preventDefault();
 }
 function triggerTestManually(type){
-	try{
+    try{
         if(window.eventType === 'cut'){
             document.body.contentEditable = 'true';
         }
-		/* make a selection to check if selected text is copied */
-		var range = document.createRange();
-		range.selectNodeContents(document.body);
-		window.getSelection().addRange(range);
-		document.execCommand(type);
-		window.getSelection().removeAllRanges();
+        /* make a selection to check if selected text is copied */
+        var range = document.createRange();
+        range.selectNodeContents(document.body);
+        window.getSelection().addRange(range);
+        document.execCommand(type);
+        window.getSelection().removeAllRanges();
         if(window.eventType ==='cut'){
             document.body.contentEditable='false';
         }
-	}catch(e){
-		result('Unexpected Exception when initiating ClipboardEvent: '+e);
-		return;
-	}
+    }catch(e){
+        result('Unexpected Exception when initiating ClipboardEvent: '+e);
+        return;
+    }
 }
 
     </script>

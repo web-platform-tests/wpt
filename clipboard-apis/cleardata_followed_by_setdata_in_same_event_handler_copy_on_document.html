@@ -12,9 +12,9 @@
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "modified text" */
 function clipboard_api_test(e){
-	e.clipboardData.clearData( 'text/plain' );
-	e.clipboardData.setData( 'text/plain', 'modified text' );
-	e.preventDefault();
+    e.clipboardData.clearData( 'text/plain' );
+    e.clipboardData.setData( 'text/plain', 'modified text' );
+    e.preventDefault();
 }
 
     </script>

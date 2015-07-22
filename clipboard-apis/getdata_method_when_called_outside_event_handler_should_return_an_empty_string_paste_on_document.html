@@ -10,11 +10,11 @@
 /* Events: paste */
 /* paste data: "pasted text" */
 function clipboard_api_test(e){
-	var cbData=e.clipboardData;
-	setTimeout( function(){
-		var passed = cbData.getData('text/plain')==='';
-		result(passed);
-	}, 1 );
+    var cbData=e.clipboardData;
+    setTimeout( function(){
+        var passed = cbData.getData('text/plain')==='';
+        result(passed);
+    }, 1 );
 }
 
     </script>

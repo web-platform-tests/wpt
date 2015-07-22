@@ -10,16 +10,16 @@
 /* Events: paste */
 /* paste data: "clipboard text" */
 function clipboard_api_test(e){
-	return e.clipboardData.getData('text/plain')=='synthetic event text';
+    return e.clipboardData.getData('text/plain')=='synthetic event text';
 }
 function onTestSetupReady(){
-	try{
-		var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/plain', data:'synthetic event text' } );
-		document.dispatchEvent(evt);
-	}catch(e){
-		result('Unexpected Exception when initiating ClipboardEvent: '+e);
-		return;
-	}
+    try{
+        var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/plain', data:'synthetic event text' } );
+        document.dispatchEvent(evt);
+    }catch(e){
+        result('Unexpected Exception when initiating ClipboardEvent: '+e);
+        return;
+    }
 }
 
     </script>

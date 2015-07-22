@@ -12,22 +12,22 @@
 /* Test HTML: <iframe id="ifr"></iframe>*/
 /* Targets: 'ifr.contentWindow' */
 function clipboard_api_test(e){
-	window.eventFired=true;
-	e.preventDefault();
+    window.eventFired=true;
+    e.preventDefault();
 }
 function triggerTestManually(){
-	var ifr=document.getElementById('ifr');
-	ifr.contentDocument.designMode='on';
-	ifr.contentWindow.focus();
-	try{
-		ifr.contentDocument.execCommand(window.eventType, false, false);
-		setTimeout(function(){
-			var passed= window.eventFired === true && ifr.contentDocument.body.innerHTML.indexOf('clipboard text')==-1;
-			result(passed);
-		}, 10);
-	}catch(e){
-		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard access in preferences for '+location.hostname+' before running this test)');
-	}
+    var ifr=document.getElementById('ifr');
+    ifr.contentDocument.designMode='on';
+    ifr.contentWindow.focus();
+    try{
+        ifr.contentDocument.execCommand(window.eventType, false, false);
+        setTimeout(function(){
+            var passed= window.eventFired === true && ifr.contentDocument.body.innerHTML.indexOf('clipboard text')==-1;
+            result(passed);
+        }, 10);
+    }catch(e){
+        result('Can not test - exception from execCommand '+e+' (Note: enable clipboard access in preferences for '+location.hostname+' before running this test)');
+    }
 }
 
     </script>

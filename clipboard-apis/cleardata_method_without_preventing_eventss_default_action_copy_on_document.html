@@ -11,9 +11,9 @@
 /* External pass condition - clipboard data: "unmodified text" */
 /* Test HTML: <form><input autofocus onfocus="this.select()" value="unmodified text"></form>*/
 function clipboard_api_test(e){
-	var passed = false;
-	e.clipboardData.clearData();
-	//e.preventDefault(); // The point of this test is that we do NOT call preventDefault() here.
+    var passed = false;
+    e.clipboardData.clearData();
+    //e.preventDefault(); // The point of this test is that we do NOT call preventDefault() here.
 }
 
     </script>

@@ -10,13 +10,13 @@
 /* Events: paste */
 /* paste data: "clipboard text" */
 function clipboard_api_test(e){
-	var hasTextPlain=false;
-	if(e.clipboardData.types){
-		for(var i=0; i<e.clipboardData.types.length;i++){
-			if(e.clipboardData.types[i]==='text/plain')hasTextPlain=true;
-		}
-	}
-	return hasTextPlain;
+    var hasTextPlain=false;
+    if(e.clipboardData.types){
+        for(var i=0; i<e.clipboardData.types.length;i++){
+            if(e.clipboardData.types[i]==='text/plain')hasTextPlain=true;
+        }
+    }
+    return hasTextPlain;
 }
 
     </script>

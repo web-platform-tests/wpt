@@ -12,7 +12,7 @@
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "clipboard text" */
 function clipboard_api_test(e){
-	e.clipboardData.setData('text/plain', 'cut text');
+    e.clipboardData.setData('text/plain', 'cut text');
   /* NO e.preventDefault() call here. This event's default action is to do nothing since there is no selection. The test verifies that nothing happens to clipboard content. */
 }
 

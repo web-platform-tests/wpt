@@ -14,26 +14,26 @@
 /* External pass condition - clipboard data: "clipboard text" */
 
 function clipboard_api_test(e){
-	e.preventDefault();
+    e.preventDefault();
 }
 
 function triggerTestManually(){
   document.getElementsByTagName('p')[0].firstChild.data='FAILED'; // if event doesn't fire, this test failed..
-	var ifr=document.getElementById('ifr');
-	var doc=ifr.contentDocument;
-	doc.designMode='on';
-	ifr.contentDocument.body.innerHTML='<p>Frame contents</p>';
-	ifr.contentWindow.focus();
-	doc.body.innerHTML='<p>This is filler text</p>';
-	var range=doc.createRange();
-	range.selectNodeContents(doc.getElementsByTagName('p')[0]);
-	doc.defaultView.getSelection().addRange(range);
-	try{
-		doc.execCommand(window.eventType, false, false);
+    var ifr=document.getElementById('ifr');
+    var doc=ifr.contentDocument;
+    doc.designMode='on';
+    ifr.contentDocument.body.innerHTML='<p>Frame contents</p>';
+    ifr.contentWindow.focus();
+    doc.body.innerHTML='<p>This is filler text</p>';
+    var range=doc.createRange();
+    range.selectNodeContents(doc.getElementsByTagName('p')[0]);
+    doc.defaultView.getSelection().addRange(range);
+    try{
+        doc.execCommand(window.eventType, false, false);
     // result(doc.body.innerHTML=='<p>This is filler text</p>'); // sorry, pass condition here is external
-	}catch(e){
-		result('Can not test - exception from execCommand '+e+' (Note: enable clipboard access in preferences for '+location.hostname+' before running this test)');
-	}
+    }catch(e){
+        result('Can not test - exception from execCommand '+e+' (Note: enable clipboard access in preferences for '+location.hostname+' before running this test)');
+    }
 }
 
     </script>

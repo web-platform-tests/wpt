@@ -8,13 +8,13 @@
     <script>
 /** ClipboardEvent and non-ASCII data II - random Unicode symbols  */
 /* Events: copy cut */
-/* Test HTML: <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form> */
+/* Test HTML: <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>*/
 /* Targets: 'input_text' */
 /* External pass condition - clipboard data: "☺✌☑☝" */
 
 function clipboard_api_test(e){
-	e.clipboardData.setData( 'text/plain', '☺✌☑☝' );
-	e.preventDefault();
+    e.clipboardData.setData( 'text/plain', '☺✌☑☝' );
+    e.preventDefault();
 }
 
     </script>
@@ -22,7 +22,7 @@ function clipboard_api_test(e){
 <body>
 
     <p>FAILED (This TC requires JavaScript enabled)</p>
-    <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form> 
+    <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>
     <div id="log"></div>
     <script>
     var dataToPaste='';

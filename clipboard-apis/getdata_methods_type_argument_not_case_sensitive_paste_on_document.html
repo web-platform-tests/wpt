@@ -10,15 +10,15 @@
 /* Events: paste */
 /* paste data: "pasted text" */
 function clipboard_api_test(e){
-	var passed = false;
-	if(e.clipboardData && e.clipboardData.getData){
-		if( e.clipboardData.getData('text/PLAIN')==='pasted text' &&
-			e.clipboardData.getData('TEXT/PLAIN')==='pasted text' &&
-			e.clipboardData.getData('Text/Plain')==='pasted text' &&
-			e.clipboardData.getData('TeXt/PlAin')==='pasted text'
-		)passed=true;
-	}
-	return passed;
+    var passed = false;
+    if(e.clipboardData && e.clipboardData.getData){
+        if( e.clipboardData.getData('text/PLAIN')==='pasted text' &&
+            e.clipboardData.getData('TEXT/PLAIN')==='pasted text' &&
+            e.clipboardData.getData('Text/Plain')==='pasted text' &&
+            e.clipboardData.getData('TeXt/PlAin')==='pasted text'
+        )passed=true;
+    }
+    return passed;
 }
 
     </script>

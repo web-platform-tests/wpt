@@ -13,20 +13,20 @@
 /* Targets: document */
 function clipboard_api_test(e){ }
 function onTestSetupReady(){
-	try{
-		var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/plain', data:'synthetic event text' } );
-		document.getElementById('editable').dispatchEvent(evt);
-		setTimeout( function(){
-			try{
-				result(document.getElementById('editable').textContent.indexOf( 'synthetic event text' )===-1);
-			}catch(e){
-				result('Unexpected exception when looking for inserted HTML data: '+e);
-			}
-		}, 50 );
-	}catch(e){
-		result('Unexpected Exception when initiating ClipboardEvent: '+e);
-		return;
-	}
+    try{
+        var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/plain', data:'synthetic event text' } );
+        document.getElementById('editable').dispatchEvent(evt);
+        setTimeout( function(){
+            try{
+                result(document.getElementById('editable').textContent.indexOf( 'synthetic event text' )===-1);
+            }catch(e){
+                result('Unexpected exception when looking for inserted HTML data: '+e);
+            }
+        }, 50 );
+    }catch(e){
+        result('Unexpected Exception when initiating ClipboardEvent: '+e);
+        return;
+    }
 }
 
     </script>

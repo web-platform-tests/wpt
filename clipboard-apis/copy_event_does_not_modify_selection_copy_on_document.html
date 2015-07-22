@@ -11,7 +11,7 @@
 /* Test HTML: <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>*/
 /* Targets: document 'input_text' */
 function clipboard_api_test(e){
-	setTimeout(function(){
+    setTimeout(function(){
     /* what is the "most standardised" way to test this? */
     var passed = document.activeElement == document.getElementById('input_text') ;
     passed = passed && document.activeElement.selectionStart == 0 && document.activeElement.selectionEnd == document.activeElement.value.length;

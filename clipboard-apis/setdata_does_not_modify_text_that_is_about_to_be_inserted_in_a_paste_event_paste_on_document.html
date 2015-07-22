@@ -11,12 +11,12 @@
 /* paste data: "pasted text" */
 /* Test HTML: <form><input autofocus></form> */
 function clipboard_api_test(e){
-	setTimeout(function(){
-		var passed=false;
+    setTimeout(function(){
+        var passed=false;
     passed=e.target.value==='pasted text';
-		result(passed);
-	}, 10);
-	e.clipboardData.setData('text/plain', 'modified text');
+        result(passed);
+    }, 10);
+    e.clipboardData.setData('text/plain', 'modified text');
 }
 
     </script>

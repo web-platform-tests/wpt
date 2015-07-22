@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function clipboard_api_test(e){
   logEvent(e);
-	setTimeout(function(){
+    setTimeout(function(){
     var passed = eventsFired.join(',') === 'keydown,keydown,'+window.eventType+',keyup,keyup' ;
     result( passed, 'Got: '+eventsFired.join(',') );
   }, 500);

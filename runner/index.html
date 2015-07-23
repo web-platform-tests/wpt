@@ -46,6 +46,10 @@
           <label for="path" class="col-sm-3 control-label">Run tests under path</label>
           <div class="col-sm-9">
             <input value="/" id='path' class='path form-control' disabled>
+            <label>
+              <input type=checkbox id='use_regex'>
+              Use regular expression
+            </label>
           </div>
         </div>
 
@@ -98,6 +102,12 @@
     <p>
       Multiple test paths can be specified by separating them with comma or whitespace. For example,
       <code>/js, /html</code> will run the <a href="http://w3c-test.org/js/">js</a> <em>and</em> <a href="http://w3c-test.org/html/">html</a>
+      tests.
+    </p>
+    <p>
+      <a href="http://www.w3schools.com/jsref/jsref_obj_regexp.asp" target="_blank">Javascript regular expressions</a> are also supported for filtering. When the option is checked,
+      only a test path matching the regex pattern will run. For example, you can specify <code>^/js/|^/html/</code>
+      to run the <a href="http://w3c-test.org/js/">js</a> <em>and</em> <a href="http://w3c-test.org/html/">html</a>
       tests.
     </p>
     <p>

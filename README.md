@@ -76,6 +76,6 @@ reviewers to use its built-in review tools. Direct submissions to Mercurial
 should be limited to administrative or housekeeping tasks, very minor changes
 that don't require a review, or from advanced users of the system.
 
-[contributing]: https://github.com/rhauck/csswg-test/blob/master/CONTRIBUTING.md
+[contributing]: https://github.com/w3c/csswg-test/blob/master/CONTRIBUTING.md
 [github101]: http://testthewebforward.org/docs/github-101.html
 [speclinks]: http://testthewebforward.org/docs/test-templates.html#specification-links

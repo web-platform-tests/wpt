@@ -55,6 +55,16 @@ in the [Contributing Guidelines][contributing]. No test is too small or too
 simple, especially if it corresponds to something for which you've noted an
 interoperability bug in a browser.
 
+Getting Involved
+----------------
+
+If you wish to contribute actively, you're very welcome to join the
+public-css-testsuite@w3.org mailing list by
+[signing up to our mailing list](mailto:public-css-testsuite-request@w3.org?subject=subscribe).
+The mailing list is [archived][mailarchive].
+
+[mailarchive]: https://lists.w3.org/Archives/Public/public-css-testsuite/
+
 Write Access
 ------------
 

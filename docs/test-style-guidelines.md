@@ -265,7 +265,7 @@ E.g. Good:
 __If the test uses the Ahem font, make sure the line-height on block
 elements is specified; avoid `line-height: normal`__. Also, for
 absolute reliability, the difference between computed line-height
-and computed font-size should be dividable by 2.
+and computed font-size should be divisible by 2.
 
 E.g. Bad:
 
@@ -273,14 +273,14 @@ E.g. Bad:
 {font: 1.25em Ahem;} /* computed line-height value is 'normal' */
 {font: 20px Ahem;} /* computed line-height value is 'normal' */
 {font-size: 25px; line-height: 50px;} /* the difference between
-computed line-height and computed font-size is not dividable by 2. */
+computed line-height and computed font-size is not divisible by 2. */
 ```
 
 E.g. Good:
 
 ``` css
 {font-size: 25px; line-height: 51px;} /* the difference between
-computed line-height and computed font-size is dividable by 2. */
+computed line-height and computed font-size is divisible by 2. */
 ```
 
 [Example test using Ahem][ahem-example]

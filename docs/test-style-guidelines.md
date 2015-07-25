@@ -219,7 +219,7 @@ shapes. This font is especially useful for testing font and text
 properties. Without this font it would be very hard to use the
 overlapping technique with text.
 
-The font's em-square is exactly square. It's ascent and descent is
+The font's em-square is exactly square. Its ascent and descent is
 exactly the size of the em square. This means that the font's extent
 is exactly the same as its line-height, meaning that it can be
 exactly aligned with padding, borders, margins, and so forth.

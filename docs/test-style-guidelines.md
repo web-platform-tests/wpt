@@ -196,14 +196,14 @@ red to denote failure._
 
 #### Overlapped text
 
-Tests of the 'line-height', 'font-size' and similar properties can
+Tests of the `line-height`, `font-size` and similar properties can
 sometimes be devised in such a way that a failure will result in the
 text overlapping.
 
 #### The word "FAIL"
 
 Some properties lend themselves well to this kind of test, for
-example 'quotes' and 'content'. The idea is that if the word "FAIL"
+example `quotes` and `content`. The idea is that if the word "FAIL"
 appears anywhere, something must have gone wrong.
 
 [Example][fail-example]
@@ -263,7 +263,7 @@ E.g. Good:
 ```
 
 __If the test uses the Ahem font, make sure the line-height on block
-elements is specified; avoid 'line-height: normal'__. Also, for
+elements is specified; avoid `line-height: normal`__. Also, for
 absolute reliability, the difference between computed line-height
 and computed font-size should be dividable by 2.
 
@@ -347,7 +347,7 @@ In practice, the important thing to decide is when to be methodical
 and when to simply test, in an ad hoc fashion, a cross section of
 the possibilities.
 
-This example is a methodical test of the :not() pseudo-class with
+This example is a methodical test of the `:not()` pseudo-class with
 each attribute selector in turn, first for long values and then for
 short values:
 
@@ -399,7 +399,7 @@ As mentioned many times in this document, red indicates a bug, so
 nothing should ever be red in a test.
 
 There is one important exception to this rule... the test for the
-'red' value for the color properties!
+`red` value for the color properties!
 
 ### Unobvious tests
 

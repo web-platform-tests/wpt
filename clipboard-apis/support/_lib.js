@@ -81,11 +81,11 @@ function setupTest(test_obj, target, event, dataToPaste, externalPassCondition )
             t.done();
         }else if( typeof externalPassCondition==='string' ){
             logNode.data='\nThis test passes if this text is now on the system clipboard: "'+externalPassCondition+'"';
-            var btn = logNode.appendChild(document.createElement('button'));
+            var btn = logNode.parentNode.appendChild(document.createElement('button'));
             btn.onclick = function(){result(true)};
             btn.textContent = 'Passed!';
             btn.type='button';
-            btn = logNode.appendChild(document.createElement('button'));
+            btn = logNode.parentNode.appendChild(document.createElement('button'));
             btn.onclick = function(){result(false)};
             btn.textContent = 'Failed!';
             btn.type='button';

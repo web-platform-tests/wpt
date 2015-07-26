@@ -13,11 +13,9 @@ function clipboard_api_test(e){
     assert_unreached('document.execCommand() triggered from non-user-initiated script thread, events should not fire');
 }
 function onTestSetupReady(eventType){
-    try{
-        result(document.execCommand(eventType) === false);
-    }catch(e){
-        result('FAILED - exception from document.execCommand() when it was expected to return false');
-    }
+    result(function(){
+      document.execCommand(eventType) === false
+    });
 }
 
     </script>
@@ -25,15 +23,17 @@ function onTestSetupReady(eventType){
 <body>
 
     <p>FAILED (This TC requires JavaScript enabled)</p>
-    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
+    <form>
+<input id="input_text" autofocus onfocus="this.select()" value="copied text">
+</form>
     <div id="log"></div>
     <script>
     var dataToPaste='';
-    var externalPassCondition=null;
+    var extPassCond=null;
     var eventTarget=document;
     var eventType='cut';
-    window.onload=function(){
-        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-    }
+    setup(function(){
+            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
+        });
     </script>
 </body></html>

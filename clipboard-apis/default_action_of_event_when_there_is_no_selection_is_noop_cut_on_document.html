@@ -25,11 +25,11 @@ function clipboard_api_test(e){
     <div id="log"></div>
     <script>
     var dataToPaste="clipboard text" ;
-    var externalPassCondition="clipboard text" ;
+    var extPassCond="clipboard text" ;
     var eventTarget=document;
     var eventType='cut';
-    window.onload=function(){
-        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-    }
+    setup(function(){
+            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
+        });
     </script>
 </body></html>

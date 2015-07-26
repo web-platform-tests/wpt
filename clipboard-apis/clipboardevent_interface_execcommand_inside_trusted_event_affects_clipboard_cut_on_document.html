@@ -15,22 +15,17 @@ function clipboard_api_test(e){
     e.preventDefault();
 }
 function triggerTestManually(type){
-    try{
-        if(window.eventType === 'cut'){
-            document.body.contentEditable = 'true';
-        }
-        /* make a selection to check if selected text is copied */
-        var range = document.createRange();
-        range.selectNodeContents(document.body);
-        window.getSelection().addRange(range);
-        document.execCommand(type);
-        window.getSelection().removeAllRanges();
-        if(window.eventType ==='cut'){
-            document.body.contentEditable='false';
-        }
-    }catch(e){
-        result('Unexpected Exception when initiating ClipboardEvent: '+e);
-        return;
+    if(window.eventType === 'cut'){
+        document.body.contentEditable = 'true';
+    }
+    /* make a selection to check if selected text is copied */
+    var range = document.createRange();
+    range.selectNodeContents(document.body);
+    window.getSelection().addRange(range);
+    document.execCommand(type);
+    window.getSelection().removeAllRanges();
+    if(window.eventType ==='cut'){
+        document.body.contentEditable='false';
     }
 }
 
@@ -39,15 +34,17 @@ function triggerTestManually(type){
 <body>
 
     <p>FAILED (This TC requires JavaScript enabled)</p>
-    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
+    <form>
+<input id="input_text" autofocus onfocus="this.select()" value="copied text">
+</form>
     <div id="log"></div>
     <script>
     var dataToPaste="clipboard text" ;
-    var externalPassCondition="modified text" ;
+    var extPassCond="modified text" ;
     var eventTarget=document;
     var eventType='cut';
-    window.onload=function(){
-        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-    }
+    setup(function(){
+            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
+        });
     </script>
 </body></html>

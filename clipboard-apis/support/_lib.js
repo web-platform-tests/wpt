@@ -1,4 +1,4 @@
-t = async_test()
+var t = async_test()
 function setupTest( target, event, dataToPaste, externalPassCondition ){
     var logNode=document.getElementsByTagName('p')[0].firstChild;
   logNode.data='';
@@ -34,12 +34,12 @@ function setupTest( target, event, dataToPaste, externalPassCondition ){
         /* Tests that require user interaction define a "triggerTestManually()" function.
         These are for example tests that rely on trusted events. */
         logNode.parentNode.appendChild(document.createTextNode('  '));
-        var btn=logNode.parentNode.appendChild(document.createElement('button'))
-        btn.type='button';
-        btn.onclick=function(){
+        var btn = logNode.parentNode.appendChild(document.createElement('button'))
+        btn.type = 'button';
+        btn.onclick = t.func_step(function(){
             triggerTestManually(event);
             btn.parentNode.removeChild(btn);
-        }
+        });
         btn.appendChild(document.createTextNode(' Click here to run test: '));
     }else{
         logNode.data+='Test in progress, waiting for '+event+' event';
@@ -72,7 +72,11 @@ function result(testResult, msg){
     if( testResult === true || testResult === false ){
         t.step(function(){assert_true(testResult)});
         t.done();
-        logNode.data= ''; // testResult ? 'PASSED' : 'FAILED';
+        logNode.data= '';
+    }else if( typeof testResult === 'function' ){
+        t.step(testResult);
+        t.done();
+        logNode.data= '';
     }else if( typeof testResult ==='string' ){
         logNode.data=testResult;
     }else if( typeof externalPassCondition==='string' ){

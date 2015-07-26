@@ -13,16 +13,11 @@
 /* Targets: document */
 function clipboard_api_test(e){ }
 function onTestSetupReady(){
-    try{
-        var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/plain', data:'synthetic event text' } );
-        document.getElementsByTagName('input')[0].dispatchEvent(evt);
-        setTimeout( function(){
-            result(document.getElementsByTagName('input')[0].value.indexOf( 'synthetic event text' )===-1);
-        }, 50 );
-    }catch(e){
-        result('Unexpected Exception when initiating ClipboardEvent: '+e);
-        return;
-    }
+    var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/plain', data:'synthetic event text' } );
+    document.getElementsByTagName('input')[0].dispatchEvent(evt);
+    setTimeout( function(){
+        result(document.getElementsByTagName('input')[0].value.indexOf( 'synthetic event text' )===-1);
+    }, 50 );
 }
 
     </script>
@@ -34,11 +29,11 @@ function onTestSetupReady(){
     <div id="log"></div>
     <script>
     var dataToPaste="clipboard text" ;
-    var externalPassCondition=null;
+    var extPassCond=null;
     var eventTarget=document;
     var eventType='paste';
-    window.onload=function(){
-        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-    }
+    setup(function(){
+            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
+        });
     </script>
 </body></html>

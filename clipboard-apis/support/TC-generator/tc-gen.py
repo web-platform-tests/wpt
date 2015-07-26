@@ -33,9 +33,9 @@ template = u"""<!DOCTYPE html>
     var extPassCond={external_pass_condition};
     var eventTarget={event_target};
     var eventType='{event_type}';
-    window.onload=function(){{
-        setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-    }}
+    setup(function(){{
+            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
+        }});
     </script>
 </body></html>
 """

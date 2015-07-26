@@ -14,23 +14,18 @@ function clipboard_api_test(e){
 
 }
 function onTestSetupReady(type){
-    try{
-        var evt = new ClipboardEvent(window.eventType, {bubbles:true, cancelable:true, dataType: 'text/plain', data:'synthetic event text'});
-        if(type === 'cut'){
-            document.body.contentEditable='true';
-        }
-        /* make a selection to check if selected text is copied by the synthetic event.. */
-        var range = document.createRange();
-        range.selectNodeContents(document.body);
-        window.getSelection().addRange(range);
-        document.dispatchEvent(evt);
-        window.getSelection().removeAllRanges();
-        if(type === 'cut'){
-            document.body.contentEditable = 'false';
-        }
-    }catch(e){
-        result('Unexpected Exception when initiating ClipboardEvent: '+e);
-        return;
+    var evt = new ClipboardEvent(window.eventType, {bubbles:true, cancelable:true, dataType: 'text/plain', data:'synthetic event text'});
+    if(type === 'cut'){
+        document.body.contentEditable='true';
+    }
+    /* make a selection to check if selected text is copied by the synthetic event.. */
+    var range = document.createRange();
+    range.selectNodeContents(document.body);
+    window.getSelection().addRange(range);
+    document.dispatchEvent(evt);
+    window.getSelection().removeAllRanges();
+    if(type === 'cut'){
+        document.body.contentEditable = 'false';
     }
 }
 
@@ -39,15 +34,17 @@ function onTestSetupReady(type){
 <body>
 
     <p>FAILED (This TC requires JavaScript enabled)</p>
-    <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>
+    <form>
+<input id="input_text" autofocus onfocus="this.select()" value="copied text">
+</form>
     <div id="log"></div>
     <script>
     var dataToPaste="clipboard text" ;
-    var externalPassCondition="clipboard text" ;
+    var extPassCond="clipboard text" ;
     var eventTarget=document;
     var eventType='cut';
-    window.onload=function(){
-        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-    }
+    setup(function(){
+            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
+        });
     </script>
 </body></html>

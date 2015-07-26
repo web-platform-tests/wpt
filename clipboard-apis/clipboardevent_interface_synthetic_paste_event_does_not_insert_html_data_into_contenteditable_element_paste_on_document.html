@@ -13,20 +13,15 @@
 /* Targets: document */
 function clipboard_api_test(e){ }
 function onTestSetupReady(){
-    try{
-        var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/html', data:'<em>synthetic event text</em>' } );
-        document.getElementById('editable').dispatchEvent(evt);
-        setTimeout( function(){
-            try{
-                result(document.getElementById('editable').getElementsByTagName('em').length == 0);
-            }catch(e){
-                result('Unexpected exception when looking for inserted HTML data: '+e);
-            }
-        }, 50 );
-    }catch(e){
-        result('Unexpected Exception when initiating ClipboardEvent: '+e);
-        return;
-    }
+    var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/html', data:'<em>synthetic event text</em>' } );
+    document.getElementById('editable').dispatchEvent(evt);
+    setTimeout( function(){
+        try{
+            result(document.getElementById('editable').getElementsByTagName('em').length == 0);
+        }catch(e){
+            result('Unexpected exception when looking for inserted HTML data: '+e);
+        }
+    }, 50 );
 }
 
     </script>
@@ -38,11 +33,11 @@ function onTestSetupReady(){
     <div id="log"></div>
     <script>
     var dataToPaste="clipboard text" ;
-    var externalPassCondition=null;
+    var extPassCond=null;
     var eventTarget=document;
     var eventType='paste';
-    window.onload=function(){
-        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-    }
+    setup(function(){
+            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
+        });
     </script>
 </body></html>

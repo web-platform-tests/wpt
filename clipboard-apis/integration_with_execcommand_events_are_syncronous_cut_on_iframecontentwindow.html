@@ -51,11 +51,11 @@ function triggerTestManually(eventType){
     <div id="log"></div>
     <script>
     var dataToPaste='';
-    var externalPassCondition=null;
+    var extPassCond=null;
     var eventTarget='iframe.contentWindow';
     var eventType='cut';
-    window.onload=function(){
-        setupTest( eventTarget, eventType, dataToPaste, externalPassCondition );
-    }
+    setup(function(){
+            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
+        });
     </script>
 </body></html>

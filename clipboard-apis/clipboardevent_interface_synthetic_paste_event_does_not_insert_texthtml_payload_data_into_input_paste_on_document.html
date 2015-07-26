@@ -13,7 +13,8 @@
 /* Targets: document */
 function clipboard_api_test(e){ }
 function onTestSetupReady(type){
-    var evt = new ClipboardEvent(type, { bubbles:true, cancellable: true, dataType: 'text/html', data:'<em>synthetic event text</em>' });
+    var evt = new ClipboardEvent(type);
+    evt.clipboardData.items.add('<em>synthetic event text</em>', 'text/html');
     document.getElementsByTagName('input')[0].dispatchEvent(evt);
     setTimeout(function(){
         result(document.getElementsByTagName('input')[0].value.indexOf('synthetic event text') === -1);

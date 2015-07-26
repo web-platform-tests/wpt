@@ -12,7 +12,8 @@
 /* Targets: 'iframe.contentWindow' */
 /* This assertation is based on Gecko's implementation. */
 function clipboard_api_test(e){
-    return window.afterExecCommand===false; /* the event is syncronous, must not run after the execCommand call is finished */
+    /* the event is syncronous, must not run after the execCommand call is finished */
+    assert_false(window.afterExecCommand);
 }
 function onTestSetupReady( eventType ){
   document.getElementsByTagName('p')[0].firstChild.data='FAILED'; // if event doesn't fire, this test failed..
@@ -29,17 +30,14 @@ function onTestSetupReady( eventType ){
     }
 }
 function triggerTestManually(eventType){
-    try{
-        var ifr=document.getElementById('iframe');
-        window.afterExecCommand=false;
-        var execSucceeded = ifr.contentDocument.execCommand(eventType, false, false);
-        window.afterExecCommand=true;
-        if(!execSucceeded){
-            result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard access in preferences for '+location.hostname+' before running this test)');
-        }
-    }catch(e){
-        result('Can not test - exception from execCommand '+e+' (Note: tester may have to enable clipboard access in preferences for '+location.hostname+' before running this test)');
-    }
+    var ifr=document.getElementById('iframe');
+    window.afterExecCommand=false;
+    /* This triggers the event listener, which asserts false */
+    var execSucceeded = ifr.contentDocument.execCommand(eventType, false, false);
+    window.afterExecCommand=true;
+    result(function(){
+      assert_true(execSucceeded, 'document.execCommand() should succeed and return true');
+    });
 }
 
     </script>

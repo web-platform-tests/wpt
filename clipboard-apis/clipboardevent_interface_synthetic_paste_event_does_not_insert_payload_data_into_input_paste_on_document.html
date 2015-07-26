@@ -29,12 +29,15 @@ function onTestSetupReady(){
     <form><input autofocus></form>
     <div id="log"></div>
     <script>
-    var dataToPaste="clipboard text" ;
-    var extPassCond=null;
-    var eventTarget=document;
-    var eventType='paste';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste="clipboard text" ;
+        var extPassCond=null;
+        var eventTarget=document;
+        var eventType='paste';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

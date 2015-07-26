@@ -13,20 +13,21 @@
 function clipboard_api_test(e){
   /* The result must be checked externally - i.e. what's on the clipboard.. */
 }
-function onTestSetupReady(type){
-    var evt = new ClipboardEvent(window.eventType);
+function onTestSetupReady(eventType){
+    var evt = new ClipboardEvent(eventType);
     evt.clipboardData.items.add('synthetic event text', 'text/plain');
     evt.preventDefault();
-    if(type === 'cut'){
+    if(eventType === 'cut'){
         document.body.contentEditable='true';
     }
     /* make a selection to check if selected text is copied by the synthetic event.. */
     var range = document.createRange();
     range.selectNodeContents(document.body);
+    window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
     document.dispatchEvent(evt);
     window.getSelection().removeAllRanges();
-    if(type === 'cut'){
+    if(eventType === 'cut'){
         document.body.contentEditable = 'false';
     }
 }
@@ -41,12 +42,15 @@ function onTestSetupReady(type){
 </form>
     <div id="log"></div>
     <script>
-    var dataToPaste="clipboard text" ;
-    var extPassCond="clipboard text" ;
-    var eventTarget=document;
-    var eventType='copy';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste="clipboard text" ;
+        var extPassCond="clipboard text" ;
+        var eventTarget=document;
+        var eventType='copy';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

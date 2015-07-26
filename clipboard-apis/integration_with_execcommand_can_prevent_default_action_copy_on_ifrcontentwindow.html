@@ -17,7 +17,7 @@ function clipboard_api_test(e){
     e.preventDefault();
 }
 
-function triggerTestManually(){
+function triggerTestManually(eventType){
   document.getElementsByTagName('p')[0].firstChild.data='FAILED'; // if event doesn't fire, this test failed..
   var ifr=document.getElementById('ifr');
   var doc=ifr.contentDocument;
@@ -28,7 +28,7 @@ function triggerTestManually(){
   range.selectNodeContents(doc.getElementsByTagName('p')[0]);
   doc.defaultView.getSelection().removeAllRanges();
   doc.defaultView.getSelection().addRange(range);
-  var returnValue = doc.execCommand(window.eventType, false, false);
+  var returnValue = doc.execCommand(eventType, false, false);
   /* Main pass condition here is clipboard contents - but we can add a couple of assertations here */
   assert_false(returnValue, 'execCommand() returns false when event default action is prevented');
   /* This assertation is especially relevant for 'cut' */
@@ -43,12 +43,15 @@ function triggerTestManually(){
     <iframe id="ifr"></iframe>
     <div id="log"></div>
     <script>
-    var dataToPaste="clipboard text" ;
-    var extPassCond="clipboard text" ;
-    var eventTarget='ifr.contentWindow';
-    var eventType='copy';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste="clipboard text" ;
+        var extPassCond="clipboard text" ;
+        var eventTarget='ifr.contentWindow';
+        var eventType='copy';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

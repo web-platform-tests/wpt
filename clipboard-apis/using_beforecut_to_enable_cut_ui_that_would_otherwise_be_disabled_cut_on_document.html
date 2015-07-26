@@ -23,12 +23,15 @@ function clipboard_api_test(e){
     <p>The "cut" menu UI state is enabled on this page even when there is no editable selection.</p>
     <div id="log"></div>
     <script>
-    var dataToPaste="pasted text" ;
-    var extPassCond=null;
-    var eventTarget=document;
-    var eventType='cut';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste="pasted text" ;
+        var extPassCond=null;
+        var eventTarget=document;
+        var eventType='cut';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

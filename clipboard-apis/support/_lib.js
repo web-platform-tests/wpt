@@ -1,5 +1,4 @@
-var t = async_test()
-function setupTest( target, event, dataToPaste, externalPassCondition ){
+function setupTest(test_obj, target, event, dataToPaste, externalPassCondition ){
     var logNode=document.getElementsByTagName('p')[0].firstChild;
   logNode.data='';
     if( typeof target==='string' ){
@@ -36,7 +35,7 @@ function setupTest( target, event, dataToPaste, externalPassCondition ){
         logNode.parentNode.appendChild(document.createTextNode('  '));
         var btn = logNode.parentNode.appendChild(document.createElement('button'))
         btn.type = 'button';
-        btn.onclick = t.func_step(function(){
+        btn.onclick = test_obj.func_step(function(){
             triggerTestManually(event);
             btn.parentNode.removeChild(btn);
         });
@@ -53,7 +52,7 @@ function setupTest( target, event, dataToPaste, externalPassCondition ){
     if(!e.target)e.target=e.srcElement;
     if(typeof window.clipboardData != 'undefined' && typeof e.clipboardData=='undefined' )e.clipboardData=window.clipboardData;
         try{
-            var testResult=clipboard_api_test(e);
+            var testResult=clipboard_api_test(e, test_obj, event, dataToPaste, externalPassCondition);
             result(testResult);
         }catch(e){
             result('exception: '+e);
@@ -65,33 +64,36 @@ function setupTest( target, event, dataToPaste, externalPassCondition ){
       if(inp.hasAttribute('autofocus'))inp.focus();
     }
   }
-}
 
-function result(testResult, msg){
-    var logNode=document.getElementsByTagName('p')[0].firstChild;
-    if( testResult === true || testResult === false ){
-        t.step(function(){assert_true(testResult)});
-        t.done();
-        logNode.data= '';
-    }else if( typeof testResult === 'function' ){
-        t.step(testResult);
-        t.done();
-        logNode.data= '';
-    }else if( typeof testResult ==='string' ){
-        logNode.data=testResult;
-    }else if( typeof externalPassCondition==='string' ){
-        logNode.data='\nThis test passes if this text is now on the system clipboard: "'+externalPassCondition+'"';
-        var btn = document.getElementById('log').appendChild(document.createElement('button'));
-        btn.onclick = function(){result(true)};
-        btn.textContent = 'Passed!';
-        btn.type='button';
-        btn = document.getElementById('log').appendChild(document.createElement('button'));
-        btn.onclick = function(){result(false)};
-        btn.textContent = 'Failed!';
-        btn.type='button';
+    function result(testResult, msg){
+        var logNode=document.getElementsByTagName('p')[0].firstChild;
+        if( testResult === true || testResult === false ){
+            test_obj.step(function(){assert_true(testResult)});
+            test_obj.done();
+            logNode.data= '';
+        }else if( typeof testResult === 'function' ){
+            test_obj.step(testResult);
+            test_obj.done();
+            logNode.data= '';
+        }else if( typeof testResult ==='string' ){
+            logNode.data=testResult;
+            test_obj.assert_equals(testResult, '');
+            t.done();
+        }else if( typeof externalPassCondition==='string' ){
+            logNode.data='\nThis test passes if this text is now on the system clipboard: "'+externalPassCondition+'"';
+            var btn = document.getElementById('log').appendChild(document.createElement('button'));
+            btn.onclick = function(){result(true)};
+            btn.textContent = 'Passed!';
+            btn.type='button';
+            btn = document.getElementById('log').appendChild(document.createElement('button'));
+            btn.onclick = function(){result(false)};
+            btn.textContent = 'Failed!';
+            btn.type='button';
+        }
+      if( msg )logNode.data+='\n'+msg;
+
+        /* another return value - or no return - from test() indicates that it is asyncronous and will call testResult() from a timeout or something */
+
     }
-  if( msg )logNode.data+='\n'+msg;
-
-    /* another return value - or no return - from test() indicates that it is asyncronous and will call testResult() from a timeout or something */
-
+    window.result = result;
 }

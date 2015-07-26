@@ -25,12 +25,15 @@ function clipboard_api_test(e){
     <input id="input_text" onfocus="this.select()" autofocus value="input 1"><input id="second" onfocus="this.select()" value="input 2">
     <div id="log"></div>
     <script>
-    var dataToPaste='';
-    var extPassCond="input 2" ;
-    var eventTarget='input_text';
-    var eventType='cut';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste='';
+        var extPassCond="input 2" ;
+        var eventTarget='input_text';
+        var eventType='cut';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

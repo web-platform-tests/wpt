@@ -19,10 +19,10 @@ document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('input_text').addEventListener( 'keypress', logEvent, false );
 },false);
 
-function clipboard_api_test(e){
+function clipboard_api_test(e, test_obj, eventType){
   logEvent(e);
     setTimeout(function(){
-    var passed = eventsFired.join(',') === 'keydown,keydown,'+window.eventType+',keyup,keyup' ;
+    var passed = eventsFired.join(',') === 'keydown,keydown,'+eventType+',keyup,keyup' ;
     result( passed, 'Got: '+eventsFired.join(',') );
   }, 500);
 }
@@ -35,12 +35,15 @@ function clipboard_api_test(e){
     <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form><p>Note: please trigger event from keyboard (ctrl+x/c/v) for this test</p>
     <div id="log"></div>
     <script>
-    var dataToPaste='';
-    var extPassCond=null;
-    var eventTarget='input_text';
-    var eventType='copy';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste='';
+        var extPassCond=null;
+        var eventTarget='input_text';
+        var eventType='copy';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

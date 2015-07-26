@@ -23,12 +23,15 @@ function clipboard_api_test(e){
     <svg xmlns="http://www.w3.org/2000/svg"><text focusable="true" id="svg_text" x="0" y="15" fill="black">SVG text</text></svg><script>document.getElementsByTagName('svg')[0].setFocus(document.getElementById('svg_text'));</script>
     <div id="log"></div>
     <script>
-    var dataToPaste='';
-    var extPassCond=null;
-    var eventTarget=document;
-    var eventType='paste';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste='';
+        var extPassCond=null;
+        var eventTarget=document;
+        var eventType='paste';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

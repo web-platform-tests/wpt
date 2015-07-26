@@ -10,8 +10,8 @@
 /* Events: copy cut */
 /* Test HTML: <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>*/
 /* Targets: document 'input_text' */
-function clipboard_api_test(e){
-    var passed = e.type === window.eventType;
+function clipboard_api_test(e, test_obj, eventType){
+    var passed = e.type === eventType;
     passed = passed && e.target.id==='input_text';
     return passed;
 }
@@ -24,12 +24,15 @@ function clipboard_api_test(e){
     <form><textarea id="input_text" autofocus onfocus="this.select()">copied text</textarea></form>
     <div id="log"></div>
     <script>
-    var dataToPaste='';
-    var extPassCond=null;
-    var eventTarget=document;
-    var eventType='copy';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste='';
+        var extPassCond=null;
+        var eventTarget=document;
+        var eventType='copy';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

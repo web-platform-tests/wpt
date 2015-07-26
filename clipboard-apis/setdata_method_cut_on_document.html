@@ -32,12 +32,15 @@ document.onbeforecut = function(){return false;}
 </form>
     <div id="log"></div>
     <script>
-    var dataToPaste="pasted text" ;
-    var extPassCond="modified text" ;
-    var eventTarget=document;
-    var eventType='cut';
-    setup(function(){
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        });
+    (function(){
+        var t = async_test()
+        var dataToPaste="pasted text" ;
+        var extPassCond="modified text" ;
+        var eventTarget=document;
+        var eventType='cut';
+        setup(function(){
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            });
+    })();
     </script>
 </body></html>

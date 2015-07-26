@@ -11,10 +11,12 @@
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "clipboard text" */
 function clipboard_api_test(e){
-
+  /* The result must be checked externally - i.e. what's on the clipboard.. */
 }
 function onTestSetupReady(type){
-    var evt = new ClipboardEvent(window.eventType, {bubbles:true, cancelable:true, dataType: 'text/plain', data:'synthetic event text'});
+    var evt = new ClipboardEvent(window.eventType);
+    evt.clipboardData.items.add('synthetic event text', 'text/plain');
+    evt.preventDefault();
     if(type === 'cut'){
         document.body.contentEditable='true';
     }

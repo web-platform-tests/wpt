@@ -11,9 +11,10 @@
 /* paste data: "clipboard text" */
 /* Test HTML: <div id="editable" contentEditable><p>Editable element</p></div><script>document.getElementById('editable').focus();<\/script>*/
 /* Targets: document */
-function clipboard_api_test(e){ }
+function clipboard_api_test(e){}
 function onTestSetupReady(){
-    var evt=new ClipboardEvent( 'paste', { bubbles:true, cancellable: true, dataType: 'text/html', data:'<em>synthetic event text</em>' } );
+    var evt = new ClipboardEvent('paste');
+    evt.clipboardData.items.add('<em>synthetic event text</em>', 'text/html');
     document.getElementById('editable').dispatchEvent(evt);
     setTimeout( function(){
         try{

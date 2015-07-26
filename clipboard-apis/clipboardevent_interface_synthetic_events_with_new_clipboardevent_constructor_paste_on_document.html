@@ -14,7 +14,8 @@ function clipboard_api_test(e){
 }
 function onTestSetupReady(){
     try{
-        var evt=new ClipboardEvent('paste', {dataType: 'text/plain', data: 'synthetic event text'});
+        var evt = new ClipboardEvent('paste')
+        evt.clipboardData.items.add('synthetic event text', 'text/plain');
         document.dispatchEvent(evt);
     }catch(e){
         result('Unexpected Exception when initiating ClipboardEvent: '+e);

@@ -10,14 +10,15 @@
 /* Events: copy */
 /* Test HTML: <form><input id="input_text" autofocus onfocus="this.select()" value="copied text"></form>*/
 /* Targets: document 'input_text' */
-function clipboard_api_test(e){
+function clipboard_api_test(e, test_obj){
   var otherEventsFired=[];
   var events=[ 'input', 'textInput', 'change' ];
   for( var i=0,ev; ev=events[i];i++ )e.currentTarget.addEventListener(ev, function(e){ otherEventsFired.push(e.type); }, false);
-    setTimeout(function(){
-    var passed = otherEventsFired.length===0;
-    result(passed);
-  }, 50);
+    test_obj.step_timeout(function(){
+      result(function(){
+        assert_equals(otherEventsFired.length, 0);
+      });
+    }, 50);
   e.target.blur(); // might provoke a change event, but should not
 }
 

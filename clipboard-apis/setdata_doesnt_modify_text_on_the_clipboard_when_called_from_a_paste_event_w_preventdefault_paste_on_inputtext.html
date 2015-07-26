@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
-    <title>Clipboard API - getData() method when called outside event handler should return an empty string  - paste on document</title>
+    <title>Clipboard API - setData() doesn't modify text on the clipboard when called from a paste event - w preventDefault()  - paste on 'input_text'</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/_lib.js"></script>
     <script>
-/** getData() method when called outside event handler should return an empty string  */
+/** setData() doesn't modify text on the clipboard when called from a paste event - w preventDefault()  */
 /* Events: paste */
 /* paste data: "pasted text" */
-function clipboard_api_test(e, test_obj){
-    var cbData=e.clipboardData;
-    test_obj.step_timeout( function(){
-        result(function(){
-          assert_equals(cbData.getData('text/plain', ''));
-        });
-    }, 1 );
+/* Test HTML: <form><input autofocus id="input_text"></form> */
+/* External pass condition - clipboard data: "pasted text" */
+/* Targets:  'input_text' */
+
+function clipboard_api_test(e){
+  e.clipboardData.setData('text/plain', 'modified text');
+  e.preventDefault();
 }
 
     </script>
@@ -23,16 +23,14 @@ function clipboard_api_test(e, test_obj){
 <body>
 
     <p>FAILED (This TC requires JavaScript enabled)</p>
-    <form>
-<input id="input_text" autofocus onfocus="this.select()" value="copied text">
-</form>
+    <form><input autofocus id="input_text"></form>
     <div id="log"></div>
     <script>
     (function(){
         var t = async_test()
         var dataToPaste="pasted text" ;
-        var extPassCond=null;
-        var eventTarget=document;
+        var extPassCond="pasted text" ;
+        var eventTarget='input_text';
         var eventType='paste';
         setup(function(){
                 setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );

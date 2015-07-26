@@ -16,7 +16,7 @@ function clipboard_api_test(e){
         passed=false;
     }catch(e){}
     try{
-        e.clipboardData.getData( 'text/plain', 'wrong number of arguments' );
+        e.clipboardData.getData('text/plain', 'wrong number of arguments');
         passed=false;
     }catch(e){}
     return passed;

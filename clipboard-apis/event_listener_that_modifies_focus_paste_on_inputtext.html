@@ -12,12 +12,13 @@
 /* Targets: 'input_text' */
 /* paste data: "clipboard text" */
 
-function clipboard_api_test(e){
-    document.getElementById('second').focus();
-  setTimeout( function(){
-    var passed = document.getElementById('second').value==='clipboard text';
-    result( passed );
-  }, 20 );
+function clipboard_api_test(e, test_obj){
+  document.getElementById('second').focus();
+  test_obj.step_timeout(function(){
+    result(function(){
+      assert_equals(document.getElementById('second').value, 'clipboard text');
+    });
+  }, 20);
 }
 
     </script>

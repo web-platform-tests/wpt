@@ -11,9 +11,9 @@
 /* Test HTML: <form><input id="input_text" onfocus="this.selectionEnd=this.selectionStart" autofocus value="copied text"></form>*/
 /* Targets: document */
 /* paste data: "clipboard text" */
-function clipboard_api_test(e){
+function clipboard_api_test(e, test_obj){
     var elm=e.target;
-  setTimeout(
+  test_obj.step_timeout(
         function(){
             result(elm.value===elm.defaultValue);
         },

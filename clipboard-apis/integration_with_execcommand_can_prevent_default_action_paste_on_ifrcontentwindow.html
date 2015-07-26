@@ -15,19 +15,15 @@ function clipboard_api_test(e){
     window.eventFired=true;
     e.preventDefault();
 }
-function triggerTestManually(eventType){
+function triggerTestManually(eventType, test_obj){
     var ifr=document.getElementById('ifr');
     ifr.contentDocument.designMode='on';
     ifr.contentWindow.focus();
-    try{
-        ifr.contentDocument.execCommand(eventType, false, false);
-        setTimeout(function(){
-            var passed= window.eventFired === true && ifr.contentDocument.body.innerHTML.indexOf('clipboard text')==-1;
-            result(passed);
-        }, 10);
-    }catch(e){
-        result('Can not test - exception from execCommand '+e+' (Note: enable clipboard access in preferences for '+location.hostname+' before running this test)');
-    }
+    ifr.contentDocument.execCommand(eventType, false, false);
+    test_obj.step_timeout(function(){
+        var passed= window.eventFired === true && ifr.contentDocument.body.innerHTML.indexOf('clipboard text')==-1;
+        result(passed);
+    }, 10);
 }
 
     </script>

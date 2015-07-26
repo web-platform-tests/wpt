@@ -20,16 +20,17 @@ document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('input_text').addEventListener( 'textInput', logEvent, false );
 },false);
 
-function clipboard_api_test(e){
+function clipboard_api_test(e, test_obj){
   logEvent(e);
-  setTimeout(function(){
+  test_obj.step_timeout(function(){
     e.target.blur(); // causes change event
     e.target.form.checkValidity(); // causes invalid event
   }, 10);
-    setTimeout(function(){
-    var evString = eventsFired.join(',')
-    var passed =  evString === 'cut,cut handler done,input,change,invalid'; // Issue: should textInput fire? Chrome doesn't but I don't know if it's on purpose
-    result( passed, 'Got: '+evString );
+  test_obj.step_timeout(function(){
+    var expected = ['cut','cut handler done','input','change','invalid']; // Issue: should textInput fire? Chrome doesn't but I don't know if it's on purpose
+    result(function(){
+      assert_array_equals(eventsFired, expected);
+    });
   }, 500);
   logEvent( {type: e.type+' handler done'} );
 }

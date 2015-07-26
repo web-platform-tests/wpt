@@ -12,16 +12,14 @@
 /* Test HTML: <div id="editable" contentEditable><p>Editable element</p></div><script>document.getElementById('editable').focus();<\/script>*/
 /* Targets: document */
 function clipboard_api_test(e){}
-function onTestSetupReady(){
-    var evt = new ClipboardEvent('paste');
+function onTestSetupReady(type, test_obj){
+    var evt = new ClipboardEvent(type);
     evt.clipboardData.items.add('synthetic event text', 'text/plain');
     document.getElementById('editable').dispatchEvent(evt);
-    setTimeout( function(){
-        try{
-            result(document.getElementById('editable').textContent.indexOf( 'synthetic event text' )===-1);
-        }catch(e){
-            result('Unexpected exception when looking for inserted HTML data: '+e);
-        }
+    test_obj.step_timeout( function(){
+      result(function(){
+        assert_equals(document.getElementById('editable').textContent.indexOf( 'synthetic event text' ), -1);
+      });
     }, 50 );
 }
 

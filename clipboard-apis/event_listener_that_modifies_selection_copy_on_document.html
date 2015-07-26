@@ -13,7 +13,7 @@
 /* External pass condition - clipboard data: "This is demo text" */
 
 function clipboard_api_test(e){
-    var range=document.createRange();
+  var range=document.createRange();
   range.selectNodeContents(document.getElementsByTagName('div')[0]);
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);

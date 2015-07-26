@@ -10,11 +10,11 @@
 /* Events: copy cut paste */
 /* paste data: "clipboard text" */
 /* External pass condition - clipboard data: "clipboard text" */
-function clipboard_api_test(e){
+function clipboard_api_test(e, test_obj){
     var cbData=e.clipboardData;
-    setTimeout( function(){
+    test_obj.step_timeout(function(){
         cbData.clearData();
-    }, 1 );
+    }, 1);
     e.preventDefault();
 }
 

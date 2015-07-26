@@ -16,8 +16,10 @@ function onTestSetupReady(type){
     var evt = new ClipboardEvent(type);
     evt.clipboardData.items.add('<em>synthetic event text</em>', 'text/html');
     document.getElementsByTagName('input')[0].dispatchEvent(evt);
-    setTimeout(function(){
-        result(document.getElementsByTagName('input')[0].value.indexOf('synthetic event text') === -1);
+    test_obj.step_timeout(function(){
+      result(function(){
+        assert_equals(document.getElementsByTagName('input')[0].value.indexOf( 'synthetic event text' ), -1);
+      });
     }, 50);
 }
 

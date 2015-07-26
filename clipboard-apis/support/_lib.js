@@ -36,7 +36,7 @@ function setupTest(test_obj, target, event, dataToPaste, externalPassCondition )
         var btn = logNode.parentNode.appendChild(document.createElement('button'))
         btn.type = 'button';
         btn.onclick = test_obj.func_step(function(){
-            triggerTestManually(event);
+            triggerTestManually(event, test_obj);
             btn.parentNode.removeChild(btn);
         });
         btn.appendChild(document.createTextNode(' Click here to run test: '));
@@ -44,7 +44,7 @@ function setupTest(test_obj, target, event, dataToPaste, externalPassCondition )
         logNode.data+='Test in progress, waiting for '+event+' event';
     }
     if(typeof onTestSetupReady==='function'){
-        onTestSetupReady(event);
+        onTestSetupReady(event, test_obj);
     }
 
     function intermediateListener(e){
@@ -53,7 +53,7 @@ function setupTest(test_obj, target, event, dataToPaste, externalPassCondition )
     if(typeof window.clipboardData != 'undefined' && typeof e.clipboardData=='undefined' )e.clipboardData=window.clipboardData;
         try{
             var testResult=clipboard_api_test(e, test_obj, event, dataToPaste, externalPassCondition);
-            result(testResult);
+            result(testResult, '', externalPassCondition);
         }catch(e){
             result('exception: '+e);
         }
@@ -81,11 +81,11 @@ function setupTest(test_obj, target, event, dataToPaste, externalPassCondition )
             t.done();
         }else if( typeof externalPassCondition==='string' ){
             logNode.data='\nThis test passes if this text is now on the system clipboard: "'+externalPassCondition+'"';
-            var btn = document.getElementById('log').appendChild(document.createElement('button'));
+            var btn = logNode.appendChild(document.createElement('button'));
             btn.onclick = function(){result(true)};
             btn.textContent = 'Passed!';
             btn.type='button';
-            btn = document.getElementById('log').appendChild(document.createElement('button'));
+            btn = logNode.appendChild(document.createElement('button'));
             btn.onclick = function(){result(false)};
             btn.textContent = 'Failed!';
             btn.type='button';

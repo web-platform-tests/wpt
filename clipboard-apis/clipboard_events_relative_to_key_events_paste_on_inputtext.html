@@ -21,9 +21,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function clipboard_api_test(e, test_obj, eventType){
   logEvent(e);
-    setTimeout(function(){
-    var passed = eventsFired.join(',') === 'keydown,keydown,'+eventType+',keyup,keyup' ;
-    result( passed, 'Got: '+eventsFired.join(',') );
+  test_obj.step_timeout(function(){
+    result(function(){
+      assert_array_equals(eventsFired, ['keydown','keydown', eventType, 'keyup','keyup'], 'The right events fired in the expected order')
+    });
   }, 500);
 }
 

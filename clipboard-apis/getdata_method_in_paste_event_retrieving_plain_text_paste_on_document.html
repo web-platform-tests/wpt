@@ -10,11 +10,7 @@
 /* Events: paste */
 /* paste data: "pasted text" */
 function clipboard_api_test(e){
-    var passed = false;
-    if(e.clipboardData && e.clipboardData.getData){
-        if(e.clipboardData.getData('text/plain')==='pasted text')passed=true;
-    }
-    return passed;
+    return e.clipboardData.getData('text/plain')==='pasted text';
 }
 
     </script>

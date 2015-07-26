@@ -11,10 +11,12 @@
 /* Test HTML: <form><input id="input_text" autofocus onfocus="this.select()" value="original text"></form>*/
 /* Targets: document 'input_text' */
 /* paste data: "pasted text" */
-function clipboard_api_test(e){
+function clipboard_api_test(e, test_obj){
     e.preventDefault();
     var theTarget=e.target;
-    setTimeout( function(){ var passed = theTarget.value === 'original text'; result(passed);   }, 10 );
+    test_obj.step_timeout(function(){
+      result(function(){assert_equals(theTarget.value, 'original text');});
+    }, 10 );
 }
 
     </script>

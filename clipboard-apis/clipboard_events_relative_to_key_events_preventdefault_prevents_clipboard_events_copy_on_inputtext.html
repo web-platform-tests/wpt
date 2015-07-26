@@ -26,14 +26,19 @@ document.addEventListener('DOMContentLoaded', function(){
 },false);
 document.onkeyup = function(){
     if(timeout)clearTimeout(timeout);
-    setTimeout(test, 500);
+    setTimeout(
+      function(){
+        result(function(){
+          assert_array_equals(eventsFired, ['keydown','keydown','keyup','keyup']);
+        });
+      }
+    , 500);
 }
-function clipboard_api_test(e){
-  if(e)logEvent(e);
-    setTimeout(function(){
-    var passed = eventsFired.join(',') === 'keydown,keydown,keyup,keyup' ;
-    result( passed, 'Got: '+eventsFired.join(',') );
-  }, 500);
+function clipboard_api_test(e, test_obj){
+  if(timeout)clearTimeout(timeout);
+  result(function(){
+      assert_unreached();
+  });
 }
 
     </script>

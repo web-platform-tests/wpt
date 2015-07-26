@@ -21,13 +21,15 @@ document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('input_text').addEventListener( 'textInput', logEvent, false );
 },false);
 
-function clipboard_api_test(e){
+function clipboard_api_test(e, test_obj){
   logEvent(e);
-  setTimeout(function(){
+  test_obj.step_timeout(function(){
     e.target.blur(); // causes change event
     e.target.form.checkValidity(); // causes invalid event
   }, 10);
-    setTimeout(function(){
+  test_obj.step_timeout(function(){
+    // would be nice to use assert_array_equals, but at the moment we allow two
+    // different pass conditions..
     var evString = eventsFired.join(',')
     var passed =  evString ==='paste,paste handler done,textInput,input,change' || evString ==='paste,paste handler done,input,change' ;
     result( passed, 'Got: '+evString );

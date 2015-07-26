@@ -347,11 +347,9 @@ In practice, the important thing to decide is when to be methodical
 and when to simply test, in an ad hoc fashion, a cross section of
 the possibilities.
 
-This example is a methodical test of the `:not()` pseudo-class with
-each attribute selector in turn, first for long values and then for
-short values:
-
-http://www.hixie.ch/tests/adhoc/css/selectors/not/010.xml
+This is an [example][methodical-test] of a methodical test of the
+`:not()` pseudo-class with each attribute selector in turn, first
+for long values and then for short values.
 
 ### Overlapping
 
@@ -436,3 +434,4 @@ The last [subtest on this page][unobvious-test] shows this problem.
 [download-ahem]: http://www.w3.org/Style/CSS/Test/Fonts/Ahem/AHEM____.TTF
 [long-test]: http://www.hixie.ch/tests/evil/mixed/lineheight3.html
 [unobvious-test]: http://www.w3.org/Style/CSS/Test/CSS1/current/sec525.htm
+[methodical-test]: http://www.hixie.ch/tests/adhoc/css/selectors/not/010.xml

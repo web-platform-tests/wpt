@@ -14,7 +14,7 @@ function clipboard_api_test(e){
 }
 function onTestSetupReady(eventType){
     result(function(){
-      document.execCommand(eventType) === false
+      assert_false(document.execCommand(eventType));
     });
 }
 

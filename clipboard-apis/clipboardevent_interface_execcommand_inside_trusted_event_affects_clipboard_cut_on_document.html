@@ -15,23 +15,18 @@ function clipboard_api_test(e){
     e.preventDefault();
 }
 function triggerTestManually(type){
-	try{
-        if(window.eventType === 'cut'){
-            document.body.contentEditable = 'true';
-        }
-		/* make a selection to check if selected text is copied */
-		var range = document.createRange();
-		range.selectNodeContents(document.body);
-		window.getSelection().addRange(range);
-		document.execCommand(type);
-		window.getSelection().removeAllRanges();
-        if(window.eventType ==='cut'){
-            document.body.contentEditable='false';
-        }
-	}catch(e){
-		result('Unexpected Exception when initiating ClipboardEvent: '+e);
-		return;
-	}
+    if(window.eventType === 'cut'){
+        document.body.contentEditable = 'true';
+    }
+    /* make a selection to check if selected text is copied */
+    var range = document.createRange();
+    range.selectNodeContents(document.body);
+    window.getSelection().addRange(range);
+    document.execCommand(type);
+    window.getSelection().removeAllRanges();
+    if(window.eventType ==='cut'){
+        document.body.contentEditable='false';
+    }
 }
 
     </script>

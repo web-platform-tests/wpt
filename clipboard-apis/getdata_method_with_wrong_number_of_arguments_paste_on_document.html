@@ -10,16 +10,14 @@
 /* Events: paste */
 /* paste data: "pasted text" */
 function clipboard_api_test(e){
-    var passed=true;
-    try{
+  result(function(){
+    assert_throws(new TypeError, function(){
         e.clipboardData.getData();
-        passed=false;
-    }catch(e){}
-    try{
+    });
+/*    assert_throws('TypeError', function(){
         e.clipboardData.getData('text/plain', 'wrong number of arguments');
-        passed=false;
-    }catch(e){}
-    return passed;
+    });*/
+  });
 }
 
     </script>

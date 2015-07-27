@@ -14,14 +14,9 @@ function clipboard_api_test(e){
 }
 
 function onTestSetupReady(){
-    try{
-        var evt = new ClipboardEvent('paste');
-        evt.clipboardData.items.add('synthetic event text', 'text/foobarbogustype');
-        document.dispatchEvent(evt);
-    }catch(e){
-        result('Unexpected Exception when initiating ClipboardEvent: '+e);
-        return;
-    }
+    var evt = new ClipboardEvent('paste');
+    evt.clipboardData.items.add('synthetic event text', 'text/foobarbogustype');
+    document.dispatchEvent(evt);
 }
 
     </script>

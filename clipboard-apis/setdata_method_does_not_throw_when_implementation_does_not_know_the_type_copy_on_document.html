@@ -14,14 +14,9 @@
 //TODO: this test asserts a NOOP.
 // how this SHOULD work is, however, underspecified..
 function clipboard_api_test(e){
-    var passed = false;
-    try{
-        e.clipboardData.setData('text/foobarbogustype', 'copycutpaste modified text');
-        e.preventDefault();
-        passed=true;
-    }catch(e){
-    }
-    return passed;
+    e.clipboardData.setData('text/foobarbogustype', 'copycutpaste modified text');
+    e.preventDefault();
+    // pass condition is external, check clipboard contents
 }
 
     </script>

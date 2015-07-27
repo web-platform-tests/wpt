@@ -10,8 +10,6 @@ script_path = os.path.abspath(os.path.dirname(__file__))
 spec_path = os.path.join(script_path, '..', 'index.html')
 tc_path = os.path.join(script_path, '..', 'testsuite') + os.sep
 
-tc_path = "C:\\mozilla\\web-platform-tests\\clipboard-apis\\"
-
 template = u"""<!DOCTYPE html>
 <html><head>
     <meta charset="UTF-8">
@@ -29,13 +27,16 @@ template = u"""<!DOCTYPE html>
     {test_html}
     <div id="log"></div>
     <script>
-    var dataToPaste={data_to_paste};
-    var extPassCond={external_pass_condition};
-    var eventTarget={event_target};
-    var eventType='{event_type}';
-    setup(function(){{
-            setupTest( eventTarget, eventType, dataToPaste, extPassCond );
-        }});
+    (function(){{
+        var t = async_test()
+        var dataToPaste={data_to_paste};
+        var extPassCond={external_pass_condition};
+        var eventTarget={event_target};
+        var eventType='{event_type}';
+        setup(function(){{
+                setupTest(t, eventTarget, eventType, dataToPaste, extPassCond );
+            }});
+    }})();
     </script>
 </body></html>
 """
@@ -78,11 +79,17 @@ for match in re.finditer(r, spec_text):
         rx = re.compile(r"\/\*\s*"+name+": (.+?)\*\/", re.S)
         try:
             test_info[value] = re.search(rx, test_info['test_js_code']).group(1)
-            if name is 'Test HTML' and '<\\/script' in test_info[value]:
-                test_info[value] = test_info[value].replace(
-                    '<\\/script',
-                    '</script'
-                )
+            if name is 'Test HTML' and test_info[value]:
+                # remove trailing whitespace
+                test_info[value] = test_info[value].rstrip()
+                # to avoid breaking inline scripts, closing
+                # script tags need some extra escaping that
+                # must be removed again here
+                if '<\\/script' in test_info[value]:
+                    test_info[value] = test_info[value].replace(
+                        '<\\/script',
+                        '</script'
+                    )
         except Exception, e:
             test_info.setdefault(value, '')
             continue
@@ -102,5 +109,4 @@ for match in re.finditer(r, spec_text):
             f.write(template.format(**test_info))
             f.close()
             testcounter += 1
-            print('wrote %s, %s' % (fn, test_info['title']))
 

@@ -144,9 +144,17 @@ var Generator = function (rangesByVO, gc, blocks) {
 Generator.prototype.generate = function (argv) {
     var codePointsByVO = {};
     var gc = this.gc;
-    var skipFunc = argv.noskip ?
-        function (code) { return unicodeData.isSkipGeneralCategory(code, gc); } :
-        function (code) { return unicodeData.isCJKMiddle(code) || unicodeData.isSkipGeneralCategory(code, gc); };
+    function skipDefault(code) {
+        return unicodeData.isCJKMiddle(code) || unicodeData.isSkipGeneralCategory(code, gc) ||
+            code == 0x0E33 || // Thai U+0E33 is class AM: https://www.microsoft.com/typography/OpenTypeDev/thai/intro.htm
+            code == 0x0EB3; // Lao U+0EB3 is class AM: https://www.microsoft.com/typography/OpenTypeDev/lao/intro.htm
+    }
+    function skipNoSkip(code) {
+        return unicodeData.isSkipGeneralCategory(code, gc) ||
+            code == 0x0E33 || // Thai U+0E33 is class AM: https://www.microsoft.com/typography/OpenTypeDev/thai/intro.htm
+            code == 0x0EB3; // Lao U+0EB3 is class AM: https://www.microsoft.com/typography/OpenTypeDev/lao/intro.htm
+    }
+    var skipFunc = argv.noskip ? skipNoSkip : skipDefault;
     for (var value in this.rangesByVO)
         codePointsByVO[value] = unicodeData.codePointsFromRanges(this.rangesByVO[value], skipFunc);
 

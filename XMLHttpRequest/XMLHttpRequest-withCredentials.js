@@ -45,6 +45,4 @@ function test_withCredentials(worker) {
     client.open("GET", "resources/delay.py?ms=1000", false)
     assert_throws("InvalidStateError", function() { client.withCredentials = true })
   }, "setting withCredentials when in DONE state (synchronous)")
-
-  done()
 }

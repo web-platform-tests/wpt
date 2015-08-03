@@ -33,7 +33,7 @@ function triggerTestManually(eventType){
     var ifr=document.getElementById('iframe');
     window.afterExecCommand=false;
     /* This triggers the event listener, which asserts false */
-    var execSucceeded = ifr.contentDocument.execCommand(eventType, false, false);
+    var execSucceeded = ifr.contentDocument.execCommand(eventType, false, null);
     window.afterExecCommand=true;
     result(function(){
       assert_true(eventFired, eventType + ' event should fire');

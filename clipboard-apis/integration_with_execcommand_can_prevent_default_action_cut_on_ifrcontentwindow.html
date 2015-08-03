@@ -28,7 +28,7 @@ function triggerTestManually(eventType){
   range.selectNodeContents(doc.getElementsByTagName('p')[0]);
   doc.defaultView.getSelection().removeAllRanges();
   doc.defaultView.getSelection().addRange(range);
-  var returnValue = doc.execCommand(eventType, false, false);
+  var returnValue = doc.execCommand(eventType, false, null);
   /* Main pass condition here is clipboard contents - but we can add a couple of assertations here */
   assert_false(returnValue, 'execCommand() returns false when event default action is prevented');
   /* This assertation is especially relevant for 'cut' */

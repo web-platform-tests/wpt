@@ -22,7 +22,7 @@ function triggerTestManually(eventType){
     var range = document.createRange();
     range.selectNodeContents(document.body);
     window.getSelection().addRange(range);
-    document.execCommand(eventType);
+    document.execCommand(eventType, false, null);
     window.getSelection().removeAllRanges();
     if(eventType ==='cut'){
         document.body.contentEditable='false';

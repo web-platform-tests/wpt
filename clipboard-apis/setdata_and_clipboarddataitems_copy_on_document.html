@@ -13,7 +13,6 @@ function clipboard_api_test(e){
     e.clipboardData.setData('text/plain', 'modified text');
     var passed = e.clipboardData.items && e.clipboardData.items.length === 1;
     passed = passed && e.clipboardData.items[0].kind=='string' &&  e.clipboardData.items[0].type=='text/plain';
-    passed = passed && e.isTrusted;
     return passed;
 }
 

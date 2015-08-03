@@ -19,7 +19,7 @@ function triggerTestManually(eventType, test_obj){
     var ifr=document.getElementById('ifr');
     ifr.contentDocument.designMode='on';
     ifr.contentWindow.focus();
-    ifr.contentDocument.execCommand(eventType, false, false);
+    ifr.contentDocument.execCommand(eventType, false, null);
     test_obj.step_timeout(function(){
         var passed= window.eventFired === true && ifr.contentDocument.body.innerHTML.indexOf('clipboard text')==-1;
         result(passed);

@@ -290,7 +290,7 @@ def check_args(kwargs):
             kwargs["debugger"] = mozdebug.get_default_debugger_name()
         debug_info = mozdebug.get_debugger_info(kwargs["debugger"],
                                                 kwargs["debugger_args"])
-        if debug_info.interactive:
+        if debug_info and debug_info.interactive:
             if kwargs["processes"] != 1:
                 kwargs["processes"] = 1
             kwargs["no_capture_stdio"] = True

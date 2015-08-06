@@ -19,7 +19,7 @@ function appendObjectElement(type) {
         });
 
         var p = document.createElement('param');
-        p.setAttribute('value', 'http://127.0.0.1:8080/plugins/resources/mock-plugin.pl?' + type);
+        p.setAttribute('value', 'resources/mock-plugin.asis?' + type);
         p.setAttribute('name', type);
 
         o.appendChild(p);

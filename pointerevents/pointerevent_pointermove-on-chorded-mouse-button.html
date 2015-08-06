@@ -48,11 +48,11 @@
                 on_event(target0, "pointermove", function (event) {
                     detected_pointertypes[event.pointerType] = true;
 
-                    if (step == 1) { // second button pressed
+                    if (step == 1 && event.button != -1) { // second button pressed
                         test_pointermove.step(function() {assert_true(event.buttons !== firstButton, "The pointermove event must be triggered by pressing a second button.");});
                         test_pointermove.step(function() {assert_true((event.buttons & firstButton) != 0, "The first button must still be reported pressed.");});
                         step = 2;
-                    } else if (step == 2) { // second button released
+                    } else if (step == 2 && event.button != -1) { // second button released
                         test_pointermove.step(function() {assert_true(event.buttons === firstButton, "The pointermove event must be triggered by releasing the second button.");});
                         step = 3;
                     }

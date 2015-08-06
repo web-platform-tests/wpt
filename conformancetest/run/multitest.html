@@ -1,11 +1,9 @@
 <!doctype html>
 <meta charset=utf-8>
-<link rel=stylesheet href=../css/reset.css>
-<title>Multipage HTML editing conformance tests</title>
+<link rel=stylesheet href=../../css/reset.css>
+<title>multitest - HTML editing conformance tests</title>
 <p>See the <a href=editing.html#tests>Tests</a> section of the specification
 for documentation.
-
-<p id=picker>
 
 <p id=timing></p>
 
@@ -13,10 +11,10 @@ for documentation.
 
 <div id=test-container></div>
 
-<script src=../implementation.js></script>
+<script src=../../implementation.js></script>
 <script>var testsJsLibraryOnly = true</script>
-<script src=../tests.js></script>
-<script src=data.js></script>
+<script src=../../tests.js></script>
+<script src=../data/multitest.js></script>
 <script src=https://w3c-test.org/resources/testharness.js></script>
 <script src=https://w3c-test.org/resources/testharnessreport.js></script>
 <script>
@@ -30,47 +28,7 @@ for documentation.
 		node.parentNode.removeChild(node);
 	});
 
-	var groupedBrowserTests = {};
-	for (var i = 0; i < browserTests.length; i++) {
-		var commands = browserTests[i][1]
-			.map(function(arr) { return arr[0] })
-			.filter(function(s) {
-				return s != "stylewithcss" && s != "defaultparagraphseparator";
-			});
-		if (commands.length == 0) {
-			// Test for stylewithcss or defaultparagraphseparator
-			commands = browserTests[i][1].map(function(arr) { return arr[0] });
-		}
-		if (commands.length == 1) {
-			// Regular test, not a multitest
-			if (!(commands[0] in groupedBrowserTests)) {
-				groupedBrowserTests[commands[0]] = [];
-			}
-			groupedBrowserTests[commands[0]].push(browserTests[i]);
-		} else {
-			// Multitest
-			if (!("multitest" in groupedBrowserTests)) {
-				groupedBrowserTests.multitest = [];
-			}
-			groupedBrowserTests.multitest.push(browserTests[i]);
-		}
-	}
-
-	var firstGroup = null;
-	var pickerContents = "Select a group of tests to run:";
-	for (var group in groupedBrowserTests) {
-		if (firstGroup === null) {
-			firstGroup = group;
-		}
-		pickerContents += " <a href=?" + group + ">" + group + "</a>";
-	}
-
-	var command = location.search.replace(/^\?/, "");
-	if (!(command in groupedBrowserTests)) {
-		document.querySelector("#picker").innerHTML = pickerContents;
-		return;
-	}
-	if (command !== firstGroup) {
+	if (true) {
 		// Silly hack: the CSS styling flag should be true, not false, to match
 		// expected results.  This is because every group of tests except the
 		// last (multitest) sets styleWithCSS automatically, and it sets it
@@ -80,14 +38,11 @@ for documentation.
 		// supposed to default it to false when the page loads, so flip it.
 		try { document.execCommand("styleWithCSS", false, "true") } catch(e) {}
 	}
-	browserTests = groupedBrowserTests[command];
 
 	browserTests.forEach(runConformanceTest);
 
 	document.getElementById("test-container").parentNode
 		.removeChild(document.getElementById("test-container"));
-
-	document.querySelector("#picker").innerHTML = pickerContents;
 
 	var elapsed = Math.round(Date.now() - startTime)/1000;
 	document.getElementById("timing").textContent =

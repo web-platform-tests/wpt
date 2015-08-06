@@ -8,3 +8,5 @@ click the button to submit.
 any discrepancies, update conformancetest/diff *and* (if appropriate)
 conformancetest/patch.  Do not forget to update conformancetest/patch, or else
 stuff will get messed up.
+
+XXX This is no longer true now that data.js is split up.

@@ -96,19 +96,37 @@ a code { text-decoration: underline }
 
 <h2 class=no-num id=status-of-this-document>Status of this Document</h2>
 
-<p>This document is a preliminary draft of a specification for HTML editing
-APIs, mainly defining <a href=#concept-selection title=concept-selection>selections</a>, <code><a href=#execcommand()>execCommand()</a></code> and related
-functionality.  It replaces a couple of old sections of the <a href=https://www.whatwg.org/html>HTML</a> specification, and the <a href=#concept-selection title=concept-selection>selection</a>
-part of the old DOM Range specification.  Issues that don't necessarily need
-discussion should preferably be <a href="https://www.w3.org/Bugs/Public/enter_bug.cgi?product=WebAppsWG&amp;component=HTML+Editing+APIs">filed
-in the issue tracker</a>.  Feedback that needs discussion should preferably be
-sent to <a href="mailto:public-webapps@w3.org?cc=ayg@aryeh.name&amp;subject=%5Bediting%5D%20">the
-public-webapps list</a>, with the string "[editing]" somewhere in the subject,
-CC'd to <a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a> to make sure I see it.
-I will handle all feedback I'm aware of, either addressing it immediately or
-filing a bug if it needs longer-term consideration and is not already filed.
+<div class=warning>
+<p>The features documented herein are obsolete.  Authors should not use these
+features directly, but instead use JavaScript editing libraries.  The features
+described in this document are not implemented consistently or fully by user
+agents, and it is not expected that this will change in the foreseeable future.
 
-<p>Copyright &copy; 2014 the Contributors to the HTML Editing APIs Specification,
+<p>This document aims to assist web browser implementers in correctly handling
+old websites, but implementers should be aware that it is incomplete and does
+not match any implementation exactly, so it is unlikely to process sites
+correctly as-is.  Nevertheless it remains available in case the research that
+went into it proves useful to implementers.
+
+<p>Because of lack of implementer interest, this document is no longer
+maintained.  However, the accompanying <a href=#conformance-tests>conformance
+tests</a> are useful for regression-testing changes to existing editor
+implementations, even if those implementations do not intend to match the
+specification exactly.
+
+<p>The <a href=#selections>selections</a> portion of this specification has
+been superseded by the <a href=http://w3c.github.io/selection-api>Selection API
+specification</a>.  It remains here as well only to avoid the need to rewrite
+the editing portions of this specification to refer to the new specification.
+</div>
+
+<p>This document is a rough draft of a specification for HTML editing APIs,
+mainly defining <a href=#concept-selection title=concept-selection>selections</a>, <code><a href=#execcommand()>execCommand()</a></code> and related
+functionality.  It replaces a couple of old sections of the <a
+href=https://www.whatwg.org/html>HTML</a> specification, and the <a href=#concept-selection title=concept-selection>selection</a>
+part of the old DOM Range specification.
+
+<p>Copyright &copy; 2015 the Contributors to the HTML Editing APIs Specification,
 published by the <a href=https://www.w3.org/community/editing/>W3C Editing
 APIs Community Group</a> under the <a href=https://www.w3.org/community/about/agreements/cla/>W3C Community
 Contributor License Agreement (CLA)</a>. A human-readable <a href=https://www.w3.org/community/about/agreements/cla-deed/>summary</a> is

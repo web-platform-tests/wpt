@@ -9,8 +9,7 @@
 <script>
 "use strict";
 
-function check_iter(iter, root, whatToShowValue)
-{
+function check_iter(iter, root, whatToShowValue) {
     whatToShowValue = whatToShowValue === undefined ? 0xFFFFFFFF : whatToShowValue;
 
     assert_equals(iter.toString(), '[object NodeIterator]');

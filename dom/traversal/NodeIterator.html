@@ -12,12 +12,12 @@
 function check_iter(iter, root, whatToShowValue) {
     whatToShowValue = whatToShowValue === undefined ? 0xFFFFFFFF : whatToShowValue;
 
-    assert_equals(iter.toString(), '[object NodeIterator]');
-    assert_equals(iter.root, root);
-    assert_equals(iter.whatToShow, whatToShowValue);
-    assert_equals(iter.filter, null);
-    assert_equals(iter.referenceNode, root);
-    assert_equals(iter.pointerBeforeReferenceNode, true);
+    assert_equals(iter.toString(), '[object NodeIterator]', 'toString');
+    assert_equals(iter.root, root, 'root');
+    assert_equals(iter.whatToShow, whatToShowValue, 'whatToShow');
+    assert_equals(iter.filter, null, 'filter');
+    assert_equals(iter.referenceNode, root, 'referenceNode');
+    assert_equals(iter.pointerBeforeReferenceNode, true, 'pointerBeforeReferenceNode');
     assert_readonly(iter, 'root');
     assert_readonly(iter, 'whatToShow');
     assert_readonly(iter, 'filter');

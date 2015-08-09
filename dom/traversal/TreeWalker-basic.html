@@ -74,11 +74,11 @@ function check_walker(walker, root, whatToShowValue)
 {
     whatToShowValue = whatToShowValue === undefined ? 0xFFFFFFFF : whatToShowValue;
 
-    assert_equals(walker.toString(), '[object TreeWalker]');
-    assert_equals(walker.root, root);
-    assert_equals(walker.whatToShow, whatToShowValue);
-    assert_equals(walker.filter, null);
-    assert_equals(walker.currentNode, root);
+    assert_equals(walker.toString(), '[object TreeWalker]', 'toString');
+    assert_equals(walker.root, root, 'root');
+    assert_equals(walker.whatToShow, whatToShowValue, 'whatToShow');
+    assert_equals(walker.filter, null, 'filter');
+    assert_equals(walker.currentNode, root, 'currentNode');
     assert_readonly(walker, 'root');
     assert_readonly(walker, 'whatToShow');
     assert_readonly(walker, 'filter');

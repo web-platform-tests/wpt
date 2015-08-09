@@ -8,23 +8,23 @@
 "use strict";
 
 test(function() {
-	selection.removeAllRanges();
-	assert_true(selection.isCollapsed, "isCollapsed must be true if both anchor and focus are null");
+    selection.removeAllRanges();
+    assert_true(selection.isCollapsed, "isCollapsed must be true if both anchor and focus are null");
 }, "Empty selection");
 
 for (var i = 0; i < testRanges.length; i++) {
-	test(function() {
-		selection.removeAllRanges();
-		var endpoints = eval(testRanges[i]);
-		var range = ownerDocument(endpoints[0]).createRange();
-		range.setStart(endpoints[0], endpoints[1]);
-		range.setEnd(endpoints[2], endpoints[3]);
-		selection.addRange(range);
+    test(function() {
+        selection.removeAllRanges();
+        var endpoints = eval(testRanges[i]);
+        var range = ownerDocument(endpoints[0]).createRange();
+        range.setStart(endpoints[0], endpoints[1]);
+        range.setEnd(endpoints[2], endpoints[3]);
+        selection.addRange(range);
 
-		assert_equals(selection.isCollapsed,
-			endpoints[0] === endpoints[2] && endpoints[1] === endpoints[3],
-			"Value of isCollapsed");
-	}, "Range " + i + " " + testRanges[i]);
+        assert_equals(selection.isCollapsed,
+            endpoints[0] === endpoints[2] && endpoints[1] === endpoints[3],
+            "Value of isCollapsed");
+    }, "Range " + i + " " + testRanges[i]);
 }
 
 testDiv.style.display = "none";

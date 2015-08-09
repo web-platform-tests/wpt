@@ -15,18 +15,18 @@
 window.unexpectedException = null;
 
 function run() {
-	window.unexpectedException = null;
-	try {
-		window.testRange = rangeFromEndpoints(eval(window.testRangeInput));
-	} catch(e) {
-		window.unexpectedException = e;
-	}
+    window.unexpectedException = null;
+    try {
+        window.testRange = rangeFromEndpoints(eval(window.testRangeInput));
+    } catch(e) {
+        window.unexpectedException = e;
+    }
 }
 
 // Remove the scripts so they don't run repeatedly when the iframe is
 // reinitialized
 [].forEach.call(document.querySelectorAll("script"), function(script) {
-	script.parentNode.removeChild(script);
+    script.parentNode.removeChild(script);
 });
 
 testDiv.style.display = "none";

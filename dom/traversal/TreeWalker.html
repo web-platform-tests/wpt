@@ -11,12 +11,6 @@
 
 // TODO .previousNode, .nextNode
 
-test(function() {
-    var walker = document.createTreeWalker(document);
-    assert_equals(walker.whatToShow, 0xFFFFFFFF, "whatToShow");
-    assert_equals(walker.filter, null, "filter");
-}, "createTreeWalker() parameter defaults");
-
 function filterNode(node, whatToShow, filter) {
     // "If active flag is set throw an "InvalidStateError"."
     // Ignore active flag for these tests, we aren't calling recursively

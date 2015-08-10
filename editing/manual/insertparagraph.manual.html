@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Manual forwardDelete (delete key) tests</title>
-<link rel=stylesheet href=tests.css>
+<title>Manual insertParagraph (enter key) tests</title>
+<link rel=stylesheet href=../include/tests.css>
 <p>See the <a href=editing.html#tests>Tests</a> section of the specification
 for documentation.
 
@@ -13,14 +13,14 @@ for documentation.
     <p><label>New test input: <input></label> <input type=button value="Add test" onclick="addTest()">
 </div>
 
-<div id=overlay>Tap delete repeatedly until this annoying message
+<div id=overlay>Tap enter repeatedly until this annoying message
 disappears!  (But not too quickly.  And don't hit any other keys or click with
 the mouse anywhere, it will mess it up.<span id=testcount>  <span></span>
 manual test(s) remain.</span>)</div>
 
-<script src=implementation.js></script>
-<script src=tests.js></script>
+<script src=../include/implementation.js></script>
+<script src=../include/tests.js></script>
 <script>
-var command = "forwarddelete";
+var command = "insertparagraph";
 </script>
-<script src=manualtest.js></script>
+<script src=../include/manualtest.js></script>

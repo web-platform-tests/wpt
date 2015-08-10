@@ -927,8 +927,7 @@ function assertNodesEqual(actual, expected, msg) {
         while (actual && expected) {
             assert_true(actual.nodeType === expected.nodeType
                 && actual.nodeName === expected.nodeName
-                && actual.nodeValue === expected.nodeValue
-                && actual.childNodes.length === expected.childNodes.length,
+                && actual.nodeValue === expected.nodeValue,
                 "First differing node: expected " + format_value(expected)
                 + ", got " + format_value(actual) + " [" + msg + "]");
             actual = nextNode(actual);

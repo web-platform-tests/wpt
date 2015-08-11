@@ -25,7 +25,7 @@
             background-color: green;
             width: 100px;
             height: 600px;
-            -webkit-flow-into: multicol;
+            flow-into: multicol;
         }
         #multicol-region {
             position: absolute;
@@ -33,9 +33,9 @@
             left: 20px;
             width: 360px;
             height: 200px;
-            -webkit-columns: 3;
-            -webkit-column-gap: 30px;
-            -webkit-flow-from: multicol;
+            columns: 3;
+            column-gap: 30px;
+            flow-from: multicol;
             overflow: hidden;
         }
         .failure {

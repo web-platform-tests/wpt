@@ -20,7 +20,7 @@ body {
 }    
 
 #article {
-    -webkit-flow-into: article;
+    flow-into: article;
 }
 
 #article p {
@@ -29,7 +29,7 @@ body {
 }
 
 #rA, #rB, #rC {
-    -webkit-flow-from: article;
+    flow-from: article;
     padding: 0em;
     box-sizing: border-box;
     border: 1px solid #a0a0a0;
@@ -43,7 +43,7 @@ body {
 
 #rB {
     height: auto;
-    -webkit-column-count: 3;
+    column-count: 3;
 }
 
 #rC {
@@ -61,11 +61,11 @@ body {
     </ul>
     <div id="article">
         <p>In first region</p>
-        <p style="-webkit-region-break-after:always;">In first region</p>
-        <p style="-webkit-column-break-after: always;">In second region</p>
+        <p style="region-break-after:always;">In first region</p>
+        <p style="column-break-after: always;">In second region</p>
         <p >In second region</p>
-        <p style="-webkit-region-break-after:always;">In second region</p>
-        <p style="-webkit-region-break-after:always;">In third region</p>
+        <p style="region-break-after:always;">In second region</p>
+        <p style="region-break-after:always;">In third region</p>
     </div>
 	<div id="rA"></div>
 	<div id="rB"></div>

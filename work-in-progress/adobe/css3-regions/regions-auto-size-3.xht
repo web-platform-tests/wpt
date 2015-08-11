@@ -12,7 +12,7 @@
     <style>
     /*<![CDATA[*/
 #article {
-    -webkit-flow-into: article;
+    flow-into: article;
     color: black;
     margin: 0px;
     padding: 0px;
@@ -28,7 +28,7 @@
 }
 
 #rA, #rB, #rC {
-    -webkit-flow-from: article;
+    flow-from: article;
     height: auto;
     border-radius: 0.5em;
     margin: 1em 1em 0em 1em;
@@ -63,7 +63,7 @@
 </head>
 <body>
     <div id="article">
-        <div id="blockA" style="width:300px;height:20px;background:#a0a0a0;-webkit-region-break-after:always;"></div>
+        <div id="blockA" style="width:300px;height:20px;background:#a0a0a0;region-break-after:always;"></div>
         <div id="blockB" style="width:100px;height:600px;background:#c0c0c0"></div>
     </div>
 

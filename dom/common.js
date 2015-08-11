@@ -601,10 +601,11 @@ function myExtractContents(range) {
     var originalEndNode = range.endContainer;
     var originalEndOffset = range.endOffset;
 
-    // "If original start node and original end node are the same, and they are
-    // a Text or Comment node:"
+    // "If original start node is original end node, and they are a Text,
+    // ProcessingInstruction, or Comment node:"
     if (range.startContainer == range.endContainer
     && (range.startContainer.nodeType == Node.TEXT_NODE
+    || range.startContainer.nodeType == Node.PROCESSING_INSTRUCTION_NODE
     || range.startContainer.nodeType == Node.COMMENT_NODE)) {
         // "Let clone be the result of calling cloneNode(false) on original
         // start node."
@@ -716,9 +717,11 @@ function myExtractContents(range) {
         newOffset = 1 + indexOf(referenceNode);
     }
 
-    // "If first partially contained child is a Text or Comment node:"
+    // "If first partially contained child is a Text, ProcessingInstruction, or
+    // Comment node:"
     if (firstPartiallyContainedChild
     && (firstPartiallyContainedChild.nodeType == Node.TEXT_NODE
+    || firstPartiallyContainedChild.nodeType == Node.PROCESSING_INSTRUCTION_NODE
     || firstPartiallyContainedChild.nodeType == Node.COMMENT_NODE)) {
         // "Let clone be the result of calling cloneNode(false) on original
         // start node."
@@ -773,9 +776,11 @@ function myExtractContents(range) {
         frag.appendChild(containedChildren[i]);
     }
 
-    // "If last partially contained child is a Text or Comment node:"
+    // "If last partially contained child is a Text, ProcessingInstruction, or
+    // Comment node:"
     if (lastPartiallyContainedChild
     && (lastPartiallyContainedChild.nodeType == Node.TEXT_NODE
+    || lastPartiallyContainedChild.nodeType == Node.PROCESSING_INSTRUCTION_NODE
     || lastPartiallyContainedChild.nodeType == Node.COMMENT_NODE)) {
         // "Let clone be the result of calling cloneNode(false) on original
         // end node."

@@ -14,24 +14,11 @@
     <div id="test"></div>
     <div id="log"></div>
     <script type="text/javascript">
-        // Set the transform 
-        document.getElementById("test").style.webkitTransform = "translate(100px, 100px)";
-        /* document.getElementById("test").style.mozkitTransform = "translate(100px, 100px)";
-        document.getElementById("test").style.msTransform = "translate(100px, 100px)";
-        document.getElementById("test").style.oTransform = "translate(100px, 100px)";
-        document.getElementById("test").style.transform = "translate(100px, 100px)"; */
- 
-        // Verify that the transform was set as expected
-        var value = document.getElementById("test").style.getPropertyCSSValue("-webkit-transform").cssText;
-        /* var value = document.getElementById("test").style.getPropertyCSSValue("-moz-transform").cssText;
-        var value = document.getElementById("test").style.getPropertyCSSValue("-ms-transform").cssText;
-        var value = document.getElementById("test").style.getPropertyCSSValue("-0-transform").cssText;
-        var value = document.getElementById("test").style.getPropertyCSSValue("transform").cssText; */
-        
-        test(function() {assert_equals(value,
-                        "translate(100px, 100px)",
-                        "transform should be translate(100px, 100px)")}, 
-                        "transform_translate_100px_100px");
+    test(function() {
+        document.getElementById("test").style.transform = "translate(100px, 100px)";
+        var value = document.getElementById("test").style.getPropertyCSSValue("transform").cssText;
+        assert_equals(value, "translate(100px, 100px)")
+    }, "transform_translate_100px_100px");
     </script>    
 </body>
 </html>

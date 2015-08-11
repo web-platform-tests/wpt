@@ -62,11 +62,6 @@ root.reflow = function() {
     document.body.offsetWidth;
 };
 
-// add all known TransitionEnd events to element
-root.addTransitionEvent = function(element, handler) {
-    return addEvent(element, 'TransitionEnd webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', handler);
-};
-
 // add space-separated list of events to element
 root.addEvent = function(element, events, handler) {
     var _events = {};

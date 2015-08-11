@@ -49,7 +49,7 @@ var suite = root.generalParallelTest = {
     // bind TransitionEnd event listeners
     _setupEvents: function(data, options) {
         ['transition', 'container'].forEach(function(elem) {
-            data[elem]._events = addTransitionEvent(data[elem].node, function(event) {
+            data[elem]._events = addEvent(data[elem].node, 'transitionend', function(event) {
                 event.stopPropagation();
                 var name = event.propertyName;
                 var time = Math.round(event.elapsedTime * 1000) / 1000;

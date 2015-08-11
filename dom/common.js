@@ -888,7 +888,7 @@ function myInsertNode(range, node) {
 
     // "Let newOffset be parent's length if referenceNode is null, and
     // referenceNode's index otherwise."
-    var newOffset = !referenceNode ? nodeLength(parent_) :
+    var newOffset = referenceNode === null ? nodeLength(parent_) :
         indexOf(referenceNode);
 
     // "Increase newOffset by node's length if node is a DocumentFragment node,

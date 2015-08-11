@@ -163,6 +163,7 @@ function setupRangeTests() {
         "[detachedForeignComment, 0, detachedForeignComment, 1]",
         "[detachedXmlComment, 2, detachedXmlComment, 6]",
         "[docfrag, 0, docfrag, 0]",
+        "[processingInstruction, 0, processingInstruction, 4]",
     ];
 
     testRanges = testRangesShort.concat([

@@ -109,14 +109,4 @@ root.domFixture = function(selector) {
         throw new Error('domFixture must be initialized first!');
     }
 };
-
-// return requestAnimationFrame handler, if available
-root.getRequestAnimationFrame = function() {
-    return window.requestAnimationFrame
-        || window.mozRequestAnimationFrame
-        || window.webkitRequestAnimationFrame
-        || window.msRequestAnimationFrame
-        || window.oRequestAnimationFrame;
-};
-
 })(window);

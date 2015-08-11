@@ -152,7 +152,7 @@ var suite = root.generalParallelTest = {
     },
     // requestAnimationFrame runLoop to collect computed values
     startValueCollection: function(options) {
-        var raf = getRequestAnimationFrame() || function(callback){
+        var raf = window.requestAnimationFrame || function(callback){
             setTimeout(callback, 20);
         };
         

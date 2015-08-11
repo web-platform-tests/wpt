@@ -49,13 +49,15 @@ var suite = root.generalParallelTest = {
     // bind TransitionEnd event listeners
     _setupEvents: function(data, options) {
         ['transition', 'container'].forEach(function(elem) {
-            data[elem]._events = addEvent(data[elem].node, 'transitionend', function(event) {
+            var handler = function(event) {
                 event.stopPropagation();
                 var name = event.propertyName;
                 var time = Math.round(event.elapsedTime * 1000) / 1000;
                 var pseudo = event.pseudoElement ? (':' + event.pseudoElement) : '';
                 data[elem].events.push(name + pseudo + ":" + time + "s");
-            });
+            };
+            data[elem].node.addEventListener('transitionend', handler, false);
+            data[elem]._events = {'transitionend': handler};
         });
     },
     // cleanup after individual test

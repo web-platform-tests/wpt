@@ -62,17 +62,6 @@ root.reflow = function() {
     document.body.offsetWidth;
 };
 
-// add space-separated list of events to element
-root.addEvent = function(element, events, handler) {
-    var _events = {};
-    var tokens = events.split(" ");
-    for (var i = 0, token; token = tokens[i]; i++) {
-        element.addEventListener(token, handler, false);
-        _events[token] = handler;
-    }
-    return _events;
-};
-
 // merge objects
 root.extend = function(target /*, ..rest */) {
     Array.prototype.slice.call(arguments, 1).forEach(function(obj) {

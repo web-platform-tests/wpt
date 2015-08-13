@@ -10,104 +10,37 @@
    <script src="http://w3c-test.org/resources/testharnessreport.js"></script>
    <style type="text/css">
       #flow-A {
-          -webkit-flow-into: flowA;
-          -ms-flow-into: flowA;
-          -moz-flow-into: flowA;
-          -o-flow-into: flowA;
           flow-into: flowA;
           background: red;
       }
       
       #flow-B {
-          -webkit-flow-into: flowB;
-          -ms-flow-into: flowB;
-          -moz-flow-into: flowB;
-          -o-flow-into: flowB;
           flow-into: flowB;
           background: red;
       }
       
       #flow-C {
-          -webkit-flow-into: flowC;
-          -ms-flow-into: flowC;
-          -moz-flow-into: flowC;
-          -o-flow-into: flowC;
           flow-into: flowC;
           background: red;
       }
       
    </style>
    <script type="text/javascript">
-   
-(function () {
-      window.setup({explicit_done:true});
-      
-      var prefix = "";
-      var alternatePrefixes = ['webkit', 'ms', 'o', ' moz'];
-      var method = document.getFlowByName;
-      var testName;
-      var failed = false;
-      
-      if (method === undefined || typeof method !== 'Function') {
-          // There is no support for the Document.getFlowByName method. 
-          // Check if there is a prefixed version of the method.
-          for (var i = 0; i < alternatePrefixes.length; i++) {
-              method = document[alternatePrefixes + 'GetFlowByName'];
-              if (method !== undefined) {
-                  if (typeof method !== 'function') {
-                      method = undefined;
-                  } else {
-                      break;
-                  }
-              }
+      async_test(function() {
+          function isNamedFlow (f) {
+              return typeof f === 'object' &&
+                     typeof f.overflow === 'boolean';
           }
-      } else {
-          method = document[methodName]
-      }
-      
-      function fail (message) {
-          test(function () {assert_true(false); }, testName);
-          done();
-          failed = true;
-      }
-      
-      function success(message) {
-          test(function () {
-              assert_true(true); 
-          }, testName);
-          done();
-      }
-      
-      function isNamedFlow (f) {
-          return typeof f === 'object' &&
-                 typeof f.overflow === 'boolean';
-      }
-      
-      window.onload = function() {
-         testName = document.querySelector('title').firstChild.data;
-         
-         var expectedFlows = ['flowA', 'flowB', 'flowC'];
-         
-         if (method === undefined) {
-             fail("FAIL the getFlowByName method is not supported on Document");
-         } else {
-             expectedFlows.forEach(function (flowName) {
-                 if (!failed) {
-                    var flow = method.call(document, [flowName]);
-                    if (flow === null) {
-                        fail("document.getFlowByName(" + flowName + ") did not return a NamedFlow instance as expected. Returned null.");
-                    } else {
-                        if (!isNamedFlow(flow)) {
-                            fail("document.getFlowByName(" + flowName + ") did not return a NamedFlow instance as expected. Returned an object with unexpected interface.");
-                        } else {
-                            success("NamedFlow instances retrieved successfully for " + expectedFlows.join(', '));
-                        }
-                    }
-                }
-             });
-         }
-      }
-  })();
+
+          window.onload = this.step_func_done(function() {
+              var expectedFlows = ['flowA', 'flowB', 'flowC'];
+              expectedFlows.forEach(function (flowName) {
+                  var flow = document.getFlowByName(flowName);
+                  assert_not_equals(flow, null, "document.getFlowByName(" + flowName + ") did not return a NamedFlow instance as expected. Returned null.");
+                  assert_true(isNamedFlow(flow), "document.getFlowByName(" + flowName + ") did not return a NamedFlow instance as expected. Returned an object with unexpected interface.");
+              });
+          });
+      });
    </script>
 </head>
 <body>

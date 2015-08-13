@@ -12,12 +12,10 @@
     
     <style type="text/css">
         #flow1 {
-            -webkit-flow-into: flow1; /*TEMP*/
             flow-into: flow1;
             display: none;
         }
         #flow2 {
-            -webkit-flow-into: flow2; /*TEMP*/
             flow-into: flow2;            
             display: none;
         }
@@ -41,7 +39,7 @@
 
             function removeNamedFlow(selector_id) {
                 var ele = document.getElementById (selector_id);
-                ele.setAttribute("style", "-webkit-flow-into:none");
+                ele.setAttribute("style", "flow-into:none");
             }
 
             function testRemovingFlowViaScript() {

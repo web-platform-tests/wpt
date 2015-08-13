@@ -12,11 +12,9 @@
     
     <style type="text/css">
         #flow1 {
-            -webkit-flow-into: flow1; /*TEMP*/
             flow-into: flow1;
         }
         #flOw1 {
-            -webkit-flow-into: flOw1; /*TEMP*/
             flow-into: flOw1;            
         }
     </style>
@@ -28,7 +26,7 @@
         
         <script type="text/javascript">
             function testGetFlow(flow_name) {
-                var namedFlow = document.webkitGetFlowByName(flow_name);
+                var namedFlow = document.getFlowByName(flow_name);
                 assert_equals (typeof (namedFlow), "object",
                     "returned value is not an object");
                 assert_equals (String (namedFlow), "[object WebKitNamedFlow]", 
@@ -37,7 +35,7 @@
             }
 
             function testNullFlow(bad_flow_name) {
-                var namedFlow = document.webkitGetFlowByName(bad_flow_name);
+                var namedFlow = document.getFlowByName(bad_flow_name);
                 assert_equals (namedFlow, NULL, "Named flow is not NULL");
             }
 

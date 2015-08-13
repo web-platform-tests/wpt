@@ -14,7 +14,7 @@
     <style>
     /*<![CDATA[*/
 #article {
-    -webkit-flow-into: article;
+    flow-into: article;
 }
 
 #rA div, #rB div, #rC div, #article div {
@@ -24,15 +24,15 @@
 
 
 .flex {
-    display: -webkit-flexbox;
+    display: flex;
     margin-bottom: 3em;
 }
 
 #rA, #rB, #rC{
     border: 1px solid #a0a0a0;
     background-color: #f0f0f0;
-    -webkit-flex: 1;
-    -webkit-flow-from: article;
+    flex: 1;
+    flow-from: article;
     margin: 10px;
     padding: 10px;
 }
@@ -49,8 +49,8 @@
         one and the right dark gray box is three times as high as the left one.</p>
 
     <div id="article">
-        <div style="width:50px;height:20px;-webkit-region-break-after:always;"></div>
-        <div style="width:50px;height:40px;-webkit-region-break-after:always;"></div>
+        <div style="width:50px;height:20px;region-break-after:always;"></div>
+        <div style="width:50px;height:40px;region-break-after:always;"></div>
         <div style="width:50px;height:80px;"></div>
     </div>
 

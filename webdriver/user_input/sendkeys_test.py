@@ -1,4 +1,4 @@
-import os
+﻿import os
 import sys
 import random
 import unittest
@@ -11,7 +11,7 @@ sys.path.insert(1, os.path.join(repo_root, "tools", "webdriver"))
 from webdriver import exceptions
 
 
-class WindowSizeTest(base_test.WebDriverBaseTest):
+class SendKeysTest(base_test.WebDriverBaseTest):
     def setUp(self):
         self.driver.get(self.webserver.where_is("user_input/res/text-form.html"))
 

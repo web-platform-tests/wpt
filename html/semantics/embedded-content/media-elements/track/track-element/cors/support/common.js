@@ -125,7 +125,7 @@ function checkData() {
     try {
         if (actual.event == 'load' && expected.event == 'error')
             assert_unreached('Security problem: got load event but expected error event');
-        assert_object_equals(actual, expected);
+        assert_equals(JSON.stringify(actual), JSON.stringify(expected));
     } catch(ex) {
         var style = document.createElement('style');
         style.textContent = '.json-diffs td { vertical-align:top } .json-diffs pre { margin:0 }';

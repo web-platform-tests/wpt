@@ -31,24 +31,5 @@ class WindowHandleTest(base_test.WebDriverBaseTest):
         if len(handles) > len(set(handles)):
             self.fail('At least one window handle was repeated')
 
-    def test_number_of_windows(self):
-        self.driver.find_element_by_id("open_new_window").click()
-        self.driver.find_element_by_id("open_new_window").click()
-        self.driver.find_element_by_id("open_new_window").click()
-
-        self.driver.close()
-        self.driver.switch_to_window(self.driver.get_window_handles()[0])
-        self.driver.close()
-        self.driver.switch_to_window(self.driver.get_window_handles()[0])
-        self.driver.close()
-        self.driver.switch_to_window(self.driver.get_window_handles()[0])
-
-        self.driver.find_element_by_id("open_new_window").click()
-
-        new_handles = self.driver.get_window_handles()
-        after_open_and_close = len(new_handles)
-
-        self.assertEquals(2, after_open_and_close)
-
 if __name__ == "__main__":
     unittest.main()

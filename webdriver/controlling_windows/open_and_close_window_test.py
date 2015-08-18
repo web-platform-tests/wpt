@@ -30,7 +30,7 @@ class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
         
         self.assertEquals(len(handles)+ 1, len(self.driver.get_window_handles()))
 
-    def test_open_window_with_correct_url(self):
+    def test_get_window_handles_returns_correct_windows(self):
         self.driver.find_element_by_id("open_new_window").click()
         
         handles = self.driver.get_window_handles()
@@ -44,7 +44,7 @@ class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
         elif url1 == self.webserver.where_is("controlling_windows/res/first-page.html"):
             self.assertEquals(url2, self.webserver.where_is("controlling_windows/res/other-page.html"))
         else:
-            self.fail("The page opened with the wrong URL")
+            self.fail("The wrong set of URLs were returned")
 
     def test_close_window(self):
         open_windows = len(self.driver.get_window_handles())
@@ -60,15 +60,15 @@ class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
         self.driver.close()
 
         with self.assertRaises(exceptions.NoSuchWindowException):
-            self.driver.find_element_by_id("open_new_window")
+            self.driver.get_window_handle()
 
-    def test_open_several_new_windows(self):
-        number_of_windows = 6
+#    def test_open_several_new_windows(self):
+#        number_of_windows = 6
 
-        open_windows = len(self.driver.get_window_handles())
+#        open_windows = len(self.driver.get_window_handles())
     
-        new_window_button = self.driver.find_element_by_id("open_new_window")
-        for i in range(0, number_of_windows):
-            new_window_button.click()
-            self.assertEquals(len(self.driver.get_window_handles()), 1 + open_windows)
-            open_windows = len(self.driver.get_window_handles())
+#        new_window_button = self.driver.find_element_by_id("open_new_window")
+#        for i in range(0, number_of_windows):
+#            new_window_button.click()
+#            self.assertEquals(len(self.driver.get_window_handles()), 1 + open_windows)
+#            open_windows = len(self.driver.get_window_handles())

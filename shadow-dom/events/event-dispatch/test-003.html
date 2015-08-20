@@ -29,41 +29,43 @@ A_05_05_03_T01.step(unit(function (ctx) {
     var d = newRenderedHTMLDocument(ctx);
 
     var host = d.createElement('div');
-    host.setAttribute('style', 'height:50%; width:100%');
     host.setAttribute('id', 'host');
     d.body.appendChild(host);
 
     //Shadow root to play with
     var s = host.createShadowRoot();
 
-    var div1 = d.createElement('div');
-    div1.setAttribute('style', 'height:50%; width:100%');
-    div1.setAttribute('id', 'div1');
-    s.appendChild(div1);
+    var input1 = d.createElement('input');
+    input1.setAttribute('id', 'input1');
+    s.appendChild(input1);
 
-    var div2 = d.createElement('div');
-    div2.setAttribute('style', 'height:50%; width:100%');
-    div2.setAttribute('id', 'div2');
-    s.appendChild(div2);
+    var input2 = d.createElement('input');
+    input2.setAttribute('id', 'input2');
+    s.appendChild(input2);
+
+    // Focus before installing the event handler.
+    input2.focus();
 
     // Add an event listner above its shadow root. If both target and
     // relatedTarget are in the same shadow tree under the root,
     // retargeted target and relatedTarget will be the same node
     // and the event must not invoke the handler.
-    host.addEventListener('mouseover', A_05_05_03_T01.step_func(function(event) {
-        if (('isTrusted' in event) && event.isTrusted) {
+    host.addEventListener('focusin', A_05_05_03_T01.step_func(function(event) {
+        if (('isTrusted' in event) && event.isTrusted &&
+            (event.target == event.relatedTarget)) {
             assert_true(false, 'Trusted event must not invoke its listeners' +
                 'if target and relatedTarget are the same');
         }
+        if (event.target !== event.relatedTarget)
+            return;
+        assert_true(true, 'Cannot determine whether the event is trusted, ' +
+            'but event handler is invoked anyway with ' +
+            'target === relatedTarget.');
     }), false);
 
-    // Note: this is not a "trusted event", thus user agents may not
-    // suppress invoking event handlers.
-    var evt = document.createEvent("MouseEvents");
-    evt.initMouseEvent("mouseover", true, false, window,
-      0, 10, 10, 10, 10, false, false, false, false, 0, div2);
-
-    div1.dispatchEvent(evt);
+    // Causes a "focusin" event, from #input2 to #input1.
+    // It should be viewed outside the shadow as "target == relatedTarget".
+    input1.focus();
 
     A_05_05_03_T01.done();
 }));

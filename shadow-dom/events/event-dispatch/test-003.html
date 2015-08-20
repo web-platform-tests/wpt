@@ -58,7 +58,7 @@ A_05_05_03_T01.step(unit(function (ctx) {
         }
         if (event.target !== event.relatedTarget)
             return;
-        assert_true(true, 'Cannot determine whether the event is trusted, ' +
+        assert_true(false, 'Cannot determine whether the event is trusted, ' +
             'but event handler is invoked anyway with ' +
             'target === relatedTarget.');
     }), false);

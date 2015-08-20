@@ -40,11 +40,11 @@ link to level 1 of the CSS Flexbox spec is:
 http://www.w3.org/TR/css-flexbox-1/#RELEVANT_SECTION
 
 When testing features not yet available in an official draft, link to the appropriate
-Editor’s Draft found at http://dev.w3.org/csswg/. Be sure to include the level of the
+Editor’s Draft found at https://drafts.csswg.org/. Be sure to include the level of the
 specification in the link. For example, the proper link to the CSS Flexbox Level 1
 Editor’s Draft is:
 
-http://dev.w3.org/csswg/css-flexbox-1/#RELEVANT_SECTION
+https://drafts.csswg.org/css-flexbox-1/#RELEVANT_SECTION
 
 Contributing
 -------------

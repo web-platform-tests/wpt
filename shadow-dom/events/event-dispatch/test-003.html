@@ -12,8 +12,8 @@ policies and contribution forms [3].
 <head>
 <title>Shadow DOM Test: A_05_05_03</title>
 <link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
-<link rel="help" href="http://www.w3.org/TR/2013/WD-shadow-dom-20130514/#event-dispatch">
-<meta name="assert" content="Event Dispatch: If the relatedTarget and target are the same for a given node, its the event listeners must not be invoked.">
+<link rel="help" href="https://w3c.github.io/webcomponents/spec/shadow/#event-path-trimming">
+<meta name="assert" content="Event Path Trimming: event listeners for trusted events must not be invoked on a node for which the target and relatedTarget are the same.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -37,19 +37,29 @@ A_05_05_03_T01.step(unit(function (ctx) {
     var s = host.createShadowRoot();
 
     var div1 = d.createElement('div');
-    div1.setAttribute('style', 'height:100%; width:100%');
+    div1.setAttribute('style', 'height:50%; width:100%');
     div1.setAttribute('id', 'div1');
     s.appendChild(div1);
 
-    s.addEventListener('mouseover', A_05_05_03_T01.step_func(function(event) {
+    var div2 = d.createElement('div');
+    div2.setAttribute('style', 'height:50%; width:100%');
+    div2.setAttribute('id', 'div2');
+    s.appendChild(div2);
+
+    // Add an event listner above its shadow root. If both target and
+    // relatedTarget are in the same shadow tree under the root,
+    // retargeted target and relatedTarget will be the same node
+    // and the event must not invoke the handler.
+    host.addEventListener('mouseover', A_05_05_03_T01.step_func(function(event) {
     	assert_true(false, 'Event listeners shouldn\'t be invoked if target and relatedTarget ' +
     			'are the same');
     }), false);
 
-
+    // Note: this is not a "trusted event", thus user agents may not
+    // suppress invoking event handlers.
     var evt = document.createEvent("MouseEvents");
     evt.initMouseEvent("mouseover", true, false, window,
-      0, 10, 10, 10, 10, false, false, false, false, 0, div1);
+      0, 10, 10, 10, 10, false, false, false, false, 0, div2);
 
     div1.dispatchEvent(evt);
 

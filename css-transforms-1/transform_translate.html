@@ -17,7 +17,7 @@
     test(function() {
         document.getElementById("test").style.transform = "translate(100px, 100px)";
         var value = window.getComputedStyle(document.getElementById("test")).getPropertyValue("transform");
-        assert_equals(value, "translate(100px, 100px)")
+        assert_equals(value, "matrix(1, 0, 0, 1, 100, 100)")
     }, "transform_translate_100px_100px");
     </script>
 </body>

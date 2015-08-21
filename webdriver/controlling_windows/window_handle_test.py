@@ -1,4 +1,4 @@
-import os
+﻿import os
 import sys
 import random
 import unittest
@@ -21,13 +21,11 @@ class WindowHandleTest(base_test.WebDriverBaseTest):
 
     def test_window_handles_are_unique(self):
         number_of_windows = 20
-        
         new_window_button = self.driver.find_element_by_id("open_new_window")
         for i in range(0, number_of_windows):
             new_window_button.click()
 
         handles = self.driver.get_window_handles()
-        
         if len(handles) > len(set(handles)):
             self.fail('At least one window handle was repeated')
 

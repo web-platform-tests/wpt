@@ -1,4 +1,4 @@
-import os
+﻿import os
 import sys
 import random
 import unittest
@@ -18,21 +18,19 @@ class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
     def tearDown(self):
         handles = self.driver.get_window_handles()
 
-        for i in range(len(handles) - 1):  
-            self.driver.switch_to_window(handles[i]) 
-            self.driver.close() 
+        for i in range(len(handles) - 1):
+            self.driver.switch_to_window(handles[i])
+            self.driver.close()
 
         self.driver.switch_to_window(self.driver.get_window_handles()[0])
 
     def test_open_new_window(self):
         handles = self.driver.get_window_handles()
         self.driver.find_element_by_id("open_new_window").click()
-        
-        self.assertEquals(len(handles)+ 1, len(self.driver.get_window_handles()))
+        self.assertEquals(len(handles) + 1, len(self.driver.get_window_handles()))
 
-    def test_get_window_handles_returns_correct_windows(self):
+    def test_get_window_handles_returns_the_windows_that_have_been_opened(self):
         self.driver.find_element_by_id("open_new_window").click()
-        
         handles = self.driver.get_window_handles()
         self.driver.switch_to_window(handles[0])
         url1 = self.driver.get_current_url()
@@ -55,20 +53,12 @@ class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
         self.driver.close()
         self.assertEquals(open_windows, len(self.driver.get_window_handles()))
 
-    def test_send_command_to_closed_window(self):
+    def test_command_sent_to_closed_window_returns_no_such_window_exception(self):
         self.driver.find_element_by_id("open_new_window").click()
         self.driver.close()
 
         with self.assertRaises(exceptions.NoSuchWindowException):
             self.driver.get_window_handle()
 
-#    def test_open_several_new_windows(self):
-#        number_of_windows = 6
-
-#        open_windows = len(self.driver.get_window_handles())
-    
-#        new_window_button = self.driver.find_element_by_id("open_new_window")
-#        for i in range(0, number_of_windows):
-#            new_window_button.click()
-#            self.assertEquals(len(self.driver.get_window_handles()), 1 + open_windows)
-#            open_windows = len(self.driver.get_window_handles())
+if __name__ == "__main__":
+    unittest.main()

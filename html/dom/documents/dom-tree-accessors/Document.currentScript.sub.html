@@ -215,7 +215,7 @@ function testLoadFail() {
 <script>
 var s = document.createElement("script");
 s.id = "cross-origin";
-s.src = "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"
+s.src = "http://{{domains[www1]}}:{{ports[http][1]}}/html/dom/documents/dom-tree-accessors/cross-domain.js"
 s.onload = function() {
   verify('cross-origin')
   finish('cross-origin');

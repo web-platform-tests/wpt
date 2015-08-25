@@ -13,7 +13,7 @@ policies and contribution forms [3].
 <title>Shadow DOM Test: A_05_05_03</title>
 <link rel="author" title="Sergey G. Grekhov" href="mailto:sgrekhov@unipro.ru">
 <link rel="help" href="https://w3c.github.io/webcomponents/spec/shadow/#event-path-trimming">
-<meta name="assert" content="Event Path Trimming: event listeners for trusted events must not be invoked on a node for which the target and relatedTarget are the same.">
+<meta name="assert" content="Event Path Trimming: In cases where both relatedTarget and target of a trusted event are part of the same shadow tree, the conforming UAs must stop events at the shadow root to avoid the appearance of spurious mouseover and mouseout events firing from the same node.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -34,6 +34,7 @@ A_05_05_03_T01.step(unit(function (ctx) {
 
     //Shadow root to play with
     var s = host.createShadowRoot();
+    s.id = 'shadow';
 
     var input1 = d.createElement('input');
     input1.setAttribute('id', 'input1');
@@ -43,31 +44,38 @@ A_05_05_03_T01.step(unit(function (ctx) {
     input2.setAttribute('id', 'input2');
     s.appendChild(input2);
 
-    // Focus before installing the event handler.
-    input2.focus();
-
-    // Add an event listner above its shadow root. If both target and
-    // relatedTarget are in the same shadow tree under the root,
-    // retargeted target and relatedTarget will be the same node
-    // and the event must not invoke the handler.
-    host.addEventListener('focusin', A_05_05_03_T01.step_func(function(event) {
-        if (('isTrusted' in event) && event.isTrusted &&
-            (event.target == event.relatedTarget)) {
-            assert_true(false, 'Trusted event must not invoke its listeners' +
-                'if target and relatedTarget are the same');
+    // Add an event listener in its shadow root.
+    s.addEventListener('focusin', A_05_05_03_T01.step_func(function(event) {
+        if (event.deepPath[0].id == 'input1') {
+          assert_equals(event.deepPath.length, 7);
+          assert_equals(event.deepPath[1].id, 'shadow');
+          assert_equals(event.deepPath[2].id, 'host');
+          assert_equals(event.deepPath[3].tagName, 'BODY');
+          assert_equals(event.deepPath[4].tagName, 'HTML');
+          assert_equals(event.deepPath[5], d);
+          assert_equals(event.deepPath[6], ctx.iframes[0].contentWindow);
+        } else if (event.deepPath[0].id == 'input2') {
+          assert_equals(event.deepPath.length, 2);
+          assert_equals(event.deepPath[1].id, 'shadow');
+          A_05_05_03_T01.done();
+        } else {
+          assert_true(false, 'Unexpected event happend.' + event);
         }
-        if (event.target !== event.relatedTarget)
-            return;
-        assert_true(false, 'Cannot determine whether the event is trusted, ' +
-            'but event handler is invoked anyway with ' +
-            'target === relatedTarget.');
     }), false);
 
-    // Causes a "focusin" event, from #input2 to #input1.
-    // It should be viewed outside the shadow as "target == relatedTarget".
+    // Expected event path:
+    // <input>, #shadow-root, <div>, <body>, <html>, #document, window
     input1.focus();
 
-    A_05_05_03_T01.done();
+    // Causes a "focusin" event, from #input1 to #input2
+    // In this case, original relatedTarget is #input1, and original target
+    // is #input2.
+    // It should be viewed outside the shadow as "target == relatedTarget"
+    // after event retargeting, therefore, event.deepPath above the shadow
+    // host will be trimmed.
+    // Expected event path:
+    // <input>, #shadow-root
+    input2.focus();
 }));
 </script>
 </body>

@@ -59,10 +59,10 @@
       var iframe = document.createElement("iframe");
       iframe.onload = this.step_func_done(function () {
         var doc = iframe.contentDocument;
-        var base = doc.body.appendChild(document.createElement("base"));
+        var base = doc.body.appendChild(doc.createElement("base"));
         base.href = "sub/";
         assert_resolve_url(doc, location.href.replace("/document-base-url.html", "/sub"));
-        assert_equals(doc.baseURI, document.baseURI);
+        assert_equals(doc.baseURI, document.baseURI.replace("/document-base-url.html", "/sub/"));
       });
       iframe.setAttribute("src", "about:blank");
       document.body.appendChild(iframe);

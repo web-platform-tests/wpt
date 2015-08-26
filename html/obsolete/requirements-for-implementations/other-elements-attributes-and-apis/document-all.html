@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>document.all</title>
+<link rel="author" title="Corey Farwell" href="mailto:coreyf@rwell.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#dom-document-all">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  assert_false(Boolean(document.all));
+  assert_true(document.all == undefined);
+  assert_true(document.all == null);
+  assert_true(document.all !== undefined);
+  assert_true(document.all !== null);
+  assert_equals(typeof document.all, "undefined");
+}, "'unusual behaviors'")
+</script>

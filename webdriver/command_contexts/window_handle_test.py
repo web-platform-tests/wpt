@@ -13,7 +13,7 @@ from webdriver import exceptions
 
 class WindowHandleTest(base_test.WebDriverBaseTest):
     def setUp(self):
-        self.driver.get(self.webserver.where_is("controlling_windows/res/first-page.html"))
+        self.driver.get(self.webserver.where_is("command_contexts/res/first-page.html"))
 
     def test_window_handle_is_not_current(self):
         handle = self.driver.get_window_handle()

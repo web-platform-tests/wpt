@@ -1,4 +1,4 @@
-import os
+﻿import os
 import sys
 import random
 import unittest
@@ -13,7 +13,7 @@ from webdriver import exceptions
 class WindowSizeTest(base_test.WebDriverBaseTest):
 
     def test_set_and_get_window_size(self):
-        self.driver.get(self.webserver.where_is("controlling_windows/res/first-page.html"))
+        self.driver.get(self.webserver.where_is("command_contexts/res/first-page.html"))
 
         initial_dimensions = self.driver.get_window_size()
                 

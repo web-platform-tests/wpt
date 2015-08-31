@@ -13,7 +13,7 @@ from webdriver import exceptions
 
 class OpenAndCloseWindowTest(base_test.WebDriverBaseTest):
     def setUp(self):
-        self.driver.get(self.webserver.where_is("controlling_windows/res/first-page.html"))
+        self.driver.get(self.webserver.where_is("command_contexts/res/first-page.html"))
 
     def tearDown(self):
         handles = self.driver.get_window_handles()

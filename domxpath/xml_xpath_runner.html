@@ -1040,14 +1040,14 @@ for (var t in tests) {
       var xhr = new XMLHttpRequest();
       xhr.open("GET", "support/" + t);
       xhr.onreadystatechange = t_test.step_func(function(e) {
-	if (xhr.readyState != 4)
-	  return;
-	if (xhr.status != 200)
-	  return;
-	var rdoc = xhr.responseXML;
-	var got = rdoc.evaluate("boolean(" + tests[t] + ")", rdoc, rdoc.createNSResolver(rdoc), XPathResult.ANY_TYPE, null);
-	assert_true(got.booleanValue, "XPath query did not match");
-	t_test.done();
+        if (xhr.readyState != 4)
+          return;
+        if (xhr.status != 200)
+          return;
+        var rdoc = xhr.responseXML;
+        var got = rdoc.evaluate("boolean(" + tests[t] + ")", rdoc, rdoc.createNSResolver(rdoc), XPathResult.ANY_TYPE, null);
+        assert_true(got.booleanValue, "XPath query did not match");
+        t_test.done();
       });
       xhr.send();
     });

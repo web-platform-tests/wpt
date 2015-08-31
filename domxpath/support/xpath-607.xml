@@ -1,0 +1,1 @@
+<nu xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:id="id1"><kappa xml:lang="nb" xml:id="id2"/><xi><theta src="attribute"/><rho xml:lang="no-nb" xml:id="id3"/><mu att="_blank"/><pi or="another attribute value"><gamma delete="this.nodeValue" xml:id="id4"/><pi xml:id="id5"/><alpha/><kappa src="content" xml:id="id6"><green>This text must be green</green></kappa></pi></xi></nu>

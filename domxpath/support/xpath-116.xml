@@ -1,0 +1,1 @@
+<sigma xmlns:xsl="http://www.w3.org/1999/XSL/Transform" att="this.nodeValue" xml:lang="no" xml:id="id1"><sigma xml:lang="no"/><rho true="content" xml:id="id2"/><rho insert="solid 1px green" xml:lang="no"><zeta title="true" xml:lang="nb"><rho xml:lang="no-nb"><green>This text must be green</green></rho></zeta></rho></sigma>

@@ -1,0 +1,1 @@
+<kappa xmlns:xsl="http://www.w3.org/1999/XSL/Transform" string="another attribute value"><alpha xml:lang="en"/><theta xml:lang="en-US" xml:id="id1"><eta xml:lang="en-US"/><any content="true" xml:lang="no-nb" xml:id="id2"/><beta xml:lang="en-GB" xml:id="id3"><gamma insert="attribute" xml:id="id4"><green>This text must be green</green></gamma></beta></theta></kappa>

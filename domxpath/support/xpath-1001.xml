@@ -1,0 +1,1 @@
+<rho xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:lang="no-nb"><tau attr="attribute value"><alpha xml:lang="en-GB"/><phi number="attribute value"/><psi/><phi/><psi xml:lang="no" xml:id="id1"/><zeta number="this-is-att-value" xml:id="id2"/><psi attrib="attribute value" xml:id="id3"><green>This text must be green</green></psi></tau></rho>

@@ -1,0 +1,1 @@
+<any xmlns:xsl="http://www.w3.org/1999/XSL/Transform" attribute="attribute" xml:lang="nb"><theta xml:lang="no" xml:id="id1"><zeta><phi xml:lang="no" xml:id="id2"><pi attribute="another attribute value" xml:lang="en-US" xml:id="id3"><eta desciption="another attribute value" xml:lang="no" xml:id="id4"><green>This text must be green</green></eta></pi></phi></zeta></theta></any>

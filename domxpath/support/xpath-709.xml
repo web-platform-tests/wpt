@@ -1,0 +1,1 @@
+<omega xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:lang="en-GB"><psi xml:id="id1"/><phi><any xml:lang="nb"><rho xml:id="id2"/><omega insert="this.nodeValue" xml:id="id3"/><alpha><green>This text must be green</green></alpha></any></phi></omega>

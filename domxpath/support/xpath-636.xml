@@ -1,0 +1,1 @@
+<phi xmlns:xsl="http://www.w3.org/1999/XSL/Transform" desciption="solid 1px green"><tau attribute="solid 1px green" xml:id="id1"/><theta attr="another attribute value"/><chi name="this-is-att-value" xml:lang="en-US"/><xi xml:id="id2"/><theta desciption="_blank" xml:id="id3"><alpha object="_blank" xml:id="id4"><green>This text must be green</green></alpha></theta></phi>

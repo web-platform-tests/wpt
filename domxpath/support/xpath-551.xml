@@ -1,0 +1,1 @@
+<beta xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:lang="en-GB" xml:id="id1"><any xml:lang="nb"/><gamma data="this-is-att-value" xml:lang="en" xml:id="id2"/><phi src="100%" xml:id="id3"><any xml:lang="en-GB" xml:id="id4"><mu src="false"/><delta object="_blank" xml:id="id5"><phi xml:id="id6"><green>This text must be green</green></phi></delta></any></phi></beta>

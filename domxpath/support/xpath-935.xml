@@ -1,0 +1,1 @@
+<omicron xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><beta string="123456789" xml:lang="en-GB"/><epsilon or="this.nodeValue"><pi att="_blank" xml:lang="no-nb"><delta delete="solid 1px green"><rho or="this-is-att-value" xml:lang="en-GB"><alpha><green>This text must be green</green></alpha></rho></delta></pi></epsilon></omicron>

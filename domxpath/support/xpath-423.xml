@@ -1,0 +1,1 @@
+<lambda xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><iota xml:lang="no-nb" xml:id="id1"/><epsilon attribute="attribute-value" xml:lang="nb"/><zeta insert="content"/><any attr="attribute"><tau xml:lang="en-US" xml:id="id2"><green>This text must be green</green></tau></any></lambda>

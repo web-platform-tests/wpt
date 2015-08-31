@@ -1,0 +1,1 @@
+<eta xmlns:xsl="http://www.w3.org/1999/XSL/Transform" number="this.nodeValue" xml:id="id1"><delta content="true" xml:lang="no" xml:id="id2"/><alpha attrib="100%"/><eta xml:lang="en" xml:id="id3"><tau attr="attribute value" xml:id="id4"/><eta><lambda xml:id="id5"><iota><green>This text must be green</green></iota></lambda></eta></eta></eta>

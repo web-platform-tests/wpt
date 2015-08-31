@@ -1,0 +1,1 @@
+<tau xmlns:xsl="http://www.w3.org/1999/XSL/Transform" insert="this.nodeValue" xml:id="id1"><mu number="solid 1px green" xml:id="id2"><gamma xml:lang="en-US"/><sigma/><alpha or="this.nodeValue" xml:lang="no-nb"/><sigma and="another attribute value" xml:lang="en-GB"><green>This text must be green</green></sigma></mu></tau>

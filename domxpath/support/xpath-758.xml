@@ -1,0 +1,1 @@
+<delta xmlns:xsl="http://www.w3.org/1999/XSL/Transform" delete="this.nodeValue" xml:lang="no-nb"><alpha xml:id="id1"><psi xml:id="id2"><delta desciption="this-is-att-value" xml:lang="en-GB"/><tau number="attribute" xml:id="id3"/><rho xml:lang="no" xml:id="id4"/><phi class="content"><green>This text must be green</green></phi></psi></alpha></delta>

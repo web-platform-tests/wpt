@@ -1,0 +1,1 @@
+<omega xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:id="id1"><pi true="attribute value" xml:id="id2"/><nu xml:lang="en-US" xml:id="id3"/><omicron true="attribute value" xml:lang="en-GB"><psi title="true" xml:lang="en" xml:id="id4"/><lambda attribute="this-is-att-value" xml:id="id5"><green>This text must be green</green></lambda></omicron></omega>

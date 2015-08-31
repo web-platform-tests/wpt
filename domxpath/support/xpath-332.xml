@@ -1,0 +1,1 @@
+<beta xmlns:xsl="http://www.w3.org/1999/XSL/Transform" attribute="123456789" xml:lang="nb"><xi xml:id="id1"/><pi xml:lang="en"/><upsilon xml:lang="en"/><iota title="this.nodeValue"/><theta attribute="attribute-value" xml:id="id2"/><omega delete="123456789" xml:lang="en"><tau xml:lang="no"><green>This text must be green</green></tau></omega></beta>

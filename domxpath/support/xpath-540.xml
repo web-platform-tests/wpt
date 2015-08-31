@@ -1,0 +1,1 @@
+<omicron xmlns:xsl="http://www.w3.org/1999/XSL/Transform" object="123456789" xml:lang="nb"><phi object="_blank"/><omicron xml:lang="en-US" xml:id="id1"/><gamma attrib="attribute value" xml:lang="nb" xml:id="id2"><beta desciption="100%" xml:id="id3"><alpha xml:id="id4"><rho src="attribute value"><green>This text must be green</green></rho></alpha></beta></gamma></omicron>

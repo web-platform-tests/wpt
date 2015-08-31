@@ -1,0 +1,1 @@
+<chi xmlns:xsl="http://www.w3.org/1999/XSL/Transform" string="this-is-att-value" xml:lang="en"><mu and="this.nodeValue" xml:lang="en-US"><alpha src="123456789" xml:id="id1"><nu xml:lang="en" xml:id="id2"/><upsilon content="attribute" xml:id="id3"/><tau/><delta string="solid 1px green" xml:lang="en-US"><green>This text must be green</green></delta></alpha></mu></chi>

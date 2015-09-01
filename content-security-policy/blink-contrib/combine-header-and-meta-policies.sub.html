@@ -10,14 +10,15 @@
     <script src='../support/logTest.sub.js?logs=["TEST COMPLETE"]'></script>
     <script src="../support/alertAssert.sub.js?alerts=[]"></script>
     <!-- enforcing multiple policies:
-Content-Security-Policy: script-src 'self' 'unsafe-inline'; connect-src 'self'; styls-src 'self'
+Content-Security-Policy: script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self'
 Content-Security-Policy: img-src 'none'
 -->
 </head>
 
 <body>
-    This test checks that we enforce all the supplied policies. This test passe if it doesn&apos;t alert fail and if the style doesn&apos;t apply.
-    Check that a SecurityPolicyViolationEvent is fired upon blocking an image.
+<p>Test passes if both style and image are blocked and a report is generated for the
+    style block from the header-supplied policy.</p>
+
     <script>
         var img = document.createElement('img');
         img.src = '../support/fail.png';

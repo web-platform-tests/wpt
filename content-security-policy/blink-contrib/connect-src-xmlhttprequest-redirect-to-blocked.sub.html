@@ -23,7 +23,7 @@ connect-src 'self'; script-src 'self' 'unsafe-inline';
             log("FAIL " + "XMLHttpRequest.open() should not throw an exception.");
         }
         xhr.onload = function() {
-            //console.log(xhr.responseText);
+            //cons/**/ole.log(xhr.responseText);
             if(xhr.responseText == "FAIL") {
                 log("FAIL " + "XMLHttpRequest.send() should fail to follow the disallowed redirect.");
             } else {

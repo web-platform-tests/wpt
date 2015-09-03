@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>svg-from-guid</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src='../support/logTest.sub.js?logs=["TEST COMPLETE"]'></script>
+    <script src="../support/alertAssert.sub.js?alerts=[]"></script>
+    <script>
+        window.addEventListener("message", function(event) {
+            alert_assert(event.data);
+        }, false);
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                log("TEST COMPLETE");
+            }, 1);
+        });
+    </script>
+</head>
+
+<body>
+    <p>Tests that an SVG loaded in an iframe with a policy enforces it, not
+    the policy enforced by this parent frame.  The SVG should render and
+    not redirect to a different resource.</p>
+    <iframe name="test_target" id="test_iframe" src="data:image/svg+xml;charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pg0KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiANCiAgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHdpZHRoPSI2Y20iIGhlaWdodD0iNWNtIiB2aWV3Qm94PSIwIDAgNjAwIDUwMCINCiAgICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiPg0KICA8ZGVzYz5FeGFtcGxlIHNjcmlwdDAxIC0gcmVkaXJlY3Q8L2Rlc2M+DQoNCiAgPHNjcmlwdCB0eXBlPSJhcHBsaWNhdGlvbi9lY21hc2NyaXB0Ij4gPCFbQ0RBVEFbDQoJbG9jYXRpb24gPSAiL2NvbnRlbnQtc2VjdXJpdHktcG9saWN5L2JsaW5rLWNvbnRyaWIvcmVzb3VyY2VzL3Bvc3RtZXNzYWdlLWZhaWwuaHRtbCI7DQogIF1dPiA8L3NjcmlwdD4NCg0KICA8IS0tIEFjdCBvbiBlYWNoIGNsaWNrIGV2ZW50IC0tPg0KICA8Y2lyY2xlIG9uY2xpY2s9ImNpcmNsZV9jbGljayhldnQpIiBjeD0iMzAwIiBjeT0iMjI1IiByPSIxMDAiDQogICAgICAgICAgZmlsbD0ibGF3bmdyZWVuIi8+DQoNCiAgPHRleHQgeD0iMzAwIiB5PSIyNTAiDQogICAgICAgIGZvbnQtZmFtaWx5PSJWZXJkYW5hIg0KICAgICAgICBmb250LXNpemU9IjUwIg0KICAgICAgICB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4NCiAgICAgIFBBU1MNCiAgICA8L3RleHQ+DQo8L3N2Zz4="></iframe>
+    <div id="log"></div>
+</body>
+
+</html>

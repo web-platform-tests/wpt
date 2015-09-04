@@ -9,7 +9,6 @@
             document.body.appendChild(p);
             window.parent.postMessage(event.data, "*");
         }
-        
         window.addEventListener(
             "message",
             onMessage,
@@ -17,6 +16,5 @@
         );
     </script>
     <iframe src='{{GET[subframe]}}' name="deepframe"></iframe>
-
 </body>
 </html>

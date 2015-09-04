@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>single-frame-self-allowed</title>
     <script src="/resources/testharness.js"></script>
@@ -19,22 +18,19 @@ connect-src 'self' 'none'; script-src 'self' 'unsafe-inline'; frame-src 'self';
                 alert_assert(event.data);
             }
         }
-        
+
         window.addEventListener(
             "message",
             onMessage,
             false);
-        
+
         function startTest() {
             window.frames['frame1'].postMessage("hello frame1", "*");
         }
     </script>
 </head>
-
 <body>
-    
     <iframe src='http://{{host}}:{{ports[http][0]}}/content-security-policy/frame-ancestors/reporting-frame-allows-self.html' name="frame1"></iframe>
     <div id="log"></div>
 </body>
-
 </html>

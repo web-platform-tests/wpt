@@ -9,13 +9,13 @@
             document.body.appendChild(p);
             window.parent.postMessage(event.data, "*");
         }
-        
+
         window.addEventListener(
             "message",
             onMessage,
             false
         );
-        
+
         window.parent.postMessage("start test", "*");
     </script>
 </body>

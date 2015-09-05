@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Programmatically converted from a WebKit Reftest, please forgive resulting idiosyncracies.-->
+    <title>worker-connect-src-blocked</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="../support/logTest.sub.js?logs=[]"></script>
+    <script src='../support/alertAssert.sub.js?alerts=["TEST COMPLETE"]'></script>
+    <!-- enforcing policy:
+connect-src 'self'; script-src 'self' 'unsafe-inline';
+-->
+
+</head>
+<p>This test loads a worker, from a guid.
+    The worker should be blocked from making an XHR
+    to www1 as this resource's policy is connect-src 'self
+    and a guid Worker should inherit is parent's policy.
+    A report should be sent to the report-uri specified
+    with this resource.</p>
+<body>
+    <script>
+        try {
+            var blob = new Blob([
+                "postMessage('FAIL');" +
+                "postMessage('TEST COMPLETE');"
+                ],
+                {type : 'application/javascript'});
+            var url = URL.createObjectURL(blob);
+            var worker = new Worker(url);
+            worker.onmessage = function(event) {
+                alert_assert(event.data);
+            };
+        } catch (e) {
+            alert_assert('Threw instead of silently blocking.' + e.message);
+        }
+        function timeout() {
+            alert_assert('TEST COMPLETE');
+        }
+    </script>
+    <div id="log"></div>
+     <script async defer src="../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=script-src%20&apos;self&apos;%20&apos;unsafe-inline&apos;"></script>
+</body>
+
+</html>

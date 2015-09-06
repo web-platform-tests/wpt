@@ -9,20 +9,33 @@ gulp.task("default", [
     "orthogonal-parent-shrink-to-fit",
     "text-orientation"]);
 
+gulp.task("test", ["server", "watch"]);
+
 gulp.task("watch", function () {
     gulp.watch("orthogonal-parent-shrink-to-fit.ejs", ["orthogonal-parent-shrink-to-fit"]);
     gulp.watch("text-orientation.ejs", ["text-orientation"]);
 });
 
-gulp.task("orthogonal-parent-shrink-to-fit", function () {
-    generateWithAffixes("orthogonal-parent-shrink-to-fit", "-001", -1, 24);
-});
+gulp.task("server", function () {
+    var connect = require("connect");
+    var serveIndex = require("serve-index");
+    var serveStatic = require("serve-static");
+    var directory = "../../..";
+    var port = 8000;
+    connect()
+        .use(serveIndex(directory))
+        .use(serveStatic(directory))
+        .listen(port);
+    console.log("Listening on port " + port);
+})
+
+gulpTaskFromTemplateWithAffixes("orthogonal-parent-shrink-to-fit", "-001", -1, 24);
 
 gulp.task("text-orientation", function () {
     return orientation.generate(argv);
 });
 
-function generateWithAffixes(name, suffix, min, lim) {
+function gulpTaskFromTemplateWithAffixes(name, suffix, min, lim) {
     if (argv.nocombo && min < 0)
         min = 0;
     if (argv.nochild && lim > 0)

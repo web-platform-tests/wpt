@@ -1,24 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Variables Test: custom property names start with "var-" in lower case</title>
+    <title>CSS Variables Test: custom property names are case-sensitive</title>
     <meta charset="UTF-8">
     <link rel="author" title="Noah Collins" href="mailto:noahcollins@gmail.com">
     <style type="text/css">
-        :root {
-            /* these should be VALID custom property names */
-            var-veryblue:   #22e;
-            var-AlsoBlue:   #22e;
-
-            /* these should be INVALID custom property names */
-            VAR-veryred:   #f00;
-            Var-AlsoRed:   #f00;
-        }
-
-        .blue-good-1  { color: var(veryblue); }
-        .blue-good-2  { color: var(AlsoBlue); }
-        .red-bad-1    { color: var(veryred);  }
-        .red-bad-2    { color: var(AlsoRed);  }
+        .blue-good-1  { color: #22e; }
+        .blue-good-2  { color: #22e; }
     </style>
 </head>
 <body>

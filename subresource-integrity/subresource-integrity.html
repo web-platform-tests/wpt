@@ -246,15 +246,15 @@
     ).execute();
 
     new SRIScriptTest(
-        true,
+        false,
         "Cross-origin, not CORS request, with correct hash",
         xorigin_anon_script,
         "sha256-51AjITq701Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="
     ).execute();
 
     new SRIScriptTest(
-        true,
-        "Cross-origin, not CORS request, with hash masmatch",
+        false,
+        "Cross-origin, not CORS request, with hash mismatch",
         xorigin_anon_script,
         "sha256-deadbeef01Y0yKSx3/UoIKtIY2UQ9+H8WGyyMuOWOC0="
     ).execute();
@@ -428,7 +428,7 @@
 
     new SRIStyleTest(
         style_tests,
-        true,
+        false,
         "Cross-origin, not CORS request, with correct hash",
         {
             href: xorigin_anon_style,
@@ -438,8 +438,8 @@
 
     new SRIStyleTest(
         style_tests,
-        true,
-        "Cross-origin, not CORS request, with hash masmatch",
+        false,
+        "Cross-origin, not CORS request, with hash mismatch",
         {
             href: xorigin_anon_style,
             integrity: "sha256-deadbeefCzHgdJ7wOccM8L89n4bhcJMz3F+SPLT7YZk="

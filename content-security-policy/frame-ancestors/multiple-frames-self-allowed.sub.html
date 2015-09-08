@@ -12,7 +12,6 @@ connect-src 'self' 'none'; script-src 'self' 'unsafe-inline'; frame-src 'self';
     <script>
         var startTestCtr = 0;
         function onMessage(event) {
-            //console.log(event.data);
             if(event.data == "start test") {
                 startTestCtr++;
                 if(startTestCtr == 2) {

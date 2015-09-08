@@ -6,9 +6,10 @@
     <link rel="help" href="http://www.w3.org/TR/css-transforms-1/#transform-property">
     <link rel="help" href="http://www.w3.org/TR/css-transforms-1/#two-d-transform-functions">
     <meta name="flags" content="dom">
-    <meta name="assert" content="Check if transform sets translate(-INFINITE, -INFINITE) that an expection is to be thrown"> 
+    <meta name="assert" content="Check if transform sets translate(-INFINITE, -INFINITE),
+                                 transform property returns initial value.">
     <script type="text/javascript" src="../../resources/testharness.js"></script>
-    <script type="text/javascript" src="../../resources/testharnessreport.js"></script>    
+    <script type="text/javascript" src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
     <div id="test"></div>
@@ -16,10 +17,9 @@
     <script type="text/javascript">
     test(function() {
         document.getElementById("test").style.transform = "translate(-INFINITE, -INFINITE)";
-        assert_throws(null, function() {
-            document.getElementById("test").style.getPropertyCSSValue("transform").cssText
-        })
+        var value = window.getComputedStyle(document.getElementById("test")).getPropertyValue("transform");
+        assert_equals(value, "none", "transform property value should be none");
     }, "transform_translate_min");
-    </script>    
+    </script>
 </body>
 </html>

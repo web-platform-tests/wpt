@@ -12,7 +12,7 @@ import optparse
 import shutil
 from apiclient import apiclient
 from w3ctestlib import Sources, Utils, Suite, Indexer
-from mercurial import hg, ui
+from mercurial import ui
 
 
 
@@ -22,7 +22,7 @@ class Builder(object):
         self.ui = ui
         self.skipDirs = ('support')
         self.rawDirs = {'other-formats': 'other'}
-        self.sourceTree = Sources.SourceTree(hg.repository(ui, '.'))
+        self.sourceTree = Sources.SourceTree()
         self.sourceCache = Sources.SourceCache(self.sourceTree)
         self.cacheDir = 'tools/cache'
         self.outputPath = outputPath.rstrip('/') if (outputPath) else 'dist'

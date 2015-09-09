@@ -119,7 +119,7 @@
             e.addEventListener("error", function() {
                 test.step(function() {
                     var background = window.getComputedStyle(div, null).getPropertyValue("background-color");
-                    assert_equals(background, "rgba(0, 0, 0, 0)");
+                    assert_not_equals(background, that.passValue);
                     test.done();
                 });
             });

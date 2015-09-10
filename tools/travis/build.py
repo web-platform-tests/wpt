@@ -1,33 +1,24 @@
 import os
 import shutil
 import subprocess
-import sys
 
 import vcs
 
-lockfile = None
-
 here = os.path.abspath(os.path.dirname(__file__))
 
-remote_source = "https://hg.csswg.org/test/"
-source_dir = os.path.join(here, "hg")
+source_dir = os.path.join(here, "..", "..")
 
-remote_built = "git@github.com:jgraham/css-test-built.git"
+remote_built = "https://github.com/jgraham/css-test-built.git"
 built_dir = os.path.join(here, "css-test-built")
 
 local_files = ["manifest", "serve", "serve.py", ".gitmodules", "tools", "resources",
                "config.default.json"]
 
-lock_path = os.path.join(here, ".lock")
-
-def update_source():
-    if not os.path.exists(source_dir) or not os.path.exists(os.path.join(source_dir, ".hg")):
-        hg = vcs.hg
-        hg("clone", remote_source, source_dir)
-    else:
-        hg = vcs.bind_to_repo(vcs.hg, source_dir)
-        hg("pull")
-        hg("update", "-r", "a2a3c34d4f34")
+def fetch_submodules():
+    hg = vcs.hg
+    for tool in ["apiclient", "w3ctestlib"]:
+        hg("clone", "https://hg.csswg.org/dev/%s" % tool,
+           os.path.join(source_dir, "tools", tool))
 
 def update_dist():
     if not os.path.exists(built_dir) or not vcs.is_git_root(built_dir):
@@ -40,8 +31,11 @@ def update_dist():
             git("checkout", "master")
             git("merge", "--ff-only", "origin/master")
 
+    git = vcs.bind_to_repo(vcs.git, built_dir)
+    git("config", "user.email", "CssBuildBot@users.noreply.github.com")
+    git("config", "user.name", "CSS Build Bot")
+
 def setup_virtualenv():
-    global lockfile
     virtualenv_path = os.path.join(here, "_virtualenv")
 
     if not os.path.exists(virtualenv_path):
@@ -54,8 +48,6 @@ def setup_virtualenv():
     subprocess.check_call(["pip", "-q", "install", "mercurial"])
     subprocess.check_call(["pip", "-q", "install", "html5lib"])
     subprocess.check_call(["pip", "-q", "install", "lxml"])
-    subprocess.check_call(["pip", "-q", "install", "lockfile"])
-    import lockfile
 
 
 def update_template():
@@ -67,8 +59,8 @@ def update_template():
                           cwd=template_dir)
 
 def update_to_changeset(changeset):
-    hg = vcs.bind_to_repo(vcs.hg, source_dir)
-    hg("update", changeset)
+    git = vcs.bind_to_repo(vcs.git, source_dir)
+    git("checkout", changeset)
 
 def build_tests():
     subprocess.check_call(["python", os.path.join(source_dir, "tools", "build.py")],
@@ -117,68 +109,38 @@ def add_changeset(changeset):
     git("add", os.path.relpath(dest_path, built_dir))
 
 def commit(changeset):
-    git = vcs.bind_to_repo(vcs.git, built_dir)
-    hg = vcs.bind_to_repo(vcs.hg, source_dir)
-    msg = hg("log", "-r", changeset, "--template", "{desc}")
+    git = vcs.git
+
+    msg = git("log", "-r", changeset, "-n", "1", "--pretty=%B", repo=source_dir)
     msg = "%s\n\nBuild from revision %s" % (msg, changeset)
-    git("commit", "-m", msg)
+
+    git("commit", "-m", msg, repo=built_dir)
 
 def get_new_commits():
-    hg = vcs.bind_to_repo(vcs.hg, source_dir)
+    git = vcs.bind_to_repo(vcs.git, source_dir)
     commit_path = os.path.join(built_dir, "source_rev")
-    if os.path.exists(commit_path):
-        with open(commit_path) as f:
-            prev_commit = f.read().strip()
-        changesets = hg("log", "--template", "{node}\n", "-r", "%s.." % prev_commit).strip().split("\n")[1:]
-    else:
-        changesets = [hg("log", "--template", "{node}\n", "-r", "tip")]
+    with open(commit_path) as f:
+        prev_commit = f.read().strip()
 
-    return changesets
-
-def push():
-    git = vcs.bind_to_repo(vcs.git, built_dir)
-    success = False
-    for i in range(2):
-        try:
-            git("push", "origin", "HEAD:master")
-        except subprocess.CalledProcessError:
-            if i == 0:
-                git("fetch", "origin")
-                git("rebase", "origin/master")
-        else:
-            success = True
-            break
-    if not success:
-        print "Push failed"
-
+    commit_range = "%s..%s" % (prev_commit, os.environ['TRAVIS_COMMIT'])
+    return reversed(git("log", "--pretty=%H", "-r", commit_range).strip().split("\n"))
 
 def main():
     setup_virtualenv()
-    lock = lockfile.LockFile(lock_path)
     try:
-        lock.acquire(timeout=30)
-    except lockfile.LockTimeout:
-        print "Update process is already running; returning"
-        sys.exit(1)
-    try:
-        try:
-            import template
-        except ImportError:
-            update_template()
-        update_source()
-        update_dist()
-        for changeset in get_new_commits():
-            update_to_changeset(changeset)
-            old_files = list_current_files()
-            build_tests()
-            new_files = copy_files()
-            update_git(old_files, new_files)
-            add_changeset(changeset)
-            commit(changeset)
-        #push()
-    finally:
-        lock.release()
+        import template
+    except ImportError:
+        update_template()
+    fetch_submodules()
+    update_dist()
+    for changeset in get_new_commits():
+        update_to_changeset(changeset)
+        old_files = list_current_files()
+        build_tests()
+        new_files = copy_files()
+        update_git(old_files, new_files)
+        add_changeset(changeset)
+        commit(changeset)
 
 if __name__ == "__main__":
     main()
-

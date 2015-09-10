@@ -9,11 +9,11 @@ lockfile = None
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-remote_hg = "https://hg.csswg.org/test/"
-hg_dir = os.path.join(here, "hg")
+remote_source = "https://hg.csswg.org/test/"
+source_dir = os.path.join(here, "hg")
 
-remote_git = "git@github.com:jgraham/css-test-built.git"
-out_dir = os.path.join(here, "css-test-built")
+remote_built = "git@github.com:jgraham/css-test-built.git"
+built_dir = os.path.join(here, "css-test-built")
 
 local_files = ["manifest", "serve", "serve.py", ".gitmodules", "tools", "resources",
                "config.default.json"]
@@ -21,20 +21,20 @@ local_files = ["manifest", "serve", "serve.py", ".gitmodules", "tools", "resourc
 lock_path = os.path.join(here, ".lock")
 
 def update_source():
-    if not os.path.exists(hg_dir) or not os.path.exists(os.path.join(hg_dir, ".hg")):
+    if not os.path.exists(source_dir) or not os.path.exists(os.path.join(source_dir, ".hg")):
         hg = vcs.hg
-        hg("clone", remote_hg, hg_dir)
+        hg("clone", remote_source, source_dir)
     else:
-        hg = vcs.bind_to_repo(vcs.hg, hg_dir)
+        hg = vcs.bind_to_repo(vcs.hg, source_dir)
         hg("pull")
         hg("update", "-r", "a2a3c34d4f34")
 
 def update_dist():
-    if not os.path.exists(out_dir) or not vcs.is_git_root(out_dir):
+    if not os.path.exists(built_dir) or not vcs.is_git_root(built_dir):
         git = vcs.git
-        git("clone", remote_git, out_dir)
+        git("clone", remote_built, built_dir)
     else:
-        git = vcs.bind_to_repo(vcs.git, out_dir)
+        git = vcs.bind_to_repo(vcs.git, built_dir)
         git("fetch")
         if "origin/master" in git("branch", "-a"):
             git("checkout", "master")
@@ -67,37 +67,37 @@ def update_template():
                           cwd=template_dir)
 
 def update_to_changeset(changeset):
-    hg = vcs.bind_to_repo(vcs.hg, hg_dir)
+    hg = vcs.bind_to_repo(vcs.hg, source_dir)
     hg("update", changeset)
 
 def build_tests():
-    subprocess.check_call(["python", os.path.join(hg_dir, "tools", "build.py")],
-                           cwd=hg_dir)
+    subprocess.check_call(["python", os.path.join(source_dir, "tools", "build.py")],
+                           cwd=source_dir)
 
 def list_current_files():
-    git = vcs.bind_to_repo(vcs.git, out_dir)
+    git = vcs.bind_to_repo(vcs.git, built_dir)
     paths = [item for item in git("ls-tree", "-r", "--full-name", "--name-only", "HEAD").split("\n")
              if item and item not in local_files]
     return set(paths)
 
 def copy_files():
-    dist_path = os.path.join(hg_dir, "dist")
+    dist_path = os.path.join(source_dir, "dist")
     dest_paths = []
     for dir_name, dir_names, file_names in os.walk(dist_path):
         for file_name in file_names:
             src_path = os.path.join(dir_name, file_name)
             rel_path = os.path.relpath(src_path, dist_path)
-            dest_path = os.path.join(out_dir, rel_path)
+            dest_path = os.path.join(built_dir, rel_path)
             dest_dir = os.path.dirname(dest_path)
             if not os.path.exists(dest_dir):
                 os.makedirs(dest_dir)
             shutil.copy2(src_path, dest_path)
-            dest_paths.append(os.path.relpath(dest_path, out_dir))
+            dest_paths.append(os.path.relpath(dest_path, built_dir))
 
     return set(dest_paths)
 
 def update_git(old_files, new_files):
-    git = vcs.bind_to_repo(vcs.git, out_dir)
+    git = vcs.bind_to_repo(vcs.git, built_dir)
 
     print old_files - new_files
     for item in old_files - new_files:
@@ -109,23 +109,23 @@ def update_git(old_files, new_files):
     git("add", "-u")
 
 def add_changeset(changeset):
-    git = vcs.bind_to_repo(vcs.git, out_dir)
+    git = vcs.bind_to_repo(vcs.git, built_dir)
 
-    dest_path = os.path.join(out_dir, "source_rev")
+    dest_path = os.path.join(built_dir, "source_rev")
     with open(dest_path, "w") as f:
         f.write(changeset)
-    git("add", os.path.relpath(dest_path, out_dir))
+    git("add", os.path.relpath(dest_path, built_dir))
 
 def commit(changeset):
-    git = vcs.bind_to_repo(vcs.git, out_dir)
-    hg = vcs.bind_to_repo(vcs.hg, hg_dir)
+    git = vcs.bind_to_repo(vcs.git, built_dir)
+    hg = vcs.bind_to_repo(vcs.hg, source_dir)
     msg = hg("log", "-r", changeset, "--template", "{desc}")
     msg = "%s\n\nBuild from revision %s" % (msg, changeset)
     git("commit", "-m", msg)
 
 def get_new_commits():
-    hg = vcs.bind_to_repo(vcs.hg, hg_dir)
-    commit_path = os.path.join(out_dir, "source_rev")
+    hg = vcs.bind_to_repo(vcs.hg, source_dir)
+    commit_path = os.path.join(built_dir, "source_rev")
     if os.path.exists(commit_path):
         with open(commit_path) as f:
             prev_commit = f.read().strip()
@@ -136,7 +136,7 @@ def get_new_commits():
     return changesets
 
 def push():
-    git = vcs.bind_to_repo(vcs.git, out_dir)
+    git = vcs.bind_to_repo(vcs.git, built_dir)
     success = False
     for i in range(2):
         try:

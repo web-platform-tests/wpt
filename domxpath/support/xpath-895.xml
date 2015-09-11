@@ -1,0 +1,1 @@
+<rho xmlns:xsl="http://www.w3.org/1999/XSL/Transform" token="solid 1px green" xml:lang="nb"><omicron xml:id="id1"/><upsilon xml:lang="en-GB"/><epsilon xml:id="id2"><epsilon xml:lang="no" xml:id="id3"/><omicron/><delta abort="100%"/><phi xml:lang="en-GB"><green>This text must be green</green></phi></epsilon></rho>

@@ -1,0 +1,1 @@
+<omicron xmlns:xsl="http://www.w3.org/1999/XSL/Transform" content="another attribute value" xml:id="id1"><lambda xml:id="id2"><mu xml:lang="nb"><theta xml:lang="nb"><kappa delete="this-is-att-value" xml:id="id3"/><kappa xml:id="id4"><green>This text must be green</green></kappa></theta></mu></lambda></omicron>

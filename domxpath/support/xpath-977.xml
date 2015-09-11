@@ -1,0 +1,1 @@
+<iota xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:id="id1"><nu abort="attribute-value" xml:lang="no-nb" xml:id="id2"><delta xml:lang="no-nb"><epsilon src="123456789" xml:lang="en-GB" xml:id="id3"><iota xml:lang="en-US" xml:id="id4"><pi abort="false" xml:lang="no-nb"><upsilon><green>This text must be green</green></upsilon></pi></iota></epsilon></delta></nu></iota>

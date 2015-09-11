@@ -1,0 +1,1 @@
+<iota xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:lang="no"><psi attr="attribute" xml:id="id1"/><eta delete="attribute"/><xi object="content"><pi att="solid 1px green" xml:id="id2"/><xi abort="this.nodeValue" xml:id="id3"><green>This text must be green</green></xi></xi></iota>

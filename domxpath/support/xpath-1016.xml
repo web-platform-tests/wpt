@@ -1,0 +1,1 @@
+<upsilon xmlns:xsl="http://www.w3.org/1999/XSL/Transform" src="this-is-att-value" xml:id="id1"><chi attrib="attribute-value" xml:lang="nb"/><eta xml:id="id2"><phi xml:lang="no-nb"><kappa and="true"><mu string="100%" xml:id="id3"><tau name="attribute" xml:lang="en" xml:id="id4"/><upsilon><green>This text must be green</green></upsilon></mu></kappa></phi></eta></upsilon>

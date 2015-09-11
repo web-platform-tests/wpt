@@ -1,0 +1,1 @@
+<iota xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:id="id1"><xi insert="attribute value" xml:lang="en"/><epsilon><delta xml:lang="nb"/><pi/><beta false="true" xml:lang="no-nb" xml:id="id2"><beta data="another attribute value" xml:id="id3"><gamma xml:lang="en-US"><green>This text must be green</green></gamma></beta></beta></epsilon></iota>

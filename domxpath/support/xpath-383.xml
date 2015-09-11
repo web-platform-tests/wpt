@@ -1,0 +1,1 @@
+<phi xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:lang="en-GB" xml:id="id1"><psi xml:lang="nb"/><phi xml:lang="nb" xml:id="id2"/><omicron title="another attribute value"><lambda token="solid 1px green" xml:lang="en" xml:id="id3"/><mu delete="100%" xml:lang="no"/><eta/><delta token="true" xml:id="id4"><green>This text must be green</green></delta></omicron></phi>

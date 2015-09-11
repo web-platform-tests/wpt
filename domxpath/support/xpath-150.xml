@@ -1,0 +1,1 @@
+<phi xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xml:id="id1"><pi xml:lang="no" xml:id="id2"><phi xml:id="id3"/><upsilon xml:id="id4"><sigma delete="solid 1px green"/><kappa true="another attribute value" xml:id="id5"/><alpha title="attribute value"><green>This text must be green</green></alpha></upsilon></pi></phi>

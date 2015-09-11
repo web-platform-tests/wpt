@@ -1,0 +1,1 @@
+<psi xmlns:xsl="http://www.w3.org/1999/XSL/Transform" attr="this-is-att-value" xml:lang="no-nb" xml:id="id1"><epsilon att="content" xml:lang="en"/><beta xml:lang="en"><kappa delete="100%" xml:id="id2"/><kappa/><omega xml:lang="en-GB"><green>This text must be green</green></omega></beta></psi>

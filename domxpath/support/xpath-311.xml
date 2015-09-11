@@ -1,0 +1,1 @@
+<eta xmlns:xsl="http://www.w3.org/1999/XSL/Transform" false="123456789" xml:lang="no-nb" xml:id="id1"><zeta xml:id="id2"><gamma xml:id="id3"><beta title="attribute"/><xi att="content" xml:id="id4"/><sigma and="this-is-att-value" xml:id="id5"/><zeta xml:lang="en-GB" xml:id="id6"><xi><omicron><green>This text must be green</green></omicron></xi></zeta></gamma></zeta></eta>

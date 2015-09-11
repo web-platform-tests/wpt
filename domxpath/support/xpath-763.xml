@@ -1,0 +1,1 @@
+<omega xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><tau xml:lang="no"/><beta xml:lang="nb" xml:id="id1"><nu xml:lang="no-nb"><eta src="123456789" xml:lang="no" xml:id="id2"><phi xml:lang="en"/><eta xml:lang="nb" xml:id="id3"><rho xml:id="id4"><psi attribute="this.nodeValue" xml:lang="nb"><green>This text must be green</green></psi></rho></eta></eta></nu></beta></omega>

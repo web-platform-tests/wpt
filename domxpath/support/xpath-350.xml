@@ -1,0 +1,1 @@
+<upsilon xmlns:xsl="http://www.w3.org/1999/XSL/Transform" or="solid 1px green" xml:id="id1"><epsilon or="100%" xml:id="id2"><psi or="this-is-att-value" xml:id="id3"><theta insert="attribute value"><theta title="attribute value"/><rho><green>This text must be green</green></rho></theta></psi></epsilon></upsilon>

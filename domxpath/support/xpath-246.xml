@@ -1,0 +1,1 @@
+<psi xmlns:xsl="http://www.w3.org/1999/XSL/Transform" number="solid 1px green" xml:lang="en"><xi name="solid 1px green"><omega insert="123456789"/><psi xml:id="id1"/><delta src="123456789"/><gamma xml:lang="no"/><mu xml:lang="en-US" xml:id="id2"/><sigma attrib="_blank" xml:id="id3"><green>This text must be green</green></sigma></xi></psi>

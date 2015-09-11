@@ -135,7 +135,7 @@ def maybe_push():
     git = vcs.bind_to_repo(vcs.git, built_dir)
 
     out = "https://%s@github.com/jgraham/css-test-built.git" % os.environ["TOKEN"]
-    git("remote", "add", "out", out)
+    git("remote", "add", "out", out, quiet=True)
 
     for i in range(2):
         try:

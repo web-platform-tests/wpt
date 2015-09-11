@@ -6,6 +6,7 @@ def vcs(bin_name):
     def inner(command, *args, **kwargs):
         repo = kwargs.pop("repo", None)
         log_error = kwargs.pop("log_error", True)
+        quiet = kwargs.pop("quiet", False)
         if kwargs:
             raise TypeError, kwargs
 
@@ -16,7 +17,8 @@ def vcs(bin_name):
             proc_kwargs["cwd"] = repo
 
         command_line = [bin_name, command] + args
-        print >> sys.stderr, " ".join(command_line[:10])
+        if not quiet:
+            print >> sys.stderr, " ".join(command_line[:10])
         try:
             return subprocess.check_output(command_line, stderr=subprocess.STDOUT, **proc_kwargs)
         except subprocess.CalledProcessError as e:

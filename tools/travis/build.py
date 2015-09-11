@@ -125,6 +125,30 @@ def get_new_commits():
     commit_range = "%s..%s" % (prev_commit, os.environ['TRAVIS_COMMIT'])
     return reversed(git("log", "--pretty=%H", "-r", commit_range).strip().split("\n"))
 
+def maybe_push():
+    if os.environ["TRAVIS_PULL_REQUEST"] != "false":
+        return
+
+    if os.environ["TRAVIS_BRANCH"] != "master":
+        return
+
+    git = vcs.bind_to_repo(vcs.git, built_dir)
+
+    out = "https://%s@github.com/jgraham/css-test-built.git" % os.environ["TOKEN"]
+    git("remote", "add", "out", out)
+
+    for i in range(2):
+        try:
+            git("push", "out", "HEAD:master")
+        except subprocess.CalledProcessError:
+            if i == 0:
+                git("fetch", "origin")
+                git("rebase", "origin/master")
+        else:
+            return
+
+    raise Exception("Push failed")
+
 def main():
     setup_virtualenv()
     try:
@@ -141,6 +165,7 @@ def main():
         update_git(old_files, new_files)
         add_changeset(changeset)
         commit(changeset)
+    maybe_push()
 
 if __name__ == "__main__":
     main()

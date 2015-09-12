@@ -12,13 +12,13 @@
   </head>
   <body>
     <p>Delete one character from the following text input:</p>
-    <input type="text" value="0123456789" maxlength="5" id="testinput">
+    <input type="text" value="0123456789" maxlength="5" autocomplete="off" id="testinput">
 
     <div id="log"></div>
     <script>
 var input = document.getElementById('testinput');
 setup({explicit_timeout: true, explicit_done: true});
-on_event(input, "change", function () {
+on_event(input, "input", function () {
   test(function() {
     assert_class_string(input.validity, 'ValidityState', 'HTMLInputElement.validity must be a ValidityState instance');
     assert_true(input.validity.tooLong, "tooLong must be true since the user just changed the input's value and the value exceeds the maxlength");

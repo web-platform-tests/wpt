@@ -219,10 +219,14 @@ var metadata_generator = {
      * Metadata is in pretty-printed JSON format
      */
     generateSource: function() {
+        /* "\/" is used instead of a plain forward slash so that the contents
+        of testharnessreport.js can (for convenience) be copy-pasted into a
+        script tag without issue. Otherwise, the HTML parser would think that
+        the script ended in the middle of that string literal. */
         var source =
             '<script id="metadata_cache">/*\n' +
             this.jsonifyObject(this.currentMetadata, '') + '\n' +
-            '*/</script>\n';
+            '*/<\/script>\n';
         return source;
     },
 

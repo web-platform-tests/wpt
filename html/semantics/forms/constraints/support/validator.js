@@ -278,7 +278,9 @@ var validator = {
     var old_value = ctl.value;
     ctl.value = "a";
     ctl.value = old_value;
-    ctl.setSelectionRange(ctl.value.length, ctl.value.length);
+    if (ctl.type !== 'email') {
+      ctl.setSelectionRange(ctl.value.length, ctl.value.length);
+    }
     document.execCommand("Delete");
     document.disgnMode = "off";
   },

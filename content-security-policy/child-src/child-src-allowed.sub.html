@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>frame-src-allowed</title>
+    <title>child-src-allowed</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src='../support/logTest.sub.js?logs=["PASS IFrame %231 generated a load event."]'></script>
@@ -31,13 +31,13 @@
                     }
                 }
                 assert_unreached('unexpected alert: ' + msg);
-                t_log.done();
+                t_alert.done();
             });
         }
 
     </script>
     <!-- enforcing policy:
-Content-Security-Policy: frame-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self';
+Content-Security-Policy: child-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self';
 -->
     <p>
         This iframe should be allowed.

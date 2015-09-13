@@ -273,14 +273,14 @@ var validator = {
   },
 
   set_dirty: function(ctl) {
-    document.disgnMode = "on";
+    document.designMode = "on";
     ctl.focus();
     var old_value = ctl.value;
     ctl.value = "a";
     ctl.value = old_value;
     ctl.setSelectionRange(ctl.value.length, ctl.value.length);
     document.execCommand("Delete");
-    document.disgnMode = "off";
+    document.designMode = "off";
   },
 
   pre_check: function(ctl, item) {

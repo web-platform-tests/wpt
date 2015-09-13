@@ -248,8 +248,8 @@ The test title for sinple page tests is always taken from `document.title`.
 ## Making assertions ##
 
 Functions for making assertions start `assert_`. The full list of
-asserts avaliable is documented in the [asserts](#asserts) section
-below.. The general signature is
+asserts avaliable is documented in the [asserts](#list-of-assertions) section
+below. The general signature is
 
 ```js
 assert_something(actual, expected, description)

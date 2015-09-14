@@ -6,12 +6,31 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-test(function() {
+function test_all(all) {
   assert_false(Boolean(document.all));
+
   assert_true(document.all == undefined);
   assert_true(document.all == null);
+  assert_false(document.all != undefined);
+  assert_false(document.all != null);
+
   assert_true(document.all !== undefined);
   assert_true(document.all !== null);
+  assert_false(document.all === undefined);
+  assert_false(document.all === null);
+
   assert_equals(typeof document.all, "undefined");
+
+  if (document.all) { assert_true(false); }
+
+  if (!document.all) {}
+  else { assert_true(false); }
+}
+
+test(function() {
+  test_all(document.all);
+
+  var all = document.all;
+  test_all(all);
 }, "'unusual behaviors'")
 </script>

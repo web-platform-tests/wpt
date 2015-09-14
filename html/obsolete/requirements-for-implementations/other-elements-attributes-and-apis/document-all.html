@@ -6,7 +6,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-function test_all(all) {
+test(function () {
   assert_false(Boolean(document.all));
 
   assert_true(document.all == undefined);
@@ -25,12 +25,28 @@ function test_all(all) {
 
   if (!document.all) {}
   else { assert_true(false); }
-}
+}, "'unusual behaviors' of document.all")
 
 test(function() {
-  test_all(document.all);
-
   var all = document.all;
-  test_all(all);
-}, "'unusual behaviors'")
+
+  assert_false(Boolean(all));
+
+  assert_true(all == undefined);
+  assert_true(all == null);
+  assert_false(all != undefined);
+  assert_false(all != null);
+
+  assert_true(all !== undefined);
+  assert_true(all !== null);
+  assert_false(all === undefined);
+  assert_false(all === null);
+
+  assert_equals(typeof all, "undefined");
+
+  if (all) { assert_true(false); }
+
+  if (!all) {}
+  else { assert_true(false); }
+}, "'unusual behaviors' of document.all with assignment")
 </script>

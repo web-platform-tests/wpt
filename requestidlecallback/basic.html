@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <title>window.requestIdleCallback exists</title>
 <link rel="author" title="Ross McIlroy" href="mailto:rmcilroy@chromium.org" />
-<link rel="help" href="http://www.w3.org/TR/requestidlecallback/"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link rel="stylesheet" href="/resources/testharness.css" />
 <script>
 test(function() {
   assert_equals(typeof window.requestIdleCallback, "function");
@@ -25,14 +23,14 @@ test(function() {
 async_test(function() {
   // Check whether requestIdleCallback schedules a callback which gets executed
   // and the deadline argument is passed correctly.
-  requestIdleCallback(this.step_func(function(deadline) {
-    assert_equals(typeof deadline, "object", "IdleDeadline MUST be passed to callback.");
+  requestIdleCallback(this.step_func_done(function(deadline) {
+    assert_equals(arguments.length, 1, "Only one argument should b passed to callback.");
+    assert_class_string(deadline, "IdleCallbackDeadline");
     assert_equals(typeof deadline.timeRemaining, "function", "IdleDeadline.timeRemaining MUST be a function which returns the time remaining in milliseconds");
     assert_equals(typeof deadline.timeRemaining(), "number", "IdleDeadline.timeRemaining MUST return a double of the time remaining in milliseconds");
     assert_true(deadline.timeRemaining() <= 50, "IdleDeadline.timeRemaining() MUST be less than or equal to 50ms in the future.");
     assert_equals(typeof deadline.didTimeout, "boolean", "IdleDeadline.didTimeout MUST be a boolean");
     assert_false(deadline.didTimeout, "IdleDeadline.didTimeout MUST be false if requestIdleCallback wasn't scheduled due to a timeout");
-    this.done();
   }));
 }, 'requestIdleCallback schedules callbacks');
 
@@ -49,6 +47,5 @@ async_test(function() {
 }, 'cancelIdleCallback cancels callbacks');
 
 </script>
-<h1>Description</h1>
-<p>This test validates that window.requestIdleCallback and window.cancelIdleCallback exist and are a functions.</p>
+<h1>Basic requestIdleCallback Tests</h1>
 <div id="log"></div>

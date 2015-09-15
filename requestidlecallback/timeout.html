@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <title>window.requestIdleCallback deals with timeouts correctly</title>
 <link rel="author" title="Ross McIlroy" href="mailto:rmcilroy@chromium.org" />
-<link rel="help" href="http://www.w3.org/TR/requestidlecallback/"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<link rel="stylesheet" href="/resources/testharness.css" />
 <script>
 
 async_test(function() {
@@ -12,10 +10,9 @@ async_test(function() {
   // is busy.
   var busy_raf_loop_iterations_remaining = 10;  // Should take 20 * 40 = 400ms
   var idle_callback_scheduled;
-  var idle_callback = this.step_func(function(deadline) {
+  var idle_callback = this.step_func_done(function(deadline) {
     assert_false(deadline.didTimeout, "IdleDeadline.didTimeout MUST be false if requestIdleCallback wasn't scheduled due to a timeout");
     assert_equals(busy_raf_loop_iterations_remaining, 0, "Busy rAF loop should be finished by the time we get scheduled");
-    this.done();
   });
 
   var busy_raf_loop_iterations_remaining = 10;  // Should take 20 * 40 = 400ms
@@ -27,7 +24,8 @@ async_test(function() {
     }
 
     // Use up the whole frame budget.
-    while (performance.now() - start_time < 40) { }
+    while (performance.now() - start_time < 40) {
+    }
     if (busy_raf_loop_iterations_remaining > 0) {
       busy_raf_loop_iterations_remaining--;
       requestAnimationFrame(busyRAFLoop);
@@ -41,13 +39,12 @@ async_test(function() {
   var busy_raf_loop_iterations_remaining = 10;  // Should take 20 * 40 = 400ms
   var timeout = 200;
   var idle_callback_scheduled;
-  var idle_callback = this.step_func(function(deadline) {
+  var idle_callback = this.step_func_done(function(deadline) {
     var time_delta = performance.now() - idle_callback_scheduled;
     assert_true(time_delta >= timeout, "Should only have been run after timeout");
     assert_true(deadline.timeRemaining() == 0, "IdleDeadline.timeRemaining MUST be equal to zero if requestIdleCallback was scheduled due to a timeout");
     assert_true(deadline.didTimeout, "IdleDeadline.didTimeout MUST be true if requestIdleCallback was scheduled due to a timeout");
     assert_true(busy_raf_loop_iterations_remaining > 0, "Busy rAF loop should still be going");
-    this.done();
   });
 
   requestAnimationFrame(this.step_func(function busyRAFLoop() {
@@ -58,7 +55,8 @@ async_test(function() {
     }
 
     // Use up the whole frame budget.
-    while (performance.now() - start_time < 40) { }
+    while (performance.now() - start_time < 40) {
+    }
     if (busy_raf_loop_iterations_remaining > 0) {
       busy_raf_loop_iterations_remaining--;
       requestAnimationFrame(busyRAFLoop);
@@ -67,6 +65,5 @@ async_test(function() {
 }, 'requestIdleCallback scheduled with timeout when event loop is busy.');
 
 </script>
-<h1>Description</h1>
-<p>This test validates that window.requestIdleCallback deals with timeouts correctly.</p>
+<h1>Test of requestIdleCallback timeout behavior</h1>
 <div id="log"></div>

@@ -9,14 +9,13 @@
     <script src="../support/logTest.sub.js?logs=[]"></script>
     <script src='../support/alertAssert.sub.js?alerts=["TEST COMPLETE"]'></script>
     <!-- enforcing policy:
-connect-src 'self'; script-src * 'unsafe-inline' blob:;
+connect-src 'self'; script-src 'self' 'unsafe-inline'; child-src *;
 -->
 
 </head>
 <p>This test loads a worker, from a guid.
-    The worker should be blocked from making an XHR
-    to www1 as this resource's policy is connect-src 'self
-    and a guid Worker should inherit is parent's policy.
+    The worker should be blocked from loading with a child-src policy of *
+    as the blob: scheme must be specified explicitly.
     A report should be sent to the report-uri specified
     with this resource.</p>
 <body>
@@ -33,14 +32,14 @@ connect-src 'self'; script-src * 'unsafe-inline' blob:;
                 alert_assert(event.data);
             };
         } catch (e) {
-            alert_assert('Threw instead of silently blocking.' + e.message);
+            alert_assert('TEST COMPLETE');
         }
         function timeout() {
             alert_assert('TEST COMPLETE');
         }
     </script>
     <div id="log"></div>
-     <script async defer src="../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=script-src%20&apos;self&apos;%20&apos;unsafe-inline&apos;"></script>
+     <script async defer src="../support/checkReport.sub.js?reportExists=true&amp;reportField=violated-directive&amp;reportValue=child-src%20&apos;self&apos;"></script>
 </body>
 
 </html>

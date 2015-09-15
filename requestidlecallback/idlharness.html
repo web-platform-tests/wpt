@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>window.requestIdleCallback exists</title>
+<link rel="author" title="Ross McIlroy" href="mailto:rmcilroy@chromium.org" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/WebIDLParser.js"></script>
+<script src="/resources/idlharness.js"></script>
+
+<h1>requestIdleCallback IDL tests</h1>
+<div id="log"></div>
+
+<pre id='untested_idl' style='display:none'>
+
+[PrimaryGlobal]
+interface Window {
+};
+
+</pre>
+
+<pre id='idl'>
+
+partial interface Window {
+    unsigned long requestIdleCallback(IdleRequestCallback callback, optional unsigned long timeout);
+    void cancelIdleCallback(unsigned long handle);
+};
+
+interface IdleDeadline {
+    DOMHighResTimeStamp timeRemaining();
+    readonly attribute boolean didTimeout;
+};
+
+callback IdleRequestCallback = void (IdleDeadline deadline);
+
+</pre>
+
+<script>
+"use strict";
+(function() {
+  var idl_array = new IdlArray();
+  idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+  idl_array.add_idls(document.getElementById("idl").textContent);
+  idl_array.add_objects({Window: ["window"]});
+  idl_array.test();
+})();
+</script>
+
+<script>

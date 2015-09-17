@@ -13,26 +13,26 @@
   data-expected="mixed" title="text-orientation initial value"></div>
 
 <div style="text-orientation: upright"
-  data-expected="upright" title="text-orientation: upright"></div>
+  data-expected="upright"></div>
 <div style="text-orientation: sideways"
-  data-expected="sideways" title="text-orientation: sideways"></div>
+  data-expected="sideways"></div>
 <div style="text-orientation: sideways-right"
-  data-expected="sideways-right" title="text-orientation: sideways-right"></div>
+  data-expected="sideways-right"></div>
 
 <div style="text-orientation: upright">
   <div
     data-expected="upright" title="text-orientation should inherit"></div>
 
   <div style="text-orientation: mixed"
-    data-expected="mixed" title="text-orientation: mixed"></div>
+    data-expected="mixed"></div>
 
   <div style="text-orientation: initial"
-    data-expected="mixed" title="text-orientation: initial"></div>
+    data-expected="mixed"></div>
   <div style="text-orientation: inherit"
-    data-expected="upright" title="text-orientation: inherit"></div>
+    data-expected="upright"></div>
 
   <div style="text-orientation: foo"
-    data-expected="upright" title="text-orientation: foo"></div>
+    data-expected="upright"></div>
 </div>
 
 <script>
@@ -40,6 +40,6 @@ Array.prototype.forEach.call(document.querySelectorAll("[data-expected]"), funct
   test(function () {
     var actual = getComputedStyle(element).textOrientation;
     assert_equals(actual, element.dataset.expected);
-  }, element.title);
+  }, element.title || element.getAttribute("style"));
 });
 </script>

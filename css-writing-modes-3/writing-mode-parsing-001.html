@@ -11,24 +11,24 @@
   data-expected="horizontal-tb" title="writing-mode initial value"></div>
 
 <div style="writing-mode: vertical-rl"
-  data-expected="vertical-rl" title="writing-mode: vertical-rl"></div>
+  data-expected="vertical-rl"></div>
 <div style="writing-mode: vertical-lr"
-  data-expected="vertical-lr" title="writing-mode: vertical-lr"></div>
+  data-expected="vertical-lr"></div>
 
 <div style="writing-mode: vertical-rl">
   <div
     data-expected="vertical-rl" title="writing-mode should inherit"></div>
 
   <div style="writing-mode: horizontal-tb"
-    data-expected="horizontal-tb" title="writing-mode: horizontal-tb"></div>
+    data-expected="horizontal-tb"></div>
 
   <div style="writing-mode: initial"
-    data-expected="horizontal-tb" title="writing-mode: initial"></div>
+    data-expected="horizontal-tb"></div>
   <div style="writing-mode: inherit"
-    data-expected="vertical-rl" title="writing-mode: inherit"></div>
+    data-expected="vertical-rl"></div>
 
   <div style="writing-mode: foo"
-    data-expected="vertical-rl" title="writing-mode: foo"></div>
+    data-expected="vertical-rl"></div>
 </div>
 
 <script>
@@ -36,6 +36,6 @@ Array.prototype.forEach.call(document.querySelectorAll("[data-expected]"), funct
   test(function () {
     var actual = getComputedStyle(element).writingMode;
     assert_equals(actual, element.dataset.expected);
-  }, element.title);
+  }, element.title || element.getAttribute("style"));
 });
 </script>

@@ -8,13 +8,13 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <div style="writing-mode: sideways-rl"
-  data-expected="sideways-rl" title="writing-mode: sideways-rl"></div>
+  data-expected="sideways-rl"></div>
 
 <script>
 Array.prototype.forEach.call(document.querySelectorAll("[data-expected]"), function (element) {
   test(function () {
     var actual = getComputedStyle(element).writingMode;
     assert_equals(actual, element.dataset.expected);
-  }, element.title);
+  }, element.title || element.getAttribute("style"));
 });
 </script>

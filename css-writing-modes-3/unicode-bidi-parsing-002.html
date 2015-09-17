@@ -8,17 +8,17 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <div style="unicode-bidi: isolate"
-  data-expected="isolate" title="unicode-bidi: isolate"></div>
+  data-expected="isolate"></div>
 <div style="unicode-bidi: isolate-override"
-  data-expected="isolate-override" title="unicode-bidi: isolate-override"></div>
+  data-expected="isolate-override"></div>
 <div style="unicode-bidi: plaintext"
-  data-expected="plaintext" title="unicode-bidi: plaintext"></div>
+  data-expected="plaintext"></div>
 
 <script>
 Array.prototype.forEach.call(document.querySelectorAll("[data-expected]"), function (element) {
   test(function () {
     var actual = getComputedStyle(element).unicodeBidi;
     assert_equals(actual, element.dataset.expected);
-  }, element.title);
+  }, element.title || element.getAttribute("style"));
 });
 </script>

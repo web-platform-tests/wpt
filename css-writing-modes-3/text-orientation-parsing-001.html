@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS Writing Modes: parsing text-orientation</title>
+<link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-combine-upright">
+<meta name="assert" content="This test asserts the parser, inherits, and getComputedStyle works correctly for the text-orientation property.">
+<meta name="flags" content="dom">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div style="text-orientation: upright"
+  data-expected="upright" title="text-orientation: upright"></div>
+<div style="text-orientation: sideways"
+  data-expected="sideways" title="text-orientation: sideways"></div>
+<div style="text-orientation: sideways-right"
+  data-expected="sideways-right" title="text-orientation: sideways-right"></div>
+
+<div style="text-orientation: upright">
+  <div
+    data-expected="upright" title="text-orientation should inherit"></div>
+
+  <div style="text-orientation: mixed"
+    data-expected="mixed" title="text-orientation: mixed"></div>
+
+  <div style="text-orientation: initial"
+    data-expected="mixed" title="text-orientation: initial"></div>
+  <div style="text-orientation: inherit"
+    data-expected="upright" title="text-orientation: inherit"></div>
+
+  <div style="text-orientation: foo"
+    data-expected="upright" title="text-orientation: foo"></div>
+</div>
+
+
+<script>
+Array.prototype.forEach.call(document.querySelectorAll("[data-expected]"), function (element) {
+  test(function () {
+    var actual = getComputedStyle(element).textOrientation;
+    assert_equals(actual, element.dataset.expected);
+  }, element.title);
+});
+</script>

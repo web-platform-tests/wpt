@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <title>CSS Writing Modes: parsing text-orientation</title>
 <link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
-<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-combine-upright">
+<link rel="help" href="https://drafts.csswg.org/css-writing-modes-3/#text-orientation">
 <meta name="assert" content="This test asserts the parser, inherits, and getComputedStyle works correctly for the text-orientation property.">
 <meta name="flags" content="dom">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+
+<div
+  data-expected="mixed" title="text-orientation initial value"></div>
 
 <div style="text-orientation: upright"
   data-expected="upright" title="text-orientation: upright"></div>

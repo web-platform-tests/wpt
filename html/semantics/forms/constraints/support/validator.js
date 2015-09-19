@@ -262,8 +262,19 @@ var validator = {
   },
 
   set_conditions: function (ctl, obj) {
-    ["required", "pattern", "step", "max", "min", "maxlength",
-     "value", "multiple", "checked", "selected"].forEach(function(item) {
+    [
+      "checked",
+      "max",
+      "maxlength",
+      "min",
+      "minlength",
+      "multiple",
+      "pattern",
+      "required",
+      "selected",
+      "step",
+      "value"
+    ].forEach(function(item) {
       ctl.removeAttribute(item);
     });
     for (var attr in obj) {

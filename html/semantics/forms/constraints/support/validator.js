@@ -264,6 +264,7 @@ var validator = {
   set_conditions: function (ctl, obj) {
     [
       "checked",
+      "disabled",
       "max",
       "maxlength",
       "min",

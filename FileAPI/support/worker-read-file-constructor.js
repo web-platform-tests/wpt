@@ -7,7 +7,7 @@ function readFile(file) {
     var reader = new FileReader();
     reader.onload = function (event) {
       var content = reader.result;
-      
+
      var message = {
                       "name": file.name,
                       "content": content,
@@ -15,7 +15,7 @@ function readFile(file) {
                     };
       postMessage(message);
     };
-    
+
     reader.onerror = function(event) {
       postMessage(event.error.message);
     }

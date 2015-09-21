@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>Read file info in Worker</title>
-<link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="help" href="https://w3c.github.io/FileAPI/#file">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+importScripts("/resources/testharness.js");
 
 async_test(function() {
   var file = new File(["bits"], "dummy", { 'type': 'text/plain', lastModified: 42 });
@@ -25,7 +17,5 @@ async_test(function() {
   });
   worker.postMessage(file);
 
-}, "FileReader in Worker")
-
-</script>
+}, "FileReader in Worker");
 

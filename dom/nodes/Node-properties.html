@@ -637,7 +637,8 @@ for (var node in expected) {
             expected[node].nextSibling = expected[node].nodeValue =
             expected[node].textContent = null;
         expected[node].documentURI = expected[node].URL;
-        expected[node].inputEncoding = expected[node].characterSet;
+        expected[node].charset = expected[node].inputEncoding =
+            expected[node].characterSet;
         break;
 
     case Node.DOCUMENT_TYPE_NODE:

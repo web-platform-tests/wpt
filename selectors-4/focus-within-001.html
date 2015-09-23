@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang=en>
+<meta charset="utf-8">
+<title>Selectors Level 4: focus-within</title>
+<link rel="author" title="Keyong Li" href="mailto:kli79@bloomberg.net">
+<link rel="help" href="https://drafts.csswg.org/selectors/#focus-within-pseudo">
+<meta name="flags" content="interact">
+<meta name="assert" content="Test that :focus-within works for basic DOM tree.">
+<style>
+div {
+border: solid 5px blue;
+}
+div:focus {
+border-color: red;
+outline: solid 5px red;
+}
+div:focus-within {
+border-color: green;
+outline: solid 5px green;
+}
+</style>
+<body>
+<p>Test passes if, when the "editor" below is focussed, it is surrounded by a thick green border. There must be no red or blue once it is focused.</p>
+<div>
+<div>
+<div>
+<div>
+<div id="editor" contenteditable="true">Focus this element</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+<script>
+var editor = document.getElementById('editor');
+editor.focus();
+</script>
+</html>

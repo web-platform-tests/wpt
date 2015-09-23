@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang=en>
+<meta charset="utf-8">
+<title>Selectors Level 4: focus-within with shadow DOM</title>
+<link rel="author" title="Keyong Li" href="mailto:kli79@bloomberg.net">
+<link rel="help" href="https://drafts.csswg.org/selectors/#focus-within-pseudo">
+<meta name="flags" content="interact dom">
+<meta name="assert" content="Test that :focus-within works shadow DOM.">
+<style>
+div {
+border: solid 5px blue;
+}
+div:focus {
+border-color: red;
+outline: solid 5px red;
+}
+div:focus-within {
+border-color: green;
+outline: solid 5px green;
+}
+</style>
+<body>
+<p>Test passes if, when the "editor" below is focussed, it is surrounded by a thick green border. There must be no red or blue once it is focused.</p>
+<div>
+<div>
+<div id="shadow-host">
+</div>
+</div>
+</div>
+</body>
+<template id="shadow-template">
+<style>
+div {
+border: solid 5px blue;
+}
+div:focus {
+border-color: red;
+outline: solid 5px red;
+}
+div:focus-within {
+border-color: green;
+outline: solid 5px green;
+}
+</style>
+<div>
+<div id="editor" contenteditable="true">editor</div>
+</div>
+</template>
+</body>
+<script>
+var shadow = document.getElementById('shadow-host').createShadowRoot();
+var template = document.getElementById('shadow-template');
+var instance = document.importNode(template.content, true);
+shadow.appendChild(instance);
+window.setTimeout(function() {
+var editor = shadow.getElementById('editor');
+editor.focus();
+}, 0);
+</script>
+</html>

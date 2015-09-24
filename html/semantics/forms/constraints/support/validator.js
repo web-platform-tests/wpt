@@ -290,7 +290,20 @@ var validator = {
     var old_value = ctl.value;
     ctl.value = "a";
     ctl.value = old_value;
-    if (ctl.type !== 'email') {
+    if (
+      // See https://html.spec.whatwg.org/multipage/#input-type-attr-summary
+      // and https://html.spec.whatwg.org/multipage/#textFieldSelection
+      (
+        ctl.tagName === "INPUT" && (
+          ctl.type === "text" ||
+          ctl.type === "search" ||
+          ctl.type === "tel" ||
+          ctl.type === "url" ||
+          ctl.type === "password"
+        )
+      ) ||
+      ctl.tagName === "TEXTAREA"
+    ) {
       ctl.setSelectionRange(ctl.value.length, ctl.value.length);
     }
     document.execCommand("Delete");

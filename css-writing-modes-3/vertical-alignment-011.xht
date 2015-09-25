@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Writing Modes Test: vertical-align - 'top' and vertical-rl writing-mode</title>
+    <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
+    <link rel="help" title="7.5 Line-Relative Mappings" href="http://www.w3.org/TR/css-writing-modes-3/#line-mappings" />
+    <link rel="help" title="10.8.1 Leading and half-leading" href="http://www.w3.org/TR/2011/REC-CSS2-20110607/visudet.html#leading" />
+    <meta name="flags" content="ahem" />
+    <style type="text/css"><![CDATA[
+    div#rl-sideways
+    {
+      writing-mode: vertical-rl;
+      font: 60px/3 Ahem; /* computes to 60px/180px */
+      color: orange;
+      text-orientation: sideways;
+    }
+
+    span
+    {
+      vertical-align: super;
+      margin-top: -1em;
+    }
+    ]]></style>
+
+  </head>
+
+  <body>
+
+  <p>Test passes if there is two orange rectangle.</p>
+
+  <div id="rl-sideways">p<span>&Eacute;</span></div>
+
+  </body>
+</html>

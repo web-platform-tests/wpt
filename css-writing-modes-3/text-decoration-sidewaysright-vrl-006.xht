@@ -4,14 +4,14 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: 'text-decoration: line-through' and 'text-orientation: sideways-right' in a 'vertical-rl' writing-mode</title>
+  <title>CSS Writing Modes Test: 'text-decoration: line-through' and 'text-orientation: sideways' in a 'vertical-rl' writing-mode</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#line-mappings" title="7.5 Line-Relative Mappings" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#logical-to-physical" title="6.4 Abstract-to-Physical Mappings" />
 
   <meta name="flags" content="" />
-  <meta content="This test checks that 'text-decoration: line-through' generates a line that passes through the middle of glyphs when 'text-orientation' is set to 'sideways-right' in a 'vertical-rl' writing-mode." name="assert" />
+  <meta content="This test checks that 'text-decoration: line-through' generates a line that passes through the middle of glyphs when 'text-orientation' is set to 'sideways' in a 'vertical-rl' writing-mode." name="assert" />
 
   <style type="text/css"><![CDATA[
   div
@@ -19,7 +19,7 @@
       color: blue;
       font: 2.5em/1.5 serif; /* computes to 40px/60px */
       text-decoration: line-through;
-      text-orientation: sideways-right;
+      text-orientation: sideways;
       writing-mode: vertical-rl;
     }
 

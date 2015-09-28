@@ -35,8 +35,8 @@
             document.head.appendChild(script);
         });
 
+        var t3 = async_test('filesystem URIs should not match *');
         if (window.webkitRequestFileSystem) {
-            var t3 = async_test('filesystem URIs should not match *');
             window.webkitRequestFileSystem(TEMPORARY, 1024*1024 /*1MB*/, function(fs) {
                 fs.root.getFile('fail.js', {create: true}, function(fileEntry) {
                     fileEntry.createWriter(function(fileWriter) {
@@ -54,6 +54,8 @@
                     });
                 });
             });
+        } else {
+          t3.done();
         }
     </script>
     </body>

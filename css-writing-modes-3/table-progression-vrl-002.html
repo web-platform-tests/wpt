@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<title>CSS Test: vertical-rl upright orientation Table Column/Colgroup Ordering</title>
+<title>CSS Test: vertical-rl Table Column/Colgroup Ordering</title>
 <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact">
-<link rel="match" href="table-progression-002-ref.orngtml">
-<meta name="assert" content="This test checks that vertical-rl tables, whether LTR or RTL, order columns top-to-bottom when text-orientation is upright.">
+<link rel="match" href="table-progression-002-ref.html">
+<meta name="assert" content="This test checks that vertical-rl tables order columns top-to-bottom (LTR) or bottom-to-top (RTL) per the table's 'direction'.">
+<meta name="assert" content="This test checks that 'writing-mode' and 'direction' do not apply to table columns and column groups.">
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode">
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#direction">
-<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
 
 <style>
   .test {
     writing-mode: vertical-rl;
-    text-orientation: upright;
   }
   [dir=rtl] {
     direction: rtl;
@@ -31,6 +30,18 @@
   .blue { background: blue }
   .aqua { background: aqua }
   .teal { background: teal }
+
+  /* These declarations must have no effect. */
+  .test col,
+  .test colgroup {
+    writing-mode: horizontal-tb;
+    writing-mode: vertical-lr;
+    direction: rtl;
+  }
+  .test[dir=rtl] col,
+  .test[dir=rtl] colgroup {
+    direction: ltr;
+  }
 </style>
 
 <p>Test passes if the following patterned boxes all look identical.
@@ -51,16 +62,16 @@
 </table>
 
 <table dir=rtl class="test">
-  <col span=2 class="navy">
-  <col class="blue">
   <col span=2 class="aqua">
+  <col class="blue">
+  <col span=2 class="navy">
   <tr><td><td><td><td><td>
 </table>
 <table dir=rtl class="test">
-  <colgroup span=2 class="navy"></colgroup>
+  <colgroup span=2 class="aqua"></colgroup>
   <colgroup>
     <col class="blue">
-    <col span=2 class="aqua">
+    <col span=2 class="navy">
   </colgroup>
   <tr><td><td><td><td><td>
 </table>
@@ -72,4 +83,3 @@
   <tr><td class="aqua">
   <tr><td class="aqua">
 </table>
-

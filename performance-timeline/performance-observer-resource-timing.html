@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Performance Observer Resource types</title>
+<link rel="author" title="W3C" href="http://www.w3.org/" />
+<link rel="help" href="https://w3c.github.io/performance-timeline/"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/webperftestharness.js"></script>
+<script src="resources/webperftestharnessextension.js"></script>
+<script>
+setup({explicit_done: true});
+
+function onload_test()
+{
+    test_namespace();
+
+    function performanceCallback(performanceEntryList) {
+        var entries = performanceEntryList.getEntriesByType('resource');
+
+        var expected_entries = {
+            '/images/blue.png': 'img',
+        };
+        test_equals(entries.length, 1, 'There should be one resource returned.');
+        test_resource_entries(entries, expected_entries);
+        observer.disconnect();
+        done();
+    }
+
+    var observer = new PerformanceObserver(performanceCallback);
+    var config = { entryTypes: ['resource'] };
+    observer.observe(config);
+
+    var image = document.createElement("img");
+    image.src = "/images/blue.png";
+}
+
+</script>
+</head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that Performance Observer gets resource events.<br />
+           NOTE: Due to caching behavior in the browser, it is possible that when revisiting this page, some resources
+           may not have to be fetched from the network.  As a result, the performance timeline will not contain entries
+           for these resources. This test will fail if any entries are missing to ensure that all resources are fetched
+           from the network and entries for these resources exist in the Performance Timeline.  If revisiting this page,
+           please either perform a full reload of the page or clear the cache between visits.
+        </p>
+        <div id="log"></div>
+        <div id="summary"></div>
+    </body>
+</html>

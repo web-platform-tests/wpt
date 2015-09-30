@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Performance Observer Resource types</title>
+<link rel="author" title="W3C" href="http://www.w3.org/" />
+<link rel="help" href="https://w3c.github.io/performance-timeline/"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/webperftestharness.js"></script>
+<script src="resources/webperftestharnessextension.js"></script>
+<script>
+setup({explicit_done: true});
+
+var entries = [];
+
+function onload_test()
+{
+    test_namespace();
+
+    function performanceCallback(performanceEntryList) {
+        entries = entries.concat(performanceEntryList.getEntries());
+        if (entries.length >= 3) {
+            observer.disconnect();
+            window.setTimeout(performTest, 50);
+        }
+    }
+
+    function performMeasure()
+    {
+        window.performance.measure('measure_1', 'mark_1', 'mark_2');
+    }
+
+    function performTest() {
+        test_equals(3, entries.length, 'Got exactly 3 entries');
+        test_equals('mark', entries[0].entryType, 'Got Mark 1');
+        test_equals('mark_1', entries[0].name, 'Mark 1\'s name is \'mark_1\'');
+        test_equals('mark', entries[1].entryType, 'Got Mark 2');
+        test_equals('mark_2', entries[1].name, 'Mark 2\'s name is \'mark_2\'');
+        test_equals('measure', entries[2].entryType, 'Got Measure 1');
+        test_equals('measure_1', entries[2].name, 'Measure 1\'s name is \'measure_1\'');
+        done();
+    }
+
+    var observer = new PerformanceObserver(performanceCallback);
+    var config = { entryTypes: ['mark', 'measure'] };
+    observer.observe(config);
+
+    window.performance.mark('mark_1');
+    window.performance.mark('mark_2');
+    window.setTimeout(performMeasure, 100);
+}
+
+</script>
+</head>
+    <body onload="onload_test();">
+        <h1>Description</h1>
+        <p>This test validates that Performance Observer gets user timing events (Marks and Measures).
+        </p>
+        <div id="log"></div>
+        <div id="summary"></div>
+    </body>
+</html>

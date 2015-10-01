@@ -3,7 +3,7 @@ work the same.
 
 First find a feature you want to test.
 
-https://drafts.csswg.org/css-ui/#box-sizing0
+https://drafts.csswg.org/css-ui/#box-sizing
 [[ 
 padding-box
 The specified width and height (and respective min/max properties) on this element determine the

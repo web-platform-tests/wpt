@@ -24,7 +24,7 @@ policies and contribution forms [3].
 <script>
 test(function () {
 
-	var d = newHTMLDocument();
+    var d = document.implementation.createHTMLDocument('Test Document');
 
     var host = d.createElement('div');
     d.body.appendChild(host);

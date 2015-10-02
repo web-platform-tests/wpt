@@ -304,9 +304,10 @@ var validator = {
       ) ||
       ctl.tagName === "TEXTAREA"
     ) {
-      ctl.setSelectionRange(ctl.value.length, ctl.value.length);
+      ctl.value += "1";
+      ctl.setSelectionRange(ctl.value.length - 1, ctl.value.length);
+      document.execCommand("Delete");
     }
-    document.execCommand("Delete");
     document.designMode = "off";
   },
 

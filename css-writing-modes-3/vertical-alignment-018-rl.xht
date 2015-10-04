@@ -5,19 +5,21 @@
     <link rel="author" title="Hajime Shiozawa" href="mailto:hajime.shiozawa@gmail.com" />
     <link rel="help" title="7.5 Line-Relative Mappings" href="http://www.w3.org/TR/css-writing-modes-3/#line-mappings" />
     <link rel="help" title="10.8.1 Leading and half-leading" href="http://www.w3.org/TR/2011/REC-CSS2-20110607/visudet.html#leading" />
+    <meta name="assert" content="This test checks the position of inline non-replaced box with vertical align property. When 'writing-mode' is 'vertical-rl', 'text-orientation' is 'upright', 'vertical-align' is 'sub', the baseline of the box is shifted to the left." />
     <meta name="flags" content="ahem" />
     <style type="text/css"><![CDATA[
-    div#rl-sideways
+    div#rl-upright
     {
       writing-mode: vertical-rl;
       font: 60px/3 Ahem; /* computes to 60px/180px */
       color: orange;
-      text-orientation: sideways;
+      text-orientation: upright;
     }
 
     span
     {
-      vertical-align: super;
+      vertical-align: sub;
+      color: blue;
       margin-top: -1em;
     }
     ]]></style>
@@ -26,9 +28,9 @@
 
   <body>
 
-  <p>Test passes if there is two orange rectangle.</p>
+  <p>Test passes if there are a blue square on the left and an orange rectangle on the right.</p>
 
-  <div id="rl-sideways">p<span>&Eacute;</span></div>
+  <div id="rl-upright">X<span>X</span></div>
 
   </body>
 </html>

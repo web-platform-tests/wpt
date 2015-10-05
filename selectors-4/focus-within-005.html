@@ -7,7 +7,7 @@
 <link rel="help" href="https://drafts.csswg.org/selectors-4/#focus-within-pseudo">
 <link rel="match" href="focus-within-001-ref.html">
 <meta name="flags" content="interact">
-<meta name="assert" content="Test that :focus-within applies to the parent of an element with tabindex where :focus applies.">
+<meta name="assert" content="Test that :focus-within works on links.">
 <style>
 /* Suppress things that cannot be reproduced in the reference file */
 :focus {
@@ -20,22 +20,34 @@
   border: solid 15px blue;
 }
 
-#target:focus-within {
-  border: solid 15px green;
+/* Make the link look like the div in the reference file */
+#focusme {
+	display: block;
+	text-decoration: none;
+	color: currentColor;
+}
+
+:focus {
+  border: solid 5px red;
+}
+div:focus-within, #focusme:focus-within {
+  border: solid 5px green;
 }
 </style>
 <p>Test passes if, when the element below is focussed,
 it is surrounded by a thick green border.
 There must be no red or blue once it is focused.</p>
-<div id="target">
-  <div id="focusme" class="reftest-wait" onfocus="this.classList.toggle('reftest-wait');" tabindex="1">Focus this element</div>
+<div>
+  <div>
+    <a id="focusme" class="reftest-wait" onfocus="this.classList.toggle('reftest-wait');" href="">Focus this element</a>
+  </div>
 </div>
 <script>
 /* This script is an optional convenience,
    simply removing the need to manually focus the element.
    The test is valid even if the script is not run. */
-var focusme = document.getElementById('focusme');
-focusme.focus();
+var editor = document.getElementById('focusme');
+editor.focus();
 </script>
 <body>
 </html>

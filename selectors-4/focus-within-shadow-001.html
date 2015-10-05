@@ -7,7 +7,7 @@
 <link rel="help" href="https://drafts.csswg.org/selectors-4/#focus-within-pseudo">
 <link rel="match" href="focus-within-001-ref.html">
 <meta name="flags" content="interact dom">
-<meta name="assert" content="Test that :focus-within applies to a contenteditable element inside the shadow DOM when :focus applies.">
+<meta name="assert" content="Test that :focus-within applies to a focused element inside the shadow DOM.">
 <body>
 <p>Test passes if, when the element below is focussed,
 it is surrounded by a thick green border.
@@ -19,12 +19,6 @@ There must be no red or blue once it is focused.</p>
 /* Suppress things that cannot be reproduced in the reference file */
 :focus {
   outline: none;
-
-  /* Make the caret invisible
-     since it matches the color of the text, which is transparent,
-     while keeping the text readable thanks to its shadow.
-     Not using the caret-color property as it is too new to be relied on. */
-  color: transparent; text-shadow: black 0px 0px 0px;
 }
 
 /* Use blue to indicate that the user needs to pay attention.
@@ -39,7 +33,7 @@ div:focus-within {
   border-color: green;
 }
 </style>
-<div id="editor" class="reftest-wait" onfocus="this.classList.toggle('reftest-wait');" contenteditable="true">Focus this element</div>
+<div id="focusme" class="reftest-wait" onfocus="this.classList.toggle('reftest-wait');" tabindex="1">Focus this element</div>
 </template>
 
 <script>
@@ -48,8 +42,8 @@ var template = document.getElementById('shadow-template');
 var instance = document.importNode(template.content, true);
 shadow.appendChild(instance);
 window.setTimeout(function() {
-var editor = shadow.getElementById('editor');
-editor.focus();
+var focusme = shadow.getElementById('focusme');
+focusme.focus();
 }, 0);
 </script>
 </body>

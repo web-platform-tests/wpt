@@ -5,13 +5,11 @@
 <link rel="author" title="Keyong Li" href="mailto:kli79@bloomberg.net">
 <link rel="author" title="Florian Rivoal" href="mailto:florian@rivoal.net">
 <link rel="help" href="https://drafts.csswg.org/selectors-4/#focus-within-pseudo">
-<link rel="match" href="focus-within-001-ref.html">
+<link rel="match" href="focus-within-shadow-001-ref.html">
 <meta name="flags" content="interact dom">
 <meta name="assert" content="Test that :focus-within applies to a focused element inside the shadow DOM.">
 <body>
-<p>Test passes if, when the element below is focussed,
-it is surrounded by a thick green border.
-There must be no red or blue once it is focused.</p>
+<p>Test passes if there is a green rectangle below.</p>
 <div id="shadow-host"><strong>Skip this test, shadow DOM is not supported.</strong></div>
 
 <template id="shadow-template">
@@ -21,19 +19,11 @@ There must be no red or blue once it is focused.</p>
   outline: none;
 }
 
-/* Use blue to indicate that the user needs to pay attention.
-   This element needs to be focused for the test to make sense. */
-div {
-  border: solid 15px blue;
-}
-div:focus {
-  border-color: red;
-}
 div:focus-within {
-  border-color: green;
+  border: solid 15px green;
 }
 </style>
-<div id="focusme" class="reftest-wait" onfocus="this.classList.toggle('reftest-wait');" tabindex="1">Focus this element</div>
+<div id="focusme" class="reftest-wait" onfocus="this.classList.toggle('reftest-wait');" tabindex="1"></div>
 </template>
 
 <script>

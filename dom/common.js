@@ -831,13 +831,14 @@ function myExtractContents(range) {
  * instance "HIERARCHY_REQUEST_ERR".
  */
 function myInsertNode(range, node) {
-    // "If range's start node is either a ProcessingInstruction or Comment
-    // node, or a Text node whose parent is null, throw an
+    // "If range's start node is a ProcessingInstruction or Comment node, or is
+    // a Text node whose parent is null, or is node, throw an
     // "HierarchyRequestError" exception and terminate these steps."
     if (range.startContainer.nodeType == Node.PROCESSING_INSTRUCTION_NODE
             || range.startContainer.nodeType == Node.COMMENT_NODE
             || (range.startContainer.nodeType == Node.TEXT_NODE
-                && !range.startContainer.parentNode)) {
+                && !range.startContainer.parentNode)
+            || range.startContainer == node) {
                     return "HIERARCHY_REQUEST_ERR";
     }
 

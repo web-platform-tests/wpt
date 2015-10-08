@@ -571,14 +571,6 @@ function indexOf(node) {
  * a spec bug.
  */
 function myExtractContents(range) {
-    // "If the context object's detached flag is set, raise an
-    // INVALID_STATE_ERR exception and abort these steps."
-    try {
-        range.collapsed;
-    } catch (e) {
-        return "INVALID_STATE_ERR";
-    }
-
     // "Let frag be a new DocumentFragment whose ownerDocument is the same as
     // the ownerDocument of the context object's start node."
     var ownerDoc = range.startContainer.nodeType == Node.DOCUMENT_NODE

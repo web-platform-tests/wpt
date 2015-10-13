@@ -18,8 +18,6 @@ test(function(){ assert_equals(document.all.item(0).tagName,"HTML")}, "Test look
 
 test(function(){ assert_equals(document.all[0].tagName,"HTML")}, "Test lookup by index using []");
 
-test(function(){ assert_equals(document.all.tags("script").length,3)}, "Test for multiple occurence 3 <script> found");
-
 test(function(){ assert_equals(document.all.item("picture").nodeName,"IMG")}, "Test lookup IMG by name");
 
 test(function(){ assert_equals(document.all.namedItem("picture").nodeName,"IMG")}, "Test lookup IMG by namedItem ");

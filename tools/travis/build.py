@@ -131,7 +131,10 @@ def get_new_commits():
         prev_commit = f.read().strip()
 
     commit_range = "%s..%s" % (prev_commit, os.environ['TRAVIS_COMMIT'])
-    return reversed(git("log", "--pretty=%H", "-r", commit_range).strip().split("\n"))
+    commits = git("log", "--pretty=%H", "-r", commit_range).strip()
+    if not commits:
+        return []
+    return reversed(commits.split("\n"))
 
 def maybe_push():
     if os.environ["TRAVIS_PULL_REQUEST"] != "false":

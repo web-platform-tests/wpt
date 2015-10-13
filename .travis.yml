@@ -1,3 +1,7 @@
 sudo: false
 language: python
 script: python tools/travis/build.py
+cache:
+  directories:
+    - tools/apiclient
+    - tools/w3ctestlib

@@ -16,9 +16,17 @@ local_files = ["manifest", "serve", "serve.py", ".gitmodules", "tools", "resourc
 
 def fetch_submodules():
     hg = vcs.hg
+    orig_dir = os.getcwd()
     for tool in ["apiclient", "w3ctestlib"]:
-        hg("clone", "https://hg.csswg.org/dev/%s" % tool,
-           os.path.join(source_dir, "tools", tool))
+        dest_dir = os.path.join(source_dir, "tools", tool)
+        if os.path.exists(os.path.join(dest_dir, ".hg")):
+            try:
+                os.chdir(dest_dir)
+                hg("pull", "-u")
+            finally:
+                os.chdir(orig_dir)
+        else:
+            hg("clone", ("https://hg.csswg.org/dev/%s" % tool), dest_dir)
 
 def update_dist():
     if not os.path.exists(built_dir) or not vcs.is_git_root(built_dir):

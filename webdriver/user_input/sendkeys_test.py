@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 import random
 import unittest
@@ -62,15 +62,6 @@ class SendKeysTest(base_test.WebDriverBaseTest):
 
         self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"low UP")
 
-    def test_send_null(self):
-        element = self.driver.find_element_by_id("Text1")
-        
-        null= unichr(int("E000", 16))
-        shift= unichr(int("E008", 16))
-        element.send_keys([shift, "u", "p", null, " ", "l", "o", "w"])
-
-        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"UP low")
-
     def test_send_arrow_keys(self):
         element = self.driver.find_element_by_id("Text1")
         
@@ -99,47 +90,6 @@ class SendKeysTest(base_test.WebDriverBaseTest):
         element.send_keys([shift, left, left, left, left, left, left, backspace])
 
         self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"Web")
-
-    def test_send_special_math_symbols(self):
-        element = self.driver.find_element_by_id("Text1")
-
-        equals = unichr(int("E019", 16))
-        numpad0 = unichr(int("E01A", 16))
-        numpad1 = unichr(int("E01B", 16))
-        numpad2 = unichr(int("E01C", 16))
-        numpad3 = unichr(int("E01D", 16))
-        numpad4 = unichr(int("E01E", 16))
-        numpad5 = unichr(int("E01F", 16))
-        numpad6 = unichr(int("E020", 16))
-        numpad7 = unichr(int("E021", 16))
-        numpad8 = unichr(int("E022", 16))
-        numpad9 = unichr(int("E023", 16))
-        multiply = unichr(int("E024", 16))
-        add = unichr(int("E025", 16))
-        separator = unichr(int("E026", 16))
-        subtract = unichr(int("E027", 16))
-        decimal = unichr(int("E028", 16))
-        divide = unichr(int("E029", 16))
-        
-        element.send_keys([equals])
-        element.send_keys([numpad0])
-        element.send_keys([numpad1])
-        element.send_keys([numpad2])
-        element.send_keys([numpad3])
-        element.send_keys([numpad4])
-        element.send_keys([numpad5])
-        element.send_keys([numpad6])
-        element.send_keys([numpad7])
-        element.send_keys([numpad8])
-        element.send_keys([numpad9])
-        element.send_keys([multiply])
-        element.send_keys([add])
-        element.send_keys([separator])
-        element.send_keys([subtract])
-        element.send_keys([decimal])
-        element.send_keys([divide])
-        
-        self.assertEquals(self.driver.find_element_by_id("text").get_text(), u"=0123456789*+,-./")
 
 
 if __name__ == "__main__":

@@ -66,36 +66,6 @@ class GetElementAttributeTest(base_test.WebDriverBaseTest):
         el = self.driver.find_element_by_css("div")
         self.assertIsNone(el.get_attribute("class"))
 
-    def test_find_span_element_in_first_level_under_body(self):
-        self.driver.get(self.webserver.where_is("element_state/res/get-element-attribute-extended.html"))
-        element = self.driver.find_element_by_id("div1")
-        attribute = element.get_attribute("name")
-        self.assertEquals("div-name", attribute)
-
-    def test_find_a_value_element_in_option_element_that_doesnt_have_a_value_attribute(self):
-        self.driver.get(self.webserver.where_is("element_state/res/get-element-attribute-extended.html"))
-        element = self.driver.find_element_by_id("opt-1")
-        attribute = element.get_attribute("value")
-        self.assertEquals("My Option 1", attribute)
-
-    def test_find_value_for_a_style_attribute_in_option_element(self):
-        self.driver.get(self.webserver.where_is("element_state/res/get-element-attribute-extended.html"))
-        element = self.driver.find_element_by_id("opt-1")
-        attribute = element.get_attribute("style")
-        self.assertEquals("font-size: 11px; display: block;", attribute)
-
-    def test_find_attribute_accesskey(self):
-        self.driver.get(self.webserver.where_is("element_state/res/get-element-attribute-extended.html"))
-        element = self.driver.find_element_by_id("id_attribute_accesskey")
-        attribute = element.get_attribute("accesskey")
-        self.assertEquals("nothing", attribute)
-
-    def test_multiple_element_state_with_same_class_nested_attribute(self):
-        self.driver.get(self.webserver.where_is("element_state/res/get-element-attribute-extended.html"))
-        element = self.driver.find_element_by_id("id_multiple_elements_same_class_nested_div_depth_2")
-        attribute = element.get_attribute("class")
-        self.assertEquals("multiple_elements_same_class_nested", attribute)
-
     def test_find_attribute_with_special_characters(self):
         self.driver.get(self.webserver.where_is("element_state/res/get-element-attribute-extended.html"))
         element = self.driver.find_element_by_id("id_special_char_attribute_name")

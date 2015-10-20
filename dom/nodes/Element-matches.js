@@ -6,6 +6,10 @@ function interfaceCheckMatches(method, type, obj) {
     test(function() {
       assert_idl_attribute(obj, method, type + " supports " + method);
     }, type + " supports " + method)
+  } else {
+    test(function() {
+      assert_false(method in obj, type + " supports " + method);
+    }, type + " should not support " + method)
   }
 }
 

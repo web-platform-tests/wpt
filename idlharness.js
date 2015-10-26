@@ -97,6 +97,16 @@ function awaitNCallbacks(n, cb, ctx) {
     };
 }
 
+var fround = (function(){
+    if (Math.fround) return Math.fround;
+
+    var arr = new Float32Array(1);
+    return function fround(n) {
+        arr[0] = n;
+        return arr[0];
+    };
+})();
+
 /// IdlArray ///
 // Entry point
 self.IdlArray = function()
@@ -457,11 +467,27 @@ IdlArray.prototype.assert_type_is = function(value, type)
             return;
 
         case "float":
-        case "double":
+            assert_equals(typeof value, "number");
+            assert_equals(value, fround(value), "float rounded to 32-bit float should be itself");
+            assert_not_equals(value, Infinity);
+            assert_not_equals(value, -Infinity);
+            assert_not_equals(value, NaN);
+            return;
+
         case "DOMHighResTimeStamp":
+        case "double":
+            assert_equals(typeof value, "number");
+            assert_not_equals(value, Infinity);
+            assert_not_equals(value, -Infinity);
+            assert_not_equals(value, NaN);
+            return;
+
         case "unrestricted float":
+            assert_equals(typeof value, "number");
+            assert_equals(value, fround(value), "unrestricted float rounded to 32-bit float should be itself");
+            return;
+
         case "unrestricted double":
-            // TODO: distinguish these cases
             assert_equals(typeof value, "number");
             return;
 

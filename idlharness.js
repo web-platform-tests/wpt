@@ -492,10 +492,17 @@ IdlArray.prototype.assert_type_is = function(value, type)
             return;
 
         case "DOMString":
-        case "ByteString":
-        case "USVString":
-            // TODO: https://github.com/w3c/testharness.js/issues/92
             assert_equals(typeof value, "string");
+            return;
+
+        case "ByteString":
+            assert_equals(typeof value, "string");
+            assert_regexp_match(value, /^[\x00-\x7F]*$/);
+            return;
+
+        case "USVString":
+            assert_equals(typeof value, "string");
+            assert_regexp_match(value, /^([\x00-\ud7ff\ue000-\uffff]|[\ud800-\udbff][\udc00-\udfff])*$/);
             return;
 
         case "object":

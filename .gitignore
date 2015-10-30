@@ -9,3 +9,11 @@ config.json
 node_modules
 scratch
 testharness_runner.html
+webdriver/.idea/.name
+webdriver/.idea/encodings.xml
+webdriver/.idea/modules.xml
+webdriver/.idea/scopes/scope_settings.xml
+webdriver/.idea/vcs.xml
+webdriver/.idea/misc.xml
+webdriver/.idea/webdriver.iml
+webdriver/.idea/workspace.xml

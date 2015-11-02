@@ -58,10 +58,7 @@ function createGetAllKeysRequest(t, storeName, connection, range, maxCount) {
     var transaction = connection.transaction(storeName, 'readonly');
     var store = transaction.objectStore(storeName);
     var index = store.index('test_idx');
-    // TODO(cmumford): Simplify once crbug.com/335871 is fixed.
-    var req = maxCount !== undefined ? index.getAllKeys(range, maxCount) :
-              range !== undefined ? index.getAllKeys(range) :
-              index.getAllKeys();
+    var req = index.getAllKeys(range, maxCount);
     req.onerror = t.unreached_func('getAllKeys request should succeed');
     return req;
 }
@@ -111,7 +108,7 @@ doSetup(location.pathname + '-IDBIndex.getAllKeys', 1, function(evt) {
                                     10);
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result,
-                             ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'],
+                             'abcdefghij'.split(''),
                              'getAllKeys() should return a..j');
           t.done();
       });
@@ -122,8 +119,8 @@ doSetup(location.pathname + '-IDBIndex.getAllKeys', 1, function(evt) {
                                     IDBKeyRange.bound('G', 'M'));
       req.onsuccess = t.step_func(function(evt) {
           assert_array_equals(evt.target.result,
-                             ['g', 'h', 'i', 'j', 'k', 'l', 'm'],
-                             'getAllKeys() should return g..m');
+                              'ghijklm'.split(''),
+                              'getAllKeys() should return g..m');
           t.done();
       });
     }, 'Get bound range');

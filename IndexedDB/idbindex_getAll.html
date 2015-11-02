@@ -68,9 +68,7 @@ function createGetAllRequest(t, storeName, connection, range, maxCount) {
     var transaction = connection.transaction(storeName, 'readonly');
     var store = transaction.objectStore(storeName);
     var index = store.index('test_idx');
-    // TODO(cmumford): Simplify once crbug.com/335871 is fixed.
-    var req = maxCount !== undefined ? index.getAll(range, maxCount) :
-              range !== undefined ? index.getAll(range) : index.getAll();
+    var req = index.getAll(range, maxCount);
     req.onerror = t.unreached_func('getAll request should succeed');
     return req;
 }
@@ -82,8 +80,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), ['c']);
-          assert_array_equals(data.map(e => e.upper), ['C']);
+          assert_array_equals(data.map(function(e) { return e.ch; }), ['c']);
+          assert_array_equals(data.map(function(e) { return e.upper; }), ['C']);
           t.done();
       });
     }, 'Single item get');
@@ -102,8 +100,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), alphabet);
-          assert_array_equals(data.map(e => e.upper), ALPHABET);
+          assert_array_equals(data.map(function(e) { return e.ch; }), alphabet);
+          assert_array_equals(data.map(function(e) { return e.upper; }), ALPHABET);
           t.done();
       });
     }, 'Get all keys');
@@ -114,8 +112,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), 'abcdefghij'.split(''));
-          assert_array_equals(data.map(e => e.upper), 'ABCDEFGHIJ'.split(''));
+          assert_array_equals(data.map(function(e) { return e.ch; }), 'abcdefghij'.split(''));
+          assert_array_equals(data.map(function(e) { return e.upper; }), 'ABCDEFGHIJ'.split(''));
           t.done();
       });
     }, 'maxCount=10');
@@ -125,8 +123,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
                                     IDBKeyRange.bound('G', 'M'));
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
-          assert_array_equals(data.map(e => e.ch), 'ghijklm'.split(''));
-          assert_array_equals(data.map(e => e.upper), 'GHIJKLM'.split(''));
+          assert_array_equals(data.map(function(e) { return e.ch; }), 'ghijklm'.split(''));
+          assert_array_equals(data.map(function(e) { return e.upper; }), 'GHIJKLM'.split(''));
           t.done();
       });
     }, 'Get bound range');
@@ -137,8 +135,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), 'ghi'.split(''));
-          assert_array_equals(data.map(e => e.upper), 'GHI'.split(''));
+          assert_array_equals(data.map(function(e) { return e.ch; }), 'ghi'.split(''));
+          assert_array_equals(data.map(function(e) { return e.upper; }), 'GHI'.split(''));
           t.done();
       });
     }, 'Get bound range with maxCount');
@@ -149,8 +147,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), 'ghij'.split(''));
-          assert_array_equals(data.map(e => e.upper), 'GHIJ'.split(''));
+          assert_array_equals(data.map(function(e) { return e.ch; }), 'ghij'.split(''));
+          assert_array_equals(data.map(function(e) { return e.upper; }), 'GHIJ'.split(''));
           t.done();
       });
     }, 'Get upper excluded');
@@ -161,8 +159,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), 'hijk'.split(''));
-          assert_array_equals(data.map(e => e.upper), 'HIJK'.split(''));
+          assert_array_equals(data.map(function(e) { return e.ch; }), 'hijk'.split(''));
+          assert_array_equals(data.map(function(e) { return e.upper; }), 'HIJK'.split(''));
           t.done();
       });
     }, 'Get lower excluded');
@@ -195,8 +193,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), alphabet);
-          assert_array_equals(data.map(e => e.upper), ALPHABET);
+          assert_array_equals(data.map(function(e) { return e.ch; }), alphabet);
+          assert_array_equals(data.map(function(e) { return e.upper; }), ALPHABET);
           t.done();
       });
     }, 'maxCount=0');
@@ -207,8 +205,8 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), 'abcdefghijklm'.split(''));
-          assert_true(data.every(e => e.half === 'first'));
+          assert_array_equals(data.map(function(e) { return e.ch; }), 'abcdefghijklm'.split(''));
+          assert_true(data.every(function(e) { return e.half === 'first'; }));
           t.done();
       });
     }, 'Retrieve multiEntry key');
@@ -219,9 +217,9 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
       req.onsuccess = t.step_func(function(evt) {
           var data = evt.target.result;
           assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(e => e.ch), ['a', 'e', 'i', 'o', 'u']);
+          assert_array_equals(data.map(function(e) { return e.ch; }), ['a', 'e', 'i', 'o', 'u']);
           assert_array_equals(data[0].attribs, ['vowel', 'first']);
-          assert_true(data.every(e => e.attribs[0] === 'vowel'));
+          assert_true(data.every(function(e) { return e.attribs[0] === 'vowel'; }));
           t.done();
       });
     }, 'Retrieve one key multiple values');

@@ -39,10 +39,7 @@ function doSetup(dbName, dbVersion, onsuccess) {
 function createGetAllKeysRequest(t, storeName, connection, range, maxCount) {
     var transaction = connection.transaction(storeName, 'readonly');
     var store = transaction.objectStore(storeName);
-    // TODO(cmumford): Simplify once crbug.com/335871 is closed.
-    var req = maxCount !== undefined ? store.getAllKeys(range, maxCount) :
-              range !== undefined ? store.getAllKeys(range) :
-              store.getAllKeys();
+    var req = store.getAllKeys(range, maxCount);
     req.onerror = t.unreached_func('getAllKeys request should succeed');
     return req;
 }
@@ -89,8 +86,7 @@ doSetup(location.pathname + '-IDBObjectStore.getAllKeys', 1, function(evt) {
       var req = createGetAllKeysRequest(t, 'out-of-line', connection, undefined,
                                     10);
       req.onsuccess = t.step_func(function(evt) {
-          assert_array_equals(evt.target.result,
-              ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']);
+          assert_array_equals(evt.target.result, 'abcdefghij'.split(''));
           t.done();
       });
     }, 'Test maxCount');
@@ -99,8 +95,7 @@ doSetup(location.pathname + '-IDBObjectStore.getAllKeys', 1, function(evt) {
       var req = createGetAllKeysRequest(t, 'out-of-line', connection,
                                     IDBKeyRange.bound('g', 'm'));
       req.onsuccess = t.step_func(function(evt) {
-          assert_array_equals(evt.target.result,
-              ['g', 'h', 'i', 'j', 'k', 'l', 'm']);
+          assert_array_equals(evt.target.result, 'ghijklm'.split(''));
           t.done();
       });
     }, 'Get bound range');

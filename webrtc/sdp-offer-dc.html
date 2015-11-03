@@ -36,7 +36,6 @@ This test uses data only, and thus does not require fake media devices.
       assert_equals(sdp_lines[0], "v=0", "The first SDP line MUST be 'v=0'");
       var origin = sdp_lines[1];
       var origin_comp = origin.split(" ");
-      console.log(sdp);
       assert_equals(origin_comp[0], "-", 'The value of the <username> field SHOULD be "-"');
       assert_equals(origin_comp[2], "0", 'The value of the <sess-version> field SHOULD be zero');
       assert_equals(sdp_lines[2], "s=-", 'The third SDP line MUST be a "s=" line.  a single dash SHOULD be used as the session name');

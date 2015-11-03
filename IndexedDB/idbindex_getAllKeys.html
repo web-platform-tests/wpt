@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+setup({explicit_done: true});
 
 var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
@@ -198,6 +199,9 @@ doSetup(location.pathname + '-IDBIndex.getAllKeys', 1, function(evt) {
       });
       req.onerror = t.unreached_func('getAllKeys request should succeed');
     }, 'Retrieve multiEntry keys');
+
+    // Explicit done needed in case async_test body fails synchronously.
+    done();
 });
 
 </script>

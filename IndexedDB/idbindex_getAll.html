@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+setup({explicit_done: true});
 
 var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 var ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -223,6 +224,9 @@ doSetup(location.pathname + '-IDBIndex.getAll', 1, function(evt) {
           t.done();
       });
     }, 'Retrieve one key multiple values');
+
+    // Explicit done needed in case async_test body fails synchronously.
+    done();
 });
 
 </script>

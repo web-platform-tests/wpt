@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+setup({explicit_done: true});
 
 var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
@@ -165,6 +166,9 @@ doSetup(location.pathname + '-IDBObjectStore.getAll', 1, function(evt) {
           t.done();
       });
     }, 'zero maxCount');
+
+    // Explicit done needed in case async_test body fails synchronously.
+    done();
 });
 
 </script>

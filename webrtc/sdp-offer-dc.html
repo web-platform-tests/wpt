@@ -99,7 +99,7 @@ This test uses data only, and thus does not require fake media devices.
       }
 
       test.done();
-    }), console.log.bind(console))
+    }))
     .catch(test.step_func(function(e) {
       assert_unreached('Error ' + e.name + ': ' + e.message);
     }));

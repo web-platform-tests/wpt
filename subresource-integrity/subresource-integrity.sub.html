@@ -21,8 +21,6 @@
     // ports in those cases.
     var main_domain = "{{domains[]}}";
     var www_domain = "{{domains[www]}}";
-    console.log(main_domain);
-    console.log(www_domain);
     var default_port = "{{ports[http][0]}}";
     if (location.protocol === "https:") {
       default_port = "{{ports[https][0]}}";

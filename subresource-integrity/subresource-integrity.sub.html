@@ -19,23 +19,33 @@
     // Thus, we only want the Access-Control-Allow-Origin header to have
     // the port if it's not port 80 or 443, since the user agent will elide the
     // ports in those cases.
+    var main_domain = "{{domains[]}}";
+    var www_domain = "{{domains[www]}}";
+    console.log(main_domain);
+    console.log(www_domain);
     var default_port = "{{ports[http][0]}}";
-    var response_port = "";
+    if (location.protocol === "https:") {
+      default_port = "{{ports[https][0]}}";
+    }
+
+    var port_string = "";
     if (default_port !== "80" && default_port !== "443")
-      response_port = ":" + default_port;
+      port_string = ":" + default_port;
+
+    www_host_and_port = www_domain + port_string;
 
     // <script> tests
     var xorigin_anon_script = location.protocol
-      + '//' + location.hostname + ':' + {{ports[http][1]}}
+      + '//' + www_host_and_port
       + '/subresource-integrity/crossorigin-anon-script.js';
 
     var xorigin_creds_script = location.protocol
-      + '//' + location.hostname + ':' + {{ports[http][1]}}
+      + '//' + www_host_and_port
       + '/subresource-integrity/crossorigin-creds-script.js?acao_port='
-      + response_port;
+      + port_string;
 
     var xorigin_ineligible_script = location.protocol
-      + '//' + location.hostname + ':' + {{ports[http][1]}}
+      + '//' + www_host_and_port
       + '/subresource-integrity/crossorigin-ineligible-script.js';
 
     var SRIScriptTest = function(pass, name, src, integrityValue, crossoriginValue) {
@@ -71,16 +81,16 @@
     // Note that all of these style URLs have query parameters started, so any
     // additional parameters should be appended starting with '&'.
     var xorigin_anon_style = location.protocol
-      + '//' + location.hostname + ':' + {{ports[http][1]}}
+      + '//' + www_host_and_port
       + '/subresource-integrity/crossorigin-anon-style.css?';
 
     var xorigin_creds_style = location.protocol
-      + '//' + location.hostname + ':' + {{ports[http][1]}}
+      + '//' + www_host_and_port
       + '/subresource-integrity/crossorigin-creds-style.css?acao_port='
-      + response_port;
+      + port_string;
 
     var xorigin_ineligible_style = location.protocol
-      + '//' + location.hostname + ':' + {{ports[http][1]}}
+      + '//' + www_host_and_port
       + '/subresource-integrity/crossorigin-ineligible-style.css?';
 
     // <link> tests

@@ -204,7 +204,7 @@ class GetElementSelectedTest(base_test.WebDriverBaseTest):
         element = self.driver.find_element_by_id("unselected-18")
 
         self.assertEquals(element.is_selected(), False)
-        
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -64,9 +64,9 @@ class SendKeysTest(base_test.WebDriverBaseTest):
 
     def test_send_arrow_keys(self):
         element = self.driver.find_element_by_id("Text1")
-        
+
         element.send_keys("internet")
-        
+
         backspace= unichr(int("E003", 16))
         left= unichr(int("E012", 16))
         right= unichr(int("E014", 16))
@@ -81,7 +81,7 @@ class SendKeysTest(base_test.WebDriverBaseTest):
 
     def test_select_text_with_shift(self):
         element = self.driver.find_element_by_id("Text1")
-        
+
         element.send_keys("WebDriver")
         backspace= unichr(int("E003", 16))
         shift= unichr(int("E008", 16))

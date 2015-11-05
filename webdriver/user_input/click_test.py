@@ -344,6 +344,6 @@ class ClickTest(base_test.WebDriverBaseTest):
         alert.accept()
 
         self.assertEquals(value, "input_image")
-        
+
 if __name__ == "__main__":
     unittest.main()

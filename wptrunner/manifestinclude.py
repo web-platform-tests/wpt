@@ -8,6 +8,7 @@ The manifest is represented by a tree of IncludeManifest objects, the root
 representing the file and each subnode representing a subdirectory that should
 be included or excluded.
 """
+import glob
 import os
 import urlparse
 
@@ -91,9 +92,9 @@ class IncludeManifest(ManifestItem):
 
         maybe_path = os.path.join(rest, last)
 
-        if os.path.exists(maybe_path):
+        for path in glob.iglob(maybe_path):
             for manifest, data in test_manifests.iteritems():
-                rel_path = os.path.relpath(maybe_path, data["tests_path"])
+                rel_path = os.path.relpath(path, data["tests_path"])
                 if ".." not in rel_path.split(os.sep):
                     url = data["url_base"] + rel_path.replace(os.path.sep, "/") + variant
                     break

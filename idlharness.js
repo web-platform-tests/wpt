@@ -69,6 +69,22 @@ function minOverloadLength(overloads) {
     .reduce(function(m, n) { return Math.min(m, n); });
 }
 
+function throwOrReject(operation, fn, obj, args,  message) {
+    if (operation.idlType.generic !== "Promise") {
+        assert_throws(new TypeError(), function() {
+            fn.apply(obj, args);
+        }, message);
+    } else {
+        fn.apply(obj, args).then(
+                function() {
+                    assert_unreached(message);
+                },
+            function(e) {
+                assert_true(e instanceof TypeError, message);
+            });
+        }
+}
+
 /// IdlArray ///
 // Entry point
 self.IdlArray = function()
@@ -1145,9 +1161,7 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
         if (!this.is_global() &&
             memberHolderObject[member.name] != self[member.name])
         {
-            assert_throws(new TypeError(), function() {
-                memberHolderObject[member.name].apply(null, args);
-            }, "calling operation with this = null didn't throw TypeError");
+            throwOrReject(member, memberHolderObject[member.name], null, args,  "calling operation with this = null didn't throw TypeError");
         }
 
         // ". . . If O is not null and is also not a platform object
@@ -1155,9 +1169,7 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
         //
         // TODO: Test a platform object that implements some other
         // interface.  (Have to be sure to get inheritance right.)
-        assert_throws(new TypeError(), function() {
-            memberHolderObject[member.name].apply({}, args);
-        }, "calling operation with this = {} didn't throw TypeError");
+        throwOrReject(member, memberHolderObject[member.name], {}, args,  "calling operation with this = {} didn't throw TypeError");
     }
 }
 
@@ -1457,10 +1469,7 @@ IdlInterface.prototype.test_interface_of = function(desc, obj, exception, expect
                 }));
                 var args = [];
                 for (var i = 0; i < minLength; i++) {
-                    assert_throws(new TypeError(), function()
-                    {
-                        obj[member.name].apply(obj, args);
-                    }.bind(this), "Called with " + i + " arguments");
+                    throwOrReject(member, obj[member.name], obj, args,  "Called with " + i + " arguments");
 
                     args.push(create_suitable_object(member.arguments[i].idlType));
                 }

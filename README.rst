@@ -125,7 +125,7 @@ input to the `wptupdate` tool.
 Expectation File Format
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Metadat about tests, notably including their expected results, is
+Metadata about tests, notably including their expected results, is
 stored in a modified ini-like format that is designed to be human
 editable, but also to be machine updatable.
 

@@ -27,11 +27,17 @@
   <div id='red' class="size red">&nbsp;</div>
   <div id='green' class="size overlay green">&nbsp;</div>
   <script>
-    assert_equals(null, document.elementFromPoint(-1, -1),
-                  "If co-ords are negative should return null");
-    assert_equals(document.getElementById('purple'), document.elementFromPoint(10, 10),
-                  "Return the first element that is the target for hit testing");
-    assert_equals(document.getElementById('red'), document.elementFromPoint(10, 120),
-                  "should return the first element that gets the mouse event with pointer-events css");
+    test(function(){
+                  assert_equals(null, document.elementFromPoint(-1, -1),
+                    "If co-ords are negative should return null");
+                });
+    test(function(){
+                  assert_equals(document.getElementById('purple'), document.elementFromPoint(10, 10),
+                    "Return the first element that is the target for hit testing");
+                });
+    test(function(){
+                  assert_equals(document.getElementById('red'), document.elementFromPoint(10, 120),
+                    "should return the first element that gets the mouse event with pointer-events css");
+                });
     done()
  </script>

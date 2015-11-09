@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>IDL check of WebCrypto</title>
+<link rel="help" href="https://dvcs.w3.org/hg/webcrypto-api/raw-file/tip/spec/Overview.html#crypto-interface">
+<link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+</head>
+<body>
+
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test verifies that the implementations of the WebCrpto API match with its WebIDL definition.</p>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+
+<script type="text/plain">
+[NoInterfaceObject]
+interface GlobalCrypto {
+  readonly attribute Crypto crypto;
+};
+
+interface Crypto {
+  readonly attribute SubtleCrypto subtle;
+  ArrayBufferView getRandomValues(ArrayBufferView array);
+};
+
+typedef (object or DOMString) AlgorithmIdentifier;
+
+typedef AlgorithmIdentifier HashAlgorithmIdentifier;
+
+dictionary Algorithm {
+  required DOMString name;
+};
+
+enum KeyType { "public", "private", "secret" };
+
+enum KeyUsage { "encrypt", "decrypt", "sign", "verify", "deriveKey", "deriveBits", "wrapKey", "unwrapKey" };
+
+interface CryptoKey {
+  readonly attribute KeyType type;
+  readonly attribute boolean extractable;
+  readonly attribute object algorithm;
+  readonly attribute object usages;
+};
+  
+
+enum KeyFormat { "raw", "spki", "pkcs8", "jwk" };
+
+interface SubtleCrypto {
+  Promise<any> encrypt(AlgorithmIdentifier algorithm,
+                       CryptoKey key,
+                       BufferSource data);
+  Promise<any> decrypt(AlgorithmIdentifier algorithm,
+                       CryptoKey key,
+                       BufferSource data);
+  Promise<any> sign(AlgorithmIdentifier algorithm,
+                    CryptoKey key,
+                    BufferSource data);
+  Promise<any> verify(AlgorithmIdentifier algorithm,
+                      CryptoKey key,
+                      BufferSource signature,
+                      BufferSource data);
+  Promise<any> digest(AlgorithmIdentifier algorithm,
+                      BufferSource data);
+
+  Promise<any> generateKey(AlgorithmIdentifier algorithm,
+                          boolean extractable,
+                          sequence<KeyUsage> keyUsages );
+  Promise<any> deriveKey(AlgorithmIdentifier algorithm,
+                         CryptoKey baseKey,
+                         AlgorithmIdentifier derivedKeyType,
+                         boolean extractable,
+                         sequence<KeyUsage> keyUsages );
+  Promise<any> deriveBits(AlgorithmIdentifier algorithm,
+                          CryptoKey baseKey,
+                          unsigned long length);
+  
+  Promise<any> importKey(KeyFormat format,
+                         (BufferSource or JsonWebKey) keyData,
+                         AlgorithmIdentifier algorithm,
+                         boolean extractable,
+                         sequence<KeyUsage> keyUsages );
+  Promise<any> exportKey(KeyFormat format, CryptoKey key);
+
+  Promise<any> wrapKey(KeyFormat format,
+                       CryptoKey key,
+                       CryptoKey wrappingKey,
+                       AlgorithmIdentifier wrapAlgorithm);
+  Promise<any> unwrapKey(KeyFormat format,
+                         BufferSource wrappedKey,
+                         CryptoKey unwrappingKey,
+                         AlgorithmIdentifier unwrapAlgorithm,
+                         AlgorithmIdentifier unwrappedKeyAlgorithm,
+                         boolean extractable,
+                         sequence<KeyUsage> keyUsages );
+};
+
+</script>
+<script>
+(function() {
+  var idl_array = new IdlArray();
+  [].forEach.call(document.querySelectorAll("script[type=text\\/plain]"),
+                  function(node) {
+                    idl_array.add_idls(node.textContent);
+                  });
+  idl_array.add_objects({"Crypto": ["crypto"], "SubtleCrypto": ["crypto.subtle"]});
+  idl_array.test();
+  done();
+})();
+</script>
+

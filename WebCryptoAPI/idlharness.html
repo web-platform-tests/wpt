@@ -45,7 +45,7 @@ interface CryptoKey {
   readonly attribute object algorithm;
   readonly attribute object usages;
 };
-  
+
 
 enum KeyFormat { "raw", "spki", "pkcs8", "jwk" };
 
@@ -77,7 +77,7 @@ interface SubtleCrypto {
   Promise<any> deriveBits(AlgorithmIdentifier algorithm,
                           CryptoKey baseKey,
                           unsigned long length);
-  
+
   Promise<any> importKey(KeyFormat format,
                          (BufferSource or JsonWebKey) keyData,
                          AlgorithmIdentifier algorithm,

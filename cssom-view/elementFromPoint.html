@@ -29,15 +29,15 @@
   <script>
     test(function(){
                   assert_equals(null, document.elementFromPoint(-1, -1),
-                    "If co-ords are negative should return null");
-                });
+                    "co-ordinates passed in are negative so should have returned a null");
+                }, "Negative co-ordinates");
     test(function(){
                   assert_equals(document.getElementById('purple'), document.elementFromPoint(10, 10),
-                    "Return the first element that is the target for hit testing");
-                });
+                    "Should have returned the element with id `purple`");
+                }, "Return first element that is the target for hit testing");
     test(function(){
                   assert_equals(document.getElementById('red'), document.elementFromPoint(10, 120),
-                    "should return the first element that gets the mouse event with pointer-events css");
-                });
+                    "Should have returned the element with id `red` as element with `green` has `pointer-events:none`");
+                }, "First element to get mouse events with pointer-events css");
     done()
  </script>

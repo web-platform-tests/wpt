@@ -5,7 +5,7 @@
         <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com" />
         <link rel="help" href="http://www.w3.org/TR/css-flexbox-1/#min-size-auto" title="4.5. Implied Minimum Size of Flex Items" />
         <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
-        <meta name="assert" content="Checks that minimun height for flex items is the min-content size." />
+        <meta name="assert" content="Checks that minimum height for flex items is the specified size if it's smaller than the min-content size." />
         <style type="text/css"><![CDATA[
             #reference-overlapped-red {
                 position: absolute;
@@ -23,14 +23,13 @@
             }
 
             #test-flex-item-overlapping-green {
-                color: green;
                 background-color: green;
-                font: 50px/1 Ahem;
+                height: 100px;
             }
 
-            #content-100x100 {
+            #content-100x200 {
                 width: 100px;
-                height: 100px;
+                height: 200px;
             }
         ]]></style>
     </head>
@@ -40,7 +39,7 @@
         <div id="reference-overlapped-red"></div>
         <div id="constrained-flex">
             <div id="test-flex-item-overlapping-green">
-                <div id="content-100x100"></div>
+                <div id="content-100x200"></div>
             </div>
         </div>
     </body>

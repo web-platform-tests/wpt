@@ -88,6 +88,7 @@ class ServoWebDriverBrowser(Browser):
 
         env = os.environ.copy()
         env["HOST_FILE"] = self.hosts_path
+        env["RUST_BACKTRACE"] = "1"
 
         debug_args, command = browser_command(self.binary,
                                               [render_arg(self.render_backend), "--hard-fail",

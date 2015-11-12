@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WorkerGlobalScope.performance.now()</title>
+<link rel="author" title="W3C" href="http://www.w3.org/" />
+<link rel="help" href="http://w3c.github.io/hr-time/#idl-def-globalperformance"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test validates that WorkerGlobalScope.performance.now() exists and follows the monotonic clock requirements.</p>
+
+<div id="log"></div>
+
+<script>
+async_test(function(t) {
+  var worker = new Worker("./resources/worker.js");
+  worker.onmessage = t.step_func_done(function(e) {
+    assert_true(e.data.exists, "WorkerGlobalScope.performance.now() exists");
+
+    assert_true(e.data.now1 > 0, "WorkerGlobalScope.performance.now() returns positive numbers");
+
+    assert_true((e.data.now2-e.data.now1) >= 0, "WorkerGlobalScope.performance.now() difference is not negative");
+  });
+});
+</script>
+</body>
+</html>

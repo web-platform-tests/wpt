@@ -29,7 +29,11 @@
   <script>
     test(function(){
                   assert_equals(null, document.elementFromPoint(-1, -1),
-                    "co-ordinates passed in are negative so should have returned a null");
+                    "both co-ordinates passed in are negative so should have returned a null");
+                  assert_equals(null, document.elementFromPoint(-1, 1),
+                    "x co-ordinates passed in are negative so should have returned a null");
+                  assert_equals(null, document.elementFromPoint(1, -1),
+                    "y co-ordinates passed in are negative so should have returned a null");
                 }, "Negative co-ordinates");
     test(function(){
                   assert_equals(document.getElementById('purple'), document.elementFromPoint(10, 10),

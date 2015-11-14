@@ -27,7 +27,7 @@
   <div id='red' class="size red">&nbsp;</div>
   <div id='green' class="size overlay green">&nbsp;</div>
   <iframe id=iframe-1 src="iframe.html" style='display:none;position:absolute; left:300px;'></iframe>
-  <iframe src="iframe.html" width="" height=""></iframe>
+  <iframe id=iframe-2 src="iframe.html" width="" height=""></iframe>
   <script>
     "use strict";
     test(function () {
@@ -49,6 +49,18 @@
                   assert_equals(null, document.elementFromPoint(viewportX + 100, viewportY + 100),
                     "X, Y co-ordinates larger than viewport");
     }, "co-ordinates larger than the viewport");
+
+    test(function () {
+                  let viewportX = window.frames[1].innerWidth;
+                  let viewportY = window.frames[1].innerHeight;
+                  let iframeRect = document.getElementById('iframe-2').getBoundingClientRect();
+                  assert_equals(null, window.frames[1].document.elementFromPoint(iframeRect.left + viewportX + 100, 10),
+                    "X co-ordinates larger than viewport");
+                  assert_equals(null, window.frames[1].document.elementFromPoint(10, iframeRect.top + viewportY + 100),
+                    "Y co-ordinates larger than viewport");
+                  assert_equals(null, window.frames[1].document.elementFromPoint(iframeRect.left + viewportX + 100, iframeRect.top + viewportY + 100),
+                    "X, Y co-ordinates larger than viewport");
+    }, "co-ordinates larger than the viewport from in iframe");
 
     test(function () {
                   assert_equals(document.getElementById('purple'), document.elementFromPoint(10, 10),

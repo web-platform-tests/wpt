@@ -26,8 +26,11 @@
   <div id='purple' class="size purple" >&nbsp;</div>
   <div id='red' class="size red">&nbsp;</div>
   <div id='green' class="size overlay green">&nbsp;</div>
+  <iframe id=iframe-1 src="iframe.html" style='display:none;position:absolute; left:300px;'></iframe>
+  <iframe src="iframe.html" width="" height=""></iframe>
   <script>
-    test(function(){
+    "use strict";
+    test(function () {
                   assert_equals(null, document.elementFromPoint(-1, -1),
                     "both co-ordinates passed in are negative so should have returned a null");
                   assert_equals(null, document.elementFromPoint(-1, 1),
@@ -35,13 +38,29 @@
                   assert_equals(null, document.elementFromPoint(1, -1),
                     "y co-ordinates passed in are negative so should have returned a null");
                 }, "Negative co-ordinates");
-    test(function(){
+
+    test(function () {
+                  let viewportX = window.innerWidth;
+                  let viewportY = window.innerHeight;
+                  assert_equals(null, document.elementFromPoint(viewportX + 100, 10),
+                    "X co-ordinates larger than viewport");
+                  assert_equals(null, document.elementFromPoint(10, viewportY + 100),
+                    "Y co-ordinates larger than viewport");
+                  assert_equals(null, document.elementFromPoint(viewportX + 100, viewportY + 100),
+                    "X, Y co-ordinates larger than viewport");
+    }, "co-ordinates larger than the viewport");
+
+    test(function () {
                   assert_equals(document.getElementById('purple'), document.elementFromPoint(10, 10),
                     "Should have returned the element with id `purple`");
                 }, "Return first element that is the target for hit testing");
-    test(function(){
+
+    test(function () {
                   assert_equals(document.getElementById('red'), document.elementFromPoint(10, 120),
                     "Should have returned the element with id `red` as element with `green` has `pointer-events:none`");
                 }, "First element to get mouse events with pointer-events css");
+
+
+
     done()
  </script>

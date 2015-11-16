@@ -45,6 +45,7 @@
 
 </svg>
   <div id='pink' class='size pink' style='transform: translate(10px)'>&nbsp;</div>
+  <div id='anotherGreen' class='size green' style='pointer-events:none'>Another Green</div>
   <script>
     "use strict";
     test(function () {
@@ -101,7 +102,7 @@
     test(function () {
             let svg = document.getElementById('svg-transform');
             let svgRect = svg.getBoundingClientRect();
-            assert_equals(svg, document.elementFromPoint(svgRect.left + Math.round(svgRect.width/2),
+            assert_equals(svg.querySelector("rect"), document.elementFromPoint(svgRect.left + Math.round(svgRect.width/2),
                                                          svgRect.top + Math.round(svgRect.height/2)),
                           "Should have returned SVG with Hello WPT! that has a transform");
 
@@ -113,5 +114,12 @@
 
     }, "transformed element at x,y");
 
+    test(function () {
+          let anotherGreen = document.getElementById('anotherGreen');
+          let anotherGreenRect = anotherGreen.getBoundingClientRect();
+          assert_equals(document.body, document.elementFromPoint(anotherGreenRect.left + Math.round(anotherGreenRect.width/2),
+                                                        anotherGreenRect.top + Math.round(anotherGreenRect.height/2)),
+                        "Should have returned the root");
+    }, "no hit target at x,y");
     done()
  </script>

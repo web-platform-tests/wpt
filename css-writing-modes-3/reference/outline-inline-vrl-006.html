@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>CSS Writing Modes Test: outline layout and non-replaced inline and vertical-rl writing-mode</title>
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com" />
+<meta content="ahem" name="flags" />
+<style>
+div {
+  color:transparent;
+  font:50px/1 Ahem;
+  width:2em;
+  height:5em;
+}
+.outline {
+  color:orange;
+  outline:blue solid 2px;
+}
+</style>
+<p>Test passes if inside of blue rectangles are orange.
+<div><span class="outline">1</span>2 34 56 78 9<span class="outline">0</span></div>

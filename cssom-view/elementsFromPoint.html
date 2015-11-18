@@ -129,10 +129,15 @@
                           [document.body, document.querySelector('html')],
                           "Should have returned the sequence [body, html]");
 
+            var doc = frames[1].document;
+            assert_array_equals([doc.querySelector('html')], doc.elementsFromPoint(0, 100),
+                                "Should have returned the sequence [html]")
+
             var doc = frames[2].document;
             doc.removeChild(doc.documentElement);
             assert_array_equals(doc.elementsFromPoint(0, 0), [],
                           "Should have returned [] as no root element");
+
       }, "no hit target at x,y");
 
       test(function () {

@@ -419,7 +419,7 @@ def template(request, content):
 
         #Should possibly support escaping for other contexts e.g. script
         #TODO: read the encoding of the response
-        return escape(unicode(value)).encode("utf-8")
+        return escape(unicode(value), quote=True).encode("utf-8")
 
     template_regexp = re.compile(r"{{([^}]*)}}")
     new_content, count = template_regexp.subn(config_replacement, content)

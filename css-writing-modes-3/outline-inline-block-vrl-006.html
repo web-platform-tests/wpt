@@ -9,7 +9,7 @@
 .container {
   color:transparent;
   font:50px/1 Ahem;
-  height:5em;
+  height:6em;
   writing-mode:vertical-rl;
 }
 .outline {
@@ -24,9 +24,9 @@
     Additional div to ensure that the origin of the containing block of the
     outline span is different from the origin of the writing mode root.
   -->
+  <div>123<span class="outline">XXX</span></div>
+  <div>12345 6<span class="outline">XX</span></div>
   <div>1</div>
-  <div>12345<span class="outline">67</span></div>
-  <div>1</div>
-  <div>1</div>
+  <div><span class="outline">1</span></div>
   <div>1</div>
 </div>

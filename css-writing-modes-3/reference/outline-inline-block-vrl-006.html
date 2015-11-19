@@ -10,11 +10,12 @@
 .outline {
   color:orange;
   display:inline-block;
-  margin-left:3em;
   outline:blue solid 2px;
 }
 </style>
 <p>Test passes if inside of blue rectangles are orange.
 <div class="container">
-  <span class="outline">1<br>2</span>
+  <span class="outline" style="margin-left:1em">1</span><br>
+  <span class="outline" style="margin-left:3em">1<br>2</span><br>
+  <span class="outline" style="margin-left:5em">1<br>2<br>X</span>
 </div>

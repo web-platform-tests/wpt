@@ -5,7 +5,7 @@
       <title>Background Color 1</title>
       <meta name="author" content="Tim Boland"/>
       <style type="text/css">p { background-color: blue }
-                            h3 {backgorund-color: red }
+                            h3 {background-color: red }
       </style>
    </head>
    <body>

@@ -5,6 +5,8 @@
 <div id="log"></div>
 <script>
   async_test(function(t) {
+    localStorage.clear()
+
     function makeHyperlink(n) {
       var hyperlink = document.body.appendChild(document.createElement("a"))
       hyperlink.rel = "noreferrer"
@@ -15,9 +17,6 @@
 
     var hyperlink1 = makeHyperlink(1),
         hyperlink2 = makeHyperlink(2)
-
-    hyperlink1.click()
-    hyperlink2.click()
 
     t.add_cleanup(function() {
       localStorage.setItem("x", "close")
@@ -35,10 +34,7 @@
       })
     })
 
-    setTimeout(function() {
-      t.step(function() {
-        localStorage.setItem("x", "hi")
-      })
-    }, 1000) // should be enough for the two windows to load
+    hyperlink1.click()
+    hyperlink2.click()
   })
 </script>

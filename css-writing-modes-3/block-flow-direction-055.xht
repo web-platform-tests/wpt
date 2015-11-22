@@ -4,14 +4,15 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: inline-block and 'vertical-lr' - block flow direction of block-level boxes</title>
+  <title>CSS Writing Modes Test: inline-block and 'sideways-lr' - block flow direction of block-level boxes</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
   <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
-  <meta content="This test checks that an inline-block with its 'writing-mode' set to 'vertical-lr' establishes a block formating context with a left-to-right block flow direction." name="assert" />
+  <meta content="This test checks that an inline-block with its 'writing-mode' set to 'sideways-lr'
+ establishes a block formating context with a left-to-right block flow direction." name="assert" />
 
   <style type="text/css"><![CDATA[
   body
@@ -23,10 +24,10 @@
   div#inline-block
     {
       background-color: blue;
-      border-top: blue solid 1em;
+      border-bottom: blue solid 1em;
       display: inline-block;
       height: 8em;
-      writing-mode: vertical-lr;
+      writing-mode: sideways-lr;
     }
 
   span
@@ -48,13 +49,13 @@
 
     <div id="inline-block">
 
-<!-- The "P" --> <span>AAAAAAA B&nbsp; C&nbsp;&nbsp; D&nbsp; E&nbsp;&nbsp; FFFF&nbsp;&nbsp;</span>
+<!-- The "P" --> <span>AAAAAAA &nbsp;&nbsp; B &nbsp;C &nbsp;&nbsp; D &nbsp;E &nbsp;&nbsp; FFFF</span>
 
-<!-- The "A" --> <span>GGGGGGG H&nbsp; J&nbsp;&nbsp; K&nbsp; L&nbsp;&nbsp; MMMMMMM</span>
+<!-- The "A" --> <span>GGGGGGG &nbsp;&nbsp; H &nbsp;J &nbsp;&nbsp; K &nbsp;L MMMMMMM</span>
 
-<!-- The left-most "S" --> <span>NNNN&nbsp; Q R&nbsp; S&nbsp; T U&nbsp; V&nbsp; W X&nbsp; YYYY</span>
+<!-- The left-most "S" --> <span>N&nbsp; QQQQ R&nbsp; S&nbsp; T U&nbsp; V&nbsp; W XXXX &nbsp;Y</span>
 
-<!-- The right-most "S" --> <span id="right-border">aaaa&nbsp; b c&nbsp; d&nbsp; e f&nbsp; g&nbsp; h j&nbsp; kkkk</span>
+<!-- The right-most "S" --> <span id="right-border">a&nbsp; bbbb c&nbsp; d&nbsp; e f&nbsp; g&nbsp; h jjjj &nbsp;k</span>
 
     </div>
 

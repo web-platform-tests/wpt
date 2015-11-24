@@ -4,14 +4,14 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: 'float: right' and 'vertical-lr' - ordering direction of line boxes</title>
+  <title>CSS Writing Modes Test: 'float: right' and 'sideways-lr' - ordering direction of line boxes</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
   <link rel="match" href="block-flow-direction-002-ref.xht" />
 
   <meta content="ahem" name="flags" />
-  <meta content="This test checks that the line boxes of right-floated boxes with 'writing-mode' set to 'vertical-lr' will be ordered from left to right." name="assert" />
+  <meta content="This test checks that the line boxes of right-floated boxes with 'writing-mode' set to 'sideways-lr' will be ordered from left to right." name="assert" />
 
   <style type="text/css"><![CDATA[
   body
@@ -28,7 +28,7 @@
       border-top: blue solid 1em;
       float: right;
       height: 7em; /* Each line box has an inline-size of 7em */
-      writing-mode: vertical-lr;
+      writing-mode: sideways-lr;
     }
 
   div#left-border
@@ -42,25 +42,25 @@
 
   <div class="floated-right">
 
-<!-- The right-most "S" --> aaaa&nbsp; b c&nbsp; d&nbsp; e f&nbsp; g&nbsp; h j&nbsp; kkkk
+<!-- The right-most "S" --> a&nbsp; bbbb c&nbsp; d&nbsp; e f&nbsp; g&nbsp; h jjjj &nbsp;k
 
   </div>
 
   <div class="floated-right">
 
-<!-- The left-most "S" --> NNNN&nbsp; Q R&nbsp; S&nbsp; T U&nbsp; V&nbsp; W X&nbsp; YYYY
+<!-- The left-most "S" --> N&nbsp; QQQQ R&nbsp; S&nbsp; T U&nbsp; V&nbsp; W XXXX &nbsp;Y
 
   </div>
 
   <div class="floated-right">
 
-<!-- The "A" --> GGGGGGG H&nbsp; J&nbsp;&nbsp; K&nbsp; L&nbsp;&nbsp; MMMMMMM
+<!-- The "A" --> GGGGGGG &nbsp;&nbsp;&nbsp;H &nbsp;J &nbsp;&nbsp;&nbsp;K &nbsp;L MMMMMMM
 
   </div>
 
   <div class="floated-right" id="left-border">
 
-<!-- The "P" --> AAAAAAA B&nbsp; C&nbsp;&nbsp; D&nbsp; E&nbsp;&nbsp; FFFF&nbsp;&nbsp;
+<!-- The "P" --> AAAAAAA &nbsp;&nbsp;&nbsp;B &nbsp;C &nbsp;&nbsp;&nbsp;D &nbsp;E &nbsp;&nbsp;&nbsp;FFFF
 
   </div>
 

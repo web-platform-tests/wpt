@@ -4,14 +4,14 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: 'float: left' and 'vertical-rl' - ordering direction of line boxes</title>
+  <title>CSS Writing Modes Test: 'float: left' and 'sideways-rl' - ordering direction of line boxes</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
   <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
-  <meta content="This test checks that the line boxes of left-floated boxes with 'writing-mode' set to 'vertical-rl' will be ordered from right to left." name="assert" />
+  <meta content="This test checks that the line boxes of left-floated boxes with 'writing-mode' set to 'sideways-rl' will be ordered from right to left." name="assert" />
 
   <style type="text/css"><![CDATA[
   body
@@ -28,7 +28,7 @@
       border-top: blue solid 1em;
       float: left;
       height: 7em; /* Each line box has an inline-size of 7em */
-      writing-mode: vertical-rl;
+      writing-mode: sideways-rl;
     }
 
   div#right-border

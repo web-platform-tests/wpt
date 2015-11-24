@@ -47,6 +47,11 @@
 </svg>
   <div id='pink' class='size pink' style='transform: translate(10px)'>&nbsp;</div>
   <div id='anotherteal' class='size teal' style='pointer-events:none'>Another teal</div>
+  <img id="dinos" src="/images/blue-area.png" usemap="#dinos_map" border="0" width="364" height="126"/>
+  <map id="dinos_map" name="dinos_map">
+  <area id="rectG" shape="rect" coords="0,0,90,100" href="#" alt="area 1"/>
+  <area id="circleO" shape="circle" coords="120,60,30" href="#" alt="area 2"/>
+  <area id="polyLE" shape="poly" coords="280,0,310,0,360,30,360,90,280,90" href="#" alt="area 3"/>
   <script>
     setup({explicit_done:true});
     window.onload = function () {
@@ -138,6 +143,15 @@
             assert_equals(doc.elementFromPoint(0, 0), null,
                           "Should have returned the documentElement for the document")
       }, "No viewport available");
+
+      test(function () {
+          var area = document.getElementById('rectG');
+          var areaRect = area.getBoundingClientRect();
+          assert_equals(document.elementFromPoint(areaRect.left + Math.round(areaRect.width/2),
+                                                  areaRect.top + Math.round(areaRect.height/2)),
+                        area,
+                        "Should have returned the image element");
+      }, "Image Maps");
       done();
     }
  </script>

@@ -11,7 +11,7 @@
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
 
   <meta content="image should" name="flags" />
-  <meta content="This test checks the order, the flow, the orientation and layout of form controls used in Example 4 of section 3.1." name="assert" />
+  <meta content="This test checks the order, the flow, the orientation and layout of form controls used in Example 4 of section 3.1 when the 'writing-mode' of the whole form element is set to 'vertical-rl'." name="assert" />
 
   <style type="text/css"><![CDATA[
   form
@@ -46,11 +46,14 @@
 <!--
   original source of the image is:
   http://www.w3.org/TR/css-writing-modes-3/vertical-form.png
-  longdesc="Screenshot of vertical layout: the input element is laid lengthwise
-  from top to botom and its contents rendered in a vertical writing mode,
-  matching the lbels outside it. The drop-down selection control after it slides
-  out to the sid (towards the after edge of the block) rather than downward as
-  it would in hoizontal writing modes."
+  Long description of image:
+  Screenshot of vertical layout: the input element is laid lengthwise
+  from top to bottom and its content rendered in a vertical writing mode,
+  matching the label outside it. The drop-down selection control (located on
+  the input element's lefthand side) slides out to the side (towards the
+  after edge of the block) rather than downward as it would in horizontal writing mode.
+  The Asian glyphs in the input element and in the drop-down selection
+  control are translated upright.
 -->
   </p>
 

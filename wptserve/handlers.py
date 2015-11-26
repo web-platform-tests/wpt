@@ -30,7 +30,7 @@ def filesystem_path(base_path, request, url_base="/"):
     if base_path is None:
         base_path = request.doc_root
 
-    path = request.url_parts.path
+    path = urllib.unquote(request.url_parts.path)
 
     if path.startswith(url_base):
         path = path[len(url_base):]

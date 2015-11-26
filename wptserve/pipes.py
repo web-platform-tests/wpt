@@ -406,6 +406,8 @@ def template(request, content):
                      "query": "?%s" % request.url_parts.query}
         elif field == "uuid()":
             value = str(uuid.uuid4())
+        elif field == "url_base":
+            value = request.url_base
         else:
             raise Exception("Undefined template variable %s" % field)
 

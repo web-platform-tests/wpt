@@ -75,11 +75,16 @@ function throwOrReject(operation, fn, obj, args,  message) {
             fn.apply(obj, args);
         }, message);
     } else {
-        fn.apply(obj, args).then(function() {
-            assert_unreached(message);
-        }, function(e) {
-            assert_true(e instanceof TypeError, message);
-        });
+        var test = async_test(operation.name + ": " + message);
+        var done = test.done.bind(test);
+        try {
+            promise_rejects(test, new TypeError(), fn.apply(obj, args)).then(done, done);
+        } catch (e){
+            test.step(function() {
+                assert_unreached("Throws \"" + e + "\" instead of rejecting promise");
+                test.done();
+            });
+        }
     }
 }
 

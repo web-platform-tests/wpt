@@ -4,14 +4,14 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: vertical-rl - table rows progression and colspan</title>
+  <title>CSS Writing Modes Test: sideways-rl - table rows progression</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#writing-mode" title="3.1 Block Flow Direction: the writing-mode property" />
   <link rel="match" href="block-flow-direction-001-ref.xht" />
 
   <meta content="ahem" name="flags" />
-  <meta content="This test checks that colspanned cells in a table are handled according to a top-to-bottom inline flow direction." name="assert" />
+  <meta content="This test checks that rows of a table element with in a 'sideways-rl' writing mode are laid out one after the other, leftwardedly, with the first beginning at the rightmost side of the table box; table rows are ordered from right to left meaning that the 1st row is the rightmost one and then the 2nd row is juxtaposed to its left-hand side, the 3rd row is juxtaposed to the 2nd row on its left-hand side, etc..." name="assert" />
 
   <style type="text/css"><![CDATA[
   body
@@ -26,7 +26,7 @@
       border-spacing: 0em;
       border: blue solid 1em;
       height: 7em;
-      writing-mode: vertical-rl;
+      writing-mode: sideways-rl;
     }
 
   td
@@ -52,10 +52,10 @@
   <tr><td>A&nbsp; B&nbsp; C&nbsp; DDD</td><td>EE F G H</td><td>JJ &nbsp;K &nbsp;L &nbsp;M</td></tr>
 
 <!-- The left-most "S" -->
-  <tr><td colspan="2">N&nbsp; OO Q&nbsp; R&nbsp; S&nbsp; T&nbsp; UUUU</td><td>WW &nbsp;X &nbsp;Y &nbsp;Z</td></tr>
+  <tr><td>N&nbsp; O&nbsp; Q&nbsp; RRR</td><td>SS T U V</td><td>WW &nbsp;X &nbsp;Y &nbsp;Z</td></tr>
 
 <!-- The "A" -->
-  <tr><td>aaa b&nbsp; c&nbsp; ddd</td><td colspan="2">eeff g&nbsp;&nbsp; h&nbsp;&nbsp; jjjj</td></tr>
+  <tr><td>aaa b&nbsp; c&nbsp; ddd</td><td>ee f g hh</td><td>jj &nbsp; &nbsp; kk</td></tr>
 
 <!-- The "P" -->
   <tr><td class="left-most-cell">mmm n&nbsp; o&nbsp; qqq</td><td class="left-most-cell">r s t uu</td><td class="left-most-cell">&nbsp; &nbsp; &nbsp; vv</td></tr>

@@ -28,10 +28,6 @@
                 "original_id": "password-state-(type=password)"
             },
             {
-                "id": "date-and-time-state-type-datetime",
-                "original_id": "date-and-time-state-(type=datetime)"
-            },
-            {
                 "id": "date-state-type-date",
                 "original_id": "date-state-(type=date)"
             },

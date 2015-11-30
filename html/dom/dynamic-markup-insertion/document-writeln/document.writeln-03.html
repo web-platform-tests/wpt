@@ -10,7 +10,7 @@
 test(function() {
   var iframe = document.createElement("iframe");
   document.body.appendChild(iframe);
-  doc = iframe.contentDocument;
+  var doc = iframe.contentDocument;
   doc.open();
   doc.writeln('a', 'b');
   doc.close();

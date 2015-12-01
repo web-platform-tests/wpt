@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+<!--
+    Test cases for Touch Events v2 Recommendation
+    https://w3c.github.io/touch-events/
+
+    These tests are based on Mozilla-Nokia-Google's single-touch tests.
+
+    The primary purpose of the tests in this document is checking the existence
+    of 'ontouchstart', 'ontouchmove', 'ontouchend', 'ontouchcancel' in
+    GlobalEventHandlers.
+-->
+
+<head>
+<title>GlobalEventHandlers Touch API Tests</title>
+<meta name="viewport" content="width=device-width">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({
+    explicit_done: true
+});
+
+function run() {
+    var touch_event_list = ['ontouchstart', 'ontouchmove', 'ontouchend', 'ontouchcancel'];
+    var global_event_handlers = [window, HTMLElement.prototype, SVGElement.prototype, Document.prototype];
+    var non_global_event_handlers = [Element.prototype];
+
+    test(function() {
+        for (var i in touch_event_list) {
+            for (var j in global_event_handlers) {
+                assert_true(touch_event_list[i] in global_event_handlers[j], "Touch event " + touch_event_list[i] + " in " + global_event_handlers[j].constructor.name);
+            }
+        }
+    }, "Touch events in GlobalEventHandlers");
+
+    test(function() {
+        for (var i in touch_event_list) {
+            for (var j in global_event_handlers) {
+                assert_true(global_event_handlers[j].hasOwnProperty(touch_event_list[i]), "GlobalEventHandler " + global_event_handlers[j].constructor.name + " hasOwnProperty " + touch_event_list[i]);
+            }
+        }
+    }, "Touch events are GlobalEventHandlers' own property");
+
+    test(function() {
+        for (var i in touch_event_list) {
+            for (var j in non_global_event_handlers) {
+                assert_false(touch_event_list[i] in non_global_event_handlers[j], "Touch event " + touch_event_list[i] + " not in " + non_global_event_handlers[j].constructor.name);
+            }
+        }
+    }, "Touch events not in Element.prototype");
+
+    target0.innerHTML = "Test complete."
+    done();
+}
+</script>
+<style>
+div {
+    margin: 0em;
+    padding: 2em;
+}
+
+#target0 {
+    background: yellow;
+    border: 1px solid orange;
+}
+</style>
+</head>
+
+<body onload="run()">
+<h1>Touch Events: GlobalEventHandlers Touch API Tests</h1>
+<div id="target0">Please wait for test to complete...</div>
+<div id="log"></div>
+</body>
+
+</html>

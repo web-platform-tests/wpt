@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://html.spec.whatwg.org/#runtime-script-errors">
 <link rel="help" href="https://html.spec.whatwg.org/#unhandled-promise-rejections">
 <script>
 'use strict';
@@ -11,6 +12,7 @@ setup({
 async_test(function(t) {
   var e = new Error('e');
   var e2 = new Error('e2');
+
   window.onerror = function (msg, url, line, col, error) {
     t.step(function() {
       assert_equals(msg, 'Uncaught Error: e2');
@@ -18,16 +20,16 @@ async_test(function(t) {
     });
     t.done();
   };
+
   window.onrejectionhandled = function() {
+    // This should cause onerror
     throw e2;
   };
+
   var p = Promise.reject(e);
-  setTimeout(function() {
-    try {
-      p.catch(function() {});
-    } catch (e) {
-      assert_unreached('attaching a handler should not throw an error');
-    }
-  }, 1);
+  setTimeout(t.step_func(function() {
+    // This will cause onrejectionhandled
+    p.catch(function() {});
+  }), 1);
 }, 'Throwing inside an unhandledrejection handler invokes the error handler.');
 </script>

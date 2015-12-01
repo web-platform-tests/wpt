@@ -29,7 +29,8 @@
             var style = newElm().style;
             style.color = 'RED';
 
-            assert_equals(style.cssText, 'color: red;');
+            // https://www.w3.org/Bugs/Public/show_bug.cgi?id=29317
+            assert_any(assert_equals, style.cssText, ['color: red;', 'color: RED;']);
 
         }, 'uppercase value');
 

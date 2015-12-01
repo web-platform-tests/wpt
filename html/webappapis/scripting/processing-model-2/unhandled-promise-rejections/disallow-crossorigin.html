@@ -18,12 +18,12 @@
     addEventListener('unhandledrejection', t.unreached_func('unhandledrejection event should never be triggered'));
     addEventListener('rejectionhandled', t.unreached_func('rejectionhandled event should never be triggered'));
 
-    setTimeout(function() {
-      loadedPromise.then(t.step_func(function() {
+    loadedPromise.then(t.step_func(function() {
+      t.step_timeout(function() {
         t.done();
-      }));
-    }, 1000);
-  }, 'Promise rejection event should be muted the cross-origin non-CORS script');
+      }, 1000);
+    }));
+  }, 'Promise rejection event should be muted for cross-origin non-CORS script');
 
   var scriptEl = document.createElement('script');
   scriptEl.src = CROSSDOMAIN + '/support/promise-access-control.py?allow=false';

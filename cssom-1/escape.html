@@ -19,10 +19,10 @@ test(function() {
 }, "String conversion");
 
 test(function() {
-  assert_throws('InvalidCharacterError', function() { CSS.escape('\0'); });
-  assert_throws('InvalidCharacterError', function() { CSS.escape('a\0'); });
-  assert_throws('InvalidCharacterError', function() { CSS.escape('\0b'); });
-  assert_throws('InvalidCharacterError', function() { CSS.escape('a\0b'); });
+  assert_equals(CSS.escape('\0'), '\\fffd ');
+  assert_equals(CSS.escape('a\0'), 'a\\fffd ');
+  assert_equals(CSS.escape('\0b'), '\\fffd b');
+  assert_equals(CSS.escape('a\0b'), 'a\\fffd b');
 }, "Null bytes");
 
 test(function() {

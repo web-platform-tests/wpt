@@ -1,0 +1,1601 @@
+<!doctype html>
+<title>SVG interface tests</title>
+<div id=log></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+<script type=text/plain>
+interface SVGElement {
+           attribute DOMString id;
+           attribute DOMString xmlbase;
+
+  readonly attribute SVGAnimatedString className;
+  readonly attribute CSSStyleDeclaration style;
+
+  CSSValue getPresentationAttribute(DOMString name);
+
+  attribute DOMString xmllang;
+  attribute DOMString xmlspace;
+
+  readonly attribute SVGSVGElement ownerSVGElement;
+  readonly attribute SVGElement viewportElement;
+};
+
+interface SVGAnimatedBoolean {
+           attribute boolean baseVal;
+  readonly attribute boolean animVal;
+};
+
+interface SVGAnimatedString {
+           attribute DOMString baseVal;
+  readonly attribute DOMString animVal;
+};
+
+interface SVGStringList {
+
+  readonly attribute unsigned long numberOfItems;
+
+  void clear();
+  DOMString initialize(DOMString newItem);
+  DOMString getItem(unsigned long index);
+  DOMString insertItemBefore(DOMString newItem, unsigned long index);
+  DOMString replaceItem(DOMString newItem, unsigned long index);
+  DOMString removeItem(unsigned long index);
+  DOMString appendItem(DOMString newItem);
+};
+
+interface SVGAnimatedEnumeration {
+           attribute unsigned short baseVal;
+  readonly attribute unsigned short animVal;
+};
+
+interface SVGAnimatedInteger {
+           attribute long baseVal;
+  readonly attribute long animVal;
+};
+
+interface SVGNumber {
+  attribute float value;
+};
+
+interface SVGAnimatedNumber {
+           attribute float baseVal;
+  readonly attribute float animVal;
+};
+
+interface SVGNumberList {
+
+  readonly attribute unsigned long numberOfItems;
+
+  void clear();
+  SVGNumber initialize(SVGNumber newItem);
+  SVGNumber getItem(unsigned long index);
+  SVGNumber insertItemBefore(SVGNumber newItem, unsigned long index);
+  SVGNumber replaceItem(SVGNumber newItem, unsigned long index);
+  SVGNumber removeItem(unsigned long index);
+  SVGNumber appendItem(SVGNumber newItem);
+};
+
+interface SVGAnimatedNumberList {
+  readonly attribute SVGNumberList baseVal;
+  readonly attribute SVGNumberList animVal;
+};
+
+interface SVGLength {
+
+  // Length Unit Types
+  const unsigned short SVG_LENGTHTYPE_UNKNOWN = 0;
+  const unsigned short SVG_LENGTHTYPE_NUMBER = 1;
+  const unsigned short SVG_LENGTHTYPE_PERCENTAGE = 2;
+  const unsigned short SVG_LENGTHTYPE_EMS = 3;
+  const unsigned short SVG_LENGTHTYPE_EXS = 4;
+  const unsigned short SVG_LENGTHTYPE_PX = 5;
+  const unsigned short SVG_LENGTHTYPE_CM = 6;
+  const unsigned short SVG_LENGTHTYPE_MM = 7;
+  const unsigned short SVG_LENGTHTYPE_IN = 8;
+  const unsigned short SVG_LENGTHTYPE_PT = 9;
+  const unsigned short SVG_LENGTHTYPE_PC = 10;
+
+  readonly attribute unsigned short unitType;
+           attribute float value;
+           attribute float valueInSpecifiedUnits;
+           attribute DOMString valueAsString;
+
+  void newValueSpecifiedUnits(unsigned short unitType, float valueInSpecifiedUnits);
+  void convertToSpecifiedUnits(unsigned short unitType);
+};
+
+interface SVGAnimatedLength {
+  readonly attribute SVGLength baseVal;
+  readonly attribute SVGLength animVal;
+};
+
+interface SVGLengthList {
+
+  readonly attribute unsigned long numberOfItems;
+
+  void clear();
+  SVGLength initialize(SVGLength newItem);
+  SVGLength getItem(unsigned long index);
+  SVGLength insertItemBefore(SVGLength newItem, unsigned long index);
+  SVGLength replaceItem(SVGLength newItem, unsigned long index);
+  SVGLength removeItem(unsigned long index);
+  SVGLength appendItem(SVGLength newItem);
+};
+
+interface SVGAnimatedLengthList {
+  readonly attribute SVGLengthList baseVal;
+  readonly attribute SVGLengthList animVal;
+};
+
+interface SVGAngle {
+
+  // Angle Unit Types
+  const unsigned short SVG_ANGLETYPE_UNKNOWN = 0;
+  const unsigned short SVG_ANGLETYPE_UNSPECIFIED = 1;
+  const unsigned short SVG_ANGLETYPE_DEG = 2;
+  const unsigned short SVG_ANGLETYPE_RAD = 3;
+  const unsigned short SVG_ANGLETYPE_GRAD = 4;
+
+  readonly attribute unsigned short unitType;
+           attribute float value;
+           attribute float valueInSpecifiedUnits;
+           attribute DOMString valueAsString;
+
+  void newValueSpecifiedUnits(unsigned short unitType, float valueInSpecifiedUnits);
+  void convertToSpecifiedUnits(unsigned short unitType);
+};
+
+interface SVGAnimatedAngle {
+  readonly attribute SVGAngle baseVal;
+  readonly attribute SVGAngle animVal;
+};
+
+interface SVGRect {
+  attribute float x;
+  attribute float y;
+  attribute float width;
+  attribute float height;
+};
+
+interface SVGAnimatedRect {
+  readonly attribute SVGRect baseVal;
+  readonly attribute SVGRect animVal;
+};
+
+[NoInterfaceObject]
+interface SVGUnitTypes {
+  // Unit Types
+  const unsigned short SVG_UNIT_TYPE_UNKNOWN = 0;
+  const unsigned short SVG_UNIT_TYPE_USERSPACEONUSE = 1;
+  const unsigned short SVG_UNIT_TYPE_OBJECTBOUNDINGBOX = 2;
+};
+
+interface SVGLocatableElement : SVGElement {
+
+  readonly attribute SVGElement nearestViewportElement;
+  readonly attribute SVGElement farthestViewportElement;
+
+  SVGRect getBBox();
+  SVGRect getStrokeBBox();
+  SVGMatrix getCTM();
+  SVGMatrix getScreenCTM();
+  SVGMatrix getTransformToElement(SVGElement element);
+};
+
+interface SVGTransformableElement : SVGLocatableElement {
+  readonly attribute SVGAnimatedTransformList transform;
+};
+
+interface SVGGraphicsElement : SVGTransformableElement {
+};
+
+SVGGraphicsElement implements SVGTests;
+
+interface SVGDefinitionElement : SVGElement {
+};
+
+SVGDefinitionElement implements SVGTests;
+
+[NoInterfaceObject]
+interface SVGTests {
+
+  readonly attribute SVGStringList requiredFeatures;
+  readonly attribute SVGStringList requiredExtensions;
+  readonly attribute SVGStringList systemLanguage;
+
+  boolean hasExtension(DOMString extension);
+};
+
+[NoInterfaceObject]
+interface SVGFitToViewBox {
+  readonly attribute SVGAnimatedRect viewBox;
+  readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
+};
+
+[NoInterfaceObject]
+interface SVGZoomAndPan {
+
+  // Zoom and Pan Types
+  const unsigned short SVG_ZOOMANDPAN_UNKNOWN = 0;
+  const unsigned short SVG_ZOOMANDPAN_DISABLE = 1;
+  const unsigned short SVG_ZOOMANDPAN_MAGNIFY = 2;
+
+  attribute unsigned short zoomAndPan;
+};
+
+interface SVGViewSpec {
+  readonly attribute SVGTransformList transform;
+  readonly attribute SVGElement viewTarget;
+  readonly attribute DOMString viewBoxString;
+  readonly attribute DOMString preserveAspectRatioString;
+  readonly attribute DOMString transformString;
+  readonly attribute DOMString viewTargetString;
+};
+
+SVGViewSpec implements SVGFitToViewBox;
+SVGViewSpec implements SVGZoomAndPan;
+
+[NoInterfaceObject]
+interface SVGURIReference {
+  readonly attribute SVGAnimatedString href;
+};
+
+[NoInterfaceObject]
+interface SVGRenderingIntent {
+  // Rendering Intent Types
+  const unsigned short RENDERING_INTENT_UNKNOWN = 0;
+  const unsigned short RENDERING_INTENT_AUTO = 1;
+  const unsigned short RENDERING_INTENT_PERCEPTUAL = 2;
+  const unsigned short RENDERING_INTENT_RELATIVE_COLORIMETRIC = 3;
+  const unsigned short RENDERING_INTENT_SATURATION = 4;
+  const unsigned short RENDERING_INTENT_ABSOLUTE_COLORIMETRIC = 5;
+};
+
+interface SVGDocument : Document {
+  readonly attribute DOMString title;
+  readonly attribute DOMString referrer;
+  readonly attribute DOMString domain;
+  readonly attribute DOMString URL;
+  readonly attribute SVGSVGElement rootElement;
+};
+
+interface SVGSVGElement : SVGGraphicsElement {
+
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+  readonly attribute SVGRect viewport;
+  readonly attribute float pixelUnitToMillimeterX;
+  readonly attribute float pixelUnitToMillimeterY;
+  readonly attribute float screenPixelToMillimeterX;
+  readonly attribute float screenPixelToMillimeterY;
+  readonly attribute boolean useCurrentView;
+  readonly attribute SVGViewSpec currentView;
+           attribute float currentScale;
+  readonly attribute SVGPoint currentTranslate;
+
+  unsigned long suspendRedraw(unsigned long maxWaitMilliseconds);
+  void unsuspendRedraw(unsigned long suspendHandleID);
+  void unsuspendRedrawAll();
+  void forceRedraw();
+  void pauseAnimations();
+  void unpauseAnimations();
+  boolean animationsPaused();
+  float getCurrentTime();
+  void setCurrentTime(float seconds);
+  NodeList getIntersectionList(SVGRect rect, SVGElement referenceElement);
+  NodeList getEnclosureList(SVGRect rect, SVGElement referenceElement);
+  boolean checkIntersection(SVGElement element, SVGRect rect);
+  boolean checkEnclosure(SVGElement element, SVGRect rect);
+  void deselectAll();
+  SVGNumber createSVGNumber();
+  SVGLength createSVGLength();
+  SVGAngle createSVGAngle();
+  SVGPoint createSVGPoint();
+  SVGMatrix createSVGMatrix();
+  SVGRect createSVGRect();
+  SVGTransform createSVGTransform();
+  SVGTransform createSVGTransformFromMatrix(SVGMatrix matrix);
+  Element getElementById(DOMString elementId);
+};
+
+//SVGSVGElement implements ViewCSS;
+//SVGSVGElement implements DocumentCSS;
+SVGSVGElement implements SVGFitToViewBox;
+SVGSVGElement implements SVGZoomAndPan;
+
+interface SVGGElement : SVGGraphicsElement {
+};
+
+interface SVGDefsElement : SVGGraphicsElement {
+};
+
+interface SVGDescElement : SVGElement {
+};
+
+interface SVGTitleElement : SVGElement {
+};
+
+interface SVGSymbolElement : SVGDefinitionElement {
+};
+
+SVGSymbolElement implements SVGFitToViewBox;
+
+interface SVGUseElement : SVGGraphicsElement {
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+  readonly attribute SVGElementInstance instanceRoot;
+  readonly attribute SVGElementInstance animatedInstanceRoot;
+};
+
+SVGUseElement implements SVGURIReference;
+
+interface SVGElementInstance : EventTarget {
+  readonly attribute SVGElement correspondingElement;
+  readonly attribute SVGUseElement correspondingUseElement;
+  readonly attribute SVGElementInstance parentNode;
+  readonly attribute SVGElementInstanceList childNodes;
+  readonly attribute SVGElementInstance firstChild;
+  readonly attribute SVGElementInstance lastChild;
+  readonly attribute SVGElementInstance previousSibling;
+  readonly attribute SVGElementInstance nextSibling;
+};
+
+interface SVGElementInstanceList {
+
+  readonly attribute unsigned long length;
+
+  SVGElementInstance item(unsigned long index);
+};
+
+interface SVGImageElement : SVGGraphicsElement {
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+  readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
+};
+
+SVGImageElement implements SVGURIReference;
+
+interface SVGSwitchElement : SVGGraphicsElement {
+};
+
+interface SVGStyleElement : SVGElement {
+  attribute DOMString type;
+  attribute DOMString media;
+  attribute DOMString title;
+};
+
+interface SVGPoint {
+
+  attribute float x;
+  attribute float y;
+
+  SVGPoint matrixTransform(SVGMatrix matrix);
+};
+
+interface SVGPointList {
+
+  readonly attribute unsigned long numberOfItems;
+
+  void clear();
+  SVGPoint initialize(SVGPoint newItem);
+  SVGPoint getItem(unsigned long index);
+  SVGPoint insertItemBefore(SVGPoint newItem, unsigned long index);
+  SVGPoint replaceItem(SVGPoint newItem, unsigned long index);
+  SVGPoint removeItem(unsigned long index);
+  SVGPoint appendItem(SVGPoint newItem);
+};
+
+interface SVGMatrix {
+
+  attribute float a;
+  attribute float b;
+  attribute float c;
+  attribute float d;
+  attribute float e;
+  attribute float f;
+
+  SVGMatrix multiply(SVGMatrix secondMatrix);
+  SVGMatrix inverse();
+  SVGMatrix translate(float x, float y);
+  SVGMatrix scale(float scaleFactor);
+  SVGMatrix scaleNonUniform(float scaleFactorX, float scaleFactorY);
+  SVGMatrix rotate(float angle);
+  SVGMatrix rotateFromVector(float x, float y);
+  SVGMatrix flipX();
+  SVGMatrix flipY();
+  SVGMatrix skewX(float angle);
+  SVGMatrix skewY(float angle);
+};
+
+interface SVGTransform {
+
+  // Transform Types
+  const unsigned short SVG_TRANSFORM_UNKNOWN = 0;
+  const unsigned short SVG_TRANSFORM_MATRIX = 1;
+  const unsigned short SVG_TRANSFORM_TRANSLATE = 2;
+  const unsigned short SVG_TRANSFORM_SCALE = 3;
+  const unsigned short SVG_TRANSFORM_ROTATE = 4;
+  const unsigned short SVG_TRANSFORM_SKEWX = 5;
+  const unsigned short SVG_TRANSFORM_SKEWY = 6;
+
+  readonly attribute unsigned short type;
+  readonly attribute SVGMatrix matrix;
+  readonly attribute float angle;
+
+  void setMatrix(SVGMatrix matrix);
+  void setTranslate(float tx, float ty);
+  void setScale(float sx, float sy);
+  void setRotate(float angle, float cx, float cy);
+  void setSkewX(float angle);
+  void setSkewY(float angle);
+};
+
+interface SVGTransformList {
+
+  readonly attribute unsigned long numberOfItems;
+
+  void clear();
+  SVGTransform initialize(SVGTransform newItem);
+  SVGTransform getItem(unsigned long index);
+  SVGTransform insertItemBefore(SVGTransform newItem, unsigned long index);
+  SVGTransform replaceItem(SVGTransform newItem, unsigned long index);
+  SVGTransform removeItem(unsigned long index);
+  SVGTransform appendItem(SVGTransform newItem);
+  SVGTransform createSVGTransformFromMatrix(SVGMatrix matrix);
+  SVGTransform consolidate();
+};
+
+interface SVGAnimatedTransformList {
+  readonly attribute SVGTransformList baseVal;
+  readonly attribute SVGTransformList animVal;
+};
+
+interface SVGPreserveAspectRatio {
+
+  // Alignment Types
+  const unsigned short SVG_PRESERVEASPECTRATIO_UNKNOWN = 0;
+  const unsigned short SVG_PRESERVEASPECTRATIO_NONE = 1;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMINYMIN = 2;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMIDYMIN = 3;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMAXYMIN = 4;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMINYMID = 5;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMIDYMID = 6;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMAXYMID = 7;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMINYMAX = 8;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMIDYMAX = 9;
+  const unsigned short SVG_PRESERVEASPECTRATIO_XMAXYMAX = 10;
+
+  // Meet-or-slice Types
+  const unsigned short SVG_MEETORSLICE_UNKNOWN = 0;
+  const unsigned short SVG_MEETORSLICE_MEET = 1;
+  const unsigned short SVG_MEETORSLICE_SLICE = 2;
+
+  attribute unsigned short align;
+  attribute unsigned short meetOrSlice;
+};
+
+interface SVGAnimatedPreserveAspectRatio {
+  readonly attribute SVGPreserveAspectRatio baseVal;
+  readonly attribute SVGPreserveAspectRatio animVal;
+};
+
+interface SVGPathSeg {
+
+  // Path Segment Types
+  const unsigned short PATHSEG_UNKNOWN = 0;
+  const unsigned short PATHSEG_CLOSEPATH = 1;
+  const unsigned short PATHSEG_MOVETO_ABS = 2;
+  const unsigned short PATHSEG_MOVETO_REL = 3;
+  const unsigned short PATHSEG_LINETO_ABS = 4;
+  const unsigned short PATHSEG_LINETO_REL = 5;
+  const unsigned short PATHSEG_CURVETO_CUBIC_ABS = 6;
+  const unsigned short PATHSEG_CURVETO_CUBIC_REL = 7;
+  const unsigned short PATHSEG_CURVETO_QUADRATIC_ABS = 8;
+  const unsigned short PATHSEG_CURVETO_QUADRATIC_REL = 9;
+  const unsigned short PATHSEG_ARC_ABS = 10;
+  const unsigned short PATHSEG_ARC_REL = 11;
+  const unsigned short PATHSEG_LINETO_HORIZONTAL_ABS = 12;
+  const unsigned short PATHSEG_LINETO_HORIZONTAL_REL = 13;
+  const unsigned short PATHSEG_LINETO_VERTICAL_ABS = 14;
+  const unsigned short PATHSEG_LINETO_VERTICAL_REL = 15;
+  const unsigned short PATHSEG_CURVETO_CUBIC_SMOOTH_ABS = 16;
+  const unsigned short PATHSEG_CURVETO_CUBIC_SMOOTH_REL = 17;
+  const unsigned short PATHSEG_CURVETO_QUADRATIC_SMOOTH_ABS = 18;
+  const unsigned short PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL = 19;
+
+  readonly attribute unsigned short pathSegType;
+  readonly attribute DOMString pathSegTypeAsLetter;
+};
+
+interface SVGPathSegClosePath : SVGPathSeg {
+};
+
+interface SVGPathSegMovetoAbs : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+};
+
+interface SVGPathSegMovetoRel : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+};
+
+interface SVGPathSegLinetoAbs : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+};
+
+interface SVGPathSegLinetoRel : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+};
+
+interface SVGPathSegCurvetoCubicAbs : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+  attribute float x1;
+  attribute float y1;
+  attribute float x2;
+  attribute float y2;
+};
+
+interface SVGPathSegCurvetoCubicRel : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+  attribute float x1;
+  attribute float y1;
+  attribute float x2;
+  attribute float y2;
+};
+
+interface SVGPathSegCurvetoQuadraticAbs : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+  attribute float x1;
+  attribute float y1;
+};
+
+interface SVGPathSegCurvetoQuadraticRel : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+  attribute float x1;
+  attribute float y1;
+};
+
+interface SVGPathSegArcAbs : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+  attribute float r1;
+  attribute float r2;
+  attribute float angle;
+  attribute boolean largeArcFlag;
+  attribute boolean sweepFlag;
+};
+
+interface SVGPathSegArcRel : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+  attribute float r1;
+  attribute float r2;
+  attribute float angle;
+  attribute boolean largeArcFlag;
+  attribute boolean sweepFlag;
+};
+
+interface SVGPathSegLinetoHorizontalAbs : SVGPathSeg {
+  attribute float x;
+};
+
+interface SVGPathSegLinetoHorizontalRel : SVGPathSeg {
+  attribute float x;
+};
+
+interface SVGPathSegLinetoVerticalAbs : SVGPathSeg {
+  attribute float y;
+};
+
+interface SVGPathSegLinetoVerticalRel : SVGPathSeg {
+  attribute float y;
+};
+
+interface SVGPathSegCurvetoCubicSmoothAbs : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+  attribute float x2;
+  attribute float y2;
+};
+
+interface SVGPathSegCurvetoCubicSmoothRel : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+  attribute float x2;
+  attribute float y2;
+};
+
+interface SVGPathSegCurvetoQuadraticSmoothAbs : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+};
+
+interface SVGPathSegCurvetoQuadraticSmoothRel : SVGPathSeg {
+  attribute float x;
+  attribute float y;
+};
+
+interface SVGPathSegList {
+
+  readonly attribute unsigned long numberOfItems;
+
+  void clear();
+  SVGPathSeg initialize(SVGPathSeg newItem);
+  SVGPathSeg getItem(unsigned long index);
+  SVGPathSeg insertItemBefore(SVGPathSeg newItem, unsigned long index);
+  SVGPathSeg replaceItem(SVGPathSeg newItem, unsigned long index);
+  SVGPathSeg removeItem(unsigned long index);
+  SVGPathSeg appendItem(SVGPathSeg newItem);
+};
+
+interface SVGAnimatedPathData {
+  readonly attribute SVGPathSegList pathSegList;
+  readonly attribute SVGPathSegList normalizedPathSegList;
+  readonly attribute SVGPathSegList animatedPathSegList;
+  readonly attribute SVGPathSegList animatedNormalizedPathSegList;
+};
+
+interface SVGPathElement : SVGGraphicsElement {
+
+  readonly attribute SVGAnimatedNumber pathLength;
+
+  float getTotalLength();
+  SVGPoint getPointAtLength(float distance);
+  unsigned long getPathSegAtLength(float distance);
+  SVGPathSegClosePath createSVGPathSegClosePath();
+  SVGPathSegMovetoAbs createSVGPathSegMovetoAbs(float x, float y);
+  SVGPathSegMovetoRel createSVGPathSegMovetoRel(float x, float y);
+  SVGPathSegLinetoAbs createSVGPathSegLinetoAbs(float x, float y);
+  SVGPathSegLinetoRel createSVGPathSegLinetoRel(float x, float y);
+  SVGPathSegCurvetoCubicAbs createSVGPathSegCurvetoCubicAbs(float x, float y, float x1, float y1, float x2, float y2);
+  SVGPathSegCurvetoCubicRel createSVGPathSegCurvetoCubicRel(float x, float y, float x1, float y1, float x2, float y2);
+  SVGPathSegCurvetoQuadraticAbs createSVGPathSegCurvetoQuadraticAbs(float x, float y, float x1, float y1);
+  SVGPathSegCurvetoQuadraticRel createSVGPathSegCurvetoQuadraticRel(float x, float y, float x1, float y1);
+  SVGPathSegArcAbs createSVGPathSegArcAbs(float x, float y, float r1, float r2, float angle, boolean largeArcFlag, boolean sweepFlag);
+  SVGPathSegArcRel createSVGPathSegArcRel(float x, float y, float r1, float r2, float angle, boolean largeArcFlag, boolean sweepFlag);
+  SVGPathSegLinetoHorizontalAbs createSVGPathSegLinetoHorizontalAbs(float x);
+  SVGPathSegLinetoHorizontalRel createSVGPathSegLinetoHorizontalRel(float x);
+  SVGPathSegLinetoVerticalAbs createSVGPathSegLinetoVerticalAbs(float y);
+  SVGPathSegLinetoVerticalRel createSVGPathSegLinetoVerticalRel(float y);
+  SVGPathSegCurvetoCubicSmoothAbs createSVGPathSegCurvetoCubicSmoothAbs(float x, float y, float x2, float y2);
+  SVGPathSegCurvetoCubicSmoothRel createSVGPathSegCurvetoCubicSmoothRel(float x, float y, float x2, float y2);
+  SVGPathSegCurvetoQuadraticSmoothAbs createSVGPathSegCurvetoQuadraticSmoothAbs(float x, float y);
+  SVGPathSegCurvetoQuadraticSmoothRel createSVGPathSegCurvetoQuadraticSmoothRel(float x, float y);
+};
+
+SVGPathElement implements SVGAnimatedPathData;
+
+interface SVGRectElement : SVGGraphicsElement {
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+  readonly attribute SVGAnimatedLength rx;
+  readonly attribute SVGAnimatedLength ry;
+};
+
+interface SVGCircleElement : SVGGraphicsElement {
+  readonly attribute SVGAnimatedLength cx;
+  readonly attribute SVGAnimatedLength cy;
+  readonly attribute SVGAnimatedLength r;
+};
+
+interface SVGEllipseElement : SVGGraphicsElement {
+  readonly attribute SVGAnimatedLength cx;
+  readonly attribute SVGAnimatedLength cy;
+  readonly attribute SVGAnimatedLength rx;
+  readonly attribute SVGAnimatedLength ry;
+};
+
+interface SVGLineElement : SVGGraphicsElement {
+  readonly attribute SVGAnimatedLength x1;
+  readonly attribute SVGAnimatedLength y1;
+  readonly attribute SVGAnimatedLength x2;
+  readonly attribute SVGAnimatedLength y2;
+};
+
+[NoInterfaceObject]
+interface SVGAnimatedPoints {
+  readonly attribute SVGPointList points;
+  readonly attribute SVGPointList animatedPoints;
+};
+
+interface SVGPolylineElement : SVGGraphicsElement {
+};
+
+SVGPolylineElement implements SVGAnimatedPoints;
+
+interface SVGPolygonElement : SVGGraphicsElement {
+};
+
+SVGPolygonElement implements SVGAnimatedPoints;
+
+interface SVGTextContentElement : SVGGraphicsElement {
+
+  // lengthAdjust Types
+  const unsigned short LENGTHADJUST_UNKNOWN = 0;
+  const unsigned short LENGTHADJUST_SPACING = 1;
+  const unsigned short LENGTHADJUST_SPACINGANDGLYPHS = 2;
+
+  readonly attribute SVGAnimatedLength textLength;
+  readonly attribute SVGAnimatedEnumeration lengthAdjust;
+
+  long getNumberOfChars();
+  float getComputedTextLength();
+  float getSubStringLength(unsigned long charnum, unsigned long nchars);
+  SVGPoint getStartPositionOfChar(unsigned long charnum);
+  SVGPoint getEndPositionOfChar(unsigned long charnum);
+  SVGRect getExtentOfChar(unsigned long charnum);
+  float getRotationOfChar(unsigned long charnum);
+  long getCharNumAtPosition(SVGPoint point);
+  void selectSubString(unsigned long charnum, unsigned long nchars);
+};
+
+interface SVGTextPositioningElement : SVGTextContentElement {
+  readonly attribute SVGAnimatedLengthList x;
+  readonly attribute SVGAnimatedLengthList y;
+  readonly attribute SVGAnimatedLengthList dx;
+  readonly attribute SVGAnimatedLengthList dy;
+  readonly attribute SVGAnimatedNumberList rotate;
+};
+
+interface SVGTextElement : SVGTextPositioningElement {
+};
+
+interface SVGTSpanElement : SVGTextPositioningElement {
+};
+
+interface SVGTRefElement : SVGTextPositioningElement {
+};
+
+SVGTRefElement implements SVGURIReference;
+
+interface SVGTextPathElement : SVGTextContentElement {
+
+  // textPath Method Types
+  const unsigned short TEXTPATH_METHODTYPE_UNKNOWN = 0;
+  const unsigned short TEXTPATH_METHODTYPE_ALIGN = 1;
+  const unsigned short TEXTPATH_METHODTYPE_STRETCH = 2;
+
+  // textPath Spacing Types
+  const unsigned short TEXTPATH_SPACINGTYPE_UNKNOWN = 0;
+  const unsigned short TEXTPATH_SPACINGTYPE_AUTO = 1;
+  const unsigned short TEXTPATH_SPACINGTYPE_EXACT = 2;
+
+  readonly attribute SVGAnimatedLength startOffset;
+  readonly attribute SVGAnimatedEnumeration method;
+  readonly attribute SVGAnimatedEnumeration spacing;
+};
+
+SVGTextPathElement implements SVGURIReference;
+
+interface SVGAltGlyphElement : SVGTextPositioningElement {
+  attribute DOMString glyphRef;
+  attribute DOMString format;
+};
+
+SVGAltGlyphElement implements SVGURIReference;
+
+interface SVGAltGlyphDefElement : SVGElement {
+};
+
+interface SVGAltGlyphItemElement : SVGElement {
+};
+
+interface SVGGlyphRefElement : SVGElement {
+  attribute DOMString glyphRef;
+  attribute DOMString format;
+  attribute float x;
+  attribute float y;
+  attribute float dx;
+  attribute float dy;
+};
+
+SVGGlyphRefElement implements SVGURIReference;
+
+interface SVGMarkerElement : SVGDefinitionElement {
+
+  // Marker Unit Types
+  const unsigned short SVG_MARKERUNITS_UNKNOWN = 0;
+  const unsigned short SVG_MARKERUNITS_USERSPACEONUSE = 1;
+  const unsigned short SVG_MARKERUNITS_STROKEWIDTH = 2;
+
+  // Marker Orientation Types
+  const unsigned short SVG_MARKER_ORIENT_UNKNOWN = 0;
+  const unsigned short SVG_MARKER_ORIENT_AUTO = 1;
+  const unsigned short SVG_MARKER_ORIENT_ANGLE = 2;
+
+  readonly attribute SVGAnimatedLength refX;
+  readonly attribute SVGAnimatedLength refY;
+  readonly attribute SVGAnimatedEnumeration markerUnits;
+  readonly attribute SVGAnimatedLength markerWidth;
+  readonly attribute SVGAnimatedLength markerHeight;
+  readonly attribute SVGAnimatedEnumeration orientType;
+  readonly attribute SVGAnimatedAngle orientAngle;
+
+  void setOrientToAuto();
+  void setOrientToAngle(SVGAngle angle);
+};
+
+SVGMarkerElement implements SVGFitToViewBox;
+
+interface SVGColorProfileElement : SVGElement {
+  attribute DOMString local;
+  attribute DOMString name;
+  attribute unsigned short renderingIntent;
+};
+
+SVGColorProfileElement implements SVGRenderingIntent;
+SVGColorProfileElement implements SVGURIReference;
+
+interface SVGColorProfileRule : SVGCSSRule {
+  attribute DOMString src;
+  attribute DOMString name;
+  attribute unsigned short renderingIntent;
+};
+
+SVGColorProfileRule implements SVGRenderingIntent;
+
+interface SVGGradientElement : SVGDefinitionElement {
+
+  // Spread Method Types
+  const unsigned short SVG_SPREADMETHOD_UNKNOWN = 0;
+  const unsigned short SVG_SPREADMETHOD_PAD = 1;
+  const unsigned short SVG_SPREADMETHOD_REFLECT = 2;
+  const unsigned short SVG_SPREADMETHOD_REPEAT = 3;
+
+  readonly attribute SVGAnimatedEnumeration gradientUnits;
+  readonly attribute SVGAnimatedTransformList gradientTransform;
+  readonly attribute SVGAnimatedEnumeration spreadMethod;
+};
+
+SVGGradientElement implements SVGURIReference;
+SVGGradientElement implements SVGUnitTypes;
+
+interface SVGLinearGradientElement : SVGGradientElement {
+  readonly attribute SVGAnimatedLength x1;
+  readonly attribute SVGAnimatedLength y1;
+  readonly attribute SVGAnimatedLength x2;
+  readonly attribute SVGAnimatedLength y2;
+};
+
+interface SVGRadialGradientElement : SVGGradientElement {
+  readonly attribute SVGAnimatedLength cx;
+  readonly attribute SVGAnimatedLength cy;
+  readonly attribute SVGAnimatedLength r;
+  readonly attribute SVGAnimatedLength fx;
+  readonly attribute SVGAnimatedLength fy;
+  readonly attribute SVGAnimatedLength fr;
+};
+
+interface SVGMeshGradientElement : SVGGradientElement {
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+};
+
+interface SVGMeshRowElement : SVGElement {
+};
+
+interface SVGMeshPatchElement : SVGElement {
+};
+
+interface SVGStopElement : SVGElement {
+  readonly attribute SVGAnimatedNumber offset;
+};
+
+interface SVGPatternElement : SVGDefinitionElement {
+  readonly attribute SVGAnimatedEnumeration patternUnits;
+  readonly attribute SVGAnimatedEnumeration patternContentUnits;
+  readonly attribute SVGAnimatedTransformList patternTransform;
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+};
+
+SVGPatternElement implements SVGFitToViewBox;
+SVGPatternElement implements SVGURIReference;
+SVGPatternElement implements SVGUnitTypes;
+
+interface SVGClipPathElement : SVGDefinitionElement {
+  readonly attribute SVGAnimatedEnumeration clipPathUnits;
+};
+
+SVGClipPathElement implements SVGUnitTypes;
+
+interface SVGMaskElement : SVGDefinitionElement {
+
+  // Mask Types
+  const unsigned short SVG_MASKTYPE_LUMINANCE = 0;
+  const unsigned short SVG_MASKTYPE_ALPHA = 1;
+
+  readonly attribute SVGAnimatedEnumeration maskUnits;
+  readonly attribute SVGAnimatedEnumeration maskContentUnits;
+  readonly attribute SVGAnimatedEnumeration maskType;
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+};
+
+SVGMaskElement implements SVGUnitTypes;
+
+interface SVGCursorElement : SVGDefinitionElement {
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+};
+
+SVGCursorElement implements SVGURIReference;
+
+interface SVGAElement : SVGGraphicsElement {
+  readonly attribute SVGAnimatedString target;
+};
+
+SVGAElement implements SVGURIReference;
+
+interface SVGViewElement : SVGElement {
+  readonly attribute SVGStringList viewTarget;
+};
+
+SVGViewElement implements SVGFitToViewBox;
+SVGViewElement implements SVGZoomAndPan;
+
+interface SVGScriptElement : SVGElement {
+  attribute DOMString type;
+};
+
+SVGScriptElement implements SVGURIReference;
+
+interface SVGZoomEvent : UIEvent {
+  readonly attribute SVGRect zoomRectScreen;
+  readonly attribute float previousScale;
+  readonly attribute SVGPoint previousTranslate;
+  readonly attribute float newScale;
+  readonly attribute SVGPoint newTranslate;
+};
+
+interface TimeEvent : Event {
+
+  readonly attribute AbstractView view;
+  readonly attribute long detail;
+
+  void initTimeEvent(DOMString typeArg, AbstractView viewArg, long detailArg);
+};
+
+interface SVGAnimationElement : SVGElement {
+
+  readonly attribute SVGElement targetElement;
+
+  float getStartTime();
+  float getCurrentTime();
+  float getSimpleDuration();
+
+  void beginElement();
+  void beginElementAt(float offset);
+  void endElement();
+  void endElementAt(float offset);
+};
+
+SVGAnimationElement implements SVGTests;
+
+interface SVGAnimateElement : SVGAnimationElement {
+};
+
+interface SVGSetElement : SVGAnimationElement {
+};
+
+interface SVGAnimateMotionElement : SVGAnimationElement {
+};
+
+interface SVGMPathElement : SVGElement {
+};
+
+SVGMPathElement implements SVGURIReference;
+
+interface SVGAnimateColorElement : SVGAnimationElement {
+};
+
+interface SVGAnimateTransformElement : SVGAnimationElement {
+};
+
+interface SVGFontElement : SVGDefinitionElement {
+};
+
+interface SVGGlyphElement : SVGElement {
+};
+
+interface SVGMissingGlyphElement : SVGElement {
+};
+
+interface SVGHKernElement : SVGElement {
+};
+
+interface SVGVKernElement : SVGElement {
+};
+
+interface SVGFontFaceElement : SVGElement {
+};
+
+interface SVGFontFaceSrcElement : SVGElement {
+};
+
+interface SVGFontFaceUriElement : SVGElement {
+};
+
+interface SVGFontFaceFormatElement : SVGElement {
+};
+
+interface SVGFontFaceNameElement : SVGElement {
+};
+
+interface SVGMetadataElement : SVGElement {
+};
+
+interface SVGForeignObjectElement : SVGGraphicsElement {
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+};
+
+interface SVGFilterElement : SVGDefinitionElement {
+  readonly attribute SVGAnimatedEnumeration filterUnits;
+  readonly attribute SVGAnimatedEnumeration primitiveUnits;
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+  readonly attribute SVGAnimatedInteger filterResX;
+  readonly attribute SVGAnimatedInteger filterResY;
+
+  void setFilterRes(unsigned long filterResX, unsigned long filterResY);
+  ImageData apply(ImageData source);
+};
+
+SVGFilterElement implements SVGURIReference;
+SVGFilterElement implements SVGUnitTypes;
+
+[NoInterfaceObject]
+interface SVGFilterPrimitiveStandardAttributes {
+  readonly attribute SVGAnimatedLength x;
+  readonly attribute SVGAnimatedLength y;
+  readonly attribute SVGAnimatedLength width;
+  readonly attribute SVGAnimatedLength height;
+  readonly attribute SVGAnimatedString result;
+};
+
+interface SVGFEBlendElement : SVGElement {
+
+  // Blend Mode Types
+  const unsigned short SVG_FEBLEND_MODE_UNKNOWN = 0;
+  const unsigned short SVG_FEBLEND_MODE_NORMAL = 1;
+  const unsigned short SVG_FEBLEND_MODE_MULTIPLY = 2;
+  const unsigned short SVG_FEBLEND_MODE_SCREEN = 3;
+  const unsigned short SVG_FEBLEND_MODE_DARKEN = 4;
+  const unsigned short SVG_FEBLEND_MODE_LIGHTEN = 5;
+
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedString in2;
+  readonly attribute SVGAnimatedEnumeration mode;
+};
+
+SVGFEBlendElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFEColorMatrixElement : SVGElement {
+
+  // Color Matrix Types
+  const unsigned short SVG_FECOLORMATRIX_TYPE_UNKNOWN = 0;
+  const unsigned short SVG_FECOLORMATRIX_TYPE_MATRIX = 1;
+  const unsigned short SVG_FECOLORMATRIX_TYPE_SATURATE = 2;
+  const unsigned short SVG_FECOLORMATRIX_TYPE_HUEROTATE = 3;
+  const unsigned short SVG_FECOLORMATRIX_TYPE_LUMINANCETOALPHA = 4;
+
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedEnumeration type;
+  readonly attribute SVGAnimatedNumberList values;
+};
+
+SVGFEColorMatrixElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFEComponentTransferElement : SVGElement {
+  readonly attribute SVGAnimatedString in1;
+};
+
+SVGFEComponentTransferElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGComponentTransferFunctionElement : SVGElement {
+
+  // Component Transfer Types
+  const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_UNKNOWN = 0;
+  const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY = 1;
+  const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_TABLE = 2;
+  const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_DISCRETE = 3;
+  const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_LINEAR = 4;
+  const unsigned short SVG_FECOMPONENTTRANSFER_TYPE_GAMMA = 5;
+
+  readonly attribute SVGAnimatedEnumeration type;
+  readonly attribute SVGAnimatedNumberList tableValues;
+  readonly attribute SVGAnimatedNumber slope;
+  readonly attribute SVGAnimatedNumber intercept;
+  readonly attribute SVGAnimatedNumber amplitude;
+  readonly attribute SVGAnimatedNumber exponent;
+  readonly attribute SVGAnimatedNumber offset;
+};
+
+interface SVGFEFuncRElement : SVGComponentTransferFunctionElement {
+};
+
+interface SVGFEFuncGElement : SVGComponentTransferFunctionElement {
+};
+
+interface SVGFEFuncBElement : SVGComponentTransferFunctionElement {
+};
+
+interface SVGFEFuncAElement : SVGComponentTransferFunctionElement {
+};
+
+interface SVGFECompositeElement : SVGElement {
+
+  // Composite Operators
+  const unsigned short SVG_FECOMPOSITE_OPERATOR_UNKNOWN = 0;
+  const unsigned short SVG_FECOMPOSITE_OPERATOR_OVER = 1;
+  const unsigned short SVG_FECOMPOSITE_OPERATOR_IN = 2;
+  const unsigned short SVG_FECOMPOSITE_OPERATOR_OUT = 3;
+  const unsigned short SVG_FECOMPOSITE_OPERATOR_ATOP = 4;
+  const unsigned short SVG_FECOMPOSITE_OPERATOR_XOR = 5;
+  const unsigned short SVG_FECOMPOSITE_OPERATOR_ARITHMETIC = 6;
+
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedString in2;
+  readonly attribute SVGAnimatedEnumeration operator;
+  readonly attribute SVGAnimatedNumber k1;
+  readonly attribute SVGAnimatedNumber k2;
+  readonly attribute SVGAnimatedNumber k3;
+  readonly attribute SVGAnimatedNumber k4;
+};
+
+SVGFECompositeElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFEConvolveMatrixElement : SVGElement {
+
+  // Edge Mode Values
+  const unsigned short SVG_EDGEMODE_UNKNOWN = 0;
+  const unsigned short SVG_EDGEMODE_DUPLICATE = 1;
+  const unsigned short SVG_EDGEMODE_WRAP = 2;
+  const unsigned short SVG_EDGEMODE_NONE = 3;
+
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedInteger orderX;
+  readonly attribute SVGAnimatedInteger orderY;
+  readonly attribute SVGAnimatedNumberList kernelMatrix;
+  readonly attribute SVGAnimatedNumber divisor;
+  readonly attribute SVGAnimatedNumber bias;
+  readonly attribute SVGAnimatedInteger targetX;
+  readonly attribute SVGAnimatedInteger targetY;
+  readonly attribute SVGAnimatedEnumeration edgeMode;
+  readonly attribute SVGAnimatedNumber kernelUnitLengthX;
+  readonly attribute SVGAnimatedNumber kernelUnitLengthY;
+  readonly attribute SVGAnimatedBoolean preserveAlpha;
+};
+
+SVGFEConvolveMatrixElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFEDiffuseLightingElement : SVGElement {
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedNumber surfaceScale;
+  readonly attribute SVGAnimatedNumber diffuseConstant;
+  readonly attribute SVGAnimatedNumber kernelUnitLengthX;
+  readonly attribute SVGAnimatedNumber kernelUnitLengthY;
+};
+
+SVGFEDiffuseLightingElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFEDistantLightElement : SVGElement {
+  readonly attribute SVGAnimatedNumber azimuth;
+  readonly attribute SVGAnimatedNumber elevation;
+};
+
+interface SVGFEPointLightElement : SVGElement {
+  readonly attribute SVGAnimatedNumber x;
+  readonly attribute SVGAnimatedNumber y;
+  readonly attribute SVGAnimatedNumber z;
+};
+
+interface SVGFESpotLightElement : SVGElement {
+  readonly attribute SVGAnimatedNumber x;
+  readonly attribute SVGAnimatedNumber y;
+  readonly attribute SVGAnimatedNumber z;
+  readonly attribute SVGAnimatedNumber pointsAtX;
+  readonly attribute SVGAnimatedNumber pointsAtY;
+  readonly attribute SVGAnimatedNumber pointsAtZ;
+  readonly attribute SVGAnimatedNumber specularExponent;
+  readonly attribute SVGAnimatedNumber limitingConeAngle;
+};
+
+interface SVGFEDisplacementMapElement : SVGElement {
+
+  // Channel Selectors
+  const unsigned short SVG_CHANNEL_UNKNOWN = 0;
+  const unsigned short SVG_CHANNEL_R = 1;
+  const unsigned short SVG_CHANNEL_G = 2;
+  const unsigned short SVG_CHANNEL_B = 3;
+  const unsigned short SVG_CHANNEL_A = 4;
+
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedString in2;
+  readonly attribute SVGAnimatedNumber scale;
+  readonly attribute SVGAnimatedEnumeration xChannelSelector;
+  readonly attribute SVGAnimatedEnumeration yChannelSelector;
+};
+
+SVGFEDisplacementMapElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFEDropShadowElement : SVGElement {
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedNumber dx;
+  readonly attribute SVGAnimatedNumber dy;
+  readonly attribute SVGAnimatedNumber stdDeviationX;
+  readonly attribute SVGAnimatedNumber stdDeviationY;
+
+  void setStdDeviation(float stdDeviationX, float stdDeviationY);
+};
+
+SVGFEDropShadowElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFEFloodElement : SVGElement {
+};
+
+interface SVGFEGaussianBlurElement : SVGElement {
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedNumber stdDeviationX;
+  readonly attribute SVGAnimatedNumber stdDeviationY;
+
+  void setStdDeviation(float stdDeviationX, float stdDeviationY);
+};
+
+SVGFEGaussianBlurElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFEImageElement : SVGElement {
+  readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
+};
+
+SVGFEImageElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFEImageElement implements SVGURIReference;
+
+interface SVGFEMergeElement : SVGElement {
+};
+
+interface SVGFEMergeNodeElement : SVGElement {
+  readonly attribute SVGAnimatedString in1;
+};
+
+interface SVGFEMorphologyElement : SVGElement {
+
+  // Morphology Operators
+  const unsigned short SVG_MORPHOLOGY_OPERATOR_UNKNOWN = 0;
+  const unsigned short SVG_MORPHOLOGY_OPERATOR_ERODE = 1;
+  const unsigned short SVG_MORPHOLOGY_OPERATOR_DILATE = 2;
+
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedEnumeration operator;
+  readonly attribute SVGAnimatedNumber radiusX;
+  readonly attribute SVGAnimatedNumber radiusY;
+};
+
+SVGFEMorphologyElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFESpecularLightingElement : SVGElement {
+  readonly attribute SVGAnimatedString in1;
+  readonly attribute SVGAnimatedNumber surfaceScale;
+  readonly attribute SVGAnimatedNumber specularConstant;
+  readonly attribute SVGAnimatedNumber specularExponent;
+  readonly attribute SVGAnimatedNumber kernelUnitLengthX;
+  readonly attribute SVGAnimatedNumber kernelUnitLengthY;
+};
+
+SVGFESpecularLightingElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFETileElement : SVGElement {
+  readonly attribute SVGAnimatedString in1;
+};
+
+SVGFETileElement implements SVGFilterPrimitiveStandardAttributes;
+
+interface SVGFETurbulenceElement : SVGElement {
+
+  // Turbulence Types
+  const unsigned short SVG_TURBULENCE_TYPE_UNKNOWN = 0;
+  const unsigned short SVG_TURBULENCE_TYPE_FRACTALNOISE = 1;
+  const unsigned short SVG_TURBULENCE_TYPE_TURBULENCE = 2;
+
+  // Stitch Options
+  const unsigned short SVG_STITCHTYPE_UNKNOWN = 0;
+  const unsigned short SVG_STITCHTYPE_STITCH = 1;
+  const unsigned short SVG_STITCHTYPE_NOSTITCH = 2;
+
+  readonly attribute SVGAnimatedNumber baseFrequencyX;
+  readonly attribute SVGAnimatedNumber baseFrequencyY;
+  readonly attribute SVGAnimatedInteger numOctaves;
+  readonly attribute SVGAnimatedNumber seed;
+  readonly attribute SVGAnimatedEnumeration stitchTiles;
+  readonly attribute SVGAnimatedEnumeration type;
+};
+
+SVGFETurbulenceElement implements SVGFilterPrimitiveStandardAttributes;
+</script>
+<script>
+var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+var defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+var Desc = document.createElementNS("http://www.w3.org/2000/svg", "desc");
+var title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+var symbol = document.createElementNS("http://www.w3.org/2000/svg", "symbol");
+var use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+var image = document.createElementNS("http://www.w3.org/2000/svg", "image");
+var Switch = document.createElementNS("http://www.w3.org/2000/svg", "switch");
+var style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+var ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+var polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+var polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+var textContent = document.createElementNS("http://www.w3.org/2000/svg",
+                                           "textContent");
+var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+var tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+var tref = document.createElementNS("http://www.w3.org/2000/svg", "tref");
+var textPath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+var altGlyph = document.createElementNS("http://www.w3.org/2000/svg", "altGlyph");
+var altGlyphDef = document.createElementNS("http://www.w3.org/2000/svg",
+                                           "altGlyphDef");
+var altGlyphItem = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "altGlyphItem");
+var glyphRef = document.createElementNS("http://www.w3.org/2000/svg",
+                                        "glyphRef");
+var glyphRef = document.createElementNS("http://www.w3.org/2000/svg",
+                                        "glyphRef");
+var marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+var colorProfile = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "color-profile");
+var linearGradient = document.createElementNS("http://www.w3.org/2000/svg",
+                                              "linearGradient");
+var radialGradient = document.createElementNS("http://www.w3.org/2000/svg",
+                                              "radialGradient");
+var meshGradient = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "meshGradient");
+var stop = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+var pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+var clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+var mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+var cursor = document.createElementNS("http://www.w3.org/2000/svg", "cursor");
+var a = document.createElementNS("http://www.w3.org/2000/svg", "a");
+var view = document.createElementNS("http://www.w3.org/2000/svg", "view");
+var script = document.createElementNS("http://www.w3.org/2000/svg", "script");
+var animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+var set = document.createElementNS("http://www.w3.org/2000/svg", "set");
+var animateMotion = document.createElementNS("http://www.w3.org/2000/svg",
+                                             "animateMotion");
+var mPath = document.createElementNS("http://www.w3.org/2000/svg", "mPath");
+var animateColor = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "animateColor");
+var animateColor = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "animateColor");
+var animateTransform = document.createElementNS("http://www.w3.org/2000/svg",
+                                                "animateTransform");
+var font = document.createElementNS("http://www.w3.org/2000/svg", "font");
+var glyph = document.createElementNS("http://www.w3.org/2000/svg", "glyph");
+var missingglyph = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "missing-glyph");
+var khern = document.createElementNS("http://www.w3.org/2000/svg", "hkern");
+var vkern = document.createElementNS("http://www.w3.org/2000/svg", "vkern");
+var fontface = document.createElementNS("http://www.w3.org/2000/svg", "font-face");
+var fontfacesrc = document.createElementNS("http://www.w3.org/2000/svg",
+                                           "font-face-src");
+var fontfaceuri = document.createElementNS("http://www.w3.org/2000/svg",
+                                           "font-face-uri");
+var fontfaceformat = document.createElementNS("http://www.w3.org/2000/svg",
+                                              "font-face-format");
+var fontfacename = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "font-face-name");
+var metadata = document.createElementNS("http://www.w3.org/2000/svg",
+                                        "metadata");
+var foreignObject = document.createElementNS("http://www.w3.org/2000/svg",
+                                             "foreignObject");
+var filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+var feBlend = document.createElementNS("http://www.w3.org/2000/svg", "feBlend");
+var feColorMatrix = document.createElementNS("http://www.w3.org/2000/svg",
+                                             "feColorMatrix");
+var feColorMatrix = document.createElementNS("http://www.w3.org/2000/svg",
+                                             "feColorMatrix");
+var feComponentTransfer = document.createElementNS("http://www.w3.org/2000/svg",
+                                                   "feComponentTransfer");
+var feFuncR = document.createElementNS("http://www.w3.org/2000/svg", "feFuncR");
+var feFuncG = document.createElementNS("http://www.w3.org/2000/svg", "feFuncG");
+var feFuncB = document.createElementNS("http://www.w3.org/2000/svg", "feFuncB");
+var feFuncA = document.createElementNS("http://www.w3.org/2000/svg", "feFuncA");
+var feComposite = document.createElementNS("http://www.w3.org/2000/svg",
+                                           "feComposite");
+var feConvolveMatrix = document.createElementNS("http://www.w3.org/2000/svg",
+                                                "feConvolveMatrix");
+var feDiffuseLighting = document.createElementNS("http://www.w3.org/2000/svg",
+                                                 "feDiffuseLighting");
+var fePointLight = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "fePointLight");
+var feSpotLight = document.createElementNS("http://www.w3.org/2000/svg",
+                                           "feSpotLight");
+var feDisplacementMap = document.createElementNS("http://www.w3.org/2000/svg",
+                                                 "feDisplacementMap");
+var feDropShadow = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "feDropShadow");
+var feFlood = document.createElementNS("http://www.w3.org/2000/svg", "feFlood");
+var feGaussianBlur = document.createElementNS("http://www.w3.org/2000/svg",
+                                              "feGaussianBlur");
+var feDisplacementMap = document.createElementNS("http://www.w3.org/2000/svg",
+                                                 "feDisplacementMap");
+var feDropShadow = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "feDropShadow");
+var feFlood = document.createElementNS("http://www.w3.org/2000/svg", "feFlood");
+var feGaussianBlur = document.createElementNS("http://www.w3.org/2000/svg",
+                                              "feGaussianBlue");
+var feImage = document.createElementNS("http://www.w3.org/2000/svg", "feImage");
+var feMerge = document.createElementNS("http://www.w3.org/2000/svg", "feMerge");
+var feMergeNode = document.createElementNS("http://www.w3.org/2000/svg",
+                                           "feMergeNode");
+var feMorphology = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "feMorphology");
+var feSpecularLighting = document.createElementNS("http://www.w3.org/2000/svg",
+                                                  "feSpecularLighting");
+var feTile = document.createElementNS("http://www.w3.org/2000/svg",
+                                      "feTile");
+var feTurbulence = document.createElementNS("http://www.w3.org/2000/svg",
+                                            "feTurbulence");
+
+
+var idlArray = new IdlArray();
+idlArray.add_idls(document.querySelector("script[type=text\\/plain]").textContent);
+idlArray.add_objects({
+  SVGAnimatedBoolean: ['feConvolveMatrix.preserveAlpha'],
+  SVGAnimatedString: ['a.target'],
+  SVGStringList: ['a.requiredFeatures'],
+  SVGAnimatedEnumeration: ['text.lengthAdjust'],
+  SVGAnimatedInteger: ['feConvolveMatrix.orderX'],
+  SVGNumber: ['svg.createSVGNumber()'],
+  SVGAnimatedNumber: ['stop.offset'],
+  SVGNumberList: ['text.rotate.baseVal'],
+  SVGAnimatedNumberList: ['text.rotate'],
+  SVGLength: ['svg.createSVGLength()'],
+  SVGAnimatedLength: ['svg.x'],
+  SVGAnimatedLengthList: ['text.x'],
+  SVGAngle: ['svg.createSVGAngle()'],
+  SVGAnimatedAngle: ['marker.orientAngle'],
+  SVGRect: ['svg.createSVGRect()'],
+  SVGAnimatedRect: ['svg.viewBox'],
+  SVGSVGElement: ['svg'],
+  SVGGElement: ['g'],
+  SVGDefsElement: ['defs'],
+  SVGDescElement: ['Desc'],
+  SVGTitleElement: ['title'],
+  SVGSymbolElement: ['symbol'],
+  SVGUseElement: ['use'],
+  SVGImageElement: ['image'],
+  SVGSwitchElement: ['Switch'],
+  SVGStyleElement: ['style'],
+  SVGPoint: ['svg.createSVGPoint()'],
+  SVGPointList: ['polygon.points'],
+  SVGMatrix: ['svg.createSVGMatrix()'],
+  SVGTransform: ['svg.createSVGTransform()'],
+  SVGTransformList: ['pattern.patternTransform.baseVal'],
+  SVGAnimatedTransformList: ['pattern.patternTransform'],
+  SVGPreserveAspectRatio: ['image.preserveAspectRatio.baseVal'],
+  SVGAnimatedPreserveAspectRatio: ['image.preserveAspectRatio'],
+  SVGPathSegClosePath: ['path.createSVGPathSegClosePath()'],
+  SVGPathSegMovetoAbs: ['path.createSVGPathSegMovetoAbs(0,0)'],
+  SVGPathSegMovetoRel: ['path.createSVGPathSegMovetoRel(0,0)'],
+  SVGPathSegLinetoAbs: ['path.createSVGPathSegLinetoAbs(0,0)'],
+  SVGPathSegLinetoRel: ['path.createSVGPathSegLinetoRel(0,0)'],
+  SVGPathSegCurvetoCubicAbs: ['path.createSVGPathSegCurvetoCubicAbs(0,0,0,0,0,0)'],
+  SVGPathSegCurvetoCubicRel: ['path.createSVGPathSegCurvetoCubicRel(0,0,0,0,0,0)'],
+  SVGPathSegCurvetoQuadraticAbs: ['path.createSVGPathSegCurvetoQuadraticAbs(0,0,0,0)'],
+  SVGPathSegCurvetoQuadraticRel: ['path.createSVGPathSegCurvetoQuadraticRel(0,0,0,0)'],
+  SVGPathSegArcAbs: ['path.createSVGPathSegArcAbs(0,0,0,0,0,true,true)'],
+  SVGPathSegArcRel: ['path.createSVGPathSegArcRel(0,0,0,0,0,true,true)'],
+  SVGPathSegLinetoHorizontalAbs: ['path.createSVGPathSegLinetoHorizontalAbs(0)'],
+  SVGPathSegLinetoHorizontalRel: ['path.createSVGPathSegLinetoHorizontalRel(0)'],
+  SVGPathSegLinetoVerticalAbs: ['path.createSVGPathSegLinetoVerticalAbs(0)'],
+  SVGPathSegLinetoVerticalRel: ['path.createSVGPathSegLinetoVerticalRel(0)'],
+  SVGPathSegCurvetoCubicSmoothAbs: ['path.createSVGPathSegCurvetoCubicSmoothAbs(0,0,0,0)'],
+  SVGPathSegCurvetoCubicSmoothRel: ['path.createSVGPathSegCurvetoCubicSmoothRel(0,0,0,0)'],
+  SVGPathSegCurvetoQuadraticSmoothAbs: ['path.createSVGPathSegCurvetoQuadraticSmoothAbs(0,0)'],
+  SVGPathSegCurvetoQuadraticSmoothRel: ['path.createSVGPathSegCurvetoQuadraticSmoothRel(0,0)'],
+  SVGPathSegList: ['path.pathSegList'],
+  SVGPathElement: ['path'],
+  SVGRectElement: ['rect'],
+  SVGCircleElement: ['circle'],
+  SVGEllipseElement: ['ellipse'],
+  SVGLineElement: ['line'],
+  SVGPolylineElement: ['polyline'],
+  SVGPolygonElement: ['polygon'],
+  SVGTextContentElement: ['textContent'],
+  SVGTextElement: ['text'],
+  SVGTSpanElement: ['tspan'],
+  SVGTRefElement: ['tref'],
+  SVGTextPathElement: ['textPath'],
+  SVGAltGlyphElement: ['altGlyph'],
+  SVGAltGlyphDefElement: ['altGlyphDef'],
+  SVGAltGlyphItemElement: ['altGlyphItem'],
+  SVGGlyphRefElement: ['glyphRef'],
+  SVGMarkerElement: ['marker'],
+  SVGColorProfileElement: ['colorProfile'],
+  SVGLinearGradientElement: ['linearGradient'],
+  SVGRadialGradientElement: ['radialGradient'],
+  SVGMeshGradientElement: ['meshGradient'],
+  SVGStopElement: ['stop'],
+  SVGPatternElement: ['pattern'],
+  SVGClipPathElement: ['clipPath'],
+  SVGMaskElement: ['mask'],
+  SVGCursorElement: ['cursor'],
+  SVGAElement: ['a'],
+  SVGViewElement: ['view'],
+  SVGScriptElement: ['script'],
+  SVGAnimateElement: ['animate'],
+  SVGSetElement: ['set'],
+  SVGAnimateMotionElement: ['animateMotion'],
+  SVGMPathElement: ['mPath'],
+  SVGAnimateColorElement: ['animateColor'],
+  SVGAnimateTransformElement: ['animateTransform'],
+  SVGFontElement: ['font'],
+  SVGGlyphElement: ['glyph'],
+  SVGMissingGlyphElement: ['missingglyph'],
+  SVGHKernElement: ['hkern'],
+  SVGVKernElement: ['vkern'],
+  SVGFontFaceElement: ['fontface'],
+  SVGFontFaceSrcElement: ['fontfacesrc'],
+  SVGFontFaceUriElement: ['fontfaceuri'],
+  SVGFontFaceFormatElement: ['fontfaceformat'],
+  SVGMetadataElement: ['metadata'],
+  SVGForeignObjectElement: ['foreignObject'],
+  SVGFilterElement: ['filter'],
+  SVGFEBlendElement: ['feBlend'],
+  SVGFEColorMatrixElement: ['feColorMatrix'],
+  SVGFEComponentTransferElement: ['feComponentTransfer'],
+  SVGFEFuncRElement: ['feFuncR'],
+  SVGFEFuncGElement: ['feFuncG'],
+  SVGFEFuncBElement: ['feFuncB'],
+  SVGFEFuncAElement: ['feFuncA'],
+  SVGFECompositeElement: ['feComposite'],
+  SVGFEConvolveMatrixElement: ['feConvolveMatrix'],
+  SVGFEDiffuseLightingElement: ['feDiffuseLighting'],
+  SVGFEPointLightElement: ['fePointLight'],
+  SVGFESpotLightElement: ['feSpotLight'],
+  SVGFEDisplacementMapElement: ['feDisplacementMap'],
+  SVGFEDropShadowElement: ['feDropShadow'],
+  SVGFEFloodElement: ['feFlood'],
+  SVGFEGaussianBlurElement: ['feGaussianBlur'],
+  SVGFEImageElement: ['feImage'],
+  SVGFEMergeElement: ['feMerge'],
+  SVGFEMergeNodeElement: ['feMergeNode'],
+  SVGFEMorphologyElement: ['feMorphology'],
+  SVGFESpecularLightingElement: ['feSpecularLighting'],
+  SVGFETileElement: ['feTile'],
+  SVGFETurbulenceElement: ['feTurbulence']
+});
+idlArray.test();
+</script>
+

@@ -1,18 +1,24 @@
 importScripts("/resources/testharness.js");
 
-async_test(function() {
-  var data = "TEST";
-  var worker = new Worker("../support/blob-in-worker.js");
+promise_test(function() {
+  return new Promise(function(resolve, reject) {
+    var data = "TEST";
+    var blob = new Blob([data], {type: "text/plain"});
 
-  worker.onmessage = this.step_func(function(event) {
-    assert_equals(event.data, data);
-    this.done();
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      var content = reader.result;
+      assert_equals(content, data);
+      resolve();
+    };
+
+    reader.onerror = function(event) {
+      assert_unreached(event.error.message);
+      reject(event.error.message);
+    };
+    reader.readAsText(blob);
   });
-
-  worker.onerror = this.step_func(function(event) {
-    assert_unreached(event.message);
-  });
-  worker.postMessage(data);
-
 }, "Create Blob in Worker");
+
+done();
 

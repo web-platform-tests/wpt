@@ -1,21 +1,24 @@
 importScripts("/resources/testharness.js");
 
-async_test(function() {
-  var file = new File(["bits"], "dummy", { 'type': 'text/plain', lastModified: 42 });
+promise_test(function() {
+  return new Promise(function(resolve, reject) {
+    var file = new File(["bits"], "dummy", { 'type': 'text/plain', lastModified: 42 });
 
-  var worker = new Worker("../support/worker-read-file-constructor.js");
+    var reader = new FileReader();
+    reader.onload = function (event) {
+      var content = reader.result;
+      assert_equals(file.name, "dummy", "file name");
+      assert_equals(content, "bits", "file content");
+      assert_equals(file.lastModified, 42, "file lastModified");
+      resolve();
+    };
 
-  worker.onmessage = this.step_func(function(event) {
-    assert_equals(event.data.name, file.name, "file name");
-    assert_equals(event.data.content, "bits", "file content");
-    assert_equals(event.data.lastModified, file.lastModified, "file lastModified");
-    this.done();
+    reader.onerror = function(event) {
+      assert_unreached(event.error.message);
+      reject(event.error.message);
+    };
+    reader.readAsText(file);
   });
-
-  worker.onerror = this.step_func(function(event) {
-    assert_unreached(event.message);
-  });
-  worker.postMessage(file);
-
 }, "FileReader in Worker");
 
+done();

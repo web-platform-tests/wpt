@@ -53,7 +53,7 @@ print "generating tests...\n";
 # ...and generate the tests
 &utils::generators::generateTopIndex(\%cache); # points to mini test index and all test type indexes
 foreach my $destinationType (split ' ', $utils::helpers::types{'DESTINATION_TYPES'}) {
-    my @destinationTests = &utils::helpers::shortlistTestsForDestination($destinationType, 
+    my @destinationTests = &utils::helpers::shortlistTestsForDestination($destinationType,
                                                                          [ sort {
                                                                              my $na = $cache{$a}->{'number'};
                                                                              my $nb = $cache{$b}->{'number'};

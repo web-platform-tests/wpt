@@ -39,7 +39,7 @@ sub prefixesUsedInternal {
     my($node, $parentPrefixes) = @_;
     my $relevantPrefixes = {};
     foreach my $prefix (keys %$parentPrefixes) {
-        if (exists $node->{currentPrefixes}->{$prefix} and 
+        if (exists $node->{currentPrefixes}->{$prefix} and
             $parentPrefixes->{$prefix} eq $node->{currentPrefixes}->{$prefix}) {
             $relevantPrefixes->{$prefix} = $parentPrefixes->{$prefix};
         }

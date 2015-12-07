@@ -27,7 +27,7 @@ Using `support/property.js` test suites compile a list of animatable properties.
   "to": {
     "background-color": "rgba(10,10,10,0.4)"
   },
-  // flags classifying property types, 
+  // flags classifying property types,
   // currently only {discrete:true} for visbility
   "flags": {}
 }

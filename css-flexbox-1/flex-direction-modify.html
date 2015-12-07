@@ -20,16 +20,16 @@
         line-height: 50px;
         text-align: center;
     }
-    
-    
+
+
     .flex-container.flex-direction-row{
         flex-direction : row;
     }
-    
+
     .flex-container.flex-direction-row-reverse{
         flex-direction : row-reverse;
     }
-    
+
     .flex-container.flex-direction-column{
         flex-direction : column;
     }
@@ -41,7 +41,7 @@
 <body>
     <h1>flex-direction:<span id="current_direction">row</h1>
     <div id="flex_container" class="flex-container"><div class="flex-item">1</div><div class="flex-item">2</div><div class="flex-item">3</div></div>
-    
+
     <script>
         var container  = document.getElementById("flex_container");
         var direction_text = document.getElementById("current_direction");
@@ -51,11 +51,11 @@
             container.className = baseClass + classPrefix + direction;
             notify( direction );
         }
-        
+
         function notify( direction ){
             direction_text.innerHTML = direction;
         }
-        
+
         change_direction("row");
         change_direction("row-reverse");
         change_direction("column");

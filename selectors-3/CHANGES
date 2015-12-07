@@ -53,7 +53,7 @@ Modified tests:
      can still pass these tests if they support combinators (mark II).
 
    css3-modsel-d1b - Dynamic handling of :empty
-     Updated to test what the spec actually says (oops).     
+     Updated to test what the spec actually says (oops).
 
 Removed tests:
    css3-modsel-180 - ::first-letter on inlines

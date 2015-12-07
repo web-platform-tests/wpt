@@ -170,7 +170,7 @@ sub saveCreditsData {
     foreach my $name (keys %{$test->{'credits'}}) {
       $credits{$name} ||= $test->{'credits'}->{$name}
         if ($name ne 'CSS1 Test Suite Contributors');
-    } 
+    }
   }
 
   $tt->process('contributors.data.tmpl',

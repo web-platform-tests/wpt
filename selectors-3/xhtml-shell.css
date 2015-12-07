@@ -12,7 +12,7 @@ pre.rules {
   margin-top: 1em;
 }
 
-div.testSource { 
+div.testSource {
   border: thin black solid;
   padding-left: 1em;
   padding-right: 1em;
@@ -70,5 +70,5 @@ iframe, object {
   width: auto;
   height: auto;
   padding: 0;
-  border: thin black solid; 
+  border: thin black solid;
 }

@@ -6,7 +6,7 @@
 
 <cssrules>
 
-<!-- 
+<!--
      foo::selection matches the part of <foo> that has the selection.
      *::selection matches the parts of every element that have the selection.
 

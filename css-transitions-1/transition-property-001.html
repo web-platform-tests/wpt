@@ -7,13 +7,13 @@
         <link rel="help" title="2.1. The 'transition-property' Property" href="http://www.w3.org/TR/css3-transitions/#transition-property-property">
         <link rel="author" title="Rodney Rehm" href="http://rodneyrehm.de/en/">
         <meta name="flags" content="dom">
-        
+
         <script src="/resources/testharness.js" type="text/javascript"></script>
         <script src="/resources/testharnessreport.js" type="text/javascript"></script>
-        
+
         <script src="./support/vendorPrefix.js" type="text/javascript"></script>
         <script src="./support/helper.js" type="text/javascript"></script>
-        
+
         <script id="metadata_cache">/*
         {
           "parse 'none'": {},
@@ -34,12 +34,12 @@
 
         <script>
             var transition = document.getElementById('transition');
-            
-            // syntax: none | [ all | <IDENT> ] [ ‘,’ [ all | <IDENT> ] ]* 
+
+            // syntax: none | [ all | <IDENT> ] [ ‘,’ [ all | <IDENT> ] ]*
             var values = [
                 'none', 'all', 'width', 'all, width', 'width, all'
             ];
-            
+
             for (var i = 0, value; value = values[i]; i++) {
                 test(function() {
                     setStyle('#transition', {

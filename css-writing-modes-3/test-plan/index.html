@@ -3,7 +3,7 @@
   <head>
     <title>CSS Writing Modes testing strategy</title>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-    <!-- 
+    <!--
       === NOTA BENE ===
       For the three scripts below, if your spec resides on dev.w3 you can check them
       out in the same tree and use relative links so that they'll work offline,
@@ -175,16 +175,16 @@ table.simple {
         spec testing.
       </p>
       <p>
-        This document is not meant to replace the spec in determining the 
+        This document is not meant to replace the spec in determining the
         normative and non-normative assertions to be tested, but rather
         complement it.
       </p>
     </section>
-    
+
     <section>
       <h2>Introduction</h2>
       <p>
-        As CSS moved away from the monolithic development of CSS 2.1 to the 
+        As CSS moved away from the monolithic development of CSS 2.1 to the
         modular development of CSS 3, the number of proposed new features and
         the complexity of the layout landscape have increased dramatically.
         While this directly translates to increased flexibility and agility in
@@ -225,7 +225,7 @@ table.simple {
           enable easy test contributions, both from W3C partners and from
           non-W3C members that wish to contribute. This is achieved by clearly
           marking and explaining the areas that need testing, linked to existing
-          tests and general testing progress. 
+          tests and general testing progress.
         </p>
       </section>
       <section>
@@ -271,11 +271,11 @@ table.simple {
           The CSS Writing Modes spec introduces a significant change in the way layout
           can be done and as a consequence, many of the assumptions that hold in
           the context of CSS&nbsp;2.1 must be re-validated in the context of CSS
-          Writing Modes. In the meanwhile, a lot of new layout modules have been 
+          Writing Modes. In the meanwhile, a lot of new layout modules have been
           proposed, with various degrees of implementer support and maturity.
           Also, non-CSS specific specs introduced concepts that affect how style
           is propagated (e.g. Shadow DOM [[shadow-dom]]) or how elements are
-          rendered and interact with their containing documents (e.g. 
+          rendered and interact with their containing documents (e.g.
           <code>&lt;iframe seamless&gt;</code> in HTML 5 [[HTML5]]).
         </p>
         <p>
@@ -315,7 +315,7 @@ table.simple {
       <section>
         <h3>Special fonts required</h3>
         <p>
-          For building reftest, several special fonts are necessary. 
+          For building reftest, several special fonts are necessary.
           If could not get some fonts, a test will be manual or reftest waiting fonts.
         </p>
       </section>
@@ -383,7 +383,7 @@ table.simple {
                   <li><code>button</code></li>
                   <li><code>input:text</code></li>
                   <li><code>select</code></li>
-                  <li><code>text-area</code></li>    
+                  <li><code>text-area</code></li>
                 </ul>
             </li>
             <li>
@@ -391,7 +391,7 @@ table.simple {
                 <ul>
                   <li><code>margin</code></li>
                   <li><code>border</code></li>
-                  <li><code>padding</code></li>  
+                  <li><code>padding</code></li>
                 </ul>
             </li>
             <li>
@@ -427,9 +427,9 @@ table.simple {
                 'dominant baseline' testing in CSS21 side?
               </div>
             </p>
-            <h3>Sec 5.Introduction to Vertical Text Layout</h3>                        
+            <h3>Sec 5.Introduction to Vertical Text Layout</h3>
             <p>
-              Parse, Rendering fundamental for the <code>text-orientation</code> property. rendering when the vertical writing mode. Rules of Appendix C. 
+              Parse, Rendering fundamental for the <code>text-orientation</code> property. rendering when the vertical writing mode. Rules of Appendix C.
             </p>
             <h3>Sec 6.Abstract Box Terminology</h3>
             <p>

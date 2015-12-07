@@ -1,9 +1,9 @@
 function checkLinePos(spanID,expectedPos,coordToCheck) {
-    if(coordToCheck == "top") 
+    if(coordToCheck == "top")
         var spanToCheck = document.getElementById(spanID).getBoundingClientRect().top;
-    else if(coordToCheck == "right") 
+    else if(coordToCheck == "right")
         var spanToCheck = document.getElementById(spanID).getBoundingClientRect().right;
-    else if(coordToCheck == "left") 
+    else if(coordToCheck == "left")
         var spanToCheck = document.getElementById(spanID).getBoundingClientRect().left;
     else
         var spanToCheck = document.getElementById(spanID).getBoundingClientRect().bottom;

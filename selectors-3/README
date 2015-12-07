@@ -19,9 +19,9 @@ The format is:
 
 You can also use a special <restrict> element in elements in the <code>
 element, as in:
-  
+
   <test:restrict xmlns:test="http://www.example.org/css3tests" for="xml xhtml">
    ...
   </test:restrict>
-  
+
 See test -d2 for an example.

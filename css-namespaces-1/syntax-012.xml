@@ -17,7 +17,7 @@ test-a );
    @namespace/**/b/**/url(	'test-b'
 );
 
-   @namespace	c	url("test-c"	
+   @namespace	c	url("test-c"
 );
 
    a|test, b|test, c|test { background:lime }

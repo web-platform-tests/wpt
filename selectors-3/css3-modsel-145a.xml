@@ -26,6 +26,6 @@
   <line type="odd" hidden="hidden">This line should be green.</line>
   <line type="even">This line should be unstyled.</line>
   <line type="odd">This line should be green.</line>
- </test> 
+ </test>
 </code>
 </csstest>

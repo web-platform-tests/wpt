@@ -7,10 +7,10 @@
         <link rel="help" title="2. Transitions" href="http://www.w3.org/TR/css3-transitions/#transitions">
         <link rel="author" title="Rodney Rehm" href="http://rodneyrehm.de/en/">
         <meta name="flags" content="dom">
-        
+
         <script src="/resources/testharness.js" type="text/javascript"></script>
         <script src="/resources/testharnessreport.js" type="text/javascript"></script>
-        
+
         <script src="./support/vendorPrefix.js" type="text/javascript"></script>
         <script src="./support/helper.js" type="text/javascript"></script>
         <script src="./support/runParallelAsyncHarness.js" type="text/javascript"></script>
@@ -22,7 +22,7 @@
                 display: none;
             }
         </style>
-        
+
         <script id="metadata_cache">/*
         {
           "transition within display:none / values": {},
@@ -40,7 +40,7 @@
             </div>
         </div>
         <div id="offscreen"></div>
-        
+
         <!--
             SEE ./support/README.md for an abstract explanation of the test procedure
             http://test.csswg.org/source/contributors/rodneyrehm/submitted/css3-transitions/README.md
@@ -51,7 +51,7 @@
             // this test takes its time, give it a minute to run
             var timeout = 60000;
             setup({timeout: timeout});
-            
+
             var tests = [
                 {
                     name: "transition within display:none",
@@ -82,12 +82,12 @@
                         '.container': data.parentStyle,
                         '.container.to': {},
                         '.container.how': {},
-                        
+
                         '.transition': data.from,
                         '.transition.to' : data.to,
                         '.transition.how' : {transition: 'all ' + duration + ' linear 0s'}
                     };
-                    
+
                     generalParallelTest.setup(data, options);
                     generalParallelTest.addStyles(data, options, styles);
                 },

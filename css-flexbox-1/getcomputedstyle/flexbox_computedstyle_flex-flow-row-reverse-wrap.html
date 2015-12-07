@@ -4,6 +4,7 @@
 <link rel="help" href="http://www.w3.org/TR/css-flexbox-1/#propdef-flex-flow">
 <link rel="help" href="http://www.w3.org/TR/css-flexbox-1/#valdef-flex-direction-row-reverse">
 <link rel="help" href="http://www.w3.org/TR/css-flexbox-1/#valdef-flex-wrap-wrap">
+<link rel="match" href="ref-pass-body.html">
 <meta name="flags" content="dom">
 <style>
 body {
@@ -22,5 +23,4 @@ body {
 	    getComputedStyle(body).getPropertyValue("flex-wrap") ==
 	    "wrap");
     body.textContent = body.className = passed ? "PASS" : "FAIL";
-    try{top.opener.rr(passed)}catch(e){}
 </script>

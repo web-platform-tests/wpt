@@ -32,6 +32,6 @@
   <line type="">This line should be unstyled.</line>
   <line type="match">This line should be green.</line>
   <line type="">This line should be unstyled.</line>
- </test> 
+ </test>
 </code>
 </csstest>

@@ -8,10 +8,10 @@
         <link rel="help" title="5. Transition Events" href="http://www.w3.org/TR/css3-transitions/#transition-events">
         <link rel="author" title="Rodney Rehm" href="http://rodneyrehm.de/en/">
         <meta name="flags" content="dom">
-        
+
         <script src="/resources/testharness.js" type="text/javascript"></script>
         <script src="/resources/testharnessreport.js" type="text/javascript"></script>
-        
+
         <script src="./support/vendorPrefix.js" type="text/javascript"></script>
         <script src="./support/helper.js" type="text/javascript"></script>
         <script src="./support/runParallelAsyncHarness.js" type="text/javascript"></script>
@@ -27,7 +27,7 @@
                 height: 100000px;
             }
         </style>
-        
+
         <script id="metadata_cache">/*
         {
           "duration: 0.1s, delay: -0.05s / events": {},
@@ -45,27 +45,27 @@
             </div>
         </div>
         <div id="offscreen"></div>
-        
+
         <!--
             SEE ./support/README.md for an abstract explanation of the test procedure
             http://test.csswg.org/source/contributors/rodneyrehm/submitted/css3-transitions/README.md
         -->
 
         <script>
-            // If the value for 'transition-delay' is a negative time offset then the transition will execute the moment the property 
-            // is changed, but will appear to have begun execution at the specified offset. That is, the transition will appear to 
-            // begin part-way through its play cycle. In the case where a transition has implied starting values and a negative 
+            // If the value for 'transition-delay' is a negative time offset then the transition will execute the moment the property
+            // is changed, but will appear to have begun execution at the specified offset. That is, the transition will appear to
+            // begin part-way through its play cycle. In the case where a transition has implied starting values and a negative
             // 'transition-delay', the starting values are taken from the moment the property is changed.
 
             // http://www.w3.org/TR/css3-transitions/#starting
-            // Define the combined duration of the transition as the sum of max(‘transition-duration’, ‘0s’) and ‘transition-delay’. 
-            // When the combined duration is greater than ‘0s’, then a transition starts based on the values of ‘transition-duration’, 
+            // Define the combined duration of the transition as the sum of max(‘transition-duration’, ‘0s’) and ‘transition-delay’.
+            // When the combined duration is greater than ‘0s’, then a transition starts based on the values of ‘transition-duration’,
             // ‘transition-delay’, and ‘transition-timing-function’; in other cases transitions do not occur.
-        
+
             // this test takes its time, give it a minute to run
             var timeout = 60000;
             setup({timeout: timeout});
-            
+
             var tests = [
                 {
                     name: "duration: 0.1s, delay: -0.05s",
@@ -73,7 +73,7 @@
                     from: {'padding-left': '1px'},
                     to: {'padding-left': '10px'},
                     expect: [
-                        'padding-left:0.1s' 
+                        'padding-left:0.1s'
                     ]
                 }, {
                     name: "duration: 0.1s, delay: -0.1s",
@@ -81,11 +81,11 @@
                     from: {'padding-left': '1px'},
                     to: {'padding-left': '10px'},
                     expect: [
-                        'padding-left:0.1s' 
+                        'padding-left:0.1s'
                     ]
                 }
-            ]; 
-            
+            ];
+
             // general transition-duration
             var duration = '0.5s';
 
@@ -106,7 +106,7 @@
                         '.container': {},
                         '.container.to': {},
                         '.container.how': {},
-                        
+
                         '.transition': data.from,
                         '.transition.to' : data.to,
                         '.transition.how' : {transition: data.transitions}

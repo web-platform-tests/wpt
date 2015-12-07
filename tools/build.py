@@ -92,7 +92,7 @@ class Builder(object):
                     self._addAnchors(specData['anchors'], specName)
                 if ('draft_anchors' in specData):
                     self._addAnchors(specData['draft_anchors'], specName)
-    
+
         url = url.lower()
         for specURL in self.specNames:
             if (url.startswith(specURL) and
@@ -160,7 +160,7 @@ class Builder(object):
             subDirPath = os.path.join(dir, subDir)
             if (not (self.sourceTree.isIgnoredDir(subDirPath) or (subDirPath in self.ignorePaths))):
                 self.gatherTests(subDirPath)
-    
+
 
     def _findSections(self, baseURL, anchors, sectionData, parentSectionName = ''):
         if (anchors):
@@ -239,7 +239,7 @@ class Builder(object):
                     self.ui.status("Unknown test suite: ", testSuiteName, "\n")
         else:
             self.buildSuiteNames = [testSuiteName for testSuiteName in self.testSuiteData if self.testSuiteData[testSuiteName].get('build')]
-        
+
         self.buildSpecNames = {}
         if (self.buildSuiteNames):
             self.specificationData = self._loadShepherdData('specifications', 'specification', anchors = True, draft = True)
@@ -262,7 +262,7 @@ class Builder(object):
         else:
             self.ui.status("No test suites identified\n")
             return 0
-        
+
         if (not self.buildSpecNames):
             self.ui.status("No target specifications identified\n")
             return -3
@@ -299,7 +299,7 @@ class Builder(object):
         if (os.path.exists(self.workPath)):
             self.ui.note("Clearing work path: ", self.workPath, "\n")
             shutil.rmtree(self.workPath)
-            
+
         suiteData = self.getSuiteData()
         flagData = self.getFlags()
         templatePath = os.path.join('tools', 'templates')
@@ -353,7 +353,7 @@ def debugHook(type, value, tb):
 
 if __name__ == "__main__":      # called from the command line
     sys.excepthook = debugHook
-    
+
     parser = optparse.OptionParser(usage = "usage: %prog [options] test_suite [...]")
     parser.add_option("-q", "--quiet",
                       action = "store_true", dest = "quiet", default = False,
@@ -375,13 +375,13 @@ if __name__ == "__main__":      # called from the command line
                       action = "store_true", dest = "cache", default = False,
                       help = "use cached test suite and specification data only")
     (options, args) = parser.parse_args()
-    
+
 
     ui = ui.ui()
     ui.setconfig('ui', 'debug', str(options.debug))
     ui.setconfig('ui', 'quiet', str(options.quiet))
     ui.setconfig('ui', 'verbose', str(options.verbose))
-    
+
     builder = Builder(ui, options.output, options.backup, options.ignore, options.cache)
     result = builder.build(args)
     quit(result)

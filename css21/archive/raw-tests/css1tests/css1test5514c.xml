@@ -11,7 +11,7 @@
  </head>
  <body>
   <p>There should be no red on this page:</p>
-  <p class="five"> 
+  <p class="five">
    &#x00A0;
   </p>
  </body>

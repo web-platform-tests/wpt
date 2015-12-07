@@ -12,13 +12,13 @@
     <link rel="help" href="http://www.w3.org/TR/css3-break/#transforms">
     <link rel="match" href="reference/regions-transforms-008-ref.html">
     <meta name="flags" content="ahem">
-    <meta name="assert" content="This test checks that named flow text content is transformed when it breaks across 
+    <meta name="assert" content="This test checks that named flow text content is transformed when it breaks across
                                  multiple regions and that the overflow remains visible.">
     <style>
     .ahem {
         font-family: Ahem;
         font-size: 10px;
-        line-height: 20px; 
+        line-height: 20px;
     }
     #named-flow {
         color: green;
@@ -54,7 +54,7 @@
 </head>
 <body>
     <p>The test passes if:</p>
-    <ul> 
+    <ul>
         <li>The two squares each contain five green horizontal stripes</li>
         <li>There are two green horizontal stripes below the square on right</li>
         <li>There is no red</li>
@@ -62,14 +62,14 @@
     <div id="named-flow" class="ahem">XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX XXXXXXXXXXX</div>
     <div class="region"></div>
     <div class="region"></div>
-    
+
     <div class="ahem failure left">
         XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
     </div>
     <div class="ahem failure right">
         XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX
     </div>
-    
-    
+
+
 </body>
 </html>

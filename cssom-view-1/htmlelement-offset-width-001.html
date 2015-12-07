@@ -5,9 +5,9 @@
     <link rel="author" title="Michael Howell" href="mailto:michael@notriddle.com">
     <link rel="help" href="https://drafts.csswg.org/cssom-view-1/#dom-htmlelement-offsetwidth">
     <meta name="flags" content="dom">
-    <meta name="assert" content="element.offsetWidth returns 0 when there is no documentElement."> 
+    <meta name="assert" content="element.offsetWidth returns 0 when there is no documentElement.">
     <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>    
+    <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
     <div id="myDiv">...</div>
@@ -22,6 +22,6 @@
             document.documentElement.remove();
             assert_equals(el.offsetWidth, 0, "new element has offset width not equal to zero after removing documentElement");
         });
-    </script>    
+    </script>
 </body>
 </html>

@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 # run this with the following command:
-# mkdir css1 && cat css1-file-list.txt | xargs -n 1 perl ./convert-css1-to-css21.pl 
+# mkdir css1 && cat css1-file-list.txt | xargs -n 1 perl ./convert-css1-to-css21.pl
 
 use strict;
 use LWP::Simple;

@@ -1,7 +1,7 @@
 @charset "UTF-8";
-/* 
+/*
 
-   implementationreport.css 
+   implementationreport.css
 
    by Tantek Çelik 2003-11-07
    additions by Bert Bos 2006-10-02
@@ -10,21 +10,21 @@
 
 
 
-table { 
+table {
   border: 1px solid black;
   border-spacing:0;
   empty-cells:show;
   padding:0;
 }
 
-tbody { 
-  border-top:1px solid gray; 
+tbody {
+  border-top:1px solid gray;
   padding:0;
 
 }
 
-td { 
-  border-top:1px solid gray; 
+td {
+  border-top:1px solid gray;
   padding:0 .5em;
   background:white;
   text-align:center;
@@ -45,7 +45,7 @@ td,th {
   vertical-align:top;
 }
 
-td:first-child,th:first-child { 
+td:first-child,th:first-child {
  border-left:none;
  vertical-align:middle
 }
@@ -62,7 +62,7 @@ a:hover { text-decoration:underline }
 
 
 
-td :link,td :visited { 
+td :link,td :visited {
   display:block; width:36em; line-height:1.5em; border-width:36em; background:#F33;
   border-color:white; border-right-style:solid; border-left-style:none;
   color:black; font-size:xx-small; margin:0;
@@ -70,8 +70,8 @@ td :link,td :visited {
 
 
 
-td .pass:link,td .pass:visited { 
-  background:#3F3; border-right-style:none; border-left-style:solid; 
+td .pass:link,td .pass:visited {
+  background:#3F3; border-right-style:none; border-left-style:solid;
 }
 
 td .f:link,td .f:visited {

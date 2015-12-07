@@ -30,15 +30,15 @@
         }
 
         var imgAttributes = [
-            ["x", false, 10], 
+            ["x", false, 10],
             ["y", false, 10],
-            ["x", true, 0], 
+            ["x", true, 0],
             ["y", true, 0],
         ];
 
         imgAttributes.forEach(function(test_data) {
-            test (function() { assert_equals(testIMGAttributes(test_data[0], test_data[1]), test_data[2])}, 
-                "test " + test_data[0] + " with display " + test_data[1]) 
+            test (function() { assert_equals(testIMGAttributes(test_data[0], test_data[1]), test_data[2])},
+                "test " + test_data[0] + " with display " + test_data[1])
             }
         );
         </script>

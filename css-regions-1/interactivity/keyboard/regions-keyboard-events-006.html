@@ -19,7 +19,7 @@
     </head>
     <body>
         <ol id="msg">
-            <li>Highlight all of the text inside in the text field in the black square</li> 
+            <li>Highlight all of the text inside in the text field in the black square</li>
             <li>Press the Delete key to delete the contents of the text field.</li>
             <li>Highlight all of the text inside in the text field in the orange square</li>
             <li>Press the Delete key to delete the contents of the the text field.</li>
@@ -47,7 +47,7 @@
         <div id="log"></div>
     </body>
     <script type="text/javascript">
-        
+
         if(getLeftPosition("target-block") !== 0) {
 
             var test1 = async_test("onkeydown event fired in textfield inside region", {timeout: testTimeout});
@@ -78,7 +78,7 @@
                 });
                 pressDeleteKey("textfield-inside");
             });
-                
+
             var test3 = async_test("onkeydown event fired in textfield outside region", {timeout: testTimeout});
             test3.step(function () {
                 var testTarget = document.getElementById("outside-region");

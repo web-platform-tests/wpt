@@ -13,7 +13,7 @@ p:not(:target) { background-color: white; color: black; }</cssrules>
        you follow <a href="#second">this link</a>.</p>
 <p id="second" xmlns="http://www.w3.org/1999/xhtml">This paragraph should initially be unstyled.
        It should become blue when you select the link above. When you select
-       <a href="#third">this link</a>, it should return to being unstyled and the 
+       <a href="#third">this link</a>, it should return to being unstyled and the
        background of the paragraph below should become blue.</p>
 <p id="third" xmlns="http://www.w3.org/1999/xhtml">This paragraph should initially be unstyled.
        It should become blue when you select the link above. When you follow

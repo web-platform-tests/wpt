@@ -3,39 +3,39 @@
 <head>
 	<meta charset="utf-8">
 	<title>
-		CSS Values and Units Test: 
+		CSS Values and Units Test:
 		Attribute references (length)
 	</title>
 	<meta name="assert" content="
 		The value of referenced attribute is used correctly as a length (even if it's 0).
 	" />
-	
-	<link 
-		rel="author" 
-		title="François REMY" 
+
+	<link
+		rel="author"
+		title="François REMY"
 		href="mailto:fremycompany.developer@yahoo.fr"
 	/ >
 
 	<link rel="help" href="http://www.w3.org/TR/css3-values/#attr-notation"/>
 
-	<link 
-		rel="match" 
+	<link
+		rel="match"
 		href="reference/200-200-green.html"
 	/>
-	
+
 	<style type="text/css">
-			
+
 			html, body { margin: 0px; padding: 0px; }
-			
+
 			html { background: white; overflow: hidden; }
 			#outer { position: relative; background: green; }
 			#outer2 { background: red; }
-			
+
 			#outer { width: 200px; height: 200px; }
 			#outer2 { width: 200px; width: attr(data-test length); height: 200px; }
-			
+
 	</style>
-	
+
 </head>
 <body>
 

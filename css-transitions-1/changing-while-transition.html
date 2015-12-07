@@ -7,10 +7,10 @@
         <link rel="help" title="3. Starting of transitions" href="http://www.w3.org/TR/css3-transitions/#starting">
         <link rel="author" title="Rodney Rehm" href="http://rodneyrehm.de/en/">
         <meta name="flags" content="dom">
-        
+
         <script src="/resources/testharness.js" type="text/javascript"></script>
         <script src="/resources/testharnessreport.js" type="text/javascript"></script>
-        
+
         <script src="./support/vendorPrefix.js" type="text/javascript"></script>
         <script src="./support/helper.js" type="text/javascript"></script>
         <script src="./support/runParallelAsyncHarness.js" type="text/javascript"></script>
@@ -25,7 +25,7 @@
                 height: 100000px;
             }
         </style>
-        
+
         <script id="metadata_cache">/*
         {
           "changing transition-duration / values": {},
@@ -65,7 +65,7 @@
                         'transition-duration': '0.1s'
                     },
                     expect: [
-                        'padding-left:0.5s' 
+                        'padding-left:0.5s'
                     ]
                 },
                 {
@@ -78,7 +78,7 @@
                         'transition-property': 'margin-left'
                     },
                     expect: [
-                        '' 
+                        ''
                     ]
                 }
             ];
@@ -103,7 +103,7 @@
                         '.container': {},
                         '.container.to': {},
                         '.container.how': {},
-                        
+
                         '.transition': data.from,
                         '.transition.to' : data.to,
                         '.transition.how' : {transition: data.transitions},
@@ -130,7 +130,7 @@
                             generalParallelTest.getStyle(data);
                             // kick off the transition
                             generalParallelTest.startTransition(data);
-                            
+
                             setTimeout(function() {
                                 data.transition.node.classList.add('then');
 

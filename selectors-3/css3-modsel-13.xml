@@ -11,7 +11,7 @@ li.t2 { background-color : lime }
   <li class="t1">This list item should have green background because its class is "t1"</li>
   <li class="t2">This list item should have green background because its class is "t2"</li>
   <li class="t2">
-<span class="t33">This list item should have green background because 
+<span class="t33">This list item should have green background because
         the inner SPAN does not match SPAN.t3</span>
 </li>
 </ul>

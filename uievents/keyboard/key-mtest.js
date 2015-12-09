@@ -105,14 +105,13 @@ function init(title, keytable) {
     createBody(title, keytable);
 
     setUserAgent();
-    
+
     var input = document.getElementById("input");
     input.disabled = true;
     addEventListener(input, "keydown", onKeyDown);
     addEventListener(input, "keyup", onKeyUp);
     //addEventListener(input, "beforeInput", onBeforeInput);
     //addEventListener(input, "input", onInput);
-    
 }
 
 function onKeyDown(e) {
@@ -120,7 +119,7 @@ function onKeyDown(e) {
     if (_modifierMode != "None" && isModifierKey(e)) {
         return;
     }
-    
+
     _keydownInfo = [e.keyCode, e.code, e.key, e.shiftKey, e.ctrlKey, e.altKey, e.metaKey];
     if (e.keyCode == 9 || e.code == "Tab") {
         e.preventDefault();
@@ -132,9 +131,9 @@ function onKeyUp(e) {
     if (_modifierMode != "None" && isModifierKey(e)) {
         return;
     }
-    
+
     _keyupInfo = [e.keyCode, e.code, e.key, e.shiftKey, e.ctrlKey, e.altKey, e.metaKey];
-    
+
     if (_testing) {
         verifyKey();
         nextKey();
@@ -165,7 +164,7 @@ function verifyKeyEventFields(eventName, keyEventInfo, code, key, error) {
     var verifyKey = document.getElementById("opt_attr_key").checked;
     var verifyModifiers = document.getElementById("opt_attr_modifiers").checked;
     var good = true;
-    
+
     if (!verifyCode && !verifyKey && !verifyModifiers) {
         good = false;
         addError(error, "Invalid test: At least one attribute must be selected for testing.");
@@ -196,23 +195,23 @@ function verifyKeyEventFields(eventName, keyEventInfo, code, key, error) {
             addErrorIncorrect(error, eventName, "metaKey", keyEventInfo, CAPTURE_METAKEY, false);
         }
     }
-    
+
     return good;
 }
 
 function verifyKey() {
     _keysTotal++;
-    
+
     var keyInfo = _keyTable[_currKey];
     var code = keyInfo[KEYINFO_CODE];
     var key = keyInfo[KEYINFO_KEY];
     var keyShift = keyInfo[KEYINFO_KEY_SHIFT];
-    
+
     var keyCheck = key;
     if (_modifierMode == "Shift") {
         keyCheck = keyShift;
     }
-    
+
     var verifyKeydown = document.getElementById("opt_event_keydown").checked;
     var verifyKeyup = document.getElementById("opt_event_keyup").checked;
 
@@ -226,26 +225,26 @@ function verifyKey() {
     if (verifyKeyup) {
         good = verifyKeyEventFields("keyup", _keyupInfo, code, keyCheck, error);
     }
-    
+
     if (!verifyKeydown && !verifyKeyup) {
         good = false;
         addError(error, "Invalid test: At least one event must be selected for testing.");
     }
-    
+
     // Allow Escape key to skip the current key.
     var skipped = false;
     if (_keydownInfo[CAPTURE_KEYCODE] == 27 || _keydownInfo[CAPTURE_CODE] == "Escape") {
         good = true;
         skipped = true;
     }
-    
+
     if (!good) {
         var p = document.createElement('p');
         p.classList.add("error1");
         p.textContent = "Error : " + code;
         error.insertBefore(p, error.firstChild);
     }
-    
+
     removeNextKeyHilight();
     if (skipped) {
         _keysSkipped++;
@@ -265,7 +264,7 @@ function updateTestSummary(error) {
     document.getElementById("keys-good").textContent = _keysGood;
     document.getElementById("keys-bad").textContent = _keysBad;
     document.getElementById("keys-skipped").textContent = _keysSkipped;
-    
+
     if (error) {
         var errors = document.getElementById("errors");
         errors.insertBefore(error, errors.firstChild);
@@ -276,15 +275,15 @@ function resetTest() {
     _keysTotal = 0;
     _keysGood = 0;
     _keysBad = 0;
-    
+
     _currKey = -1;
     nextKey();
-    
+
     updateTestSummary();
 
     // Remove previous test results.
     clearChildren(document.getElementById("errors"));
-    
+
     // Remove highlighting from keys.
     for (var i = 0; i < _keyTable.length; i++) {
         var code = _keyTable[i][KEYINFO_CODE];
@@ -350,7 +349,7 @@ function nextKey() {
         _currKey++;
         keyInfo = _keyTable[_currKey];
         var type = keyInfo[KEYINFO_TYPE];
-        
+
         // Skip over disabled keys.
         keepLooking = (type == KEYTYPE_DISABLED);
 
@@ -406,7 +405,7 @@ function createBody(title, keytable) {
     var body = document.getElementsByTagName("body")[0];
     var p;
     var span;
-    
+
     var h1 = document.createElement('h1');
     h1.textContent = "Keyboard Event Manual Test - " + title;
     body.appendChild(h1);
@@ -418,7 +417,7 @@ function createBody(title, keytable) {
     useragent.id = "useragent";
     p.appendChild(useragent);
     body.appendChild(p);
-    
+
     // Display input textedit.
     p = document.createElement('p');
     p.textContent = "Test Input: ";
@@ -447,13 +446,13 @@ function createBody(title, keytable) {
     helpToggle.textContent = "Show Help";
     p.appendChild(helpToggle);
     body.appendChild(p);
-    
+
     createOptions(body);
-    
+
     createHelp(body);
 
     createKeyboard(body, keytable);
-    
+
     // Test info and summary.
     var test_info = document.createElement('div');
     test_info.id = "test-info";
@@ -497,7 +496,7 @@ function createBody(title, keytable) {
     span.textContent = 0;
     summary.appendChild(span);
     test_info.appendChild(summary);
-    
+
     var errors = document.createElement('div');
     errors.id = "errors";
     test_info.appendChild(errors);
@@ -524,7 +523,7 @@ function addOptionCheckbox(cell, id, text) {
 
     label.appendChild(document.createTextNode(" " + text));
     cell.appendChild(label);
-    
+
     cell.appendChild(document.createElement("br"));
 }
 
@@ -541,7 +540,7 @@ function addOptionRadio(cell, group, text, handler, checked) {
 
     label.appendChild(document.createTextNode(" " + text));
     cell.appendChild(label);
-    
+
     cell.appendChild(document.createElement("br"));
 }
 
@@ -549,12 +548,12 @@ function handleModifierGroup() {
     var radio = document.querySelector("input[name=opt_modifier]:checked");
     var oldMode = _modifierMode;
     _modifierMode = radio.value;
-    
+
     if (oldMode == "Shift") {
         document.getElementById("ShiftLeft").classList.remove("activeModifierKey");
         document.getElementById("ShiftRight").classList.remove("activeModifierKey");
     }
-    
+
     if (_modifierMode == "Shift") {
         document.getElementById("ShiftLeft").classList.add("activeModifierKey");
         document.getElementById("ShiftRight").classList.add("activeModifierKey");
@@ -570,7 +569,7 @@ function createOptions(body) {
     table.classList.add("opttable");
     var row = document.createElement('tr');
     var cell;
-    
+
     cell = document.createElement('td');
     cell.classList.add("optcell");
     addOptionTitle(cell, "Keyboard Rows");
@@ -580,14 +579,14 @@ function createOptions(body) {
     addOptionCheckbox(cell, "opt_row_3", "Row B");
     addOptionCheckbox(cell, "opt_row_4", "Row A (bottom)");
     row.appendChild(cell);
-    
+
     cell = document.createElement('td');
     cell.classList.add("optcell");
     addOptionTitle(cell, "Events");
     addOptionCheckbox(cell, "opt_event_keydown", "keydown");
     addOptionCheckbox(cell, "opt_event_keyup", "keyup");
     row.appendChild(cell);
-    
+
     cell = document.createElement('td');
     cell.classList.add("optcell");
     addOptionTitle(cell, "Attributes");
@@ -595,17 +594,17 @@ function createOptions(body) {
     addOptionCheckbox(cell, "opt_attr_key", "key");
     addOptionCheckbox(cell, "opt_attr_modifiers", "modifiers");
     row.appendChild(cell);
-    
+
     cell = document.createElement('td');
     cell.classList.add("optcell");
     addOptionTitle(cell, "Modifiers");
     addOptionRadio(cell, "opt_modifier", "None", handleModifierGroup, true);
     addOptionRadio(cell, "opt_modifier", "Shift", handleModifierGroup, false);
     row.appendChild(cell);
-    
+
     table.appendChild(row);
     options.appendChild(table);
-    
+
     body.appendChild(options);
 }
 
@@ -637,7 +636,7 @@ function createKeyboard(body, keytable) {
     var currRow = 0;
     var row = document.createElement('div');
     row.classList.add("key-row");
-    
+
     for (var i = 0; i < keytable.length; i++) {
         var code = keytable[i][KEYINFO_CODE];
         var rowId = keytable[i][KEYINFO_ROW];
@@ -648,7 +647,7 @@ function createKeyboard(body, keytable) {
         if (type == KEYTYPE_END) {
             continue;
         }
-        
+
         if (rowId != currRow) {
             keyboard.appendChild(row);
             row = document.createElement('div');

@@ -127,9 +127,10 @@ function get_type() {
   return run_type;
 };
 
-var test_in_data_uri = get_test_func(function (iframe, uri_encoded_input) {
-                                       iframe.src = "data:text/html;charset=utf8," + uri_encoded_input;
-                                     });
+var test_in_srcdoc = get_test_func(function (iframe, uri_encoded_input) {
+                                     var input = decodeURIComponent(uri_encoded_input);
+                                     iframe.srcdoc = input;
+                                   });
 
 var test_document_write = get_test_func(function(iframe, uri_encoded_input) {
                                           iframe.contentDocument.open();
@@ -248,7 +249,7 @@ function init_tests(test_type) {
   var test_funcs = {
     "write":test_document_write,
     "write_single":test_document_write_single,
-    "uri":test_in_data_uri,
+    "uri":test_in_srcdoc,
     "innerHTML":test_fragment
   };
   var tests_started = 0;

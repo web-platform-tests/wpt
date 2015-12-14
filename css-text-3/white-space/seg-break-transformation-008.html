@@ -11,27 +11,27 @@
 .test span { font-size: 24px; font-family: sans-serif; background-color: #2AA5F7; color: white; }
 .ref span { font-size: 24px; font-family: sans-serif; background-color: #270CEF; color: white; }
 </style>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
 <div id='log'></div>
 <div id='test1' class="test"><span>日本語
 ＷＩＤＴＨ</span></div>
-<div id='test2' class="test"><span>日本語   
+<div id='test2' class="test"><span>日本語&#x20;&#x20;&#x20;
 ＷＩＤＴＨ</span></div>
 <div id='test3' class="test"><span>日本語
-        ＷＩＤＴＨ</span></div>
-<div id='test4' class="test"><span>日本語   
-     ＷＩＤＴＨ</span></div>
+&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;ＷＩＤＴＨ</span></div>
+<div id='test4' class="test"><span>日本語&#x20;&#x20;&#x20;
+&#x20;&#x20;&#x20;&#x20;&#x20;ＷＩＤＴＨ</span></div>
 <div id='test5' class="test"><span>日本語
 
 
 ＷＩＤＴＨ</span></div>
-<div id='test6' class="test"><span>日本語  
-   
-   
-   ＷＩＤＴＨ</span></div>
+<div id='test6' class="test"><span>日本語&#x20;&#x20;
+&#x20;&#x20;&#x20;
+&#x20;&#x20;&#x20;
+&#x20;&#x20;&#x20;ＷＩＤＴＨ</span></div>
 <div id="ref" class="ref"><span>日本語ＷＩＤＴＨ</span></div>
 <script>
 test(function() {

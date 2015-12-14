@@ -10,19 +10,19 @@
 .test span { font-size: 24px; font-family: sans-serif; background-color: #2AA5F7; color: white; }
 .ref span { font-size: 24px; font-family: sans-serif; background-color: #270CEF; color: white; }
 </style>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
 <div id='log'></div>
-<div id='test' class="test"><span>hello   &#x0009;       there</span></div>
-<div id="ref" class="ref"><span>hello there</span></div>
-<div id='testW' class="test"><span>缔造真正全球通行       &#x0009;   的万维网</span></div>
-<div id="refW" class="ref"><span>缔造真正全球通行 的万维网</span></div>
-<div id='testF' class="test"><span>ＦＵＬＬ   &#x0009;        ＷＩＤＴＨ</span></div>
-<div id="refF" class="ref"><span>ＦＵＬＬ  ＷＩＤＴＨ</span></div>
-<div id='testH' class="test"><span>ﾊﾝ   &#x0009;         ｶｸ</span></div>
-<div id="refH" class="ref"><span>ﾊﾝ   ｶｸ</span></div>
+<div id='test' class="test"><span>hello&#x20;&#x20;&#x20;&#x0009;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;there</span></div>
+<div id="ref" class="ref"><span>hello&#x20;there</span></div>
+<div id='testW' class="test"><span>缔造真正全球通行&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x0009;&#x20;&#x20;&#x20;的万维网</span></div>
+<div id="refW" class="ref"><span>缔造真正全球通行&#x20;的万维网</span></div>
+<div id='testF' class="test"><span>ＦＵＬＬ&#x20;&#x20;&#x20;&#x0009;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;ＷＩＤＴＨ</span></div>
+<div id="refF" class="ref"><span>ＦＵＬＬ&#x20;&#x20;ＷＩＤＴＨ</span></div>
+<div id='testH' class="test"><span>ﾊﾝ&#x20;&#x20;&#x20;&#x0009;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;ｶｸ</span></div>
+<div id="refH" class="ref"><span>ﾊﾝ&#x20;&#x20;&#x20;ｶｸ</span></div>
 <script>
 test(function() {
 assert_equals(document.getElementById('test').firstChild.offsetWidth, document.getElementById('ref').firstChild.offsetWidth);

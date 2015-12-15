@@ -4,7 +4,7 @@ This test suite is currently tracking the [Working Draft 13 October 2015][workin
 
 ## IDL Tests
 
-Each of the [controlling-ua](./controlling-ua) and [receiving-ua](./receiving-ua) subfolders contains a file called `idlharness.html` that defines IDL tests of the Presentation API for controlling and receiving user agents. The WebIDL of the Presentation API spec is extracted from the [Working Draft][working-draft] by running the following JavaScript code in the Dev. console of the Browser. 
+Each of the [controlling-ua](./controlling-ua) and [receiving-ua](./receiving-ua) subfolders contains a file called `idlharness.html` that defines IDL tests of the Presentation API for controlling and receiving user agents. The WebIDL of the Presentation API spec is extracted from the [Working Draft][working-draft] by running the following JavaScript code in the Dev. console of the Browser.
 
 ```javascript
 (function(){

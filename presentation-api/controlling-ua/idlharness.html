@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>Presentation API IDL tests for Controlling User Agent</title>
 <link rel="author" title="Louay Bassbouss" href="http://www.fokus.fraunhofer.de">
-<link rel="help" href="http://www.w3.org/TR/2015/WD-presentation-api-20151013/#dfn-controlling-user-agent">
+<link rel="help" href="http://w3c.github.io/presentation-api/#dfn-controlling-user-agent">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
@@ -24,35 +24,15 @@ interface PresentationReceiver {
 </script>
 
 <script id='idl' type="text/plain">
-enum PresentationConnectionState {
-    "connected",
-    "closed",
-    "terminated"
+partial interface Navigator {
+    [SameObject]
+    readonly attribute Presentation presentation;
 };
 
-enum BinaryType {
-    "blob",
-    "arraybuffer"
-};
-
-interface PresentationConnection : EventTarget {
-    readonly attribute DOMString?                  id;
-    readonly attribute PresentationConnectionState state;
-    void close();
-    void terminate();
-    attribute EventHandler onstatechange;
-    // Communication
-    attribute BinaryType binaryType;
-    attribute EventHandler onmessage;
-    void send(DOMString message);
-    void send(Blob data);
-    void send(ArrayBuffer data);
-    void send(ArrayBufferView data);
-};
-
-interface PresentationAvailability : EventTarget {
-    readonly attribute boolean value;
-    attribute EventHandler onchange;
+interface Presentation {
+    attribute PresentationRequest? defaultRequest;
+    [SameObject]
+    readonly attribute PresentationReceiver? receiver;
 };
 
 [Constructor(DOMString url)]
@@ -61,6 +41,11 @@ interface PresentationRequest : EventTarget {
     Promise<PresentationConnection> reconnect(DOMString presentationId);
     Promise<PresentationAvailability> getAvailability();
     attribute EventHandler onconnectionavailable;
+};
+
+interface PresentationAvailability : EventTarget {
+    readonly attribute boolean  value;
+    attribute EventHandler onchange;
 };
 
 [Constructor(DOMString type, PresentationConnectionAvailableEventInit eventInitDict)]
@@ -73,15 +58,30 @@ dictionary PresentationConnectionAvailableEventInit : EventInit {
     required PresentationConnection connection;
 };
 
-partial interface Navigator {
-    [SameObject]
-    readonly attribute Presentation presentation;
+enum PresentationConnectionState {
+    "connected",
+    "closed",
+    "terminated"
 };
 
-interface Presentation {
-    attribute PresentationRequest?  defaultRequest;
-    [SameObject]
-    readonly attribute PresentationReceiver? receiver;
+enum BinaryType {
+    "blob",
+    "arraybuffer"
+};
+
+interface PresentationConnection : EventTarget {
+    readonly attribute DOMString? id;
+    readonly attribute PresentationConnectionState state;
+    void close();
+    void terminate();
+    attribute EventHandler onstatechange;
+    // Communication
+    attribute BinaryType binaryType;
+    attribute EventHandler onmessage;
+    void send(DOMString message);
+    void send(Blob data);
+    void send(ArrayBuffer data);
+    void send(ArrayBufferView data);
 };
 </script>
 

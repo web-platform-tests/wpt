@@ -26,12 +26,11 @@
 
         <script type="text/javascript">
             function testGetFlow(flow_name) {
-                var namedFlow = document.getFlowByName(flow_name);
+                var namedFlow = document.namedFlows.get(flow_name);
                 assert_equals (typeof (namedFlow), "object",
                     "returned value is not an object");
-                assert_equals (String (namedFlow), "[object WebKitNamedFlow]",
+                assert_equals (String (namedFlow), "[object NamedFlow]",
                     "returned value is not a NamedFlow");
-                return namedFlow;
             }
 
             function testNullFlow(bad_flow_name) {

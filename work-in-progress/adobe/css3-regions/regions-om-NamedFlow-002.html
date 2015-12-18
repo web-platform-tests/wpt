@@ -42,23 +42,20 @@
                 ele.setAttribute("style", "flow-into:none");
             }
 
-            function testRemovingFlowViaScript() {
+            test(function() {
+                testNamedFlowCollection(2);
+            }, "Test initial collection of named flows from style block.");
+
+            test(function() {
                 removeNamedFlow ("flow2");
                 testNamedFlowCollection (1);
-            }
+            }, "Test collection after removing a flow");
 
-            function testEmptyCollection() {
+            test(function() {
                 removeNamedFlow ("flow1");
                 removeNamedFlow ("flow2");
                 testNamedFlowCollection (0);
-            }
-
-            test( function() {testNamedFlowCollection(2);},
-                "Test initial collection of named flows from style block.");
-            test( function() {testRemovingFlowViaScript();},
-                "Test collection after removing a flow");
-            test( function() {testEmptyCollection();},
-                "Test empty collection.");
+            }, "Test empty collection.");
         </script>
     </body>
 </html>

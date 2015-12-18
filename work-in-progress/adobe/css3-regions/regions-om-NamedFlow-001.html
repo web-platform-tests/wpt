@@ -7,15 +7,15 @@
         <meta name="flags" content="dom">
         <meta name="assert" content="The getFlowByName method returns an appropriate value.">
         <script src="/resources/testharness.js"></script>
-        <script src="/resources/testharnessreport.js"></script>        
+        <script src="/resources/testharnessreport.js"></script>
     </head>
-    
+
     <style type="text/css">
         #flow1 {
             flow-into: flow1;
         }
         #flOw1 {
-            flow-into: flOw1;            
+            flow-into: flOw1;
         }
     </style>
     <body>
@@ -23,13 +23,13 @@
 
         <div id="flow1">foo</div>
         <div id="flOw1">foo</div>
-        
+
         <script type="text/javascript">
             function testGetFlow(flow_name) {
                 var namedFlow = document.getFlowByName(flow_name);
                 assert_equals (typeof (namedFlow), "object",
                     "returned value is not an object");
-                assert_equals (String (namedFlow), "[object WebKitNamedFlow]", 
+                assert_equals (String (namedFlow), "[object WebKitNamedFlow]",
                     "returned value is not a NamedFlow");
                 return namedFlow;
             }
@@ -47,11 +47,11 @@
             }
 
             test( function() {testGetFlow("flow1");},
-                "Test created flow."); 
+                "Test created flow.");
             test( function() {testGetFlow("flow0");},
-                "Test non-created flow."); 
+                "Test non-created flow.");
             test( function() {testSeparateFlows("flow1", "flOw1");},
-                "Test flow name casing."); 
+                "Test flow name casing.");
         </script>
     </body>
 </html>

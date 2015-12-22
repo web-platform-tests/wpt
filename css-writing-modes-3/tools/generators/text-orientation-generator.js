@@ -233,8 +233,9 @@ Generator.prototype.generateRefTest = function () {
     });
 };
 Generator.prototype.generateRefTestFile = function (key, isReference, mapCodePointsForRendering) {
-    var path = "text-orientation-" + key + "-001.html";
-    var reference = "reference/" + path;
+    var name = "text-orientation-" + key + "-001";
+    var path = name + ".html";
+    var reference = name + "-ref.html";
     if (isReference) {
         path = "../../" + reference;
         this.reference = null;

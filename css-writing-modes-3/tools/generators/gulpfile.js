@@ -7,12 +7,14 @@ var orientation = require("./text-orientation-generator.js");
 
 gulp.task("default", [
     "orthogonal-parent-shrink-to-fit",
+    "text-orientation-ref",
     "text-orientation-script"]);
 
 gulp.task("test", ["server", "watch"]);
 
 gulp.task("watch", function () {
     gulp.watch("orthogonal-parent-shrink-to-fit.ejs", ["orthogonal-parent-shrink-to-fit"]);
+    gulp.watch("text-orientation-ref.ejs", ["text-orientation-ref"]);
     gulp.watch("text-orientation-script.ejs", ["text-orientation-script"]);
 });
 
@@ -30,6 +32,10 @@ gulp.task("server", function () {
 })
 
 gulpTaskFromTemplateWithAffixes("orthogonal-parent-shrink-to-fit", "-001", -1, 24);
+
+gulp.task("text-orientation-ref", function () {
+    return orientation.generateRefTest(argv);
+});
 
 gulp.task("text-orientation-script", function () {
     return orientation.generate(argv);

@@ -137,27 +137,18 @@ var Generator = function (rangesByVO, gc, blocks) {
     this.rangesByVO = rangesByVO;
     this.gc = gc;
     this.blocks = blocks;
-    var template = fs.readFileSync("text-orientation-script.ejs", "utf-8");
-    this.template = ejs.compile(template);
     this.charactersPerLine = 32;
 };
 Generator.prototype.generate = function (argv) {
     var codePointsByVO = {};
     var gc = this.gc;
-    function skipNoSkip(code) {
-        return unicodeData.isSkipGeneralCategory(code, gc) ||
-            code == 0x0E33 || // Thai U+0E33 is class AM: https://www.microsoft.com/typography/OpenTypeDev/thai/intro.htm
-            code == 0x0EB3; // Lao U+0EB3 is class AM: https://www.microsoft.com/typography/OpenTypeDev/lao/intro.htm
-    }
-    function skipDefault(code) {
-        return unicodeData.isCJKMiddle(code) || skipNoSkip(code);
-    }
-    var skipFunc = argv.noskip ? skipNoSkip : skipDefault;
+    var skipFunc = this.createSkipFunc(argv.noskip);
     for (var value in this.rangesByVO)
         codePointsByVO[value] = unicodeData.codePointsFromRanges(this.rangesByVO[value], skipFunc);
 
     this.codePointsByVO = codePointsByVO;
-    this.prefix = argv.prefix ? "-" + argv.prefix + "-" : "";
+    var template = fs.readFileSync("text-orientation-script.ejs", "utf-8");
+    this.template = ejs.compile(template);
 
     if (!argv.nocombo)
         this.generateFile();
@@ -203,6 +194,67 @@ Generator.prototype.generateFile = function (vo, fileIndex, page, pages) {
     fs.writeSync(output, this.template(this));
     fs.closeSync(output);
 };
+Generator.prototype.generateRefTest = function () {
+    var template = fs.readFileSync("text-orientation-ref.ejs", "utf-8");
+    this.template = ejs.compile(template);
+    var codePointRanges = [
+        [0x0021, 0x007E],
+        [0x3000, 0x30FF],
+        [0x4E00, 0x4E0F],
+        [0xFF01, 0xFF60],
+    ];
+    var skipFunc = this.createSkipFunc(true);
+    for (var i = 0; i < codePointRanges.length; i++)
+        codePointRanges[i] = unicodeData.codePointsFromRanges(codePointRanges[i], skipFunc);
+    var writingModes = [[ "vrl", "vertical-rl" ]];
+    var voByCodePoint = unicodeData.arrayFromRangesByValue(this.rangesByVO);
+    var textOrientations = [
+        ["mixed", function (ch) { return voByCodePoint[ch] == "R" ? 0x0041 : 0x56FD; }],
+    ];
+    var self = this;
+    writingModes.forEach(function (writingMode) {
+        self.writingMode = writingMode[1];
+        textOrientations.forEach(function (textOrientation) {
+            self.textOrientation = textOrientation[0];
+            self.title = "writing-mode: " + self.writingMode + "; text-orientation: " + self.textOrientation;
+            var key = writingMode[0] + "-" + textOrientation[0];
+            self.codePointRanges = codePointRanges;
+            self.generateRefTestFile(key, false);
+
+            self.codePointRanges = [];
+            for (var range of codePointRanges)
+                self.codePointRanges.push(range.map(textOrientation[1]));
+            self.generateRefTestFile(key, true);
+        });
+    });
+};
+Generator.prototype.generateRefTestFile = function (key, isReference) {
+    var path = "text-orientation-" + key + "-001.html";
+    var reference = "reference/" + path;
+    if (isReference) {
+        path = "../../" + reference;
+        this.reference = null;
+    } else {
+        path = "../../" + path;
+        this.reference = reference;
+    }
+    console.log("Writing " + path + ": " + this.title);
+    var output = fs.openSync(path, "w");
+    fs.writeSync(output, this.template(this));
+    fs.closeSync(output);
+};
+var gc = this.gc;
+Generator.prototype.createSkipFunc = function (noSkip) {
+    var gc = this.gc;
+    function skipCombiningMarks(code) {
+        return unicodeData.isSkipGeneralCategory(code, gc) ||
+            code == 0x0E33 || // Thai U+0E33 is class AM: https://www.microsoft.com/typography/OpenTypeDev/thai/intro.htm
+            code == 0x0EB3; // Lao U+0EB3 is class AM: https://www.microsoft.com/typography/OpenTypeDev/lao/intro.htm
+    };
+    if (noSkip)
+        return skipCombiningMarks;
+    return function (code) { return unicodeData.isCJKMiddle(code) || skipCombiningMarks(code); };
+};
 Generator.prototype.splitCodePointsByBlocks = function (codePoints) {
     return unicodeData.splitCodePoints(codePoints, this.blocks);
 };
@@ -245,13 +297,26 @@ function affixFromIndex(index) {
     return String.fromCharCode("a".charCodeAt(0) + index);
 }
 
+function createGenerator(func, argv) {
+  return Promise.all([
+      unicodeData.get(unicodeData.url.vo, unicodeData.formatAsRangesByValue),
+      unicodeData.get(unicodeData.url.gc),
+      unicodeData.get(unicodeData.url.blocks),
+  ]).then(function (results) {
+      var generator = new Generator(results[0], results[1], results[2]);
+      generator.prefix = argv.prefix ? "-" + argv.prefix + "-" : "";
+      func(generator);
+  });
+}
+
 module.exports.generate = function (argv) {
-    return Promise.all([
-        unicodeData.get(unicodeData.url.vo, unicodeData.formatAsRangesByValue),
-        unicodeData.get(unicodeData.url.gc),
-        unicodeData.get(unicodeData.url.blocks),
-    ]).then(function (results) {
-        var generator = new Generator(results[0], results[1], results[2]);
+    return createGenerator(function (generator) {
         generator.generate(argv);
-    });
+    }, argv);
+};
+
+module.exports.generateRefTest = function (argv) {
+    return createGenerator(function (generator) {
+        generator.generateRefTest(argv);
+    }, argv);
 };

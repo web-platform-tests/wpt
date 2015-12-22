@@ -24,6 +24,7 @@ html {
     white-space: pre;
 }
 </style>
+<body>
 <div id="container">
 <% for (var range of codePointRanges) {
      var codePoints = mapCodePointsForRendering(range);
@@ -43,3 +44,4 @@ function codePointToString(c) {
     return "U+" + c.toString(16).toUpperCase();
 }
 %></div>
+</body>

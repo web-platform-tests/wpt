@@ -206,6 +206,7 @@ Generator.prototype.generateRefTest = function () {
     var skipFunc = this.createSkipFunc(true);
     for (var i = 0; i < codePointRanges.length; i++)
         codePointRanges[i] = unicodeData.codePointsFromRanges(codePointRanges[i], skipFunc);
+    this.codePointRanges = codePointRanges;
     var writingModes = [[ "vrl", "vertical-rl" ]];
     var voByCodePoint = unicodeData.arrayFromRangesByValue(this.rangesByVO);
     var textOrientations = [
@@ -218,17 +219,14 @@ Generator.prototype.generateRefTest = function () {
             self.textOrientation = textOrientation[0];
             self.title = "writing-mode: " + self.writingMode + "; text-orientation: " + self.textOrientation;
             var key = writingMode[0] + "-" + textOrientation[0];
-            self.codePointRanges = codePointRanges;
             self.generateRefTestFile(key, false);
-
-            self.codePointRanges = [];
-            for (var range of codePointRanges)
-                self.codePointRanges.push(range.map(textOrientation[1]));
-            self.generateRefTestFile(key, true);
+            self.generateRefTestFile(key, true, function (c) {
+                return c.map(textOrientation[1]);
+            });
         });
     });
 };
-Generator.prototype.generateRefTestFile = function (key, isReference) {
+Generator.prototype.generateRefTestFile = function (key, isReference, mapCodePointsForRendering) {
     var path = "text-orientation-" + key + "-001.html";
     var reference = "reference/" + path;
     if (isReference) {
@@ -239,6 +237,9 @@ Generator.prototype.generateRefTestFile = function (key, isReference) {
         this.reference = reference;
     }
     console.log("Writing " + path + ": " + this.title);
+    if (!mapCodePointsForRendering)
+        mapCodePointsForRendering = function (c) { return c; };
+    this.mapCodePointsForRendering = mapCodePointsForRendering;
     var output = fs.openSync(path, "w");
     fs.writeSync(output, this.template(this));
     fs.closeSync(output);

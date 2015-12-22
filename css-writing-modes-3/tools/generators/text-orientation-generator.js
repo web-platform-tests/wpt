@@ -224,7 +224,7 @@ Generator.prototype.generateRefTest = function () {
         textOrientations.forEach(function (textOrientation) {
             self.textOrientation = textOrientation.value;
             self.title = "writing-mode: " + self.writingMode + "; text-orientation: " + self.textOrientation;
-            var key = writingMode.key + "-" + textOrientation.value;
+            var key = textOrientation.value + "-" + writingMode.key;
             self.generateRefTestFile(key, false);
             self.generateRefTestFile(key, true, function (c) {
                 return c.map(textOrientation.ref);

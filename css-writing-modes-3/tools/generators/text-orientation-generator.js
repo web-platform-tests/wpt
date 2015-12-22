@@ -74,7 +74,7 @@
       var template = fs.readFileSync("text-orientation-ref.ejs", "utf-8");
       this.template = ejs.compile(template);
       var codePointRanges = [
-        [0x0021, 0x007E],
+        [0x0020, 0x007E],
         [0x3000, 0x30FF],
         [0x4E00, 0x4E0F],
         [0xFF01, 0xFF60],

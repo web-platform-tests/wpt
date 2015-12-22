@@ -14,6 +14,7 @@ gulp.task("test", ["server", "watch"]);
 
 gulp.task("watch", function () {
     gulp.watch("orthogonal-parent-shrink-to-fit.ejs", ["orthogonal-parent-shrink-to-fit"]);
+    gulp.watch("text-orientation-generator.js", ["text-orientation-ref", "text-orientation-script"]);
     gulp.watch("text-orientation-ref.ejs", ["text-orientation-ref"]);
     gulp.watch("text-orientation-script.ejs", ["text-orientation-script"]);
 });

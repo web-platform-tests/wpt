@@ -207,21 +207,27 @@ Generator.prototype.generateRefTest = function () {
     for (var i = 0; i < codePointRanges.length; i++)
         codePointRanges[i] = unicodeData.codePointsFromRanges(codePointRanges[i], skipFunc);
     this.codePointRanges = codePointRanges;
-    var writingModes = [[ "vrl", "vertical-rl" ]];
+    var writingModes = [
+        { key: "vlr", value: "vertical-lr" },
+        { key: "vrl", value: "vertical-rl" },
+    ];
     var voByCodePoint = unicodeData.arrayFromRangesByValue(this.rangesByVO);
+    var R = 0x0041, U = 0x56FD;
     var textOrientations = [
-        ["mixed", function (ch) { return voByCodePoint[ch] == "R" ? 0x0041 : 0x56FD; }],
+        { value: "mixed", ref: function (ch) { return voByCodePoint[ch] == "R" ? R : U; } },
+        { value: "sideways", ref: function (ch) { return R; } },
+        { value: "upright", ref: function (ch) { return U; } },
     ];
     var self = this;
     writingModes.forEach(function (writingMode) {
-        self.writingMode = writingMode[1];
+        self.writingMode = writingMode.value;
         textOrientations.forEach(function (textOrientation) {
-            self.textOrientation = textOrientation[0];
+            self.textOrientation = textOrientation.value;
             self.title = "writing-mode: " + self.writingMode + "; text-orientation: " + self.textOrientation;
-            var key = writingMode[0] + "-" + textOrientation[0];
+            var key = writingMode.key + "-" + textOrientation.value;
             self.generateRefTestFile(key, false);
             self.generateRefTestFile(key, true, function (c) {
-                return c.map(textOrientation[1]);
+                return c.map(textOrientation.ref);
             });
         });
     });

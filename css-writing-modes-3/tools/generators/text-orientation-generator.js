@@ -137,7 +137,7 @@ var Generator = function (rangesByVO, gc, blocks) {
     this.rangesByVO = rangesByVO;
     this.gc = gc;
     this.blocks = blocks;
-    var template = fs.readFileSync("text-orientation.ejs", "utf-8");
+    var template = fs.readFileSync("text-orientation-script.ejs", "utf-8");
     this.template = ejs.compile(template);
     this.charactersPerLine = 32;
 };

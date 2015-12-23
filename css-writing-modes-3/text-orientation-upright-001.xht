@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>CSS Writing Modes Test: text-orientation - upright in vertical-rl writing mode</title>
 		<link rel="author" title="Kazuaki Takemura" href="mailto:takemura@networksoft.co.jp" />
@@ -9,16 +10,19 @@
 		<style type="text/css"><![CDATA[
 			@font-face
 			{
-				font-family: "DejaVuSerifBook";
-				src: url("support/DejaVuSerif-webfont.woff") format("woff");
-				/* Filesize: 18096 bytes (17.7 KBytes) */
+					font-family: "mplus-1p-regular";
+					src: url("support/mplus-1p-regular.woff") format("woff");
+					/* filesize: 803300 bytes (784.5 KBytes) */
+					/*
+					mplus-1p-regular.ttf can be downloaded at, from [TBD later]
+					*/
 			}
 
 			div {
 				border: 1px solid gray;
 				float: left;
 				color: blue;
-				font-family: "DejaVuSerifBook";
+				font-family: "mplus-1p-regular";
 				font-size: 30px;
 				line-height: 1.4; /* equivalent to 42px:
 				so that top-half-leading outside content is 6px
@@ -42,7 +46,13 @@
 		have the <strong>same order</strong>, the <strong>same orientation</strong> and the <strong>same layout</strong>:
 		"Text sample" should be displayed on the upright.</p>
 
-	<div id="vertical">Ｔext sample</div>
+	<div id="vertical">&#65332;ext sample</div>
+
+	<!--
+	HTML Entity (decimal) &#65332; or HTML Entity (hex) &#xff34; is Unicode Character 'FULLWIDTH LATIN CAPITAL LETTER T'
+	More info:
+	http://lists.w3.org/Archives/Public/public-css-testsuite/2015Dec/0008.html
+	-->
 
 	<div><img src="./support/text-orientation-upright-001.png" width="42" height="349" alt="Image download support must be enabled" /></div>
 

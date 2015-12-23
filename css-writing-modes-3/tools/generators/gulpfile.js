@@ -61,7 +61,7 @@ gulpTaskFromTemplateWithAffixes("orthogonal-parent-shrink-to-fit", "-001", -1, 2
 
 gulp.task("text-orientation", function () {
   var orientation = require("./text-orientation-generator.js");
-  Promise.all([
+  return Promise.all([
     orientation.generate(argv),
     orientation.generateRefTest(argv),
   ]).then(reload);

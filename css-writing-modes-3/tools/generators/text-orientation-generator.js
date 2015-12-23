@@ -73,16 +73,12 @@
     generateRefTest() {
       var template = fs.readFileSync("text-orientation-ref.ejs", "utf-8");
       this.template = ejs.compile(template);
-      var codePointRanges = [
+      this.codePointRanges = [
         [0x0020, 0x007E],
         [0x3000, 0x30FF],
-        [0x4E00, 0x4E0F],
+        [0x4E00, 0x4E1F],
         [0xFF01, 0xFF60],
       ];
-      var skipFunc = this.createSkipFunc(true);
-      for (var i = 0; i < codePointRanges.length; i++)
-        codePointRanges[i] = unicodeData.codePointsFromRanges(codePointRanges[i], skipFunc);
-      this.codePointRanges = codePointRanges;
       var writingModes = [
         { key: "vlr", value: "vertical-lr" },
         { key: "vrl", value: "vertical-rl" },
@@ -102,14 +98,12 @@
           self.title = "writing-mode: " + self.writingMode + "; text-orientation: " + self.textOrientation;
           var key = textOrientation.value + "-" + writingMode.key;
           self.generateRefTestFile(key, false);
-          self.generateRefTestFile(key, true, function (c) {
-            return c.map(textOrientation.ref);
-          });
+          self.generateRefTestFile(key, true, textOrientation.ref);
         });
       });
     }
-    generateRefTestFile(key, isReference, mapCodePointsForRendering) {
-      var name = "text-orientation-" + key + "-001";
+    generateRefTestFile(key, isReference, mapCodePointForRendering) {
+      var name = "text-orientation-" + key + "-100";
       var path = name + ".html";
       var reference = name + "-ref.html";
       if (isReference) {
@@ -120,12 +114,18 @@
         this.reference = reference;
       }
       console.log("Writing " + path + ": " + this.title);
-      if (!mapCodePointsForRendering)
-        mapCodePointsForRendering = function (c) { return c; };
-      this.mapCodePointsForRendering = mapCodePointsForRendering;
+      var skipFunc0 = this.createSkipFunc(true);
+      // Workaround CSS test harness bug that double-escape &lt; and &gt;.
+      var skipFunc = c => c == 0x3C || c == 0x3E || skipFunc0(c);
+      this.codePointsFromRangeForRendering = mapCodePointForRendering
+        ? range => unicodeData.codePointsFromRanges(range, skipFunc).map(mapCodePointForRendering)
+        : range => unicodeData.codePointsFromRanges(range, skipFunc);
       var output = fs.openSync(path, "w");
       fs.writeSync(output, this.template(this));
       fs.closeSync(output);
+    }
+    headingFromRange(range) {
+      return "U+" + unicodeData.toHex(range[0]) + "-" + unicodeData.toHex(range[range.length - 1]);
     }
     createSkipFunc(noSkip) {
       var gc = this.gc;

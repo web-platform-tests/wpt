@@ -27,21 +27,11 @@ html {
 <body>
 <div id="container">
 <% for (var range of codePointRanges) {
-     var codePoints = mapCodePointsForRendering(range);
-%><div><%= rangeToString(range) %>
-<div class="test">
-<%   for (var line of linesFromCodePoints(codePoints)) {
+%><div><%= headingFromRange(range) %><div class="test">
+<%   var codePoints = codePointsFromRangeForRendering(range);
+     for (var line of linesFromCodePoints(codePoints)) {
 %><div class="line"><%= line %></div>
 <%   }
 %></div></div>
-<% }
-
-function rangeToString(range) {
-    return codePointToString(range[0]) + " - " + codePointToString(range[range.length - 1]);
-}
-
-function codePointToString(c) {
-    return "U+" + c.toString(16).toUpperCase();
-}
-%></div>
+<% } %></div>
 </body>

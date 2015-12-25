@@ -2,11 +2,24 @@
  <head>
   <title>CSS: 15 simple tests of :empty</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/selectors/empty/001.xml"/>
+  <link rel="help" href="https://drafts.csswg.org/selectors-3/#empty-pseudo"/>
+  <link rel="help" href="https://drafts.csswg.org/selectors-4/#the-empty-pseudo"/>
+  <link rel="match" href="selectors-empty-001-ref.xml"/>
+  <meta name="flags" content="nonHTML"/>
   <style type="text/css">
-   tests, tests * { display: block; }
-   tests > * { border: solid thick red; height: 1em; padding: 4px; margin: 4px; color: white; }
-   tests[type=positive] > :empty, tests[type=negative] > :not(:empty) { border: solid thick lime; }
+   tests, tests * {
+    display: block;
+   }
+   tests > * {
+    border: solid thick red;
+    height: 1em;
+    padding: 4px;
+    margin: 4px;
+    color: white;
+   }
+   tests[type=positive] > :empty, tests[type=negative] > :not(:empty) {
+    border: solid thick lime;
+   }
   </style>
  </head>
  <body>

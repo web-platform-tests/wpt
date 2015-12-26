@@ -149,13 +149,7 @@
   {
     "input": "http://f:999999/c",
     "base": "http://example.org/foo/bar",
-    "href": "http://f:999999/c",
-    "protocol": "http:",
-    "hostname": "f",
-    "port": "999999",
-    "pathname": "/c",
-    "search": "",
-    "hash": ""
+    "failure": true
   },
   {
     "input": "http://f: 21 / b ? d # e ",
@@ -407,7 +401,7 @@
   {
     "input": "http://&a:foo(b]c@d:2/",
     "base": "http://example.org/foo/bar",
-    "href": "http://&a:foo(b]c@d:2/",
+    "href": "http://&a:foo(b%5Dc@d:2/",
     "protocol": "http:",
     "hostname": "d",
     "port": "2",
@@ -418,7 +412,7 @@
   {
     "input": "http://::@c@d:2",
     "base": "http://example.org/foo/bar",
-    "href": "http://::%40c@d:2/",
+    "href": "http://:%3A%40c@d:2/",
     "protocol": "http:",
     "hostname": "d",
     "port": "2",
@@ -691,7 +685,7 @@
   {
     "input": "file:/example.com/",
     "base": "http://example.org/foo/bar",
-    "href": "file:/example.com/",
+    "href": "file:///example.com/",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -966,7 +960,7 @@
   {
     "input": "file:c:\\foo\\bar.html",
     "base": "file:///tmp/mock/path",
-    "href": "file:/c:/foo/bar.html",
+    "href": "file:///c:/foo/bar.html",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -977,7 +971,7 @@
   {
     "input": "  File:c|////foo\\bar.html",
     "base": "file:///tmp/mock/path",
-    "href": "file:/c:////foo/bar.html",
+    "href": "file:///c:////foo/bar.html",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -988,7 +982,7 @@
   {
     "input": "C|/foo/bar",
     "base": "file:///tmp/mock/path",
-    "href": "file:/C:/foo/bar",
+    "href": "file:///C:/foo/bar",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -999,7 +993,7 @@
   {
     "input": "/C|\\foo\\bar",
     "base": "file:///tmp/mock/path",
-    "href": "file:/C:/foo/bar",
+    "href": "file:///C:/foo/bar",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1010,7 +1004,7 @@
   {
     "input": "//C|/foo/bar",
     "base": "file:///tmp/mock/path",
-    "href": "file:/C:/foo/bar",
+    "href": "file:///C:/foo/bar",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1054,7 +1048,7 @@
   {
     "input": "file:///foo/bar.txt",
     "base": "file:///tmp/mock/path",
-    "href": "file:/foo/bar.txt",
+    "href": "file:///foo/bar.txt",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1065,7 +1059,7 @@
   {
     "input": "file:///home/me",
     "base": "file:///tmp/mock/path",
-    "href": "file:/home/me",
+    "href": "file:///home/me",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1076,7 +1070,7 @@
   {
     "input": "//",
     "base": "file:///tmp/mock/path",
-    "href": "file:/",
+    "href": "file:///",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1087,7 +1081,7 @@
   {
     "input": "///",
     "base": "file:///tmp/mock/path",
-    "href": "file:/",
+    "href": "file:///",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1098,7 +1092,7 @@
   {
     "input": "///test",
     "base": "file:///tmp/mock/path",
-    "href": "file:/test",
+    "href": "file:///test",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1120,9 +1114,9 @@
   {
     "input": "file://localhost",
     "base": "file:///tmp/mock/path",
-    "href": "file://localhost/",
+    "href": "file:///",
     "protocol": "file:",
-    "hostname": "localhost",
+    "hostname": "",
     "port": "",
     "pathname": "/",
     "search": "",
@@ -1131,9 +1125,9 @@
   {
     "input": "file://localhost/",
     "base": "file:///tmp/mock/path",
-    "href": "file://localhost/",
+    "href": "file:///",
     "protocol": "file:",
-    "hostname": "localhost",
+    "hostname": "",
     "port": "",
     "pathname": "/",
     "search": "",
@@ -1142,9 +1136,9 @@
   {
     "input": "file://localhost/test",
     "base": "file:///tmp/mock/path",
-    "href": "file://localhost/test",
+    "href": "file:///test",
     "protocol": "file:",
-    "hostname": "localhost",
+    "hostname": "",
     "port": "",
     "pathname": "/test",
     "search": "",
@@ -1153,7 +1147,7 @@
   {
     "input": "test",
     "base": "file:///tmp/mock/path",
-    "href": "file:/tmp/mock/test",
+    "href": "file:///tmp/mock/test",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1164,7 +1158,7 @@
   {
     "input": "file:test",
     "base": "file:///tmp/mock/path",
-    "href": "file:/tmp/mock/test",
+    "href": "file:///tmp/mock/test",
     "protocol": "file:",
     "hostname": "",
     "port": "",
@@ -1916,7 +1910,7 @@
   {
     "input": "file:/example.com/",
     "base": "about:blank",
-    "href": "file:/example.com/",
+    "href": "file:///example.com/",
     "protocol": "file:",
     "hostname": "",
     "port": "",

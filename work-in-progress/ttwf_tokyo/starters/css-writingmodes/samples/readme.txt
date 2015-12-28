@@ -1,1 +1,0 @@
-Directory for sample CSS Writing Modes tests

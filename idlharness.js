@@ -943,12 +943,12 @@ IdlInterface.prototype.test_self = function()
 IdlInterface.prototype.test_member_const = function(member)
 //@{
 {
+    if (!this.has_constants()) {
+        throw "Internal error: test_member_const called without any constants";
+    }
+
     test(function()
     {
-        if (this.is_callback() && !this.has_constants()) {
-            return;
-        }
-
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 
@@ -970,14 +970,11 @@ IdlInterface.prototype.test_member_const = function(member)
         assert_true(desc.enumerable, "property is not enumerable");
         assert_false(desc.configurable, "property is configurable");
     }.bind(this), this.name + " interface: constant " + member.name + " on interface object");
+
     // "In addition, a property with the same characteristics must
     // exist on the interface prototype object."
     test(function()
     {
-        if (this.is_callback() && !this.has_constants()) {
-            return;
-        }
-
         assert_own_property(self, this.name,
                             "self does not have own property " + format_value(this.name));
 

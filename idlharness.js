@@ -544,8 +544,7 @@ IdlDictionary.prototype = Object.create(IdlObject.prototype);
 /// IdlInterface ///
 function IdlInterface(obj, is_callback) {
     /**
-     * obj is an object produced by the WebIDLParser.js "exception" or
-     * "interface" production, as appropriate.
+     * obj is an object produced by the WebIDLParser.js "interface" production.
      */
 
     /** Self-explanatory. */
@@ -555,9 +554,9 @@ function IdlInterface(obj, is_callback) {
     this.array = obj.array;
 
     /**
-     * An indicator of whether we should run tests on the (exception) interface
-     * object and (exception) interface prototype object.  Tests on members are
-     * controlled by .untested on each member, not this.
+     * An indicator of whether we should run tests on the interface object and
+     * interface prototype object. Tests on members are controlled by .untested
+     * on each member, not this.
      */
     this.untested = obj.untested;
 

@@ -1072,6 +1072,9 @@ IdlInterface.prototype.test_member_operation = function(member)
 {
     test(function()
     {
+        // This function tests WebIDL as of 2015-12-29.
+        // https://heycam.github.io/webidl/#es-operations
+
         if (this.is_callback() && !this.has_constants()) {
             return;
         }
@@ -1088,23 +1091,30 @@ IdlInterface.prototype.test_member_operation = function(member)
         assert_own_property(self[this.name], "prototype",
                             'interface "' + this.name + '" does not have own property "prototype"');
 
-        // "For each unique identifier of an operation defined on the
-        // interface, there must be a corresponding property on the
-        // interface prototype object (if it is a regular operation) or
-        // the interface object (if it is a static operation), unless
-        // the effective overload set for that identifier and operation
-        // and with an argument count of 0 (for the ECMAScript language
-        // binding) has no entries."
-        //
+        // "For each unique identifier of an exposed operation defined on the
+        // interface, there must exist a corresponding property, unless the
+        // effective overload set for that identifier and operation and with an
+        // argument count of 0 has no entries."
+
+        // TODO: Consider [Exposed].
+
+        // "The location of the property is determined as follows:"
         var memberHolderObject;
+        // "* If the operation is static, then the property exists on the
+        //    interface object."
         if (member["static"]) {
             assert_own_property(self[this.name], member.name,
                     "interface object missing static operation");
             memberHolderObject = self[this.name];
+        // "* Otherwise, [...] if the interface was declared with the [Global]
+        //    or [PrimaryGlobal] extended attribute, then the property exists
+        //    on every object that implements the interface."
         } else if (this.is_global()) {
             assert_own_property(self, member.name,
                     "global object missing non-static operation");
             memberHolderObject = self;
+        // "* Otherwise, the property exists solely on the interface’s
+        //    interface prototype object."
         } else {
             assert_own_property(self[this.name].prototype, member.name,
                     "interface prototype object missing non-static operation");

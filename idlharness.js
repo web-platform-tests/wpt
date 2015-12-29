@@ -1027,6 +1027,10 @@ IdlInterface.prototype.test_member_attribute = function(member)
                 "The prototype object must not have a property " +
                 format_value(member.name));
 
+            var getter = Object.getOwnPropertyDescriptor(self, member.name).get;
+            assert_equals(typeof(getter), "function",
+                          format_value(member.name) + " must have a getter");
+
             // Try/catch around the get here, since it can legitimately throw.
             // If it does, we obviously can't check for equality with direct
             // invocation of the getter.
@@ -1039,12 +1043,10 @@ IdlInterface.prototype.test_member_attribute = function(member)
                 gotValue = false;
             }
             if (gotValue) {
-                var getter = Object.getOwnPropertyDescriptor(self, member.name).get;
-                assert_equals(typeof(getter), "function",
-                              format_value(member.name) + " must have a getter");
                 assert_equals(propVal, getter.call(undefined),
                               "Gets on a global should not require an explicit this");
             }
+
             this.do_interface_attribute_asserts(self, member);
         } else {
             assert_true(member.name in self[this.name].prototype,

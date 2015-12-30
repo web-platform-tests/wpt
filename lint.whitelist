@@ -110,6 +110,9 @@ PARSE-FAILED:content-security-policy/svg/including.sub.svg
 PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/empty.xml
 PARSE-FAILED:dom/nodes/Document-createElement-namespace-tests/minimal_html.xml
 
+# The tests under this directory are not done by us
+*:webgl/conformance-1.0.3/*
+
 # Git submodules are not currently scanned
 *:tools/*
 *:resources/*

@@ -43,6 +43,10 @@ function nonKhronosFrameworkNotifyDone() {
 function reportTestResultsToHarness(success, msg) {
   if (window.parent.webglTestHarness) {
     window.parent.webglTestHarness.reportResults(success, msg);
+  } else if (window.test) { // WPT test harness
+    test(function () {
+      assert_true(sucess, msg);
+    }, msg);
   }
 }
 
@@ -54,21 +58,12 @@ function notifyFinishedToHarness() {
 
 function description(msg)
 {
-    // For MSIE 6 compatibility
-    var span = document.createElement("span");
-    span.innerHTML = '<p>' + msg + '</p><p>On success, you will see a series of "<span class="pass">PASS</span>" messages, followed by "<span class="pass">TEST COMPLETE</span>".</p>';
-    var description = document.getElementById("description");
-    if (description.firstChild)
-        description.replaceChild(span, description.firstChild);
-    else
-        description.appendChild(span);
+  console.log("DESCRIPTION: " + msg);
 }
 
 function debug(msg)
 {
-    var span = document.createElement("span");
-    document.getElementById("console").appendChild(span); // insert it first so XHTML knows the namespace
-    span.innerHTML = msg + '<br />';
+  console.log(msg);
 }
 
 function escapeHTML(text)
@@ -79,13 +74,13 @@ function escapeHTML(text)
 function testPassed(msg)
 {
     reportTestResultsToHarness(true, msg);
-    debug('<span><span class="pass">PASS</span> ' + escapeHTML(msg) + '</span>');
+    debug("PASS: " + msg);
 }
 
 function testFailed(msg)
 {
     reportTestResultsToHarness(false, msg);
-    debug('<span><span class="fail">FAIL</span> ' + escapeHTML(msg) + '</span>');
+    debug("FAIL: " + msg);
 }
 
 function areArraysEqual(_a, _b)

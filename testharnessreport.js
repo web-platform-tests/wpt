@@ -395,7 +395,14 @@ function dump_test_results(tests, status) {
             message: status.message,
             stack: status.stack};
     results_element.textContent = JSON.stringify(data);
-    document.documentElement.lastChild.appendChild(results_element);
+
+    // To avoid a HierarchyRequestError with XML documents, ensure that 'results_element'
+    // is inserted at a location that results in a valid document.
+    var parent = document.body
+        ? document.body                 // <body> is required in XHTML documents
+        : document.documentElement;     // fallback for optional <body> in HTML5, SVG, etc.
+
+    parent.appendChild(results_element);
 }
 
 metadata_generator.setup();

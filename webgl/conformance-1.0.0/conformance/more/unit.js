@@ -829,9 +829,16 @@ GLConstants = [
 0x809D
 ];
 
+// To prevent duplicated test names
+var WPT_WEBGL_TEST_ID = 0;
 function reportTestResultsToHarness(success, msg) {
   if (window.parent.webglTestHarness) {
     window.parent.webglTestHarness.reportResults(success, msg);
+  } else if (window.test) { // WPT test harness
+    test(function () {
+      assert_true(success,  + msg);
+    }, "WebGL test #" + (WPT_WEBGL_TEST_ID++) + ": " + msg);
+
   }
 }
 

@@ -1,4 +1,6 @@
-/*global add_completion_callback, setup */
+/* global add_completion_callback */
+/* global setup */
+
 /*
  * This file is intended for vendors to implement
  * code needed to integrate testharness.js tests with their own test systems.
@@ -22,8 +24,6 @@
  * For more documentation about the callback functions and the
  * parameters they are called with see testharness.js
  */
-
-
 
 var metadata_generator = {
 

@@ -389,11 +389,11 @@ function dump_test_results(tests, status) {
     var test_results = tests.map(function(x) {
         return {name:x.name, status:x.status, message:x.message, stack:x.stack}
     });
-    data = {test:window.location.href,
-            tests:test_results,
-            status: status.status,
-            message: status.message,
-            stack: status.stack};
+    var data = {test:window.location.href,
+                tests:test_results,
+                status: status.status,
+                message: status.message,
+                stack: status.stack};
     results_element.textContent = JSON.stringify(data);
 
     // To avoid a HierarchyRequestError with XML documents, ensure that 'results_element'

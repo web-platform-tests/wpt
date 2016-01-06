@@ -28,30 +28,6 @@ test(function() {
 
 test(function() {
   var ctx = document.createElement('canvas').getContext('2d');
-  ctx.imageSmoothingEnabled = false;
-  assert_equals(ctx.imageSmoothingEnabled, false);
-}, "On setting imageSmoothingEnabled, it must be set to the new value.");
-
-test(function() {
-  var ctx = document.createElement('canvas').getContext('2d');
-  var old = ctx.imageSmoothingEnabled;
-  ctx.save();
-  ctx.imageSmoothingEnabled = false;
-  ctx.restore();
-  assert_equals(ctx.imageSmoothingEnabled, old);
-}, "Test that restore() undoes any modifications to imageSmoothingEnabled.");
-
-test(function() {
-  var ctx = document.createElement('canvas').getContext('2d');
-  ctx.imageSmoothingEnabled = false;
-  var old = ctx.imageSmoothingEnabled;
-  ctx.save();
-  assert_equals(ctx.imageSmoothingEnabled, old);
-  ctx.restore();
-}, "Test that save() doesn't modify the values of imageSmoothingEnabled.");
-
-test(function() {
-  var ctx = document.createElement('canvas').getContext('2d');
   var image = createTestImage();
   ctx.scale(10, 10);
   ctx.drawImage(image, 0, 0);
@@ -70,19 +46,6 @@ test(function() {
   assert_not_equals(pixels[0], 0);
   assert_not_equals(pixels[1], 255);
 }, "Test that image smoothing works when imageSmoothingEnabled is set to true");
-
-test(function() {
-  var ctx = document.createElement('canvas').getContext('2d');
-  ctx.imageSmoothingEnabled = false;
-  ctx.save();
-  ctx.imageSmoothingEnabled = true;
-  ctx.restore();
-  var image = createTestImage();
-  ctx.scale(10, 10);
-  ctx.drawImage(image, 0, 0);
-  var pixels = ctx.getImageData(0, 0, 1, 1).data;
-  assert_array_equals(pixels, [0, 255, 0, 255]);
-}, "Test that restoring actually changes smoothing and not just the attribute value.");
 
 test(function() {
   var ctx = document.createElement('canvas').getContext('2d');

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Headers errors</title>
+    <meta name="help" href="https://fetch.spec.whatwg.org/#headers">
+    <meta name="author" title="Canon Research France" href="https://www.crf.canon.fr">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      var headerSeqError1 = [["invalid", "invalidValue1", "invalidValue2"]];
+      var headerSeqError2 = [["invalidĀ", "Value1"]];
+      var headerSeqError3 = [["name", "invalidValueĀ"]];
+
+      test(function() {
+        assert_throws(new TypeError() , function() { new Headers(headerSeqError1) });
+        assert_throws(new TypeError() , function() { new Headers(headerSeqError2) });
+        assert_throws(new TypeError() , function() { new Headers(headerSeqError3) });
+      }, "Create headers giving invalid init arguments");
+
+      test(function() {
+        var headers = new Headers();
+        assert_throws(new TypeError() , function() { headers.get("invalidĀ") });
+        assert_throws(new TypeError() , function() { headers.getAll("invalidĀ") });
+        assert_throws(new TypeError() , function() { headers.delete("invalidĀ") });
+        assert_throws(new TypeError() , function() { headers.has("invalidĀ") });
+        assert_throws(new TypeError() , function() { headers.set("invalidĀ", "Value1") });
+        assert_throws(new TypeError() , function() { headers.set("name", "invalidValueĀ") });
+        assert_throws(new TypeError() , function() { headers.append("invalidĀ", "Value1") });
+        assert_throws(new TypeError() , function() { headers.append("name", "invalidValueĀ") });
+      }, "Check headers'method giving invalid arguments");
+    </script>
+  </body>
+</html>

@@ -55,4 +55,18 @@ test(function() {
   assert_equals(script.firstChild.data, "undefined")
   assert_equals(script.firstChild, script.lastChild)
 }, "Setter (undefined)")
+
+test(function() {
+  var s = document.createElement("script");
+  var text = document.createTextNode("one");
+  s.appendChild(text);
+
+  assert_equals(s.firstChild, text);
+  assert_equals(text.nodeValue, "one");
+
+  s.text = "two";
+  assert_not_equals(s.firstChild, text);
+  assert_equals(text.nodeValue, "one");
+  assert_equals(s.firstChild.nodeValue, "two");
+}, "Setter (text node reuse)")
 </script>

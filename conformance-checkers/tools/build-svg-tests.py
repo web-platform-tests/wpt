@@ -38,6 +38,7 @@ import urllib2
 # this is used to toggle between -isvalid.html and -novalid.html output
     
 invalid_svg_files = dict([
+    # 'DTD Invalid' entries are produced by calling validate_svg_dtd (see below)
     ('animate-dom-01-f.svg', 'DTD Invalid'),
     ('animate-dom-02-f.svg', 'DTD Invalid'),
     ('animate-elem-24-t.svg', 'DTD Invalid'),
@@ -112,6 +113,7 @@ invalid_svg_files = dict([
     ('types-dom-07-f.svg', 'DTD Invalid'),
     ('types-dom-08-f.svg', 'DTD Invalid'),
         
+    # these entries manually added after cross checking behaviour with spec
     ('coords-transformattr-01-f.svg', 'Numeric character reference expanded to carriage return - not allowed in HTML5 - see 8.1.4'),
     ('fonts-overview-201-t.svg', 'Unsupported SVG version specified - specifies SVG 1.2'),
     ('script-specify-01-f.svg', 'Attribute contentscripttype not allowed on element svg at this point - not allowed in HTML5 - see 4.8.18 SVG'),
@@ -119,11 +121,8 @@ invalid_svg_files = dict([
     ('metadata-example-01-t.svg', 'Element rdf:rdf not allowed as child of element metadata in this context - namespaced XML not allowed in HTML5')
 ])
 
-# valid but fail in SS but not NU
-# Bad value for attribute 'href' anyURI animate-elem-30-t-isvalid.html
-# CSS Validation Error pservers-grad-08-b-isvalid.html, render-elems-06-t-isvalid.html, render-elems-07-t-isvalid.html
-# Element 'rdf' not allowed as child element in this context metadata-example-01-t-isvalid.html (warn in VNU)
-# TODO MathML and SVG uses xsd:anyURI, HTML URLs use URL Standard
+# TODO Github Issue #216 MathML and SVG uses xsd:anyURI, HTML URLs use URL Standard
+# TODO Github Issue #217 NU has script/@type optional for HTML, but not SVG-in-HTML
 
 def build_html_testfiles(svgdirectory,htmldirectory):   
     """Builds HTML test files from SVG test suite folder."""
@@ -194,6 +193,7 @@ def build_html_test_file(filename, svgdirectory, htmldirectory):
     
     # uncomment these 2 lines to generate 'DTD Invalid' entries for invalid_svg_files dict above
     # very slow operation - only needs done if the SVG test suite ever changes
+    # when uncommented expect to see AttributeError: 'NoneType' object has no attribute 'find'
     #validate_svg_dtd(filename, svg)
     #return
 

@@ -40,6 +40,7 @@ interface BatteryManager : EventTarget {
 </script>
 <script>
 "use strict";
+var t = async_test();
 var idl_array = new IdlArray();
 var idls;
 var manager;
@@ -47,10 +48,13 @@ var manager;
   idls = node.textContent;
   idl_array[(node.className === 'untested') ? 'add_untested_idls' : 'add_idls'](idls);
 });
+t.step(function() {
 navigator.getBattery().then(function(bm) {
   manager = bm;
   idl_array.add_objects({Navigator: ['navigator'], BatteryManager: ['manager']});
   idl_array.test();
+  t.done();
+});
 });
 </script>
 

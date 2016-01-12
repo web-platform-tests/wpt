@@ -101,22 +101,6 @@
     }, 'onchargingchange is set to function');
 
     test(function() {
-      var desc = 'onchargingchange did not treat noncallable as null';
-      battery.onchargingchange = function() {};
-      battery.onchargingchange = {};
-      assert_equals(battery.onchargingchange, null, desc);
-    }, 'onchargingchange: treat object as null');
-
-    test(function() {
-      var desc = 'onchargingchange did not treat noncallable as null';
-      battery.onchargingchange = function() {};
-      battery.onchargingchange = {
-          call: 'test'
-      };
-      assert_equals(battery.onchargingchange, null, desc);
-    }, 'onchargingchange: treat object with non-callable call property as null');
-
-    test(function() {
       var desc = 'onchargingchange did not treat noncallable (string) as null';
       battery.onchargingchange = function() {};
       battery.onchargingchange = 'string';
@@ -137,13 +121,6 @@
       assert_equals(battery.onchargingchange, null, desc);
     }, 'onchargingchange: treat undefined as null');
 
-    test(function() {
-      var desc = 'onchargingchange did not treat noncallable (array) as null';
-      battery.onchargingchange = function() {};
-      battery.onchargingchange = [];
-      assert_equals(battery.onchargingchange, null, desc);
-    }, 'onchargingchange: treat array as null');
-
     // attribute EventHandler onchargingtimechange;
 
     test(function() {
@@ -162,22 +139,6 @@
       window.onchargingtimechange = func;
       assert_equals(window.onchargingtimechange, func, desc);
     }, 'onchargingtimechange is set to function');
-
-    test(function() {
-      var desc = 'onchargingtimechange did not treat noncallable as null';
-      battery.onchargingtimechange = function() {};
-      battery.onchargingtimechange = {};
-      assert_equals(battery.onchargingtimechange, null, desc);
-    }, 'onchargingtimechange: treat object as null');
-
-    test(function() {
-      var desc = 'onchargingtimechange did not treat noncallable as null';
-      battery.onchargingtimechange = function() {};
-      battery.onchargingtimechange = {
-          call: 'test'
-      };
-      assert_equals(battery.onchargingtimechange, null, desc);
-    }, 'onchargingtimechange: treat object with non-callable call property as null');
 
     test(function() {
       var desc = 'onchargingtimechange did not treat noncallable (string) as null';
@@ -200,13 +161,6 @@
       assert_equals(battery.onchargingtimechange, null, desc);
     }, 'onchargingtimechange: treat undefined as null');
 
-    test(function() {
-      var desc = 'onchargingtimechange did not treat noncallable (array) as null';
-      battery.onchargingtimechange = function() {};
-      battery.onchargingtimechange = [];
-      assert_equals(battery.onchargingtimechange, null, desc);
-    }, 'onchargingtimechange: treat array as null');
-
     // attribute EventHandler ondischargingtimechange;
 
     test(function() {
@@ -225,22 +179,6 @@
       window.ondischargingtimechange = func;
       assert_equals(window.ondischargingtimechange, func, desc);
     }, 'ondischargingtimechange is set to function');
-
-    test(function() {
-      var desc = 'ondischargingtimechange did not treat noncallable as null';
-      battery.ondischargingtimechange = function() {};
-      battery.ondischargingtimechange = {};
-      assert_equals(battery.ondischargingtimechange, null, desc);
-    }, 'ondischargingtimechange: treat object as null');
-
-    test(function() {
-      var desc = 'ondischargingtimechange did not treat noncallable as null';
-      battery.ondischargingtimechange = function() {};
-      battery.ondischargingtimechange = {
-          call: 'test'
-      };
-      assert_equals(battery.ondischargingtimechange, null, desc);
-    }, 'ondischargingtimechange: treat object with non-callable call property as null');
 
     test(function() {
       var desc = 'ondischargingtimechange did not treat noncallable (string) as null';
@@ -263,13 +201,6 @@
       assert_equals(battery.ondischargingtimechange, null, desc);
     }, 'ondischargingtimechange: treat undefined as null');
 
-    test(function() {
-      var desc = 'ondischargingtimechange did not treat noncallable (array) as null';
-      battery.ondischargingtimechange = function() {};
-      battery.ondischargingtimechange = [];
-      assert_equals(battery.ondischargingtimechange, null, desc);
-    }, 'ondischargingtimechange: treat array as null');
-
     // attribute EventHandler onlevelchange;
 
     test(function() {
@@ -288,22 +219,6 @@
       window.onlevelchange = func;
       assert_equals(window.onlevelchange, func, desc);
     }, 'onlevelchange is set to function');
-
-    test(function() {
-      var desc = 'onlevelchange did not treat noncallable as null';
-      battery.onlevelchange = function() {};
-      battery.onlevelchange = {};
-      assert_equals(battery.onlevelchange, null, desc);
-    }, 'onlevelchange: treat object as null');
-
-    test(function() {
-      var desc = 'onlevelchange did not treat noncallable as null';
-      battery.onlevelchange = function() {};
-      battery.onlevelchange = {
-          call: 'test'
-      };
-      assert_equals(battery.onlevelchange, null, desc);
-    }, 'onlevelchange: treat object with non-callable call property as null');
 
     test(function() {
       var desc = 'onlevelchange did not treat noncallable (string) as null';
@@ -325,13 +240,6 @@
       battery.onlevelchange = undefined;
       assert_equals(battery.onlevelchange, null, desc);
     }, 'onlevelchange: treat undefined as null');
-
-    test(function() {
-      var desc = 'onlevelchange did not treat noncallable (array) as null';
-      battery.onlevelchange = function() {};
-      battery.onlevelchange = [];
-      assert_equals(battery.onlevelchange, null, desc);
-    }, 'onlevelchange: treat array as null');
 
     done();
 

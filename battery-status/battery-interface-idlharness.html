@@ -39,13 +39,17 @@ interface BatteryManager : EventTarget {
 "use strict";
 var idl_array = new IdlArray();
 var idls;
+var manager;
 [].forEach.call(document.querySelectorAll('script[type=text\\/plain]'), function(node) {
   // replace 'EventHandler' and 'unrestricted double' unrecognized by idlharness.js
   idls = node.textContent.replace(/EventHandler/g, 'Function?').replace(/unrestricted double/g, 'double');
   idl_array[(node.className === 'untested') ? 'add_untested_idls' : 'add_idls'](idls);
 });
-idl_array.add_objects({Navigator: ['navigator'], BatteryManager: ['navigator.getBattery()']});
-idl_array.test();
+navigator.getBattery().then(function(bm) {
+  manager = bm;
+  idl_array.add_objects({Navigator: ['navigator'], BatteryManager: ['manager']});
+  idl_array.test();
+});
 </script>
 
 <h2>Description</h2>

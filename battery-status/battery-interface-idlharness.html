@@ -18,6 +18,9 @@ interface EventTarget {
 interface EventListener {
   void handleEvent(Event event);
 };
+[TreatNonObjectAsNull]
+callback EventHandlerNonNull = any (Event event);
+typedef EventHandlerNonNull? EventHandler;
 </script>
 <script type="text/plain">
 partial interface Navigator {
@@ -41,8 +44,7 @@ var idl_array = new IdlArray();
 var idls;
 var manager;
 [].forEach.call(document.querySelectorAll('script[type=text\\/plain]'), function(node) {
-  // replace 'EventHandler' and 'unrestricted double' unrecognized by idlharness.js
-  idls = node.textContent.replace(/EventHandler/g, 'Function?').replace(/unrestricted double/g, 'double');
+  idls = node.textContent;
   idl_array[(node.className === 'untested') ? 'add_untested_idls' : 'add_idls'](idls);
 });
 navigator.getBattery().then(function(bm) {

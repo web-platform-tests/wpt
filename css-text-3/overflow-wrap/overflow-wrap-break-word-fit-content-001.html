@@ -23,9 +23,9 @@
   <li><div class="fit">𝜋</div>
 </ol>
 <script>
-var tests = container.children;
+var tests = document.querySelectorAll(".fit");
 for (var i = 0; i < tests.length; i++) {
-  var element = tests[i].firstElementChild;
+  var element = tests[i];
   test(function () {
     var rects = element.getClientRects();
     assert_equals(1, rects.length);

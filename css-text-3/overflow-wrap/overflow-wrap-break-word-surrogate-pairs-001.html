@@ -19,15 +19,14 @@
 <p classs="instructions">Tests pass if all lines do not wrap.
 <ol id="container">
   <li><div class="fit">&#x1D70B;</div>
-  <li><div class="fit">&#xD835;&#xDF0B;</div>
+  <li><div class="fit">𝜋</div>
 </ol>
 <script>
 var tests = container.children;
 for (var i = 0; i < tests.length; i++) {
-  var element = tests[i];
+  var element = tests[i].firstElementChild;
   test(function () {
     var rects = element.getClientRects();
-    console.log(rects[0].width);
     assert_equals(1, rects.length);
     assert_equals(rects[0].height, 20);
   }, (i + 1).toString());

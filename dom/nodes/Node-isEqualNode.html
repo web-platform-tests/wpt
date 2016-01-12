@@ -123,8 +123,8 @@ test(function() {
 
 test(function() {
 
-  var document1 = document.implementation.createDocument();
-  var document2 = document.implementation.createDocument();
+  var document1 = document.implementation.createDocument("", "");
+  var document2 = document.implementation.createDocument("", "");
 
   assert_true(document1.isEqualNode(document1), "self-comparison");
   assert_true(document1.isEqualNode(document2), "another empty XML document");
@@ -142,7 +142,7 @@ test(function() {
 
   testDeepEquality(function() { return document.createElement("foo") });
   testDeepEquality(function() { return document.createDocumentFragment() });
-  testDeepEquality(function() { return document.implementation.createDocument() });
+  testDeepEquality(function() { return document.implementation.createDocument("", "") });
   testDeepEquality(function() { return document.implementation.createHTMLDocument() });
   testDeepEquality(function() { return document.createComment("data") });
   testDeepEquality(function() { return document.createTextNode("data") });

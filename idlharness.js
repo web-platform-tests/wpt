@@ -1077,8 +1077,9 @@ IdlInterface.prototype.test_member_operation = function(member)
 //@{
 {
     var a_test = async_test(this.name + " interface: operation " + member.name +
-    "(" + member.arguments.map(function(m) { return m.idlType.idlType; }) +
-    ")");
+                            "(" + member.arguments.map(
+                                function(m) {return m.idlType.idlType; } )
+                            +")");
     a_test.step(function()
     {
         if (this.is_callback() && !this.has_constants()) {
@@ -1178,7 +1179,8 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
             memberHolderObject[member.name] != self[member.name])
         {
             cb = awaitNCallbacks(2, done);
-            throwOrReject(a_test, member, memberHolderObject[member.name], null, args,  "calling operation with this = null didn't throw TypeError", cb);
+            throwOrReject(a_test, member, memberHolderObject[member.name], null, args,
+                          "calling operation with this = null didn't throw TypeError", cb);
         } else {
             cb = awaitNCallbacks(1, done);
         }
@@ -1188,7 +1190,8 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
         //
         // TODO: Test a platform object that implements some other
         // interface.  (Have to be sure to get inheritance right.)
-        throwOrReject(a_test, member, memberHolderObject[member.name], {}, args,  "calling operation with this = {} didn't throw TypeError", cb);
+        throwOrReject(a_test, member, memberHolderObject[member.name], {}, args,
+                      "calling operation with this = {} didn't throw TypeError", cb);
     } else {
         done();
     }

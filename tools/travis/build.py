@@ -14,19 +14,44 @@ built_dir = os.path.join(here, "css-test-built")
 local_files = ["manifest", "serve", "serve.py", ".gitmodules", "tools", "resources",
                "config.default.json"]
 
+def get_hgsubstate():
+    state = {}
+    with open(os.path.join(source_dir, ".hgsubstate"), "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            revision, path = line.split(" ", 1)
+            state[path] = revision
+    return state
+
 def fetch_submodules():
     hg = vcs.hg
     orig_dir = os.getcwd()
+    state = get_hgsubstate()
     for tool in ["apiclient", "w3ctestlib"]:
         dest_dir = os.path.join(source_dir, "tools", tool)
+        repo_path = "tools/" + tool
         if os.path.exists(os.path.join(dest_dir, ".hg")):
             try:
                 os.chdir(dest_dir)
-                hg("pull", "-u")
+                hg("pull")
+                if repo_path in state:
+                    hg("update", state[repo_path])
+                else:
+                    hg("update")
             finally:
                 os.chdir(orig_dir)
         else:
             hg("clone", ("https://hg.csswg.org/dev/%s" % tool), dest_dir)
+            try:
+                os.chdir(dest_dir)
+                if repo_path in state:
+                    hg("update", state[repo_path])
+                else:
+                    hg("update")
+            finally:
+                os.chdir(orig_dir)
 
 def update_dist():
     if not os.path.exists(built_dir) or not vcs.is_git_root(built_dir):

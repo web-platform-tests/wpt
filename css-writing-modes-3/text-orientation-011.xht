@@ -22,11 +22,17 @@
 
   div
     {
+      color: blue;
       font-family: "CSS Full-Width Orientation Test";
-      font-size: 200px;
+      font-size: 180px;
       line-height: 3;
       text-orientation: upright;
       writing-mode: vertical-rl;
+    }
+
+  span
+    {
+      color: orange;
     }
   ]]></style>
 
@@ -34,9 +40,9 @@
 
  <body>
 
-  <p>Test passes if there is a black rectangle with a white <strong>triangle pointing up</strong>.</p>
+  <p>Test passes if there are 2 rectangles with a white <strong>triangle pointing up</strong> and if the orange rectangle is below the blue rectangle.</p>
 
-  <div>F</div>
+  <div>F<span>A</span></div>
 
   <!--
   Unfortunately, we can not compare text with images even with web-fonts. Rendering varies

@@ -9,9 +9,8 @@
   <link rel="author" title="Taka Oshiyama" href="mailto:takaoshiyama@gmail.com" />
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" title="5.1 Orienting Text: the 'text-orientation' property" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation" />
-  <link rel="match" href="text-orientation-011-ref.xht" />
 
-  <meta name="flags" content="image" />
+  <meta name="flags" content="" />
   <meta name="assert" content="This test checks that 'text-orientation: upright' causes characters from horizontal-only scripts to be rendered upright, i.e. in their standard horizontal orientation, in vertical writing modes." />
 
   <style type="text/css"><![CDATA[
@@ -23,11 +22,9 @@
 
   div#test
     {
-      border: blue solid 2px;
       font-family: "CSS Full-Width Orientation Test";
-      font-size: 80px;
+      font-size: 200px;
       line-height: 3;
-      margin-bottom: 8px;
       text-orientation: upright;
       writing-mode: vertical-rl;
     }
@@ -37,11 +34,15 @@
 
  <body>
 
-  <p>Test passes if the 2 blue rectangles are <strong>identical</strong>.</p>
+  <p>Test passes if there is a black rectangle with a white <strong>triangle pointing up</strong>.</p>
 
-  <div id="test">FAIL</div>
+  <div>F</div>
 
-  <div id="reference"><img src="support/text-orientation-011-exp-res.png" width="244" height="164" alt="Image download support must be enabled" /></div>
+  <!--
+  Unfortunately, we can not compare text with images even with web-fonts. Rendering varies
+  by platform, like Retina (high-res) Mac will fail if you compare text with
+  pre-rendered image. Koji Ishii, 2016-01-17
+  -->
 
  </body>
 </html>

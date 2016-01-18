@@ -252,7 +252,7 @@ def main():
 
     for path in iter_files():
         abs_path = os.path.join(repo_root, path)
-        if not os.path.exists(path):
+        if not os.path.exists(abs_path):
             continue
         for path_fn in path_lints:
             last = run_lint(path, path_fn, last)

@@ -35,7 +35,6 @@ function checkKoUrl(url, method, desc) {
 }
 
 var blob2 = new Blob(["Blob's data"], { "type" : "text/plain" });
-checkKoUrl("data:notAblobUrl.com", "GET");
 checkKoUrl("blob:http://{{domains[www]}}:{{ports[http][0]}}/", "GET");
 checkKoUrl(URL.createObjectURL(blob2), "POST");
 

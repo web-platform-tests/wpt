@@ -17,7 +17,6 @@ function fetchSameOrigin(url, shouldPass) {
 
 fetchSameOrigin(RESOURCES_DIR + "top.txt", true);
 fetchSameOrigin("http://{{host}}:{{ports[http][0]}}/fetch/api/resources/top.txt", true);
-fetchSameOrigin("http://anotherOrigin.com", false);
 fetchSameOrigin("https://{{host}}:{{ports[https][0]}}/fetch/api/resources/top.txt", false);
 fetchSameOrigin("http://{{domains[www]}}:{{ports[http][0]}}/fetch/api/resources/top.txt", false);
 

@@ -22,7 +22,7 @@ function checkFetchResponse(url, data, mime, desc) {
   }, desc);
 }
 
-checkFetchResponse( "about:blank", "", "text/html;charset=utf-8");
+checkFetchResponse("about:blank", "", "text/html;charset=utf-8");
 checkFetchResponse("about:unicorn", unicorn, "image/svg+xml");
 
 function checkKoUrl(url, desc) {

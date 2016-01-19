@@ -13,12 +13,11 @@ function requestForbiddenHeaders(desc, forbiddenHeaders) {
       assert_equals(resp.status, 200, "HTTP status is 200");
       assert_equals(resp.type , "basic", "Response's type is basic");
       for (var header in forbiddenHeaders)
-        assert_not_equals(resp.headers.get("x-request-" + header), forbiddenHeaders[header], header + " has not the value we defined");
+        assert_not_equals(resp.headers.get("x-request-" + header), forbiddenHeaders[header], header + " does not have the value we defined");
     });
   }, desc);
 }
 
-//origin header policy still under discussion for no-cors fetches
 requestForbiddenHeaders("Accept-Charset is a forbidden request header", {"Accept-Charset": "utf-8"});
 requestForbiddenHeaders("Accept-Encoding is a forbidden request header", {"Accept-Encoding": ""});
 

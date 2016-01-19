@@ -61,7 +61,7 @@ ports are randomly-chosen free ports. Tests must be loaded from the
 to some port of your choice e.g.
 
 ```
-"http":[1234, "auto"]
+"http": [1234, "auto"]
 ```
 
 If you installed OpenSSL in such a way that running `openssl` at a

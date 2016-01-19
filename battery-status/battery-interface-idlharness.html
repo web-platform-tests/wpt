@@ -9,15 +9,8 @@
 interface Navigator { };
 
 interface EventTarget {
-  void addEventListener(DOMString type, EventListener? callback, optional boolean capture);
-  void removeEventListener(DOMString type, EventListener? callback, optional boolean capture);
-  boolean dispatchEvent(Event event);
 };
 
-[Callback]
-interface EventListener {
-  void handleEvent(Event event);
-};
 [TreatNonObjectAsNull]
 callback EventHandlerNonNull = any (Event event);
 typedef EventHandlerNonNull? EventHandler;

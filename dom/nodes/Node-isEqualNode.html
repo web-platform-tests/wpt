@@ -144,9 +144,6 @@ test(function() {
   testDeepEquality(function() { return document.createDocumentFragment() });
   testDeepEquality(function() { return document.implementation.createDocument("", "") });
   testDeepEquality(function() { return document.implementation.createHTMLDocument() });
-  testDeepEquality(function() { return document.createComment("data") });
-  testDeepEquality(function() { return document.createTextNode("data") });
-  testDeepEquality(function() { return document.createProcessingInstruction("target", "data") });
 
   function testDeepEquality(parentFactory) {
     // Some ad-hoc tests of deep equality
@@ -157,11 +154,6 @@ test(function() {
     parentA.appendChild(document.createComment("data"));
     assert_false(parentA.isEqualNode(parentB));
     parentB.appendChild(document.createComment("data"));
-    assert_true(parentA.isEqualNode(parentB));
-
-    parentA.firstChild.appendChild(document.implementation.createDocumentType("qualifiedName", "publicId", "systemId"));
-    assert_false(parentA.isEqualNode(parentB));
-    parentB.firstChild.appendChild(document.implementation.createDocumentType("qualifiedName", "publicId", "systemId"));
     assert_true(parentA.isEqualNode(parentB));
   }
 

@@ -17,25 +17,17 @@
                                 ["triple", "tripleValue2"],
                                 ["triple", "tripleValue3"]
       ];
-      var expectedDict = {"single": ["singleValue"],
-                          "double": ["doubleValue1", "doubleValue2"],
-                          "triple": ["tripleValue1", "tripleValue2", "tripleValue3"]
+      var expectedDict = {"single": "singleValue",
+                          "double": "doubleValue1, doubleValue2",
+                          "triple": "tripleValue1, tripleValue2, tripleValue3"
       };
 
       test(function() {
         var headers = new Headers(headerSeqNameshake);
         for (name in expectedDict)
-          assert_equals(headers.get(name), expectedDict[name][0],
-              "name: " + name + " has value: " + expectedDict[name][0]);
+          assert_equals(headers.get(name), expectedDict[name],
+              "name: " + name + " has value: " + expectedDict[name]);
       }, "Create headers using same name for different values");
-
-      test(function() {
-        var headers = new Headers(headerSeqNameshake);
-        for (name in expectedDict) {
-          assert_array_equals(headers.getAll(name), expectedDict[name],
-           "GetAll return all the values associated to " + name);
-        }
-      }, "Check getAll when using same name for different values");
 
       test(function() {
         var headers = new Headers(headerSeqNameshake);
@@ -50,7 +42,6 @@
         var headers = new Headers(headerSeqNameshake);
         for (name in expectedDict) {
           headers.set(name,"newSingleValue");
-          assert_equals(headers.getAll(name).length, 1, "name: " + name + " has only one value");
           assert_equals(headers.get(name), "newSingleValue", "name: " + name + " has value: newSingleValue");
         }
       }, "Check set methods when called with already used name");
@@ -58,10 +49,10 @@
       test(function() {
         var headers = new Headers(headerSeqNameshake);
         for (name in expectedDict) {
-          var nameOccurences = headers.getAll(name).length;
+          var value = headers.get(name);
           headers.append(name,"newSingleValue");
-          assert_equals(headers.getAll(name).length, nameOccurences + 1,
-            "name: " + name + " has " + (nameOccurences + 1) + "values");
+          assert_equals(headers.get(name), (value + ", " + "newSingleValue"),
+            "name: " + name + " has value: " + headers.get(name));
         }
       }, "Check append methods when called with already used name");
     </script>

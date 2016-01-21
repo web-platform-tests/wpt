@@ -83,22 +83,6 @@
 
         assert_equals(headers.get("nameNotInHeaders"), null, "name: nameNotInHeaders has no value");
       }, "Check get method");
-
-      test(function() {
-        var headers = new Headers(headerDict);
-        for (name in headerDict)
-          assert_equals(headers.getAll(name)[0], headerDict[name],
-            "name: " + name + "has value: " + headerDict[name]);
-
-        for (name in headerDict) {
-          headers.append(name, headerDict[name]+"-bis");
-          assert_equals(headers.getAll(name)[0], headerDict[name],
-            "name: " + name + "has value: " + headerDict[name]);
-          assert_equals(headers.getAll(name)[1], headerDict[name]+"-bis",
-            "name: " + name + "has also value: " + headerDict[name]+"-bis");
-        }
-        assert_equals(headers.getAll("nameNotInHeaders").length, 0 , "name: nameNotInHeaders has no value");
-      }, "Check getAll method");
     </script>
   </body>
 </html>

@@ -37,11 +37,19 @@
       });
     }
 
+    <!-- Taken from https://developers.google.com -->
+    function str2ab(str) {
+      var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+      var bufView = new Uint16Array(buf);
+      for (var i=0, strLen=str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+      }
+      return buf;
+    }
+
     function checkBodyArrayBuffer(request, expectedBody) {
       return request.arrayBuffer().then( function(bodyAsArrayBuffer) {
-        var decoder = new TextDecoder("utf-8");
-        var strBody = decoder.decode(bodyAsArrayBuffer);
-        assert_equals(strBody, expectedBody, "Retrieve and verify request's body");
+        assert_array_equals(bodyAsArrayBuffer, str2ab(expectedBody), "Retrieve and verify request's body");
         assert_true(request.bodyUsed === true, "body as arrayBuffer: bodyUsed turned true");
       });
     }

@@ -15,24 +15,41 @@
 <div id="log"></div>
 
 <pre id='untested_idl' style='display:none'>
-
 interface Window {
 };
 
-interface Performance {
+[Constructor(DOMString scriptURL), Exposed=(Window,Worker)]
+interface Worker {
 };
 
-partial interface Window {
-  [Replaceable] readonly attribute Performance performance;
+[Exposed=(Window,Worker)]
+interface EventTarget {
+};
+
+[Exposed=Worker]
+interface WorkerGlobalScope : EventTarget {
 };
 </pre>
 
 <pre id='idl'>
 typedef double DOMHighResTimeStamp;
 
-partial interface Performance {
-  DOMHighResTimeStamp now();
+[Exposed=(Window,Worker)]
+interface Performance : EventTarget {
+    DOMHighResTimeStamp now();
+    serializer = {attribute};
 };
+
+[NoInterfaceObject,
+ Exposed=(Window,Worker)]
+interface GlobalPerformance {
+    [Replaceable]
+    readonly attribute Performance performance;
+};
+
+Window implements GlobalPerformance;
+
+WorkerGlobalScope implements GlobalPerformance;
 </pre>
 
 <script>

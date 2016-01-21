@@ -25,13 +25,11 @@ def main(request, response):
         if "allow_methods" in request.GET:
             headers.append(("Access-Control-Allow-Methods", request.GET['allow_methods']))
 
-        if "token" in request.GET:
-            stashed_data['preflight'] = "1"
-
         preflight_status = 200
         if "preflight_status" in request.GET:
             preflight_status = int(request.GET.first("preflight_status"))
 
+        stashed_data['preflight'] = "1"
         stashed_data['preflight_referrer'] = request.headers.get("Referer", "")
         request.server.stash.put(request.GET.first("token"), stashed_data)
 
@@ -41,7 +39,7 @@ def main(request, response):
     if "token" in request.GET:
         token = request.GET.first("token")
         data = request.server.stash.take(token)
-        if data :
+        if data:
             stashed_data = data
 
     #use x-* headers for returning value to bodyless responses

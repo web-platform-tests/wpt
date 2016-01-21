@@ -16,23 +16,21 @@ function corsOrigin(desc, scheme, subdomain, port, method, origin, shouldPass) {
     origin = scheme + "://" + subdomain + "{{host}}" + ":" + port;
 
   var uuid_token = token();
-  //clean stash
-  fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
   var urlParameters = "?token=" + uuid_token + "&max_age=0&origin=" + encodeURIComponent(origin) + "&allow_methods=" + method;
   var url = scheme + "://" + subdomain + "{{host}}" + ":" + port + dirname(location.pathname) + RESOURCES_DIR + "preflight.py";
   var requestInit = {"mode": "cors", "method": method};
 
-    promise_test(function(test) {
-      test.add_cleanup(function() {
-        fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-      });
-      if (shouldPass)
+  promise_test(function(test) {
+    fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
+      assert_equals(resp.status, 200, "Clean stash response's status is 200");
+      if (shouldPass) {
         return fetch(url + urlParameters, requestInit).then(function(resp) {
           assert_equals(resp.status, 200, "Response's status is 200");
         });
-      else
+      } else
         return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
-    }, desc);
+    });
+  }, desc);
 
 }
 var port = "{{ports[http][0]}}";
@@ -42,7 +40,7 @@ var httpsPort = "{{ports[https][0]}}";
 var origin = "http://{{host}}:{{ports[http][0]}}";
 
 corsOrigin("Cross domain different subdomain [origin OK]", "http", "www1", undefined, "GET", origin, true);
-corsOrigin("Cross domain different subdomain [origin KO]", "http", "www1", undefined, "GET", undefined , false);
+corsOrigin("Cross domain different subdomain [origin KO]", "http", "www1", undefined, "GET", undefined, false);
 corsOrigin("Same domain different port [origin OK]", "http", undefined, port2, "GET", origin, true);
 corsOrigin("Same domain different port [origin KO]", "http", undefined, port2, "GET", undefined, false);
 corsOrigin("Cross domain different port [origin OK]", "http", "www1", port2, "GET", origin, true);

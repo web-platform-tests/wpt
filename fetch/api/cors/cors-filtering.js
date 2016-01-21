@@ -10,7 +10,7 @@ function corsFilter(corsUrl, headerName, headerValue, isFiltered) {
       assert_equals(resp.status, 200, "Fetch success with code 200");
       assert_equals(resp.type , "cors", "CORS fetch's response has cors type");
       if (!isFiltered) {
-        assert_equals(resp.headers.get(headerName),headerValue,
+        assert_equals(resp.headers.get(headerName), headerValue,
           headerName + " header should be included in response with value: " + headerValue);
       } else {
         assert_false(resp.headers.has(headerName), "UA should exclude " + headerName + " header from response");
@@ -30,7 +30,7 @@ function corsExposeFilter(corsUrl, headerName, headerValue, isForbidden) {
       assert_equals(resp.status, 200, "Fetch success with code 200");
       assert_equals(resp.type , "cors", "CORS fetch's response has cors type");
       if (!isForbidden) {
-        assert_equals(resp.headers.get(headerName),headerValue,
+        assert_equals(resp.headers.get(headerName), headerValue,
           headerName + " header should be included in response with value: " + headerValue);
       } else {
         assert_false(resp.headers.has(headerName), "UA should exclude " + headerName + " header from response");
@@ -49,14 +49,14 @@ corsFilter(url, "Expires","04 May 1988 22:22:22 GMT" , false);
 corsFilter(url, "Last-Modified", "04 May 1988 22:22:22 GMT", false);
 corsFilter(url, "Pragma", "no-cache", false);
 
-corsFilter(url, "Age","27", true);
+corsFilter(url, "Age", "27", true);
 corsFilter(url, "Server", "wptServe" , true);
 corsFilter(url, "Warning", "Mind the gap" , true);
 corsFilter(url, "Content-Length", "0" , true);
 corsFilter(url, "Set-Cookie", "name=value" , true);
 corsFilter(url, "Set-Cookie2", "name=value" , true);
 
-corsExposeFilter(url, "Age","27", false);
+corsExposeFilter(url, "Age", "27", false);
 corsExposeFilter(url, "Server", "wptServe" , false);
 corsExposeFilter(url, "Warning", "Mind the gap" , false);
 corsExposeFilter(url, "Content-Length", "0" , false);

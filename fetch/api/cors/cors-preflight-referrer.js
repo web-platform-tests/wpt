@@ -6,9 +6,6 @@ if (this.document === undefined) {
 
 function corsPreflightReferrer(desc, corsUrl, referrerPolicy, expectedReferrer) {
   var uuid_token = token();
-  /* clean stash */
-  fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-
   var url = corsUrl;
   var urlParameters = "?token=" + uuid_token + "&max_age=0";
   var requestInit = {"mode": "cors", "referrerPolicy": referrerPolicy};
@@ -18,14 +15,14 @@ function corsPreflightReferrer(desc, corsUrl, referrerPolicy, expectedReferrer) 
   urlParameters += "&allow_headers=x-force-preflight";
 
   promise_test(function(test) {
-    test.add_cleanup(function() {
-      fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-    });
-    return fetch(url + urlParameters, requestInit).then(function(resp) {
-      assert_equals(resp.status, 200, "Response's status is 200");
-      assert_equals(resp.headers.get("x-did-preflight"), "1", "Preflight request has been made");
-      assert_equals(resp.headers.get("x-preflight-referrer"), expectedReferrer, "Preflight's referrer is correct");
-      assert_equals(resp.headers.get("x-referrer"), expectedReferrer, "Request's refferer is correct");
+    fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
+      assert_equals(resp.status, 200, "Clean stash response's status is 200");
+      return fetch(url + urlParameters, requestInit).then(function(resp) {
+        assert_equals(resp.status, 200, "Response's status is 200");
+        assert_equals(resp.headers.get("x-did-preflight"), "1", "Preflight request has been made");
+        assert_equals(resp.headers.get("x-preflight-referrer"), expectedReferrer, "Preflight's referrer is correct");
+        assert_equals(resp.headers.get("x-referrer"), expectedReferrer, "Request's refferer is correct");
+      });
     });
   }, desc);
 }

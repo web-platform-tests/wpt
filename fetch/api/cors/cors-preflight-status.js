@@ -7,9 +7,6 @@ if (this.document === undefined) {
 /* Check preflight is ok if status is ok status (200  to 299)*/
 function corsPreflightStatus(desc, corsUrl, preflightStatus) {
   var uuid_token = token();
-  /* clean stash */
-  fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-
   var url = corsUrl;
   var requestInit = {"mode": "cors"};
   /* Force preflight */
@@ -20,16 +17,16 @@ function corsPreflightStatus(desc, corsUrl, preflightStatus) {
   urlParameters += "&preflight_status=" + preflightStatus;
 
   promise_test(function(test) {
-    test.add_cleanup(function() {
-      fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
+    fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
+      assert_equals(resp.status, 200, "Clean stash response's status is 200");
+      if (200 <= preflightStatus && 299 >= preflightStatus) {
+        return fetch(url + urlParameters, requestInit).then(function(resp) {
+          assert_equals(resp.status, 200, "Response's status is 200");
+          assert_equals(resp.headers.get("x-did-preflight"), "1", "Preflight request has been made");
+        });
+      } else
+        return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
     });
-    if (200 <= preflightStatus && 299 >= preflightStatus )
-      return fetch(url + urlParameters, requestInit).then(function(resp) {
-        assert_equals(resp.status, 200, "Response's status is 200");
-        assert_equals(resp.headers.get("x-did-preflight"), "1", "Preflight request has been made");
-      });
-    else
-      return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
   }, desc);
 }
 
@@ -37,7 +34,7 @@ var corsUrl = "http://www1.{{host}}:{{ports[http][0]}}" + dirname(location.pathn
 for (status of [200, 201, 202, 203, 204, 205, 206,
                 300, 301, 302, 303, 304, 305, 306, 307, 308,
                 400, 401, 402, 403, 404, 405,
-                501, 502, 503, 504, 505 ])
+                501, 502, 503, 504, 505])
   corsPreflightStatus("Preflight answered with status " + status, corsUrl, status);
 
 done();

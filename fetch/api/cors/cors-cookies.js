@@ -3,7 +3,7 @@ if (this.document === undefined) {
   importScripts("../resources/utils.js");
 }
 
-function corsCookies(desc, domain1, domain2, credentialsMode ,cookies) {
+function corsCookies(desc, domain1, domain2, credentialsMode, cookies) {
   var urlSetCookie = "http://" + domain1 + ":{{ports[http][0]}}" + dirname(location.pathname) + RESOURCES_DIR + "top.txt";
   var urlCheckCookies = "http://" + domain2 + ":{{ports[http][0]}}" + dirname(location.pathname) + RESOURCES_DIR + "inspect-headers.py?cors&headers=cookie";
   //enable cors with credentials
@@ -13,9 +13,9 @@ function corsCookies(desc, domain1, domain2, credentialsMode ,cookies) {
   var urlCleanParameters = "?pipe=header(Access-Control-Allow-Origin," + location.origin + ")";
   urlCleanParameters += "|header(Access-Control-Allow-Credentials,true)";
   if (cookies) {
-    urlParameters +="|header(Set-Cookie,";
+    urlParameters += "|header(Set-Cookie,";
     urlParameters += cookies.join(",True)|header(Set-Cookie,") +  ",True)";
-    urlCleanParameters +="|header(Set-Cookie,";
+    urlCleanParameters += "|header(Set-Cookie,";
     urlCleanParameters +=  cookies.join("%3B%20max-age=0,True)|header(Set-Cookie,") +  "%3B%20max-age=0,True)";
   }
 

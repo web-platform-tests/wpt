@@ -6,9 +6,6 @@ if (this.document === undefined) {
 
 function corsRedirect(desc, redirectUrl, redirectLocation, redirectStatus, expectedOrigin) {
   var uuid_token = token();
-  //clean stash
-  fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-
   var url = redirectUrl;
   var urlParameters = "?token=" + uuid_token + "&max_age=0";
   urlParameters += "&redirect_status=" + redirectStatus;
@@ -17,13 +14,12 @@ function corsRedirect(desc, redirectUrl, redirectLocation, redirectStatus, expec
   var requestInit = {"mode": "cors", "redirect": "follow"};
 
   promise_test(function(test) {
-    test.add_cleanup(function() {
-      fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-    });
-    return fetch(url + urlParameters, requestInit).then(function(resp) {
-      assert_equals(resp.status, 200, "Response's status is 200");
-      assert_equals(resp.headers.get("x-did-preflight"), "0", "No preflight request has been made");
-      assert_equals(resp.headers.get("x-origin"), expectedOrigin, "Origin is correctly set after redirect");
+    fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
+      return fetch(url + urlParameters, requestInit).then(function(resp) {
+        assert_equals(resp.status, 200, "Response's status is 200");
+        assert_equals(resp.headers.get("x-did-preflight"), "0", "No preflight request has been made");
+        assert_equals(resp.headers.get("x-origin"), expectedOrigin, "Origin is correctly set after redirect");
+      });
     });
   }, desc);
 }

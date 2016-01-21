@@ -12,7 +12,7 @@ def main(request, response):
             headers.append(("Access-Control-Allow-Origin", request.headers.get("Origin", "")))
         else:
             headers.append(("Access-Control-Allow-Origin", "*"))
-        headers.append(("Access-Control-Allow-credentials", "true"))
+        headers.append(("Access-Control-Allow-Credentials", "true"))
         headers.append(("Access-Control-Allow-Methods", "GET, POST, HEAD"))
         exposed_headers = ["x-request-" + header for header in checked_headers]
         headers.append(("Access-Control-Expose-Headers", ", ".join(exposed_headers)))

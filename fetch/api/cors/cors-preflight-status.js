@@ -24,8 +24,9 @@ function corsPreflightStatus(desc, corsUrl, preflightStatus) {
           assert_equals(resp.status, 200, "Response's status is 200");
           assert_equals(resp.headers.get("x-did-preflight"), "1", "Preflight request has been made");
         });
-      } else
+      } else {
         return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
+      }
     });
   }, desc);
 }

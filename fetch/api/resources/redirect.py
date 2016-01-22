@@ -29,7 +29,7 @@ def main(request, response):
     stashed_data['count'] += 1
 
     #keep url parameters in location
-    url_parameters = "?" + "&".join(map(lambda x: x[0] + "=" + x[1], request.GET.items()))
+    url_parameters = "?" + "&".join(map(lambda x: x[0][0] + "=" + x[1][0], request.GET.items()))
     #make sure location changes during redirection loop
     url_parameters += "&count=" + str(stashed_data['count'])
 

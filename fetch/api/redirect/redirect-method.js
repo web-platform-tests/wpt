@@ -32,7 +32,7 @@ redirectMethod("Redirect 302 with HEAD", redirUrl, locationUrl, 302, "HEAD", "HE
 
 redirectMethod("Redirect 303 with GET", redirUrl, locationUrl, 303, "GET", "GET");
 redirectMethod("Redirect 303 with POST", redirUrl, locationUrl, 303, "POST", "GET");
-redirectMethod("Redirect 303 with HEAD", redirUrl, locationUrl, 303, "HEAD", "GET");
+redirectMethod("Redirect 303 with HEAD", redirUrl, locationUrl, 303, "HEAD", "HEAD");
 
 redirectMethod("Redirect 307 with GET", redirUrl, locationUrl, 307, "GET", "GET");
 redirectMethod("Redirect 307 with POST", redirUrl, locationUrl, 307, "POST", "POST");

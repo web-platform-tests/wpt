@@ -5,8 +5,8 @@ if (this.document === undefined) {
 
 function basicAuth(desc, user, pass, mode, status) {
   promise_test(function(test) {
-    var headers = { "Authorization":  "Basic " + btoa(user + ":" + pass)};
-    var requestInit = {"credentials": mode, "headers":headers};
+    var headers = { "Authorization": "Basic " + btoa(user + ":" + pass)};
+    var requestInit = {"credentials": mode, "headers": headers};
     return fetch(RESOURCES_DIR + "authentication.py?realm=test", requestInit).then(function(resp) {
         assert_equals(resp.status, status, "HTTP status is " + status);
         assert_equals(resp.type , "basic", "Response's type is basic");

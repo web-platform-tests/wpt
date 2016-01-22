@@ -53,7 +53,7 @@
       dictionary RequestInit {
         ByteString method;
         HeadersInit headers;
-        BodyInit body;
+        BodyInit? body;
         USVString referrer;
         ReferrerPolicy referrerPolicy;
         RequestMode mode;
@@ -80,23 +80,6 @@
       idlsArray.add_untested_idls("interface Headers {};");
       idlsArray.add_objects({ Request: ['new Request("")'] });
       idlsArray.test();
-      /*
-    setup(function() {
-      var idlsArray = new IdlArray();
-      var fetchBody = fetch("../resources/body-idlharness.idl");
-      var fetchrRequest = fetch("../resources/request-idlharness.idl");
-
-      Promise.all([fetchBody, fetchrRequest]).then( function(responses) {
-        var respPromises = [];
-        for (resp of responses)
-          respPromises.push(resp.text());
-        Promise.all(respPromises).then( function(idlsDef) {
-          for (idls of idlsDef)
-            idlsArray.add_idls(idls);
-          done();
-        });
-      });
-    }, {explicit_done: true});*/
     </script>
   </body>
 </html>

@@ -19,13 +19,14 @@ function redirectLocation(desc, redirectUrl, redirectLocation, redirectStatus, r
         assert_equals(resp.status, 0, "Response's status is 0");
         assert_equals(resp.type, "opaqueredirect", "Response's type is opaqueredirect");
         assert_equals(resp.statusText, "", "Response's statusText is \"\"");
+        assert_true(resp.headers.entries().next().done, "Headers should be empty");
       });
 
     if (redirectMode === "manual" || redirectMode === "follow")
       return fetch(url + urlParameters, requestInit).then(function(resp) {
         assert_equals(resp.status, redirectStatus, "Response's status is " + redirectStatus);
       });
-    assert_unreached(redirectMode + " is no a valid redirect mode");
+    assert_unreached(redirectMode + " is not a valid redirect mode");
   }, desc);
 }
 

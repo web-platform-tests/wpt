@@ -35,10 +35,10 @@ var remoteLocation = "http://www1.{{host}}:{{ports[http][0]}}" + preflightPath;
 var remoteLocation2 = "http://www.{{host}}:{{ports[http][0]}}" + preflightPath;
 
 for (var code of [301, 302, 303, 307, 308]) {
-  corsRedirect("Redirect " + code + ": cors to same cors", remoteRedirect, remoteLocation, code, location.origin, true);
-  corsRedirect("Redirect " + code + ": cors to another cors", remoteRedirect, remoteLocation2, code, "null", true);
-  corsRedirect("Redirect " + code + ": same origin to cors", localRedirect, remoteLocation, code, location.origin, true);
-  corsRedirect("Redirect " + code + ": cors to same origin", remoteRedirect, localLocation, code, "null", true);
+  corsRedirect("Redirect " + code + ": cors to same cors", remoteRedirect, remoteLocation, code, location.origin);
+  corsRedirect("Redirect " + code + ": cors to another cors", remoteRedirect, remoteLocation2, code, "null");
+  corsRedirect("Redirect " + code + ": same origin to cors", localRedirect, remoteLocation, code, location.origin);
+  corsRedirect("Redirect " + code + ": cors to same origin", remoteRedirect, localLocation, code, "null");
 }
 
 done();

@@ -22,23 +22,25 @@
         var headers = new Headers(headerDictWS);
         for (name in headerDictWS)
           assert_equals(headers.get(name), headerDictWS[name].trim(),
-            "name: " + name + "has normalized value: " + headerDictWS[name].trim());
+            "name: " + name + " has normalized value: " + headerDictWS[name].trim());
       }, "Create headers with not normalized values");
 
       test(function() {
         var headers = new Headers();
-        for (name in headerDictWS)
+        for (name in headerDictWS) {
           headers.append(name, headerDictWS[name]);
           assert_equals(headers.get(name), headerDictWS[name].trim(),
-            "name: " + name + "has value: " + headerDictWS[name].trim());
+            "name: " + name + " has value: " + headerDictWS[name].trim());
+        }
       }, "Check append method whith not normalized values");
 
       test(function() {
         var headers = new Headers();
-        for (name in headerDictWS)
+        for (name in headerDictWS) {
           headers.set(name, headerDictWS[name]);
           assert_equals(headers.get(name), headerDictWS[name].trim(),
-            "name: " + name + "has value: " + headerDictWS[name].trim());
+            "name: " + name + " has value: " + headerDictWS[name].trim());
+        }
       }, "Check set method whith not normalized values");
     </script>
   </body>

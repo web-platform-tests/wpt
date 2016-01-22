@@ -21,6 +21,7 @@ function redirectMode(desc, redirectUrl, redirectLocation, redirectStatus, redir
       });
     if (redirectMode === "follow")
       return fetch(url + urlParameters, requestInit).then(function(resp) {
+        assert_true(new URL(resp.url).pathname.endsWith(locationUrl), "Response's url should be the redirected one");
         assert_equals(resp.status, 200, "Response's status is 200");
       });
     assert_unreached(redirectMode + " is no a valid redirect mode");

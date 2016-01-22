@@ -10,27 +10,57 @@
   </head>
   <body>
     <script>
-      var headerSeqError1 = [["invalid", "invalidValue1", "invalidValue2"]];
-      var headerSeqError2 = [["invalidĀ", "Value1"]];
-      var headerSeqError3 = [["name", "invalidValueĀ"]];
 
       test(function() {
-        assert_throws(new TypeError() , function() { new Headers(headerSeqError1) });
-        assert_throws(new TypeError() , function() { new Headers(headerSeqError2) });
-        assert_throws(new TypeError() , function() { new Headers(headerSeqError3) });
-      }, "Create headers giving invalid init arguments");
+        assert_throws(new TypeError() , function() { new Headers([["name"]]) });
+      }, "Create headers giving an array having one string as init argument");
+
+      test(function() {
+        assert_throws(new TypeError() , function() { new Headers([["invalid", "invalidValue1", "invalidValue2"]]) });
+      }, "Create headers giving an array having three strings as init argument");
+
+      test(function() {
+        assert_throws(new TypeError() , function() { new Headers([["invalidĀ", "Value1"]]) });
+      }, "Create headers giving bad header name as init argument");
+
+      test(function() {
+        assert_throws(new TypeError() , function() { new Headers([["name", "invalidValueĀ"]]) });
+      }, "Create headers giving bad header value as init argument");
 
       test(function() {
         var headers = new Headers();
         assert_throws(new TypeError() , function() { headers.get("invalidĀ") });
-        assert_throws(new TypeError() , function() { headers.getAll("invalidĀ") });
+      }, "Check headers get with an invalid name");
+
+      test(function() {
+        var headers = new Headers();
         assert_throws(new TypeError() , function() { headers.delete("invalidĀ") });
+      }, "Check headers delete with an invalid name");
+
+      test(function() {
+        var headers = new Headers();
         assert_throws(new TypeError() , function() { headers.has("invalidĀ") });
+      }, "Check headers has with an invalid name");
+
+      test(function() {
+        var headers = new Headers();
         assert_throws(new TypeError() , function() { headers.set("invalidĀ", "Value1") });
+      }, "Check headers set with an invalid name");
+
+      test(function() {
+        var headers = new Headers();
         assert_throws(new TypeError() , function() { headers.set("name", "invalidValueĀ") });
+      }, "Check headers set with an invalid value");
+
+      test(function() {
+        var headers = new Headers();
         assert_throws(new TypeError() , function() { headers.append("invalidĀ", "Value1") });
+      }, "Check headers append with an invalid name");
+
+      test(function() {
+        var headers = new Headers();
         assert_throws(new TypeError() , function() { headers.append("name", "invalidValueĀ") });
-      }, "Check headers'method giving invalid arguments");
+      }, "Check headers append with an invalid value");
     </script>
   </body>
 </html>

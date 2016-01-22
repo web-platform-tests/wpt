@@ -19,14 +19,15 @@ function redirectCount(desc, redirectUrl, redirectLocation, redirectStatus, maxC
   var requestInit = {"redirect": "follow"};
 
   promise_test(function(test) {
-    test.add_cleanup(function() {
-      fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-    });
-    if (!shouldPass)
-      return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
-    return fetch(url + urlParameters, requestInit).then(function(resp) {
-      assert_equals(resp.status, 200, "Response's status is 200");
-      return resp.text();
+    fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(resp) {
+      assert_equals(resp.status, 200, "Clean stash response's status is 200");
+
+      if (!shouldPass)
+        return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
+
+      return fetch(url + urlParameters, requestInit).then(function(resp) {
+        assert_equals(resp.status, 200, "Response's status is 200");
+      });
     }).then(function(body) {
       assert_equals(body, maxCount.toString(), "Redirected " + maxCount + "times");
     });

@@ -27,8 +27,9 @@ function corsOrigin(desc, scheme, subdomain, port, method, origin, shouldPass) {
         return fetch(url + urlParameters, requestInit).then(function(resp) {
           assert_equals(resp.status, 200, "Response's status is 200");
         });
-      } else
+      } else {
         return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
+      }
     });
   }, desc);
 

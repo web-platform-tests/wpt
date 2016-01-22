@@ -10,9 +10,29 @@
   </head>
   <body>
     <script>
+      test(function() {
+        new Headers();
+      }, "Create headers from no parameter");
+
+      test(function() {
+        new Headers(undefined);
+      }, "Create headers from undefined parameter");
+
+      test(function() {
+        new Headers({});
+      }, "Create headers from empty object");
+
+      var parameters = [null, 1];
+      parameters.forEach(function(parameter) {
+        test(function() {
+          assert_throws(new TypeError(), () => new Headers(parameter));
+        }, "Create headers with " + parameter + " should throw");
+      });
+
       var headerDict = {"name1": "value1",
                         "name2": "value2",
-                        "name3": "value3"
+                        "name3": "value3",
+                        "Content-Type": "value4"
       };
 
       var headerSeq = [];
@@ -23,14 +43,14 @@
         var headers = new Headers(headerSeq);
         for (name in headerDict)
           assert_equals(headers.get(name), headerDict[name],
-            "name: " + name + "has value: " + headerDict[name]);
+            "name: " + name + " has value: " + headerDict[name]);
       }, "Create headers with sequence");
 
       test(function() {
         var headers = new Headers(headerDict);
         for (name in headerDict)
           assert_equals(headers.get(name), headerDict[name],
-            "name: " + name + "has value: " + headerDict[name]);
+            "name: " + name + " has value: " + headerDict[name]);
       }, "Create headers with OpenEndedDictionary");
 
       test(function() {
@@ -38,15 +58,16 @@
         var headers2 = new Headers(headers);
         for (name in headerDict)
           assert_equals(headers2.get(name), headerDict[name],
-            "name: " + name + "has value: " + headerDict[name]);
+            "name: " + name + " has value: " + headerDict[name]);
       }, "Create headers whith existing headers");
 
       test(function() {
         var headers = new Headers();
-        for (name in headerDict)
+        for (name in headerDict) {
           headers.append(name, headerDict[name]);
           assert_equals(headers.get(name), headerDict[name],
-            "name: " + name + "has value: " + headerDict[name]);
+            "name: " + name + " has value: " + headerDict[name]);
+        }
       }, "Check append method");
 
       test(function() {
@@ -54,7 +75,7 @@
         for (name in headerDict) {
           headers.set(name, headerDict[name]);
           assert_equals(headers.get(name), headerDict[name],
-            "name: " + name + "has value: " + headerDict[name]);
+            "name: " + name + " has value: " + headerDict[name]);
         }
       }, "Check set method");
 
@@ -63,15 +84,15 @@
         for (name in headerDict)
           assert_true(headers.has(name),"headers has name " + name);
 
-        assert_false(headers.has("nameNotInHeaders"),"headers has not name: nameNotInHeaders");
+        assert_false(headers.has("nameNotInHeaders"),"headers do not have header: nameNotInHeaders");
       }, "Check has method");
 
       test(function() {
         var headers = new Headers(headerDict);
         for (name in headerDict) {
-          assert_true(headers.has(name),"headers has name " + name);
+          assert_true(headers.has(name),"headers have a header: " + name);
           headers.delete(name)
-          assert_true(!headers.has(name),"headers has not name " + name +" anymore");
+          assert_true(!headers.has(name),"headers do not have anymore a header: " + name);
         }
       }, "Check delete method");
 
@@ -81,7 +102,7 @@
           assert_equals(headers.get(name), headerDict[name],
             "name: " + name + "has value: " + headerDict[name]);
 
-        assert_equals(headers.get("nameNotInHeaders"), null, "name: nameNotInHeaders has no value");
+        assert_equals(headers.get("nameNotInHeaders"), null, "header: nameNotInHeaders has no value");
       }, "Check get method");
     </script>
   </body>

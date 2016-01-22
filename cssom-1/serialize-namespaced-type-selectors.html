@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSSOM Test: test serialization of type selectors and namespace prefixes</title>
+        <link rel="author" title="Rune Lillesveen" href="mailto:rune@opera.com">
+        <link rel="help" href="https://drafts.csswg.org/cssom-1/#serializing-selectors">
+        <meta name="flags" content="dom">
+        <meta charset="utf-8">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <style id="teststyles">
+        </style>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script>
+            var ns_rule = "@namespace ns url(ns);";
+            var default_ns_rules = "@namespace url(default_ns); @namespace nsdefault url(default_ns);" + ns_rule;
+
+            function assert_selector_serializes_to(source, expected_result) {
+                var style_element = document.getElementById("teststyles");
+                style_element.firstChild.data = source + "{ font-size: 1em; }";
+                var sheet = style_element.sheet;
+                assert_equals(sheet.cssRules[sheet.cssRules.length - 1].selectorText, expected_result);
+            }
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "e", "e");
+                assert_selector_serializes_to(default_ns_rules + "e", "e");
+            }, "Simple type selector");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "|e", "|e");
+                assert_selector_serializes_to(default_ns_rules + "|e", "|e");
+            }, "Type selector without a namespace");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "*|e", "e");
+                assert_selector_serializes_to(default_ns_rules + "*|e", "*|e");
+            }, "Type selector with any namespace");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "*", "*");
+                assert_selector_serializes_to(default_ns_rules + "*", "*");
+            }, "Universal selector");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "|*", "|*");
+                assert_selector_serializes_to(default_ns_rules + "|*", "|*");
+            }, "Universal selector without a namespace");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "*|*", "*");
+                assert_selector_serializes_to(default_ns_rules + "*|*", "*|*");
+            }, "Universal selector in any namespace");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "ns|e", "ns|e");
+                assert_selector_serializes_to(default_ns_rules + "ns|e", "ns|e");
+            }, "Type selector with namespace");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "ns|*", "ns|*");
+                assert_selector_serializes_to(default_ns_rules + "ns|*", "ns|*");
+            }, "Universal selector with namespace");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "e.c", "e.c");
+                assert_selector_serializes_to(default_ns_rules + "e.c", "e.c");
+            }, "Simple type selector followed by class");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "|e.c", "|e.c");
+                assert_selector_serializes_to(default_ns_rules + "|e.c", "|e.c");
+            }, "Type selector without a namespace followed by class");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "*|e.c", "e.c");
+                assert_selector_serializes_to(default_ns_rules + "*|e.c", "*|e.c");
+            }, "Type selector with any namespace followed by class");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "*.c", ".c");
+                assert_selector_serializes_to(default_ns_rules + "*.c", ".c");
+            }, "Universal selector followed by class");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "|*.c", "|*.c");
+                assert_selector_serializes_to(default_ns_rules + "|*.c", "|*.c");
+            }, "Universal selector without a namespace followed by class");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "*|*.c", ".c");
+                assert_selector_serializes_to(default_ns_rules + "*|*.c", "*|*.c");
+            }, "Universal selector in any namespace followed by class");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "ns|e.c", "ns|e.c");
+                assert_selector_serializes_to(default_ns_rules + "ns|e.c", "ns|e.c");
+            }, "Type selector with namespace followed by class");
+            test(function() {
+                assert_selector_serializes_to(ns_rule + "ns|*.c", "ns|*.c");
+                assert_selector_serializes_to(default_ns_rules + "ns|*.c", "ns|*.c");
+            }, "Universal selector with namespace followed by class");
+            test(function() {
+                assert_selector_serializes_to(default_ns_rules + "nsdefault|e", "e");
+            }, "Type selector with namespace equal to default namespace");
+            test(function() {
+                assert_selector_serializes_to(default_ns_rules + "nsdefault|*", "*");
+            }, "Universal selector with namespace equal to default namespace");
+            test(function() {
+                assert_selector_serializes_to(default_ns_rules + "nsdefault|e.c", "e.c");
+            }, "Type selector with namespace equal to default namespace followed by class");
+            test(function() {
+                assert_selector_serializes_to(default_ns_rules + "nsdefault|*.c", ".c");
+            }, "Universal selector with namespace equal to default namespace followed by class");
+        </script>
+    </body>
+</html>
+

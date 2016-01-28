@@ -12,7 +12,7 @@
   <body>
     <script>
       test(function() {
-        assert_throws(new TypeError() , function() { new Request("", {"window" : "whatever"}); },
+        assert_throws(new TypeError() , function() { new Request("", {"window" : "http://test.url"}); },
           "Expect TypeError exception");
       },"RequestInit's window is not null");
 

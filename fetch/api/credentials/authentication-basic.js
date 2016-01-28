@@ -14,11 +14,8 @@ function basicAuth(desc, user, pass, mode, status) {
   }, desc);
 }
 
-basicAuth("Use Authorization header with include mode", "user", "password", "include", 200);
-basicAuth("Use Authorization header with same-origin mode", "user", "password", "same-origin", 200);
-basicAuth("Use Authorization header with omit mode", "user", "password", "omit", 200);
-
-//omit mode prevent popup for authentication (which makes the test manual)
-basicAuth("Use Authorization header with invalid credentials", "user", "wrong-pass", "omit", 401);
+basicAuth("User-added Authorization header with include mode", "user", "password", "include", 200);
+basicAuth("User-added Authorization header with same-origin mode", "user", "password", "same-origin", 200);
+basicAuth("User-added Authorization header with omit mode", "user", "password", "omit", 200);
 
 done();

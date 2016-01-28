@@ -6,8 +6,6 @@ if (this.document === undefined) {
 
 function redirectCount(desc, redirectUrl, redirectLocation, redirectStatus, maxCount, shouldPass) {
   var uuid_token = token();
-  //clean stash
-  fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
 
   var urlParameters = "?token=" + uuid_token + "&max_age=0";
   urlParameters += "&redirect_status=" + redirectStatus;

@@ -30,15 +30,16 @@ function corsCookies(desc, domain1, domain2, credentialsMode, cookies) {
       assert_equals(resp.status, 200, "HTTP status is 200");
       assert_false(resp.headers.has("Cookie") , "Cookie header is not exposed in response");
       if (credentialsMode === "include" && domain1 === domain2) {
-        assert_equals(resp.headers.get("x-request-cookie") , cookies.join("; "), "Request include cookie(s)");
+        assert_equals(resp.headers.get("x-request-cookie") , cookies.join("; "), "Request includes cookie(s)");
       }
       else {
-        assert_false(resp.headers.has("x-request-cookie") , "Request does not have cookie(s)");
+        assert_false(resp.headers.has("x-request-cookie") , "Request should have no cookie");
       }
       //clean cookies
       return fetch(urlSetCookie + urlCleanParameters, {"credentials": "include"});
-    }).catch(function() {
+    }).catch(function(e) {
       fetch(urlSetCookie + urlCleanParameters, {"credentials": "include"});
+      throw e;
     });
   }, desc);
 }
@@ -52,5 +53,6 @@ corsCookies("Include mode: local cookies are not sent with remote request", loca
 corsCookies("Include mode: remote cookies are not sent with local request", remote, local, "include", ["d=4"]);
 corsCookies("Include mode: remote cookies are not sent with other remote request", remote, remote1, "include", ["e=5"]);
 corsCookies("Same-origin mode: cookies are discarded in cors request", remote, remote, "same-origin", ["f=6"]);
+corsCookies("Omit mode: no cookie sent", local, local, "omit", ["g=7"]);
 
 done();

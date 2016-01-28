@@ -9,12 +9,17 @@ function redirectMethod(desc, redirectUrl, redirectLocation, redirectStatus, met
   urlParameters += "&location=" + encodeURIComponent(redirectLocation);
 
   var requestInit = {"method": method, "redirect": "follow"};
+  if (method != "GET" && method != "HEAD")
+    requestInit.body = "this is my body";
 
   promise_test(function(test) {
     return fetch(url + urlParameters, requestInit).then(function(resp) {
       assert_equals(resp.status, 200, "Response's status is 200");
       assert_equals(resp.type, "basic", "Response's type basic");
       assert_equals(resp.headers.get("x-request-method"), expectedMethod, "Request method after redirection is " + expectedMethod);
+      return resp.text().then(function(text) {
+        assert_equals(text, expectedMethod == "POST" ? requestInit.body : "");
+      });
     });
   }, desc);
 }

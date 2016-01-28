@@ -15,12 +15,12 @@
       };
       var referrers = {"givenValues" : ["/relative/ressource",
                                         "http://{{host}}:{{ports[http][0]}}/relative/ressource?query=true#fragment",
-                                        "http://{{host}}:{{ports[http][0]}}",
+                                        "http://{{host}}:{{ports[http][0]}}/",
                                         ""
                                        ],
-                       "expectedValues" : ["about:client",
-                                           "about:client",
-                                           "http://{{host}}:{{ports[http][0]}}",
+                       "expectedValues" : ["http://{{host}}:{{ports[http][0]}}/relative/ressource",
+                                           "http://{{host}}:{{ports[http][0]}}/relative/ressource?query=true#fragment",
+                                           "http://{{host}}:{{ports[http][0]}}/",
                                            ""
                                           ]
       };
@@ -71,19 +71,20 @@
                              "window" : windows
       };
 
-      for (var attributeName in initValuesDict)
-        test(function() {
-          var valuesToTest = initValuesDict[attributeName];
-          for (var valueIdx in valuesToTest["givenValues"]) {
-            var givenValue = valuesToTest["givenValues"][valueIdx];
-            var expectedValue = valuesToTest["expectedValues"][valueIdx];
+      for (var attributeName in initValuesDict) {
+        var valuesToTest = initValuesDict[attributeName];
+        for (var valueIdx in valuesToTest["givenValues"]) {
+          var givenValue = valuesToTest["givenValues"][valueIdx];
+          var expectedValue = valuesToTest["expectedValues"][valueIdx];
+          test(function() {
             var requestInit = {};
             requestInit[attributeName] = givenValue
             var request = new Request("", requestInit);
             assert_equals(request[attributeName], expectedValue,
               "Expect request's " + attributeName + " is " + expectedValue + " when initialized with " + givenValue);
-          }
-        }, "Check " + attributeName + " init values and associated getter");
+          }, "Check " + attributeName + " init value of " + givenValue + " and associated getter");
+        }
+      }
     </script>
   </body>
 </html>

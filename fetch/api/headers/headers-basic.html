@@ -32,6 +32,8 @@
       var headerDict = {"name1": "value1",
                         "name2": "value2",
                         "name3": "value3",
+                        "name5": undefined,
+                        "name4": null,
                         "Content-Type": "value4"
       };
 
@@ -42,14 +44,14 @@
       test(function() {
         var headers = new Headers(headerSeq);
         for (name in headerDict)
-          assert_equals(headers.get(name), headerDict[name],
+          assert_equals(headers.get(name), String(headerDict[name]),
             "name: " + name + " has value: " + headerDict[name]);
       }, "Create headers with sequence");
 
       test(function() {
         var headers = new Headers(headerDict);
         for (name in headerDict)
-          assert_equals(headers.get(name), headerDict[name],
+          assert_equals(headers.get(name), String(headerDict[name]),
             "name: " + name + " has value: " + headerDict[name]);
       }, "Create headers with OpenEndedDictionary");
 
@@ -57,7 +59,7 @@
         var headers = new Headers(headerDict);
         var headers2 = new Headers(headers);
         for (name in headerDict)
-          assert_equals(headers2.get(name), headerDict[name],
+          assert_equals(headers2.get(name), String(headerDict[name]),
             "name: " + name + " has value: " + headerDict[name]);
       }, "Create headers whith existing headers");
 
@@ -65,7 +67,7 @@
         var headers = new Headers();
         for (name in headerDict) {
           headers.append(name, headerDict[name]);
-          assert_equals(headers.get(name), headerDict[name],
+          assert_equals(headers.get(name), String(headerDict[name]),
             "name: " + name + " has value: " + headerDict[name]);
         }
       }, "Check append method");
@@ -74,7 +76,7 @@
         var headers = new Headers();
         for (name in headerDict) {
           headers.set(name, headerDict[name]);
-          assert_equals(headers.get(name), headerDict[name],
+          assert_equals(headers.get(name), String(headerDict[name]),
             "name: " + name + " has value: " + headerDict[name]);
         }
       }, "Check set method");
@@ -99,7 +101,7 @@
       test(function() {
         var headers = new Headers(headerDict);
         for (name in headerDict)
-          assert_equals(headers.get(name), headerDict[name],
+          assert_equals(headers.get(name), String(headerDict[name]),
             "name: " + name + "has value: " + headerDict[name]);
 
         assert_equals(headers.get("nameNotInHeaders"), null, "header: nameNotInHeaders has no value");

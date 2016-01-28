@@ -31,7 +31,7 @@
           );
           var reqHeaders = request.headers;
           var mime = reqHeaders.get("Content-Type");
-          assert_true(mime && mime.search(bodyType) > -1, "Content-Type header should be \"" + bodyType + "\" ");
+          assert_true(mime && mime.search(bodyType) > -1, "Content-Type header should be \"" + bodyType + "\", not \"" + mime + "\"");
           return request.text().then(function(bodyAsText) {
             //not equals: cannot guess formData exact value
             assert_true( bodyAsText.search(expectedTextBody) > -1, "Retrieve and verify request body");
@@ -42,16 +42,21 @@
       var blob = new Blob(["This is a blob"], {type: "application/octet-binary"});
       var formaData = new FormData();
       formaData.append("name", "value");
-      var urlSearchParams = "URLSearchParams are not supported";
-      //avoid test timeout if not implemented
-      if (window.URLSearchParams)
-        urlSearchParams = new URLSearchParams("name=value");
       var usvString = "This is a USVString"
 
       checkRequestInit(blob, "application/octet-binary", "This is a blob");
       checkRequestInit(formaData, "multipart/form-data", "name=\"name\"\r\n\r\nvalue");
-      checkRequestInit(urlSearchParams, "application/x-www-form-urlencoded;charset=UTF-8", "name=value");
       checkRequestInit(usvString, "text/plain;charset=UTF-8", "This is a USVString");
+
+      // Ensure test does not time out in case of missing URLSearchParams support.
+      if (window.URLSearchParams) {
+        var urlSearchParams = new URLSearchParams("name=value");
+        checkRequestInit(urlSearchParams, "application/x-www-form-urlencoded;charset=UTF-8", "name=value");
+      } else {
+        promise_test(function(test) {
+          return Promise.reject("URLSearchParams not supported");
+        }, "Initialize Response's body with application/x-www-form-urlencoded;charset=UTF-8");
+      }
     </script>
   </body>
 </html>

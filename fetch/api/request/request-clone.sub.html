@@ -15,7 +15,7 @@
       var emptyHeaders = new Headers();
 
       var initValuesDict = {"method" : "POST",
-                            "referrer" : "http://{{host}}:{{ports[http][0]}}",
+                            "referrer" : "http://{{host}}:{{ports[http][0]}}/",
                             "referrerPolicy" : "origin-only",
                             "mode" : "same-origin",
                             "credentials" : "include",
@@ -27,7 +27,7 @@
       };
 
       var expectedInitialized = {"method" : "POST",
-                                 "referrer" : "http://{{host}}:{{ports[http][0]}}",
+                                 "referrer" : "http://{{host}}:{{ports[http][0]}}/",
                                  "referrerPolicy" : "origin-only",
                                  "mode" : "same-origin",
                                  "credentials" : "include",

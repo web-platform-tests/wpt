@@ -9,58 +9,51 @@ if (this.document === undefined) {
   Control if server allows method and headers and check accordingly
   Check control access headers added by UA (for method and headers)
 */
-function corsPreflight(desc, corsUrl, method, allowed ,headers) {
+function corsPreflight(desc, corsUrl, method, allowed, headers) {
   var uuid_token = token();
-  //clean stash
-  fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
+  fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(response) {
 
-  var url = corsUrl;
-  var urlParameters = "?token=" + uuid_token + "&max_age=0";
-  var requestInit = {"mode": "cors", "method": method};
-  if (headers)
-    requestInit["headers"] = headers;
-
-  if (allowed) {
-    urlParameters += "&allow_methods=" + method;
+    var url = corsUrl;
+    var urlParameters = "?token=" + uuid_token + "&max_age=0";
+    var requestInit = {"mode": "cors", "method": method};
     if (headers)
-    {
-      //UA should ask permission for headers
-      //Server will send back headers from Access-Control-Request-Headers in x-control-request-headers
-      urlParameters += "&control_request_headers"
-      //Make the server allow the headers
-      urlParameters += "&allow_headers="
-      var first = true;
-      for (var header in headers) {
-        if (first)
-          first = false;
-        else
-          urlParameters += "%2C%20";
-        urlParameters += header;
+      requestInit["headers"] = headers;
+
+    if (allowed) {
+      urlParameters += "&allow_methods=" + method;
+      if (headers) {
+        //Let's check prefligh request.
+        //Server will send back headers from Access-Control-Request-Headers in x-control-request-headers
+        urlParameters += "&control_request_headers"
+        //Make the server allow the headers
+        urlParameters += "&allow_headers="
+        urlParameters += headers.join("%2C%20");
       }
+      promise_test(function(test) {
+        test.add_cleanup(function() {
+          fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
+        });
+        return fetch(url + urlParameters, requestInit).then(function(resp) {
+          assert_equals(resp.status, 200, "Response's status is 200");
+          assert_equals(resp.headers.get("x-did-preflight"), "1", "Preflight request has been made");
+          if (headers) {
+            var actualHeaders = resp.headers.get("x-control-request-headers").split(",");
+            for (var i in actualHeaders)
+              actualHeaders[i] = actualHeaders[i].trim();
+            for (var header in headers)
+              assert_in_array(header, actualHeaders, "Preflight asked permission for header: " + header);
+          }
+        });
+      }, desc);
+    } else {
+      promise_test(function(test) {
+        test.add_cleanup(function() {
+          fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
+        });
+        return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
+      }, desc);
     }
-    promise_test(function(test) {
-      test.add_cleanup(function() {
-        fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-      });
-      return fetch(url + urlParameters, requestInit).then(function(resp) {
-        assert_equals(resp.status, 200, "Response's status is 200");
-        assert_equals(resp.headers.get("x-did-preflight"), "1", "Preflight request has been made");
-        if (headers)
-          var actualHeaders = resp.headers.get("x-control-request-headers").split(",");
-          for (var i in actualHeaders)
-            actualHeaders[i] = actualHeaders[i].trim();
-          for (var header in headers)
-            assert_in_array(header, actualHeaders, "Preflight asked permission for header: " + header);
-      });
-    }, desc);
-  } else {
-    promise_test(function(test) {
-      test.add_cleanup(function() {
-        fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
-      });
-      return promise_rejects(test, new TypeError(), fetch(url + urlParameters, requestInit));
-    }, desc);
-  }
+  });
 }
 
 var corsUrl = "http://www1.{{host}}:{{ports[http][0]}}" + dirname(location.pathname) + RESOURCES_DIR + "preflight.py";

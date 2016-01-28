@@ -63,7 +63,6 @@
 
           case "destination":
             defaultValue = "";
-            var hasDefaultValue = true;
             newValue = "worker";
             break;
 
@@ -107,7 +106,7 @@
             break;
 
           default:
-              return;
+            return;
         }
 
         request[attributeToCheck] = newValue;

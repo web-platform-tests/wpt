@@ -20,8 +20,6 @@
       var bodyConsumed = new Request("", initValuesDict);
       bodyConsumed.blob();
 
-      var RequestInitialized = new Request("", initValuesDict);
-
       test(function() {
         assert_false(noBodyConsumed.bodyUsed , "bodyUsed is false when request is not disturbed");
         try {

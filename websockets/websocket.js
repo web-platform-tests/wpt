@@ -14,7 +14,6 @@ var __IS__WEBSOCKET;
 var __PASS = "Pass";
 var __FAIL = "Fail";
 var wsocket;
-var csocket;
 var data;
 
 // variables for testing Close Browser/Navigate Away scenarios
@@ -117,7 +116,6 @@ function CreateControlWebSocket(isSecure) {
         __URL = "ws://" + __SERVER__NAME + ":" + __PORT + "/" + __CONTROLPATH;
     }
 
-    csocket = new WebSocket(__URL);
-    return csocket;
+    return new WebSocket(__URL);
 }
 

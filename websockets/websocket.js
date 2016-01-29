@@ -7,13 +7,6 @@ var __PATH = "echo";
 var wsocket;
 var data;
 
-// variables for testing Close Browser/Navigate Away scenarios
-var isAssociated = false;
-var guid;
-var dataReceived;
-var closeCode;
-var urlToOpen;
-
 function IsWebSocket() {
     if (!window.WebSocket) {
         assert_true(false, "Browser does not support WebSocket");

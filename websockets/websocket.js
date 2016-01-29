@@ -4,11 +4,6 @@ var __SECURE__PORT = {{ports[wss][0]}};
 var __NEW__PORT = __PORT; //All ports are non-default for now
 var __NEW__SECURE__PORT = __SECURE__PORT; //All ports are non-default for now
 var __PATH = "echo";
-var __CONTROLPATH = "control";
-var __PROTOCOL = "echo";
-var __PROTOCOLS = ["echo", "chat"];
-var __REPEATED__PROTOCOLS = ["echo", "echo"];
-var __REPEATED__PROTOCOLS_CASE_INSENSITIVE = ["echo", "eCho"];
 var __URL;
 var wsocket;
 var data;
@@ -71,13 +66,13 @@ function CreateWebSocketWithSpaceInProtocol(protocolWithSpace) {
 function CreateWebSocketWithRepeatedProtocols() {
     IsWebSocket();
     __URL = "ws://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH;
-    wsocket = new WebSocket(__URL, __REPEATED__PROTOCOLS);
+    wsocket = new WebSocket(__URL, ["echo", "echo"]);
 }
 
 function CreateWebSocketWithRepeatedProtocolsCaseInsensitive() {
     IsWebSocket();
     __URL = "ws://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH;
-    wsocket = new WebSocket(__URL, __REPEATED__PROTOCOLS_CASE_INSENSITIVE);
+    wsocket = new WebSocket(__URL, ["echo", "eCho"]);
 }
 
 function CreateWebSocket(isSecure, isProtocol, isProtocols) {
@@ -93,10 +88,10 @@ function CreateWebSocket(isSecure, isProtocol, isProtocols) {
     }
 
     if (isProtocol) {
-        wsocket = new WebSocket(__URL, __PROTOCOL);
+        wsocket = new WebSocket(__URL, "echo");
     }
     else if (isProtocols) {
-        wsocket = new WebSocket(__URL, __PROTOCOLS);
+        wsocket = new WebSocket(__URL, ["echo", "chat"]);
     }
     else {
         wsocket = new WebSocket(__URL);
@@ -107,10 +102,10 @@ function CreateWebSocket(isSecure, isProtocol, isProtocols) {
 function CreateControlWebSocket(isSecure) {
     IsWebSocket();
     if (isSecure) {
-        __URL = "wss://" + __SERVER__NAME + ":" + __SECURE__PORT + "/" + __CONTROLPATH;
+        __URL = "wss://" + __SERVER__NAME + ":" + __SECURE__PORT + "/control";
     }
     else {
-        __URL = "ws://" + __SERVER__NAME + ":" + __PORT + "/" + __CONTROLPATH;
+        __URL = "ws://" + __SERVER__NAME + ":" + __PORT + "/control";
     }
 
     return new WebSocket(__URL);

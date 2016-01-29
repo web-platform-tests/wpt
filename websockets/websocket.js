@@ -10,9 +10,6 @@ var __PROTOCOLS = ["echo", "chat"];
 var __REPEATED__PROTOCOLS = ["echo", "echo"];
 var __REPEATED__PROTOCOLS_CASE_INSENSITIVE = ["echo", "eCho"];
 var __URL;
-var __IS__WEBSOCKET;
-var __PASS = "Pass";
-var __FAIL = "Fail";
 var wsocket;
 var data;
 

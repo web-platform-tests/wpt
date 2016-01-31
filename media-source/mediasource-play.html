@@ -11,8 +11,8 @@
         <script>
           mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {
-              test.failOnEvent(mediaElement, 'error');
-              test.endOnEvent(mediaElement, 'ended');
+              mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
+              mediaElement.addEventListener('ended', test.step_func_done());
 
               test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
               test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
@@ -38,7 +38,7 @@
                   mediaSource.endOfStream();
                   mediaElement.play();
               });
-          }, "Test normal playback case with MediaSource API", {timeout: 5000});
+          }, "Test normal playback case with MediaSource API");
         </script>
     </body>
 </html>

@@ -1,13 +1,14 @@
 var __SERVER__NAME = "{{host}}";
 var __PORT = {{ports[ws][0]}};
-var __SECURE__PORT = null; //{{ports[ws][0]}}; //Should be wss
+var __SECURE__PORT = {{ports[wss][0]}};
 var __NEW__PORT = __PORT; //All ports are non-default for now
-var __NEW__SECURE__PORT = __PORT; //All ports are non-default for now
+var __NEW__SECURE__PORT = __SECURE__PORT; //All ports are non-default for now
 var __PATH = "echo";
 var __CONTROLPATH = "control";
 var __PROTOCOL = "echo";
 var __PROTOCOLS = ["echo", "chat"];
 var __REPEATED__PROTOCOLS = ["echo", "echo"];
+var __REPEATED__PROTOCOLS_CASE_INSENSITIVE = ["echo", "eCho"];
 var __URL;
 var __IS__WEBSOCKET;
 var __PASS = "Pass";
@@ -47,6 +48,12 @@ function CreateWebSocketNonAsciiProtocol(nonAsciiProtocol) {
     wsocket = new WebSocket(__URL, nonAsciiProtocol);
 }
 
+function CreateWebSocketWithAsciiSep(asciiWithSep) {
+    IsWebSocket();
+    __URL = "ws://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH;
+    wsocket = new WebSocket(__URL, asciiWithSep);
+}
+
 function CreateWebSocketWithBlockedPort(blockedPort) {
     IsWebSocket();
     __URL = "wss://" + __SERVER__NAME + ":" + blockedPort + "/" + __PATH;
@@ -69,6 +76,12 @@ function CreateWebSocketWithRepeatedProtocols() {
     IsWebSocket();
     __URL = "ws://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH;
     wsocket = new WebSocket(__URL, __REPEATED__PROTOCOLS);
+}
+
+function CreateWebSocketWithRepeatedProtocolsCaseInsensitive() {
+    IsWebSocket();
+    __URL = "ws://" + __SERVER__NAME + ":" + __PORT + "/" + __PATH;
+    wsocket = new WebSocket(__URL, __REPEATED__PROTOCOLS_CASE_INSENSITIVE);
 }
 
 function CreateWebSocket(isSecure, isProtocol, isProtocols) {

@@ -33,7 +33,7 @@
                   timeUpdateCount++;
               }));
 
-              test.failOnEvent(mediaElement, 'error');
+              mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
 
               test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
               test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
@@ -65,7 +65,7 @@
                   assert_greater_than(timeUpdateCount, 2, "timeUpdateCount");
                   test.done();
               });
-          }, "Test HTMLVideoElement.getVideoPlaybackQuality() with MediaSource API", {timeout: 5000});
+          }, "Test HTMLVideoElement.getVideoPlaybackQuality() with MediaSource API");
         </script>
     </body>
 </html>

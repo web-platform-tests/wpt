@@ -73,16 +73,21 @@ class Builder(object):
             if ('children' in anchor):
                 self._addAnchors(anchor['children'], specName)
 
+    def _normalizeScheme(self, url):
+        if (url and url.startswith('http:')):
+            return 'https:' + url[5:]
+        return url
+
     def getSpecName(self, url):
         if (not self.specNames):
             for specName in self.specificationData:
                 specData = self.specificationData[specName]
-                officialURL = specData.get('base_uri')
+                officialURL = self._normalizeScheme(specData.get('base_uri'))
                 if (officialURL):
                     if (officialURL.endswith('/')):
                         officialURL = officialURL[:-1]
                     self.specNames[officialURL.lower()] = specName
-                draftURL = specData.get('draft_uri')
+                draftURL = self._normalizeScheme(specData.get('draft_uri'))
                 if (draftURL):
                     if (draftURL.endswith('/')):
                         draftURL = draftURL[:-1]
@@ -93,7 +98,7 @@ class Builder(object):
                 if ('draft_anchors' in specData):
                     self._addAnchors(specData['draft_anchors'], specName)
 
-        url = url.lower()
+        url = self._normalizeScheme(url.lower())
         for specURL in self.specNames:
             if (url.startswith(specURL) and
                 ((url == specURL) or

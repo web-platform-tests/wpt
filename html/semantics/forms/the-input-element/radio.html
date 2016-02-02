@@ -15,8 +15,8 @@
 <input type=radio id=radio5>
 <input type=radio id=radio6 disabled>
 
-<input type=radio id=radio71 checked>
-<input type=radio id=radio72>
+<input type=radio name="group5" id=radio71 checked>
+<input type=radio name="group5" id=radio72>
 
 <input type=radio name=group3 id=radio8 checked>
 <input type=radio name=group3 id=radio9>
@@ -124,18 +124,20 @@
   });
 
   radio72.onclick = t5.step_func_done(function(e){
-    assert_false(radio71.checked);
-    assert_true(radio72.checked);
+    assert_false(radio71.checked, "click on radio should uncheck other radio in same group");
+    assert_true(radio72.checked, "click on radio should check that radio");
     e.preventDefault();
-    assert_false(radio71.checked);
-    assert_true(radio72.checked);
+    // The cancelation of the click doesn't have an effect until after all the click event handlers have been run.
+    assert_false(radio71.checked, "radio remains unchecked immediately after click event on other radio in same group is canceled");
+    assert_true(radio72.checked, "clicked radio remains checked immediately after click event is canceled");
   });
 
   t5.step(function(){
-    assert_true(radio71.checked);
-    assert_false(radio72.checked);
+    assert_true(radio71.checked, "initially checked radio should be checked");
+    assert_false(radio72.checked, "other radios in same group as initially-checked radio should be unchecked");
     radio72.click();
-    assert_true(radio71.checked);
-    assert_false(radio72.checked);
+    // Now that the click event has been fully dispatched, its cancelation has taken effect.
+    assert_true(radio71.checked, "canceled click event on radio should leave the previously-checked radio checked");
+    assert_false(radio72.checked, "canceled click event on previously-unchecked radio should leave that radio unchecked");
   });
 </script>

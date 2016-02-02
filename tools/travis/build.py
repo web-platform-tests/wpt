@@ -137,10 +137,10 @@ def update_git(old_files, new_files):
     added = sorted(new_files - old_files)
 
     for r in grouper(10, removed):
-        git("rm", r)
+        git("rm", *r)
 
     for a in grouper(10, added):
-        git("add", a)
+        git("add", *a)
 
     git("add", "-u")
 

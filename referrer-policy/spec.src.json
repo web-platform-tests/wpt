@@ -245,6 +245,22 @@
       "referrer_url": "*"
     },
     {
+      "name": "elements-not-supporting-attr-referrer",
+      "expansion": "*",
+      "source_protocol": "*",
+      "target_protocol": "*",
+      "delivery_method": ["attr-referrer"],
+      "redirection": "*",
+      "origin": "*",
+      "subresource": [
+        "script-tag",
+        "xhr-request",
+        "worker-request",
+        "fetch-request"
+      ],
+      "referrer_url": "*"
+    },
+    {
       "name": "elements-not-supporting-rel-noreferrer",
       "expansion": "*",
       "source_protocol": "*",

@@ -124,7 +124,6 @@ def copy_files():
 def update_git(old_files, new_files):
     git = vcs.bind_to_repo(vcs.git, built_dir)
 
-    print old_files - new_files
     for item in old_files - new_files:
         git("rm", item)
 

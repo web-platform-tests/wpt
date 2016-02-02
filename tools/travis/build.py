@@ -124,14 +124,8 @@ def copy_files():
 def update_git(old_files, new_files):
     git = vcs.bind_to_repo(vcs.git, built_dir)
 
-    print "RM", sorted(old_files - new_files)[:10]
-    print "ADD", sorted(new_files - old_files)[:10]
-
-    for item in sorted(old_files - new_files):
-        git("rm", item)
-
-    for item in sorted(new_files - old_files):
-        git("add", item)
+    git("rm", *sorted(old_files - new_files))
+    git("add", *sorted(new_files - old_files))
 
     git("add", "-u")
 

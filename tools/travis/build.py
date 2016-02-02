@@ -1,3 +1,4 @@
+import itertools
 import os
 import shutil
 import subprocess
@@ -121,11 +122,25 @@ def copy_files():
 
     return set(dest_paths)
 
+def grouper(n, iterable):
+    """
+    >>> list(grouper(3, 'ABCDEFG'))
+    [['A', 'B', 'C'], ['D', 'E', 'F'], ['G']]
+    """
+    iterable = iter(iterable)
+    return iter(lambda: list(itertools.islice(iterable, n)), [])
+
 def update_git(old_files, new_files):
     git = vcs.bind_to_repo(vcs.git, built_dir)
 
-    git("rm", *sorted(old_files - new_files))
-    git("add", *sorted(new_files - old_files))
+    removed = sorted(old_files - new_files)
+    added = sorted(new_files - old_files)
+
+    for r in grouper(10, removed):
+        git("rm", r)
+
+    for a in grouper(10, added):
+        git("add", a)
 
     git("add", "-u")
 

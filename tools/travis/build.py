@@ -36,10 +36,15 @@ def fetch_submodules():
         if os.path.exists(os.path.join(dest_dir, ".hg")):
             try:
                 os.chdir(dest_dir)
-                hg("pull")
                 if repo_path in state:
-                    hg("update", state[repo_path])
+                    rev = state[repo_path]
+                    try:
+                        hg("update", rev, log_error=False)
+                    except subprocess.CalledProcessError:
+                        hg("pull")
+                        hg("update", rev)
                 else:
+                    hg("pull")
                     hg("update")
             finally:
                 os.chdir(orig_dir)

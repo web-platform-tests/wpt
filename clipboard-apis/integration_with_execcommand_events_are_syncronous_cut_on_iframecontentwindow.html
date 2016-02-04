@@ -18,7 +18,6 @@ function clipboard_api_test(e){
     eventFired = true;
 }
 function onTestSetupReady( eventType ){
-  document.getElementsByTagName('p')[0].firstChild.data='FAILED'; // if event doesn't fire, this test failed..
     var ifr=document.getElementById('iframe'), doc;
     (doc=ifr.contentDocument).designMode='on';
     doc.body.innerHTML='<p>Frame contents</p>';
@@ -36,8 +35,8 @@ function triggerTestManually(eventType){
     var execSucceeded = ifr.contentDocument.execCommand(eventType, false, null);
     window.afterExecCommand=true;
     result(function(){
-      assert_true(eventFired, eventType + ' event should fire');
       assert_true(execSucceeded, 'document.execCommand() should succeed and return true');
+      assert_true(eventFired, eventType + ' event should fire');
     });
 }
 

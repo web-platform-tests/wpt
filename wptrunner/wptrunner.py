@@ -215,9 +215,9 @@ def run_tests(config, test_paths, product, **kwargs):
 
 def main():
     """Main entry point when calling from the command line"""
-    try:
-        kwargs = wptcommandline.parse_args()
+    kwargs = wptcommandline.parse_args()
 
+    try:
         if kwargs["prefs_root"] is None:
             kwargs["prefs_root"] = os.path.abspath(os.path.join(here, "prefs"))
 
@@ -230,6 +230,9 @@ def main():
         else:
             return not run_tests(**kwargs)
     except Exception:
-        import pdb, traceback
-        print traceback.format_exc()
-        pdb.post_mortem()
+        if kwargs["pdb"]:
+            import pdb, traceback
+            print traceback.format_exc()
+            pdb.post_mortem()
+        else:
+            raise

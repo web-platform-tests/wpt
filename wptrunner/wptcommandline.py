@@ -126,6 +126,9 @@ def create_parser(product_choices=None):
     debugging_group.add_argument("--stackwalk-binary", action="store", type=abs_path,
                                  help="Path to stackwalker program used to analyse minidumps.")
 
+    debugging_group.add_argument("--pdb", action="store_true",
+                                 help="Drop into pdb on python exception")
+
     chunking_group = parser.add_argument_group("Test Chunking")
     chunking_group.add_argument("--total-chunks", action="store", type=int, default=1,
                                 help="Total number of chunks to use")

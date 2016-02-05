@@ -16,6 +16,7 @@
 <script src=/resources/idlharness.js></script>
 
 <script type="text/plain">
+
 [NoInterfaceObject]
 interface GlobalCrypto {
   readonly attribute Crypto crypto;
@@ -38,6 +39,7 @@ enum KeyType { "public", "private", "secret" };
 
 enum KeyUsage { "encrypt", "decrypt", "sign", "verify", "deriveKey", "deriveBits", "wrapKey", "unwrapKey" };
 
+[Exposed=(Window,Worker)]
 interface CryptoKey {
   readonly attribute KeyType type;
   readonly attribute boolean extractable;
@@ -48,6 +50,7 @@ interface CryptoKey {
 
 enum KeyFormat { "raw", "spki", "pkcs8", "jwk" };
 
+[Exposed=(Window,Worker)]
 interface SubtleCrypto {
   Promise<any> encrypt(AlgorithmIdentifier algorithm,
                        CryptoKey key,

@@ -10,15 +10,16 @@
     <pre>Running...</pre>
 
     <script>
-      var test = test("Invalid referrerpolicy values not reflected");
-      var elements = ["iframe", "img", "a", "area"];
-      for (var i = 0; i < elements.length; i++) {
-          var elem = document.createElement(elements[i]);
-          elem.referrerpolicy = "unsafe-url";
-          assert_equals("unsafe-url", elem.referrerpolicy);
-          elem.referrerpolicy = "not-valid-value";
-          assert_equals("", elem.referrerpolicy);
-      }
+      test(function () {
+          var elements = ["iframe", "img", "a", "area"];
+          for (var i = 0; i < elements.length; i++) {
+              var elem = document.createElement(elements[i]);
+              elem.referrerpolicy = "unsafe-url";
+              assert_equals(elem.referrerpolicy, "unsafe-url");
+              elem.referrerpolicy = "not-valid-value";
+              assert_equals(elem.referrerpolicy, "");
+          }
+      }, "Invalid referrerpolicy values not reflected");
     </script>
   </body>
 </html>

@@ -826,7 +826,7 @@ policies and contribution forms [3].
         /* falls through */
         default:
             try {
-                return typeof val + ' "' + truncate(String(val), 60) + '"';
+                return typeof val + ' "' + truncate(String(val), 1000) + '"';
             } catch(e) {
                 return ("[stringifying object threw " + String(e) +
                         " with type " + String(typeof e) + "]");

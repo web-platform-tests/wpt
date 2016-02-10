@@ -3,6 +3,8 @@ which contains a JSON array of comments as strings and test cases as objects.
 The keys for each test case are:
 
 * `base`: an absolute URL as a string whose [parsing] without a base of its own should succeed.
+  This key is always present, 
+  and may have a value like `"about:blank"` when `input` is an absolute URL.
 * `input`: an URL as a string to be [parsed][parsing] with `base` as its base URL.
 * Either:
   * `failure` with the value `true`, indicating that parsing `input` should return failure,

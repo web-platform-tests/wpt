@@ -2201,7 +2201,7 @@
   {
     "input": "http://www/foo%2Ehtml",
     "base": "about:blank",
-    "href": "http://www/foo%2Ehtml",
+    "href": "http://www/foo.html",
     "origin": "http://www",
     "protocol": "http:",
     "username": "",
@@ -2209,7 +2209,7 @@
     "host": "www",
     "hostname": "www",
     "port": "",
-    "pathname": "/foo%2Ehtml",
+    "pathname": "/foo.html",
     "search": "",
     "hash": ""
   },

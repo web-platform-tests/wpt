@@ -1,5 +1,7 @@
-The test for browsers is `a-element.html`. The reusable format is `urltestdata.json`,
-which contains a JSON array of comments as strings and test cases as objects.
+These tests are for browsers, but the data for 
+`a-element.html`, `url-constructor.html`, and `a-element-xhtml.xhtml`
+is in `urltestdata.json` and can be re-used by non-browser implementations.
+This file contains a JSON array of comments as strings and test cases as objects.
 The keys for each test case are:
 
 * `base`: an absolute URL as a string whose [parsing] without a base of its own should succeed.

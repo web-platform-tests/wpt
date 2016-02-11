@@ -2,16 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
 	<head>
-		<title>CSS Test: word-break - normal - basic cases</title>
+		<title>CSS Test: word-break - keep-all - basic cases</title>
 		<link rel="author" title="Satoshi Umehara" href="mailto:umehara@est.co.jp" />
 		<link rel="help" title="CSS Text Level 3: 5.2. Word Breaking Rules: the ‘word-break’ property" href="http://www.w3.org/TR/css-text-3/#word-break" />
-		<link rel="match" href="reference/word-break-normal-001-ref.xht"/>
+		<link rel="match" href="reference/word-break-keep-all-004-ref.xht"/>
 		<meta name="flags" content="font" />
-		<meta name="assert" content="Break lines according to their usual rules." />
+		<meta name="assert" content="Block characters can no longer create implied break points." />
 		<style type="text/css">
 			<![CDATA[
 				.test span {
-					word-break: normal;
+					word-break: keep-all;
 				}
 				/* the CSS below is not part of the test */
 				p.test, p.control {
@@ -22,6 +22,9 @@
 				}
 				span.attention {
 					color: red;
+				}
+				span.no_wrap {
+					white-space: nowrap;
 				}
 			]]>
 		</style>
@@ -49,7 +52,7 @@
 			<span>満たすための文字満たすための文字</span>
 		</p>
 		<p class="control">
-			<span>満たすための文字満た<br />すための文字</span>
+			<span class="no_wrap">満たすための文字満たすための文字</span>
 		</p>
 		<hr />
 		<p>

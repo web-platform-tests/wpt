@@ -1450,7 +1450,7 @@ policies and contribution forms [3].
         var args = Array.prototype.slice.call(arguments, 2);
         return setTimeout(this.step_func(function() {
             return f.apply(test_this, args);
-        }, timeout * tests.timeout_multiplier));
+        }), timeout * tests.timeout_multiplier);
     }
 
     Test.prototype.add_cleanup = function(callback) {

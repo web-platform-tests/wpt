@@ -1,10 +1,16 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import errno
 import httplib
 import json
 import socket
 import time
 import urlparse
+
 from collections import defaultdict
+
 
 element_key = "element-6066-11e4-a52e-4f735466cecf"
 
@@ -12,9 +18,6 @@ element_key = "element-6066-11e4-a52e-4f735466cecf"
 class WebDriverException(Exception):
     http_status = None
     status_code = None
-
-    def __init__(self, message):
-        self.message = message
 
 
 class ElementNotSelectableException(WebDriverException):
@@ -153,7 +156,7 @@ del group_exceptions
 
 
 def wait_for_port(host, port, timeout=60):
-    """ Wait for the specified Marionette host/port to be available."""
+    """Wait for the specified Marionette host/port to be available."""
     starttime = time.time()
     poll_interval = 0.1
     while time.time() - starttime < timeout:
@@ -173,18 +176,26 @@ def wait_for_port(host, port, timeout=60):
 
 
 class Transport(object):
-    def __init__(self, host, port, url_prefix="", port_timeout=60):
+    """Transports messages (commands and responses) over the WebDriver
+    wire protocol.
+    """
+
+    def __init__(self, host, port, url_prefix="/", wait=1):
+        """Construct interface for communicating with the remote server.
+
+        :param url: URL of remote WebDriver server.
+        :param wait: Duration to wait for remote to appear.
+        """
+
         self.host = host
         self.port = port
-        self.port_timeout = port_timeout
-        if url_prefix == "":
-            self.path_prefix = "/"
-        else:
-            self.path_prefix = "/%s/" % url_prefix.strip("/")
+        self.path_prefix = url_prefix
+
+        self._wait = wait
         self._connection = None
 
     def connect(self):
-        wait_for_port(self.host, self.port, self.port_timeout)
+        wait_for_port(self.host, self.port, self._wait)
         self._connection = httplib.HTTPConnection(self.host, self.port)
 
     def close_connection(self):
@@ -193,9 +204,19 @@ class Transport(object):
         self._connection = None
 
     def url(self, suffix):
-        return urlparse.urljoin(self.url_prefix, suffix)
+        return urlparse.urljoin(self.path_prefix, suffix)
 
     def send(self, method, url, body=None, headers=None, key=None):
+        """Send a command to the remote.
+
+        :param method: "POST" or "GET".
+        :param body: Body of the request.  Defaults to an empty dictionary
+            if ``method`` is "POST".
+        :param headers: Additional headers to include in the request.
+        :param key: Extract this key from the dictionary returned from
+            the remote.
+        """
+
         if not self._connection:
             self.connect()
 
@@ -212,28 +233,22 @@ class Transport(object):
             headers = {}
 
         url = self.path_prefix + url
-
         self._connection.request(method, url, body, headers)
 
-        try:
-            resp = self._connection.getresponse()
-        except Exception:
-            # This should probably be more specific
-            raise IOError
+        resp = self._connection.getresponse()
         resp_body = resp.read()
 
         try:
             data = json.loads(resp_body)
         except:
-            raise WebDriverException("Could not parse response body as JSON: %s" % body)
+            raise IOError("Could not parse response body as JSON: %s" % body)
 
         if resp.status != 200:
-            cls = _exceptions.get(resp.status, {}).get(data.get("status", None), WebDriverException)
-            raise cls(data.get("message", ""))
+            cls = _exceptions.get(resp.status, {}).get(data.get("error", None), WebDriverException)
+            raise cls(data.get("message"))
 
         if key is not None:
             data = data[key]
-
         if not data:
             data = None
 
@@ -243,12 +258,14 @@ class Transport(object):
 def command(func):
     def inner(self, *args, **kwargs):
         if hasattr(self, "session"):
-            session_id = self.session.session_id
+            session = self.session
         else:
-            session_id = self.session_id
+            session = self
 
-        if session_id is None:
-            raise SessionNotCreatedException("Session not created")
+        if session.session_id is None:
+            session.start()
+        assert session.session_id != None
+
         return func(self, *args, **kwargs)
 
     inner.__name__ = func.__name__
@@ -363,10 +380,12 @@ class Cookies(object):
 
 
 class Session(object):
-    def __init__(self, host, port, url_prefix="", desired_capabilities=None, port_timeout=60,
+    def __init__(self, host, port, url_prefix="",
+                 desired_capabilities=None, required_capabilities=None, wait=60,
                  extension=None):
-        self.transport = Transport(host, port, url_prefix, port_timeout)
+        self.transport = Transport(host, port, url_prefix, wait=wait)
         self.desired_capabilities = desired_capabilities
+        self.required_capabilities = required_capabilities
         self.session_id = None
         self.timeouts = None
         self.window = None
@@ -376,11 +395,17 @@ class Session(object):
         self.extension_cls = extension
 
     def start(self):
-        desired_capabilities = self.desired_capabilities if self.desired_capabilities else {}
-        body = {"capabilities": {"desiredCapabilites": desired_capabilities}}
+        body = {}
 
-        rv = self.transport.send("POST", "session", body=body)
-        self.session_id = rv["sessionId"]
+        caps = {}
+        if self.desired_capabilities is not None:
+            caps["desiredCapabilities"] = self.desired_capabilities
+        if self.required_capabilities is not None:
+            caps["requiredCapabilities"] = self.required_capabilities
+        body["capabilities"] = caps
+
+        resp = self.transport.send("POST", "session", body=body)
+        self.session_id = resp["sessionId"]
 
         self.timeouts = Timeouts(self)
         self.window = Window(self)
@@ -388,7 +413,7 @@ class Session(object):
         if self.extension_cls:
             self.extension = self.extension_cls(self)
 
-        return rv["value"]
+        return resp["value"]
 
     @command
     def end(self):
@@ -448,12 +473,12 @@ class Session(object):
 
     @property
     @command
-    def handle(self):
+    def window_handle(self):
         return self.send_command("GET", "window_handle", key="value")
 
-    @handle.setter
+    @window_handle.setter
     @command
-    def handle(self, handle):
+    def window_handle(self, handle):
         body = {"handle": handle}
         return self.send_command("POST", "window", body=body)
 
@@ -621,6 +646,7 @@ class Element(object):
     @command
     def attribute(self, name):
         return self.session.send_command("GET", self.url("attribute/%s" % name))
+
 
 class ServoExtensions(object):
     def __init__(self, session):

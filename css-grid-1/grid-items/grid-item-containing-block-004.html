@@ -15,16 +15,23 @@
         grid-template-columns: 1fr 1fr;
     }
 
-    #test-item {
-        background-color: green;
+    #test-item-overlapped-red {
+        background-color: red;
         width: 100%;
         height: 100%;
+    }
+    #reference-overlapping-green{
+        background-color: green;
+        width: 100px;
+        height: 100px;
     }
 </style>
 <body>
     <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
     <div id="grid">
-        <div id="test-item">
+        <div id="test-item-overlapped-red">
+            <div id="reference-overlapping-green">
+            </div>
         </div>
     </div>
 </body>

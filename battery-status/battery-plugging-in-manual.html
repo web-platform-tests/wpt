@@ -30,7 +30,16 @@
 </ol>
 
 <div id="note">
-  Plug in the charger and wait for all the tests to complete.
+  <ol>
+    <li>
+      Plug in the charger and wait for all the tests to complete.
+    </li>
+    <li>
+      The tests may take long time since the definition of how
+      often the chargingtimechange, dischargingtimechange, and levelchange
+      events are fired is left to the implementation.
+    </li>
+  </ol>
 </div>
 
 <div id="log"></div>
@@ -59,8 +68,11 @@
     });
 
     battery.ondischargingtimechange = ondischargingtimechange_test.step_func(function () {
-      assert_equals(battery.dischargingTime, Infinity, 'The value of the dischargingTime attribute must be set to Infinity.');
-      ondischargingtimechange_test.done();
+      if (battery.charging) {
+        assert_equals(battery.dischargingTime, Infinity,
+          'The value of the dischargingTime attribute must be set to Infinity.');
+        ondischargingtimechange_test.done();
+      }
     });
 
     battery.onlevelchange = onlevelchange_test.step_func(function () {

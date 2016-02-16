@@ -3,7 +3,7 @@
 <head>
 <title>Test that mediastreamtrack are properly ended</title>
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
-<link rel="help" href="http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediastreamtrack">
+<link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#mediastreamtrack">
 <link rel='stylesheet' href='/resources/testharness.css' media='all'/>
 </head>
 <body>
@@ -29,7 +29,7 @@ t.step(function () {
     vidTrack.onended = t.step_func(function () {
         assert_equals(vidTrack.readyState, "ended", "Video track has been ended as expected");
         assert_equals(audTrack.readyState, "ended", "Audio track has been ended as expected");
-        assert_true(stream.ended, "MediaStream has been ended as expected");
+        assert_false(stream.active, "MediaStream has been inactive as expected");
         t.done();
       });
     }), function (error) {}

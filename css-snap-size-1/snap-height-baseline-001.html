@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>CSS Snap Size: snap-height baseline</title>
+<link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-snap-size/#snap-height">
+<link rel="match" href="reference/snap-height-baseline-001.html">
+<meta name="assert" content="This test asserts the snap-height property rounds up line box height and set the baseline position.">
+<meta name="flags" content="ahem">
+<style>
+div {
+  font-family: Ahem;
+  font-size: 40px;
+  line-height: 40px;
+}
+.test, .ref {
+  display: inline-block;
+  vertical-align: top;
+  width: 5em;
+}
+.test {
+  snap-height: 64px 50;
+}
+.ref > div {
+  margin-bottom: 24px;
+}
+.transparent {
+  color: transparent;
+}
+</style>
+<p class="instructions">Test passes if left and right are the same.
+<div class="ref">
+  <div>XXXXX</div>
+  <div>XXXXX</div>
+  <div>XXXXX</div>
+  <div>XXXXX</div>
+  <div class="transparent">X</div>
+  <div>X</div>
+  <div>X</div>
+</div>
+<div class="test">
+  <div>XXXXX</div>
+  <div>XXXXX XXXXX XXXXX</div>
+  <div><br>X<br>X</div>
+</div>

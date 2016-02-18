@@ -62,9 +62,9 @@ test(function () {
   assert_equals( elem.className, ' ' );
 }, 'className should contain initial markup whitespace');
 test(function () {
-  assert_equals( elem.classList + '', '', 'implicit' );
-  assert_equals( elem.classList.toString(), '', 'explicit' );
-}, 'empty classList should return the empty string since the ordered set parser skip the whitespaces');
+  assert_equals( elem.classList + '', ' ', 'implicit' );
+  assert_equals( elem.classList.toString(), ' ', 'explicit' );
+}, 'classList should contain initial markup whitespace');
 test(function () {
   assert_throws( 'SYNTAX_ERR', function () { elem.classList.contains(''); } );
 }, '.contains(empty_string) must throw a SYNTAX_ERR');
@@ -290,15 +290,13 @@ test(function () {
   assert_false(failed,'an error was thrown');
 }, 'classList.length must be read-only');
 test(function () {
-  var failed = false, realList = secondelem.classList;
-  try {
-    secondelem.classList = '';
-  } catch(e) {
-    failed = e;
-  }
+  var realList = secondelem.classList;
+  secondelem.classList = 'foo bar';
   assert_equals(secondelem.classList,realList);
-  assert_false(failed,'an error was thrown');
-}, 'classList must be read-only');
+  assert_equals(secondelem.classList.length,2);
+  assert_equals(secondelem.classList[0],'foo');
+  assert_equals(secondelem.classList[1],'bar');
+}, 'classList must have [PutForwards=value]');
     </script>
   </head>
   <body>

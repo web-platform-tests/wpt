@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>Presentation API IDL tests for Receiving User Agent</title>
 <link rel="author" title="Louay Bassbouss" href="http://www.fokus.fraunhofer.de">
-<link rel="help" href="http://w3c.github.io/presentation-api/#dfn-controlling-user-agent#dfn-receiving-user-agent">
+<link rel="help" href="http://w3c.github.io/presentation-api/#dfn-receiving-user-agent">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
@@ -19,23 +19,34 @@ interface Event {
 };
 dictionary EventInit {
 };
-interface PresentationRequest {
-};
 </script>
 
 <script id='idl' type="text/plain">
 partial interface Navigator {
     [SameObject]
-    readonly attribute Presentation presentation;
+    readonly attribute Presentation? presentation;
 };
 
 interface Presentation {
-    attribute PresentationRequest? defaultRequest;
+};
+
+partial interface Presentation {
     [SameObject]
     readonly attribute PresentationReceiver? receiver;
 };
 
+[Constructor(DOMString type, PresentationConnectionAvailableEventInit eventInitDict)]
+interface PresentationConnectionAvailableEvent : Event {
+    [SameObject]
+    readonly attribute PresentationConnection connection;
+};
+
+dictionary PresentationConnectionAvailableEventInit : EventInit {
+    required PresentationConnection connection;
+};
+
 enum PresentationConnectionState {
+    "connecting",
     "connected",
     "closed",
     "terminated"
@@ -51,7 +62,9 @@ interface PresentationConnection : EventTarget {
     readonly attribute PresentationConnectionState state;
     void close();
     void terminate();
-    attribute EventHandler onstatechange;
+    attribute EventHandler onconnect;
+    attribute EventHandler onclose;
+    attribute EventHandler onterminate;
     // Communication
     attribute BinaryType binaryType;
     attribute EventHandler onmessage;
@@ -61,9 +74,26 @@ interface PresentationConnection : EventTarget {
     void send(ArrayBufferView data);
 };
 
+enum PresentationConnectionClosedReason {
+    "error",
+    "closed",
+    "wentaway"
+};
+
+[Constructor(DOMString type, PresentationConnectionClosedEventInit eventInitDict)]
+interface PresentationConnectionClosedEvent : Event {
+    readonly attribute PresentationConnectionClosedReason reason;
+    readonly attribute DOMString message;
+};
+
+dictionary PresentationConnectionClosedEventInit : EventInit {
+    required PresentationConnectionClosedReason reason;
+    DOMString message;
+};
+
 interface PresentationReceiver {
     [SameObject]
-    readonly attribute Promise<PresentationConnectionList> connections;
+    readonly attribute Promise<PresentationConnectionList> connectionList;
 };
 
 interface PresentationConnectionList : EventTarget {

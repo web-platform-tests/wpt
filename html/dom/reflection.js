@@ -621,12 +621,8 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 
         case "enum":
         // Whee, enum is complicated.
-        if (typeof data.invalidVal == "undefined") {
-            data.invalidVal = defaultVal;
-        }
-        if (typeof data.nonCanon == "undefined") {
-            data.nonCanon = {};
-        }
+        var invalidVal = (typeof data.invalidVal == "undefined") ? defaultVal : data.invalidVal;
+        var nonCanon = (typeof data.nonCanon == "undefined") ? {} : data.nonCanon;
         for (var i = 0; i < data.keywords.length; i++) {
             if (data.keywords[i] != "") {
                 domTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
@@ -653,14 +649,12 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         idlDomExpected = idlTests.slice(0);
 
         // Now we have the fun of calculating what the expected IDL values are.
-        domExpected = [];
-        idlIdlExpected = [];
-        for (var i = 0; i < domTests.length; i++) {
-            domExpected.push(this.enumExpected(data.keywords, data.nonCanon, data.invalidVal, domTests[i]));
-        }
-        for (var i = 0; i < idlTests.length; i++) {
-            idlIdlExpected.push(this.enumExpected(data.keywords, data.nonCanon, data.invalidVal, idlTests[i]));
-        }
+        domExpected = domTests.map(function(t) {
+            return this.enumExpected(data.keywords, nonCanon, invalidVal, t);
+        });
+        idlIdlExpected = idlTests.map(function(t) {
+            return this.enumExpected(data.keywords, nonCanon, invalidVal, t);
+        });
         break;
 
         case "string":
@@ -673,18 +667,13 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         }
         break;
     }
-    if (domObj.tagName.toLowerCase() == "canvas" && (domName == "width" || domName == "height")) {
-        // Opera tries to allocate a canvas with the given width and height, so
-        // it OOMs when given excessive sizes.  This is permissible under the
-        // hardware-limitations clause, so cut out those checks.  TODO: Must be
-        // a way to make this more succinct.
-        domTests = domTests.filter(function(element, index, array) { return domExpected[index] < 1000; });
-        domExpected = domExpected.filter(function(element, index, array) { return element < 1000; });
-        idlTests = idlTests.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
-        idlDomExpected = idlDomExpected.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
-        idlIdlExpected = idlIdlExpected.filter(function(element, index, array) { return idlIdlExpected[index] < 1000; });
-    }
 
+    this.testGetter(data, domObj, domName, domTests, domExpected, idlObj, idlName);
+
+    this.testSetter(data, domObj, domName, idlObj, idlName, idlTests, idlDomExpected, idlIdlExpected);
+};
+
+ReflectionTests.testGetter = function(data, domObj, domName, domTests, domExpected, idlObj, idlName) {
     if (!data.customGetter) {
         for (var i = 0; i < domTests.length; i++) {
             if (domExpected[i] === null) {
@@ -710,7 +699,9 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
             }
         }
     }
+};
 
+ReflectionTests.testSetter = function(data, domObj, domName, idlObj, idlName, idlTests, idlDomExpected, idlIdlExpected) {
     for (var i = 0; i < idlTests.length; i++) {
         if ((data.type == "limited long" && idlTests[i] < 0) ||
             (data.type == "limited unsigned long" && idlTests[i] == 0)) {

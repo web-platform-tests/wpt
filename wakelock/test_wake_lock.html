@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf8>
+<meta content="width=device-width, initial-scale=1" name=viewport>
+<link rel="help" href="https://www.w3.org/TR/wake-lock/">
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function() {
+	assert_true('keepAwake' in window.screen);
+    assert_idl_attribute(screen, 'keepAwake');
+    assert_equals(typeof screen.keepAwake, 'boolean');
+}, 'Test that the Wake Lock API is present.');
+test(function() {
+   assert_false(screen.keepAwake);
+}, 'Test  that screen.keepAwake default value is false');
+test(function() {
+    screen.keepAwake = true;
+    assert_true(screen.keepAwake);
+    screen.keepAwake = false;
+    assert_false(screen.keepAwake);
+}, 'Test that screen.keepAwake preserves set value');
+</script>
+</body>
+</html>

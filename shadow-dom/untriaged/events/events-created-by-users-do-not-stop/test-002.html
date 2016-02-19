@@ -43,7 +43,7 @@ A_05_04_02_T01.step(unit(function (ctx) {
     var pass = false;
 
     s.addEventListener('error', A_05_04_02_T01.step_func(function(event) {
-    	assert_equals(event.target.getAttribute('id'), 'inp1', 'Inside shadow tree: Wrong target');
+        assert_equals(event.target.getAttribute('id'), 'inp1', 'Inside shadow tree: Wrong target');
         pass = true;
     }), false);
 

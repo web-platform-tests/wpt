@@ -25,6 +25,7 @@ test(function() {
     "appendChild",
     "insertBefore",
     "childNodes",
+    "nodeName",
   ]
   removed_members.forEach(function(m) {
     assert_false(m in attr, m + " should not be supported")

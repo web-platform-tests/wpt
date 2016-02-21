@@ -871,11 +871,11 @@ interface HTMLHyperlinkElementUtils {
            attribute USVString hash;
 };
 
-interface HTMLAllCollection : HTMLCollection {
-  // inherits length and 'getter'
-  Element? item(unsigned long index);
+interface HTMLAllCollection {
+  readonly attribute unsigned long length;
+  getter Element? item(unsigned long index);
   (HTMLCollection or Element)? item(DOMString name);
-  legacycaller getter (HTMLCollection or Element)? namedItem(DOMString name); // shadows inherited namedItem()
+  legacycaller getter (HTMLCollection or Element)? namedItem(DOMString name);
 };
 
 interface HTMLFormControlsCollection : HTMLCollection {

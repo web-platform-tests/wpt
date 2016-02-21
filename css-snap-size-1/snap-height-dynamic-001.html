@@ -12,21 +12,20 @@ div {
   line-height: 1;
 }
 </style>
+<div id="log"></div>
 <div id="target">X</div>
 <div id="next">X</div>
 <script>
 var before = next.offsetTop;
 target.style.snapHeight = "40px";
 var after = next.offsetTop;
-test(function () {
-  assert_not_equals(after, before);
-}, "Height must change when snap-height changes");
-
 forceRelayout(document.documentElement);
 var afterRelayout = next.offsetTop;
+
 test(function () {
-  assert_equals(after, afterRelayout);
-}, "Height must not change after relayout");
+  assert_not_equals(after, before, "Height must change when snap-height changes");
+  assert_equals(after, afterRelayout, "Height must not change after relayout");
+});
 
 function forceRelayout(element) {
   var saved = element.style.display;

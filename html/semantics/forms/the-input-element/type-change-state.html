@@ -25,7 +25,7 @@
     { type: "color", sanitizedValue: "#000000" },
     { type: "checkbox" },
     { type: "radio" },
-    { type: "file", sanitizedValue: "" },
+    { type: "file" },
     { type: "submit" },
     { type: "image" },
     { type: "reset" },
@@ -41,6 +41,10 @@
             assert_throws("INVALID_STATE_ERR", function() {
               input.value = "  foo\rbar  ";
             });
+            assert_equals(input.value, "");
+          } else if (types[j].type === "file") {
+            input.value = "  foo\rbar  ";
+            input.type = types[j].type;  // change state
             assert_equals(input.value, "");
           } else {
             input.value = "  foo\rbar  ";

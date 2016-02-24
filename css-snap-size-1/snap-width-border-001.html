@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>CSS Snap Size: snap-width</title>
+<link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-snap-size/#snap-width">
+<link rel="match" href="reference/snap-width-border-001.html">
+<meta name="assert" content="This test asserts the snap-width property rounds down the box width.">
+<meta name="flags" content="ahem">
+<style>
+.test, .ref {
+  border: .4em blue solid;
+  font-family: Ahem;
+  font-size: 32px;
+  line-height: 1;
+  margin: .5em 0;
+  padding: .4em;
+  width: 20em;
+}
+.test {
+  width: 20.5em;
+  text-align: right;
+  snap-width: 1em;
+}
+</style>
+<body>
+<p class="instructions">Test passes if the top and the bottom boxes are the same,
+  including how they look and their horizontal positions.
+<div class="test">XXXXXXXXXX XXXXXXXXX</div>
+<div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+</body>

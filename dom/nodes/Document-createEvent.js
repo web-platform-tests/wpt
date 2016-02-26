@@ -4,7 +4,6 @@ var aliases = [
   ["Events", "Event"],
   ["HTMLEvents", "Event"],
   ["KeyboardEvent", "KeyboardEvent"],
-  ["KeyEvents", "KeyboardEvent"],
   ["MessageEvent", "MessageEvent"],
   ["MouseEvent", "MouseEvent"],
   ["MouseEvents", "MouseEvent"],

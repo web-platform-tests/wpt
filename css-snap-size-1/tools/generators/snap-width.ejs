@@ -7,35 +7,46 @@
 <meta name="flags" content="ahem">
 <% } %><link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
 <style>
-.test, .ref {
+.container {
   font-family: Ahem;
   font-size: 32px;
   line-height: 1;
+}
+.container > div {
   margin: .5em 0;
-  width: 20em;
 }
-<% if (!isReference) {
-%>.test {
-  width: 20.5em;
-  text-align: right;
-  snap-width: 1em;
-}
-<% }
-%>.border > div {
+.border > div {
   border: .4em orange solid;
 }
 .padding > div {
   padding: 0 .4em;
+}
+
+<% if (!isReference) {
+  if (name.indexOf("-available-") > 0) {
+%>.container { width: 20.5em; }
+.container.border, .container.padding { width: 21.3em; }
+.container.border.padding { width: 22.1em; }
+<% } %>.test {
+  snap-width: 1em;
+  text-align: right;
+<% if (name.indexOf("-fixed-") > 0) { %>  width: 20.5em;
+<% } else if (name.indexOf("-max-") > 0) { %>  max-width: 20.5em;
+<% } %>}
+<% } %>.ref {
+  white-space: pre;
+  width: 20em;
 }
 </style>
 <body>
 <p class="instructions">Test passes if each pair of boxes are the same,
   including how they look, widths, and horizontal positions.
 <%
-[ "", "border", "padding", "border padding"].forEach(function (className) {
+[ [], ["border"], ["padding"], ["border", "padding"]].forEach(function (classList) {
+  classList.push("container");
 %>
-<div<%- className ? ' class="' + className + '"' : null %>>
-  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
+<div class="<%= classList.join(" ") %>">
+  <div class="<%= isReference ? 'ref' : 'test'%>">XXXXXXXXXX XXXXXXXXX</div>
   <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
 </div>
 <% });

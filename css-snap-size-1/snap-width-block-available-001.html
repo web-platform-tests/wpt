@@ -6,17 +6,13 @@
 <meta name="flags" content="ahem">
 <link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
 <style>
-.test, .ref {
+.container {
   font-family: Ahem;
   font-size: 32px;
   line-height: 1;
-  margin: .5em 0;
-  width: 20em;
 }
-.test {
-  width: 20.5em;
-  text-align: right;
-  snap-width: 1em;
+.container > div {
+  margin: .5em 0;
 }
 .border > div {
   border: .4em orange solid;
@@ -24,27 +20,39 @@
 .padding > div {
   padding: 0 .4em;
 }
+
+.container { width: 20.5em; }
+.container.border, .container.padding { width: 21.3em; }
+.container.border.padding { width: 22.1em; }
+.test {
+  snap-width: 1em;
+  text-align: right;
+}
+.ref {
+  white-space: pre;
+  width: 20em;
+}
 </style>
 <body>
 <p class="instructions">Test passes if each pair of boxes are the same,
   including how they look, widths, and horizontal positions.
 
-<div>
+<div class="container">
   <div class="test">XXXXXXXXXX XXXXXXXXX</div>
   <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
 </div>
 
-<div class="border">
+<div class="border container">
   <div class="test">XXXXXXXXXX XXXXXXXXX</div>
   <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
 </div>
 
-<div class="padding">
+<div class="padding container">
   <div class="test">XXXXXXXXXX XXXXXXXXX</div>
   <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
 </div>
 
-<div class="border padding">
+<div class="border padding container">
   <div class="test">XXXXXXXXXX XXXXXXXXX</div>
   <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
 </div>

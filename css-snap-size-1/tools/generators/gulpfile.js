@@ -12,25 +12,33 @@ gulp.task("default", [
   "snap-width",
 ]);
 
+var snapWidthFiles = [
+  { name: "snap-width-block-available-001" },
+  { name: "snap-width-block-fixed-001" },
+  { name: "snap-width-block-max-001" },
+  { name: "snap-width-001", isReference: true },
+]
+
 gulp.task("snap-width", function () {
-  return generate({
-    source: "snap-width.ejs",
-    name: "snap-width-001",
-  });
+  return generateFiles(snapWidthFiles);
 });
 
-function generate(options) {
+function generateFiles(files) {
+  return generateFile(files[0])
+    .on("end", function () {
+      if (files.length > 1)
+        return generateFiles(files.slice(1));
+    });
+}
+
+function generateFile(options) {
   options.isReference = options.isReference || false;
   options.destname = options.name + ".html";
   options.destdir = options.isReference ? refdir : testdir;
-  return gulp.src(options.source)
+  return gulp.src("snap-width.ejs")
     .pipe(ejs(options))
     .pipe(rename(options.destname))
-    .pipe(gulp.dest(options.destdir))
-    .on("end", function () {
-      if (!options.isReference)
-        return generate(extend(options, { isReference: true }));
-    });
+    .pipe(gulp.dest(options.destdir));
 }
 
 function extend(obj, props) {

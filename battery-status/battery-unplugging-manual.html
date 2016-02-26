@@ -54,7 +54,7 @@
       'fire a dischargingtimechange event.');
   var onlevelchange_test = async_test(
       'When the device is unplugged in and the battery level is updated, ' +
-      must set the level attribute\'s value and fire a levelchange event.');
+      'must set the level attribute\'s value and fire a levelchange event.');
 
   var batterySuccess = function (battery) {
     battery.onchargingchange = onchargingchange_test.step_func(function () {

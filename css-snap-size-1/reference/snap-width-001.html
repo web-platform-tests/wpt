@@ -9,10 +9,34 @@
   margin: .5em 0;
   width: 20em;
 }
+.border > div {
+  border: .4em orange solid;
+}
+.padding > div {
+  padding: 0 .4em;
+}
 </style>
 <body>
-<p class="instructions">Test passes if the top and the bottom boxes are the same,
-  including how they look and their horizontal positions.
-<div class="test">XXXXXXXXXX XXXXXXXXX</div>
-<div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+<p class="instructions">Test passes if each pair of boxes are the same,
+  including how they look, widths, and horizontal positions.
+
+<div>
+  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
+  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+</div>
+
+<div class="border">
+  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
+  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+</div>
+
+<div class="padding">
+  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
+  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+</div>
+
+<div class="border padding">
+  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
+  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+</div>
 </body>

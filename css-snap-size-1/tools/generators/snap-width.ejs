@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <title>CSS Snap Size: snap-width</title>
-<link rel="help" href="https://drafts.csswg.org/css-snap-size/#snap-width">
+<% if (!isReference) {
+%><link rel="help" href="https://drafts.csswg.org/css-snap-size/#snap-width">
 <link rel="match" href="reference/snap-width-001.html">
 <meta name="assert" content="This test asserts the snap-width property rounds down the box width.">
 <meta name="flags" content="ahem">
-<link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
+<% } %><link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
 <style>
 .test, .ref {
   font-family: Ahem;
@@ -13,12 +14,14 @@
   margin: .5em 0;
   width: 20em;
 }
-.test {
+<% if (!isReference) {
+%>.test {
   width: 20.5em;
   text-align: right;
   snap-width: 1em;
 }
-.border > div {
+<% }
+%>.border > div {
   border: .4em orange solid;
 }
 .padding > div {
@@ -28,24 +31,12 @@
 <body>
 <p class="instructions">Test passes if each pair of boxes are the same,
   including how they look, widths, and horizontal positions.
-
-<div>
+<%
+[ "", "border", "padding", "border padding"].forEach(function (className) {
+%>
+<div<%- className ? ' class="' + className + '"' : null %>>
   <div class="test">XXXXXXXXXX XXXXXXXXX</div>
   <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
 </div>
-
-<div class="border">
-  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
-  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
-</div>
-
-<div class="padding">
-  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
-  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
-</div>
-
-<div class="border padding">
-  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
-  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
-</div>
-</body>
+<% });
+%></body>

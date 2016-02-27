@@ -208,17 +208,27 @@ function build_asn_private(keyMap)
 function import_test(t, format, keyData, algorithm, extractable, keyUsages) {
     self.crypto.subtle.importKey(format, keyData, algorithm, extractable, keyUsages).then(
         t.step_func(function(newKey) {
+            //
+            //  Verify public fields match with what we imported
+            //
+            
             assert_equals(newKey.algorithm.name, algorithm.name);
             assert_equals(newKey.algorithm.modulusLength, 2048);
             assert_array_equals(newKey.algorithm.publicExponent, new Uint8Array([1, 0, 1]));
             assert_equals(newKey.algorithm.hash.name, algorithm.hash);
+
             if (format == "pkcs8") assert_equals(newKey.type, "private");
             else if (format == "spki") assert_equals(newKey.type, "public");
-            //  No check for format == "jwk"
+            else if (format == "jwk") {
+                if ('d' in keyData) assert_equals(newKey.type, "private");
+                else assert_equals(newKey.type, "public");
+            }
+            
             assert_equals(newKey.extractable, extractable);
             assert_array_equals(newKey.usages, keyUsages);
 
             //  Try and export the key now
+            
             self.crypto.subtle.exportKey(format, newKey).then(
                 t.step_func(function(data) {
                     if (!extractable) assert_unreached("Export should have failed");
@@ -249,6 +259,26 @@ var jwkAlgs = [ null, "RS1", "RS256", "RS384", "RS512" ];
 var extractableNames = ["not-extractable","extractable"];
 var extractable = [false, true];
 
+//
+//  Run a test on importing the same key in a variety of different ways
+//
+//  Matrix of test is:
+//     extractable: false, true
+//     format x type: jwk public, jwk private, pkcs8, spki
+//     algorithm.hash.name: SHA-1, SHA-256, SHA-384, SHA-512
+//     key data algorithm: rsaEncryption, hash algorithm w/rsaEncryption
+//              (i.e. sha1WithRsaEncryption, sha256WithRSAEncryption,
+//                    sha384WithRSAEncrypiton, sha512WithRSAEncryption)
+//
+//  Total Test Count: 64
+//
+//  Additional test - import jwk w/ only d private value
+//    Expect a change to the spec so that this goes away as it is not supported by anybody
+//
+//  Current test is over a single key, this should be adaquate but can be adapted to
+//      multiple keys if needed.
+//
+
 function run_test()
 {
     var asn;
@@ -258,7 +288,7 @@ function run_test()
     var jsonPublic = build_jwk_public(asnPrivate);
     var jsonPrivate = build_jwk_private(asnPrivate);
     
-    t = async_test("Import: cover  jwk private-d only exportable none " + algArrayName[i]);
+    t = async_test("RSASSA Import: cover  jwk private-d only exportable none " + algArrayName[i]);
     import_test(t, "jwk", jwkPrivateDOnly, alg256, true, ["sign"] );
 
     for (j=0; j<2; j++) {
@@ -266,13 +296,13 @@ function run_test()
             jwkKey = jsonPublic;
             delete jwkKey["alg"];
 
-            t = async_test("Import: cover  jwk public " + extractableNames[j] + " none " + algArrayName[i]);
+            t = async_test("RSASSA Import: cover  jwk public " + extractableNames[j] + " none " + algArrayName[i]);
             import_test(t, "jwk", jwkKey, algArray[i], extractable[j], ["verify"] );
 
             jwkKey = jsonPrivate;
             delete jwkKey["alg"];
 
-            t = async_test("Import: cover  jwk private " + extractableNames[j] + " none " + algArrayName[i]);
+            t = async_test("RSASSA Import: cover  jwk private " + extractableNames[j] + " none " + algArrayName[i]);
             import_test(t, "jwk", jwkKey, algArray[i], extractable[j], ["sign"] );
         }
 
@@ -280,13 +310,13 @@ function run_test()
             jwkKey = jsonPublic;
             jwkKey["alg"] = jwkAlgs[i];
 
-            t = async_test("Import: cover  jwk public " + extractableNames[j] + " " + jwkAlgs[i] + " " + algArrayName[i]);
+            t = async_test("RSASSA Import: cover  jwk public " + extractableNames[j] + " " + jwkAlgs[i] + " " + algArrayName[i]);
             import_test(t, "jwk", jwkKey, algArray[i], extractable[j], ["verify"] );
             
             jwkKey = jsonPrivate;
             jwkKey["alg"] = jwkAlgs[i];
 
-            t = async_test("Import: cover  jwk private " + extractableNames[j] + " " + jwkAlgs[i] + " " + algArrayName[i]);
+            t = async_test("RSASSA Import: cover  jwk private " + extractableNames[j] + " " + jwkAlgs[i] + " " + algArrayName[i]);
             import_test(t, "jwk", jwkKey, algArray[i], extractable[j], ["sign"] );
         }
 
@@ -297,13 +327,13 @@ function run_test()
             asnPublic[2] = oid2Array[0];
             asn = asn1_to_uint8(asnPublic);
 
-            t = async_test("Import: cover  asn public " + extractableNames[j] + " " + oidNames[0] + " " + algArrayName[i]);
+            t = async_test("RSASSA Import: cover  asn public " + extractableNames[j] + " " + oidNames[0] + " " + algArrayName[i]);
             import_test(t, "spki", asn, algArray[i], extractable[j], ["verify"] );
 
             asnPrivate[3] = oid2Array[0];
             asn = asn1_to_uint8(asnPrivate);
 
-            t = async_test("Import: cover  asn private " + extractableNames[j] + " " + oidNames[0] + " " + algArrayName[i]);
+            t = async_test("RSASSA Import: cover  asn private " + extractableNames[j] + " " + oidNames[0] + " " + algArrayName[i]);
             import_test(t, "pkcs8", asn, algArray[i], extractable[j], ["sign"] );
         }
             
@@ -311,13 +341,13 @@ function run_test()
             asnPublic[2] = oid2Array[i];
             asn = asn1_to_uint8(asnPublic);
 
-            t = async_test("Import: cover  asn public " + extractableNames[j] + " " + oidNames[i] + " " +algArrayName[i]);
+            t = async_test("RSASSA Import: cover  asn public " + extractableNames[j] + " " + oidNames[i] + " " +algArrayName[i]);
             import_test(t, "spki", asn, algArray[i], extractable[j], ["verify"] );
 
             asnPrivate[3] = oid2Array[i];
             asn = asn1_to_uint8(asnPrivate);
 
-            t = async_test("Import: cover  asn private " + extractableNames[j] + " " + oidNames[i] + " " +algArrayName[i]);
+            t = async_test("RSASSA Import: cover  asn private " + extractableNames[j] + " " + oidNames[i] + " " +algArrayName[i]);
             import_test(t, "pkcs8", asn, algArray[i], extractable[j], ["sign"] );
         }
     }

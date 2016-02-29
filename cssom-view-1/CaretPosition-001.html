@@ -31,14 +31,16 @@
 <div id="log"></div>
 <script>
 test(function(){
-  assert_equals(getBox('box2'), document.elementFromPoint(400,100), "Expected value for element id is 'box2'");
-},'getBox');
+  assert_equals(document.elementFromPoint(400, 100),
+                document.getElementById('box2'),
+                "Expected value for element id is 'box2'");
+}, 'Element at (400, 100)');
+
 test(function(){
-  assert_equals(null, document.elementFromPoint(400,900), "Expected value for element id is 'box2'");
-},'getBox');
-function getBox(id){
-  return document.getElementById(id);
-}
+  assert_equals(document.elementFromPoint(400, 900),
+                null,
+                "Expected value for element id is 'box2'");
+}, 'Element at (400, 900)');
 </script>
 </body>
 </html>

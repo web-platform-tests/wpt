@@ -5,6 +5,7 @@ const refdir = "../../reference";
 
 var browserSync = null;
 var gulp = require("gulp");
+var gutil = require('gulp-util');
 var ejs = require("gulp-ejs");
 var rename = require("gulp-rename");
 
@@ -13,11 +14,11 @@ gulp.task("default", [
 ]);
 
 var snapWidthFiles = [
-  { name: "snap-width-block-available-001" },
-  { name: "snap-width-block-fixed-001" },
-  { name: "snap-width-block-max-001" },
   { name: "snap-width-001", isReference: true },
-]
+];
+["available", "fixed", "max"].forEach(width => {
+  snapWidthFiles.push({ name: "snap-width-inline-in-" + width + "-001" });
+});
 
 gulp.task("snap-width", function () {
   return generateFiles(snapWidthFiles);
@@ -35,6 +36,7 @@ function generateFile(options) {
   options.isReference = options.isReference || false;
   options.destname = options.name + ".html";
   options.destdir = options.isReference ? refdir : testdir;
+  gutil.log("Generating", options.destname);
   return gulp.src("snap-width.ejs")
     .pipe(ejs(options))
     .pipe(rename(options.destname))

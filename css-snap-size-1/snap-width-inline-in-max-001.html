@@ -15,7 +15,8 @@
   margin: .5em 0;
 }
 .border > div {
-  border: .4em orange solid;
+  border-left: .4em transparent solid;
+  border-right: .4em transparent solid;
 }
 .padding > div {
   padding: 0 .4em;
@@ -24,10 +25,10 @@
 .test {
   snap-width: 1em;
   text-align: right;
-  width: 20.5em;
+  max-width: 20.5em;
 }
 .ref {
-  white-space: pre;
+  white-space: pre; /* make sure the line does not wrap */
   width: 20em;
 }
 </style>

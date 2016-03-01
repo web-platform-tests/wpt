@@ -13,11 +13,20 @@ gulp.task("default", [
   "snap-width",
 ]);
 
-var snapWidthFiles = [
-  { name: "snap-width-001", isReference: true },
-];
-["available", "fixed", "max"].forEach(width => {
-  snapWidthFiles.push({ name: "snap-width-inline-in-" + width + "-001" });
+var snapWidthFiles = [];
+["inline", "block"].forEach(content => {
+  ["available", "fixed", "max"].forEach(width => {
+    snapWidthFiles.push({
+      name: "snap-width-" + content + "-in-" + width + "-001",
+      contentType: content,
+      widthType: width,
+    });
+  });
+  snapWidthFiles.push({
+    name: "snap-width-" + content + "-001",
+    contentType: content,
+    isReference: true,
+  });
 });
 
 gulp.task("snap-width", function () {

@@ -249,22 +249,7 @@ function build_asn_private(keyMap)
 
 //* private w/o usages
 //* secret as format
-//** spki
-//* contain usages not "verify"
-//* spki that does not parse < bad structure, extra data>
-//* spki for non rsa algorithm
-//* Mis-match the public key algorithm w/ the hash passed in
-//* Use a hash algorithm of md5WithRsaEncryption
-//* Pass in a non-hash algorithm w/ rsaEncryption as OID
-//* fail parsing public key algorithm < bad structure, extra data>
 //
-//** pkcs8
-//* conains usage not "sign"
-//* private key structure does not parse  < bad structure, extra data>
-//* Mismatch of hash algorithms w/ the private key data
-//* Pass inhash not being a hash and rsaEncryption
-//* fail parsing RSA Private data structure <bad struture, extra data>
-//* empty usages
 //
 //** jwk
 
@@ -340,21 +325,76 @@ function run_jwk_import()
     //* md5withRSAEncryption
     //* bad hash algorithm passed in with alg absent
     //* d present and one or more items absent
-    //* d present and one or more extra items present
+    jwk = build_jwk_private(rsaKey);
+    delete jwk["qi"];
+    import_test_fail(t, "jwk", jwk, alg256, true, ["sign"], "DataError" );
 
     //* d absent and one or more items present
-    //* d absent and one or more items absent
+    jwk = build_jwk_private(rsaKey);
+    delete jwk["d"];
+    import_test_fail(t, "jwk", jwk, alg256, true, ["sign"], "DataError" );
 }
+
 //
 //** Size of imported data is too small
 //** Size of imported data is too large
 
 function run_pkcs8_import()
 {
+    var privKey = build_jwk_private(rsaKey);
+    var pubKey = build_jwk_private(pubKey);
+    
+    //* conains usage not "sign"
+    t = async_test("RSASSA import pkcs8 usages=[\"verify\",\"sign\"]");
+    import_test_fail(t, "pkcs8",privKey , alg256, true, ["verify","sign"], "SyntaxError" );
+
+    //* conains usage not "sign"
+    t = async_test("RSASSA import pkcs8 usages=[\"verify\"]");
+    import_test_fail(t, "pkcs8",privKey , alg256, true, ["verify"], "SyntaxError" );
+
+    //* private key structure does not parse  < bad structure, extra data>
+    //* Mismatch of hash algorithms w/ the private key data
+    //*  Does not work given that only rsaEncryption can be used
+    
+    //* Pass in hash not being a hash and rsaEncryption
+    t = async_test("RSASSA import pkcs8 hash='aes-gcm'");
+    import_test_fail(t, "pkcs8",privKey , {name: "RSASSA-PKCS1-v1_5", hash: "AES-GCM" }, true, ["sign"], "DataError" );
+    
+    
+    //* fail parsing RSA Private data structure <bad struture, extra data>
+    t = async_test("RSASSA import pkcs8 extra asn.1 byte");
+    var rgb = [privKey, new Uint8Array([0])];
+    import_test_fail(t, "pkcs8", rgb , alg256, true, ["sign"], "DataError" );
+    
+    //* empty usages
+    t = async_test("RSASSA import pkcs8 usage=[]");
+    import_test_fail(t, "pkcs8", privKey , alg256, true, [], "SyntaxError" );
+
+    //  Public key
+    t = async_test("RSASSA import pkcs8 public key structure");
+    import_test_fail(t, "pkcs8", pubKey , alg256, true, [], "DataError" );
 }
 
 function run_spki_import()
 {
+    var pubKey = build_jwk_private(pubKey);
+
+    //* conains usage not "sign"
+    t = async_test("RSASSA import spki usages=[\"verify\",\"sign\"]");
+    import_test_fail(t, "spki", pubKey , alg256, true, ["verify","sign"], "SyntaxError" );
+
+    //* conains usage not "sign"
+    t = async_test("RSASSA import spki usages=[\"sign\"]");
+    import_test_fail(t, "spki", pubKey , alg256, true, ["sign"], "SyntaxError" );
+
+//* spki that does not parse < bad structure, extra data>
+
+    //* spki for non rsa algorithm
+
+    //* fail parsing RSA public data structure <bad struture, extra data>
+    t = async_test("RSASSA import spki extra asn.1 byte");
+    var rgb = [pubKey, new Uint8Array([0])];
+    import_test_fail(t, "spki", rgb , alg256, true, ["verify"], "DataError" );
 }
 
 function run_test() {

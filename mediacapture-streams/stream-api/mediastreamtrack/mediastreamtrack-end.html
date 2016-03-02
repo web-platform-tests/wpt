@@ -4,7 +4,6 @@
 <title>Test that mediastreamtrack are properly ended</title>
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
 <link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#mediastreamtrack">
-<link rel='stylesheet' href='/resources/testharness.css' media='all'/>
 </head>
 <body>
 <p class="instructions">When prompted, accept to share your video and audio
@@ -12,7 +11,7 @@ stream, and then revoke that permission.</p>
 <h1 class="instructions">Description</h1>
 <p class="instructions">This test checks that the video and audio tracks of
 MediaStream object returned by the success callback in getUserMedia are
-correctly set into ended state when permission is revoked.</p>
+correctly set into inactive state when permission is revoked.</p>
 
 <div id='log'></div>
 <script src=/resources/testharness.js></script>

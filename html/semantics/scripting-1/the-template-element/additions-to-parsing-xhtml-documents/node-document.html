@@ -32,7 +32,7 @@ test(function() {
 
     assert_equals(template.ownerDocument, doc.body.ownerDocument,
             'Wrong template node owner document');
-    assert_equals(template.content.ownerDocument, doc,
+    assert_not_equals(template.content.ownerDocument, doc,
             'Wrong template content owner document');
 
 }, 'Parsing XHTML: Node\'s node document must be set to that of the element '

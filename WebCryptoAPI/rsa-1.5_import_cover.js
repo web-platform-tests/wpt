@@ -1,3 +1,4 @@
+
 var jwkPrivateDOnly = {
     alg:"RS256",
     d:"zfAYnuMaaUQZ-A0adLQcvmd6w_DHAfHQ4Str1_2Yd-mmkaOMVyGtwa_8s2Z1KSGfFaVBzv1XHP89udQfsajYFKXOcgEsB6ue_mw4CXBXZEqv0KwXHyV_HAqPOcmz6yO1IwLu7NKlMWKwsgbd1nGeR4m1cfn0ZngOw0qbIe9-BXGLNFBCe3e3K9VMArYZ_b44bWwgxr3fna-t0U0tZfJy58Wz8AwEHQop3zd5NFwiTUj-kdXuuDaoy_ZMCuEL_uYdsrF_uz6mzhjoPjf3wTw7DC0Q9ogPmgPbyRxCpu_d5pdu0jUDk7YkyzBYtAp1rHD0eHKYH0n84lllKRpkFFdupQ",
@@ -35,7 +36,7 @@ var rsaKey = {
         0xf7, 0x2e, 0x99, 0x35, 0xf2, 0x66, 0xa9, 0xf0, 0x57, 0x93, 0x20, 0x67, 0x53, 0x9f, 0xdc, 0x45,
         0xa2, 0x72, 0xd9, 0x7e, 0xbc, 0x8f, 0xe7, 0x97, 0x0b, 0x27, 0x8d, 0x31, 0x2b, 0xca, 0xae, 0x9d,
         0x9e, 0xad, 0x19, 0x6c, 0xb5, 0x60, 0x27, 0x57, 0x17, 0x2d, 0xfe, 0x37, 0xae, 0xb9, 0xe8, 0x39,
-        0x19, 0xd2, 0x84, 0x19, 0x3e, 0xd8, 0x86, 0x56, 0x31, 0x78, 0xaf, 0xba, 0x62, 0x2e, 0x94, 0xfe, 
+        0x19, 0xd2, 0x84, 0x19, 0x3e, 0xd8, 0x86, 0x56, 0x31, 0x78, 0xaf, 0xba, 0x62, 0x2e, 0x94, 0xfe,
                        0xbd]), // value of modulus
 
     e: new Uint8Array([0x01, 0x00, 0x01]), // public exponent - e
@@ -92,7 +93,7 @@ var rsaKey = {
                         0xa8, 0x5c, 0x61, 0xee, 0x73, 0x8c, 0x10, 0x6f, 0xe1, 0x58, 0x2c, 0xb0, 0xf6, 0xea, 0xd3, 0xa7,
                         0xa2, 0xca, 0x2d, 0xf0, 0x34, 0xd4, 0x9d, 0x3d, 0xe6, 0xc5, 0x33, 0x84, 0x4c, 0x0c, 0x67, 0x05,
                         0x4a, 0x9a, 0x67, 0x10, 0x75, 0xe7, 0x70, 0xe0, 0xce, 0x88, 0x0b, 0x9a, 0x09, 0x75, 0x0c, 0xa1]), // value of dq
-    
+
     qi: new Uint8Array([0x63, 0x53, 0xec, 0xd4, 0x61, 0xb1, 0x9a, 0x08, 0x66, 0xd8, 0x65, 0x1a, 0x75, 0x7f, 0x89, 0xa2,
                          0x0e, 0xaa, 0xb8, 0x4b, 0x0a, 0xd9, 0xdc, 0xda, 0xaa, 0x9b, 0x61, 0x54, 0xe0, 0xc4, 0x5a, 0x10,
                          0xab, 0x03, 0x0c, 0x47, 0x9b, 0x2a, 0xf5, 0x3b, 0x39, 0xdc, 0x11, 0x42, 0x7a, 0x65, 0x15, 0xa0,
@@ -138,7 +139,7 @@ function build_jwk_private(asnPrivateArray)
     key["dp"] = toBase64(rsaKey["dp"]);
     key["dq"] = toBase64(rsaKey["dq"]);
     key["qi"] = toBase64(rsaKey["qi"]);
-    
+
     key["key_ops"] = ["sign"];
     key["ext"] = true;
 
@@ -156,7 +157,7 @@ function build_asn_public(asnPrivateArray)
     key = key.concat(
         asn1_encode_bitstring(
             asn1_encode(0x30, [].concat(
-                asn1_encode_integer([rsaKey["n"]]), 
+                asn1_encode_integer([rsaKey["n"]]),
                 asn1_encode_integer([rsaKey["e"]])))));
 
     return asn1_to_fields(asn1_to_uint8(key));
@@ -211,7 +212,7 @@ function import_test(t, format, keyData, algorithm, extractable, keyUsages) {
             //
             //  Verify public fields match with what we imported
             //
-            
+
             assert_equals(newKey.algorithm.name, algorithm.name);
             assert_equals(newKey.algorithm.modulusLength, 2048);
             assert_array_equals(newKey.algorithm.publicExponent, new Uint8Array([1, 0, 1]));
@@ -223,12 +224,12 @@ function import_test(t, format, keyData, algorithm, extractable, keyUsages) {
                 if ('d' in keyData) assert_equals(newKey.type, "private");
                 else assert_equals(newKey.type, "public");
             }
-            
+
             assert_equals(newKey.extractable, extractable);
             assert_array_equals(newKey.usages, keyUsages);
 
             //  Try and export the key now
-            
+
             self.crypto.subtle.exportKey(format, newKey).then(
                 t.step_func(function(data) {
                     if (!extractable) assert_unreached("Export should have failed");
@@ -287,7 +288,7 @@ function run_test()
     var jwkKey;
     var jsonPublic = build_jwk_public(asnPrivate);
     var jsonPrivate = build_jwk_private(asnPrivate);
-    
+
     t = async_test("RSASSA Import: cover  jwk private-d only exportable none " + algArrayName[i]);
     import_test(t, "jwk", jwkPrivateDOnly, alg256, true, ["sign"] );
 
@@ -312,7 +313,7 @@ function run_test()
 
             t = async_test("RSASSA Import: cover  jwk public " + extractableNames[j] + " " + jwkAlgs[i] + " " + algArrayName[i]);
             import_test(t, "jwk", jwkKey, algArray[i], extractable[j], ["verify"] );
-            
+
             jwkKey = jsonPrivate;
             jwkKey["alg"] = jwkAlgs[i];
 
@@ -322,7 +323,7 @@ function run_test()
 
         var asnPublic = build_asn_public(rsaKey);
         var asnPrivate = build_asn_private(rsaKey);
-        
+
         for (i=1; i<5; i++) {
             asnPublic[2] = oid2Array[0];
             asn = asn1_to_uint8(asnPublic);
@@ -336,7 +337,7 @@ function run_test()
             t = async_test("RSASSA Import: cover  asn private " + extractableNames[j] + " " + oidNames[0] + " " + algArrayName[i]);
             import_test(t, "pkcs8", asn, algArray[i], extractable[j], ["sign"] );
         }
-            
+
         for (i=1; i<5; i++) {
             asnPublic[2] = oid2Array[i];
             asn = asn1_to_uint8(asnPublic);

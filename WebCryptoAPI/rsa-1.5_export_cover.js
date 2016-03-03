@@ -60,7 +60,6 @@ function check_pkcs8_key(key, asn1Data)
     assert_array_equals(asn1List[4], asnNull, "Parameters are NULL");
 }
 
-    
 function export_test(t, format, key)
 {
     self.crypto.subtle.exportKey(format, key).then(
@@ -79,7 +78,7 @@ function export_test(t, format, key)
             }
 
             //  We should be able to import what we just exported
-            
+
             self.crypto.subtle.importKey(format, keyData, key.algorithm, true, key.usages).then(
                 t.step_func(function(newKey) {
                     t.done();

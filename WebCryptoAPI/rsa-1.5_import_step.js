@@ -343,7 +343,7 @@ function run_pkcs8_import()
 {
     var privKey = build_jwk_private(rsaKey);
     var pubKey = build_jwk_private(pubKey);
-    
+
     //* conains usage not "sign"
     t = async_test("RSASSA import pkcs8 usages=[\"verify\",\"sign\"]");
     import_test_fail(t, "pkcs8",privKey , alg256, true, ["verify","sign"], "SyntaxError" );
@@ -355,17 +355,16 @@ function run_pkcs8_import()
     //* private key structure does not parse  < bad structure, extra data>
     //* Mismatch of hash algorithms w/ the private key data
     //*  Does not work given that only rsaEncryption can be used
-    
+
     //* Pass in hash not being a hash and rsaEncryption
     t = async_test("RSASSA import pkcs8 hash='aes-gcm'");
     import_test_fail(t, "pkcs8",privKey , {name: "RSASSA-PKCS1-v1_5", hash: "AES-GCM" }, true, ["sign"], "DataError" );
-    
-    
+
     //* fail parsing RSA Private data structure <bad struture, extra data>
     t = async_test("RSASSA import pkcs8 extra asn.1 byte");
     var rgb = [privKey, new Uint8Array([0])];
     import_test_fail(t, "pkcs8", rgb , alg256, true, ["sign"], "DataError" );
-    
+
     //* empty usages
     t = async_test("RSASSA import pkcs8 usage=[]");
     import_test_fail(t, "pkcs8", privKey , alg256, true, [], "SyntaxError" );

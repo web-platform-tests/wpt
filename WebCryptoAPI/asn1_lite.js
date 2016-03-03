@@ -56,7 +56,7 @@ function asn1_to_uint8(dataArray)
 {
     var c = 0;
     var item;
-    
+
     dataArray.forEach(function(item) { c += item.length; });
 
     var asn = new Uint8Array(c);

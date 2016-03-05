@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+<title>getUserMedia: test that getUserMedia is present (with or without vendor prefix)</title>
+<link rel="author" title="Dr Alex Gouaillard" href="mailto:agouaillard@gmail.com"/>
+<link rel="help" href="https://www.w3.org/TR/mediacapture-streams/#mediadevices-interface-extensions">
+<meta name='assert' content='Check that the mediaDevices.getUserMedia() method is present.'/>
+<meta name='flags' content='dom'/>
+<link rel='stylesheet' href='/resources/testharness.css' media='all'/>
+</head>
+<body>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks for the presence of the
+<code>navigator.mediaDevices.getUserMedia</code> method.</p>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+test(function () {
+          assert_true(undefined !== navigator.mediaDevices.getUserMedia, "navigator.mediaDevices.getUserMedia exists");
+      }, "mediaDevices.getUserMedia() is present on navigator");
+</script>
+</body>
+</html>

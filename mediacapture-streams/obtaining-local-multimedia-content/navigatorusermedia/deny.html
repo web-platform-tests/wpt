@@ -26,8 +26,22 @@ t.step(function() {
     t.done();
   }),
   t.step_func(function (error) {
-    assert_equals(error.name, "SecurityError", "SecurityError returned");
-    assert_equals(error.constraintName, null, "constraintName attribute not set for permission denied");
+    // NOTE ALEX: last call specs and editor specs differ here:
+    // editor draft, 2016: https://w3c.github.io/mediacapture-main/getusermedia.html
+    // assert_equals(error.name, "securityError", "securityError returned");
+    // last call working draft, 2016: https://www.w3.org/TR/mediacapture-streams/
+    // assert_equals(error.name, "PermissionDeniedError", "PermissionDeniedError returned");
+    if(error.name != "SecurityError" &&          // FF
+       error.name != "PermissionDeniedError") {  // all others
+      assert_unreached("Error type is neither securityError or PermissionDeniedError.");
+      t.done();
+    };
+    // NOTE ALEX: this is also nullable, but practically, all the browsers but FF set it to an empty string.
+    // assert_equals(error.constraintName, "", "constraintName attribute not set for permission denied");
+    if(error.constraintName != "" &&
+       error.constraintName != undefined) {
+      assert_unreached("constraintName attribute not set for permission denied");
+    };
     t.done();
   }));
 });

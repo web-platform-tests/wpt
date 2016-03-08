@@ -13,14 +13,14 @@ test(function(){
 test(function(){
     var track = document.createElement('track');
     track.setAttribute('src', '');
-    assert_equals(track.src, '');
+    assert_equals(track.src, document.URL);
     assert_equals(track.getAttribute('src'), '');
 }, document.title + ' empty string in content attribute');
 
 test(function(){
     var track = document.createElement('track');
     track.src = '';
-    assert_equals(track.src, '');
+    assert_equals(track.src, document.URL);
     assert_equals(track.getAttribute('src'), '');
 }, document.title + ' empty string in IDL attribute');
 
@@ -44,7 +44,7 @@ test(function(){
     var track = document.createElement('track');
     track.setAttribute('src', '\u0000');
     var link = document.createElement('a');
-    link.setAttribute('href', '%00');
+    link.setAttribute('href', '');
     assert_equals(track.src, link.href);
     assert_equals(track.getAttribute('src'), '\u0000');
 }, document.title + ' \\u0000 in content attribute');
@@ -69,7 +69,7 @@ test(function(){
     var track = document.createElement('track');
     track.src = '\u0000';
     var link = document.createElement('a');
-    link.setAttribute('href', '%00');
+    link.setAttribute('href', '');
     assert_equals(track.src, link.href);
     assert_equals(track.getAttribute('src'), '\u0000');
 }, document.title + ' assigning \\u0000 to IDL attribute');

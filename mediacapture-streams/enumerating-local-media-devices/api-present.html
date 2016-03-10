@@ -28,7 +28,7 @@ test(function () {
       assert_true(undefined !== mediainfo.label,    "mediaInfo's label    should exist.");
       assert_true(undefined !== mediainfo.groupId,  "mediaInfo's groupId  should exist.");
       // TODO the values of some of those fields should be empty string by default is no permission has been requested.
-      if( mediainfo.kind == "audioinput" || 
+      if( mediainfo.kind == "audioinput" ||
           mediainfo.kind == "videoinput") {
         // NOTE ALEX: looks like nobody has implemented that. How can I make a separate test,
         // ...        to have better granularity?
@@ -36,11 +36,11 @@ test(function () {
         // var cap = mediainfo.getcapabilities();
       } else if ( mediainfo.kind !== "audiooutput" ) {
         assert_unreached("mediainfo.kind should be one of 'audioinput', 'videoinput', or 'audiooutput'.")
-      }       
+      }
     }
   })
   p.catch(function(err){
-    assert_unreached("A call to enumerateDevices() should never fail."); 
+    assert_unreached("A call to enumerateDevices() should never fail.");
   });
 }, "mediaDevices.enumerateDevices() is present and working on navigator");
 </script>

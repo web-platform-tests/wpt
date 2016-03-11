@@ -44,19 +44,32 @@ function checkRequest(request, ExpectedValuesDict) {
   }
 }
 
+// Taken from https://developers.google.com
+function stringToArrayBuffer(str) {
+  var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+  var bufView = new Uint16Array(buf);
+  for (var i=0, strLen=str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
+}
+
 //check reader's text content in an asyncronous test
-function readTextStream(reader, asyncTest, expectedValue, retrievedText) {
-  if (!retrievedText)
-    retrievedText = "";
+function readTextStream(reader, asyncTest, expectedValue, retrievedArrayBuffer) {
   reader.read().then(function(data) {
     if (!data.done) {
-      var decoder = new TextDecoder();
-      retrievedText += decoder.decode(data.value);
-      readTextStream(reader, asyncTest, expectedValue, retrievedText);
+      var newBuffer;
+      if (retrievedArrayBuffer) {
+        newBuffer =  new ArrayBuffer(data.value.length + retrievedArrayBuffer.length);
+        newBuffer.set(retrievedArrayBuffer, 0);
+        newBuffer.set(data.value, retrievedArrayBuffer.length);
+      } else
+        newBuffer = data.value;
+      readTextStream(reader, asyncTest, expectedValue, newBuffer);
       return;
     }
     asyncTest.step(function() {
-      assert_equals(retrievedText, expectedValue, "Retrieve and verify stream");
+      assert_array_equals(retrievedArrayBuffer, stringToArrayBuffer(expectedValue), "Retrieve and verify stream");
       asyncTest.done();
     });
   }).catch(function(e) {

@@ -78,7 +78,7 @@
 
     function checkResponseWithEmptyBody(bodyType, body, asText) {
       promise_test(function(test) {
-        var response = new Response("", {"method": "POST", "body" : body});
+        var response = new Response(body);
         assert_false(response.bodyUsed, "bodyUsed is false at init");
         if (asText) {
           return response.text().then(function(bodyAsString) {

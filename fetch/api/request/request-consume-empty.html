@@ -76,28 +76,28 @@
     checkRequestWithNoBody("json", checkBodyJSON);
     checkRequestWithNoBody("formData", checkBodyFormData);
 
-    function checkResponseWithEmptyBody(bodyType, body, asText) {
+    function checkRequestWithEmptyBody(bodyType, body, asText) {
       promise_test(function(test) {
-        var response = new Response("", {"method": "POST", "body" : body});
-        assert_false(response.bodyUsed, "bodyUsed is false at init");
+        var request = new Request("", {"method": "POST", "body" : body});
+        assert_false(request.bodyUsed, "bodyUsed is false at init");
         if (asText) {
-          return response.text().then(function(bodyAsString) {
+          return request.text().then(function(bodyAsString) {
             assert_equals(bodyAsString.length, 0, "Resolved value should be empty");
-            assert_true(response.bodyUsed, "bodyUsed is true after being consumed");
+            assert_true(request.bodyUsed, "bodyUsed is true after being consumed");
           });
         }
-        return response.arrayBuffer().then(function(bodyAsArrayBuffer) {
+        return request.arrayBuffer().then(function(bodyAsArrayBuffer) {
           assert_equals(bodyAsArrayBuffer.byteLength, 0, "Resolved value should be empty");
-          assert_true(response.bodyUsed, "bodyUsed is true after being consumed");
+          assert_true(request.bodyUsed, "bodyUsed is true after being consumed");
         });
-      }, "Consume empty " + bodyType + " response body as " + (asText ? "text" : "arrayBuffer"));
+      }, "Consume empty " + bodyType + " request body as " + (asText ? "text" : "arrayBuffer"));
     }
 
     // FIXME: Add BufferSource, FormData and URLSearchParams.
-    checkResponseWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), false);
-    checkResponseWithEmptyBody("text", "", false);
-    checkResponseWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), true);
-    checkResponseWithEmptyBody("text", "", true);
+    checkRequestWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), false);
+    checkRequestWithEmptyBody("text", "", false);
+    checkRequestWithEmptyBody("blob", new Blob([], { "type" : "text/plain" }), true);
+    checkRequestWithEmptyBody("text", "", true);
     </script>
   </body>
 </html>

@@ -40,7 +40,7 @@
 
     function checkBodyArrayBuffer(response, expectedBody) {
       return response.arrayBuffer().then( function(bodyAsArrayBuffer) {
-        assert_array_equals(bodyAsArrayBuffer, stringToArrayBuffer(expectedBody), "Retrieve and verify response's body");
+        validateBufferFromString(bodyAsArrayBuffer, expectedBody, "Retrieve and verify response's body");
         assert_true(response.bodyUsed, "body as arrayBuffer: bodyUsed turned true");
       });
     }

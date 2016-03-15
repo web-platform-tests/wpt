@@ -44,19 +44,20 @@ function checkRequest(request, ExpectedValuesDict) {
   }
 }
 
-// Taken from https://developers.google.com
-function stringToArrayBuffer(str) {
-  var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-  var bufView = new Uint16Array(buf);
-  for (var i=0, strLen=str.length; i < strLen; i++) {
-    bufView[i] = str.charCodeAt(i);
-  }
-  return buf;
+function stringToArray(str) {
+  var array = new Uint8Array(str.length);
+  for (var i=0, strLen = str.length; i < strLen; i++)
+    array[i] = str.charCodeAt(i);
+  return array;
 }
 
-//check reader's text content in an asyncronous test
-function readTextStream(reader, asyncTest, expectedValue, retrievedArrayBuffer) {
-  reader.read().then(function(data) {
+function validateBufferFromString(buffer, expectedValue, message)
+{
+  return assert_array_equals(new Uint8Array(buffer), stringToArray(expectedValue), message);
+}
+
+function validateStreamFromString(reader, expectedValue, retrievedArrayBuffer) {
+  return reader.read().then(function(data) {
     if (!data.done) {
       var newBuffer;
       if (retrievedArrayBuffer) {
@@ -66,17 +67,8 @@ function readTextStream(reader, asyncTest, expectedValue, retrievedArrayBuffer) 
       } else {
         newBuffer = data.value;
       }
-      readTextStream(reader, asyncTest, expectedValue, newBuffer);
-      return;
+      return validateStreamFromString(reader, expectedValue, newBuffer);
     }
-    asyncTest.step(function() {
-      assert_array_equals(retrievedArrayBuffer, stringToArrayBuffer(expectedValue), "Retrieve and verify stream");
-      asyncTest.done();
-    });
-  }).catch(function(e) {
-    asyncTest.step(function() {
-      assert_unreached("Cannot read stream " + e);
-      asyncTest.done();
-    });
+    validateBufferFromString(retrievedArrayBuffer, expectedValue, "Retrieve and verify stream");
   });
 }

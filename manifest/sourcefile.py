@@ -296,7 +296,7 @@ class SourceFile(object):
             rv = [TestharnessTest(self, self.url[:-3])]
 
         elif self.name_is_webdriver:
-            rv = [WebdriverSpecTest(self)]
+            rv = [WebdriverSpecTest(self, self.url)]
 
         elif self.content_is_testharness:
             rv = []

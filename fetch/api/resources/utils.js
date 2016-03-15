@@ -63,8 +63,9 @@ function readTextStream(reader, asyncTest, expectedValue, retrievedArrayBuffer) 
         newBuffer =  new ArrayBuffer(data.value.length + retrievedArrayBuffer.length);
         newBuffer.set(retrievedArrayBuffer, 0);
         newBuffer.set(data.value, retrievedArrayBuffer.length);
-      } else
+      } else {
         newBuffer = data.value;
+      }
       readTextStream(reader, asyncTest, expectedValue, newBuffer);
       return;
     }

@@ -12,7 +12,7 @@
   <body>
     <script>
     function checkBodyText(response) {
-      return response.text().then( function(bodyAsText) {
+      return response.text().then(function(bodyAsText) {
         assert_equals(bodyAsText, "", "Resolved value should be empty");
         assert_false(response.bodyUsed);
       });
@@ -20,7 +20,7 @@
 
     function checkBodyBlob(response) {
       return response.blob().then(function(bodyAsBlob) {
-        var promise = new Promise(function (resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
           var reader = new FileReader();
           reader.onload = function(evt) {
             resolve(reader.result)
@@ -38,7 +38,7 @@
     }
 
     function checkBodyArrayBuffer(response) {
-      return response.arrayBuffer().then( function(bodyAsArrayBuffer) {
+      return response.arrayBuffer().then(function(bodyAsArrayBuffer) {
         assert_equals(bodyAsArrayBuffer.byteLength, 0, "Resolved value should be empty");
         assert_false(response.bodyUsed);
       });

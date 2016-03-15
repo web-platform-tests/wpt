@@ -186,12 +186,6 @@ class Stub(URLManifestItem):
 class WebdriverSpecTest(ManifestItem):
     item_type = "wdspec"
 
-    @property
-    def id(self):
-        return self.path
-
-    @classmethod
-    def from_json(cls, manifest, tests_root, obj, source_files=None):
-        source_file = get_source_file(source_files, tests_root, manifest,
-                                      to_os_path(obj["path"]))
-        return cls(source_file, manifest=manifest)
+    def __init__(self, source_file, url, url_base="/", timeout=None, manifest=None):
+        URLManifestItem.__init__(self, source_file, url, url_base=url_base, manifest=manifest)
+        self.timeout = timeout

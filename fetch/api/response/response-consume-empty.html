@@ -46,10 +46,10 @@
 
     function checkBodyJSON(response) {
       return response.json().then(
-        (bodyAsJSON) => {
+        function(bodyAsJSON) {
           assert_unreached("JSON parsing should fail");
         },
-        () => {
+        function() {
           assert_false(response.bodyUsed);
         });
     }

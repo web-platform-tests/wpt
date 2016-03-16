@@ -180,6 +180,7 @@ interface Node : EventTarget {
   readonly attribute DOMString? baseURI;
 
   readonly attribute Document? ownerDocument;
+  readonly attribute Node rootNode;
   readonly attribute Node? parentNode;
   readonly attribute Element? parentElement;
   boolean hasChildNodes();

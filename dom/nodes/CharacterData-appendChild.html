@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Node.appendChild applied to CharacterData</title>
+<link rel=help href="https://dom.spec.whatwg.org/#dom-node-appendchild">
+<link rel=help href="https://dom.spec.whatwg.org/#introduction-to-the-dom">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+function testNode(create, type) {
+  test(function() {
+    var chardata = create();
+    assert_equals(node.data, "test")
+    var duplicate = create();
+    assert_throws("HierarchyRequestError", function () {
+      chardata.appendChild(duplicate);
+    }, "CharacterData type " + type + " must not have children");
+  }, type + ".appendChild(" + type + ") must fail");
+}
+
+testNode(function() { return document.createTextNode("test") }, "Text");
+testNode(function() { return document.createComment("test") }, "Comment");
+testNode(function() { return document.createProcessingInstruction("target", "test"); }, "ProcessingInstruction");
+</script>

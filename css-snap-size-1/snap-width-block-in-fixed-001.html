@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>CSS Snap Size: snap-width</title>
 <link rel="help" href="https://drafts.csswg.org/css-snap-size/#snap-width">
-<link rel="match" href="reference/snap-width-block-001.html">
+<link rel="match" href="reference/snap-width--001.html">
 <meta name="assert" content="This test asserts the snap-width property rounds down the box width.">
 <meta name="flags" content="ahem">
 <link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
@@ -27,11 +27,6 @@
   text-align: right;
   width: 20.5em;
 }
-.content {
-  display: block;
-  height: 1em;
-  background-color: black;
-}
 .ref {
   white-space: pre; /* make sure the line does not wrap */
   width: 20em;
@@ -42,22 +37,22 @@
   including how they look, widths, and horizontal positions.
 
 <div class="container">
-  <div class="test"><div class="content"></div></div>
-  <div class="ref"><div class="content"></div></div>
+  <div class="test"><div>XXXXXXXXXX XXXXXXXXX</div></div>
+  <div class="ref"><div>XXXXXXXXXX XXXXXXXXX</div></div>
 </div>
 
 <div class="border container">
-  <div class="test"><div class="content"></div></div>
-  <div class="ref"><div class="content"></div></div>
+  <div class="test"><div>XXXXXXXXXX XXXXXXXXX</div></div>
+  <div class="ref"><div>XXXXXXXXXX XXXXXXXXX</div></div>
 </div>
 
 <div class="padding container">
-  <div class="test"><div class="content"></div></div>
-  <div class="ref"><div class="content"></div></div>
+  <div class="test"><div>XXXXXXXXXX XXXXXXXXX</div></div>
+  <div class="ref"><div>XXXXXXXXXX XXXXXXXXX</div></div>
 </div>
 
 <div class="border padding container">
-  <div class="test"><div class="content"></div></div>
-  <div class="ref"><div class="content"></div></div>
+  <div class="test"><div>XXXXXXXXXX XXXXXXXXX</div></div>
+  <div class="ref"><div>XXXXXXXXXX XXXXXXXXX</div></div>
 </div>
 </body>

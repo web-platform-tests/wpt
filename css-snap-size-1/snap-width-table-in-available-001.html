@@ -29,6 +29,8 @@
   snap-width: 1em;
   text-align: right;
 }
+table { border-spacing: 0; }
+td { padding: 0; }
 .ref {
   white-space: pre; /* make sure the line does not wrap */
   width: 20em;
@@ -39,22 +41,22 @@
   including how they look, widths, and horizontal positions.
 
 <div class="container">
-  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
-  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+  <div class="test"><table width="100%"><tr><td>XXXXXXXXXX XXXXXXXXX</td></tr></table></div>
+  <div class="ref"><table width="100%"><tr><td>XXXXXXXXXX XXXXXXXXX</td></tr></table></div>
 </div>
 
 <div class="border container">
-  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
-  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+  <div class="test"><table width="100%"><tr><td>XXXXXXXXXX XXXXXXXXX</td></tr></table></div>
+  <div class="ref"><table width="100%"><tr><td>XXXXXXXXXX XXXXXXXXX</td></tr></table></div>
 </div>
 
 <div class="padding container">
-  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
-  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+  <div class="test"><table width="100%"><tr><td>XXXXXXXXXX XXXXXXXXX</td></tr></table></div>
+  <div class="ref"><table width="100%"><tr><td>XXXXXXXXXX XXXXXXXXX</td></tr></table></div>
 </div>
 
 <div class="border padding container">
-  <div class="test">XXXXXXXXXX XXXXXXXXX</div>
-  <div class="ref">XXXXXXXXXX XXXXXXXXX</div>
+  <div class="test"><table width="100%"><tr><td>XXXXXXXXXX XXXXXXXXX</td></tr></table></div>
+  <div class="ref"><table width="100%"><tr><td>XXXXXXXXXX XXXXXXXXX</td></tr></table></div>
 </div>
 </body>

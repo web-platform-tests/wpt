@@ -7,7 +7,7 @@
 <meta name="flags" content="ahem">
 <% } %><link rel="author" title="Koji Ishii" href="kojiishi@gmail.com">
 <%
-var styles = "", contentHTML = "";
+var styles = "";
 if (!isReference) {
   switch (widthType) {
   case "available":
@@ -20,32 +20,44 @@ if (!isReference) {
   text-align: right;
 }`;
     break;
-  case "fixed": styles = `
+  case "fixed":
+    styles = `
 .test {
   snap-width: 1em;
   text-align: right;
   width: 20.5em;
-}`; break;
-  case "max": styles = `
+}`;
+    break;
+  case "max":
+    styles = `
 .test {
   snap-width: 1em;
   text-align: right;
   max-width: 20.5em;
-}`; break;
+}`;
+    break;
+  default:
+    console.assert(false, "Unknown widthType:", widthType);
   }
 }
-switch (contentType) {
-case "block":
-  contentHTML= `<div class="content"></div>`;
-  styles += `
-.content {
-  display: block;
-  height: 1em;
-  background-color: black;
-}`;
-  break;
-default:
-  contentHTML = "XXXXXXXXXX XXXXXXXXX";
+
+var contentHTML = "XXXXXXXXXX XXXXXXXXX";
+for (var contentType of contentTypes) {
+  switch (contentType) {
+  case "block":
+    contentHTML= `<div>${contentHTML}</div>`;
+    break;
+  case "table":
+    contentHTML= `<table width="100%"><tr><td>${contentHTML}</td></tr></table>`;
+    styles += `
+table { border-spacing: 0; }
+td { padding: 0; }`;
+    break;
+  case "inline":
+    break;
+  default:
+    console.assert(false, "Unknown contentType:", contentType);
+  }
 }
 %><style>
 .container {
@@ -72,7 +84,7 @@ default:
 <body>
 <p class="instructions">Test passes if each pair of boxes are the same,
   including how they look, widths, and horizontal positions.
-<% [ [], ["border"], ["padding"], ["border", "padding"]].forEach(function (containerClassList) {
+<% [[], ["border"], ["padding"], ["border", "padding"]].forEach(function (containerClassList) {
     containerClassList.push("container");
 %>
 <div class="<%= containerClassList.join(" ") %>">

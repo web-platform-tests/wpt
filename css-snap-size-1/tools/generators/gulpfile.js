@@ -14,17 +14,17 @@ gulp.task("default", [
 ]);
 
 var snapWidthFiles = [];
-["inline", "block"].forEach(content => {
-  ["available", "fixed", "max"].forEach(width => {
+[["inline"], ["block"], ["table"]].forEach(contentTypes => {
+  ["available", "fixed", "max"].forEach(widthType => {
     snapWidthFiles.push({
-      name: "snap-width-" + content + "-in-" + width + "-001",
-      contentType: content,
-      widthType: width,
+      name: "snap-width-" + contentTypes.join("-") + "-in-" + widthType + "-001",
+      contentTypes: contentTypes,
+      widthType: widthType,
     });
   });
   snapWidthFiles.push({
-    name: "snap-width-" + content + "-001",
-    contentType: content,
+    name: "snap-width-" + contentTypes.join("-") + "-001",
+    contentTypes: contentTypes,
     isReference: true,
   });
 });

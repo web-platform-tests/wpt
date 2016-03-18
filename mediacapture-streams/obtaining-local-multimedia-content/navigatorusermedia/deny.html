@@ -5,7 +5,6 @@
 <link rel="author" title="Dominique Hazael-Massieux" href="mailto:dom@w3.org"/>
 <link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#error-names">
 <link rel="help" href="http://w3c.github.io/mediacapture-main/getusermedia.html#idl-def-MediaStreamError">
-<link rel='stylesheet' href='/resources/testharness.css' media='all'/>
 </head>
 <body>
 <p class="instructions">When prompted, <strong>please deny</strong> access to
@@ -27,11 +26,7 @@ t.step(function() {
   }),
   t.step_func(function (error) {
     assert_equals(error.name, "securityError", "securityError returned");
-    // NOTE ALEX: this is also nullable, but practically, all the browsers but FF set it to an empty string.
-    // assert_equals(error.constraintName, "", "constraintName attribute not set for permission denied");
-    if(error.constraintName != "" &&
-       error.constraintName != undefined) {
-      assert_unreached("constraintName attribute not set for permission denied");
+    assert_equals(error.constraintName, undefined, "constraintName attribute not set for permission denied");
     };
     t.done();
   }));

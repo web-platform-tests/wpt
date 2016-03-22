@@ -1,6 +1,6 @@
 import json
 import os
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from item import item_types, ManualTest, WebdriverSpecTest, Stub, RefTest, TestharnessTest
 from log import get_logger
@@ -208,8 +208,9 @@ class Manifest(object):
             for item_type, items in self._data.iteritems()
         }
 
-        reftest_nodes = {from_os_path(key): [v.to_json() for v in value]
-                         for key, value in self.reftest_nodes.iteritems()}
+        reftest_nodes = OrderedDict()
+        for key, value in sorted(self.reftest_nodes.items()):
+            reftest_nodes[from_os_path(key)] = [v.to_json() for v in value]
 
         rv = {"url_base": self.url_base,
               "rev": self.rev,

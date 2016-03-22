@@ -8,7 +8,7 @@ from cStringIO import StringIO
 
 
 def resolve_content(response):
-    rv = "".join(item for item in response.iter_content())
+    rv = "".join(item for item in response.iter_content(read_file=True))
     if type(rv) == unicode:
         rv = rv.encode(response.encoding)
     return rv

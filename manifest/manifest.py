@@ -8,7 +8,7 @@ from sourcefile import SourceFile
 from utils import from_os_path, to_os_path
 
 
-CURRENT_VERSION = 2
+CURRENT_VERSION = 3
 
 
 class ManifestError(Exception):

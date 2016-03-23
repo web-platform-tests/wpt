@@ -20,16 +20,18 @@ when user denies access to the video stream.</p>
 <script>
 var t = async_test("Tests that the error callback is triggered when permission is denied", {timeout:10000});
 t.step(function() {
-  navigator.getUserMedia({video: true}, t.step_func(function (stream) {
-    assert_unreached("The success callback should not be triggered since access is to be denied");
-    t.done();
-  }),
-  t.step_func(function (error) {
-    assert_equals(error.name, "securityError", "securityError returned");
-    assert_equals(error.constraintName, undefined, "constraintName attribute not set for permission denied");
-    };
-    t.done();
-  }));
+  navigator.getUserMedia(
+    {video: true},
+    t.step_func(function (stream) {
+      assert_unreached("The success callback should not be triggered since access is to be denied");
+      t.done();
+    }),
+    t.step_func(function (error) {
+      assert_equals(error.name, "securityError", "securityError returned");
+      assert_equals(error.constraintName, undefined, "constraintName attribute not set for permission denied");
+      t.done();
+    })
+  );
 });
 </script>
 </body>

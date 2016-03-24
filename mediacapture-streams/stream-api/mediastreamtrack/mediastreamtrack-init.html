@@ -25,15 +25,13 @@ object returned by the success callback in getUserMedia is correctly initialized
 var t = async_test("Tests that the video MediaStreamTrack objects are properly initialized", {timeout:10000});
 var track = null
 var idl_array = new IdlArray();
+
 idl_array.add_idls("interface EventTarget {\
   void addEventListener(DOMString type, EventListener? callback, optional boolean capture = false);\
   void removeEventListener(DOMString type, EventListener? callback, optional boolean capture = false);\
   boolean dispatchEvent(Event event);\
 };");
 
-/*idl_array.add_idls("callback interface EventListener {\
-  void handleEvent(Event event);\
-};");*/
 idl_array.add_idls("interface MediaStreamTrack : EventTarget {\
     readonly    attribute DOMString             kind;\
     readonly    attribute DOMString             id;\
@@ -45,16 +43,14 @@ idl_array.add_idls("interface MediaStreamTrack : EventTarget {\
     readonly    attribute boolean               _readonly;\
     readonly    attribute boolean               remote;\
     readonly    attribute MediaStreamTrackState readyState;\
-                attribute EventHandler          onstarted;\
                 attribute EventHandler          onended;\
-    static sequence<SourceInfo>                    getSourceInfos ();\
-    MediaTrackConstraints?                         constraints ();\
-    MediaSourceStates                              states ();\
-    (AllVideoCapabilities or AllAudioCapabilities) capabilities ();\
-    void                                           applyConstraints (MediaTrackConstraints constraints);\
                 attribute EventHandler          onoverconstrained;\
-    MediaStreamTrack                               clone ();\
-    void                                           stop ();\
+    MediaStreamTrack       clone ();\
+    void                   stop ();\
+    MediaTrackCapabilities getCapabilities ();\
+    MediaTrackConstraints  getConstraints ();\
+    MediaTrackSettings     getSettings ();\
+    Promise<void>          applyConstraints (optional MediaTrackConstraints constraints);\
 };");
 
 t.step(function () {
@@ -62,12 +58,13 @@ t.step(function () {
     var videoTracks = stream.getVideoTracks();
     assert_equals(videoTracks.length, 1, "There is exactly one video track in the media stream");
     track = videoTracks[0];
-    assert_equals(track.readyState, "live", "The track object is in live state");
-    assert_equals(track.kind, "video", "The track object is of video kind");
-    assert_true(track.enabled, "The track object is enabed"); // Not clear that this is required by the spec, see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22212
     idl_array.add_objects({MediaStreamTrack: ["track"]});
     idl_array.test();
-
+    assert_equals(track.readyState, "live", "The track object is in live state");
+    assert_equals(track.kind, "video", "The track object is of video kind");
+    // Not clear that this is required by the spec,
+    // see https://www.w3.org/Bugs/Public/show_bug.cgi?id=22212
+    assert_true(track.enabled, "The track object is enabed");
     t.done();
   }), function (error) {});
 });

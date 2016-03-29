@@ -10,6 +10,7 @@ import os
 import json
 import optparse
 import shutil
+from collections import defaultdict
 from apiclient import apiclient
 from w3ctestlib import Sources, Utils, Suite, Indexer
 from mercurial import ui
@@ -119,7 +120,7 @@ class Builder(object):
             return
 
         self.ui.note("Scanning directory: ", dir, "\n")
-        suiteFileNames = {}
+        suiteFileNames = defaultdict(set)
         for fileName in Utils.listfiles(dir):
             filePath = os.path.join(dir, fileName)
             if (self.sourceTree.isTestCase(filePath)):
@@ -138,8 +139,6 @@ class Builder(object):
                                                 for formatName in formats:
                                                     if (((formatName) in self.formatData) and
                                                         (self.formatData[formatName].get('mime_type') == source.mimetype)):
-                                                        if (testSuiteName not in suiteFileNames):
-                                                            suiteFileNames[testSuiteName] = set()
                                                         suiteFileNames[testSuiteName].add(fileName)
                                                         break
                                                 else:
@@ -245,7 +244,7 @@ class Builder(object):
         else:
             self.buildSuiteNames = [testSuiteName for testSuiteName in self.testSuiteData if self.testSuiteData[testSuiteName].get('build')]
 
-        self.buildSpecNames = {}
+        self.buildSpecNames = defaultdict(list)
         if (self.buildSuiteNames):
             self.specificationData = self._loadShepherdData('specifications', 'specification', anchors = True, draft = True)
             if (not self.specificationData):
@@ -256,10 +255,7 @@ class Builder(object):
                 if (specNames):
                     for specName in specNames:
                         if (specName in self.specificationData):
-                            if (specName in self.buildSpecNames):
-                                self.buildSpecNames[specName].append(testSuiteName)
-                            else:
-                                self.buildSpecNames[specName] = [testSuiteName]
+                            self.buildSpecNames[specName].append(testSuiteName)
                         else:
                             self.ui.warn("WARNING: Test suite '", testSuiteName, "' references unknown specification: '", specName, "'.\n")
                 else:

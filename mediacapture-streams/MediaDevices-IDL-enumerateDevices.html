@@ -48,8 +48,6 @@ test(function(){
         if( list.length > 0 ) {
           _mediaInfo = list[0];
           MDI_idl.add_objects({MediaDeviceInfo: ["_mediaInfo"]});
-        } else {
-          assert_unreached("enumerateDevice exists, but returns an empty list. No devices? MediaDeviceInfo not tested.");
         }
         for(let media of list) {
           if( media.kind == "audioinput" ||

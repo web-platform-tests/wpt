@@ -14,7 +14,7 @@ from .base import (Protocol,
                    RefTestImplementation,
                    TestharnessExecutor,
                    strip_server)
-import webdriver
+from .. import webdriver
 from ..testrunner import Stop
 
 here = os.path.join(os.path.split(__file__)[0])
@@ -34,10 +34,11 @@ class ServoWebDriverProtocol(Protocol):
         """Connect to browser via WebDriver."""
         self.runner = runner
 
+        url = "http://%s:%d" % (self.host, self.port)
         session_started = False
         try:
-            self.session = webdriver.Session(self.host, self.port,
-                                             extension=webdriver.ServoExtensions)
+            self.session = webdriver.client.Session(
+                self.host, self.port, extension=webdriver.client.ServoExtensions)
             self.session.start()
         except:
             self.logger.warning(
@@ -62,7 +63,7 @@ class ServoWebDriverProtocol(Protocol):
     def is_alive(self):
         try:
             # Get a simple property over the connection
-            self.session.handle
+            self.session.window_handle
         # TODO what exception?
         except Exception:
             return False
@@ -75,7 +76,7 @@ class ServoWebDriverProtocol(Protocol):
         while True:
             try:
                 self.session.execute_async_script("")
-            except webdriver.TimeoutException:
+            except webdriver.client.TimeoutException:
                 pass
             except (socket.timeout, IOError):
                 break
@@ -112,7 +113,7 @@ class ServoWebDriverRun(object):
     def _run(self):
         try:
             self.result = True, self.func(self.session, self.url, self.timeout)
-        except webdriver.TimeoutException:
+        except webdriver.client.TimeoutException:
             self.result = False, ("EXTERNAL-TIMEOUT", None)
         except (socket.timeout, IOError):
             self.result = False, ("CRASH", None)

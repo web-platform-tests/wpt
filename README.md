@@ -28,7 +28,7 @@ as it is picked up as a submodule to
 [wpt-tools](https://github.com/w3c/wpt-tools)
 that is checked out in `./tools`.
 
-# Usage
+## Usage
 
 ```py
 import webdriver
@@ -42,7 +42,7 @@ print "The current URL is %s" % session.url
 session.end()
 ```
 
-# Dependencies
+## Dependencies
 
 This client has the benefit of only using standard library dependencies.
 No external PyPI dependencies are needed.

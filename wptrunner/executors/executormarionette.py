@@ -63,7 +63,9 @@ class MarionetteProtocol(Protocol):
         Protocol.setup(self, runner)
 
         self.logger.debug("Connecting to Marionette on port %i" % self.marionette_port)
-        self.marionette = marionette.Marionette(host='localhost', port=self.marionette_port)
+        self.marionette = marionette.Marionette(host='localhost',
+                                                port=self.marionette_port,
+                                                socket_timeout=None)
 
         # XXX Move this timeout somewhere
         self.logger.debug("Waiting for Marionette connection")
@@ -134,12 +136,18 @@ class MarionetteProtocol(Protocol):
             "document.title = '%s'" % threading.current_thread().name.replace("'", '"'))
 
     def wait(self):
+        socket_timeout = self.marionette.client.sock.gettimeout()
+        if socket_timeout:
+            self.marionette.set_script_timeout((socket_timeout / 2) * 1000)
+
         while True:
             try:
-                self.marionette.execute_async_script("");
+                self.marionette.execute_async_script("")
             except errors.ScriptTimeoutException:
+                self.logger.debug("Script timed out")
                 pass
             except (socket.timeout, IOError):
+                self.logger.debug("Socket closed")
                 break
             except Exception as e:
                 self.logger.error(traceback.format_exc(e))

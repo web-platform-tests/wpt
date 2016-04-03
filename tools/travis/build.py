@@ -87,15 +87,8 @@ def setup_virtualenv():
     subprocess.check_call(["pip", "-q", "install", "mercurial"])
     subprocess.check_call(["pip", "-q", "install", "html5lib"])
     subprocess.check_call(["pip", "-q", "install", "lxml"])
+    subprocess.check_call(["pip", "-q", "install", "Template-Python"])
 
-
-def update_template():
-    svn = vcs.vcs("svn")
-    template_dir = os.path.join(here, "Template-Python")
-
-    svn("co", "svn://svn.tt2.org/Template-Python/trunk", template_dir)
-    subprocess.check_call(["python", "setup.py", "install"],
-                          cwd=template_dir)
 
 def update_to_changeset(changeset):
     git = vcs.bind_to_repo(vcs.git, source_dir)
@@ -184,10 +177,6 @@ def maybe_push():
 
 def main():
     setup_virtualenv()
-    try:
-        import template
-    except ImportError:
-        update_template()
     fetch_submodules()
     update_dist()
     for changeset in get_new_commits():

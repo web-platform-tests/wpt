@@ -2,7 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import error
+import urlparse
+
 import transport
 
 
@@ -134,10 +135,10 @@ class Cookies(object):
 
 
 class Session(object):
-    def __init__(self, host, port, url_prefix="",
-                 desired_capabilities=None, required_capabilities=None, wait=60,
-                 extension=None):
-        self.transport = transport.HTTPWireProtocol(host, port, url_prefix, wait=wait)
+    def __init__(self, host, port, url_prefix="", desired_capabilities=None,
+                 required_capabilities=None, timeout=60, extension=None):
+        self.transport = transport.HTTPWireProtocol(
+            host, port, url_prefix, timeout=timeout)
         self.desired_capabilities = desired_capabilities
         self.required_capabilities = required_capabilities
         self.session_id = None

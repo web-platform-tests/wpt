@@ -3,3 +3,29 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from client import Cookies, Element, Find, Session, Timeouts, Window
+from error import (
+    ElementNotSelectableException,
+    ElementNotVisibleException,
+    InvalidArgumentException,
+    InvalidCookieDomainException,
+    InvalidElementCoordinatesException,
+    InvalidElementStateException,
+    InvalidSelectorException,
+    InvalidSessionIdException,
+    JavascriptErrorException,
+    MoveTargetOutOfBoundsException,
+    NoSuchAlertException,
+    NoSuchElementException,
+    NoSuchFrameException,
+    NoSuchWindowException,
+    ScriptTimeoutException,
+    SessionNotCreatedException,
+    StaleElementReferenceException,
+    TimeoutException,
+    UnableToSetCookieException,
+    UnexpectedAlertOpenException,
+    UnknownCommandException,
+    UnknownErrorException,
+    UnknownMethodException,
+    UnsupportedOperationException,
+    WebDriverException)

@@ -10,6 +10,8 @@ import socket
 import time
 import urlparse
 
+import error
+
 
 HTTP_TIMEOUT = 5
 
@@ -34,7 +36,7 @@ class HTTPWireProtocol(object):
         self._connection = None
 
     def connect(self):
-        wait_for_port(self.host, self.port, self._wait)
+        wait_for_port(self.host, self.port, self._timeout)
         self._connection = httplib.HTTPConnection(
             self.host, self.port, timeout=self._timeout)
 

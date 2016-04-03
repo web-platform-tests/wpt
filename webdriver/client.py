@@ -150,6 +150,9 @@ class Session(object):
         self.extension_cls = extension
 
     def start(self):
+        if self.session_id is not None:
+            return
+
         body = {}
 
         caps = {}

@@ -151,7 +151,8 @@ def get_new_commits():
     with open(commit_path) as f:
         prev_commit = f.read().strip()
 
-    commit_range = "%s..%s" % (prev_commit, os.environ['TRAVIS_COMMIT'])
+    merge_base = git("merge-base", prev_commit, os.environ['TRAVIS_COMMIT']).strip()
+    commit_range = "%s..%s" % (merge_base, os.environ['TRAVIS_COMMIT'])
     commits = git("log", "--pretty=%H", "-r", commit_range).strip()
     if not commits:
         return []

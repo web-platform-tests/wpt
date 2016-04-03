@@ -117,19 +117,13 @@ def remove_current_files():
 
 def copy_files():
     dist_path = os.path.join(source_dir, "dist")
-    dest_paths = []
-    for dir_name, dir_names, file_names in os.walk(dist_path):
-        for file_name in file_names:
-            src_path = os.path.join(dir_name, file_name)
-            rel_path = os.path.relpath(src_path, dist_path)
-            dest_path = os.path.join(built_dir, rel_path)
-            dest_dir = os.path.dirname(dest_path)
-            if not os.path.exists(dest_dir):
-                os.makedirs(dest_dir)
+    for node in os.listdir(dist_path):
+        src_path = os.path.join(dist_path, node)
+        dest_path = os.path.join(built_dir, node)
+        if os.path.isdir(src_path):
+            shutil.copytree(src_path, dest_path)
+        else:
             shutil.copy2(src_path, dest_path)
-            dest_paths.append(os.path.relpath(dest_path, built_dir))
-
-    return set(dest_paths)
 
 def update_git():
     git = vcs.bind_to_repo(vcs.git, built_dir)

@@ -105,11 +105,15 @@ def build_tests():
     subprocess.check_call(["python", os.path.join(source_dir, "tools", "build.py")],
                            cwd=source_dir)
 
-def list_current_files():
-    git = vcs.bind_to_repo(vcs.git, built_dir)
-    paths = [item for item in git("ls-tree", "-r", "--full-name", "--name-only", "HEAD").split("\n")
-             if item and item not in local_files]
-    return set(paths)
+def remove_current_files():
+    for node in os.listdir(built_dir):
+        if node.startswith(".git"):
+            continue
+        path = os.path.join(built_dir, node)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        else:
+            os.remove(path)
 
 def copy_files():
     dist_path = os.path.join(source_dir, "dist")
@@ -127,27 +131,9 @@ def copy_files():
 
     return set(dest_paths)
 
-def grouper(n, iterable):
-    """
-    >>> list(grouper(3, 'ABCDEFG'))
-    [['A', 'B', 'C'], ['D', 'E', 'F'], ['G']]
-    """
-    iterable = iter(iterable)
-    return iter(lambda: list(itertools.islice(iterable, n)), [])
-
-def update_git(old_files, new_files):
+def update_git():
     git = vcs.bind_to_repo(vcs.git, built_dir)
-
-    removed = sorted(old_files - new_files)
-    added = sorted(new_files - old_files)
-
-    for r in grouper(10, removed):
-        git("rm", *r)
-
-    for a in grouper(10, added):
-        git("add", *a)
-
-    git("add", "-u")
+    git("add", ".")
 
 def add_changeset(changeset):
     git = vcs.bind_to_repo(vcs.git, built_dir)
@@ -211,10 +197,10 @@ def main():
     update_dist()
     for changeset in get_new_commits():
         update_to_changeset(changeset)
-        old_files = list_current_files()
+        remove_current_files()
         build_tests()
-        new_files = copy_files()
-        update_git(old_files, new_files)
+        copy_files()
+        update_git()
         add_changeset(changeset)
         commit(changeset)
     maybe_push()

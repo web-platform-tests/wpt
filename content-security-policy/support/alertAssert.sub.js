@@ -13,7 +13,7 @@ if(expected_alerts.length == 0) {
  var t_alert = async_test('Expecting alerts: {{GET[alerts]}}');
  setTimeout(function() {
    if(t_alert.phase != t_alert.phases.COMPLETE) {
-     t_alert.step(function() { assert_unreached('Alert timeout, expected alerts {{GET[alerts]}} not fired.') });
+     t_alert.step(function() { assert_unreached('Alert timeout, expected alerts ' + expected_alerts  + ' not fired.') });
      t_alert.done();
     }
  }, timeout * 100); 

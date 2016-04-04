@@ -13,7 +13,7 @@ if (expected_logs.length == 0) {
     var t_log = async_test('Expecting logs: {{GET[logs]}}');
     setTimeout(function() {
       if(t_log.phase != t_log.phases.COMPLETE){ 
-        t_log.step(function () { assert_unreached('Logging timeout, expected logs {{GET[logs]}}, not sent.') });
+        t_log.step(function () { assert_unreached('Logging timeout, expected logs ' + expected_logs + ' not sent.') });
         t_log.done();
       }
     }, timeout * 1000);

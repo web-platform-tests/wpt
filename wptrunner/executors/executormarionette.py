@@ -15,12 +15,13 @@ from collections import defaultdict
 
 from ..wpttest import WdspecResult, WdspecSubtestResult
 
+errors = None
 marionette = None
+webdriver = None
 
 here = os.path.join(os.path.split(__file__)[0])
 
 from . import pytestrunner
-from .. import webdriver
 from .base import (ExecutorException,
                    Protocol,
                    RefTestExecutor,
@@ -32,6 +33,7 @@ from .base import (ExecutorException,
                    strip_server,
                    WdspecExecutor)
 from ..testrunner import Stop
+from ..webdriver_server import GeckoDriverServer
 
 # Extra timeout to use after internal test timeout at which the harness
 # should force a timeout
@@ -39,7 +41,7 @@ extra_timeout = 5 # seconds
 
 
 def do_delayed_imports():
-    global errors, marionette
+    global errors, marionette, webdriver
 
     # Marionette client used to be called marionette, recently it changed
     # to marionette_driver for unfathomable reasons
@@ -48,6 +50,8 @@ def do_delayed_imports():
         from marionette import errors
     except ImportError:
         from marionette_driver import marionette, errors
+
+    import webdriver
 
 
 class MarionetteProtocol(Protocol):
@@ -242,7 +246,7 @@ class RemoteMarionetteProtocol(Protocol):
     def setup(self, runner):
         """Connect to browser via the Marionette HTTP server."""
         try:
-            self.server = webdriver.server.GeckoDriverServer(
+            self.server = GeckoDriverServer(
                 self.logger, self.marionette_port, binary=self.webdriver_binary)
             self.server.start(block=False)
             self.logger.info(
@@ -250,7 +254,7 @@ class RemoteMarionetteProtocol(Protocol):
 
             self.logger.info(
                 "Establishing new WebDriver session with %s" % self.server.url)
-            self.session = webdriver.client.Session(
+            self.session = webdriver.Session(
                 self.server.host, self.server.port, self.server.base_path)
         except Exception:
             self.logger.error(traceback.format_exc())

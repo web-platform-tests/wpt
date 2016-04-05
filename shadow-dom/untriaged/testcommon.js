@@ -42,93 +42,13 @@ var HTML5_ELEMENT_NAMES = [
 var HTML5_FORM_ASSOCIATED_ELEMENTS = ['button', 'fieldset', 'input', 'keygen', 'label',
                                       'object', 'output', 'select', 'textarea'];
 
-// Whether to work around vendor prefixes.
-var USE_VENDOR_SPECIFIC_WORKAROUND = true;
-
-function activateVendorSpecificWorkaround() {
-    if (Element.prototype.webkitCreateShadowRoot &&
-        !Element.prototype.createShadowRoot) {
-        Element.prototype.createShadowRoot =
-            Element.prototype.webkitCreateShadowRoot;
-
-        Object.defineProperty(Element.prototype, 'pseudo', {
-            get: function () { return this.webkitPseudo; },
-            set: function (value) { return this.webkitPseudo = value; }
-        });
-
-        Object.defineProperty(Element.prototype, 'shadowRoot', {
-            get: function () { return this.webkitShadowRoot; }
-        });
-    }
-}
-
-if (USE_VENDOR_SPECIFIC_WORKAROUND)
-    activateVendorSpecificWorkaround();
-
-// ----------------------------------------------------------------------------
-// Deprecated: The code below is preserved only for the existing tests that are
-// using it. Now vendor prefixes are handled in a way that does not require
-// manual intervention. New tests should just use unprefixed APIs and you
-// are all set.
-//
-// These functions will eventually be removed when no tests use them.
-
-function ShadowDomNotSupportedError() {
-    this.message = "Shadow DOM is not supported";
-}
-
-// To allow using of both prefixed and non-prefixed API we do
-// the following hook
-function addPrefixed(element) {
-	if (element && !element.pseudo) {
-		Object.defineProperty(element, 'pseudo', {
-			  get: function () { return element.webkitPseudo; },
-			  set: function (value) { return element.webkitPseudo = value; }
-		});
-	}
-}
-
-function addDocumentPrefixed(d) {
-	if (d) {
-		if (d.body) {
-		    addPrefixed(d.body);
-		}
-		if (d.head) {
-		    addPrefixed(d.head);			
-		}
-		if (d.documentElement) {
-			addPrefixed(d.documentElement);
-		}
-		d.oldCreate = d.createElement;
-		d.createElement = function(tagName) {
-			var el = d.oldCreate(tagName);
-			addPrefixed(el);
-			return el;
-		};		
-	}	
-}
-
-
-function rethrowInternalErrors(e) {
-    if (e instanceof ShadowDomNotSupportedError) {
-        throw e;
-    }
-
-}
-
 function newDocument() {
-    var d = document.implementation.createDocument(
+    return document.implementation.createDocument(
         'http://www.w3.org/1999/xhtml', 'html');
-    //FIXME remove the call below when non-prefixed API is used
-    addDocumentPrefixed(d);
-    return d;        
 }
 
 function newHTMLDocument() {
-	var d = document.implementation.createHTMLDocument('Test Document');
-    //FIXME remove the call below when non-prefixed API is used
-    addDocumentPrefixed(d);
-    return d;
+    return document.implementation.createHTMLDocument('Test Document');
 }
 
 function newIFrame(ctx, src) {
@@ -154,14 +74,8 @@ function newIFrame(ctx, src) {
 }
 function newRenderedHTMLDocument(ctx) {
     var frame = newIFrame(ctx);
-    var d = frame.contentWindow.document;
-    //FIXME remove the call below when non-prefixed API is used
-    addDocumentPrefixed(d);
-    return d;    
+    return frame.contentWindow.document;
 }
-
-// End deprecated.
-// ----------------------------------------------------------------------------
 
 function newContext() {
     return {iframes:[]};
@@ -226,39 +140,39 @@ function assert_nodelist_contents_equal_noorder(actual, expected, message) {
 //Example taken from http://www.w3.org/TR/shadow-dom/#event-retargeting-example
 function createTestMediaPlayer(d) {
     d.body.innerHTML = '' +
-	'<div id="player">' +
-		'<input type="checkbox" id="outside-control">' +
-		'<div id="player-shadow-host">' +
-	    '</div>' +
-	'</div>';
+    '<div id="player">' +
+        '<input type="checkbox" id="outside-control">' +
+        '<div id="player-shadow-host">' +
+        '</div>' +
+    '</div>';
 
-	var playerShadowRoot = d.querySelector('#player-shadow-host').createShadowRoot();
-	playerShadowRoot.innerHTML = '' +
-		'<div id="controls">' +
-			'<button class="play-button">PLAY</button>' +
-			'<div tabindex="0" id="timeline">' +
-				'<div id="timeline-shadow-host">' +
-				'</div>' +
-			'</div>' +
-		    '<div class="volume-slider-container" id="volume-slider-container">' +
-		        '<div tabindex="0" class="volume-slider" id="volume-slider">' +
-		            '<div id="volume-shadow-host">' +
-		            '</div>' +
-		        '</div>' +
-		    '</div>' +
-		'</div>';
+    var playerShadowRoot = d.querySelector('#player-shadow-host').createShadowRoot();
+    playerShadowRoot.innerHTML = '' +
+        '<div id="controls">' +
+            '<button class="play-button">PLAY</button>' +
+            '<div tabindex="0" id="timeline">' +
+                '<div id="timeline-shadow-host">' +
+                '</div>' +
+            '</div>' +
+            '<div class="volume-slider-container" id="volume-slider-container">' +
+                '<div tabindex="0" class="volume-slider" id="volume-slider">' +
+                    '<div id="volume-shadow-host">' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
 
-	var timeLineShadowRoot = playerShadowRoot.querySelector('#timeline-shadow-host').createShadowRoot();
-	timeLineShadowRoot.innerHTML =  '<div class="slider-thumb" id="timeline-slider-thumb"></div>';
+    var timeLineShadowRoot = playerShadowRoot.querySelector('#timeline-shadow-host').createShadowRoot();
+    timeLineShadowRoot.innerHTML =  '<div class="slider-thumb" id="timeline-slider-thumb"></div>';
 
-	var volumeShadowRoot = playerShadowRoot.querySelector('#volume-shadow-host').createShadowRoot();
-	volumeShadowRoot.innerHTML = '<div class="slider-thumb" id="volume-slider-thumb"></div>';
+    var volumeShadowRoot = playerShadowRoot.querySelector('#volume-shadow-host').createShadowRoot();
+    volumeShadowRoot.innerHTML = '<div class="slider-thumb" id="volume-slider-thumb"></div>';
 
-	return {
-		'playerShadowRoot': playerShadowRoot,
-		'timeLineShadowRoot': timeLineShadowRoot,
-		'volumeShadowRoot': volumeShadowRoot
-		};
+    return {
+        'playerShadowRoot': playerShadowRoot,
+        'timeLineShadowRoot': timeLineShadowRoot,
+        'volumeShadowRoot': volumeShadowRoot
+        };
 }
 
 //FIXME This call of initKeyboardEvent works for WebKit-only.

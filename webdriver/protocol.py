@@ -33,6 +33,13 @@ def http(request, session):
     return HTTPRequest(session.transport.host, session.transport.port)
 
 
+@pytest.fixture
+def new_session(session):
+    session.end()
+    assert session.session_id is None
+    return session
+
+
 def test_provides_http(http):
     # 4.0
     with http.head("/") as resp:
@@ -53,7 +60,7 @@ def test_send_an_error(http):
     assert body["error"] == "unknown command"
 
 
-def test_unknown_command(http, session):
+def test_unknown_command(http, new_session):
     # 4.3 step 3
     with http.head("/foo") as resp:
         assert resp.status == 404
@@ -61,10 +68,10 @@ def test_unknown_command(http, session):
         assert resp.status == 404
 
     # jump to step 1
-    session.url
+    new_session.url
 
 
-def test_invalid_session_id(http, session):
+def test_invalid_session_id(http, new_session):
     # 4.3 step 5
     with http.get("/session/foo/url") as resp:
         assert resp.status == 404
@@ -72,50 +79,49 @@ def test_invalid_session_id(http, session):
     assert body["error"] == "invalid session id"
 
     # jump to step 1
-    session.url
+    new_session.url
 
 
-def test_new_session(session):
+def test_new_session(new_session):
     # 4.3 step 5
-    session.end()
-    assert session.session_id is None
-    session.start()
-    assert session.session_id is not None
+    assert new_session.session_id is None
+    new_session.start()
+    assert new_session.session_id is not None
 
 
-def test_malformed_body_on_post(session):
+def test_malformed_body_on_post(new_session):
     # 4.3 step 6
-    session.start()
+    new_session.start()
     with pytest.raises(webdriver.InvalidArgumentException):
-        session.send_command("POST", "url", body="foo")
+        new_session.send_command("POST", "url", body="foo")
     with pytest.raises(webdriver.InvalidArgumentException):
-        session.send_command("POST", "url", body="true")
+        new_session.send_command("POST", "url", body="true")
     with pytest.raises(webdriver.InvalidArgumentException):
-        session.send_command("POST", "url", body="[]")
+        new_session.send_command("POST", "url", body="[]")
 
 
-def test_error_from_command(session):
+def test_error_from_command(new_session):
     # 4.3 step 8
-    session.start()
+    new_session.start()
     with pytest.raises(webdriver.InvalidArgumentException):
-        session.send_command("POST", "url", body={"foo": "bar"})
+        new_session.send_command("POST", "url", body={"foo": "bar"})
 
 
-def test_success_loop(session):
+def test_success_loop(new_session):
     # 4.3 step 10
-    session.url
-    session.url
+    new_session.url
+    new_session.url
 
 
-def test_match_a_request_unknown_command(session):
+def test_match_a_request_unknown_command(new_session):
     # 4.4 match a request, steps 1-3
-    session.start()
+    new_session.start()
     with pytest.raises(webdriver.UnknownCommandException):
-        session.send_command("GET", "cottage")
+        new_session.send_command("GET", "cottage")
 
 
-def test_match_a_request_case_sensitive(session):
+def test_match_a_request_case_sensitive(new_session):
     """4.4 match a request, steps 4-5"""
-    session.start()
+    new_session.start()
     with pytest.raises(webdriver.UnknownCommandException):
-        session.send_command("GET", "URL")
+        new_session.send_command("GET", "URL")

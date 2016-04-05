@@ -86,7 +86,7 @@ class HTTPWireProtocol(object):
             raise IOError("Could not parse response body as JSON: %s" % body)
 
         if resp.status != 200:
-            cls = error.get(resp.status)
+            cls = error.get(data.get("error"))
             raise cls(data.get("message"))
 
         if key is not None:

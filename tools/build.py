@@ -123,36 +123,44 @@ class Builder(object):
         suiteFileNames = defaultdict(set)
         for fileName in Utils.listfiles(dir):
             filePath = os.path.join(dir, fileName)
-            if (self.sourceTree.isTestCase(filePath)):
-                source = self.sourceCache.generateSource(filePath, fileName)
-                if (source.isTest()):
-                    metaData = source.getMetadata(True)
-                    if (metaData):
-                        for specURL in metaData['links']:
-                            specName, anchorURL = self.getSpecName(specURL)
-                            if (specName):
-                                if (specName in self.buildSpecNames):
-                                    if (anchorURL):
-                                        for testSuiteName in self.buildSpecNames[specName]:
-                                            formats = self.testSuiteData[testSuiteName].get('formats')
-                                            if (formats):
-                                                for formatName in formats:
-                                                    if (((formatName) in self.formatData) and
-                                                        (self.formatData[formatName].get('mime_type') == source.mimetype)):
-                                                        suiteFileNames[testSuiteName].add(fileName)
-                                                        break
-                                                else:
-                                                    self.ui.note("Test not in acceptable format: ", source.mimetype, "\n for: ", filePath, "\n")
-                                    else:
-                                        self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
-                            else:
-                                self.ui.note("Unknown specification URL: ", specURL, "\n  in: ", filePath, "\n")
-                    else:
-                        if (source.errors):
-                            self.ui.warn("Error parsing '", filePath, "': ", ' '.join(source.errors), "\n")
-                        else:
-                            self.ui.warn("No metadata available for '", filePath, "'\n")
+            if not self.sourceTree.isTestCase(filePath):
+                continue
 
+            source = self.sourceCache.generateSource(filePath, fileName)
+            if not source.isTest():
+                continue
+
+            metaData = source.getMetadata(True)
+            if not metaData:
+                if (source.errors):
+                    self.ui.warn("Error parsing '", filePath, "': ", ' '.join(source.errors), "\n")
+                else:
+                    self.ui.warn("No metadata available for '", filePath, "'\n")
+                continue
+
+            for specURL in metaData['links']:
+                specName, anchorURL = self.getSpecName(specURL)
+                if not specName:
+                    self.ui.note("Unknown specification URL: ", specURL, "\n  in: ", filePath, "\n")
+                    continue
+
+                if not specName in self.buildSpecNames:
+                    continue
+
+                if not anchorURL:
+                    self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
+                    continue
+
+                for testSuiteName in self.buildSpecNames[specName]:
+                    formats = self.testSuiteData[testSuiteName].get('formats')
+                    if (formats):
+                        for formatName in formats:
+                            if (((formatName) in self.formatData) and
+                                (self.formatData[formatName].get('mime_type') == source.mimetype)):
+                                suiteFileNames[testSuiteName].add(fileName)
+                                break
+                        else:
+                            self.ui.note("Test not in acceptable format: ", source.mimetype, "\n for: ", filePath, "\n")
 
         for testSuiteName in suiteFileNames:
             if (dirName in self.rawDirs):
@@ -386,6 +394,3 @@ if __name__ == "__main__":      # called from the command line
     builder = Builder(ui, options.output, options.backup, options.ignore, options.cache)
     result = builder.build(args)
     quit(result)
-
-
-

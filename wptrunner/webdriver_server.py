@@ -87,9 +87,7 @@ class WebDriverServer(object):
 
     @property
     def is_alive(self):
-        return (self._proc is not None and
-                self._proc.proc is not None and
-                self._proc.poll() is None)
+        return hasattr(self._proc, "proc") and self._proc.poll() is None
 
     def on_output(self, line):
         self.logger.process_output(self.pid,

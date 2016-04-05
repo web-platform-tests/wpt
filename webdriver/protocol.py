@@ -28,7 +28,7 @@ class HTTPRequest(object):
             conn.close()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def http(request, session):
     return HTTPRequest(session.transport.host, session.transport.port)
 
@@ -40,7 +40,7 @@ def test_provides_http(http):
 
 
 def test_send_an_error(http):
-    """4.3 send an error, steps 1-5"""
+    # 4.3 send an error, steps 1-5
     with http.get("/cream") as resp:
         assert resp.status == 404
         body = json.load(resp)
@@ -85,6 +85,7 @@ def test_new_session(session):
 
 def test_malformed_body_on_post(session):
     # 4.3 step 6
+    session.start()
     with pytest.raises(webdriver.InvalidArgumentException):
         session.send_command("POST", "url", body="foo")
     with pytest.raises(webdriver.InvalidArgumentException):
@@ -95,6 +96,7 @@ def test_malformed_body_on_post(session):
 
 def test_error_from_command(session):
     # 4.3 step 8
+    session.start()
     with pytest.raises(webdriver.InvalidArgumentException):
         session.send_command("POST", "url", body={"foo": "bar"})
 
@@ -107,13 +109,13 @@ def test_success_loop(session):
 
 def test_match_a_request_unknown_command(session):
     # 4.4 match a request, steps 1-3
+    session.start()
     with pytest.raises(webdriver.UnknownCommandException):
-        session.start()
         session.send_command("GET", "cottage")
 
 
 def test_match_a_request_case_sensitive(session):
     """4.4 match a request, steps 4-5"""
+    session.start()
     with pytest.raises(webdriver.UnknownCommandException):
-        session.start()
         session.send_command("GET", "URL")

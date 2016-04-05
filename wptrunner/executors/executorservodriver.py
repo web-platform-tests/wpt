@@ -17,13 +17,21 @@ from .base import (Protocol,
 from .. import webdriver
 from ..testrunner import Stop
 
+webdriver = None
+
 here = os.path.join(os.path.split(__file__)[0])
 
 extra_timeout = 5
 
 
+def do_delayed_imports():
+    global webdriver
+    import webdriver
+
+
 class ServoWebDriverProtocol(Protocol):
     def __init__(self, executor, browser, capabilities, **kwargs):
+        do_delayed_imports()
         Protocol.__init__(self, executor, browser)
         self.capabilities = capabilities
         self.host = browser.webdriver_host
@@ -37,8 +45,8 @@ class ServoWebDriverProtocol(Protocol):
         url = "http://%s:%d" % (self.host, self.port)
         session_started = False
         try:
-            self.session = webdriver.client.Session(
-                self.host, self.port, extension=webdriver.client.ServoExtensions)
+            self.session = webdriver.Session(self.host, self.port,
+                extension=webdriver.servo.ServoCommandExtensions)
             self.session.start()
         except:
             self.logger.warning(
@@ -76,7 +84,7 @@ class ServoWebDriverProtocol(Protocol):
         while True:
             try:
                 self.session.execute_async_script("")
-            except webdriver.client.TimeoutException:
+            except webdriver.TimeoutException:
                 pass
             except (socket.timeout, IOError):
                 break
@@ -113,7 +121,7 @@ class ServoWebDriverRun(object):
     def _run(self):
         try:
             self.result = True, self.func(self.session, self.url, self.timeout)
-        except webdriver.client.TimeoutException:
+        except webdriver.TimeoutException:
             self.result = False, ("EXTERNAL-TIMEOUT", None)
         except (socket.timeout, IOError):
             self.result = False, ("CRASH", None)

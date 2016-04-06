@@ -37,11 +37,11 @@ A_05_05_02_T01.step(unit(function (ctx) {
 
     //For #volume-shadow-root adjusted related target #volume-shadow-root
     roots.volumeShadowRoot.addEventListener('mouseover',
-    		A_05_05_02_T01.step_func(function(event) {
-	    	invoked = true;
-	    	assert_true(event.relatedTarget === roots.volumeShadowRoot,
-	    			'Wrong relatedTarget');
-	    }), false);
+            A_05_05_02_T01.step_func(function(event) {
+            invoked = true;
+            assert_true(event.relatedTarget === roots.volumeShadowRoot,
+                    'Wrong relatedTarget');
+        }), false);
 
 
 

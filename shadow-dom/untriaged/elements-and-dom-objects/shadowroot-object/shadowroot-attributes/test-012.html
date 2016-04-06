@@ -24,14 +24,14 @@ policies and contribution forms [3].
 <script>
 test(unit(function (ctx) {
 
-	var d = newRenderedHTMLDocument(ctx);
+    var d = newRenderedHTMLDocument(ctx);
 
-	var host = d.createElement('div');
-	d.body.appendChild(host);
-	var s = host.createShadowRoot();
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+    var s = host.createShadowRoot();
 
     assert_equals(s.nodeType, 11, 'The nodeType attribute of a ShadowRoot ' +
-    		'instance must return DOCUMENT_FRAGMENT_NODE');
+            'instance must return DOCUMENT_FRAGMENT_NODE');
 
 }), 'A_10_01_01_06_T01');
 </script>

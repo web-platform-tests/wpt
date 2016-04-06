@@ -23,19 +23,19 @@ policies and contribution forms [3].
 <div id="log"></div>
 <script>
 test(unit(function (ctx) {
-	var d = newRenderedHTMLDocument(ctx);
+    var d = newRenderedHTMLDocument(ctx);
 
-	var host = d.createElement('div');
-	d.body.appendChild(host);
-	var s = host.createShadowRoot();
+    var host = d.createElement('div');
+    d.body.appendChild(host);
+    var s = host.createShadowRoot();
 
-	try {
-		s.cloneNode();
-		assert_true(false, 'Invoking the cloneNode() method on a ShadowRoot instance must always ' +
-    	'throw a DATA_CLONE_ERR exception.');
-	} catch (e) {
-		assert_equals(e.code, 25, 'Wrong exceprion type');
-	}
+    try {
+        s.cloneNode();
+        assert_true(false, 'Invoking the cloneNode() method on a ShadowRoot instance must always ' +
+        'throw a DATA_CLONE_ERR exception.');
+    } catch (e) {
+        assert_equals(e.code, 25, 'Wrong exceprion type');
+    }
 }), 'A_10_01_02_09_T01');
 </script>
 </body>

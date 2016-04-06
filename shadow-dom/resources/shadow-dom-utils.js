@@ -38,57 +38,6 @@ var HTML5_ELEMENT_NAMES = [
     'wbr'
 ];
 
-// http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#form-associated-element
-var HTML5_FORM_ASSOCIATED_ELEMENTS = ['button', 'fieldset', 'input', 'keygen', 'label',
-                                      'object', 'output', 'select', 'textarea'];
-
-function newDocument() {
-    return document.implementation.createDocument(
-        'http://www.w3.org/1999/xhtml', 'html');
-}
-
-function newHTMLDocument() {
-    return document.implementation.createHTMLDocument('Test Document');
-}
-
-function newIFrame(ctx, src) {
-    if (typeof(ctx) == 'undefined' || typeof (ctx.iframes) != 'object') {
-        assert_unreached('Illegal context object in newIFrame');
-    }
-
-    var iframe = document.createElement('iframe');
-    if (!ctx.debug) {
-        iframe.style.display = 'none';
-    }
-    if (typeof(src) != 'undefined') {
-        iframe.src = src;
-    }
-    document.body.appendChild(iframe);
-    ctx.iframes.push(iframe);
-
-    assert_true(typeof(iframe.contentWindow) != 'undefined'
-        && typeof(iframe.contentWindow.document) != 'undefined'
-        && iframe.contentWindow.document != document, 'Failed to create new rendered document'
-    );
-    return iframe;
-}
-function newRenderedHTMLDocument(ctx) {
-    var frame = newIFrame(ctx);
-    return frame.contentWindow.document;
-}
-
-function newContext() {
-    return {iframes:[]};
-}
-
-function cleanContext(ctx) {
-    if (!ctx.debug) {
-        ctx.iframes.forEach(function (e) {
-            e.parentNode.removeChild(e);
-        });
-    }
-}
-
 function unit(f) {
     return function () {
         var ctx = newContext();
@@ -135,7 +84,6 @@ function assert_nodelist_contents_equal_noorder(actual, expected, message) {
         }
     }
 }
-
 
 //Example taken from http://www.w3.org/TR/shadow-dom/#event-retargeting-example
 function createTestMediaPlayer(d) {

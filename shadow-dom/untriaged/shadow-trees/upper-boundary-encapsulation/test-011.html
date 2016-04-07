@@ -44,21 +44,21 @@ A_04_01_11_T1.step(function () {
 // check that <link> element added to head is not exposed
 test(unit(function (ctx) {
 
-	var d = newRenderedHTMLDocument(ctx);
-	var initialStyleSheetsCount = d.styleSheets.length;
+    var d = newRenderedHTMLDocument(ctx);
+    var initialStyleSheetsCount = d.styleSheets.length;
 
-	var link = d.createElement('link');
-	link.setAttribute('rel', 'stylesheet');
-	d.body.appendChild(link);
+    var link = d.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    d.body.appendChild(link);
 
-	//create Shadow root
-	var root = d.createElement('div');
-	d.body.appendChild(root);
-	var s = root.createShadowRoot();
+    //create Shadow root
+    var root = d.createElement('div');
+    d.body.appendChild(root);
+    var s = root.createShadowRoot();
 
-	s.appendChild(link);
+    s.appendChild(link);
 
-	assert_equals(d.styleSheets.length, initialStyleSheetsCount, 'stylesheet link elements in shadow DOM must not be ' +
+    assert_equals(d.styleSheets.length, initialStyleSheetsCount, 'stylesheet link elements in shadow DOM must not be ' +
             'exposed via the document.styleSheets collection');
 
 

@@ -22,7 +22,7 @@
         var ret=navigator.requestMIDIAccess({sysex:false}).then( successCallback, errorCallback );
         // 4.1 requestMIDIAccess() (in { sysex:false })
         test(function(){
-            assert_equals("Promise", ret.constructor.name);
+            assert_class_string(ret, "Promise");
         }, "4.1 Return type in {sysex:false}");
         function successCallback(access) {
             MIDI=access;
@@ -63,7 +63,7 @@
         var ret02=navigator.requestMIDIAccess({sysex:true}).then( successCallback, errorCallback );
         // 4.1 requestMIDIAccess() (in { sysex:true })
         test(function(){
-            assert_equals("Promise", ret02.constructor.name);
+            assert_class_string(ret02, "Promise");
         }, "Return type test in sysex:true");
         function successCallback(access) {
             MIDI=access;

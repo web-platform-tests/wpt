@@ -33,18 +33,17 @@
                 }, "5 MIDIAccess Interface name test in {sysex:false}");
                 // 5.1 Attributes
                 test(function(){
-                    assert_equals("MIDIInputMap", MIDI.inputs.constructor.name);
-                    assert_equals("MIDIOutputMap", MIDI.outputs.constructor.name);
-                    assert_equals("object", typeof MIDI.onstatechange);
+                    assert_true(MIDI.inputs.constructor.name=="MIDIInputMap");
+                    assert_true(MIDI.outputs.constructor.name=="MIDIOutputMap");
+                    //assert_true(typeof MIDI.onstatechange=="object");
                     assert_equals("boolean", typeof MIDI.sysexEnabled);
                     assert_false(MIDI.sysexEnabled);
                 }, "5.1 MIDIAccess interface attribute type test in {sysex:false}.");
                 test(function(){
                     assert_idl_attribute(MIDI, "inputs");
                     assert_idl_attribute(MIDI, "outputs");
-                    assert_idl_attribute(MIDI, "onstatachange");
+                    assert_idl_attribute(MIDI, "onstatechange");
                     assert_idl_attribute(MIDI, "sysexEnabled");
-                assert_false(true);
                 }, "5.1 MIDIAccess interface attribute name test in {sysex:false}.");
                 test_requestMIDIAccess.done();
             });
@@ -75,16 +74,16 @@
                 }, "MIDIAccess interface name test in {sysex:true}");
                 // 5.1 Attributes
                 test(function(){
-                    assert_equals("MIDIInputMap", MIDI.inputs.constructor.name);
-                    assert_equals("MIDIOutputMap", MIDI.outputs.constructor.name);
-                    assert_equals("object", typeof MIDI.onstatechange);
+                    assert_true(MIDI.inputs.constructor.name=="MIDIInputMap");
+                    assert_true(MIDI.outputs.constructor.name=="MIDIOutputMap");
+                    assert_true(typeof MIDI.onstatechange=="object");
                     assert_equals("boolean", typeof MIDI.sysexEnabled);
                     assert_true(MIDI.sysexEnabled);
                 }, "5.1 MIDIAccess interface attribute type test in {sysex:true}.");
                 test(function(){
                     assert_idl_attribute(MIDI, "inputs");
                     assert_idl_attribute(MIDI, "outputs");
-                    assert_idl_attribute(MIDI, "onstatachange");
+                    assert_idl_attribute(MIDI, "onstatechange");
                     assert_idl_attribute(MIDI, "sysexEnabled");
                 }, "5.1 MIDIAccess interface attribute name test in {sysex:true}.");
             });

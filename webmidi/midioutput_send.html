@@ -23,7 +23,7 @@
     var outputs=[];
     var test_outputs = async_test(
         "6.3.1 Methods (MIDIOutput Interface) : send()",
-        {timeout: 5000} //msec
+        {timeout: 10000} //msec
     );
     navigator.requestMIDIAccess().then( successCallback, errorCallback );
     function successCallback(access) {
@@ -33,11 +33,11 @@
             for(var o=outputIterator.next(); !o.done; o=outputIterator.next()) {
                 outputs.push(o.value);
             }
-            console.log("[OutputDevices] ", outputs.length);
+            //console.log("[OutputDevices] ", outputs.length);
             if(outputs.length==0) {
                 document.getElementById("warning").innerHTML="Your Computer looks no <b><u>MIDI OUTPUT</u></b> devices are pluged-in.<br> Please plug-in at least one <b><u>MIDI OUTPUT</u></b> device before run this Test.";
                 assert_unreached("No MIDI OUTPUT devices are pluged-in");
-                disableButton()
+                disableButton();
                 test_outputs.done();
             } else {
                 var input = document.createElement("input");
@@ -67,16 +67,15 @@
                         var snd=msg[count];
                         o.send( [ 0xc0, 0x01] );
                         o.send( [ fst, snd, 0x7f ] );
-                        console.log(fst.toString(16), snd.toString(16), parseInt(0x7f).toString(16));
+                        //console.log(fst.toString(16), snd.toString(16), parseInt(0x7f).toString(16));
                         if(j%2==0) count++;
 
                         if(msg.length<=count) {
                             clearInterval(timerId);
-                            assert_unreached("Timeout");
                             disableButton();
                             test_outputs.done();
                         }
-                    }, 100); //default:70
+                    }, 70); //default:70
                 });
             }
         });

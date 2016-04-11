@@ -50,7 +50,7 @@
         }
         function errorCallback(message) {
             test_requestMIDIAccess.step(function() {
-                assert_equals("SecurityError", message.name);
+                assert_any(assert_array_equals, message.name, ["SecurityError", "AbortError", "InvalidStateError", "NotSupportedError"]);
                 test_requestMIDIAccess.done();
             });
         }
@@ -91,7 +91,7 @@
         }
         function errorCallback(message) {
             test_requestMIDIAccess02.step(function() {
-                assert_equals("SecurityError", message.name, "");
+                assert_any(assert_array_equals, message.name, ["SecurityError", "AbortError", "InvalidStateError", "NotSupportedError"]);
                 test_requestMIDIAccess02.done();
             });
         }

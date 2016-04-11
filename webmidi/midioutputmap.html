@@ -46,13 +46,11 @@
                     var outputEntries=MIDI.outputs.entries()
                     assert_class_string(outputEntries, "Iterator");
                 }, "4.4.3 Methods Test (MIDIOutputMap interface) : entries()");
-                /*
                 test(function() {
                     assert_equals("function", typeof MIDI.outputs.forEach);
                     var outputEntries=MIDI.outputs.forEach()
                     assert_class_string(outputEntries, "undefined");
                 }, "4.4.3 Methods Test (MIDIOutputMap interface) : forEach()");
-                 */
                 test(function() {
                     assert_equals("function", typeof MIDI.outputs.keys);
                     var outputEntries=MIDI.outputs.keys();

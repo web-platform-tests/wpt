@@ -13,7 +13,7 @@ policies and contribution forms [3].
 "use strict";
 
 // custom element is also allowed.
-var ATTACHSHADOW_WHITELISTED_ELEMENTS = [
+var ATTACHSHADOW_SAFELISTED_ELEMENTS = [
     'article',
     'aside',
     'blockquote',

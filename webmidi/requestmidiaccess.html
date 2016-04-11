@@ -33,8 +33,8 @@
                 }, "5 MIDIAccess Interface name test in {sysex:false}");
                 // 5.1 Attributes
                 test(function(){
-                    assert_true(MIDI.inputs.constructor.name=="MIDIInputMap");
-                    assert_true(MIDI.outputs.constructor.name=="MIDIOutputMap");
+                    assert_class_string(MIDI.inputs, "MIDIInputMap");
+                    assert_class_string(MIDI.outputs, "MIDIOutputMap");
                     //assert_true(typeof MIDI.onstatechange=="object");
                     assert_equals("boolean", typeof MIDI.sysexEnabled);
                     assert_false(MIDI.sysexEnabled);
@@ -74,8 +74,8 @@
                 }, "MIDIAccess interface name test in {sysex:true}");
                 // 5.1 Attributes
                 test(function(){
-                    assert_true(MIDI.inputs.constructor.name=="MIDIInputMap");
-                    assert_true(MIDI.outputs.constructor.name=="MIDIOutputMap");
+                    assert_class_string(MIDI.inputs, "MIDIInputMap");
+                    assert_class_string(MIDI.outputs, "MIDIOutputMap");
                     assert_true(typeof MIDI.onstatechange=="object");
                     assert_equals("boolean", typeof MIDI.sysexEnabled);
                     assert_true(MIDI.sysexEnabled);

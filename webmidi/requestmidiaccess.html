@@ -17,7 +17,7 @@
     <script type="text/javascript">
     var MIDI;
     var test_requestMIDIAccess = async_test("requestMIDIAccess({sysex: flase})");
-    // [TODO/FIXME] need more test on the MIDIOptions flag
+    // [TODO] need more test on the MIDIOptions flag
     function testWMA() {
         var ret=navigator.requestMIDIAccess({sysex:false}).then( successCallback, errorCallback );
         // 4.1 requestMIDIAccess() (in { sysex:false })

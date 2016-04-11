@@ -12,6 +12,27 @@ policies and contribution forms [3].
 
 "use strict";
 
+// custom element is also allowed.
+var ATTACHSHADOW_SAFELISTED_ELEMENTS = [
+    'article',
+    'aside',
+    'blockquote',
+    'body',
+    'div',
+    'footer',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'header',
+    'nav',
+    'p',
+    'section',
+    'span'
+];
+
 var HTML5_ELEMENT_NAMES = [
     'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio',
     'b', 'base', 'bdi', 'bdo', 'blockquote', 'body', 'br', 'button',

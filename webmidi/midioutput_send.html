@@ -33,7 +33,6 @@
             for(var o=outputIterator.next(); !o.done; o=outputIterator.next()) {
                 outputs.push(o.value);
             }
-            //console.log("[OutputDevices] ", outputs.length);
             if(outputs.length==0) {
                 document.getElementById("warning").innerHTML="Your Computer looks no <b><u>MIDI OUTPUT</u></b> devices are pluged-in.<br> Please plug-in at least one <b><u>MIDI OUTPUT</u></b> device before run this Test.";
                 assert_unreached("No MIDI OUTPUT devices are pluged-in");
@@ -67,7 +66,6 @@
                         var snd=msg[count];
                         o.send( [ 0xc0, 0x01] );
                         o.send( [ fst, snd, 0x7f ] );
-                        //console.log(fst.toString(16), snd.toString(16), parseInt(0x7f).toString(16));
                         if(j%2==0) count++;
 
                         if(msg.length<=count) {

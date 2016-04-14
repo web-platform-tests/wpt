@@ -34,6 +34,18 @@ import sys, getopt
 import urllib2
 
 # some files in the SVG 1.1 test suite don't validate against the SVG 1.1 DTD
+# but are valid against the HTML 5 spec
+
+valid_svg_files = dict([
+    # these entries manually added after cross checking behaviour with spec
+    
+    # VNU warns about text not in Unicode Normalization Form C, but it's not an error
+    ('struct-cond-02-t.svg', 'Source text is not in Unicode Normalization Form C'),
+    # FiLl, fill and FILL are all valid in case-insensitive HTML
+    ('styling-css-10-f.svg', 'Attribute FiLl not allowed on SVG element circle at this point')
+])
+
+# some files in the SVG 1.1 test suite don't validate against the SVG 1.1 DTD
 # and some files are marked as version='SVG 1.2'. 
 # this is used to toggle between -isvalid.html and -novalid.html output
     
@@ -114,6 +126,10 @@ invalid_svg_files = dict([
     ('types-dom-08-f.svg', 'DTD Invalid'),
         
     # these entries manually added after cross checking behaviour with spec
+    # note there are some confusing differences between w:iri-ref (used in HTML for img/@src)
+    # and xsd:anyURI (used in SVG for image/@xlink:href)
+    ('animate-elem-40-t.svg', 'Spaces in data: URI - not allowed by URL Standard or RFC 2397.'),
+    ('conform-viewers-02-f.svg', 'Newlines in data: URI - not allowed by URL Standard or RFC 2397.'),
     ('coords-transformattr-01-f.svg', 'Numeric character reference expanded to carriage return - not allowed in HTML5 - see 8.1.4'),
     ('fonts-overview-201-t.svg', 'Unsupported SVG version specified - specifies SVG 1.2'),
     ('script-specify-01-f.svg', 'Attribute contentscripttype not allowed on element svg at this point - not allowed in HTML5 - see 4.8.18 SVG'),
@@ -135,7 +151,8 @@ def build_html_testfiles(svgdirectory,htmldirectory):
         #logging.debug(filename)
         if filename.endswith(".svg"): 
             htmlpathname = build_html_test_file(filename, svgdirectory, htmldirectory)
-            testfiles.append(htmlpathname)
+            if htmlpathname:
+                testfiles.append(htmlpathname)
         pass
     pass
 
@@ -174,7 +191,8 @@ def build_html_test_file(filename, svgdirectory, htmldirectory):
 
     svgpathname = svgdirectory + "/" + filename
 
-    if invalid_svg_files.has_key(filename): 
+    # valid_svg_file overrides invalid_svg_files (may invalid in case-sensitive XML but valid in case-insensitive HTML)
+    if invalid_svg_files.has_key(filename) and not valid_svg_files.has_key(filename): 
         htmlpathname = htmldirectory + "/" + filename.replace( ".svg", "-novalid.html")
     else:
         htmlpathname = htmldirectory + "/" + filename.replace( ".svg", "-isvalid.html")
@@ -182,14 +200,20 @@ def build_html_test_file(filename, svgdirectory, htmldirectory):
     logging.debug(svgpathname)
     logging.debug(htmlpathname)
 
-    # read SVG data, but remove <d:SVGTestCase> from file (not valid in HTML or SVG DTD)
+    # read SVG data
     svgfile = open(svgpathname, "r")
     svg = svgfile.read()
+    svgfile.close()
+
+    # but remove <d:SVGTestCase> from file (not valid in HTML or SVG DTD)
     svg = svg.replace('<?xml version="1.0" encoding="UTF-8"?>', '')
     svgbefore = svg.split("<d:SVGTestCase")[0];
     svgafter = svg.split("</d:SVGTestCase>")[1];
     svg = svgbefore + svgafter
-    svgfile.close()
+    
+    # ignore files with SVG DOCTYPE and !ENTITY declarations (unsupported in HTML)
+    if svg.find( "<!DOCTYPE" ) != -1:
+        return
     
     # uncomment these 2 lines to generate 'DTD Invalid' entries for invalid_svg_files dict above
     # very slow operation - only needs done if the SVG test suite ever changes
@@ -267,7 +291,7 @@ def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     logging.debug('main: IN')
     
-    svgdirectory = "~/Downloads/W3C_SVG_11_TestSuite/svg"
+    svgdirectory = "/Users/markrogers/Downloads/W3C_SVG_11_TestSuite/svg"
     htmldirectory = "../html-svg"
 
     try:

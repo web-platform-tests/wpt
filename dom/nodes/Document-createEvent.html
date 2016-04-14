@@ -163,6 +163,6 @@ someNonCreateableEvents.forEach(function (eventInterface) {
     assert_throws("NOT_SUPPORTED_ERR", function () {
       var evt = document.createEvent(eventInterface + "s");
     });
-  }, 'Should throw NOT_SUPPORTED_ERR for pluralized non-legacy event interface "' + eventInterface + '"');
+  }, 'Should throw NOT_SUPPORTED_ERR for pluralized non-legacy event interface "' + eventInterface + 's"');
 });
 </script>

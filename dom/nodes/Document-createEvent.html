@@ -39,7 +39,7 @@ for (var alias in aliases) {
   testAlias(alias.toLowerCase(), iface);
   testAlias(alias.toUpperCase(), iface);
 
-  if (!alias.endsWith("s")) {
+  if (alias[alias.length - 1] != "s") {
     var plural = alias + "s";
     if (!(plural in aliases)) {
       test(function () {

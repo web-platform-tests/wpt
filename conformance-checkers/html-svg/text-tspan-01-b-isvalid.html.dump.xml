@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/text-tspan-01-b-isvalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="tspan" pmx-most-frequent-word1-count="6" pmx-most-frequent-word1-ratio="8" pmx-most_frequent_word2="text" pmx-most-frequent-word2-count="3" pmx-most-frequent-word2-ratio="4" pmx-most_frequent_word3="peach" pmx-most-frequent-word3-count="3" pmx-most-frequent-word3-ratio="4" pmx-most_frequent_word4="not" pmx-most-frequent-word4-count="3" pmx-most-frequent-word4-ratio="4" pmx-longest-paragraph="8" pmx-longest-sentence="15" pmx-longest-word="12" pmx-sentence-count="8" pmx-syllable-count="91" pmx-raw-word-count="70" pmx-word-count="66" pmx-proper-noun-count="4" pmx-flesch-reading-ease="81" pmx-gunning-fog="6" pmx-content-length="5393" pmx-uncompressed-length="0" pmx-page-weight="5393" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="100" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">text-tspan-01-b-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="8" pmx-longest-sentence="15" pmx-longest-word="12" pmx-text-type="1" pmx-endtag-line="100" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="44">Source SVG: text-tspan-01-b-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" version="1.1" baseProfile="basic" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="98" pmx-endtag-col="1">
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  SVG 1.1 2nd Edition Test Case                                     =</pmx-comment>
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2009 World Wide Web Consortium, (Massachusetts          =</pmx-comment>
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment>
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment>
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment>
+  <pmx-comment pmx-line="19" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment>
+  <pmx-comment pmx-line="20" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  
+  <title pmx-line="22" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="22" pmx-endtag-col="59">$RCSfile: text-tspan-01-b.svg,v $</title>
+  <defs pmx-line="23" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3">
+    <font-face pmx-line="24" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5">
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7">
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="87" pmx-endtag-col="3">
+  	<defs pmx-line="31" pmx-col="4" pmx-text-type="0" pmx-endtag-line="52" pmx-endtag-col="4">
+	  	<font-face pmx-line="32" pmx-col="5" font-family="FreeSerif" unicode-range="U+0-7F" font-weight="400" pmx-text-type="0" pmx-endtag-line="36" pmx-endtag-col="6">
+	      <font-face-src pmx-line="33" pmx-col="8" pmx-text-type="0" pmx-endtag-line="35" pmx-endtag-col="8">
+	        <font-face-uri pmx-line="34" pmx-col="10" href="../resources/FreeSerif.svg#FreeSerif" pmx-text-type="0" pmx-endtag-line="34" pmx-endtag-col="10"/>
+	      </font-face-src>
+	    </font-face>
+	    <font-face pmx-line="37" pmx-col="6" font-family="FreeSerif" unicode-range="U+0-7F" font-weight="700" pmx-text-type="0" pmx-endtag-line="41" pmx-endtag-col="6">
+	      <font-face-src pmx-line="38" pmx-col="8" pmx-text-type="0" pmx-endtag-line="40" pmx-endtag-col="8">
+	        <font-face-uri pmx-line="39" pmx-col="10" href="../resources/FreeSerifBold.svg#FreeSerifBold" pmx-text-type="0" pmx-endtag-line="39" pmx-endtag-col="10"/>
+	      </font-face-src>
+	    </font-face>
+	    <font-face pmx-line="42" pmx-col="6" font-family="FreeSerif" unicode-range="U+0-7F" font-weight="400" font-style="italic" pmx-text-type="0" pmx-endtag-line="46" pmx-endtag-col="6">
+	      <font-face-src pmx-line="43" pmx-col="8" pmx-text-type="0" pmx-endtag-line="45" pmx-endtag-col="8">
+	        <font-face-uri pmx-line="44" pmx-col="10" href="../resources/FreeSerifItalic.svg#FreeSerifItalic" pmx-text-type="0" pmx-endtag-line="44" pmx-endtag-col="10"/>
+	      </font-face-src>
+	    </font-face>
+	    <font-face pmx-line="47" pmx-col="6" font-family="FreeSerif" unicode-range="U+0-7F" font-weight="700" font-style="italic" pmx-text-type="0" pmx-endtag-line="51" pmx-endtag-col="6">
+	      <font-face-src pmx-line="48" pmx-col="8" pmx-text-type="0" pmx-endtag-line="50" pmx-endtag-col="8">
+	        <font-face-uri pmx-line="49" pmx-col="10" href="../resources/FreeSerifBoldItalic.svg#FreeSerifBoldItalic" pmx-text-type="0" pmx-endtag-line="49" pmx-endtag-col="10"/>
+	      </font-face-src>
+	    </font-face>
+  	</defs>
+    <text pmx-line="53" pmx-col="5" x="25" y="20" font-size="16" pmx-text-type="0" pmx-endtag-line="53" pmx-endtag-col="100">Basics of tspan: changing visual properties and positioning.</text>
+    <pmx-comment pmx-line="54" pmx-col="74" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> From example tspan01 - using tspan to change visual attributes </pmx-comment>
+    <g pmx-line="55" pmx-col="5" id="tspan01" font-size="16" font-family="FreeSerif, serif" pmx-text-type="0" pmx-endtag-line="63" pmx-endtag-col="5">
+      <text pmx-line="56" pmx-col="7" x="74" y="63.75" fill="blue" pmx-text-type="0" pmx-endtag-line="58" pmx-endtag-col="7">
+        You are<tspan pmx-line="57" pmx-col="16" font-weight="bold" fill="green" pmx-text-type="0" pmx-endtag-line="57" pmx-endtag-col="60"> not </tspan>a banana.
+      </text>
+      <rect pmx-line="59" pmx-col="7" x="47.5" y="74.25" width="310.5" height="53.5" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="59" pmx-endtag-col="7"/>
+      <text pmx-line="60" pmx-col="7" x="65.25" y="90.75" font-size="16" pmx-text-type="0" pmx-endtag-line="60" pmx-endtag-col="77">Text: "You are not a banana."</text>
+      <text pmx-line="61" pmx-col="7" x="65.25" y="108" font-size="16" pmx-text-type="0" pmx-endtag-line="61" pmx-endtag-col="89">'tspan' changes visual attributes of "not",</text>
+      <text pmx-line="62" pmx-col="7" x="65.25" y="125.25" font-size="16" pmx-text-type="0" pmx-endtag-line="62" pmx-endtag-col="64">to green, bold.</text>
+    </g>
+    <pmx-comment pmx-line="65" pmx-col="59" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> From example tspan02 - using tspan's dx and dy attributes 
+                 for incremental positioning adjustments </pmx-comment>
+    <g pmx-line="66" pmx-col="5" id="tspan02" font-size="16" font-family="FreeSerif, serif" pmx-text-type="0" pmx-endtag-line="74" pmx-endtag-col="5">
+      <text pmx-line="67" pmx-col="7" x="257.5" y="153.75" fill="blue" pmx-text-type="0" pmx-endtag-line="69" pmx-endtag-col="7">
+        But you<tspan pmx-line="68" pmx-col="16" dx="2em" dy="-10.75" font-weight="bold" fill="green" pmx-text-type="0" pmx-endtag-line="68" pmx-endtag-col="79">are</tspan><tspan pmx-line="68" pmx-col="87" dy="25.5" space="preserve" pmx-text-type="0" pmx-endtag-line="68" pmx-endtag-col="134"> a peach!</tspan>
+      </text>
+      <rect pmx-line="70" pmx-col="7" x="225" y="179" width="245.5" height="53.5" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="70" pmx-endtag-col="7"/>
+      <text pmx-line="71" pmx-col="7" x="238" y="195" font-size="16" pmx-text-type="0" pmx-endtag-line="71" pmx-endtag-col="72">Text: "But you are a peach!"</text>
+      <text pmx-line="72" pmx-col="7" x="238" y="212.25" font-size="16" pmx-text-type="0" pmx-endtag-line="72" pmx-endtag-col="81">Using dx,dy, 'tspan' raises "are",</text>
+      <text pmx-line="73" pmx-col="7" x="238" y="229.5" font-size="16" pmx-text-type="0" pmx-endtag-line="73" pmx-endtag-col="71">'tspan' lowers "a peach!"</text>
+    </g>
+    <pmx-comment pmx-line="76" pmx-col="72" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Example tspan03 - using tspan's x and y attributes 
+                     for multiline text and precise glyph positioning </pmx-comment>
+    <g pmx-line="77" pmx-col="5" id="tspan03" fill="#000000" font-size="16" font-family="FreeSerif, serif" pmx-text-type="0" pmx-endtag-line="86" pmx-endtag-col="5">
+      <text pmx-line="78" pmx-col="7" fill="rgb(255,164,0)" pmx-text-type="0" pmx-endtag-line="81" pmx-endtag-col="7">
+        <tspan pmx-line="79" pmx-col="9" x="35 53.75 72.5 91.25 110.5 128.75 147.5 166.25" y="200" pmx-text-type="0" pmx-endtag-line="79" pmx-endtag-col="83">Cute and </tspan>
+        <tspan pmx-line="80" pmx-col="9" x="63.13 81.88 100.63 119.38 138.13" y="230.5" pmx-text-type="0" pmx-endtag-line="80" pmx-endtag-col="69">fuzzy.</tspan>
+      </text>
+      <rect pmx-line="82" pmx-col="7" x="17.5" y="244.75" width="335.5" height="53.5" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="82" pmx-endtag-col="7"/>
+      <text pmx-line="83" pmx-col="7" x="25.25" y="258" font-size="16" pmx-text-type="0" pmx-endtag-line="83" pmx-endtag-col="69">Text: "Cute and fuzzy."</text>
+      <text pmx-line="84" pmx-col="7" x="25.25" y="275.25" font-size="16" pmx-text-type="0" pmx-endtag-line="84" pmx-endtag-col="94">'tspan' char-by-char placement of "Cute and",</text>
+      <text pmx-line="85" pmx-col="7" x="25.25" y="292.5" font-size="16" pmx-text-type="0" pmx-endtag-line="85" pmx-endtag-col="87">'tspan' char-by-char "fuzzy", below it.</text>
+    </g>
+  </g>
+  <g pmx-line="88" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="90" pmx-endtag-col="3">
+    <text pmx-line="89" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="89" pmx-endtag-col="84">$Revision: 1.10 $</text>
+  </g>
+  <rect pmx-line="91" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="91" pmx-endtag-col="3"/>
+  <pmx-comment pmx-line="92" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment>
+  <pmx-comment pmx-line="97" pmx-col="8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">&lt;g id="draft-watermark"&gt;
+    &lt;rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/&gt;
+    &lt;text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
+      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white"&gt;DRAFT&lt;/text&gt;
+  &lt;/g&gt;</pmx-comment>
+</svg>
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.2.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F25.html" refname="WCAG 2.0" refsect="A F25" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Matterhorn 1.02" refsect="06-004" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccMatterhorn</categoryref></rule></issue><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoDoorwayPage" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://www.google.com/webmasters/guidelines.html" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue></issues></doc>

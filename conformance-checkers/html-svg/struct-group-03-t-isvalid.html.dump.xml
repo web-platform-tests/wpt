@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/struct-group-03-t-isvalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="visibility" pmx-most-frequent-word1-count="1" pmx-most-frequent-word1-ratio="3" pmx-most_frequent_word2="text-anchor" pmx-most-frequent-word2-count="1" pmx-most-frequent-word2-ratio="3" pmx-most_frequent_word3="svg" pmx-most-frequent-word3-count="1" pmx-most-frequent-word3-ratio="3" pmx-most_frequent_word4="stroke-width" pmx-most-frequent-word4-count="1" pmx-most-frequent-word4-ratio="3" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-sentence-count="0" pmx-syllable-count="0" pmx-raw-word-count="31" pmx-word-count="0" pmx-proper-noun-count="0" pmx-flesch-reading-ease="100" pmx-gunning-fog="0" pmx-content-length="11123" pmx-uncompressed-length="0" pmx-page-weight="11123" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="269" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">struct-group-03-t-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="269" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="46">Source SVG: struct-group-03-t-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" version="1.1" baseProfile="tiny" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="267" pmx-endtag-col="1">
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  SVG 1.1 2nd Edition Test Case                                     =</pmx-comment>
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2009 World Wide Web Consortium, (Massachusetts          =</pmx-comment>
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment>
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment>
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment>
+  <pmx-comment pmx-line="19" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment>
+  <pmx-comment pmx-line="20" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  
+  <title pmx-line="22" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="22" pmx-endtag-col="61">$RCSfile: struct-group-03-t.svg,v $</title>
+  <defs pmx-line="23" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3">
+    <font-face pmx-line="24" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5">
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7">
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="256" pmx-endtag-col="3">
+    <g pmx-line="31" pmx-col="5" id="grid" transform="translate(70, 150) rotate(-90)" fill="none" stroke="black" pmx-text-type="0" pmx-endtag-line="94" pmx-endtag-col="5">
+      <defs pmx-line="32" pmx-col="7" pmx-text-type="0" pmx-endtag-line="35" pmx-endtag-col="7">
+        <rect pmx-line="33" pmx-col="9" id="propertyCell" x="-5" y="-14" width="110" height="22" pmx-text-type="0" pmx-endtag-line="33" pmx-endtag-col="9"/>
+        <rect pmx-line="34" pmx-col="9" id="sampleCell" x="-5" y="-14" width="50" height="22" pmx-text-type="0" pmx-endtag-line="34" pmx-endtag-col="9"/>
+      </defs>
+
+      <use pmx-line="37" pmx-col="7" href="#propertyCell" pmx-text-type="0" pmx-endtag-line="37" pmx-endtag-col="7"/>
+      <use pmx-line="38" pmx-col="7" href="#propertyCell" y="22" pmx-text-type="0" pmx-endtag-line="38" pmx-endtag-col="7"/>
+      <use pmx-line="39" pmx-col="7" href="#propertyCell" y="44" pmx-text-type="0" pmx-endtag-line="39" pmx-endtag-col="7"/>
+      <use pmx-line="40" pmx-col="7" href="#propertyCell" y="66" pmx-text-type="0" pmx-endtag-line="40" pmx-endtag-col="7"/>
+      <use pmx-line="41" pmx-col="7" href="#propertyCell" y="88" pmx-text-type="0" pmx-endtag-line="41" pmx-endtag-col="7"/>
+      <use pmx-line="42" pmx-col="7" href="#propertyCell" y="110" pmx-text-type="0" pmx-endtag-line="42" pmx-endtag-col="7"/>
+      <use pmx-line="43" pmx-col="7" href="#propertyCell" y="132" pmx-text-type="0" pmx-endtag-line="43" pmx-endtag-col="7"/>
+      <use pmx-line="44" pmx-col="7" href="#propertyCell" y="154" pmx-text-type="0" pmx-endtag-line="44" pmx-endtag-col="7"/>
+      <use pmx-line="45" pmx-col="7" href="#propertyCell" y="176" pmx-text-type="0" pmx-endtag-line="45" pmx-endtag-col="7"/>
+      <use pmx-line="46" pmx-col="7" href="#propertyCell" y="198" pmx-text-type="0" pmx-endtag-line="46" pmx-endtag-col="7"/>
+      <use pmx-line="47" pmx-col="7" href="#propertyCell" y="220" pmx-text-type="0" pmx-endtag-line="47" pmx-endtag-col="7"/>
+      <use pmx-line="48" pmx-col="7" href="#propertyCell" y="242" pmx-text-type="0" pmx-endtag-line="48" pmx-endtag-col="7"/>
+      <use pmx-line="49" pmx-col="7" href="#propertyCell" y="264" pmx-text-type="0" pmx-endtag-line="49" pmx-endtag-col="7"/>
+      <use pmx-line="50" pmx-col="7" href="#propertyCell" y="286" pmx-text-type="0" pmx-endtag-line="50" pmx-endtag-col="7"/>
+      <use pmx-line="51" pmx-col="7" href="#propertyCell" y="308" pmx-text-type="0" pmx-endtag-line="51" pmx-endtag-col="7"/>
+      <use pmx-line="52" pmx-col="7" href="#propertyCell" y="330" pmx-text-type="0" pmx-endtag-line="52" pmx-endtag-col="7"/>
+      <use pmx-line="53" pmx-col="7" href="#propertyCell" y="352" pmx-text-type="0" pmx-endtag-line="53" pmx-endtag-col="7"/>
+
+      <g pmx-line="55" pmx-col="7" transform="translate(-50, 0)" pmx-text-type="0" pmx-endtag-line="73" pmx-endtag-col="7">
+        <use pmx-line="56" pmx-col="9" href="#sampleCell" pmx-text-type="0" pmx-endtag-line="56" pmx-endtag-col="9"/>
+        <use pmx-line="57" pmx-col="9" href="#sampleCell" y="22" pmx-text-type="0" pmx-endtag-line="57" pmx-endtag-col="9"/>
+        <use pmx-line="58" pmx-col="9" href="#sampleCell" y="44" pmx-text-type="0" pmx-endtag-line="58" pmx-endtag-col="9"/>
+        <use pmx-line="59" pmx-col="9" href="#sampleCell" y="66" pmx-text-type="0" pmx-endtag-line="59" pmx-endtag-col="9"/>
+        <use pmx-line="60" pmx-col="9" href="#sampleCell" y="88" pmx-text-type="0" pmx-endtag-line="60" pmx-endtag-col="9"/>
+        <use pmx-line="61" pmx-col="9" href="#sampleCell" y="110" pmx-text-type="0" pmx-endtag-line="61" pmx-endtag-col="9"/>
+        <use pmx-line="62" pmx-col="9" href="#sampleCell" y="132" pmx-text-type="0" pmx-endtag-line="62" pmx-endtag-col="9"/>
+        <use pmx-line="63" pmx-col="9" href="#sampleCell" y="154" pmx-text-type="0" pmx-endtag-line="63" pmx-endtag-col="9"/>
+        <use pmx-line="64" pmx-col="9" href="#sampleCell" y="176" pmx-text-type="0" pmx-endtag-line="64" pmx-endtag-col="9"/>
+        <use pmx-line="65" pmx-col="9" href="#sampleCell" y="198" pmx-text-type="0" pmx-endtag-line="65" pmx-endtag-col="9"/>
+        <use pmx-line="66" pmx-col="9" href="#sampleCell" y="220" pmx-text-type="0" pmx-endtag-line="66" pmx-endtag-col="9"/>
+        <use pmx-line="67" pmx-col="9" href="#sampleCell" y="242" pmx-text-type="0" pmx-endtag-line="67" pmx-endtag-col="9"/>
+        <use pmx-line="68" pmx-col="9" href="#sampleCell" y="264" pmx-text-type="0" pmx-endtag-line="68" pmx-endtag-col="9"/>
+        <use pmx-line="69" pmx-col="9" href="#sampleCell" y="286" pmx-text-type="0" pmx-endtag-line="69" pmx-endtag-col="9"/>
+        <use pmx-line="70" pmx-col="9" href="#sampleCell" y="308" pmx-text-type="0" pmx-endtag-line="70" pmx-endtag-col="9"/>
+        <use pmx-line="71" pmx-col="9" href="#sampleCell" y="330" pmx-text-type="0" pmx-endtag-line="71" pmx-endtag-col="9"/>
+        <use pmx-line="72" pmx-col="9" href="#sampleCell" y="352" pmx-text-type="0" pmx-endtag-line="72" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="75" pmx-col="7" transform="translate(-100, 0)" pmx-text-type="0" pmx-endtag-line="93" pmx-endtag-col="7">
+        <use pmx-line="76" pmx-col="9" href="#sampleCell" pmx-text-type="0" pmx-endtag-line="76" pmx-endtag-col="9"/>
+        <use pmx-line="77" pmx-col="9" href="#sampleCell" y="22" pmx-text-type="0" pmx-endtag-line="77" pmx-endtag-col="9"/>
+        <use pmx-line="78" pmx-col="9" href="#sampleCell" y="44" pmx-text-type="0" pmx-endtag-line="78" pmx-endtag-col="9"/>
+        <use pmx-line="79" pmx-col="9" href="#sampleCell" y="66" pmx-text-type="0" pmx-endtag-line="79" pmx-endtag-col="9"/>
+        <use pmx-line="80" pmx-col="9" href="#sampleCell" y="88" pmx-text-type="0" pmx-endtag-line="80" pmx-endtag-col="9"/>
+        <use pmx-line="81" pmx-col="9" href="#sampleCell" y="110" pmx-text-type="0" pmx-endtag-line="81" pmx-endtag-col="9"/>
+        <use pmx-line="82" pmx-col="9" href="#sampleCell" y="132" pmx-text-type="0" pmx-endtag-line="82" pmx-endtag-col="9"/>
+        <use pmx-line="83" pmx-col="9" href="#sampleCell" y="154" pmx-text-type="0" pmx-endtag-line="83" pmx-endtag-col="9"/>
+        <use pmx-line="84" pmx-col="9" href="#sampleCell" y="176" pmx-text-type="0" pmx-endtag-line="84" pmx-endtag-col="9"/>
+        <use pmx-line="85" pmx-col="9" href="#sampleCell" y="198" pmx-text-type="0" pmx-endtag-line="85" pmx-endtag-col="9"/>
+        <use pmx-line="86" pmx-col="9" href="#sampleCell" y="220" pmx-text-type="0" pmx-endtag-line="86" pmx-endtag-col="9"/>
+        <use pmx-line="87" pmx-col="9" href="#sampleCell" y="242" pmx-text-type="0" pmx-endtag-line="87" pmx-endtag-col="9"/>
+        <use pmx-line="88" pmx-col="9" href="#sampleCell" y="264" pmx-text-type="0" pmx-endtag-line="88" pmx-endtag-col="9"/>
+        <use pmx-line="89" pmx-col="9" href="#sampleCell" y="286" pmx-text-type="0" pmx-endtag-line="89" pmx-endtag-col="9"/>
+        <use pmx-line="90" pmx-col="9" href="#sampleCell" y="308" pmx-text-type="0" pmx-endtag-line="90" pmx-endtag-col="9"/>
+        <use pmx-line="91" pmx-col="9" href="#sampleCell" y="330" pmx-text-type="0" pmx-endtag-line="91" pmx-endtag-col="9"/>
+        <use pmx-line="92" pmx-col="9" href="#sampleCell" y="352" pmx-text-type="0" pmx-endtag-line="92" pmx-endtag-col="9"/>
+      </g>
+    </g>
+    <g pmx-line="95" pmx-col="5" id="properties" transform="translate(70, 150) rotate(-90)" pmx-text-type="0" pmx-endtag-line="113" pmx-endtag-col="5">
+      <text pmx-line="96" pmx-col="7" pmx-text-type="0" pmx-endtag-line="96" pmx-endtag-col="18">color</text>
+      <text pmx-line="97" pmx-col="7" y="22" pmx-text-type="0" pmx-endtag-line="97" pmx-endtag-col="27">display</text>
+      <text pmx-line="98" pmx-col="7" y="44" pmx-text-type="0" pmx-endtag-line="98" pmx-endtag-col="24">fill</text>
+      <text pmx-line="99" pmx-col="7" y="66" pmx-text-type="0" pmx-endtag-line="99" pmx-endtag-col="29">fill-rule</text>
+      <text pmx-line="100" pmx-col="7" y="88" pmx-text-type="0" pmx-endtag-line="100" pmx-endtag-col="26">stroke</text>
+      <text pmx-line="101" pmx-col="7" y="110" pmx-text-type="0" pmx-endtag-line="101" pmx-endtag-col="37">stroke-dasharray</text>
+      <text pmx-line="102" pmx-col="7" y="132" pmx-text-type="0" pmx-endtag-line="102" pmx-endtag-col="38">stroke-dashoffset</text>
+      <text pmx-line="103" pmx-col="7" y="154" pmx-text-type="0" pmx-endtag-line="103" pmx-endtag-col="35">stroke-linecap</text>
+      <text pmx-line="104" pmx-col="7" y="176" pmx-text-type="0" pmx-endtag-line="104" pmx-endtag-col="36">stroke-linejoin</text>
+      <text pmx-line="105" pmx-col="7" y="198" pmx-text-type="0" pmx-endtag-line="105" pmx-endtag-col="38">stroke-miterlimit</text>
+      <text pmx-line="106" pmx-col="7" y="220" pmx-text-type="0" pmx-endtag-line="106" pmx-endtag-col="33">stroke-width</text>
+      <text pmx-line="107" pmx-col="7" y="242" pmx-text-type="0" pmx-endtag-line="107" pmx-endtag-col="31">visibility</text>
+      <text pmx-line="108" pmx-col="7" y="264" pmx-text-type="0" pmx-endtag-line="108" pmx-endtag-col="32">font-family</text>
+      <text pmx-line="109" pmx-col="7" y="286" pmx-text-type="0" pmx-endtag-line="109" pmx-endtag-col="30">font-size</text>
+      <text pmx-line="110" pmx-col="7" y="308" pmx-text-type="0" pmx-endtag-line="110" pmx-endtag-col="31">font-style</text>
+      <text pmx-line="111" pmx-col="7" y="330" pmx-text-type="0" pmx-endtag-line="111" pmx-endtag-col="32">font-weight</text>
+      <text pmx-line="112" pmx-col="7" y="352" pmx-text-type="0" pmx-endtag-line="112" pmx-endtag-col="32">text-anchor</text>
+    </g>
+
+    <g pmx-line="115" pmx-col="5" id="inheritGroup" transform="translate(56, 155)" pmx-text-type="0" pmx-endtag-line="184" pmx-endtag-col="5">
+
+      <g pmx-line="117" pmx-col="7" color="#0F0" pmx-text-type="0" pmx-endtag-line="119" pmx-endtag-col="7">
+        <rect pmx-line="118" pmx-col="9" x="3" y="10" width="16" height="32" fill="currentColor" pmx-text-type="0" pmx-endtag-line="118" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="121" pmx-col="7" display="none" transform="translate(22, 0)" pmx-text-type="0" pmx-endtag-line="123" pmx-endtag-col="7">
+        <rect pmx-line="122" pmx-col="9" x="3" y="10" width="16" height="32" display="inherit" pmx-text-type="0" pmx-endtag-line="122" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="125" pmx-col="7" fill="#0F0" transform="translate(44, 0)" pmx-text-type="0" pmx-endtag-line="127" pmx-endtag-col="7">
+        <rect pmx-line="126" pmx-col="9" x="3" y="10" width="16" height="32" fill="inherit" pmx-text-type="0" pmx-endtag-line="126" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="129" pmx-col="7" fill-rule="evenodd" transform="translate(66, 0)" pmx-text-type="0" pmx-endtag-line="131" pmx-endtag-col="7">
+        <polygon pmx-line="130" pmx-col="9" points="10.5,0 21,21 0,7 21,7 0,21" fill-rule="inherit" fill="#0F0" transform="translate(3, 15) scale(0.7)" pmx-text-type="0" pmx-endtag-line="130" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="133" pmx-col="7" stroke="#0F0" transform="translate(88, 0)" pmx-text-type="0" pmx-endtag-line="135" pmx-endtag-col="7">
+        <rect pmx-line="134" pmx-col="9" x="3" y="10" width="16" height="32" stroke="inherit" fill="none" pmx-text-type="0" pmx-endtag-line="134" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="137" pmx-col="7" stroke-dasharray="2,2,5,5" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="139" pmx-endtag-col="7">
+        <line pmx-line="138" pmx-col="9" x1="11" y1="5" x2="11" y2="40" stroke="#0F0" stroke-dasharray="inherit" stroke-width="2" pmx-text-type="0" pmx-endtag-line="138" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="141" pmx-col="7" stroke-dashoffset="4" transform="translate(132, 0)" pmx-text-type="0" pmx-endtag-line="143" pmx-endtag-col="7">
+        <line pmx-line="142" pmx-col="9" x1="11" y1="5" x2="11" y2="40" stroke="#0F0" stroke-dashoffset="inherit" stroke-dasharray="2,2,5,5" stroke-width="2" pmx-text-type="0" pmx-endtag-line="142" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="145" pmx-col="7" stroke-linecap="round" transform="translate(154, 0)" pmx-text-type="0" pmx-endtag-line="147" pmx-endtag-col="7">
+        <line pmx-line="146" pmx-col="9" x1="11" y1="10" x2="11" y2="40" stroke="#0F0" stroke-linecap="inherit" stroke-width="10" pmx-text-type="0" pmx-endtag-line="146" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="149" pmx-col="7" stroke-linejoin="round" transform="translate(176, 0)" pmx-text-type="0" pmx-endtag-line="151" pmx-endtag-col="7">
+        <polyline pmx-line="150" pmx-col="9" points="3,40 11,10 19,40" stroke="#0F0" stroke-linejoin="inherit" stroke-width="5" fill="none" pmx-text-type="0" pmx-endtag-line="150" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="153" pmx-col="7" stroke-miterlimit="1" transform="translate(198, 0)" pmx-text-type="0" pmx-endtag-line="155" pmx-endtag-col="7">
+        <polyline pmx-line="154" pmx-col="9" points="3,40 11,10 19,40" stroke="#0F0" stroke-miterlimit="inherit" stroke-width="5" fill="none" pmx-text-type="0" pmx-endtag-line="154" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="157" pmx-col="7" stroke-width="5" transform="translate(220, 0)" pmx-text-type="0" pmx-endtag-line="159" pmx-endtag-col="7">
+        <line pmx-line="158" pmx-col="9" x1="11" y1="10" x2="11" y2="40" stroke="#0F0" stroke-width="inherit" pmx-text-type="0" pmx-endtag-line="158" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="161" pmx-col="7" visibility="hidden" transform="translate(242, 0)" pmx-text-type="0" pmx-endtag-line="163" pmx-endtag-col="7">
+        <line pmx-line="162" pmx-col="9" x1="11" y1="10" x2="11" y2="40" stroke="#0F0" visibility="inherit" pmx-text-type="0" pmx-endtag-line="162" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="165" pmx-col="7" font-family="serif" transform="translate(264, 0)" pmx-text-type="0" pmx-endtag-line="167" pmx-endtag-col="7">
+        <text pmx-line="166" pmx-col="9" x="11" y="30" font-size="20" text-anchor="middle" font-family="inherit" pmx-text-type="0" pmx-endtag-line="166" pmx-endtag-col="88">A</text>
+      </g>
+
+      <g pmx-line="169" pmx-col="7" font-size="10" transform="translate(286, 0)" pmx-text-type="0" pmx-endtag-line="171" pmx-endtag-col="7">
+        <text pmx-line="170" pmx-col="9" x="11" y="30" font-size="inherit" text-anchor="middle" font-family="serif" pmx-text-type="0" pmx-endtag-line="170" pmx-endtag-col="91">A</text>
+      </g>
+
+      <g pmx-line="173" pmx-col="7" font-style="italic" transform="translate(308, 0)" pmx-text-type="0" pmx-endtag-line="175" pmx-endtag-col="7">
+        <text pmx-line="174" pmx-col="9" x="11" y="30" font-style="inherit" text-anchor="middle" font-size="20" font-family="serif" pmx-text-type="0" pmx-endtag-line="174" pmx-endtag-col="107">A</text>
+      </g>
+
+      <g pmx-line="177" pmx-col="7" font-weight="bold" transform="translate(330, 0)" pmx-text-type="0" pmx-endtag-line="179" pmx-endtag-col="7">
+        <text pmx-line="178" pmx-col="9" x="11" y="30" font-weight="inherit" text-anchor="middle" font-family="serif" font-size="20" pmx-text-type="0" pmx-endtag-line="178" pmx-endtag-col="108">A</text>
+      </g>
+
+      <g pmx-line="181" pmx-col="7" text-anchor="middle" transform="translate(352, 0)" pmx-text-type="0" pmx-endtag-line="183" pmx-endtag-col="7">
+        <text pmx-line="182" pmx-col="9" x="11" y="30" text-anchor="inherit" font-family="serif" font-size="20" pmx-text-type="0" pmx-endtag-line="182" pmx-endtag-col="87">A</text>
+      </g>
+    </g>
+
+    <g pmx-line="186" pmx-col="5" id="referenceGroup" transform="translate(56, 205)" pmx-text-type="0" pmx-endtag-line="255" pmx-endtag-col="5">
+
+      <g pmx-line="188" pmx-col="7" pmx-text-type="0" pmx-endtag-line="190" pmx-endtag-col="7">
+        <rect pmx-line="189" pmx-col="9" x="3" y="10" width="16" height="32" fill="#0F0" pmx-text-type="0" pmx-endtag-line="189" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="192" pmx-col="7" transform="translate(22, 0)" pmx-text-type="0" pmx-endtag-line="194" pmx-endtag-col="7">
+        <rect pmx-line="193" pmx-col="9" x="3" y="10" width="16" height="32" display="none" pmx-text-type="0" pmx-endtag-line="193" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="196" pmx-col="7" transform="translate(44, 0)" pmx-text-type="0" pmx-endtag-line="198" pmx-endtag-col="7">
+        <rect pmx-line="197" pmx-col="9" x="3" y="10" width="16" height="32" fill="#0F0" pmx-text-type="0" pmx-endtag-line="197" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="200" pmx-col="7" transform="translate(66, 0)" pmx-text-type="0" pmx-endtag-line="202" pmx-endtag-col="7">
+        <polygon pmx-line="201" pmx-col="9" points="10.5,0 21,21 0,7 21,7 0,21" fill-rule="evenodd" fill="#0F0" transform="translate(3, 15) scale(0.7)" pmx-text-type="0" pmx-endtag-line="201" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="204" pmx-col="7" transform="translate(88, 0)" pmx-text-type="0" pmx-endtag-line="206" pmx-endtag-col="7">
+        <rect pmx-line="205" pmx-col="9" x="3" y="10" width="16" height="32" stroke="#0F0" fill="none" pmx-text-type="0" pmx-endtag-line="205" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="208" pmx-col="7" stroke-dasharray="2,2,5,5" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="210" pmx-endtag-col="7">
+        <line pmx-line="209" pmx-col="9" x1="11" y1="5" x2="11" y2="40" stroke="#0F0" stroke-dasharray="inherit" stroke-width="2" pmx-text-type="0" pmx-endtag-line="209" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="212" pmx-col="7" transform="translate(132, 0)" pmx-text-type="0" pmx-endtag-line="214" pmx-endtag-col="7">
+        <line pmx-line="213" pmx-col="9" x1="11" y1="5" x2="11" y2="40" stroke="#0F0" stroke-dashoffset="4" stroke-dasharray="2,2,5,5" stroke-width="2" pmx-text-type="0" pmx-endtag-line="213" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="216" pmx-col="7" transform="translate(154, 0)" pmx-text-type="0" pmx-endtag-line="218" pmx-endtag-col="7">
+        <line pmx-line="217" pmx-col="9" x1="11" y1="10" x2="11" y2="40" stroke="#0F0" stroke-linecap="round" stroke-width="10" pmx-text-type="0" pmx-endtag-line="217" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="220" pmx-col="7" transform="translate(176, 0)" pmx-text-type="0" pmx-endtag-line="222" pmx-endtag-col="7">
+        <polyline pmx-line="221" pmx-col="9" points="3,40 11,10 19,40" stroke="#0F0" stroke-linejoin="round" stroke-width="5" fill="none" pmx-text-type="0" pmx-endtag-line="221" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="224" pmx-col="7" transform="translate(198, 0)" pmx-text-type="0" pmx-endtag-line="226" pmx-endtag-col="7">
+        <polyline pmx-line="225" pmx-col="9" points="3,40 11,10 19,40" stroke="#0F0" stroke-miterlimit="1" stroke-width="5" fill="none" pmx-text-type="0" pmx-endtag-line="225" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="228" pmx-col="7" transform="translate(220, 0)" pmx-text-type="0" pmx-endtag-line="230" pmx-endtag-col="7">
+        <line pmx-line="229" pmx-col="9" x1="11" y1="10" x2="11" y2="40" stroke="#0F0" stroke-width="5" pmx-text-type="0" pmx-endtag-line="229" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="232" pmx-col="7" transform="translate(242, 0)" pmx-text-type="0" pmx-endtag-line="234" pmx-endtag-col="7">
+        <line pmx-line="233" pmx-col="9" x1="11" y1="10" x2="11" y2="40" stroke="#0F0" visibility="hidden" pmx-text-type="0" pmx-endtag-line="233" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="236" pmx-col="7" transform="translate(264, 0)" pmx-text-type="0" pmx-endtag-line="238" pmx-endtag-col="7">
+        <text pmx-line="237" pmx-col="9" x="11" y="30" font-size="20" text-anchor="middle" font-family="serif" pmx-text-type="0" pmx-endtag-line="237" pmx-endtag-col="86">A</text>
+      </g>
+
+      <g pmx-line="240" pmx-col="7" transform="translate(286, 0)" pmx-text-type="0" pmx-endtag-line="242" pmx-endtag-col="7">
+        <text pmx-line="241" pmx-col="9" x="11" y="30" font-size="10" text-anchor="middle" font-family="serif" pmx-text-type="0" pmx-endtag-line="241" pmx-endtag-col="86">A</text>
+      </g>
+
+      <g pmx-line="244" pmx-col="7" transform="translate(308, 0)" pmx-text-type="0" pmx-endtag-line="246" pmx-endtag-col="7">
+        <text pmx-line="245" pmx-col="9" x="11" y="30" font-style="italic" text-anchor="middle" font-size="20" font-family="serif" pmx-text-type="0" pmx-endtag-line="245" pmx-endtag-col="106">A</text>
+      </g>
+
+      <g pmx-line="248" pmx-col="7" transform="translate(330, 0)" pmx-text-type="0" pmx-endtag-line="250" pmx-endtag-col="7">
+        <text pmx-line="249" pmx-col="9" x="11" y="30" font-weight="bold" text-anchor="middle" font-family="serif" font-size="20" pmx-text-type="0" pmx-endtag-line="249" pmx-endtag-col="105">A</text>
+      </g>
+
+      <g pmx-line="252" pmx-col="7" transform="translate(352, 0)" pmx-text-type="0" pmx-endtag-line="254" pmx-endtag-col="7">
+        <text pmx-line="253" pmx-col="9" x="11" y="30" text-anchor="middle" font-family="serif" font-size="20" pmx-text-type="0" pmx-endtag-line="253" pmx-endtag-col="86">A</text>
+      </g>
+    </g>
+  </g>
+  <g pmx-line="257" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="259" pmx-endtag-col="3">
+    <text pmx-line="258" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="258" pmx-endtag-col="83">$Revision: 1.5 $</text>
+  </g>
+  <rect pmx-line="260" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="260" pmx-endtag-col="3"/>
+  <pmx-comment pmx-line="261" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment>
+  <pmx-comment pmx-line="266" pmx-col="8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">&lt;g id="draft-watermark"&gt;
+    &lt;rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/&gt;
+    &lt;text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
+      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white"&gt;DRAFT&lt;/text&gt;
+  &lt;/g&gt;</pmx-comment>
+</svg>
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.2.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F25.html" refname="WCAG 2.0" refsect="A F25" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Matterhorn 1.02" refsect="06-004" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccMatterhorn</categoryref></rule></issue><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue></issues></doc>

@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/shapes-intro-01-t-isvalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="zero" pmx-most-frequent-word1-count="6" pmx-most-frequent-word1-ratio="23" pmx-most_frequent_word2="radius" pmx-most-frequent-word2-count="3" pmx-most-frequent-word2-ratio="11" pmx-most_frequent_word3="rect" pmx-most-frequent-word3-count="2" pmx-most-frequent-word3-ratio="7" pmx-most_frequent_word4="ellipse" pmx-most-frequent-word4-count="2" pmx-most-frequent-word4-ratio="7" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-sentence-count="0" pmx-syllable-count="0" pmx-raw-word-count="26" pmx-word-count="0" pmx-proper-noun-count="0" pmx-flesch-reading-ease="100" pmx-gunning-fog="0" pmx-content-length="5891" pmx-uncompressed-length="0" pmx-page-weight="5891" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="103" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">shapes-intro-01-t-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="103" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="46">Source SVG: shapes-intro-01-t-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" version="1.1" baseProfile="tiny" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="101" pmx-endtag-col="1">
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  SVG 1.1 2nd Edition Test Case                                     =</pmx-comment>
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2009 World Wide Web Consortium, (Massachusetts          =</pmx-comment>
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment>
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment>
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment>
+  <pmx-comment pmx-line="19" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment>
+  <pmx-comment pmx-line="20" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  
+  <title pmx-line="22" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="22" pmx-endtag-col="61">$RCSfile: shapes-intro-01-t.svg,v $</title>
+  <defs pmx-line="23" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3">
+    <font-face pmx-line="24" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5">
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7">
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="90" pmx-endtag-col="3">
+    <pmx-comment pmx-line="31" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <pmx-comment pmx-line="32" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Draw the boxes to contain the shapes and the text labels for the boxes </pmx-comment>
+    <pmx-comment pmx-line="33" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <g pmx-line="34" pmx-col="5" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="53" pmx-endtag-col="5">
+      <pmx-comment pmx-line="35" pmx-col="19" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> rects </pmx-comment>
+      <rect pmx-line="36" pmx-col="7" x="50" y="50" width="35" height="60" pmx-text-type="0" pmx-endtag-line="36" pmx-endtag-col="7"/>
+      <rect pmx-line="37" pmx-col="7" x="50" y="155" width="35" height="60" pmx-text-type="0" pmx-endtag-line="37" pmx-endtag-col="7"/>
+      <rect pmx-line="38" pmx-col="7" x="130" y="50" width="35" height="60" pmx-text-type="0" pmx-endtag-line="38" pmx-endtag-col="7"/>
+      <rect pmx-line="39" pmx-col="7" x="130" y="155" width="35" height="60" pmx-text-type="0" pmx-endtag-line="39" pmx-endtag-col="7"/>
+
+      <pmx-comment pmx-line="41" pmx-col="21" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> circles </pmx-comment>
+      <rect pmx-line="42" pmx-col="7" x="210" y="50" width="60" height="60" pmx-text-type="0" pmx-endtag-line="42" pmx-endtag-col="7"/>
+      <rect pmx-line="43" pmx-col="7" x="210" y="155" width="60" height="60" pmx-text-type="0" pmx-endtag-line="43" pmx-endtag-col="7"/>
+
+      <pmx-comment pmx-line="45" pmx-col="22" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ellipses </pmx-comment>
+      <rect pmx-line="46" pmx-col="7" x="315" y="50" width="35" height="60" pmx-text-type="0" pmx-endtag-line="46" pmx-endtag-col="7"/>
+      <rect pmx-line="47" pmx-col="7" x="315" y="155" width="35" height="60" pmx-text-type="0" pmx-endtag-line="47" pmx-endtag-col="7"/>
+      <rect pmx-line="48" pmx-col="7" x="394" y="50" width="35" height="60" pmx-text-type="0" pmx-endtag-line="48" pmx-endtag-col="7"/>
+      <rect pmx-line="49" pmx-col="7" x="394" y="155" width="35" height="60" pmx-text-type="0" pmx-endtag-line="49" pmx-endtag-col="7"/>
+
+      <pmx-comment pmx-line="51" pmx-col="18" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> line </pmx-comment>
+      <rect pmx-line="52" pmx-col="7" x="235" y="260" width="10" height="10" pmx-text-type="0" pmx-endtag-line="52" pmx-endtag-col="7"/>
+    </g>
+
+    <g pmx-line="55" pmx-col="5" font-family="Arial" font-size="8" pmx-text-type="0" pmx-endtag-line="64" pmx-endtag-col="5">
+      <text pmx-line="56" pmx-col="7" x="5" y="90" pmx-text-type="0" pmx-endtag-line="56" pmx-endtag-col="33">Stroked</text>
+      <text pmx-line="57" pmx-col="7" x="5" y="195" pmx-text-type="0" pmx-endtag-line="57" pmx-endtag-col="36">Unstroked</text>
+      <text pmx-line="58" pmx-col="7" x="50" y="135" pmx-text-type="0" pmx-endtag-line="58" pmx-endtag-col="43">Zero width rect</text>
+      <text pmx-line="59" pmx-col="7" x="130" y="135" pmx-text-type="0" pmx-endtag-line="59" pmx-endtag-col="45">Zero height rect</text>
+      <text pmx-line="60" pmx-col="7" x="210" y="135" pmx-text-type="0" pmx-endtag-line="60" pmx-endtag-col="47">Zero radius circle</text>
+      <text pmx-line="61" pmx-col="7" x="315" y="135" pmx-text-type="0" pmx-endtag-line="61" pmx-endtag-col="50">Zero x radius ellipse</text>
+      <text pmx-line="62" pmx-col="7" x="394" y="135" pmx-text-type="0" pmx-endtag-line="62" pmx-endtag-col="50">Zero y radius ellipse</text>
+      <text pmx-line="63" pmx-col="7" x="235" y="290" pmx-text-type="0" pmx-endtag-line="63" pmx-endtag-col="45">Zero length line</text>
+    </g>
+    <pmx-comment pmx-line="65" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <pmx-comment pmx-line="66" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Draw 4 rectangles, two with zero width, two with zero height           </pmx-comment>
+    <pmx-comment pmx-line="67" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> (stroked and unstroked)                                                </pmx-comment>
+    <pmx-comment pmx-line="68" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <rect pmx-line="69" pmx-col="5" id="Zero-width-stroked-rect" fill="none" stroke="#000000" x="55" y="55" width="0" height="50" pmx-text-type="0" pmx-endtag-line="69" pmx-endtag-col="5"/>
+    <rect pmx-line="70" pmx-col="5" id="Zero-width-unstroked-rect" fill="#FF0000" stroke="none" x="55" y="160" width="0" height="50" pmx-text-type="0" pmx-endtag-line="70" pmx-endtag-col="5"/>
+    <rect pmx-line="71" pmx-col="5" id="Zero-height-stroked-rect" fill="#00FF00" stroke="#0000FF" x="135" y="55" width="25" height="0" pmx-text-type="0" pmx-endtag-line="71" pmx-endtag-col="5"/>
+    <rect pmx-line="72" pmx-col="5" id="Zero-height-rect" fill="#00FF00" stroke="none" x="135" y="160" width="25" height="0" pmx-text-type="0" pmx-endtag-line="72" pmx-endtag-col="5"/>
+    <pmx-comment pmx-line="73" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <pmx-comment pmx-line="74" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Draw two zero radius circles (stroked and unstroked)                   </pmx-comment>
+    <pmx-comment pmx-line="75" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <circle pmx-line="76" pmx-col="5" id="Zero-radius-stroked-circle" fill="none" stroke="#000000" cx="240" cy="80" r="0" pmx-text-type="0" pmx-endtag-line="76" pmx-endtag-col="5"/>
+    <circle pmx-line="77" pmx-col="5" id="Zero-radius-unstroked-circle" fill="#FF0000" stroke="none" cx="240" cy="185" r="0" pmx-text-type="0" pmx-endtag-line="77" pmx-endtag-col="5"/>
+    <pmx-comment pmx-line="78" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <pmx-comment pmx-line="79" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Draw 4 ellipses, two with a zero x radius, two with a zero y radius    </pmx-comment>
+    <pmx-comment pmx-line="80" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> (stroked and unstroked)                                                </pmx-comment>
+    <pmx-comment pmx-line="81" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <ellipse pmx-line="82" pmx-col="5" id="Zero-x-radius-stroked-ellipse" fill="#00FF00" stroke="#0000FF" cx="332" cy="80" rx="0" ry="25" pmx-text-type="0" pmx-endtag-line="82" pmx-endtag-col="5"/>
+    <ellipse pmx-line="83" pmx-col="5" id="Zero-x-radius-unstroked-ellipse" fill="#00FF00" stroke="none" cx="332" cy="185" rx="0" ry="25" pmx-text-type="0" pmx-endtag-line="83" pmx-endtag-col="5"/>
+    <ellipse pmx-line="84" pmx-col="5" id="Zero-y-radius-stroked-ellipse" fill="none" stroke="#000000" cx="411" cy="80" rx="12" ry="0" pmx-text-type="0" pmx-endtag-line="84" pmx-endtag-col="5"/>
+    <ellipse pmx-line="85" pmx-col="5" id="Zero-y-radius-unstroked-ellipse" fill="#FF0000" stroke="none" cx="411" cy="185" rx="12" ry="0" pmx-text-type="0" pmx-endtag-line="85" pmx-endtag-col="5"/>
+    <pmx-comment pmx-line="86" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <pmx-comment pmx-line="87" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Draw a zero-length line                                                </pmx-comment>
+    <pmx-comment pmx-line="88" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ====================================================================== </pmx-comment>
+    <line pmx-line="89" pmx-col="5" id="Zero-length-line" stroke="#0000FF" x1="240" y1="265" x2="240" y2="265" pmx-text-type="0" pmx-endtag-line="89" pmx-endtag-col="5"/>
+  </g>
+  <g pmx-line="91" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="93" pmx-endtag-col="3">
+    <text pmx-line="92" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="92" pmx-endtag-col="83">$Revision: 1.5 $</text>
+  </g>
+  <rect pmx-line="94" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="94" pmx-endtag-col="3"/>
+  <pmx-comment pmx-line="95" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment>
+  <pmx-comment pmx-line="100" pmx-col="8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">&lt;g id="draft-watermark"&gt;
+    &lt;rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/&gt;
+    &lt;text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
+      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white"&gt;DRAFT&lt;/text&gt;
+  &lt;/g&gt;</pmx-comment>
+</svg>
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.2.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F25.html" refname="WCAG 2.0" refsect="A F25" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Matterhorn 1.02" refsect="06-004" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccMatterhorn</categoryref></rule></issue><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue></issues></doc>

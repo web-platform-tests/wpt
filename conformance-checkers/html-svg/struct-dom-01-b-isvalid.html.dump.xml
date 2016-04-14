@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/struct-dom-01-b-isvalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="svg" pmx-most-frequent-word1-count="1" pmx-most-frequent-word1-ratio="25" pmx-most_frequent_word2="source" pmx-most-frequent-word2-count="1" pmx-most-frequent-word2-ratio="25" pmx-most_frequent_word3="revision" pmx-most-frequent-word3-count="1" pmx-most-frequent-word3-ratio="25" pmx-most_frequent_word4="" pmx-most-frequent-word4-count="0" pmx-most-frequent-word4-ratio="0" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-sentence-count="0" pmx-syllable-count="0" pmx-raw-word-count="4" pmx-word-count="0" pmx-proper-noun-count="0" pmx-flesch-reading-ease="100" pmx-gunning-fog="0" pmx-content-length="7205" pmx-uncompressed-length="0" pmx-page-weight="7205" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="166" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">struct-dom-01-b-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="166" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="44">Source SVG: struct-dom-01-b-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" version="1.1" baseProfile="basic" onload="domTest(evt)" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="164" pmx-endtag-col="1"> 
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment> 
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  SVG 1.1 2nd Edition Test Case                                     =</pmx-comment> 
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment> 
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2009 World Wide Web Consortium, (Massachusetts          =</pmx-comment> 
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment> 
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment> 
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment> 
+  <pmx-comment pmx-line="19" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment> 
+  <pmx-comment pmx-line="20" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment> 
+   
+  <title pmx-line="22" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="22" pmx-endtag-col="59">$RCSfile: struct-dom-01-b.svg,v $</title> 
+  <defs pmx-line="23" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3"> 
+    <font-face pmx-line="24" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5"> 
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7"> 
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/> 
+      </font-face-src> 
+    </font-face> 
+  </defs> 
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="153" pmx-endtag-col="3"> 
+    <script pmx-line="31" pmx-col="5" type="text/ecmascript" href="../resources/testharness.js" pmx-text-type="2" pmx-endtag-line="31" pmx-endtag-col="77"/> 
+    <script pmx-line="32" pmx-col="5" type="text/ecmascript" pmx-text-type="2" pmx-endtag-line="97" pmx-endtag-col="8"><pmx-script pmx-line="32" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-function pmx-line="33" pmx-col="1" name="domTest" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="33" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">domTest</pmx-id><pmx-id pmx-line="33" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">evt</pmx-id><pmx-param pmx-line="33" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">evt</pmx-param><pmx-block pmx-line="33" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+
+<pmx-statement pmx-line="35" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="35" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="35" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">svg_ns</pmx-id><pmx-lit-string pmx-line="35" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">http://www.w3.org/2000/svg</pmx-lit-string></pmx-statement>
+
+<pmx-comment pmx-line="37" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// Get Document </pmx-comment>
+<pmx-statement pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">target</pmx-id><pmx-id pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">evt</pmx-id>.<pmx-id pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">target</pmx-id></pmx-statement>
+<pmx-statement pmx-line="39" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="39" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="39" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">doc</pmx-id><pmx-id pmx-line="39" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">target</pmx-id>.<pmx-id pmx-line="39" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">ownerDocument</pmx-id></pmx-statement>
+
+<pmx-comment pmx-line="41" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-comment pmx-line="42" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// Test that our rectangle is an SVGElement instance </pmx-comment>
+<pmx-comment pmx-line="43" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-statement pmx-line="44" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="44" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="44" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id><pmx-id pmx-line="44" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">doc</pmx-id>.<pmx-id pmx-line="44" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">getElementById</pmx-id>(<pmx-lit-string pmx-line="44" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rectId</pmx-lit-string>)</pmx-statement>
+<pmx-statement pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rootSVG</pmx-id><pmx-id pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id>.<pmx-id pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">ownerSVGElement</pmx-id></pmx-statement>
+<pmx-statement pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rootId</pmx-id><pmx-id pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rootSVG</pmx-id>.<pmx-id pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">getAttribute</pmx-id>(<pmx-lit-string pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">id</pmx-lit-string>)</pmx-statement>
+
+<pmx-comment pmx-line="48" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// Insert a new text element to the DOM tree using the id </pmx-comment>
+<pmx-statement pmx-line="49" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="49" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="49" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newText</pmx-id><pmx-id pmx-line="49" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">doc</pmx-id>.<pmx-id pmx-line="49" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">createElementNS</pmx-id>(<pmx-id pmx-line="49" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">svg_ns</pmx-id><pmx-lit-string pmx-line="49" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">text</pmx-lit-string>)</pmx-statement>
+<pmx-statement pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="49" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newText</pmx-id>.<pmx-id pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">setAttribute</pmx-id>(<pmx-lit-string pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">x</pmx-lit-string><pmx-lit-string pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">50</pmx-lit-string>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="51" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="51" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newText</pmx-id>.<pmx-id pmx-line="51" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">setAttribute</pmx-id>(<pmx-lit-string pmx-line="51" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">y</pmx-lit-string><pmx-lit-string pmx-line="51" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">100</pmx-lit-string>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">message</pmx-id><pmx-lit-string pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">This document's root identifier is: </pmx-lit-string><pmx-op-add pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">+</pmx-op-add><pmx-id pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rootId</pmx-id></pmx-statement>
+<pmx-statement pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">textContent</pmx-id><pmx-id pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">doc</pmx-id>.<pmx-id pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">createTextNode</pmx-id>(<pmx-id pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">message</pmx-id>)</pmx-statement>
+<pmx-statement pmx-line="54" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="54" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newText</pmx-id>.<pmx-id pmx-line="54" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">appendChild</pmx-id>(<pmx-id pmx-line="54" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">textContent</pmx-id>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="55" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="54" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="55" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id>.<pmx-id pmx-line="55" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">parentNode</pmx-id>.<pmx-id pmx-line="55" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">appendChild</pmx-id>(<pmx-id pmx-line="55" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newText</pmx-id>)</pmx-expr></pmx-statement>
+
+<pmx-comment pmx-line="57" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-comment pmx-line="58" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// Now, check that our rectangle is an instance of SVGRect by accessing </pmx-comment>
+<pmx-comment pmx-line="59" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// specific methods in order to get its x, y, width and height attributes. </pmx-comment>
+<pmx-comment pmx-line="60" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-statement pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">x</pmx-id><pmx-id pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id>.<pmx-id pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">x</pmx-id>.<pmx-id pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">baseVal</pmx-id>.<pmx-id pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">value</pmx-id></pmx-statement><pmx-comment pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// SVGRect -&amp;gt; SVGAnimatedLenght -&amp;gt; SVGLength -&amp;gt; long </pmx-comment>
+<pmx-statement pmx-line="62" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="62" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="62" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">y</pmx-id><pmx-id pmx-line="62" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id>.<pmx-id pmx-line="62" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">y</pmx-id>.<pmx-id pmx-line="62" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">baseVal</pmx-id>.<pmx-id pmx-line="62" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">value</pmx-id></pmx-statement>
+<pmx-statement pmx-line="63" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="63" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="63" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">width</pmx-id><pmx-id pmx-line="63" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id>.<pmx-id pmx-line="63" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">width</pmx-id>.<pmx-id pmx-line="63" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">baseVal</pmx-id>.<pmx-id pmx-line="63" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">value</pmx-id></pmx-statement>
+<pmx-statement pmx-line="64" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="64" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="64" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">height</pmx-id><pmx-id pmx-line="64" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id>.<pmx-id pmx-line="64" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">height</pmx-id>.<pmx-id pmx-line="64" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">baseVal</pmx-id>.<pmx-id pmx-line="64" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">value</pmx-id></pmx-statement>
+
+<pmx-comment pmx-line="66" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-comment pmx-line="67" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// Now, build a new SVGRect through the SVGSVGElement interface. </pmx-comment>
+<pmx-comment pmx-line="68" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-statement pmx-line="69" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="69" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="69" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id><pmx-id pmx-line="69" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">doc</pmx-id>.<pmx-id pmx-line="69" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">createElementNS</pmx-id>(<pmx-id pmx-line="69" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">svg_ns</pmx-id><pmx-lit-string pmx-line="69" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-lit-string>)</pmx-statement>
+
+<pmx-comment pmx-line="71" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-comment pmx-line="72" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// Set the x, y, width and height of this element </pmx-comment>
+<pmx-comment pmx-line="73" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-statement pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="69" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id>.<pmx-id pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">x</pmx-id>.<pmx-id pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">baseVal</pmx-id>.<pmx-id pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">value</pmx-id><pmx-op-assign pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=</pmx-op-assign><pmx-id pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">x</pmx-id><pmx-op-add pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">+</pmx-op-add><pmx-lit-int pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">10</pmx-lit-int></pmx-expr></pmx-statement>
+<pmx-statement pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="74" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id>.<pmx-id pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">y</pmx-id>.<pmx-id pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">baseVal</pmx-id>.<pmx-id pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">value</pmx-id><pmx-op-assign pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=</pmx-op-assign><pmx-id pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">y</pmx-id><pmx-op-add pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">+</pmx-op-add><pmx-lit-int pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">10</pmx-lit-int></pmx-expr></pmx-statement>
+<pmx-statement pmx-line="76" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="75" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="76" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id>.<pmx-id pmx-line="76" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">setAttribute</pmx-id>(<pmx-lit-string pmx-line="76" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">width</pmx-lit-string><pmx-id pmx-line="76" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">width</pmx-id>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="77" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="76" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="77" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id>.<pmx-id pmx-line="77" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">setAttribute</pmx-id>(<pmx-lit-string pmx-line="77" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">height</pmx-lit-string><pmx-id pmx-line="77" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">height</pmx-id>)</pmx-expr></pmx-statement>
+
+<pmx-comment pmx-line="79" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-comment pmx-line="80" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// Insert new element in DOM tree </pmx-comment>
+<pmx-comment pmx-line="81" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-statement pmx-line="82" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="77" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="82" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id>.<pmx-id pmx-line="82" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">parentNode</pmx-id>.<pmx-id pmx-line="82" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">insertBefore</pmx-id>(<pmx-id pmx-line="82" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id><pmx-id pmx-line="82" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rect</pmx-id>)</pmx-expr></pmx-statement>
+
+<pmx-comment pmx-line="84" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-comment pmx-line="85" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// Check the pass criteria using the JS framework </pmx-comment>
+<pmx-comment pmx-line="86" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">// </pmx-comment>
+<pmx-statement pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="82" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">test</pmx-id>(<pmx-function pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-block pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-statement pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">assert_equals</pmx-id>(<pmx-id pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">rootId</pmx-id><pmx-lit-string pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">svg-root</pmx-lit-string>)</pmx-expr></pmx-statement></pmx-block></pmx-function><pmx-lit-string pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">Assert that the document's root identifier is 'svg-root'.</pmx-lit-string>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="94" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="87" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="88" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">test</pmx-id>(<pmx-function pmx-line="88" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-block pmx-line="88" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="89" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="88" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="89" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">assert_true</pmx-id>(<pmx-id pmx-line="89" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id><pmx-op-instanceof pmx-line="89" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">instanceof</pmx-op-instanceof><pmx-id pmx-line="89" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SVGRectElement</pmx-id>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="89" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">assert_equals</pmx-id>(<pmx-id pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id>.<pmx-id pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">getAttribute</pmx-id>(<pmx-lit-string pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">x</pmx-lit-string>)<pmx-id pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">String</pmx-id>(<pmx-id pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">x</pmx-id><pmx-op-add pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">+</pmx-op-add><pmx-lit-int pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">10</pmx-lit-int>))</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="90" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">assert_equals</pmx-id>(<pmx-id pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id>.<pmx-id pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">getAttribute</pmx-id>(<pmx-lit-string pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">y</pmx-lit-string>)<pmx-id pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">String</pmx-id>(<pmx-id pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">y</pmx-id><pmx-op-add pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">+</pmx-op-add><pmx-lit-int pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">10</pmx-lit-int>))</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="92" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="91" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="92" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">assert_equals</pmx-id>(<pmx-id pmx-line="92" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id>.<pmx-id pmx-line="92" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">getAttribute</pmx-id>(<pmx-lit-string pmx-line="92" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">width</pmx-lit-string>)<pmx-id pmx-line="92" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">String</pmx-id>(<pmx-id pmx-line="92" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">width</pmx-id>))</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="93" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="92" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="93" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">assert_equals</pmx-id>(<pmx-id pmx-line="93" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">newRect</pmx-id>.<pmx-id pmx-line="93" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">getAttribute</pmx-id>(<pmx-lit-string pmx-line="93" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">height</pmx-lit-string>)<pmx-id pmx-line="93" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">String</pmx-id>(<pmx-id pmx-line="93" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">height</pmx-id>))</pmx-expr></pmx-statement>
+</pmx-block></pmx-function><pmx-lit-string pmx-line="94" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">Assert that 'newRect' is replica (ignoring fill) of 'rect' with different x and y.</pmx-lit-string>)</pmx-expr></pmx-statement>
+</pmx-block></pmx-function>
+
+</pmx-script> 
+      function domTest(evt) { 
+ 
+      var svg_ns = "http://www.w3.org/2000/svg"; 
+ 
+      // Get Document 
+      var target = evt.target; 
+      var doc = target.ownerDocument; 
+ 
+      // 
+      // Test that our rectangle is an SVGElement instance 
+      // 
+      var rect = doc.getElementById("rectId"); 
+      var rootSVG = rect.ownerSVGElement; 
+      var rootId = rootSVG.getAttribute( "id" ); 
+ 
+      // Insert a new text element to the DOM tree using the id 
+      var newText = doc.createElementNS(svg_ns, 'text'); 
+      newText.setAttribute('x', '50'); 
+      newText.setAttribute('y', '100'); 
+      var message = "This document's root identifier is: " + rootId; 
+      var textContent = doc.createTextNode(message); 
+      newText.appendChild(textContent); 
+      rect.parentNode.appendChild(newText); 
+ 
+      // 
+      // Now, check that our rectangle is an instance of SVGRect by accessing 
+      // specific methods in order to get its x, y, width and height attributes. 
+      // 
+      var x = rect.x.baseVal.value; // SVGRect -&amp;gt; SVGAnimatedLenght -&amp;gt; SVGLength -&amp;gt; long 
+      var y = rect.y.baseVal.value; 
+      var width = rect.width.baseVal.value; 
+      var height = rect.height.baseVal.value; 
+ 
+      // 
+      // Now, build a new SVGRect through the SVGSVGElement interface. 
+      // 
+      var newRect = doc.createElementNS(svg_ns, 'rect'); 
+ 
+      // 
+      // Set the x, y, width and height of this element 
+      // 
+      newRect.x.baseVal.value = x + 10; 
+      newRect.y.baseVal.value = y + 10; 
+      newRect.setAttribute("width", width); 
+      newRect.setAttribute("height", height); 
+ 
+      // 
+      // Insert new element in DOM tree 
+      // 
+      rect.parentNode.insertBefore(newRect, rect); 
+ 
+      // 
+      // Check the pass criteria using the JS framework 
+      // 
+      test(function() {assert_equals(rootId, "svg-root")}, "Assert that the document's root identifier is 'svg-root'."); 
+      test(function() { 
+           assert_true(newRect instanceof SVGRectElement); 
+           assert_equals(newRect.getAttribute('x'), String(x+10)); 
+           assert_equals(newRect.getAttribute('y'), String(y+10)); 
+           assert_equals(newRect.getAttribute('width'), String(width)); 
+           assert_equals(newRect.getAttribute('height'), String(height)); 
+      }, "Assert that 'newRect' is replica (ignoring fill) of 'rect' with different x and y."); 
+      } 
+ 
+    </script> 
+    <pmx-comment pmx-line="98" pmx-col="80" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment> 
+    <pmx-comment pmx-line="99" pmx-col="80" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Since this test is examining the SVG DOM, it could use any language  </pmx-comment> 
+    <pmx-comment pmx-line="100" pmx-col="80" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> binding. Here is the equivalent code for the Java binding            </pmx-comment> 
+    <pmx-comment pmx-line="147" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 
+ 
+        // 
+        // Test that our rectangle is an SVGElement instance 
+        // 
+        SVGRectElement rect = (SVGRectElement) doc.getElementById("rectId"); 
+        SVGElement rootSVG = rect.getOwnerSVGElement(); 
+        String rootId = rootSVG.getId(); 
+ 
+        // Insert a new text element to the DOM tree using the id 
+        Element newText = doc.createElement("text"); 
+        newText.setAttribute("x", "50"); 
+        newText.setAttribute("y", "100"); 
+        String message = "This document's root identifier is=" " + rootId"  
+        Text textContent = doc.createTextNode(message); 
+        newText.appendChild(textContent); 
+        rect.getParentNode().appendChild(newText); 
+ 
+        // 
+        // Now, check that our rectangle is an instance of SVGRect by accessing 
+        // specific methods in order to get its x, y, width and height attributes. 
+        // 
+        float x = rect.getX().getBaseVal().getValue(); 
+        float y = rect.getY().getBaseVal().getValue(); 
+        float width = rect.getWidth().getBaseVal().getValue(); 
+        float height = rect.getHeight().getBaseVal().getValue(); 
+ 
+        // 
+        // Now, build a new SVGRect through the SVGSVGElement interface. 
+        // 
+        SVGRectElement newRect = (SVGRectElement) doc.createElement("rect"); 
+ 
+        // 
+        // Set the x, y, width and height of this element 
+        // 
+        newRect.getX().getBaseVal().setValue(x + 10); 
+        newRect.getY().getBaseVal().setValue(y + 10); 
+        newRect.getWidth().getBaseVal().setValue(width); 
+        newRect.getHeight().getBaseVal().setValue(height); 
+ 
+        // 
+        // Insert new element in DOM tree 
+        // 
+	alert(newRect) 
+        rect.getParentNode().insertBefore(newRect, rect); 
+ 
+</pmx-comment> 
+    <pmx-comment pmx-line="148" pmx-col="81" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ===================================================================== </pmx-comment> 
+    <pmx-comment pmx-line="149" pmx-col="81" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The following rectangle's is accessed in the 'domTest' ECMA Script    </pmx-comment> 
+    <pmx-comment pmx-line="150" pmx-col="81" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> handler.                                                              </pmx-comment> 
+    <pmx-comment pmx-line="151" pmx-col="81" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ===================================================================== </pmx-comment> 
+    <rect pmx-line="152" pmx-col="5" id="rectId" x="40" y="150" width="50" height="50" fill="green" pmx-text-type="0" pmx-endtag-line="152" pmx-endtag-col="5"/> 
+  </g> 
+  <g pmx-line="154" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="156" pmx-endtag-col="3"> 
+    <text pmx-line="155" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="155" pmx-endtag-col="83">$Revision: 1.8 $</text> 
+  </g> 
+  <rect pmx-line="157" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="157" pmx-endtag-col="3"/> 
+  <pmx-comment pmx-line="158" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment> 
+  <pmx-comment pmx-line="163" pmx-col="8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">&lt;g id="draft-watermark"&gt; 
+    &lt;rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/&gt; 
+    &lt;text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240" 
+      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white"&gt;DRAFT&lt;/text&gt; 
+  &lt;/g&gt;</pmx-comment> 
+</svg> 
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.2.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F25.html" refname="WCAG 2.0" refsect="A F25" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Matterhorn 1.02" refsect="06-004" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccMatterhorn</categoryref></rule></issue><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="54" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugIeTextContent" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.quirksmode.org/dom/w3c_html.html" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechScript</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue></issues></doc>

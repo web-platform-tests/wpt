@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/text-text-12-t-isvalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="text-anchor" pmx-most-frequent-word1-count="2" pmx-most-frequent-word1-ratio="22" pmx-most_frequent_word2="svg" pmx-most-frequent-word2-count="1" pmx-most-frequent-word2-ratio="11" pmx-most_frequent_word3="source" pmx-most-frequent-word3-count="1" pmx-most-frequent-word3-ratio="11" pmx-most_frequent_word4="revision" pmx-most-frequent-word4-count="1" pmx-most-frequent-word4-ratio="11" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-sentence-count="0" pmx-syllable-count="0" pmx-raw-word-count="9" pmx-word-count="0" pmx-proper-noun-count="0" pmx-flesch-reading-ease="100" pmx-gunning-fog="0" pmx-content-length="7627" pmx-uncompressed-length="0" pmx-page-weight="7627" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="167" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">text-text-12-t-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="167" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="43">Source SVG: text-text-12-t-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" version="1.1" baseProfile="tiny" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="165" pmx-endtag-col="1">
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  SVG 1.1 2nd Edition Test Case                                     =</pmx-comment>
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2009 World Wide Web Consortium, (Massachusetts          =</pmx-comment>
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment>
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment>
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment>
+  <pmx-comment pmx-line="19" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment>
+  <pmx-comment pmx-line="20" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  
+  <title pmx-line="22" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="22" pmx-endtag-col="58">$RCSfile: text-text-12-t.svg,v $</title>
+  <defs pmx-line="23" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3">
+    <font-face pmx-line="24" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5">
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7">
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="154" pmx-endtag-col="3">
+    <style pmx-line="31" pmx-col="5" type="text/css" pmx-text-type="2" pmx-endtag-line="36" pmx-endtag-col="3"><pmx-font-face pmx-line="32" pmx-col="3" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-font-family pmx-line="33" pmx-col="5" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">embeded</pmx-font-family><pmx-src pmx-line="34" pmx-col="5" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-url pmx-line="34" pmx-col="10" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">woffs/embeded-text-text-05.woff</pmx-url></pmx-src><pmx-src pmx-line="34" pmx-col="5" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/></pmx-font-face>
+  @font-face {
+    font-family: embeded;
+    src: url(woffs/embeded-text-text-05.woff) format("woff");
+    }
+  </style>
+    <g pmx-line="37" pmx-col="5" font-size="16" pmx-text-type="0" pmx-endtag-line="153" pmx-endtag-col="5">
+      <defs pmx-line="38" pmx-col="7" pmx-text-type="0" pmx-endtag-line="48" pmx-endtag-col="7">
+        <font pmx-line="39" pmx-col="9" id="embeded" horiz-adv-x="224" pmx-text-type="0" pmx-endtag-line="46" pmx-endtag-col="9">
+          <font-face pmx-line="40" pmx-col="11" font-family="embeded" units-per-em="1000" panose-1="0 0 0 0 0 0 0 0 0 0" ascent="917" descent="-250" alphabetic="0" pmx-text-type="0" pmx-endtag-line="40" pmx-endtag-col="11"/>
+          <missing-glyph pmx-line="41" pmx-col="11" horiz-adv-x="800" d="M50 0V800H750V0H50ZM700 50V750H100V50H700Z" pmx-text-type="0" pmx-endtag-line="41" pmx-endtag-col="11"/>
+          <glyph pmx-line="42" pmx-col="11" unicode="1" glyph-name="gl_1" horiz-adv-x="1500" d="M 0 0 L 250 0 L 250 250 L 0 250 Z" pmx-text-type="0" pmx-endtag-line="42" pmx-endtag-col="11"/>
+          <glyph pmx-line="43" pmx-col="11" unicode="2" glyph-name="gl_2" horiz-adv-x="1500" d="M 0 0 L 500 0 L 500 500 L 0 500 Z" pmx-text-type="0" pmx-endtag-line="43" pmx-endtag-col="11"/>
+          <glyph pmx-line="44" pmx-col="11" unicode="3" glyph-name="gl_3" horiz-adv-x="1500" d="M 0 0 L 750 0 L 750 750 L 0 750 Z" pmx-text-type="0" pmx-endtag-line="44" pmx-endtag-col="11"/>
+          <glyph pmx-line="45" pmx-col="11" unicode="4" glyph-name="gl_4" horiz-adv-x="1500" d="M 0 0 L 1000 0 L 1000 1000 L 0 1000 Z" pmx-text-type="0" pmx-endtag-line="45" pmx-endtag-col="11"/>
+        </font>
+
+      </defs>
+
+      <defs pmx-line="50" pmx-col="7" pmx-text-type="0" pmx-endtag-line="55" pmx-endtag-col="7">
+        <g pmx-line="51" pmx-col="9" id="marker" pmx-text-type="0" pmx-endtag-line="54" pmx-endtag-col="9">
+          <line pmx-line="52" pmx-col="11" y2="-15" stroke="fuchsia" pmx-text-type="0" pmx-endtag-line="52" pmx-endtag-col="11"/>
+          <rect pmx-line="53" pmx-col="11" x="-4" y="-4" width="8" height="8" pmx-text-type="0" pmx-endtag-line="53" pmx-endtag-col="11"/>
+        </g>
+      </defs>
+
+      <g pmx-line="57" pmx-col="7" id="legend" transform="translate(10, 40)" pmx-text-type="0" pmx-endtag-line="67" pmx-endtag-col="7">
+        <text pmx-line="58" pmx-col="9" y="30" pmx-text-type="0" pmx-endtag-line="58" pmx-endtag-col="29">1.x 1.y</text>
+        <text pmx-line="59" pmx-col="9" y="60" pmx-text-type="0" pmx-endtag-line="59" pmx-endtag-col="29">4.x 1.y</text>
+        <text pmx-line="60" pmx-col="9" y="90" pmx-text-type="0" pmx-endtag-line="60" pmx-endtag-col="29">2.x 1.y</text>
+        <text pmx-line="61" pmx-col="9" y="120" pmx-text-type="0" pmx-endtag-line="61" pmx-endtag-col="30">1.x 4.y</text>
+        <text pmx-line="62" pmx-col="9" y="150" pmx-text-type="0" pmx-endtag-line="62" pmx-endtag-col="30">4.x 4.y</text>
+        <text pmx-line="63" pmx-col="9" y="180" pmx-text-type="0" pmx-endtag-line="63" pmx-endtag-col="30">2.x 4.y</text>
+        <text pmx-line="64" pmx-col="9" y="210" pmx-text-type="0" pmx-endtag-line="64" pmx-endtag-col="30">1.x 2.y</text>
+        <text pmx-line="65" pmx-col="9" y="240" pmx-text-type="0" pmx-endtag-line="65" pmx-endtag-col="30">4.x 2.y</text>
+        <text pmx-line="66" pmx-col="9" y="270" pmx-text-type="0" pmx-endtag-line="66" pmx-endtag-col="30">2.x 2.y</text>
+      </g>
+			
+			<defs pmx-line="69" pmx-col="4" pmx-text-type="0" pmx-endtag-line="137" pmx-endtag-col="4">
+	      <g pmx-line="70" pmx-col="8" id="textContent" pmx-text-type="0" pmx-endtag-line="136" pmx-endtag-col="8">
+	        <pmx-comment pmx-line="71" pmx-col="24" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 1.x 1.y </pmx-comment>
+	        <use pmx-line="72" pmx-col="10" y="30" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="72" pmx-endtag-col="10"/>
+	        <text pmx-line="73" pmx-col="10" x="0" y="30" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="73" pmx-endtag-col="70">1234</text>
+	
+	        <pmx-comment pmx-line="75" pmx-col="43" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 4.x 1.y : four text chunks </pmx-comment>
+	        <use pmx-line="76" pmx-col="10" x="10" y="60" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="76" pmx-endtag-col="10"/>
+	        <use pmx-line="77" pmx-col="10" x="20" y="60" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="77" pmx-endtag-col="10"/>
+	        <use pmx-line="78" pmx-col="10" x="30" y="60" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="78" pmx-endtag-col="10"/>
+	        <use pmx-line="79" pmx-col="10" x="40" y="60" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="79" pmx-endtag-col="10"/>
+	        <text pmx-line="80" pmx-col="10" x="10 20 30 40" y="60" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="80" pmx-endtag-col="80">1234</text>
+	
+	        <pmx-comment pmx-line="82" pmx-col="42" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 2.x 1.y : two text chunks </pmx-comment>
+	        <use pmx-line="83" pmx-col="10" x="10" y="90" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="83" pmx-endtag-col="10"/>
+	        <use pmx-line="84" pmx-col="10" x="60" y="90" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="84" pmx-endtag-col="10"/>
+	        <text pmx-line="85" pmx-col="10" x="10 60" y="90" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="85" pmx-endtag-col="74">1234</text>
+	
+	        <pmx-comment pmx-line="87" pmx-col="43" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 1.x 4.y : four text chunks </pmx-comment>
+	        <g pmx-line="88" pmx-col="10" transform="translate(0, 120)" pmx-text-type="0" pmx-endtag-line="94" pmx-endtag-col="10">
+	          <use pmx-line="89" pmx-col="12" x="0" y="-10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="89" pmx-endtag-col="12"/>
+	          <use pmx-line="90" pmx-col="12" x="15" y="-5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="90" pmx-endtag-col="12"/>
+	          <use pmx-line="91" pmx-col="12" x="30" y="5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="91" pmx-endtag-col="12"/>
+	          <use pmx-line="92" pmx-col="12" x="45" y="10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="92" pmx-endtag-col="12"/>
+	          <text pmx-line="93" pmx-col="12" x="0" y="-10 -5 5 10" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="93" pmx-endtag-col="81">1234</text>
+	        </g>
+	
+	        <pmx-comment pmx-line="96" pmx-col="43" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 4.x 4.y : four text chunks </pmx-comment>
+	        <g pmx-line="97" pmx-col="10" transform="translate(0, 150)" pmx-text-type="0" pmx-endtag-line="103" pmx-endtag-col="10">
+	          <use pmx-line="98" pmx-col="12" x="10" y="-10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="98" pmx-endtag-col="12"/>
+	          <use pmx-line="99" pmx-col="12" x="20" y="-5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="99" pmx-endtag-col="12"/>
+	          <use pmx-line="100" pmx-col="12" x="30" y="5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="100" pmx-endtag-col="12"/>
+	          <use pmx-line="101" pmx-col="12" x="40" y="10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="101" pmx-endtag-col="12"/>
+	          <text pmx-line="102" pmx-col="12" x="10 20 30 40" y="-10 -5 5 10" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="102" pmx-endtag-col="91">1234</text>
+	        </g>
+	
+	        <pmx-comment pmx-line="105" pmx-col="43" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 2.x 4.y : four text chunks </pmx-comment>
+	        <g pmx-line="106" pmx-col="10" transform="translate(0, 180)" pmx-text-type="0" pmx-endtag-line="112" pmx-endtag-col="10">
+	          <use pmx-line="107" pmx-col="12" x="10" y="-10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="107" pmx-endtag-col="12"/>
+	          <use pmx-line="108" pmx-col="12" x="20" y="-5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="108" pmx-endtag-col="12"/>
+	          <use pmx-line="109" pmx-col="12" x="35" y="5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="109" pmx-endtag-col="12"/>
+	          <use pmx-line="110" pmx-col="12" x="50" y="10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="110" pmx-endtag-col="12"/>
+	          <text pmx-line="111" pmx-col="12" x="10 20" y="-10 -5 5 10" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="111" pmx-endtag-col="85">1234</text>
+	        </g>
+	
+	        <pmx-comment pmx-line="114" pmx-col="42" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 1.x 2.y : two text chunks </pmx-comment>
+	        <g pmx-line="115" pmx-col="10" transform="translate(0, 210)" pmx-text-type="0" pmx-endtag-line="119" pmx-endtag-col="10">
+	          <use pmx-line="116" pmx-col="12" x="0" y="-10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="116" pmx-endtag-col="12"/>
+	          <use pmx-line="117" pmx-col="12" x="15" y="5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="117" pmx-endtag-col="12"/>
+	          <text pmx-line="118" pmx-col="12" x="0" y="-10 5" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="118" pmx-endtag-col="75">1234</text>
+	        </g>
+	
+	        <pmx-comment pmx-line="121" pmx-col="43" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 4.x 2.y : four text chunks </pmx-comment>
+	        <g pmx-line="122" pmx-col="10" transform="translate(0, 240)" pmx-text-type="0" pmx-endtag-line="128" pmx-endtag-col="10">
+	          <use pmx-line="123" pmx-col="12" x="10" y="-10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="123" pmx-endtag-col="12"/>
+	          <use pmx-line="124" pmx-col="12" x="20" y="-5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="124" pmx-endtag-col="12"/>
+	          <use pmx-line="125" pmx-col="12" x="30" y="-5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="125" pmx-endtag-col="12"/>
+	          <use pmx-line="126" pmx-col="12" x="40" y="-5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="126" pmx-endtag-col="12"/>
+	          <text pmx-line="127" pmx-col="12" x="10 20 30 40" y="-10 -5" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="127" pmx-endtag-col="86">1234</text>
+	        </g>
+	
+	        <pmx-comment pmx-line="130" pmx-col="42" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> 2.x 2.y : two text chunks </pmx-comment>
+	        <g pmx-line="131" pmx-col="10" transform="translate(0, 270)" pmx-text-type="0" pmx-endtag-line="135" pmx-endtag-col="10">
+	          <use pmx-line="132" pmx-col="12" x="10" y="-10" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="132" pmx-endtag-col="12"/>
+	          <use pmx-line="133" pmx-col="12" x="60" y="-5" href="#marker" fill="#8888ff" pmx-text-type="0" pmx-endtag-line="133" pmx-endtag-col="12"/>
+	          <text pmx-line="134" pmx-col="12" x="10 60" y="-10 -5" font-family="embeded" font-size="10" pmx-text-type="0" pmx-endtag-line="134" pmx-endtag-col="80">1234</text>
+	        </g>
+	      </g>
+			</defs>
+			
+      <g pmx-line="139" pmx-col="7" id="anchorMiddle" text-anchor="middle" transform="translate(250, 40)" pmx-text-type="0" pmx-endtag-line="144" pmx-endtag-col="7">
+        <text pmx-line="140" pmx-col="9" y="-17" text-anchor="middle" pmx-text-type="0" pmx-endtag-line="140" pmx-endtag-col="55">text-anchor</text>
+        <text pmx-line="141" pmx-col="9" y="-3" text-anchor="middle" pmx-text-type="0" pmx-endtag-line="141" pmx-endtag-col="49">middle</text>
+        <line pmx-line="142" pmx-col="9" x1="0" y1="10" x2="0" y2="290" stroke="fuchsia" pmx-text-type="0" pmx-endtag-line="142" pmx-endtag-col="9"/>
+        <use pmx-line="143" pmx-col="9" href="#textContent" pmx-text-type="0" pmx-endtag-line="143" pmx-endtag-col="9"/>
+      </g>
+
+      <g pmx-line="146" pmx-col="7" id="anchorEnd" text-anchor="end" transform="translate(350, 40)" pmx-text-type="0" pmx-endtag-line="151" pmx-endtag-col="7">
+        <text pmx-line="147" pmx-col="9" y="-17" text-anchor="middle" pmx-text-type="0" pmx-endtag-line="147" pmx-endtag-col="55">text-anchor</text>
+        <text pmx-line="148" pmx-col="9" y="-3" text-anchor="middle" pmx-text-type="0" pmx-endtag-line="148" pmx-endtag-col="46">end</text>
+        <line pmx-line="149" pmx-col="9" x1="0" y1="10" x2="0" y2="290" stroke="fuchsia" pmx-text-type="0" pmx-endtag-line="149" pmx-endtag-col="9"/>
+        <use pmx-line="150" pmx-col="9" href="#textContent" pmx-text-type="0" pmx-endtag-line="150" pmx-endtag-col="9"/>
+      </g>
+
+    </g>
+  </g>
+  <g pmx-line="155" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="157" pmx-endtag-col="3">
+    <text pmx-line="156" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="156" pmx-endtag-col="83">$Revision: 1.1 $</text>
+  </g>
+  <rect pmx-line="158" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="158" pmx-endtag-col="3"/>
+  <pmx-comment pmx-line="159" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment>
+  <g pmx-line="160" pmx-col="3" id="draft-watermark" pmx-text-type="0" pmx-endtag-line="164" pmx-endtag-col="3">
+    <rect pmx-line="161" pmx-col="5" x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1" pmx-text-type="0" pmx-endtag-line="161" pmx-endtag-col="5"/>
+    <text pmx-line="162" pmx-col="5" font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240" text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white" pmx-text-type="0" pmx-endtag-line="163" pmx-endtag-col="87">DRAFT</text>
+  </g>
+</svg>
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue></issues></doc>

@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/coords-units-01-b-isvalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="fraction" pmx-most-frequent-word1-count="6" pmx-most-frequent-word1-ratio="15" pmx-most_frequent_word2="percentage" pmx-most-frequent-word2-count="5" pmx-most-frequent-word2-ratio="13" pmx-most_frequent_word3="user" pmx-most-frequent-word3-count="3" pmx-most-frequent-word3-ratio="7" pmx-most_frequent_word4="space" pmx-most-frequent-word4-count="3" pmx-most-frequent-word4-ratio="7" pmx-longest-paragraph="1" pmx-longest-sentence="19" pmx-longest-word="11" pmx-sentence-count="1" pmx-syllable-count="39" pmx-raw-word-count="38" pmx-word-count="19" pmx-proper-noun-count="6" pmx-flesch-reading-ease="13" pmx-gunning-fog="18" pmx-content-length="9651" pmx-uncompressed-length="0" pmx-page-weight="9651" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="150" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">coords-units-01-b-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="1" pmx-longest-sentence="19" pmx-longest-word="11" pmx-text-type="1" pmx-endtag-line="150" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="46">Source SVG: coords-units-01-b-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" version="1.1" baseProfile="basic" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="148" pmx-endtag-col="1">
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  SVG 1.1 2nd Edition Test Case                                     =</pmx-comment>
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2009 World Wide Web Consortium, (Massachusetts          =</pmx-comment>
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment>
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment>
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment>
+  <pmx-comment pmx-line="19" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment>
+  <pmx-comment pmx-line="20" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  
+  <title pmx-line="22" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="22" pmx-endtag-col="61">$RCSfile: coords-units-01-b.svg,v $</title>
+  <defs pmx-line="23" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3">
+    <font-face pmx-line="24" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5">
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7">
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="137" pmx-endtag-col="3">
+    <g pmx-line="31" pmx-col="5" font-size="14" pmx-text-type="0" pmx-endtag-line="136" pmx-endtag-col="5">
+      <pmx-comment pmx-line="32" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ==================================================================== </pmx-comment>
+      <pmx-comment pmx-line="33" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The following gradients will be used to fill a rectangle with the    </pmx-comment>
+      <pmx-comment pmx-line="34" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> following geometry in User space: x=0, y=0, width=50 height=20       </pmx-comment>
+      <pmx-comment pmx-line="35" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The gradient vector, in linearBoundingBox, is defined as: (0%, 0%)   </pmx-comment>
+      <pmx-comment pmx-line="36" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> to (100%, 0%).                                                       </pmx-comment>
+      <pmx-comment pmx-line="37" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The gradient vector, in linearBoundingBoxFraction, is defined as:    </pmx-comment>
+      <pmx-comment pmx-line="38" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> (0, 0) to (1, 0), which is equivalent.                               </pmx-comment>
+      <pmx-comment pmx-line="39" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> According to the spec, for our rectangle, this corresponds to the    </pmx-comment>
+      <pmx-comment pmx-line="40" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> following user space coordinates:                                    </pmx-comment>
+      <pmx-comment pmx-line="41" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> (0%, 0%) becomes (0, 0) and (100%, 0%) becomes (20, 0)               </pmx-comment>
+      <pmx-comment pmx-line="42" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> These values are used to define the linearUserSpace gradient.        </pmx-comment>
+      <pmx-comment pmx-line="43" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> If the test succeeds, all the gradient should fill the rectangles    </pmx-comment>
+      <pmx-comment pmx-line="44" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> the same way                                                         </pmx-comment>
+      <pmx-comment pmx-line="45" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ==================================================================== </pmx-comment>
+      <linearGradient pmx-line="46" pmx-col="7" id="linearBoundingBoxPercentage" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%" pmx-text-type="0" pmx-endtag-line="49" pmx-endtag-col="7">
+        <stop pmx-line="47" pmx-col="9" stop-color="fuchsia" offset="0" pmx-text-type="0" pmx-endtag-line="47" pmx-endtag-col="9"/>
+        <stop pmx-line="48" pmx-col="9" stop-color="blue" offset="1" pmx-text-type="0" pmx-endtag-line="48" pmx-endtag-col="9"/>
+      </linearGradient>
+      <linearGradient pmx-line="50" pmx-col="7" id="linearBoundingBoxFraction" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0" pmx-text-type="0" pmx-endtag-line="53" pmx-endtag-col="7">
+        <stop pmx-line="51" pmx-col="9" stop-color="fuchsia" offset="0" pmx-text-type="0" pmx-endtag-line="51" pmx-endtag-col="9"/>
+        <stop pmx-line="52" pmx-col="9" stop-color="blue" offset="1" pmx-text-type="0" pmx-endtag-line="52" pmx-endtag-col="9"/>
+      </linearGradient>
+      <linearGradient pmx-line="54" pmx-col="7" id="linearUserSpace" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="50" y2="0" pmx-text-type="0" pmx-endtag-line="57" pmx-endtag-col="7">
+        <stop pmx-line="55" pmx-col="9" stop-color="fuchsia" offset="0" pmx-text-type="0" pmx-endtag-line="55" pmx-endtag-col="9"/>
+        <stop pmx-line="56" pmx-col="9" stop-color="blue" offset="1" pmx-text-type="0" pmx-endtag-line="56" pmx-endtag-col="9"/>
+      </linearGradient>
+      <pmx-comment pmx-line="58" pmx-col="31" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Draw Text Comment </pmx-comment>
+      <text pmx-line="59" pmx-col="7" x="30" y="30" pmx-text-type="0" pmx-endtag-line="59" pmx-endtag-col="86">Bounding box relative coordinates (percentage and fraction)</text>
+      <g pmx-line="60" pmx-col="7" transform="translate(30, 40)" pmx-text-type="0" pmx-endtag-line="69" pmx-endtag-col="7">
+        <rect pmx-line="61" pmx-col="9" x="0" y="0" width="50" height="20" fill="url(#linearBoundingBoxPercentage)" pmx-text-type="0" pmx-endtag-line="61" pmx-endtag-col="9"/>
+        <rect pmx-line="62" pmx-col="9" x="0" y="0" width="50" height="20" transform="translate(0, 20)" fill="url(#linearBoundingBoxFraction)" pmx-text-type="0" pmx-endtag-line="62" pmx-endtag-col="9"/>
+        <rect pmx-line="63" pmx-col="9" x="0" y="0" width="50" height="20" transform="translate(0, 40)" fill="url(#linearUserSpace)" pmx-text-type="0" pmx-endtag-line="63" pmx-endtag-col="9"/>
+        <line pmx-line="64" pmx-col="9" x1="0" y1="20" x2="50" y2="20" stroke="#cccccc" stroke-width="1" pmx-text-type="0" pmx-endtag-line="64" pmx-endtag-col="9"/>
+        <line pmx-line="65" pmx-col="9" x1="0" y1="40" x2="50" y2="40" stroke="#cccccc" stroke-width="1" pmx-text-type="0" pmx-endtag-line="65" pmx-endtag-col="9"/>
+        <text pmx-line="66" pmx-col="9" x="60" y="15" pmx-text-type="0" pmx-endtag-line="66" pmx-endtag-col="39">Percentage</text>
+        <text pmx-line="67" pmx-col="9" x="60" y="35" pmx-text-type="0" pmx-endtag-line="67" pmx-endtag-col="37">Fraction</text>
+        <text pmx-line="68" pmx-col="9" x="60" y="55" pmx-text-type="0" pmx-endtag-line="68" pmx-endtag-col="39">User Space</text>
+      </g>
+      <pmx-comment pmx-line="70" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ==================================================================== </pmx-comment>
+      <pmx-comment pmx-line="71" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The following gradients will be used to fill a rectangle with the    </pmx-comment>
+      <pmx-comment pmx-line="72" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> following geometry in User space: x=0, y=0, width=60 height=60       </pmx-comment>
+      <pmx-comment pmx-line="73" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The radial gradient outmost circle, in radialBoundingBox, is defined </pmx-comment>
+      <pmx-comment pmx-line="74" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> as: cx=25% cy=25% r=25%                                              </pmx-comment>
+      <pmx-comment pmx-line="75" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The radial gradient outmost circle, in radialBoundingBoxFraction, is </pmx-comment>
+      <pmx-comment pmx-line="76" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> defined as: cx=0.25 cy=0.25 and r=0.25                               </pmx-comment>
+      <pmx-comment pmx-line="77" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> These two definition, for our rectangle, should be identical to the  </pmx-comment>
+      <pmx-comment pmx-line="78" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> following radial gradient outmost circle, in radialUserSpace:        </pmx-comment>
+      <pmx-comment pmx-line="79" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> cx=15 cy=15 r=15                                                     </pmx-comment>
+      <pmx-comment pmx-line="80" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ==================================================================== </pmx-comment>
+      <radialGradient pmx-line="81" pmx-col="7" id="radialBoundingBoxPercentage" gradientUnits="objectBoundingBox" cx="25%" cy="25%" r="25%" fx="25%" fy="25%" pmx-text-type="0" pmx-endtag-line="84" pmx-endtag-col="7">
+        <stop pmx-line="82" pmx-col="9" stop-color="fuchsia" offset="0" pmx-text-type="0" pmx-endtag-line="82" pmx-endtag-col="9"/>
+        <stop pmx-line="83" pmx-col="9" stop-color="blue" offset="1" pmx-text-type="0" pmx-endtag-line="83" pmx-endtag-col="9"/>
+      </radialGradient>
+      <radialGradient pmx-line="85" pmx-col="7" id="radialBoundingBoxFraction" gradientUnits="objectBoundingBox" cx="0.25" cy="0.25" r="0.25" fx="0.25" fy="0.25" pmx-text-type="0" pmx-endtag-line="88" pmx-endtag-col="7">
+        <stop pmx-line="86" pmx-col="9" stop-color="fuchsia" offset="0" pmx-text-type="0" pmx-endtag-line="86" pmx-endtag-col="9"/>
+        <stop pmx-line="87" pmx-col="9" stop-color="blue" offset="1" pmx-text-type="0" pmx-endtag-line="87" pmx-endtag-col="9"/>
+      </radialGradient>
+      <radialGradient pmx-line="89" pmx-col="7" id="radialUserSpace" gradientUnits="userSpaceOnUse" cx="15" cy="15" r="15" fx="15" fy="15" pmx-text-type="0" pmx-endtag-line="92" pmx-endtag-col="7">
+        <stop pmx-line="90" pmx-col="9" stop-color="fuchsia" offset="0" pmx-text-type="0" pmx-endtag-line="90" pmx-endtag-col="9"/>
+        <stop pmx-line="91" pmx-col="9" stop-color="blue" offset="1" pmx-text-type="0" pmx-endtag-line="91" pmx-endtag-col="9"/>
+      </radialGradient>
+      <pmx-comment pmx-line="93" pmx-col="31" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Draw Text Comment </pmx-comment>
+      <text pmx-line="94" pmx-col="7" x="30" y="130" pmx-text-type="0" pmx-endtag-line="94" pmx-endtag-col="82">Bounding box relative length (percentage and fraction)</text>
+      <g pmx-line="95" pmx-col="7" transform="translate(30, 140)" pmx-text-type="0" pmx-endtag-line="102" pmx-endtag-col="7">
+        <rect pmx-line="96" pmx-col="9" x="0" y="0" width="60" height="60" fill="url(#radialBoundingBoxPercentage)" pmx-text-type="0" pmx-endtag-line="96" pmx-endtag-col="9"/>
+        <rect pmx-line="97" pmx-col="9" x="0" y="0" width="60" height="60" transform="translate(61, 0)" fill="url(#radialBoundingBoxFraction)" pmx-text-type="0" pmx-endtag-line="97" pmx-endtag-col="9"/>
+        <rect pmx-line="98" pmx-col="9" x="0" y="0" width="60" height="60" transform="translate(122, 0)" fill="url(#radialUserSpace)" pmx-text-type="0" pmx-endtag-line="98" pmx-endtag-col="9"/>
+        <text pmx-line="99" pmx-col="9" x="0" y="73" pmx-text-type="0" pmx-endtag-line="99" pmx-endtag-col="36">Percent.</text>
+        <text pmx-line="100" pmx-col="9" x="61" y="73" pmx-text-type="0" pmx-endtag-line="100" pmx-endtag-col="37">Fraction</text>
+        <text pmx-line="101" pmx-col="9" x="122" y="73" pmx-text-type="0" pmx-endtag-line="101" pmx-endtag-col="40">User Space</text>
+      </g>
+      <pmx-comment pmx-line="103" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ==================================================================== </pmx-comment>
+      <pmx-comment pmx-line="104" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The following patterns will be used to fill a rectangle, with the    </pmx-comment>
+      <pmx-comment pmx-line="105" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> following geometry in User space: x=0, y=0, width=50 height=30       </pmx-comment>
+      <pmx-comment pmx-line="106" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The pattern tile, in patterBoundingBoxPercentage, is defined as:     </pmx-comment>
+      <pmx-comment pmx-line="107" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> x=25% y=25% width=50% height=50%                                     </pmx-comment>
+      <pmx-comment pmx-line="108" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> The pattern tile, in patternBoundingBoxFraction, is defined as:      </pmx-comment>
+      <pmx-comment pmx-line="109" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> x=0.25 y=0.25 width=0.50 height=0.50                                 </pmx-comment>
+      <pmx-comment pmx-line="110" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> For our test rectangle, both correspond to the following User space  </pmx-comment>
+      <pmx-comment pmx-line="111" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> coordinates: x=12.5 y=7.5 width=25 height=15                         </pmx-comment>
+      <pmx-comment pmx-line="112" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> These coordinates are use to define the patternUserSpace tile        </pmx-comment>
+      <pmx-comment pmx-line="113" pmx-col="82" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> ==================================================================== </pmx-comment>
+      <pattern pmx-line="114" pmx-col="7" id="patternBoundingBoxPercentage" patternUnits="objectBoundingBox" patternContentUnits="objectBoundingBox" x="25%" y="25%" width="50%" height="50%" pmx-text-type="0" pmx-endtag-line="117" pmx-endtag-col="7">
+        <circle pmx-line="115" pmx-col="9" cx="0.50" cy="0.50" r="0.25" fill="fuchsia" pmx-text-type="0" pmx-endtag-line="115" pmx-endtag-col="9"/>
+        <rect pmx-line="116" pmx-col="9" x="0.4" y="0.4" width=".2" height=".2" fill="blue" pmx-text-type="0" pmx-endtag-line="116" pmx-endtag-col="9"/>
+      </pattern>
+      <pattern pmx-line="118" pmx-col="7" id="patternBoundingBoxFraction" patternUnits="objectBoundingBox" patternContentUnits="objectBoundingBox" x="0.25" y="0.25" width="0.50" height="0.50" pmx-text-type="0" pmx-endtag-line="121" pmx-endtag-col="7">
+        <circle pmx-line="119" pmx-col="9" cx="0.50" cy="0.50" r="0.25" fill="fuchsia" pmx-text-type="0" pmx-endtag-line="119" pmx-endtag-col="9"/>
+        <rect pmx-line="120" pmx-col="9" x="0.4" y="0.4" width=".2" height=".2" fill="blue" pmx-text-type="0" pmx-endtag-line="120" pmx-endtag-col="9"/>
+      </pattern>
+      <pattern pmx-line="122" pmx-col="7" id="patternUserSpace" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse" x="12.5" y="7.5" width="25" height="15" pmx-text-type="0" pmx-endtag-line="125" pmx-endtag-col="7">
+        <circle pmx-line="123" pmx-col="9" id="patternContent" cx="25" cy="15" r="10" fill="fuchsia" pmx-text-type="0" pmx-endtag-line="123" pmx-endtag-col="9"/>
+        <rect pmx-line="124" pmx-col="9" x="20" y="12" width="10" height="6" fill="blue" pmx-text-type="0" pmx-endtag-line="124" pmx-endtag-col="9"/>
+      </pattern>
+      <pmx-comment pmx-line="126" pmx-col="31" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> Draw Text Comment </pmx-comment>
+      <text pmx-line="127" pmx-col="7" x="30" y="240" pmx-text-type="0" pmx-endtag-line="127" pmx-endtag-col="88">Bounding box relative width/height (percentage and fraction)</text>
+      <g pmx-line="128" pmx-col="7" transform="translate(30, 250)" pmx-text-type="0" pmx-endtag-line="135" pmx-endtag-col="7">
+        <rect pmx-line="129" pmx-col="9" x="0" y="0" width="50" height="30" fill="url(#patternBoundingBoxPercentage)" stroke="black" pmx-text-type="0" pmx-endtag-line="129" pmx-endtag-col="9"/>
+        <rect pmx-line="130" pmx-col="9" x="0" y="0" width="50" height="30" transform="translate(150, 0)" fill="url(#patternBoundingBoxFraction)" stroke="black" pmx-text-type="0" pmx-endtag-line="130" pmx-endtag-col="9"/>
+        <rect pmx-line="131" pmx-col="9" x="0" y="0" width="50" height="30" transform="translate(300, 0)" fill="url(#patternUserSpace)" stroke="black" pmx-text-type="0" pmx-endtag-line="131" pmx-endtag-col="9"/>
+        <text pmx-line="132" pmx-col="9" x="60" y="20" pmx-text-type="0" pmx-endtag-line="132" pmx-endtag-col="39">Percentage</text>
+        <text pmx-line="133" pmx-col="9" x="210" y="20" pmx-text-type="0" pmx-endtag-line="133" pmx-endtag-col="38">Fraction</text>
+        <text pmx-line="134" pmx-col="9" x="360" y="20" pmx-text-type="0" pmx-endtag-line="134" pmx-endtag-col="40">User Space</text>
+      </g>
+    </g>
+  </g>
+  <g pmx-line="138" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="140" pmx-endtag-col="3">
+    <text pmx-line="139" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="139" pmx-endtag-col="83">$Revision: 1.7 $</text>
+  </g>
+  <rect pmx-line="141" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000000" pmx-text-type="0" pmx-endtag-line="141" pmx-endtag-col="3"/>
+  <pmx-comment pmx-line="142" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment>
+  <pmx-comment pmx-line="147" pmx-col="8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">&lt;g id="draft-watermark"&gt;
+    &lt;rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/&gt;
+    &lt;text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
+      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white"&gt;DRAFT&lt;/text&gt;
+  &lt;/g&gt;</pmx-comment>
+</svg>
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.2.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F25.html" refname="WCAG 2.0" refsect="A F25" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Matterhorn 1.02" refsect="06-004" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccMatterhorn</categoryref></rule></issue><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue></issues></doc>

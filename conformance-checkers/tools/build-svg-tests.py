@@ -40,9 +40,9 @@ valid_svg_files = dict([
     # these entries manually added after cross checking behaviour with spec
     
     # VNU warns about text not in Unicode Normalization Form C, but it's not an error
-    ('struct-cond-02-t.svg', 'Source text is not in Unicode Normalization Form C'),
+    ('struct-cond-02-t-manual.svg', 'Source text is not in Unicode Normalization Form C'),
     # FiLl, fill and FILL are all valid in case-insensitive HTML (but SVG DTD is case-sensitive)
-    ('styling-css-10-f.svg', 'Attribute FiLl not allowed on SVG element circle at this point')
+    ('styling-css-10-f-manual.svg', 'Attribute FiLl not allowed on SVG element circle at this point')
 ])
 
 # some files in the SVG 1.1 test suite don't validate against the SVG 1.1 DTD
@@ -51,90 +51,90 @@ valid_svg_files = dict([
     
 invalid_svg_files = dict([
     # 'DTD Invalid' entries are produced by calling validate_svg_dtd (see below)
-    ('animate-dom-01-f.svg', 'DTD Invalid'),
-    ('animate-dom-02-f.svg', 'DTD Invalid'),
-    ('animate-elem-24-t.svg', 'DTD Invalid'),
-    ('animate-elem-77-t.svg', 'DTD Invalid'),
-    ('animate-pservers-grad-01-b.svg', 'DTD Invalid'),
-    ('animate-script-elem-01-b.svg', 'DTD Invalid'),
-    ('animate-struct-dom-01-b.svg', 'DTD Invalid'),
-    ('conform-viewers-03-f.svg', 'DTD Invalid'),
-    ('coords-dom-01-f.svg', 'DTD Invalid'),
-    ('coords-dom-02-f.svg', 'DTD Invalid'),
-    ('coords-dom-03-f.svg', 'DTD Invalid'),
-    ('extend-namespace-01-f.svg', 'DTD Invalid'),
-    ('filters-color-02-b.svg', 'DTD Invalid'),
-    ('filters-conv-02-f.svg', 'DTD Invalid'),
-    ('filters-conv-04-f.svg', 'DTD Invalid'),
-    ('filters-conv-05-f.svg', 'DTD Invalid'),
-    ('filters-light-05-f.svg', 'DTD Invalid'),
-    ('fonts-glyph-04-t.svg', 'DTD Invalid'),
-    ('interact-events-02-b.svg', 'DTD Invalid'),
-    ('interact-pevents-01-b.svg', 'DTD Invalid'),
-    ('interact-pevents-03-b.svg', 'DTD Invalid'),
-    ('interact-pevents-05-b.svg', 'DTD Invalid'),
-    ('interact-pevents-07-t.svg', 'DTD Invalid'),
-    ('interact-pevents-08-f.svg', 'DTD Invalid'),
-    ('interact-pevents-09-f.svg', 'DTD Invalid'),
-    ('interact-pointer-01-t.svg', 'DTD Invalid'),
-    ('interact-pointer-02-t.svg', 'DTD Invalid'),
-    ('interact-pointer-03-t.svg', 'DTD Invalid'),
-    ('linking-a-09-b.svg', 'DTD Invalid'),
-    ('linking-a-10-f.svg', 'DTD Invalid'),
-    ('masking-filter-01-f.svg', 'DTD Invalid'),
-    ('masking-intro-01-f.svg', 'DTD Invalid'),
-    ('masking-path-09-b.svg', 'DTD Invalid'),
-    ('painting-marker-04-f.svg', 'DTD Invalid'),
-    ('paths-data-18-f.svg', 'DTD Invalid'),
-    ('paths-data-20-f.svg', 'DTD Invalid'),
-    ('paths-dom-01-f.svg', 'DTD Invalid'),
-    ('paths-dom-02-f.svg', 'DTD Invalid'),
-    ('pservers-grad-23-f.svg', 'DTD Invalid'),
-    ('render-elems-03-t.svg', 'DTD Invalid'),
-    ('shapes-rect-03-t.svg', 'DTD Invalid'),
-    ('struct-cond-02-t.svg', 'DTD Invalid'),
-    ('struct-dom-07-f.svg', 'DTD Invalid'),
-    ('struct-dom-08-f.svg', 'DTD Invalid'),
-    ('struct-dom-11-f.svg', 'DTD Invalid'),
-    ('struct-dom-13-f.svg', 'DTD Invalid'),
-    ('struct-dom-14-f.svg', 'DTD Invalid'),
-    ('struct-dom-15-f.svg', 'DTD Invalid'),
-    ('struct-dom-17-f.svg', 'DTD Invalid'),
-    ('struct-dom-19-f.svg', 'DTD Invalid'),
-    ('struct-dom-20-f.svg', 'DTD Invalid'),
-    ('struct-frag-05-t.svg', 'DTD Invalid'),
-    ('struct-image-12-b.svg', 'DTD Invalid'),
-    ('struct-use-11-f.svg', 'DTD Invalid'),
-    ('struct-use-12-f.svg', 'DTD Invalid'),
-    ('struct-use-13-f.svg', 'DTD Invalid'),
-    ('styling-css-10-f.svg', 'DTD Invalid'),
-    ('styling-pres-02-f.svg', 'DTD Invalid'),
-    ('svgdom-over-01-f.svg', 'DTD Invalid'),
-    ('text-dom-02-f.svg', 'DTD Invalid'),
-    ('text-dom-03-f.svg', 'DTD Invalid'),
-    ('text-dom-05-f.svg', 'DTD Invalid'),
-    ('text-fonts-03-t.svg', 'DTD Invalid'),
-    ('text-fonts-05-f.svg', 'DTD Invalid'),
-    ('text-tref-02-b.svg', 'DTD Invalid'),
-    ('text-tselect-02-f.svg', 'DTD Invalid'),
-    ('text-tselect-03-f.svg', 'DTD Invalid'),
-    ('types-dom-02-f.svg', 'DTD Invalid'),
-    ('types-dom-03-b.svg', 'DTD Invalid'),
-    ('types-dom-04-b.svg', 'DTD Invalid'),
-    ('types-dom-05-b.svg', 'DTD Invalid'),
-    ('types-dom-07-f.svg', 'DTD Invalid'),
-    ('types-dom-08-f.svg', 'DTD Invalid'),
+    ('animate-dom-01-f-manual.svg', 'DTD Invalid'),
+    ('animate-dom-02-f-manual.svg', 'DTD Invalid'),
+    ('animate-elem-24-t-manual.svg', 'DTD Invalid'),
+    ('animate-elem-77-t-manual.svg', 'DTD Invalid'),
+    ('animate-pservers-grad-01-b-manual.svg', 'DTD Invalid'),
+    ('animate-script-elem-01-b-manual.svg', 'DTD Invalid'),
+    ('animate-struct-dom-01-b-manual.svg', 'DTD Invalid'),
+    ('conform-viewers-03-f-manual.svg', 'DTD Invalid'),
+    ('coords-dom-01-f-manual.svg', 'DTD Invalid'),
+    ('coords-dom-02-f-manual.svg', 'DTD Invalid'),
+    ('coords-dom-03-f-manual.svg', 'DTD Invalid'),
+    ('extend-namespace-01-f-manual.svg', 'DTD Invalid'),
+    ('filters-color-02-b-manual.svg', 'DTD Invalid'),
+    ('filters-conv-02-f-manual.svg', 'DTD Invalid'),
+    ('filters-conv-04-f-manual.svg', 'DTD Invalid'),
+    ('filters-conv-05-f-manual.svg', 'DTD Invalid'),
+    ('filters-light-05-f-manual.svg', 'DTD Invalid'),
+    ('fonts-glyph-04-t-manual.svg', 'DTD Invalid'),
+    ('interact-events-02-b-manual.svg', 'DTD Invalid'),
+    ('interact-pevents-01-b-manual.svg', 'DTD Invalid'),
+    ('interact-pevents-03-b-manual.svg', 'DTD Invalid'),
+    ('interact-pevents-05-b-manual.svg', 'DTD Invalid'),
+    ('interact-pevents-07-t-manual.svg', 'DTD Invalid'),
+    ('interact-pevents-08-f-manual.svg', 'DTD Invalid'),
+    ('interact-pevents-09-f-manual.svg', 'DTD Invalid'),
+    ('interact-pointer-01-t-manual.svg', 'DTD Invalid'),
+    ('interact-pointer-02-t-manual.svg', 'DTD Invalid'),
+    ('interact-pointer-03-t-manual.svg', 'DTD Invalid'),
+    ('linking-a-09-b-manual.svg', 'DTD Invalid'),
+    ('linking-a-10-f-manual.svg', 'DTD Invalid'),
+    ('masking-filter-01-f-manual.svg', 'DTD Invalid'),
+    ('masking-intro-01-f-manual.svg', 'DTD Invalid'),
+    ('masking-path-09-b-manual.svg', 'DTD Invalid'),
+    ('painting-marker-04-f-manual.svg', 'DTD Invalid'),
+    ('paths-data-18-f-manual.svg', 'DTD Invalid'),
+    ('paths-data-20-f-manual.svg', 'DTD Invalid'),
+    ('paths-dom-01-f-manual.svg', 'DTD Invalid'),
+    ('paths-dom-02-f-manual.svg', 'DTD Invalid'),
+    ('pservers-grad-23-f-manual.svg', 'DTD Invalid'),
+    ('render-elems-03-t-manual.svg', 'DTD Invalid'),
+    ('shapes-rect-03-t-manual.svg', 'DTD Invalid'),
+    ('struct-cond-02-t-manual.svg', 'DTD Invalid'),
+    ('struct-dom-07-f-manual.svg', 'DTD Invalid'),
+    ('struct-dom-08-f-manual.svg', 'DTD Invalid'),
+    ('struct-dom-11-f-manual.svg', 'DTD Invalid'),
+    ('struct-dom-13-f-manual.svg', 'DTD Invalid'),
+    ('struct-dom-14-f-manual.svg', 'DTD Invalid'),
+    ('struct-dom-15-f-manual.svg', 'DTD Invalid'),
+    ('struct-dom-17-f-manual.svg', 'DTD Invalid'),
+    ('struct-dom-19-f-manual.svg', 'DTD Invalid'),
+    ('struct-dom-20-f-manual.svg', 'DTD Invalid'),
+    ('struct-frag-05-t-manual.svg', 'DTD Invalid'),
+    ('struct-image-12-b-manual.svg', 'DTD Invalid'),
+    ('struct-use-11-f-manual.svg', 'DTD Invalid'),
+    ('struct-use-12-f-manual.svg', 'DTD Invalid'),
+    ('struct-use-13-f-manual.svg', 'DTD Invalid'),
+    ('styling-css-10-f-manual.svg', 'DTD Invalid'),
+    ('styling-pres-02-f-manual.svg', 'DTD Invalid'),
+    ('svgdom-over-01-f-manual.svg', 'DTD Invalid'),
+    ('text-dom-02-f-manual.svg', 'DTD Invalid'),
+    ('text-dom-03-f-manual.svg', 'DTD Invalid'),
+    ('text-dom-05-f-manual.svg', 'DTD Invalid'),
+    ('text-fonts-03-t-manual.svg', 'DTD Invalid'),
+    ('text-fonts-05-f-manual.svg', 'DTD Invalid'),
+    ('text-tref-02-b-manual.svg', 'DTD Invalid'),
+    ('text-tselect-02-f-manual.svg', 'DTD Invalid'),
+    ('text-tselect-03-f-manual.svg', 'DTD Invalid'),
+    ('types-dom-02-f-manual.svg', 'DTD Invalid'),
+    ('types-dom-03-b-manual.svg', 'DTD Invalid'),
+    ('types-dom-04-b-manual.svg', 'DTD Invalid'),
+    ('types-dom-05-b-manual.svg', 'DTD Invalid'),
+    ('types-dom-07-f-manual.svg', 'DTD Invalid'),
+    ('types-dom-08-f-manual.svg', 'DTD Invalid'),
         
     # these entries manually added after cross checking behaviour with spec
     # note there are some confusing differences between w:iri-ref (used in HTML for img/@src)
     # and xsd:anyURI (used in SVG for image/@xlink:href)
-    ('animate-elem-40-t.svg', 'Spaces in data: URI - not allowed by URL Standard or RFC 2397.'),
-    ('conform-viewers-02-f.svg', 'Newlines in data: URI - not allowed by URL Standard or RFC 2397.'),
-    ('coords-transformattr-01-f.svg', 'Numeric character reference expanded to carriage return - not allowed in HTML5 - see 8.1.4'),
-    ('fonts-overview-201-t.svg', 'Unsupported SVG version specified - specifies SVG 1.2'),
-    ('script-specify-01-f.svg', 'Attribute contentscripttype not allowed on element svg at this point - not allowed in HTML5 - see 4.8.18 SVG'),
-    ('types-dom-04-b.svg', 'Attribute externalresourcesrequired not allowed on element svg at this point - not allowed in HTML5 - see 4.8.18 SVG'),
-    ('metadata-example-01-t.svg', 'Element rdf:rdf not allowed as child of element metadata in this context - namespaced XML not allowed in HTML5')
+    ('animate-elem-40-t-manual.svg', 'Spaces in data: URI - not allowed by URL Standard or RFC 2397.'),
+    ('conform-viewers-02-f-manual.svg', 'Newlines in data: URI - not allowed by URL Standard or RFC 2397.'),
+    ('coords-transformattr-01-f-manual.svg', 'Numeric character reference expanded to carriage return - not allowed in HTML5 - see 8.1.4'),
+    ('fonts-overview-201-t-manual.svg', 'Unsupported SVG version specified - specifies SVG 1.2'),
+    ('script-specify-01-f-manual.svg', 'Attribute contentscripttype not allowed on element svg at this point - not allowed in HTML5 - see 4.8.18 SVG'),
+    ('types-dom-04-b-manual.svg', 'Attribute externalresourcesrequired not allowed on element svg at this point - not allowed in HTML5 - see 4.8.18 SVG'),
+    ('metadata-example-01-t-manual.svg', 'Element rdf:rdf not allowed as child of element metadata in this context - namespaced XML not allowed in HTML5')
 ])
 
 # TODO Github Issue #216 MathML and SVG uses xsd:anyURI, HTML URLs use URL Standard
@@ -193,9 +193,9 @@ def build_html_test_file(filename, svgdirectory, htmldirectory):
 
     # valid_svg_file overrides invalid_svg_files (may invalid in case-sensitive XML but valid in case-insensitive HTML)
     if invalid_svg_files.has_key(filename) and not valid_svg_files.has_key(filename): 
-        htmlpathname = htmldirectory + "/" + filename.replace( ".svg", "-novalid.html")
+        htmlpathname = htmldirectory + "/" + filename.replace( "-manual.svg", "-novalid.html")
     else:
-        htmlpathname = htmldirectory + "/" + filename.replace( ".svg", "-isvalid.html")
+        htmlpathname = htmldirectory + "/" + filename.replace( "-manual.svg", "-isvalid.html")
 
     logging.debug(svgpathname)
     logging.debug(htmlpathname)
@@ -291,7 +291,7 @@ def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     logging.debug('main: IN')
     
-    svgdirectory = os.path.expanduser("~/Downloads/W3C_SVG_11_TestSuite/svg")
+    svgdirectory = "../../svg/import"
     htmldirectory = "../html-svg"
 
     try:

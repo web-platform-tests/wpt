@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/interact-pevents-01-b-novalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="toggle" pmx-most-frequent-word1-count="1" pmx-most-frequent-word1-ratio="2" pmx-most_frequent_word2="text" pmx-most-frequent-word2-count="1" pmx-most-frequent-word2-ratio="2" pmx-most_frequent_word3="test" pmx-most-frequent-word3-count="1" pmx-most-frequent-word3-ratio="2" pmx-most_frequent_word4="svg" pmx-most-frequent-word4-count="1" pmx-most-frequent-word4-ratio="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-sentence-count="0" pmx-syllable-count="0" pmx-raw-word-count="50" pmx-word-count="0" pmx-proper-noun-count="0" pmx-flesch-reading-ease="100" pmx-gunning-fog="0" pmx-content-length="10245" pmx-uncompressed-length="0" pmx-page-weight="10245" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="173" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">interact-pevents-01-b-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="173" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="50">Source SVG: interact-pevents-01-b-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" version="1.1" baseProfile="tiny" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="171" pmx-endtag-col="1">
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  SVG 1.1 2nd Edition Test Case                                     =</pmx-comment>
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2009 World Wide Web Consortium, (Massachusetts          =</pmx-comment>
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment>
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment>
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment>
+  <pmx-comment pmx-line="19" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment>
+  <pmx-comment pmx-line="20" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  
+  <title pmx-line="22" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="22" pmx-endtag-col="65">$RCSfile: interact-pevents-01-b.svg,v $</title>
+  <defs pmx-line="23" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3">
+    <font-face pmx-line="24" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5">
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7">
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="160" pmx-endtag-col="3">
+    <g pmx-line="31" pmx-col="5" font-family="sans-serif" font-size="40" text-rendering="geometricPrecision" pmx-text-type="0" pmx-endtag-line="159" pmx-endtag-col="5">
+      <script pmx-line="32" pmx-col="7" pmx-text-type="2" pmx-endtag-line="69" pmx-endtag-col="10"><pmx-script pmx-line="32" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="33" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-var pmx-line="33" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">var</pmx-var><pmx-id pmx-line="33" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">no_reset</pmx-id><pmx-lit-int pmx-line="33" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">1</pmx-lit-int></pmx-statement>
+
+<pmx-function pmx-line="35" pmx-col="1" name="pass_in" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="35" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">pass_in</pmx-id><pmx-id pmx-line="35" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id><pmx-param pmx-line="35" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-param>
+<pmx-block pmx-line="36" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="37" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="36" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="37" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id>.<pmx-id pmx-line="37" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">setAttribute</pmx-id>(<pmx-lit-string pmx-line="37" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">fill</pmx-lit-string><pmx-lit-string pmx-line="37" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">green</pmx-lit-string>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="37" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id>.<pmx-id pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">setAttribute</pmx-id>(<pmx-lit-string pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">visibility</pmx-lit-string><pmx-lit-string pmx-line="38" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">visible</pmx-lit-string>)</pmx-expr></pmx-statement>
+</pmx-block></pmx-function>
+
+<pmx-function pmx-line="41" pmx-col="1" name="pass_out" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="41" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">pass_out</pmx-id><pmx-id pmx-line="41" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id><pmx-param pmx-line="41" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-param>
+<pmx-block pmx-line="42" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="43" pmx-col="1" keyword="if" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="43" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="43" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">no_reset</pmx-id></pmx-expr><pmx-statement pmx-line="43" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-block pmx-line="44" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="44" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id>.<pmx-id pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">removeAttribute</pmx-id>(<pmx-lit-string pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">fill</pmx-lit-string>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="45" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id>.<pmx-id pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">removeAttribute</pmx-id>(<pmx-lit-string pmx-line="46" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">visibility</pmx-lit-string>)</pmx-expr></pmx-statement>
+</pmx-block></pmx-statement>
+</pmx-statement></pmx-block></pmx-function>
+
+<pmx-function pmx-line="50" pmx-col="1" name="fail_in" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">fail_in</pmx-id><pmx-id pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id><pmx-param pmx-line="50" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-param>
+<pmx-block pmx-line="51" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="51" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id>.<pmx-id pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">setAttribute</pmx-id>(<pmx-lit-string pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">fill</pmx-lit-string><pmx-lit-string pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">red</pmx-lit-string>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="52" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id>.<pmx-id pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">setAttribute</pmx-id>(<pmx-lit-string pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">visibility</pmx-lit-string><pmx-lit-string pmx-line="53" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">visible</pmx-lit-string>)</pmx-expr></pmx-statement>
+</pmx-block></pmx-function>
+
+<pmx-function pmx-line="56" pmx-col="1" name="fail_out" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="56" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">fail_out</pmx-id><pmx-id pmx-line="56" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id><pmx-param pmx-line="56" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-param>
+<pmx-block pmx-line="57" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="58" pmx-col="1" keyword="if" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="58" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="58" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">no_reset</pmx-id></pmx-expr><pmx-statement pmx-line="58" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-block pmx-line="59" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="60" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="59" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="60" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id>.<pmx-id pmx-line="60" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">removeAttribute</pmx-id>(<pmx-lit-string pmx-line="60" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">fill</pmx-lit-string>)</pmx-expr></pmx-statement>
+<pmx-statement pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="60" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">elm</pmx-id>.<pmx-id pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">removeAttribute</pmx-id>(<pmx-lit-string pmx-line="61" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">visibility</pmx-lit-string>)</pmx-expr></pmx-statement>
+</pmx-block></pmx-statement>
+</pmx-statement></pmx-block></pmx-function>
+
+<pmx-function pmx-line="65" pmx-col="1" name="toggle_freeze" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="65" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">toggle_freeze</pmx-id>
+<pmx-block pmx-line="66" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">
+<pmx-statement pmx-line="67" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-expr pmx-line="66" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><pmx-id pmx-line="67" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">no_reset</pmx-id><pmx-op-assign pmx-line="67" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=</pmx-op-assign><pmx-id pmx-line="67" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">no_reset</pmx-id></pmx-expr></pmx-statement>
+</pmx-block></pmx-function>
+</pmx-script>
+        var no_reset = 1;
+
+        function pass_in(elm)
+        {
+        elm.setAttribute("fill", "green");
+        elm.setAttribute("visibility", "visible");
+        }
+
+        function pass_out(elm)
+        {
+        if(!no_reset)
+        {
+        elm.removeAttribute("fill");
+        elm.removeAttribute("visibility");
+        }
+        }
+
+        function fail_in(elm)
+        {
+        elm.setAttribute("fill", "red");
+        elm.setAttribute("visibility", "visible");
+        }
+
+        function fail_out(elm)
+        {
+        if(!no_reset)
+        {
+        elm.removeAttribute("fill");
+        elm.removeAttribute("visibility");
+        }
+        }
+
+        function toggle_freeze()
+        {
+        no_reset = !no_reset;
+        }
+      </script>
+
+      <text pmx-line="71" pmx-col="7" x="240" y="40" text-anchor="middle" font-size="20" pmx-text-type="0" pmx-endtag-line="71" pmx-endtag-col="91">Test pointer-events on text</text>
+      <g pmx-line="72" pmx-col="7" transform="translate(40, -10)" pmx-text-type="0" pmx-endtag-line="158" pmx-endtag-col="7">
+        <g pmx-line="73" pmx-col="9" id="first-line" pmx-text-type="0" pmx-endtag-line="90" pmx-endtag-col="9">
+          <text pmx-line="74" pmx-col="11" x="50" y="100" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="74" pmx-endtag-col="101">O</text>
+          <text pmx-line="75" pmx-col="11" x="80" y="100" pointer-events="visiblePainted" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="75" pmx-endtag-col="133">O</text>
+          <text pmx-line="76" pmx-col="11" x="110" y="100" pointer-events="visibleFill" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="76" pmx-endtag-col="131">O</text>
+          <text pmx-line="77" pmx-col="11" x="140" y="100" pointer-events="visibleStroke" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="77" pmx-endtag-col="133">O</text>
+          <text pmx-line="78" pmx-col="11" x="170" y="100" pointer-events="visible" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="78" pmx-endtag-col="127">O</text>
+          <text pmx-line="79" pmx-col="11" x="200" y="100" pointer-events="painted" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="79" pmx-endtag-col="127">O</text>
+          <text pmx-line="80" pmx-col="11" x="230" y="100" pointer-events="fill" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="80" pmx-endtag-col="124">O</text>
+          <text pmx-line="81" pmx-col="11" x="260" y="100" pointer-events="stroke" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="81" pmx-endtag-col="126">O</text>
+          <text pmx-line="82" pmx-col="11" x="290" y="100" pointer-events="all" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="82" pmx-endtag-col="123">O</text>
+          <text pmx-line="83" pmx-col="11" x="320" y="100" pointer-events="none" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="83" pmx-endtag-col="124">O</text>
+
+          <g pmx-line="85" pmx-col="11" pointer-events="none" pmx-text-type="0" pmx-endtag-line="89" pmx-endtag-col="11">
+            <rect pmx-line="86" pmx-col="13" x="50" y="65" height="40" width="270" fill="green" fill-opacity="0.5" visibility="visible" pmx-text-type="0" pmx-endtag-line="86" pmx-endtag-col="13"/>
+
+            <rect pmx-line="88" pmx-col="13" x="50" y="65" height="40" width="300" fill="none" stroke="black" visibility="visible" pmx-text-type="0" pmx-endtag-line="88" pmx-endtag-col="13"/>
+          </g>
+        </g>
+
+        <g pmx-line="92" pmx-col="9" id="second-line" transform="translate(0 60)" fill="none" stroke="black" pmx-text-type="0" pmx-endtag-line="109" pmx-endtag-col="9">
+          <text pmx-line="93" pmx-col="11" x="50" y="100" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="93" pmx-endtag-col="101">O</text>
+          <text pmx-line="94" pmx-col="11" x="80" y="100" pointer-events="visiblePainted" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="94" pmx-endtag-col="133">O</text>
+          <text pmx-line="95" pmx-col="11" x="110" y="100" pointer-events="visibleFill" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="95" pmx-endtag-col="131">O</text>
+          <text pmx-line="96" pmx-col="11" x="140" y="100" pointer-events="visibleStroke" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="96" pmx-endtag-col="133">O</text>
+          <text pmx-line="97" pmx-col="11" x="170" y="100" pointer-events="visible" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="97" pmx-endtag-col="127">O</text>
+          <text pmx-line="98" pmx-col="11" x="200" y="100" pointer-events="painted" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="98" pmx-endtag-col="127">O</text>
+          <text pmx-line="99" pmx-col="11" x="230" y="100" pointer-events="fill" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="99" pmx-endtag-col="124">O</text>
+          <text pmx-line="100" pmx-col="11" x="260" y="100" pointer-events="stroke" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="100" pmx-endtag-col="126">O</text>
+          <text pmx-line="101" pmx-col="11" x="290" y="100" pointer-events="all" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="101" pmx-endtag-col="123">O</text>
+          <text pmx-line="102" pmx-col="11" x="320" y="100" pointer-events="none" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="102" pmx-endtag-col="124">O</text>
+
+          <g pmx-line="104" pmx-col="11" pointer-events="none" pmx-text-type="0" pmx-endtag-line="108" pmx-endtag-col="11">
+            <rect pmx-line="105" pmx-col="13" x="50" y="65" height="40" width="270" fill="green" fill-opacity="0.5" visibility="visible" stroke="none" pmx-text-type="0" pmx-endtag-line="105" pmx-endtag-col="13"/>
+
+            <rect pmx-line="107" pmx-col="13" x="50" y="65" height="40" width="300" fill="none" stroke="black" visibility="visible" pmx-text-type="0" pmx-endtag-line="107" pmx-endtag-col="13"/>
+          </g>
+        </g>
+
+        <g pmx-line="111" pmx-col="9" id="third-line" transform="translate(0 120)" visibility="hidden" pmx-text-type="0" pmx-endtag-line="128" pmx-endtag-col="9">
+          <text pmx-line="112" pmx-col="11" x="50" y="100" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="112" pmx-endtag-col="101">O</text>
+          <text pmx-line="113" pmx-col="11" x="80" y="100" pointer-events="visiblePainted" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="113" pmx-endtag-col="133">O</text>
+          <text pmx-line="114" pmx-col="11" x="110" y="100" pointer-events="visibleFill" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="114" pmx-endtag-col="131">O</text>
+          <text pmx-line="115" pmx-col="11" x="140" y="100" pointer-events="visibleStroke" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="115" pmx-endtag-col="133">O</text>
+          <text pmx-line="116" pmx-col="11" x="170" y="100" pointer-events="visible" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="116" pmx-endtag-col="127">O</text>
+          <text pmx-line="117" pmx-col="11" x="200" y="100" pointer-events="painted" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="117" pmx-endtag-col="127">O</text>
+          <text pmx-line="118" pmx-col="11" x="230" y="100" pointer-events="fill" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="118" pmx-endtag-col="124">O</text>
+          <text pmx-line="119" pmx-col="11" x="260" y="100" pointer-events="stroke" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="119" pmx-endtag-col="126">O</text>
+          <text pmx-line="120" pmx-col="11" x="290" y="100" pointer-events="all" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="120" pmx-endtag-col="123">O</text>
+          <text pmx-line="121" pmx-col="11" x="320" y="100" pointer-events="none" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="121" pmx-endtag-col="124">O</text>
+
+          <g pmx-line="123" pmx-col="11" pointer-events="none" pmx-text-type="0" pmx-endtag-line="127" pmx-endtag-col="11">
+            <rect pmx-line="124" pmx-col="13" x="200" y="65" height="40" width="120" fill="green" fill-opacity="0.5" visibility="visible" pmx-text-type="0" pmx-endtag-line="124" pmx-endtag-col="13"/>
+
+            <rect pmx-line="126" pmx-col="13" x="50" y="65" height="40" width="300" fill="none" stroke="black" visibility="visible" pmx-text-type="0" pmx-endtag-line="126" pmx-endtag-col="13"/>
+          </g>
+        </g>
+
+        <g pmx-line="130" pmx-col="9" id="fourth-line" transform="translate(0 180)" fill="none" stroke="none" pmx-text-type="0" pmx-endtag-line="152" pmx-endtag-col="9">
+          <text pmx-line="131" pmx-col="11" x="50" y="100" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="131" pmx-endtag-col="101">O</text>
+          <text pmx-line="132" pmx-col="11" x="80" y="100" pointer-events="visiblePainted" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="132" pmx-endtag-col="133">O</text>
+
+          <text pmx-line="134" pmx-col="11" x="110" y="100" pointer-events="visibleFill" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="134" pmx-endtag-col="131">O</text>
+          <text pmx-line="135" pmx-col="11" x="140" y="100" pointer-events="visibleStroke" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="135" pmx-endtag-col="133">O</text>
+          <text pmx-line="136" pmx-col="11" x="170" y="100" pointer-events="visible" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="136" pmx-endtag-col="127">O</text>
+
+          <text pmx-line="138" pmx-col="11" x="200" y="100" pointer-events="painted" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="138" pmx-endtag-col="127">O</text>
+
+          <text pmx-line="140" pmx-col="11" x="230" y="100" pointer-events="fill" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="140" pmx-endtag-col="124">O</text>
+          <text pmx-line="141" pmx-col="11" x="260" y="100" pointer-events="stroke" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="141" pmx-endtag-col="126">O</text>
+          <text pmx-line="142" pmx-col="11" x="290" y="100" pointer-events="all" onmouseover="pass_in(evt.target)" onmouseout="pass_out(evt.target)" pmx-text-type="0" pmx-endtag-line="142" pmx-endtag-col="123">O</text>
+
+          <text pmx-line="144" pmx-col="11" x="320" y="100" pointer-events="none" onmouseover="fail_in(evt.target)" onmouseout="fail_out(evt.target)" pmx-text-type="0" pmx-endtag-line="144" pmx-endtag-col="124">O</text>
+
+          <g pmx-line="146" pmx-col="11" pointer-events="none" pmx-text-type="0" pmx-endtag-line="151" pmx-endtag-col="11">
+            <rect pmx-line="147" pmx-col="13" x="110" y="65" height="40" width="90" fill="green" fill-opacity="0.5" visibility="visible" pmx-text-type="0" pmx-endtag-line="147" pmx-endtag-col="13"/>
+            <rect pmx-line="148" pmx-col="13" x="230" y="65" height="40" width="90" fill="green" fill-opacity="0.5" visibility="visible" pmx-text-type="0" pmx-endtag-line="148" pmx-endtag-col="13"/>
+
+            <rect pmx-line="150" pmx-col="13" x="50" y="65" height="40" width="300" fill="none" stroke="black" visibility="visible" pmx-text-type="0" pmx-endtag-line="150" pmx-endtag-col="13"/>
+          </g>
+        </g>
+
+        <g pmx-line="154" pmx-col="9" transform="translate(275, 300) scale(0.5)" onclick="toggle_freeze();" pmx-text-type="0" pmx-endtag-line="157" pmx-endtag-col="9">
+          <rect pmx-line="155" pmx-col="11" id="button" width="150" height="26" fill="blue" pmx-text-type="0" pmx-endtag-line="155" pmx-endtag-col="11"/>
+          <text pmx-line="156" pmx-col="11" x="75" y="19" text-anchor="middle" font-size="20" fill="white" pmx-text-type="0" pmx-endtag-line="156" pmx-endtag-col="93">Toggle freeze</text>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g pmx-line="161" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="163" pmx-endtag-col="3">
+    <text pmx-line="162" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="162" pmx-endtag-col="83">$Revision: 1.6 $</text>
+  </g>
+  <rect pmx-line="164" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000" pmx-text-type="0" pmx-endtag-line="164" pmx-endtag-col="3"/>
+  <pmx-comment pmx-line="165" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment>
+  <pmx-comment pmx-line="170" pmx-col="8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">&lt;g id="draft-watermark"&gt;
+    &lt;rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/&gt;
+    &lt;text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
+      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white"&gt;DRAFT&lt;/text&gt;
+  &lt;/g&gt;</pmx-comment>
+</svg>
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.2.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F25.html" refname="WCAG 2.0" refsect="A F25" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Matterhorn 1.02" refsect="06-004" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccMatterhorn</categoryref></rule></issue><issue pmx-line="74" pmx-col="11" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-9.3.2" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-device-independence" refname="WCAG 1.0" refsect="AA 9.3" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.access-board.gov/guidelines-and-standards/communications-and-it/about-the-section-508-standards/guide-to-the-section-508-standards/web-based-intranet-and-internet-information-and-applications-1194-22" refname="Section 508" refsect="1194.22 (l)" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccSection508</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F54.html" refname="WCAG 2.0" refsect="A F54" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref></rule></issue><issue pmx-line="74" pmx-col="11" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-9.3.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-device-independence" refname="WCAG 1.0" refsect="AA 9.3" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.access-board.gov/guidelines-and-standards/communications-and-it/about-the-section-508-standards/guide-to-the-section-508-standards/web-based-intranet-and-internet-information-and-applications-1194-22" refname="Section 508" refsect="1194.22 (l)" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccSection508</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F54.html" refname="WCAG 2.0" refsect="A F54" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref></rule></issue><issue pmx-line="154" pmx-col="9" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-9.3.5" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-device-independence" refname="WCAG 1.0" refsect="AA 9.3" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.access-board.gov/guidelines-and-standards/communications-and-it/about-the-section-508-standards/guide-to-the-section-508-standards/web-based-intranet-and-internet-information-and-applications-1194-22" refname="Section 508" refsect="1194.22 (l)" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccSection508</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F54.html" refname="WCAG 2.0" refsect="A F54" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref></rule></issue><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue><issue pmx-line="32" pmx-col="7" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="W3C" priority="1" certainty="100" ruleid="W3cHtml5Error-RnvErAmis-script" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/html5/" refname="HTML5" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">W3cHtml5</categoryref></rule></issue></issues></doc>

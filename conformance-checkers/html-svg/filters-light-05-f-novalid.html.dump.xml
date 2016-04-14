@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/filters-light-05-f-novalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="deg" pmx-most-frequent-word1-count="24" pmx-most-frequent-word1-ratio="68" pmx-most_frequent_word2="using" pmx-most-frequent-word2-count="3" pmx-most-frequent-word2-ratio="8" pmx-most_frequent_word3="source" pmx-most-frequent-word3-count="3" pmx-most-frequent-word3-ratio="8" pmx-most_frequent_word4="svg" pmx-most-frequent-word4-count="1" pmx-most-frequent-word4-ratio="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-sentence-count="0" pmx-syllable-count="0" pmx-raw-word-count="35" pmx-word-count="0" pmx-proper-noun-count="0" pmx-flesch-reading-ease="100" pmx-gunning-fog="0" pmx-content-length="11788" pmx-uncompressed-length="0" pmx-page-weight="11788" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="207" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">filters-light-05-f-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="207" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="47">Source SVG: filters-light-05-f-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="205" pmx-endtag-col="1">
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2008 World Wide Web Consortium, (Massachusetts          =</pmx-comment>
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment>
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment>
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment>
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment>
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  
+  <title pmx-line="20" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="20" pmx-endtag-col="62">$RCSfile: filters-light-05-f.svg,v $</title>
+  <defs pmx-line="21" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3">
+    <font-face pmx-line="22" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5">
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7">
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="193" pmx-endtag-col="3">
+    <defs pmx-line="31" pmx-col="5" color="#00FF00" pmx-text-type="0" pmx-endtag-line="122" pmx-endtag-col="5">
+      <filter pmx-line="32" pmx-col="7" id="distantLightUp" pmx-text-type="0" pmx-endtag-line="36" pmx-endtag-col="7">
+        <feDiffuseLighting pmx-line="33" pmx-col="9" in="SourceGraphic" surfaceScale="10" diffuseConstant="1" lighting-color="currentColor" pmx-text-type="0" pmx-endtag-line="35" pmx-endtag-col="9">
+          <feDistantLight pmx-line="34" pmx-col="11" azimuth="0" elevation="90" pmx-text-type="0" pmx-endtag-line="34" pmx-endtag-col="11"/>
+        </feDiffuseLighting>
+      </filter>
+      <filter pmx-line="37" pmx-col="7" id="distantLightDown" pmx-text-type="0" pmx-endtag-line="41" pmx-endtag-col="7">
+        <feDiffuseLighting pmx-line="38" pmx-col="9" in="SourceGraphic" surfaceScale="10" diffuseConstant="1" lighting-color="currentColor" pmx-text-type="0" pmx-endtag-line="40" pmx-endtag-col="9">
+          <feDistantLight pmx-line="39" pmx-col="11" azimuth="0" elevation="270" pmx-text-type="0" pmx-endtag-line="39" pmx-endtag-col="11"/>
+        </feDiffuseLighting>
+      </filter>
+      <filter pmx-line="42" pmx-col="7" id="distantLightLeft" pmx-text-type="0" pmx-endtag-line="46" pmx-endtag-col="7">
+        <feDiffuseLighting pmx-line="43" pmx-col="9" in="SourceGraphic" surfaceScale="10" diffuseConstant="1" lighting-color="currentColor" pmx-text-type="0" pmx-endtag-line="45" pmx-endtag-col="9">
+          <feDistantLight pmx-line="44" pmx-col="11" azimuth="0" elevation="180" pmx-text-type="0" pmx-endtag-line="44" pmx-endtag-col="11"/>
+        </feDiffuseLighting>
+      </filter>
+      <filter pmx-line="47" pmx-col="7" id="distantLightRight" pmx-text-type="0" pmx-endtag-line="51" pmx-endtag-col="7">
+        <feDiffuseLighting pmx-line="48" pmx-col="9" in="SourceGraphic" surfaceScale="10" diffuseConstant="1" lighting-color="currentColor" pmx-text-type="0" pmx-endtag-line="50" pmx-endtag-col="9">
+          <feDistantLight pmx-line="49" pmx-col="11" azimuth="0" elevation="0" pmx-text-type="0" pmx-endtag-line="49" pmx-endtag-col="11"/>
+        </feDiffuseLighting>
+      </filter>
+
+      <filter pmx-line="53" pmx-col="7" id="specularLightUp" pmx-text-type="0" pmx-endtag-line="57" pmx-endtag-col="7">
+        <feSpecularLighting pmx-line="54" pmx-col="9" in="SourceGraphic" surfaceScale="10" specularConstant="1" specularExponent="1" lighting-color="currentColor" pmx-text-type="0" pmx-endtag-line="56" pmx-endtag-col="9">
+          <feDistantLight pmx-line="55" pmx-col="11" azimuth="0" elevation="90" pmx-text-type="0" pmx-endtag-line="55" pmx-endtag-col="11"/>
+        </feSpecularLighting>
+      </filter>
+      <filter pmx-line="58" pmx-col="7" id="specularLightDown" pmx-text-type="0" pmx-endtag-line="62" pmx-endtag-col="7">
+        <feSpecularLighting pmx-line="59" pmx-col="9" in="SourceGraphic" surfaceScale="10" specularConstant="1" specularExponent="1" lighting-color="currentColor" pmx-text-type="0" pmx-endtag-line="61" pmx-endtag-col="9">
+          <feDistantLight pmx-line="60" pmx-col="11" azimuth="0" elevation="270" pmx-text-type="0" pmx-endtag-line="60" pmx-endtag-col="11"/>
+        </feSpecularLighting>
+      </filter>
+      <filter pmx-line="63" pmx-col="7" id="specularLightLeft" pmx-text-type="0" pmx-endtag-line="67" pmx-endtag-col="7">
+        <feSpecularLighting pmx-line="64" pmx-col="9" in="SourceGraphic" surfaceScale="10" specularConstant="1" specularExponent="1" lighting-color="currentColor" pmx-text-type="0" pmx-endtag-line="66" pmx-endtag-col="9">
+          <feDistantLight pmx-line="65" pmx-col="11" azimuth="0" elevation="180" pmx-text-type="0" pmx-endtag-line="65" pmx-endtag-col="11"/>
+        </feSpecularLighting>
+      </filter>
+      <filter pmx-line="68" pmx-col="7" id="specularLightRight" pmx-text-type="0" pmx-endtag-line="72" pmx-endtag-col="7">
+        <feSpecularLighting pmx-line="69" pmx-col="9" in="SourceGraphic" surfaceScale="10" specularConstant="1" specularExponent="1" lighting-color="currentColor" pmx-text-type="0" pmx-endtag-line="71" pmx-endtag-col="9">
+          <feDistantLight pmx-line="70" pmx-col="11" azimuth="0" elevation="0" pmx-text-type="0" pmx-endtag-line="70" pmx-endtag-col="11"/>
+        </feSpecularLighting>
+      </filter>
+
+      <filter pmx-line="74" pmx-col="7" id="combinedUp" pmx-text-type="0" pmx-endtag-line="85" pmx-endtag-col="7">
+        <feDiffuseLighting pmx-line="75" pmx-col="9" in="SourceGraphic" surfaceScale="10" diffuseConstant="1" lighting-color="currentColor" result="res_a" pmx-text-type="0" pmx-endtag-line="77" pmx-endtag-col="9">
+          <feDistantLight pmx-line="76" pmx-col="11" azimuth="0" elevation="90" pmx-text-type="0" pmx-endtag-line="76" pmx-endtag-col="11"/>
+        </feDiffuseLighting>
+        <feSpecularLighting pmx-line="78" pmx-col="9" in="SourceGraphic" surfaceScale="10" specularConstant="1" specularExponent="1" lighting-color="currentColor" result="res_b" pmx-text-type="0" pmx-endtag-line="80" pmx-endtag-col="9">
+          <feDistantLight pmx-line="79" pmx-col="11" azimuth="0" elevation="90" pmx-text-type="0" pmx-endtag-line="79" pmx-endtag-col="11"/>
+        </feSpecularLighting>
+        <feMerge pmx-line="81" pmx-col="9" pmx-text-type="0" pmx-endtag-line="84" pmx-endtag-col="9">
+          <feMergeNode pmx-line="82" pmx-col="11" in="res_a" pmx-text-type="0" pmx-endtag-line="82" pmx-endtag-col="11"/>
+          <feMergeNode pmx-line="83" pmx-col="11" in="res_b" pmx-text-type="0" pmx-endtag-line="83" pmx-endtag-col="11"/>
+        </feMerge>
+      </filter>
+      <filter pmx-line="86" pmx-col="7" id="combinedDown" pmx-text-type="0" pmx-endtag-line="97" pmx-endtag-col="7">
+        <feDiffuseLighting pmx-line="87" pmx-col="9" in="SourceGraphic" surfaceScale="10" diffuseConstant="1" lighting-color="currentColor" result="res_a" pmx-text-type="0" pmx-endtag-line="89" pmx-endtag-col="9">
+          <feDistantLight pmx-line="88" pmx-col="11" azimuth="0" elevation="270" pmx-text-type="0" pmx-endtag-line="88" pmx-endtag-col="11"/>
+        </feDiffuseLighting>
+        <feSpecularLighting pmx-line="90" pmx-col="9" in="SourceGraphic" surfaceScale="10" specularConstant="1" specularExponent="1" lighting-color="currentColor" result="res_b" pmx-text-type="0" pmx-endtag-line="92" pmx-endtag-col="9">
+          <feDistantLight pmx-line="91" pmx-col="11" azimuth="0" elevation="270" pmx-text-type="0" pmx-endtag-line="91" pmx-endtag-col="11"/>
+        </feSpecularLighting>
+        <feMerge pmx-line="93" pmx-col="9" pmx-text-type="0" pmx-endtag-line="96" pmx-endtag-col="9">
+          <feMergeNode pmx-line="94" pmx-col="11" in="res_a" pmx-text-type="0" pmx-endtag-line="94" pmx-endtag-col="11"/>
+          <feMergeNode pmx-line="95" pmx-col="11" in="res_b" pmx-text-type="0" pmx-endtag-line="95" pmx-endtag-col="11"/>
+        </feMerge>
+      </filter>
+      <filter pmx-line="98" pmx-col="7" id="combinedLeft" pmx-text-type="0" pmx-endtag-line="109" pmx-endtag-col="7">
+        <feDiffuseLighting pmx-line="99" pmx-col="9" in="SourceGraphic" surfaceScale="10" diffuseConstant="1" lighting-color="currentColor" result="res_a" pmx-text-type="0" pmx-endtag-line="101" pmx-endtag-col="9">
+          <feDistantLight pmx-line="100" pmx-col="11" azimuth="0" elevation="180" pmx-text-type="0" pmx-endtag-line="100" pmx-endtag-col="11"/>
+        </feDiffuseLighting>
+        <feSpecularLighting pmx-line="102" pmx-col="9" in="SourceGraphic" surfaceScale="10" specularConstant="1" specularExponent="1" lighting-color="currentColor" result="res_b" pmx-text-type="0" pmx-endtag-line="104" pmx-endtag-col="9">
+          <feDistantLight pmx-line="103" pmx-col="11" azimuth="0" elevation="180" pmx-text-type="0" pmx-endtag-line="103" pmx-endtag-col="11"/>
+        </feSpecularLighting>
+        <feMerge pmx-line="105" pmx-col="9" pmx-text-type="0" pmx-endtag-line="108" pmx-endtag-col="9">
+          <feMergeNode pmx-line="106" pmx-col="11" in="res_a" pmx-text-type="0" pmx-endtag-line="106" pmx-endtag-col="11"/>
+          <feMergeNode pmx-line="107" pmx-col="11" in="res_b" pmx-text-type="0" pmx-endtag-line="107" pmx-endtag-col="11"/>
+        </feMerge>
+      </filter>
+      <filter pmx-line="110" pmx-col="7" id="combinedRight" pmx-text-type="0" pmx-endtag-line="121" pmx-endtag-col="7">
+        <feDiffuseLighting pmx-line="111" pmx-col="9" in="SourceGraphic" surfaceScale="10" diffuseConstant="1" lighting-color="currentColor" result="res_a" pmx-text-type="0" pmx-endtag-line="113" pmx-endtag-col="9">
+          <feDistantLight pmx-line="112" pmx-col="11" azimuth="0" elevation="0" pmx-text-type="0" pmx-endtag-line="112" pmx-endtag-col="11"/>
+        </feDiffuseLighting>
+        <feSpecularLighting pmx-line="114" pmx-col="9" in="SourceGraphic" surfaceScale="10" specularConstant="1" specularExponent="1" lighting-color="currentColor" result="res_b" pmx-text-type="0" pmx-endtag-line="116" pmx-endtag-col="9">
+          <feDistantLight pmx-line="115" pmx-col="11" azimuth="0" elevation="0" pmx-text-type="0" pmx-endtag-line="115" pmx-endtag-col="11"/>
+        </feSpecularLighting>
+        <feMerge pmx-line="117" pmx-col="9" pmx-text-type="0" pmx-endtag-line="120" pmx-endtag-col="9">
+          <feMergeNode pmx-line="118" pmx-col="11" in="res_a" pmx-text-type="0" pmx-endtag-line="118" pmx-endtag-col="11"/>
+          <feMergeNode pmx-line="119" pmx-col="11" in="res_b" pmx-text-type="0" pmx-endtag-line="119" pmx-endtag-col="11"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <text pmx-line="124" pmx-col="5" x="70" y="40" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="124" pmx-endtag-col="94">feDiffuseLight using feDistantLight source</text>
+    <g pmx-line="125" pmx-col="5" transform="scale(1.5) translate(5 45)" pmx-text-type="0" pmx-endtag-line="130" pmx-endtag-col="5">
+      <circle pmx-line="126" pmx-col="7" id="c1" r="10" fill="red" filter="url(#distantLightUp)" transform="translate(20 0)" pmx-text-type="0" pmx-endtag-line="126" pmx-endtag-col="7"/>
+      <circle pmx-line="127" pmx-col="7" id="c2" r="10" fill="red" filter="url(#distantLightDown)" transform="translate(50 0)" pmx-text-type="0" pmx-endtag-line="127" pmx-endtag-col="7"/>
+      <circle pmx-line="128" pmx-col="7" id="c3" r="10" fill="red" filter="url(#distantLightLeft)" transform="translate(80 0)" pmx-text-type="0" pmx-endtag-line="128" pmx-endtag-col="7"/>
+      <circle pmx-line="129" pmx-col="7" id="c4" r="10" fill="red" filter="url(#distantLightRight)" transform="translate(110 0)" pmx-text-type="0" pmx-endtag-line="129" pmx-endtag-col="7"/>
+    </g>
+    <text pmx-line="131" pmx-col="5" x="20" y="100" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="131" pmx-endtag-col="74">90 deg</text>
+    <text pmx-line="132" pmx-col="5" x="65" y="100" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="132" pmx-endtag-col="75">270 deg</text>
+    <text pmx-line="133" pmx-col="5" x="110" y="100" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="133" pmx-endtag-col="76">180 deg</text>
+    <text pmx-line="134" pmx-col="5" x="160" y="100" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="134" pmx-endtag-col="74">0 deg</text>
+
+    <text pmx-line="136" pmx-col="5" x="70" y="135" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="136" pmx-endtag-col="96">feSpecularLight using feDistantLight source</text>
+    <g pmx-line="137" pmx-col="5" transform="scale(1.5) translate(5 110)" pmx-text-type="0" pmx-endtag-line="142" pmx-endtag-col="5">
+      <circle pmx-line="138" pmx-col="7" id="c1" r="10" fill="red" filter="url(#specularLightUp)" transform="translate(20 0)" pmx-text-type="0" pmx-endtag-line="138" pmx-endtag-col="7"/>
+      <circle pmx-line="139" pmx-col="7" id="c2" r="10" fill="red" filter="url(#specularLightDown)" transform="translate(50 0)" pmx-text-type="0" pmx-endtag-line="139" pmx-endtag-col="7"/>
+      <circle pmx-line="140" pmx-col="7" id="c3" r="10" fill="red" filter="url(#specularLightLeft)" transform="translate(80 0)" pmx-text-type="0" pmx-endtag-line="140" pmx-endtag-col="7"/>
+      <circle pmx-line="141" pmx-col="7" id="c4" r="10" fill="red" filter="url(#specularLightRight)" transform="translate(110 0)" pmx-text-type="0" pmx-endtag-line="141" pmx-endtag-col="7"/>
+    </g>
+    <text pmx-line="143" pmx-col="5" x="20" y="195" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="143" pmx-endtag-col="74">90 deg</text>
+    <text pmx-line="144" pmx-col="5" x="65" y="195" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="144" pmx-endtag-col="75">270 deg</text>
+    <text pmx-line="145" pmx-col="5" x="110" y="195" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="145" pmx-endtag-col="76">180 deg</text>
+    <text pmx-line="146" pmx-col="5" x="160" y="195" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="146" pmx-endtag-col="74">0 deg</text>
+
+    <text pmx-line="148" pmx-col="5" x="30" y="230" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="148" pmx-endtag-col="108">feDiffuseLight and feSpecularLight using feDistantLight</text>
+    <g pmx-line="149" pmx-col="5" transform="scale(1.5) translate(5 170)" pmx-text-type="0" pmx-endtag-line="154" pmx-endtag-col="5">
+      <circle pmx-line="150" pmx-col="7" id="c1" r="10" fill="red" filter="url(#combinedUp)" transform="translate(20 0)" pmx-text-type="0" pmx-endtag-line="150" pmx-endtag-col="7"/>
+      <circle pmx-line="151" pmx-col="7" id="c2" r="10" fill="red" filter="url(#combinedDown)" transform="translate(50 0)" pmx-text-type="0" pmx-endtag-line="151" pmx-endtag-col="7"/>
+      <circle pmx-line="152" pmx-col="7" id="c3" r="10" fill="red" filter="url(#combinedLeft)" transform="translate(80 0)" pmx-text-type="0" pmx-endtag-line="152" pmx-endtag-col="7"/>
+      <circle pmx-line="153" pmx-col="7" id="c4" r="10" fill="red" filter="url(#combinedRight)" transform="translate(110 0)" pmx-text-type="0" pmx-endtag-line="153" pmx-endtag-col="7"/>
+    </g>
+    <text pmx-line="155" pmx-col="5" x="20" y="290" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="155" pmx-endtag-col="74">90 deg</text>
+    <text pmx-line="156" pmx-col="5" x="65" y="290" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="156" pmx-endtag-col="75">270 deg</text>
+    <text pmx-line="157" pmx-col="5" x="110" y="290" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="157" pmx-endtag-col="76">180 deg</text>
+    <text pmx-line="158" pmx-col="5" x="160" y="290" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="158" pmx-endtag-col="74">0 deg</text>
+
+    <g pmx-line="160" pmx-col="5" transform="translate(0, 55)" pmx-text-type="0" pmx-endtag-line="165" pmx-endtag-col="5">
+      <image pmx-line="161" pmx-col="7" href="../images/bumpMap3.png" x="240" y="0" width="40" height="30" filter="url(#distantLightUp)" pmx-text-type="0" pmx-endtag-line="161" pmx-endtag-col="7"/>
+      <image pmx-line="162" pmx-col="7" href="../images/bumpMap3.png" x="300" y="0" width="40" height="30" filter="url(#distantLightDown)" pmx-text-type="0" pmx-endtag-line="162" pmx-endtag-col="7"/>
+      <image pmx-line="163" pmx-col="7" href="../images/bumpMap3.png" x="360" y="0" width="40" height="30" filter="url(#distantLightLeft)" pmx-text-type="0" pmx-endtag-line="163" pmx-endtag-col="7"/>
+      <image pmx-line="164" pmx-col="7" href="../images/bumpMap3.png" x="420" y="0" width="40" height="30" filter="url(#distantLightRight)" pmx-text-type="0" pmx-endtag-line="164" pmx-endtag-col="7"/>
+    </g>
+    <text pmx-line="166" pmx-col="5" x="245" y="100" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="166" pmx-endtag-col="75">90 deg</text>
+    <text pmx-line="167" pmx-col="5" x="305" y="100" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="167" pmx-endtag-col="76">270 deg</text>
+    <text pmx-line="168" pmx-col="5" x="365" y="100" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="168" pmx-endtag-col="76">180 deg</text>
+    <text pmx-line="169" pmx-col="5" x="430" y="100" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="169" pmx-endtag-col="74">0 deg</text>
+
+    <g pmx-line="171" pmx-col="5" transform="translate(0, 150)" pmx-text-type="0" pmx-endtag-line="176" pmx-endtag-col="5">
+      <image pmx-line="172" pmx-col="7" href="../images/bumpMap3.png" x="240" y="0" width="40" height="30" filter="url(#specularLightUp)" pmx-text-type="0" pmx-endtag-line="172" pmx-endtag-col="7"/>
+      <image pmx-line="173" pmx-col="7" href="../images/bumpMap3.png" x="300" y="0" width="40" height="30" filter="url(#specularLightDown)" pmx-text-type="0" pmx-endtag-line="173" pmx-endtag-col="7"/>
+      <image pmx-line="174" pmx-col="7" href="../images/bumpMap3.png" x="360" y="0" width="40" height="30" filter="url(#specularLightLeft)" pmx-text-type="0" pmx-endtag-line="174" pmx-endtag-col="7"/>
+      <image pmx-line="175" pmx-col="7" href="../images/bumpMap3.png" x="420" y="0" width="40" height="30" filter="url(#specularLightRight)" pmx-text-type="0" pmx-endtag-line="175" pmx-endtag-col="7"/>
+    </g>
+    <text pmx-line="177" pmx-col="5" x="245" y="195" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="177" pmx-endtag-col="75">90 deg</text>
+    <text pmx-line="178" pmx-col="5" x="305" y="195" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="178" pmx-endtag-col="76">270 deg</text>
+    <text pmx-line="179" pmx-col="5" x="365" y="195" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="179" pmx-endtag-col="76">180 deg</text>
+    <text pmx-line="180" pmx-col="5" x="430" y="195" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="180" pmx-endtag-col="74">0 deg</text>
+
+    <g pmx-line="182" pmx-col="5" transform="translate(0, 240)" pmx-text-type="0" pmx-endtag-line="187" pmx-endtag-col="5">
+      <image pmx-line="183" pmx-col="7" href="../images/bumpMap3.png" x="240" y="0" width="40" height="30" filter="url(#combinedUp)" pmx-text-type="0" pmx-endtag-line="183" pmx-endtag-col="7"/>
+      <image pmx-line="184" pmx-col="7" href="../images/bumpMap3.png" x="300" y="0" width="40" height="30" filter="url(#combinedDown)" pmx-text-type="0" pmx-endtag-line="184" pmx-endtag-col="7"/>
+      <image pmx-line="185" pmx-col="7" href="../images/bumpMap3.png" x="360" y="0" width="40" height="30" filter="url(#combinedLeft)" pmx-text-type="0" pmx-endtag-line="185" pmx-endtag-col="7"/>
+      <image pmx-line="186" pmx-col="7" href="../images/bumpMap3.png" x="420" y="0" width="40" height="30" filter="url(#combinedRight)" pmx-text-type="0" pmx-endtag-line="186" pmx-endtag-col="7"/>
+    </g>
+    <text pmx-line="188" pmx-col="5" x="245" y="290" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="188" pmx-endtag-col="75">90 deg</text>
+    <text pmx-line="189" pmx-col="5" x="305" y="290" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="189" pmx-endtag-col="76">270 deg</text>
+    <text pmx-line="190" pmx-col="5" x="365" y="290" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="190" pmx-endtag-col="76">180 deg</text>
+    <text pmx-line="191" pmx-col="5" x="430" y="290" font-size="10" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="191" pmx-endtag-col="74">0 deg</text>
+    
+  </g>
+  <g pmx-line="194" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="197" pmx-endtag-col="3">
+    <text pmx-line="195" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="196" pmx-endtag-col="36">$Revision: 1.3 $</text>
+  </g>
+  <rect pmx-line="198" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000" pmx-text-type="0" pmx-endtag-line="198" pmx-endtag-col="3"/>
+  <pmx-comment pmx-line="199" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment>
+  <g pmx-line="200" pmx-col="3" id="draft-watermark" pmx-text-type="0" pmx-endtag-line="204" pmx-endtag-col="3">
+    <rect pmx-line="201" pmx-col="5" x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1" pmx-text-type="0" pmx-endtag-line="201" pmx-endtag-col="5"/>
+    <text pmx-line="202" pmx-col="5" font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240" text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white" pmx-text-type="0" pmx-endtag-line="203" pmx-endtag-col="87">DRAFT</text>
+  </g>
+</svg>
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.2.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F25.html" refname="WCAG 2.0" refsect="A F25" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Matterhorn 1.02" refsect="06-004" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccMatterhorn</categoryref></rule></issue><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue><issue pmx-line="138" pmx-col="7" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="W3C" priority="1" certainty="100" ruleid="W3cHtml5Error-errDuplicateId" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/html5/" refname="HTML5" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">W3cHtml5</categoryref></rule></issue></issues></doc>

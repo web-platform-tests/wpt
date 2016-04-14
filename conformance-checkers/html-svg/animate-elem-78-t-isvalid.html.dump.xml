@@ -1,0 +1,421 @@
+<?xml version="1.0"?>
+<doc pmx-line="1" pmx-col="1" pmx-app-build="1756" pmx-doctype="&lt;!DOCTYPE html&gt;" pmx-fullurl="file:///Users/markrogers/web-platform-tests/conformance-checkers/html-svg/animate-elem-78-t-isvalid.html" pmx-host-name="" pmx-onsite-links-in="0" pmx-offsite-links-out="0" pmx-onsite-links-out="0" pmx-page-depth="1" pmx-click-depth="0" pmx-mime-type="text/html" pmx-expected-mime-type="text/html" pmx-type="html" pmx-has-cookies="0" pmx-cookie-names="Used in JavaScript" pmx-download-secs="0" pmx-link-type="9" pmx-parsing-aborted="0" pmx-on-start-site="0" pmx-max-page-count="16072" pmx-max-page-weight="0" pmx-min-reading-age="30" pmx-parse-javascript="1" pmx-max-reading-ease="0" pmx-is-offsite="0" pmx-last-modified="Mon, 01 Jan 1601 00:00:00 GMT" pmx-last-modified-timestamp="0" pmx-map-edition="mac.pro.desktop.val" pmx-docversion="HTML 5.0" pmx-charset="iso-8859-1" pmx-http-status="200" pmx-http-status-text="OK" pmx-most_frequent_word1="visibility" pmx-most-frequent-word1-count="1" pmx-most-frequent-word1-ratio="5" pmx-most_frequent_word2="svg" pmx-most-frequent-word2-count="1" pmx-most-frequent-word2-ratio="5" pmx-most_frequent_word3="stroke-width" pmx-most-frequent-word3-count="1" pmx-most-frequent-word3-ratio="5" pmx-most_frequent_word4="stroke-miterlimit" pmx-most-frequent-word4-count="1" pmx-most-frequent-word4-ratio="5" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-sentence-count="0" pmx-syllable-count="0" pmx-raw-word-count="20" pmx-word-count="0" pmx-proper-noun-count="0" pmx-flesch-reading-ease="100" pmx-gunning-fog="0" pmx-content-length="21981" pmx-uncompressed-length="0" pmx-page-weight="21981" pmx-issue-count="0" pmx-issue-location-count="0" pmx-text-type="4" pmx-endtag-line="0" pmx-endtag-col="0"><html pmx-line="2" pmx-col="1" lang="en" pmx-text-type="0" pmx-endtag-line="423" pmx-endtag-col="1"><head pmx-line="3" pmx-col="1" pmx-text-type="0" pmx-endtag-line="6" pmx-endtag-col="1">
+ <title pmx-line="4" pmx-col="2" pmx-text-type="1" pmx-endtag-line="4" pmx-endtag-col="2">animate-elem-78-t-manual.svg</title>
+ <meta pmx-line="5" pmx-col="2" charset="utf-8" pmx-text-type="2" pmx-endtag-line="5" pmx-endtag-col="2"/>
+</head>
+<body pmx-line="7" pmx-col="1" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="423" pmx-endtag-col="1">
+ <h1 pmx-line="8" pmx-col="2" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="8" pmx-endtag-col="46">Source SVG: animate-elem-78-t-manual.svg</h1>
+<svg pmx-line="9" pmx-col="1" version="1.1" baseProfile="tiny" id="svg-root" width="100%" height="100%" viewBox="0 0 480 360" pmx-xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" pmx-text-type="0" pmx-endtag-line="421" pmx-endtag-col="1">
+  <pmx-comment pmx-line="12" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="13" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  SVG 1.1 2nd Edition Test Case                                     =</pmx-comment>
+  <pmx-comment pmx-line="14" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  <pmx-comment pmx-line="15" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Copyright 2009 World Wide Web Consortium, (Massachusetts          =</pmx-comment>
+  <pmx-comment pmx-line="16" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Institute of Technology, European Research Consortium for         =</pmx-comment>
+  <pmx-comment pmx-line="17" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  Informatics and Mathematics (ERCIM), Keio University).            =</pmx-comment>
+  <pmx-comment pmx-line="18" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  All Rights Reserved.                                              =</pmx-comment>
+  <pmx-comment pmx-line="19" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">=  See http://www.w3.org/Consortium/Legal/.                          =</pmx-comment>
+  <pmx-comment pmx-line="20" pmx-col="78" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">======================================================================</pmx-comment>
+  
+  <title pmx-line="22" pmx-col="3" id="test-title" pmx-longest-paragraph="0" pmx-longest-sentence="0" pmx-longest-word="0" pmx-text-type="1" pmx-endtag-line="22" pmx-endtag-col="61">$RCSfile: animate-elem-78-t.svg,v $</title>
+  <defs pmx-line="23" pmx-col="3" pmx-text-type="0" pmx-endtag-line="29" pmx-endtag-col="3">
+    <font-face pmx-line="24" pmx-col="5" font-family="SVGFreeSansASCII" unicode-range="U+0-7F" pmx-text-type="0" pmx-endtag-line="28" pmx-endtag-col="5">
+      <font-face-src pmx-line="25" pmx-col="7" pmx-text-type="0" pmx-endtag-line="27" pmx-endtag-col="7">
+        <font-face-uri pmx-line="26" pmx-col="9" href="../resources/SVGFreeSans.svg#ascii" pmx-text-type="0" pmx-endtag-line="26" pmx-endtag-col="9"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <g pmx-line="30" pmx-col="3" id="test-body-content" font-family="SVGFreeSansASCII,sans-serif" font-size="18" pmx-text-type="0" pmx-endtag-line="410" pmx-endtag-col="3">
+    <text pmx-line="31" pmx-col="5" text-anchor="middle" x="240" y="25" font-size="20" pmx-text-type="0" pmx-endtag-line="31" pmx-endtag-col="70">graphics</text>
+    <g pmx-line="32" pmx-col="5" transform="translate(80, 75)" pmx-text-type="0" pmx-endtag-line="409" pmx-endtag-col="5">
+      <g pmx-line="33" pmx-col="7" transform="translate(30,10)" text-anchor="end" font-size="12" pmx-text-type="0" pmx-endtag-line="45" pmx-endtag-col="7">
+        <text pmx-line="34" pmx-col="9" pmx-text-type="0" pmx-endtag-line="34" pmx-endtag-col="19">fill</text>
+        <text pmx-line="35" pmx-col="9" y="20" pmx-text-type="0" pmx-endtag-line="35" pmx-endtag-col="31">fill-rule</text>
+        <text pmx-line="36" pmx-col="9" y="40" pmx-text-type="0" pmx-endtag-line="36" pmx-endtag-col="28">stroke</text>
+        <text pmx-line="37" pmx-col="9" y="60" pmx-text-type="0" pmx-endtag-line="37" pmx-endtag-col="34">stroke-width</text>
+        <text pmx-line="38" pmx-col="9" y="80" pmx-text-type="0" pmx-endtag-line="38" pmx-endtag-col="36">stroke-linecap</text>
+        <text pmx-line="39" pmx-col="9" y="100" pmx-text-type="0" pmx-endtag-line="39" pmx-endtag-col="38">stroke-linejoin</text>
+        <text pmx-line="40" pmx-col="9" y="120" pmx-text-type="0" pmx-endtag-line="40" pmx-endtag-col="40">stroke-miterlimit</text>
+        <text pmx-line="41" pmx-col="9" y="140" pmx-text-type="0" pmx-endtag-line="41" pmx-endtag-col="40">stroke-dashoffset</text>
+        <text pmx-line="42" pmx-col="9" y="160" pmx-text-type="0" pmx-endtag-line="42" pmx-endtag-col="30">display</text>
+        <text pmx-line="43" pmx-col="9" y="180" pmx-text-type="0" pmx-endtag-line="43" pmx-endtag-col="33">visibility</text>
+        <text pmx-line="44" pmx-col="9" y="200" pmx-text-type="0" pmx-endtag-line="44" pmx-endtag-col="28">color</text>
+      </g>
+
+      <g pmx-line="47" pmx-col="7" id="type" transform="translate(90, -20)" text-anchor="middle" font-size="14" pmx-text-type="0" pmx-endtag-line="51" pmx-endtag-col="7">
+        <text pmx-line="48" pmx-col="9" x="20" y="3" pmx-text-type="0" pmx-endtag-line="48" pmx-endtag-col="41">'Basic Shape'</text>
+        <text pmx-line="49" pmx-col="9" x="130" y="3" pmx-text-type="0" pmx-endtag-line="49" pmx-endtag-col="38">&lt;g&gt;</text>
+        <text pmx-line="50" pmx-col="9" x="235" y="3" pmx-text-type="0" pmx-endtag-line="50" pmx-endtag-col="38">&lt;a&gt;</text>
+      </g>
+
+      <g pmx-line="53" pmx-col="7" transform="translate(80,0)" fill="rgb(204,0,102)" pmx-text-type="0" pmx-endtag-line="408" pmx-endtag-col="7">
+        <rect pmx-line="54" pmx-col="9" x="10" width="8" height="8" fill="#ccc" pmx-text-type="0" pmx-endtag-line="54" pmx-endtag-col="9"/>
+
+        <g pmx-line="56" pmx-col="9" id="setOne" pmx-text-type="0" pmx-endtag-line="86" pmx-endtag-col="9">
+          <defs pmx-line="57" pmx-col="11" pmx-text-type="0" pmx-endtag-line="62" pmx-endtag-col="11">
+            <g pmx-line="58" pmx-col="13" id="setOneRef" pmx-text-type="0" pmx-endtag-line="61" pmx-endtag-col="13">
+              <rect pmx-line="59" pmx-col="15" x="10" width="8" height="8" fill="#ccc" pmx-text-type="0" pmx-endtag-line="59" pmx-endtag-col="15"/>
+              <rect pmx-line="60" pmx-col="15" x="10" width="8" height="8" fill="#ccc" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="60" pmx-endtag-col="15"/>
+            </g>
+          </defs>
+          <use pmx-line="63" pmx-col="11" href="#setOneRef" pmx-text-type="0" pmx-endtag-line="63" pmx-endtag-col="11"/>
+          <use pmx-line="64" pmx-col="11" href="#setOneRef" x="110" pmx-text-type="0" pmx-endtag-line="64" pmx-endtag-col="11"/>
+          <use pmx-line="65" pmx-col="11" href="#setOneRef" x="220" pmx-text-type="0" pmx-endtag-line="65" pmx-endtag-col="11"/>
+
+          <rect pmx-line="67" pmx-col="11" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="70" pmx-endtag-col="11">
+            <set pmx-line="68" pmx-col="13" id="firstSet1" attributeName="fill" to="rgb(255, 165, 0)" begin="0s; firstSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="68" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="69" pmx-col="13" attributeName="transform" id="firstSet1_1" type="translate" from="30,0" to="30,0" begin="0s; firstSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="69" pmx-endtag-col="13"/>
+          </rect>
+
+          <g pmx-line="72" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="77" pmx-endtag-col="11">
+            <set pmx-line="73" pmx-col="13" id="firstSet2" attributeName="fill" to="rgb(255, 165, 0)" begin="0s; firstSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="73" pmx-endtag-col="13"/>
+            <rect pmx-line="74" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="76" pmx-endtag-col="13">
+              <animateTransform pmx-line="75" pmx-col="15" attributeName="transform" id="firstSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; firstSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="75" pmx-endtag-col="15"/>
+            </rect>
+          </g>
+
+          <a pmx-line="79" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="84" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="80" pmx-col="13" id="firstSet3" attributeName="fill" to="rgb(255, 165, 0)" begin="0s; firstSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="80" pmx-endtag-col="13"/>
+            <rect pmx-line="81" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="83" pmx-endtag-col="13">
+              <animateTransform pmx-line="82" pmx-col="15" attributeName="transform" id="firstSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; firstSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="82" pmx-endtag-col="15"/>
+            </rect>
+          </a>
+
+        </g>
+        <g pmx-line="87" pmx-col="9" id="setTwo" transform="translate(5,15)" stroke="rgb(204,0,102)" pmx-text-type="0" pmx-endtag-line="119" pmx-endtag-col="9">
+          <defs pmx-line="88" pmx-col="11" pmx-text-type="0" pmx-endtag-line="95" pmx-endtag-col="11">
+            <g pmx-line="89" pmx-col="13" id="setTwoRef" pmx-text-type="0" pmx-endtag-line="94" pmx-endtag-col="13">
+              <polyline pmx-line="90" pmx-col="15" fill="#ccc" stroke="#ccc" stroke-width="1" points="20,10,0,10,15,20,10,2,5,20,20,10" pmx-text-type="0" pmx-endtag-line="91" pmx-endtag-col="15">
+              </polyline>
+              <polyline pmx-line="92" pmx-col="15" fill="#ccc" stroke="#ccc" fill-rule="evenodd" stroke-width="1" points="20,10,0,10,15,20,10,2,5,20,20,10" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="93" pmx-endtag-col="15">
+              </polyline>
+            </g>
+          </defs>
+          <use pmx-line="96" pmx-col="11" href="#setTwoRef" pmx-text-type="0" pmx-endtag-line="96" pmx-endtag-col="11"/>
+          <use pmx-line="97" pmx-col="11" href="#setTwoRef" x="110" pmx-text-type="0" pmx-endtag-line="97" pmx-endtag-col="11"/>
+          <use pmx-line="98" pmx-col="11" href="#setTwoRef" x="220" pmx-text-type="0" pmx-endtag-line="98" pmx-endtag-col="11"/>
+
+          <polyline pmx-line="100" pmx-col="11" points="20,10,0,10,15,20,10,2,5,20,20,10" pmx-text-type="0" pmx-endtag-line="103" pmx-endtag-col="11">
+            <set pmx-line="101" pmx-col="13" id="secondSet1" attributeName="fill-rule" to="evenodd" begin="0s; secondSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="101" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="102" pmx-col="13" attributeName="transform" id="secondSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; secondSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="102" pmx-endtag-col="13"/>
+          </polyline>
+
+          <g pmx-line="105" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="110" pmx-endtag-col="11">
+            <set pmx-line="106" pmx-col="13" id="secondSet2" attributeName="fill-rule" to="evenodd" begin="0s; secondSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="106" pmx-endtag-col="13"/>
+            <polyline pmx-line="107" pmx-col="13" points="20,10,0,10,15,20,10,2,5,20,20,10" pmx-text-type="0" pmx-endtag-line="109" pmx-endtag-col="13">
+              <animateTransform pmx-line="108" pmx-col="15" attributeName="transform" id="secondSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; secondSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="108" pmx-endtag-col="15"/>
+            </polyline>
+          </g>
+
+          <a pmx-line="112" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="117" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="113" pmx-col="13" id="secondSet3" attributeName="fill-rule" to="evenodd" begin="0s; secondSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="113" pmx-endtag-col="13"/>
+            <polyline pmx-line="114" pmx-col="13" points="20,10,0,10,15,20,10,2,5,20,20,10" pmx-text-type="0" pmx-endtag-line="116" pmx-endtag-col="13">
+              <animateTransform pmx-line="115" pmx-col="15" attributeName="transform" id="secondSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; secondSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="115" pmx-endtag-col="15"/>
+            </polyline>
+          </a>
+
+        </g>
+
+        <g pmx-line="121" pmx-col="9" id="setThree" transform="translate(0,45)" fill="none" pmx-text-type="0" pmx-endtag-line="150" pmx-endtag-col="9">
+          <defs pmx-line="122" pmx-col="11" pmx-text-type="0" pmx-endtag-line="127" pmx-endtag-col="11">
+            <g pmx-line="123" pmx-col="13" id="setThreeRef" pmx-text-type="0" pmx-endtag-line="126" pmx-endtag-col="13">
+              <rect pmx-line="124" pmx-col="15" x="10" width="8" height="8" fill="#ccc" pmx-text-type="0" pmx-endtag-line="124" pmx-endtag-col="15"/>
+              <rect pmx-line="125" pmx-col="15" x="10" width="8" height="8" fill="#ccc" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="125" pmx-endtag-col="15"/>
+            </g>
+          </defs>
+          <use pmx-line="128" pmx-col="11" href="#setThreeRef" pmx-text-type="0" pmx-endtag-line="128" pmx-endtag-col="11"/>
+          <use pmx-line="129" pmx-col="11" href="#setThreeRef" x="110" pmx-text-type="0" pmx-endtag-line="129" pmx-endtag-col="11"/>
+          <use pmx-line="130" pmx-col="11" href="#setThreeRef" x="220" pmx-text-type="0" pmx-endtag-line="130" pmx-endtag-col="11"/>
+
+          <rect pmx-line="132" pmx-col="11" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="135" pmx-endtag-col="11">
+            <set pmx-line="133" pmx-col="13" id="thirdSet1" attributeName="stroke" to="rgb(204,0,102)" begin="0s; thirdSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="133" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="134" pmx-col="13" attributeName="transform" id="thirdSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; thirdSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="134" pmx-endtag-col="13"/>
+          </rect>
+
+          <g pmx-line="137" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="142" pmx-endtag-col="11">
+            <set pmx-line="138" pmx-col="13" id="thirdSet2" attributeName="stroke" to="rgb(204,0,102)" begin="0s; thirdSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="138" pmx-endtag-col="13"/>
+            <rect pmx-line="139" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="141" pmx-endtag-col="13">
+              <animateTransform pmx-line="140" pmx-col="15" attributeName="transform" id="thirdSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; thirdSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="140" pmx-endtag-col="15"/>
+            </rect>
+          </g>
+
+          <a pmx-line="144" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="149" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="145" pmx-col="13" id="thirdSet3" attributeName="stroke" to="rgb(204,0,102)" begin="0s; thirdSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="145" pmx-endtag-col="13"/>
+            <rect pmx-line="146" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="148" pmx-endtag-col="13">
+              <animateTransform pmx-line="147" pmx-col="15" attributeName="transform" id="thirdSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; thirdSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="147" pmx-endtag-col="15"/>
+            </rect>
+          </a>
+        </g>
+
+        <g pmx-line="152" pmx-col="9" id="setFour" transform="translate(0,60)" stroke="rgb(204,0,102)" pmx-text-type="0" pmx-endtag-line="183" pmx-endtag-col="9">
+          <defs pmx-line="153" pmx-col="11" pmx-text-type="0" pmx-endtag-line="160" pmx-endtag-col="11">
+            <g pmx-line="154" pmx-col="13" id="setFourRef" pmx-text-type="0" pmx-endtag-line="159" pmx-endtag-col="13">
+              <line pmx-line="155" pmx-col="15" x1="10" y1="8" x2="20" y2="0" stroke="#ccc" pmx-text-type="0" pmx-endtag-line="156" pmx-endtag-col="15">
+              </line>
+              <line pmx-line="157" pmx-col="15" x1="10" y1="8" x2="20" y2="0" stroke-width="4" stroke="#ccc" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="158" pmx-endtag-col="15">
+              </line>
+            </g>
+          </defs>
+          <use pmx-line="161" pmx-col="11" href="#setFourRef" pmx-text-type="0" pmx-endtag-line="161" pmx-endtag-col="11"/>
+          <use pmx-line="162" pmx-col="11" href="#setFourRef" x="110" pmx-text-type="0" pmx-endtag-line="162" pmx-endtag-col="11"/>
+          <use pmx-line="163" pmx-col="11" href="#setFourRef" x="220" pmx-text-type="0" pmx-endtag-line="163" pmx-endtag-col="11"/>
+
+          <line pmx-line="165" pmx-col="11" x1="10" y1="8" x2="20" y2="0" pmx-text-type="0" pmx-endtag-line="168" pmx-endtag-col="11">
+            <set pmx-line="166" pmx-col="13" id="fourthSet1" attributeName="stroke-width" to="4" begin="0s; fourthSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="166" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="167" pmx-col="13" attributeName="transform" id="fourthSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; fourthSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="167" pmx-endtag-col="13"/>
+          </line>
+
+          <g pmx-line="170" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="175" pmx-endtag-col="11">
+            <set pmx-line="171" pmx-col="13" id="fourthSet2" attributeName="stroke-width" to="4" begin="0s; fourthSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="171" pmx-endtag-col="13"/>
+            <line pmx-line="172" pmx-col="13" x1="10" y1="8" x2="20" y2="0" pmx-text-type="0" pmx-endtag-line="174" pmx-endtag-col="13">
+              <animateTransform pmx-line="173" pmx-col="15" attributeName="transform" id="fourthSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; fourthSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="173" pmx-endtag-col="15"/>
+            </line>
+          </g>
+
+          <a pmx-line="177" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="182" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="178" pmx-col="13" id="fourthSet3" attributeName="stroke-width" to="4" begin="0s; fourthSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="178" pmx-endtag-col="13"/>
+            <line pmx-line="179" pmx-col="13" x1="10" y1="8" x2="20" y2="0" pmx-text-type="0" pmx-endtag-line="181" pmx-endtag-col="13">
+              <animateTransform pmx-line="180" pmx-col="15" attributeName="transform" id="fourthSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; fourthSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="180" pmx-endtag-col="15"/>
+            </line>
+          </a>
+        </g>
+
+        <g pmx-line="185" pmx-col="9" id="setFive" transform="translate(0,80)" stroke-width="4" stroke="rgb(204,0,102)" pmx-text-type="0" pmx-endtag-line="216" pmx-endtag-col="9">
+          <defs pmx-line="186" pmx-col="11" pmx-text-type="0" pmx-endtag-line="193" pmx-endtag-col="11">
+            <g pmx-line="187" pmx-col="13" id="setFiveRef" pmx-text-type="0" pmx-endtag-line="192" pmx-endtag-col="13">
+              <line pmx-line="188" pmx-col="15" x1="10" y1="8" x2="20" y2="0" stroke="#ccc" pmx-text-type="0" pmx-endtag-line="189" pmx-endtag-col="15">
+              </line>
+              <line pmx-line="190" pmx-col="15" x1="10" y1="8" x2="20" y2="0" stroke-linecap="round" stroke="#ccc" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="191" pmx-endtag-col="15">
+              </line>
+            </g>
+          </defs>
+          <use pmx-line="194" pmx-col="11" href="#setFiveRef" pmx-text-type="0" pmx-endtag-line="194" pmx-endtag-col="11"/>
+          <use pmx-line="195" pmx-col="11" href="#setFiveRef" x="110" pmx-text-type="0" pmx-endtag-line="195" pmx-endtag-col="11"/>
+          <use pmx-line="196" pmx-col="11" href="#setFiveRef" x="220" pmx-text-type="0" pmx-endtag-line="196" pmx-endtag-col="11"/>
+
+          <line pmx-line="198" pmx-col="11" x1="10" y1="8" x2="20" y2="0" pmx-text-type="0" pmx-endtag-line="201" pmx-endtag-col="11">
+            <set pmx-line="199" pmx-col="13" id="fifthSet1" attributeName="stroke-linecap" to="round" begin="0s; fifthSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="199" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="200" pmx-col="13" attributeName="transform" id="fifthSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; fifthSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="200" pmx-endtag-col="13"/>
+          </line>
+
+          <g pmx-line="203" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="208" pmx-endtag-col="11">
+            <set pmx-line="204" pmx-col="13" id="fifthSet2" attributeName="stroke-linecap" to="round" begin="0s; fifthSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="204" pmx-endtag-col="13"/>
+            <line pmx-line="205" pmx-col="13" x1="10" y1="8" x2="20" y2="0" pmx-text-type="0" pmx-endtag-line="207" pmx-endtag-col="13">
+              <animateTransform pmx-line="206" pmx-col="15" attributeName="transform" id="fifthSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; fifthSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="206" pmx-endtag-col="15"/>
+            </line>
+          </g>
+
+          <a pmx-line="210" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="215" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="211" pmx-col="13" id="fifthSet3" attributeName="stroke-linecap" to="round" begin="0s; fifthSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="211" pmx-endtag-col="13"/>
+            <line pmx-line="212" pmx-col="13" x1="10" y1="8" x2="20" y2="0" pmx-text-type="0" pmx-endtag-line="214" pmx-endtag-col="13">
+              <animateTransform pmx-line="213" pmx-col="15" attributeName="transform" id="fifthSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; fifthSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="213" pmx-endtag-col="15"/>
+            </line>
+          </a>
+        </g>
+
+        <g pmx-line="218" pmx-col="9" id="setSix" transform="translate(5,100)" fill="none" stroke-miterlimit="10" stroke-width="3" stroke="rgb(204,0,102)" pmx-text-type="0" pmx-endtag-line="249" pmx-endtag-col="9">
+          <defs pmx-line="219" pmx-col="11" pmx-text-type="0" pmx-endtag-line="226" pmx-endtag-col="11">
+            <g pmx-line="220" pmx-col="13" id="setSixRef" pmx-text-type="0" pmx-endtag-line="225" pmx-endtag-col="13">
+              <polyline pmx-line="221" pmx-col="15" stroke="#ccc" points="5,2,20,5,5,8" pmx-text-type="0" pmx-endtag-line="222" pmx-endtag-col="15">
+              </polyline>
+              <polyline pmx-line="223" pmx-col="15" stroke="#ccc" points="5,2,20,5,5,8" stroke-linejoin="bevel" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="224" pmx-endtag-col="15">
+              </polyline>
+            </g>
+          </defs>
+          <use pmx-line="227" pmx-col="11" href="#setSixRef" pmx-text-type="0" pmx-endtag-line="227" pmx-endtag-col="11"/>
+          <use pmx-line="228" pmx-col="11" href="#setSixRef" x="110" pmx-text-type="0" pmx-endtag-line="228" pmx-endtag-col="11"/>
+          <use pmx-line="229" pmx-col="11" href="#setSixRef" x="220" pmx-text-type="0" pmx-endtag-line="229" pmx-endtag-col="11"/>
+
+          <polyline pmx-line="231" pmx-col="11" points="5,2,20,5,5,8" pmx-text-type="0" pmx-endtag-line="234" pmx-endtag-col="11">
+            <set pmx-line="232" pmx-col="13" id="sixthSet1" attributeName="stroke-linejoin" to="bevel" begin="0s; sixthSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="232" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="233" pmx-col="13" attributeName="transform" id="sixthSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; sixthSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="233" pmx-endtag-col="13"/>
+          </polyline>
+
+          <g pmx-line="236" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="241" pmx-endtag-col="11">
+            <set pmx-line="237" pmx-col="13" id="sixthSet2" attributeName="stroke-linejoin" to="bevel" begin="0s; sixthSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="237" pmx-endtag-col="13"/>
+            <polyline pmx-line="238" pmx-col="13" points="5,2,20,5,5,8" pmx-text-type="0" pmx-endtag-line="240" pmx-endtag-col="13">
+              <animateTransform pmx-line="239" pmx-col="15" attributeName="transform" id="sixthSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; sixthSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="239" pmx-endtag-col="15"/>
+            </polyline>
+          </g>
+
+          <a pmx-line="243" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="248" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="244" pmx-col="13" id="sixthSet3" attributeName="stroke-linejoin" to="bevel" begin="0s; sixthSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="244" pmx-endtag-col="13"/>
+            <polyline pmx-line="245" pmx-col="13" points="5,2,20,5,5,8" pmx-text-type="0" pmx-endtag-line="247" pmx-endtag-col="13">
+              <animateTransform pmx-line="246" pmx-col="15" attributeName="transform" id="sixthSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; sixthSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="246" pmx-endtag-col="15"/>
+            </polyline>
+          </a>
+        </g>
+
+        <g pmx-line="251" pmx-col="9" id="setSeven" transform="translate(5,120)" stroke-miterlimit="1" fill="none" stroke-width="3" stroke="rgb(204,0,102)" pmx-text-type="0" pmx-endtag-line="281" pmx-endtag-col="9">
+          <defs pmx-line="252" pmx-col="11" pmx-text-type="0" pmx-endtag-line="257" pmx-endtag-col="11">
+            <g pmx-line="253" pmx-col="13" id="setSevenRef" pmx-text-type="0" pmx-endtag-line="256" pmx-endtag-col="13">
+              <polyline pmx-line="254" pmx-col="15" points="5,0,20,5,5,10" stroke="#ccc" pmx-text-type="0" pmx-endtag-line="254" pmx-endtag-col="15"/>
+              <polyline pmx-line="255" pmx-col="15" points="5,0,20,5,5,10" stroke="#ccc" stroke-miterlimit="10" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="255" pmx-endtag-col="15"/>
+            </g>
+          </defs>
+          <use pmx-line="258" pmx-col="11" href="#setSevenRef" pmx-text-type="0" pmx-endtag-line="258" pmx-endtag-col="11"/>
+          <use pmx-line="259" pmx-col="11" href="#setSevenRef" x="110" pmx-text-type="0" pmx-endtag-line="259" pmx-endtag-col="11"/>
+          <use pmx-line="260" pmx-col="11" href="#setSevenRef" x="220" pmx-text-type="0" pmx-endtag-line="260" pmx-endtag-col="11"/>
+
+          <polyline pmx-line="262" pmx-col="11" points="5,0,20,5,5,10" pmx-text-type="0" pmx-endtag-line="265" pmx-endtag-col="11">
+            <set pmx-line="263" pmx-col="13" id="seventhSet1" attributeName="stroke-miterlimit" to="10" begin="0s; seventhSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="263" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="264" pmx-col="13" attributeName="transform" id="seventhSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; seventhSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="264" pmx-endtag-col="13"/>
+          </polyline>
+
+          <g pmx-line="267" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="272" pmx-endtag-col="11">
+            <set pmx-line="268" pmx-col="13" id="seventhSet2" attributeName="stroke-miterlimit" to="10" begin="0s; seventhSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="268" pmx-endtag-col="13"/>
+            <polyline pmx-line="269" pmx-col="13" points="5,0,20,5,5,10" pmx-text-type="0" pmx-endtag-line="271" pmx-endtag-col="13">
+              <animateTransform pmx-line="270" pmx-col="15" attributeName="transform" id="seventhSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; seventhSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="270" pmx-endtag-col="15"/>
+            </polyline>
+          </g>
+
+          <a pmx-line="274" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="279" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="275" pmx-col="13" id="seventhSet3" attributeName="stroke-miterlimit" to="10" begin="0s; seventhSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="275" pmx-endtag-col="13"/>
+            <polyline pmx-line="276" pmx-col="13" points="5,0,20,5,5,10" pmx-text-type="0" pmx-endtag-line="278" pmx-endtag-col="13">
+              <animateTransform pmx-line="277" pmx-col="15" attributeName="transform" id="seventhSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; seventhSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="277" pmx-endtag-col="15"/>
+            </polyline>
+          </a>
+
+        </g>
+
+        <g pmx-line="283" pmx-col="9" id="setEight" transform="translate(-5,145)" stroke-dasharray="3,4,5" stroke-width="3" stroke="rgb(204,0,102)" pmx-text-type="0" pmx-endtag-line="312" pmx-endtag-col="9">
+          <defs pmx-line="284" pmx-col="11" pmx-text-type="0" pmx-endtag-line="289" pmx-endtag-col="11">
+            <g pmx-line="285" pmx-col="13" id="setEightRef" pmx-text-type="0" pmx-endtag-line="288" pmx-endtag-col="13">
+              <line pmx-line="286" pmx-col="15" x1="0" y1="0" x2="25" y2="0" stroke="#ccc" pmx-text-type="0" pmx-endtag-line="286" pmx-endtag-col="15"/>
+              <line pmx-line="287" pmx-col="15" x1="0" y1="0" x2="25" y2="0" stroke="#ccc" stroke-dashoffset="5.5" transform="translate(40,0)" pmx-text-type="0" pmx-endtag-line="287" pmx-endtag-col="15"/>
+            </g>
+          </defs>
+          <use pmx-line="290" pmx-col="11" href="#setEightRef" pmx-text-type="0" pmx-endtag-line="290" pmx-endtag-col="11"/>
+          <use pmx-line="291" pmx-col="11" href="#setEightRef" x="110" pmx-text-type="0" pmx-endtag-line="291" pmx-endtag-col="11"/>
+          <use pmx-line="292" pmx-col="11" href="#setEightRef" x="220" pmx-text-type="0" pmx-endtag-line="292" pmx-endtag-col="11"/>
+
+          <line pmx-line="294" pmx-col="11" x1="0" y1="0" x2="25" y2="0" pmx-text-type="0" pmx-endtag-line="297" pmx-endtag-col="11">
+            <set pmx-line="295" pmx-col="13" id="eighthSet1" attributeName="stroke-dashoffset" to="5.5" begin="0s; eighthSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="295" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="296" pmx-col="13" attributeName="transform" id="eighthSet1_1" type="translate" from="40, 0" to="40,0" begin="0s; eighthSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="296" pmx-endtag-col="13"/>
+          </line>
+
+          <g pmx-line="299" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="304" pmx-endtag-col="11">
+            <set pmx-line="300" pmx-col="13" id="eighthSet2" attributeName="stroke-dashoffset" to="5.5" begin="0s; eighthSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="300" pmx-endtag-col="13"/>
+            <line pmx-line="301" pmx-col="13" x1="0" y1="0" x2="25" y2="0" pmx-text-type="0" pmx-endtag-line="303" pmx-endtag-col="13">
+              <animateTransform pmx-line="302" pmx-col="15" attributeName="transform" id="eighthSet2_1" type="translate" from="40, 0" to="40,0" begin="0s; eighthSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="302" pmx-endtag-col="15"/>
+            </line>
+          </g>
+
+          <a pmx-line="306" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="311" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="307" pmx-col="13" id="eighthSet3" attributeName="stroke-dashoffset" to="5.5" begin="0s; eighthSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="307" pmx-endtag-col="13"/>
+            <line pmx-line="308" pmx-col="13" x1="0" y1="0" x2="25" y2="0" pmx-text-type="0" pmx-endtag-line="310" pmx-endtag-col="13">
+              <animateTransform pmx-line="309" pmx-col="15" attributeName="transform" id="eighthSet3_1" type="translate" from="40, 0" to="40,0" begin="0s; eighthSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="309" pmx-endtag-col="15"/>
+            </line>
+          </a>
+        </g>
+
+        <g pmx-line="314" pmx-col="9" id="setNine" transform="translate(0,160)" pmx-text-type="0" pmx-endtag-line="342" pmx-endtag-col="9">
+          <defs pmx-line="315" pmx-col="11" pmx-text-type="0" pmx-endtag-line="320" pmx-endtag-col="11">
+            <g pmx-line="316" pmx-col="13" id="setNineRef" pmx-text-type="0" pmx-endtag-line="319" pmx-endtag-col="13">
+              <rect pmx-line="317" pmx-col="15" x="10" width="8" height="8" fill="#ccc" pmx-text-type="0" pmx-endtag-line="317" pmx-endtag-col="15"/>
+              <rect pmx-line="318" pmx-col="15" x="10" width="8" height="8" fill="#ccc" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="318" pmx-endtag-col="15"/>
+            </g>
+          </defs>
+          <use pmx-line="321" pmx-col="11" href="#setNineRef" pmx-text-type="0" pmx-endtag-line="321" pmx-endtag-col="11"/>
+          <use pmx-line="322" pmx-col="11" href="#setNineRef" x="110" pmx-text-type="0" pmx-endtag-line="322" pmx-endtag-col="11"/>
+          <use pmx-line="323" pmx-col="11" href="#setNineRef" x="220" pmx-text-type="0" pmx-endtag-line="323" pmx-endtag-col="11"/>
+          <rect pmx-line="324" pmx-col="11" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="327" pmx-endtag-col="11">
+            <set pmx-line="325" pmx-col="13" id="ninthSet1" attributeName="display" to="none" begin="0s; ninthSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="325" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="326" pmx-col="13" attributeName="transform" id="ninthSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; ninthSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="326" pmx-endtag-col="13"/>
+          </rect>
+
+          <g pmx-line="329" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="334" pmx-endtag-col="11">
+            <set pmx-line="330" pmx-col="13" id="ninthSet2" attributeName="display" to="none" begin="0s; ninthSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="330" pmx-endtag-col="13"/>
+            <rect pmx-line="331" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="333" pmx-endtag-col="13">
+              <animateTransform pmx-line="332" pmx-col="15" attributeName="transform" id="ninthSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; ninthSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="332" pmx-endtag-col="15"/>
+            </rect>
+          </g>
+
+          <a pmx-line="336" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="341" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="337" pmx-col="13" id="ninthSet3" attributeName="display" to="none" begin="0s; ninthSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="337" pmx-endtag-col="13"/>
+            <rect pmx-line="338" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="340" pmx-endtag-col="13">
+              <animateTransform pmx-line="339" pmx-col="15" attributeName="transform" id="ninthSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; ninthSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="339" pmx-endtag-col="15"/>
+            </rect>
+          </a>
+        </g>
+
+        <g pmx-line="344" pmx-col="9" id="setTen" transform="translate(0,180)" pmx-text-type="0" pmx-endtag-line="373" pmx-endtag-col="9">
+          <defs pmx-line="345" pmx-col="11" pmx-text-type="0" pmx-endtag-line="350" pmx-endtag-col="11">
+            <g pmx-line="346" pmx-col="13" id="setTenRef" pmx-text-type="0" pmx-endtag-line="349" pmx-endtag-col="13">
+              <rect pmx-line="347" pmx-col="15" x="10" width="8" height="8" fill="#ccc" pmx-text-type="0" pmx-endtag-line="347" pmx-endtag-col="15"/>
+              <rect pmx-line="348" pmx-col="15" x="10" width="8" height="8" fill="#ccc" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="348" pmx-endtag-col="15"/>
+            </g>
+          </defs>
+          <use pmx-line="351" pmx-col="11" href="#setTenRef" pmx-text-type="0" pmx-endtag-line="351" pmx-endtag-col="11"/>
+          <use pmx-line="352" pmx-col="11" href="#setTenRef" x="110" pmx-text-type="0" pmx-endtag-line="352" pmx-endtag-col="11"/>
+          <use pmx-line="353" pmx-col="11" href="#setTenRef" x="220" pmx-text-type="0" pmx-endtag-line="353" pmx-endtag-col="11"/>
+
+          <rect pmx-line="355" pmx-col="11" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="358" pmx-endtag-col="11">
+            <set pmx-line="356" pmx-col="13" id="tenthSet1" attributeName="visibility" to="hidden" begin="0s; tenthSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="356" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="357" pmx-col="13" attributeName="transform" id="tenthSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; tenthSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="357" pmx-endtag-col="13"/>
+          </rect>
+
+          <g pmx-line="360" pmx-col="11" transform="translate(110, 0)" pmx-text-type="0" pmx-endtag-line="365" pmx-endtag-col="11">
+            <set pmx-line="361" pmx-col="13" id="tenthSet2" attributeName="visibility" to="hidden" begin="0s; tenthSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="361" pmx-endtag-col="13"/>
+            <rect pmx-line="362" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="364" pmx-endtag-col="13">
+              <animateTransform pmx-line="363" pmx-col="15" attributeName="transform" id="tenthSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; tenthSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="363" pmx-endtag-col="15"/>
+            </rect>
+          </g>
+
+          <a pmx-line="367" pmx-col="11" href="" transform="translate(220, 0)" pmx-text-type="5" pmx-endtag-line="372" pmx-endtag-col="11" pmx-acc-name="&#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <set pmx-line="368" pmx-col="13" id="tenthSet3" attributeName="visibility" to="hidden" begin="0s; tenthSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="368" pmx-endtag-col="13"/>
+            <rect pmx-line="369" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="371" pmx-endtag-col="13">
+              <animateTransform pmx-line="370" pmx-col="15" attributeName="transform" id="tenthSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; tenthSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="370" pmx-endtag-col="15"/>
+            </rect>
+          </a>
+        </g>
+
+        <g pmx-line="375" pmx-col="9" id="setEleven" color="rgb(204,0,102)" transform="translate(0,200)" pmx-text-type="0" pmx-endtag-line="407" pmx-endtag-col="9">
+          <defs pmx-line="376" pmx-col="11" pmx-text-type="0" pmx-endtag-line="381" pmx-endtag-col="11">
+            <g pmx-line="377" pmx-col="13" id="setElevenRef" pmx-text-type="0" pmx-endtag-line="380" pmx-endtag-col="13">
+              <rect pmx-line="378" pmx-col="15" x="10" width="8" height="8" fill="#ccc" pmx-text-type="0" pmx-endtag-line="378" pmx-endtag-col="15"/>
+              <rect pmx-line="379" pmx-col="15" x="10" width="8" height="8" fill="#ccc" transform="translate(30,0)" pmx-text-type="0" pmx-endtag-line="379" pmx-endtag-col="15"/>
+            </g>
+          </defs>
+          <use pmx-line="382" pmx-col="11" href="#setElevenRef" pmx-text-type="0" pmx-endtag-line="382" pmx-endtag-col="11"/>
+          <use pmx-line="383" pmx-col="11" href="#setElevenRef" x="110" pmx-text-type="0" pmx-endtag-line="383" pmx-endtag-col="11"/>
+          <use pmx-line="384" pmx-col="11" href="#setTenRef" x="220" pmx-text-type="0" pmx-endtag-line="384" pmx-endtag-col="11"/>
+
+          <rect pmx-line="386" pmx-col="11" x="10" width="8" height="8" fill="currentColor" pmx-text-type="0" pmx-endtag-line="389" pmx-endtag-col="11">
+            <set pmx-line="387" pmx-col="13" id="eleventhSet1" attributeName="color" to="rgb(255, 165, 0)" begin="0s; eleventhSet1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="387" pmx-endtag-col="13"/>
+            <animateTransform pmx-line="388" pmx-col="13" attributeName="transform" id="eleventhSet1_1" type="translate" from="30, 0" to="30,0" begin="0s; eleventhSet1_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="388" pmx-endtag-col="13"/>
+          </rect>
+
+          <g pmx-line="391" pmx-col="11" transform="translate(110, 0)" fill="currentColor" pmx-text-type="0" pmx-endtag-line="396" pmx-endtag-col="11">
+            <set pmx-line="392" pmx-col="13" id="eleventhSet2" attributeName="color" to="rgb(255, 165, 0)" begin="0s; eleventhSet2.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="392" pmx-endtag-col="13"/>
+            <rect pmx-line="393" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="395" pmx-endtag-col="13">
+              <animateTransform pmx-line="394" pmx-col="15" attributeName="transform" id="eleventhSet2_1" type="translate" from="30, 0" to="30,0" begin="0s; eleventhSet2_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="394" pmx-endtag-col="15"/>
+            </rect>
+          </g>
+
+          <a pmx-line="398" pmx-col="11" href="" transform="translate(220, 0)" fill="currentColor" pmx-text-type="5" pmx-endtag-line="406" pmx-endtag-col="11" pmx-acc-name="&#10;             This first 'set' is because 'color' on the 'a' might well be a different color from that&#10;                 inherited from its parent, due to UA style sheet &quot;:visited { color: something }&quot; rules. &#10;            &#10;            &#10;            &#10;              &#10;            &#10;          ">
+            <pmx-comment pmx-line="400" pmx-col="107" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> This first 'set' is because 'color' on the 'a' might well be a different color from that
+                 inherited from its parent, due to UA style sheet ":visited { color: something }" rules. </pmx-comment>
+            <set pmx-line="401" pmx-col="13" attributeName="color" to="rgb(204,0,102)" pmx-text-type="0" pmx-endtag-line="401" pmx-endtag-col="13"/>
+            <set pmx-line="402" pmx-col="13" id="eleventhSet3" attributeName="color" to="rgb(255, 165, 0)" begin="0s; eleventhSet3.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="402" pmx-endtag-col="13"/>
+            <rect pmx-line="403" pmx-col="13" x="10" width="8" height="8" pmx-text-type="0" pmx-endtag-line="405" pmx-endtag-col="13">
+              <animateTransform pmx-line="404" pmx-col="15" attributeName="transform" id="eleventhSet3_1" type="translate" from="30, 0" to="30,0" begin="0s; eleventhSet3_1.end + 1s" dur="1s" pmx-text-type="0" pmx-endtag-line="404" pmx-endtag-col="15"/>
+            </rect>
+          </a>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g pmx-line="411" pmx-col="3" font-family="SVGFreeSansASCII,sans-serif" font-size="32" pmx-text-type="0" pmx-endtag-line="413" pmx-endtag-col="3">
+    <text pmx-line="412" pmx-col="5" id="revision" x="10" y="340" stroke="none" fill="black" pmx-text-type="0" pmx-endtag-line="412" pmx-endtag-col="83">$Revision: 1.7 $</text>
+  </g>
+  <rect pmx-line="414" pmx-col="3" id="test-frame" x="1" y="1" width="478" height="358" fill="none" stroke="#000" pmx-text-type="0" pmx-endtag-line="414" pmx-endtag-col="3"/>
+  <pmx-comment pmx-line="415" pmx-col="62" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"> comment out this watermark once the test is approved </pmx-comment>
+  <pmx-comment pmx-line="420" pmx-col="8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">&lt;g id="draft-watermark"&gt;
+    &lt;rect x="1" y="1" width="478" height="20" fill="red" stroke="black" stroke-width="1"/&gt;
+    &lt;text font-family="SVGFreeSansASCII,sans-serif" font-weight="bold" font-size="20" x="240"
+      text-anchor="middle" y="18" stroke-width="0.5" stroke="black" fill="white"&gt;DRAFT&lt;/text&gt;
+  &lt;/g&gt;</pmx-comment>
+</svg>
+
+
+</body></html><pmx-http-headers pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksin pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><pmx-linksout pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"/><issues pmx-line="0" pmx-col="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><issue pmx-line="79" pmx-col="11" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.1.1" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG-TECHS/F89.html" refname="WCAG 2.0" refsect="A F89" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="100" ruleid="AccWcag1-13.2.3" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AA 13.2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG20-TECHS/F25.html" refname="WCAG 2.0" refsect="A F25" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag2</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Matterhorn 1.02" refsect="06-004" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccMatterhorn</categoryref></rule></issue><issue pmx-line="9" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="BUG" priority="1" certainty="100" ruleid="BugHtmlSvg" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://msdn.microsoft.com/en-us/ie/hh410107#_Scaling_Vector_Graphics" refname="Internet Explorer" refsect="&amp;#8804; 8" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugMicrosoft</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://en.wikipedia.org/wiki/Scalable_Vector_Graphics" refname="Android" refsect="&amp;#8804; 2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugAndroidMobile</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="" refname="" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">BugTechHtml</categoryref></rule></issue><issue pmx-line="79" pmx-col="11" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ERR" priority="1" certainty="100" ruleid="ErrEmptyLink" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Broken Link" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">ErrHttp</categoryref></rule></issue><issue pmx-line="112" pmx-col="11" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="ACC" priority="1" certainty="75" ruleid="Section508-o-1" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://www.access-board.gov/guidelines-and-standards/communications-and-it/about-the-section-508-standards/guide-to-the-section-508-standards/web-based-intranet-and-internet-information-and-applications-1194-22" refname="Section 508" refsect="1194.22 (o)" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccSection508</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.w3.org/TR/WCAG10/#gl-facilitate-navigation" refname="WCAG 1.0" refsect="AAA 13.6" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">AccWcag1</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="3" certainty="100" ruleid="SeoMetaDescription" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="https://help.yahoo.com/kb/search/search-content-quality-guidelines-sln2245.html" refname="Yahoo" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoYahoo</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="https://support.google.com/webmasters/bin/answer.py?answer=35624#1" refname="Google" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoGoogle</categoryref><categoryref pmx-line="0" pmx-col="0" refurl="http://www.bing.com/webmaster/help/webmaster-guidelines-30fba23a" refname="Bing" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoMsn</categoryref></rule></issue><issue pmx-line="4" pmx-col="2" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="SEO" priority="1" certainty="100" ruleid="SeoMultipleTitleTags" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="" refname="Best Practice" refsect="" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">SeoOther</categoryref></rule></issue><issue pmx-line="398" pmx-col="11" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="3" certainty="100" ruleid="UseGov10.11" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/102" refname="Usability.gov" refsect="10:11" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue><issue pmx-line="1" pmx-col="1" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><rule pmx-line="0" pmx-col="0" class="USE" priority="2" certainty="80" ruleid="UseGov17.4" state="0" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0"><categoryref pmx-line="0" pmx-col="0" refurl="http://guidelines.usability.gov/guidelines/189" refname="Usability.gov" refsect="17:4" pmx-text-type="2" pmx-endtag-line="0" pmx-endtag-col="0">UseUsGov</categoryref></rule></issue></issues></doc>

@@ -41,7 +41,7 @@ valid_svg_files = dict([
     
     # VNU warns about text not in Unicode Normalization Form C, but it's not an error
     ('struct-cond-02-t.svg', 'Source text is not in Unicode Normalization Form C'),
-    # FiLl, fill and FILL are all valid in case-insensitive HTML
+    # FiLl, fill and FILL are all valid in case-insensitive HTML (but SVG DTD is case-sensitive)
     ('styling-css-10-f.svg', 'Attribute FiLl not allowed on SVG element circle at this point')
 ])
 
@@ -227,12 +227,12 @@ def build_html_test_file(filename, svgdirectory, htmldirectory):
     htmlfile.write("<html lang='en'>\n")
 
     htmlfile.write("<head>\n")
-    htmlfile.write(" <title>%s</title>\n" % svgpathname)
+    htmlfile.write(" <title>%s</title>\n" % os.path.basename(svgpathname) )
     htmlfile.write(" <meta charset='utf-8'>\n")
     htmlfile.write("</head>\n")
 
     htmlfile.write("<body>\n")
-    htmlfile.write(" <h1>Source SVG: %s</h1>\n" % svgpathname)
+    htmlfile.write(" <h1>Source SVG: %s</h1>\n" % os.path.basename(svgpathname) )
     
     # insert SVG without any XML processing to avoid unexpected transformations on
     # encoding and entity refs, but remove <d:SVGTestCase> from file (not valid in HTML)
@@ -291,7 +291,7 @@ def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     logging.debug('main: IN')
     
-    svgdirectory = "/Users/markrogers/Downloads/W3C_SVG_11_TestSuite/svg"
+    svgdirectory = os.path.expanduser("~/Downloads/W3C_SVG_11_TestSuite/svg")
     htmldirectory = "../html-svg"
 
     try:

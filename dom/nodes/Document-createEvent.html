@@ -66,11 +66,11 @@ test(function() {
 }, "Should throw NOT_SUPPORTED_ERR for unrecognized arguments");
 
 /*
-The following are event interfaces which do actually exist, but must still
-throw since they're absent from the table in the spec
-for document.createEvent().
-This list is not exhaustive.
-*/
+ * The following are event interfaces which do actually exist, but must still
+ * throw since they're absent from the table in the spec for
+ * document.createEvent().  This list is not exhaustive, but includes all
+ * interfaces that it is known some UA does or did not throw for.
+ */
 var someNonCreateableEvents = [
   "AnimationEvent",
   "AnimationPlayerEvent",
@@ -82,7 +82,9 @@ var someNonCreateableEvents = [
   "BlobEvent",
   "ClipboardEvent",
   "CloseEvent",
+  "CommandEvent",
   "CompositionEvent",
+  "DataContainerEvent",
   "DeviceLightEvent",
   "DeviceMotionEvent",
   "DeviceOrientationEvent",
@@ -107,13 +109,17 @@ var someNonCreateableEvents = [
   "MediaQueryListEvent",
   "MediaStreamEvent",
   "MediaStreamTrackEvent",
+  "MouseScrollEvent",
   "MutationEvent",
   "NotificationEvent",
+  "NotifyPaintEvent",
   "OfflineAudioCompletionEvent",
   "OrientationEvent",
+  "PageTransition", // Yes, with no "Event"
   "PageTransitionEvent",
   "PointerEvent",
   "PopStateEvent",
+  "PopUpEvent",
   "PresentationConnectionAvailableEvent",
   "PresentationConnectionCloseEvent",
   "ProgressEvent",
@@ -126,21 +132,25 @@ var someNonCreateableEvents = [
   "ResourceProgressEvent",
   "SVGEvent",
   "SVGZoomEvent",
+  "ScrollAreaEvent",
   "SecurityPolicyViolationEvent",
   "ServicePortConnectEvent",
   "ServiceWorkerMessageEvent",
+  "SimpleGestureEvent",
   "SpeechRecognitionError",
   "SpeechRecognitionEvent",
   "SpeechSynthesisEvent",
   "StorageEvent",
   "SyncEvent",
   "TextEvent",
+  "TimeEvent",
   "TrackEvent",
   "TransitionEvent",
   "WebGLContextEvent",
   "WebKitAnimationEvent",
   "WebKitTransitionEvent",
-  "WheelEvent"
+  "WheelEvent",
+  "XULCommandEvent",
 ];
 someNonCreateableEvents.forEach(function (eventInterface) {
   test(function () {

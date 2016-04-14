@@ -241,7 +241,7 @@ def build_html_test_file(filename, svgdirectory, htmldirectory):
     
     htmlfile.write("</body>\n")
 
-    htmlfile.write("</html>")
+    htmlfile.write("</html>\n")
     htmlfile.close()
     
     return htmlpathname

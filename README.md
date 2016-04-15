@@ -2,8 +2,10 @@ The Web Platform Tests Project [![IRC chat](https://goo.gl/6nCIks)](http://irc.w
 ==============================
 
 The Web Platform Tests Project is a W3C-coordinated attempt to build a
-cross-browser testsuite for the Web-platform stack. Writing tests in a
-way that allows them to be run in all browsers gives browser projects
+cross-browser testsuite for the Web-platform stack.  However, for mainly
+historic reasons, the CSS WG testsuite is in a separate repository,
+[csswg-test](https://github.com/w3c/csswg-test). Writing tests in a way
+that allows them to be run in all browsers gives browser projects
 confidence that they are shipping software that is compatible with other
 implementations, and that later implementations will be compatible with
 their implementations. This in turn gives Web authors/developers
@@ -134,14 +136,6 @@ they will be under `html/browsers/history/the-history-interface/`.
 
 Various resources that tests depend on are in `common`, `images`, and
 `fonts`.
-
-
-If you're looking at a section of the specification and can't figure
-out where the directory is for it in the tree, just run:
-
-```
-node tools/scripts/id2path.js your-id
-```
 
 Branches
 ========

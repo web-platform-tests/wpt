@@ -102,12 +102,12 @@
             }
         },
         {
-            "comment": "Spec deviation: from special scheme to not is not problematic. https://github.com/whatwg/url/issues/104",
+            "comment": "Can’t switch from special scheme to non-special. Note: this may change, see https://github.com/whatwg/url/issues/104",
             "href": "http://example.net",
             "new_value": "b",
             "expected": {
-                "href": "b://example.net/",
-                "protocol": "b:"
+                "href": "http://example.net/",
+                "protocol": "http:"
             }
         },
         {
@@ -120,12 +120,12 @@
             }
         },
         {
-            "comment": "Spec deviation: from non-special scheme with a host to special is not problematic. https://github.com/whatwg/url/issues/104",
+            "comment": "Can’t switch from non-special scheme to special. Note: this may change, see https://github.com/whatwg/url/issues/104",
             "href": "ssh://me@example.net",
             "new_value": "http",
             "expected": {
-                "href": "http://me@example.net/",
-                "protocol": "http:"
+                "href": "ssh://me@example.net/",
+                "protocol": "ssh:"
             }
         },
         {
@@ -346,14 +346,14 @@
             }
         },
         {
-            "comment": "Spec deviation: port number is removed if empty in the new value: https://github.com/whatwg/url/pull/113",
+            "comment": "Port number is unchanges if empty in the new value. Note: this may change, see https://github.com/whatwg/url/pull/113",
             "href": "http://example.net:8080",
             "new_value": "example.com:",
             "expected": {
-                "href": "http://example.com/",
-                "host": "example.com",
+                "href": "http://example.com:8080/",
+                "host": "example.com:8080",
                 "hostname": "example.com",
-                "port": ""
+                "port": "8080"
             }
         },
         {
@@ -761,14 +761,14 @@
             }
         },
         {
-            "comment": "Spec deviation: port number is removed if empty in the new value. https://github.com/whatwg/url/pull/113",
+            "comment": "Port number is unchanged if empty in the new value. Note: this may change, see https://github.com/whatwg/url/pull/113",
             "href": "http://example.net:8080",
             "new_value": "",
             "expected": {
-                "href": "http://example.net/",
-                "host": "example.net",
+                "href": "http://example.net:8080/",
+                "host": "example.net:8080",
                 "hostname": "example.net",
-                "port": ""
+                "port": "8080"
             }
         },
         {

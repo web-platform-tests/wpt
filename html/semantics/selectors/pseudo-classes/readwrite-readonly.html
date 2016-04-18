@@ -47,6 +47,8 @@
 <script>
   testSelector("#set0 :read-write", [], "The :read-write pseudo-class must not match input elements to which the readonly attribute does not apply");
 
+  testSelector("#set0 :read-only", ["checkbox1", "hidden1", "range1", "color1", "radio1", "file1", "submit1", "image1", "button1", "reset1"], "The :read-only pseudo-class must match input elements to which the readonly attribute does not apply");
+
   testSelector("#set1 :read-write", ["input1"], "The :read-write pseudo-class must match input elements to which the readonly attribute applies, and that are mutable");
 
   testSelector("#set1 :read-only", ["input2"], "The :read-only pseudo-class must not match input elements to which the readonly attribute applies, and that are mutable");

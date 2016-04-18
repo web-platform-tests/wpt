@@ -123,7 +123,9 @@ test(function() {
         var doc = document.implementation.createDocument(namespace, qualifiedName, doctype)
         assert_equals(doc.compatMode, "CSS1Compat")
         assert_equals(doc.characterSet, "UTF-8")
-        assert_equals(doc.contentType, "application/xml")
+        assert_equals(doc.contentType, namespace == htmlNamespace ? "text/html"
+                                 : namespace == svgNamespace ?  "image/svg+xml"
+                                 : "application/xml")
         assert_equals(doc.URL, "about:blank")
         assert_equals(doc.documentURI, "about:blank")
         assert_equals(doc.createElement("DIV").localName, "DIV");

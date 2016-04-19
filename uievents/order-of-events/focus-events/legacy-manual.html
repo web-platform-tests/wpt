@@ -64,12 +64,12 @@ window.onload = function () {
     document.getElementById('done').addEventListener('click', function () {
       finish();
       t.step(function () {
-        assert_equals(
+        assert_array_equals(
           events,
           ['focusin', 'focus', 'DOMFocusIn', 'focusout', 'focusin', 'blur', 'DOMFocusOut', 'focus', 'DOMFocusIn'],
           'Focus-related events should fire in this order: focusin, focus, DOMFocusIn, focusout, focusin, blur, DOMFocusOut, focus, DOMFocusIn'
         );
-        assert_equals(
+        assert_array_equals(
           targets,
           [      'a',     'a',          'a',        'a',       'b',    'a',           'a',     'b',          'b'],
           'Focus-related events should fire at the correct targets'

@@ -271,6 +271,7 @@
       "subresource": [
         "iframe-tag",
         "img-tag",
+        "img-tag-in-srcdoc",
         "script-tag",
         "xhr-request",
         "worker-request",
@@ -372,6 +373,7 @@
     "subresource": [
       "iframe-tag",
       "img-tag",
+      "img-tag-in-srcdoc",
       "script-tag",
       "a-tag",
       "area-tag",
@@ -393,6 +395,7 @@
     "fetch-request": "/referrer-policy/generic/subresource/xhr.py",
     "iframe-tag": "/referrer-policy/generic/subresource/document.py",
     "img-tag": "/referrer-policy/generic/subresource/image.py",
+    "img-tag-in-srcdoc": "/referrer-policy/generic/subresource/image.py",
     "script-tag": "/referrer-policy/generic/subresource/script.py",
     "worker-request": "/referrer-policy/generic/subresource/worker.py",
     "xhr-request": "/referrer-policy/generic/subresource/xhr.py"

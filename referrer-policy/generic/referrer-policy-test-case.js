@@ -19,6 +19,7 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
     "fetch-request": queryFetch,
     "iframe-tag": queryIframe,
     "img-tag":  queryImage,
+    "img-tag-in-srcdoc":  queryImageInSrcdoc,
     "script-tag": queryScript,
     "worker-request": queryWorker,
     "xhr-request": queryXhr

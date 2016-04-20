@@ -33,8 +33,25 @@ function appendIframeToBody(url, attributes) {
   return iframe;
 }
 
-function loadImage(src, callback, attributes) {
-  var image = new Image();
+
+function loadImage(src, callback, attributes, isSrcDoc)
+{
+  if (!isSrcDoc) {
+    loadImageInWindow(src, callback, attributes, window);
+    return;
+  }
+
+  var iframe = document.createElement("iframe");
+  iframe.srcdoc = "srcdoc iframe";
+  iframe.onload = function() {
+    loadImageInWindow(src, callback, attributes, iframe.contentWindow);
+  }
+  document.body.appendChild(iframe);
+}
+
+function loadImageInWindow(src, callback, attributes, wnd)
+{
+  var image = new wnd.Image();
   image.crossOrigin = "Anonymous";
   image.onload = function() {
     callback(image);
@@ -46,7 +63,7 @@ function loadImage(src, callback, attributes) {
       image[attr] = attributes[attr];
     }
   }
-  document.body.appendChild(image)
+  wnd.document.body.appendChild(image)
 }
 
 function decodeImageData(rgba) {
@@ -73,14 +90,14 @@ function decodeImageData(rgba) {
   return JSON.parse(string_data);
 }
 
-function decodeImage(url, callback, referrer_policy) {
+function decodeImage(url, callback, referrer_policy, isSrcDoc) {
   loadImage(url, function(img) {
     var canvas = document.createElement("canvas");
     var context = canvas.getContext('2d');
     context.drawImage(img, 0, 0);
     var imgData = context.getImageData(0, 0, img.clientWidth, img.clientHeight);
     callback(decodeImageData(imgData.data))
-  }, referrer_policy);
+  }, referrer_policy, isSrcDoc);
 }
 
 function normalizePort(targetPort) {
@@ -114,7 +131,13 @@ function queryIframe(url, callback, referrer_policy) {
 function queryImage(url, callback, referrer_policy) {
   decodeImage(url, function(server_data) {
     callback(wrapResult(url, server_data), url);
-  }, referrer_policy)
+  }, referrer_policy, false)
+}
+
+function queryImageInSrcdoc(url, callback, referrer_policy) {
+  decodeImage(url, function(server_data) {
+    callback(wrapResult(url, server_data), url);
+  }, referrer_policy, true)
 }
 
 function queryXhr(url, callback) {

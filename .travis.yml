@@ -1,0 +1,6 @@
+language: python
+install:
+  - pip install pytest
+  - pip install ./html5lib
+  - pip install pytest-travis-fold
+script: py.test manifest

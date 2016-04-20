@@ -1,5 +1,5 @@
 import os
-import urlparse
+from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
 try:
     from xml.etree import cElementTree as ElementTree
@@ -8,9 +8,9 @@ except ImportError:
 
 import html5lib
 
-import vcs
-from item import Stub, ManualTest, WebdriverSpecTest, RefTest, TestharnessTest
-from utils import rel_path_to_url, is_blacklisted, ContextManagerStringIO, cached_property
+from . import vcs
+from .item import Stub, ManualTest, WebdriverSpecTest, RefTest, TestharnessTest
+from .utils import rel_path_to_url, is_blacklisted, ContextManagerStringIO, cached_property
 
 wd_pattern = "*.py"
 
@@ -74,7 +74,7 @@ class SourceFile(object):
             blob = git("show", "HEAD:%s" % self.rel_path)
             file_obj = ContextManagerStringIO(blob)
         else:
-            file_obj = open(self.path)
+            file_obj = open(self.path, 'rb')
         return file_obj
 
     @property
@@ -267,7 +267,7 @@ class SourceFile(object):
         rel_map = {"match": "==", "mismatch": "!="}
         for item in self.reftest_nodes:
             if "href" in item.attrib:
-                ref_url = urlparse.urljoin(self.url, item.attrib["href"])
+                ref_url = urljoin(self.url, item.attrib["href"])
                 ref_type = rel_map[item.attrib["rel"]]
                 rv.append((ref_url, ref_type))
         return rv

@@ -7,7 +7,7 @@ if(expected_alerts.length == 0) {
  }
 } else {
  var t_alert = async_test('Expecting alerts: {{GET[alerts]}}');
- function alert_assert(msg) {
+ var alert_assert = function (msg) {
      t_alert.step(function () {
          if(msg && msg instanceof Error) {
              msg = msg.message;
@@ -29,5 +29,5 @@ if(expected_alerts.length == 0) {
          assert_unreached('unexpected alert: ' + msg);
          t_log.done();
      });
- }
+ }.bind(this);
 }

@@ -1,0 +1,16 @@
+<!doctype html>
+<title>visibilitychange fires on unload</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+var t = async_test();
+var w = window.open("unload-1.html");
+onmessage = t.step_func(function(event) {
+  assert_equals(event.data, "hidden");
+  t.done();
+});
+setTimeout(function () {
+  w.close();
+}, 500);
+</script>

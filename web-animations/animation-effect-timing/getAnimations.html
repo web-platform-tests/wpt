@@ -6,7 +6,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../testcommon.js"></script>
-<link rel="stylesheet" href="/resources/testharness.css">
 <body>
 <div id="log"></div>
 <script>
@@ -51,6 +50,19 @@ test(function(t) {
   assert_equals(div.getAnimations().length, 0,
     'set currentTime same as duration when endDelay is negative value');
 }, 'when endDelay is changed');
+
+test(function(t) {
+  var div = createDiv(t);
+  var anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
+  anim.finish();
+  assert_equals(div.getAnimations().length, 0, 'animation finished');
+  anim.effect.timing.iterations = 10;
+  assert_equals(div.getAnimations()[0], anim, 'set iterations 10');
+  anim.effect.timing.iterations = 0;
+  assert_equals(div.getAnimations().length, 0, 'set iterations 0');
+  anim.effect.timing.iterations = Infinity;
+  assert_equals(div.getAnimations().length, 1, 'set iterations Infinity');
+}, 'when iterations is changed');
 
 test(function(t) {
   var div = createDiv(t);

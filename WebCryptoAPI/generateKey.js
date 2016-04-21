@@ -1,15 +1,24 @@
 function run_test() {
     // Good key generation parameters
-    var goodAlgorithmIdentifierParameters = [
-        {name: "AES-CBC", length: 128},
-        {name: "AES-CBC", length: 192},
-        {name: "AES-CBC", length: 256},
-        {name: "aes-cbc", length: 128},
-        {name: "aes-cbc", length: 192},
-        {name: "aes-cbc", length: 256},
-        {name: "aes-CBC", length: 128},
-        {name: "aes-CBC", length: 192},
-        {name: "aes-CBC", length: 256}
+    var goodSymmetricEncryptionAlgorithmNames = [
+        "AES-CTR",
+        "AES-CBC",
+        "AES-GCM",
+        "AES-CFB",
+        "aes-CTR",
+        "aes-CBC",
+        "aes-GCM",
+        "aes-CFB",
+        "AES-ctr",
+        "AES-cbc",
+        "AES-gcm",
+        "AES-cfb"
+    ];
+
+    var goodSymmetricEncryptionAlgorithmLengths = [
+        128,
+        192,
+        256
     ];
 
     var goodExtractableParameters = [
@@ -32,47 +41,51 @@ function run_test() {
         secure = ["https:", "wss:", "file:"].includes(location.protocol);
     }
 
-    goodAlgorithmIdentifierParameters.forEach(function(algorithm){
-        goodExtractableParameters.forEach(function(extractable){
-            goodUsagesParameters.forEach(function(usages){
-                var parameters =
-                    '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
-                    extractable.toString() + ', [' + usages.toString() + ']'
+    goodSymmetricEncryptionAlgorithmNames.forEach(function(name) {
+        goodSymmetricEncryptionAlgorithmLengths.forEach(function(length){
+            var algorithm = {name: name, length: length};
 
-                if (secure) {
-                    promise_test(function(test) {
-                        return crypto.subtle.generateKey(algorithm, extractable, usages)
-                        .then(function(result) {
-                            assert_equals(result.constructor, CryptoKey, "Result is a CryptoKey");
-                            assert_equals(result.type, "secret", "Is a secret key");
+            goodExtractableParameters.forEach(function(extractable){
+                goodUsagesParameters.forEach(function(usages){
+                    var parameters =
+                        '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
+                        extractable.toString() + ', [' + usages.toString() + ']'
 
-                            assert_readonly(result, "type",         "type property is readonly");
-                            assert_readonly(result, "extractable",  "extractable property is readonly");
+                    if (secure) {
+                        promise_test(function(test) {
+                            return crypto.subtle.generateKey(algorithm, extractable, usages)
+                            .then(function(result) {
+                                assert_equals(result.constructor, CryptoKey, "Result is a CryptoKey");
+                                assert_equals(result.type, "secret", "Is a secret key");
 
-                            // assert_readonly does not work for object properties, because
-                            // the values of the properties may be created from the
-                            // underlying implementation whenever referenced. Thus,
-                            // result.algorithm === result.algorithm could be false.
-                            // So we do a rougher check for readonly.
-                            result.algorithm = "Changed";
-                            assert_equals(result.algorithm.name.toLowerCase(),  algorithm.name.toLowerCase(),   "algorithm property is readonly");
-                            assert_equals(result.algorithm.length,              algorithm.length,               "algorithm property is readonly");
+                                assert_readonly(result, "type",         "type property is readonly");
+                                assert_readonly(result, "extractable",  "extractable property is readonly");
 
-                            result.usages = "Changed";
-                            assert_equals(result.usages.length, usages.length, "usages property is readonly");
-                        });
-                    }, "Successful generateKey (" + parameters + ") ");
-                } else {
-                    promise_test(function(test) {
-                        return crypto.subtle.generateKey(algorithm, extractable, usages)
-                        .then(function(result) {
-                            assert_unreached("Should not resolve in insecure contexts");
-                        })
-                        .catch(function(err) {
-                            assert_true(err.message.includes("secure"), "Error due to context security");
-                        });
-                    }, "Insecure context error thrown for generateKey (" + parameters + ") ");
-                }
+                                // assert_readonly does not work for object properties, because
+                                // the values of the properties may be created from the
+                                // underlying implementation whenever referenced. Thus,
+                                // result.algorithm === result.algorithm could be false.
+                                // So we do a rougher check for readonly.
+                                result.algorithm = "Changed";
+                                assert_equals(result.algorithm.name.toLowerCase(),  algorithm.name.toLowerCase(),   "algorithm property is readonly");
+                                assert_equals(result.algorithm.length,              algorithm.length,               "algorithm property is readonly");
+
+                                result.usages = "Changed";
+                                assert_equals(result.usages.length, usages.length, "usages property is readonly");
+                            });
+                        }, "Successful generateKey (" + parameters + ") ");
+                    } else {
+                        promise_test(function(test) {
+                            return crypto.subtle.generateKey(algorithm, extractable, usages)
+                            .then(function(result) {
+                                assert_unreached("Should not resolve in insecure contexts");
+                            })
+                            .catch(function(err) {
+                                assert_true(err.message.includes("secure"), "Error due to context security");
+                            });
+                        }, "Insecure context error thrown for generateKey (" + parameters + ") ");
+                    }
+                });
             });
         });
     });

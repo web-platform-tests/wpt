@@ -4,14 +4,15 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-var t = async_test();
-var w = window.open("unload-1.html");
-onmessage = t.step_func(function(event) {
-  if (event.data === "close") {
-    w.close();
-    return;
-  }
-  assert_equals(event.data, "hidden");
-  t.done();
+async_test(function(t) {
+  var w = window.open("unload-1.html");
+  window.onmessage = t.step_func(function(event) {
+    if (event.data === "close") {
+      w.close();
+      return;
+    }
+    assert_equals(event.data, "hidden");
+    t.done();
+  });
 });
 </script>

@@ -7,10 +7,11 @@
 var t = async_test();
 var w = window.open("unload-1.html");
 onmessage = t.step_func(function(event) {
+  if (event.data === "close") {
+    w.close();
+    return;
+  }
   assert_equals(event.data, "hidden");
   t.done();
 });
-t.step_timeout(function () {
-  w.close();
-}, 500);
 </script>

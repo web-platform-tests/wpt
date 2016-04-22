@@ -3243,19 +3243,31 @@ window.onload = function() {
       'document.createElement("wbr")',
       'document.createElement("summary")',
       'document.createElement("acronym")',
+      'document.createElement("basefont")',
+      'document.createElement("big")',
+      'document.createElement("center")',
+      'document.createElement("nobr")',
+      'document.createElement("noembed")',
+      'document.createElement("noframes")',
+      'document.createElement("plaintext")',
+      'document.createElement("rb")',
+      'document.createElement("rtc")',
+      'document.createElement("strike")',
+      'document.createElement("tt")',
+      'document.createElement("foo-bar")', // valid custom element name
     ],
     HTMLUnknownElement: [
-      'document.createElement("blink")',
-      'document.createElement("quasit")',
       'document.createElement("bgsound")',
+      'document.createElement("blink")',
       'document.createElement("isindex")',
       'document.createElement("multicol")',
       'document.createElement("nextid")',
-      'document.createElement("rb")',
       'document.createElement("spacer")',
-      'document.createElement("basefont")',
+      'document.createElement("quasit")',
       'document.createElement("directory")',
       'document.createElement("mod")',
+      'document.createElement("å-bar")', // not a valid custom element name
+      'document.createElementNS("http://www.w3.org/1999/xhtml", "foo-BAR")', // not a valid custom element name
     ],
     HTMLHtmlElement: ['document.createElement("html")'],
     HTMLHeadElement: ['document.createElement("head")'],
@@ -3279,7 +3291,6 @@ window.onload = function() {
     HTMLPreElement: [
       'document.createElement("pre")',
       'document.createElement("listing")',
-      'document.createElement("plaintext")',
       'document.createElement("xmp")',
     ],
     HTMLQuoteElement: [

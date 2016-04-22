@@ -5,14 +5,10 @@ function run_test() {
         "AES-CBC",
         "AES-GCM",
         "AES-CFB",
-        "aes-CTR",
-        "aes-CBC",
-        "aes-GCM",
-        "aes-CFB",
-        "AES-ctr",
-        "AES-cbc",
-        "AES-gcm",
-        "AES-cfb"
+        "aEs-ctr",
+        "aEs-cbc",
+        "aEs-gcm",
+        "aEs-cfb"
     ];
 
     var goodSymmetricEncryptionAlgorithmLengths = [
@@ -29,48 +25,56 @@ function run_test() {
     var goodUsagesParameters = [
         ["encrypt"],
         ["decrypt"],
+        ["wrapKey"],
+        ["unwrapKey"],
         ["decrypt", "encrypt"],
-        ["encrypt", "decrypt"]
+        ["decrypt", "wrapKey"],
+        ["decrypt", "unwrapKey"],
+        ["encrypt", "wrapKey"],
+        ["encrypt", "unwrapKey"],
+        ["wrapKey", "unwrapKey"],
+        ["decrypt", "encrypt", "wrapKey"],
+        ["decrypt", "encrypt", "unwrapKey"],
+        ["decrypt", "wrapKey", "unwrapKey"],
+        ["encrypt", "wrapKey", "unwrapKey"],
+        ["decrypt", "encrypt", "wrapKey", "unwrapKey"],
+        ["encrypt", "unwrapKey", "decrypt", "unwrapKey"],
+        ["encrypt", "unwrapKey", "decrypt", "unwrapKey", "decrypt", "decrypt"]
     ];
 
-    var secure = runningInASecureContext();
+    if (runningInASecureContext()) {
+        goodSymmetricEncryptionAlgorithmNames.forEach(function(name) {
+            goodSymmetricEncryptionAlgorithmLengths.forEach(function(length){
+                goodExtractableParameters.forEach(function(extractable){
+                    goodUsagesParameters.forEach(function(usages){
+                        var parameters =
+                            '{name: "' + name + '", length: ' + length.toString() + '}, ' +
+                            extractable.toString() + ', [' + usages.toString() + ']'
 
-    goodSymmetricEncryptionAlgorithmNames.forEach(function(name) {
-        goodSymmetricEncryptionAlgorithmLengths.forEach(function(length){
-            var algorithm = {name: name, length: length};
-
-            goodExtractableParameters.forEach(function(extractable){
-                goodUsagesParameters.forEach(function(usages){
-                    var parameters =
-                        '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
-                        extractable.toString() + ', [' + usages.toString() + ']'
-
-                    if (secure) {
                         promise_test(function(test) {
-                            return crypto.subtle.generateKey(algorithm, extractable, usages)
+                            return crypto.subtle.generateKey({name: name, length: length}, extractable, usages)
                             .then(function(result) {
                                 assert_equals(result.constructor, CryptoKey, "Result is a CryptoKey");
                                 assert_equals(result.type, "secret", "Is a secret key");
                                 assert_equals(result.extractable, extractable, "Extractability is correct");
-                                assert_equals(result.algorithm.name.toLowerCase(),  algorithm.name.toLowerCase(),   "Correct algorithm name");
-                                assert_equals(result.algorithm.length,              algorithm.length,               "Correct algorithm length");
-                                assert_equals(result.usages.length, usages.length, "usages property is readonly");
+                                assert_equals(result.algorithm.name, name.toUpperCase(), "Correct algorithm name");
+                                assert_equals(result.algorithm.length, length, "Correct algorithm length");
+
+                                var usageCount = 0;
+                                ["encrypt", "decrypt", "wrapKey", "unwrapKey"].forEach(function(usage) {
+                                    if (usages.includes(usage)) {
+                                        usageCount += 1;
+                                        assert_true(result.usages.includes(usage), "Has " + usage + " usage");
+                                    }
+                                });
+                                assert_equals(result.usages.length, usageCount, "usages property is correct");
                             });
                         }, "generateKey(" + parameters + ") ");
-                    } else {
-                        promise_test(function(test) {
-                            return crypto.subtle.generateKey(algorithm, extractable, usages)
-                            .then(function(result) {
-                                assert_unreached("Should not resolve in insecure contexts");
-                            })
-                            .catch(function(err) {
-                                assert_true(err.message.includes("secure"), "Error due to context security");
-                            });
-                        }, "Throw insecure context error thrown for generateKey(" + parameters + ") ");
-                    }
+                    });
                 });
             });
         });
-    });
-
+    } else {
+        test(function() {}, "No tests because API not available in insecure context");
+    }
 }

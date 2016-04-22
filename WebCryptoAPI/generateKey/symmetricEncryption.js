@@ -33,13 +33,7 @@ function run_test() {
         ["encrypt", "decrypt"]
     ];
 
-    var secure;
-    if ("isSecureContext" in this) {
-        secure = isSecureContext;
-    } else {
-        // TODO: address localhost equivalents
-        secure = ["https:", "wss:", "file:"].includes(location.protocol);
-    }
+    var secure = runningInASecureContext();
 
     goodSymmetricEncryptionAlgorithmNames.forEach(function(name) {
         goodSymmetricEncryptionAlgorithmLengths.forEach(function(length){
@@ -57,23 +51,12 @@ function run_test() {
                             .then(function(result) {
                                 assert_equals(result.constructor, CryptoKey, "Result is a CryptoKey");
                                 assert_equals(result.type, "secret", "Is a secret key");
-
-                                assert_readonly(result, "type",         "type property is readonly");
-                                assert_readonly(result, "extractable",  "extractable property is readonly");
-
-                                // assert_readonly does not work for object properties, because
-                                // the values of the properties may be created from the
-                                // underlying implementation whenever referenced. Thus,
-                                // result.algorithm === result.algorithm could be false.
-                                // So we do a rougher check for readonly.
-                                result.algorithm = "Changed";
-                                assert_equals(result.algorithm.name.toLowerCase(),  algorithm.name.toLowerCase(),   "algorithm property is readonly");
-                                assert_equals(result.algorithm.length,              algorithm.length,               "algorithm property is readonly");
-
-                                result.usages = "Changed";
+                                assert_equals(result.extractable, extractable, "Extractability is correct");
+                                assert_equals(result.algorithm.name.toLowerCase(),  algorithm.name.toLowerCase(),   "Correct algorithm name");
+                                assert_equals(result.algorithm.length,              algorithm.length,               "Correct algorithm length");
                                 assert_equals(result.usages.length, usages.length, "usages property is readonly");
                             });
-                        }, "Successful generateKey (" + parameters + ") ");
+                        }, "generateKey(" + parameters + ") ");
                     } else {
                         promise_test(function(test) {
                             return crypto.subtle.generateKey(algorithm, extractable, usages)
@@ -83,7 +66,7 @@ function run_test() {
                             .catch(function(err) {
                                 assert_true(err.message.includes("secure"), "Error due to context security");
                             });
-                        }, "Insecure context error thrown for generateKey (" + parameters + ") ");
+                        }, "Throw insecure context error thrown for generateKey(" + parameters + ") ");
                     }
                 });
             });

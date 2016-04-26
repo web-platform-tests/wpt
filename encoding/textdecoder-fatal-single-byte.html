@@ -22,7 +22,7 @@ var singleByteEncodings = [
      {encoding: 'KOI8-R', bad: []},
      {encoding: 'KOI8-U', bad: []},
      {encoding: 'macintosh', bad: []},
-     {encoding: 'windows-874', bad: [0xDB, 0xDC, 0xDD, 0xDE, 0xFC, 0xFD, 0xFE, 0xFF] },
+     {encoding: 'windows-874', bad: [0xDB, 0xDC, 0xDD, 0xDE, 0xFC, 0xFD, 0xFE, 0xFF]},
      {encoding: 'windows-1250', bad: []},
      {encoding: 'windows-1251', bad: []},
      {encoding: 'windows-1252', bad: []},
@@ -36,8 +36,8 @@ var singleByteEncodings = [
 ];
 
 singleByteEncodings.forEach(function(t) {
-    Array.apply(null, Array(256)).forEach(function(a,i) {
-        if (t.bad.length && t.bad.indexOf(i) != -1) {
+    for (var i = 0; i < 256; ++i) {
+        if (t.bad.indexOf(i) != -1) {
             test(function() {
                 assert_throws(new TypeError(), function() {
                     new TextDecoder(t.encoding, {fatal: true}).decode(new Uint8Array([i]));
@@ -49,8 +49,7 @@ singleByteEncodings.forEach(function(t) {
                 assert_equals(typeof new TextDecoder(t.encoding, {fatal: true}).decode(new Uint8Array([i])), "string");
             }, 'Not throw: ' + t.encoding + ' has a pointer ' + i);
         }
-    });
-
+    }
 });
 
 </script>

@@ -1,86 +1,101 @@
 function run_test() {
-
     // API may not be available outside a secure context.
     if (!runningInASecureContext()) {
-        test(function() {}, "No tests because API not available in insecure context");
+        test(function() {}, "No tests because API not necessarily available in insecure context");
         return;
     }
 
+    var subtle = crypto.subtle; // Change to test prefixed implementations
 
-    // Good key generation parameters
-    var goodSymmetricEncryptionAlgorithmNames = [
-        "AES-CTR",
-        "AES-CBC",
-        "AES-GCM",
-        "AES-CFB",
-        "aEs-ctr",
-        "aEs-cbc",
-        "aEs-gcm",
-        "aEs-cfb"
+    var goodTestVectors = [ // Parameters that should work for generateKey
+        {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
+        {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
+        {name: "AES-CMAC", resultType: CryptoKey, usages: ["sign", "verify"]},
+        {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
+        {name: "AES-CFB",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
+        {name: "AES-KW",   resultType: CryptoKey, usages: ["wrapKey", "unwrapKey"]}
     ];
 
-    var goodSymmetricEncryptionAlgorithmLengths = [
-        128,
-        192,
-        256
-    ];
+    function allAlgorithmSpecifiersFor(algorithmName) {
+        var results = [];
 
-    var goodExtractableParameters = [
-        true,
-        false
-    ];
+        if (algorithmName.toUpperCase().substring(0, 4) === "AES-") {
+            // Specifier properties are name and length
+            [128, 192, 256].forEach(function(length) {
+                results.push({name: algorithmName, length: length});
+            });
 
-    var goodUsagesParameters = [
-        ["encrypt"],
-        ["decrypt"],
-        ["wrapKey"],
-        ["unwrapKey"],
-        ["decrypt", "encrypt"],
-        ["decrypt", "wrapKey"],
-        ["decrypt", "unwrapKey"],
-        ["encrypt", "wrapKey"],
-        ["encrypt", "unwrapKey"],
-        ["wrapKey", "unwrapKey"],
-        ["decrypt", "encrypt", "wrapKey"],
-        ["decrypt", "encrypt", "unwrapKey"],
-        ["decrypt", "wrapKey", "unwrapKey"],
-        ["encrypt", "wrapKey", "unwrapKey"],
-        ["decrypt", "encrypt", "wrapKey", "unwrapKey"],
-        ["encrypt", "unwrapKey", "decrypt", "unwrapKey"],
-        ["encrypt", "unwrapKey", "decrypt", "unwrapKey", "decrypt", "decrypt"]
-    ];
+        return results;
+        }
+    }
 
-    goodSymmetricEncryptionAlgorithmNames.forEach(function(name) {
-        goodSymmetricEncryptionAlgorithmLengths.forEach(function(length){
-            goodExtractableParameters.forEach(function(extractable){
-                goodUsagesParameters.forEach(function(usages){
-                    var parameters =
-                        '{name: "' + name + '", length: ' + length.toString() + '}, ' +
-                        extractable.toString() + ', [' + usages.toString() + ']'
+    function allUsageCombinationsOf(validUsages) {
+        var results = [];
+        var firstUsage;
+        var remainingUsages;
 
-                    promise_test(function(test) {
-                        return crypto.subtle.generateKey({name: name, length: length}, extractable, usages)
-                        .then(function(result) {
-                            assert_equals(result.constructor, CryptoKey, "Result is a CryptoKey");
-                            assert_equals(result.type, "secret", "Is a secret key");
-                            assert_equals(result.extractable, extractable, "Extractability is correct");
-                            assert_equals(result.algorithm.name, name.toUpperCase(), "Correct algorithm name");
-                            assert_equals(result.algorithm.length, length, "Correct algorithm length");
+        for(var i=0; i<validUsages.length; i++) {
+            firstUsage = validUsages[i];
+            remainingUsages = validUsages.slice(i+1);
+            results.push([firstUsage]);
 
-                            var usageCount = 0;
-                            ["encrypt", "decrypt", "wrapKey", "unwrapKey"].forEach(function(usage) {
-                                if (usages.includes(usage)) {
-                                    usageCount += 1;
-                                    assert_true(result.usages.includes(usage), "Has " + usage + " usage");
-                                }
+            if (remainingUsages.length > 0) {
+                allUsageCombinationsOf(remainingUsages).forEach(function(combination) {
+                    combination.push(firstUsage);
+                    results.push(combination);
+                });
+            }
+        }
+
+        return results;
+    }
+
+    x = allUsageCombinationsOf;
+
+    goodTestVectors.forEach(function(vector) {
+        var upCaseName = vector.name;
+        var lowCaseName = vector.name.toLowerCase();
+        var mixedCaseName = upCaseName.substring(0, 1) + lowCaseName.substring(1);
+
+        [upCaseName, lowCaseName, mixedCaseName].forEach(function(name) {
+            allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
+                console.log(algorithm);
+                allUsageCombinationsOf(vector.usages).forEach(function(usages) {
+                    [false, true].forEach(function(extractable) {
+
+                        var parameters =
+                            '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
+                            extractable.toString() + ', [' + usages.toString() + ']'
+
+                        promise_test(function(test) {
+                            return crypto.subtle.generateKey(algorithm, extractable, usages)
+                            .then(function(result) {
+                                assert_equals(result.constructor, CryptoKey, "Result is a CryptoKey");
+                                assert_equals(result.type, "secret", "Is a secret key");
+                                assert_equals(result.extractable, extractable, "Extractability is correct");
+                                assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
+
+                                var usageCount = 0;
+                                vector.usages.forEach(function(usage) {
+                                    if (usages.includes(usage)) {
+                                        usageCount += 1;
+                                        assert_true(result.usages.includes(usage), "Has " + usage + " usage");
+                                    }
+                                });
+                                assert_equals(result.usages.length, usageCount, "usages property is correct");
                             });
-                            assert_equals(result.usages.length, usageCount, "usages property is correct");
-                        });
-                    }, "generateKey(" + parameters + ") ");
+                        }, "generateKey(" + parameters + ") ");
+
+
+
+                    });
                 });
             });
         });
     });
+
+    return true;    // TODO: Fix and extend below to use more general approach, as above.
+
 
     // Now test for properly handling errors
 

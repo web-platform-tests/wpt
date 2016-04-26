@@ -2,21 +2,21 @@
 <title>flexbox | computed style | align-self: baseline</title>
 <link rel="author" href="http://opera.com" title="Opera Software">
 <link rel="help" href="http://www.w3.org/TR/css-flexbox-1/#propdef-align-self">
-<link rel="match" href="ref-pass-body.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <meta name="flags" content="dom">
 <style>
 body {
 	color: red;
 	align-self: baseline;
 }
-.PASS {color: black;}
 </style>
-<h1>FAIL, enable javascript</h1>
+<div id="log"></div>
 <script>
+test(function() {
     var body = document.body;
 
-    var passed =
-	    getComputedStyle(body).getPropertyValue("align-self") ==
-	    "baseline";
-    body.textContent = body.className = passed ? "PASS" : "FAIL";
+    assert_equals(getComputedStyle(body).getPropertyValue("align-self"),
+	          "baseline");
+});
 </script>

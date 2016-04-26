@@ -1557,22 +1557,14 @@ interface HTMLTableRowElement : HTMLElement {
   // also has obsolete members
 };
 
-interface HTMLTableDataCellElement : HTMLTableCellElement {
-  // also has obsolete members
-};
-
-interface HTMLTableHeaderCellElement : HTMLTableCellElement {
-           attribute DOMString scope;
-           attribute DOMString abbr;
-           attribute DOMString sorted;
-  void sort();
-};
-
 interface HTMLTableCellElement : HTMLElement {
-           attribute unsigned long colSpan;
-           attribute unsigned long rowSpan;
-  [PutForwards=value] readonly attribute DOMTokenList headers;
+  [CEReactions] attribute unsigned long colSpan;
+  [CEReactions] attribute unsigned long rowSpan;
+  [CEReactions, SameObject, PutForwards=value] readonly attribute DOMTokenList headers;
   readonly attribute long cellIndex;
+
+  [CEReactions] attribute DOMString scope; // only conforming for th elements
+  [CEReactions] attribute DOMString abbr;  // only conforming for th elements
 
   // also has obsolete members
 };
@@ -3128,10 +3120,6 @@ partial interface HTMLTableCellElement {
   [TreatNullAs=EmptyString] attribute DOMString bgColor;
 };
 
-partial interface HTMLTableDataCellElement {
-           attribute DOMString abbr;
-};
-
 partial interface HTMLTableRowElement {
            attribute DOMString align;
            attribute DOMString ch;
@@ -3344,9 +3332,10 @@ window.onload = function() {
       'document.createElement("tfoot")',
     ],
     HTMLTableRowElement: ['document.createElement("tr")'],
-    HTMLTableDataCellElement: ['document.createElement("td")'],
-    HTMLTableHeaderCellElement: ['document.createElement("th")'],
-    HTMLTableCellElement: [],
+    HTMLTableCellElement: [
+      'document.createElement("td")',
+      'document.createElement("th")',
+    ],
     HTMLFormElement: ['document.createElement("form")'],
     HTMLFieldsetElement: ['document.createElement("fieldset")'],
     HTMLLegendElement: ['document.createElement("legend")'],

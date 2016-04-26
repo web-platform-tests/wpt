@@ -38,6 +38,7 @@ function run_test() {
             firstUsage = validUsages[i];
             remainingUsages = validUsages.slice(i+1);
             results.push([firstUsage]);
+            results.push([firstUsage, firstUsage]); // Repeats should be allowed
 
             if (remainingUsages.length > 0) {
                 allUsageCombinationsOf(remainingUsages).forEach(function(combination) {
@@ -50,8 +51,6 @@ function run_test() {
         return results;
     }
 
-    x = allUsageCombinationsOf;
-
     goodTestVectors.forEach(function(vector) {
         var upCaseName = vector.name;
         var lowCaseName = vector.name.toLowerCase();
@@ -59,7 +58,6 @@ function run_test() {
 
         [upCaseName, lowCaseName, mixedCaseName].forEach(function(name) {
             allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
-                console.log(algorithm);
                 allUsageCombinationsOf(vector.usages).forEach(function(usages) {
                     [false, true].forEach(function(extractable) {
 
@@ -94,21 +92,18 @@ function run_test() {
         });
     });
 
-    return true;    // TODO: Fix and extend below to use more general approach, as above.
-
-
     // Now test for properly handling errors
 
     // Algorithm normalization should fail with "Not supported"
     var badSymmetricEncryptionAlgorithms = [
         "AES",
         {name: "AES"},
-        {name: "AES", length: 128},
+        {name: "AES", length: 128}
     ];
 
     badSymmetricEncryptionAlgorithms.forEach(function(algorithm) {
-        goodExtractableParameters.forEach(function(extractable){
-            goodUsagesParameters.forEach(function(usages){
+        allUsageCombinationsOf(["encrypt", "decrypt", "sign", "verify"]).forEach(function(usages) {
+            [false, true].forEach(function(extractable){
                 var algorithmString;
 
                 if (typeof algorithm === "string") {
@@ -138,6 +133,36 @@ function run_test() {
             });
         });
     });
+
+// How about some bad usages?
+
+    goodTestVectors.forEach(function(vector) {
+        var name = vector.name;
+
+        allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
+            allUsageCombinationsOf(vector.usages).forEach(function(usages) {
+                usages.push("encrypt", "sign"); // No algorithms support both
+                [false, true].forEach(function(extractable) {
+
+                    var parameters =
+                        '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
+                        extractable.toString() + ', [' + usages.toString() + ']'
+
+                    promise_test(function(test) {
+                        return crypto.subtle.generateKey(algorithm, extractable, usages)
+                        .then(function(result) {
+                            assert_unreached("Operation succeeded, but should not have");
+                        })
+                        .catch(function(err) {
+                            assert_equals(err.code, DOMException.SYNTAX_ERR, "Bad algorithm not supported");
+                        });
+                    }, "Bad usages generateKey(" + parameters + ") ");
+
+                });
+            });
+        });
+    });
+
 
 
     var badSymmetricEncryptionAlgorithmLengths = [

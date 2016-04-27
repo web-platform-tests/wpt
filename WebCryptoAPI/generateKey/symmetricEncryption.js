@@ -187,7 +187,7 @@ function run_test() {
                             assert_unreached("Operation succeeded, but should not have");
                         })
                         .catch(function(err) {
-                            assert_equals(err.code, DOMException.SYNTAX_ERR, "Bad algorithm not supported");
+                            assert_equals(err.code, DOMException.SYNTAX_ERR, "Bad usages");
                         });
                     }, "Bad usages: generateKey(" + parameters + ") ");
 
@@ -242,7 +242,7 @@ function run_test() {
                         assert_unreached("Operation succeeded, but should not have");
                     })
                     .catch(function(err) {
-                        assert_equals(err.code, DOMException.SYNTAX_ERR, "Bad algorithm not supported");
+                        assert_equals(err.code, DOMException.SYNTAX_ERR, "Empty usages");
                     });
                 }, "Empty usages: generateKey(" + parameters + ") ");
             });

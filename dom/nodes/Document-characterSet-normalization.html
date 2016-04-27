@@ -340,17 +340,7 @@ Object.keys(encodingMap).forEach(function(name) {
     */
   }
 });
-/*
-function expected_case(encoding_label) {
-  if (encoding_label === 'big5') {
-    return 'Big5';
-  }
-  if (encoding_label === 'shift_jis') {
-    return 'Shift_JIS';
-  }
-  return encoding_label.toUpperCase();
-}
-*/
+
 Object.keys(encodingMap).forEach(function(name) {
   encodingMap[name].forEach(function(label) {
     var iframe = document.createElement("iframe");
@@ -360,14 +350,6 @@ Object.keys(encodingMap).forEach(function(name) {
                        " has label " + format_value(label) + " (inputEncoding)");
     var t3 = async_test("Name " + format_value(name) +
                        " has label " + format_value(label) + " (charset)");
-    /*
-    iframe.src = "data:text/html,<!doctype html>" +
-                 '<meta charset="' + label + '">';
-    */
-    /*
-    var blob = new Blob(["<!doctype html>" + '<meta charset="' + label + '">'], {type: "text/html"});
-    iframe.src = window.URL.createObjectURL(blob);
-    */
     iframe.src = "encoding.py?label=" + label;
     iframe.onload = function() {
       t.step(function() {

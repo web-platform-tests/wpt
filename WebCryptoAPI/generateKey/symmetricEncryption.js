@@ -10,16 +10,14 @@ function run_test() {
     var goodTestVectors = [ // Parameters that should work for generateKey
         {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
         {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
-        {name: "AES-CMAC", resultType: CryptoKey, usages: ["sign", "verify"]},
         {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
-        {name: "AES-CFB",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
         {name: "AES-KW",   resultType: CryptoKey, usages: ["wrapKey", "unwrapKey"]}
     ];
 
     function allAlgorithmSpecifiersFor(algorithmName) {
         var results = [];
 
-        if (algorithmName.toUpperCase().substring(0, 4) === "AES-") {
+        if (algorithmName.toUpperCase().substring(0, 3) === "AES") {
             // Specifier properties are name and length
             [128, 192, 256].forEach(function(length) {
                 results.push({name: algorithmName, length: length});
@@ -29,28 +27,55 @@ function run_test() {
         }
     }
 
-    function allUsageCombinationsOf(validUsages) {
+    function badAlgorithmLengthSpecifiersFor(algorithmName) {
         var results = [];
-        var firstUsage;
-        var remainingUsages;
 
-        for(var i=0; i<validUsages.length; i++) {
-            firstUsage = validUsages[i];
-            remainingUsages = validUsages.slice(i+1);
-            results.push([firstUsage]);
-            results.push([firstUsage, firstUsage]); // Repeats should be allowed
+        if (algorithmName.toUpperCase().substring(0, 3) === "AES") {
+            // Specifier properties are name and length
+            [64, 127, 129, 255, 257, 512].forEach(function(length) {
+                results.push({name: algorithmName, length: length});
+            });
 
-            if (remainingUsages.length > 0) {
-                allUsageCombinationsOf(remainingUsages).forEach(function(combination) {
-                    combination.push(firstUsage);
-                    results.push(combination);
-                });
-            }
+        return results;
         }
+    }
+
+    // Returns a list of lists of all valid usages (order
+    // or list members is not guaranteed).
+    //
+    // Provide all possible usages, and whether the empty set is valid
+    function allValidUsages(validUsages, emptyIsValid) {
+        var subsets = allNonemptySubsetsOf(validUsages);
+        if (emptyIsValid) {
+            subsets.push([]);
+        }
+
+        subsets.push(validUsages.concat(validUsages)); // Repeated values are allowed
+        return subsets;
+    }
+
+    // Essentially the inverse of allValidUsages. However, it only
+    // returns usage sets consisting of potentially valid usages,
+    // it does not return usages arrays include random strings, for example.
+    function allInvalidUsages(validUsages, emptyIsValid) {
+        var universe = allNonemptySubsetsOf(["encrypt", "decrypt", "sign", "verify", "wrapKey", "unwrapKey"]);
+
+        var results = [];
+        if (!emptyIsValid) {
+            results.push([]);
+        }
+
+        universe.forEach(function(subset) {
+            if (!subset.every(function(elem) {return validUsages.includes(elem);})) {
+                results.push(subset);
+            }
+        });
 
         return results;
     }
 
+
+    // Try all the paths that should succeed.
     goodTestVectors.forEach(function(vector) {
         var upCaseName = vector.name;
         var lowCaseName = vector.name.toLowerCase();
@@ -58,12 +83,12 @@ function run_test() {
 
         [upCaseName, lowCaseName, mixedCaseName].forEach(function(name) {
             allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
-                allUsageCombinationsOf(vector.usages).forEach(function(usages) {
+                allValidUsages(vector.usages, false).forEach(function(usages) {
                     [false, true].forEach(function(extractable) {
 
                         var parameters =
                             '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
-                            extractable.toString() + ', [' + usages.toString() + ']'
+                            extractable.toString() + ', [' + usages.toString() + ']';
 
                         promise_test(function(test) {
                             return crypto.subtle.generateKey(algorithm, extractable, usages)
@@ -72,20 +97,19 @@ function run_test() {
                                 assert_equals(result.type, "secret", "Is a secret key");
                                 assert_equals(result.extractable, extractable, "Extractability is correct");
                                 assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
+                                assert_equals(result.algorithm.length, algorithm.length, "Correct length");
 
                                 var usageCount = 0;
                                 vector.usages.forEach(function(usage) {
                                     if (usages.includes(usage)) {
                                         usageCount += 1;
+                                        assert_in_array(usage, result.usages, "Has " + usage + " usage");
                                         assert_true(result.usages.includes(usage), "Has " + usage + " usage");
                                     }
                                 });
                                 assert_equals(result.usages.length, usageCount, "usages property is correct");
                             });
                         }, "generateKey(" + parameters + ") ");
-
-
-
                     });
                 });
             });
@@ -93,17 +117,26 @@ function run_test() {
     });
 
     // Now test for properly handling errors
+    // - Unsupported algorithm
+    // - Bad usages for algorithm
+    // - Bad key lengths
 
     // Algorithm normalization should fail with "Not supported"
     var badSymmetricEncryptionAlgorithms = [
         "AES",
         {name: "AES"},
-        {name: "AES", length: 128}
+        {name: "AES", length: 128},
+        {name: "AES-CMAC", length: 128},    // Removed after CR
+        {name: "AES-CFB", length: 128}      // Removed after CR
     ];
 
+    // Algorithm normalization failures should be found first
+    // - all other parameters can be good or bad, should fail due to normalization
     badSymmetricEncryptionAlgorithms.forEach(function(algorithm) {
-        allUsageCombinationsOf(["encrypt", "decrypt", "sign", "verify"]).forEach(function(usages) {
-            [false, true].forEach(function(extractable){
+        allValidUsages(["encrypt", "decrypt", "sign", "verify"], false)
+        .concat([[]])
+        .forEach(function(usages) {
+            [false, true, "RED", 7].forEach(function(extractable){
                 var algorithmString;
 
                 if (typeof algorithm === "string") {
@@ -113,13 +146,13 @@ function run_test() {
                     if ("length" in algorithm) {
                         algorithmString += ', length: ' + algorithm.length.toString() + '}';
                     } else {
-                        algorithmString += '};'
+                        algorithmString += '};';
                     }
                 }
 
                 var parameters =
                     algorithmString + ', ' +
-                    extractable.toString() + ', [' + usages.toString() + ']'
+                    extractable.toString() + ', [' + usages.toString() + ']';
 
                 promise_test(function(test) {
                     return crypto.subtle.generateKey(algorithm, extractable, usages)
@@ -134,19 +167,19 @@ function run_test() {
         });
     });
 
-// How about some bad usages?
-
+    // Algorithms okay, but usages bad (though not empty)
     goodTestVectors.forEach(function(vector) {
         var name = vector.name;
 
-        allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
-            allUsageCombinationsOf(vector.usages).forEach(function(usages) {
-                usages.push("encrypt", "sign"); // No algorithms support both
-                [false, true].forEach(function(extractable) {
+        allAlgorithmSpecifiersFor(name)
+        .concat(badAlgorithmLengthSpecifiersFor(name))
+        .forEach(function(algorithm) {
+            allInvalidUsages(vector.usages, false).forEach(function(usages) {
+                [false, true, "RED", 7].forEach(function(extractable) {
 
                     var parameters =
                         '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
-                        extractable.toString() + ', [' + usages.toString() + ']'
+                        extractable.toString() + ', [' + usages.toString() + ']';
 
                     promise_test(function(test) {
                         return crypto.subtle.generateKey(algorithm, extractable, usages)
@@ -156,25 +189,65 @@ function run_test() {
                         .catch(function(err) {
                             assert_equals(err.code, DOMException.SYNTAX_ERR, "Bad algorithm not supported");
                         });
-                    }, "Bad usages generateKey(" + parameters + ") ");
+                    }, "Bad usages: generateKey(" + parameters + ") ");
 
                 });
             });
         });
     });
 
+    // Length should be checked if algorithm normalization and usages succeed
+    // - Special case: normally bad usage [] isn't checked until after length,
+    //   so it's included in this test case
+    goodTestVectors.forEach(function(vector) {
+        var name = vector.name;
+        badAlgorithmLengthSpecifiersFor(name).forEach(function(algorithm) {
+            allValidUsages(vector.usages, false)
+            .concat([[]])
+            .forEach(function(usages) {
+                [false, true, "RED", 7].forEach(function(extractable) {
+                    var parameters =
+                        '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
+                        extractable.toString() + ', [' + usages.toString() + ']';
+
+                    promise_test(function(test) {
+                        return crypto.subtle.generateKey(algorithm, extractable, usages)
+                        .then(function(result) {
+                            assert_unreached("Operation succeeded, but should not have");
+                        })
+                        .catch(function(err) {
+                            assert_equals(err.name, "OperationError", "Bad length should be an OperationError");
+                        });
+                    }, "Bad length: generateKey(" + parameters + ") ");
+                });
+            });
+        });
+    });
+
+    // The last thing that should be checked is an empty usages (for secret keys).
+    goodTestVectors.forEach(function(vector) {
+        var name = vector.name;
+
+        allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
+            var usages = [];
+            [false, true].forEach(function(extractable) {
+
+            var parameters =
+                '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
+                extractable.toString() + ', [' + usages.toString() + ']';
+
+                promise_test(function(test) {
+                    return crypto.subtle.generateKey(algorithm, extractable, usages)
+                    .then(function(result) {
+                        assert_unreached("Operation succeeded, but should not have");
+                    })
+                    .catch(function(err) {
+                        assert_equals(err.code, DOMException.SYNTAX_ERR, "Bad algorithm not supported");
+                    });
+                }, "Empty usages: generateKey(" + parameters + ") ");
+            });
+        });
+    });
 
 
-    var badSymmetricEncryptionAlgorithmLengths = [
-        64,
-        127,
-        257,
-        512
-    ];
-
-    var invalidUsagesParameters = [
-        [],
-        ["DECRYPT"],
-        ["decrypt", "DECRYPT"]
-    ];
 }

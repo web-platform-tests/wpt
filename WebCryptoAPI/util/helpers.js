@@ -26,3 +26,29 @@ function runningInASecureContext() {
 
     return false;
 }
+
+
+// Treats an array as a set, and generates an array of all non-empty
+// subsets (which are themselves arrays).
+//
+// The order of members of the "subsets" is not guaranteed.
+function allNonemptySubsetsOf(arr) {
+    var results = [];
+    var firstElement;
+    var remainingElements;
+
+    for(var i=0; i<arr.length; i++) {
+        firstElement = arr[i];
+        remainingElements = arr.slice(i+1);
+        results.push([firstElement]);
+
+        if (remainingElements.length > 0) {
+            allNonemptySubsetsOf(remainingElements).forEach(function(combination) {
+                combination.push(firstElement);
+                results.push(combination);
+            });
+        }
+    }
+
+    return results;
+}

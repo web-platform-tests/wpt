@@ -76,7 +76,7 @@ function validateStreamFromString(reader, expectedValue, retrievedArrayBuffer) {
 // From streams tests
 function delay(milliseconds)
 {
-    return new Promise(function(resolve) {
-        step_timeout(resolve, milliseconds);
-    });
+  return new Promise(function(resolve) {
+    step_timeout(resolve, milliseconds);
+  });
 }

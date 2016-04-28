@@ -7,13 +7,97 @@ function run_test() {
 
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
-    var goodTestVectors = [ // Parameters that should work for generateKey
+// These tests first check that generateKey successfully creates keys
+// when provided any of a wide set of correct parameters. They then check
+// that it throws an error, and that the error is of the right type, for
+// a wide set of incorrect parameters.
+//
+// Error testing occurs by setting the parameter that should trigger the
+// error to an invalid value, then combining that with all valid
+// parameters that should be checked earlier by generateKey, and all
+// valid and invalid parameters that should be checked later by
+// generateKey.
+//
+// There are a lot of combinations of possible parameters for both
+// success and failure modes, resulting in a very large number of tests
+// performed.
+
+
+// Setup: define the correct behaviors that should be sought, and create
+// helper functions that generate all possible test parameters for
+// different situations.
+
+    var testVectors = [ // Parameters that should work for generateKey
         {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
         {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
         {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
         {name: "AES-KW",   resultType: CryptoKey, usages: ["wrapKey", "unwrapKey"]}
     ];
 
+    // Create a string representation of keyGeneration parameters for
+    // test names and labels.
+    function parameterString(algorithm, extractable, usages) {
+        var keyValuePairs = [];
+        Object.keys(algorithm).sort().forEach(function(keyName) {
+            keyValuePairs.push(keyName + ": " + algorithm[keyName]);
+        });
+
+        var result = "{" + keyValuePairs.join(", ") + "}, ";
+        result += extractable.toString() + ", ";
+        result += "[" + usages.join(", ") + "]";
+
+        return "(" + result + ")";
+    }
+
+    // Test that a given combination of parameters is successful
+    function testSuccess(algorithm, extractable, usages, resultType, testTag) {
+        promise_test(function(test) {
+            return crypto.subtle.generateKey(algorithm, extractable, usages)
+            .then(function(result) {
+                assert_equals(result.constructor, resultType, "Result is a " + resultType.toString());
+                assert_equals(result.type, "secret", "Is a secret key");
+                assert_equals(result.extractable, extractable, "Extractability is correct");
+                assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
+                assert_equals(result.algorithm.length, algorithm.length, "Correct length");
+
+                // The usages parameter could have repeats, but the usages
+                // property of the result should not.
+                var usageCount = 0;
+                result.usages.forEach(function(usage) {
+                    usageCount += 1;
+                    assert_in_array(usage, usages, "Has " + usage + " usage");
+                });
+                assert_equals(result.usages.length, usageCount, "usages property is correct");
+            })
+            .catch(function(err) {
+                assert_unreached("Threw an unexpected error: " + err.toString());
+            });
+        }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));
+    }
+
+    // Test that a given combination of parameters results in an error,
+    // AND that it is the correct kind of error.
+    //
+    // Expected error is either a number, tested against the error code,
+    // or a string, tested against the error name.
+    function testError(algorithm, extractable, usages, expectedError, testTag) {
+        promise_test(function(test) {
+            return crypto.subtle.generateKey(algorithm, extractable, usages)
+            .then(function(result) {
+                assert_unreached("Operation succeeded, but should not have");
+            })
+            .catch(function(err) {
+                if (typeof expectedError === "number") {
+                    assert_equals(err.code, expectedError, testTag + " not supported");
+                } else {
+                    assert_equals(err.name, expectedError, testTag + " not supported");
+                }
+            });
+        }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));
+    }
+
+    // The algorithm parameter is an object with a name and other
+    // properties. Given the name, generate all valid parameters.
     function allAlgorithmSpecifiersFor(algorithmName) {
         var results = [];
 
@@ -27,7 +111,8 @@ function run_test() {
         }
     }
 
-    function badAlgorithmLengthSpecifiersFor(algorithmName) {
+    // Given an algorithm name, create several invalid parameters.
+    function badAlgorithmPropertySpecifiersFor(algorithmName) {
         var results = [];
 
         if (algorithmName.toUpperCase().substring(0, 3) === "AES") {
@@ -40,10 +125,8 @@ function run_test() {
         }
     }
 
-    // Returns a list of lists of all valid usages (order
-    // or list members is not guaranteed).
-    //
-    // Provide all possible usages, and whether the empty set is valid
+    // Create every possible valid usages parameter, given legal
+    // usages. Note that an empty usages parameter is not always valid.
     function allValidUsages(validUsages, emptyIsValid) {
         var subsets = allNonemptySubsetsOf(validUsages);
         if (emptyIsValid) {
@@ -54,9 +137,8 @@ function run_test() {
         return subsets;
     }
 
-    // Essentially the inverse of allValidUsages. However, it only
-    // returns usage sets consisting of potentially valid usages,
-    // it does not return usages arrays include random strings, for example.
+    // There are six possible usages values overall. Create all those
+    // combinations that are illegal for a specific algorithm.
     function allInvalidUsages(validUsages, emptyIsValid) {
         var universe = allNonemptySubsetsOf(["encrypt", "decrypt", "sign", "verify", "wrapKey", "unwrapKey"]);
 
@@ -74,52 +156,39 @@ function run_test() {
         return results;
     }
 
-
-    // Try all the paths that should succeed.
-    goodTestVectors.forEach(function(vector) {
-        var upCaseName = vector.name;
-        var lowCaseName = vector.name.toLowerCase();
+    // Algorithm name specifiers are case-insensitive. Generate several
+    // case variations of a given name.
+    function allNameVariants(name) {
+        var upCaseName = name.toUpperCase();
+        var lowCaseName = name.toLowerCase();
         var mixedCaseName = upCaseName.substring(0, 1) + lowCaseName.substring(1);
 
-        [upCaseName, lowCaseName, mixedCaseName].forEach(function(name) {
+        return [upCaseName, lowCaseName, mixedCaseName];
+    }
+
+
+
+// The happy paths. Test all valid sets of parameters for successful
+// key generation.
+
+    testVectors.forEach(function(vector) {
+        allNameVariants(vector.name).forEach(function(name) {
             allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
                 allValidUsages(vector.usages, false).forEach(function(usages) {
                     [false, true].forEach(function(extractable) {
-
-                        var parameters =
-                            '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
-                            extractable.toString() + ', [' + usages.toString() + ']';
-
-                        promise_test(function(test) {
-                            return crypto.subtle.generateKey(algorithm, extractable, usages)
-                            .then(function(result) {
-                                assert_equals(result.constructor, CryptoKey, "Result is a CryptoKey");
-                                assert_equals(result.type, "secret", "Is a secret key");
-                                assert_equals(result.extractable, extractable, "Extractability is correct");
-                                assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
-                                assert_equals(result.algorithm.length, algorithm.length, "Correct length");
-
-                                var usageCount = 0;
-                                vector.usages.forEach(function(usage) {
-                                    if (usages.includes(usage)) {
-                                        usageCount += 1;
-                                        assert_in_array(usage, result.usages, "Has " + usage + " usage");
-                                        assert_true(result.usages.includes(usage), "Has " + usage + " usage");
-                                    }
-                                });
-                                assert_equals(result.usages.length, usageCount, "usages property is correct");
-                            });
-                        }, "generateKey(" + parameters + ") ");
+                        testSuccess(algorithm, extractable, usages, vector.resultType, "Success");
                     });
                 });
             });
         });
     });
 
-    // Now test for properly handling errors
-    // - Unsupported algorithm
-    // - Bad usages for algorithm
-    // - Bad key lengths
+
+
+// Now test for properly handling errors
+// - Unsupported algorithm
+// - Bad usages for algorithm
+// - Bad key lengths
 
     // Algorithm normalization should fail with "Not supported"
     var badSymmetricEncryptionAlgorithms = [
@@ -131,120 +200,59 @@ function run_test() {
     ];
 
     // Algorithm normalization failures should be found first
-    // - all other parameters can be good or bad, should fail due to normalization
+    // - all other parameters can be good or bad, should fail
+    //   due to NOT_SUPPORTED_ERR
     badSymmetricEncryptionAlgorithms.forEach(function(algorithm) {
-        allValidUsages(["encrypt", "decrypt", "sign", "verify"], false)
-        .concat([[]])
+        allValidUsages(["encrypt", "decrypt", "sign", "verify", "wrapKey", "unwrapKey"], false).concat([[]])
         .forEach(function(usages) {
             [false, true, "RED", 7].forEach(function(extractable){
-                var algorithmString;
-
-                if (typeof algorithm === "string") {
-                    algorithmString = '"' + algorithm + '"';
-                } else {
-                    algorithmString = '{name: "' + algorithm.name + '"';
-                    if ("length" in algorithm) {
-                        algorithmString += ', length: ' + algorithm.length.toString() + '}';
-                    } else {
-                        algorithmString += '};';
-                    }
-                }
-
-                var parameters =
-                    algorithmString + ', ' +
-                    extractable.toString() + ', [' + usages.toString() + ']';
-
-                promise_test(function(test) {
-                    return crypto.subtle.generateKey(algorithm, extractable, usages)
-                    .then(function(result) {
-                        assert_unreached("Operation succeeded, but should not have");
-                    })
-                    .catch(function(err) {
-                        assert_equals(err.code, DOMException.NOT_SUPPORTED_ERR, "Bad algorithm not supported");
-                    });
-                }, "Bad algorithm: generateKey(" + parameters + ") ");
+                testError(algorithm, extractable, usages, DOMException.NOT_SUPPORTED_ERR, "Bad algorithm");
             });
         });
     });
 
-    // Algorithms okay, but usages bad (though not empty)
-    goodTestVectors.forEach(function(vector) {
+    // Algorithms normalize okay, but usages bad (though not empty)
+    testVectors.forEach(function(vector) {
         var name = vector.name;
 
-        allAlgorithmSpecifiersFor(name)
-        .concat(badAlgorithmLengthSpecifiersFor(name))
+        // Algorithm normalization should succeed, even if
+        // there's a bad property (like length), so try all
+        // good and bad property combinations. Then check
+        // the first possible next error: bad usages.
+        allAlgorithmSpecifiersFor(name).concat(badAlgorithmPropertySpecifiersFor(name))
         .forEach(function(algorithm) {
             allInvalidUsages(vector.usages, false).forEach(function(usages) {
                 [false, true, "RED", 7].forEach(function(extractable) {
-
-                    var parameters =
-                        '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
-                        extractable.toString() + ', [' + usages.toString() + ']';
-
-                    promise_test(function(test) {
-                        return crypto.subtle.generateKey(algorithm, extractable, usages)
-                        .then(function(result) {
-                            assert_unreached("Operation succeeded, but should not have");
-                        })
-                        .catch(function(err) {
-                            assert_equals(err.code, DOMException.SYNTAX_ERR, "Bad usages");
-                        });
-                    }, "Bad usages: generateKey(" + parameters + ") ");
-
+                    testError(algorithm, extractable, usages, DOMException.SYNTAX_ERR, "Bad usages");
                 });
             });
         });
     });
 
-    // Length should be checked if algorithm normalization and usages succeed
-    // - Special case: normally bad usage [] isn't checked until after length,
+    // Other algorithm properties should be checked next, so try good
+    // algorithm names and usages, but bad algorithm properties next.
+    // - Special case: normally bad usage [] isn't checked until after properties,
     //   so it's included in this test case
-    goodTestVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var name = vector.name;
-        badAlgorithmLengthSpecifiersFor(name).forEach(function(algorithm) {
-            allValidUsages(vector.usages, false)
-            .concat([[]])
+        badAlgorithmPropertySpecifiersFor(name).forEach(function(algorithm) {
+            allValidUsages(vector.usages, false).concat([[]])
             .forEach(function(usages) {
                 [false, true, "RED", 7].forEach(function(extractable) {
-                    var parameters =
-                        '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
-                        extractable.toString() + ', [' + usages.toString() + ']';
-
-                    promise_test(function(test) {
-                        return crypto.subtle.generateKey(algorithm, extractable, usages)
-                        .then(function(result) {
-                            assert_unreached("Operation succeeded, but should not have");
-                        })
-                        .catch(function(err) {
-                            assert_equals(err.name, "OperationError", "Bad length should be an OperationError");
-                        });
-                    }, "Bad length: generateKey(" + parameters + ") ");
+                    testError(algorithm, extractable, usages, "OperationError", "Bad algorithm property");
                 });
             });
         });
     });
 
     // The last thing that should be checked is an empty usages (for secret keys).
-    goodTestVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var name = vector.name;
 
         allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
             var usages = [];
             [false, true].forEach(function(extractable) {
-
-            var parameters =
-                '{name: "' + algorithm.name + '", length: ' + algorithm.length.toString() + '}, ' +
-                extractable.toString() + ', [' + usages.toString() + ']';
-
-                promise_test(function(test) {
-                    return crypto.subtle.generateKey(algorithm, extractable, usages)
-                    .then(function(result) {
-                        assert_unreached("Operation succeeded, but should not have");
-                    })
-                    .catch(function(err) {
-                        assert_equals(err.code, DOMException.SYNTAX_ERR, "Empty usages");
-                    });
-                }, "Empty usages: generateKey(" + parameters + ") ");
+                testError(algorithm, extractable, usages, DOMException.SYNTAX_ERR, "Empty usages");
             });
         });
     });

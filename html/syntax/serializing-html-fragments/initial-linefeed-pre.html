@@ -22,25 +22,8 @@ x</listing>
 </div>
 </div>
 
-<script id="expected" type="text/html">
-<div id="inner">
-<pre id="pre1">x</pre>
-<pre id="pre2">
-
-x</pre>
-<textarea id="textarea1">x</textarea>
-<textarea id="textarea2">
-
-x</textarea>
-<listing id="listing1">x</listing>
-<listing id="listing2">
-
-x</listing>
-</div>
-</script>
-
 <script>
-var expected_outer = expected.textContent;
+var expected_outer = '\n<div id="inner">\n<pre id="pre1">x</pre>\n<pre id="pre2">\n\nx</pre>\n<textarea id="textarea1">x</textarea>\n<textarea id="textarea2">\n\nx</textarea>\n<listing id="listing1">x</listing>\n<listing id="listing2">\n\nx</listing>\n</div>\n';
 var expected_inner = expected_outer.replace('\n<div id="inner">', '').replace('</div>\n', '');
 var expected_1 = 'x';
 var expected_2 = '\nx';

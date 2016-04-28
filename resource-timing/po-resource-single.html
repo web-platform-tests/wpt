@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>PerformanceObservers: resource</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="performanceobservers.js"></script>
+<h1>PerformanceObservers: resource</h1>
+<p>
+New resources will <a href="https://w3c.github.io/performance-timeline/#dfn-queue-a-performanceentry">queue a PerformanceEntry</a>.
+</p>
+<div id="log"></div>
+<script>
+  async_test(function (t) {
+    function path(pathname) {
+      var filename = pathname.substring(pathname.lastIndexOf('/')+1);
+      return pathname.substring(0, pathname.length - filename.length);
+    }
+    var img_location = document.location.origin + path(document.location.pathname)
+       + "resources/square.png";
+    var observer = new PerformanceObserver(
+        t.step_func(function (entryList, obs) {
+          checkEntries(entryList.getEntriesByType("resource"),
+            [{ entryType: "resource", name: img_location}]);
+          observer.disconnect();
+          t.done();
+        })
+      );
+    observer.observe({entryTypes: ["resource"]});
+    var img = document.createElement("img");
+    img.src = img_location;
+    document.body.appendChild(img);
+    img = document.createElement("img");
+    img.src = img_location;
+    document.body.appendChild(img);
+  }, "Only one resource entry per resource");
+</script>

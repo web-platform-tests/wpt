@@ -80,19 +80,19 @@ function testOptionEquality(addOptionValue, removeOptionValue, expectedEquality)
 }
 
 test(function() {
-  // Option values that should be treated as equivalent 
+  // Option values that should be treated as equivalent
   testOptionEquality({}, false, true);
   testOptionEquality({capture: false}, false, true);
   testOptionEquality(true, {capture: true}, true);
   testOptionEquality({capture: null}, undefined, true);
   testOptionEquality({capture: true}, {dummy: false, capture: 1}, true);
   testOptionEquality({dummy: true}, false, true);
-  
+
   // Option values that should be treated as distinct
   testOptionEquality(true, false, false);
   testOptionEquality(true, {capture:false}, false);
   testOptionEquality({}, true, false);
-  
-}, "Equivalence of option values");  
+
+}, "Equivalence of option values");
 
 </script>

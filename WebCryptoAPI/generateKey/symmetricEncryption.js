@@ -31,22 +31,58 @@ function run_test() {
         {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
         {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
         {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
-        {name: "AES-KW",   resultType: CryptoKey, usages: ["wrapKey", "unwrapKey"]}
+        {name: "AES-KW",   resultType: CryptoKey, usages: ["wrapKey", "unwrapKey"]},
+        {name: "HMAC",     resultType: CryptoKey, usages: ["sign", "verify"]}
     ];
 
     // Create a string representation of keyGeneration parameters for
     // test names and labels.
-    function parameterString(algorithm, extractable, usages) {
+
+    function objectToString(obj) {
         var keyValuePairs = [];
-        Object.keys(algorithm).sort().forEach(function(keyName) {
-            keyValuePairs.push(keyName + ": " + algorithm[keyName]);
+
+        if (Array.isArray(obj)) {
+            return "[" + obj.map(function(elem){return objectToString(elem);}).join(", ") + "]";
+        }
+        else if (typeof obj === "object") {
+            Object.keys(obj).sort().forEach(function(keyName) {
+                keyValuePairs.push(keyName + ": " + objectToString(obj[keyName]));
+            });
+            return "{" + keyValuePairs.join(", ") + "}";
+        } else {
+            return obj.toString();
+        }
+
+        var keyValuePairs = [];
+
+        Object.keys(obj).sort().forEach(function(keyName) {
+            var value = obj[keyName];
+            if (typeof value === "object") {
+                value = objectToString(value);
+            } else if (typeof value === "array") {
+                value = "[" + value.map(function(elem){return objectToString(elem);}).join(", ") + "]";
+            } else {
+                value = value.toString();
+            }
+
+            keyValuePairs.push(keyName + ": " + value);
         });
 
-        var result = "{" + keyValuePairs.join(", ") + "}, ";
-        result += extractable.toString() + ", ";
-        result += "[" + usages.join(", ") + "]";
+        return "{" + keyValuePairs.join(", ") + "}";
+    }
 
-        return "(" + result + ")";
+    function parameterString(algorithm, extractable, usages) {
+        if (typeof algorithm !== "object" && typeof algorithm !== "string") {
+            alert(algorithm);
+        }
+
+        var result = "(" +
+                        objectToString(algorithm) + ", " +
+                        objectToString(extractable) + ", " +
+                        objectToString(usages) +
+                     ")";
+
+        return result;
     }
 
     // Test that a given combination of parameters is successful
@@ -59,7 +95,9 @@ function run_test() {
                 assert_equals(result.extractable, extractable, "Extractability is correct");
                 assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
                 assert_equals(result.algorithm.length, algorithm.length, "Correct length");
-
+                if (algorithm.name === "HMAC") {
+                    assert_equals(result.algorithm.hash.name, algorithm.hash.name.toUpperCase(), "Correct hash function");
+                }
                 // The usages parameter could have repeats, but the usages
                 // property of the result should not.
                 var usageCount = 0;
@@ -106,9 +144,18 @@ function run_test() {
             [128, 192, 256].forEach(function(length) {
                 results.push({name: algorithmName, length: length});
             });
+        } else if (algorithmName.toUpperCase() === "HMAC") {
+            [
+                {name: "SHA-1", length: 160},
+                {name: "SHA-256", length: 256},
+                {name: "SHA-384", length: 384},
+                {name: "SHA-512", length: 512}
+            ].forEach(function(hashAlgorithm) {
+                results.push({name: algorithmName, hash: {name: hashAlgorithm.name}, length: hashAlgorithm.length});
+            });
+        }
 
         return results;
-        }
     }
 
     // Given an algorithm name, create several invalid parameters.
@@ -120,9 +167,18 @@ function run_test() {
             [64, 127, 129, 255, 257, 512].forEach(function(length) {
                 results.push({name: algorithmName, length: length});
             });
+        } else if (algorithmName.toUpperCase() === "HMAC") {
+            [
+                {name: "SHA-1", length: 256},
+                {name: "SHA-256", length: 160},
+                {name: "SHA-384", length: 512},
+                {name: "SHA-512", length: 384}
+            ].forEach(function(hashAlgorithm) {
+                results.push({name: algorithmName, hash: {name: hashAlgorithm.name}, length: hashAlgorithm.length});
+            });
+        }
 
         return results;
-        }
     }
 
     // Create every possible valid usages parameter, given legal
@@ -170,7 +226,6 @@ function run_test() {
 
 // The happy paths. Test all valid sets of parameters for successful
 // key generation.
-
     testVectors.forEach(function(vector) {
         allNameVariants(vector.name).forEach(function(name) {
             allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
@@ -191,18 +246,21 @@ function run_test() {
 // - Bad key lengths
 
     // Algorithm normalization should fail with "Not supported"
-    var badSymmetricEncryptionAlgorithms = [
+    var badAlgorithmNames = [
         "AES",
         {name: "AES"},
         {name: "AES", length: 128},
         {name: "AES-CMAC", length: 128},    // Removed after CR
-        {name: "AES-CFB", length: 128}      // Removed after CR
+        {name: "AES-CFB", length: 128},      // Removed after CR
+        {name: "HMAC", hash: {name: "MD5", length: 128}},
+        {name: "HMAC", hash: {name: "SHA", length: 160}},
+        {name: "HMAC", hash: "MD5"}
     ];
 
     // Algorithm normalization failures should be found first
     // - all other parameters can be good or bad, should fail
     //   due to NOT_SUPPORTED_ERR
-    badSymmetricEncryptionAlgorithms.forEach(function(algorithm) {
+    badAlgorithmNames.forEach(function(algorithm) {
         allValidUsages(["encrypt", "decrypt", "sign", "verify", "wrapKey", "unwrapKey"], false).concat([[]])
         .forEach(function(usages) {
             [false, true, "RED", 7].forEach(function(extractable){

@@ -21,7 +21,6 @@ INDENT TABS: shadow-dom/*
 INDENT TABS: svg/import/*
 INDENT TABS: tools/*
 INDENT TABS: touch-events/*
-INDENT TABS: uievents/legacy-domevents-tests/*
 INDENT TABS: web-animations/*
 INDENT TABS: webaudio/*
 INDENT TABS: webvtt/*
@@ -40,7 +39,6 @@ TRAILING WHITESPACE: progress-events/*
 TRAILING WHITESPACE: shadow-dom/*
 TRAILING WHITESPACE: svg/import/*
 TRAILING WHITESPACE: tools/*
-TRAILING WHITESPACE: uievents/legacy-domevents-tests/*
 TRAILING WHITESPACE: webaudio/*
 TRAILING WHITESPACE: WebIDL/*
 TRAILING WHITESPACE: webvtt/*

@@ -304,7 +304,9 @@ function run_test() {
         {name: "AES-CFB", length: 128},      // Removed after CR
         {name: "HMAC", hash: {name: "MD5", length: 128}},
         {name: "HMAC", hash: {name: "SHA", length: 160}},
-        {name: "HMAC", hash: "MD5"}
+        {name: "HMAC", hash: "MD5"},
+        {name: "RSA", hash: "SHA-256", modulusLength: 2048, publicExponent: new Uint8Array([1,0,1])},
+        {name: "RSA-PSS", hash: "SHA", modulusLength: 2048, publicExponent: new Uint8Array([1,0,1])}
     ];
 
     // Algorithm normalization failures should be found first

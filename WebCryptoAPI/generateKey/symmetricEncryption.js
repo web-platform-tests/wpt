@@ -197,6 +197,14 @@ function run_test() {
             ].forEach(function(hashAlgorithm) {
                 results.push({name: algorithmName, hash: {name: hashAlgorithm.name}, length: hashAlgorithm.length});
             });
+        } else if (algorithmName === "RSASSA-PKCS1-v1_5" || algorithmName === "RSA-PSS") {
+            ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(function(hashName) {
+                [0, 1000000000].forEach(function(modulusLength) {
+                    [new Uint8Array([1,2,3])].forEach(function(publicExponent) {
+                        results.push({name: algorithmName, hash: hashName, modulusLength: modulusLength, publicExponent: publicExponent});
+                    });
+                });
+            });
         }
 
         return results;

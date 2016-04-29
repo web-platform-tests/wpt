@@ -28,11 +28,13 @@ function run_test() {
 // different situations.
 
     var testVectors = [ // Parameters that should work for generateKey
-        {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
-        {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
-        {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"]},
-        {name: "AES-KW",   resultType: CryptoKey, usages: ["wrapKey", "unwrapKey"]},
-        {name: "HMAC",     resultType: CryptoKey, usages: ["sign", "verify"]}
+        {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
+        {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
+        {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
+        {name: "AES-KW",   resultType: CryptoKey, usages: ["wrapKey", "unwrapKey"], mandatoryUsages: []},
+        {name: "HMAC",     resultType: CryptoKey, usages: ["sign", "verify"], mandatoryUsages: []},
+        {name: "RSASSA-PKCS1-v1_5", resultType: "CryptoKeyPair", usages: ["sign", "verify"], mandatoryUsages: ["sign"]},
+        {name: "RSA-PSS",  resultType: "CryptoKeyPair", usages: ["sign", "verify"], mandatoryUsages: ["sign"]}
     ];
 
     // Create a string representation of keyGeneration parameters for
@@ -43,12 +45,13 @@ function run_test() {
 
         if (Array.isArray(obj)) {
             return "[" + obj.map(function(elem){return objectToString(elem);}).join(", ") + "]";
-        }
-        else if (typeof obj === "object") {
+        } else if (typeof obj === "object") {
             Object.keys(obj).sort().forEach(function(keyName) {
                 keyValuePairs.push(keyName + ": " + objectToString(obj[keyName]));
             });
             return "{" + keyValuePairs.join(", ") + "}";
+        } else if (typeof obj === "undefined") {
+            return "undefined";
         } else {
             return obj.toString();
         }
@@ -90,22 +93,32 @@ function run_test() {
         promise_test(function(test) {
             return crypto.subtle.generateKey(algorithm, extractable, usages)
             .then(function(result) {
-                assert_equals(result.constructor, resultType, "Result is a " + resultType.toString());
-                assert_equals(result.type, "secret", "Is a secret key");
-                assert_equals(result.extractable, extractable, "Extractability is correct");
-                assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
-                assert_equals(result.algorithm.length, algorithm.length, "Correct length");
-                if (algorithm.name === "HMAC") {
-                    assert_equals(result.algorithm.hash.name, algorithm.hash.name.toUpperCase(), "Correct hash function");
+                if (resultType === "CryptoKeyPair") {
+                    assert_equals(result.publicKey.constructor, CryptoKey, "Public key is a CryptoKey");
+                    assert_equals(result.privateKey.constructor, CryptoKey, "Private key is a CryptoKey");
+                    assert_equals(result.publicKey.type, "public", "Is a public key");
+                    assert_equals(result.privateKey.type, "private", "Is a private key");
+                    assert_equals(result.publicKey.extractable, true, "Public key is always extractable");
+                    assert_equals(result.privateKey.extractable, extractable, "Private key extractability is correct");
+                } else {
+                    assert_equals(result.constructor, resultType, "Result is a " + resultType.toString());
+                    assert_equals(result.type, "secret", "Is a secret key");
+                    assert_equals(result.extractable, extractable, "Extractability is correct");
+
+                    assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
+                    assert_equals(result.algorithm.length, algorithm.length, "Correct length");
+                    if (algorithm.name === "HMAC") {
+                        assert_equals(result.algorithm.hash.name, algorithm.hash.name.toUpperCase(), "Correct hash function");
+                    }
+                    // The usages parameter could have repeats, but the usages
+                    // property of the result should not.
+                    var usageCount = 0;
+                    result.usages.forEach(function(usage) {
+                        usageCount += 1;
+                        assert_in_array(usage, usages, "Has " + usage + " usage");
+                    });
+                    assert_equals(result.usages.length, usageCount, "usages property is correct");
                 }
-                // The usages parameter could have repeats, but the usages
-                // property of the result should not.
-                var usageCount = 0;
-                result.usages.forEach(function(usage) {
-                    usageCount += 1;
-                    assert_in_array(usage, usages, "Has " + usage + " usage");
-                });
-                assert_equals(result.usages.length, usageCount, "usages property is correct");
             })
             .catch(function(err) {
                 assert_unreached("Threw an unexpected error: " + err.toString());
@@ -153,6 +166,14 @@ function run_test() {
             ].forEach(function(hashAlgorithm) {
                 results.push({name: algorithmName, hash: {name: hashAlgorithm.name}, length: hashAlgorithm.length});
             });
+        } else if (algorithmName === "RSASSA-PKCS1-v1_5" || algorithmName === "RSA-PSS") {
+            ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(function(hashName) {
+                [1024, 2048, 3072, 4096].forEach(function(modulusLength) {
+                    [new Uint8Array([3]), new Uint8Array([1,0,1])].forEach(function(publicExponent) {
+                        results.push({name: algorithmName, hash: hashName, modulusLength: modulusLength, publicExponent: publicExponent});
+                    });
+                });
+            });
         }
 
         return results;
@@ -183,13 +204,34 @@ function run_test() {
 
     // Create every possible valid usages parameter, given legal
     // usages. Note that an empty usages parameter is not always valid.
-    function allValidUsages(validUsages, emptyIsValid) {
-        var subsets = allNonemptySubsetsOf(validUsages);
+    //
+    // There is an optional parameter - mandatoryUsages. If provided,
+    // it should be an array containing those usages that must be
+    // included. For example, when generating an RSA-PSS key pair,
+    // both "sign" and "verify" are possible usages, but if "verify"
+    // is not included in the usages, the private key will end up
+    // with an empty set of usages, causing a Syntax Error.
+    function allValidUsages(validUsages, emptyIsValid, mandatoryUsages) {
+        var optionalUsages = [];
+        if (typeof mandatoryUsages === "undefined") {
+            mandatoryUsages = [];
+        }
+
+        validUsages.forEach(function(usage) {
+            if (!mandatoryUsages.includes(usage)) {
+                optionalUsages.push(usage);
+            }
+        });
+
+        var subsets = allNonemptySubsetsOf(optionalUsages).map(function(subset) {
+             return subset.concat(mandatoryUsages);
+        });
+
         if (emptyIsValid) {
             subsets.push([]);
         }
 
-        subsets.push(validUsages.concat(validUsages)); // Repeated values are allowed
+        subsets.push(mandatoryUsages.concat(mandatoryUsages).concat(optionalUsages)); // Repeated values are allowed
         return subsets;
     }
 
@@ -229,7 +271,7 @@ function run_test() {
     testVectors.forEach(function(vector) {
         allNameVariants(vector.name).forEach(function(name) {
             allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
-                allValidUsages(vector.usages, false).forEach(function(usages) {
+                allValidUsages(vector.usages, false, vector.mandatoryUsages).forEach(function(usages) {
                     [false, true].forEach(function(extractable) {
                         testSuccess(algorithm, extractable, usages, vector.resultType, "Success");
                     });

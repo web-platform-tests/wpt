@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <root>
     <head xmlns="http://www.w3.org/1999/xhtml">
-        <title> ProcessingInstruction.data and DOMCharacterDataModified event </title> 
+        <title> ProcessingInstruction.data and DOMCharacterDataModified event </title>
     </head>
 
     <p xmlns="http://www.w3.org/1999/xhtml">
         <h3>DOM Events</h3>
         <h4>
-            Test Description: DOMCharacterDataModified event fires after ProcessingInstruction.data have been modified, 
-            but the node itself has not been inserted or deleted. The proximal event target of this event shall be the 
+            Test Description: DOMCharacterDataModified event fires after ProcessingInstruction.data have been modified,
+            but the node itself has not been inserted or deleted. The proximal event target of this event shall be the
             ProcessingInstruction node.
         </h4>
 
@@ -25,17 +25,17 @@
                     document.getElementsByTagName("testresult")[0].firstChild.data = "PASS";
                     TestResult = true;
                 }
-                
+
                 var FailTest = function()
                 {
                     document.getElementsByTagName("testresult")[0].firstChild.data = "FAIL";
                     TestResult = false;
                 }
-                
+
                 var EVENT = "DOMCharacterDataModified";
                 var TARGET = document.getElementsByTagName('pi')[0].firstChild;
                 var TestResult = false;
-                
+
                 try
                 {
                     TARGET.addEventListener(EVENT, TestEvent, false);
@@ -45,7 +45,7 @@
                 {
                     FailTest();
                 }
-                
+
                 function TestEvent(evt)
                 {
                     if ((EVENT == evt.type) && (TARGET == evt.target) && ("newbar" == evt.newValue))

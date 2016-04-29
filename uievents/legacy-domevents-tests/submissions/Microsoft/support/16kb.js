@@ -1,4 +1,4 @@
-var text = 
+var text =
 "This is a test! This is a test! This is a test! This is a test! This is a test! This is a test! This is a test! " +
 "This is a test! This is a test! This is a test! This is a test! This is a test! This is a test! This is a test! " +
 "This is a test! This is a test! This is a test! This is a test! This is a test! This is a test! This is a test! " +

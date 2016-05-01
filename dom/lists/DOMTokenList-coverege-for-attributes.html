@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>DOMTokenList coverege for attributes</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+"use strict";
+
+var pairs = [
+	// Defined in DOM
+  {"anyElement": ["classList"]},
+  // Defined in HTML
+	{"anyHTMLElement": ["dropzone"]},
+	{"a": ["ping", "relList"]},
+  {"area": ["ping", "relList"]},
+	{"link": ["relList", "sizes"]},
+	{"iframe": ["sandbox"]},
+	{"output": ["htmlFor"]},
+	{"td": ["headers"]},
+	{"th": ["headers"]},
+];
+
+pairs.forEach(function(pair){
+  Object.keys(pair).forEach(function(el_name) {
+    var el = document.createElement(el_name);
+    pair[el_name].forEach(function(attr_name){
+      test(function() {
+        assert_class_string(el[attr_name], "DOMTokenList");
+      },  el_name + "." + attr_name + " should be DOMTokenList");
+    });
+  });
+});
+
+</script>

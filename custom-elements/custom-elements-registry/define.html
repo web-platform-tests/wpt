@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<title>Custom Elements: Element definition</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#element-definition">
+<meta name="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="log"></div>
+<script>
+'use strict';
+(function () {
+  var testable = false;
+  test(function () {
+    assert_true('customElements' in window, '"window.customElements" exists');
+    assert_true('define' in window.customElements, '"window.customElements.define" exists');
+    testable = true;
+  }, '"window.customElements.define" exists');
+  if (!testable)
+    return;
+
+  // 1. If IsConstructor(constructor) is false,
+  // then throw a TypeError and abort these steps.
+  test(function () {
+    assert_throws(new TypeError, function () {
+      window.customElements.define();
+    });
+  }, 'If no arguments, throw a TypeError');
+  test(function () {
+    assert_throws(new TypeError, function () {
+      window.customElements.define("test-define-one-arg");
+    });
+  }, 'If one argument, throw a TypeError');
+  [
+    [ "undefined", undefined ],
+    [ "null", null ],
+    [ "object", {} ],
+    [ "string", "string" ],
+    [ "function", function () {} ],
+  ].forEach(function (t) {
+    test(function () {
+      assert_throws(new TypeError, function () {
+        window.customElements.define("test-define-ctor-" + t[0], t[1]);
+      });
+    }, 'If constructor is ' + t[0] + ', throw a TypeError');
+  });
+
+  // 2. If name is not a valid custom element name,
+  // then throw a SyntaxError and abort these steps.
+  var validCustomElementNames = [
+    // [a-z] (PCENChar)* '-' (PCENChar)*
+    // https://html.spec.whatwg.org/multipage/scripting.html#valid-custom-element-name
+    "a-",
+    "a-a",
+    "aa-",
+    "aa-a",
+    "a-.-_",
+    "a-0123456789",
+    "a-\u6F22\u5B57", // Two CJK Unified Ideographs
+    "a-\uD840\uDC0B", // Surrogate pair U+2000B
+  ];
+  var invalidCustomElementNames = [
+    undefined,
+    null,
+    "",
+    "a",
+    "A",
+    "A-",
+    "0-",
+    "a-A",
+    "a-Z",
+    // name must not be any of the hyphen-containing element names.
+    "annotation-xml",
+    "color-profile",
+    "font-face",
+    "font-face-src",
+    "font-face-uri",
+    "font-face-format",
+    "font-face-name",
+    "missing-glyph",
+  ];
+  validCustomElementNames.forEach(function (name) {
+    test(function () {
+      window.customElements.define(name, class {});
+    }, 'If name is ' + name + ', success');
+  });
+  invalidCustomElementNames.forEach(function (name) {
+    test(function () {
+      assert_throws(new SyntaxError, function () {
+        window.customElements.define(name, class {});
+      });
+    }, 'If name is ' + name + ', throw a SyntaxError');
+  });
+
+  // 3. If this CustomElementsRegistry contains an entry with name name,
+  // then throw a NotSupportedError and abort these steps.
+  test(function () {
+    window.customElements.define("test-define-dup-name", class {});
+  }, "test-define-dup-name 1st, success");
+  test(function () {
+    assert_throws(new NotSupportedError, function () {
+      window.customElements.define("test-define-dup-name", class {});
+    });
+  }, "test-define-dup-name 2nd, throw a NotSupportedError");
+
+  // 4. If this CustomElementsRegistry contains an entry with constructor constructor,
+  // then throw a NotSupportedError and abort these steps.
+  var testDupCtor = class {};
+  test(function () {
+    window.customElements.define("test-define-dup-ctor", testDupCtor);
+  }, "test-define-dup-ctor 1st, success");
+  test(function () {
+    assert_throws(new NotSupportedError, function () {
+      window.customElements.define("test-define-dup-ctor2", testDupCtor);
+    });
+  }, "test-define-dup-ctor 2nd, throw a NotSupportedError");
+
+  // 7.1. If extends is a valid custom element name,
+  // then throw a NotSupportedError.
+  validCustomElementNames.forEach(function (name) {
+    test(function () {
+      assert_throws(new NotSupportedError, function () {
+        window.customElements.define("test-define-extend-valid-name", class {}, { extends: name });
+      });
+    }, 'If extends is ' + name + ', throw a NotSupportedError');
+  });
+
+  // 7.2. If the element interface for extends and the HTML namespace is HTMLUnknownElement
+  // (e.g., if extends does not indicate an element definition in this specification),
+  // then throw a NotSupportedError.
+  [
+    // https://html.spec.whatwg.org/multipage/dom.html#elements-in-the-dom:htmlunknownelement
+    "bgsound",
+    "blink",
+    "isindex",
+    "multicol",
+    "nextid",
+    "spacer",
+    "elementnametobeunknownelement",
+  ].forEach(function (name) {
+    test(function () {
+      assert_throws(new NotSupportedError, function () {
+        window.customElements.define("test-define-extend-" + name, class {}, { extends: name });
+      });
+    }, 'If extends is ' + name + ', throw a NotSupportedError');
+  });
+
+  // 10. Let prototype be Get(constructor, "prototype"). Rethrow any exceptions.
+  // 11. If Type(prototype) is not Object,
+  // then throw a TypeError exception.
+  test(function () {
+    var c = class {};
+    c.prototype = "string";
+    assert_throws(new TypeError, function () {
+      window.customElements.define("test-define-ctor-prototype-string", c);
+    });
+  }, 'If Type(constructor.prototype) is not Object, throw a TypeError');
+
+  // 12. Let connectedCallback be Get(prototype, "connectedCallback"). Rethrow any exceptions.
+  // 13. If connectedCallback is not undefined, and IsCallable(connectedCallback) is false,
+  // then throw a TypeError exception.
+  // 14. Let disconnectedCallback be Get(prototype, "disconnectedCallback"). Rethrow any exceptions.
+  // 15. If disconnectedCallback is not undefined, and IsCallable(disconnectedCallback) is false,
+  // then throw a TypeError exception.
+  // 16. Let attributeChangedCallback be Get(prototype, "attributeChangedCallback"). Rethrow any exceptions.
+  // 17. If attributeChangedCallback is not undefined, and IsCallable(attributeChangedCallback) is false,
+  // then throw a TypeError exception.
+  [ "connectedCallback", "disconnectedCallback", "attributeChangedCallback" ].forEach(function (name) {
+    test(function () {
+      var c = class {};
+      c.prototype[name] = {};
+      assert_throws(new TypeError, function () {
+        window.customElements.define("test-define-ctor-prototype-" + name, c);
+      });
+    }, 'If constructor.prototype.' + name + ' is an object, throw a TypeError');
+  });
+})();
+</script>
+</body>

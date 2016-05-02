@@ -20,7 +20,7 @@ function testDoc(doc, contentType) {
   if (doc.contentType !== undefined) {
     // Sanity check
     assert_equals(doc.contentType, contentType,
-                  "Wrong MIME type -- incorrect server config?");
+                  "Wrong MIME type returned from doc.contentType");
   }
 
   var expectedNamespace = contentType == "text/html" ||

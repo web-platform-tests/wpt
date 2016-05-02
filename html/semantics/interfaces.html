@@ -14,6 +14,7 @@ function do_test(local_name, iface, useNS) {
     var e;
     var i = "HTML" + iface + "Element";
     if (useNS) {
+      // Use createElementNS here to preserve the case of local_name.
       e = document.createElementNS("http://www.w3.org/1999/xhtml", local_name);
     } else {
       e = document.createElement(local_name);
@@ -33,7 +34,11 @@ function do_test(local_name, iface, useNS) {
 }
 
 elements.forEach(function(a) {
-  do_test(a[0], a[1], true);
+  do_test(a[0], a[1], "useNS");
+
+  // Only run the createElement variant if the input is all-lowercase, because createElement
+  // case-folds to lowercase. Custom elements are required to use all-lowercase to implement
+  // HTMLElement, otherwise they use HTMLUnknownElement per spec. Example: "foo-BAR".
   if (a[0] === a[0].toLowerCase()) {
     do_test(a[0].toUpperCase(), a[1]);
   }

@@ -9,11 +9,11 @@
 <script src=interfaces.js></script>
 <div id="log"></div>
 <script>
-function do_test(local_name, iface, useNS) {
+function do_test(local_name, iface, variant) {
   test(function() {
     var e;
     var i = "HTML" + iface + "Element";
-    if (useNS) {
+    if (variant === "useNS") {
       // Use createElementNS here to preserve the case of local_name.
       e = document.createElementNS("http://www.w3.org/1999/xhtml", local_name);
     } else {

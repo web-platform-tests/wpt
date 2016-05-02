@@ -7,10 +7,10 @@ function run_test() {
 
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
-// These tests first check that generateKey successfully creates keys
-// when provided any of a wide set of correct parameters. They then check
-// that it throws an error, and that the error is of the right type, for
-// a wide set of incorrect parameters.
+    setup({explicit_timeout: true});
+
+// These tests check that generateKey throws an error, and that
+// the error is of the right type, for a wide set of incorrect parameters.
 //
 // Error testing occurs by setting the parameter that should trigger the
 // error to an invalid value, then combining that with all valid
@@ -37,42 +37,6 @@ function run_test() {
         {name: "RSA-PSS",  resultType: "CryptoKeyPair", usages: ["sign", "verify"], mandatoryUsages: ["sign"]}
     ];
 
-    // Create a string representation of keyGeneration parameters for
-    // test names and labels.
-
-    function objectToString(obj) {
-        var keyValuePairs = [];
-
-        if (Array.isArray(obj)) {
-            return "[" + obj.map(function(elem){return objectToString(elem);}).join(", ") + "]";
-        } else if (typeof obj === "object") {
-            Object.keys(obj).sort().forEach(function(keyName) {
-                keyValuePairs.push(keyName + ": " + objectToString(obj[keyName]));
-            });
-            return "{" + keyValuePairs.join(", ") + "}";
-        } else if (typeof obj === "undefined") {
-            return "undefined";
-        } else {
-            return obj.toString();
-        }
-
-        var keyValuePairs = [];
-
-        Object.keys(obj).sort().forEach(function(keyName) {
-            var value = obj[keyName];
-            if (typeof value === "object") {
-                value = objectToString(value);
-            } else if (typeof value === "array") {
-                value = "[" + value.map(function(elem){return objectToString(elem);}).join(", ") + "]";
-            } else {
-                value = value.toString();
-            }
-
-            keyValuePairs.push(keyName + ": " + value);
-        });
-
-        return "{" + keyValuePairs.join(", ") + "}";
-    }
 
     function parameterString(algorithm, extractable, usages) {
         if (typeof algorithm !== "object" && typeof algorithm !== "string") {
@@ -86,44 +50,6 @@ function run_test() {
                      ")";
 
         return result;
-    }
-
-    // Test that a given combination of parameters is successful
-    function testSuccess(algorithm, extractable, usages, resultType, testTag) {
-        promise_test(function(test) {
-            return crypto.subtle.generateKey(algorithm, extractable, usages)
-            .then(function(result) {
-                if (resultType === "CryptoKeyPair") {
-                    assert_equals(result.publicKey.constructor, CryptoKey, "Public key is a CryptoKey");
-                    assert_equals(result.privateKey.constructor, CryptoKey, "Private key is a CryptoKey");
-                    assert_equals(result.publicKey.type, "public", "Is a public key");
-                    assert_equals(result.privateKey.type, "private", "Is a private key");
-                    assert_equals(result.publicKey.extractable, true, "Public key is always extractable");
-                    assert_equals(result.privateKey.extractable, extractable, "Private key extractability is correct");
-                } else {
-                    assert_equals(result.constructor, resultType, "Result is a " + resultType.toString());
-                    assert_equals(result.type, "secret", "Is a secret key");
-                    assert_equals(result.extractable, extractable, "Extractability is correct");
-
-                    assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
-                    assert_equals(result.algorithm.length, algorithm.length, "Correct length");
-                    if (algorithm.name === "HMAC") {
-                        assert_equals(result.algorithm.hash.name, algorithm.hash.name.toUpperCase(), "Correct hash function");
-                    }
-                    // The usages parameter could have repeats, but the usages
-                    // property of the result should not.
-                    var usageCount = 0;
-                    result.usages.forEach(function(usage) {
-                        usageCount += 1;
-                        assert_in_array(usage, usages, "Has " + usage + " usage");
-                    });
-                    assert_equals(result.usages.length, usageCount, "usages property is correct");
-                }
-            })
-            .catch(function(err) {
-                assert_unreached("Threw an unexpected error: " + err.toString());
-            });
-        }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));
     }
 
     // Test that a given combination of parameters results in an error,
@@ -166,7 +92,7 @@ function run_test() {
             ].forEach(function(hashAlgorithm) {
                 results.push({name: algorithmName, hash: {name: hashAlgorithm.name}, length: hashAlgorithm.length});
             });
-        } else if (algorithmName === "RSASSA-PKCS1-v1_5" || algorithmName === "RSA-PSS") {
+        } else if (algorithmName.toUpperCase() === "RSASSA-PKCS1-V1_5" || algorithmName.toUpperCase() === "RSA-PSS") {
             ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(function(hashName) {
                 [1024, 2048, 3072, 4096].forEach(function(modulusLength) {
                     [new Uint8Array([3]), new Uint8Array([1,0,1])].forEach(function(publicExponent) {
@@ -199,7 +125,7 @@ function run_test() {
             });
         } else if (algorithmName === "RSASSA-PKCS1-v1_5" || algorithmName === "RSA-PSS") {
             ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(function(hashName) {
-                [0, 1000000000].forEach(function(modulusLength) {
+                [0, -1].forEach(function(modulusLength) {
                     [new Uint8Array([1,2,3])].forEach(function(publicExponent) {
                         results.push({name: algorithmName, hash: hashName, modulusLength: modulusLength, publicExponent: publicExponent});
                     });
@@ -271,23 +197,6 @@ function run_test() {
 
         return [upCaseName, lowCaseName, mixedCaseName];
     }
-
-
-
-// The happy paths. Test all valid sets of parameters for successful
-// key generation.
-    testVectors.forEach(function(vector) {
-        allNameVariants(vector.name).forEach(function(name) {
-            allAlgorithmSpecifiersFor(name).forEach(function(algorithm) {
-                allValidUsages(vector.usages, false, vector.mandatoryUsages).forEach(function(usages) {
-                    [false, true].forEach(function(extractable) {
-                        testSuccess(algorithm, extractable, usages, vector.resultType, "Success");
-                    });
-                });
-            });
-        });
-    });
-
 
 
 // Now test for properly handling errors

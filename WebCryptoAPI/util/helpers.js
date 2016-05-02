@@ -52,3 +52,41 @@ function allNonemptySubsetsOf(arr) {
 
     return results;
 }
+
+
+// Create a string representation of keyGeneration parameters for
+// test names and labels.
+
+function objectToString(obj) {
+    var keyValuePairs = [];
+
+    if (Array.isArray(obj)) {
+        return "[" + obj.map(function(elem){return objectToString(elem);}).join(", ") + "]";
+    } else if (typeof obj === "object") {
+        Object.keys(obj).sort().forEach(function(keyName) {
+            keyValuePairs.push(keyName + ": " + objectToString(obj[keyName]));
+        });
+        return "{" + keyValuePairs.join(", ") + "}";
+    } else if (typeof obj === "undefined") {
+        return "undefined";
+    } else {
+        return obj.toString();
+    }
+
+    var keyValuePairs = [];
+
+    Object.keys(obj).sort().forEach(function(keyName) {
+        var value = obj[keyName];
+        if (typeof value === "object") {
+            value = objectToString(value);
+        } else if (typeof value === "array") {
+            value = "[" + value.map(function(elem){return objectToString(elem);}).join(", ") + "]";
+        } else {
+            value = value.toString();
+        }
+
+        keyValuePairs.push(keyName + ": " + value);
+    });
+
+    return "{" + keyValuePairs.join(", ") + "}";
+}

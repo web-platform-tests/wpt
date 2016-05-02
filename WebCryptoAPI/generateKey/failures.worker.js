@@ -1,4 +1,4 @@
 importScripts("/resources/testharness.js");
-importScripts("generateKey.js");
+importScripts("failures.js");
 run_test();
 done();

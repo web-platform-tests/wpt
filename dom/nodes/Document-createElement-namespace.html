@@ -54,6 +54,23 @@ test(function() {
           "application/xml");
 }, "Created element's namespace in created MathML document");
 
+// Second also test document created by DOMParser
+test(function() {
+  testDoc(new DOMParser().parseFromString("", "text/html"), "text/html");
+}, "Created element's namespace in created HTML document by DOMParser ('text/html')");
+test(function() {
+  testDoc(new DOMParser().parseFromString("<root/>", "text/xml"), "text/xml");
+}, "Created element's namespace in created XML document by DOMParser ('text/xml')");
+test(function() {
+  testDoc(new DOMParser().parseFromString("<root/>", "application/xml"), "application/xml");
+}, "Created element's namespace in created XML document by DOMParser ('application/xml')");
+test(function() {
+  testDoc(new DOMParser().parseFromString("<html/>", "application/xhtml+xml"), "application/xhtml+xml");
+}, "Created element's namespace in created XHTML document by DOMParser ('application/xhtml+xml')");
+test(function() {
+  testDoc(new DOMParser().parseFromString("<math/>", "image/svg+xml"), "image/svg+xml");
+}, "Created element's namespace in created SVG document by DOMParser ('image/svg+xml')");
+
 // Now for various externally-loaded files.  Note: these lists must be kept
 // synced with the lists in generate.py in the subdirectory, and that script
 // must be run whenever the lists are updated.  (We could keep the lists in a

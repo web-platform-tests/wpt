@@ -16,6 +16,40 @@ and collect the results of the testing.  This assumes knowledge of the requireme
 collection of tests so that the input data is relevant.  Each test or test collection contains
 information sufficient for the task.
 
+Test Cases
+----------
+
+Each test is expressed as a simple requirement in a test file.  For each section of the document, the
+simple requirement is represented as a minimal JSON Schema expression in a file
+with the suffix .json. It has a shape like:
+
+<pre>
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Verify annotation has @context",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "anyOf": [
+            {
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "not": {"type": "object"}
+    }
+  },
+  "required": ["@context"]
+}
+</pre>
+
 Manual Tests
 ------------
 

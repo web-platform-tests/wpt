@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Verify annotation has @context",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "anyOf": [
+            {
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "not": {"type": "object"}
+    }
+  },
+  "required": ["@context"]
+}

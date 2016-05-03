@@ -72,8 +72,10 @@ promise_test(function(t) {
   var previousAnimationCurrentTime;
   return animation.ready.then(function() {
     previousAnimationCurrentTime = animation.currentTime;
-    previousTimelineCurrentTime = animation.timeline.currentTime;
     animation.playbackRate = 1;
+    return animation.ready;
+  }).then(function() {
+    previousTimelineCurrentTime = animation.timeline.currentTime;
     return waitForAnimationFrames(1);
   }).then(function() {
     assert_equals(animation.playbackRate, 1,

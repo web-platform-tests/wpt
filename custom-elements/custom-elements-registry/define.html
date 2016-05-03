@@ -35,7 +35,8 @@
     [ "null", null ],
     [ "object", {} ],
     [ "string", "string" ],
-    [ "function", function () {} ],
+    [ "arrow function", () => {} ], // IsConstructor returns false for arrow functions
+    [ "method", ({ m() { } }).m ], // IsConstructor returns false for methods
   ].forEach(function (t) {
     test(function () {
       assert_throws(new TypeError, function () {
@@ -68,6 +69,7 @@
     "0-",
     "a-A",
     "a-Z",
+    "A-a",
     // name must not be any of the hyphen-containing element names.
     "annotation-xml",
     "color-profile",
@@ -85,7 +87,7 @@
   });
   invalidCustomElementNames.forEach(function (name) {
     test(function () {
-      assert_throws(new SyntaxError, function () {
+      assert_throws("SyntaxError", function () {
         window.customElements.define(name, class {});
       });
     }, 'If name is ' + name + ', throw a SyntaxError');
@@ -104,7 +106,7 @@
 
   // 4. If this CustomElementsRegistry contains an entry with constructor constructor,
   // then throw a NotSupportedError and abort these steps.
-  var testDupCtor = class {};
+  class testDupCtor {};
   test(function () {
     window.customElements.define("test-define-dup-ctor", testDupCtor);
   }, "test-define-dup-ctor 1st, success");
@@ -118,7 +120,7 @@
   // then throw a NotSupportedError.
   validCustomElementNames.forEach(function (name) {
     test(function () {
-      assert_throws(new NotSupportedError, function () {
+      assert_throws("NOT_SUPPORTED_ERR", function () {
         window.customElements.define("test-define-extend-valid-name", class {}, { extends: name });
       });
     }, 'If extends is ' + name + ', throw a NotSupportedError');
@@ -144,11 +146,30 @@
     }, 'If extends is ' + name + ', throw a NotSupportedError');
   });
 
+  // 8. Let observedAttributesIterable be Get(constructor, "observedAttributes").
+  // Rethrow any exceptions.
+  // See step 12 for rethrow tests.
+
   // 10. Let prototype be Get(constructor, "prototype"). Rethrow any exceptions.
   // 11. If Type(prototype) is not Object,
   // then throw a TypeError exception.
+  function throw_rethrown() {
+    const e = new Error("check this is rethrown");
+    e.name = "rethrown";
+    throw e;
+  }
   test(function () {
-    var c = class {};
+    // Hack for prototype to throw while IsConstructor is true.
+    const C = new Proxy(function () {}, {
+      construct() { return {}; },
+      get() { throw_rethrown(); }
+    });
+    assert_throws({ name: "rethrown" }, function () {
+      window.customElements.define("test-define-ctor-prototype-rethrow", C);
+    });
+  }, 'If constructor.prototype throws, rethrow');
+  test(function () {
+    function c() {};
     c.prototype = "string";
     assert_throws(new TypeError, function () {
       window.customElements.define("test-define-ctor-prototype-string", c);
@@ -164,14 +185,43 @@
   // 16. Let attributeChangedCallback be Get(prototype, "attributeChangedCallback"). Rethrow any exceptions.
   // 17. If attributeChangedCallback is not undefined, and IsCallable(attributeChangedCallback) is false,
   // then throw a TypeError exception.
-  [ "connectedCallback", "disconnectedCallback", "attributeChangedCallback" ].forEach(function (name) {
+  [
+    "observedAttributes", // See step 8 above.
+    "connectedCallback",
+    "disconnectedCallback",
+    "attributeChangedCallback",
+  ].forEach(function (name) {
     test(function () {
-      var c = class {};
-      c.prototype[name] = {};
-      assert_throws(new TypeError, function () {
-        window.customElements.define("test-define-ctor-prototype-" + name, c);
+      class C {
+        get [name]() { throw_rethrown(); }
+      }
+      assert_throws({ name: "rethrown" }, function () {
+        window.customElements.define("test-define-ctor-rethrow-prototype-" + name, C);
       });
-    }, 'If constructor.prototype.' + name + ' is an object, throw a TypeError');
+    }, 'If constructor.prototype.' + name + ' throws, rethrow');
+  });
+  [
+    "connectedCallback",
+    "disconnectedCallback",
+    "attributeChangedCallback",
+  ].forEach(function (name) {
+    test(function () {
+      class c {};
+      c.prototype[name] = undefined;
+      window.customElements.define("test-define-ctor-prototype-" + name, c);
+    }, 'If constructor.prototype.' + name + ' is undefined, success');
+    [
+      [ "null", null ],
+      [ "object", {} ],
+    ].forEach(function (value) {
+      test(function () {
+        class c {};
+        c.prototype[name] = value[1];
+        assert_throws(new TypeError, function () {
+          window.customElements.define("test-define-ctor-prototype-" + name, c);
+        });
+      }, 'If constructor.prototype.' + name + ' is ' + value[0] + ', throw a TypeError');
+    })
   });
 })();
 </script>

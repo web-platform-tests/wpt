@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>DOMTokenList.supports</title>
+<script src="/resources/testharness.js"></script>
+<script src=h"/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+"use strict";
+
+var tokens = {
+  // https://html.spec.whatwg.org/multipage/interaction.html#the-dropzone-attribute:concept-supported-tokens
+  el_dropzone: [
+    "copy", "move", "link", "string:test1", "string:test2", "file:test1", "file:test2"
+  ],
+  // https://html.spec.whatwg.org/multipage/embedded-content.html#the-iframe-element:concept-supported-tokens
+  iframe_sandbox: [
+    "allow-forms", "allow-modals", "allow-pointer-lock", "allow-popups",
+    "allow-popups-to-escape-sandbox", "allow-same-origin", "allow-scripts", "allow-top-navigation"
+  ],
+  // https://html.spec.whatwg.org/multipage/semantics.html#links-created-by-a-and-area-elements:concept-supported-tokens
+  a_area_rel: [
+    "noreferrer", "noopener", "prefetch"
+  ],
+  // https://html.spec.whatwg.org/multipage/semantics.html#the-link-element:concept-supported-tokens
+	link_rel: [
+    "alternate", "icon", "pingback", "prefetch", "stylesheet", "next"
+  ],
+  // https://html.spec.whatwg.org/multipage/semantics.html#linkTypes
+  other_rel_values: [
+    "author", "bookmark", "external", "help", "license", "nofollow", "prev", "search", "tag"
+  ],
+  fiction_values: ["", " ", "test"]
+}
+
+var pairs = {
+  // Defined in DOM
+  "classList": {
+    "anyElement" : []
+  },
+  // Defined in HTML
+  "dropzone": {
+    "anyHTMLElement": tokens.el_dropzone
+  },
+  "headers": {
+    "td": [],
+    "th": [],
+  },
+  "htmlFor": {
+    "output": []
+  },
+  "ping": {
+    "a": [],
+    "area": [],
+  },
+  "relList": {
+    "a": tokens.a_area_rel,
+    "area": tokens.a_area_rel,
+    "link": tokens.link_rel
+  },
+  "sandbox": {
+    "iframe": tokens.iframe_sandbox
+  }
+}
+
+// Produce mixed tokens (including uppercase)
+function prepareTokens(el, attr) {
+	var output = [];
+  var mixTonens = [].concat(pairs[attr][el]); // firstly we always check correct tokens
+  Object.keys(tokens).forEach(function(token){ // and some others for comparison
+    mixTonens = mixTonens.concat(tokens[token]);
+  });
+  for (var i = 0, len = mixTonens.length; i < len; ++i){
+    output.push(mixTonens[i]);
+    output.push(mixTonens[i].toUpperCase()); // remember that supports() is case insensitive
+  }
+  output = output.filter(function(elem, pos) { // remove any duplicates (if exist)
+    return output.indexOf(elem) == pos;
+  });
+  return output;
+}
+
+function runSupportsTest(el, attr) {
+  var new_el = document.createElement(el);
+  if (attr === "classList") el = "anyElement";
+  if (attr === "dropzone") el = "anyHTMLElement";
+  var test_tokens = prepareTokens(el, attr);
+
+  test(function() {
+    assert_class_string(new_el[attr], "DOMTokenList", "Missing implement DOMTokenList:");
+    assert_true("supports" in new_el[attr], "Missing implement supports():");
+  }, new_el.localName + "." + attr +  " must implement DOMTokenList and supports().");
+  
+  // Run more tests only when DOMTokenList and supports() are implemented (uncomment if you always want a fixed number of tests)
+  if (new_el[attr] && new_el[attr].supports) {
+    test_tokens.forEach(function(token) {
+      if (pairs[attr][el].length === 0) {
+        test(function() {
+          assert_throws(new TypeError(), function() {
+            new_el[attr].supports(token);
+          });
+        }, new_el.localName + "." + attr + '.supports("' + token + '") should throw.');
+      }
+      else if (pairs[attr][el].indexOf(token.toLowerCase()) != -1) {
+        test(function() {
+          assert_true(new_el[attr].supports(token));
+        }, new_el.localName + "." + attr + '.supports("' + token + '") should return true.');
+      }
+      else {
+        test(function() {
+          assert_false(new_el[attr].supports(token));
+        }, new_el.localName + "." + attr + '.supports("' + token + '") should return false.');
+      }
+    });
+  }
+}
+
+// This cases should return true or false
+runSupportsTest("iframe", "sandbox");
+runSupportsTest("a", "relList");
+runSupportsTest("area", "relList");
+runSupportsTest("link", "relList");
+runSupportsTest("span", "dropzone");
+// This cases should always throw
+runSupportsTest("div", "classList");
+runSupportsTest("td", "headers");
+runSupportsTest("th", "headers");
+runSupportsTest("output", "htmlFor");
+runSupportsTest("a", "ping");
+runSupportsTest("area", "ping");
+
+</script>

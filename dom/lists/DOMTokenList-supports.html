@@ -68,13 +68,16 @@ var pairs = {
 // Produce mixed tokens (including uppercase)
 function prepareTokens(el, attr) {
   var output = [];
-  var mixTonens = [].concat(pairs[attr][el]); // firstly we always check correct tokens
-  Object.keys(tokens).forEach(function(token){ // and some others for comparison
-    mixTonens = mixTonens.concat(tokens[token]);
+  var mixTokens = [].concat(pairs[attr][el], tokens.fiction_values); // firstly we always check correct tokens and some fictional
+  // Uncomment below if you also want to test some tokens from other attributes
+  /*
+  Object.keys(tokens).forEach(function(token){
+    mixTokens = mixTokens.concat(tokens[token]);
   });
-  for (var i = 0, len = mixTonens.length; i < len; ++i){
-    output.push(mixTonens[i]);
-    output.push(mixTonens[i].toUpperCase()); // remember that supports() is case insensitive
+  */
+  for (var i = 0, len = mixTokens.length; i < len; ++i){
+    output.push(mixTokens[i]);
+    output.push(mixTokens[i].toUpperCase()); // remember that supports() is case insensitive
   }
   output = output.filter(function(elem, pos) { // remove any duplicates (if exist)
     return output.indexOf(elem) == pos;
@@ -87,34 +90,25 @@ function runSupportsTest(el, attr) {
   if (attr === "classList") el = "anyElement";
   if (attr === "dropzone") el = "anyHTMLElement";
   var test_tokens = prepareTokens(el, attr);
-
-  test(function() {
-    assert_class_string(new_el[attr], "DOMTokenList", "Missing implement DOMTokenList:");
-    assert_true("supports" in new_el[attr], "Missing implement supports():");
-  }, new_el.localName + "." + attr +  " must implement DOMTokenList and supports().");
-
-  // Run more tests only when DOMTokenList and supports() are implemented (uncomment if you always want a fixed number of tests)
-  if (new_el[attr] && new_el[attr].supports) {
-    test_tokens.forEach(function(token) {
-      if (pairs[attr][el].length === 0) {
-        test(function() {
-          assert_throws(new TypeError(), function() {
-            new_el[attr].supports(token);
-          });
-        }, new_el.localName + "." + attr + '.supports("' + token + '") should throw.');
-      }
-      else if (pairs[attr][el].indexOf(token.toLowerCase()) != -1) {
-        test(function() {
-          assert_true(new_el[attr].supports(token));
-        }, new_el.localName + "." + attr + '.supports("' + token + '") should return true.');
-      }
-      else {
-        test(function() {
-          assert_false(new_el[attr].supports(token));
-        }, new_el.localName + "." + attr + '.supports("' + token + '") should return false.');
-      }
-    });
-  }
+  test_tokens.forEach(function(token) {
+    if (pairs[attr][el].length === 0) {
+      test(function() {
+        assert_throws(new TypeError(), function() {
+          if (new_el[attr] && new_el[attr].supports) new_el[attr].supports(token); // this must throw because invoke supports()
+        }, "Missing DOMTokenList or supports():");
+      }, new_el.localName + "." + attr + '.supports("' + token + '") should throw.');
+    }
+    else if (pairs[attr][el].indexOf(token.toLowerCase()) != -1) {
+      test(function() {
+        assert_true(new_el[attr].supports(token));
+      }, new_el.localName + "." + attr + '.supports("' + token + '") should return true.');
+    }
+    else {
+      test(function() {
+        assert_false(new_el[attr].supports(token));
+      }, new_el.localName + "." + attr + '.supports("' + token + '") should return false.');
+    }
+  });
 }
 
 // This cases should return true or false

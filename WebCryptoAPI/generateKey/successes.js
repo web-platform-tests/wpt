@@ -1,4 +1,8 @@
-function run_test() {
+// The standard for run_test is to have no parameters, and
+// execute all tests. But tests with RSA keys are very, very
+// slow, so we give calls an option to provide a list of algorithm
+// names to test. If no list is given, all algorithms are tested.
+function run_test(algorithmNames) {
     // API may not be available outside a secure context.
     if (!runningInASecureContext()) {
         test(function() {}, "No tests because API not necessarily available in insecure context");
@@ -21,7 +25,7 @@ function run_test() {
 // helper functions that generate all possible test parameters for
 // different situations.
 
-    var testVectors = [ // Parameters that should work for generateKey
+    var allTestVectors = [ // Parameters that should work for generateKey
         {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
         {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
         {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
@@ -31,12 +35,15 @@ function run_test() {
         {name: "RSA-PSS",  resultType: "CryptoKeyPair", usages: ["sign", "verify"], mandatoryUsages: ["sign"]}
     ];
 
+    var testVectors = [];
+    allTestVectors.forEach(function(vector) {
+        if (!algorithmNames || algorithmNames.includes(vector.name)) {
+            testVectors.push(vector);
+        }
+    });
+
 
     function parameterString(algorithm, extractable, usages) {
-        if (typeof algorithm !== "object" && typeof algorithm !== "string") {
-            alert(algorithm);
-        }
-
         var result = "(" +
                         objectToString(algorithm) + ", " +
                         objectToString(extractable) + ", " +
@@ -48,34 +55,18 @@ function run_test() {
 
     // Test that a given combination of parameters is successful
     function testSuccess(algorithm, extractable, usages, resultType, testTag) {
+        // algorithm, extractable, and usages are the generateKey parameters
+        // resultType is the expected result, either the CryptoKey object or "CryptoKeyPair"
+        // testTag is a string to prepend to the test name.
+
         promise_test(function(test) {
             return crypto.subtle.generateKey(algorithm, extractable, usages)
             .then(function(result) {
                 if (resultType === "CryptoKeyPair") {
-                    assert_equals(result.publicKey.constructor, CryptoKey, "Public key is a CryptoKey");
-                    assert_equals(result.privateKey.constructor, CryptoKey, "Private key is a CryptoKey");
-                    assert_equals(result.publicKey.type, "public", "Is a public key");
-                    assert_equals(result.privateKey.type, "private", "Is a private key");
-                    assert_equals(result.publicKey.extractable, true, "Public key is always extractable");
-                    assert_equals(result.privateKey.extractable, extractable, "Private key extractability is correct");
+                    assert_goodCryptoKey(result.privateKey, algorithm, extractable, usages, "private");
+                    assert_goodCryptoKey(result.publicKey, algorithm, extractable, usages, "public");
                 } else {
-                    assert_equals(result.constructor, resultType, "Result is a " + resultType.toString());
-                    assert_equals(result.type, "secret", "Is a secret key");
-                    assert_equals(result.extractable, extractable, "Extractability is correct");
-
-                    assert_equals(result.algorithm.name, algorithm.name.toUpperCase(), "Correct algorithm name");
-                    assert_equals(result.algorithm.length, algorithm.length, "Correct length");
-                    if (algorithm.name === "HMAC") {
-                        assert_equals(result.algorithm.hash.name, algorithm.hash.name.toUpperCase(), "Correct hash function");
-                    }
-                    // The usages parameter could have repeats, but the usages
-                    // property of the result should not.
-                    var usageCount = 0;
-                    result.usages.forEach(function(usage) {
-                        usageCount += 1;
-                        assert_in_array(usage, usages, "Has " + usage + " usage");
-                    });
-                    assert_equals(result.usages.length, usageCount, "usages property is correct");
+                    assert_goodCryptoKey(result, algorithm, extractable, usages, "secret");
                 }
             })
             .catch(function(err) {
@@ -101,7 +92,7 @@ function run_test() {
                 {name: "SHA-384", length: 384},
                 {name: "SHA-512", length: 512}
             ].forEach(function(hashAlgorithm) {
-                results.push({name: algorithmName, hash: {name: hashAlgorithm.name}, length: hashAlgorithm.length});
+                results.push({name: algorithmName, hash: hashAlgorithm.name, length: hashAlgorithm.length});
             });
         } else if (algorithmName.toUpperCase() === "RSASSA-PKCS1-V1_5" || algorithmName.toUpperCase() === "RSA-PSS") {
             ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(function(hashName) {

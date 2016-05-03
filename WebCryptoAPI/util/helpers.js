@@ -90,3 +90,55 @@ function objectToString(obj) {
 
     return "{" + keyValuePairs.join(", ") + "}";
 }
+
+// Is key a CryptoKey object with correct algorithm, extractable, and usages?
+// Is it a secret, private, or public kind of key?
+function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
+    var correctUsages = [];
+
+    var registeredAlgorithmName;
+    ["AES-CTR", "AES-CBC", "AES-GCM", "AES-KW", "HMAC", "RSASSA-PKCS1-v1_5", "RSA-PSS"].forEach(function(name) {
+        if (name.toUpperCase() === algorithm.name.toUpperCase()) {
+            registeredAlgorithmName = name;
+        }
+    });
+
+    assert_equals(key.constructor, CryptoKey, "Is a CryptoKey");
+    assert_equals(key.type, kind, "Is a " + kind + " key");
+    if (key.type === "public") {
+        extractable = true; // public keys are always extractable
+    }
+    assert_equals(key.extractable, extractable, "Extractability is correct");
+
+    assert_equals(key.algorithm.name, registeredAlgorithmName, "Correct algorithm name");
+    assert_equals(key.algorithm.length, algorithm.length, "Correct length");
+    if (["HMAC", "RSASSA-PKCS1-v1_5", "RSA-PSS"].includes(registeredAlgorithmName)) {
+        assert_equals(key.algorithm.hash.name.toUpperCase(), algorithm.hash.toUpperCase(), "Correct hash function");
+    }
+
+    // The usages parameter could have repeats, but the usages
+    // property of the result should not.
+
+    if (key.type === "public") {
+        ["encrypt", "verify", "wrapKey"].forEach(function(usage) {
+            if (usages.includes(usage)) {
+                correctUsages.push(usage);
+            }
+        });
+    } else if (key.type === "public") {
+        ["decrypt", "sign", "unwrapKey"].forEach(function(usage) {
+            if (usages.includes(usage)) {
+                correctUsages.push(usage);
+            }
+        });
+    } else {
+        correctUsages = usages;
+    }
+
+    var usageCount = 0;
+    key.usages.forEach(function(usage) {
+        usageCount += 1;
+        assert_in_array(usage, correctUsages, "Has " + usage + " usage");
+    });
+    assert_equals(key.usages.length, usageCount, "usages property is correct");
+}

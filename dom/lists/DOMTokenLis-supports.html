@@ -22,7 +22,7 @@ var tokens = {
     "noreferrer", "noopener", "prefetch"
   ],
   // https://html.spec.whatwg.org/multipage/semantics.html#the-link-element:concept-supported-tokens
-	link_rel: [
+  link_rel: [
     "alternate", "icon", "pingback", "prefetch", "stylesheet", "next"
   ],
   // https://html.spec.whatwg.org/multipage/semantics.html#linkTypes
@@ -64,7 +64,7 @@ var pairs = {
 
 // Produce mixed tokens (including uppercase)
 function prepareTokens(el, attr) {
-	var output = [];
+  var output = [];
   var mixTonens = [].concat(pairs[attr][el]); // firstly we always check correct tokens
   Object.keys(tokens).forEach(function(token){ // and some others for comparison
     mixTonens = mixTonens.concat(tokens[token]);
@@ -89,7 +89,7 @@ function runSupportsTest(el, attr) {
     assert_class_string(new_el[attr], "DOMTokenList", "Missing implement DOMTokenList:");
     assert_true("supports" in new_el[attr], "Missing implement supports():");
   }, new_el.localName + "." + attr +  " must implement DOMTokenList and supports().");
-  
+
   // Run more tests only when DOMTokenList and supports() are implemented (uncomment if you always want a fixed number of tests)
   if (new_el[attr] && new_el[attr].supports) {
     test_tokens.forEach(function(token) {

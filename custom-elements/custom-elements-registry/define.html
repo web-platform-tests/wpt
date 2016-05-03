@@ -151,8 +151,6 @@
   // See step 12 for rethrow tests.
 
   // 10. Let prototype be Get(constructor, "prototype"). Rethrow any exceptions.
-  // 11. If Type(prototype) is not Object,
-  // then throw a TypeError exception.
   function throw_rethrown() {
     const e = new Error("check this is rethrown");
     e.name = "rethrown";
@@ -160,14 +158,22 @@
   }
   test(function () {
     // Hack for prototype to throw while IsConstructor is true.
-    const C = new Proxy(function () {}, {
-      construct() { return {}; },
+    const BadConstructor = (function () { }).bind({});
+    Object.defineProperty(BadConstructor, "prototype", {
       get() { throw_rethrown(); }
     });
     assert_throws({ name: "rethrown" }, function () {
-      window.customElements.define("test-define-ctor-prototype-rethrow", C);
+      window.customElements.define("test-define-ctor-prototype-rethrow", BadConstructor);
     });
   }, 'If constructor.prototype throws, rethrow');
+  // 11. If Type(prototype) is not Object,
+  // then throw a TypeError exception.
+  test(function () {
+    const c = (function () { }).bind({}); // prototype is undefined.
+    assert_throws(new TypeError, function () {
+      window.customElements.define("test-define-ctor-prototype-undefined", c);
+    });
+  }, 'If Type(constructor.prototype) is not Object, throw a TypeError');
   test(function () {
     function c() {};
     c.prototype = "string";

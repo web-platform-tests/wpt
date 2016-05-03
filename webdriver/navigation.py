@@ -102,6 +102,11 @@ def test_get_current_url_file_protocol(session):
     assert session.url == "file:///"
 
 
+# TODO(ato): Test for http:// and https:// protocols.
+# We need to expose a fixture for accessing
+# documents served by wptserve in order to test this.
+
+
 def test_get_current_url_malformed_url(session):
     session.url = "foo"
     assert session.url

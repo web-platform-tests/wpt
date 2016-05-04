@@ -41,6 +41,18 @@
             <input class="select-algorithm" type="checkbox" id="rsa-pss-cbox" value="RSA-PSS" checked="checked"/>
             <label for="rsa-pss-cbox">RSA-PSS</label>
         </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="rsa-oaep-cbox" value="RSA-OAEP" checked="checked"/>
+            <label for="rsa-oaep-cbox">RSA-OAEP</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="ecdsa-cbox" value="ECDSA" checked="checked"/>
+            <label for="ecdsa-cbox">ECDSA</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="ecdh-cbox" value="ECDH" checked="checked"/>
+            <label for="ecdh-cbox">ECDH</label>
+        </li>
     </ul>
     <input type="button" id="run" value="Run tests"/>
 </div>
@@ -62,6 +74,4 @@ document.getElementById("run").addEventListener("click", function() {
     run_test(namesToTest);
 });
 
-
-//run_test(["AES-CTR", "AES-CBC", "AES-GCM", "AES-KW", "HMAC", "RSASSA-PKCS1-v1_5", "RSA-PSS"]);
 </script>

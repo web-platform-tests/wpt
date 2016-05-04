@@ -97,7 +97,7 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
     var correctUsages = [];
 
     var registeredAlgorithmName;
-    ["AES-CTR", "AES-CBC", "AES-GCM", "AES-KW", "HMAC", "RSASSA-PKCS1-v1_5", "RSA-PSS"].forEach(function(name) {
+    ["AES-CTR", "AES-CBC", "AES-GCM", "AES-KW", "HMAC", "RSASSA-PKCS1-v1_5", "RSA-PSS", "RSA-OAEP", "ECDSA", "ECDH"].forEach(function(name) {
         if (name.toUpperCase() === algorithm.name.toUpperCase()) {
             registeredAlgorithmName = name;
         }
@@ -142,3 +142,100 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
     });
     assert_equals(key.usages.length, usageCount, "usages property is correct");
 }
+
+
+// The algorithm parameter is an object with a name and other
+// properties. Given the name, generate all valid parameters.
+//
+// You can have a "short run" for RSA by including a second, true
+// parameter. Useful if you're testing one variant of the
+// algorithm name exhaustively, so need less exhaustive tests
+// for other variants.
+function allAlgorithmSpecifiersFor(algorithmName, shortRun) {
+    var results = [];
+    var hashes = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"];
+    var keyLengths = [1024, 2048, 3072, 4096];
+    var curves = ["P-256", "P-384", "P-521"];
+
+    if (algorithmName.toUpperCase().substring(0, 3) === "AES") {
+        // Specifier properties are name and length
+        [128, 192, 256].forEach(function(length) {
+            results.push({name: algorithmName, length: length});
+        });
+    } else if (algorithmName.toUpperCase() === "HMAC") {
+        [
+            {name: "SHA-1", length: 160},
+            {name: "SHA-256", length: 256},
+            {name: "SHA-384", length: 384},
+            {name: "SHA-512", length: 512}
+        ].forEach(function(hashAlgorithm) {
+            results.push({name: algorithmName, hash: hashAlgorithm.name, length: hashAlgorithm.length});
+        });
+    } else if (algorithmName.toUpperCase().substring(0, 3) === "RSA") {
+        if (shortRun) {
+            hashes = ["SHA-1", "SHA-384"];
+            keyLengths = [1024, 2048];
+        }
+        hashes.forEach(function(hashName) {
+            if (shortRun) {
+                keyLengths = [1024, 2048];
+            }
+            keyLengths.forEach(function(modulusLength) {
+                [new Uint8Array([3]), new Uint8Array([1,0,1])].forEach(function(publicExponent) {
+                    results.push({name: algorithmName, hash: hashName, modulusLength: modulusLength, publicExponent: publicExponent});
+                });
+            });
+        });
+    } else if (algorithmName.toUpperCase().substring(0, 2) === "EC") {
+        curves.forEach(function(curveName) {
+            results.push({name: algorithmName, namedCurve: curveName});
+        });
+    }
+
+    return results;
+}
+
+
+// Create every possible valid usages parameter, given legal
+// usages. Note that an empty usages parameter is not always valid.
+//
+// There is an optional parameter - mandatoryUsages. If provided,
+// it should be an array containing those usages of which one must be
+// included. For example, when generating an RSA-PSS key pair,
+// both "sign" and "verify" are possible usages, but if "verify"
+// is not included in the usages, the private key will end up
+// with an empty set of usages, causing a Syntax Error.
+function allValidUsages(validUsages, emptyIsValid, mandatoryUsages) {
+    okaySubsets = [];
+    allNonemptySubsetsOf(validUsages).forEach(function(subset) {
+        if (!mandatoryUsages || mandatoryUsages.length === 0) {
+            okaySubsets.push(subset);
+        } else {
+            for (var i=0; i<mandatoryUsages.length; i++) {
+                if (subset.includes(mandatoryUsages[i])) {
+                    okaySubsets.push(subset);
+                    return;
+                }
+            }
+        }
+    });
+
+    if (emptyIsValid) {
+        okaySubsets.push([]);
+    }
+
+    okaySubsets.push(validUsages.concat(mandatoryUsages).concat(validUsages)); // Repeated values are allowed
+    return okaySubsets;
+}
+
+// Algorithm name specifiers are case-insensitive. Generate several
+// case variations of a given name.
+function allNameVariants(name) {
+    var upCaseName = name.toUpperCase();
+    var lowCaseName = name.toLowerCase();
+    var mixedCaseName = upCaseName.substring(0, 1) + lowCaseName.substring(1);
+
+    return [upCaseName, lowCaseName, mixedCaseName];
+}
+
+

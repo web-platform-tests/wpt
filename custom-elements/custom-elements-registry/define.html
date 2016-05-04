@@ -99,7 +99,7 @@
     window.customElements.define("test-define-dup-name", class {});
   }, "test-define-dup-name 1st, success");
   test(function () {
-    assert_throws(new NotSupportedError, function () {
+    assert_throws("NOT_SUPPORTED_ERR", function () {
       window.customElements.define("test-define-dup-name", class {});
     });
   }, "test-define-dup-name 2nd, throw a NotSupportedError");
@@ -111,7 +111,7 @@
     window.customElements.define("test-define-dup-ctor", testDupCtor);
   }, "test-define-dup-ctor 1st, success");
   test(function () {
-    assert_throws(new NotSupportedError, function () {
+    assert_throws("NOT_SUPPORTED_ERR", function () {
       window.customElements.define("test-define-dup-ctor2", testDupCtor);
     });
   }, "test-define-dup-ctor 2nd, throw a NotSupportedError");
@@ -140,7 +140,7 @@
     "elementnametobeunknownelement",
   ].forEach(function (name) {
     test(function () {
-      assert_throws(new NotSupportedError, function () {
+      assert_throws("NOT_SUPPORTED_ERR", function () {
         window.customElements.define("test-define-extend-" + name, class {}, { extends: name });
       });
     }, 'If extends is ' + name + ', throw a NotSupportedError');

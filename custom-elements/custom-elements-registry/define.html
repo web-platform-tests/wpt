@@ -97,24 +97,20 @@
   // then throw a NotSupportedError and abort these steps.
   test(function () {
     window.customElements.define("test-define-dup-name", class {});
-  }, "test-define-dup-name 1st, success");
-  test(function () {
     assert_throws("NOT_SUPPORTED_ERR", function () {
       window.customElements.define("test-define-dup-name", class {});
     });
-  }, "test-define-dup-name 2nd, throw a NotSupportedError");
+  }, "If the name is already defined, throw a NotSupportedError");
 
   // 4. If this CustomElementsRegistry contains an entry with constructor constructor,
   // then throw a NotSupportedError and abort these steps.
-  class testDupCtor {};
   test(function () {
+    class testDupCtor {};
     window.customElements.define("test-define-dup-ctor", testDupCtor);
-  }, "test-define-dup-ctor 1st, success");
-  test(function () {
     assert_throws("NOT_SUPPORTED_ERR", function () {
       window.customElements.define("test-define-dup-ctor2", testDupCtor);
     });
-  }, "test-define-dup-ctor 2nd, throw a NotSupportedError");
+  }, "If ctor is already defined, throw a NotSupportedError");
 
   // 7.1. If extends is a valid custom element name,
   // then throw a NotSupportedError.

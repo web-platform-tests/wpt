@@ -24,40 +24,78 @@ Test Cases
 
 Each test is expressed as a simple requirement in a test file.  For each
 section of the document, the simple requirement is represented as a
-minimal JSON Schema expression in a file with the suffix .json. It has
-a shape like:
+structure that describes the nature of the test, and then includes or
+references minimal JSON Schema that test the assertions.  Each test case has
+a suffix of ".test" and a shape like:
 
 <pre>
 {
-  name: "Verify annotation has @context",
-  ref: "https://www.w3.org/TR/annotation-model/#model",
-  expectedResult: true,
-  testSchema: {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "Verify annotation has @context",
-    "type": "object",
-    "properties": {
-      "@context": {
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "array",
-            "anyOf": [
-              {
-                "type": "string"
-              }
-            ]
-          }
-        ],
-        "not": {"type": "object"}
-      }
-    },
-    "required": ["@context"]
-  }
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Verify annotation conforms to the model",
+  "description": "Supply an example annotation that conforms to the basic structure.",
+  "ref": "https://www.w3.org/TR/annotation-model/#model",
+  "assertions": [
+    "common/has_context.json",
+    "common/has_id.json",
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "title": "Verify annotation has @target",
+      "type": "object",
+      "properties": {
+        "@target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "anyOf": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "not": {"type": "object"}
+        }
+      },
+      "required": ["@target"]
+    }
+  ]
 }
 </pre>
+
+External references are used when the "assertion" is a common one that needs to be
+checked on many different test cases (e.g., that there is an @context in the supplied
+annotation).  An external file has a .json suffix and a structure like:
+
+<pre>
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Verify annotation has @context",
+  "type": "object",
+  "properties": {
+    "@context": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "anyOf": [
+            {
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "not": {"type": "object"}
+    }
+  },
+  "required": ["@context"]
+}
+</pre>
+
 
 Manual Tests
 ------------

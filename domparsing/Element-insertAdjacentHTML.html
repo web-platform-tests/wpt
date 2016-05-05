@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Element.insertAdjacentHTML</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="box" style="display: none;"></div>
+<div id="log"></div>
+<script>
+"use strict";
+
+// Checking valid position argument and basic method behaviour in actual HTML document
+function prepareTarget() {
+  var target = document.createElement("div");
+  target.id = "target";
+  box.textContent = "";
+  box.appendChild(target);
+  return target;
+}
+var possiblePositions = {
+  "beforebegin": '<span>beforebegin</span><div id="target"></div>',
+  "afterbegin": '<div id="target"><span>afterbegin</span></div>',
+  "beforeend": '<div id="target"><span>beforeend</span></div>',
+  "afterend": '<div id="target"></div><span>afterend</span>'
+}
+var box = document.getElementById("box");
+var positions = Object.keys(possiblePositions).concat(["test", "fictional"]);
+var mixPositions = [];
+for (var i = 0, len = positions.length; i < len; ++i) {
+  mixPositions.push(positions[i]);
+  mixPositions.push(positions[i].toUpperCase()); // position is case insensitive
+}
+mixPositions.forEach(function(position) {
+  var target = prepareTarget();
+  var added_markup = "<span>" + position.toLowerCase() + "</span>";
+  if (Object.keys(possiblePositions).indexOf(position.toLowerCase()) != -1) {
+    test(function() {
+      target.insertAdjacentHTML(position, added_markup);
+      assert_equals(box.innerHTML, possiblePositions[position.toLowerCase()]);
+    }, 'Basic support insertAdjacentHTML("' + position + '", ' + added_markup + ') in actual HTML document.');
+  }
+  else {
+    test(function() {
+      assert_throws(new SyntaxError(), function() {
+        target.insertAdjacentHTML(position, added_markup);
+      });
+    }, 'Basic support insertAdjacentHTML("' + position + '", ' + added_markup + ') in actual HTML document should throw.');
+  }
+});
+
+// Throwing for "beforebegin" and "afterend" position when context object doesn't have parent or when parent is document
+test(function() {
+
+  var target = document.documentElement;
+  assert_equals(target.parentNode.nodeName, "#document");
+  assert_throws("NoModificationAllowedError", function() {
+    target.insertAdjacentHTML("beforebegin", "");
+  });
+  assert_throws("NoModificationAllowedError", function() {
+    target.insertAdjacentHTML("afterend", "");
+  });
+
+  target = document.createElement("div");
+  assert_equals(target.parentNode, null);
+  assert_throws("NoModificationAllowedError", function() {
+    target.insertAdjacentHTML("beforebegin", "");
+  });
+  assert_throws("NoModificationAllowedError", function() {
+    target.insertAdjacentHTML("afterend", "");
+  });
+
+}, 'Throwing for "beforebegin" and "afterend" position when context object doesn\'t have parent or when parent is document.');
+
+// Checking to not merge adjacent text nodes around inserted new text nodes
+// More details: https://www.w3.org/Bugs/Public/show_bug.cgi?id=12584
+test(function() {
+  var box = document.createElement("div");
+  box.appendChild(document.createTextNode("TextNode1"));
+  box.appendChild(document.createTextNode("TextNode2"));
+  var el = document.createElement("span");
+  el.textContent = "TextNode inside element";
+  box.appendChild(el);
+  box.appendChild(document.createTextNode("TextNode3"));
+  box.appendChild(document.createTextNode("TextNode4"));
+  el.insertAdjacentHTML("beforebegin", "TextNode beforebegin");
+  el.insertAdjacentHTML("afterend", "TextNode afterend");
+  el.insertAdjacentHTML("afterbegin", "TextNode afterbegin");
+  el.insertAdjacentHTML("beforeend", "TextNode beforeend");
+  assert_equals(el.childNodes.length, 3, "child nodes");
+  assert_equals(box.childNodes.length, 7, "child nodes");
+}, "Checking to not merge adjacent text nodes around inserted new text nodes.");
+
+// Checking correct behaviour for changing or not changing context element that is used by parser
+// More details: https://www.w3.org/Bugs/Public/show_bug.cgi?id=29175
+test(function() {
+  var frag = document.createDocumentFragment();
+  frag.appendChild(document.createElement("html"));
+  frag.firstChild.insertAdjacentHTML("beforebegin", "<p>beforebegin</p>"); // context element for parser is body
+  assert_equals(frag.childNodes.length, 2, "child nodes");
+  assert_equals(frag.firstChild.localName, "p");
+  assert_equals(frag.firstChild.textContent, "beforebegin");
+  assert_equals(frag.lastChild.localName, "html");
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [1].");
+
+test(function() {
+  var frag = document.createDocumentFragment();
+  frag.appendChild(document.createElement("html"));
+  frag.firstChild.insertAdjacentHTML("afterbegin", "<p>afterbegin</p>"); // context element for parser is body
+  assert_equals(frag.firstChild.outerHTML, "<html><p>afterbegin</p></html>");
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [2].");
+
+test(function() {
+  var frag = document.createDocumentFragment();
+  frag.appendChild(document.createElement("div"));
+  frag.firstChild.insertAdjacentHTML("afterbegin", "<p>afterbegin</p>"); // context element for parser is body
+  assert_equals(frag.firstChild.outerHTML, "<div><p>afterbegin</p></div>");
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [3].");
+
+test(function() {
+  var frag = document.createDocumentFragment();
+  var html = document.createElement("html");
+  var head = document.createElement("head");
+  html.appendChild(head);
+  frag.appendChild(html);
+  head.insertAdjacentHTML("afterend", "<html><meta charset='utf-8'><p>aaa"); // context element for parser is body
+  assert_equals(frag.firstChild.outerHTML, '<html><head></head><meta charset="utf-8"><p>aaa</p></html>');
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [4].");
+
+test(function() {
+  var frag = document.createDocumentFragment();
+  var html = document.createElement("html");
+  var head = document.createElement("head");
+  html.appendChild(head);
+  frag.appendChild(html);
+  head.insertAdjacentHTML("afterbegin", "<html><meta charset='utf-8'><p>aaa"); // context element for parser is head
+  assert_equals(frag.firstChild.outerHTML, '<html><head><meta charset="utf-8"><p>aaa</p></head></html>');
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [5].");
+
+</script>

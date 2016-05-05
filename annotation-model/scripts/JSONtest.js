@@ -20,12 +20,8 @@
 
 function JSONtest(params) {
 
-  // need this in closures from different contexts;
-  var testObject = this;
-
   this.Params = null;
   this.Test = null;
-  this.testHandle = null;
 
   // create an ajv object that will stay around so that caching
   // of schema that are compiled just works
@@ -38,9 +34,9 @@ function JSONtest(params) {
       // we already loaded it
       this.Test = params.test;
     } else if (params.testFile !== null && params.testFile !== "") {
-      var test = this.loadTest(params.testFile) ;
-      if (test) {
-        this.Test = test;
+      var theTest = this.loadTest(params.testFile) ;
+      if (theTest) {
+        this.Test = theTest;
       }
     } else {
       throw("JSONtest: no test defined");
@@ -57,8 +53,8 @@ function JSONtest(params) {
     // we have the required parameters; set a listener
 
     on_event(document, "DOMContentLoaded", function() {
-        testObject.init() ;
-    });
+        this.init() ;
+    }.bind(this));
   }
   return this;
 };
@@ -69,117 +65,94 @@ JSONtest.prototype = {
     // set up a handler
     var button = document.getElementById(this.Params.runTest) ;
     var testInput  = document.getElementById(this.Params.testInput) ;
-    var testObject = this ;
     on_event(button, "click", function() {
       // user clicked
       var content = testInput.value;
-      testObject.testHandle = async_test(testObject.Test.name) ;
-      testObject.runTests(content);
-      testObject.testHandle.done() ;
-    });
+      // iterate over all of the tests for this instance
+      this.runTests(content);
+      // explicitly tell the test framework we are done
+      done() ;
+    }.bind(this));
   },
 
   runTests: function(content) {
+    // first make sure content is an object
+    if (typeof content === "string") {
+      try {
+        content = JSON.parse(content) ;
+      } catch(err) {
+        // if the parsing failed, create a special test and mark it failed
+        test( function() {
+          assert_true(false, "Parse of JSON failed: " + err) ;
+        }, "Parsing submitted input");
+        return ;
+      }
+    }
+
     // for each assertion (in order) load the external json schema if
     // one is referenced, or use the inline schema if supplied
-    // validate content against
-    var t = this ;
+    // validate content against the referenced schema
+    if (this.Test.assertions) {
+      this.Test.assertions.forEach( function(assert, num) {
 
-    if (t.Test.assertions) {
-      t.Test.assertions.forEach( function(assert, num) {
-
+        var schema = assert ;
         var schemaName = "schema from assertion " + num;
         if (typeof assert === "string") {
           schemaName = "schema from file " + assert + " for assertion " + num;
+          schema = this.load_file(assert) ;
         }
 
-        var schema = t.loadTest(assert) ; // embedded or from remote
+        if (typeof schema === "string") {
+          try {
+            schema = JSON.parse(schema) ;
+          }
+          catch(e) {
+            test( function() {
+              assert_true(false, "Parse of schema " + schemaName + " failed: " + e) ;
+            }, "Parsing Schema");
+            return ;
+          }
+        }
 
         var validate = null;
 
         try {
-          validate = t.ajv.compile(schema);
+          validate = this.ajv.compile(schema);
         }
         catch(err) {
-          throw("JSONtest: Failed to compile " + schemaName + ": " + validate.errors);
+          test( function() {
+            assert_true(false, "Compilation of schema " + schemaName + " failed: " + e) ;
+          }, "Compiling Schema");
+          return ;
         }
 
-        var valid = validate(content) ;
+        test(function() {
+          var valid = validate(content) ;
 
-        // were there errors validating
-        if (validate.errors !== null) {
-          var err = t.ajv.errorsText(validate.errors) ;
-          t.testHandle.step(function() {
-            assert_true(valid, schema.title + " Errors: " + err )
-          });
-        } else {
-          t.testHandle.step(function() { assert_true(valid, t.Test.name) });
-        }
-      });
+          // were there errors validating
+          if (validate.errors !== null) {
+            var err = this.ajv.errorsText(validate.errors) ;
+            assert_true(valid, schema.title + " Errors: " + err );
+          } else {
+            assert_true(valid, schema.title);
+          }
+        }.bind(this));
+      }.bind(this));
     }
     return;
   },
 
-  // loadSchema - process schema from string or remote
+  // load_file - synchronously load a file from a URI
   //
-  // returns an object with the JSON Schema
-
-  loadSchema: function(schema) {
-    var ret = null;
-
-    var p = null ; // will be a Promise
-
-    if (typeof schema === "string") {
-      // it is a name for a file - load it
-      p = t.load_file('GET', assert);
-    } else {
-      p = new Promise() ;
-      p.resolve(schema) ;
-    }
-
-    p.then(function(data) {
-      if (typeof data === "string") {
-        try {
-          ret = JSON.parse(schema) ;
-        }
-        catch(e) {
-          throw("JSONtest: Failed to parse schema " + schema + ":" + e);
-        }
-      } else {
-        ret = data;
-      }
-      return ret;
-    }.catch(function(err) {
-      throw("JSONtest: loadSchema failed with " + err.statusText") ;
-    }
-  },
-
-
-  // load_file - load a file from a URI
-  //
-  // Returns a Promise that resolves when the load completes or fails
   load_file: function(method, url) {
-    return new Promise(function (resolve, reject) {
-      var xhr = new XMLHttpRequest();
-      xhr.open(method, url);
-      xhr.onload = function () {
-        if (this.status >= 200 && this.status < 300) {
-          resolve(xhr.response);
-        } else {
-          reject({
-            status: this.status,
-            statusText: xhr.statusText
-          });
-        }
-      };
-      xhr.onerror = function () {
-        reject({
-          status: this.status,
-          statusText: xhr.statusText
-        });
-      };
-      xhr.send();
-    });
+    var xhr = new XMLHttpRequest();
+    xhr.open(method, url, false);
+    xhr.send(null) ;
+    if (xhr.status >= 200 && xhr.status < 300) {
+      return(xhr.response);
+    } else {
+      throw("JSONtest: load_file: " + xhr.status + " " + xhr.statusText);
+    }
   },
 
   // loadTest - load a test from an external JSON file
@@ -191,13 +164,11 @@ JSONtest.prototype = {
 
     var testData = null;
 
-    this.load_file('GET', theTestFile)
-      .then(function(data) {
-        testData = data ;
-      }).catch(function(err) {
-        throw("JSONtest: Failed to load " + theTestFile + ":" + err.statusText);
-      });
-
+    try {
+      testData = this.load_file('GET', theTestFile);
+    } catch(err) {
+      throw(err) ;
+    }
     return testData;
   }
 }

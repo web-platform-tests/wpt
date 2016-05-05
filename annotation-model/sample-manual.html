@@ -5,7 +5,7 @@
 <script src="scripts/ajv.min.js"></script>
 <script src="scripts/JSONtest.js"></script>
 <script>
-setup({explicit_timeout: true, explicit_done: true});
+setup({explicit_timeout: true, explicit_done: true });
 
 // var theTestFile="framework/annotations/verify-context-present.json"; // {{theTestFile}}
 
@@ -17,7 +17,6 @@ var theTest = {
   "description": "Supply an example annotation that conforms to the basic structure.",
   "ref": "https://www.w3.org/TR/annotation-model/#model",
   "assertions": [
-    "context.json",
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "Verify annotation has target",
@@ -41,11 +40,35 @@ var theTest = {
         }
       },
       "required": ["target"]
+    },
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "title": "Verify annotation has @context",
+      "type": "object",
+      "properties": {
+        "@context": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "anyOf": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "not": {"type": "object"}
+        }
+      },
+      "required": ["@context"]
     }
   ]
 } ;
 
-var test = new JSONtest( {
+var runningTest = new JSONtest( {
     "testInput": "annotation-input",
     "runTest": "annotation-run",
     "test": theTest

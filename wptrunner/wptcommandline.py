@@ -108,6 +108,9 @@ scheme host and port.""")
     debugging_group.add_argument("--stackwalk-binary", action="store", type=abs_path,
                                  help="Path to stackwalker program used to analyse minidumps.")
 
+    debugging_group.add_argument("--pdb", action="store_true",
+                                 help="Drop into pdb on python exception")
+
     config_group = parser.add_argument_group("Configuration")
     config_group.add_argument("--binary", action="store",
                               type=abs_path, help="Binary to run tests against")

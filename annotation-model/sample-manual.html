@@ -3,17 +3,57 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="scripts/ajv.min.js"></script>
-<!-- <script src="scripts/test_json.js"></script> -->
+<script src="scripts/JSONtest.js"></script>
 <script>
-setup({explicit_timeout: true});
+setup({explicit_timeout: true, explicit_done: true});
 
-var theTest="framework/annotations/verify-context-present.json"; // {{theTest}}
+// var theTestFile="framework/annotations/verify-context-present.json"; // {{theTestFile}}
 
-// add an event listener on annotation-run
+// -- or --
+
+var theTest = {
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Verify annotation conforms to the model",
+  "description": "Supply an example annotation that conforms to the basic structure.",
+  "ref": "https://www.w3.org/TR/annotation-model/#model",
+  "assertions": [
+    "context.json",
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "title": "Verify annotation has target",
+      "type": "object",
+      "properties": {
+        "target": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "anyOf": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "not": {"type": "object"}
+        }
+      },
+      "required": ["target"]
+    }
+  ]
+} ;
+
+var test = new JSONtest( {
+    "testInput": "annotation-input",
+    "runTest": "annotation-run",
+    "test": theTest
+} ) ;
 
 </script>
-<p>Provide JSON-LD output from your annotation client implementation that supports the following
-assertion:</p>
+<p>Provide JSON output from your annotation client implementation that supports the following
+assertion(s):</p>
 <p class="assertion">{{ASSERTION}}</p>
 <form name="annotation" id="annotation">
     <textarea name="annotation-input" id="annotation-input" style="width: 90%; height: 10em" >

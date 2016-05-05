@@ -10,7 +10,70 @@
 <script src="/WebCryptoAPI/util/helpers.js"></script>
 <script src="failures.js"></script>
 
+<h1>generateKey Tests for Bad Parameters</h1>
+
+<div id="selections">
+    <h2>Select algorithms to test</h2>
+    <ul style="list-style-type: none;">
+        <li>
+            <input class="select-algorithm" type="checkbox" id="aes-ctr-cbox" value="AES-CTR" checked="checked"/>
+            <label for="aes-ctr-cbox">AES-CTR</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="aes-cbc-cbox" value="AES-CBC" checked="checked"/>
+            <label for="aes-cbc-cbox">AES-CBC</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="aes-gcm-cbox" value="AES-GCM" checked="checked"/>
+            <label for="aes-gcm-cbox">AES-GCM</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="aes-kw-cbox" value="AES-KW" checked="checked"/>
+            <label for="aes-kw-cbox">AES-KW</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="hmac-cbox" value="HMAC" checked="checked"/>
+            <label for="hmac-cbox">HMAC</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="rsassa-pkcs1-v1_5-cbox" value="RSASSA-PKCS1-v1_5" checked="checked"/>
+            <label for="rsassa-pkcs1-v1_5-cbox">RSASSA-PKCS1-v1_5</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="rsa-pss-cbox" value="RSA-PSS" checked="checked"/>
+            <label for="rsa-pss-cbox">RSA-PSS</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="rsa-oaep-cbox" value="RSA-OAEP" checked="checked"/>
+            <label for="rsa-oaep-cbox">RSA-OAEP</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="ecdsa-cbox" value="ECDSA" checked="checked"/>
+            <label for="ecdsa-cbox">ECDSA</label>
+        </li>
+        <li>
+            <input class="select-algorithm" type="checkbox" id="ecdh-cbox" value="ECDH" checked="checked"/>
+            <label for="ecdh-cbox">ECDH</label>
+        </li>
+    </ul>
+    <input type="button" id="run" value="Run tests"/>
+</div>
+
+
 <div id="log"></div>
 <script>
-run_test();
+
+document.getElementById("run").addEventListener("click", function() {
+    var elements = document.getElementsByClassName("select-algorithm");
+
+    var namesToTest = [];
+    for (var i=0; i<elements.length; i++) {
+        if (elements[i].checked) {
+            namesToTest.push(elements[i].value);
+        }
+    }
+
+    run_test(namesToTest);
+});
+
 </script>

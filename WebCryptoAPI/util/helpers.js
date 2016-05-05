@@ -4,6 +4,26 @@
 // Helper functions used by several WebCryptoAPI tests
 //
 
+var registeredAlgorithmNames = [
+    "RSASSA-PKCS1-v1_5",
+    "RSA-PSS",
+    "RSA-OAEP",
+    "ECDSA",
+    "ECDH",
+    "AES-CTR",
+    "AES-CBC",
+    "AES-GCM",
+    "AES-KW",
+    "HMAC",
+    "SHA-1",
+    "SHA-256",
+    "SHA-384",
+    "SHA-512",
+    "HKDF-CTR",
+    "PBKDF2"
+];
+
+
 function runningInASecureContext() {
     var protocol = location.protocol.toLowerCase();
     var hostname = location.hostname.toLowerCase();
@@ -97,7 +117,7 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
     var correctUsages = [];
 
     var registeredAlgorithmName;
-    ["AES-CTR", "AES-CBC", "AES-GCM", "AES-KW", "HMAC", "RSASSA-PKCS1-v1_5", "RSA-PSS", "RSA-OAEP", "ECDSA", "ECDH"].forEach(function(name) {
+    registeredAlgorithmNames.forEach(function(name) {
         if (name.toUpperCase() === algorithm.name.toUpperCase()) {
             registeredAlgorithmName = name;
         }

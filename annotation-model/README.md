@@ -39,10 +39,10 @@ a suffix of ".test" and a shape like:
     "common/has_id.json",
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
-      "title": "Verify annotation has @target",
+      "title": "Verify annotation has target",
       "type": "object",
       "properties": {
-        "@target": {
+        "target": {
           "anyOf": [
             {
               "type": "string"
@@ -59,7 +59,7 @@ a suffix of ".test" and a shape like:
           "not": {"type": "object"}
         }
       },
-      "required": ["@target"]
+      "required": ["target"]
     }
   ]
 }

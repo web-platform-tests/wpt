@@ -10,9 +10,16 @@
 <script src="/WebCryptoAPI/util/helpers.js"></script>
 <script src="successes.js"></script>
 
+<h1>generateKey Tests for Good Parameters</h1>
+<p>
+    <strong>Warning!</strong> RSA key generation is intrinsically
+    very slow, so the related tests can take anywhere from
+    two to twenty minutes to complete, depending on browser!
+</p>
+
 <div id="selections">
     <h2>Select algorithms to test</h2>
-    <ul>
+    <ul style="list-style-type: none;">
         <li>
             <input class="select-algorithm" type="checkbox" id="aes-ctr-cbox" value="AES-CTR" checked="checked"/>
             <label for="aes-ctr-cbox">AES-CTR</label>

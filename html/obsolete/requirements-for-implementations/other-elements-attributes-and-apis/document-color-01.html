@@ -9,13 +9,12 @@
 <iframe id="iframe"></iframe>
 <script>
 test(function() {
-  var doc = document.getElementById("iframe").contentDocument;
-  var body = doc.documentElement.removeChild(doc.body);
-  assert_equals(doc.fgColor, "");
-  assert_equals(doc.bgColor, "");
-  assert_equals(doc.linkColor, "");
-  assert_equals(doc.vlinkColor, "");
-  assert_equals(doc.alinkColor, "");
-  doc.body = body;
+  var body = document.documentElement.removeChild(document.body);
+  assert_equals(document.fgColor, "");
+  assert_equals(document.bgColor, "");
+  assert_equals(document.linkColor, "");
+  assert_equals(document.vlinkColor, "");
+  assert_equals(document.alinkColor, "");
+  document.body = body;
 })
 </script>

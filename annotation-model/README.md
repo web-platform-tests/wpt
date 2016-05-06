@@ -100,7 +100,7 @@ That context defines the following terms:
 |description    | string          | A long self-describing paragraph that explains the purpose of the test and the expected input
 |ref            | URI             | An optional reference to the portion of the specification to which the test relates
 |testType       | `automated`, `manual`, `ref` | The type of test - this informs [WPT](https://github.com/w3c/web-platform-tests) how the test should be controlled and presented
-|assertions     | list of URI or Objects | The ordered collection of tests the input should be run against. See [JSON Schema Usage](#jsonSchema) for the structure of the objects.  URI is relative to the top level folder of the test collection if it has a slash; relative to the current directory if it does not.
+|assertions     | list of URI, List, or AssertionObject | The ordered collection of tests the input should be run against. See [JSON Schema Usage](#jsonSchema) for the structure of the objects.  URI is relative to the top level folder of the test collection if it has a slash; relative to the current directory if it does not. Lists can be nested to define groups of sub-tests.  Assertions / groups can be conditionally skipped.  See [Assertion Lists](#assertionLists) for more details.
 
 Each test case has a suffix of ".test" and a shape like:
 
@@ -118,6 +118,8 @@ Each test case has a suffix of ".test" and a shape like:
       "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "Verify annotation has target",
       "type": "object",
+      "expectedResult": "valid",
+      "errorMessage": "The object was missing a required 'target' property",
       "properties": {
         "target": {
           "anyOf": [
@@ -146,12 +148,33 @@ External references are used when the "assertion" is a common one that needs to 
 checked on many different test cases (e.g., that there is an @context in the supplied
 annotation).
 
-<a id="jsonSchema">JSON Schema Usage</a>
+### <a id="assertionLists">Assertion Lists</a> ###
+
+The `assertion` list is an ordered list of assertions that will be evaluated against the
+submitted content. The list is *required*, and MUST have at least one entry. Entries in the
+list have the following types:
+
+* URI
+
+  A relative or absolute URI that references a AssertionObject in a .json file.  If the URI
+  is relative but contains no slashes, then it is considered to be in the current directory.
+  If the URI is relative, contains slashes, but **does not start with a slash** then it is
+  considered relative to the top of the tree of the current test collection (e.g.,
+  `annotation-model`).
+* AssertionObject
+
+  An in-line Object as defined in the section
+
+
+<a id="assertionObject">Assertion Objects</a>
 -----------------
 
-In this collection of tests, JSON Schema files MUST use the suffix ".json"
-and the vocabularly and structure as defined in
-[JSON Schema v4](http://json-schema.org/documentation.html).
+In this collection of tests, Assertion Objects can be contained inline in the `.test` files
+or contained in external files with the suffix `.json`.
+The vocabularly and structure is as defined in
+[JSON Schema v4](http://json-schema.org/documentation.html) augmented with some additional
+properties defined in this section.
+
 In general each JSON Schema definition provided in this test suite should be
 as minimal as possible.  This promotes clarity and increases the likelihood that it is
 correct.  While it is ---possible--- to create JSON Schema files that enforce many different
@@ -165,16 +188,20 @@ are also permitted to use the following keywords:
 
 |Keyword        | Values          | Meaning |
 |---------------|-----------------|---------|
-|expectedResult | `pass`, `fail`  | Tells the framework whether validating against this schema is expected to succeed or fail.  The default is `pass` |
+|actionOnUnexpectedResult   | @@@TODO@@@      | Action to take when the result is not as expected. Default is `failAndContinue` |
+|assertionType  | `must`, `may`, `should` | Informs the system about the severity of a failure. The default is `must` |
+|errorMessage   | string          | A human readable explanation of what it means if the test fails.  |
+|expectedResult | `valid`, `invalid`  | Tells the framework whether validating against this schema is expected to succeed or fail.  The default is `valid` |
 
-### Example JSON Schema File ###
+
+### Example Assertion Object ###
 
 <pre>
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Verify annotation has @context",
   "type": "object",
-  "expectedResult" : "pass",
+  "expectedResult" : "valid",
   "properties": {
     "@context": {
       "anyOf": [

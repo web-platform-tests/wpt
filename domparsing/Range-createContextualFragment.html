@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Range.createContextualFragment</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div><!-- Comment node -->
+<script>
+"use strict";
+
+// Checking basic method behaviour on different nodes as Range's start node
+var nodes = [
+  document,
+  document.body,
+  document.doctype,
+  document.getElementById("log").nextSibling, // comment node
+  document.getElementById("log").nextSibling.nextSibling, // text node
+  // PI is valid (P&S has bug: https://www.w3.org/Bugs/Public/show_bug.cgi?id=29174) and we use XML doc due to IE throws when using createProcessingInstruction() for HTML
+  document.implementation.createDocument(null, null, null).createProcessingInstruction("target", "data"),
+  document.createDocumentFragment(),
+  document.createTextNode("data"),
+  document.createComment("data"),
+  document.createElementNS("http://www.w3.org/1999/xhtml", "newElement"),
+  document.createElementNS("http://www.w3.org/2000/svg", "newElement"),
+  document.createElementNS("http://www.w3.org/1998/Math/MathML", "newElement"),
+  document.createElementNS("http://example.com/", "newElement"),
+  document.createElementNS("", "newElement"),
+  document.implementation.createDocument(null, null, null),
+  document.implementation.createHTMLDocument(""),
+  document.implementation.createDocumentType("xml", "", "")
+];
+var mapsType = [
+  "ELEMENT_NODE", "ATTRIBUTE_NODE", "TEXT_NODE", "CDATA_SECTION_NODE",
+  "ENTITY_REFERENCE_NODE", "ENTITY_NODE", "PROCESSING_INSTRUCTION_NODE", "COMMENT_NODE",
+  "DOCUMENT_NODE", "DOCUMENT_TYPE_NODE", "DOCUMENT_FRAGMENT_NODE", "NOTATION_NODE"
+];
+var range = document.createRange();
+
+nodes.forEach(function(node, i) {
+  i++;
+  if (node.nodeType != 10) { // all nodes excluding DocumentType
+    test(function() {
+      range.setStart(node, 0);
+      assert_equals(range.startContainer.nodeType, node.nodeType);
+      var frag = range.createContextualFragment("<p>test</p>");
+      assert_equals(frag.childNodes.length, 1);
+      assert_equals(frag.firstChild.textContent, "test");
+    }, "Invoking createContextualFragment() on Range with " + mapsType[node.nodeType - 1] + " as start node should work [" + i + "].");
+  }
+  else {
+    test(function() {
+      assert_throws("InvalidNodeTypeError", function() {
+        range.setStart(node, 0);
+      });
+    }, "Setting " + mapsType[node.nodeType - 1] + " as start node in Range should throw [" + i + "].");
+  }
+});
+
+// Checking correct behaviour for changing or not changing context element that is used by parser
+// More details: https://www.w3.org/Bugs/Public/show_bug.cgi?id=29175
+test(function() {
+  range.setStart(document, 0);
+  var frag = range.createContextualFragment("<div><html><meta charset='utf-8'><p>test</div>"); // context element for parser is body (insertion mode will be "in body")
+  assert_equals(frag.firstChild.outerHTML, '<div><meta charset="utf-8"><p>test</p></div>');
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [1].");
+
+test(function() {
+  range.setStart(document.createDocumentFragment(), 0);
+  var frag = range.createContextualFragment("<div><html><meta charset='utf-8'><p>test</div>"); // context element for parser is body (insertion mode will be "in body")
+  assert_equals(frag.firstChild.outerHTML, '<div><meta charset="utf-8"><p>test</p></div>');
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [2].");
+
+test(function() {
+  range.setStart(document.documentElement, 0);
+  var frag = range.createContextualFragment("<div><html><meta charset='utf-8'><p>test</div>"); // context element for parser is body (insertion mode will be "in body")
+  assert_equals(frag.firstChild.outerHTML, '<div><meta charset="utf-8"><p>test</p></div>');
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [3].");
+
+test(function() {
+  range.setStart(document.head, 0);
+  var frag = range.createContextualFragment("<div><html><meta charset='utf-8'><p>test</div>"); // context element for parser is body (insertion mode will be "in body")
+  assert_equals(frag.firstChild.outerHTML, '<div><meta charset="utf-8"><p>test</p></div>');
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [4].");
+
+test(function() {
+  range.setStart(document.createElement("div"), 0);
+  var frag = range.createContextualFragment("<div><html><meta charset='utf-8'><p>test</div>"); // context element for parser is div (insertion mode will be "in body")
+  assert_equals(frag.firstChild.outerHTML, '<div><meta charset="utf-8"><p>test</p></div>');
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [5].");
+
+test(function() {
+  range.setStart(document.createElement("table"), 0);
+  var frag = range.createContextualFragment("<html><th>theader<td>tdata"); // context element for parser is table (insertion mode will be "in table")
+  assert_equals(frag.firstChild.outerHTML, '<tbody><tr><th>theader</th><td>tdata</td></tr></tbody>');
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [6].");
+
+test(function() {
+  range.setStart(document.createElement("title"), 0);
+  var frag = range.createContextualFragment("<html><meta charset='utf-8'><p>test&amp;"); // context element for parser is title (tokenizer is RCDATA state)
+  assert_equals(frag.firstChild.data, "<html><meta charset='utf-8'><p>test&");
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [7].");
+
+</script>

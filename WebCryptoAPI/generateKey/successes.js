@@ -65,8 +65,7 @@ function run_test(algorithmNames) {
                 } else {
                     assert_goodCryptoKey(result, algorithm, extractable, usages, "secret");
                 }
-            })
-            .catch(function(err) {
+            }, function(err) {
                 assert_unreached("Threw an unexpected error: " + err.toString());
             });
         }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));

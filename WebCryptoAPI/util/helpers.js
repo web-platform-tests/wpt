@@ -145,8 +145,8 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
                 correctUsages.push(usage);
             }
         });
-    } else if (key.type === "public") {
-        ["decrypt", "sign", "unwrapKey"].forEach(function(usage) {
+    } else if (key.type === "private") {
+        ["decrypt", "sign", "unwrapKey", "deriveKey", "deriveBits"].forEach(function(usage) {
             if (usages.includes(usage)) {
                 correctUsages.push(usage);
             }
@@ -155,8 +155,8 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
         correctUsages = usages;
     }
 
-    assert_equals((typeof key.usages), "object", "key.usages is an object");
-    assert_not_equals(key.usages, null, "key.usages isn't null");
+    assert_equals((typeof key.usages), "object", key.type + " key.usages is an object");
+    assert_not_equals(key.usages, null, key.type + " key.usages isn't null");
     var usageCount = 0;
     key.usages.forEach(function(usage) {
         usageCount += 1;

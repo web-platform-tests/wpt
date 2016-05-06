@@ -156,6 +156,7 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
     }
 
     assert_equals((typeof key.usages), "object", "key.usages is an object");
+    assert_not_equals(key.usages, null, "key.usages isn't null");
     var usageCount = 0;
     key.usages.forEach(function(usage) {
         usageCount += 1;

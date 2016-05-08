@@ -91,11 +91,10 @@ locally to view reports about recorded results.
 Test Cases
 ----------
 
-Each test is expressed as a simple (or complex) requirement in a test
-file.  For each section of the document, the requirement is
-represented as a structure that describes the nature of the test, and
-then includes or references minimal JSON Schema that test the assertions implied
-by the requirement..
+Each test is expressed as a simple (or complex) requirement in a test file.
+For each section of the document, the requirement is represented as a structure
+that describes the nature of the test, and then includes or references minimal
+JSON Schema that test the assertions implied by the requirement..
 
 The structure of a test case is defined using a [JSON-LD
 Context](JSONtest-v1.jsonld).  That context defines the following terms:
@@ -150,59 +149,61 @@ Each test case has a suffix of `.test` and a shape like:
 }
 </pre>
 
-External references are used when the "assertion" is a common one that needs to be
-checked on many different test cases (e.g., that there is an @context in the supplied
-annotation).
+External references are used when the "assertion" is a common one that needs to
+be checked on many different test cases (e.g., that there is an @context in the
+supplied annotation).
 
 ### <a id="assertionLists">Assertion Lists</a> ###
 
-The `assertion` list is an ordered list of assertions that will be evaluated against the
-submitted content. The list is *required*, and MUST have at least one entry. Entries in the
-list have the following types:
+The `assertion` list is an ordered list of assertions that will be evaluated
+against the submitted content. The list is *required*, and MUST have at least
+one entry. Entries in the list have the following types:
 
 * AssertionObject
 
-  An in-line Object as defined in the section [Assertion Objects](#assertionObjects).
+  An in-line Object as defined in the section [Assertion
+  Objects](#assertionObjects).
 * URI
 
-  A relative or absolute URI that references a AssertionObject in a .json file.  If the URI
-  is relative but contains no slashes, then it is considered to be in the current directory.
-  If the URI is relative, contains slashes, but **does not start with a slash** then it is
-  considered relative to the top of the tree of the current test collection (e.g.,
-  `annotation-model`).
+  A relative or absolute URI that references a AssertionObject in a .json file.
+  If the URI is relative but contains no slashes, then it is considered to be
+  in the current directory.  If the URI is relative, contains slashes, but
+  **does not start with a slash** then it is considered relative to the top of
+  the tree of the current test collection (e.g., `annotation-model`).
 * List
 
-  A nested Assertion List.  While nested Assertion Lists are optional, if one is
-  present it MUST have at least one entry.  Entries are as in this list.  Assertion Lists
-  can be nested to any depth (but don't do that - it would be too hard to maintain).
-
+  A nested Assertion List.  While nested Assertion Lists are optional, if one
+  is present it MUST have at least one entry.  Entries are as in this list.
+  Assertion Lists can be nested to any depth (but don't do that - it would be
+  too hard to maintain).
 
 <a id="assertionObjects">Assertion Objects</a>
 -----------------
 
-In this collection of tests, Assertion Objects can be contained inline in the `.test` files
-or contained in external files with the suffix `.json`.
-The vocabularly and structure is as defined in
-[JSON Schema v4](http://json-schema.org/documentation.html) augmented with some additional
+In this collection of tests, Assertion Objects can be contained inline in the
+`.test` files or contained in external files with the suffix `.json`.  The
+vocabularly and structure is as defined in [JSON Schema
+v4](http://json-schema.org/documentation.html) augmented with some additional
 properties defined in this section.
 
-In general each JSON Schema definition provided in this test suite should be
-as minimal as possible.  This promotes clarity and increases the likelihood that it is
-correct.  While it is ---possible--- to create JSON Schema files that enforce many different
-requirements on a data model, it increases the complexity and can also reduce the atomicity
-of tests / sub-tests (because a test ends up testing more than one thing).  Please try
-to avoid creating complex JSON Schema.  (A notable exception is the situation where
-multiple properties of a structure are interdependent.)
+In general each JSON Schema definition provided in this test suite should be as
+minimal as possible.  This promotes clarity and increases the likelihood that
+it is correct.  While it is ---possible--- to create JSON Schema files that
+enforce many different requirements on a data model, it increases the
+complexity and can also reduce the atomicity of tests / sub-tests (because a
+test ends up testing more than one thing).  Please try to avoid creating
+complex JSON Schema.  (A notable exception is the situation where multiple
+properties of a structure are interdependent.)
 
-Tools such as [the JSON Schema Creator](http://jsonschema.net/) may be helpful in
-creating schema snippets that can be integrated into JSONtest Assertion Objects.
-Remember that the JSON Schema you create should be as permissive as possible to
-address the various shapes that a give property might take (e.g., a 'foo' might be
-a string or an object that contains sub-properties that express the string, or an
-array of 1 or more objects with those sub-properties).
+Tools such as [the JSON Schema Creator](http://jsonschema.net/) may be helpful
+in creating schema snippets that can be integrated into JSONtest Assertion
+Objects.  Remember that the JSON Schema you create should be as permissive as
+possible to address the various shapes that a give property might take (e.g., a
+'foo' might be a string or an object that contains sub-properties that express
+the string, or an array of 1 or more objects with those sub-properties).
 
-In addition to the validation keys defined in JSON Schema v4, Schema files in this collection
-are also permitted to use the following keywords:
+In addition to the validation keys defined in JSON Schema v4, Schema files in
+this collection are also permitted to use the following keywords:
 
 |Keyword        | Values          | Meaning |
 |---------------|-----------------|---------|
@@ -243,16 +244,15 @@ are also permitted to use the following keywords:
 }
 </pre>
 
-Note that in the case where a feature is *optional* the JSON Schema MUST be crafted such
-that if the attribute is permitted to be missing from the content (so that the result is `true`),
-but when the attribute is present in the content it conforms to any requirements.
+Note that in the case where a feature is *optional* the JSON Schema MUST be
+crafted such that if the attribute is permitted to be missing from the content
+(so that the result is `true`), but when the attribute is present in the
+content it conforms to any requirements.
 
 @@@ example of optional attribute @@@
 
-
 Automating Test Execution
 -------------------------
-
 
 Command Line Tools
 ------------------
@@ -267,14 +267,14 @@ Complex Examples
 ----------------
 
 This section is a collection of more complex examples to illustrate the
-expressive power of the [Assertion List](#assertionLists) structure.  These can be
-used as templates for creating actual `.test` files.
+expressive power of the [Assertion List](#assertionLists) structure.  These can
+be used as templates for creating actual `.test` files.
 
 ### Including and Overriding an Assertion ###
 
 Assertions can be contained in external `.json` files.  It is possible for an
-object in an Assertion List to include the external file and override one or more
-of its properties:
+object in an Assertion List to include the external file and override one or
+more of its properties:
 
 <pre>
 {
@@ -304,9 +304,9 @@ of its properties:
 
 ### Nested Assertion Collections with Skip ###
 
-Assertion Lists can be nested within Assertion Lists.  This feature, combined with
-the `onUnexpectedResult` property, makes it possible to skip a collection of tests
-when an assertion in the list is not satisfied:
+Assertion Lists can be nested within Assertion Lists.  This feature, combined
+with the `onUnexpectedResult` property, makes it possible to skip a collection
+of tests when an assertion in the list is not satisfied:
 
 <pre>
 {

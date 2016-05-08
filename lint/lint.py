@@ -7,7 +7,6 @@ import sys
 
 from collections import defaultdict
 
-from .. import localpaths
 from manifest.sourcefile import SourceFile
 
 here = os.path.abspath(os.path.split(__file__)[0])
@@ -247,6 +246,7 @@ def parse_args():
     return parser.parse_args()
 
 def main():
+    from .. import localpaths
     repo_root = localpaths.repo_root
     args = parse_args()
     paths = args.paths if args.paths else all_git_paths(repo_root)

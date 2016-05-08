@@ -13,30 +13,13 @@ import os
 import shutil
 import sys
 
-# if '--standalone' in sys.argv:
-
 TESTTREE = '..'
 TEMPLATE = 'template'
 
-def simpleEscapeJS(str):
-    return str.replace('\\', '\\\\').replace('"', '\\"')
-
-def escapeJS(str):
-    str = simpleEscapeJS(str)
-    str = re.sub(r'\[(\w+)\]', r'[\\""+(\1)+"\\"]', str) # kind of an ugly hack, for nicer failure-message output
-    return str
-
-def escapeHTML(str):
-    return str.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
-
-if len(sys.argv) > 1 and sys.argv[1] == '--test':
-    import doctest
-    doctest.testmod()
-    sys.exit()
 
 # pull in the template
 
-template = open('template').read()
+template = open(TEMPLATE).read()
 
 # iterate over the folders looking for .test files
 

@@ -7,4 +7,5 @@
     "common/context.json",
     "common/target.json",
     "common/id.json"
-};
+  ]
+}

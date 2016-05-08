@@ -2,97 +2,102 @@ Annotation-model: Tests for the Web Annotation Data Model
 =========================================================
 
 The [Web Annotation Data Model](https://www.w3.org/TR/annotation-model)
-specification presents a JSON-oriented collection of terms and structure
-that permit the sharing of annotations about other content.
+specification presents a JSON-oriented collection of terms and structure that
+permit the sharing of annotations about other content.
 
 The purpose of these tests is to help validate that each of the structural
-requirements expressed in the Data Model specification are properly
-supported by implementations.
+requirements expressed in the Data Model specification are properly supported
+by implementations.
 
-The general approach for this testing is to enable both manual and
-automated testing. However, since the specification has no actual user
-interface requirements, there is no general automation mechanism that can
-be presented for clients.  Instead, the automation mechanism is one where
-client implementors could take advantage of the plumbing we provide here
-to push their data into the tests and collect the results of the testing.
-This assumes knowledge of the requirements of each test / collection of
-tests so that the input data is relevant.  Each test or test collection
-contains information sufficient for the task.
+The general approach for this testing is to enable both manual and automated
+testing. However, since the specification has no actual user interface
+requirements, there is no general automation mechanism that can be presented
+for clients.  Instead, the automation mechanism is one where client
+implementors could take advantage of the plumbing we provide here to push their
+data into the tests and collect the results of the testing.  This assumes
+knowledge of the requirements of each test / collection of tests so that the
+input data is relevant.  Each test or test collection contains information
+sufficient for the task.
 
 Running Tests
 -------------
 
-WPT is big, but at its core is the "framework".  This includes a web
-server and a rich collection of JavaScript that supports writing and
-running tests and reporting results.  There is all sorts of support for
-things like creating protocol emulators to test clients, Web Sockets,
-encryption, IPV6, etc.
+WPT is big, but at its core is the "framework".  This includes a web server and
+a rich collection of JavaScript that supports writing and running tests and
+reporting results.  There is all sorts of support for things like creating
+protocol emulators to test clients, Web Sockets, encryption, IPV6, etc.
 
-The rest of WPT is the tests for the web platform - most top level folders
-map to a W3C recommendation.  Many of the tests are automated.  Some are
-"ref" tests, where output is visually compared to a "reference" sample.
-The rest are "manual" tests, where the tester is given a window in which
-to do something.  The window can then assess whether things worked or,
-in some cases, the user must make the determination and click "pass"
-or "fail" in the main driver window.  For an example of this in action,
-see the [w3c-test.org site](http://w3c-test.org/tools/runner/index.html)
-- in the Run Tests under path, try "/2dcontext" as a value for the "run
-tests under path" field. These tests are largely automated JavaScript
-tests.  If you want to look at just ref or manual tests, de-select the
-"JavaScript tests" checkbox.  When you are ready, click "Run".
+The rest of WPT is the tests for the web platform - most top level folders map
+to a W3C recommendation.  Many of the tests are automated.  Some are "ref"
+tests, where output is visually compared to a "reference" sample.  The rest are
+"manual" tests, where the tester is given a window in which to do something.
+The window can then assess whether things worked or, in some cases, the user
+must make the determination and click "pass" or "fail" in the main driver
+window.  For an example of this in action, see the [w3c-test.org
+site](http://w3c-test.org/tools/runner/index.html)
+- in the Run Tests under path, try "/2dcontext" as a value for the "run tests
+  under path" field. These tests are largely automated JavaScript tests.  If
+  you want to look at just ref or manual tests, de-select the "JavaScript
+  tests" checkbox.  When you are ready, click "Run".
 
-In the case of this test collection, we will be initially creating
-manual tests.  These will automatically determine pass or fail and
-generate output for the main driver window.  The plan is to minimize
-the number of such tests to ease the burden on the testers while still
-exercising all the features.
+In the case of this test collection, we will be initially creating manual
+tests.  These will automatically determine pass or fail and generate output for
+the main driver window.  The plan is to minimize the number of such tests to
+ease the burden on the testers while still exercising all the features.
 
 The workflow for running these tests is something like:
 
-1. Start up the test driver window and select the annotation-model tests - click "Start"
-1. A window pops up that shows a test - the description of which tells the tester what input is expected.  The window contains a textarea into which the input can be typed / pasted, along with a button to click to start testing that input.
-1. The tester (presumably in another window) brings up their annotation client and uses it to generate an annotation that supplies the requested structure.  They then copy / paste that into the aforementioned textarea and select the button.
-1. The test runs.  Success or failure is determined and reported to the test driver window, which then cycles to the next test in the sequence.
-1. Repeat steps 2-4 until done.
-1. Download the JSON format report of test results, which can then be visually inspected, reported on using various tools, or passed on to W3C for evaluation and collection in the Implementation Report.
+1. Start up the test driver window and select the annotation-model tests -
+   click "Start"
+2. A window pops up that shows a test - the description of which tells the
+   tester what input is expected.  The window contains a textarea into which
+   the input can be typed / pasted, along with a button to click to start
+   testing that input.
+3. The tester (presumably in another window) brings up their annotation client
+   and uses it to generate an annotation that supplies the requested structure.
+   They then copy / paste that into the aforementioned textarea and select the
+   button.
+4. The test runs.  Success or failure is determined and reported to the test
+   driver window, which then cycles to the next test in the sequence.
+5. Repeat steps 2-4 until done.
+6. Download the JSON format report of test results, which can then be visually
+   inspected, reported on using various tools, or passed on to W3C for
+   evaluation and collection in the Implementation Report.
 
-**Remember that while these tests are written to help exercise
-implementations, their other (important) purpose is to increase
-confidence that there are interoperable implementations.** So,
-implementers are our audience, but these tests are not meant to be a
-comprehensive collection of tests for a client that might implement
-the Recommendation.  The bulk of the tests are manual because there are
-no UI requirements in the Recommendation that would make it possible to
-effectively stimulate every client portably.
+**Remember that while these tests are written to help exercise implementations,
+their other (important) purpose is to increase confidence that there are
+interoperable implementations.** So, implementers are our audience, but these
+tests are not meant to be a comprehensive collection of tests for a client that
+might implement the Recommendation.  The bulk of the tests are manual because
+there are no UI requirements in the Recommendation that would make it possible
+to effectively stimulate every client portably.
 
-Having said that, because the structure of these "manual" tests is very
-rigid, it is possible for an implementer who understands test automation
-to use an open source tool such as [Selenium](http://www.seleniumhq.org/)
-to run these "manual" tests against their implementation - exercising
-their implementation against content they provide to create annotations
-and feed the data into our test input field and run the test.
-
+Having said that, because the structure of these "manual" tests is very rigid,
+it is possible for an implementer who understands test automation to use an
+open source tool such as [Selenium](http://www.seleniumhq.org/) to run these
+"manual" tests against their implementation - exercising their implementation
+against content they provide to create annotations and feed the data into our
+test input field and run the test.
 
 Capturing and Reporting Results
 -------------------------------
 
-As tests are run against implementations, if the results of testing
-are submitted to [test-results](https://w3c.github.io/test-results/)
-then they will be automatically included in documents generated by
-[wptreport](https://www.github.com/w3c/wptreport). The same tool can be
-used locally to view reports about recorded results.
-
+As tests are run against implementations, if the results of testing are
+submitted to [test-results](https://w3c.github.io/test-results/) then they will
+be automatically included in documents generated by
+[wptreport](https://www.github.com/w3c/wptreport). The same tool can be used
+locally to view reports about recorded results.
 
 Test Cases
 ----------
 
 Each test is expressed as a simple requirement in a test file.  For each
-section of the document, the simple requirement is represented as a
-structure that describes the nature of the test, and then includes or
-references minimal JSON Schema that test the assertions.
+section of the document, the simple requirement is represented as a structure
+that describes the nature of the test, and then includes or references minimal
+JSON Schema that test the assertions.
 
-The structure of a test case is defined using a [JSON-LD Context](JSONtest-v1.jsonld).
-That context defines the following terms:
+The structure of a test case is defined using a [JSON-LD
+Context](JSONtest-v1.jsonld).  That context defines the following terms:
 
 |Keyword        | Values          | Meaning
 |---------------|-----------------|---------
@@ -154,6 +159,9 @@ The `assertion` list is an ordered list of assertions that will be evaluated aga
 submitted content. The list is *required*, and MUST have at least one entry. Entries in the
 list have the following types:
 
+* AssertionObject
+
+  An in-line Object as defined in the section [Assertion Objects](#assertionObjects).
 * URI
 
   A relative or absolute URI that references a AssertionObject in a .json file.  If the URI
@@ -161,12 +169,14 @@ list have the following types:
   If the URI is relative, contains slashes, but **does not start with a slash** then it is
   considered relative to the top of the tree of the current test collection (e.g.,
   `annotation-model`).
-* AssertionObject
+* List
 
-  An in-line Object as defined in the section
+  A nested Assertion List.  While nested Assertion Lists are optional, if one is
+  present it MUST have at least one entry.  Entries are as in this list.  Assertion Lists
+  can be nested to any depth (but don't do that - it would be too hard to maintain).
 
 
-<a id="assertionObject">Assertion Objects</a>
+<a id="assertionObjects">Assertion Objects</a>
 -----------------
 
 In this collection of tests, Assertion Objects can be contained inline in the `.test` files
@@ -188,8 +198,9 @@ are also permitted to use the following keywords:
 
 |Keyword        | Values          | Meaning |
 |---------------|-----------------|---------|
-|actionOnUnexpectedResult   | @@@TODO@@@      | Action to take when the result is not as expected. Default is `failAndContinue` |
+|onUnexpectedResult   | `failAndContinue`, `failAndSkip`, `failAndAbort`, `passAndContinue`, `passAndSkip`, `passAndAbort` | Action to take when the result is not as expected. Default is `failAndContinue` |
 |assertionType  | `must`, `may`, `should` | Informs the system about the severity of a failure. The default is `must` |
+|assertionFile | URI      | An external file that contains an assertion SCHEMA.  When this value is supplied, and local properties will override the ones loaded from the external file.
 |errorMessage   | string          | A human readable explanation of what it means if the test fails.  |
 |expectedResult | `valid`, `invalid`  | Tells the framework whether validating against this schema is expected to succeed or fail.  The default is `valid` |
 

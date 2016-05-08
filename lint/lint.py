@@ -70,20 +70,30 @@ def parse_whitelist_file(filename):
             data[file_match][error_type].add(line_number)
 
     def inner(path, errors):
-        whitelisted = [False for item in xrange(len(errors))]
+        return filter_whitelist_errors(data, path, errors)
 
-        for file_match, whitelist_errors in data.iteritems():
-            if fnmatch.fnmatch(path, file_match):
-                for i, (error_type, msg, line) in enumerate(errors):
-                    if "*" in whitelist_errors:
-                        whitelisted[i] = True
-                    elif error_type in whitelist_errors:
-                        allowed_lines = whitelist_errors[error_type]
-                        if None in allowed_lines or line in allowed_lines:
-                            whitelisted[i] = True
-
-        return [item for i, item in enumerate(errors) if not whitelisted[i]]
     return inner
+
+
+def filter_whitelist_errors(data, path, errors):
+    """
+    Filter out those errors that are whitelisted in `data`.
+    """
+
+    whitelisted = [False for item in xrange(len(errors))]
+
+    for file_match, whitelist_errors in data.iteritems():
+        if fnmatch.fnmatch(path, file_match):
+            for i, (error_type, msg, line) in enumerate(errors):
+                if "*" in whitelist_errors:
+                    whitelisted[i] = True
+                elif error_type in whitelist_errors:
+                    allowed_lines = whitelist_errors[error_type]
+                    if None in allowed_lines or line in allowed_lines:
+                        whitelisted[i] = True
+
+    return [item for i, item in enumerate(errors) if not whitelisted[i]]
+
 
 _whitelist_fn = None
 def whitelist_errors(path, errors):

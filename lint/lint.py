@@ -26,21 +26,10 @@ you could add the following line to the lint.whitelist file."
 
 %s:%s"""
 
-def git(command, *args):
-    args = list(args)
-
-    proc_kwargs = {"cwd": repo_root}
-
-    command_line = ["git", command] + args
-
-    try:
-        return subprocess.check_output(command_line, **proc_kwargs)
-    except subprocess.CalledProcessError:
-        raise
-
-
 def all_git_paths():
-    for item in git("ls-tree", "-r", "--name-only", "HEAD").split("\n"):
+    command_line = ["git", "ls-tree", "-r", "--name-only", "HEAD"]
+    output = subprocess.check_output(command_line, cwd=repo_root)
+    for item in output.split("\n"):
         yield item
 
 

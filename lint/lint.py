@@ -11,7 +11,6 @@ from .. import localpaths
 from manifest.sourcefile import SourceFile
 
 here = os.path.abspath(os.path.split(__file__)[0])
-repo_root = localpaths.repo_root
 
 ERROR_MSG = """You must fix all errors; for details on how to fix them, see
 https://github.com/w3c/web-platform-tests/blob/master/docs/lint-tool.md
@@ -26,14 +25,14 @@ you could add the following line to the lint.whitelist file."
 
 %s:%s"""
 
-def all_git_paths():
+def all_git_paths(repo_root):
     command_line = ["git", "ls-tree", "-r", "--name-only", "HEAD"]
     output = subprocess.check_output(command_line, cwd=repo_root)
     for item in output.split("\n"):
         yield item
 
 
-def check_path_length(path):
+def check_path_length(repo_root, path):
     if len(path) + 1 > 150:
         return [("PATH LENGTH", "/%s longer than maximum path length (%d > 150)" % (path, len(path) + 1), None)]
     return []
@@ -139,7 +138,7 @@ regexps = [item() for item in
             ConsoleRegexp,
             PrintRegexp]]
 
-def check_regexp_line(path, f):
+def check_regexp_line(repo_root, path, f):
     errors = []
 
     applicable_regexps = [regexp for regexp in regexps if regexp.applies(path)]
@@ -151,7 +150,7 @@ def check_regexp_line(path, f):
 
     return errors
 
-def check_parsed(path, f):
+def check_parsed(repo_root, path, f):
     source_file = SourceFile(repo_root, path, "/")
 
     errors = []
@@ -248,18 +247,19 @@ def parse_args():
     return parser.parse_args()
 
 def main():
+    repo_root = localpaths.repo_root
     args = parse_args()
-    paths = args.paths if args.paths else all_git_paths()
-    return lint(paths)
+    paths = args.paths if args.paths else all_git_paths(repo_root)
+    return lint(repo_root, paths)
 
-def lint(paths):
+def lint(repo_root, paths):
     error_count = defaultdict(int)
     last = None
 
     whitelist = parse_whitelist_file(os.path.join(repo_root, "lint.whitelist"))
 
     def run_lint(path, fn, last, *args):
-        errors = filter_whitelist_errors(whitelist, path, fn(path, *args))
+        errors = filter_whitelist_errors(whitelist, path, fn(repo_root, path, *args))
         if errors:
             last = (errors[-1][0], path)
 

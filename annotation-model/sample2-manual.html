@@ -18,8 +18,26 @@ var theTest = {
   "ref": "https://www.w3.org/TR/annotation-model/#model",
   "assertions": [
     "common/context.json",
-    "common/target.json"
-};
+    [
+      { "assertionFile" : "common/target.json",
+        "title" : "Assertions only relevant if a target is present",
+        "onUnexpectedResult" : "passAndSkip"
+      },
+      { "assertionFile" : "common/context.json",
+        "title" : "Example sub-test",
+        "message" : "This would have run if the first assertion passed",
+      },
+      { "assertionFile" : "common/context.json",
+        "title" : "Example sub-test 2",
+        "message" : "This is a test of an override",
+      },
+      { "assertionFile" : "common/context.json",
+        "title" : "Example sub-test 3",
+        "message" : "This is a test of an override",
+      }
+    ]
+  ]
+} ;
 
 var runningTest = new JSONtest( {
     "testInput": "annotation-input",
@@ -30,7 +48,7 @@ var runningTest = new JSONtest( {
 </script>
 <p>Provide JSON output from your annotation client implementation that supports the following
 assertion(s):</p>
-<div class="assertion">{{ASSERTION}}</div>
+<div class="assertion">{{ASSERTIONS}}</div>
 <form name="annotation" id="annotation">
     <textarea name="annotation-input" id="annotation-input" style="width: 90%; height: 10em" >
     </textarea>

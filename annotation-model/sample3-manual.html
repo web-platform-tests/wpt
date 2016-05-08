@@ -13,13 +13,24 @@ setup({explicit_timeout: true, explicit_done: true });
 
 var theTest = {
   "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
-  "name": "Verify annotation conforms to the model",
-  "description": "Supply an example annotation that conforms to the basic structure.",
+  "name": "Abort if there is a failure",
+  "description": "Basic structure test - abort if anything is missing",
   "ref": "https://www.w3.org/TR/annotation-model/#model",
   "assertions": [
-    "common/context.json",
-    "common/target.json"
-};
+    {
+      "assertionFile" : "common/context.json",
+      "onUnexpectedResult": "failAndAbort"
+    },
+    {
+      "assertionFile" : "common/id.json",
+      "onUnexpectedResult": "failAndAbort"
+    },
+    {
+      "assertionFile" : "common/type.json",
+      "onUnexpectedResult": "failAndAbort"
+    }
+  ]
+} ;
 
 var runningTest = new JSONtest( {
     "testInput": "annotation-input",
@@ -30,7 +41,7 @@ var runningTest = new JSONtest( {
 </script>
 <p>Provide JSON output from your annotation client implementation that supports the following
 assertion(s):</p>
-<div class="assertion">{{ASSERTION}}</div>
+<div class="assertion">{{ASSERTIONS}}</div>
 <form name="annotation" id="annotation">
     <textarea name="annotation-input" id="annotation-input" style="width: 90%; height: 10em" >
     </textarea>

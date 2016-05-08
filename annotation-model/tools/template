@@ -1,10 +1,32 @@
 <!doctype html>
-<title>Manual click on button triggers onclick handler</title>
+<html>
+<head>
+<title>{{TESTTITLE}}</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="scripts/ajv.min.js"></script>
+<script src="scripts/JSONtest.js"></script>
 <script>
-setup({explicit_timeout: true})
+setup({explicit_timeout: true, explicit_done: true });
+
+var theTestFile="{{TESTFILE}}";
+
+var runningTest = new JSONtest( {
+    "testInput": "annotation-input",
+    "runTest": "annotation-run",
+    "testFile": theTestFile
+} ) ;
+
 </script>
-<p>Click on the button below. If a "PASS" result appears the test
-passes, otherwise it fails</p>
-<button onclick="done()">Click Here</button>
+</head>
+<body>
+<p>Provide JSON output from your annotation client implementation that supports the following
+assertion(s):</p>
+<p class="assertion">{{ASSERTION}}</p>
+<form name="annotation" id="annotation">
+    <textarea name="annotation-input" id="annotation-input" style="width: 90%; height: 10em" >
+    </textarea>
+    <input type="button" id="annotation-run" name="Check JSON" value="Check JSON">
+</form>
+</body>
+</html>

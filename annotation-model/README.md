@@ -91,10 +91,11 @@ locally to view reports about recorded results.
 Test Cases
 ----------
 
-Each test is expressed as a simple requirement in a test file.  For each
-section of the document, the simple requirement is represented as a structure
-that describes the nature of the test, and then includes or references minimal
-JSON Schema that test the assertions.
+Each test is expressed as a simple (or complex) requirement in a test
+file.  For each section of the document, the requirement is
+represented as a structure that describes the nature of the test, and
+then includes or references minimal JSON Schema that test the assertions implied
+by the requirement..
 
 The structure of a test case is defined using a [JSON-LD
 Context](JSONtest-v1.jsonld).  That context defines the following terms:
@@ -107,7 +108,7 @@ Context](JSONtest-v1.jsonld).  That context defines the following terms:
 |testType       | `automated`, `manual`, `ref` | The type of test - this informs [WPT](https://github.com/w3c/web-platform-tests) how the test should be controlled and presented
 |assertions     | list of URI, List, or AssertionObject | The ordered collection of tests the input should be run against. See [JSON Schema Usage](#jsonSchema) for the structure of the objects.  URI is relative to the top level folder of the test collection if it has a slash; relative to the current directory if it does not. Lists can be nested to define groups of sub-tests.  Assertions / groups can be conditionally skipped.  See [Assertion Lists](#assertionLists) for more details.
 
-Each test case has a suffix of ".test" and a shape like:
+Each test case has a suffix of `.test` and a shape like:
 
 <pre>
 {
@@ -193,6 +194,13 @@ of tests / sub-tests (because a test ends up testing more than one thing).  Plea
 to avoid creating complex JSON Schema.  (A notable exception is the situation where
 multiple properties of a structure are interdependent.)
 
+Tools such as [the JSON Schema Creator](http://jsonschema.net/) may be helpful in
+creating schema snippets that can be integrated into JSONtest Assertion Objects.
+Remember that the JSON Schema you create should be as permissive as possible to
+address the various shapes that a give property might take (e.g., a 'foo' might be
+a string or an object that contains sub-properties that express the string, or an
+array of 1 or more objects with those sub-properties).
+
 In addition to the validation keys defined in JSON Schema v4, Schema files in this collection
 are also permitted to use the following keywords:
 
@@ -254,3 +262,68 @@ Command Line Tools
 ### Testing the Tests ###
 
 ### Driving Tests with Input Files ###
+
+Complex Examples
+----------------
+
+This section is a collection of more complex examples to illustrate the
+expressive power of the [Assertion List](#assertionLists) structure.  These can be
+used as templates for creating actual `.test` files.
+
+### Including and Overriding an Assertion ###
+
+Assertions can be contained in external `.json` files.  It is possible for an
+object in an Assertion List to include the external file and override one or more
+of its properties:
+
+<pre>
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Permit no target property",
+  "description": "Ensure there is no 'target' property when there is a 'randomName' property in the Annotation",
+  "assertions": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "title": "Verify annotation has randomName",
+      "type": "object",
+      "properties": {
+        "randomName": {
+          "type": "string"
+        }
+      },
+      "required": ["randomName"]
+    },
+    { "assertionFile" : "common/target.json",
+      "title" : "Require target to be missing",
+      "expectedResult" : "invalid",
+      "message" : "The target MUST not be present when 'randomName' is also present",
+    }
+  ]
+}
+</pre>
+
+### Nested Assertion Collections with Skip ###
+
+Assertion Lists can be nested within Assertion Lists.  This feature, combined with
+the `onUnexpectedResult` property, makes it possible to skip a collection of tests
+when an assertion in the list is not satisfied:
+
+<pre>
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "If there is no 'target' property, skip some tests",
+  "description": "When 'target' is not present, other properties related to 'target' are not required",
+  "assertions": [
+    "common/context.json",
+    [
+      { "assertionFile" : "common/target.json",
+        "message" : "Target was not present so skip the rest of this section",
+        "onUnexpectedResult" : "failAndSkip"
+      },
+      "sometest.json",
+      "sometest2.json",
+      "sometest3.json"
+    ]
+  ]
+} ;
+</pre>

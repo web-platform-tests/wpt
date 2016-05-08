@@ -27,17 +27,21 @@ for curdir, subdirList, fileList in os.walk(TESTTREE):
   for file in fnmatch.filter(fileList, "*.test"):
 # for each .test file, create a corresponding .html file using template
     theFile = os.path.join(curdir, file)
-    testJSON = json.load(open(theFile))
-    rfile = re.sub("../", "", file)
-    # interesting pattern is {{TESTFILE}}
-    tcopy = re.sub("{{TESTFILE}}", rfile, template)
-
-    # target file is basename of theFile + '-manual.html'
-    target = re.sub(".test","-manual.html", theFile)
-
     try:
-      out = open(target, "w")
-      out.write(tcopy)
-      out.close()
-    except:
-      print("Failed to create "+target)
+      testJSON = json.load(open(theFile))
+    except ValueError as e:
+      print "parse of " + theFile + " failed: " + e[0]
+    else:
+      rfile = re.sub("../", "", file)
+      # interesting pattern is {{TESTFILE}}
+      tcopy = re.sub("{{TESTFILE}}", rfile, template)
+
+      # target file is basename of theFile + '-manual.html'
+      target = re.sub(".test","-manual.html", theFile)
+
+      try:
+        out = open(target, "w")
+        out.write(tcopy)
+        out.close()
+      except:
+        print("Failed to create "+target)

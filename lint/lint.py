@@ -53,6 +53,10 @@ def set_type(error_type, errors):
     return [(error_type,) + error for error in errors]
 
 def parse_whitelist_file(filename):
+    """
+    Parse the whitelist file at `filename`, and return the parsed structure.
+    """
+
     data = defaultdict(lambda:defaultdict(set))
 
     with open(filename) as f:
@@ -69,10 +73,7 @@ def parse_whitelist_file(filename):
             error_type, file_match, line_number = parts
             data[file_match][error_type].add(line_number)
 
-    def inner(path, errors):
-        return filter_whitelist_errors(data, path, errors)
-
-    return inner
+    return data
 
 
 def filter_whitelist_errors(data, path, errors):
@@ -100,7 +101,12 @@ def whitelist_errors(path, errors):
     global _whitelist_fn
 
     if _whitelist_fn is None:
-        _whitelist_fn = parse_whitelist_file(os.path.join(repo_root, "lint.whitelist"))
+        data = parse_whitelist_file(os.path.join(repo_root, "lint.whitelist"))
+
+        def inner(path, errors):
+            return filter_whitelist_errors(data, path, errors)
+
+        _whitelist_fn = inner
     return _whitelist_fn(path, errors)
 
 class Regexp(object):

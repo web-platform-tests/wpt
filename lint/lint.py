@@ -95,20 +95,6 @@ def filter_whitelist_errors(data, path, errors):
 
     return [item for i, item in enumerate(errors) if not whitelisted[i]]
 
-
-_whitelist_fn = None
-def whitelist_errors(path, errors):
-    global _whitelist_fn
-
-    if _whitelist_fn is None:
-        data = parse_whitelist_file(os.path.join(repo_root, "lint.whitelist"))
-
-        def inner(path, errors):
-            return filter_whitelist_errors(data, path, errors)
-
-        _whitelist_fn = inner
-    return _whitelist_fn(path, errors)
-
 class Regexp(object):
     pattern = None
     file_extensions = None
@@ -281,8 +267,10 @@ def lint(paths):
     error_count = defaultdict(int)
     last = None
 
+    whitelist = parse_whitelist_file(os.path.join(repo_root, "lint.whitelist"))
+
     def run_lint(path, fn, last, *args):
-        errors = whitelist_errors(path, fn(path, *args))
+        errors = filter_whitelist_errors(whitelist, path, fn(path, *args))
         if errors:
             last = (errors[-1][0], path)
 

@@ -103,6 +103,18 @@ test(function() {
   assert_equals(box.childNodes.length, 7, "childNodes.length");
 }, "Checking to not merge adjacent text nodes around inserted new text nodes.");
 
+// Checking if script can't be run (even when added to document with browsing context) and if noscript was not parsed.
+var run = false;
+test(function() {
+  var box = document.createElement("div");
+  box.insertAdjacentHTML("afterbegin", "<script>run = true;<\/script><noscript><p>test1<p>test2</noscript>"); // context element for parser is body (insertion mode will be "in body")
+  assert_equals(box.lastChild.childNodes.length, 1, "Noscript created by insertAdjacentHTML() should not be parsed.");
+  assert_equals(box.lastChild.firstChild.nodeType, Node.TEXT_NODE, "Noscript created by insertAdjacentHTML() should not be parsed.");
+  assert_false(run, "Script created by insertAdjacentHTML() should never run.");
+  document.body.appendChild(box.firstChild);
+  assert_false(run, "Script created by insertAdjacentHTML() should never run (even when added to document with browsing context).");
+}, "Checking if script can't be run (even when added to document with browsing context) and if noscript was not parsed.");
+
 // Checking correct behaviour for changing or not changing context element that is used by parser
 // More details: https://www.w3.org/Bugs/Public/show_bug.cgi?id=29175
 test(function() {
@@ -152,8 +164,16 @@ test(function() {
 test(function() {
   var frag = document.createDocumentFragment();
   frag.appendChild(document.createElement("table"));
-  frag.firstChild.insertAdjacentHTML("afterbegin", "<th>theader<td>tdata"); // context element for parser is table (insertion mode will be "in table")
+  frag.firstChild.insertAdjacentHTML("afterbegin", "<html><th>theader<td>tdata"); // context element for parser is table (insertion mode will be "in table")
   assert_equals(frag.firstChild.outerHTML, "<table><tbody><tr><th>theader</th><td>tdata</td></tr></tbody></table>");
 }, "Checking correct behaviour for changing or not changing context element that is used by parser [6].");
+
+test(function() {
+  var frag = document.createDocumentFragment();
+  frag.appendChild(document.createElement("title"));
+  frag.firstChild.insertAdjacentHTML("afterbegin", "<html><meta charset='utf-8'><p>test&amp;"); // context element for parser is title (tokenizer is RCDATA state)
+  assert_equals(frag.textContent, "<html><meta charset='utf-8'><p>test&");
+  assert_equals(frag.firstChild.firstChild.nodeType, Node.TEXT_NODE);
+}, "Checking correct behaviour for changing or not changing context element that is used by parser [7].");
 
 </script>

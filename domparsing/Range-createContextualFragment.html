@@ -42,8 +42,12 @@ nodes.forEach(function(node, i) {
       range.setStart(node, 0);
       assert_equals(range.startContainer.nodeType, node.nodeType);
       var frag = range.createContextualFragment("<p>test</p>");
+      var nodeOwner = node.ownerDocument === null ? node : node.ownerDocument;
+      assert_equals(frag.nodeType, Node.DOCUMENT_FRAGMENT_NODE);
+      assert_equals(frag.ownerDocument, nodeOwner);
+      assert_equals(frag.baseURI, node.baseURI);
       assert_equals(frag.childNodes.length, 1);
-      assert_equals(frag.firstChild.textContent, "test");
+      assert_equals(frag.firstChild.outerHTML, "<p>test</p>");
     }, "Invoking createContextualFragment() on Range with " + mapsType[node.nodeType - 1] + " as start node should work [" + i + "].");
   }
   else {
@@ -54,6 +58,19 @@ nodes.forEach(function(node, i) {
     }, "Setting " + mapsType[node.nodeType - 1] + " as start node in Range should throw [" + i + "].");
   }
 });
+
+// Checking if script can be run after adding to document with browsing context and if noscript was not parsed.
+var run = false;
+test(function() {
+  range.setStart(document.body, 0);
+  var frag = range.createContextualFragment("<script>run = true<\/script><noscript><p>test1<p>test2</noscript>");
+  assert_equals(frag.lastChild.childNodes.length, 1, "Noscript created by createContextualFragment() should not be parsed.");
+  assert_equals(frag.lastChild.firstChild.nodeType, Node.TEXT_NODE, "Noscript created by createContextualFragment() should not be parsed.");
+  assert_false(run, "Script created by createContextualFragment() before added to document with browsing context should not have run.");
+  document.body.appendChild(frag.firstChild);
+  assert_true(run, "Script created by createContextualFragment() and added to document with browsing context should run.");
+}, "Checking if script can be run after adding to document with browsing context and if noscript has RAWTEXT state.");
+
 
 // Checking correct behaviour for changing or not changing context element that is used by parser
 // More details: https://www.w3.org/Bugs/Public/show_bug.cgi?id=29175
@@ -77,7 +94,7 @@ test(function() {
 
 test(function() {
   range.setStart(document.head, 0);
-  var frag = range.createContextualFragment("<div><html><meta charset='utf-8'><p>test</div>"); // context element for parser is body (insertion mode will be "in body")
+  var frag = range.createContextualFragment("<div><html><meta charset='utf-8'><p>test</div>"); // context element for parser is head (insertion mode will be "in body")
   assert_equals(frag.firstChild.outerHTML, '<div><meta charset="utf-8"><p>test</p></div>');
 }, "Checking correct behaviour for changing or not changing context element that is used by parser [4].");
 
@@ -96,7 +113,8 @@ test(function() {
 test(function() {
   range.setStart(document.createElement("title"), 0);
   var frag = range.createContextualFragment("<html><meta charset='utf-8'><p>test&amp;"); // context element for parser is title (tokenizer is RCDATA state)
-  assert_equals(frag.firstChild.data, "<html><meta charset='utf-8'><p>test&");
+  assert_equals(frag.textContent, "<html><meta charset='utf-8'><p>test&");
+  assert_equals(frag.firstChild.nodeType, Node.TEXT_NODE);
 }, "Checking correct behaviour for changing or not changing context element that is used by parser [7].");
 
 </script>

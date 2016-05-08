@@ -12,15 +12,15 @@
       },
       { "assertionFile" : "common/context.json",
         "title" : "Example sub-test",
-        "message" : "This would have run if the first assertion passed",
+        "message" : "This would have run if the first assertion passed"
       },
       { "assertionFile" : "common/context.json",
         "title" : "Example sub-test 2",
-        "message" : "This is a test of an override",
+        "message" : "This is a test of an override"
       },
       { "assertionFile" : "common/context.json",
         "title" : "Example sub-test 3",
-        "message" : "This is a test of an override",
+        "message" : "This is a test of an override"
       }
     ]
   ]

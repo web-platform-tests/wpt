@@ -1,0 +1,27 @@
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Verify annotation conforms to the model",
+  "description": "Supply an example annotation that conforms to the basic structure.",
+  "ref": "https://www.w3.org/TR/annotation-model/#model",
+  "assertions": [
+    "common/context.json",
+    [
+      { "assertionFile" : "common/target.json",
+        "title" : "Assertions only relevant if a target is present",
+        "onUnexpectedResult" : "passAndSkip"
+      },
+      { "assertionFile" : "common/context.json",
+        "title" : "Example sub-test",
+        "message" : "This would have run if the first assertion passed",
+      },
+      { "assertionFile" : "common/context.json",
+        "title" : "Example sub-test 2",
+        "message" : "This is a test of an override",
+      },
+      { "assertionFile" : "common/context.json",
+        "title" : "Example sub-test 3",
+        "message" : "This is a test of an override",
+      }
+    ]
+  ]
+}

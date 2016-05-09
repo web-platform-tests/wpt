@@ -48,8 +48,8 @@
                 }, "4.4.3 Methods Test (MIDIOutputMap interface) : entries()");
                 test(function() {
                     assert_equals("function", typeof MIDI.outputs.forEach);
-                    var outputEntries=MIDI.outputs.forEach()
-                    assert_class_string(outputEntries, "undefined");
+                    var outputEntries=MIDI.outputs.forEach(function(){})
+                    assert_class_string(outputEntries, "Undefined");
                 }, "4.4.3 Methods Test (MIDIOutputMap interface) : forEach()");
                 test(function() {
                     assert_equals("function", typeof MIDI.outputs.keys);

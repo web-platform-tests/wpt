@@ -16,6 +16,7 @@
     <div id="log"></div>
     <!-- PAGE CONTENT -->
     <script type="text/javascript">
+    // TODO: Attribute test should better to be run by idlharness.js. 
     var MIDI;
     var test_midiInputMap = async_test("MIDIInputMap Interface Test");
     navigator.requestMIDIAccess({sysex:false}).then( successCallback, errorCallback );

@@ -1,3 +1,4 @@
+// TODO: Attribute test should better to be run by idlharness.js. 
 var mod_requestMIDIAccess = function(sysex, test, test_obj) {
     this.sysex=sysex;
     this.test=test;

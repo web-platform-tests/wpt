@@ -1,3 +1,4 @@
+import imp
 import os
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
@@ -5,6 +6,9 @@ try:
     from xml.etree import cElementTree as ElementTree
 except ImportError:
     from xml.etree import ElementTree
+
+here = os.path.dirname(__file__)
+localpaths = imp.load_source("localpaths", os.path.abspath(os.path.join(here, os.pardir, "localpaths.py")))
 
 import html5lib
 

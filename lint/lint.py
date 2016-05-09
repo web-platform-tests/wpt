@@ -53,6 +53,10 @@ def set_type(error_type, errors):
     return [(error_type,) + error for error in errors]
 
 def parse_whitelist_file(filename):
+    """
+    Parse the whitelist file at `filename`, and return the parsed structure.
+    """
+
     data = defaultdict(lambda:defaultdict(set))
 
     with open(filename) as f:
@@ -69,29 +73,27 @@ def parse_whitelist_file(filename):
             error_type, file_match, line_number = parts
             data[file_match][error_type].add(line_number)
 
-    def inner(path, errors):
-        whitelisted = [False for item in xrange(len(errors))]
+    return data
 
-        for file_match, whitelist_errors in data.iteritems():
-            if fnmatch.fnmatch(path, file_match):
-                for i, (error_type, msg, line) in enumerate(errors):
-                    if "*" in whitelist_errors:
+
+def filter_whitelist_errors(data, path, errors):
+    """
+    Filter out those errors that are whitelisted in `data`.
+    """
+
+    whitelisted = [False for item in xrange(len(errors))]
+
+    for file_match, whitelist_errors in data.iteritems():
+        if fnmatch.fnmatch(path, file_match):
+            for i, (error_type, msg, line) in enumerate(errors):
+                if "*" in whitelist_errors:
+                    whitelisted[i] = True
+                elif error_type in whitelist_errors:
+                    allowed_lines = whitelist_errors[error_type]
+                    if None in allowed_lines or line in allowed_lines:
                         whitelisted[i] = True
-                    elif error_type in whitelist_errors:
-                        allowed_lines = whitelist_errors[error_type]
-                        if None in allowed_lines or line in allowed_lines:
-                            whitelisted[i] = True
 
-        return [item for i, item in enumerate(errors) if not whitelisted[i]]
-    return inner
-
-_whitelist_fn = None
-def whitelist_errors(path, errors):
-    global _whitelist_fn
-
-    if _whitelist_fn is None:
-        _whitelist_fn = parse_whitelist_file(os.path.join(repo_root, "lint.whitelist"))
-    return _whitelist_fn(path, errors)
+    return [item for i, item in enumerate(errors) if not whitelisted[i]]
 
 class Regexp(object):
     pattern = None
@@ -265,8 +267,10 @@ def lint(paths):
     error_count = defaultdict(int)
     last = None
 
+    whitelist = parse_whitelist_file(os.path.join(repo_root, "lint.whitelist"))
+
     def run_lint(path, fn, last, *args):
-        errors = whitelist_errors(path, fn(path, *args))
+        errors = filter_whitelist_errors(whitelist, path, fn(path, *args))
         if errors:
             last = (errors[-1][0], path)
 

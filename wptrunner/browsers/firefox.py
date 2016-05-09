@@ -129,7 +129,8 @@ class FirefoxBrowser(Browser):
         self.profile.set_preferences({"marionette.defaultPrefs.enabled": True,
                                       "marionette.defaultPrefs.port": self.marionette_port,
                                       "dom.disable_open_during_load": False,
-                                      "network.dns.localDomains": ",".join(hostnames)})
+                                      "network.dns.localDomains": ",".join(hostnames),
+                                      "places.history.enabled": False})
         if self.e10s:
             self.profile.set_preferences({"browser.tabs.remote.autostart": True})
 

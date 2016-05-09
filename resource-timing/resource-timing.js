@@ -90,7 +90,7 @@ window.onload =
         [
             { initiator: "iframe",         response: "(done)",      mime: mimeHtml },
             { initiator: "xmlhttprequest", response: "(done)",      mime: mimeText },
-            // Multiple browsers seem to cheat a bit and race onLoad of images.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187 
+            // Multiple browsers seem to cheat a bit and race onLoad of images.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187
             // { initiator: "img",            response: greenPng,      mime: mimePng },
             { initiator: "script",         response: '"";',         mime: mimeScript },
             { initiator: "link",           response: ".unused{}",   mime: mimeCss },
@@ -135,7 +135,7 @@ window.onload =
         [
             { initiator: "iframe",         responsePart1: serverStepDelay + "ms;", responsePart2: (serverStepDelay * 2) + "ms;(done)",                                                      mime: mimeHtml },
             { initiator: "xmlhttprequest", responsePart1: serverStepDelay + "ms;", responsePart2: (serverStepDelay * 2) + "ms;(done)",                                                      mime: mimeText },
-            // Multiple browsers seem to cheat a bit and race img.onLoad and setting responseEnd.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187 
+            // Multiple browsers seem to cheat a bit and race img.onLoad and setting responseEnd.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187
             // { initiator: "img",            responsePart1: greenPng.substring(0, greenPng.length / 2), responsePart2: "0x" + greenPng.substring(greenPng.length / 2, greenPng.length),       mime: mimePng },
             { initiator: "script",         responsePart1: '"', responsePart2: '";',                                                                                                         mime: mimeScript },
             { initiator: "link",           responsePart1: ".unused{", responsePart2: "}",                                                                                                   mime: mimeCss },
@@ -183,7 +183,7 @@ window.onload =
         [
             { initiator: "iframe",         response: serverStepDelay + "ms;redirect;" + (serverStepDelay * 2) + "ms;(done)",        mime: mimeHtml },
             { initiator: "xmlhttprequest", response: serverStepDelay + "ms;redirect;" + (serverStepDelay * 2) + "ms;(done)",        mime: mimeText },
-            // Multiple browsers seem to cheat a bit and race img.onLoad and setting responseEnd.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187 
+            // Multiple browsers seem to cheat a bit and race img.onLoad and setting responseEnd.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187
             // { initiator: "img",            response: greenPng,                                                                      mime: mimePng },
             { initiator: "script",         response: '"";',                                                                         mime: mimeScript },
             { initiator: "link",           response: ".unused{}",                                                                   mime: mimeCss },
@@ -241,7 +241,7 @@ window.onload =
 
         /** Iterates through all resource entries on the timeline, vetting all invariants. */
         function assertInvariants(test, done) {
-            // Multiple browsers seem to cheat a bit and race img.onLoad and setting responseEnd.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187 
+            // Multiple browsers seem to cheat a bit and race img.onLoad and setting responseEnd.  Microsoft https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/2379187
             // Yield for 100ms to workaround a suspected race where window.onload fires before
             //     script visible side-effects from the wininet/urlmon thread have finished.
             window.setTimeout(

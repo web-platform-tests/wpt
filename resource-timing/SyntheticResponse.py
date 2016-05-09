@@ -1,4 +1,4 @@
-﻿import urllib
+import urllib
 import time
 
 def main(request, response):
@@ -21,5 +21,6 @@ def main(request, response):
                 headersSent = 1
 
             response.writer.write(text)
-        else:
-            print "  INVALID ARGUMENT %s" % arg
+#        else:
+#            error "  INVALID ARGUMENT %s" % arg
+

@@ -1,12 +1,14 @@
-/**
- *
- *
- *
- */
-
 'use strict';
+/* globals Promise, done, assert_true, Ajv, on_event */
 
 /**
+ * Creates a JSONtest object.  If the parameters are supplied
+ * it also loads a referenced testFile, processes that file, loads any
+ * referenced external assertions, and sets up event listeners to process the
+ * user's test data.  The loading is done asynchronously via Promises.  The test
+ * button's text is changed to Loading while it is processing, and to "Check
+ * JSON" once the data is loaded.
+ *
  * @constructor
  * @param {object} params
  * @param {string} [params.test] - object containing JSON test definition
@@ -22,6 +24,20 @@ function JSONtest(params) {
   this.Params = null;   // paramaters passed in
   this.Test = null;     // test being run
   this.Base = null;     // URI "base" for the tests being run
+  this.Properties = null; // testharness_properties from the opening window
+  this.AssertCounter = 0; // keeps track of which assertion is being processed
+
+  this._assertionCache = [];  // Array to put loaded assertions into
+  this._loading = true;
+
+  var pending = [] ;
+
+  // set up in case DOM finishes loading early
+  pending.push(new Promise(function(resolve) {
+    on_event(document, "DOMContentLoaded", function() {
+        resolve(true);
+    }.bind(this));
+  }.bind(this)));
 
   // create an ajv object that will stay around so that caching
   // of schema that are compiled just works
@@ -34,35 +50,55 @@ function JSONtest(params) {
   var p = l.pathname;
   this.Base = p.substr(0, 1+p.indexOf('/', 1));
 
-  if (params) {
-    this.Params = params;
-
-    if ( params.test ) {
-      // we already loaded it
-      this.Test = params.test;
-    } else if (params.testFile !== null && params.testFile !== "") {
-      var theTest = this.loadTest(params.testFile) ;
-      if (theTest) {
-        this.Test = theTest;
-      }
-    } else {
-      throw("JSONtest: no test defined");
-    }
-
-    if (!this.Params.runTest) {
-      throw("JSONtest: No runTest parameter");
-    }
-
-    if (!this.Params.testInput) {
-      throw("JSONtest: no testInput parameter");
-    }
-
-    // we have the required parameters; set a listener
-
-    on_event(document, "DOMContentLoaded", function() {
-        this.init() ;
-    }.bind(this));
+  // if we are under runner, then there are props in the parent window
+  //
+  // if "output" is set in that, then pause at the end of running so the output
+  // can be analyzed.
+  if (window && window.opener && window.opener.testharness_properties) {
+    this.Properties = window.opener.testharness_properties;
   }
+
+  this.Params = params;
+
+  // start by loading the testfile if needed
+  pending.push(this.loadTest(params)
+    .then(function(test) {
+      if (typeof test === 'string') {
+        test = JSON.parse(test) ;
+      }
+
+      this.Test = test;
+      return new Promise(function(resolve) {
+        if (test.assertions &&
+            typeof test.assertions === "object" &&
+            Array.isArray(test.assertions) &&
+            test.assertions.length > 0) {
+          // we have at least one assertion
+          // get the inline contents and the references to external files
+          var assertFiles = this._assertionRefs(test.assertions);
+          var promisedAsserts = assertFiles.map(function(item) {
+            return this.loadAssertion(item);
+          }.bind(this));
+          Promise.all(promisedAsserts)
+          .then(function (assertContents) {
+            for(var i = 0; i < assertFiles.length; i++) {
+              this._assertionCache[assertFiles[i]] = assertContents[i];
+            }
+            resolve(true);
+          }.bind(this));
+        } else {
+          throw ("Test has no assertion property or property is not an Array");
+        }
+      }.bind(this));
+    }.bind(this)));
+
+  // once the DOM and the test / assertions are loaded... set us up
+  Promise.all(pending)
+  .then(function() {
+    this.loading = false;
+    this.init();
+  }.bind(this));
+
   return this;
 }
 
@@ -75,9 +111,19 @@ JSONtest.prototype = {
     // set up a handler
     var button = document.getElementById(this.Params.runTest) ;
     var testInput  = document.getElementById(this.Params.testInput) ;
+
+    if (!this.loading) {
+      button.disabled = false;
+      button.textContent = "Check JSON";
+    } else {
+      window.alert("Loading did not finish before init handler was called!");
+    }
+
     on_event(button, "click", function() {
       // user clicked
       var content = testInput.value;
+      button.disabled = true;
+
       // make sure content is an object
       if (typeof content === "string") {
         try {
@@ -94,7 +140,7 @@ JSONtest.prototype = {
       }
 
       // iterate over all of the tests for this instance
-      var action = this.runTests(this.Test.assertions, content);
+      this.runTests(this.Test.assertions, content);
 
       // explicitly tell the test framework we are done
       done() ;
@@ -142,36 +188,15 @@ JSONtest.prototype = {
           return 'abort';
         }
 
-        // okay, it isn't an
-        var schema = assert ;
         var schemaName = "schema from assertion " + num;
 
-        // if this is a string, then it is a URI.  Load it up
         if (typeof assert === "string") {
           schemaName = "schema from file " + assert + " for assertion " + num;
-          schema = this._loadFile("GET", this._parseURI(assert)) ;
-        } else if (schema.hasOwnProperty("assertionFile")) {
-          // this obect is referecing an external assertion
-          var external = this._loadFile("GET", this._parseURI(schema.assertionFile));
-          if (typeof external === "string") {
-            try {
-              external = JSON.parse(external) ;
-            }
-            catch(e) {
-              test( function() {
-                assert_true(false, "Parse of external schema " + schema.assertionFile + " failed: " + e) ;
-              }, "Parsing " + schemaName);
-              return ;
-            }
-          }
-          // okay - we have an external object
-          Object.keys(schema).forEach(function(key) {
-            if (key !== 'assertionFile') {
-              external[key] = schema[key];
-            }
-          });
-          schema = external;
+        } else if (assert.hasOwnProperty("assertionFile")) {
+          // this object is referecing an external assertion
+          schemaName = "schema with local overrides from file " + schema.assertionFile + " for assertion " + num;
         }
+        var schema = this._assertionCache[this.AssertionCounter++];
 
         if (typeof schema === "string") {
           try {
@@ -192,7 +217,7 @@ JSONtest.prototype = {
         }
         catch(err) {
           test( function() {
-            assert_true(false, "Compilation of schema " + schemaName + " failed: " + e) ;
+            assert_true(false, "Compilation of schema " + schemaName + " failed: " + err) ;
           }, "Compiling " + schemaName);
           return ;
         }
@@ -278,49 +303,128 @@ JSONtest.prototype = {
     }
   },
 
-  // _loadFile - synchronously load a file from a URI
+  // loadAssertion - load an Assertion from an external JSON file
   //
-  _loadFile: function(method, url) {
-    var xhr = new XMLHttpRequest();
-    xhr.open(method, url, false);
-    xhr.send(null) ;
-    if (xhr.status >= 200 && xhr.status < 300) {
-      return(xhr.response);
+  // returns a promise that resolves with the contents of the assertion file
+
+  loadAssertion: function(afile) {
+    if (typeof(afile) === 'string') {
+      // it is a file reference - load it
+      return this._loadFile("GET", this._parseURI(afile));
+    } else if (afile.hasOwnProperty("assertionFile")) {
+      // this object is referecing an external assertion
+      return new Promise(function(resolve, reject) {
+        this._loadFile("GET", this._parseURI(afile.assertionFile))
+        .then(function(external) {
+          try {
+            external = JSON.parse(external) ;
+          }
+          catch(e) {
+              throw(false, "Parse of external schema " + afile.assertionFile + " failed: " + e) ;
+          }
+          // okay - we have an external object
+          Object.keys(afile).forEach(function(key) {
+            if (key !== 'assertionFile') {
+              external[key] = afile[key];
+            }
+          });
+          resolve(external);
+        }.bind(this))
+        .catch(function(err) {
+          reject(err);
+        });
+      }.bind(this));
     } else {
-      throw("JSONtest: _loadFile: " + xhr.status + " " + xhr.statusText);
+      // it is already a loaded assertion - just use it
+      return new Promise(function(resolve) {
+        resolve(afile);
+      });
     }
   },
 
   // loadTest - load a test from an external JSON file
+  //
+  // returns a promise that resolves with the contents of the
+  // test
 
-  loadTest: function(theTestFile) {
-    // pull in the schema that defines the test
-    // NOTE: the schema could already be pulled in...
-    // Schema = testSchema;
+  loadTest: function(params) {
 
-    var testData = null;
-
-    try {
-      testData = this._loadFile('GET', theTestFile);
-    } catch(err) {
-      throw(err) ;
-    }
-    return testData;
+    if (params.hasOwnProperty('testFile')) {
+      // the test is referred to by a file name
+      return this._loadFile("GET", params.testFile);
+    } // else
+    return new Promise(function(resolve, reject) {
+      if (params.hasOwnProperty('test')) {
+        resolve(params.test);
+      } else {
+        reject("Must supply a 'test' or 'testFile' parameter");
+      }
+    });
   },
 
   _parseURI: function(theURI) {
     // determine what the top level URI should be
-    if (theURI.indexOf('/') == -1) {
+    if (theURI.indexOf('/') === -1) {
       // no slash - it's relative to where we are
       // so just use it
       return theURI;
-    } else if (theURI.indexOf('/') === 0 || theURI.indexOf('http:') === 0 || theURI.indexOf('https:')) {
+    } else if (theURI.indexOf('/') === 0 || theURI.indexOf('http:') === 0 || theURI.indexOf('https:') === 0) {
       // it is an absolute URI so just use it
       return theURI;
     } else {
       // it is relative and contains a slash.
       // make it relative to the current test root
-      return this.suiteBase + theURI;
+      return this.Base + theURI;
     }
-  }
+  },
+
+  // _assertionRefs - return a list of inline assertions or references
+  _assertionRefs: function(assertions) {
+    var ret = [] ;
+    assertions.forEach( function(assert) {
+      // first - what is the type of the assert
+      if (typeof assert === "object" && Array.isArray(assert)) {
+        // it is a nested list - recurse
+        this._assertionRefs(assert).forEach( function(item) {
+          ret.push(item);
+        }.bind(this));
+      } else if (typeof assert === "string") {
+        // it is a file name
+        ret.push(assert) ;
+      } else if (assert.hasOwnProperty("assertionFile")) {
+        // it is an object - does it have an included file?
+        ret.push(assert.assertionFile) ;
+      } else {
+        ret.push(assert);
+      }
+    }.bind(this));
+    return ret;
+  },
+
+  // _loadFile - return a promise loading a file
+  //
+  _loadFile: function(method, url) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.onload = function () {
+        if (this.status >= 200 && this.status < 300) {
+          resolve(xhr.response);
+        } else {
+          reject({
+            status: this.status,
+            statusText: xhr.statusText
+          });
+        }
+      };
+      xhr.onerror = function () {
+        reject({
+          status: this.status,
+          statusText: xhr.statusText
+        });
+      };
+      xhr.send();
+    });
+  },
+
 };

@@ -25,7 +25,7 @@ function JSONtest(params) {
   this.Test = null;     // test being run
   this.Base = null;     // URI "base" for the tests being run
   this.Properties = null; // testharness_properties from the opening window
-  this.AssertCounter = 0; // keeps track of which assertion is being processed
+  this.AssertionCounter = 0; // keeps track of which assertion is being processed
 
   this._assertionCache = [];  // Array to put loaded assertions into
   this._loading = true;
@@ -82,7 +82,7 @@ function JSONtest(params) {
           Promise.all(promisedAsserts)
           .then(function (assertContents) {
             for(var i = 0; i < assertFiles.length; i++) {
-              this._assertionCache[assertFiles[i]] = assertContents[i];
+              this._assertionCache.push(assertContents[i]);
             }
             resolve(true);
           }.bind(this));
@@ -114,7 +114,7 @@ JSONtest.prototype = {
 
     if (!this.loading) {
       button.disabled = false;
-      button.textContent = "Check JSON";
+      button.value = "Check JSON";
     } else {
       window.alert("Loading did not finish before init handler was called!");
     }

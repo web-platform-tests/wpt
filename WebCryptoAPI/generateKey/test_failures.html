@@ -62,18 +62,5 @@
 
 <div id="log"></div>
 <script>
-
-document.getElementById("run").addEventListener("click", function() {
-    var elements = document.getElementsByClassName("select-algorithm");
-
-    var namesToTest = [];
-    for (var i=0; i<elements.length; i++) {
-        if (elements[i].checked) {
-            namesToTest.push(elements[i].value);
-        }
-    }
-
-    run_test(namesToTest);
-});
-
+run_test();
 </script>

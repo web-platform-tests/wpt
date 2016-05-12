@@ -36,6 +36,9 @@ for curdir, subdirList, fileList in os.walk(TESTTREE):
       # interesting pattern is {{TESTFILE}}
       tcopy = re.sub("{{TESTFILE}}", rfile, template)
 
+      if testJSON['name']:
+        tcopy = re.sub("{{TESTTITLE}}", testJSON['name'], tcopy)
+
       # target file is basename of theFile + '-manual.html'
       target = re.sub(".test","-manual.html", theFile)
 
@@ -45,3 +48,5 @@ for curdir, subdirList, fileList in os.walk(TESTTREE):
         out.close()
       except:
         print("Failed to create "+target)
+      else:
+        print("Created " + target)

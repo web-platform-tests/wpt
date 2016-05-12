@@ -12,3 +12,5 @@ Change JSONtest logic so that it loads all of the required external files during
 initialization so that it can populate the list of assertions for the HTML in a
 manual test.  Use Promises and Promise.all() to achieve this.
 
+Add a Skip option to tools/runner
+

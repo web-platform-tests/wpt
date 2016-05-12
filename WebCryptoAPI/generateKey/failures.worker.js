@@ -1,5 +1,5 @@
 importScripts("/resources/testharness.js");
-importScripts("../util/helper.js");
+importScripts("../util/helpers.js");
 importScripts("failures.js");
 run_test();
 done();

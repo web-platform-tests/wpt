@@ -1,7 +1,4 @@
-// The standard for run_test is to have no parameters, and
-// execute all tests. But tests with RSA keys are very, very
-// slow, so we give calls an option to provide a list of algorithm
-// names to test. If no list is given, all algorithms are tested.
+
 function run_test(algorithmNames) {
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
@@ -19,7 +16,7 @@ function run_test(algorithmNames) {
 // helper functions that generate all possible test parameters for
 // different situations.
 
-    var allTestVectors = [ // Parameters that should work for generateKey
+    var testVectors = [ // Parameters that should work for generateKey
         {name: "AES-CTR",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
         {name: "AES-CBC",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
         {name: "AES-GCM",  resultType: CryptoKey, usages: ["encrypt", "decrypt", "wrapKey", "unwrapKey"], mandatoryUsages: []},
@@ -31,13 +28,6 @@ function run_test(algorithmNames) {
         {name: "ECDSA",    resultType: "CryptoKeyPair", usages: ["sign", "verify"], mandatoryUsages: ["sign"]},
         {name: "ECDH",     resultType: "CryptoKeyPair", usages: ["deriveKey", "deriveBits"], mandatoryUsages: ["deriveKey", "deriveBits"]}
     ];
-
-    var testVectors = [];
-    allTestVectors.forEach(function(vector) {
-        if (!algorithmNames || algorithmNames.includes(vector.name)) {
-            testVectors.push(vector);
-        }
-    });
 
 
     function parameterString(algorithm, extractable, usages) {
@@ -70,7 +60,6 @@ function run_test(algorithmNames) {
             });
         }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));
     }
-
 
     // Test all valid sets of parameters for successful
     // key generation.

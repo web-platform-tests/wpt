@@ -1,4 +1,3 @@
-'use strict';
 /* globals Promise, done, assert_true, Ajv, on_event */
 
 /**
@@ -20,14 +19,17 @@
  */
 
 function JSONtest(params) {
+  'use strict';
 
-  this.Params = null;   // paramaters passed in
-  this.Test = null;     // test being run
-  this.Base = null;     // URI "base" for the tests being run
-  this.Properties = null; // testharness_properties from the opening window
-  this.AssertionCounter = 0; // keeps track of which assertion is being processed
+  this.Assertions = [];     // object that will contain the assertions to process
+  this.Base = null;         // URI "base" for the tests being run
+  this.Params = null;       // paramaters passed in
+  this.Properties = null;   // testharness_properties from the opening window
+  this.Test = null;         // test being run
+  this.AssertionCounter = 0;// keeps track of which assertion is being processed
 
-  this._assertionCache = [];  // Array to put loaded assertions into
+  this._assertionText = []; // Array of text or nested arrays of assertions
+  this._assertionCache = [];// Array to put loaded assertions into
   this._loading = true;
 
   var pending = [] ;
@@ -53,22 +55,24 @@ function JSONtest(params) {
   // if we are under runner, then there are props in the parent window
   //
   // if "output" is set in that, then pause at the end of running so the output
-  // can be analyzed.
+  // can be analyzed. @@@TODO@@@
   if (window && window.opener && window.opener.testharness_properties) {
     this.Properties = window.opener.testharness_properties;
   }
 
   this.Params = params;
 
-  // start by loading the testfile if needed
+  // start by loading the test (it might be inline, but
+  // loadTest deals with that
   pending.push(this.loadTest(params)
     .then(function(test) {
+      // if the test is NOT an object, turn it into one
       if (typeof test === 'string') {
         test = JSON.parse(test) ;
       }
 
       this.Test = test;
-      return new Promise(function(resolve) {
+      return new Promise(function(resolve, reject) {
         if (test.assertions &&
             typeof test.assertions === "object" &&
             Array.isArray(test.assertions) &&
@@ -76,18 +80,51 @@ function JSONtest(params) {
           // we have at least one assertion
           // get the inline contents and the references to external files
           var assertFiles = this._assertionRefs(test.assertions);
+
           var promisedAsserts = assertFiles.map(function(item) {
             return this.loadAssertion(item);
           }.bind(this));
+
+          // Once all the loadAssertion promises resolve...
           Promise.all(promisedAsserts)
           .then(function (assertContents) {
-            for(var i = 0; i < assertFiles.length; i++) {
-              this._assertionCache.push(assertContents[i]);
-            }
+            // assertContents has assertions in document order
+
+            var assertIdx = 0;
+
+            // buildList returns an array of expanded assertion objects
+            var buildList = function(assertions, level) {
+              // level
+              if (level === undefined) {
+                level = 0;
+              }
+
+              var list = [] ;
+              if (assertions) {
+                assertions.forEach( function(assert) {
+                  // first - what is the type of the assert
+                  if (typeof assert === "object" && Array.isArray(assert)) {
+                    // it is a nested list - recurse
+                    list.push(buildList(assert, level+1)) ;
+                  } else {
+                    list.push(assertContents[assertIdx++]);
+                  }
+                }.bind(this));
+              }
+              return list;
+            }.bind(this);
+
+            // call a recursive function to populate a finalized
+            // array of expanded assertions
+            this.Assertions = buildList(test.assertions, 0);
             resolve(true);
           }.bind(this));
         } else {
-          throw ("Test has no assertion property or property is not an Array");
+          if (!test.assertions) {
+            reject("Test has no assertion property");
+          } else {
+            reject("Test assertion property is not an Array");
+          }
         }
       }.bind(this));
     }.bind(this)));
@@ -108,6 +145,7 @@ JSONtest.prototype = {
    * @listens click
    */
   init: function() {
+    'use strict';
     // set up a handler
     var button = document.getElementById(this.Params.runTest) ;
     var testInput  = document.getElementById(this.Params.testInput) ;
@@ -140,7 +178,7 @@ JSONtest.prototype = {
       }
 
       // iterate over all of the tests for this instance
-      this.runTests(this.Test.assertions, content);
+      this.runTests(this.Assertions, content);
 
       // explicitly tell the test framework we are done
       done() ;
@@ -155,6 +193,7 @@ JSONtest.prototype = {
    * @param {integer} [level=0] - depth of recursion since assertion lists can nest
    */
   runTests: function(assertions, content, testAction, level) {
+    'use strict';
 
     // level
     if (level === undefined) {
@@ -188,53 +227,37 @@ JSONtest.prototype = {
           return 'abort';
         }
 
-        var schemaName = "schema from assertion " + num;
+        var schemaName = "inline " + level + ":" + num;
 
-        if (typeof assert === "string") {
-          schemaName = "schema from file " + assert + " for assertion " + num;
-        } else if (assert.hasOwnProperty("assertionFile")) {
-          // this object is referecing an external assertion
-          schemaName = "schema with local overrides from file " + schema.assertionFile + " for assertion " + num;
-        }
-        var schema = this._assertionCache[this.AssertionCounter++];
-
-        if (typeof schema === "string") {
-          try {
-            schema = JSON.parse(schema) ;
-          }
-          catch(e) {
-            test( function() {
-              assert_true(false, "Parse of schema " + schemaName + " failed: " + e) ;
-            }, "Parsing " + schemaName);
-            return ;
-          }
+        if (assert.assertionFile) {
+          schemaName = "external file " + assert.assertionFile + " " + level + ":" + num;
         }
 
         var validate = null;
 
         try {
-          validate = this.ajv.compile(schema);
+          validate = this.ajv.compile(assert);
         }
         catch(err) {
           test( function() {
-            assert_true(false, "Compilation of schema " + schemaName + " failed: " + err) ;
+            assert_true(false, "Compilation of schema " + level + ":" + num + " failed: " + err) ;
           }, "Compiling " + schemaName);
           return ;
         }
 
-        var expected = schema.hasOwnProperty('expectedResult') ? schema.expectedResult : 'valid' ;
-        var message = schema.hasOwnProperty('message') ? schema.message : "Result was not " + expected;
+        var expected = assert.hasOwnProperty('expectedResult') ? assert.expectedResult : 'valid' ;
+        var message = assert.hasOwnProperty('message') ? assert.message : "Result was not " + expected;
 
         if (testAction !== 'continue') {
           // a previous test told us to not run this test; skip it
-          test(function() { }, "SKIPPED: " + schema.title);
+          test(function() { }, "SKIPPED: " + assert.title);
         } else {
           // start an actual sub-test
           test(function() {
             var valid = validate(content) ;
 
-            var result = this.determineResult(schema, valid) ;
-            var newAction = this.determineAction(schema, result) ;
+            var result = this.determineResult(assert, valid) ;
+            var newAction = this.determineAction(assert, result) ;
             // next time around we will use this action
             testAction = newAction;
 
@@ -253,7 +276,7 @@ JSONtest.prototype = {
             } else {
               assert_true(result, err) ;
             }
-          }.bind(this), schema.title);
+          }.bind(this), assert.title);
         }
       }.bind(this));
     }
@@ -262,6 +285,7 @@ JSONtest.prototype = {
   },
 
   determineResult: function(schema, valid) {
+    'use strict';
     var r = 'valid' ;
     if (schema.hasOwnProperty('expectedResult')) {
       r = schema.expectedResult;
@@ -275,6 +299,7 @@ JSONtest.prototype = {
   },
 
   determineAction: function(schema, result) {
+    'use strict';
     // mapping from results to actions
     var mapping = {
       'failAndContinue' : 'continue',
@@ -308,20 +333,25 @@ JSONtest.prototype = {
   // returns a promise that resolves with the contents of the assertion file
 
   loadAssertion: function(afile) {
+    'use strict';
     if (typeof(afile) === 'string') {
       // it is a file reference - load it
-      return this._loadFile("GET", this._parseURI(afile));
-    } else if (afile.hasOwnProperty("assertionFile")) {
+      return new Promise(function(resolve, reject) {
+        this._loadFile("GET", this._parseURI(afile), true)
+          .then(function(data) {
+            data.assertionFile = afile;
+            resolve(data);
+          }.bind(this))
+          .catch(function(err) {
+            reject(err);
+          });
+        }.bind(this));
+      }
+      else if (afile.hasOwnProperty("assertionFile")) {
       // this object is referecing an external assertion
       return new Promise(function(resolve, reject) {
-        this._loadFile("GET", this._parseURI(afile.assertionFile))
+        this._loadFile("GET", this._parseURI(afile.assertionFile), true)
         .then(function(external) {
-          try {
-            external = JSON.parse(external) ;
-          }
-          catch(e) {
-              throw(false, "Parse of external schema " + afile.assertionFile + " failed: " + e) ;
-          }
           // okay - we have an external object
           Object.keys(afile).forEach(function(key) {
             if (key !== 'assertionFile') {
@@ -348,6 +378,7 @@ JSONtest.prototype = {
   // test
 
   loadTest: function(params) {
+    'use strict';
 
     if (params.hasOwnProperty('testFile')) {
       // the test is referred to by a file name
@@ -363,6 +394,7 @@ JSONtest.prototype = {
   },
 
   _parseURI: function(theURI) {
+    'use strict';
     // determine what the top level URI should be
     if (theURI.indexOf('/') === -1) {
       // no slash - it's relative to where we are
@@ -378,24 +410,28 @@ JSONtest.prototype = {
     }
   },
 
-  // _assertionRefs - return a list of inline assertions or references
+  /**
+   * return a list of all inline assertions or references
+   *
+   * @param {array} assertions list of assertions to examine
+   */
+
   _assertionRefs: function(assertions) {
+    'use strict';
     var ret = [] ;
     assertions.forEach( function(assert) {
+      //
       // first - what is the type of the assert
       if (typeof assert === "object" && Array.isArray(assert)) {
         // it is a nested list - recurse
         this._assertionRefs(assert).forEach( function(item) {
           ret.push(item);
         }.bind(this));
-      } else if (typeof assert === "string") {
+      } else if (typeof assert === "object") {
+        ret.push(assert) ;
+      } else {
         // it is a file name
         ret.push(assert) ;
-      } else if (assert.hasOwnProperty("assertionFile")) {
-        // it is an object - does it have an included file?
-        ret.push(assert.assertionFile) ;
-      } else {
-        ret.push(assert);
       }
     }.bind(this));
     return ret;
@@ -403,13 +439,27 @@ JSONtest.prototype = {
 
   // _loadFile - return a promise loading a file
   //
-  _loadFile: function(method, url) {
+  _loadFile: function(method, url, parse) {
+    'use strict';
+    if (parse === undefined) {
+      parse = true;
+    }
+
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.open(method, url);
       xhr.onload = function () {
         if (this.status >= 200 && this.status < 300) {
-          resolve(xhr.response);
+          var d = xhr.response;
+          if (parse) {
+            try {
+              d = JSON.parse(d);
+            }
+            catch(err) {
+              throw("Parsing of " + url + " failed: " + err);
+            }
+          }
+          resolve(d);
         } else {
           reject({
             status: this.status,

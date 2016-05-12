@@ -1,11 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Verify annotation has at least 1 id",
+  "title": "Check if the Annotation has an id property",
+  "assertionType": "should", 
+  "expectedResult": "valid",
+  "onUnexpectedResult": "passAndContinue",
+  "errorMessage": "Warning: An Annotation should have exactly one id (Section 3.1 of the Data Model).",
   "type": "object",
   "properties": {
-    "id": {
-      "type": "string",
-      "format": "uri"
-  },
+    "id": {}
+    },
   "required": ["id"]
 }

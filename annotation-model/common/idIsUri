@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "id if present must be a string of format uri",
+  "assertionType": "must", 
+  "expectedResult": "valid",
+  "onUnexpectedResult": "failAndContinue",
+  "errorMessage": "Error: The id of an Annotation, if present, must be a string of format uri (Section 3.1 of the Data Model).",
+  "type": "object",
+  "properties": {
+    "id": {"type": "string",
+           "format": "uri"}
+    }
+}

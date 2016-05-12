@@ -22,6 +22,7 @@ function JSONtest(params) {
   'use strict';
 
   this.Assertions = [];     // object that will contain the assertions to process
+  this.AssertionText = "";  // string that holds the titles of all the assertions in use
   this.Base = null;         // URI "base" for the tests being run
   this.Params = null;       // paramaters passed in
   this.Properties = null;   // testharness_properties from the opening window
@@ -96,7 +97,7 @@ function JSONtest(params) {
             var buildList = function(assertions, level) {
               // level
               if (level === undefined) {
-                level = 0;
+                level = 1;
               }
 
               var list = [] ;
@@ -104,9 +105,12 @@ function JSONtest(params) {
                 assertions.forEach( function(assert) {
                   // first - what is the type of the assert
                   if (typeof assert === "object" && Array.isArray(assert)) {
+                    this.AssertionText += "<ol>";
                     // it is a nested list - recurse
                     list.push(buildList(assert, level+1)) ;
+                    this.AssertionText += "</ol>\n";
                   } else {
+                    this.AssertionText += "<li>" + assertContents[assertIdx].title + "</li>\n";
                     list.push(assertContents[assertIdx++]);
                   }
                 }.bind(this));
@@ -149,10 +153,14 @@ JSONtest.prototype = {
     // set up a handler
     var button = document.getElementById(this.Params.runTest) ;
     var testInput  = document.getElementById(this.Params.testInput) ;
+    var assertion  = document.getElementById("assertion") ;
 
     if (!this.loading) {
       button.disabled = false;
       button.value = "Check JSON";
+      if (assertion) {
+        assertion.innerHTML = "<ol>" + this.AssertionText + "</ol>\n";
+      }
     } else {
       window.alert("Loading did not finish before init handler was called!");
     }
@@ -197,7 +205,7 @@ JSONtest.prototype = {
 
     // level
     if (level === undefined) {
-      level = 0;
+      level = 1;
     }
 
     // testAction
@@ -227,10 +235,10 @@ JSONtest.prototype = {
           return 'abort';
         }
 
-        var schemaName = "inline " + level + ":" + num;
+        var schemaName = "inline " + level + ":" + (num+1);
 
         if (assert.assertionFile) {
-          schemaName = "external file " + assert.assertionFile + " " + level + ":" + num;
+          schemaName = "external file " + assert.assertionFile + " " + level + ":" + (num+1);
         }
 
         var validate = null;
@@ -240,7 +248,7 @@ JSONtest.prototype = {
         }
         catch(err) {
           test( function() {
-            assert_true(false, "Compilation of schema " + level + ":" + num + " failed: " + err) ;
+            assert_true(false, "Compilation of schema " + level + ":" + (num+1) + " failed: " + err) ;
           }, "Compiling " + schemaName);
           return ;
         }

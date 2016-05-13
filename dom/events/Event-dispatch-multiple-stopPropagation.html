@@ -13,43 +13,39 @@
 </div>
 
 <script>
-    var EVENT = "foo";
-    var TARGET = document.getElementById("target");
-    var PARENT = document.getElementById("parent");
-    var ExpectResult = [TARGET, PARENT, PARENT, document, window];
-    var ActualResult = [];
+test(function() {
+    var event_type = "foo";
+    var target = document.getElementById("target");
+    var parent = document.getElementById("parent");
+    var actual_result;
+    var test_event = function(evt) {
+        actual_result.push(evt.currentTarget);
 
-    var description = "Test Description: " +
-                      "An event object may be properly dispatched multiple times while also allowing to prevent the event objects " +
-                      "propagation prior to the event dispatch.";
-
-    test(function()
-    {
-        var evt = document.createEvent("Event");
-        evt.initEvent(EVENT, true, true);
-
-        TARGET.addEventListener(EVENT, TestEvent, false);
-        PARENT.addEventListener(EVENT, TestEvent, false);
-        document.addEventListener(EVENT, TestEvent, false);
-        window.addEventListener(EVENT, TestEvent, false);
-
-        TARGET.dispatchEvent(evt);
-        PARENT.dispatchEvent(evt);
-        document.dispatchEvent(evt);
-
-        assert_array_equals(ActualResult, ExpectResult);
-
-    }, description);
-
-    function TestEvent(evt)
-    {
-        ActualResult.push(evt.currentTarget);
-
-        if (PARENT == evt.currentTarget)
-        {
+        if (parent == evt.currentTarget) {
             evt.stopPropagation();
         }
-    }
+    };
+
+    var evt = document.createEvent("Event");
+    evt.initEvent(event_type, true, true);
+
+    target.addEventListener(event_type, test_event, false);
+    parent.addEventListener(event_type, test_event, false);
+    document.addEventListener(event_type, test_event, false);
+    window.addEventListener(event_type, test_event, false);
+
+    actual_result = [];
+    target.dispatchEvent(evt);
+    assert_array_equals(actual_result, [target, parent]);
+
+    actual_result = [];
+    parent.dispatchEvent(evt);
+    assert_array_equals(actual_result, [parent]);
+
+    actual_result = [];
+    document.dispatchEvent(evt);
+    assert_array_equals(actual_result, [document, window]);
+});
 </script>
 </body>
 </html>

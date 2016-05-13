@@ -94,11 +94,9 @@
                                 o.send( [ 0xc0, 0x01] );
                                 o.send( [ fst, snd, 0x7f ] );
                                 if(j%2==0) count++;
-                                
                                 if(msg.length<=count) {
                                     clearInterval(timerId);
                                     disableButton();
-
                                     test_outputs.done();
                                 }
                             }, 70); //default:70

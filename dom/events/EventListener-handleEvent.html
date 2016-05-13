@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-<html>
-<head>
-<title> EventLister member: handleEvent() </title>
+<meta charset=utf-8>
+<title>EventListener::handleEvent()</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-</head>
-<body>
 <div id=log></div>
-
 <table id="table" border="1" style="display: none">
     <tbody id="table-body">
     <tr id="table-row">
@@ -20,41 +16,26 @@
     </tr>
     </tbody>
 </table>
-
 <script>
-    var EVENT = "foo";
-    var TARGET = document.getElementById("target");
-    var TestResult = false;
+test(function(t) {
+    var event = "foo";
+    var target = document.getElementById("target");
 
-    var description = "Test Description: " +
-                      "handleEvent - This method shall be called whenever an event occurs of the event type for " +
-                      "which the EventListener interface was registered.";
-
-    var EventListener = {};
-    EventListener.handleEvent = function(evt)
-    {
-        if ((EVENT == evt.type) && (TARGET == evt.target) && (this === EventListener))
-        {
-            TestResult = true;
+    var event_listener = {
+        "handleEvent": function(evt) {
+            var that = this;
+            t.step(function() {
+                assert_equals(evt.type, event);
+                assert_equals(evt.target, target);
+                assert_equals(that, event_listener);
+            });
         }
-        else
-        {
-            TestResult = false;
-        }
-    }
+    };
 
-    test(function()
-    {
-        var evt = document.createEvent("Event");
-        evt.initEvent(EVENT, true, true);
+    var evt = document.createEvent("Event");
+    evt.initEvent(event, true, true);
 
-        TARGET.addEventListener(EVENT, EventListener, true);
-        TARGET.dispatchEvent(evt);
-        TARGET.removeEventListener(EVENT, EventListener, true);
-
-        assert_true(TestResult);
-
-    }, description);
+    target.addEventListener(event, event_listener, true);
+    target.dispatchEvent(evt);
+});
 </script>
-</body>
-</html>

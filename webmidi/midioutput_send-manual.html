@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>method of send() on MIDIOutput interface | Web MIDI API Test</title>
+    <link rel="author" title="Ryoya KAWAI" href="mailto:ryoya.kawai@gmail.com">
+    <link rel="help" href="http://webaudio.github.io/web-midi-api/#midioutput-interface"> <!-- 6.3 -->
+    <meta name="assert" content="Success when MIDI messages send to device with send() and MIDI device plays C4(60) D4(62) E4(64) F4(65) G4(67) A4(69) B4(71) C5(72) in Piano voice.">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <p>Success when MIDI messages send to device with send() and MIDI device plays C4(60) D4(62) E4(64) F4(65) G4(67) A4(69) B4(71) C5(72) in Piano voice.</p>
+    <div id="warning" style="color:red;"></div>
+    <div>
+      <select id="selectdevice">
+        <option>(Select Device)</option>
+      </select>
+      <button id="runtest" disabled>Run</button>
+    </div>
+    <p>Selected Device: <span id="outputdevice" style="border:1px solid #afafaf; border-radius:4px; padding:2px 4px;"></span></p>
+    <div id="log"></div>
+    <!-- PAGE CONTENT -->
+    <script type="text/javascript">
+    var MIDI;
+    var timerId={ };
+    var getPort={ };
+    var outputs=[];
+    var test_outputs = async_test(
+        "6.3.1 Methods (MIDIOutput Interface) : send()",
+        {timeout: 10000} //msec
+    );
+    navigator.requestMIDIAccess().then( successCallback, errorCallback );
+    function successCallback(access) {
+        MIDI = access;
+        test_send();
+        MIDI.onstatechange=function(event) {
+            test_send();
+        }
+
+        function test_send() {
+            if(MIDI.outputs.size>0) {
+                var outputIterator=MIDI.outputs.values();
+                for(var o=outputIterator.next(); !o.done; o=outputIterator.next()) {
+                    var newPort=true;
+                    // add/update from object
+                    for(var i=0; i<outputs.length; i++) {
+                        if(outputs[i].id==o.value.id) {
+                            outputs[i]=o.value;
+                            newPort=false;
+                        }
+                    }
+                    if(newPort===true) {
+                        outputs.push(o.value);
+                    }
+                }
+                var select=document.getElementById("selectdevice");
+                for(var i=0; i<outputs.length; i++) {
+                    var newPort=true;
+                    for(var j=0; j<select.length; j++) {
+                        if(outputs[i].id==select.options[j].id) {
+                            select[j].removeAttribute("disabled");
+                            if(outputs[i].state=="disconnected") {
+                                select[j].setAttribute("disabled", "disabled");
+                            }
+                            newPort=false;
+                        }
+                    }
+                    if(newPort===true) {
+                        select.options[i+1]=new Option(outputs[i]["name"]+" ("+outputs[i]["id"]+")", i);
+                        select.options[i+1].id=outputs[i]["id"];
+                    }
+                }
+                select.addEventListener("change", function(event){
+                    var idx=event.target.value;
+                    if(outputs[idx].state!="disconnected") {
+                        document.getElementById("runtest").removeAttribute("disabled");
+                        document.getElementById("runtest").addEventListener("mousedown", function(event){
+                            var selIdx=document.getElementById("selectdevice").selectedIndex-1;
+                            //disableButton()
+                            var o = outputs[selIdx];
+                            document.getElementById("outputdevice").innerHTML=outputs[selIdx]["name"]+" ("+outputs[selIdx]["id"]+")";
+                            assert_true(outputs instanceof Object);
+                            var count=0, j=0;
+                            var msg=[0x3c, 0x3e, 0x40, 0x41, 0x43, 0x45, 0x47, 0x48];
+                            var timerId = setInterval(function(){
+                                j++;
+                                var fst=0x80;
+                                if(j%2==1) {
+                                    fst=0x90;
+                                }
+                                // 6.3.1 Methods (6.3 MIDIOutput Interface)
+                                var snd=msg[count];
+                                o.send( [ 0xc0, 0x01] );
+                                o.send( [ fst, snd, 0x7f ] );
+                                if(j%2==0) count++;
+                                
+                                if(msg.length<=count) {
+                                    clearInterval(timerId);
+                                    disableButton();
+
+                                    test_outputs.done();
+                                }
+                            }, 70); //default:70
+                         });
+                    }
+                });
+            }
+        }
+    }
+    function errorCallback(message) {
+        test_outputs.step(function() {
+            assert_unreached("Called errorCallback in Promise of requestMIDIAccess");
+            disableButton()
+            test_outputs.done();
+        });
+    }
+    function disableButton() {
+        document.getElementById("outputdevice").setAttribute("disabled", "disabled");
+        document.getElementById("runtest").setAttribute("disabled", "disabled");
+    }
+
+    </script>
+  </body>
+</html>

@@ -21,6 +21,10 @@
 <p><label id="label-form-form2" form="form2">label-form-form2</label>
 <p><label id="label-with-control">label-with-control <input></label>
 <p><label id="label-for" for="control-for-label">label-for</label> <input id="control-for-label">
+<p>
+ <input id="input-with-form-attr-in-form" form="form2">
+ <label id="label-for-control-form-in-form" for="input-with-form-attr-in-form">label-for-control-form-in-form</label>
+</p>
 </form>
 <form id="form2"></form>
 <p>
@@ -81,6 +85,7 @@ testLabel("label-form", null);
 testLabel("label-form-form2", null);
 testLabel("label-with-control", form);
 testLabel("label-for", form);
+testLabel("label-for-control-form-in-form", form2);
 testLabel("label-for-control-form", form2);
 testLabel("label-in-table", null);
 testLabel("label-in-table-with-control", form3);

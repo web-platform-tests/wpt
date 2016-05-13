@@ -9,7 +9,8 @@ function run_test(algorithmNames) {
 //
 // There are a lot of combinations of possible parameters,
 // resulting in a very large number of tests
-// performed.
+// performed. This can cause timeouts in a worker, so we
+// test fewer RSA variations if the global inWorker is true.
 
 
 // Setup: define the correct behaviors that should be sought, and create
@@ -61,11 +62,12 @@ function run_test(algorithmNames) {
         }, testTag + ": generateKey" + parameterString(algorithm, extractable, usages));
     }
 
+
     // Test all valid sets of parameters for successful
     // key generation.
     testVectors.forEach(function(vector) {
         allNameVariants(vector.name).forEach(function(name) {
-            var useOnlyShortKeys = (name !== name.toUpperCase()); // Save time on low and mixed case variations
+            var useOnlyShortKeys = inWorker || (name !== name.toUpperCase()); // Save time on low and mixed case variations
             allAlgorithmSpecifiersFor(name, useOnlyShortKeys).forEach(function(algorithm, useOnlyShortKeys) {
                 allValidUsages(vector.usages, false, vector.mandatoryUsages).forEach(function(usages) {
                     [false, true].forEach(function(extractable) {

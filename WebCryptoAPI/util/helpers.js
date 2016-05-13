@@ -24,30 +24,6 @@ var registeredAlgorithmNames = [
 ];
 
 
-function runningInASecureContext() {
-    var protocol = location.protocol.toLowerCase();
-    var hostname = location.hostname.toLowerCase();
-
-    if (["https:", "wss:", "file:"].includes(protocol)) {
-        return true;
-    }
-
-    if (hostname === "localhost") {
-        return true;
-    }
-
-    if (/^127\.\d+\.\d+\.\d+$/.test(hostname)) {
-        return true;
-    }
-
-    if (/^(0:){7}1$/.test(hostname) || /^::1$/.test(hostname)) {
-        return true;
-    }
-
-    return false;
-}
-
-
 // Treats an array as a set, and generates an array of all non-empty
 // subsets (which are themselves arrays).
 //
@@ -76,7 +52,6 @@ function allNonemptySubsetsOf(arr) {
 
 // Create a string representation of keyGeneration parameters for
 // test names and labels.
-
 function objectToString(obj) {
     var keyValuePairs = [];
 
@@ -136,9 +111,9 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
         assert_equals(key.algorithm.hash.name.toUpperCase(), algorithm.hash.toUpperCase(), "Correct hash function");
     }
 
-    // The usages parameter could have repeats, but the usages
-    // property of the result should not.
-
+    // usages is expected to be provided for a key pair, but we are checking
+    // only a single key. The publicKey and privateKey portions of a key pair
+    // recognize only some of the usages appropriate for a key pair.
     if (key.type === "public") {
         ["encrypt", "verify", "wrapKey"].forEach(function(usage) {
             if (usages.includes(usage)) {
@@ -157,6 +132,9 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
 
     assert_equals((typeof key.usages), "object", key.type + " key.usages is an object");
     assert_not_equals(key.usages, null, key.type + " key.usages isn't null");
+
+    // The usages parameter could have repeats, but the usages
+    // property of the result should not.
     var usageCount = 0;
     key.usages.forEach(function(usage) {
         usageCount += 1;
@@ -195,13 +173,10 @@ function allAlgorithmSpecifiersFor(algorithmName, shortRun) {
         });
     } else if (algorithmName.toUpperCase().substring(0, 3) === "RSA") {
         if (shortRun) {
-            hashes = ["SHA-1", "SHA-384"];
-            keyLengths = [1024, 2048];
+            hashes = ["SHA-1", "SHA-256"];
+            keyLengths = [1024];
         }
         hashes.forEach(function(hashName) {
-            if (shortRun) {
-                keyLengths = [1024, 2048];
-            }
             keyLengths.forEach(function(modulusLength) {
                 [new Uint8Array([3]), new Uint8Array([1,0,1])].forEach(function(publicExponent) {
                     results.push({name: algorithmName, hash: hashName, modulusLength: modulusLength, publicExponent: publicExponent});
@@ -223,14 +198,15 @@ function allAlgorithmSpecifiersFor(algorithmName, shortRun) {
 //
 // There is an optional parameter - mandatoryUsages. If provided,
 // it should be an array containing those usages of which one must be
-// included. For example, when generating an RSA-PSS key pair,
-// both "sign" and "verify" are possible usages, but if "verify"
-// is not included in the usages, the private key will end up
-// with an empty set of usages, causing a Syntax Error.
+// included.
 function allValidUsages(validUsages, emptyIsValid, mandatoryUsages) {
+    if (typeof mandatoryUsages === "undefined") {
+        mandatoryUsages = [];
+    }
+
     okaySubsets = [];
     allNonemptySubsetsOf(validUsages).forEach(function(subset) {
-        if (!mandatoryUsages || mandatoryUsages.length === 0) {
+        if (mandatoryUsages.length === 0) {
             okaySubsets.push(subset);
         } else {
             for (var i=0; i<mandatoryUsages.length; i++) {
@@ -249,6 +225,7 @@ function allValidUsages(validUsages, emptyIsValid, mandatoryUsages) {
     okaySubsets.push(validUsages.concat(mandatoryUsages).concat(validUsages)); // Repeated values are allowed
     return okaySubsets;
 }
+
 
 // Algorithm name specifiers are case-insensitive. Generate several
 // case variations of a given name.

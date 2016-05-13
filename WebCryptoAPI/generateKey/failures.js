@@ -1,10 +1,4 @@
 function run_test(algorithmNames) {
-    // API may not be available outside a secure context.
-    if (!runningInASecureContext()) {
-        test(function() {}, "No tests because API not necessarily available in insecure context");
-        return;
-    }
-
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
     setup({explicit_timeout: true});

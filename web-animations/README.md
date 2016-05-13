@@ -18,7 +18,7 @@ Guidelines for writing tests
     start time&ldquo; procedure in the &ldquo;Timing model&rdquo; section.
 
     Instead, try something like:
-    
+
     > *   `/web-animations/timing-model/animation/set-the-animation-start-time.html`<br>
     >     Tests all the branches and inputs to the procedure as defined in the
     >     spec (using the `Animation.startTime` API).
@@ -92,7 +92,7 @@ Guidelines for writing tests
     the test should be at least 100s in length.
 
 *   Avoid using `GLOBAL_CONSTS` that make the test harder to read.
-    It's fine to repeat the the same parameter values like `100 * SEC_PER_MSEC`
+    It's fine to repeat the the same parameter values like `100 * MS_PER_SEC`
     over and over again since it makes it easy to read and debug a test in
     isolation.
     Remember, even if we do need to make all tests take, say 200s each, text

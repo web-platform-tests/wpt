@@ -1,28 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "Verify Annotation has an @context with value 'https://www.w3.org/ns/anno.jsonld'",
+    "title": "'The Annotation must have 1 or more @context values' (Section 3.1)",
     "assertionType": "must",
     "expectedResult": "valid",
-    "onUnexpectedResult": "failAndContinue",
-    "errorMessage": "Error: Annotation must have a property @context, and value must be the string 'https://www.w3.org/ns/anno.jsonld' or if @context is an array, first item in array must be string with this value.",
+    "errorMessage": "Error: Annotation does not have an @context property.",
     "type": "object",
-    "properties": {"@context": {
-        "anyOf": [
-            {
-                "type": "string",
-                "enum": ["https://www.w3.org/ns/anno.jsonld"]
-            },
-            {
-                "type": "array",
-                "minItems": 1,
-                "items": [{
-                    "type": "string",
-                    "enum": ["https://www.w3.org/ns/anno.jsonld"]
-                }]
-            }
-        ],
-        "not": {"type": "object"}
-    }},
+    "properties": {
+      "@context": {}
+    },
     "required": ["@context"]
 }
  

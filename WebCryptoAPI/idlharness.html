@@ -304,7 +304,7 @@ required HashAlgorithmIdentifier hash;
                   function(node) {
                     idl_array.add_idls(node.textContent);
                   });
-  idl_array.add_objects({"Window": ["Window"], "Crypto": ["crypto"], "SubtleCrypto": ["crypto.subtle"]});
+  idl_array.add_objects({"Crypto": ["crypto"], "SubtleCrypto": ["crypto.subtle"]});
   idl_array.test();
   done();
 })();

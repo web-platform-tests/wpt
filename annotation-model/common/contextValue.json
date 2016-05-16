@@ -17,7 +17,8 @@
                 "items": [{
                     "type": "string",
                     "enum": ["https://www.w3.org/ns/anno.jsonld"]
-                }]
+                }],
+                "additionalItems": true
             }
         ],
         "not": {"type": "object"}

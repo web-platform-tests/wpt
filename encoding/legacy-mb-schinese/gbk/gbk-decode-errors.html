@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"/>
+<title>GBK decoding errors</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/encoding/#gbk">
+<meta name="assert" content="When decoding gbk text, the browser uses replacement characters as described by the algorithm in the Encoding spec.">
+<style>
+ iframe { display:none }
+</style>
+</head>
+
+<body onload="showNodes();">
+
+<iframe src="gbk_errors.html" name="scriptWindow" id="scrwin"></iframe>
+
+<p class="instructions">Test passes if the number of failures is the same as for test gbk-decode.html</p>
+<div id="log"></div>
+
+<script>
+var tests = []
+
+function iframeRef( frameRef ) {
+    return frameRef.contentWindow
+        ? frameRef.contentWindow.document
+        : frameRef.contentDocument
+	}
+
+function showNodes () {
+	var iframe = iframeRef( document.getElementById('scrwin') )
+	var nodes = iframe.querySelectorAll('span')
+	
+	var t=-1; 
+	t++; tests[t] = async_test("step 2: 82 30 C3") 
+	t++; tests[t] = async_test("step 3.5: 82 30 C3 53") 
+	t++; tests[t] = async_test("step 4.2: 83 30 FF 33") 
+	t++; tests[t] = async_test("step 5.7: 82 FF C3 33") 
+	t++; tests[t] = async_test("step 9: FF 30 C3 33") 
+
+	
+	
+	t=-1; 
+	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�') } )
+	tests[t].done()
+	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0肧') } )
+	tests[t].done()
+	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0�3') } )
+	tests[t].done()
+	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '��') } )
+	tests[t].done()
+	t++; tests[t].step(function() {assert_equals(nodes[t].textContent, '�0�') } )
+	tests[t].done()
+
+	}
+
+</script>
+<p style="font-size: 70%;">You can raise issues with this test at <a target="_blank" href="https://github.com/w3c/encodingtests/issues">https://github.com/w3c/encodingtests/issues</a></p>
+</body>
+</html>
+

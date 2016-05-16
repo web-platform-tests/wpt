@@ -3,10 +3,10 @@
   "title": "'An Annotation should have exactly 1' id (Section 3.1)",
   "assertionType": "should", 
   "expectedResult": "valid",
-  "errorMessage": "Warning: The Annotation does not have a singular string id property by which the Annotaion is identified (Section 3.1).",
+  "errorMessage": "Warning: The Annotation is not identified using the id key (Section 3.1).",
   "type": "object",
   "properties": {
-    "id": {"type": "string"}
+    "id": {}
     },
   "required": ["id"]
 }

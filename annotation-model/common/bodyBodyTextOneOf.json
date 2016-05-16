@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "'There should be 1 or more body relationships' (Section 3.1)",
-    "assertionType": "should",
+    "title": "'If the bodyText property is present, then the body relationship must not also be present.' (Section 3.2.5)",
+    "assertionType": "must",
     "expectedResult": "valid",
-    "errorMessage": "Warning: Annotation has neither body nor bodyText - 1 of these should be present.",
+    "errorMessage": "Error: Annotation has both body and bodyText - only 1 is allowed.",
     "type": "object",
-    "anyOf": [
+    "oneOf": [
         {"properties": {
              "body": {}
          },
@@ -18,3 +18,4 @@
          }
     ]
 } 
+ 

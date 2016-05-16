@@ -18,7 +18,7 @@
     [{ "assertionFile" : "common/id.json",
         "assertionType": "should",
         "errorMessage" : "Warning: The Annotation is not identified using the id key; skipping check of id value format",
-        "onUnexpectedResult" : "passAndSkip"
+        "onUnexpectedResult" : "failAndSkip"
       },
       {"assertionFile":"common/idFormat.json",
        "assertionType": "must",
@@ -38,7 +38,7 @@
     [{ "assertionFile" : "common/bodyBodyTextAnyOf.json",
         "assertionType": "should",
         "errorMessage" : "Warning: Annotation has neither body nor bodyText - 1 of these should be present; skipping check that only 1 is present",
-        "onUnexpectedResult" : "passAndSkip"
+        "onUnexpectedResult" : "failAndSkip"
       },
       {"assertionFile":"common/bodyBodyTextOneOf.json",
        "assertionType": "must",

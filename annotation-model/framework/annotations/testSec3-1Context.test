@@ -1,0 +1,19 @@
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Verify that annotation implements @context feature of model Section 3.1 [correctly].",
+  "description": "Supply an example annotation that conforms to and implements @context.",
+  "ref": "https://www.w3.org/TR/annotation-model/#annotations",
+  "testType": "manual",
+  "assertions": [
+    [{ "assertionFile" : "common/context.json",
+        "assertionType": "must",
+        "errorMessage" : "Error: Annotation does not have an @context property; skipping check of @context value",
+        "onUnexpectedResult" : "failAndSkip"
+      },
+      {"assertionFile":"common/contextValue.json",
+       "assertionType": "must",
+       "onUnexpectedResult" : "failAndContinue"
+       }
+    ]    
+  ]
+}

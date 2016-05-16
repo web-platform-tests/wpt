@@ -12,7 +12,7 @@
          "required": ["body"]
         },
         {"properties": {
-             "bodyText": {"type": "string"}
+             "bodyText": {}
           },
          "required": ["bodyText"]
          }

@@ -296,7 +296,7 @@ more of its properties:
     { "assertionFile" : "common/target.json",
       "title" : "Require target to be missing",
       "expectedResult" : "invalid",
-      "message" : "The target MUST not be present when 'randomName' is also present",
+      "errorMessage" : "The target MUST not be present when 'randomName' is also present",
     }
   ]
 }
@@ -317,7 +317,7 @@ of tests when an assertion in the list is not satisfied:
     "common/context.json",
     [
       { "assertionFile" : "common/target.json",
-        "message" : "Target was not present so skip the rest of this section",
+        "errorMessage" : "Target was not present so skip the rest of this section",
         "onUnexpectedResult" : "failAndSkip"
       },
       "sometest.json",

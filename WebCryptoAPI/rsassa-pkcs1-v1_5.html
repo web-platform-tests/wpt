@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>Test for WebCrypto RSASSA-PKCS1-v1_5</title>
+<link rel="help" href="https://w3c.github.io/webcrypto/Overview.html#crypto-interface">
+</head>
+<body>
+
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test verifies that the implementations of the WebCrpto API match the requirements for the RSASSA-PKCS1-v1_5 algorithm.</p>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+  var exp = new Uint8Array([1,0,1]);
+  var algoName = "RSASSA-PKCS1-v1_5";
+  var algo = {name: algoName, modulusLength:2048, publicExponent: exp, hash: "SHA-256"};
+  var buffer = new ArrayBuffer();
+  var t = async_test("Invalid encrypt usage fails");
+
+  crypto.subtle.generateKey(algo, true, ["encrypt"])
+  .then(t.step_func(function(key) {
+    assert_unreached("Cannot generate a key for encryption with " + algoName);
+    t.done();
+  }),
+  t.step_func(function(err) {
+   assert_equals(err.name, "SyntaxError", "encrypt is invalid usage for " + algoName);
+   t.done();
+  }));
+
+  var oaep = {name: "RSA-OAEP", modulusLength:2048, publicExponent: exp, hash: "SHA-256"};
+  var t2 = async_test("Invalid encrypt method fails");
+  crypto.subtle.generateKey(oaep, false, ["encrypt"])
+  .then(t2.step_func(function(pair) {
+    crypto.subtle.encrypt(algo, pair.publicKey, buffer).then(
+     t2.step_func(function() {
+        assert_unreached("Should fail to encrypt with " + algoName);
+        t2.done();
+  }), t2.step_func(function(err) {
+        assert_equals(err.name, "NotSupportedError", "encrypt is not valid with " + algoName);
+        t2.done();
+  })
+  );}),
+  t2.step_func(function(err) {
+     assert_unreached("Should not fail to generate RSA-OAEP key with 'encrypt' usage, but failed with " + err.name + ": " + err.message);
+        t2.done();
+  }));
+
+</script>

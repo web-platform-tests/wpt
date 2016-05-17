@@ -1,7 +1,7 @@
-//[NoInterfaceObject]
-//interface GlobalCrypto {
-//  readonly attribute Crypto crypto;
-//};
+[NoInterfaceObject]
+interface GlobalCrypto {
+  readonly attribute Crypto crypto;
+};
 
 //Window implements GlobalCrypto;
 //WorkerGlobalScope implements GlobalCrypto;

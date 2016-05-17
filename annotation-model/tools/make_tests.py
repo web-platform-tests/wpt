@@ -32,7 +32,7 @@ for curdir, subdirList, fileList in os.walk(TESTTREE):
     except ValueError as e:
       print "parse of " + theFile + " failed: " + e[0]
     else:
-      rfile = re.sub("../", "", file)
+      rfile = re.sub("\.\./", "", file)
       # interesting pattern is {{TESTFILE}}
       tcopy = re.sub("{{TESTFILE}}", rfile, template)
 
@@ -40,7 +40,7 @@ for curdir, subdirList, fileList in os.walk(TESTTREE):
         tcopy = re.sub("{{TESTTITLE}}", testJSON['name'], tcopy)
 
       # target file is basename of theFile + '-manual.html'
-      target = re.sub(".test","-manual.html", theFile)
+      target = re.sub("\.test","-manual.html", theFile)
 
       try:
         out = open(target, "w")

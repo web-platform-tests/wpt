@@ -213,6 +213,7 @@ this collection are also permitted to use the following keywords:
 |errorMessage   | string          | A human readable explanation of what it means if the test fails.  |
 |expectedResult | `valid`, `invalid`  | Tells the framework whether validating against this schema is expected to succeed or fail.  The default is `valid` |
 
+@@@TODO@@@ add handling for "or" across a collection of assertions.
 
 ### Example Assertion Object ###
 

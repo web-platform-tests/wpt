@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>window.open(): entry ok, incumbent removed, current ok, and relevant ok</title>
+<div id=log></div>
+<script>
+  var t = async_test(document.title)
+  onload = t.step_func(function() {
+    var incumbent = self[0],
+        current = self[1],
+        relevant = self[2],
+        target = self[3],
+        toDo = incumbent.helper
+    incumbent.frameElement.parentNode.removeChild(incumbent.frameElement)
+    toDo(current.open.bind(relevant)) // incumbent.helper(...) fails in Safari
+    target.frameElement.onload = t.step_func(() => {
+      assert_equals(target.document.referrer, document.URL)
+      t.done()
+    })
+  })
+</script>
+<iframe src="support/incumbent.html"></iframe>
+<iframe src="support/current.html"></iframe>
+<iframe src="support/relevant.html"></iframe>
+<iframe name=uniqueish-target></iframe>

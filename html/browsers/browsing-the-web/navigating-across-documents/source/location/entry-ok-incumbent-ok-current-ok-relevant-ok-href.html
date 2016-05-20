@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>location: entry ok, incumbent ok, current ok, and relevant ok (using href)</title>
+<div id=log></div>
+<script>
+  var t = async_test(document.title),
+      navigations = 0
+  onload = t.step_func(function() {
+    var incumbent = self[0],
+        current = self[1],
+        relevant = self[2]
+    incumbent.helper(Object.getOwnPropertyDescriptor(current.location, "href").set.bind(relevant.location))
+  })
+  function d() {
+    if(navigations === 1) {
+      assert_equals(frames[2].document.referrer, document.URL, "Referrer needs to come from entry")
+      t.done()
+    }
+    navigations++
+  }
+</script>
+<iframe src="support/incumbent.html"></iframe>
+<iframe src="support/current.html"></iframe>
+<iframe src="support/relevant.html" onload=t.step(d)></iframe>

@@ -1,0 +1,27 @@
+<!doctype html>
+<title>Navigate using window.open() from a navigated document using a name</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+  var t = async_test("Navigate using window.open() from a navigated document using a name"),
+      navigations = 0,
+      navigations2 = 0,
+      fRef
+  function l() {
+  	if(navigations === 0) {
+  	  fRef = frames[0].f
+  	  navigations++
+  	  frames[0].location = "about:blank"
+    } else {
+      fRef()
+    }
+  }
+  function d() {
+    if(navigations2 === 1)
+      t.done()
+    navigations2++
+  }
+</script>
+<iframe src=support/window-open-uniqueish.html onload=t.step(l)></iframe>
+<iframe name=uniqueish onload=t.step(d)></iframe>

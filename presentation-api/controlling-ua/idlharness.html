@@ -19,20 +19,19 @@ interface Event {
 };
 dictionary EventInit {
 };
-interface PresentationReceiver {
-};
 </script>
 
 <script id='idl' type="text/plain">
 partial interface Navigator {
     [SameObject]
-    readonly attribute Presentation presentation;
+    readonly attribute Presentation? presentation;
 };
 
 interface Presentation {
+};
+
+partial interface Presentation {
     attribute PresentationRequest? defaultRequest;
-    [SameObject]
-    readonly attribute PresentationReceiver? receiver;
 };
 
 [Constructor(DOMString url)]
@@ -44,7 +43,7 @@ interface PresentationRequest : EventTarget {
 };
 
 interface PresentationAvailability : EventTarget {
-    readonly attribute boolean  value;
+    readonly attribute boolean value;
     attribute EventHandler onchange;
 };
 
@@ -59,6 +58,7 @@ dictionary PresentationConnectionAvailableEventInit : EventInit {
 };
 
 enum PresentationConnectionState {
+    "connecting",
     "connected",
     "closed",
     "terminated"
@@ -74,7 +74,9 @@ interface PresentationConnection : EventTarget {
     readonly attribute PresentationConnectionState state;
     void close();
     void terminate();
-    attribute EventHandler onstatechange;
+    attribute EventHandler onconnect;
+    attribute EventHandler onclose;
+    attribute EventHandler onterminate;
     // Communication
     attribute BinaryType binaryType;
     attribute EventHandler onmessage;
@@ -82,6 +84,23 @@ interface PresentationConnection : EventTarget {
     void send(Blob data);
     void send(ArrayBuffer data);
     void send(ArrayBufferView data);
+};
+
+enum PresentationConnectionClosedReason {
+    "error",
+    "closed",
+    "wentaway"
+};
+
+[Constructor(DOMString type, PresentationConnectionClosedEventInit eventInitDict)]
+interface PresentationConnectionClosedEvent : Event {
+    readonly attribute PresentationConnectionClosedReason reason;
+    readonly attribute DOMString message;
+};
+
+dictionary PresentationConnectionClosedEventInit : EventInit {
+    required PresentationConnectionClosedReason reason;
+    DOMString message;
 };
 </script>
 

@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>window.open(): entry ok, incumbent ok, current removed, and relevant removed</title>
+<div id=log></div>
+<script>
+  var t = async_test(document.title)
+  onload = t.step_func(function() {
+    var incumbent = self[0],
+        current = self[1],
+        relevant = self[2],
+        target = self[3]
+        toDo = current.open.bind(relevant)
+    current.frameElement.parentNode.removeChild(current.frameElement)
+    relevant.frameElement.parentNode.removeChild(relevant.frameElement)
+    incumbent.helper(toDo)
+    target.frameElement.onload = t.step_func(() => asssert_unreached())
+    t.step_timeout(() => t.done(), 500)
+  })
+</script>
+<iframe src="support/incumbent.html"></iframe>
+<iframe src="support/current.html"></iframe>
+<iframe src="support/relevant.html"></iframe>
+<iframe name=uniqueish-target></iframe>

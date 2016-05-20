@@ -1,0 +1,21 @@
+<!doctype html>
+<title>Navigate using location from a document in a frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+  var t = async_test(document.title),
+      navigations = 0,
+      url = null
+  function l() {
+  	if(navigations === 0) {
+  	  navigations++
+  	  url = frames[0].document.URL
+      frames[0].f()
+    } else {
+      assert_equals(frames[0].document.referrer, url)
+      t.done()
+    }
+  }
+</script>
+<iframe src=support/window-location.html onload=t.step(l)></iframe>

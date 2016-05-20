@@ -1,0 +1,22 @@
+<!doctype html>
+<title>Navigate using window.open from a removed frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+  var t = async_test("Use window.open() with a function from a removed frame with a different current global"),
+      navigations = 0
+  function l() {
+  	var nav = frames[0].f,
+  	    fr = frames[0].frameElement
+    fr.parentNode.removeChild(fr)
+    nav(window)
+  }
+  function d() {
+    if(navigations === 1)
+      t.done()
+    navigations++
+  }
+</script>
+<iframe src=support/window-open-uniqueish.html onload=t.step(l)></iframe>
+<iframe name=uniqueish onload=t.step(d)></iframe>

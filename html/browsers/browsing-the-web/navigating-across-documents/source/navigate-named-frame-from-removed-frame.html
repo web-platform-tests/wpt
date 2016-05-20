@@ -1,0 +1,27 @@
+<!doctype html>
+<title>Navigate using a link from a removed frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+  var t = async_test("Navigate using <a> from a removed <iframe>"),
+      eventDispatched = false
+  function l() {
+    var fr = frames[0].frameElement,
+        fr2 = frames[1]
+        link = document.createElement("a")
+    link.href = "support/dummy.html"
+    link.target = "uniqueness"
+    link.onclick = t.step_func(() => eventDispatched = true)
+    fr.contentDocument.body.appendChild(link)
+    fr.parentNode.removeChild(fr)
+    link.click()
+    assert_true(eventDispatched, "Event dispatch should have happened")
+    t.step_timeout(() => {
+      assert_equals(fr2.document.body.textContent, "", "No navigation should have happened")
+      t.done()
+    })
+  }
+</script>
+<iframe onload=t.step(l)></iframe>
+<iframe name=uniqueness></iframe>

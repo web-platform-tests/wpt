@@ -14,3 +14,7 @@ manual test.  Use Promises and Promise.all() to achieve this.
 
 Add a Skip option to tools/runner
 
+Add a "or" mode for collections of assertions.
+
+Add a tuple mode for evaluating RDF declaratively as well.
+

@@ -1,0 +1,17 @@
+<!doctype html>
+<title>Navigate using location from a document in a frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  var navigations = 0
+  function l() {
+  	if(navigations === 0) {
+  	  navigations++
+  	  frames[0].f()
+    } else if(navigations === 1) {
+      navigations++
+      document.body.appendChild(document.createTextNode(frames[0].document.referrer))
+    }
+  }
+</script>
+<iframe src=support/window-location.html onload=l()></iframe>

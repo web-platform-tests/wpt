@@ -1,5 +1,8 @@
 <script>
-  function f() {
-    window.open("support/dummy.html", "uniqueish")
+  function f(global) {
+    if(global === undefined) {
+      global = window
+    }
+    global.open("support/dummy.html", "uniqueish")
   }
 </script>

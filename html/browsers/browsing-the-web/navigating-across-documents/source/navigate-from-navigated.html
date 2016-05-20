@@ -1,0 +1,22 @@
+<!doctype html>
+<title>Navigate from a document that is no longer active</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  var navigations = 0, link;
+  function f() {
+    if (navigations === 0) {
+      link = frames[0].document.createElement("a")
+      link.href = "https://google.com/"
+      link.onclick = e => console.log(e)
+      navigations++;
+      frames[0].location = "/"
+    } else if(navigations === 1) {
+      navigations++
+      link.click()
+    } else {
+      console.log("fail")
+    }
+  }
+</script>
+<iframe onload="f()"></iframe>

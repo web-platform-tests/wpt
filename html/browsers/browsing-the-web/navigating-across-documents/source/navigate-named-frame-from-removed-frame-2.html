@@ -1,0 +1,13 @@
+<!doctype html>
+<title>Navigate using window.open from a removed frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  function l(fr) {
+  	var nav = frames[0].f
+    fr.parentNode.removeChild(fr)
+    nav()
+  }
+</script>
+<iframe src=support/window-open-uniqueish.html onload=l(this)></iframe>
+<iframe name=uniqueish></iframe>

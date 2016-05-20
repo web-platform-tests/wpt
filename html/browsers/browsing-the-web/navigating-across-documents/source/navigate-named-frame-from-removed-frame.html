@@ -1,0 +1,17 @@
+<!doctype html>
+<title>Navigate using a link from a removed frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  function l(fr) {
+  	var link = document.createElement("a")
+    link.href = "support/dummy.html"
+    link.target = "uniqueness"
+    link.onclick = e => console.log(e)
+    fr.contentDocument.body.appendChild(link)
+    fr.parentNode.removeChild(fr)
+    link.click()
+  }
+</script>
+<iframe onload=l(this)></iframe>
+<iframe name=uniqueness></iframe>

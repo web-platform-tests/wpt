@@ -168,7 +168,7 @@ JSONtest.prototype = {
     on_event(button, "click", function() {
       // user clicked
       var content = testInput.value;
-      button.disabled = true;
+      // button.disabled = true;
 
       // make sure content is an object
       if (typeof content === "string") {

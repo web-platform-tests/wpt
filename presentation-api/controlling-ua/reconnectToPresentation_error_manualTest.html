@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Presentation API reconnect a presentation for Controlling User Agent (Error - manual test)</title>
+<link rel="author" title="Franck William Taffo" href="http://www.fokus.fraunhofer.de">
+<link rel="help" href="http://w3c.github.io/presentation-api/#dfn-controlling-user-agent">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+    /**
+     *
+     * Test if reconnect returns a NotFoundError() by wrong presentation ID
+     */
+    var presentation_url = 'https://google.com/cast#__castAppId__=CC1AD845/__castClientId__=';
+    var request = new PresentationRequest(presentation_url);
+    var wrong_presentationId = null;
+
+    var reconnect = function () {
+        promise_test(function () {
+
+            var presId = "presId";
+            // presId is mandatory when reconnecting to a presentation.
+            if (!!presId) {
+                return request.reconnect(presId)
+                        .then(function (setConnection) {
+                            assert_true(false, "reconnect should not return a Promise resolve by wrong presentation ID");
+                        })
+                        .catch(function (rejected) {
+                            if (typeof NotFoundError == "undefined") {
+                                assert_true(false, "NotFoundError is undefined");
+                            }
+                            else {
+                                assert_true(rejected instanceof NotFoundError);
+                            }
+                        });
+                // No connection found for presUrl and presId, or an error occurred.
+            }
+
+        }, "In failure case, reconnect() return a NotFoundError");
+    };
+
+
+
+</script>
+<script>
+    setup({explicit_timeout: true})
+</script>
+<p>click on the button to the perfom the test</p>
+<button id="reconnectBtn" onclick="reconnect()">Reconnect</button>

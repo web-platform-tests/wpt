@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Presentation API, start new presentation tests for Controlling User Agent (error - manual test)</title>
+<link rel="author" title="Marius Wessel" href="http://www.fokus.fraunhofer.de">
+<link rel="help" href="http://w3c.github.io/presentation-api/#dfn-controlling-user-agent">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<p>Click the button below and abort the selection for an device, to start the manual test.</p>
+<button id="presentBtn" onclick="startPresentation()">Start Presentation Test</button>
+
+<script>
+    // ----------
+    // DOM Object
+    // ----------
+    var presentBtn = document.getElementById("presentBtn");
+
+    // ------------
+    // Request init
+    // ------------
+    var validUnixDate = new Date().getTime() + String(Math.floor(Math.random() * 1e5)),
+            validPresURL = 'https://google.com/cast#__castAppId__=CC1AD845/__castClientId__=' + validUnixDate,
+            request = new PresentationRequest(validPresURL);
+
+    // -------------------------------------------
+    // Start New Presentation Test (error) - begin
+    // -------------------------------------------
+    var startPresentation = function () {
+        promise_test(function () {
+            return request.start()
+                    .catch(function (err) {
+                        if (typeof SecurityError == "undefined" || typeof OperationError == "undefined") {
+                            test(function () {
+                                assert_true(false, "SecurityError or OperationError class is not defined")
+                            }, "Error object must be from type SecurityError")
+                        }
+                        else {
+                            test(function () {
+                                assert_true(err instanceof SecurityError || err instanceof OperationError, "err must be from type SecurityError or OperationError")
+                            }, "Error object must be from type SecurityError or OperationError")
+                        }
+                    });
+        }, "The starting process for the presentation has been aborted.");
+    }
+    // -----------------------------------------
+    // Start New Presentation Test (error) - end
+    // -----------------------------------------
+</script>
+

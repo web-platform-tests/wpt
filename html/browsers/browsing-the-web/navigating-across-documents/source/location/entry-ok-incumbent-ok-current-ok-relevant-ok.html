@@ -11,6 +11,6 @@
     var incumbent = self[0],
         current = self[1],
         relevant = self[2]
-    incumbent.helper(Object.getOwnPropertyDescriptor(current.location, "href").get.bind(relevant.location))
+    incumbent.helper(Object.getOwnPropertyDescriptor(current.location, "href").set.bind(relevant.location))
   }
 </script>

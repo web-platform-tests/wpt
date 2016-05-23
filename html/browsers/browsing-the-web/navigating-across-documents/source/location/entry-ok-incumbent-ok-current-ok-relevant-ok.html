@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>location: entry ok, incumbent ok, current ok, and relevant ok</title>
+<iframe src="support/incumbent.html"></iframe>
+<iframe src="support/current.html"></iframe>
+<iframe src="support/relevant.html"></iframe>
+<script>
+  onload = function() {
+    var incumbent = self[0],
+        current = self[1],
+        relevant = self[2]
+    incumbent.helper(Object.getOwnPropertyDescriptor(current.location, "href").get.bind(relevant.location))
+  }
+</script>

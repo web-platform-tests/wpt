@@ -2,16 +2,18 @@
 <title>Navigate using location from a document in a frame, part 2</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
 <script>
-  var navigations = 0
+  var t = async_test(document.title),
+      navigations = 0
   function l() {
   	if(navigations === 0) {
   	  navigations++
   	  frames[0].location = "support/dummy.html" // a variant of this test with about:blank here "fails" in Firefox/Edge
-    } else if(navigations === 1) {
-      navigations++
-      document.body.appendChild(document.createTextNode(frames[0].document.referrer))
+    } else {
+      assert_equals(frames[0].document.referrer, document.URL)
+      t.done()
     }
   }
 </script>
-<iframe src=support/dummy.html onload=l()></iframe>
+<iframe src=support/dummy.html onload=t.step(l)></iframe>

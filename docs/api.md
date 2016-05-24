@@ -233,7 +233,7 @@ the normal step function wrapper. For example:
 
 ```html
 <!doctype html>
-<title>Example single-page test</title>
+<title>Basic document.body test</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>

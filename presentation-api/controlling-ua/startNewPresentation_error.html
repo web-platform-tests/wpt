@@ -21,16 +21,7 @@
     promise_test(function () {
         return request.start()
                 .catch(function (error) {
-                    if (typeof InvalidAccessError == "undefined") {
-                        test(function () {
-                            assert_true(false);
-                        }, "Error object must be from type InvalidAccessError")
-                    }
-                    else {
-                        test(function () {
-                            assert_true(error instanceof InvalidAccessError)
-                        }, "Error object must be from type InvalidAccessError")
-                    }
+                    assert_true(error instanceof InvalidAccessError);
                 });
 
     }, "The presentation could not start, because a user gesture is required.");

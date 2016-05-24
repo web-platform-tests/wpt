@@ -2,7 +2,7 @@
 <meta charset=utf-8>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<title>location: entry ok, incumbent ok, current ok, and relevant ok</title>
+<title>location: entry ok, incumbent ok, current ok, and relevant removed</title>
 <div id=log></div>
 <script>
   var t = async_test(document.title),
@@ -10,14 +10,15 @@
   onload = t.step_func(function() {
     var incumbent = self[0],
         current = self[1],
-        relevant = self[2]
-    incumbent.helper(current.location.assign.bind(relevant.location))
+        relevant = self[2],
+        toDo = current.location.assign.bind(relevant.location)
+    relevant.frameElement.parentNode.removeChild(relevant.frameElement)
+    incumbent.helper(toDo)
+    t.step_timeout(() => t.done(), 500)
   })
   function d() {
-    if(navigations === 1) {
-      assert_equals(frames[2].document.referrer, document.URL, "Referrer needs to come from entry")
-      t.done()
-    }
+    if(navigations === 1)
+      assert_unreached()
     navigations++
   }
 </script>

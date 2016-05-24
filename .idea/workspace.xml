@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3430061-0f71-42b4-aa49-abb0ea2aa720" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error.html" afterPath="$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error-manual.html" afterPath="$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error-manual.html" />
     </list>
     <ignored path="web-platform-tests.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -23,11 +24,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="startNewPresentation_error.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="startNewPresentation_error.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="483">
               <caret line="23" column="69" selection-start-line="23" selection-start-column="69" selection-end-line="23" selection-end-column="69" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="startNewPresentation_error-manual.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error-manual.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="532">
+              <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -53,6 +64,7 @@
       <list>
         <option value="$PROJECT_DIR$/presentation-api/controlling-ua/reconnectToPresentation_success-manual.html" />
         <option value="$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error.html" />
+        <option value="$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error-manual.html" />
       </list>
     </option>
   </component>
@@ -214,12 +226,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1464085947843</updated>
-      <workItem from="1464085950465" duration="923000" />
+      <workItem from="1464085950465" duration="1046000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="923000" />
+    <option name="totallyTimeSpent" value="1046000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
@@ -276,6 +288,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="483">
           <caret line="23" column="69" selection-start-line="23" selection-start-column="69" selection-end-line="23" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/presentation-api/controlling-ua/startNewPresentation_error-manual.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="532">
+          <caret line="30" column="37" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
           <folding />
         </state>
       </provider>

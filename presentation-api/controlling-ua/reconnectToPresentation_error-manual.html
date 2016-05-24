@@ -23,7 +23,7 @@
             if (!!presId) {
                 return request.reconnect(presId)
                         .then(function (setConnection) {
-                            assert_true(false, "reconnect should not return a Promise resolve by wrong presentation ID");
+                            assert_unreached("reconnect should not return a Promise resolve by wrong presentation ID");
                         })
                         .catch(function (rejected) {
                             if (typeof NotFoundError == "undefined") {

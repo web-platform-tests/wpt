@@ -61,12 +61,7 @@
 
             return request.reconnect(presId)
                     .then(function (connection) {
-
-                        test(function () {
-                            assert_true(connection instanceof PresentationConnection);
-                        }, 'The connection is an instance of PresentationConnection.');
-
-                        assert_true(true);
+                        assert_true(connection instanceof PresentationConnection);
                         done();
                     });
         }, 'The reconnection was successful.');

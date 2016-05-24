@@ -26,12 +26,7 @@
                             assert_unreached("reconnect should not return a Promise resolve by wrong presentation ID");
                         })
                         .catch(function (rejected) {
-                            if (typeof NotFoundError == "undefined") {
-                                assert_true(false, "NotFoundError is undefined");
-                            }
-                            else {
-                                assert_true(rejected instanceof NotFoundError);
-                            }
+                                assert_true(true, "reconnect catch an Error by wrong presentation ID");
                         });
                 // No connection found for presUrl and presId, or an error occurred.
             }

@@ -14,7 +14,7 @@
      */
 
     test(function() {
-        assert_throws(new SyntaxError(), function() {
+        assert_throws(new TypeError(), function() {
             new PresentationRequest();
         });
     }, 'Call PresentationRequest() constructor without presentation URL. SyntaxError Exception expected.');
@@ -24,7 +24,7 @@
      */
 
     test(function() {
-        assert_throws(new SyntaxError(), function() {
+        assert_throws(new TypeError(), function() {
             new PresentationRequest(wrong_presentation_url);
         });
     }, 'Call PresentationRequest() constructor with null presentation URL. SyntaxError Exception expected.');

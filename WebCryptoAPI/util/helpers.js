@@ -146,15 +146,13 @@ function assert_goodCryptoKey(key, algorithm, extractable, usages, kind) {
 
 // The algorithm parameter is an object with a name and other
 // properties. Given the name, generate all valid parameters.
-//
-// You can have a "short run" for RSA by including a second, true
-// parameter. Useful if you're testing one variant of the
-// algorithm name exhaustively, so need less exhaustive tests
-// for other variants.
-function allAlgorithmSpecifiersFor(algorithmName, shortRun) {
+function allAlgorithmSpecifiersFor(algorithmName) {
     var results = [];
-    var hashes = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"];
-    var keyLengths = [1024, 2048, 3072, 4096];
+
+    // RSA key generation is slow. Test a minimal set of parameters
+    var hashes = ["SHA-1", "SHA-256"];
+
+    // EC key generation is a lot faster. Check all curves in the spec
     var curves = ["P-256", "P-384", "P-521"];
 
     if (algorithmName.toUpperCase().substring(0, 3) === "AES") {
@@ -172,16 +170,8 @@ function allAlgorithmSpecifiersFor(algorithmName, shortRun) {
             results.push({name: algorithmName, hash: hashAlgorithm.name, length: hashAlgorithm.length});
         });
     } else if (algorithmName.toUpperCase().substring(0, 3) === "RSA") {
-        if (shortRun) {
-            hashes = ["SHA-1", "SHA-256"];
-            keyLengths = [1024];
-        }
         hashes.forEach(function(hashName) {
-            keyLengths.forEach(function(modulusLength) {
-                [new Uint8Array([3]), new Uint8Array([1,0,1])].forEach(function(publicExponent) {
-                    results.push({name: algorithmName, hash: hashName, modulusLength: modulusLength, publicExponent: publicExponent});
-                });
-            });
+            results.push({name: algorithmName, hash: hashName, modulusLength: 2048, publicExponent: new Uint8Array([1,0,1])});
         });
     } else if (algorithmName.toUpperCase().substring(0, 2) === "EC") {
         curves.forEach(function(curveName) {

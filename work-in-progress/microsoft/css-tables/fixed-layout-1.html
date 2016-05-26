@@ -11,7 +11,7 @@
 
 	<hr/>
 	<p>This should be a 100px-wide blue square:</p>
-	<p></p>
+	<p>Width is distributed equally between columns of auto size</p>
 	<x-table style="table-layout: fixed; width: 200px; border-spacing: 0px">
 		<x-tr>
 			<x-td style="padding: 0; background: blue; height: 100px;"></x-td>
@@ -21,7 +21,7 @@
 
 	<hr/>
 	<p>This should be a 100px-wide blue square:</p>
-	<p></p>
+	<p>Width is distributed equally between columns of auto size (even if they are defined by rows other than the first)</p>
 	<x-table style="table-layout: fixed; width: 200px; border-spacing: 0px">
 		<x-tr><x-td style="padding: 0; background: blue; height: 100px;"></x-td></x-tr>
 		<x-tr><x-td style="padding: 0; height: 0px"></x-td><x-td style="padding: 0"></x-td></x-tr>
@@ -29,7 +29,7 @@
 	
 	<hr/>
 	<p>This should be a 100px-wide blue square:</p>
-	<p></p>
+	<p>Widths defined on cells that are not the first row are ignored</p>
 	<x-table style="table-layout: fixed; width: 200px; border-spacing: 0px">
 		<x-tr><x-td style="padding: 0; background: blue; height: 100px;"></x-td></x-tr>
 		<x-tr><x-td style="padding: 0; height: 0px; width: 200px;"></x-td><x-td style="padding: 0; width: 200px;"></x-td></x-tr>
@@ -37,7 +37,7 @@
 	
 	<hr/>
 	<p>This should be a 100px-wide blue square:</p>
-	<p></p>
+	<p>The table has to grow to contain the widths defined for its columns</p>
 	<x-table style="table-layout: fixed; width: 50px; border-spacing: 0px">
 		<x-tr><x-td style="padding: 0; background: blue; height: 100px; width: 100px;"></x-td></x-tr>
 		<x-tr><x-td style="padding: 0; height: 0px"></x-td><x-td style="padding: 0"></x-td></x-tr>
@@ -45,7 +45,7 @@
 	
 	<hr/>
 	<p>This should be a 100px-wide blue square:</p>
-	<p></p>
+	<p>The first row is based on the visual order, not the dom order</p>
 	<x-table style="table-layout: fixed; width: 100px; border-spacing: 0px">
 		<x-tr><x-td style="padding: 0; height: 0px"></x-td><x-td style="padding: 0"></x-td></x-tr>
 		<x-thead><x-tr><x-td style="padding: 0; background: blue; height: 100px; width: 100px;"></x-td></x-tr></x-thead>

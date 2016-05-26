@@ -11,7 +11,7 @@
 
 	<hr/>
 	<p>This should be a 100px-wide blue square:</p>
-	<p></p>
+	<p>Table-layout:fixed does not apply to width:auto tables</p>
 	<x-table style="table-layout: fixed; border-spacing: 0px">
 		<x-tr>
 			<x-td style="padding: 0; background: blue; height: 100px;"><div style="width: 100px"></div></x-td>
@@ -21,7 +21,7 @@
 	
 	<hr/>
 	<p>This should be a 100px-wide blue square:</p>
-	<p></p>
+	<p>Table-layout:fixed does not apply to width:max-content tables</p>
 	<x-table style="table-layout: fixed; width: max-content; border-spacing: 0px">
 		<x-tr>
 			<x-td style="padding: 0; background: blue; height: 100px;"><div style="width: 100px"></div></x-td>
@@ -31,8 +31,8 @@
 	
 	<hr/>
 	<p>This should be a 100px-wide blue square:</p>
-	<p></p>
-	<x-table style="table-layout: auto; width: min-content; border-spacing: 0px">
+	<p>Table-layout:fixed does not apply to width:min-content/fit-content tables</p>
+	<x-table style="table-layout: auto; width: fit-content; border-spacing: 0px">
 		<x-tr>
 			<x-td style="padding: 0; background: blue; height: 50px;"><div style="width: 100px"></div></x-td>
 			<x-td style="padding: 0"></x-td>

@@ -1,7 +1,7 @@
 /* custom table tags */
 
 	x-table { display: table; }
-	x-colgroup { display: table-colum-group; }
+	x-colgroup { display: table-column-group; }
 	x-col { display: table-column; }
 	x-tbody { display: table-row-group; }
 	x-thead { display: table-header-group; }

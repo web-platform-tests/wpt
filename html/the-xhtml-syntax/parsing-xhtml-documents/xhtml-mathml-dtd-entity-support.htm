@@ -8,7 +8,7 @@
 <script>
   var parser = new DOMParser();
   var parse = parser.parseFromString.bind(parser);
-  
+
   function generateTestFunction(entitystring, expectedString, doctypeMarkupString, mimeType, friendlyMime) {
     return function () {
       var doc = parse(doctypeMarkupString + "<html><head></head><body id='test'>"+entitystring+"</body></html>", mimeType);
@@ -31,9 +31,9 @@
       }
     }
   }
-  
+
   setup(function() {}, {explicit_done: true});
-  
+
   var xhr = new XMLHttpRequest();
   //xhr.open("GET", "entities.json");
   xhr.open("GET", "https://w3c.github.io/html/entities.json");

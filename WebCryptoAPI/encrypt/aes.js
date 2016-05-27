@@ -50,9 +50,9 @@ function run_test() {
             if (aBytes[i] !== bBytes[i]) {
                 return false;
             }
-
-        return true;
         }
+        
+        return true;
     }
 
     return;

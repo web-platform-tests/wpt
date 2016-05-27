@@ -27,7 +27,7 @@ function run_test() {
                 var tag = result.slice(ciphertextLength);
 
                 assert_true(equalBuffers(ciphertext, ciphertextGcm128), "Correct ciphertext");
-                assert_true(equalBuffers(tag, tagGcm128), "Correct tag");
+                assert_true(equalBuffers(tag, tagGcm128_128), "Correct tag");
             })
             .catch(function(err) {
                 assert_unreached("Threw an unexpected error: " + err.toString());
@@ -51,7 +51,7 @@ function run_test() {
                 return false;
             }
         }
-        
+
         return true;
     }
 

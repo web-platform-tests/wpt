@@ -3,13 +3,8 @@
 
 // Define the data and expected results for the tests.
 
-var iv256 = new Uint8Array([58, 146, 115, 42, 166, 234, 57,
-    191, 57, 134, 224, 199, 63, 169, 32, 0, 32, 33, 117, 56,
-    94, 248, 173, 234, 194, 200, 115, 53, 235, 146, 141, 212]);
-
-var keyBytes128 = new Uint8Array([222, 192, 212, 252, 191, 60, 71,
-    65, 200, 146, 218, 189, 28, 212, 192, 78]);
-
+// We will encrypt the plaintext below, which is the ASCII
+// encoding of the Web Cryptography API Abstract.
 var plaintext = new Uint8Array([84, 104, 105, 115, 32, 115,
     112, 101, 99, 105, 102, 105, 99, 97, 116, 105, 111, 110,
     32, 100, 101, 115, 99, 114, 105, 98, 101, 115, 32, 97, 32,
@@ -46,17 +41,49 @@ var plaintext = new Uint8Array([84, 104, 105, 115, 32, 115,
     99, 117, 109, 101, 110, 116, 32, 111, 114, 32, 99, 111,
     100, 101, 32, 115, 105, 103, 110, 105, 110, 103, 44, 32,
     97, 110, 100, 32, 116, 104, 101, 32, 99, 111, 110, 102,
-     105, 100, 101, 110, 116, 105, 97, 108, 105, 116, 121, 32,
-     97, 110, 100, 32, 105, 110, 116, 101, 103, 114, 105, 116,
-     121, 32, 111, 102, 32, 99, 111, 109, 109, 117, 110, 105,
-     99, 97, 116, 105, 111, 110, 115, 46]);
+    105, 100, 101, 110, 116, 105, 97, 108, 105, 116, 121, 32,
+    97, 110, 100, 32, 105, 110, 116, 101, 103, 114, 105, 116,
+    121, 32, 111, 102, 32, 99, 111, 109, 109, 117, 110, 105,
+    99, 97, 116, 105, 111, 110, 115, 46]);
 
+// We want some random key bytes of various sizes.
+// These were randomly generated from a script.
+var keyBytes128 = new Uint8Array([222, 192, 212, 252, 191, 60, 71,
+    65, 200, 146, 218, 189, 28, 212, 192, 78]);
+
+var keyBytes192 = new Uint8Array([208, 238, 131, 65, 63, 68, 196, 63, 186, 208,
+    61, 207, 166, 18, 99, 152, 29, 109, 221, 95, 240, 30, 28, 246]);
+
+var keyBytes256 = new Uint8Array([103, 105, 56, 35, 251, 29, 88, 7, 63, 145, 236,
+    233, 204, 58, 249, 16, 229, 83, 38, 22, 164, 210, 123, 19, 235, 123, 116,
+    216, 0, 11, 191, 48]);
+
+// AES-CBC needs a 16 byte (128 bit) IV.
+var iv128 = new Uint8Array([85, 170, 248, 155, 168, 148, 19, 213, 78, 167, 39,
+    167, 108, 39, 162, 132]);
+
+// AES-CTR needs a 16 byte (128 bit) random counter
+var counter128 = new Uint8Array([222, 96, 193, 184, 168, 216, 155, 45, 102, 106,
+    190, 168, 44, 106, 29, 49]);
+
+// AES-GCM needs an IV of no more than 2^64 - 1 bytes. Well, 32 bytes is okay then.
+var iv256 = new Uint8Array([58, 146, 115, 42, 166, 234, 57,
+    191, 57, 134, 224, 199, 63, 169, 32, 0, 32, 33, 117, 56,
+    94, 248, 173, 234, 194, 200, 115, 53, 235, 146, 141, 212]);
+
+// Authenticated encryption via AES-GCM requires additional data that
+// will be checked. We use the ASCII encoded Editorial Note
+// following the Abstract of the Web Cryptography API recommendation.
 var additionalData = new Uint8Array([84, 104, 101, 114, 101,
     32, 97, 114, 101, 32, 55, 32, 102, 117, 114, 116, 104, 101,
     114, 32, 101, 100, 105, 116, 111, 114, 105, 97, 108, 32,
     110, 111, 116, 101, 115, 32, 105, 110, 32, 116, 104, 101,
     32, 100, 111, 99, 117, 109, 101, 110, 116, 46]);
 
+
+// Results. These were created using the Python cryptography module.
+
+// AES-GCM produces ciphertext and a tag.
 var ciphertextGcm128 = new Uint8Array([180, 241, 40, 183, 105,
     52, 147, 238, 224, 175, 175, 236, 168, 244, 241, 121, 9,
     202, 225, 237, 56, 216, 253, 254, 186, 102, 111, 207, 228,
@@ -97,5 +124,6 @@ var ciphertextGcm128 = new Uint8Array([180, 241, 40, 183, 105,
     80, 128, 101, 191, 240, 91, 151, 249, 62, 62, 244, 18, 3,
     17, 135, 222, 210, 93, 149, 123]);
 
-var tagGcm128 = new Uint8Array([194, 226, 198, 253, 239, 28,
+//  The length of the tag defaults to 16 bytes (128 bites).
+var tagGcm128_128 = new Uint8Array([194, 226, 198, 253, 239, 28,
     197, 240, 123, 216, 176, 151, 239, 200, 184, 183]);

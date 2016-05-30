@@ -1,0 +1,12 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Navigate to a facetime URL</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<iframe src="support/redirect.py?r=facetime:user@example.com" onerror="alert(1)" onload="alert(2)"></iframe>
+<script>
+  onload = function() {
+  	done()
+  }
+</script>

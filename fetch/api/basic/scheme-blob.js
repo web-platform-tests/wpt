@@ -34,12 +34,12 @@ checkKoUrl("blob:http://{{domains[www]}}:{{ports[http][0]}}/", "GET",
           "Fetching [GET] blob:http://{{domains[www]}}:{{ports[http][0]}}/ is KO");
 
 var invalidRequestMethods = [
-  ["POST"],
-  ["OPTIONS"],
-  ["HEAD"],
-  ["PUT"],
-  ["DELETE"],
-  ["INVALID"],
+  "POST",
+  "OPTIONS",
+  "HEAD",
+  "PUT",
+  "DELETE",
+  "INVALID",
 ];
 invalidRequestMethods.forEach(function(method) {
   checkKoUrl(URL.createObjectURL(blob2), method, "Fetching [" + method + "] URL.createObjectURL(blob) is KO");

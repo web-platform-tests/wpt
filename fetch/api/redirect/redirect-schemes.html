@@ -16,8 +16,8 @@
     fetch(url + "blob:djfksfjs")
   ]
   ;tests.forEach(function(f) {
-  	promise_test(function(t) {
+    promise_test(function(t) {
       return promise_rejects(t, new TypeError(), f)
-  	})
+    })
   })
 </script>

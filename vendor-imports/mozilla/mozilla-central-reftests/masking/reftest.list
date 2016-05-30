@@ -13,7 +13,7 @@
 # mask-mode test cases
 == mask-mode-a.html mask-mode-ref.html
 == mask-mode-b.html mask-mode-ref.html
-== mask-type.html mask-type-ref.html
+== mask-mode-to-mask-type.html mask-mode-to-mask-type-ref.html
 
 # mask-image test cases
 == mask-image-1a.html mask-image-1-ref.html

@@ -14,8 +14,8 @@
     fetch(url + "about:blank"),
     fetch(url + "about:unicorn"),
     fetch(url + "blob:djfksfjs")
-  ]
-  ;tests.forEach(function(f) {
+  ];
+  tests.forEach(function(f) {
     promise_test(function(t) {
       return promise_rejects(t, new TypeError(), f)
     })

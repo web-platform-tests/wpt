@@ -221,7 +221,7 @@
   ].forEach(name => {
     test(() => {
       class C {
-        get[name]() { throw_rethrown_error(); }
+        get [name]() { throw_rethrown_error(); }
       }
       assert_rethrown(() => {
         customElements.define(`test-define-${name.toLowerCase()}-rethrow`, C);
@@ -245,7 +245,7 @@
             customElements.define(`test-define-${name.toLowerCase()}-${data.name}`, C);
           });
         }
-      }, `If constructor.prototype.${name} is ${data.name}, should ${data.success ? 'success' : 'throw a TypeError'}`);
+      }, `If constructor.prototype.${name} is ${data.name}, should ${data.success ? 'succeed' : 'throw a TypeError'}`);
     });
   });
 })();

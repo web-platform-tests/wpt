@@ -2,24 +2,10 @@
 function run_test() {
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
-    // Test AES-CBC encryption with various key lengths for both successes
-    // and appropriate errors.
-
-    // Label tests with the parameters used for encrypt
-    function parameterString(algorithm, keyLength, usages) {
-        var result = "(" +
-                        objectToString(algorithm) + ", " +
-                        objectToString(keyLength) + ", " +
-                        objectToString(usages) +
-                     ")";
-
-        return result;
-    }
-
     // Source file aes_vectors.js provides the getTestVectors method
     // that drives these tests.
     getTestVectors().forEach(function(vector) {
-        importVectorKey(vector)
+        importVectorKey(vector, ["encrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
@@ -29,6 +15,30 @@ function run_test() {
                     assert_unreached("encrypt error for test " + vector.name + ": " + err.message);
                 });
             }, vector.name);
+
+            // Try bad tagLengths. In order to not repeat, trigger them only for
+            // vectors with the largest possible tagLength. Try tags that are
+            // too long, too short, and an unallowed middle value.
+            if (vector.algorithm.tagLength === 128) {
+                [132, 28, 100].forEach(function(badTagLength) {
+                    var algorithm = Object.assign({}, vector.algorithm);
+                    algorithm.tagLength = badTagLength;
+
+                    promise_test(function(test) {
+                        return subtle.encrypt(algorithm, vector.key, vector.plaintext)
+                        .then(function(result) {
+                            assert_unreached("Bad tag length " + badTagLength.toString + " should have thrown error");
+                        }, function(err) {
+                            assert_equals(err.name, "OperationError", "Should have thrown an OperationError")
+                        });
+                    }, vector.name + " with " + badTagLength + "-bit tag");
+                });
+            }
+
+            // Should also test bad plaintext, iv, and additionalData lengths.
+            // But it's not realistic to generate buffers of more than 2^39,
+            // 2^64, and 2^64 bytes, so no such tests.
+
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so
             // we know we never tested encryption
@@ -39,16 +49,22 @@ function run_test() {
     });
 
     // A test vector has all needed fields for encryption, EXCEPT that the
-    // key field is null. This function replaces that null with the Correct
+    // key field may be null. This function replaces that null with the Correct
     // CryptoKey object.
     //
     // Returns a Promise that yields an updated vector on success.
-    function importVectorKey(vector) {
-        return subtle.importKey("raw", vector.keyBuffer, {name: vector.algorithm.name}, false, ["encrypt"])
-        .then(function(key) {
-            vector.key = key;
-            return vector;
-        });
+    function importVectorKey(vector, usages) {
+        if (vector.key !== null) {
+            return new Promise(function(resolve, reject) {
+                resolve(vector);
+            });
+        } else {
+            return subtle.importKey("raw", vector.keyBuffer, {name: vector.algorithm.name}, false, usages)
+            .then(function(key) {
+                vector.key = key;
+                return vector;
+            });
+        }
     }
 
     function equalBuffers(a, b) {

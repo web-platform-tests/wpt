@@ -45,8 +45,6 @@ def check_path_length(repo_root, path):
         return [("PATH LENGTH", "/%s longer than maximum path length (%d > 150)" % (path, len(path) + 1), None)]
     return []
 
-def set_type(error_type, errors):
-    return [(error_type,) + error for error in errors]
 
 def parse_whitelist(f):
     """

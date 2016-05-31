@@ -8,5 +8,5 @@ install:
   - pip install ./html5lib
   - pip install pytest-travis-fold
 script:
-  - py.test manifest
+  - py.test lint manifest
   - flake8

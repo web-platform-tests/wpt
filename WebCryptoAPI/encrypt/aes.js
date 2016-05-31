@@ -16,27 +16,40 @@ function run_test() {
         return result;
     }
 
-    subtle.importKey("raw", keyBytes128, {name: "AES-GCM"}, false, ["encrypt"])
-    .then(function(key128) {
-
-        promise_test(function(test) {
-            return subtle.encrypt({name: "AES-GCM", iv: iv256, additionalData: additionalData, tagLength: 128}, key128, plaintext)
-            .then(function(result) {
-                var ciphertextLength = result.byteLength - 16;
-                var ciphertext = result.slice(0, ciphertextLength);
-                var tag = result.slice(ciphertextLength);
-
-                assert_true(equalBuffers(ciphertext, ciphertextGcm128), "Correct ciphertext");
-                assert_true(equalBuffers(tag, tagGcm128_128), "Correct tag");
-            })
-            .catch(function(err) {
-                assert_unreached("Threw an unexpected error: " + err.toString());
-            });
+    // Source file aes_vectors.js provides the getTestVectors method
+    // that drives these tests.
+    getTestVectors().forEach(function(vector) {
+        importVectorKey(vector)
+        .then(function(vector) {
+            promise_test(function(test) {
+                return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
+                .then(function(result) {
+                    assert_true(equalBuffers(result, vector.result), "Should return expected result");
+                }, function(err) {
+                    assert_unreached("encrypt error for test " + vector.name + ": " + err.message);
+                });
+            }, vector.name);
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importKey failed for " + vector.name);
+            }, "importKey step: " + vector.name);
         });
-
-    }, function(err) {
-        assert_unreached("Threw an unexpected error: " + err.toString());
     });
+
+    // A test vector has all needed fields for encryption, EXCEPT that the
+    // key field is null. This function replaces that null with the Correct
+    // CryptoKey object.
+    //
+    // Returns a Promise that yields an updated vector on success.
+    function importVectorKey(vector) {
+        return subtle.importKey("raw", vector.keyBuffer, {name: vector.algorithm.name}, false, ["encrypt"])
+        .then(function(key) {
+            vector.key = key;
+            return vector;
+        });
+    }
 
     function equalBuffers(a, b) {
         if (a.byteLength !== b.byteLength) {

@@ -209,15 +209,19 @@ function getTestVectors() {
             42, 85, 76, 194, 28, 49, 60])
     };
 
-    var vectors = [];
-    [128, 192, 256].forEach(function(keyLength) {
-        [32, 64, 96, 104, 112, 120, 128].forEach(function(tagLength) {
+    var keyLengths = [128, 192, 256];
+    var tagLengths = [32, 64, 96, 104, 112, 120, 128];
+
+    // All the scenarios that should succeed, if the key has "encrypt" usage
+    var passing = [];
+    keyLengths.forEach(function(keyLength) {
+        tagLengths.forEach(function(tagLength) {
             var byteCount = tagLength / 8;
             var result = new Uint8Array(ciphertextGcm[keyLength].byteLength + byteCount);
             result.set(ciphertextGcm[keyLength], 0);
             result.set(tagGcm[keyLength].slice(0, byteCount), ciphertextGcm[keyLength].byteLength);
 
-            vectors.push({
+            passing.push({
                     name: "AES-GCM " + keyLength.toString() + "-bit key, " + tagLength.toString() + "-bit tag",
                     keyBuffer: keyBytes[keyLength],
                     key: null,
@@ -228,5 +232,20 @@ function getTestVectors() {
         });
     });
 
-    return vectors;
+    // Scenarios that should fail because of a bad tag length, causing an OperationError
+    var failing = [];
+    keyLengths.forEach(function(keyLength) {
+        // First, make some tests for bad tag lengths
+        [24, 48, 72, 95, 129, 256].forEach(function(badTagLength) {
+            failing.push({
+                name: "AES-GCM " + keyLength.toString() + "-bit key, " + badTagLength.toString() + "-bit tag",
+                keyBuffer: keyBytes[keyLength],
+                key: null,
+                algorithm: {name: "AES-GCM", iv: iv256, additionalData: additionalData, tagLength: badTagLength},
+                plaintext: plaintext
+            });
+        });
+    });
+
+    return {passing: passing, failing: failing};
 }

@@ -66,16 +66,8 @@ function getTestVectors() {
             216, 0, 11, 191, 48])
     }
 
-    // AES-CBC needs a 16 byte (128 bit) IV.
-    var iv128 = new Uint8Array([85, 170, 248, 155, 168, 148, 19, 213, 78, 167, 39,
-        167, 108, 39, 162, 132]);
-
-    // AES-CTR needs a 16 byte (128 bit) random counter
-    var counter128 = new Uint8Array([222, 96, 193, 184, 168, 216, 155, 45, 102, 106,
-        190, 168, 44, 106, 29, 49]);
-
     // AES-GCM needs an IV of no more than 2^64 - 1 bytes. Well, 32 bytes is okay then.
-    var iv256 = new Uint8Array([58, 146, 115, 42, 166, 234, 57,
+    var iv = new Uint8Array([58, 146, 115, 42, 166, 234, 57,
         191, 57, 134, 224, 199, 63, 169, 32, 0, 32, 33, 117, 56,
         94, 248, 173, 234, 194, 200, 115, 53, 235, 146, 141, 212]);
 
@@ -92,7 +84,7 @@ function getTestVectors() {
     // Results. These were created using the Python cryptography module.
 
     // AES-GCM produces ciphertext and a tag.
-    var ciphertextGcm = {
+    var ciphertext = {
         128: new Uint8Array([180, 241, 40, 183, 105,
             52, 147, 238, 224, 175, 175, 236, 168, 244, 241, 121, 9,
             202, 225, 237, 56, 216, 253, 254, 186, 102, 111, 207, 228,
@@ -200,7 +192,7 @@ function getTestVectors() {
     };
 
     //  The length of the tag defaults to 16 bytes (128 bit).
-    var tagGcm = {
+    var tag = {
         128: new Uint8Array([194, 226, 198, 253, 239, 28,
             197, 240, 123, 216, 176, 151, 239, 200, 184, 183]),
         192: new Uint8Array([183, 57, 32, 144, 164, 76, 121, 77, 58,
@@ -217,15 +209,15 @@ function getTestVectors() {
     keyLengths.forEach(function(keyLength) {
         tagLengths.forEach(function(tagLength) {
             var byteCount = tagLength / 8;
-            var result = new Uint8Array(ciphertextGcm[keyLength].byteLength + byteCount);
-            result.set(ciphertextGcm[keyLength], 0);
-            result.set(tagGcm[keyLength].slice(0, byteCount), ciphertextGcm[keyLength].byteLength);
+            var result = new Uint8Array(ciphertext[keyLength].byteLength + byteCount);
+            result.set(ciphertext[keyLength], 0);
+            result.set(tag[keyLength].slice(0, byteCount), ciphertext[keyLength].byteLength);
 
             passing.push({
                     name: "AES-GCM " + keyLength.toString() + "-bit key, " + tagLength.toString() + "-bit tag",
                     keyBuffer: keyBytes[keyLength],
                     key: null,
-                    algorithm: {name: "AES-GCM", iv: iv256, additionalData: additionalData, tagLength: tagLength},
+                    algorithm: {name: "AES-GCM", iv: iv, additionalData: additionalData, tagLength: tagLength},
                     plaintext: plaintext,
                     result: result
                 });
@@ -241,7 +233,7 @@ function getTestVectors() {
                 name: "AES-GCM " + keyLength.toString() + "-bit key, " + badTagLength.toString() + "-bit tag",
                 keyBuffer: keyBytes[keyLength],
                 key: null,
-                algorithm: {name: "AES-GCM", iv: iv256, additionalData: additionalData, tagLength: badTagLength},
+                algorithm: {name: "AES-GCM", iv: iv, additionalData: additionalData, tagLength: badTagLength},
                 plaintext: plaintext
             });
         });

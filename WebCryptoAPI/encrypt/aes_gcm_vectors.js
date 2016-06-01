@@ -1,5 +1,5 @@
 
-// aes-vectors.js
+// aes_gcm_vectors.js
 
 // The following function returns an array of test vectors
 // for the subtleCrypto encrypt method.

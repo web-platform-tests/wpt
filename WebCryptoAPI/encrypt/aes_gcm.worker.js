@@ -1,5 +1,5 @@
 importScripts("/resources/testharness.js");
-importScripts("aes.js");
+importScripts("aes_gcm.js");
 
 run_test();
 done();

@@ -18,7 +18,7 @@ constraint (width &gt;=0) in getUserMedia works</p>
 <script>
 var t = async_test("Tests that setting a trivial mandatory constraint in getUserMedia works", {timeout:10000});
 t.step(function() {
-  navigator.getUserMedia({video: {mandatory: {width: {min:0}}}}, t.step_func(function (stream) {
+  navigator.getUserMedia({video: {width: {min:0}}}, t.step_func(function (stream) {
     assert_equals(stream.getVideoTracks().length, 1, "the media stream has exactly one video track");
     t.done();
   }), t.step_func(function(error) {

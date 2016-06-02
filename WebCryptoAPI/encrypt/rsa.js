@@ -12,34 +12,40 @@ function run_test() {
     passingVectors.forEach(function(vector) {
         importVectorKeys(vector, ["encrypt"], ["decrypt"])
         .then(function(vectors) {
-            promise_test(function(test) {
-                // We will encrypt, check that no errors are thrown and result is
-                // "reasonable" looking, then decrypt to make sure we get the
-                // starting plaintext back, then encrypt again to make sure we
-                // don't get the same ciphertext for two subsequent invocations.
-                return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
-                .then(function(ciphertext) {
-                    return subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
-                    .then(function(result) {
-                        assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
-                        return ciphertext;
-                    }, function(err) {
-                        assert_unreached("decrypt error for test " + vector.name + ": " + err.message);
-                    });
-                }, function(err) {
-                    assert_unreached("encrypt error for test " + vector.name + ": " + err.message);
-                })
-                .then(function(priorCiphertext) {
-                    return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
+            ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(function(hash) {
+                var algorithm = Object.assign({}, vector.algorithm);
+                algorithm.hash = hash;
+                var name = "RSA-OAEP with " + hash + " and no label"
+
+                promise_test(function(test) {
+                    return subtle.encrypt(algorithm, vector.publicKey, vector.plaintext)
                     .then(function(ciphertext) {
-                        assert_false(equalBuffers(priorCiphertext, ciphertext), "Two encrypts give different results")
+                        assert_equals(ciphertext.byteLength * 8, vector.privateKey.algorithm.modulusLength, "Ciphertext length matches modulus length");
+
+                        // Can we get the original plaintext back via decrypt?
+                        return subtle.decrypt(algorithm, vector.privateKey, ciphertext)
+                        .then(function(result) {
+                            assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
+                            return ciphertext;
+                        }, function(err) {
+                            assert_unreached("decrypt error for test " + name + ": " + err.message);
+                        });
                     }, function(err) {
-                        assert_unreached("second time encrypt error for test " + vector.name + ": " + err.message);
+                        assert_unreached("encrypt error for test " + name + ": " + err.message);
+                    })
+                    .then(function(priorCiphertext) {
+                        // Will a second encrypt give us different ciphertext, as it should?
+                        return subtle.encrypt(algorithm, vector.publicKey, vector.plaintext)
+                        .then(function(ciphertext) {
+                            assert_false(equalBuffers(priorCiphertext, ciphertext), "Two encrypts give different results")
+                        }, function(err) {
+                            assert_unreached("second time encrypt error for test " + name + ": " + err.message);
+                        });
+                    }, function(err) {
+                        assert_unreached("second decrypt error for test " + name + ": " + err.message);
                     });
-                }, function(err) {
-                    assert_unreached("second decrypt error for test " + vector.name + ": " + err.message);
-                });
-            }, vector.name);
+                }, name);
+            });
 
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so

@@ -13,23 +13,39 @@ function run_test() {
         importVectorKeys(vector, ["encrypt"], ["decrypt"])
         .then(function(vectors) {
             promise_test(function(test) {
+                // We will encrypt, check that no errors are thrown and result is
+                // "reasonable" looking, then decrypt to make sure we get the
+                // starting plaintext back, then encrypt again to make sure we
+                // don't get the same ciphertext for two subsequent invocations.
                 return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
                 .then(function(ciphertext) {
-                    subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
+                    return subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
                     .then(function(result) {
                         assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
+                        return ciphertext;
                     }, function(err) {
                         assert_unreached("decrypt error for test " + vector.name + ": " + err.message);
                     });
                 }, function(err) {
                     assert_unreached("encrypt error for test " + vector.name + ": " + err.message);
+                })
+                .then(function(priorCiphertext) {
+                    return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
+                    .then(function(ciphertext) {
+                        assert_false(equalBuffers(priorCiphertext, ciphertext), "Two encrypts give different results")
+                    }, function(err) {
+                        assert_unreached("second time encrypt error for test " + vector.name + ": " + err.message);
+                    });
+                }, function(err) {
+                    assert_unreached("second decrypt error for test " + vector.name + ": " + err.message);
                 });
             }, vector.name);
+
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so
             // we know we never tested encryption
             promise_test(function(test) {
-                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: " + err.message);
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
             }, "importVectorKeys step: " + vector.name);
         });
     });
@@ -114,7 +130,7 @@ function run_test() {
             });
         }
 
-        return Promise.race([publicPromise, privatePromise]);
+        return Promise.all([publicPromise, privatePromise]);
     }
 
     function equalBuffers(a, b) {

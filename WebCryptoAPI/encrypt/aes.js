@@ -2,8 +2,8 @@
 function run_test() {
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
-    // Source file aes_gcm_vectors.js provides the getTestVectors method
-    // that drives these tests.
+    // Source file aes_XXX_vectors.js provides the getTestVectors method
+    // for the AES-XXX algorithm that drives these tests.
     var vectors = getTestVectors();
     var passingVectors = vectors.passing;
     var failingVectors = vectors.failing;

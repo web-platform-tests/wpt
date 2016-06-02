@@ -28,8 +28,18 @@
     var startPresentation = function () {
         promise_test(function () {
             return request.start()
-                    .catch(function () {
-                        assert_true(true);
+                    .catch(function (err) {
+
+                        test(function () {
+                            assert_true(err.code == 20, 'The error code is equal to 20.');
+                        }, 'Check, if the error code is correct.')
+
+                        test(function () {
+                            assert_true(err.message === 'Dialog closed.', 'The error message is equal to "Dialog closed."');
+                        }, 'Check, if the error message is correct.')
+
+                        assert_true(err.name === 'AbortError', 'The error name is AbortError.');
+
                     });
         }, "The starting process for the presentation has been aborted.");
     }

@@ -36,7 +36,7 @@ function getTestVectors() {
             publicKeyBuffer: spki,
             publicKeyFormat: "spki",
             privateKey: null,
-            privateKeyBuffer: spki,
+            privateKeyBuffer: pkcs8,
             privateKeyFormat: "pkcs8",
             publicKey: null,
             algorithm: {name: "RSA-OAEP"},

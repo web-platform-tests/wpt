@@ -20,7 +20,7 @@ constraint (width &gt;=0) in getUserMedia works</p>
 <script>
 var t = async_test("Tests that setting an impossible constraint in getUserMedia fails", {timeout:10000});
 t.step(function() {
-  navigator.getUserMedia({video: {mandatory: {width: {min:Infinity}}}}, t.step_func(function (stream) {
+  navigator.getUserMedia({video: {width: {min:Infinity}}}, t.step_func(function (stream) {
     assert_unreached("a Video stream of infinite width cannot be created");
     t.done();
   }), t.step_func(function(error) {

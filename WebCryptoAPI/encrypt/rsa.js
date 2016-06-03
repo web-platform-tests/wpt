@@ -12,40 +12,32 @@ function run_test() {
     passingVectors.forEach(function(vector) {
         importVectorKeys(vector, ["encrypt"], ["decrypt"])
         .then(function(vectors) {
-            ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(function(hash) {
-                var algorithm = Object.assign({}, vector.algorithm);
-                algorithm.hash = hash;
-                var name = "RSA-OAEP with " + hash + " and no label"
+            promise_test(function(test) {
+                return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
+                .then(function(ciphertext) {
+                    assert_equals(ciphertext.byteLength * 8, vector.privateKey.algorithm.modulusLength, "Ciphertext length matches modulus length");
 
-                promise_test(function(test) {
-                    return subtle.encrypt(algorithm, vector.publicKey, vector.plaintext)
-                    .then(function(ciphertext) {
-                        assert_equals(ciphertext.byteLength * 8, vector.privateKey.algorithm.modulusLength, "Ciphertext length matches modulus length");
-
-                        // Can we get the original plaintext back via decrypt?
-                        return subtle.decrypt(algorithm, vector.privateKey, ciphertext)
-                        .then(function(result) {
-                            assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
-                            return ciphertext;
-                        }, function(err) {
-                            assert_unreached("decrypt error for test " + name + ": " + err.message);
-                        });
+                    // Can we get the original plaintext back via decrypt?
+                    return subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
+                    .then(function(result) {
+                        assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
+                        return ciphertext;
                     }, function(err) {
-                        assert_unreached("encrypt error for test " + name + ": " + err.message);
-                    })
-                    .then(function(priorCiphertext) {
-                        // Will a second encrypt give us different ciphertext, as it should?
-                        return subtle.encrypt(algorithm, vector.publicKey, vector.plaintext)
-                        .then(function(ciphertext) {
-                            assert_false(equalBuffers(priorCiphertext, ciphertext), "Two encrypts give different results")
-                        }, function(err) {
-                            assert_unreached("second time encrypt error for test " + name + ": " + err.message);
-                        });
-                    }, function(err) {
-                        assert_unreached("second decrypt error for test " + name + ": " + err.message);
+                        assert_unreached("decrypt error for test " + vector.name + ": " + err.message + "'");
                     });
-                }, name);
-            });
+                })
+                .then(function(priorCiphertext) {
+                    // Will a second encrypt give us different ciphertext, as it should?
+                    return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
+                    .then(function(ciphertext) {
+                        assert_false(equalBuffers(priorCiphertext, ciphertext), "Two encrypts give different results")
+                    }, function(err) {
+                        assert_unreached("second time encrypt error for test " + vector.name + ": '" + err.message + "'");
+                    });
+                }, function(err) {
+                    assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
+                });
+            }, vector.name);
 
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so
@@ -56,53 +48,85 @@ function run_test() {
         });
     });
 
-    return;
-
-    // Everything that succeeded should fail if no "encrypt" usage.
+    // Check for failures due to too long plaintext.
     passingVectors.forEach(function(vector) {
-        // Don't want to overwrite key being used for success tests!
-        var badVector = Object.assign({}, vector);
-        badVector.key = null;
-
-        importVectorKey(badVector, ["decrypt"])
-        .then(function(vector) {
+        importVectorKeys(vector, ["encrypt"], ["decrypt"])
+        .then(function(vectors) {
+            // Get a one byte longer plaintext to encrypt
+            var plaintext = new Uint8Array(vector.plaintext.byteLength + 1);
+            plaintext.set(plaintext, 0);
+            plaintext.set(new Uint8Array([32]), vector.plaintext.byteLength);
             promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
-                .then(function(result) {
-                    assert_unreached("should have thrown exception for test " + vector.name);
+                return subtle.encrypt(vector.algorithm, vector.publicKey, plaintext)
+                .then(function(ciphertext) {
+                    assert_unreached("Should have thrown error for too long plaintext in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw an InvalidAccessError")
+                    assert_equals(err.name, "OperationError", "Should throw OperationError");
                 });
-            }, vector.name + " without encrypt usage");
+            }, vector.name + " too long plaintext");
+
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so
             // we know we never tested encryption
             promise_test(function(test) {
-                assert_unreached("importKey failed for " + vector.name);
-            }, "importKey step: " + vector.name + " without encrypt usage");
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " too long plaintext");
         });
     });
 
-    // Check for OperationError due to bad tag length.
-    failingVectors.forEach(function(vector) {
-        importVectorKey(vector, ["encrypt"])
-        .then(function(vector) {
+
+    // Check for failures due to using privateKey to encrypt.
+    passingVectors.forEach(function(vector) {
+        importVectorKeys(vector, ["encrypt"], ["decrypt"])
+        .then(function(vectors) {
+            // Get a one byte longer plaintext to encrypt
+            var plaintext = new Uint8Array(vector.plaintext.byteLength + 1);
+            plaintext.set(plaintext, 0);
+            plaintext.set(new Uint8Array([32]), vector.plaintext.byteLength);
             promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
-                .then(function(result) {
-                    assert_unreached("should have thrown exception for test " + vector.name);
+                return subtle.encrypt(vector.algorithm, vector.privateKey, plaintext)
+                .then(function(ciphertext) {
+                    assert_unreached("Should have thrown error for using privateKey to encrypt in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "OperationError", "Should throw an OperationError")
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
                 });
-            }, vector.name);
+            }, vector.name + " using privateKey to encrypt");
+
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so
             // we know we never tested encryption
             promise_test(function(test) {
-                assert_unreached("importKey failed for " + vector.name);
-            }, "importKey step: " + vector.name);
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " using privateKey to encrypt");
         });
     });
+
+
+    // Check for failures due to no "encrypt usage".
+    passingVectors.forEach(function(originalVector) {
+        var vector = Object.assign({}, originalVector);
+
+        importVectorKeys(vector, [], ["decrypt"])
+        .then(function(vectors) {
+            // Get a one byte longer plaintext to encrypt
+            promise_test(function(test) {
+                return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
+                .then(function(ciphertext) {
+                    assert_unreached("Should have thrown error for no encrypt usage in " + vector.name + ": " + err.message + "'");
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
+                });
+            }, vector.name + " no encrypt usage");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " no encrypt usage");
+        });
+    });
+
 
     // A test vector has all needed fields for encryption, EXCEPT that the
     // key field may be null. This function replaces that null with the Correct

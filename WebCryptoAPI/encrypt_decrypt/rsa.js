@@ -8,6 +8,33 @@ function run_test() {
     var passingVectors = vectors.passing;
     var failingVectors = vectors.failing;
 
+    // Test decryption, first, because encryption tests rely on that working
+    passingVectors.forEach(function(vector) {
+        importVectorKeys(vector, ["encrypt"], ["decrypt"])
+        .then(function(vectors) {
+            // Get a one byte longer plaintext to encrypt
+            if (!("ciphertext" in vector)) {
+                return;
+            }
+
+            promise_test(function(test) {
+                return subtle.decrypt(vector.algorithm, vector.privateKey, vector.ciphertext)
+                .then(function(plaintext) {
+                    assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
+                }, function(err) {
+                    assert_unreached("Decryption should not throw error " + vector.name + ": " + err.message + "'");
+                });
+            }, vector.name + " decryption");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " decryption");
+        });
+    });
+
     // Check for successful encryption.
     passingVectors.forEach(function(vector) {
         importVectorKeys(vector, ["encrypt"], ["decrypt"])

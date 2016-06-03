@@ -27,9 +27,7 @@
                         .then(function (setConnection) {
                             assert_unreached("reconnect should not return a Promise resolve by wrong presentation ID");
                         })
-                // No connection found for presUrl and presId, or an error occurred.
-
-        }, "In failure case, reconnect() return a NotFoundError");
+        }, "Check that the promise is rejected by wrong presentation Id");
     };
 
     setup({explicit_timeout: true})

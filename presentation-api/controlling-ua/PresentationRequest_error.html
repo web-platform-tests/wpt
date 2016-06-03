@@ -10,23 +10,23 @@
     var wrong_presentation_url = null;
 
     /**
-     *  Test if PresentationRequest constructor returns a SyntaxError() by missing presentation URL
+     *  Test if PresentationRequest constructor returns a TypeError() by missing presentation URL
      */
 
     test(function() {
         assert_throws(new TypeError(), function() {
             new PresentationRequest();
         });
-    }, 'Call PresentationRequest() constructor without presentation URL. SyntaxError Exception expected.');
+    }, 'Call PresentationRequest() constructor without presentation URL. TypeError Exception expected.');
 
     /**
-     *  Test if PresentationRequest constructor returns a SyntaxError() by wrong presentation URL
+     *  Test if PresentationRequest constructor returns a TypeError() by wrong presentation URL
      */
 
     test(function() {
         assert_throws(new TypeError(), function() {
             new PresentationRequest(wrong_presentation_url);
         });
-    }, 'Call PresentationRequest() constructor with null presentation URL. SyntaxError Exception expected.');
+    }, 'Call PresentationRequest() constructor with null presentation URL. TypeError Exception expected.');
 
 </script>

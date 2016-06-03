@@ -1,30 +1,28 @@
 ﻿<!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Basic User Interface Test: caret-color is not inherited</title>
+<title>CSS Basic User Interface Test: caret-color is inherited</title>
 <link rel="author" title="Chris Lilley" href="mailto:chris@w3.org">
-<link rel="help" title="7.2.1. Coloring the insertion caret: caret-color" href="http://www.w3.org/TR/css3-ui/#caret-color">
-<meta name="flags" content="">
-<meta name="assert" content="Test checks that caret-color value does not inherit">
+<link rel="author" title="Florian Rivoal" href="mailto:florian@rivoal.net">
+<link rel="help" href="http://www.w3.org/TR/css3-ui/#caret-color">
+<meta name="flags" content="interact">
+<meta name="assert" content="Test checks that caret-color value does inherit">
 <style>
-  #container {
-     caret-color:red;
-  }
-  #test1 {
-    caret-color:#070;
-  }
   textarea {
     font-size: 2em;
     font-weight: bold;
     width: 10em;
+    padding: 10px;
+    background: black; color: white; /* the color of a thin object like the caret is easier to see on a black background. */
   }
+  div {
+    caret-color: green;
   }
 </style>
 <body>
-  <p>Test passes if, when the cursor is placed in the first textarea for editing, the caret is green and then,
-  when placed in the second textarea, the caret is not red.</p>
+  <p>Test passes if, when the textarea is focused for editing, the text insertion caret is green, and then
+  when placed in the second textarea, it is not red.</p>
   <p>The shape of the caret, and whether it flashes, are not part of the test.</p>
-  <textarea id="test1">First textarea</textarea>
-  <div id="container">
-    <textarea id="test2">Second textarea</textarea>
+  <div>
+    <textarea autofocus></textarea>
   </div>
 </body>

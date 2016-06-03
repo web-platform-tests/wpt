@@ -10,7 +10,7 @@ function run_test() {
 
     // Check for successful encryption.
     passingVectors.forEach(function(vector) {
-        importVectorKey(vector, ["encrypt"])
+        importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
@@ -26,6 +26,27 @@ function run_test() {
             promise_test(function(test) {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step: " + vector.name);
+        });
+    });
+
+    // Check for successful decryption.
+    passingVectors.forEach(function(vector) {
+        importVectorKey(vector, ["encrypt", "decrypt"])
+        .then(function(vector) {
+            promise_test(function(test) {
+                return subtle.decrypt(vector.algorithm, vector.key, vector.result)
+                .then(function(result) {
+                    assert_true(equalBuffers(result, vector.plaintext), "Should return expected result");
+                }, function(err) {
+                    assert_unreached("decrypt error for test " + vector.name + ": " + err.message);
+                });
+            }, vector.name + " decryption");
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importKey failed for " + vector.name);
+            }, "importKey step for decryption: " + vector.name);
         });
     });
 
@@ -54,9 +75,34 @@ function run_test() {
         });
     });
 
-    // Check for OperationError due to bad tag length.
+    // Everything that succeeded decrypting should fail if no "decrypt" usage.
+    passingVectors.forEach(function(vector) {
+        // Don't want to overwrite key being used for success tests!
+        var badVector = Object.assign({}, vector);
+        badVector.key = null;
+
+        importVectorKey(badVector, ["encrypt"])
+        .then(function(vector) {
+            promise_test(function(test) {
+                return subtle.decrypt(vector.algorithm, vector.key, vector.result)
+                .then(function(result) {
+                    assert_unreached("should have thrown exception for test " + vector.name);
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should throw an InvalidAccessError")
+                });
+            }, vector.name + " without decrypt usage");
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importKey failed for " + vector.name);
+            }, "importKey step: " + vector.name + " without decrypt usage");
+        });
+    });
+
+    // Check for OperationError due to data lengths.
     failingVectors.forEach(function(vector) {
-        importVectorKey(vector, ["encrypt"])
+        importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
@@ -72,6 +118,27 @@ function run_test() {
             promise_test(function(test) {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step: " + vector.name);
+        });
+    });
+
+    // Check for OperationError due to data lengths for decryption, too.
+    failingVectors.forEach(function(vector) {
+        importVectorKey(vector, ["encrypt", "decrypt"])
+        .then(function(vector) {
+            promise_test(function(test) {
+                return subtle.decrypt(vector.algorithm, vector.key, vector.result)
+                .then(function(result) {
+                    assert_unreached("should have thrown exception for test " + vector.name);
+                }, function(err) {
+                    assert_equals(err.name, "OperationError", "Should throw an OperationError")
+                });
+            }, vector.name + " decryption");
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importKey failed for " + vector.name);
+            }, "importKey step: decryption " + vector.name);
         });
     });
 

@@ -27,9 +27,6 @@
                         .then(function (setConnection) {
                             assert_unreached("reconnect should not return a Promise resolve by wrong presentation ID");
                         })
-                        .catch(function (rejected) {
-                                assert_true(true, "reconnect catch an Error by wrong presentation ID");
-                        });
                 // No connection found for presUrl and presId, or an error occurred.
 
         }, "In failure case, reconnect() return a NotFoundError");

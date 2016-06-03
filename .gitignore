@@ -10,3 +10,4 @@ tools/cache
 *~
 *.orig
 *Thumbs.db
+node_modules

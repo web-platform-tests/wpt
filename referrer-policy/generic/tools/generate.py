@@ -20,7 +20,9 @@ def expand_test_expansion_pattern(spec_test_expansion, test_expansion_schema):
     return expansion
 
 
-def permute_expansion(expansion, selection = {}, artifact_index = 0):
+def permute_expansion(expansion, selection = None, artifact_index = 0):
+    if selection is None:
+        selection = {}
     artifact_order = ['delivery_method', 'redirection', 'origin',
                       'source_protocol', 'target_protocol', 'subresource',
                       'referrer_url', 'name']

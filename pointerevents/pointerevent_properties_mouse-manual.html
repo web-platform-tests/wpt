@@ -32,18 +32,17 @@
                             assert_equals(event.pointerType, 'mouse', 'pointerType should be mouse');
                         }, event.type + ".pointerType attribute is correct.");
 
-                        if (event.type != 'pointerout' && event.type != 'pointerleave' ) { 
+                        if (event.type != 'pointerout' && event.type != 'pointerleave' ) {
                             test(function () {
-                                assert_between_inclusive(event.clientX, 100, 100 + rectSquare1.width - 1, "ClientX should be in the boundaries of the black box");
-                            }, event.type + ".ClientX attribute is correct.");
-    
+                                assert_between_inclusive(event.clientX, rectSquare1.left, rectSquare1.right - 1, "ClientX should be in the boundaries of the black box");
+                            }, event.type + ".clientX attribute is correct.");
                             test(function () {
-                                assert_between_inclusive(event.clientY, 150, 150 + rectSquare1.height - 1, "ClientY should be in the boundaries of the black box");
-                            }, event.type + ".ClientY attribute is correct.");
+                                assert_between_inclusive(event.clientY, rectSquare1.top, rectSquare1.bottom - 1, "ClientY should be in the boundaries of the black box");
+                            }, event.type + ".clientY attribute is correct.");
                         } else {
                             test(function () {
-                                assert_true(event.clientX < 100 || event.clientX > 100 + rectSquare1.width - 1 || event.clientY < 150 || event.clientY > 150 + rectSquare1.Height - 1, "ClientX/Y should be out of the boundaries of the black box");
-                            }, event.type + " ClientX and ClientY attribute is correct.");
+                                assert_true(event.clientX < rectSquare1.left || event.clientX > rectSquare1.right - 1 || event.clientY < rectSquare1.top || event.clientY > rectSquare1.bottom - 1, "ClientX/Y should be out of the boundaries of the black box");
+                            }, event.type + "'s ClientX and ClientY attributes are correct.");
                         }
 
                         test(function () {

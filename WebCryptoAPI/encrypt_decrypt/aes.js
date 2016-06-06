@@ -7,6 +7,7 @@ function run_test() {
     var vectors = getTestVectors();
     var passingVectors = vectors.passing;
     var failingVectors = vectors.failing;
+    var decryptionFailingVectors = vectors.decryptionFailing;
 
     // Check for successful encryption.
     passingVectors.forEach(function(vector) {
@@ -133,6 +134,28 @@ function run_test() {
                     assert_equals(err.name, "OperationError", "Should throw an OperationError")
                 });
             }, vector.name + " decryption");
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importKey failed for " + vector.name);
+            }, "importKey step: decryption " + vector.name);
+        });
+    });
+
+    // Check for decryption failing for algorithm-specific reasons (such as bad
+    // padding for AES-CBC).
+    decryptionFailingVectors.forEach(function(vector) {
+        importVectorKey(vector, ["encrypt", "decrypt"])
+        .then(function(vector) {
+            promise_test(function(test) {
+                return subtle.decrypt(vector.algorithm, vector.key, vector.result)
+                .then(function(result) {
+                    assert_unreached("should have thrown exception for test " + vector.name);
+                }, function(err) {
+                    assert_equals(err.name, "OperationError", "Should throw an OperationError")
+                });
+            }, vector.name);
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so
             // we know we never tested encryption

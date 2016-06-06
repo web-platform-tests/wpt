@@ -178,6 +178,25 @@ function getTestVectors() {
             171, 196, 145, 225, 10, 111, 248, 111, 164, 216, 54, 225, 253])
     };
 
+    // Replace the last block of each ciphertext with bad padding below for decryption errors
+    var badPadding = {
+        128: {
+            "zeroPadChar": new Uint8Array([238, 27, 248, 169, 218, 138, 164, 86, 207, 102, 36, 223, 6, 166, 77, 14]),
+            "bigPadChar": new Uint8Array([91, 67, 119, 104, 252, 238, 175, 144, 17, 75, 12, 163, 212, 52, 46, 51]),
+            "inconsistentPadChars": new Uint8Array([135, 101, 112, 208, 3, 106, 226, 20, 25, 219, 79, 94, 58, 212, 242, 192])
+        },
+        192: {
+            "zeroPadChar": new Uint8Array([22, 158, 50, 15, 168, 47, 19, 194, 182, 133, 184, 65, 36, 43, 177, 254]),
+            "bigPadChar": new Uint8Array([207, 110, 28, 160, 165, 213, 48, 213, 163, 242, 15, 78, 96, 117, 106, 87]),
+            "inconsistentPadChars": new Uint8Array([143, 227, 12, 112, 216, 207, 136, 167, 78, 137, 93, 30, 50, 75, 102, 101])
+        },
+        256: {
+            "zeroPadChar": new Uint8Array([1, 253, 141, 214, 30, 193, 254, 68, 140, 200, 157, 110, 200, 89, 177, 129]),
+            "bigPadChar": new Uint8Array([88, 7, 110, 221, 74, 34, 97, 109, 99, 25, 189, 222, 94, 90, 27, 60]),
+            "inconsistentPadChars": new Uint8Array([152, 54, 60, 148, 59, 136, 193, 21, 77, 140, 170, 67, 120, 74, 106, 62])
+        }
+    };
+
     var keyLengths = [128, 192, 256];
 
     // All the scenarios that should succeed, if the key has "encrypt" usage
@@ -217,5 +236,24 @@ function getTestVectors() {
         });
     });
 
-    return {passing: passing, failing: failing};
+    // Scenarios that should fail decryption because of bad padding
+    var decryptionFailing = [];
+    keyLengths.forEach(function(keyLength) {
+        ["zeroPadChar", "bigPadChar", "inconsistentPadChars"].forEach(function(paddingProblem) {
+            var badCiphertext = new Uint8Array(ciphertext[keyLength].byteLength);
+            badCiphertext.set(ciphertext[keyLength].slice(0, ciphertext[keyLength].byteLength - 16));
+            badCiphertext.set(badPadding[keyLength][paddingProblem]);
+
+            decryptionFailing.push({
+                name: "AES-CBC " + keyLength.toString() + "-bit key, " + paddingProblem,
+                keyBuffer: keyBytes[keyLength],
+                key: null,
+                algorithm: {name: "AES-CBC", iv: iv},
+                plaintext: plaintext,
+                result: badCiphertext
+            });
+        });
+    });
+
+    return {passing: passing, failing: failing, decryptionFailing: decryptionFailing};
 }

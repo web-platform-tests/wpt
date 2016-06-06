@@ -117,5 +117,5 @@ function getTestVectors() {
         });
     });
 
-    return {passing: passing, failing: failing};
+    return {passing: passing, failing: failing, decryptionFailing: []};
 }

@@ -108,6 +108,15 @@ def generate_selection(selection, spec, subresource_path,
         elif selection['delivery_method'] == 'rel-noreferrer':
             # rel=noreferrer is supported by the JS test wrapper.
             pass
+        elif selection['delivery_method'] == 'http-rp':
+            selection['meta_delivery_method'] = \
+                "<!-- No meta: Referrer policy delivered via HTTP headers. -->"
+            test_headers_filename = test_filename + ".headers"
+            with open(test_headers_filename, "w") as f:
+                f.write('Referrer-Policy: ' + \
+                        '%(referrer_policy)s\n' % spec)
+                # TODO(kristijanburnik): Limit to WPT origins.
+                f.write('Access-Control-Allow-Origin: *\n')
         else:
             raise ValueError('Not implemented delivery_method: ' \
                               + selection['delivery_method'])

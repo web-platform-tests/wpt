@@ -2,6 +2,9 @@
 function run_test() {
     var subtle = crypto.subtle; // Change to test prefixed implementations
 
+    // When are all these tests really done? When all the promises they use have resolved.
+    var all_promises = [];
+
     // Source file aes_XXX_vectors.js provides the getTestVectors method
     // for the AES-XXX algorithm that drives these tests.
     var vectors = getTestVectors();
@@ -11,7 +14,7 @@ function run_test() {
 
     // Check for successful encryption.
     passingVectors.forEach(function(vector) {
-        importVectorKey(vector, ["encrypt", "decrypt"])
+        var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
@@ -28,11 +31,13 @@ function run_test() {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step: " + vector.name);
         });
+
+        all_promises.push(promise);
     });
 
     // Check for successful decryption.
     passingVectors.forEach(function(vector) {
-        importVectorKey(vector, ["encrypt", "decrypt"])
+        var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.decrypt(vector.algorithm, vector.key, vector.result)
@@ -49,6 +54,8 @@ function run_test() {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step for decryption: " + vector.name);
         });
+
+        all_promises.push(promise);
     });
 
     // Everything that succeeded should fail if no "encrypt" usage.
@@ -57,7 +64,7 @@ function run_test() {
         var badVector = Object.assign({}, vector);
         badVector.key = null;
 
-        importVectorKey(badVector, ["decrypt"])
+        var promise = importVectorKey(badVector, ["decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
@@ -74,6 +81,8 @@ function run_test() {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step: " + vector.name + " without encrypt usage");
         });
+
+        all_promises.push(promise);
     });
 
     // Everything that succeeded decrypting should fail if no "decrypt" usage.
@@ -82,7 +91,7 @@ function run_test() {
         var badVector = Object.assign({}, vector);
         badVector.key = null;
 
-        importVectorKey(badVector, ["encrypt"])
+        var promise = importVectorKey(badVector, ["encrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.decrypt(vector.algorithm, vector.key, vector.result)
@@ -99,11 +108,13 @@ function run_test() {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step: " + vector.name + " without decrypt usage");
         });
+
+        all_promises.push(promise);
     });
 
     // Check for OperationError due to data lengths.
     failingVectors.forEach(function(vector) {
-        importVectorKey(vector, ["encrypt", "decrypt"])
+        var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.encrypt(vector.algorithm, vector.key, vector.plaintext)
@@ -120,11 +131,13 @@ function run_test() {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step: " + vector.name);
         });
+
+        all_promises.push(promise);
     });
 
     // Check for OperationError due to data lengths for decryption, too.
     failingVectors.forEach(function(vector) {
-        importVectorKey(vector, ["encrypt", "decrypt"])
+        var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.decrypt(vector.algorithm, vector.key, vector.result)
@@ -141,12 +154,14 @@ function run_test() {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step: decryption " + vector.name);
         });
+
+        all_promises.push(promise);
     });
 
     // Check for decryption failing for algorithm-specific reasons (such as bad
     // padding for AES-CBC).
     decryptionFailingVectors.forEach(function(vector) {
-        importVectorKey(vector, ["encrypt", "decrypt"])
+        var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
                 return subtle.decrypt(vector.algorithm, vector.key, vector.result)
@@ -163,7 +178,13 @@ function run_test() {
                 assert_unreached("importKey failed for " + vector.name);
             }, "importKey step: decryption " + vector.name);
         });
+
+        all_promises.push(promise);
     });
+
+    Promise.all(all_promises)
+    .then(function() {done();})
+    .catch(function() {done();})
 
     // A test vector has all needed fields for encryption, EXCEPT that the
     // key field may be null. This function replaces that null with the Correct

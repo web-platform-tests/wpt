@@ -34,10 +34,10 @@
 
                         if (event.type != 'pointerout' && event.type != 'pointerleave' ) {
                             test(function () {
-                                assert_between_inclusive(event.clientX, rectSquare1.left, rectSquare1.right - 1, "ClientX should be in the boundaries of the black box");
+                                assert_true(event.clientX >= rectSquare1.left && event.clientX < rectSquare1.right, "ClientX should be in the boundaries of the black box");
                             }, event.type + ".clientX attribute is correct.");
                             test(function () {
-                                assert_between_inclusive(event.clientY, rectSquare1.top, rectSquare1.bottom - 1, "ClientY should be in the boundaries of the black box");
+                              assert_true(event.clientY >= rectSquare1.top && event.clientY < rectSquare1.bottom, "ClientY should be in the boundaries of the black box");
                             }, event.type + ".clientY attribute is correct.");
                         } else {
                             test(function () {

@@ -80,6 +80,22 @@ function getTestVectors() {
         110, 111, 116, 101, 115, 32, 105, 110, 32, 116, 104, 101,
         32, 100, 111, 99, 117, 109, 101, 110, 116, 46]);
 
+    //  The length of the tag defaults to 16 bytes (128 bit).
+    var tag = {
+        128: new Uint8Array([194, 226, 198, 253, 239, 28,
+            197, 240, 123, 216, 176, 151, 239, 200, 184, 183]),
+        192: new Uint8Array([183, 57, 32, 144, 164, 76, 121, 77, 58,
+            86, 62, 132, 53, 130, 96, 225]),
+        256: new Uint8Array([188, 239, 241, 48, 159, 21, 213, 0, 241,
+            42, 85, 76, 194, 28, 49, 60])
+    };
+
+    var tag_with_empty_ad = {
+        128: new Uint8Array([222, 51, 11, 23, 36, 222, 250, 248, 27, 98, 30, 81, 150, 35, 220, 198]),
+        192: new Uint8Array([243, 11, 130, 112, 169, 239, 114, 238, 185, 219, 93, 1, 95, 108, 184, 183]),
+        256: new Uint8Array([244, 186, 86, 203, 154, 37, 191, 248, 246, 57, 139, 130, 224, 47, 217, 238])
+    };
+
 
     // Results. These were created using the Python cryptography module.
 
@@ -191,16 +207,6 @@ function getTestVectors() {
             20, 58, 87, 182, 192, 148, 219, 41, 88, 230, 229, 70, 249])
     };
 
-    //  The length of the tag defaults to 16 bytes (128 bit).
-    var tag = {
-        128: new Uint8Array([194, 226, 198, 253, 239, 28,
-            197, 240, 123, 216, 176, 151, 239, 200, 184, 183]),
-        192: new Uint8Array([183, 57, 32, 144, 164, 76, 121, 77, 58,
-            86, 62, 132, 53, 130, 96, 225]),
-        256: new Uint8Array([188, 239, 241, 48, 159, 21, 213, 0, 241,
-            42, 85, 76, 194, 28, 49, 60])
-    };
-
     var keyLengths = [128, 192, 256];
     var tagLengths = [32, 64, 96, 104, 112, 120, 128];
 
@@ -209,10 +215,10 @@ function getTestVectors() {
     keyLengths.forEach(function(keyLength) {
         tagLengths.forEach(function(tagLength) {
             var byteCount = tagLength / 8;
+
             var result = new Uint8Array(ciphertext[keyLength].byteLength + byteCount);
             result.set(ciphertext[keyLength], 0);
             result.set(tag[keyLength].slice(0, byteCount), ciphertext[keyLength].byteLength);
-
             passing.push({
                     name: "AES-GCM " + keyLength.toString() + "-bit key, " + tagLength.toString() + "-bit tag",
                     keyBuffer: keyBytes[keyLength],
@@ -220,7 +226,19 @@ function getTestVectors() {
                     algorithm: {name: "AES-GCM", iv: iv, additionalData: additionalData, tagLength: tagLength},
                     plaintext: plaintext,
                     result: result
-                });
+            });
+
+            var noadresult = new Uint8Array(ciphertext[keyLength].byteLength + byteCount);
+            noadresult.set(ciphertext[keyLength], 0);
+            noadresult.set(tag_with_empty_ad[keyLength].slice(0, byteCount), ciphertext[keyLength].byteLength);
+            passing.push({
+                    name: "AES-GCM " + keyLength.toString() + "-bit key, no additional data, " + tagLength.toString() + "-bit tag",
+                    keyBuffer: keyBytes[keyLength],
+                    key: null,
+                    algorithm: {name: "AES-GCM", iv: iv, tagLength: tagLength},
+                    plaintext: plaintext,
+                    result: noadresult
+            });
         });
     });
 

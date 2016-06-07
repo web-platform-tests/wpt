@@ -135,6 +135,36 @@ function run_test() {
         all_promises.push(promise);
     });
 
+    // Encryption should fail if algorithm of key doesn't match algorithm of function call.
+    passingVectors.forEach(function(vector) {
+        var algorithm = Object.assign({}, vector.algorithm);
+        if (algorithm.name === "AES-CBC") {
+            algorithm.name = "AES-CTR";
+        } else {
+            algorithm.name = "AES-CBC";
+        }
+
+        var promise = importVectorKey(vector, ["encrypt", "decrypt"])
+        .then(function(vector) {
+            promise_test(function(test) {
+                return subtle.encrypt(algorithm, vector.key, vector.plaintext)
+                .then(function(result) {
+                    assert_unreached("encrypt succeeded despite mismatch " + vector.name + ": " + err.message);
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Mismatch should cause InvalidAccessError");
+                });
+            }, vector.name + " with mismatched key and algorithm");
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested encryption
+            promise_test(function(test) {
+                assert_unreached("importKey failed for " + vector.name);
+            }, "importKey step: " + vector.name + " with mismatched key and algorithm");
+        });
+
+        all_promises.push(promise);
+    });
+
     // Everything that succeeded decrypting should fail if no "decrypt" usage.
     passingVectors.forEach(function(vector) {
         // Don't want to overwrite key being used for success tests!

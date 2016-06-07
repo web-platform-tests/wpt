@@ -21,7 +21,8 @@
   setup({explicit_timeout: true});
   var startPresentation = function () {
     async_test(function(t) {
-      var url = "support/presentation.html";
+      var client_id = String(new Date().getTime()) + String(Math.floor(Math.random() * 1e5));
+      var url = "support/presentation.html#__castAppId__=C2335F62/__castClientId__="+ client_id;
       var request = new PresentationRequest(url);
       request.start()
         .then(function(connection) {

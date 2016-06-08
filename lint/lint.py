@@ -9,6 +9,9 @@ import sys
 
 from collections import defaultdict
 
+from .. import localpaths
+
+from manifest.sourcefile import SourceFile
 from six import iteritems
 from six.moves import range
 
@@ -153,8 +156,6 @@ def check_regexp_line(repo_root, path, f):
     return errors
 
 def check_parsed(repo_root, path, f):
-    from manifest.sourcefile import SourceFile
-
     source_file = SourceFile(repo_root, path, "/")
 
     errors = []
@@ -251,7 +252,6 @@ def parse_args():
     return parser.parse_args()
 
 def main():
-    from .. import localpaths
     repo_root = localpaths.repo_root
     args = parse_args()
     paths = args.paths if args.paths else all_git_paths(repo_root)

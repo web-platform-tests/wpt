@@ -12,8 +12,6 @@ from collections import defaultdict
 from six import iteritems
 from six.moves import range
 
-from manifest.sourcefile import SourceFile
-
 here = os.path.abspath(os.path.split(__file__)[0])
 
 ERROR_MSG = """You must fix all errors; for details on how to fix them, see
@@ -155,6 +153,8 @@ def check_regexp_line(repo_root, path, f):
     return errors
 
 def check_parsed(repo_root, path, f):
+    from manifest.sourcefile import SourceFile
+
     source_file = SourceFile(repo_root, path, "/")
 
     errors = []

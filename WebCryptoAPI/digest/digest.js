@@ -43,11 +43,17 @@ function run_test() {
     // When are all these tests really done? When all the promises they use have resolved.
     var all_promises = [];
 
+    // Try every combination of hash with source data size. Variations tested are
+    // hash name in upper, lower, or mixed case, and upper-case version with the
+    // source buffer altered after call.
     Object.keys(sourceData).forEach(function(size) {
         Object.keys(digestedData).forEach(function(alg) {
+            var upCase = alg.toUpperCase();
+            var downCase = alg.toLowerCase();
+            var mixedCase = upCase.substr(0, 1) + downCase.substr(1);
+
             promise_test(function(test) {
-                var algorithm = alg.toUpperCase();
-                var promise = subtle.digest({name: algorithm}, sourceData[size])
+                var promise = subtle.digest({name: upCase}, sourceData[size])
                 .then(function(result) {
                     assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
                 }, function(err) {
@@ -56,9 +62,69 @@ function run_test() {
 
                 all_promises.push(promise);
                 return promise;
-            }, alg + " with " + size + " source data");
+            }, upCase + " with " + size + " source data");
+
+            promise_test(function(test) {
+                var promise = subtle.digest({name: mixedCase}, sourceData[size])
+                .then(function(result) {
+                    assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
+                }, function(err) {
+                    assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);mixedCase
+                });
+
+                all_promises.push(promise);
+                return promise;
+            }, downCase + " with " + size + " source data");
+
+            promise_test(function(test) {
+                var promise = subtle.digest({name: mixedCase}, sourceData[size])
+                .then(function(result) {
+                    assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
+                }, function(err) {
+                    assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
+                });
+
+                all_promises.push(promise);
+                return promise;
+            }, mixedCase + " with " + size + " source data");
+
+            promise_test(function(test) {
+                var copiedBuffer = copyBuffer(sourceData[size]);
+                var promise = subtle.digest({name: upCase}, copiedBuffer)
+                .then(function(result) {
+                    copiedBuffer[0] = 255 - copiedBuffer;
+                    assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
+                }, function(err) {
+                    assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
+                });
+
+                all_promises.push(promise);
+                return promise;
+            }, upCase + " with " + size + " source data and altered buffer after call");
+
         });
     });
+
+    // Call digest() with bad algorithm names to get an error
+    var badNames = ["AES-GCM", "RSA-OAEP", "PBKDF2", "AES-KW"];
+    Object.keys(sourceData).forEach(function(size) {
+        badNames.forEach(function(badName) {
+
+            promise_test(function(test) {
+                var promise = subtle.digest({name: badName}, sourceData[size])
+                .then(function(result) {
+                    assert_unreached("digest() should not have worked for " + alg + ":" + size);
+                }, function(err) {
+                    assert_equals(err.message, "OperationError", "Bad algorithm name should cause OperationError")
+                });
+
+                all_promises.push(promise);
+                return promise;
+            }, badName + " with " + size);
+
+        });
+    });
+
 
     Promise.all(all_promises).then(function() {done();}, function() {done();});
 

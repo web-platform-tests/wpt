@@ -106,6 +106,8 @@ test(function() {
   testOptionEquivalence({}, {passive:false}, true);
   testOptionEquivalence({passive:true}, {passive:false}, true);
   testOptionEquivalence(undefined, {passive:true}, true);
+  testOptionEquivalence({capture: true, passive: false}, {capture: true, passive: true}, true);
+
 }, "Equivalence of option values");
 
 </script>

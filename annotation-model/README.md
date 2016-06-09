@@ -177,6 +177,7 @@ one entry. Entries in the list have the following types:
   Assertion Lists can be nested to any depth (but don't do that - it would be
   too hard to maintain).
 
+
 <a id="assertionObjects">Assertion Objects</a>
 -----------------
 
@@ -249,7 +250,53 @@ crafted such that if the attribute is permitted to be missing from the content
 (so that the result is `true`), but when the attribute is present in the
 content it conforms to any requirements.
 
-@@@ example of optional attribute @@@
+
+
+<a id="conditionObjects">Condition Objects</a>
+-----------------
+
+A Condition Object is a sub-class of an Assertion Object.  It allows the
+specification of the evaluation strategy for the assertions referenced by the
+object.  An object is a Condition Object IFF it has a `assertions` property. In
+this case, there MUST NOT be an `assertionFile` property.
+
+
+|Keyword        | Values          | Meaning |
+|---------------|-----------------|---------|
+|compareWith    | `and`, `or` | How should the result of any referenced assertions be compared.  Defaults to `and`.  Note that this implies there is also an assertions property with a nested list of assertions to compare. |
+|assertions     | a list of assertions as in a Test Case above. This is required if there is a compareWith property |
+
+
+An example of a test that would pass if there were an `@context` OR there were an `@id`:
+
+<pre>
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "A test that has an 'or' clause",
+  "description": "A complex test that uses or-ing among a list of assertions",
+  "ref": "https://www.w3.org/TR/annotation-model/#model",
+  "testType": "manual",
+  "assertions": [
+    { "$schema": "http://json-schema.org/draft-04/schema#",
+      "title": "must have context or id",
+      "description": "A more complex example that allows one of many options to pass",
+      "assertions": [
+        { "title": "Condition Object",
+          "description": "A pseudo-test that will get a result from the aggregate of its children",
+          "assertionType": "must",
+          "expectedResult": "valid",
+          "errorMessage": "Error: None of the various options were present",
+          "compareWith": "or",
+          "assertions": [
+            "common/has_context.json",
+            "common/has_id.json"
+          ]
+        }
+      ]
+    }
+  ]
+}
+</pre>
 
 Automating Test Execution
 -------------------------
@@ -326,4 +373,43 @@ of tests when an assertion in the list is not satisfied:
     ]
   ]
 } ;
+</pre>
+
+### Assertion that finds a specific @context Value ###
+
+Sometimes you want a property to be flexible, but to have one and only one of a
+specific value.  This is especially true with, for example, @context in JSON-LD.
+One way you might do this is:
+
+<pre>
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Verify a specific @context",
+  "type": "object",
+  "expectedResult" : "valid",
+  "properties": {
+    "@context": {
+      "anyOf": [
+        {
+          "type": "string"
+          "enum": [ "http://www.w3.org/ns/anno.jsonld" ]
+        },
+        {
+          "type": "array",
+          "minitems": "1",
+          "uniqueItems": true,
+          "additionalItems": true,
+          "items" : [
+              { "type": "string",
+                "enum": [ "http://www.w3.org/ns/anno.jsonld" ]
+              }
+          ]
+        }
+      ],
+      "not": {"type": "object"}
+    }
+  },
+  "required": ["@context"]
+}
+
 </pre>

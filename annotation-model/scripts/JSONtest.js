@@ -199,8 +199,10 @@ JSONtest.prototype = {
    * @param {string} content - JSON(-LD) to be evaluated
    * @param {string} [testAction='continue'] - state of test processing (in parent when recursing)
    * @param {integer} [level=0] - depth of recursion since assertion lists can nest
+   * @param {string} [compareWith='and'] - the way the results of the referenced assertions should be compared
+   * @returns {string} - the testAction resulting from evaluating all of the assertions
    */
-  runTests: function(assertions, content, testAction, level) {
+  runTests: function(assertions, content, testAction, level, compareWith) {
     'use strict';
 
     // level
@@ -213,26 +215,87 @@ JSONtest.prototype = {
       testAction = 'continue';
     }
 
+    // compareWith
+    if (compareWith === undefined) {
+      compareWith = 'and';
+    }
+
     // for each assertion (in order) load the external json schema if
     // one is referenced, or use the inline schema if supplied
     // validate content against the referenced schema
+
+    var theResults = [] ;
 
     if (assertions) {
 
       assertions.forEach( function(assert, num) {
 
+        var expected = assert.hasOwnProperty('expectedResult') ? assert.expectedResult : 'valid' ;
+        var message = assert.hasOwnProperty('message') ? assert.message : "Result was not " + expected;
+
         // first - what is the type of the assert
-        if (typeof assert === "object" && Array.isArray(assert)) {
+        if (typeof assert === "object" && !Array.isArray(assert)) {
+          if (assert.hasOwnProperty("compareWith") && assert.hasOwnProperty("assertions") && Array.isArray(assert.assertions) ) {
+            // this is a comparisonObject
+            var r = this.runTests(assert.assertions, content, testAction, level+1, assert.compareWith);
+            // r is an object that contains, among other things, an array of results from the child assertions
+            testAction = r.action;
+
+            // evaluate the results against the compareWith setting
+            var result = true;
+            var data = r.results ;
+            var i;
+
+            if (assert.compareWith === "or") {
+              result = false;
+              for(i = 0; i < data.length; i++) {
+                if (data[i]) {
+                  result = true;
+                }
+              }
+            } else {
+              for(i = 0; i < data.length; i++) {
+                if (!data[i]) {
+                  result = false;
+                }
+              }
+            }
+
+            // create a test and push the result
+            test(function() {
+              var newAction = this.determineAction(assert, result) ;
+              // next time around we will use this action
+              testAction = newAction;
+
+              var err = ";";
+
+              if (testAction === 'abort') {
+                err += "; Aborting execution of remaining assertions;";
+              } else if (testAction === 'skip') {
+                err += "; Skipping execution of remaining assertions at level " + level + ";";
+              }
+
+              if (result === false) {
+                // test result was unexpected; use message
+                assert_true(result, message + err);
+              } else {
+                assert_true(result, err) ;
+              }
+            }.bind(this), assert.title);
+            // we are going to return out of this
+            return;
+          }
+        } else if (typeof assert === "object" && Array.isArray(assert)) {
           // it is a nested list - recurse
-          var subAction = this.runTests(assert, content, testAction, level+1) ;
-          if (subAction === 'abort') {
+          var o = this.runTests(assert, content, testAction, level+1);
+          if (o.result && o.result === 'abort') {
             // we are bailing out
             testAction = 'abort';
           }
         }
 
         if (testAction === 'abort') {
-          return 'abort';
+          return {action: 'abort' };
         }
 
         var schemaName = "inline " + level + ":" + (num+1);
@@ -253,9 +316,6 @@ JSONtest.prototype = {
           return ;
         }
 
-        var expected = assert.hasOwnProperty('expectedResult') ? assert.expectedResult : 'valid' ;
-        var message = assert.hasOwnProperty('message') ? assert.message : "Result was not " + expected;
-
         if (testAction !== 'continue') {
           // a previous test told us to not run this test; skip it
           test(function() { }, "SKIPPED: " + assert.title);
@@ -265,6 +325,10 @@ JSONtest.prototype = {
             var valid = validate(content) ;
 
             var result = this.determineResult(assert, valid) ;
+
+            // remember the result
+            theResults.push(result);
+
             var newAction = this.determineAction(assert, result) ;
             // next time around we will use this action
             testAction = newAction;
@@ -289,7 +353,7 @@ JSONtest.prototype = {
       }.bind(this));
     }
 
-    return testAction;
+    return { action: testAction, results: theResults} ;
   },
 
   determineResult: function(schema, valid) {

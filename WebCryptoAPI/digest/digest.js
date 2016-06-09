@@ -40,9 +40,6 @@ function run_test() {
         },
     }
 
-    // When are all these tests really done? When all the promises they use have resolved.
-    var all_promises = [];
-
     // Try every combination of hash with source data size. Variations tested are
     // hash name in upper, lower, or mixed case, and upper-case version with the
     // source buffer altered after call.
@@ -60,7 +57,6 @@ function run_test() {
                     assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
                 });
 
-                all_promises.push(promise);
                 return promise;
             }, upCase + " with " + size + " source data");
 
@@ -72,7 +68,6 @@ function run_test() {
                     assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);mixedCase
                 });
 
-                all_promises.push(promise);
                 return promise;
             }, downCase + " with " + size + " source data");
 
@@ -84,7 +79,6 @@ function run_test() {
                     assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
                 });
 
-                all_promises.push(promise);
                 return promise;
             }, mixedCase + " with " + size + " source data");
 
@@ -92,13 +86,12 @@ function run_test() {
                 var copiedBuffer = copyBuffer(sourceData[size]);
                 var promise = subtle.digest({name: upCase}, copiedBuffer)
                 .then(function(result) {
-                    copiedBuffer[0] = 255 - copiedBuffer;
                     assert_true(equalBuffers(result, digestedData[alg][size]), "digest() yielded expected result for " + alg + ":" + size);
                 }, function(err) {
                     assert_unreached("digest() threw an error for " + alg + ":" + size + " - " + err.message);
                 });
 
-                all_promises.push(promise);
+                copiedBuffer[0] = 255 - copiedBuffer;
                 return promise;
             }, upCase + " with " + size + " source data and altered buffer after call");
 
@@ -118,7 +111,6 @@ function run_test() {
                     assert_equals(err.message, "OperationError", "Bad algorithm name should cause OperationError")
                 });
 
-                all_promises.push(promise);
                 return promise;
             }, badName + " with " + size);
 
@@ -126,7 +118,7 @@ function run_test() {
     });
 
 
-    Promise.all(all_promises).then(function() {done();}, function() {done();});
+    done();
 
 
     // Returns a copy of the sourceBuffer it is sent.

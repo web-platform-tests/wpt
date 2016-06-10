@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>Encrypted Media Extentions IDL test</title>
+    <link rel="help" href="https://w3c.github.io/encrypted-media/">
+
+    <script src=/resources/testharness.js></script>
+    <script src=/resources/testharnessreport.js></script>
+    <script src=/resources/WebIDLParser.js></script>
+    <script src=/resources/idlharness.js></script>
+  </head>
+  <body>
+    <h1 class="instructions">Description</h1>
+    <p class="instructions">
+      This test verifies that the implementations of the Encrypted Media Extensions API matchs its WebIDL definition.
+    </p>
+
+    <div id='log'></div>
+
+    <script>
+      var file_input;
+      setup(function() {
+          var idl_array = new IdlArray();
+
+          var request = new XMLHttpRequest();
+          request.open("GET", "EncryptedMediaExtensions.idl");
+          request.send();
+          request.onload = function() {
+              var idls = request.responseText;
+
+              idl_array.add_untested_idls("[PrimaryGlobal] interface Window {};");
+              idl_array.add_untested_idls("interface Navigator {};");
+              idl_array.add_untested_idls("interface ArrayBuffer {};");
+              idl_array.add_untested_idls("interface HTMLMediaElement {};");
+            
+              idl_array.add_idls(idls);
+
+              idl_array.test();
+              
+              done();
+        };
+      }, {explicit_done: true});
+    </script>
+  </body>
+</html>

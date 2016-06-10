@@ -51,13 +51,14 @@ function run_test() {
 
             promise_test(function(test) {
                 var ciphertext = copyBuffer(vector.ciphertext);
-                return subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
+                var operation = subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
                 .then(function(plaintext) {
-                    ciphertext[0] = 255 - ciphertext[0];
                     assert_true(equalBuffers(plaintext, vector.plaintext, "Decryption works"));
                 }, function(err) {
                     assert_unreached("Decryption should not throw error " + vector.name + ": " + err.message + "'");
                 });
+                ciphertext[0] = 255 - ciphertext[0];
+                return operation;
             }, vector.name + " decryption with altered ciphertext");
 
         }, function(err) {
@@ -130,11 +131,9 @@ function run_test() {
         .then(function(vectors) {
             promise_test(function(test) {
                 var plaintext = copyBuffer(vector.plaintext);
-                return subtle.encrypt(vector.algorithm, vector.publicKey, plaintext)
+                var operation = subtle.encrypt(vector.algorithm, vector.publicKey, plaintext)
                 .then(function(ciphertext) {
-                    plaintext[0] = 255 - plaintext[0];
                     assert_equals(ciphertext.byteLength * 8, vector.privateKey.algorithm.modulusLength, "Ciphertext length matches modulus length");
-
                     // Can we get the original plaintext back via decrypt?
                     return subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
                     .then(function(result) {
@@ -155,6 +154,9 @@ function run_test() {
                 }, function(err) {
                     assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
                 });
+
+                plaintext[0] = 255 - plaintext[0];
+                return operation;
             }, vector.name + " with altered plaintext");
 
         }, function(err) {

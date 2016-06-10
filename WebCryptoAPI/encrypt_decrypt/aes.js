@@ -41,13 +41,14 @@ function run_test() {
         var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.key, plaintext)
+                var operation = subtle.encrypt(vector.algorithm, vector.key, plaintext)
                 .then(function(result) {
-                    plaintext[0] = 255 - plaintext[0];
                     assert_true(equalBuffers(result, vector.result), "Should return expected result");
                 }, function(err) {
                     assert_unreached("encrypt error for test " + vector.name + ": " + err.message);
                 });
+                plaintext[0] = 255 - plaintext[0];
+                return operation;
             }, vector.name + " with altered plaintext");
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so
@@ -89,13 +90,14 @@ function run_test() {
         var promise = importVectorKey(vector, ["encrypt", "decrypt"])
         .then(function(vector) {
             promise_test(function(test) {
-                return subtle.decrypt(vector.algorithm, vector.key, ciphertext)
+                var operation = subtle.decrypt(vector.algorithm, vector.key, ciphertext)
                 .then(function(result) {
-                    ciphertext[0] = 255 - ciphertext[0];
                     assert_true(equalBuffers(result, vector.plaintext), "Should return expected result");
                 }, function(err) {
                     assert_unreached("decrypt error for test " + vector.name + ": " + err.message);
                 });
+                ciphertext[0] = 255 - ciphertext[0];
+                return operation;
             }, vector.name + " decryption with altered ciphertext");
         }, function(err) {
             // We need a failed test if the importVectorKey operation fails, so

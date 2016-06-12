@@ -221,7 +221,8 @@ function getTestVectors() {
             keyBuffer: keyBytes[keyLength],
             key: null,
             algorithm: {name: "AES-CBC", iv: shortIv},
-            plaintext: plaintext
+            plaintext: plaintext,
+            result: ciphertext[keyLength]
         });
 
         var longIv = new Uint8Array(24);
@@ -232,7 +233,8 @@ function getTestVectors() {
             keyBuffer: keyBytes[keyLength],
             key: null,
             algorithm: {name: "AES-CBC", iv: longIv},
-            plaintext: plaintext
+            plaintext: plaintext,
+            result: ciphertext[keyLength]
         });
     });
 

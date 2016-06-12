@@ -1,6 +1,6 @@
 
 function run_test() {
-    var subtle = crypto.subtle; // Change to test prefixed implementations
+    var subtle = self.crypto.subtle; // Change to test prefixed implementations
 
     // When are all these tests really done? When all the promises they use have resolved.
     var all_promises = [];
@@ -123,7 +123,7 @@ function run_test() {
                 .then(function(result) {
                     assert_unreached("should have thrown exception for test " + vector.name);
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw an InvalidAccessError")
+                    assert_equals(err.name, "InvalidAccessError", "Should throw an InvalidAccessError instead of " + err.message)
                 });
             }, vector.name + " without encrypt usage");
         }, function(err) {
@@ -142,8 +142,11 @@ function run_test() {
         var algorithm = Object.assign({}, vector.algorithm);
         if (algorithm.name === "AES-CBC") {
             algorithm.name = "AES-CTR";
+            algorithm.counter = new Uint8Array(16);
+            algorithm.length = 64;
         } else {
             algorithm.name = "AES-CBC";
+            algorithm.iv = new Uint8Array(16); // Need syntactically valid parameter to get to error being checked.
         }
 
         var promise = importVectorKey(vector, ["encrypt", "decrypt"])
@@ -153,7 +156,7 @@ function run_test() {
                 .then(function(result) {
                     assert_unreached("encrypt succeeded despite mismatch " + vector.name + ": " + err.message);
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Mismatch should cause InvalidAccessError");
+                    assert_equals(err.name, "InvalidAccessError", "Mismatch should cause InvalidAccessError instead of " + err.message);
                 });
             }, vector.name + " with mismatched key and algorithm");
         }, function(err) {
@@ -180,7 +183,7 @@ function run_test() {
                 .then(function(result) {
                     assert_unreached("should have thrown exception for test " + vector.name);
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw an InvalidAccessError")
+                    assert_equals(err.name, "InvalidAccessError", "Should throw an InvalidAccessError instead of " + err.message)
                 });
             }, vector.name + " without decrypt usage");
         }, function(err) {
@@ -203,7 +206,7 @@ function run_test() {
                 .then(function(result) {
                     assert_unreached("should have thrown exception for test " + vector.name);
                 }, function(err) {
-                    assert_equals(err.name, "OperationError", "Should throw an OperationError")
+                    assert_equals(err.name, "OperationError", "Should throw an OperationError instead of " + err.message)
                 });
             }, vector.name);
         }, function(err) {
@@ -226,7 +229,7 @@ function run_test() {
                 .then(function(result) {
                     assert_unreached("should have thrown exception for test " + vector.name);
                 }, function(err) {
-                    assert_equals(err.name, "OperationError", "Should throw an OperationError")
+                    assert_equals(err.name, "OperationError", "Should throw an OperationError instead of " + err.message)
                 });
             }, vector.name + " decryption");
         }, function(err) {
@@ -250,7 +253,7 @@ function run_test() {
                 .then(function(result) {
                     assert_unreached("should have thrown exception for test " + vector.name);
                 }, function(err) {
-                    assert_equals(err.name, "OperationError", "Should throw an OperationError")
+                    assert_equals(err.name, "OperationError", "Should throw an OperationError instead of " + err.message)
                 });
             }, vector.name);
         }, function(err) {

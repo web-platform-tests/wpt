@@ -1,6 +1,6 @@
 
 function run_test() {
-    var subtle = crypto.subtle; // Change to test prefixed implementations
+    var subtle = self.crypto.subtle; // Change to test prefixed implementations
 
     // When are all these tests really done? When all the promises they use have resolved.
     var all_promises = [];
@@ -81,7 +81,7 @@ function run_test() {
                 .then(function(plaintext) {
                     assert_unreached("Should have thrown error for using publicKey to decrypt in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of " + err.message);
                 });
             }, vector.name + " using publicKey to decrypt");
 
@@ -109,7 +109,7 @@ function run_test() {
                 .then(function(plaintext) {
                     assert_unreached("Should have thrown error for no decrypt usage in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of " + err.message);
                 });
             }, vector.name + " no decrypt usage");
 
@@ -225,7 +225,7 @@ function run_test() {
                 .then(function(ciphertext) {
                     assert_unreached("Should have thrown error for too long plaintext in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "OperationError", "Should throw OperationError");
+                    assert_equals(err.name, "OperationError", "Should throw OperationError instead of " + err.message);
                 });
             }, vector.name + " too long plaintext");
 
@@ -250,7 +250,7 @@ function run_test() {
                 .then(function(ciphertext) {
                     assert_unreached("Should have thrown error for using privateKey to encrypt in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of " + err.message);
                 });
             }, vector.name + " using privateKey to encrypt");
 
@@ -278,7 +278,7 @@ function run_test() {
                 .then(function(ciphertext) {
                     assert_unreached("Should have thrown error for no encrypt usage in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of " + err.message);
                 });
             }, vector.name + " no encrypt usage");
 

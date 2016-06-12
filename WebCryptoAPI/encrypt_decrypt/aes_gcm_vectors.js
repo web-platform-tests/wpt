@@ -252,7 +252,8 @@ function getTestVectors() {
                 keyBuffer: keyBytes[keyLength],
                 key: null,
                 algorithm: {name: "AES-GCM", iv: iv, additionalData: additionalData, tagLength: badTagLength},
-                plaintext: plaintext
+                plaintext: plaintext,
+                result: ciphertext[keyLength]
             });
         });
     });

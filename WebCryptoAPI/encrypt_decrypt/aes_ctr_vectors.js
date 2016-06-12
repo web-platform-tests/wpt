@@ -105,7 +105,8 @@ function getTestVectors() {
             keyBuffer: keyBytes[keyLength],
             key: null,
             algorithm: {name: "AES-CTR", counter: counter, length: 0},
-            plaintext: plaintext
+            plaintext: plaintext,
+            result: ciphertext[keyLength]
         });
 
         failing.push({
@@ -113,7 +114,8 @@ function getTestVectors() {
             keyBuffer: keyBytes[keyLength],
             key: null,
             algorithm: {name: "AES-CTR", counter: counter, length: 129},
-            plaintext: plaintext
+            plaintext: plaintext,
+            result: ciphertext[keyLength]
         });
     });
 

@@ -5,8 +5,8 @@ function run_test() {
     // When are all these tests really done? When all the promises they use have resolved.
     var all_promises = [];
 
-    // Source file rsa_XXX_vectors.js provides the getTestVectors method
-    // for the RSA algorithm that drives these tests.
+    // Source file ecdsa_vectors.js provides the getTestVectors method
+    // for the algorithm that drives these tests.
     var vectors = getTestVectors();
     var passingVectors = vectors.passing;
     var failingVectors = vectors.failing;
@@ -15,12 +15,9 @@ function run_test() {
     passingVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
-            // Some tests are sign only
-            if (!("signature" in vector)) {
-                return;
-            }
+            var algorithm = {name: vector.algorithmName, hash: vector.hashName};
             promise_test(function(test) {
-                var operation = subtle.verify(vector.algorithm, vector.publicKey, vector.signature, vector.plaintext)
+                var operation = subtle.verify(algorithm, vector.publicKey, vector.signature, vector.plaintext)
                 .then(function(is_verified) {
                     assert_true(is_verified, "Signature verified");
                 }, function(err) {
@@ -40,6 +37,13 @@ function run_test() {
 
         all_promises.push(promise);
     });
+
+    Promise.all(all_promises)
+    .then(function() {done();})
+    .catch(function() {done();})
+    return;
+
+
 
     // Test verification with an altered buffer
     passingVectors.forEach(function(vector) {
@@ -297,7 +301,7 @@ function run_test() {
                 resolve(vector);
             });
         } else {
-            publicPromise = subtle.importKey(vector.publicKeyFormat, vector.publicKeyBuffer, {name: vector.algorithm.name, hash: vector.hash}, false, publicKeyUsages)
+            publicPromise = subtle.importKey(vector.publicKeyFormat, vector.publicKeyBuffer, {name: vector.algorithmName, namedCurve: vector.namedCurve}, false, publicKeyUsages)
             .then(function(key) {
                 vector.publicKey = key;
                 return vector;
@@ -309,7 +313,7 @@ function run_test() {
                 resolve(vector);
             });
         } else {
-            privatePromise = subtle.importKey(vector.privateKeyFormat, vector.privateKeyBuffer, {name: vector.algorithm.name, hash: vector.hash}, false, privateKeyUsages)
+            privatePromise = subtle.importKey(vector.privateKeyFormat, vector.privateKeyBuffer, {name: vector.algorithmName, namedCurve: vector.namedCurve}, false, privateKeyUsages)
             .then(function(key) {
                 vector.privateKey = key;
                 return vector;

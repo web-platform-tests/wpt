@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>{{TESTTITLE}}</title>
+<title>Verify annotation conforms to the model</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/annotation-model/scripts/ajv.min.js"></script>
@@ -9,7 +9,7 @@
 <script>
 setup({explicit_timeout: true, explicit_done: true });
 
-var theTestFile="{{TESTFILE}}";
+var theTestFile="example1.test";
 
 var runningTest = new JSONtest( {
     "testInput": "annotation-input",

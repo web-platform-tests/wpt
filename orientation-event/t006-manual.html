@@ -9,6 +9,7 @@
     <link rel="reviewer author" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2013-10-12 -->
   </head>
   <body>
+    <p>Rotate the device frame around its z axis to run the test.</p>
     <div id="log"></div>
     <script>
       var alpha = 0;
@@ -20,8 +21,6 @@
         }
       }, false);
 
-      alert("Rotate the device frame around its z axis.");
-      
       test(function() {
         assert_true(alpha > 0 && alpha < 360);
       }, "Alpha is between 0 and 360");

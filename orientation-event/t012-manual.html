@@ -10,6 +10,7 @@
   </head>
   <body>
     <p>Precondition: implementation is unable to provide all three angles</p>
+    <p>Rotate the device to run the test.</p>
     <div id="log"></div>
     <script>
       var gamma, beta, alpha;
@@ -22,8 +23,6 @@
           alpha = e.alpha; // Alpha : orientation (N-S-E-O)
         }
       }, false);
-
-      alert("Rotate the device to run the test.");
 
       test(function() {
         assert_equals(gamma, null);

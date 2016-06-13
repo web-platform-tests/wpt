@@ -9,6 +9,7 @@
     <link rel="reviewer author" title="Zhiqiang Zhang" href="mailto:zhiqiang.zhang@intel.com"> <!-- 2013-10-12 -->
   </head>
   <body>
+    <p>Rotate the device frame around its y axis to run the test.</p>
     <div id="log"></div>
     <script>
       var gamma = 90;
@@ -19,8 +20,6 @@
           gamma = e.gamma;
         }
       }, false);
-        
-      alert("Rotate the device frame around its y axis.");
 
       test(function() {
         assert_true(gamma > -90 && gamma < 90);

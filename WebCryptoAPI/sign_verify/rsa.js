@@ -1,6 +1,6 @@
 
 function run_test() {
-    var subtle = crypto.subtle; // Change to test prefixed implementations
+    var subtle = self.crypto.subtle; // Change to test prefixed implementations
 
     // When are all these tests really done? When all the promises they use have resolved.
     var all_promises = [];
@@ -15,10 +15,10 @@ function run_test() {
     passingVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
+            // Some tests are sign only
             if (!("signature" in vector)) {
                 return;
             }
-
             promise_test(function(test) {
                 var operation = subtle.verify(vector.algorithm, vector.publicKey, vector.signature, vector.plaintext)
                 .then(function(is_verified) {
@@ -48,7 +48,6 @@ function run_test() {
             if (!("signature" in vector)) {
                 return;
             }
-
             promise_test(function(test) {
                 var signature = copyBuffer(vector.signature);
                 var operation = subtle.verify(vector.algorithm, vector.publicKey, signature, vector.plaintext)
@@ -61,10 +60,7 @@ function run_test() {
                 signature[0] = 255 - signature[0];
                 return operation;
             }, vector.name + " verification with altered signature");
-
         }, function(err) {
-            // We need a failed test if the importVectorKey operation fails, so
-            // we know we never tested encryption
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
             }, "importVectorKeys step: " + vector.name + " verification with altered signature");
@@ -72,57 +68,6 @@ function run_test() {
 
         all_promises.push(promise);
     });
-
-    // Check for failures due to using privateKey to verify.
-    passingVectors.forEach(function(vector) {
-        var promise = importVectorKeys(vector, ["verify"], ["sign"])
-        .then(function(vectors) {
-            promise_test(function(test) {
-                return subtle.verify(vector.algorithm, vector.privateKey, vector.signature, vector.plaintext)
-                .then(function(plaintext) {
-                    assert_unreached("Should have thrown error for using privateKey to verify in " + vector.name + ": " + err.message + "'");
-                }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
-                });
-            }, vector.name + " using privateKey to verify");
-
-        }, function(err) {
-            // We need a failed test if the importVectorKey operation fails, so
-            // we know we never tested encryption
-            promise_test(function(test) {
-                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name + " using privateKey to verify");
-        });
-
-        all_promises.push(promise);
-    });
-
-    // Check for failures due to no "verify" usage.
-    passingVectors.forEach(function(originalVector) {
-        var vector = Object.assign({}, originalVector);
-
-        var promise = importVectorKeys(vector, [], ["sign"])
-        .then(function(vectors) {
-            promise_test(function(test) {
-                return subtle.verify(vector.algorithm, vector.publicKey, vector.signature, vector.plaintext)
-                .then(function(plaintext) {
-                    assert_unreached("Should have thrown error for no verify usage in " + vector.name + ": " + err.message + "'");
-                }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
-                });
-            }, vector.name + " no verify usage");
-
-        }, function(err) {
-            // We need a failed test if the importVectorKey operation fails, so
-            // we know we never tested encryption
-            promise_test(function(test) {
-                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name + " no verify usage");
-        });
-
-        all_promises.push(promise);
-    });
-
 
     // Check for successful verification even if plaintext is altered after call.
     passingVectors.forEach(function(vector) {
@@ -140,10 +85,7 @@ function run_test() {
                 plaintext[0] = 255 - plaintext[0];
                 return operation;
             }, vector.name + " with altered plaintext after call");
-
         }, function(err) {
-            // We need a failed test if the importVectorKey operation fails, so
-            // we know we never tested encryption
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
             }, "importVectorKeys step: " + vector.name + " with altered plaintext");
@@ -152,141 +94,189 @@ function run_test() {
         all_promises.push(promise);
     });
 
-    // TODO - move this block down bit by bit until all encrypt/decrypt tests have been changed to sign/verify
-    console.log("There are " + all_promises.length.toString() + " promises to wait for.");
-    Promise.all(all_promises)
-    .then(function() {done();})
-    .catch(function() {done();})
-    return;
-
-    // Check for successful encryption.
+    // Check for failures due to using privateKey to verify.
     passingVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
             promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
-                .then(function(ciphertext) {
-                    assert_equals(ciphertext.byteLength * 8, vector.privateKey.algorithm.modulusLength, "Ciphertext length matches modulus length");
-
-                    // Can we get the original plaintext back via decrypt?
-                    return subtle.decrypt(vector.algorithm, vector.privateKey, ciphertext)
-                    .then(function(result) {
-                        assert_true(equalBuffers(result, vector.plaintext), "Round trip returns original plaintext");
-                        return ciphertext;
-                    }, function(err) {
-                        assert_unreached("decrypt error for test " + vector.name + ": " + err.message + "'");
-                    });
-                })
-                .then(function(priorCiphertext) {
-                    // Will a second encrypt give us different ciphertext, as it should?
-                    return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
-                    .then(function(ciphertext) {
-                        assert_false(equalBuffers(priorCiphertext, ciphertext), "Two encrypts give different results")
-                    }, function(err) {
-                        assert_unreached("second time encrypt error for test " + vector.name + ": '" + err.message + "'");
-                    });
+                return subtle.verify(vector.algorithm, vector.privateKey, vector.signature, vector.plaintext)
+                .then(function(plaintext) {
+                    assert_unreached("Should have thrown error for using privateKey to verify in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_unreached("decrypt error for test " + vector.name + ": '" + err.message + "'");
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of '" + err.message + "'");
                 });
-            }, vector.name);
+            }, vector.name + " using privateKey to verify");
 
         }, function(err) {
-            // We need a failed test if the importVectorKey operation fails, so
-            // we know we never tested encryption
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name);
+            }, "importVectorKeys step: " + vector.name + " using privateKey to verify");
         });
 
         all_promises.push(promise);
     });
 
-    // Check for failures due to too long plaintext.
+    // Check for failures due to using publicKey to sign.
     passingVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
-            // Get a one byte longer plaintext to encrypt
-            var plaintext = new Uint8Array(vector.plaintext.byteLength + 1);
-            plaintext.set(plaintext, 0);
-            plaintext.set(new Uint8Array([32]), vector.plaintext.byteLength);
             promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.publicKey, plaintext)
-                .then(function(ciphertext) {
-                    assert_unreached("Should have thrown error for too long plaintext in " + vector.name + ": " + err.message + "'");
+                return subtle.sign(vector.algorithm, vector.publicKey, vector.plaintext)
+                .then(function(signature) {
+                    assert_unreached("Should have thrown error for using publicKey to sign in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "OperationError", "Should throw OperationError");
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of '" + err.message + "'");
                 });
-            }, vector.name + " too long plaintext");
-
+            }, vector.name + " using publicKey to sign");
         }, function(err) {
-            // We need a failed test if the importVectorKey operation fails, so
-            // we know we never tested encryption
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name + " too long plaintext");
+            }, "importVectorKeys step: " + vector.name + " using publicKey to sign");
         });
 
         all_promises.push(promise);
     });
 
-
-    // Check for failures due to using privateKey to encrypt.
-    passingVectors.forEach(function(vector) {
-        var promise = importVectorKeys(vector, ["verify"], ["sign"])
-        .then(function(vectors) {
-            promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.privateKey, vector.plaintext)
-                .then(function(ciphertext) {
-                    assert_unreached("Should have thrown error for using privateKey to encrypt in " + vector.name + ": " + err.message + "'");
-                }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
-                });
-            }, vector.name + " using privateKey to encrypt");
-
-        }, function(err) {
-            // We need a failed test if the importVectorKey operation fails, so
-            // we know we never tested encryption
-            promise_test(function(test) {
-                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name + " using privateKey to encrypt");
-        });
-
-        all_promises.push(promise);
-    });
-
-
-    // Check for failures due to no "encrypt usage".
+    // Check for failures due to no "verify" usage.
     passingVectors.forEach(function(originalVector) {
         var vector = Object.assign({}, originalVector);
 
-        var promise = importVectorKeys(vector, [], ["decrypt"])
+        var promise = importVectorKeys(vector, [], ["sign"])
         .then(function(vectors) {
-            // Get a one byte longer plaintext to encrypt
             promise_test(function(test) {
-                return subtle.encrypt(vector.algorithm, vector.publicKey, vector.plaintext)
-                .then(function(ciphertext) {
-                    assert_unreached("Should have thrown error for no encrypt usage in " + vector.name + ": " + err.message + "'");
+                return subtle.verify(vector.algorithm, vector.publicKey, vector.signature, vector.plaintext)
+                .then(function(plaintext) {
+                    assert_unreached("Should have thrown error for no verify usage in " + vector.name + ": " + err.message + "'");
                 }, function(err) {
-                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError");
+                    assert_equals(err.name, "InvalidAccessError", "Should throw InvalidAccessError instead of '" + err.message + "'");
                 });
-            }, vector.name + " no encrypt usage");
-
+            }, vector.name + " no verify usage");
         }, function(err) {
-            // We need a failed test if the importVectorKey operation fails, so
-            // we know we never tested encryption
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name + " no encrypt usage");
+            }, "importVectorKeys step: " + vector.name + " no verify usage");
         });
 
         all_promises.push(promise);
     });
 
+    // Check for successful signing and verification.
+    passingVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["verify"], ["sign"])
+        .then(function(vectors) {
+            promise_test(function(test) {
+                return subtle.sign(vector.algorithm, vector.privateKey, vector.plaintext)
+                .then(function(signature) {
+                    // Can we get the verify the new signature?
+                    return subtle.verify(vector.algorithm, vector.publicKey, signature, vector.plaintext)
+                    .then(function(is_verified) {
+                        assert_true(is_verified, "Round trip returns original plaintext");
+                        return signature;
+                    }, function(err) {
+                        assert_unreached("verify error for test " + vector.name + ": " + err.message + "'");
+                    });
+                })
+                .then(function(priorSignature) {
+                    // Will a second signing give us different signature, as it should?
+                    return subtle.sign(vector.algorithm, vector.privateKey, vector.plaintext)
+                    .then(function(signature) {
+                        if (vector.algorithm.saltLength > 0) {
+                            assert_false(equalBuffers(priorSignature, signature), "Two signings with a salt give different signatures")
+                        } else {
+                            assert_true(equalBuffers(priorSignature, signature), "Two signings with empty salt give same signature")
+                        }
+                    }, function(err) {
+                        assert_unreached("second time verify error for test " + vector.name + ": '" + err.message + "'");
+                    });
+                }, function(err) {
+                    assert_unreached("sign error for test " + vector.name + ": '" + err.message + "'");
+                });
+            }, vector.name + " round trip");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested signing or verifying
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " round trip");
+        });
+
+        all_promises.push(promise);
+    });
+
+
+    // Test signing with the wrong algorithm
+    passingVectors.forEach(function(vector) {
+        // Want to get the key for the wrong algorithm
+        var alteredVector = Object.assign({}, vector);
+        alteredVector.algorithm = Object.assign({}, vector.algorithm);
+        alteredVector.algorithm.name = "RSASSA-PKCS1-v1_5";
+
+        var promise = importVectorKeys(alteredVector, ["verify"], ["sign"])
+        .then(function(vectors) {
+            promise_test(function(test) {
+                var operation = subtle.sign(vector.algorithm, alteredVector.privateKey, vector.plaintext)
+                .then(function(signature) {
+                    assert_unreached("Signing should not have succeeded for " + vector.name);
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should have thrown InvalidAccessError instead of '" + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " signing with wrong algorithm name");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested verification.
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " signing with wrong algorithm name");
+        });
+
+        all_promises.push(promise);
+    });
+
+    // Test verification with the wrong algorithm
+    passingVectors.forEach(function(vector) {
+        // Want to get the key for the wrong algorithm
+        var alteredVector = Object.assign({}, vector);
+        alteredVector.algorithm = Object.assign({}, vector.algorithm);
+        alteredVector.algorithm.name = "RSASSA-PKCS1-v1_5";
+
+        var promise = importVectorKeys(alteredVector, ["verify"], ["sign"])
+        .then(function(vectors) {
+            // Some tests are sign only
+            if (!("signature" in vector)) {
+                return;
+            }
+            promise_test(function(test) {
+                var operation = subtle.verify(vector.algorithm, alteredVector.publicKey, vector.signature, vector.plaintext)
+                .then(function(is_verified) {
+                    assert_unreached("Verification should not have succeeded for " + vector.name);
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should have thrown InvalidAccessError instead of '" + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " verification with wrong algorithm name");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested verification.
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " verification with wrong algorithm name");
+        });
+
+        all_promises.push(promise);
+    });
+
+
     Promise.all(all_promises)
     .then(function() {done();})
     .catch(function() {done();})
 
-    // A test vector has all needed fields for encryption, EXCEPT that the
+    // A test vector has all needed fields for signing and verifying, EXCEPT that the
     // key field may be null. This function replaces that null with the Correct
     // CryptoKey object.
     //

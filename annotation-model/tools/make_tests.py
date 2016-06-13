@@ -12,10 +12,17 @@ import fnmatch
 import os
 import shutil
 import sys
+import argparse
 
 TESTTREE = '..'
 TEMPLATE = 'template'
 
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--examples', action="store_const", const=1)
+
+args = parser.parse_args()
 
 # pull in the template
 
@@ -23,7 +30,11 @@ template = open(TEMPLATE).read()
 
 # iterate over the folders looking for .test files
 
-for curdir, subdirList, fileList in os.walk(TESTTREE):
+for curdir, subdirList, fileList in os.walk(TESTTREE, topdown=True):
+  # skip the examples directory
+  if args.examples != 1:
+    subdirList[:] = [d for d in subdirList if d != "examples"]
+
   for file in fnmatch.filter(fileList, "*.test"):
 # for each .test file, create a corresponding .html file using template
     theFile = os.path.join(curdir, file)

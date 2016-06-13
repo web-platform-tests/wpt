@@ -210,7 +210,11 @@ function run_test() {
         // Want to get the key for the wrong algorithm
         var alteredVector = Object.assign({}, vector);
         alteredVector.algorithm = Object.assign({}, vector.algorithm);
-        alteredVector.algorithm.name = "RSASSA-PKCS1-v1_5";
+        if (vector.algorithm.name === "RSA-PSS") {
+            alteredVector.algorithm.name = "RSASSA-PKCS1-v1_5";
+        } else {
+            alteredVector.algorithm.name = "RSA-PSS";
+        }
 
         var promise = importVectorKeys(alteredVector, ["verify"], ["sign"])
         .then(function(vectors) {
@@ -241,7 +245,11 @@ function run_test() {
         // Want to get the key for the wrong algorithm
         var alteredVector = Object.assign({}, vector);
         alteredVector.algorithm = Object.assign({}, vector.algorithm);
-        alteredVector.algorithm.name = "RSASSA-PKCS1-v1_5";
+        if (vector.algorithm.name === "RSA-PSS") {
+            alteredVector.algorithm.name = "RSASSA-PKCS1-v1_5";
+        } else {
+            alteredVector.algorithm.name = "RSA-PSS";
+        }
 
         var promise = importVectorKeys(alteredVector, ["verify"], ["sign"])
         .then(function(vectors) {

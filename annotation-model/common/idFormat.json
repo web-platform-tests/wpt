@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Check that Annotation identifier, if present, is a URI (Section 3.1)",
-  "assertionType": "must", 
+  "assertionType": "must",
   "expectedResult": "valid",
   "errorMessage": "Error: The Annotation identifier ('id') is not a string of format URI (Section 3.1).",
   "type": "object",

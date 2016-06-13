@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "'the Annotation class must be one' of an Annotation's type values (Section 3.1)",
-  "assertionType": "must", 
+  "assertionType": "must",
   "expectedResult": "valid",
   "errorMessage": "Error: 'Annotation' is neither first nor only value of type.",
   "type": "object",

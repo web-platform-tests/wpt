@@ -1,4 +1,4 @@
-/* globals Promise, done, assert_true, Ajv, on_event */
+/* globals add_completion_callback, Promise, done, assert_true, Ajv, on_event */
 
 /**
  * Creates a JSONtest object.  If the parameters are supplied

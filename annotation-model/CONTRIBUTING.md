@@ -247,6 +247,15 @@ Command Line Tools
 
 ### Building the Test Files ###
 
+The actual .html test case files are generated using the script
+tools/make_tests.py.  This script will search the directory heriarchy looking for
+files ending on `.test` and creating `.html` files from them using the template in
+the tools folder.  If you want to regenerate the examples too, supply the
+`--examples` option to the script.
+
+Note that when submitting tests to the repository, the `.html` versions must be
+included.
+
 ### Testing the Tests ###
 
 ### Driving Tests with Input Files ###

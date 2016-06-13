@@ -45,7 +45,7 @@ function JSONtest(params) {
 
   // create an ajv object that will stay around so that caching
   // of schema that are compiled just works
-  this.ajv = new Ajv({allErrors: true, validateSchema: false}) ;
+  this.ajv = new Ajv({v5: true, allErrors: true, validateSchema: false}) ;
 
   // determine the base URI for the test collection.  This is
   // the top level folder in the test "document.location"

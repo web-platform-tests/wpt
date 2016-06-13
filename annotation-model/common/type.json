@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "'An Annotation must have 1 or more types' (Section 3.1)",
+  "assertionType": "must",
+  "expectedResult": "valid",
+  "errorMessage": "Error: Annotation does not have a 'type' which is a string or array of strings.",
+  "type": "object",
+  "properties": {
+    "type": {
+        "anyOf": [
+        {"type": "string"},
+        {"type": "array",
+         "items": {"type": "string"}
+        }
+      ],
+      "not": {"type": "object"}
+    }
+  },
+  "required": ["type"]
+}

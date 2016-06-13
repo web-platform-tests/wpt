@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "'There should be 1 or more body relationships' (Section 3.1)",
+    "assertionType": "should",
+    "expectedResult": "valid",
+    "errorMessage": "Warning: Annotation has neither body nor bodyText - 1 of these should be present.",
+    "type": "object",
+    "anyOf": [
+        {"properties": {
+             "body": {}
+         },
+         "required": ["body"]
+        },
+        {"properties": {
+             "bodyText": {}
+          },
+         "required": ["bodyText"]
+         }
+    ]
+}

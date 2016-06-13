@@ -81,11 +81,11 @@ interface ParentNode {
   readonly attribute Element? lastElementChild;
   readonly attribute unsigned long childElementCount;
 
-  [Unscopeable] void prepend((Node or DOMString)... nodes);
-  [Unscopeable] void append((Node or DOMString)... nodes);
+  [Unscopable] void prepend((Node or DOMString)... nodes);
+  [Unscopable] void append((Node or DOMString)... nodes);
 
-  [Unscopeable] Element? query(DOMString relativeSelectors);
-  [NewObject, Unscopeable] Elements queryAll(DOMString relativeSelectors);
+  [Unscopable] Element? query(DOMString relativeSelectors);
+  [NewObject, Unscopable] Elements queryAll(DOMString relativeSelectors);
   Element? querySelector(DOMString selectors);
   [NewObject] NodeList querySelectorAll(DOMString selectors);
 };
@@ -103,10 +103,10 @@ CharacterData implements NonDocumentTypeChildNode;
 
 [NoInterfaceObject]
 interface ChildNode {
-  [Unscopeable] void before((Node or DOMString)... nodes);
-  [Unscopeable] void after((Node or DOMString)... nodes);
-  [Unscopeable] void replaceWith((Node or DOMString)... nodes);
-  [Unscopeable] void remove();
+  [Unscopable] void before((Node or DOMString)... nodes);
+  [Unscopable] void after((Node or DOMString)... nodes);
+  [Unscopable] void replaceWith((Node or DOMString)... nodes);
+  [Unscopable] void remove();
 };
 DocumentType implements ChildNode;
 Element implements ChildNode;
@@ -898,17 +898,7 @@ interface HTMLOptionsCollection : HTMLCollection {
            attribute long selectedIndex;
 };
 
-interface HTMLPropertiesCollection : HTMLCollection {
-  // inherits length and item()
-  getter PropertyNodeList? namedItem(DOMString name); // shadows inherited namedItem()
-  readonly attribute DOMString[] names;
-};
-
 typedef sequence<any> PropertyValueArray;
-
-interface PropertyNodeList : NodeList {
-  PropertyValueArray getValues();
-};
 
 [OverrideBuiltins, Exposed=(Window,Worker)]
 interface DOMStringMap {
@@ -952,7 +942,6 @@ partial /*sealed*/ interface Document {
   readonly attribute HTMLCollection forms;
   readonly attribute HTMLCollection scripts;
   NodeList getElementsByName(DOMString elementName);
-  NodeList getItems(optional DOMString typeNames = ""); // microdata
   readonly attribute DOMElementMap cssElementMap;
   readonly attribute HTMLScriptElement? currentScript;
 
@@ -994,15 +983,6 @@ interface HTMLElement : Element {
            attribute boolean translate;
            attribute DOMString dir;
   readonly attribute DOMStringMap dataset;
-
-  // microdata
-           attribute boolean itemScope;
-  [PutForwards=value] readonly attribute DOMTokenList itemType;
-           attribute DOMString itemId;
-  [PutForwards=value] readonly attribute DOMTokenList itemRef;
-  [PutForwards=value] readonly attribute DOMTokenList itemProp;
-  readonly attribute HTMLPropertiesCollection properties;
-           attribute any itemValue; // acts as DOMString on setting
 
   // user interaction
            attribute boolean hidden;
@@ -1131,7 +1111,7 @@ interface HTMLDivElement : HTMLElement {
 interface HTMLAnchorElement : HTMLElement {
   attribute DOMString target;
   attribute DOMString download;
-  [PutForwards=value] readonly attribute DOMTokenList ping;
+  [CEReactions] attribute USVString ping;
   attribute DOMString rel;
   [PutForwards=value] readonly attribute DOMTokenList relList;
   attribute DOMString hreflang;
@@ -1501,7 +1481,7 @@ interface HTMLAreaElement : HTMLElement {
   attribute DOMString shape;
   attribute DOMString target;
   attribute DOMString download;
-  [PutForwards=value] readonly attribute DOMTokenList ping;
+  [CEReactions] attribute USVString ping;
   attribute DOMString rel;
   [PutForwards=value] readonly attribute DOMTokenList relList;
   // hreflang and type are not reflected
@@ -1560,7 +1540,7 @@ interface HTMLTableRowElement : HTMLElement {
 interface HTMLTableCellElement : HTMLElement {
   [CEReactions] attribute unsigned long colSpan;
   [CEReactions] attribute unsigned long rowSpan;
-  [CEReactions, SameObject, PutForwards=value] readonly attribute DOMTokenList headers;
+  [CEReactions] attribute DOMString headers;
   readonly attribute long cellIndex;
 
   [CEReactions] attribute DOMString scope; // only conforming for th elements
@@ -1655,9 +1635,9 @@ interface HTMLInputElement : HTMLElement {
   readonly attribute NodeList labels;
 
   void select();
-           attribute unsigned long selectionStart;
-           attribute unsigned long selectionEnd;
-           attribute DOMString selectionDirection;
+           attribute unsigned long? selectionStart;
+           attribute unsigned long? selectionEnd;
+           attribute DOMString? selectionDirection;
   void setRangeText(DOMString replacement);
   void setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
   void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
@@ -1778,9 +1758,9 @@ interface HTMLTextAreaElement : HTMLElement {
   readonly attribute NodeList labels;
 
   void select();
-           attribute unsigned long selectionStart;
-           attribute unsigned long selectionEnd;
-           attribute DOMString selectionDirection;
+           attribute unsigned long? selectionStart;
+           attribute unsigned long? selectionEnd;
+           attribute DOMString? selectionDirection;
   void setRangeText(DOMString replacement);
   void setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
   void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
@@ -3187,6 +3167,13 @@ setup(function() {
   iframe.hidden = true;
   document.body.appendChild(iframe);
 }, {explicit_done:true});
+
+function createInput(type) {
+  var input = document.createElement('input');
+  input.type = type;
+  return input;
+}
+
 window.onload = function() {
   idlArray.add_objects({
     NodeList: ['document.getElementsByName("name")'],
@@ -3194,8 +3181,6 @@ window.onload = function() {
     HTMLFormControlsCollection: ['document.createElement("form").elements'],
     RadioNodeList: [],
     HTMLOptionsCollection: ['document.createElement("select").options'],
-    HTMLPropertiesCollection: ['document.head.properties'],
-    PropertyNodeList: [],
     DOMStringMap: ['document.head.dataset'],
     DOMElementMap: ['document.cssElementMap'],
     Transferable: [],
@@ -3215,7 +3200,11 @@ window.onload = function() {
     HTMLHeadingElement: ['document.createElement("h1")'],
     HTMLParagraphElement: ['document.createElement("p")'],
     HTMLHRElement: ['document.createElement("hr")'],
-    HTMLPreElement: ['document.createElement("pre")'],
+    HTMLPreElement: [
+      'document.createElement("pre")',
+      'document.createElement("listing")',
+      'document.createElement("xmp")',
+    ],
     HTMLQuoteElement: [
       'document.createElement("blockquote")',
       'document.createElement("q")',
@@ -3288,7 +3277,31 @@ window.onload = function() {
     HTMLFieldsetElement: ['document.createElement("fieldset")'],
     HTMLLegendElement: ['document.createElement("legend")'],
     HTMLLabelElement: ['document.createElement("label")'],
-    HTMLInputElement: ['document.createElement("input")'],
+    HTMLInputElement: [
+      'document.createElement("input")',
+      'createInput("text")',
+      'createInput("hidden")',
+      'createInput("search")',
+      'createInput("tel")',
+      'createInput("url")',
+      'createInput("email")',
+      'createInput("password")',
+      'createInput("date")',
+      'createInput("month")',
+      'createInput("week")',
+      'createInput("time")',
+      'createInput("datetime-local")',
+      'createInput("number")',
+      'createInput("range")',
+      'createInput("color")',
+      'createInput("checkbox")',
+      'createInput("radio")',
+      'createInput("file")',
+      'createInput("submit")',
+      'createInput("image")',
+      'createInput("reset")',
+      'createInput("button")'
+    ],
     HTMLButtonElement: ['document.createElement("button")'],
     HTMLSelectElement: ['document.createElement("select")'],
     HTMLDataListElement: ['document.createElement("datalist")'],

@@ -200,6 +200,76 @@ function run_test() {
         all_promises.push(promise);
     });
 
+    // Test signing with the wrong algorithm
+    passingVectors.forEach(function(vector) {
+        // Want to get the key for the wrong algorithm
+        var promise = subtle.generateKey({name: "HMAC", hash: "SHA-1"}, false, ["sign", "verify"])
+        .then(function(wrongKey) {
+            return importVectorKeys(vector, ["verify"], ["sign"])
+            .then(function(vectors) {
+                promise_test(function(test) {
+                    var operation = subtle.sign(vector.algorithm, wrongKey, vector.plaintext)
+                    .then(function(signature) {
+                        assert_unreached("Signing should not have succeeded for " + vector.name);
+                    }, function(err) {
+                        assert_equals(err.name, "InvalidAccessError", "Should have thrown InvalidAccessError instead of '" + err.message + "'");
+                    });
+
+                    return operation;
+                }, vector.name + " signing with wrong algorithm name");
+
+            }, function(err) {
+                // We need a failed test if the importVectorKey operation fails, so
+                // we know we never tested verification.
+                promise_test(function(test) {
+                    assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+                }, "importVectorKeys step: " + vector.name + " signing with wrong algorithm name");
+            });
+        }, function(err) {
+            promise_test(function(test) {
+                assert_unreached("Generate wrong key for test " + vector.name + " failed: '" + err.message + "'");
+            }, "generate wrong key step: " + vector.name + " signing with wrong algorithm name");
+        });
+
+        all_promises.push(promise);
+    });
+
+    // Test verification with the wrong algorithm
+    passingVectors.forEach(function(vector) {
+        // Want to get the key for the wrong algorithm
+        var promise = subtle.generateKey({name: "HMAC", hash: "SHA-1"}, false, ["sign", "verify"])
+        .then(function(wrongKey) {
+            return importVectorKeys(vector, ["verify"], ["sign"])
+            .then(function(vectors) {
+                promise_test(function(test) {
+                    var operation = subtle.verify(vector.algorithm, wrongKey, vector.signature, vector.plaintext)
+                    .then(function(signature) {
+                        assert_unreached("Verifying should not have succeeded for " + vector.name);
+                    }, function(err) {
+                        assert_equals(err.name, "InvalidAccessError", "Should have thrown InvalidAccessError instead of '" + err.message + "'");
+                    });
+
+                    return operation;
+                }, vector.name + " verifying with wrong algorithm name");
+
+            }, function(err) {
+                // We need a failed test if the importVectorKey operation fails, so
+                // we know we never tested verification.
+                promise_test(function(test) {
+                    assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+                }, "importVectorKeys step: " + vector.name + " verifying with wrong algorithm name");
+            });
+        }, function(err) {
+            promise_test(function(test) {
+                assert_unreached("Generate wrong key for test " + vector.name + " failed: '" + err.message + "'");
+            }, "generate wrong key step: " + vector.name + " verifying with wrong algorithm name");
+        });
+
+        all_promises.push(promise);
+    });
+
+
+
     Promise.all(all_promises)
     .then(function() {done();})
     .catch(function() {done();})

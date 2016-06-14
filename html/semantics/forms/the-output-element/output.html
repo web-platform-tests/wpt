@@ -1,14 +1,30 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <meta charset=utf-8>
 <title>The output element</title>
 <link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
+<link rel="author" title="Arron Eicholz" href="mailto:arronei@microsoft.com">
 <link rel=help href="https://html.spec.whatwg.org/multipage/#the-output-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
-<output id=output></output>
+<p id="outputs"><output id="output"></output><output></output><output></output><output></output></p>
 <script>
   var output = document.getElementById("output");
+
+  var outputp = document.getElementById('outputs');
+  var outputs = outputp.getElementsByTagName('output');
+
+  //OUTPUT elements
+  test(function () {
+    assert_equals(outputs.length, 4);
+  }, 'HTML parsing should locate 4 output elements in this document');
+  test(function () {
+    assert_true(!!window.HTMLOutputElement);
+  }, 'HTMLOutputElement should be exposed for prototyping');
+  test(function () {
+    assert_true(document.createElement('output') instanceof window.HTMLOutputElement, 'createElement variant');
+    assert_true(outputs[0] instanceof window.HTMLOutputElement, 'HTML parsing variant');
+  }, 'the output elements should be instanceof HTMLOutputElement');
 
   test(function(){
     assert_equals(output.type, "output", "type must return the string 'output'");

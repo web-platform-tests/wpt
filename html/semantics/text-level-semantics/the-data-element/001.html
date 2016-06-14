@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>HTML data element API</title>
+    <style>
+        data { visibility: hidden; }
+    </style>
+    <link rel="help" href="https://html.spec.whatwg.org/multipage/#the-data-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <!-- intentionally nested to test parsing rules -->
+    <p id="data"><data value="Dummy text">Dummy text <data>Other text<data>more text<data></data></data>even more</data></data></p>
+    <script type="text/javascript">
+        'use strict'
+        function makeData(value,contents,valueProp) {
+            var dataEl = document.createElement('data');
+            if(value) {
+                dataEl.setAttribute('value',value);
+            }
+            if(contents) {
+                dataEl.innerHTML = contents;
+            }
+            if(valueProp) {
+                dataEl.value = valueProp;
+            }
+            return dataEl;
+        }
+
+        var datap = document.getElementById('data');
+        var datas = datap.getElementsByTagName('data');
+
+        //DATA elements
+        test(function () {
+            assert_equals(datas.length, 4, 'getElementsByTagName must find 4 elements');
+        }, 'getElementsByTagName for data elements');
+
+        test(function () {
+            assert_true(!!window.HTMLDataElement, 'HTMLDataElement prototype existence');
+        }, 'HTMLDataElement should be exposed for prototyping');
+
+        test(function () {
+            assert_true(makeData() instanceof window.HTMLDataElement, 'createElement variant must return variant instance of window.HTMLDataElement');
+            assert_true(datas[0] instanceof window.HTMLDataElement, 'HTML parsing variant must return variant instance of window.HTMLDataElement');
+        }, 'the data elements should be instanceof HTMLDataElement');
+
+        //value
+        test(function () {
+            assert_equals(makeData('Some text','Some text').value, 'Some text', 'the .value property should reflect the value attribute');
+        }, 'the value attribute should be reflected by the .value property');
+
+        test(function () {
+            assert_equals(typeof makeData().value, 'string', 'typeof value property must be string');
+            assert_equals(makeData().value, '', 'value property must be empty string');
+        }, 'default type and value for for value IDL property');
+
+        test(function () {
+            assert_equals(makeData(false,false,'Some text').value, 'Some text', 'the .value property must be the expected value');
+        }, 'the value property should be read/write');
+
+        test(function () {
+            assert_equals(makeData('Some text').value, 'Some text', 'the .value property must be the expected value');
+        }, 'the value attribute should be reflected by the .value property even if it is invalid');
+
+        test(function () {
+            assert_equals(makeData(false,'Some text').value, '', 'the .value property if not set must return empty string');
+        }, 'the value attribute should not reflect the textContent');
+
+        test(function () {
+            var dataEl = makeData('Some text', 'Content text', 'More text')
+            assert_equals(dataEl.value, 'More text', 'the .value property must return the expected value set using .value property');
+            assert_equals(dataEl.getAttribute('value'), 'More text', 'the value attribute must return the expected value set by .value property')
+        }, 'set the value attribute then the .value property');
+
+        test(function () {
+            assert_equals(makeData().getAttribute('value'), null, 'getAttribute must return null if attribute is not set')
+        }, 'the value attribute not set, calling getAttribute should default to null');
+    </script>
+  </body>
+</html>

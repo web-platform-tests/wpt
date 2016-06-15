@@ -203,10 +203,11 @@ function run_test() {
         // Want to get the key for the wrong algorithm
         var promise = subtle.generateKey({name: "HMAC", hash: "SHA-1"}, false, ["sign", "verify"])
         .then(function(wrongKey) {
+            var algorithm = {name: vector.algorithmName, hash: vector.hashName};
             return importVectorKeys(vector, ["verify"], ["sign"])
             .then(function(vectors) {
                 promise_test(function(test) {
-                    var operation = subtle.sign(vector.algorithm, wrongKey, vector.plaintext)
+                    var operation = subtle.sign(algorithm, wrongKey, vector.plaintext)
                     .then(function(signature) {
                         assert_unreached("Signing should not have succeeded for " + vector.name);
                     }, function(err) {
@@ -239,8 +240,9 @@ function run_test() {
         .then(function(wrongKey) {
             return importVectorKeys(vector, ["verify"], ["sign"])
             .then(function(vectors) {
+                var algorithm = {name: vector.algorithmName, hash: vector.hashName};
                 promise_test(function(test) {
-                    var operation = subtle.verify(vector.algorithm, wrongKey, vector.signature, vector.plaintext)
+                    var operation = subtle.verify(algorithm, wrongKey, vector.signature, vector.plaintext)
                     .then(function(signature) {
                         assert_unreached("Verifying should not have succeeded for " + vector.name);
                     }, function(err) {

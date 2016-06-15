@@ -5,20 +5,14 @@ function run_test() {
     // When are all these tests really done? When all the promises they use have resolved.
     var all_promises = [];
 
-    // Source file rsa_XXX_vectors.js provides the getTestVectors method
-    // for the RSA algorithm that drives these tests.
-    var vectors = getTestVectors();
-    var passingVectors = vectors.passing;
-    var failingVectors = vectors.failing;
+    // Source file [algorithm_name]_vectors.js provides the getTestVectors method
+    // for the algorithm that drives these tests.
+    var testVectors = getTestVectors();
 
     // Test verification first, because signing tests rely on that working
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
-            // Some tests are sign only
-            if (!("signature" in vector)) {
-                return;
-            }
             promise_test(function(test) {
                 var operation = subtle.verify(vector.algorithm, vector.publicKey, vector.signature, vector.plaintext)
                 .then(function(is_verified) {
@@ -41,13 +35,10 @@ function run_test() {
         all_promises.push(promise);
     });
 
-    // Test verification with an altered buffer
-    passingVectors.forEach(function(vector) {
+    // Test verification with an altered buffer after call
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
-            if (!("signature" in vector)) {
-                return;
-            }
             promise_test(function(test) {
                 var signature = copyBuffer(vector.signature);
                 var operation = subtle.verify(vector.algorithm, vector.publicKey, signature, vector.plaintext)
@@ -59,18 +50,18 @@ function run_test() {
 
                 signature[0] = 255 - signature[0];
                 return operation;
-            }, vector.name + " verification with altered signature");
+            }, vector.name + " verification with altered signature after call");
         }, function(err) {
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name + " verification with altered signature");
+            }, "importVectorKeys step: " + vector.name + " verification with altered signature after call");
         });
 
         all_promises.push(promise);
     });
 
     // Check for successful verification even if plaintext is altered after call.
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
             promise_test(function(test) {
@@ -88,14 +79,14 @@ function run_test() {
         }, function(err) {
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
-            }, "importVectorKeys step: " + vector.name + " with altered plaintext");
+            }, "importVectorKeys step: " + vector.name + " with altered plaintext after call");
         });
 
         all_promises.push(promise);
     });
 
     // Check for failures due to using privateKey to verify.
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
             promise_test(function(test) {
@@ -117,7 +108,7 @@ function run_test() {
     });
 
     // Check for failures due to using publicKey to sign.
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
             promise_test(function(test) {
@@ -138,7 +129,7 @@ function run_test() {
     });
 
     // Check for failures due to no "verify" usage.
-    passingVectors.forEach(function(originalVector) {
+    testVectors.forEach(function(originalVector) {
         var vector = Object.assign({}, originalVector);
 
         var promise = importVectorKeys(vector, [], ["sign"])
@@ -161,26 +152,26 @@ function run_test() {
     });
 
     // Check for successful signing and verification.
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])
         .then(function(vectors) {
             promise_test(function(test) {
                 return subtle.sign(vector.algorithm, vector.privateKey, vector.plaintext)
                 .then(function(signature) {
-                    // Can we get the verify the new signature?
+                    // Can we verify the new signature?
                     return subtle.verify(vector.algorithm, vector.publicKey, signature, vector.plaintext)
                     .then(function(is_verified) {
-                        assert_true(is_verified, "Round trip returns original plaintext");
+                        assert_true(is_verified, "Round trip verifies");
                         return signature;
                     }, function(err) {
                         assert_unreached("verify error for test " + vector.name + ": " + err.message + "'");
                     });
                 })
                 .then(function(priorSignature) {
-                    // Will a second signing give us different signature, as it should?
+                    // Will a second signing give us different signature? It should for PSS with non-empty salt
                     return subtle.sign(vector.algorithm, vector.privateKey, vector.plaintext)
                     .then(function(signature) {
-                        if (vector.algorithm.saltLength > 0) {
+                        if ("saltLength" in vector.algorithm && vector.algorithm.saltLength > 0) {
                             assert_false(equalBuffers(priorSignature, signature), "Two signings with a salt give different signatures")
                         } else {
                             assert_true(equalBuffers(priorSignature, signature), "Two signings with empty salt give same signature")
@@ -206,7 +197,7 @@ function run_test() {
 
 
     // Test signing with the wrong algorithm
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         // Want to get the key for the wrong algorithm
         var alteredVector = Object.assign({}, vector);
         alteredVector.algorithm = Object.assign({}, vector.algorithm);
@@ -241,7 +232,7 @@ function run_test() {
     });
 
     // Test verification with the wrong algorithm
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         // Want to get the key for the wrong algorithm
         var alteredVector = Object.assign({}, vector);
         alteredVector.algorithm = Object.assign({}, vector.algorithm);
@@ -274,6 +265,62 @@ function run_test() {
             promise_test(function(test) {
                 assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
             }, "importVectorKeys step: " + vector.name + " verification with wrong algorithm name");
+        });
+
+        all_promises.push(promise);
+    });
+
+    // Verification should fail with wrong signature
+    testVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["verify"], ["sign"])
+        .then(function(vectors) {
+            promise_test(function(test) {
+                var signature = copyBuffer(vector.signature);
+                signature[0] = 255 - signature[0];
+                var operation = subtle.verify(vector.algorithm, vector.publicKey, signature, vector.plaintext)
+                .then(function(is_verified) {
+                    assert_false(is_verified, "Signature NOT verified");
+                }, function(err) {
+                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " verification failure with altered signature");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested verification.
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " verification failure with altered signature");
+        });
+
+        all_promises.push(promise);
+    });
+
+    // Verification should fail with wrong plaintext
+    testVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["verify"], ["sign"])
+        .then(function(vectors) {
+            promise_test(function(test) {
+                var plaintext = copyBuffer(vector.plaintext);
+                plaintext[0] = 255 - plaintext[0];
+                var operation = subtle.verify(vector.algorithm, vector.publicKey, vector.signature, plaintext)
+                .then(function(is_verified) {
+                    assert_false(is_verified, "Signature NOT verified");
+                }, function(err) {
+                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " verification failure with altered plaintext");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested verification.
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " verification failure with altered plaintext");
         });
 
         all_promises.push(promise);

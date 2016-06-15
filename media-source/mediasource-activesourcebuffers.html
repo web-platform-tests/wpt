@@ -23,7 +23,7 @@
                   var sourceBuffer = mediaSource.addSourceBuffer(typeAudio);
                   assert_equals(mediaSource.activeSourceBuffers.length, 0,
                     "activeSourceBuffers is empty to start with");
-                  
+
                   test.expectEvent(mediaElement, "loadedmetadata");
                   test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
                   sourceBuffer.appendBuffer(dataAudio);
@@ -52,7 +52,7 @@
                   test.expectEvent(mediaElement, "loadedmetadata");
                   test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
                   sourceBuffer.appendBuffer(dataVideo);
-                  
+
                   test.waitForExpectedEvents(function()
                   {
                       assert_equals(mediaSource.activeSourceBuffers.length, 1,
@@ -87,7 +87,7 @@
                       test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
                       sourceBufferAudio.appendBuffer(dataAudio);
                       sourceBufferVideo.appendBuffer(dataVideo);
-                      
+
                       test.waitForExpectedEvents(function()
                       {
                           assert_equals(mediaSource.activeSourceBuffers.length, 2,
@@ -117,7 +117,7 @@
                       test.expectEvent(sourceBufferVideo.videoTracks, "addtrack");
                       sourceBufferAudio.appendBuffer(dataAudio);
                       sourceBufferVideo.appendBuffer(dataVideo);
-                      
+
                       test.waitForExpectedEvents(function()
                       {
                           assert_equals(mediaSource.activeSourceBuffers.length, 2,
@@ -167,7 +167,7 @@
                   test.expectEvent(sourceBuffer.audioTracks, "addtrack");
                   test.expectEvent(sourceBuffer.videoTracks, "addtrack");
                   sourceBuffer.appendBuffer(dataAV);
-                  
+
                   test.waitForExpectedEvents(function()
                   {
                       assert_equals(mediaSource.activeSourceBuffers.length, 1,

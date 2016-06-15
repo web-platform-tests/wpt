@@ -11,7 +11,7 @@
         <script>
             var detected_pointertypes = {};
             var detected_eventTypes = {};
-            var test_pointerEvent = async_test("pointerdown event received");
+            var test_pointerEvent = async_test("pointerevent attributes");
             // showPointerTypes is defined in pointerevent_support.js
             // Requirements: the callback function will reference the test_pointerEvent object and
             // will fail unless the async_test is created with the var name "test_pointerEvent".
@@ -32,6 +32,31 @@
                             assert_equals(event.pointerType, 'mouse', 'pointerType should be mouse');
                         }, event.type + ".pointerType attribute is correct.");
 
+                        // Test button and buttons
+                        if (event.type == 'pointerdown') {
+                            test(function() {
+                                assert_true(event.button == 0, "If left mouse button is pressed button attribute is 0")
+                            }, event.type + "'s button attribute is 0 when left mouse button is pressed.");
+                            test(function() {
+                                assert_true(event.buttons == 1, "If left mouse button is pressed buttons attribute is 1")
+                            }, event.type + "'s buttons attribute is 1 when left mouse button is pressed.");
+                        } else if (event.type == 'pointerup') {
+                            test(function() {
+                                assert_true(event.button == 0, "If left mouse button is just released button attribute is 0")
+                            }, event.type + "'s button attribute is 0 when left mouse button is just released.");
+                            test(function() {
+                                assert_true(event.buttons == 0, "If left mouse button is just released buttons attribute is 0")
+                            }, event.type + "'s buttons attribute is 0 when left mouse button is just released.");
+                        } else {
+                            test(function() {
+                                assert_true(event.button == -1, "If mouse buttons are released button attribute is -1")
+                            }, event.type + "'s button is -1 when mouse buttons are released.");
+                            test(function() {
+                                assert_true(event.buttons == 0, "If mouse buttons are released buttons attribute is 0")
+                            }, event.type + "'s buttons is 0 when mouse buttons are released.");
+                        }
+
+                        // Test clientX and clientY
                         if (event.type != 'pointerout' && event.type != 'pointerleave' ) {
                             test(function () {
                                 assert_true(event.clientX >= rectSquare1.left && event.clientX < rectSquare1.right, "ClientX should be in the boundaries of the black box");
@@ -45,6 +70,7 @@
                             }, event.type + "'s ClientX and ClientY attributes are correct.");
                         }
 
+                        // Test isPrimary
                         test(function () {
                             assert_equals(event.isPrimary, true, "isPrimary should be true");
                         }, event.type + ".isPrimary attribute is correct.");

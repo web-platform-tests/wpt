@@ -17,7 +17,7 @@
                   var sourceBuffer = mediaSource.addSourceBuffer(segmentInfo.type);
 
                   if (expected == "TypeError")  {
-                      assert_throws({name: "TypeError"},
+                      assert_throws(new TypeError(),
                           function() { sourceBuffer.timestampOffset = value; },
                           "setting timestampOffset to " + description + " throws an exception.");
                   } else {

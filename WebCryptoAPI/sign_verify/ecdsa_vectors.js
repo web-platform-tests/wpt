@@ -79,7 +79,7 @@ function getTestVectors() {
     //     }
     // };
 
-    var passing = [];
+    var vectors = [];
     ["P-256", "P-384", "P-521"].forEach(function(curveName) {
         ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(function(hashName) {
             var vector = {
@@ -97,11 +97,9 @@ function getTestVectors() {
                 signature: signatures[curveName][hashName]
             };
 
-            passing.push(vector);
+            vectors.push(vector);
         })
     });
 
-    var failing = [];
-
-    return {passing: passing, failing: failing};
+    return vectors;
 }

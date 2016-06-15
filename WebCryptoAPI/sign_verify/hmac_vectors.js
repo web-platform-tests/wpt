@@ -23,9 +23,9 @@ function getTestVectors() {
     //     hashName - the hash function to sign with
     //     plaintext - the text to encrypt
     //     signature - the expected signature
-    var passing = [];
+    var vectors = [];
     Object.keys(raw).forEach(function(hashName) {
-        passing.push({
+        vectors.push({
             name: "HMAC with " + hashName,
             hash: hashName,
             keyBuffer: raw[hashName],
@@ -35,5 +35,5 @@ function getTestVectors() {
         });
     });
 
-    return {passing: passing, failing: []};
+    return vectors;
 }

@@ -7,12 +7,10 @@ function run_test() {
 
     // Source file hmac_vectors.js provides the getTestVectors method
     // for the algorithm that drives these tests.
-    var vectors = getTestVectors();
-    var passingVectors = vectors.passing;
-    var failingVectors = vectors.failing;
+    var testVectors = getTestVectors();
 
     // Test verification first, because signing tests rely on that working
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vector) {
             promise_test(function(test) {
@@ -38,7 +36,7 @@ function run_test() {
     });
 
     // Test verification with an altered buffer after call
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vector) {
             promise_test(function(test) {
@@ -63,9 +61,9 @@ function run_test() {
     });
 
     // Check for successful verification even if plaintext is altered after call.
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
-        .then(function(vectors) {
+        .then(function(vector) {
             promise_test(function(test) {
                 var plaintext = copyBuffer(vector.plaintext);
                 var operation = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, vector.signature, plaintext)
@@ -88,11 +86,11 @@ function run_test() {
     });
 
     // Check for failures due to no "verify" usage.
-    passingVectors.forEach(function(originalVector) {
+    testVectors.forEach(function(originalVector) {
         var vector = Object.assign({}, originalVector);
 
         var promise = importVectorKeys(vector, ["sign"])
-        .then(function(vectors) {
+        .then(function(vector) {
             promise_test(function(test) {
                 return subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, vector.signature, vector.plaintext)
                 .then(function(plaintext) {
@@ -111,7 +109,7 @@ function run_test() {
     });
 
     // Check for successful signing and verification.
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vectors) {
             promise_test(function(test) {
@@ -140,7 +138,7 @@ function run_test() {
     });
 
     // Test signing with the wrong algorithm
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         // Want to get the key for the wrong algorithm
         var promise = subtle.generateKey({name: "ECDSA", namedCurve: "P-256", hash: "SHA-256"}, false, ["sign", "verify"])
         .then(function(wrongKey) {
@@ -174,12 +172,12 @@ function run_test() {
     });
 
     // Test verification with the wrong algorithm
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         // Want to get the key for the wrong algorithm
         var promise = subtle.generateKey({name: "ECDSA", namedCurve: "P-256", hash: "SHA-256"}, false, ["sign", "verify"])
         .then(function(wrongKey) {
             return importVectorKeys(vector, ["verify", "sign"])
-            .then(function(vectors) {
+            .then(function(vector) {
                 promise_test(function(test) {
                     var operation = subtle.verify({name: "HMAC", hash: vector.hash}, wrongKey.publicKey, vector.signature, vector.plaintext)
                     .then(function(signature) {
@@ -208,7 +206,7 @@ function run_test() {
     });
 
     // Verification should fail if the plaintext is changed
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vector) {
             var plaintext = copyBuffer(vector.plaintext);
@@ -236,7 +234,7 @@ function run_test() {
     });
 
     // Verification should fail if the signature is changed
-    passingVectors.forEach(function(vector) {
+    testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify", "sign"])
         .then(function(vector) {
             var signature = copyBuffer(vector.signature);

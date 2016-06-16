@@ -1,0 +1,29 @@
+language: python
+python: 2.7
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+env:
+  - TOXENV=py27-base
+  - TOXENV=py27-b2g
+  - TOXENV=py27-chrome
+  - TOXENV=py27-firefox
+  - TOXENV=py27-servo
+
+matrix:
+  allow_failures:
+    - env: TOXENV=py27-base
+    - env: TOXENV=py27-b2g
+    - env: TOXENV=py27-chrome
+    - env: TOXENV=py27-firefox
+    - env: TOXENV=py27-servo
+
+install:
+  - pip install -U tox
+
+script:
+  - tox

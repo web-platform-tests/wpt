@@ -14,14 +14,6 @@ env:
   - TOXENV=py27-firefox
   - TOXENV=py27-servo
 
-matrix:
-  allow_failures:
-    - env: TOXENV=py27-base
-    - env: TOXENV=py27-b2g
-    - env: TOXENV=py27-chrome
-    - env: TOXENV=py27-firefox
-    - env: TOXENV=py27-servo
-
 install:
   - pip install -U tox
 

@@ -4,7 +4,9 @@
 
 import unittest
 import sys
-sys.path.insert(0, "..")
+from os.path import join, dirname
+
+sys.path.insert(0, join(dirname(__file__), "..", ".."))
 
 from wptrunner import wptrunner
 

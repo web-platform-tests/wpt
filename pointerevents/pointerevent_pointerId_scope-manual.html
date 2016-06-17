@@ -34,7 +34,7 @@ http://www.w3.org/wiki/PointerEvents/TestAssertions
 
                 function checkPointerId(event, inner) {
                     detected_pointertypes[event.pointerType] = true;
-                    var eventName = (inner ? "inner frame " : " ") + event.type;
+                    var eventName = (inner ? "inner frame " : "" ) + event.type;
                     test_pointerEvent.step(function() {
                         assert_equals(event.pointerId, pointerover_pointerId, "PointerId of " + eventName + " is not correct");
                         assert_equals(event.pointerType, pointerover_pointerType, "PointerType of " + eventName + " is not correct");
@@ -47,10 +47,6 @@ http://www.w3.org/wiki/PointerEvents/TestAssertions
                     checkPointerId(pe_event, true);
                     if (Object.keys(receivedEvents).length == eventList.length && Object.keys(receivedEventsInnerFrame).length == eventList.length)
                         test_pointerEvent.done();
-                });
-                
-                on_event(target0, 'gotpointercapture', function(event) {
-                     target0.releasePointerCapture(event.pointerId);
                 });
 
                 eventList.forEach(function(eventName) {

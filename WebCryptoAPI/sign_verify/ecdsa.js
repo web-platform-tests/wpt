@@ -165,22 +165,13 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.sign(algorithm, vector.privateKey, vector.plaintext)
                 .then(function(signature) {
-                    // Can we get verify the signature?
+                    // Can we verify the signature?
                     return subtle.verify(algorithm, vector.publicKey, signature, vector.plaintext)
                     .then(function(is_verified) {
                         assert_true(is_verified, "Round trip verification works");
                         return signature;
                     }, function(err) {
                         assert_unreached("verify error for test " + vector.name + ": " + err.message + "'");
-                    });
-                })
-                .then(function(priorSignature) {
-                    // Will a second signing give us different signature, as it should?
-                    return subtle.sign(algorithm, vector.privateKey, vector.plaintext)
-                    .then(function(signature) {
-                        assert_false(equalBuffers(priorSignature, signature), "Two signings give different signatures")
-                    }, function(err) {
-                        assert_unreached("second time verify error for test " + vector.name + ": '" + err.message + "'");
                     });
                 }, function(err) {
                     assert_unreached("sign error for test " + vector.name + ": '" + err.message + "'");

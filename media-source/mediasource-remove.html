@@ -197,6 +197,7 @@
                   test.expectEvent(sourceBuffer, "updatestart");
                   test.expectEvent(sourceBuffer, "update");
                   test.expectEvent(sourceBuffer, "updateend");
+                  test.expectEvent(mediaSource, "sourceopen");
                   sourceBuffer.remove(1, 2);
 
                   assert_true(sourceBuffer.updating, "updating");

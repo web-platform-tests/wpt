@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Pointer Event: Prevent compatibility mouse events</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <link rel="author" title="Google" href="http://www.google.com "/>
+    <meta name="assert" content="When a pointerdown is canceled, selected compatibilty mouse events are not fired until a pointerup."/>
+    <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
+    <!-- /resources/testharness.js -->
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <!-- Additional helper script for common checks across event types -->
+    <script type="text/javascript" src="pointerevent_support.js"></script>
+    <script type="text/javascript">
+      var test_pointerEvent = async_test("Prevent compat mouse events");
+      add_completion_callback(end_of_test);
+
+      var detected_pointertypes = {};
+      var event_log = [];
+
+      function end_of_test() {
+          document.getElementById("event-log").innerHTML =
+              "Logged the following events: " +
+              (event_log.length ? event_log.join(", ") : "(none)");
+          showPointerTypes();
+      }
+
+      var include_next_pointermove = false;
+      var include_next_mousemove = false;
+
+      // Limits logging/testing of pointermove/mousemove.
+      function drop_event(event_type) {
+          return (event_type == "pointermove" && !include_next_pointermove) ||
+                 (event_type == "mousemove" && !include_next_mousemove);
+      }
+
+      function end_of_interaction() {
+          test(function () {
+              assert_equals(event_log.join(", "),
+                        "pointerdown@target0, " +
+                        "pointermove@target0, " +
+                        "pointerup@target0, " +
+                        "pointerdown@target1, mousedown@target1, " +
+                        "pointermove@target1, mousemove@target1, " +
+                        "pointerup@target1, mouseup@target1");
+          }, "Event log");
+
+          test_pointerEvent.done(); // complete test
+      }
+
+      function run() {
+          on_event(document.getElementById("done"), "click", end_of_interaction);
+
+          var target_list = ["target0", "target1"];
+          var pointer_event_list = ["pointerdown", "pointerup", "pointermove", "pointercancel"];
+          var mouse_event_list = ["mousedown", "mouseup", "mousemove"];
+
+          target_list.forEach(function(targetId) {
+              var target = document.getElementById(targetId);
+
+              pointer_event_list.forEach(function(eventName) {
+                  on_event(target, eventName, function (event) {
+                      console.log(event.type + "@" + targetId);
+                      if (drop_event(event.type))
+                          return;
+
+                      var label = event.type + "@" + targetId;
+                      event_log.push(label);
+                      detected_pointertypes[event.pointerType] = true;
+
+                      test(function () {
+                          assert_true(event.isPrimary);
+                      }, "primary pointer " + label);
+
+                      if (label === "pointerdown@target0")
+                          event.preventDefault();
+
+                      include_next_pointermove = (event.type == "pointerdown");
+                  });
+              });
+
+              mouse_event_list.forEach(function(eventName) {
+                  on_event(target, eventName, function (event) {
+                      console.log(event.type + "@" + targetId);
+                      if (drop_event(event.type))
+                          return;
+
+                      var label = event.type + "@" + targetId;
+                      event_log.push(label);
+
+                      include_next_mousemove = (event.type == "mousedown");
+                  });
+              });
+          });
+      }
+    </script>
+    <style>
+      #target0, #target1 {
+        margin: 20px;
+        touch-action: none;
+      }
+
+      #done {
+        margin: 20px;
+        border: 2px solid black;
+      }
+    </style>
+  </head>
+  <body onload="run()">
+    <h1>Pointer Event: Prevent compatibility mouse events</h1>
+    <h4>
+      When a pointerdown is canceled, selected compatibilty mouse events are not fired until a pointerup.
+    </h4>
+    <ol>
+      <li> Drag mouse/pen/finger within Target0 and release.</li>
+      <li> Drag mouse/pen/finger within Target1 and release.</li>
+      <li> Click Done.</li>
+    </ol>
+    <div id="target0">
+      Target0
+    </div>
+    <div id="target1">
+      Target1
+    </div>
+    <div id="done">
+      Done
+    </div>
+    <div id="complete-notice">
+      <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+    </div>
+    <div id="event-log"></div>
+    <div id="log"></div>
+  </body>
+</html>

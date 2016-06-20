@@ -6,10 +6,8 @@
     <link rel="author" title="Google" href="http://www.google.com "/>
     <meta name="assert" content="When a pointerdown is canceled, selected compatibilty mouse events are not fired until a pointerup."/>
     <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
-    <!-- /resources/testharness.js -->
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <!-- Additional helper script for common checks across event types -->
     <script type="text/javascript" src="pointerevent_support.js"></script>
     <script type="text/javascript">
       var test_pointerEvent = async_test("Prevent compat mouse events");
@@ -25,23 +23,12 @@
           showPointerTypes();
       }
 
-      var include_next_pointermove = false;
-      var include_next_mousemove = false;
-
-      // Limits logging/testing of pointermove/mousemove.
-      function drop_event(event_type) {
-          return (event_type == "pointermove" && !include_next_pointermove) ||
-                 (event_type == "mousemove" && !include_next_mousemove);
-      }
-
       function end_of_interaction() {
           test(function () {
               assert_equals(event_log.join(", "),
                         "pointerdown@target0, " +
-                        "pointermove@target0, " +
                         "pointerup@target0, " +
                         "pointerdown@target1, mousedown@target1, " +
-                        "pointermove@target1, mousemove@target1, " +
                         "pointerup@target1, mouseup@target1");
           }, "Event log");
 
@@ -52,18 +39,14 @@
           on_event(document.getElementById("done"), "click", end_of_interaction);
 
           var target_list = ["target0", "target1"];
-          var pointer_event_list = ["pointerdown", "pointerup", "pointermove", "pointercancel"];
-          var mouse_event_list = ["mousedown", "mouseup", "mousemove"];
+          var pointer_event_list = ["pointerdown", "pointerup"];
+          var mouse_event_list = ["mousedown", "mouseup"];
 
           target_list.forEach(function(targetId) {
               var target = document.getElementById(targetId);
 
               pointer_event_list.forEach(function(eventName) {
                   on_event(target, eventName, function (event) {
-                      console.log(event.type + "@" + targetId);
-                      if (drop_event(event.type))
-                          return;
-
                       var label = event.type + "@" + targetId;
                       event_log.push(label);
                       detected_pointertypes[event.pointerType] = true;
@@ -74,21 +57,12 @@
 
                       if (label === "pointerdown@target0")
                           event.preventDefault();
-
-                      include_next_pointermove = (event.type == "pointerdown");
                   });
               });
 
               mouse_event_list.forEach(function(eventName) {
                   on_event(target, eventName, function (event) {
-                      console.log(event.type + "@" + targetId);
-                      if (drop_event(event.type))
-                          return;
-
-                      var label = event.type + "@" + targetId;
-                      event_log.push(label);
-
-                      include_next_mousemove = (event.type == "mousedown");
+                      event_log.push(event.type + "@" + targetId);
                   });
               });
           });
@@ -97,12 +71,10 @@
     <style>
       #target0, #target1 {
         margin: 20px;
-        touch-action: none;
       }
 
       #done {
         margin: 20px;
-        border: 2px solid black;
       }
     </style>
   </head>
@@ -111,11 +83,7 @@
     <h4>
       When a pointerdown is canceled, selected compatibilty mouse events are not fired until a pointerup.
     </h4>
-    <ol>
-      <li> Drag mouse/pen/finger within Target0 and release.</li>
-      <li> Drag mouse/pen/finger within Target1 and release.</li>
-      <li> Click Done.</li>
-    </ol>
+    Instruction: Click or tap first on Target0, then on Target1, then on Done.
     <div id="target0">
       Target0
     </div>

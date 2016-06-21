@@ -14,57 +14,6 @@ function removeWhiteSpaceOnlyTextNodes(node)
   }
 }
 
-function convertTemplatesToShadowRootsWithin(node) {
-    var nodes = node.querySelectorAll("template");
-    for (var i = 0; i < nodes.length; ++i) {
-        var template = nodes[i];
-        var mode = template.getAttribute("data-mode");
-        var parent = template.parentNode;
-        parent.removeChild(template);
-        var shadowRoot;
-        if (!mode || mode == 'v0'){
-            shadowRoot = parent.createShadowRoot();
-        } else {
-            shadowRoot = parent.attachShadow({'mode': mode});
-        }
-        var expose = template.getAttribute("data-expose-as");
-        if (expose)
-            window[expose] = shadowRoot;
-        if (template.id)
-            shadowRoot.id = template.id;
-        var fragments = document.importNode(template.content, true);
-        shadowRoot.appendChild(fragments);
-
-        convertTemplatesToShadowRootsWithin(shadowRoot);
-    }
-}
-
-function isShadowHost(node)
-{
-    return node && node.nodeType == Node.ELEMENT_NODE && node.shadowRoot;
-}
-
-function isIFrameElement(element)
-{
-    return element && element.nodeName == 'IFRAME';
-}
-
-// Returns node from shadow/iframe tree "path".
-function getNodeInComposedTree(path)
-{
-    var ids = path.split('/');
-    var node = document.getElementById(ids[0]);
-    for (var i = 1; node != null && i < ids.length; ++i) {
-        if (isIFrameElement(node))
-            node = node.contentDocument.getElementById(ids[i]);
-        else if (isShadowHost(node))
-            node = node.shadowRoot.getElementById(ids[i]);
-        else
-            return null;
-    }
-    return node;
-}
-
 function createTestTree(node) {
 
   let ids = {};
@@ -167,18 +116,6 @@ function dispatchUAEventWithLog(nodes, target, eventType, callback) {
   }
   callback(target);
   return log;
-}
-
-function debugEventLog(log) {
-  for (let i = 0; i < log.length; i++) {
-    console.log('[' + i + '] currentTarget: ' + log[i][0] + ' target: ' + log[i][1] + ' relatedTarget: ' + log[i][2] + ' composedPath(): ' + log[i][3]);
-  }
-}
-
-function debugCreateTestTree(nodes) {
-  for (let k in nodes) {
-    console.log(k + ' -> ' + nodes[k]);
-  }
 }
 
 // This function assumes that testharness.js is available.

@@ -81,7 +81,7 @@ indexeddb_test(
             tx3.oncomplete = t.step_func(() => saw('tx3.oncomplete'));
 
             var rq2 = store.put('b', 2);
-            rq2.onsuccess = () => t.step_func(saw('rq2.onsuccess'));
+            rq2.onsuccess = t.step_func(() => saw('rq2.onsuccess'));
             rq2.onerror = t.unreached_func('request should succeed');
         });
     },

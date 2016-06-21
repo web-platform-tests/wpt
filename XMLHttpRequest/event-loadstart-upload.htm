@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang=en>
 <meta charset=utf-8>
-<title>XMLHttpRequest: The send() method: Fire a progress event named progress (synchronous flag is unset)</title>
+<title>XMLHttpRequest: The send() method: Fire a progress event named loadstart on upload object (synchronous flag is unset)</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://xhr.spec.whatwg.org/#handler-xhr-onprogress" data-tested-assertations="../.." />
@@ -12,16 +12,18 @@
   var test = async_test();
   test.step(function() {
     var client = new XMLHttpRequest();
-    client.onprogress = test.step_func(function(e) {
+    client.upload.onloadstart = test.step_func(function(e) {
       assert_true(e instanceof ProgressEvent);
-      assert_equals(e.type, "progress");
+      assert_equals(e.total, 7, 'upload.onloadstart: event.total');
+      assert_equals(e.loaded, 0, 'upload.onloadstart: event.loaded');
+      assert_equals(e.type, "loadstart");
       test.done();
     });
     client.onreadystatechange = test.step_func(function() {
       if (client.readyState === 4)
-        assert_unreached("onprogress not called.");
+        assert_unreached("onloadstart not called.");
     });
-    client.open("GET", "resources/trickle.py?count=4&delay=150");
-    client.send(null);
+    client.open("POST", "resources/trickle.py?ms=5&count=8");
+    client.send('foo=bar');
   });
 </script>

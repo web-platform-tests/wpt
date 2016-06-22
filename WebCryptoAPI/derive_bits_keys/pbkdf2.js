@@ -2,6 +2,13 @@
 function run_test() {
     var subtle = self.crypto.subtle;
 
+    var passphrase = {
+        "empty": new Uint8Array([]),
+        "short": new Uint8Array([]),
+        "medium": new Uint8Array([])
+    };
+
+
     console.log("About to set it all up")
     setUpBaseKeys(getTestVectors())
     .then(function(testVectors) {

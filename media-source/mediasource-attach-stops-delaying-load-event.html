@@ -1,48 +1,42 @@
 <!DOCTYPE html>
 <!-- Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
-<html>
-    <head>
-        <title>Tests that MediaSource attachment stops delaying the load event.</title>
-        <link rel="author" title="Matthew Wolenetz" href="mailto:wolenetz@chromium.org"/>
-        <script src="/resources/testharness.js"></script>
-        <script src="/resources/testharnessreport.js"></script>
-    </head>
-    <body>
-        <script>
-            async_test(function(test)
-            {
-                var receivedLoadEvent = false;
+<title>Tests that MediaSource attachment stops delaying the load event.</title>
+<link rel="author" title="Matthew Wolenetz" href="mailto:wolenetz@chromium.org"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(function(test)
+{
+    var receivedLoadEvent = false;
 
-                window.addEventListener("load", test.step_func(function() {
-                    assert_false(receivedLoadEvent, "window should not receive multiple load events");
-                    receivedLoadEvent = true;
-                }));
+    window.addEventListener("load", test.step_func(function() {
+        assert_false(receivedLoadEvent, "window should not receive multiple load events");
+        receivedLoadEvent = true;
+    }));
 
-                assert_equals(document.readyState, "loading", "document should not be complete yet");
-                var video = document.createElement("video");
-                var mediaSource = new MediaSource();
+    assert_equals(document.readyState, "loading", "document should not be complete yet");
+    var video = document.createElement("video");
+    var mediaSource = new MediaSource();
 
-                // |video| should stop delaying the load event long before either a
-                // "progress", "stalled" or "suspend" event are enqueued.
-                video.addEventListener("suspend", test.unreached_func("unexpected 'suspend' event"));
-                video.addEventListener("stalled", test.unreached_func("unexpected 'stalled' event"));
-                video.addEventListener("progress", test.unreached_func("unexpected 'progress' event"));
+    // |video| should stop delaying the load event long before either a
+    // "progress", "stalled" or "suspend" event are enqueued.
+    video.addEventListener("suspend", test.unreached_func("unexpected 'suspend' event"));
+    video.addEventListener("stalled", test.unreached_func("unexpected 'stalled' event"));
+    video.addEventListener("progress", test.unreached_func("unexpected 'progress' event"));
 
-                // No error is expected.
-                video.addEventListener("error", test.unreached_func("unexpected 'error' event"));
+    // No error is expected.
+    video.addEventListener("error", test.unreached_func("unexpected 'error' event"));
 
-                mediaSource.addEventListener("sourceopen", test.step_func(function() {
-                    assert_true(receivedLoadEvent, "load event should have been received first");
-                    assert_equals(video.networkState, video.NETWORK_LOADING);
-                    assert_equals(video.readyState, video.HAVE_NOTHING);
-                    assert_equals(document.readyState, "complete", "document should be complete");
-                    test.done();
-                }));
+    mediaSource.addEventListener("sourceopen", test.step_func(function() {
+        assert_true(receivedLoadEvent, "load event should have been received first");
+        assert_equals(video.networkState, video.NETWORK_LOADING);
+        assert_equals(video.readyState, video.HAVE_NOTHING);
+        assert_equals(document.readyState, "complete", "document should be complete");
+        test.done();
+    }));
 
-                var mediaSourceURL = URL.createObjectURL(mediaSource);
-                video.src = mediaSourceURL;
-                test.add_cleanup(function() { URL.revokeObjectURL(mediaSourceURL); });
-            }, "MediaSource attachment should immediately stop delaying the load event");
-        </script>
-    </body>
-</html>
+    var mediaSourceURL = URL.createObjectURL(mediaSource);
+    video.src = mediaSourceURL;
+    test.add_cleanup(function() { URL.revokeObjectURL(mediaSourceURL); });
+}, "MediaSource attachment should immediately stop delaying the load event");
+</script>

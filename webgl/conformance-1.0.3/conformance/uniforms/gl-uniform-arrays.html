@@ -432,7 +432,7 @@ function testUniformOptimizationIssues(testIndex) {
 
   // Ensure that requesting an array uniform past MaxInt32PlusOne returns no uniform
   var nameMaxInt32PlusOne = test.arrayName + "[" + (test.usedUniformVector + MaxInt32PlusOne) + "]";
-  assertMsg(gl.getUniformLocation(program, nameMaxInt32PlusOne) === null, 
+  assertMsg(gl.getUniformLocation(program, nameMaxInt32PlusOne) === null,
     "Requesting " + nameMaxInt32PlusOne + " uniform should return a null uniform location");
 
   // Set just the used uniform

@@ -261,6 +261,33 @@ function run_test() {
         all_promises.push(promise);
     });
 
+    // Verification should fail if the signature is wrong length
+    testVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["verify", "sign"])
+        .then(function(vector) {
+            var signature = vector.signature.slice(1); // Drop first byte
+            promise_test(function(test) {
+                var operation = subtle.verify({name: "HMAC", hash: vector.hash}, vector.key, signature, vector.plaintext)
+                .then(function(is_verified) {
+                    assert_false(is_verified, "Signature is NOT verified");
+                }, function(err) {
+                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " verification failure due to short signature");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested verification.
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " verification failure due to short signature");
+        });
+
+        all_promises.push(promise);
+    });
+
 
 
     Promise.all(all_promises)

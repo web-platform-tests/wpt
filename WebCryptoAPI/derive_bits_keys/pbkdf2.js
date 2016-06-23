@@ -1,54 +1,58 @@
 
 function run_test() {
     var subtle = self.crypto.subtle;
+    var testData = getTestData();
+    var passwords = testData.passwords;
+    var salts = testData.salts;
+    var derivations = testData.derivations;
 
-    console.log("About to set it all up")
-    setUpBaseKeys(getTestVectors())
-    .then(function(testVectors) {
-        console.log("running tests with " + testVectors.length + " vectors");
-        testVectors.forEach(function(vector) {
-            console.log("running test " + vector.name);
-            promise_test(function(test) {
-                return subtle.deriveBits({name: "PBKDF2", salt: vector.salt, iterations: vector.iterations, hash: vector.hash}, vector.baseKey, vector.length)
-                .then(function(bits) {
-                    assert_equals(bits.byteLength, vector.length / 8, "Returned requested number of bits");
-                }, function(err) {
-                    assert_unreached("deriveBits failed for " + vector.name + ". Message: '" + err.message + "'");
+    setUpBaseKeys(passwords)
+    .then(function(baseKeys) {
+        Object.keys(derivations).forEach(function(passwordSize) {
+            Object.keys(derivations[passwordSize]).forEach(function(saltSize) {
+                Object.keys(derivations[passwordSize][saltSize]).forEach(function(hashName) {
+                    Object.keys(derivations[passwordSize][saltSize][hashName]).forEach(function(iterations) {
+                        promise_test(function(test) {
+                            subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: iterations}, baseKeys[0], 256)
+                            .then(function(derivation) {
+                                assert_true(equalBuffers(derivation, derivations[passwordSize][saltSize][hashName][iterations]), "Derived correct key");
+                            }, function(err) {
+                                assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
+                            });
+                        }, passwordSize + " password, " + saltSize + " salt, " + hashName + ", with " + iterations + " iterations");
+                    });
                 });
-            }, vector.name + " successful attempt.");
+            });
         });
-        //done();
     }, function(err) {
         promise_test(function(test) {
             assert_unreached("setUpBaseKeys failed with error '" + err.message + "'");
         }, "setUpBaseKeys");
-        //done();
     });
 
-    function setUpBaseKeys(testVectors) {
-        console.log("setting up " + testVectors.length + " vectors");
+    function setUpBaseKeys(passwords) {
         var promises = [];
-
-        testVectors.forEach(function(vector) {
-            console.log("setting up vector for " + vector.name)
-            var operation = subtle.importKey("raw", vector.baseKeyBuffer, {name: "PBKDF2"}, false, ["deriveKey", "deriveBits"]);
-            operation.then(function(key) {
-                console.log("got the key")
-                vector.baseKey = key;
-            }, function(err) {
-                console.log("Error " + err.name + ": " + err.message)
-            });
-            console.log("About to push")
-            promises.push(operation);
-            console.log("Pushed")
+        Object.keys(passwords).forEach(function(passwordSize) {
+            promises.push(subtle.importKey("raw", passwords[passwordSize], {name: "PBKDF2"}, false, ["deriveKey", "deriveBits"]));
         });
+        return Promise.all(promises);
+    }
 
-        console.log("Waiting for " + promises.length + " promises to resolve.")
-        return Promise.all(promises)
-        .then(function() {
-            console.log("Returning test vectors")
-            return testVectors;
-        });
+    function equalBuffers(a, b) {
+        if (a.byteLength !== b.byteLength) {
+            return false;
+        }
+
+        var aBytes = new Uint8Array(a);
+        var bBytes = new Uint8Array(b);
+
+        for (var i=0; i<a.byteLength; i++) {
+            if (aBytes[i] !== bBytes[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

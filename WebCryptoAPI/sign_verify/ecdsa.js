@@ -319,6 +319,35 @@ function run_test() {
         all_promises.push(promise);
     });
 
+    // Test verification fails with bad hash name
+    testVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["verify"], ["sign"])
+        .then(function(vectors) {
+            // use the wrong name for the hash
+            var hashName = vector.hashName.substring(0, 3) + vector.hashName.substring(4);
+            var algorithm = {name: vector.algorithmName, hash: hashName};
+            promise_test(function(test) {
+                var operation = subtle.verify(algorithm, vector.publicKey, vector.signature, vector.plaintext)
+                .then(function(is_verified) {
+                    assert_unreached("Verification should throw an error");
+                }, function(err) {
+                    assert_equals(err.name, "NotSupportedError", "Correctly throws NotSupportedError for illegal hash name")
+                });
+
+                return operation;
+            }, vector.name + " verification failure due to bad hash name");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested verification.
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " verification failure due to bad hash name");
+        });
+
+        all_promises.push(promise);
+    });
+
     // Test verification fails with short (odd length) signature
     testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])

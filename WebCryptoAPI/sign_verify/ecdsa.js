@@ -297,6 +297,34 @@ function run_test() {
         all_promises.push(promise);
     });
 
+    // Test verification fails with short (odd length) signature
+    testVectors.forEach(function(vector) {
+        var promise = importVectorKeys(vector, ["verify"], ["sign"])
+        .then(function(vectors) {
+            var algorithm = {name: vector.algorithmName, hash: vector.hashName};
+            var signature = vector.signature.slice(1); // Skip the first byte
+            promise_test(function(test) {
+                var operation = subtle.verify(algorithm, vector.publicKey, signature, vector.plaintext)
+                .then(function(is_verified) {
+                    assert_false(is_verified, "Signature NOT verified");
+                }, function(err) {
+                    assert_unreached("Verification should not throw error " + vector.name + ": " + err.message + "'");
+                });
+
+                return operation;
+            }, vector.name + " verification failure due to shortened signature");
+
+        }, function(err) {
+            // We need a failed test if the importVectorKey operation fails, so
+            // we know we never tested verification.
+            promise_test(function(test) {
+                assert_unreached("importVectorKeys failed for " + vector.name + ". Message: ''" + err.message + "''");
+            }, "importVectorKeys step: " + vector.name + " verification failure due to shortened signature");
+        });
+
+        all_promises.push(promise);
+    });
+
     // Test verification fails with wrong plaintext
     testVectors.forEach(function(vector) {
         var promise = importVectorKeys(vector, ["verify"], ["sign"])

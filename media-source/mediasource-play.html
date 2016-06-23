@@ -26,15 +26,6 @@
                   assert_greater_than(mediaSource.duration, 1, "duration");
 
                   mediaSource.duration = 1;
-
-                  assert_true(sourceBuffer.updating, "updating");
-                  test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
-                  test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
-                  test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
-              });
-
-              test.waitForExpectedEvents(function()
-              {
                   mediaSource.endOfStream();
                   mediaElement.play();
               });

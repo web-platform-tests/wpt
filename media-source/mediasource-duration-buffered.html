@@ -29,13 +29,13 @@
                     test.waitForExpectedEvents(function()
                     {
                         assert_equals(sourceBuffer.buffered.length, 1);
-                        assert_less_than(sourceBuffer.buffered.start(0), newDuration);
+                        assert_greater_than(newDuration, sourceBuffer.buffered.start(0));
                         mediaSource.duration = newDuration;
                         assert_equals(mediaSource.duration, newDuration);
                         test.done();
                     });
                 });
-            }, "Duration truncation succeeds when coded frames do not first need to be removed");
+            }, "MediaSource.duration: Truncating the duration succeeds when new duration is greater than the highest starting time of buffered coded frames");
 
 
             mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
@@ -62,7 +62,7 @@
                         test.done();
                     });
                 });
-            }, "Duration truncation throws an InvalidStateError exception when coded frames first need to be removed");
+            }, "MediaSource.duration: Truncating the duration throws an InvalidStateError exception when new duration is less than the highest starting time of buffered coded frames");
 
 
             mediasource_test(function(test, mediaElement, mediaSource)
@@ -100,7 +100,7 @@
                         });
                     });
                 });
-            }, "Duration truncation throws an InvalidStateError exception when some coded frames first need to be removed");
+            }, "MediaSource.duration: Truncating the duration throws an InvalidStateError exception when new duration is less than the highest starting time for at least some buffered coded frames");
         </script>
     </body>
 </html>

@@ -32,7 +32,6 @@
                       assert_equals(mediaSource.duration, fullDuration, 'mediaSource fullDuration');
 
                       test.expectEvent(mediaElement, 'seeking', 'seeking to seekTo');
-                      test.expectEvent(mediaElement, 'timeupdate', 'timeupdate while seeking to seekTo');
                       test.expectEvent(mediaElement, 'seeked', 'seeked to seekTo');
                       mediaElement.currentTime = seekTo;
                       assert_true(mediaElement.seeking, 'mediaElement.seeking (to seekTo)');
@@ -51,19 +50,10 @@
 
                       mediaSource.duration = truncatedDuration;
 
-                      assert_true(sourceBuffer.updating, 'sourceBuffer.updating');
-                      test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
-                      test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
-                      test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
-
+                      assert_false(sourceBuffer.updating, 'sourceBuffer.updating');
                       assert_true(mediaElement.seeking, 'Seeking after setting truncatedDuration');
-                  });
-
-                  test.waitForExpectedEvents(function()
-                  {
                       assert_equals(mediaElement.currentTime, truncatedDuration,
                                     'Playback time is truncatedDuration while seeking');
-                      assert_true(mediaElement.seeking, 'mediaElement.seeking while seeking to truncatedDuration');
                       assert_equals(mediaElement.duration, truncatedDuration,
                                     'mediaElement truncatedDuration during seek to it');
                       assert_equals(mediaSource.duration, truncatedDuration,
@@ -75,13 +65,68 @@
               }, description, options);
           }
 
+
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          {
+              mediaSource.duration = 2;
+              assert_false(sourceBuffer.updating,
+                'No SourceBuffer update when duration is set');
+              test.done();
+          }, 'MediaSource.duration: setting the duration does not trigger any SourceBuffer update');
+
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          {
+              assert_less_than(segmentInfo.duration, 60, 'Sufficient test media duration');
+              sourceBuffer.appendBuffer(mediaData);
+              test.expectEvent(sourceBuffer, 'updateend',
+                'Media data appended to the SourceBuffer');
+              test.waitForExpectedEvents(function()
+              {
+                  mediaSource.duration = 60;
+                  assert_false(sourceBuffer.updating,
+                    'No SourceBuffer update when duration is increased');
+                  test.done();
+              });
+          }, 'MediaSource.duration: Increasing the duration does not trigger any SourceBuffer update');
+
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          {
+              assert_greater_than(segmentInfo.duration, 2, 'Sufficient test media duration');
+              sourceBuffer.appendBuffer(mediaData);
+              test.expectEvent(sourceBuffer, 'updateend',
+                'Media data appended to the SourceBuffer');
+              test.waitForExpectedEvents(function()
+              {
+                  mediaSource.duration = 1;
+                  assert_false(sourceBuffer.updating,
+                    'No SourceBuffer update when duration is truncated');
+                  test.done();
+              });
+          }, 'MediaSource.duration: Truncating the duration does not trigger any SourceBuffer update');
+
+          mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
+          {
+              assert_greater_than(segmentInfo.duration, 2, 'Sufficient test media duration');
+              mediaElement.play();
+              sourceBuffer.appendBuffer(mediaData);
+              test.expectEvent(sourceBuffer, 'updateend',
+                'Media data appended to the SourceBuffer');
+              test.waitForExpectedEvents(function()
+              {
+                  mediaSource.duration = 1;
+                  assert_false(sourceBuffer.updating,
+                    'No SourceBuffer update when duration is truncated');
+                  test.done();
+              });
+          }, 'MediaSource.duration: Truncating the duration during media playback does not trigger any SourceBuffer update');
+
           mediasource_truncated_duration_seek_test(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer,
                                                             mediaData, truncatedDuration)
           {
               // Tests that duration truncation below current playback position
               // starts seek to new duration.
               test.done();
-          }, 'Test seek starts on duration truncation below currentTime');
+          }, 'MediaSource.duration: Truncating the duration triggers a seek if new duration is below currentTime');
 
           mediasource_truncated_duration_seek_test(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer,
                                                             mediaData, truncatedDuration)
@@ -110,7 +155,7 @@
 
                   test.done();
               });
-          }, 'Test appendBuffer completes previous seek to truncated duration');
+          }, 'MediaSource.duration: Adding more data after truncating the duration completes the seek triggered by the truncation');
 
           mediasource_truncated_duration_seek_test(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer,
                                                             mediaData, truncatedDuration)
@@ -137,7 +182,7 @@
 
                   test.done();
               });
-          }, 'Test endOfStream completes previous seek to truncated duration');
+          }, 'MediaSource.duration: Calling endOfStream() after truncating the duration completes the seek triggered by the truncation');
 
           mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {
@@ -173,18 +218,9 @@
 
                   assert_false(sourceBuffer.updating, "updating");
 
-                  // Truncate duration. This should result in one 'durationchange' fired.
+                  // Truncate duration. This should result in one 'durationchange' event fired.
                   mediaSource.duration = newDuration;
-
-                  assert_true(sourceBuffer.updating, "updating");
-                  test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
-                  test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
-                  test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
-              });
-
-              test.waitForExpectedEvents(function()
-              {
-                  assert_false(sourceBuffer.updating, "updating");
+                  assert_equals(mediaSource.duration, newDuration);
 
                   // Set duration again to make sure it does not trigger another 'durationchange' event.
                   mediaSource.duration = newDuration;
@@ -193,11 +229,10 @@
                   test.expectEvent(mediaSource, 'sourceended', 'endOfStream acknowledged');
                   mediaSource.endOfStream();
 
-                  // endOfStream can change duration downwards slightly.
+                  // endOfStream can change duration slightly.
                   // Allow for one more 'durationchange' event only in this case.
                   var currentDuration = mediaSource.duration;
                   if (currentDuration != newDuration) {
-                      assert_true(currentDuration > 0 && currentDuration < newDuration, 'adjusted duration');
                       newDuration = currentDuration;
                       ++expectedDurationChangeEventCount;
                   }
@@ -211,7 +246,7 @@
                       test.done();
                   });
               });
-          }, 'Test setting same duration multiple times does not fire duplicate durationchange');
+          }, 'MediaSource.duration: Setting the same duration multiple times does not fire duplicate durationchange events');
         </script>
     </body>
 </html>

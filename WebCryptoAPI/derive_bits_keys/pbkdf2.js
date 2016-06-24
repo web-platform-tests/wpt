@@ -5,11 +5,15 @@ function run_test() {
     var passwords = testData.passwords;
     var salts = testData.salts;
     var derivations = testData.derivations;
+    var derivedKeyTypes = testData.derivedKeyTypes;
+
+    var derivedKeyAlgorithms = ["AES-CBC", "AES-CTR", "AES-GCM", "AES-KW", "HMAC"];
 
     setUpBaseKeys(passwords)
     .then(function(allKeys) {
         var baseKeys = allKeys.baseKeys;
-        var noUsageKeys = allKeys.noUsageKeys;
+        var noBits = allKeys.noBits;
+        var noKey = allKeys.noKey;
         var wrongKey = allKeys.wrongKey;
 
         Object.keys(derivations).forEach(function(passwordSize) {
@@ -25,6 +29,36 @@ function run_test() {
                                 assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
                             });
                         }, testName);
+
+                        derivedKeyTypes.forEach(function(derivedKeyType) {
+                            var testName = "Derived key of type ";
+                            Object.keys(derivedKeyType).forEach(function(prop) {
+                                testName += prop + ": " + derivedKeyType[prop] + " ";
+                            });
+                            testName += " using " + passwordSize + " password, " + saltSize + " salt, " + hashName + ", with " + iterations + " iterations";
+
+                            promise_test(function(test) {
+                                var usages = ["encrypt", "decrypt"];
+                                if (derivedKeyType.name === "HMAC") {
+                                    usages = ["sign", "verify"];
+                                } else if (derivedKeyType.name === "AES-KW") {
+                                    usages = ["wrapKey", "unwrapKey"];
+                                }
+
+                                return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], derivedKeyType, true, usages)
+                                .then(function(key) {
+                                    return subtle.exportKey("raw", key)
+                                    .then(function(buffer) {
+                                        assert_true(equalBuffers(buffer, derivations[passwordSize][saltSize][hashName][iterations].slice(0, derivedKeyType.length/8)), "Exported key matches correct value");
+                                    }, function(err) {
+                                        assert_unreached("Exporting derived key failed with error " + err.name + ": " + err.message);
+                                    });
+                                }, function(err) {
+                                    assert_unreached("deriveKey failed with error " + err.name + ": " + err.message);
+
+                                });
+                            }, testName);
+                        });
 
                         // length null (OperationError)
                         promise_test(function(test) {
@@ -69,7 +103,7 @@ function run_test() {
 
                         // - baseKey usages missing "deriveBits" (InvalidAccessError)
                         promise_test(function(test) {
-                            return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, noUsageKeys[passwordSize], 256)
+                            return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, noBits[passwordSize], 256)
                             .then(function(derivation) {
                                 assert_unreached("missing deriveBits usage should have thrown an InvalidAccessError");
                             }, function(err) {
@@ -126,7 +160,8 @@ function run_test() {
     function setUpBaseKeys(passwords) {
         var promises = [];
         var baseKeys = {};
-        var noUsageKeys = {};
+        var noBits = {};
+        var noKey = {};
 
         Object.keys(passwords).forEach(function(passwordSize) {
             var promise = subtle.importKey("raw", passwords[passwordSize], {name: "PBKDF2"}, false, ["deriveKey", "deriveBits"])
@@ -139,13 +174,23 @@ function run_test() {
             });
             promises.push(promise);
 
-            var promise = subtle.importKey("raw", passwords[passwordSize], {name: "PBKDF2"}, false, ["deriveBits"])
+            promise = subtle.importKey("raw", passwords[passwordSize], {name: "PBKDF2"}, false, ["deriveBits"])
             .then(function(baseKey) {
-                noUsageKeys[passwordSize] = baseKey;
+                noKey[passwordSize] = baseKey;
             }, function(err) {
              promise_test(function(test) {
-                 assert_unreached("setUpBaseKeys for key '" + passwordSize + "' with missing usage failed with error '" + err.message + "'");
-             }, "setUpBaseKeys for key '" + passwordSize + "' with missing usage");
+                 assert_unreached("setUpBaseKeys for key '" + passwordSize + "' with missing deriveKey usage failed with error '" + err.message + "'");
+             }, "setUpBaseKeys for key '" + passwordSize + "' with missing deriveKey usage");
+            });
+            promises.push(promise);
+
+            promise = subtle.importKey("raw", passwords[passwordSize], {name: "PBKDF2"}, false, ["deriveKey"])
+            .then(function(baseKey) {
+                noBits[passwordSize] = baseKey;
+            }, function(err) {
+             promise_test(function(test) {
+                 assert_unreached("setUpBaseKeys for key '" + passwordSize + "' with missing deriveBits usage failed with error '" + err.message + "'");
+             }, "setUpBaseKeys for key '" + passwordSize + "' with missing deriveBits usage");
             });
             promises.push(promise);
         });
@@ -162,7 +207,7 @@ function run_test() {
 
 
         return Promise.all(promises).then(function() {
-            return {baseKeys: baseKeys, noUsageKeys: noUsageKeys, wrongKey: wrongKey};
+            return {baseKeys: baseKeys, noBits: noBits, noKey: noKey, wrongKey: wrongKey};
         });
     }
 

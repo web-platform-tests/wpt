@@ -28,6 +28,25 @@ function getTestData() {
     // - baseKey algorithm does not match PBKDF2 (InvalidAccessError)
     // - 0 iterations
 
+    var derivedKeyTypes = [
+        {name: "AES-CBC", length: 128},
+        {name: "AES-CBC", length: 192},
+        {name: "AES-CBC", length: 256},
+        {name: "AES-CTR", length: 128},
+        {name: "AES-CTR", length: 192},
+        {name: "AES-CTR", length: 256},
+        {name: "AES-GCM", length: 128},
+        {name: "AES-GCM", length: 192},
+        {name: "AES-GCM", length: 256},
+        {name: "AES-KW", length: 128},
+        {name: "AES-KW", length: 192},
+        {name: "AES-KW", length: 256},
+        {name: "HMAC", hash: "SHA-1", length: 256},
+        {name: "HMAC", hash: "SHA-256", length: 256},
+        {name: "HMAC", hash: "SHA-384", length: 256},
+        {name: "HMAC", hash: "SHA-512", length: 256}
+    ];
+
     var passwords = {
         "short": new Uint8Array([80, 64, 115, 115, 119, 48, 114, 100]),
         "long": new Uint8Array([85, 115, 101, 114, 115, 32, 115, 104, 111, 117, 108, 100, 32, 112, 105, 99, 107, 32, 108, 111, 110, 103, 32, 112, 97, 115, 115, 112, 104, 114, 97, 115, 101, 115, 32, 40, 110, 111, 116, 32, 117, 115, 101, 32, 115, 104, 111, 114, 116, 32, 112, 97, 115, 115, 119, 111, 114, 100, 115, 41, 33]),
@@ -247,15 +266,5 @@ function getTestData() {
         }
     };
 
-    var xxderivations = {
-        short: {
-            short: {
-                "SHA-256": {
-                    "1": new Uint8Array([198, 188, 85, 164, 4, 173, 206, 163, 106, 26, 181, 103, 152, 8, 94, 10, 175, 105, 127, 107, 178, 193, 106, 80, 114, 248, 56, 241, 125, 254, 108, 182])
-                }
-            }
-        }
-    };
-
-    return {passwords: passwords, salts: salts, derivations: derivations};
+    return {passwords: passwords, salts: salts, derivations: derivations, derivedKeyTypes: derivedKeyTypes};
 }

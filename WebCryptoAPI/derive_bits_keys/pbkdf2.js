@@ -17,9 +17,7 @@ function run_test() {
                 Object.keys(derivations[passwordSize][saltSize]).forEach(function(hashName) {
                     Object.keys(derivations[passwordSize][saltSize][hashName]).forEach(function(iterations) {
                         var testName = passwordSize + " password, " + saltSize + " salt, " + hashName + ", with " + iterations + " iterations";
-                        console.log(testName)
                         promise_test(function(test) {
-                            console.log("Good test")
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], 256)
                             .then(function(derivation) {
                                 assert_true(equalBuffers(derivation, derivations[passwordSize][saltSize][hashName][iterations]), "Derived correct key");
@@ -30,7 +28,6 @@ function run_test() {
 
                         // length null (OperationError)
                         promise_test(function(test) {
-                            console.log("null length test")
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], null)
                             .then(function(derivation) {
                                 assert_unreached("null length should have thrown an OperationError");
@@ -41,7 +38,6 @@ function run_test() {
 
                         // 0 length (OperationError)
                         promise_test(function(test) {
-                            console.log("0 length test")
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], 0)
                             .then(function(derivation) {
                                 assert_unreached("0 length should have thrown an OperationError");
@@ -52,7 +48,6 @@ function run_test() {
 
                         // length not multiple of 8 (OperationError)
                         promise_test(function(test) {
-                            console.log("non-multiple of 8 test")
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], 44)
                             .then(function(derivation) {
                                 assert_unreached("non-multiple of 8 length should have thrown an OperationError");
@@ -64,7 +59,6 @@ function run_test() {
                         // - illegal name for hash algorithm (NotSupportedError)
                         var badHash = hashName.substring(0, 3) + hashName.substring(4);
                         promise_test(function(test) {
-                            console.log("Bad hash name test")
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: badHash, iterations: parseInt(iterations)}, baseKeys[passwordSize], 256)
                             .then(function(derivation) {
                                 assert_unreached("bad hash name should have thrown an NotSupportedError");
@@ -96,7 +90,6 @@ function run_test() {
 
                     // Check that 0 iterations throws proper error
                     promise_test(function(test) {
-                        console.log("0 iterations test")
                         return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: 0}, baseKeys[passwordSize], 256)
                         .then(function(derivation) {
                             assert_unreached("0 iterations should have thrown an error");
@@ -139,7 +132,6 @@ function run_test() {
             var promise = subtle.importKey("raw", passwords[passwordSize], {name: "PBKDF2"}, false, ["deriveKey", "deriveBits"])
             .then(function(baseKey) {
                 baseKeys[passwordSize] = baseKey;
-                console.log("baseKey for " + passwordSize)
             }, function(err) {
                 promise_test(function(test) {
                     assert_unreached("setUpBaseKeys for key '" + passwordSize + "' failed with error '" + err.message + "'");
@@ -149,8 +141,7 @@ function run_test() {
 
             var promise = subtle.importKey("raw", passwords[passwordSize], {name: "PBKDF2"}, false, ["deriveBits"])
             .then(function(baseKey) {
-             noUsageKeys[passwordSize] = baseKey;
-             console.log("noUsageKey for " + passwordSize)
+                noUsageKeys[passwordSize] = baseKey;
             }, function(err) {
              promise_test(function(test) {
                  assert_unreached("setUpBaseKeys for key '" + passwordSize + "' with missing usage failed with error '" + err.message + "'");
@@ -171,7 +162,6 @@ function run_test() {
 
 
         return Promise.all(promises).then(function() {
-            console.log("Assembling keys");
             return {baseKeys: baseKeys, noUsageKeys: noUsageKeys, wrongKey: wrongKey};
         });
     }

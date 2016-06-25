@@ -127,10 +127,10 @@
       ]
     },
     {
-      "name": "origin-only",
-      "title": "Referrer Policy is set to 'origin-only'",
+      "name": "origin",
+      "title": "Referrer Policy is set to 'origin'",
       "description": "Check that all subresources in all casses get only the origin portion of the referrer URL.",
-      "specification_url": "https://w3c.github.io/webappsec/specs/referrer-policy/#referrer-policy-state-origin",
+      "specification_url": "https://w3c.github.io/webappsec-referrer-policy/#referrer-policy-origin",
       "referrer_policy": "origin",
       "test_expansion": [
         {

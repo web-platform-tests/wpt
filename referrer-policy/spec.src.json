@@ -3,16 +3,49 @@
     {
       "name": "unset-referrer-policy",
       "title": "Referrer Policy is not explicitly defined",
-      "description": "Check that sub-resource gets the referrer URL when no explicit Referrer Policy is set.",
-      "specification_url": "https://w3c.github.io/webappsec/specs/referrer-policy/#referrer-policy-states",
+      "description": "Check that referrer URL follows no-referrer-when-downgrade policy when no explicit Referrer Policy is set.",
+      "specification_url": "https://w3c.github.io/webappsec-referrer-policy/#referrer-policies",
       "referrer_policy": null,
       "test_expansion": [
         {
-          "name": "generic",
+          "name": "insecure-protocol",
           "expansion": "default",
-          "source_protocol": "*",
-          "target_protocol": "*",
-            "delivery_method": ["http-rp", "meta-referrer", "meta-csp", "attr-referrer"],
+          "source_protocol": "http",
+          "target_protocol": "http",
+          "delivery_method": ["http-rp", "meta-referrer", "meta-csp", "attr-referrer"],
+          "redirection": "*",
+          "origin": "*",
+          "subresource": "*",
+          "referrer_url": "stripped-referrer"
+        },
+        {
+          "name": "upgrade-protocol",
+          "expansion": "default",
+          "source_protocol": "http",
+          "target_protocol": "https",
+          "delivery_method": ["http-rp", "meta-referrer", "meta-csp", "attr-referrer"],
+          "redirection": "*",
+          "origin": "*",
+          "subresource": "*",
+          "referrer_url": "stripped-referrer"
+        },
+        {
+          "name": "downgrade-protocol",
+          "expansion": "default",
+          "source_protocol": "https",
+          "target_protocol": "http",
+          "delivery_method": ["http-rp", "meta-referrer", "meta-csp", "attr-referrer"],
+          "redirection": "*",
+          "origin": "*",
+          "subresource": "*",
+          "referrer_url": "omitted"
+        },
+        {
+          "name": "secure-protocol",
+          "expansion": "default",
+          "source_protocol": "https",
+          "target_protocol": "https",
+          "delivery_method": ["http-rp", "meta-referrer", "meta-csp", "attr-referrer"],
           "redirection": "*",
           "origin": "*",
           "subresource": "*",
@@ -78,7 +111,7 @@
           "redirection": "*",
           "origin": "*",
           "subresource": "*",
-          "referrer_url": "origin"
+          "referrer_url": "omitted"
         },
         {
           "name": "secure-protocol",

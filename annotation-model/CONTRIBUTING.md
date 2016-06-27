@@ -31,6 +31,11 @@ There are a few other folders that provide supporting materials for the tests:
 * scripts - JavaScript that are included by tests
 * tools - supporting scripts and files
 
+NOTE: The files in the definitions folder are expected to be JSON Schema
+definitions - basically commonly used concepts that are referenced by other JSON
+Schema files in the system.  All of these 'definitions' are preloaded by the
+system before any other parts of a test are processed.
+
 Test Cases
 ----------
 

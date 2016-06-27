@@ -15,6 +15,7 @@ import sys
 import argparse
 
 TESTTREE = '..'
+DEFDIR   = '../definitions'
 TEMPLATE = 'template'
 
 
@@ -28,9 +29,30 @@ args = parser.parse_args()
 
 template = open(TEMPLATE).read()
 
+defList = []
+defnames = ""
+
+# find all of the definitions
+for curdir, subdirList, fileList in os.walk(DEFDIR, topdown=True):
+  for file in fnmatch.filter(fileList, "*.json"):
+    theFile = os.path.join(curdir, file)
+    try:
+      testJSON = json.load(open(theFile))
+    except ValueError as e:
+      print "parse of " + theFile + " failed: " + e[0]
+    else:
+      theFile = re.sub("\.\./", "", theFile)
+      defList.append(theFile)
+
+if (len(defList)):
+    defNames = '"' + '",\n  "'.join(defList) + '"'
+
+
 # iterate over the folders looking for .test files
 
 for curdir, subdirList, fileList in os.walk(TESTTREE, topdown=True):
+  # sjip the definitions directory
+  subdirList[:] = [d for d in subdirList if d != "definitions"]
   # skip the examples directory
   if args.examples != 1:
     subdirList[:] = [d for d in subdirList if d != "examples"]
@@ -46,6 +68,8 @@ for curdir, subdirList, fileList in os.walk(TESTTREE, topdown=True):
       rfile = re.sub("\.\./", "", file)
       # interesting pattern is {{TESTFILE}}
       tcopy = re.sub("{{TESTFILE}}", rfile, template)
+
+      tcopy = re.sub("{{SCHEMADEFS}}", defNames, tcopy)
 
       if testJSON['name']:
         tcopy = re.sub("{{TESTTITLE}}", testJSON['name'], tcopy)

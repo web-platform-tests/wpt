@@ -45,7 +45,7 @@ function JSONtest(params) {
 
   // create an ajv object that will stay around so that caching
   // of schema that are compiled just works
-  this.ajv = new Ajv({v5: true, allErrors: true, validateSchema: false}) ;
+  this.ajv = new Ajv({allErrors: true, validateSchema: false}) ;
 
   // determine the base URI for the test collection.  This is
   // the top level folder in the test "document.location"
@@ -63,6 +63,28 @@ function JSONtest(params) {
   }
 
   this.Params = params;
+
+  // if there is a list of definitions in the params,
+  // include them
+  if (this.Params.schemaDefs) {
+    var defPromise = new Promise(function(resolve, reject) {
+      var promisedSchema = this.Params.schemaDefs.map(function(item) {
+        return this.loadDefinition(item);
+      }.bind(this));
+
+      // Once all the loadAssertion promises resolve...
+      Promise.all(promisedSchema)
+      .then(function (schemaContents) {
+        this.ajv.addSchema(schemaContents);
+        resolve(true);
+      }.bind(this))
+      .catch(function(err) {
+        reject(err);
+      }.bind(this));
+    }.bind(this));
+    // these schema need to load up too
+    pending.push(defPromise) ;
+  }
 
   // start by loading the test (it might be inline, but
   // loadTest deals with that
@@ -494,6 +516,24 @@ JSONtest.prototype = {
       });
     }
   },
+
+  // loadDefinition - load a JSON Schema definition from an external JSON file
+  //
+  // returns a promise that resolves with the contents of the definition file
+
+  loadDefinition: function(dfile) {
+    'use strict';
+    return new Promise(function(resolve, reject) {
+      this._loadFile("GET", this._parseURI(dfile), true)
+        .then(function(data) {
+          resolve(data);
+        }.bind(this))
+        .catch(function(err) {
+          reject(err);
+        });
+      }.bind(this));
+  },
+
 
   // loadTest - load a test from an external JSON file
   //

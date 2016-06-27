@@ -9,13 +9,18 @@
 <script>
 setup({explicit_timeout: true, explicit_done: true });
 
+var theDefinitions=[
+  {{SCHEMADEFS}}
+];
+
 var theTestFile="{{TESTFILE}}";
 
 var runningTest = new JSONtest( {
-    "testInput": "annotation-input",
-    "runTest": "annotation-run",
+    "testInput"   : "annotation-input",
+    "runTest"     : "annotation-run",
     "closeWindow" : "annotation-close",
-    "testFile": theTestFile
+    "schemaDefs"  : theDefinitions,
+    "testFile"    : theTestFile
 } ) ;
 
 </script>

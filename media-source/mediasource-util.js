@@ -359,6 +359,9 @@
         return media_test(function(test)
         {
             var mediaTag = document.createElement("video");
+            if (!document.body) {
+                document.body = document.createElement("body");
+            }
             document.body.appendChild(mediaTag);
 
             test.removeMediaElement_ = true;

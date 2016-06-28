@@ -175,6 +175,9 @@ function JSONtest(params) {
             // Assertions will ONLY contain the top level assertions
             this.Assertions = buildList(test.assertions, 0);
             resolve(true);
+          }.bind(this))
+          .catch(function(err) {
+            reject(err);
           }.bind(this));
         } else {
           if (!test.assertions) {
@@ -191,6 +194,14 @@ function JSONtest(params) {
   .then(function() {
     this.loading = false;
     this.init();
+  }.bind(this))
+  .catch(function(err) {
+    // loading the components failed somehow - report the errors and mark the test failed
+    test( function() {
+      assert_true(false, "Loading of test components failed: " +JSON.stringify(err)) ;
+    }, "Loading test components");
+    done() ;
+    return ;
   }.bind(this));
 
   return this;
@@ -480,14 +491,18 @@ JSONtest.prototype = {
   loadAssertion: function(afile) {
     'use strict';
     if (typeof(afile) === 'string') {
+      var theFile = this._parseURI(afile);
       // it is a file reference - load it
       return new Promise(function(resolve, reject) {
-        this._loadFile("GET", this._parseURI(afile), true)
+        this._loadFile("GET", theFile, true)
           .then(function(data) {
             data.assertionFile = afile;
             resolve(data);
           }.bind(this))
           .catch(function(err) {
+            if (typeof err === "object") {
+              err.theFile = theFile;
+            }
             reject(err);
           });
         }.bind(this));
@@ -495,7 +510,8 @@ JSONtest.prototype = {
       else if (afile.hasOwnProperty("assertionFile")) {
       // this object is referecing an external assertion
       return new Promise(function(resolve, reject) {
-        this._loadFile("GET", this._parseURI(afile.assertionFile), true)
+        var theFile = this._parseURI(afile.assertionFile);
+        this._loadFile("GET", theFile, true)
         .then(function(external) {
           // okay - we have an external object
           Object.keys(afile).forEach(function(key) {
@@ -506,6 +522,9 @@ JSONtest.prototype = {
           resolve(external);
         }.bind(this))
         .catch(function(err) {
+          if (typeof err === "object") {
+            err.theFile = theFile;
+          }
           reject(err);
         });
       }.bind(this));

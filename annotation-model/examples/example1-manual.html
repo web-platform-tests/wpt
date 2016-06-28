@@ -9,13 +9,22 @@
 <script>
 setup({explicit_timeout: true, explicit_done: true });
 
+var theDefinitions=[
+  "definitions/specificResource.json",
+  "definitions/stringUri.json",
+  "definitions/choiceSet.json",
+  "definitions/externalWebResource.json",
+  "definitions/textualBody.json"
+];
+
 var theTestFile="example1.test";
 
 var runningTest = new JSONtest( {
-    "testInput": "annotation-input",
-    "runTest": "annotation-run",
+    "testInput"   : "annotation-input",
+    "runTest"     : "annotation-run",
     "closeWindow" : "annotation-close",
-    "testFile": theTestFile
+    "schemaDefs"  : theDefinitions,
+    "testFile"    : theTestFile
 } ) ;
 
 </script>

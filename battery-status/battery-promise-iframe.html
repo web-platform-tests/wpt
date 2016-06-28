@@ -10,7 +10,7 @@
 </style>
 <div id="log"></div>
 <iframe id="blank" src="about:blank"></iframe>
-<iframe id="frame" src="support-iframe-initial.html"></iframe>
+<iframe id="frame"></iframe>
 <script>
 promise_test(function(t) {
   var iframe = document.querySelector('#blank');
@@ -58,12 +58,11 @@ async_test(function (t) {
 }, 'setting src of an iframe with initial about:blank makes same Navigator object and battery promise');
 
 async_test(function (t) {
-  window.onmessage = t.step_func(function(e) {
-    var iframe = document.querySelector('#frame');
+  var iframe = document.querySelector('#frame');
+  iframe.src = 'support-iframe-initial.html';
+  iframe.onload = t.step_func(function() {
     var originalNavigator = iframe.contentWindow.navigator;
     var originalPromise = iframe.contentWindow.navigator.getBattery();
-
-    assert_equals(e.data, 'loaded');
 
     iframe.onload = t.step_func(function() {
       assert_not_equals(iframe.contentWindow.navigator,

@@ -29,22 +29,22 @@ function getTestData() {
     // - 0 iterations
 
     var derivedKeyTypes = [
-        {name: "AES-CBC", length: 128},
-        {name: "AES-CBC", length: 192},
-        {name: "AES-CBC", length: 256},
-        {name: "AES-CTR", length: 128},
-        {name: "AES-CTR", length: 192},
-        {name: "AES-CTR", length: 256},
-        {name: "AES-GCM", length: 128},
-        {name: "AES-GCM", length: 192},
-        {name: "AES-GCM", length: 256},
-        {name: "AES-KW", length: 128},
-        {name: "AES-KW", length: 192},
-        {name: "AES-KW", length: 256},
-        {name: "HMAC", hash: "SHA-1", length: 256},
-        {name: "HMAC", hash: "SHA-256", length: 256},
-        {name: "HMAC", hash: "SHA-384", length: 256},
-        {name: "HMAC", hash: "SHA-512", length: 256}
+        {algorithm: {name: "AES-CBC", length: 128}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-CBC", length: 192}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-CBC", length: 256}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-CTR", length: 128}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-CTR", length: 192}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-CTR", length: 256}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-GCM", length: 128}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-GCM", length: 192}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-GCM", length: 256}, usages: ["encrypt", "decrypt"]},
+        {algorithm: {name: "AES-KW", length: 128}, usages: ["wrapKey", "unwrapKey"]},
+        {algorithm: {name: "AES-KW", length: 192}, usages: ["wrapKey", "unwrapKey"]},
+        {algorithm: {name: "AES-KW", length: 256}, usages: ["wrapKey", "unwrapKey"]},
+        {algorithm: {name: "HMAC", hash: "SHA-1", length: 256}, usages: ["sign", "verify"]},
+        {algorithm: {name: "HMAC", hash: "SHA-256", length: 256}, usages: ["sign", "verify"]},
+        {algorithm: {name: "HMAC", hash: "SHA-384", length: 256}, usages: ["sign", "verify"]},
+        {algorithm: {name: "HMAC", hash: "SHA-512", length: 256}, usages: ["sign", "verify"]}
     ];
 
     var passwords = {

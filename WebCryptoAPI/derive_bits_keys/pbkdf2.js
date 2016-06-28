@@ -48,28 +48,19 @@ function run_test() {
                         // key that can be created by the deriveKeys operation.
                         derivedKeyTypes.forEach(function(derivedKeyType) {
                             var testName = "Derived key of type ";
-                            Object.keys(derivedKeyType).forEach(function(prop) {
-                                testName += prop + ": " + derivedKeyType[prop] + " ";
+                            Object.keys(derivedKeyType.algorithm).forEach(function(prop) {
+                                testName += prop + ": " + derivedKeyType.algorithm[prop] + " ";
                             });
                             testName += " using " + passwordSize + " password, " + saltSize + " salt, " + hashName + ", with " + iterations + " iterations";
 
-                            // Must provide appropriate usages parameter for
-                            // different derived key types.
-                            var usages = ["encrypt", "decrypt"];
-                            if (derivedKeyType.name === "HMAC") {
-                                usages = ["sign", "verify"];
-                            } else if (derivedKeyType.name === "AES-KW") {
-                                usages = ["wrapKey", "unwrapKey"];
-                            }
-
                             // Test the particular key derivation.
                             promise_test(function(test) {
-                                return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], derivedKeyType, true, usages)
+                                return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     // Need to export the key to see that the correct bits were set.
                                     return subtle.exportKey("raw", key)
                                     .then(function(buffer) {
-                                        assert_true(equalBuffers(buffer, derivations[passwordSize][saltSize][hashName][iterations].slice(0, derivedKeyType.length/8)), "Exported key matches correct value");
+                                        assert_true(equalBuffers(buffer, derivations[passwordSize][saltSize][hashName][iterations].slice(0, derivedKeyType.algorithm.length/8)), "Exported key matches correct value");
                                     }, function(err) {
                                         assert_unreached("Exporting derived key failed with error " + err.name + ": " + err.message);
                                     });
@@ -84,7 +75,7 @@ function run_test() {
                             // - illegal name for hash algorithm (NotSupportedError)
                             var badHash = hashName.substring(0, 3) + hashName.substring(4);
                             promise_test(function(test) {
-                                return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: badHash, iterations: parseInt(iterations)}, baseKeys[passwordSize], derivedKeyType, true, usages)
+                                return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: badHash, iterations: parseInt(iterations)}, baseKeys[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     assert_unreached("bad hash name should have thrown an NotSupportedError");
                                 }, function(err) {
@@ -94,7 +85,7 @@ function run_test() {
 
                             // - baseKey usages missing "deriveKey" (InvalidAccessError)
                             promise_test(function(test) {
-                                return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, noKey[passwordSize], derivedKeyType, true, usages)
+                                return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, noKey[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     assert_unreached("missing deriveKey usage should have thrown an InvalidAccessError");
                                 }, function(err) {
@@ -104,7 +95,7 @@ function run_test() {
 
                             // - baseKey algorithm does not match PBKDF2 (InvalidAccessError)
                             promise_test(function(test) {
-                                return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, wrongKey, derivedKeyType, true, usages)
+                                return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, wrongKey, derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     assert_unreached("wrong (ECDH) key should have thrown an InvalidAccessError");
                                 }, function(err) {
@@ -188,6 +179,22 @@ function run_test() {
                         });
                     }, passwordSize + " password, " + saltSize + " salt, " + hashName + ", with 0 iterations");
 
+                    derivedKeyTypes.forEach(function(derivedKeyType) {
+                        var testName = "Derived key of type ";
+                        Object.keys(derivedKeyType.algorithm).forEach(function(prop) {
+                            testName += prop + ": " + derivedKeyType.algorithm[prop] + " ";
+                        });
+                        testName += " using " + passwordSize + " password, " + saltSize + " salt, " + hashName + ", with 0 iterations";
+
+                        promise_test(function(test) {
+                            return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: 0}, baseKeys[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
+                            .then(function(derivation) {
+                                assert_unreached("0 iterations should have thrown an error");
+                            }, function(err) {
+                                assert_equals(err.name, "OperationError", "derivekey with 0 iterations correctly threw OperationError: " + err.message);
+                            });
+                        }, testName);
+                    });
                 });
 
                 // - legal algorithm name but not digest one (e.g., PBKDF2) (NotSupportedError)
@@ -203,6 +210,24 @@ function run_test() {
                             assert_equals(err.name, "NotSupportedError", "deriveBits with non-digest algorithm correctly threw NotSupportedError: " + err.message);
                         });
                     }, testName + " with non-digest algorithm " + nonDigestHash);
+
+                    derivedKeyTypes.forEach(function(derivedKeyType) {
+                        var testName = "Derived key of type ";
+                        Object.keys(derivedKeyType.algorithm).forEach(function(prop) {
+                            testName += prop + ": " + derivedKeyType.algorithm[prop] + " ";
+                        });
+                        testName += " using " + passwordSize + " password, " + saltSize + " salt, " + nonDigestHash + ", with " + iterations + " iterations";
+
+                        promise_test(function(test) {
+                            return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: nonDigestHash, iterations: parseInt(iterations)}, baseKeys[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
+                            .then(function(derivation) {
+                                assert_unreached("non-digest algorithm should have thrown an NotSupportedError");
+                            }, function(err) {
+                                assert_equals(err.name, "NotSupportedError", "derivekey with non-digest algorithm correctly threw NotSupportedError: " + err.message);
+                            });
+                        }, testName);
+                    });
+
                 });
 
             });

@@ -1,26 +1,40 @@
 
 function run_test() {
+    // May want to test prefixed implementations.
     var subtle = self.crypto.subtle;
+
+    // pbkdf2_vectors sets up test data with the correct derivations for each
+    // test case.
     var testData = getTestData();
     var passwords = testData.passwords;
     var salts = testData.salts;
     var derivations = testData.derivations;
-    var derivedKeyTypes = testData.derivedKeyTypes;
 
-    var derivedKeyAlgorithms = ["AES-CBC", "AES-CTR", "AES-GCM", "AES-KW", "HMAC"];
+    // What kinds of keys can be created with deriveKey? The following:
+    var derivedKeyTypes = testData.derivedKeyTypes;
 
     setUpBaseKeys(passwords)
     .then(function(allKeys) {
+
+        // We get several kinds of base keys. Normal ones that can be used for
+        // derivation operations, ones that lack the deriveBits usage, ones
+        // that lack the deriveKeys usage, and one key that is for the wrong
+        // algorithm (not PBKDF2 in this case).
         var baseKeys = allKeys.baseKeys;
         var noBits = allKeys.noBits;
         var noKey = allKeys.noKey;
         var wrongKey = allKeys.wrongKey;
 
+        // Test each combination of password size, salt size, hash function,
+        // and number of iterations. The derivations object is structured in
+        // that way, so navigate it to run tests and compare with correct results.
         Object.keys(derivations).forEach(function(passwordSize) {
             Object.keys(derivations[passwordSize]).forEach(function(saltSize) {
                 Object.keys(derivations[passwordSize][saltSize]).forEach(function(hashName) {
                     Object.keys(derivations[passwordSize][saltSize][hashName]).forEach(function(iterations) {
                         var testName = passwordSize + " password, " + saltSize + " salt, " + hashName + ", with " + iterations + " iterations";
+
+                        // Check for correct deriveBits result
                         promise_test(function(test) {
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], 256)
                             .then(function(derivation) {
@@ -30,6 +44,8 @@ function run_test() {
                             });
                         }, testName);
 
+                        // Check for correct deriveKey results for every kind of
+                        // key that can be created by the deriveKeys operation.
                         derivedKeyTypes.forEach(function(derivedKeyType) {
                             var testName = "Derived key of type ";
                             Object.keys(derivedKeyType).forEach(function(prop) {
@@ -37,16 +53,20 @@ function run_test() {
                             });
                             testName += " using " + passwordSize + " password, " + saltSize + " salt, " + hashName + ", with " + iterations + " iterations";
 
-                            promise_test(function(test) {
-                                var usages = ["encrypt", "decrypt"];
-                                if (derivedKeyType.name === "HMAC") {
-                                    usages = ["sign", "verify"];
-                                } else if (derivedKeyType.name === "AES-KW") {
-                                    usages = ["wrapKey", "unwrapKey"];
-                                }
+                            // Must provide appropriate usages parameter for
+                            // different derived key types.
+                            var usages = ["encrypt", "decrypt"];
+                            if (derivedKeyType.name === "HMAC") {
+                                usages = ["sign", "verify"];
+                            } else if (derivedKeyType.name === "AES-KW") {
+                                usages = ["wrapKey", "unwrapKey"];
+                            }
 
+                            // Test the particular key derivation.
+                            promise_test(function(test) {
                                 return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], derivedKeyType, true, usages)
                                 .then(function(key) {
+                                    // Need to export the key to see that the correct bits were set.
                                     return subtle.exportKey("raw", key)
                                     .then(function(buffer) {
                                         assert_true(equalBuffers(buffer, derivations[passwordSize][saltSize][hashName][iterations].slice(0, derivedKeyType.length/8)), "Exported key matches correct value");
@@ -58,7 +78,43 @@ function run_test() {
 
                                 });
                             }, testName);
+
+                            // Test various error conditions for deriveKey:
+
+                            // - illegal name for hash algorithm (NotSupportedError)
+                            var badHash = hashName.substring(0, 3) + hashName.substring(4);
+                            promise_test(function(test) {
+                                return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: badHash, iterations: parseInt(iterations)}, baseKeys[passwordSize], derivedKeyType, true, usages)
+                                .then(function(key) {
+                                    assert_unreached("bad hash name should have thrown an NotSupportedError");
+                                }, function(err) {
+                                    assert_equals(err.name, "NotSupportedError", "deriveKey with bad hash name correctly threw NotSupportedError: " + err.message);
+                                });
+                            }, testName + " with bad hash name " + badHash);
+
+                            // - baseKey usages missing "deriveKey" (InvalidAccessError)
+                            promise_test(function(test) {
+                                return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, noKey[passwordSize], derivedKeyType, true, usages)
+                                .then(function(key) {
+                                    assert_unreached("missing deriveKey usage should have thrown an InvalidAccessError");
+                                }, function(err) {
+                                    assert_equals(err.name, "InvalidAccessError", "deriveKey with missing deriveKey usage correctly threw InvalidAccessError: " + err.message);
+                                });
+                            }, testName + " with missing deriveBits usage");
+
+                            // - baseKey algorithm does not match PBKDF2 (InvalidAccessError)
+                            promise_test(function(test) {
+                                return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, wrongKey, derivedKeyType, true, usages)
+                                .then(function(key) {
+                                    assert_unreached("wrong (ECDH) key should have thrown an InvalidAccessError");
+                                }, function(err) {
+                                    assert_equals(err.name, "InvalidAccessError", "deriveKey with wrong (ECDH) key correctly threw InvalidAccessError: " + err.message);
+                                });
+                            }, testName + " with wrong (ECDH) key");
+
                         });
+
+                        // Test various error conditions for deriveBits below:
 
                         // length null (OperationError)
                         promise_test(function(test) {
@@ -157,6 +213,9 @@ function run_test() {
         }, "setUpBaseKeys");
     });
 
+    // Deriving bits and keys requires starting with a base key, which is created
+    // by importing a password. setUpBaseKeys returns a promise that yields the
+    // necessary base keys.
     function setUpBaseKeys(passwords) {
         var promises = [];
         var baseKeys = {};

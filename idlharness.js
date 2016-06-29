@@ -1334,6 +1334,46 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
 }
 
 //@}
+IdlInterface.prototype.add_iterable_members = function(member)
+//@{
+{
+    this.members.push({type: "operation", name: "entries", idlType: "iterator", arguments: []});
+    this.members.push({type: "operation", name: "keys", idlType: "iterator", arguments: []});
+    this.members.push({type: "operation", name: "values", idlType: "iterator", arguments: []});
+    this.members.push({type: "operation", name: "forEach", idlType: "void", arguments:
+        [{ name: "callback", idlType: {idlType: "function"}},
+        { name: "thisValue", idlType: {idlType: "any"}, optional: true}]});
+};
+
+//@}
+IdlInterface.prototype.test_member_iterable = function(member)
+//@{
+{
+    var interfaceName = this.name;
+    var isPairIterator = member.idlType instanceof Array;
+    test(function()
+    {
+        var descriptor = Object.getOwnPropertyDescriptor(self[interfaceName].prototype, Symbol.iterator);
+        assert_true(descriptor.writable, "property is not writable");
+        assert_true(descriptor.configurable, "property is not configurable");
+        assert_false(descriptor.enumerable, "property is enumerable");
+        assert_equals(self[interfaceName].prototype[Symbol.iterator].name, isPairIterator ? "entries" : "values", "@@iterator function does not have the right name");
+    }, "Testing Symbol.iterator property of iterable interface " + interfaceName);
+
+    if (isPairIterator) {
+        test(function() {
+            assert_equals(self[interfaceName].prototype["entries"], self[interfaceName].prototype[Symbol.iterator], "entries method is not the same as @@iterator");
+        }, "Testing pair iterable interface " + interfaceName);
+    } else {
+        test(function() {
+            ["entries", "keys", "values", "forEach", Symbol.Iterator].forEach(function(property) {
+                assert_equals(self[interfaceName].prototype[property], Array.prototype[property], property + " function is not the same as Array one");
+            });
+        }, "Testing value iterable interface " + interfaceName);
+    }
+};
+
+//@}
 IdlInterface.prototype.test_member_stringifier = function(member)
 //@{
 {
@@ -1404,6 +1444,19 @@ IdlInterface.prototype.test_members = function()
     for (var i = 0; i < this.members.length; i++)
     {
         var member = this.members[i];
+        switch (member.type) {
+        case "iterable":
+            this.add_iterable_members(member);
+            break;
+        // TODO: add setlike and maplike handling.
+        default:
+            break;
+        }
+    }
+
+    for (var i = 0; i < this.members.length; i++)
+    {
+        var member = this.members[i];
         if (member.untested) {
             continue;
         }
@@ -1440,6 +1493,9 @@ IdlInterface.prototype.test_members = function()
             }
             break;
 
+        case "iterable":
+            this.test_member_iterable(member);
+            break;
         default:
             // TODO: check more member types.
             break;

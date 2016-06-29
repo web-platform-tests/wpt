@@ -15,7 +15,6 @@ function run_test() {
 
     setUpBaseKeys(passwords)
     .then(function(allKeys) {
-
         // We get several kinds of base keys. Normal ones that can be used for
         // derivation operations, ones that lack the deriveBits usage, ones
         // that lack the deriveKeys usage, and one key that is for the wrong
@@ -91,7 +90,7 @@ function run_test() {
                                 }, function(err) {
                                     assert_equals(err.name, "InvalidAccessError", "deriveKey with missing deriveKey usage correctly threw InvalidAccessError: " + err.message);
                                 });
-                            }, testName + " with missing deriveBits usage");
+                            }, testName + " with missing deriveKey usage");
 
                             // - baseKey algorithm does not match PBKDF2 (InvalidAccessError)
                             promise_test(function(test) {
@@ -232,10 +231,13 @@ function run_test() {
 
             });
         });
+
+        done();
     }, function(err) {
-        promise_test(function(test) {
+        test(function(test) {
             assert_unreached("setUpBaseKeys failed with error '" + err.message + "'");
         }, "setUpBaseKeys");
+        done();
     });
 
     // Deriving bits and keys requires starting with a base key, which is created
@@ -243,18 +245,18 @@ function run_test() {
     // necessary base keys.
     function setUpBaseKeys(passwords) {
         var promises = [];
+
         var baseKeys = {};
         var noBits = {};
         var noKey = {};
+        var wrongKey = null;
 
         Object.keys(passwords).forEach(function(passwordSize) {
             var promise = subtle.importKey("raw", passwords[passwordSize], {name: "PBKDF2"}, false, ["deriveKey", "deriveBits"])
             .then(function(baseKey) {
                 baseKeys[passwordSize] = baseKey;
             }, function(err) {
-                promise_test(function(test) {
-                    assert_unreached("setUpBaseKeys for key '" + passwordSize + "' failed with error '" + err.message + "'");
-                }, "setUpBaseKeys for key '" + passwordSize + "'");
+                baseKeys[passwordSize] = null;
             });
             promises.push(promise);
 
@@ -262,9 +264,7 @@ function run_test() {
             .then(function(baseKey) {
                 noKey[passwordSize] = baseKey;
             }, function(err) {
-             promise_test(function(test) {
-                 assert_unreached("setUpBaseKeys for key '" + passwordSize + "' with missing deriveKey usage failed with error '" + err.message + "'");
-             }, "setUpBaseKeys for key '" + passwordSize + "' with missing deriveKey usage");
+                noKey[passwordSize] = null;
             });
             promises.push(promise);
 
@@ -272,9 +272,7 @@ function run_test() {
             .then(function(baseKey) {
                 noBits[passwordSize] = baseKey;
             }, function(err) {
-             promise_test(function(test) {
-                 assert_unreached("setUpBaseKeys for key '" + passwordSize + "' with missing deriveBits usage failed with error '" + err.message + "'");
-             }, "setUpBaseKeys for key '" + passwordSize + "' with missing deriveBits usage");
+                noBits[passwordSize] = null;
             });
             promises.push(promise);
         });
@@ -283,9 +281,7 @@ function run_test() {
         .then(function(baseKey) {
             wrongKey = baseKey.privateKey;
         }, function(err) {
-            promise_test(function(test) {
-                assert_unreached("setUpBaseKeys for wrong key failed with error '" + err.message + "'");
-            }, "setUpBaseKeys for wrong key");
+            wrongKey = null;
         });
         promises.push(promise);
 

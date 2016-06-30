@@ -26,10 +26,7 @@
       function end_of_interaction() {
           test(function () {
               assert_equals(event_log.join(", "),
-                        "pointerdown@target0, " +
-                        "pointerup@target0, " +
-                        "pointerdown@target1, mousedown@target1, " +
-                        "pointerup@target1, mouseup@target1");
+                  "mousedown@target1, mouseup@target1");
           }, "Event log");
 
           test_pointerEvent.done(); // complete test
@@ -48,7 +45,6 @@
               pointer_event_list.forEach(function(eventName) {
                   on_event(target, eventName, function (event) {
                       var label = event.type + "@" + targetId;
-                      event_log.push(label);
                       detected_pointertypes[event.pointerType] = true;
 
                       test(function () {
@@ -75,6 +71,7 @@
 
       #done {
         margin: 20px;
+        border: 2px solid black;
       }
     </style>
   </head>

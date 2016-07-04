@@ -34,7 +34,8 @@ partial interface Presentation {
     attribute PresentationRequest? defaultRequest;
 };
 
-[Constructor(DOMString url)]
+[Constructor(DOMString url),
+ Constructor(DOMString[] urls)]
 interface PresentationRequest : EventTarget {
     Promise<PresentationConnection>   start();
     Promise<PresentationConnection>   reconnect(DOMString presentationId);
@@ -45,7 +46,7 @@ interface PresentationRequest : EventTarget {
 
 interface PresentationAvailability : EventTarget {
     readonly attribute boolean      value;
-			 attribute EventHandler onchange;
+             attribute EventHandler onchange;
 };
 
 [Constructor(DOMString type, PresentationConnectionAvailableEventInit eventInitDict)]
@@ -75,7 +76,7 @@ interface PresentationConnection : EventTarget {
     readonly attribute PresentationConnectionState state;
     void close();
     void terminate();
-	attribute EventHandler                onconnect;
+    attribute EventHandler                onconnect;
     attribute EventHandler                onclose;
     attribute EventHandler                onterminate;
 

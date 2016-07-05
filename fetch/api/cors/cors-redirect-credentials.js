@@ -24,7 +24,7 @@ var remoteRedirect = "http://{{host}}:{{ports[http][1]}}" + redirPath;
 
 var localLocation = "http://{{host}}:{{ports[http][0]}}" + preflightPath;
 var remoteLocation = "http://{{host}}:{{ports[http][1]}}" + preflightPath;
-var remoteLocation2 = "https://{{host}}:{{ports[https][0]}}" + preflightPath;
+var remoteLocation2 = "http://www.{{host}}:{{ports[http][0]}}" + preflightPath;
 
 for (var code of [301, 302, 303, 307, 308]) {
   corsRedirectCredentials("Redirect " + code + " from same origin to remote with user and password", localRedirect, remoteLocation, code, "user:password");

@@ -22,13 +22,9 @@
         return navigator.presentation.defaultRequest.start()
                 .catch(function (err) {
 
-                    test(function () {
-                        assert_equals(err.message, apiPreDefinedErrorMessage, 'The error message is "PresentationRequest::start() requires user gesture."');
-                    }, 'Error message is correct.');
+                    assert_equals(err.message, apiPreDefinedErrorMessage, 'The error message is "PresentationRequest::start() requires user gesture."');
 
-                    test(function () {
-                        assert_equals(err.name, 'InvalidAccessError', 'The error name is InvalidAccessError.');
-                    }, 'Error name is correct - it is an InvalidAccessError.');
+                    assert_equals(err.name, 'InvalidAccessError', 'The error name is InvalidAccessError.');
 
                 });
     }, "The presentation could not start, because a user gesture is required.");

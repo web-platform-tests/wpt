@@ -17,9 +17,7 @@
       var event_log = [];
 
       function end_of_test() {
-          document.getElementById("event-log").innerHTML =
-              "Logged the following events: " +
-              (event_log.length ? event_log.join(", ") : "(none)");
+          showLoggedEvents();
           showPointerTypes();
       }
 
@@ -109,8 +107,8 @@
     </div>
     <div id="complete-notice">
       <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
+      <p>The following events were logged: <span id="event-log"></span>.</p>
     </div>
-    <div id="event-log"></div>
     <div id="log"></div>
   </body>
 </html>

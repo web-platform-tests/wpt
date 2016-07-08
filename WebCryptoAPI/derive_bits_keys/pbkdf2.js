@@ -84,7 +84,7 @@ function run_test() {
 
                             // - baseKey usages missing "deriveKey" (InvalidAccessError)
                             promise_test(function(test) {
-                                return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, noKey[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
+                                return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, noKey[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     assert_unreached("missing deriveKey usage should have thrown an InvalidAccessError");
                                 }, function(err) {
@@ -94,7 +94,7 @@ function run_test() {
 
                             // - baseKey algorithm does not match PBKDF2 (InvalidAccessError)
                             promise_test(function(test) {
-                                return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, wrongKey, derivedKeyType.algorithm, true, derivedKeyType.usages)
+                                return subtle.deriveKey({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, wrongKey, derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     assert_unreached("wrong (ECDH) key should have thrown an InvalidAccessError");
                                 }, function(err) {
@@ -105,7 +105,6 @@ function run_test() {
                         });
 
                         // Test various error conditions for deriveBits below:
-
                         // length null (OperationError)
                         promise_test(function(test) {
                             return subtle.deriveBits({name: "PBKDF2", salt: salts[saltSize], hash: hashName, iterations: parseInt(iterations)}, baseKeys[passwordSize], null)

@@ -73,6 +73,7 @@ def update_dist():
     git = vcs.bind_to_repo(vcs.git, built_dir)
     git("config", "user.email", "CssBuildBot@users.noreply.github.com")
     git("config", "user.name", "CSS Build Bot")
+    git("submodule", "update", "--init", "--recursive")
 
 def setup_virtualenv():
     virtualenv_path = os.path.join(here, "_virtualenv")
@@ -102,6 +103,10 @@ def remove_current_files():
     for node in os.listdir(built_dir):
         if node.startswith(".git"):
             continue
+
+        if node in ("resources", "tools"):
+            continue
+
         path = os.path.join(built_dir, node)
         if os.path.isdir(path):
             shutil.rmtree(path)

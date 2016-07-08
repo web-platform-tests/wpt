@@ -144,8 +144,15 @@ def get_new_commits():
     with open(commit_path) as f:
         prev_commit = f.read().strip()
 
-    merge_base = git("merge-base", prev_commit, os.environ['TRAVIS_COMMIT']).strip()
-    commit_range = "%s..%s" % (merge_base, os.environ['TRAVIS_COMMIT'])
+    if git("rev-parse", "--revs-only", prev_commit).strip() != prev_commit:
+        # we don't have prev_commit in current tree, so let's just do what's new
+        commit_range = os.environ['TRAVIS_COMMIT_RANGE']
+        assert (os.environ["TRAVIS_PULL_REQUEST"] != "false" or
+                os.environ["TRAVIS_BRANCH"] != "master")
+    else:
+        merge_base = git("merge-base", prev_commit, os.environ['TRAVIS_COMMIT']).strip()
+        commit_range = "%s..%s" % (merge_base, os.environ['TRAVIS_COMMIT'])
+
     commits = git("log", "--pretty=%H", "-r", commit_range).strip()
     if not commits:
         return []

@@ -33,7 +33,7 @@
                 }).then(function() {
                     assert_true(video.mediaKeys === mediaKeys);
                     // Load the media element to create the WebMediaPlayer.
-                    video.src = 'content/test-encrypted.webm';
+                    video.src = 'webm/test-encrypted.webm';
                     // Set mediaKeys again on video should still return a
                     // resolved promise.
                     return video.setMediaKeys(mediaKeys);

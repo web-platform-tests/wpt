@@ -81,7 +81,7 @@
 
                     return video.setMediaKeys(mediaKeys);
                 }).then(function(result) {
-                    video.src = 'content/test-encrypted.webm';
+                    video.src = 'webm/test-encrypted.webm';
                     video.play();
                 }).catch(function(error) {
                     forceTestFailureFromPromise(test, error);

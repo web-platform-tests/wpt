@@ -126,7 +126,7 @@
                 }).then(function(mediaKeys) {
                     waitForEventAndRunStep('encrypted', video, onEncrypted, test);
                     waitForEventAndRunStep('playing', video, onPlaying, test);
-                    video.src = 'content/test-encrypted-different-av-keys.webm';
+                    video.src = 'webm/test-encrypted-different-av-keys.webm';
                     return video.setMediaKeys(mediaKeys);
                 }).then(function(result) {
                     video.play();

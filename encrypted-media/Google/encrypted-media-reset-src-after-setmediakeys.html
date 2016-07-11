@@ -28,7 +28,7 @@
                     // for the video stream each time .src is set.
                     if (encryptedEventIndex == 2) {
                         // Finished first video; set src to a different video.
-                        video.src = 'content/test-encrypted-different-av-keys.webm';
+                        video.src = 'webm/test-encrypted-different-av-keys.webm';
                     } else if (encryptedEventIndex == 4) {
                         // Finished second video.
                         test.done();
@@ -50,7 +50,7 @@
 
                     // Set src to a video.
                     waitForEventAndRunStep('encrypted', video, onEncrypted, test);
-                    video.src = 'content/test-encrypted.webm';
+                    video.src = 'webm/test-encrypted.webm';
                 }).catch(function(error) {
                     forceTestFailureFromPromise(test, error);
                 });

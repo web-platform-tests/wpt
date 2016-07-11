@@ -65,7 +65,7 @@
 
                 // Start a video now so that it is waiting for MediaKeys
                 // in order to continue.
-                video.src = 'content/test-encrypted.webm';
+                video.src = 'webm/test-encrypted.webm';
                 video.play();
                 return wait_for_encrypted_event(video).then(function() {
                     return navigator.requestMediaKeySystemAccess('org.w3.clearkey', [{}]);

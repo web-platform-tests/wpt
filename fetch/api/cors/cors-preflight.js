@@ -71,3 +71,5 @@ corsPreflight("CORS [GET] [several headers], server allows", corsUrl, "GET", tru
 corsPreflight("CORS [GET] [several headers], server refuses", corsUrl, "GET", false, headers);
 corsPreflight("CORS [PUT] [several headers], server allows", corsUrl, "PUT", true, headers);
 corsPreflight("CORS [PUT] [several headers], server refuses", corsUrl, "PUT", false, headers);
+
+done();

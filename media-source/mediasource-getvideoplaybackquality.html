@@ -29,8 +29,8 @@
                   assert_greater_than_equal(newQuality.totalVideoFrames, 0, "totalVideoFrames >= 0");
                   assert_greater_than_equal(newQuality.totalVideoFrames, previousQuality.totalVideoFrames,
                     "totalVideoFrames increases monotonically");
-                  assert_less_than(newQuality.totalVideoFrames, 50,
-                    "totalVideoFrames should remain low as duration is 1s and framerate less than 30fps");
+                  assert_less_than(newQuality.totalVideoFrames, 300,
+                    "totalVideoFrames should remain low as duration is less than 10s and framerate less than 30fps");
 
                   assert_greater_than_equal(newQuality.droppedVideoFrames, 0, "droppedVideoFrames >= 0");
                   assert_greater_than_equal(newQuality.droppedVideoFrames, previousQuality.droppedVideoFrames,
@@ -55,8 +55,7 @@
 
               test.waitForExpectedEvents(function()
               {
-                  assert_greater_than(mediaSource.duration, 1, "duration");
-                  mediaSource.duration = 1;
+                  assert_less_than(mediaSource.duration, 10, "duration");
                   mediaSource.endOfStream();
                   mediaElement.play();
                   test.expectEvent(mediaElement, 'ended', 'mediaElement');
@@ -97,8 +96,7 @@
               test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
               test.waitForExpectedEvents(function()
               {
-                  assert_greater_than(mediaSource.duration, 1, "duration");
-                  mediaSource.duration = 1;
+                  assert_less_than(mediaSource.duration, 10, "duration");
                   mediaSource.endOfStream();
                   startTime = window.performance.now();
                   mediaElement.play();

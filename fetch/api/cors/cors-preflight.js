@@ -12,7 +12,7 @@ if (this.document === undefined) {
 function corsPreflight(desc, corsUrl, method, allowed, headers) {
   return promise_test(function(test) {
     var uuid_token = token();
-    fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(response) {
+    return fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token).then(function(response) {
       var url = corsUrl;
       var urlParameters = "?token=" + uuid_token + "&max_age=0";
       var requestInit = {"mode": "cors", "method": method};

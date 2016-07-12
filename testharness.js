@@ -475,7 +475,7 @@ policies and contribution forms [3].
             self instanceof WorkerGlobalScope) {
             return new DedicatedWorkerTestEnvironment();
         }
-        
+
         throw new Error("Unsupported test environment");
     }
 

@@ -64,10 +64,8 @@ function mediaSourceConfigChangeTest(directory, idA, idB, description)
                 test.waitForExpectedEvents(function()
                 {
                     assert_false(sourceBuffer.updating, "updating");
-                    assert_greater_than(mediaSource.duration, 2, "duration");
+                    assert_less_than(mediaSource.duration, 5, "duration");
 
-                    // Truncate the presentation to a duration of 2 seconds.
-                    mediaSource.duration = 2;
                     mediaSource.endOfStream();
 
                     assert_false(sourceBuffer.updating, "updating");

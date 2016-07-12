@@ -23,9 +23,7 @@
               test.waitForExpectedEvents(function()
               {
                   assert_false(sourceBuffer.updating, "updating");
-                  assert_greater_than(mediaSource.duration, 1, "duration");
 
-                  mediaSource.duration = 1;
                   mediaSource.endOfStream();
                   mediaElement.play();
               });

@@ -70,25 +70,4 @@
             test.done();
         });
     }, 'MediaSource.endOfStream(): duration set to the highest end time reported by the buffered attribute');
-
-    mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
-    {
-        assert_greater_than(segmentInfo.duration, 2, 'Sufficient test media duration');
-        sourceBuffer.appendBuffer(mediaData);
-        test.expectEvent(sourceBuffer, 'updateend',
-          'Media buffer appended to SourceBuffer');
-        test.waitForExpectedEvents(function()
-        {
-            assert_equals(sourceBuffer.buffered.length, 1,
-              'Media data properly buffered');
-            var highestEndTime = sourceBuffer.buffered.end(0);
-
-            mediaSource.duration = 1;
-            mediaSource.endOfStream();
-
-            assert_equals(mediaSource.duration, sourceBuffer.buffered.end(0),
-              'Duration set to the higest end time');
-            test.done();
-        });
-    }, 'MediaSource.endOfStream(): duration set to the highest end time reported by the buffered attribute even after truncation');
 </script>

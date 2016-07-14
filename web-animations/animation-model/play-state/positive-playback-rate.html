@@ -10,7 +10,7 @@
 'use strict';
 
 function createIdleAnimation(t) {
-  var animation = createDiv(t).animate([], 100 * MS_PER_SEC);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.cancel();
   return animation;
 }

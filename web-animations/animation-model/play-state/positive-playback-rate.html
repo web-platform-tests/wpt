@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Tests for discrete animation</title>
+<title>Test play state changes for animations with a positive playback rate</title>
 <link rel="help" href="https://w3c.github.io/web-animations/#play-state">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -8,6 +8,7 @@
 <body>
 <script>
 'use strict';
+
 function createIdleAnimation(t) {
   var animation = createDiv(t).animate([], 100000);
   animation.cancel();
@@ -382,3 +383,4 @@ async_test(function(t) {
   });
 }, "PlayState is 'running' while pausing a running animation");
 </script>
+</body>

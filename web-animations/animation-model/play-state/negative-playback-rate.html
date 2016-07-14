@@ -2,11 +2,13 @@
 <meta charset=utf-8>
 <title>Test play state changes for animations with a negative playback rate</title>
 <link rel="help" href="http://w3c.github.io/web-animations/#play-state">
-<script src="../../testcommon.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-
+<script src="../../testcommon.js"></script>
+<body>
 <script>
+'use strict';
+
 var duration = 100000;
 
 function assert_unresolved(value) {
@@ -356,3 +358,4 @@ test(function() {
   assert_equals(animation.playState, 'running');
 }, "Setting currentTime on a finished animation");
 </script>
+</body>

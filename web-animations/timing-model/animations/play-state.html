@@ -369,18 +369,16 @@ async_test(function(t) {
   });
 }, "PlayState is 'running' while playing a cancelled animation");
 
-async_test(function(t) {
-  let animation = createRunningAnimation(t);
+promise_test(function(t) {
+  var animation = createRunningAnimation(t);
   animation.pause();
-  let animationCurrentTime = animation.currentTime;
-  animation.ready.then(() => {
-    t.step(() => {
-      assert_equals(animation.playState, 'paused');
-      assert_equals(animation.startTime, null);
-      assert_greater_than_equal(animation.currentTime, animationCurrentTime);
-    });
-    t.done();
+  var animationCurrentTime = animation.currentTime;
+  return animation.ready.then(() => {
+    assert_equals(animation.playState, 'paused');
+    assert_equals(animation.startTime, null);
+    assert_greater_than_equal(animation.currentTime, animationCurrentTime);
   });
 }, "PlayState is 'running' while pausing a running animation");
+
 </script>
 </body>

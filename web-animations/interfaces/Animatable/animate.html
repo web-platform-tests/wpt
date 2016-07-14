@@ -26,6 +26,14 @@ test(function(t) {
                       'Returned Animation has a KeyframeEffect');
 }, 'Element.animate() creates an Animation object with a KeyframeEffect');
 
+gEmptyKeyframeListTests.forEach(function(subTest) {
+  test(function(t) {
+    var div = createDiv(t);
+    var anim = div.animate(subTest, 2000);
+    assert_not_equals(anim, null);
+  }, 'Element.animate() accepts empty keyframe lists');
+});
+
 gPropertyIndexedKeyframesTests.forEach(function(subtest) {
   test(function(t) {
     var div = createDiv(t);

@@ -112,7 +112,8 @@ test(function(t) {
 test(function(t) {
   var div = createDiv(t);
   var anim = div.animate({ WebkitTransform: ['translateX(100px)', 'translateX(100px)'],
-                           webkitTransform: ['translateX(100px)', 'translateX(100px)'] }, 1000);
+                           webkitTransform: ['translateX(100px)', 'translateX(100px)'] },
+                         { duration: 100 * MS_PER_SEC, fill: 'both' });
 
   anim.currentTime = 0;
   assert_not_equals(getComputedStyle(div).getPropertyValue('-webkit-transform'), 'translateX(100px)');

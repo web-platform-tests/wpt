@@ -30,5 +30,14 @@ promise_test(function(t) {
 }, 'play() throws when seeking an infinite-duration animation played in ' +
    'reverse');
 
+test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 100 * MS_PER_SEC);
+  animation.finish();
+  assert_times_equal(animation.currentTime, 100 * MS_PER_SEC);
+  animation.play();
+  assert_times_equal(animation.currentTime, 0);
+}, 'play() seeks back to start on finished animation');
+
 </script>
 </body>

@@ -97,14 +97,11 @@ test(function(t) {
   assert_true(animation.ready instanceof Promise);
 }, 'The ready attribute should be a Promise');
 
-async_test(function(t) {
+promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.cancel();
-  animation.ready.then(function(p) {
-    t.step(function() {
-      assert_equals(p, animation);
-    });
-    t.done();
+  return animation.ready.then(function(p) {
+    assert_equals(p, animation);
   });
 }, 'The ready promise should be resolved when an animation is in the idle play state');
 
@@ -127,7 +124,7 @@ async_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.ready.then(function() {
     t.step(function() {
-      assert_unreached();
+      t.unreached_func('Promise should not resolve when animation cancelled');
     });
   }, function(e) {
     t.step(function() {
@@ -138,41 +135,40 @@ async_test(function(t) {
   animation.cancel();
 }, 'A pending ready promise should be rejected when the animation is cancelled');
 
-async_test(function(t) {
+promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
-  promise.then(function(p) {
-    t.step(function() {
-      assert_equals(p, animation);
-      assert_equals(animation.ready, promise);
-    });
-    t.done();
+  return promise.then(function(p) {
+    assert_equals(p, animation);
+    assert_equals(animation.ready, promise);
   });
 }, 'A pending ready promise should be resolved and not replaced when the animation enters the running state');
 
-async_test(function(t) {
+promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
+  var readyResolved = false;
+
   animation.finish();
-  promise.then(function(p) {
-    t.step(function() {
-      assert_equals(p, animation);
-      assert_equals(animation.ready, promise);
-    });
-    t.done();
+
+  animation.ready.then(function() {
+    readyResolved = true;
+  });
+  return animation.finished.then(function(p) {
+    assert_equals(p, animation);
+    assert_equals(animation.ready, promise);
+    assert_true(readyResolved);
   });
 }, 'A pending ready promise should be resolved and not replaced when the animation enters the finished state');
 
-async_test(function(t) {
+promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
   animation.pause();
-  promise.then(function(p) {
-    t.step(function() {
-      assert_equals(p, animation);
-      assert_equals(animation.ready, promise);
-    });
-    t.done();
+  return promise.then(function(p) {
+    assert_equals(p, animation);
+    assert_equals(animation.ready, promise);
+    assert_equals(animation.playState, 'paused');
   });
 }, 'A pending ready promise should be resolved and not replaced when the animation enters the paused state');
 

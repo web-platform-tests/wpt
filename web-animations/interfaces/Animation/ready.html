@@ -12,7 +12,7 @@
 
 promise_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate({}, 100 * MS_PER_SEC);
+  var animation = div.animate(null, 100 * MS_PER_SEC);
   var originalReadyPromise = animation.ready;
   var pauseReadyPromise;
 
@@ -35,7 +35,7 @@ promise_test(function(t) {
 
 promise_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate({}, 100 * MS_PER_SEC);
+  var animation = div.animate(null, 100 * MS_PER_SEC);
 
   return animation.ready.then(function() {
     var promiseBeforeCallingPlay = animation.ready;
@@ -48,7 +48,7 @@ promise_test(function(t) {
 
 promise_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate({}, 100 * MS_PER_SEC);
+  var animation = div.animate(null, 100 * MS_PER_SEC);
 
   return animation.ready.then(function(resolvedAnimation) {
     assert_equals(resolvedAnimation, animation,
@@ -59,7 +59,7 @@ promise_test(function(t) {
 
 promise_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate({}, 100 * MS_PER_SEC);
+  var animation = div.animate(null, 100 * MS_PER_SEC);
 
   var retPromise = animation.ready.then(function() {
     assert_unreached('ready promise was fulfilled');
@@ -76,7 +76,7 @@ promise_test(function(t) {
 
 promise_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate({}, 100 * MS_PER_SEC);
+  var animation = div.animate(null, 100 * MS_PER_SEC);
   return animation.ready.then(function() {
     animation.pause();
     // Set up listeners on pause-pending ready promise
@@ -93,12 +93,12 @@ promise_test(function(t) {
    + ' calling cancel()');
 
 test(function(t) {
-  var animation = createDiv(t).animate([], 100000);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   assert_true(animation.ready instanceof Promise);
 }, 'The ready attribute should be a Promise');
 
 async_test(function(t) {
-  var animation = createDiv(t).animate([], 100000);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.cancel();
   animation.ready.then(function(p) {
     t.step(function() {
@@ -109,14 +109,14 @@ async_test(function(t) {
 }, 'The ready promise should be resolved when an animation is in the idle play state');
 
 test(function(t) {
-  var animation = createDiv(t).animate([], 100000);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
   animation.cancel();
   assert_not_equals(animation.ready, promise);
 }, 'The ready promise should be replaced when the animation is cancelled');
 
 test(function(t) {
-  var animation = createDiv(t).animate([], 100000);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.cancel();
   var promise = animation.ready;
   animation.play();
@@ -124,7 +124,7 @@ test(function(t) {
 }, 'The ready promise should be replaced when the animation enters the pending state');
 
 async_test(function(t) {
-  var animation = createDiv(t).animate([], 100000);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   animation.ready.then(function() {
     t.step(function() {
       assert_unreached();
@@ -139,7 +139,7 @@ async_test(function(t) {
 }, 'A pending ready promise should be rejected when the animation is cancelled');
 
 async_test(function(t) {
-  var animation = createDiv(t).animate([], 100000);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
   promise.then(function(p) {
     t.step(function() {
@@ -151,7 +151,7 @@ async_test(function(t) {
 }, 'A pending ready promise should be resolved and not replaced when the animation enters the running state');
 
 async_test(function(t) {
-  var animation = createDiv(t).animate([], 100000);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
   animation.finish();
   promise.then(function(p) {
@@ -164,7 +164,7 @@ async_test(function(t) {
 }, 'A pending ready promise should be resolved and not replaced when the animation enters the finished state');
 
 async_test(function(t) {
-  var animation = createDiv(t).animate([], 100000);
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var promise = animation.ready;
   animation.pause();
   promise.then(function(p) {

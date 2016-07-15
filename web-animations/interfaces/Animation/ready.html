@@ -92,5 +92,89 @@ promise_test(function(t) {
 }, 'ready promise is rejected when a pause-pending animation is cancelled by'
    + ' calling cancel()');
 
+test(function() {
+  var animation = document.documentElement.animate([], 100000);
+  assert_true(animation.ready instanceof Promise);
+}, 'The ready attribute should be a Promise');
+
+async_test(function(t) {
+  var animation = document.documentElement.animate([], 100000);
+  animation.cancel();
+  animation.ready.then(function(p) {
+    t.step(function() {
+      assert_equals(p, animation);
+    });
+    t.done();
+  });
+}, 'The ready promise should be resolved when an animation is in the idle play state');
+
+test(function() {
+  var animation = document.documentElement.animate([], 100000);
+  var promise = animation.ready;
+  animation.cancel();
+  assert_not_equals(animation.ready, promise);
+}, 'The ready promise should be replaced when the animation is cancelled');
+
+test(function() {
+  var animation = document.documentElement.animate([], 100000);
+  animation.cancel();
+  var promise = animation.ready;
+  animation.play();
+  assert_not_equals(animation.ready, promise);
+}, 'The ready promise should be replaced when the animation enters the pending state');
+
+async_test(function(t) {
+  var animation = document.documentElement.animate([], 100000);
+  animation.ready.then(function() {
+    t.step(function() {
+      assert_unreached();
+    });
+  }, function(e) {
+    t.step(function() {
+      assert_equals(e.code, DOMException.ABORT_ERR);
+    });
+    t.done();
+  });
+  animation.cancel();
+}, 'A pending ready promise should be rejected when the animation is cancelled');
+
+async_test(function(t) {
+  var animation = document.documentElement.animate([], 100000);
+  var promise = animation.ready;
+  promise.then(function(p) {
+    t.step(function() {
+      assert_equals(p, animation);
+      assert_equals(animation.ready, promise);
+    });
+    t.done();
+  });
+}, 'A pending ready promise should be resolved and not replaced when the animation enters the running state');
+
+async_test(function(t) {
+  var animation = document.documentElement.animate([], 100000);
+  var promise = animation.ready;
+  animation.finish();
+  promise.then(function(p) {
+    t.step(function() {
+      assert_equals(p, animation);
+      assert_equals(animation.ready, promise);
+    });
+    t.done();
+  });
+}, 'A pending ready promise should be resolved and not replaced when the animation enters the finished state');
+
+async_test(function(t) {
+  var animation = document.documentElement.animate([], 100000);
+  var promise = animation.ready;
+  animation.pause();
+  promise.then(function(p) {
+    t.step(function() {
+      assert_equals(p, animation);
+      assert_equals(animation.ready, promise);
+    });
+    t.done();
+  });
+}, 'A pending ready promise should be resolved and not replaced when the animation enters the paused state');
+
 </script>
 </body>

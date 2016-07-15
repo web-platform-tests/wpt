@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Tests for the finish event</title>
-<link rel="help" href="https://w3c.github.io/web-animations/#the-current-finished-promise">
+<link rel="help" href="https://w3c.github.io/web-animations/#updating-the-finished-state">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
 <body>
 <script>
 'use strict';
+
 function validateFinishEvent(t, event, animation) {
   t.step(function() {
     assert_equals(event, animation, 'Animation should be target');
@@ -78,4 +79,6 @@ async_test(function(t) {
     t.done();
   })
 }, "animation.finished calls can be chained");
+
 </script>
+</body>

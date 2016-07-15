@@ -17,6 +17,21 @@ function validateFinishEvent(t, event, animation) {
   });
 }
 
+function awaitFinishEventAndPromise(t, animation) {
+  var eventPromise = new Promise(function(resolve) {
+    animation.onfinish = function(event) {
+      validateFinishEvent(t, event, animation);
+      resolve();
+    };
+  });
+
+  var finishedPromise = animation.finished.then(function(target) {
+    assert_equals(target, animation);
+  });
+
+  return Promise.all([eventPromise, finishedPromise]);
+}
+
 async_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 1);
@@ -50,37 +65,21 @@ async_test(function(t) {
 promise_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 1);
-
-  var eventPromise = new Promise(function(resolve) {
-    animation.onfinish = function(event) {
-      validateFinishEvent(t, event, animation);
-      resolve();
-    };
-  });
-  var finishedPromise = animation.finished.then(function(target) {
-    assert_equals(target, animation);
-  });
-
   animation.finish();
-
-  return Promise.all([eventPromise, finishedPromise]);
+  return awaitFinishEventAndPromise(t, animation);
 }, "Finish notification steps run when the animation completes with .finish()");
 
 promise_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 1);
+  animation.currentTime = 10;
+  return awaitFinishEventAndPromise(t, animation);
+}, "Finish notification steps run when the animation seeks past finish");
 
-  var eventPromise = new Promise(function(resolve) {
-    animation.onfinish = function(event) {
-      validateFinishEvent(t, event, animation);
-      resolve();
-    };
-  });
-  var finishedPromise = animation.finished.then(function(target) {
-    assert_equals(target, animation);
-  });
-
-  return Promise.all([eventPromise, finishedPromise]);
+promise_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 1);
+  return awaitFinishEventAndPromise(t, animation);
 }, "Finish notification steps run when the animation completes");
 
 promise_test(function(t) {

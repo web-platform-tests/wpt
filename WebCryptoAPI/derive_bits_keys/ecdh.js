@@ -1,5 +1,4 @@
 
-
 function run_test() {
     // May want to test prefixed implementations.
     var subtle = self.crypto.subtle;
@@ -28,38 +27,189 @@ function run_test() {
         "P-384": new Uint8Array([224, 189, 107, 206, 10, 239, 140, 164, 136, 56, 166, 226, 252, 197, 126, 103, 185, 197, 232, 134, 12, 95, 11, 233, 218, 190, 197, 62, 69, 78, 24, 160, 161, 116, 196, 136, 136, 162, 100, 136, 17, 91, 45, 201, 241, 223, 165, 45])
     };
 
-    importKeys(pkcs8, spki)
+    importKeys(pkcs8, spki, sizes)
     .then(function(results) {
         publicKeys = results.publicKeys;
         privateKeys = results.privateKeys;
+        ecdsaKeyPairs = results.ecdsaKeyPairs;
+        noDeriveBitsKeys = results.noDeriveBitsKeys;
 
         Object.keys(sizes).forEach(function(namedCurve) {
+            // Basic success case
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
                 }, function(err) {
                     assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
                 });
-            }, namedCurve);
+            }, namedCurve + " good parameters");
 
+            // Case insensitivity check
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "EcDh", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                .then(function(derivation) {
+                    assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
+                }, function(err) {
+                    assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " mixed case parameters");
+
+            // Null length
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], null)
+                .then(function(derivation) {
+                    assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
+                }, function(err) {
+                    assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " with null length");
+
+            // Shorter than entire derivation per algorithm
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] - 32)
+                .then(function(derivation) {
+                    assert_true(equalBuffers(derivation, derivations[namedCurve], 8 * sizes[namedCurve] - 32), "Derived correct bits");
+                }, function(err) {
+                    assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " short result");
+
+            // Non-multiple of 8
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] - 11)
+                .then(function(derivation) {
+                    assert_true(equalBuffers(derivation, derivations[namedCurve], 8 * sizes[namedCurve] - 11), "Derived correct bits");
+                }, function(err) {
+                    assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " non-multiple of 8 bits");
+
+            // Errors to test:
+
+            // - missing public property TypeError
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                .then(function(derivation) {
+                    assert_unreached("deriveBits succeeded but should have failed with TypeError");
+                }, function(err) {
+                    assert_equals(err.name, "TypeError", "Should throw correct error, not " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " missing public curve");
+
+            // - Non CryptoKey public property TypeError
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: {message: "Not a CryptoKey"}}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                .then(function(derivation) {
+                    assert_unreached("deriveBits succeeded but should have failed with TypeError");
+                }, function(err) {
+                    assert_equals(err.name, "TypeError", "Should throw correct error, not " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " public property of algorithm is not a CryptoKey");
+
+            // - wrong named curve
+            promise_test(function(test) {
+                publicKey = publicKeys["P-256"];
+                if (namedCurve === "P-256") {
+                    publicKey = publicKeys["P-384"];
+                }
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                .then(function(derivation) {
+                    assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should throw correct error, not " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " mismatched curves");
+
+            // - not ECDH public property InvalidAccessError
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: ecdsaKeyPairs[namedCurve].publicKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                .then(function(derivation) {
+                    assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should throw correct error, not " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " public property of algorithm is not an ECDSA public key");
+
+            // - No deriveBits usage in baseKey InvalidAccessError
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, noDeriveBitsKeys[namedCurve], 8 * sizes[namedCurve])
+                .then(function(derivation) {
+                    assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should throw correct error, not " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " no deriveBits usage for base key");
+
+            // - Use public key for baseKey InvalidAccessError
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, publicKeys[namedCurve], 8 * sizes[namedCurve])
+                .then(function(derivation) {
+                    assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should throw correct error, not " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " base key is not a private key");
+
+            // - Use private key for public property InvalidAccessError
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: privateKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                .then(function(derivation) {
+                    assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
+                }, function(err) {
+                    assert_equals(err.name, "InvalidAccessError", "Should throw correct error, not " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " public property value is a private key");
+
+            // - Use secret key for public property InvalidAccessError
+            promise_test(function(test) {
+                return subtle.generateKey({name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                .then(function(secretKey) {
+                    subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: secretKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                    .then(function(derivation) {
+                        assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
+                    }, function(err) {
+                        assert_equals(err.name, "InvalidAccessError", "Should throw correct error, not " + err.name + ": " + err.message);
+                    });
+                });
+            }, namedCurve + " public property value is a secret key");
+
+            // - Length greater than 256, 384, 521 for particular curves OperationError
+            promise_test(function(test) {
+                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] + 8)
+                .then(function(derivation) {
+                    assert_unreached("deriveBits succeeded but should have failed with OperationError");
+                }, function(err) {
+                    assert_equals(err.name, "OperationError", "Should throw correct error, not " + err.name + ": " + err.message);
+                });
+            }, namedCurve + " asking for too many bits");
         });
+        done()
     });
 
-
-    function importKeys(pkcs8, spki) {
+    function importKeys(pkcs8, spki, sizes) {
         var privateKeys = {};
         var publicKeys = {};
+        var ecdsaKeyPairs = {};
+        var noDeriveBitsKeys = {};
 
         var promises = [];
         Object.keys(pkcs8).forEach(function(namedCurve) {
-            console.log(namedCurve)
             var operation = subtle.importKey("pkcs8", pkcs8[namedCurve],
                                             {name: "ECDH", namedCurve: namedCurve},
                                             false, ["deriveBits", "deriveKey"])
                             .then(function(key) {
                                 privateKeys[namedCurve] = key;
                             }, function(err) {console.log("Error importing pkcs8[" + namedCurve + "]: " + err.name + " - " + err.message)});
+            promises.push(operation);
+        });
+        Object.keys(pkcs8).forEach(function(namedCurve) {
+            var operation = subtle.importKey("pkcs8", pkcs8[namedCurve],
+                                            {name: "ECDH", namedCurve: namedCurve},
+                                            false, ["deriveKey"])
+                            .then(function(key) {
+                                noDeriveBitsKeys[namedCurve] = key;
+                            }, function(err) {console.log("Error importing pkcs8[" + namedCurve + "] without deriveBits: " + err.name + " - " + err.message)});
             promises.push(operation);
         });
         Object.keys(spki).forEach(function(namedCurve) {
@@ -71,23 +221,46 @@ function run_test() {
                             }, function(err) {console.log("Error importing spki[" + namedCurve + "]: " + err.name + " - " + err.message)});
             promises.push(operation);
         });
+        Object.keys(sizes).forEach(function(namedCurve) {
+            var operation = subtle.generateKey({name: "ECDSA", namedCurve: namedCurve}, false, ["sign", "verify"])
+                            .then(function(keyPair) {
+                                ecdsaKeyPairs[namedCurve] = keyPair;
+                            }, function(err) {console.log("Error generating ECDSA key for " + namedCurve + ": " + err.name + " - " + err.message)});
+            promises.push(operation);
+        });
 
         return Promise.all(promises)
-               .then(function(results) {return {privateKeys: privateKeys, publicKeys: publicKeys}});
+               .then(function(results) {return {privateKeys: privateKeys, publicKeys: publicKeys, ecdsaKeyPairs: ecdsaKeyPairs, noDeriveBitsKeys: noDeriveBitsKeys}});
     }
 
-    function equalBuffers(a, b) {
-        if (a.byteLength !== b.byteLength) {
+    // Compares two ArrayBuffer or ArrayBufferView objects. If bitCount is
+    // omitted, the two values must be the same length and have the same contents
+    // in every byte. If bitCount is included, only that leading number of bits
+    // have to match.
+    function equalBuffers(a, b, bitCount) {
+        var remainder;
+
+        if (typeof bitCount === "undefined" && a.byteLength !== b.byteLength) {
             return false;
         }
 
         var aBytes = new Uint8Array(a);
         var bBytes = new Uint8Array(b);
 
-        for (var i=0; i<a.byteLength; i++) {
+        var length = a.byteLength;
+        if (typeof bitCount !== "undefined") {
+            length = Math.floor(bitCount / 8);
+        }
+
+        for (var i=0; i<length; i++) {
             if (aBytes[i] !== bBytes[i]) {
                 return false;
             }
+        }
+
+        if (typeof bitCount !== "undefined") {
+            remainder = bitCount % 8;
+            return aBytes[length] >> (8 - remainder) === bBytes[length] >> (8 - remainder);
         }
 
         return true;

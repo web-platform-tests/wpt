@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Tests for the finish event</title>
+<link rel="help" href="https://w3c.github.io/web-animations/#the-current-finished-promise">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<body>
+<script>
+'use strict';
+function validateFinishEvent(t, event, animation) {
+  t.step(function() {
+    assert_equals(event, animation, 'Animation should be target');
+    assert_times_equal(event.currentTime, animation.currentTime, 'Event currentTime should be animation currentTime');
+  });
+}
+
+async_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 70.0);
+  animation.finished.then(function(event) {
+    t.unreached_func("Seeking to finish should not queue finished event");
+  })
+  animation.finish();
+  animation.currentTime = 0;
+  animation.pause();
+  t.done();
+}, "animation.finished doesn't run when the animation seeks to finish");
+
+async_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 70.0);
+  animation.finished.then(function (event) {
+    t.unreached_func("Seeking past finish should not queue finished event");
+  })
+  animation.currentTime = 80.0;
+  animation.currentTime = 0;
+  animation.pause();
+  t.done();
+}, "animation.finished doesn't run when the animation seeks past finish");
+
+async_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 90.0);
+  animation.finished.then(function(event) {
+    validateFinishEvent(t, event, animation);
+    t.done();
+  })
+  animation.finish();
+}, "animation.finished runs when the animation completes with .finish()");
+
+async_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 100);
+  animation.finished.then(function(event) {
+    validateFinishEvent(t, event, animation);
+    t.done();
+  })
+}, "animation.finished runs when the animation completes");
+
+// TODO(alancutter): Change this to a promise_test.
+async_test(function(t) {
+  var animation1 = createDiv(t).animate(null, 0.05);
+  animation1.finished.then(function(event) {
+    validateFinishEvent(t, event, animation1);
+    animation1.currentTime = 0;
+    return animation1.finished;
+  }).then(function(event) {
+    var animation2 = createDiv(t).animate(null, 0.05);
+    // TODO(alancutter): Move this .then to the outer promise chain.
+    animation2.finished.then(function(event) {
+      validateFinishEvent(t, event, animation2);
+      animation2.play();
+      return animation2.finished;
+    })
+    return animation2.finished;
+  }).then(function(event) {
+    t.done();
+  })
+}, "animation.finished calls can be chained");
+</script>

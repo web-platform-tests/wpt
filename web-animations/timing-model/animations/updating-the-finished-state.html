@@ -19,7 +19,7 @@ function validateFinishEvent(t, event, animation) {
 
 async_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate(null, 70.0);
+  var animation = div.animate(null, 1);
   animation.onfinish = function(event) {
     t.unreached_func("Seeking to finish should not fire finish event");
   };
@@ -34,14 +34,14 @@ async_test(function(t) {
 
 async_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate(null, 70.0);
+  var animation = div.animate(null, 1);
   animation.onfinish = function(event) {
     t.unreached_func("Seeking past finish should not fire finish event");
   };
   animation.finished.then(function() {
     t.unreached_func("Seeking past finish should not resolve finished promise");
   })
-  animation.currentTime = 80.0;
+  animation.currentTime = 10;
   animation.currentTime = 0;
   animation.pause();
   t.done();
@@ -49,7 +49,7 @@ async_test(function(t) {
 
 promise_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate(null, 90.0);
+  var animation = div.animate(null, 1);
 
   var eventPromise = new Promise(function(resolve) {
     animation.onfinish = function(event) {
@@ -68,7 +68,7 @@ promise_test(function(t) {
 
 promise_test(function(t) {
   var div = createDiv(t);
-  var animation = div.animate(null, 100);
+  var animation = div.animate(null, 1);
 
   var eventPromise = new Promise(function(resolve) {
     animation.onfinish = function(event) {
@@ -84,7 +84,7 @@ promise_test(function(t) {
 }, "Finish notification steps run when the animation completes");
 
 promise_test(function(t) {
-  var animation = createDiv(t).animate(null, 0.05);
+  var animation = createDiv(t).animate(null, 1);
   var firstPromise = animation.finished;
 
   return firstPromise.then(function(target) {
@@ -95,7 +95,7 @@ promise_test(function(t) {
 }, "Animation finished promise is replaced after seeking back to start");
 
 promise_test(function(t) {
-  var animation = createDiv(t).animate(null, 0.05);
+  var animation = createDiv(t).animate(null, 1);
   var firstPromise = animation.finished;
 
   return firstPromise.then(function(target) {
@@ -106,7 +106,7 @@ promise_test(function(t) {
 }, "Animation finished promise is replaced after replaying from start");
 
 async_test(function(t) {
-  var animation = createDiv(t).animate(null, 0.05);
+  var animation = createDiv(t).animate(null, 1);
   animation.onfinish = function(event) {
     animation.currentTime = 0;
     animation.onfinish = function(event) {
@@ -116,7 +116,7 @@ async_test(function(t) {
 }, "Animation finish event is fired again after seeking back to start");
 
 async_test(function(t) {
-  var animation = createDiv(t).animate(null, 0.05);
+  var animation = createDiv(t).animate(null, 1);
   animation.onfinish = function(event) {
     animation.play();
     animation.onfinish = function(event) {

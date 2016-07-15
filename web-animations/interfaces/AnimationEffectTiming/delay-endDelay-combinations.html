@@ -5,8 +5,10 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
-<body></body>
+<body>
 <script>
+'use strict';
+
 function testTiming({timing, expectations}, description) {
   test(t => {
     for (let {at, expect} of expectations) {
@@ -107,4 +109,6 @@ testTiming({
     { at: 12, expect: 1 },
   ],
 }, 'Negative endDelay that eclipses delay and duration');
+
 </script>
+</body>

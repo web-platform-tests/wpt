@@ -45,5 +45,12 @@ promise_test(function(t) {
   });
 }, 'startTime is resolved when running');
 
+test(function() {
+  var player = document.documentElement.animate([], 100000);
+  player.cancel();
+  assert_equals(player.startTime, null);
+  assert_equals(player.currentTime, null);
+}, "startTime and currentTime are unresolved when animation is cancelled");
+
 </script>
 </body>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Test combinations of delay and endDelay</title>
+<link rel="help" href="https://w3c.github.io/web-animations/#the-animationeffecttiming-interface">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../../testcommon.js"></script>
+<body></body>
+<script>
+function testTiming({timing, expectations}, description) {
+  test(t => {
+    for (let {at, expect} of expectations) {
+      let target =  createDiv(t);
+      let animation = target.animate({opacity: [0, 1]}, timing);
+      animation.currentTime = at;
+      assert_times_equal(Number(getComputedStyle(target).opacity), expect, 'at ' + at);
+      animation.cancel();
+    }
+  }, description);
+}
+
+testTiming({
+  timing: {
+    duration: 10,
+    delay: 1,
+    endDelay: 1,
+    fill: 'both',
+  },
+  expectations: [
+    { at: 0, expect: 0 },
+    { at: 1, expect: 0 },
+    { at: 2, expect: 0.1 },
+    { at: 10, expect: 0.9 },
+    { at: 11, expect: 1 },
+    { at: 12, expect: 1 },
+  ],
+}, 'delay and endDelay both positive');
+
+testTiming({
+  timing: {
+    duration: 10,
+    delay: 1,
+    endDelay: -1,
+    fill: 'both',
+  },
+  expectations: [
+    { at: 0, expect: 0 },
+    { at: 1, expect: 0 },
+    { at: 2, expect: 0.1 },
+    { at: 9, expect: 0.8 },
+    { at: 10, expect: 1 },
+    { at: 11, expect: 1 },
+  ],
+}, 'Positive delay and negative endDelay');
+
+testTiming({
+  timing: {
+    duration: 10,
+    delay: -1,
+    endDelay: 1,
+    fill: 'both',
+  },
+  expectations: [
+    { at: -2, expect: 0 },
+    { at: -1, expect: 0 },
+    { at: 0, expect: 0.1 },
+    { at: 1, expect: 0.2 },
+    { at: 8, expect: 0.9 },
+    { at: 9, expect: 1 },
+    { at: 10, expect: 1 },
+  ],
+}, 'Negative delay and positive endDelay');
+
+testTiming({
+  timing: {
+    duration: 10,
+    delay: -1,
+    endDelay: -1,
+    fill: 'both',
+  },
+  expectations: [
+    { at: -2, expect: 0 },
+    { at: -1, expect: 0 },
+    { at: 0, expect: 0.1 },
+    { at: 1, expect: 0.2 },
+    { at: 7, expect: 0.8 },
+    { at: 8, expect: 1 },
+    { at: 9, expect: 1 },
+    { at: 10, expect: 1 },
+  ],
+}, 'delay and endDelay both negative');
+
+testTiming({
+  timing: {
+    duration: 10,
+    delay: 1,
+    endDelay: -12,
+    fill: 'both',
+  },
+  expectations: [
+    { at: -2, expect: 0 },
+    { at: -1, expect: 1 },
+    { at: 0, expect: 1 },
+    { at: 5, expect: 1 },
+    { at: 10, expect: 1 },
+    { at: 11, expect: 1 },
+    { at: 12, expect: 1 },
+  ],
+}, 'Negative endDelay that eclipses delay and duration');
+</script>

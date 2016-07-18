@@ -169,7 +169,7 @@ function run_test() {
                                             false, ["deriveBits", "deriveKey"])
                             .then(function(key) {
                                 privateKeys[namedCurve] = key;
-                            }, function(err) {console.log("Error importing pkcs8[" + namedCurve + "]: " + err.name + " - " + err.message)});
+                            });
             promises.push(operation);
         });
         Object.keys(pkcs8).forEach(function(namedCurve) {
@@ -178,7 +178,7 @@ function run_test() {
                                             false, ["deriveBits"])
                             .then(function(key) {
                                 noDeriveKeyKeys[namedCurve] = key;
-                            }, function(err) {console.log("Error importing pkcs8[" + namedCurve + "] without deriveBits: " + err.name + " - " + err.message)});
+                            });
             promises.push(operation);
         });
         Object.keys(spki).forEach(function(namedCurve) {
@@ -187,14 +187,14 @@ function run_test() {
                                             false, [])
                             .then(function(key) {
                                 publicKeys[namedCurve] = key;
-                            }, function(err) {console.log("Error importing spki[" + namedCurve + "]: " + err.name + " - " + err.message)});
+                            });
             promises.push(operation);
         });
         Object.keys(sizes).forEach(function(namedCurve) {
             var operation = subtle.generateKey({name: "ECDSA", namedCurve: namedCurve}, false, ["sign", "verify"])
                             .then(function(keyPair) {
                                 ecdsaKeyPairs[namedCurve] = keyPair;
-                            }, function(err) {console.log("Error generating ECDSA key for " + namedCurve + ": " + err.name + " - " + err.message)});
+                            });
             promises.push(operation);
         });
 

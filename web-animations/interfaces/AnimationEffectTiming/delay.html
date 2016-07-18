@@ -58,5 +58,15 @@ test(function(t) {
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0);
 }, 'Test finishing an animation using a large negative delay');
 
+test(function(t) {
+  var div = createDiv(t);
+  var anim = div.animate({});
+  for (let invalid of [NaN, Infinity]) {
+    assert_throws({ name: 'TypeError' }, function() {
+      anim.effect.timing.delay = invalid;
+    }, invalid);
+  }
+}, 'Setting invalid values should throw TypeError');
+
 </script>
 </body>

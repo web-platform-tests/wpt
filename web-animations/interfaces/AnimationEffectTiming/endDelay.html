@@ -13,6 +13,12 @@
 
 test(function(t) {
   var div = createDiv(t);
+  var anim = div.animate({});
+  assert_equals(anim.effect.timing.endDelay, 0);
+}, 'Test default value');
+
+test(function(t) {
+  var div = createDiv(t);
   var anim = div.animate({ opacity: [ 0, 1 ] }, 2000);
   anim.effect.timing.endDelay = 123.45;
   assert_times_equal(anim.effect.timing.endDelay, 123.45,

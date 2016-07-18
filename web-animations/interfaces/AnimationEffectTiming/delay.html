@@ -14,6 +14,12 @@
 
 test(function(t) {
   var div = createDiv(t);
+  var anim = div.animate({});
+  assert_equals(anim.effect.timing.delay, 0);
+}, 'Test default value');
+
+test(function(t) {
+  var div = createDiv(t);
   var anim = div.animate({ opacity: [ 0, 1 ] }, 100);
   anim.effect.timing.delay = 100;
   assert_equals(anim.effect.timing.delay, 100, 'set delay 100');

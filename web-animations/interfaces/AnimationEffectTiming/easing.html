@@ -58,8 +58,7 @@ gInvalidEasings.forEach(function(invalidEasing) {
 
 gRoundtripEasings.forEach(easing => {
   test(function(t) {
-    const div = createDiv(t);
-    const anim = div.animate({});
+    const anim = createDiv(t).animate(null);
     anim.effect.timing.easing = easing;
     assert_equals(anim.effect.timing.easing, easing);
   }, `Canonical easing '${easing}' is returned as set`);

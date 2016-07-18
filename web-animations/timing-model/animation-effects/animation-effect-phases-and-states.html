@@ -11,11 +11,10 @@
 
 function testTiming({timing, expectations}, description) {
   test(t => {
-    for (let {at, expect} of expectations) {
-      let target =  createDiv(t);
-      let animation = target.animate({opacity: [0, 1]}, timing);
+    for (var {at, expect} of expectations) {
+      var animation = createDiv(t).animate({opacity: [0, 1]}, timing);
       animation.currentTime = at;
-      assert_times_equal(Number(getComputedStyle(target).opacity), expect, 'at ' + at);
+      assert_times_equal(animation.effect.getComputedTiming().progress, expect, 'at ' + at);
       animation.cancel();
     }
   }, description);

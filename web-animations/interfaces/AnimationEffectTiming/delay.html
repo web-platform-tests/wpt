@@ -60,11 +60,14 @@ test(function(t) {
 
 test(function(t) {
   var div = createDiv(t);
-  var anim = div.animate({});
+  var anim = div.animate(null);
   for (let invalid of [NaN, Infinity]) {
     assert_throws({ name: 'TypeError' }, function() {
       anim.effect.timing.delay = invalid;
-    }, invalid);
+    }, 'setting ' + invalid);
+    assert_throws({ name: 'TypeError' }, function() {
+      div.animate({}, { delay: invalid });
+    }, 'animate() with ' + invalid);
   }
 }, 'Setting invalid values should throw TypeError');
 

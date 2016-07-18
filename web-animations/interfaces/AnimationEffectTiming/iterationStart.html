@@ -56,7 +56,7 @@ test(function(t) {
 
 test(function(t) {
   var div = createDiv(t);
-  var anim = div.animate({});
+  var anim = div.animate(null);
   for (let invalid of [-1, NaN, Infinity]) {
     assert_throws({ name: 'TypeError' }, function() {
       anim.effect.timing.iterationStart = invalid;

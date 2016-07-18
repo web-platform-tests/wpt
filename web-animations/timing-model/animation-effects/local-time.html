@@ -10,17 +10,17 @@
 'use strict';
 
 test(function(t) {
-  var anim = createDiv(t).animate({}, 10 * MS_PER_SEC);
+  var anim = createDiv(t).animate(null, 10 * MS_PER_SEC);
   for (var seconds of [-1, 0, 5, 10, 20]) {
     anim.currentTime = seconds * MS_PER_SEC;
     assert_equals(anim.effect.getComputedTiming().localTime, seconds * MS_PER_SEC);
   }
-}, 'Local time is current time for AnimationEffects associated with an Animation.');
+}, 'Local time is current time for animation effects associated with an animation.');
 
 test(function(t) {
-  var effect = new KeyframeEffect(createDiv(t), {}, 10 * MS_PER_SEC);
+  var effect = new KeyframeEffect(createDiv(t), null, 10 * MS_PER_SEC);
   assert_equals(effect.getComputedTiming().localTime, null);
-}, 'Local time is unresolved for AnimationEffects not associated with an Animation.');
+}, 'Local time is unresolved for animation effects not associated with an animation.');
 
 </script>
 </body>

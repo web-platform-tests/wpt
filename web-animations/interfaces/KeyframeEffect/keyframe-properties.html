@@ -4,12 +4,12 @@
 <link rel='help' href='https://w3c.github.io/web-animations/#processing-a-keyframes-argument'>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-<div id='div'></div>
+<script src='../../testcommon.js'></script>
 <body>
 <script>
 'use strict';
 
-test(function() {
+test(function(t) {
   var keyframe = {};
   Object.defineProperty(keyframe, 'width', {value: '200px'});
   Object.defineProperty(keyframe, 'height', {
@@ -18,13 +18,13 @@ test(function() {
   assert_equals(keyframe.width, '200px', 'width of keyframe is readable');
   assert_equals(keyframe.height, '100px', 'height of keyframe is readable');
   try {
-    div.animate([keyframe, {height: '200px'}], 1);
+    createDiv(t).animate([keyframe, {height: '200px'}], 1);
   } catch (e) {
     assert_unreached('Mismatched properties - both or neither properties on keyframe were considered.');
   }
 }, 'Only enumerable properties on keyframes are considered');
 
-test(function() {
+test(function(t) {
   var KeyframeParent = function() { this.width = '100px'; };
   KeyframeParent.prototype = { height: '100px' };
   var Keyframe = function() { this.top = '100px'; };
@@ -34,7 +34,7 @@ test(function() {
     enumerable: 'true'});
   var keyframe = new Keyframe();
   try {
-    div.animate([keyframe, {top: '200px'}], 1);
+    createDiv(t).animate([keyframe, {top: '200px'}], 1);
   } catch (e) {
     assert_unreached('Mismatched properties - left, width or height considered on first keyframe.');
   }

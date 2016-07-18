@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Lists and Counters Test: list-style-position - text-align</title>
+
+  <!--
+  http://lists.w3.org/Archives/Public/public-css-testsuite/2010Oct/0191.html
+  http://lists.w3.org/Archives/Public/public-css-testsuite/2010Oct/0196.html
+  http://lists.w3.org/Archives/Public/public-css-testsuite/2010Oct/0197.html
+  https://github.com/w3c/csswg-test/commit/0147c4a7a6946cb7d777bedce0b2499b2b9d60d3
+  http://lists.w3.org/Archives/Public/public-css-testsuite/2016Jul/0003.html
+  -->
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="https://www.w3.org/TR/css-lists-3/#list-style-position-property" title="4 Marker Position: The list-style-position property" />
+  <meta content="" name="flags" />
+  <meta name="assert" content="Text-align should only format inline content of a list-item's principal block box when the list-item's list-style-position is set to outside." />
+
+  <style type="text/css"><![CDATA[
+  li
+    {
+      background-color: black;
+      list-style-position: outside;
+    }
+
+  li#left-aligned
+    {
+      text-align: left;
+    }
+
+  li#centered
+    {
+      text-align: center;
+    }
+
+  li#right-aligned
+    {
+      text-align: right;
+    }
+  ]]></style>
+
+ </head>
+
+ <body>
+
+  <p>There must be 3 black horizontal bars below, each preceded by a black bullet (small filled-in circle).</p>
+
+  <ul>
+    <li id="left-aligned">&nbsp;</li>
+  </ul>
+
+  <ul>
+    <li id="centered">&nbsp;</li>
+  </ul>
+
+  <ul>
+    <li id="right-aligned">&nbsp;</li>
+  </ul>
+
+ </body>
+</html>

@@ -12,7 +12,7 @@
 function testTiming({timing, expectations}, description) {
   test(t => {
     for (var {at, expect} of expectations) {
-      var animation = createDiv(t).animate({opacity: [0, 1]}, timing);
+      var animation = createDiv(t).animate(null, timing);
       animation.currentTime = at;
       assert_times_equal(animation.effect.getComputedTiming().progress, expect, 'at ' + at);
       animation.cancel();

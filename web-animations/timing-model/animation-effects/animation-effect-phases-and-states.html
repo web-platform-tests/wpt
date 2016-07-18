@@ -49,8 +49,8 @@ testTiming({
     { at: 1, expect: 0 },
     { at: 2, expect: 0.1 },
     { at: 9, expect: 0.8 },
-    { at: 10, expect: 1 },
-    { at: 11, expect: 1 },
+    { at: 10, expect: 0.9 },
+    { at: 11, expect: 0.9 },
   ],
 }, 'Test progress with positive delay and negative endDelay');
 
@@ -85,9 +85,9 @@ testTiming({
     { at: 0, expect: 0.1 },
     { at: 1, expect: 0.2 },
     { at: 7, expect: 0.8 },
-    { at: 8, expect: 1 },
-    { at: 9, expect: 1 },
-    { at: 10, expect: 1 },
+    { at: 8, expect: 0.9 },
+    { at: 9, expect: 0.9 },
+    { at: 10, expect: 0.9 },
   ],
 }, 'Test progress when delay and endDelay both negative');
 
@@ -100,12 +100,12 @@ testTiming({
   },
   expectations: [
     { at: -2, expect: 0 },
-    { at: -1, expect: 1 },
-    { at: 0, expect: 1 },
-    { at: 5, expect: 1 },
-    { at: 10, expect: 1 },
-    { at: 11, expect: 1 },
-    { at: 12, expect: 1 },
+    { at: -1, expect: 0 },
+    { at: 0, expect: 0 },
+    { at: 5, expect: 0 },
+    { at: 10, expect: 0 },
+    { at: 11, expect: 0 },
+    { at: 12, expect: 0 },
   ],
 }, 'Test progress when negative endDelay eclipses delay and duration');
 

@@ -4,8 +4,8 @@
     <head>
         <title>Clear Key Play Two Videos At Same Time</title>
         <script src="encrypted-media-utils.js"></script>
-        <script src="../../resources/testharness.js"></script>
-        <script src="../../resources/testharnessreport.js"></script>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
     </head>
     <body>
         <video id="testVideo"></video>
@@ -22,8 +22,8 @@
             promise_test(function(test)
             {
                 var promises = [
-                    play_video_as_promise(document.getElementById('testVideo'), '../content/test-encrypted.webm'),
-                    play_video_as_promise(document.getElementById('secondVideo'), '../content/test-encrypted.webm')
+                    play_video_as_promise(document.getElementById('testVideo'), 'webm/test-encrypted.webm'),
+                    play_video_as_promise(document.getElementById('secondVideo'), 'webm/test-encrypted.webm')
                 ];
                 return Promise.all(promises);
             }, 'Play two videos at the same time.');

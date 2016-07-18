@@ -7,6 +7,7 @@
   <title>CSS Lists and Counters Test: list-style-position - text-align</title>
 
   <!--
+  More info about this test:
   http://lists.w3.org/Archives/Public/public-css-testsuite/2010Oct/0191.html
   http://lists.w3.org/Archives/Public/public-css-testsuite/2010Oct/0196.html
   http://lists.w3.org/Archives/Public/public-css-testsuite/2010Oct/0197.html
@@ -16,8 +17,10 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="https://www.w3.org/TR/css-lists-3/#list-style-position-property" title="4 Marker Position: The list-style-position property" />
+  <link rel="match" href="list-style-position-018-ref.xht" />
+
   <meta content="" name="flags" />
-  <meta name="assert" content="Text-align should only format inline content of a list-item's principal block box when the list-item's list-style-position is set to outside." />
+  <meta name="assert" content="'text-align' should only format inline content of a list-item's principal block box when the list-item's 'list-style-position' is set to 'outside'." />
 
   <style type="text/css"><![CDATA[
   li
@@ -46,7 +49,7 @@
 
  <body>
 
-  <p>There must be 3 black horizontal bars below, each preceded by a black bullet (small filled-in circle).</p>
+  <p>Test passes if there are 3 black horizontal bars, each preceded by a black bullet (small filled-in circle).</p>
 
   <ul>
     <li id="left-aligned">&nbsp;</li>

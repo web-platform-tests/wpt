@@ -5,7 +5,9 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="div"></div>
+<body>
 <script>
+'use strict';
 
 test(function() {
   var keyframe = {};
@@ -39,3 +41,4 @@ test(function() {
 }, 'Only properties defined directly on keyframes are considered');
 
 </script>
+</body>

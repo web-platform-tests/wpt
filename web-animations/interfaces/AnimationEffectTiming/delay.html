@@ -13,8 +13,7 @@
 'use strict';
 
 test(function(t) {
-  var div = createDiv(t);
-  var anim = div.animate({});
+  var anim = createDiv(t).animate(null);
   assert_equals(anim.effect.timing.delay, 0);
 }, 'Test default value');
 

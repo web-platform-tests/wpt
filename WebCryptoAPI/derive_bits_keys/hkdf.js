@@ -37,6 +37,7 @@ function run_test() {
                         if (infoSize !== "missing") {
                             algorithm.info = infos[infoSize];
                         }
+
                         // Check for correct deriveBits result
                         promise_test(function(test) {
                             return subtle.deriveBits(algorithm, baseKeys[passwordSize], 256)
@@ -46,6 +47,16 @@ function run_test() {
                                 assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
                             });
                         }, testName);
+
+                        // 0 length (OperationError)
+                        promise_test(function(test) {
+                            return subtle.deriveBits(algorithm, baseKeys[passwordSize], 0)
+                            .then(function(derivation) {
+                                assert_equals(derivation.byteLength, 0, "Derived correctly empty key");
+                            }, function(err) {
+                                assert_equals(err.name, "OperationError", "deriveBits with 0 length correctly threw OperationError: " + err.message);
+                            });
+                        }, testName + " with 0 length");
 
                         // Check for correct deriveKey results for every kind of
                         // key that can be created by the deriveKeys operation.
@@ -114,21 +125,11 @@ function run_test() {
                         promise_test(function(test) {
                             return subtle.deriveBits(algorithm, baseKeys[passwordSize], null)
                             .then(function(derivation) {
-                                assert_unreached("null length should have thrown an OperationError");
+                                assert_unreached("null length should have thrown an TypeError");
                             }, function(err) {
-                                assert_equals(err.name, "OperationError", "deriveBits with null length correctly threw OperationError: " + err.message);
+                                assert_equals(err.name, "TypeError", "deriveBits with null length correctly threw OperationError: " + err.message);
                             });
                         }, testName + " with null length");
-
-                        // 0 length (OperationError)
-                        promise_test(function(test) {
-                            return subtle.deriveBits(algorithm, baseKeys[passwordSize], 0)
-                            .then(function(derivation) {
-                                assert_unreached("0 length should have thrown an OperationError");
-                            }, function(err) {
-                                assert_equals(err.name, "OperationError", "deriveBits with 0 length correctly threw OperationError: " + err.message);
-                            });
-                        }, testName + " with 0 length");
 
                         // length not multiple of 8 (OperationError)
                         promise_test(function(test) {

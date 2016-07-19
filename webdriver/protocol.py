@@ -99,6 +99,9 @@ def test_malformed_body_on_post(new_session):
     with pytest.raises(webdriver.InvalidArgumentException):
         new_session.send_command("POST", "url", body="[]")
 
+    # jump to step 1
+    new_session.url
+
 
 def test_error_from_command(new_session):
     # 4.3 step 8

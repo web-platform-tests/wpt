@@ -56,6 +56,25 @@
     }, `If constructor is ${t[0]}, should throw a TypeError`);
   });
 
+  // 2. If constructor is an interface object or named constructor whose corresponding
+  // interface either is HTMLElement or has HTMLElement in its set of inherited interfaces,
+  // throw a TypeError and abort these steps.
+  [
+    [ 'HTMLElement', HTMLElement ],
+    [ 'HTMLButtonElement', HTMLButtonElement ],
+    [ 'HTMLImageElement', HTMLImageElement ],
+    [ 'HTMLMediaElement', HTMLMediaElement ],
+    [ 'Image' , Image ],
+    [ 'Audio' , Audio ],
+    [ 'Option', Option ],
+  ].forEach(t => {
+    test(() => {
+      assert_throws(expectTypeError, () => {
+        customElements.define(`test-define-constructor-${t[0]}`, t[1]);
+      });
+    }, `If constructor is ${t[0]}, should throw a TypeError`);
+  });
+
   // 3. If name is not a valid custom element name,
   // then throw a SyntaxError and abort these steps.
   let validCustomElementNames = [

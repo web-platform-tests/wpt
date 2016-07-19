@@ -28,16 +28,16 @@ from ..browsers.base import browser_command
 from ..wpttest import WdspecResult, WdspecSubtestResult
 from ..webdriver_server import ServoDriverServer
 from .executormarionette import WdspecRun
-from . import pytestrunner
 
+pytestrunner = None
 render_arg = None
 webdriver = None
+
 extra_timeout = 5 # seconds
 
 def do_delayed_imports():
-    global render_arg, webdriver
+    global render_arg
     from ..browsers.servo import render_arg
-    import webdriver
 
 hosts_text = """127.0.0.1 web-platform.test
 127.0.0.1 www.web-platform.test
@@ -285,7 +285,7 @@ class ServoRefTestExecutor(ProcessTestExecutor):
 
 class ServoWdspecProtocol(Protocol):
     def __init__(self, executor, browser):
-        do_delayed_imports()
+        self.do_delayed_imports()
         Protocol.__init__(self, executor, browser)
         self.session = None
         self.server = None
@@ -323,6 +323,12 @@ class ServoWdspecProtocol(Protocol):
         conn.request("HEAD", self.server.base_path + "invalid")
         res = conn.getresponse()
         return res.status == 404
+
+    def do_delayed_imports(self):
+        global pytestrunner, webdriver
+        from . import pytestrunner
+        from tools import webdriver
+
 
 class ServoWdspecExecutor(WdspecExecutor):
     def __init__(self, browser, server_config,

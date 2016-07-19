@@ -366,5 +366,39 @@ promise_test(function(t) {
    'falls out finished state even though the current finished ' +
    'promise is generated soon after animation state became finished');
 
+async_test(function(t) {
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
+  var ready = false;
+  animation.ready.then(function() {
+    t.step(function() {
+      ready = true;
+    });
+  });
+  animation.finished.then(function() {
+    t.step(function() {
+      assert_true(ready, 'Ready promise has resolved');
+    });
+    t.done();
+  });
+  animation.finish();
+}, 'Test finished promise is resolved after the ready promise is resolved');
+
+async_test(function(t) {
+  var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
+  var ready = false;
+  animation.ready.catch(function() {
+    t.step(function() {
+      ready = true;
+    });
+  });
+  animation.finished.catch(function() {
+    t.step(function() {
+      assert_true(ready, 'Ready promise has resolved');
+    });
+    t.done();
+  });
+  animation.cancel();
+}, 'Test finished promise is rejected after the ready promise is rejected');
+
 </script>
 </body>

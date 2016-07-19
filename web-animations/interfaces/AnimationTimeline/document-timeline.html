@@ -20,6 +20,17 @@ test(function() {
 }, 'document.timeline identity tests');
 
 promise_test(function(t) {
+  var baseTime = document.timeline.currentTime;
+  var iframeBaseTime = iframe.contentDocument.timeline.currentTime;
+  return waitForAnimationFrames(4).then(function() {
+    var delta = document.timeline.currentTime - baseTime;
+    var iframeDelta = iframe.contentDocument.timeline.currentTime - iframeBaseTime;
+    assert_greater_than(delta, 0);
+    assert_times_equal(delta, iframeDelta, 'different document timelines should progress at the same rate');
+  });
+}, 'document.timeline should tick consistently across frames');
+
+async_test(function(t) {
   assert_true(document.timeline.currentTime > 0,
     'document.timeline.currentTime is positive');
   // document.timeline.currentTime should be set even before document
@@ -35,11 +46,14 @@ promise_test(function(t) {
   // We can't just compare document.timeline.currentTime to
   // window.performance.now() because currentTime is only updated on a sample
   // so we use requestAnimationFrame instead.
-  return window.requestAnimationFrame(t.step_func(function(rafTime) {
-    assert_equals(document.timeline.currentTime, rafTime,
-                  'document.timeline.currentTime matches' +
-                  ' requestAnimationFrame time');
-  }));
+  window.requestAnimationFrame(function(rafTime) {
+    t.step(function() {
+      assert_equals(document.timeline.currentTime, rafTime,
+                    'document.timeline.currentTime matches' +
+                    ' requestAnimationFrame time');
+    });
+    t.done();
+  });
 }, 'document.timeline.currentTime value tests');
 
 promise_test(function(t) {
@@ -50,11 +64,26 @@ promise_test(function(t) {
   }
   assert_equals(document.timeline.currentTime, valueAtStart,
     'document.timeline.currentTime does not change within a script block');
-  return window.requestAnimationFrame(t.step_func(function() {
-    assert_true(document.timeline.currentTime > valueAtStart,
+  return waitForAnimationFrames(1).then(function() {
+    assert_greater_than(document.timeline.currentTime, valueAtStart,
       'document.timeline.currentTime increases between script blocks');
-  }));
+  });
 }, 'document.timeline.currentTime liveness tests');
+
+promise_test(function(t) {
+  var iframeTimeline = iframe.contentDocument.timeline;
+  var valueAtStart = iframeTimeline.currentTime;
+  var timeAtStart = window.performance.now();
+  while (window.performance.now() - timeAtStart < 100) {
+    // Wait 100ms
+  }
+  assert_equals(iframeTimeline.currentTime, valueAtStart,
+    'iframe document.timeline.currentTime does not change within a script block');
+  return waitForAnimationFrames(1).then(function() {
+    assert_greater_than(iframeTimeline.currentTime, valueAtStart,
+      'iframe document.timeline.currentTime increases between script blocks');
+  });
+}, 'iframe document.timeline.currentTime liveness tests');
 
 async_test(function(t) {
   var startTime = document.timeline.currentTime;

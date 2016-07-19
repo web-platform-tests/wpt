@@ -1,0 +1,14 @@
+{
+  "@context":    "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name":        "Automated example test",
+  "description": "A test that runs with no user intervention",
+  "testType":    "automated",
+  "assertions":  [ "exampleContext.json" ],
+  "content":     {
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "http://example.org/anno1",
+    "type": "Annotation",
+    "body": "http://example.org/post1",
+    "target": "http://example.com/page1"
+  }
+}

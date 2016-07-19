@@ -2,6 +2,7 @@
   "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
   "name": "Verify annotation conforms to the model",
   "description": "Supply an example annotation that conforms to the basic structure.",
+  "testType": "manual",
   "ref": "https://www.w3.org/TR/annotation-model/#model",
   "assertions": [
     "exampleContext.json",

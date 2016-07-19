@@ -1,0 +1,8 @@
+{
+  "@context":    "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name":        "Important test that is not yet written",
+  "description": "Brief description of the test",
+  "ref":         "https://www.w3.org/TR/annotation-model/#model",
+  "testType":    "manual",
+  "assertions":  []
+}

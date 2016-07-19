@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+<title>{{TESTTITLE}}</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+setup({ explicit_timeout: true });
+
+async_test("{{TESTTITLE}}");
+timeout();
+</script>
+</head>
+<body>
+<p>This is a new test, indicating that the corresponding test case has not yet
+been written.  It will return a result of NOTRUN.</p>
+</body>
+</html>

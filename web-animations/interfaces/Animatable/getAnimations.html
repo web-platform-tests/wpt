@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Animatable.getAnimations tests</title>
-<link rel="help" href="https://w3c.github.io/web-animations/#dom-document-getanimations">
+<link rel="help" href="https://w3c.github.io/web-animations/#dom-animatable-getanimations">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -34,10 +34,11 @@ test(function(t) {
   var divParent = createDiv(t);
   var divChild = createDiv(t);
   divParent.appendChild(divChild);
-  var animation = divChild.animate(null, 100 * MS_PER_SEC);
-  assert_array_equals(divParent.getAnimations(), [], 'divParent');
-  assert_array_equals(divChild.getAnimations(), [animation], 'divChild');
-}, 'Test getAnimations on element with animation on child element');
+  var animationParent = divParent.animate(null, 100 * MS_PER_SEC);
+  var animationChild = divChild.animate(null, 100 * MS_PER_SEC);
+  assert_array_equals(divParent.getAnimations(), [animationParent], 'divParent');
+  assert_array_equals(divChild.getAnimations(), [animationChild], 'divChild');
+}, 'Test getAnimations on parent and child elements with separate animations');
 
 test(function(t) {
   var div = createDiv(t);
@@ -55,6 +56,15 @@ test(function(t) {
   animation.finish();
   assert_array_equals(div.getAnimations(), [animation]);
 }, 'Test getAnimations on element with finished fill forwards animation');
+
+test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, {
+    duration: 100 * MS_PER_SEC,
+    delay: 100 * MS_PER_SEC,
+  });
+  assert_array_equals(div.getAnimations(), [animation]);
+}, 'Test getAnimations on element with delayed animation');
 
 </script>
 </body>

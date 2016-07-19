@@ -22,6 +22,7 @@ test(function() {
 
 promise_test(function(t) {
   var baseTime = document.timeline.currentTime;
+  var iframe = document.getElementById('iframe');
   var iframeBaseTime = iframe.contentDocument.timeline.currentTime;
   return waitForAnimationFrames(4).then(function() {
     var delta = document.timeline.currentTime - baseTime;

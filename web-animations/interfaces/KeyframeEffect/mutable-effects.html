@@ -12,13 +12,15 @@
 test(function(t) {
   document.timeline.playbackRate = 0;
   document.timeline.currentTime = 0;
-  var player = createDiv(t).animate([], 1000);
-  player.startTime = -1000;
-  assert_equals(player.currentTime, 1000);
-  player.effect.timing.duration = 1500;
+  var element = createDiv(t);
+  var effect = new KeyframeEffect(element, null, 1000);
+  var animation = new Animation(effect);
+  animation.startTime = -1000;
+  assert_equals(animation.currentTime, 1000);
+  animation.effect.timing.duration = 1500;
   document.timeline.currentTime = 2000;
-  assert_equals(player.startTime, -1000);
-  assert_equals(player.currentTime, 1500);
+  assert_equals(animation.startTime, -1000);
+  assert_equals(animation.currentTime, 1500);
 }, 'Extending effect should not cause a change in start time.');
 
 </script>

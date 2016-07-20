@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(function() {
+  document.timeline.playbackRate = 0;
+  document.timeline.currentTime = 0;
+  var player = document.documentElement.animate([], 1000);
+  player.startTime = -1000;
+  assert_equals(player.currentTime, 1000);
+  player.effect.timing.duration = 1500;
+  document.timeline.currentTime = 2000;
+  assert_equals(player.startTime, -1000);
+  assert_equals(player.currentTime, 1500);
+}, 'Extending effect should not cause a change in start time.');
+</script>

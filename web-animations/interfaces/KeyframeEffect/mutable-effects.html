@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Tests for modifying animation effects</title>
-<link rel="help" href="https://w3c.github.io/web-animations/#the-keyframeeffect-interfaces">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../../testcommon.js"></script>
+<link rel='help' href='https://w3c.github.io/web-animations/#the-keyframeeffect-interfaces'>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src='../../testcommon.js'></script>
 <body>
 <script>
 'use strict';
@@ -17,12 +17,12 @@ promise_test(function(t) {
   return animation.ready.then(function() {
     var startTime = animation.startTime;
     var currentTime = animation.currentTime;
-    assert_equals(animation.effect.getComputedTiming().duration, 1000, "Initial duration should be as set on KeyframeEffect");
+    assert_equals(animation.effect.getComputedTiming().duration, 1000, 'Initial duration should be as set on KeyframeEffect');
 
     effect.timing.duration = 2000;
-    assert_times_equal(animation.startTime, startTime, "startTime should be unaffected by changing effect duration");
-    assert_times_equal(animation.currentTime, currentTime, "currentTime should be unaffected by changing effect duration");
-    assert_equals(animation.effect.getComputedTiming().duration, 2000, "Effect duration should have been updated");
+    assert_times_equal(animation.startTime, startTime, 'startTime should be unaffected by changing effect duration');
+    assert_times_equal(animation.currentTime, currentTime, 'currentTime should be unaffected by changing effect duration');
+    assert_equals(animation.effect.getComputedTiming().duration, 2000, 'Effect duration should have been updated');
   });
 }, 'Extending effect should not cause a change in start time.');
 

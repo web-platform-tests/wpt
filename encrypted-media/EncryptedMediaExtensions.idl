@@ -1,5 +1,8 @@
 // Encrypted Media Extensions WebIDL
 //
+// NOTE: Please update the link below to the specification version from
+//       which this IDL was extracted.
+//
 // https://www.w3.org/TR/2016/WD-encrypted-media-20160610/
 //
 

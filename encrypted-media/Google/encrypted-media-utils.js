@@ -130,23 +130,23 @@ function dumpKeyStatuses(keyStatuses)
 {
     consoleWrite("for (var entry of keyStatuses)");
     for (var entry of keyStatuses) {
-        consoleWrite(arrayBufferAsString(entry[0]) + ", " + entry[1]);
+        consoleWrite(arrayBufferAsString(entry[0]) + ": " + entry[1]);
     }
-    consoleWrite("for (var key of keyStatuses.keys())");
-    for (var key of keyStatuses.keys()) {
-        consoleWrite(arrayBufferAsString(key));
+    consoleWrite("for (var keyId of keyStatuses.keys())");
+    for (var keyId of keyStatuses.keys()) {
+        consoleWrite(arrayBufferAsString(keyId));
     }
-    consoleWrite("for (var value of keyStatuses.values())");
-    for (var value of keyStatuses.values()) {
-        consoleWrite(value);
+    consoleWrite("for (var status of keyStatuses.values())");
+    for (var status of keyStatuses.values()) {
+        consoleWrite(status);
     }
     consoleWrite("for (var entry of keyStatuses.entries())");
     for (var entry of keyStatuses.entries()) {
-        consoleWrite(arrayBufferAsString(entry[0]) + ", " + entry[1]);
+        consoleWrite(arrayBufferAsString(entry[0]) + ": " + entry[1]);
     }
     consoleWrite("keyStatuses.forEach()");
-    keyStatuses.forEach(function(value, key, map) {
-        consoleWrite(arrayBufferAsString(key) + ", " + value);
+    keyStatuses.forEach(function(status, keyId) {
+        consoleWrite(arrayBufferAsString(keyId) + ": " + status);
     });
 }
 

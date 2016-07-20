@@ -15,7 +15,7 @@
 
             promise_test(function(test)
             {
-                return navigator.requestMediaKeySystemAccess('org.w3.clearkey', [{}]).then(function(access) {
+                return navigator.requestMediaKeySystemAccess('org.w3.clearkey', getSimpleConfiguration()).then(function(access) {
                     return access.createMediaKeys();
                 }).then(function(mediaKeys) {
                     var cert = new Uint8Array(200);

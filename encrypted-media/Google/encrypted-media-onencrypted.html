@@ -19,6 +19,7 @@
             async_test(function(test)
             {
                 var video = document.getElementById('testVideo');
+                var content = 'webm/test-encrypted.webm';
 
                 var onEncrypted = function(event)
                 {
@@ -33,7 +34,7 @@
                 };
 
                 waitForEventAndRunStep('encrypted', video, onEncrypted, test);
-                video.src = 'webm/test-encrypted.webm';
+                video.src = content;
             }, 'encrypted fired on encrypted media file.');
         </script>
     </body>

@@ -14,6 +14,7 @@
             async_test(function(test)
             {
                 var video = document.getElementById('testVideo');
+                var content = 'webm/test-encrypted-different-av-keys.webm';
                 var audioMediaKeySession = null;
                 var videoMediaKeySession = null;
                 var audioInitDataType = null;
@@ -121,12 +122,12 @@
                     test.done();
                 }
 
-                navigator.requestMediaKeySystemAccess('org.w3.clearkey', [{}]).then(function(access) {
+                navigator.requestMediaKeySystemAccess('org.w3.clearkey', getConfigurationForFile(content)).then(function(access) {
                     return access.createMediaKeys();
                 }).then(function(mediaKeys) {
                     waitForEventAndRunStep('encrypted', video, onEncrypted, test);
                     waitForEventAndRunStep('playing', video, onPlaying, test);
-                    video.src = 'webm/test-encrypted-different-av-keys.webm';
+                    video.src = content;
                     return video.setMediaKeys(mediaKeys);
                 }).then(function(result) {
                     video.play();

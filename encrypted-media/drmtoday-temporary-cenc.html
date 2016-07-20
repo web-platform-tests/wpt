@@ -20,15 +20,17 @@
     <meta name="timeout" content="long">
     <h1 class="instructions">Description</h1>
     <p class="instructions">
-      This test verifies success paths for the Clear Key keysystem.
+      This test verifies successful playback for a temporary session with DRM Today and mp4/cenc content.
     </p>
 
     <div id='log'></div>
 
-    <div id='video'></div>
+    <div id='video'>
+      <video id="videoelement" width="600px"></video>
+    </div>
 
     <script>
-        var config = {  element:            document.getElementById('video'),
+        var config = {  video:              document.getElementById('videoelement'),
                         keysystem:          getKeySystem(),
                         sessiontype:        'temporary',
                         messagehandler:     messagehandler,
@@ -47,23 +49,15 @@
                                     sessionTypes: [ config.sessiontype ] };
 
         async_test( function( test ) {
-            window.console.log( testname + " running" );
 
-            var _video,
+            var _video = config.video,
                 _mediaKeys,
                 _mediaKeySession,
                 _mediaSource,
                 _allKeysUsableEvent = false,
-                _waitingForKeyEvent = false,
-                _canPlayThroughEvent = false,
                 _playingEvent = false,
                 _timeupdateEvent = false,
-                _releaseSequence = false,
                 _events = [ ];
-
-            _video = document.createElement('video');
-            _video.setAttribute( 'width', '600px' );
-            config.element.appendChild( _video );
 
             function onMessage(event) {
                 assert_equals( event.target, _mediaKeySession );
@@ -72,19 +66,15 @@
 
                 assert_any( assert_equals,
                             event.messageType,
-                            _releaseSequence    ? [ 'license-release']
-                                                : [ 'license-request', 'individualization-request' ] );
+                            [ 'license-request', 'individualization-request' ] );
 
                 if ( event.messageType !== 'individualization-request' ) {
                     _events.push( event.messageType );
                 }
 
                 config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                    if ( event.messageType === 'license-request' ) {
-                        _events.push( 'license-response' );
-                    } else if ( event.messageType === 'license-release' ) {
-                        _events.push( 'release-response' );
-                    }
+                    
+                    _events.push( 'license-response' );
 
                     waitForEventAndRunStep('keystatuseschange', _mediaKeySession, onKeyStatusesChange, test);
                     _mediaKeySession.update( response ).then( function() {
@@ -111,9 +101,9 @@
 
                 if ( !_allKeysUsableEvent && hasKeys && !pendingKeys ) {
                     _allKeysUsableEvent = true;
+                   
                     _events.push( 'allkeysusable' );
 
-                    window.console.log("Set media keys");
                     _video.setMediaKeys(_mediaKeys);
                 }
 
@@ -145,7 +135,8 @@
                                         'update',
                                         'allkeysusable',
                                         'playing',
-                                        'close'
+                                        'close',
+                                        'emptykeyslist'
                                     ],
                                     "Expected events sequence" );
 
@@ -181,9 +172,9 @@
             navigator.requestMediaKeySystemAccess(config.keysystem, [config.configuration]).then(function(access) {
                 return access.createMediaKeys();
             }).then(function(mediaKeys) {
+                
                 _mediaKeys = mediaKeys;
-            }).then(function() {
-                // Create the MediaKeySession
+
                 _mediaKeySession = _mediaKeys.createSession( config.sessiontype );
 
                 waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
@@ -192,7 +183,6 @@
                 return testmediasource(config);
             }).then(function(source) {
                 _mediaSource = source;
-                window.console.log("Set video source attribute");
                 _video.src = URL.createObjectURL(_mediaSource);
                 _video.play();
             }).catch(function(error) {

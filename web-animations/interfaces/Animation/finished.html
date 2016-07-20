@@ -385,15 +385,15 @@ async_test(function(t) {
 
 async_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  var ready = false;
+  var caught = false;
   animation.ready.catch(function() {
     t.step(function() {
-      ready = true;
+      caught = true;
     });
   });
   animation.finished.catch(function() {
     t.step(function() {
-      assert_true(ready, 'Ready promise has resolved');
+      assert_true(caught, 'Ready promise has been rejected');
     });
     t.done();
   });

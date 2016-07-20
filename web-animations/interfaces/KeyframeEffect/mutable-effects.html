@@ -11,18 +11,18 @@
 
 promise_test(function(t) {
   var element = createDiv(t);
-  var effect = new KeyframeEffect(element, null, 1000);
+  var effect = new KeyframeEffect(element, null, 10 * MS_PER_SEC);
   var animation = new Animation(effect);
   animation.play();
   return animation.ready.then(function() {
     var startTime = animation.startTime;
     var currentTime = animation.currentTime;
-    assert_equals(animation.effect.getComputedTiming().duration, 1000, 'Initial duration should be as set on KeyframeEffect');
+    assert_equals(animation.effect.getComputedTiming().duration, 10 * MS_PER_SEC, 'Initial duration should be as set on KeyframeEffect');
 
-    effect.timing.duration = 2000;
+    effect.timing.duration = 20 * MS_PER_SEC;
     assert_times_equal(animation.startTime, startTime, 'startTime should be unaffected by changing effect duration');
     assert_times_equal(animation.currentTime, currentTime, 'currentTime should be unaffected by changing effect duration');
-    assert_equals(animation.effect.getComputedTiming().duration, 2000, 'Effect duration should have been updated');
+    assert_equals(animation.effect.getComputedTiming().duration, 20 * MS_PER_SEC, 'Effect duration should have been updated');
   });
 }, 'Extending effect should not cause a change in start time.');
 

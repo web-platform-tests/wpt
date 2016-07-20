@@ -1,7 +1,13 @@
 <!DOCTYPE html>
+<meta charset=utf-8>
+<title>Tests for modifying animation effects</title>
+<link rel="help" href="https://w3c.github.io/web-animations/#the-keyframeeffect-interfaces">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<body>
 <script>
+'use strict';
+
 test(function() {
   document.timeline.playbackRate = 0;
   document.timeline.currentTime = 0;
@@ -13,4 +19,6 @@ test(function() {
   assert_equals(player.startTime, -1000);
   assert_equals(player.currentTime, 1500);
 }, 'Extending effect should not cause a change in start time.');
+
 </script>
+</body>

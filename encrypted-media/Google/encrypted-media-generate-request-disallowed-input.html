@@ -21,7 +21,7 @@
                     if (!result)
                         return Promise.resolve('Not supported');
 
-                    return navigator.requestMediaKeySystemAccess('org.w3.clearkey', [{}]).then(function(access) {
+                    return navigator.requestMediaKeySystemAccess('org.w3.clearkey', getSimpleConfigurationForInitDataType(initDataType)).then(function(access) {
                         return access.createMediaKeys();
                     }).then(function(mediaKeys) {
                         var mediaKeySession = mediaKeys.createSession();

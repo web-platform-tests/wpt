@@ -15,6 +15,7 @@
                 var mediaKeySession;
                 var initDataType;
                 var initData;
+                var closed = false;
 
                 // Even though key ids are uint8, using printable values so that
                 // they can be verified easily.
@@ -40,7 +41,7 @@
                     });
                 }
 
-                function processKeyStatusesChange(event)
+                function checkKeyStatusFor2Keys()
                 {
                     // Two keys added, so both should show up in |keyStatuses|.
                     assert_equals(mediaKeySession.keyStatuses.size, 2);
@@ -125,15 +126,33 @@
                     invalid6.set(key1, 0);  // Last element will be 0.
                     assert_false(mediaKeySession.keyStatuses.has(invalid6));
                     assert_equals(mediaKeySession.keyStatuses.get(invalid6), undefined);
-
-                    test.done();
                 }
 
-                getSupportedInitDataType().then(function(type) {
-                    initDataType = type;
+                function processKeyStatusesChange(event)
+                {
+                    if ( !closed )
+                    {
+                        // The first keystatuseschange (caused by update())
+                        // should include both keys.
+                        checkKeyStatusFor2Keys();
+
+                        mediaKeySession.close().catch(function(error) {
+                            forceTestFailureFromPromise(test, error);
+                        });
+                        closed = true;
+                    }
+                    else
+                    {
+                        // The second keystatuseschange (caused by close())
+                        // should not have any keys.
+                        assert_equals(mediaKeySession.keyStatuses.size, 0);
+                        test.done();
+                    }
+                }
+
+                navigator.requestMediaKeySystemAccess('org.w3.clearkey', getSimpleConfiguration()).then(function(access) {
+                    initDataType = access.getConfiguration().initDataTypes[0];
                     initData = getInitData(initDataType);
-                    return navigator.requestMediaKeySystemAccess('org.w3.clearkey', [{}]);
-                }).then(function(access) {
                     return access.createMediaKeys();
                 }).then(function(mediaKeys) {
                     mediaKeySession = mediaKeys.createSession();

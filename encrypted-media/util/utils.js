@@ -22,6 +22,7 @@ function getInitData(initDataType) {
     }
     throw 'initDataType ' + initDataType + ' not supported.';
 }
+
 function stringToUint8Array(str)
 {
     var result = new Uint8Array(str.length);
@@ -39,6 +40,10 @@ function base64urlEncode(data) {
 // Decode |encoded| using base64url decoding.
 function base64urlDecode(encoded) {
     return atob(encoded.replace(/\-/g, "+").replace(/\_/g, "/"));
+}
+// Decode |encoded| using base64 to a Uint8Array
+function base64DecodeToUnit8Array(encoded) {
+    return new Uint8Array( atob( encoded ).split('').map( function(c){return c.charCodeAt(0);} ) );
 }
 // Clear Key can also support Key IDs Initialization Data.
 // ref: http://w3c.github.io/encrypted-media/keyids-format.html
@@ -59,7 +64,6 @@ function getKeySystem() {
     if(userAgent.indexOf('chrome') > -1) {
         keysystem = 'com.widevine.alpha';
     }
-    window.console.log(userAgent + " --> " + keysystem);
 
     return keysystem;
 }
@@ -75,3 +79,32 @@ function waitForEventAndRunStep(eventName, element, func, stepTest)
 
     element.addEventListener(eventName, eventCallback, true);
 }
+
+var consoleDiv = null;
+
+function consoleWrite(text)
+{
+    if (!consoleDiv && document.body) {
+        consoleDiv = document.createElement('div');
+        document.body.appendChild(consoleDiv);
+    }
+    var span = document.createElement('span');
+    span.appendChild(document.createTextNode(text));
+    span.appendChild(document.createElement('br'));
+    consoleDiv.appendChild(span);
+}
+
+function forceTestFailureFromPromise(test, error, message)
+{
+    // Promises convert exceptions into rejected Promises. Since there is
+    // currently no way to report a failed test in the test harness, errors
+    // are reported using force_timeout().
+    if (message)
+        consoleWrite(message + ': ' + error.message);
+    else if (error)
+        consoleWrite(error);
+
+    test.force_timeout();
+    test.done();
+}
+

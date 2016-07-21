@@ -1,10 +1,11 @@
+// Expect utf8decoder and utf8decoder to be TextEncoder('utf-8') and TextDecoder('utf-8') respectively
 function messagehandler(messageType, message) {
 
     const keySystems = {
         'com.widevine.alpha': {
             responseType: 'json',
             getLicenseMessage: function(response) {
-                return BASE64.decodeArray(response.license);
+                return base64DecodeToUnit8Array( response.license );
             },
             getErrorResponse: function(response) {
                 return response;

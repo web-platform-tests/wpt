@@ -35,10 +35,17 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
     executor_kwargs = base_executor_kwargs(test_type, server_config,
                                            cache_manager, **kwargs)
     executor_kwargs["close_after_done"] = True
-    executor_kwargs["capabilities"] = dict(DesiredCapabilities.CHROME.items())
+    capabilities = dict(DesiredCapabilities.CHROME.items())
+    capabilities.setdefault("chromeOptions", {})["prefs"] = {
+        "profile": {
+            "default_content_setting_values": {
+                "popups": 1
+            }
+        }
+    }
     if kwargs["binary"] is not None:
-        executor_kwargs["capabilities"]["chromeOptions"] = {"binary": kwargs["binary"]}
-
+        capabilities["chromeOptions"]["binary"] = kwargs["binary"]
+    executor_kwargs["capabilities"] = capabilities
     return executor_kwargs
 
 

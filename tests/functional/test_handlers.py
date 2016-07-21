@@ -12,7 +12,7 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt")
         self.assertEquals(200, resp.getcode())
         self.assertEquals("text/plain", resp.info()["Content-Type"])
-        self.assertEquals(open(os.path.join(doc_root, "document.txt")).read(), resp.read())
+        self.assertEquals(open(os.path.join(doc_root, "document.txt"), 'rb').read(), resp.read())
 
     def test_headers(self):
         resp = self.request("/with_headers.txt")
@@ -27,7 +27,7 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt", headers={"Range":"bytes=10-19"})
         self.assertEquals(206, resp.getcode())
         data = resp.read()
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         self.assertEquals(10, len(data))
         self.assertEquals("bytes 10-19/%i" % len(expected), resp.info()['Content-Range'])
         self.assertEquals("10", resp.info()['Content-Length'])
@@ -37,7 +37,7 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt", headers={"Range":"bytes=10-"})
         self.assertEquals(206, resp.getcode())
         data = resp.read()
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         self.assertEquals(len(expected) - 10, len(data))
         self.assertEquals("bytes 10-%i/%i" % (len(expected) - 1, len(expected)), resp.info()['Content-Range'])
         self.assertEquals(expected[10:], data)
@@ -46,7 +46,7 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt", headers={"Range":"bytes=-10"})
         self.assertEquals(206, resp.getcode())
         data = resp.read()
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         self.assertEquals(10, len(data))
         self.assertEquals("bytes %i-%i/%i" % (len(expected) - 10,
                                               len(expected) - 1,
@@ -57,7 +57,7 @@ class TestFileHandler(TestUsingServer):
         resp = self.request("/document.txt", headers={"Range":"bytes=1-2,5-7,6-10"})
         self.assertEquals(206, resp.getcode())
         data = resp.read()
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         self.assertTrue(resp.info()["Content-Type"].startswith("multipart/byteranges; boundary="))
         boundary = resp.info()["Content-Type"].split("boundary=")[1]
         parts = data.split("--" + boundary)
@@ -76,7 +76,7 @@ class TestFileHandler(TestUsingServer):
             self.request("/document.txt", headers={"Range":"bytes=11-10"})
         self.assertEquals(cm.exception.code, 416)
 
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         with self.assertRaises(urllib2.HTTPError) as cm:
             self.request("/document.txt", headers={"Range":"bytes=%i-%i" % (len(expected), len(expected) + 10)})
         self.assertEquals(cm.exception.code, 416)

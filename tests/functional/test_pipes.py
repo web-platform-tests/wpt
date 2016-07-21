@@ -37,34 +37,34 @@ class TestHeader(TestUsingServer):
 class TestSlice(TestUsingServer):
     def test_both_bounds(self):
         resp = self.request("/document.txt", query="pipe=slice(1,10)")
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         self.assertEquals(resp.read(), expected[1:10])
 
     def test_no_upper(self):
         resp = self.request("/document.txt", query="pipe=slice(1)")
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         self.assertEquals(resp.read(), expected[1:])
 
     def test_no_lower(self):
         resp = self.request("/document.txt", query="pipe=slice(null,10)")
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         self.assertEquals(resp.read(), expected[:10])
 
 class TestSub(TestUsingServer):
     def test_sub_config(self):
         resp = self.request("/sub.txt", query="pipe=sub")
-        expected = "localhost localhost %i\n" % self.server.port
-        self.assertEquals(resp.read(), expected)
+        expected = "localhost localhost %i" % self.server.port
+        self.assertEquals(resp.read().rstrip(), expected)
 
     def test_sub_headers(self):
         resp = self.request("/sub_headers.txt", query="pipe=sub", headers={"X-Test": "PASS"})
-        expected = "PASS\n"
-        self.assertEquals(resp.read(), expected)
+        expected = "PASS"
+        self.assertEquals(resp.read().rstrip(), expected)
 
     def test_sub_params(self):
         resp = self.request("/sub_params.txt", query="test=PASS&pipe=sub")
-        expected = "PASS\n"
-        self.assertEquals(resp.read(), expected)
+        expected = "PASS"
+        self.assertEquals(resp.read().rstrip(), expected)
 
 class TestTrickle(TestUsingServer):
     def test_trickle(self):
@@ -72,7 +72,7 @@ class TestTrickle(TestUsingServer):
         t0 = time.time()
         resp = self.request("/document.txt", query="pipe=trickle(1:d2:5:d1:r2)")
         t1 = time.time()
-        expected = open(os.path.join(doc_root, "document.txt")).read()
+        expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
         self.assertEquals(resp.read(), expected)
         self.assertGreater(6, t1-t0)
 

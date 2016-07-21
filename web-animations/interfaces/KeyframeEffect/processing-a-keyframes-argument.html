@@ -79,6 +79,92 @@ gNonAnimatableProps.forEach(function(prop) {
      + ' a keyframe sequence');
 });
 
+// Test equivalent forms of property indexed and sequenced keyframe syntax
+
+function assertEquivalentKeyframeSyntax(keyframesA, keyframesB) {
+  var processedKeyframesA = new KeyframeEffectReadOnly(null, keyframesA).getKeyframes();
+  var processedKeyframesB = new KeyframeEffectReadOnly(null, keyframesB).getKeyframes();
+  assert_frame_lists_equal(processedKeyframesA, processedKeyframesB);
+}
+
+var gEquivalentSyntaxTests = [
+  {
+    description: 'two properties with one value',
+    indexedKeyframes: {
+      left: '100px',
+      opacity: ['1'],
+    },
+    sequencedKeyframes: [
+      {left: '100px', opacity: '1'},
+    ],
+  },
+  {
+    description: 'two properties with three values',
+    indexedKeyframes: {
+      left: ['10px', '100px', '150px'],
+      opacity: ['1', '0', '1'],
+    },
+    sequencedKeyframes: [
+      {left: '10px', opacity: '1'},
+      {left: '100px', opacity: '0'},
+      {left: '150px', opacity: '1'},
+    ],
+  },
+  {
+    description: 'two properties with different numbers of values',
+    indexedKeyframes: {
+      left: ['0px', '100px', '200px'],
+      opacity: ['0', '1']
+    },
+    sequencedKeyframes: [
+      {left: '0px', opacity: '0'},
+      {left: '100px'},
+      {left: '200px', opacity: '1'},
+    ],
+  },
+  {
+    description: 'same offset applied to all keyframes',
+    indexedKeyframes: {
+      left: ['0px', '100px'],
+      offset: 0.5,
+    },
+    sequencedKeyframes: [
+      {left: '0px', offset: 0.5},
+      {left: '100px', offset: 0.5},
+    ],
+  },
+  {
+    description: 'same easing applied to all keyframes',
+    indexedKeyframes: {
+      left: ['10px', '100px', '150px'],
+      opacity: ['1', '0', '1'],
+      easing: 'ease',
+    },
+    sequencedKeyframes: [
+      {left: '10px', opacity: '1', easing: 'ease'},
+      {left: '100px', opacity: '0', easing: 'ease'},
+      {left: '150px', opacity: '1', easing: 'ease'},
+    ],
+  },
+  {
+    description: 'same composite applied to all keyframes',
+    indexedKeyframes: {
+      left: ['0px', '100px'],
+      composite: 'add',
+    },
+    sequencedKeyframes: [
+      {left: '0px', composite: 'add'},
+      {left: '100px', composite: 'add'},
+    ],
+  },
+];
+
+gEquivalentSyntaxTests.forEach(function({description, indexedKeyframes, sequencedKeyframes}) {
+  test(function(t) {
+    assertEquivalentKeyframeSyntax(indexedKeyframes, sequencedKeyframes);
+  }, 'Equivalent property indexed and sequenced keyframes: ' + description);
+});
+
 // FIXME: Test that non-enumerable properties are not accessed
 
 // FIXME: Test that properties are accessed in ascending order by Unicode

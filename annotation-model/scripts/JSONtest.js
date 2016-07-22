@@ -35,6 +35,9 @@ function JSONtest(params) {
   this._assertionCache = [];// Array to put loaded assertions into
   this._loading = true;
 
+  this.Promise = null;      // a handle to a Promise that will resolve when loads are complete
+
+
   var pending = [] ;
 
   // set up in case DOM finishes loading early
@@ -92,6 +95,7 @@ function JSONtest(params) {
   // loadTest deals with that
   pending.push(this.loadTest(params)
     .then(function(test) {
+
       // if the test is NOT an object, turn it into one
       if (typeof test === 'string') {
         test = JSON.parse(test) ;
@@ -103,6 +107,20 @@ function JSONtest(params) {
 
       if (test.description) {
         this.DescriptionText = test.description;
+      }
+
+      if (test.content) {
+        // we have content
+        if (typeof test.content === "string") {
+          // this is a URI... hit it for content
+          pending.push(this.loadDefinition(test.content)
+            .then(function(content) {
+              if (typeof content === 'string') {
+                content = JSON.parse(content) ;
+              }
+              test.content = content;
+            }));
+        }
       }
 
       return new Promise(function(resolve, reject) {
@@ -191,19 +209,23 @@ function JSONtest(params) {
       }.bind(this));
     }.bind(this)));
 
-  // once the DOM and the test / assertions are loaded... set us up
-  Promise.all(pending)
-  .then(function() {
-    this.loading = false;
-    this.init();
-  }.bind(this))
-  .catch(function(err) {
-    // loading the components failed somehow - report the errors and mark the test failed
-    test( function() {
-      assert_true(false, "Loading of test components failed: " +JSON.stringify(err)) ;
-    }, "Loading test components");
-    done() ;
-    return ;
+  this.Promise = new Promise(function(resolve, reject) {
+    // once the DOM and the test / assertions are loaded... set us up
+    Promise.all(pending)
+    .then(function() {
+      this.loading = false;
+      this.init();
+      resolve(this);
+    }.bind(this))
+    .catch(function(err) {
+      // loading the components failed somehow - report the errors and mark the test failed
+      test( function() {
+        assert_true(false, "Loading of test components failed: " +JSON.stringify(err)) ;
+      }, "Loading test components");
+      done() ;
+      reject(err);
+      return ;
+    }.bind(this));
   }.bind(this));
 
   return this;
@@ -224,8 +246,10 @@ JSONtest.prototype = {
     var desc  = document.getElementById("testDescription") ;
 
     if (!this.loading) {
-      runButton.disabled = false;
-      runButton.value = "Check JSON";
+      if (runButton) {
+        runButton.disabled = false;
+        runButton.value = "Check JSON";
+      }
       if (desc) {
         desc.innerHTML = this.DescriptionText;
       }
@@ -251,38 +275,40 @@ JSONtest.prototype = {
       }.bind(this));
     }
 
-    on_event(runButton, "click", function() {
-      // user clicked
-      var content = testInput.value;
-      runButton.disabled = true;
+    if (runButton) {
+      on_event(runButton, "click", function() {
+        // user clicked
+        var content = testInput.value;
+        runButton.disabled = true;
 
-      // make sure content is an object
-      if (typeof content === "string") {
-        try {
-          content = JSON.parse(content) ;
-        } catch(err) {
-          // if the parsing failed, create a special test and mark it failed
-          test( function() {
-            assert_true(false, "Parse of JSON failed: " + err) ;
-          }, "Parsing submitted input");
-          // and just give up
-          done();
-          return ;
+        // make sure content is an object
+        if (typeof content === "string") {
+          try {
+            content = JSON.parse(content) ;
+          } catch(err) {
+            // if the parsing failed, create a special test and mark it failed
+            test( function() {
+              assert_true(false, "Parse of JSON failed: " + err) ;
+            }, "Parsing submitted input");
+            // and just give up
+            done();
+            return ;
+          }
         }
-      }
 
-      // iterate over all of the tests for this instance
-      this.runTests(this.Assertions, content);
+        // iterate over all of the tests for this instance
+        this.runTests(this.Assertions, content);
 
-      // explicitly tell the test framework we are done
-      done();
-    }.bind(this));
+        // explicitly tell the test framework we are done
+        done();
+      }.bind(this));
+    }
   },
 
   // runTests - process tests
   /**
-   * @param {object} assertions - List of assertions to process
-   * @param {string} content - JSON(-LD) to be evaluated
+   * @param {object} [assertions=this.Assertions] - List of assertions to process
+   * @param {string} [content={}] - JSON(-LD) to be evaluated
    * @param {string} [testAction='continue'] - state of test processing (in parent when recursing)
    * @param {integer} [level=0] - depth of recursion since assertion lists can nest
    * @param {string} [compareWith='and'] - the way the results of the referenced assertions should be compared
@@ -290,6 +316,16 @@ JSONtest.prototype = {
    */
   runTests: function(assertions, content, testAction, level, compareWith) {
     'use strict';
+
+    // assertions
+
+    if (assertions === undefined) {
+      assertions = this.Assertions;
+    }
+
+    if (content === undefined) {
+      content = "{ }";  // An empty JSON structure
+    }
 
     // level
     if (level === undefined) {

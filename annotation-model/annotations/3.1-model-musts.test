@@ -61,7 +61,7 @@
     "expectedResult": "valid",
     "errorMessage": "Error: 'Annotation' is not a 'type' value.",
     "type": "object",
-    "required": [ "@context" ],
+    "required": [ "type" ],
     "properties": {
       "type": {
         "oneOf": [

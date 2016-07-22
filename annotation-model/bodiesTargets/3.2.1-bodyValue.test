@@ -5,6 +5,7 @@
   "testType": "manual",
   "ref": "https://www.w3.org/TR/annotation-model/#h-string-body",
   "assertions": [
+  "annotations/requiredProperties.json",
   {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "Check bodyValue presence",

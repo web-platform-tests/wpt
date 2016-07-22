@@ -2,7 +2,7 @@ function runTest(config) {
 
     var testname = config.keysystem + ', sucessful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', set src before setMediaKeys';
+                                    + ', setMediaKeys before setting src';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],
@@ -62,7 +62,6 @@ function runTest(config) {
             if ( !_allKeysUsableEvent && hasKeys && !pendingKeys ) {
                 _allKeysUsableEvent = true;
                 _events.push( 'allkeysusable' );
-                _video.setMediaKeys(_mediaKeys);
             }
 
             if ( !hasKeys ) {
@@ -76,7 +75,7 @@ function runTest(config) {
             assert_equals(event.type, 'encrypted');
 
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
-            _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
+            _mediaKeySession.generateRequest(   config.initDataType || event.initDataType,
                                                 config.initData || event.initData ).then( function() {
                 _events.push( 'generaterequest' );
             }).catch(function(error) {
@@ -138,6 +137,7 @@ function runTest(config) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
+            _video.setMediaKeys(_mediaKeys);
             _mediaKeySession = _mediaKeys.createSession( 'temporary' );
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);

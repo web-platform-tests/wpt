@@ -1,7 +1,8 @@
 // Expect utf8decoder and utf8decoder to be TextEncoder('utf-8') and TextDecoder('utf-8') respectively
 function messagehandler( keysystem, messageType, message )
 {
-    var keys = { 'AAAAAAPS_EEAAAAAAAAAAA' : 'rzQTSR-sLD46a4jgU4RCBg' };
+    var keys = {    'AAAAAAPS_EEAAAAAAAAAAA'    : 'rzQTSR-sLD46a4jgU4RCBg',
+                    'AAECAwQFBgcICQoLDA0ODw'    : '691i8WgU0nto7xIq_OSuPA' };
 
     var self = this;
 

@@ -1,4 +1,17 @@
 function getInitData(initDataType) {
+
+    // FIXME: This is messed up, because here we are hard coding the key ids for the different content
+    //        that we use for clearkey testing: webm and mp4. For keyids we return the mp4 one
+    //
+    //        The content used with the DRM today servers has a different key id altogether
+
+    if (initDataType == 'webm') {
+      return new Uint8Array([
+          0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+          0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F
+      ]);
+    }
+
     if (initDataType == 'cenc') {
         return new Uint8Array([
             0x00, 0x00, 0x00, 0x00, // size = 0
@@ -8,7 +21,7 @@ function getInitData(initDataType) {
             0x10, 0x77, 0xEF, 0xEC, 0xC0, 0xB2, 0x4D, 0x02, // Common SystemID
             0xAC, 0xE3, 0x3C, 0x1E, 0x52, 0xE2, 0xFB, 0x4B,
             0x00, 0x00, 0x00, 0x01, // key count
-            0x00, 0x00, 0x00, 0x00, 0x03, 0xd2, 0xfc, 0x41, // key
+            0x00, 0x00, 0x00, 0x00, 0x03, 0xd2, 0xfc, 0x41, // key id
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00 // datasize
         ]);
@@ -106,5 +119,45 @@ function forceTestFailureFromPromise(test, error, message)
 
     test.force_timeout();
     test.done();
+}
+
+// Returns an array of audioCapabilities that includes entries for a set of
+// codecs that should cover all user agents.
+function getPossibleAudioCapabilities()
+{
+    return [
+        { contentType: 'audio/mp4; codecs="mp4a.40.2"' },
+        { contentType: 'audio/webm; codecs="opus"' },
+    ];
+}
+
+// Returns a trivial MediaKeySystemConfiguration that should be accepted,
+// possibly as a subset of the specified capabilities, by all user agents.
+function getSimpleConfiguration()
+{
+    return [ {
+        initDataTypes : [ 'webm', 'cenc', 'keyids' ],
+        audioCapabilities: getPossibleAudioCapabilities()
+    } ];
+}
+
+// Returns a MediaKeySystemConfiguration for |initDataType| that should be
+// accepted, possibly as a subset of the specified capabilities, by all
+// user agents.
+function getSimpleConfigurationForInitDataType(initDataType)
+{
+    return [ {
+        initDataTypes: [ initDataType ],
+        audioCapabilities: getPossibleAudioCapabilities()
+    } ];
+}
+
+// Returns a promise that is fulfilled with true if |initDataType| is supported,
+// by keysystem or false if not.
+function isInitDataTypeSupported(keysystem,initDataType)
+{
+    return navigator.requestMediaKeySystemAccess(
+                        keysystem, getSimpleConfigurationForInitDataType(initDataType))
+        .then(function() { return true; }, function() { return false; });
 }
 

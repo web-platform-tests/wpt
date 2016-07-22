@@ -3,7 +3,7 @@ function runTest(config) {
     var testname = config.keysystem + ', events';
 
     var configuration = getSimpleConfiguration();
-    
+
     async_test(function(test)
     {
         var initDataType;
@@ -18,7 +18,7 @@ function runTest(config) {
             assert_any( assert_equals,
                         event.messageType,
                         [ 'license-request', 'individualization-request' ] );
-               
+
             config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
 
                 waitForEventAndRunStep('keystatuseschange', mediaKeySession, test.step_func(processKeyStatusesChange), test);
@@ -48,5 +48,5 @@ function runTest(config) {
             forceTestFailureFromPromise(test, error);
         }));
     }, testname );
-    
+
 }

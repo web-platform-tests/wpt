@@ -2,7 +2,7 @@
 function messagehandler( keysystem, messageType, message )
 {
     var keys = { 'AAAAAAPS_EEAAAAAAAAAAA' : 'rzQTSR-sLD46a4jgU4RCBg' };
-  
+
     var self = this;
 
     if ( messageType === 'license-request' )

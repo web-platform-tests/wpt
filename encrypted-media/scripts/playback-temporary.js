@@ -1,13 +1,13 @@
 function runTest(config) {
 
-	var testname = config.keysystem + ', sucessful playback, temporary, '
-									+ /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-									+ ', set src before setMediaKeys';
-	
-	var configuration = {   initDataTypes: [ config.initDataType ],
-							audioCapabilities: [ { contentType: config.audioType } ],
-							videoCapabilities: [ { contentType: config.videoType } ],
-							sessionTypes: [ 'temporary' ] };
+    var testname = config.keysystem + ', sucessful playback, temporary, '
+                                    + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
+                                    + ', set src before setMediaKeys';
+
+    var configuration = {   initDataTypes: [ config.initDataType ],
+                            audioCapabilities: [ { contentType: config.audioType } ],
+                            videoCapabilities: [ { contentType: config.videoType } ],
+                            sessionTypes: [ 'temporary' ] };
 
     async_test( function( test ) {
 
@@ -85,30 +85,30 @@ function runTest(config) {
         }
 
         function onClosed(event) {
-			   
-			_events.push( 'closed-promise' );
-			
-			setTimeout( test.step_func( function() {
-				
-				assert_array_equals( _events,
-									[
-										'generaterequest',
-										'license-request',
-										'license-response',
-										'updated',
-										'allkeysusable',
-										'playing',
-										'closed',
-										'closed-promise',
-										'emptykeyslist'
-									],
-									"Expected events sequence" );
 
-				_video.src = "";
-				_video.setMediaKeys( null ).then(function(){
-					test.done();
-				});
-			} ), 0 );
+            _events.push( 'closed-promise' );
+
+            setTimeout( test.step_func( function() {
+
+                assert_array_equals( _events,
+                                    [
+                                        'generaterequest',
+                                        'license-request',
+                                        'license-response',
+                                        'updated',
+                                        'allkeysusable',
+                                        'playing',
+                                        'closed',
+                                        'closed-promise',
+                                        'emptykeyslist'
+                                    ],
+                                    "Expected events sequence" );
+
+                _video.src = "";
+                _video.setMediaKeys( null ).then(function(){
+                    test.done();
+                });
+            } ), 0 );
         }
 
         function onTimeupdate(event) {

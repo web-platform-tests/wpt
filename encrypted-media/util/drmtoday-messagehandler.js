@@ -1,5 +1,5 @@
 // Expect utf8decoder and utf8decoder to be TextEncoder('utf-8') and TextDecoder('utf-8') respectively
-function messagehandler(messageType, message) {
+function messagehandler(keysystem, messageType, message) {
 
     const keySystems = {
         'com.widevine.alpha': {
@@ -40,8 +40,7 @@ function messagehandler(messageType, message) {
 
         readDrmConfig().then(function(response) {
 
-            var keysystem = getKeySystem(),
-                protData = response[keysystem],
+            var protData = response[keysystem],
                 url = undefined,
                 reqheaders = {},
                 credentials = undefined;

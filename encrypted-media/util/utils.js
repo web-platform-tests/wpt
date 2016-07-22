@@ -58,7 +58,7 @@ function createKeyIDs() {
     return keyIds;
 }
 
-function getKeySystem() {
+function getSupportedKeySystem() {
     var userAgent = navigator.userAgent.toLowerCase();
     var keysystem = undefined;
     if(userAgent.indexOf('chrome') > -1) {

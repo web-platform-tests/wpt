@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
+<script src="../../resources/keyframe-utils.js"></script>
 <body>
 <div id="log"></div>
 <div id="target"></div>
@@ -164,6 +165,101 @@ gEquivalentSyntaxTests.forEach(function({description, indexedKeyframes, sequence
     assertEquivalentKeyframeSyntax(indexedKeyframes, sequencedKeyframes);
   }, 'Equivalent property indexed and sequenced keyframes: ' + description);
 });
+
+// Test handling of custom iterable objects.
+
+function createIterable(iterations) {
+  return {
+    [Symbol.iterator]() {
+      var i = 0;
+      return {
+        next() {
+          return iterations[i++];
+        },
+      };
+    },
+  };
+}
+
+test(() => {
+  var effect = new KeyframeEffect(null, createIterable([
+    {done: false, value: {left: '100px'}},
+    {done: false, value: {left: '300px'}},
+    {done: false, value: {left: '200px'}},
+    {done: true},
+  ]));
+  assert_frame_lists_equal(effect.getKeyframes(), [
+    {offset: null, computedOffset: 0, easing: 'linear', left: '100px'},
+    {offset: null, computedOffset: 0.5, easing: 'linear', left: '300px'},
+    {offset: null, computedOffset: 1, easing: 'linear', left: '200px'},
+  ]);
+}, 'Custom iterator with basic keyframes.');
+
+test(() => {
+  var keyframes = createIterable([
+    {done: false, value: {left: '100px'}},
+    {done: false, value: {left: '300px'}},
+    {done: false, value: {left: '200px'}},
+    {done: true},
+  ]);
+  keyframes.easing = 'ease-in-out';
+  keyframes.offset = '0.1';
+  var effect = new KeyframeEffect(null, keyframes);
+  assert_frame_lists_equal(effect.getKeyframes(), [
+    {offset: null, computedOffset: 0, easing: 'linear', left: '100px'},
+    {offset: null, computedOffset: 0.5, easing: 'linear', left: '300px'},
+    {offset: null, computedOffset: 1, easing: 'linear', left: '200px'},
+  ]);
+}, 'easing and offset are ignored on iterable objects.');
+
+test(() => {
+  var effect = new KeyframeEffect(null, createIterable([
+    {done: false, value: {left: '100px', top: '200px'}},
+    {done: false, value: {left: '300px'}},
+    {done: false, value: {left: '200px', top: '100px'}},
+    {done: true},
+  ]));
+  assert_frame_lists_equal(effect.getKeyframes(), [
+    {offset: null, computedOffset: 0, easing: 'linear', left: '100px', top: '200px'},
+    {offset: null, computedOffset: 0.5, easing: 'linear', left: '300px'},
+    {offset: null, computedOffset: 1, easing: 'linear', left: '200px', top: '100px'},
+  ]);
+}, 'Custom iterator with multiple properties specified.');
+
+test(() => {
+  var effect = new KeyframeEffect(null, createIterable([
+    {done: false, value: {left: '100px'}},
+    {done: false, value: {left: '250px', offset: 0.75}},
+    {done: false, value: {left: '200px'}},
+    {done: true},
+  ]));
+  assert_frame_lists_equal(effect.getKeyframes(), [
+    {offset: null, computedOffset: 0, easing: 'linear', left: '100px'},
+    {offset: 0.75, computedOffset: 0.75, easing: 'linear', left: '250px'},
+    {offset: null, computedOffset: 1, easing: 'linear', left: '200px'},
+  ]);
+}, 'Custom iterator with offset specified.');
+
+test(() => {
+  assert_throws({name: 'TypeError'}, function() {
+    new KeyframeEffect(null, createIterable([
+      {done: false, value: {left: '100px'}},
+      {done: false, value: 1234},
+      {done: false, value: {left: '200px'}},
+      {done: true},
+    ]));
+  });
+}, 'Custom iterator with non object keyframe should throw.');
+
+test(() => {
+  var effect = new KeyframeEffect(null, createIterable([
+    {done: false, value: {left: ['100px', '200px']}},
+    {done: true},
+  ]));
+  assert_frame_lists_equal(effect.getKeyframes(), [
+    {offset: null, computedOffset: 1, easing: 'linear', left: '100px,200px'}
+  ]);
+}, 'Custom iterator with value list in keyframe should give bizarre string representation of list.');
 
 // FIXME: Test that non-enumerable properties are not accessed
 

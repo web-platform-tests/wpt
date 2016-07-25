@@ -161,3 +161,8 @@ function isInitDataTypeSupported(keysystem,initDataType)
         .then(function() { return true; }, function() { return false; });
 }
 
+function getSupportedInitDataTypes( keysystem )
+{
+    return [ 'cenc', 'keyids', 'webm' ].filter( isInitDataTypeSupported.bind( null, keysystem ) );
+}
+

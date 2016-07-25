@@ -16,6 +16,9 @@
     <script src=/encrypted-media/util/fetch.js></script>
     <script src=/encrypted-media/util/testmediasource.js></script>
 
+    <!-- Content metadata -->
+    <script src=/encrypted-media/content/content-metadata.js></script>
+
     <!-- Message handler for DRM servers -->
     <script src=/encrypted-media/util/drmtoday-messagehandler.js></script>
 
@@ -32,11 +35,16 @@
     <div id='log'></div>
 
     <script>
-        var config = {  keysystem:          getSupportedKeySystem(),
-                        messagehandler:     messagehandler,
-                     };
+        var keysystem = getSupportedKeySystem();
 
-        runTest(config);
+        getSupportedContent( keysystem )
+        .then( function( contents )
+        {
+            runTest( {  keysystem:          keysystem,
+                        content:            contents[ 0 ],
+                        messagehandler:     messagehandler.bind( contents[ 0 ] ),
+                     } );
+        } );
 
     </script>
   </body>

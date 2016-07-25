@@ -16,6 +16,9 @@
     <script src=/encrypted-media/util/fetch.js></script>
     <script src=/encrypted-media/util/testmediasource.js></script>
 
+    <!-- Content metadata -->
+    <script src=/encrypted-media/content/content-metadata.js></script>
+
     <!-- Message handler for DRM servers -->
     <script src=/encrypted-media/util/drmtoday-messagehandler.js></script>
 
@@ -36,18 +39,18 @@
     </div>
 
     <script>
-        var config = {  video:              document.getElementById('videoelement'),
+        var contentitem = content['mp4-basic'],
+            config = {  video:              document.getElementById('videoelement'),
                         keysystem:          getSupportedKeySystem(),
-                        messagehandler:     messagehandler,
-                        audioType:          'audio/mp4;codecs="mp4a.40.2"',
-                        videoType:          'video/mp4;codecs="avc1.4d401e"',
-                        audioPath:          '/encrypted-media/content/audio_aac-lc_128k_dashinit.mp4',
-                        videoPath:          '/encrypted-media/content/video_512x288_h264-360k_dashinit.mp4',
-                        initDataType:       'cenc',
+                        messagehandler:     messagehandler.bind( contentitem ),
+                        audioPath:          contentitem.audio.path,
+                        videoPath:          contentitem.video.path,
+                        audioType:          contentitem.audio.type,
+                        videoType:          contentitem.video.type,
+                        initDataType:       contentitem.initDataType,
                         duration:           5 };
 
         runTest(config);
-
     </script>
   </body>
 </html>

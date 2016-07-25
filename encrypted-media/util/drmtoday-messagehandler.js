@@ -1,6 +1,8 @@
 // Expect utf8decoder and utf8decoder to be TextEncoder('utf-8') and TextDecoder('utf-8') respectively
 function messagehandler(keysystem, messageType, message) {
 
+    var contentmetadata = this;
+
     const keySystems = {
         'com.widevine.alpha': {
             responseType: 'json',

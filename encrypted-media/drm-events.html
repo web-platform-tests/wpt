@@ -40,9 +40,13 @@
         getSupportedContent( keysystem )
         .then( function( contents )
         {
+            contents = contents.filter( function( ci ) { return ci.initData && ci.initData[ keysystem ]; } );
+            
             runTest( {  keysystem:          keysystem,
                         content:            contents[ 0 ],
                         messagehandler:     messagehandler.bind( contents[ 0 ] ),
+                        initDataType:       contents[ 0 ].initDataType,
+                        initData:           base64DecodeToUnit8Array( contents[ 0 ].initData[ keysystem ] )
                      } );
         } );
 

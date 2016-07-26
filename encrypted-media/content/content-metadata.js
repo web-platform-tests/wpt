@@ -12,7 +12,7 @@ content = addMemberListToObject( {
                     
     'mp4-av-multikey' : {  initDataType:   'cenc',
                         audio:  {   type:   'audio/mp4;codecs="mp4a.40.2"',
-                                    path:   '/encrypted-media/content/audio_aac-lc-128k_enc.mp4' },
+                                    path:   '/encrypted-media/content/audio_aac-lc_128k_enc_dashinit.mp4' },
                         video : {   type:   'video/mp4;codecs="avc1.4d401e"',
                                     path:   '/encrypted-media/content/video_512x288_h264-360k_enc_dashinit.mp4' },
                         keys :  [ { kid: [ 0xad, 0x13, 0xf9, 0xea, 0x2b, 0xe6, 0x98, 0xb8, 0x75, 0xf5, 0x04, 0xa8, 0xe3, 0xcc, 0xea, 0x64 ],
@@ -24,6 +24,22 @@ content = addMemberListToObject( {
                                     initDataType : 'cenc',
                                     initData: 'AAAcXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAFEIARIQVY7lQbkKsvOVDQCt43YNRRoIY2FzdGxhYnMiKGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRjMmx1WjJ4bEluMD0yB2RlZmF1bHQAAAxpwc3NoAAAAAJoE8HmYQEKGq5LmW+CIX5UAAAL6+gIAAAEAAQDwAjwAVwBSAE0ASABFAEEARABFAFIAIAB4AG0AbABuAHMAPQAiAGgAdAB0AHAAOgAvAC8AcwBjAGgAZQBtAGEAcwAuAG0AaQBjAHIAbwBzAG8AZgB0AC4AYwBvAG0ALwBEAFIATQAvADIAMAAwADcALwAwADMALwBQAGwAYQB5AFIAZQBhAGQAeQBIAGUAYQBkAGUAcgAiACAAdgBlAHIAcwBpAG8AbgA9ACIANAAuADAALgAwAC4AMAAiAD4APABEAEEAVABBAD4APABQAFIATwBUAEUAQwBUAEkATgBGAE8APgA8AEsARQBZAEwARQBOAD4AMQA2ADwALwBLAEUAWQBMAEUATgA+ADwAQQBMAEcASQBEAD4AQQBFAFMAQwBUAFIAPAAvAEEATABHAEkARAA+ADwALwBQAFIATwBUAEUAQwBUAEkATgBGAE8APgA8AEsASQBEAD4AUQBlAFcATwBWAFEAcQA1ADgANwBLAFYARABRAEMAdAA0ADMAWQBOAFIAUQA9AD0APAAvAEsASQBEAD4APABDAEgARQBDAEsAUwBVAE0APgBZAGkATwAvADEANgBMAHMAOQA2AEUAPQA8AC8AQwBIAEUAQwBLAFMAVQBNAD4APABMAEEAXwBVAFIATAA+AGgAdAB0AHAAOgAvAC8AcABsAGEAeQByAGUAYQBkAHkALgBkAGkAcgBlAGMAdAB0AGEAcABzAC4AbgBlAHQALwBwAHIALwBzAHYAYwAvAHIAaQBnAGgAdABzAG0AYQBuAGEAZwBlAHIALgBhAHMAbQB4AD8AUABsAGEAeQBSAGkAZwBoAHQAPQAxACYAYQBtAHAAOwBVAHMAZQBTAGkAbQBwAGwAZQBOAG8AbgBQAGUAcgBzAGkAcwB0AGUAbgB0AEwAaQBjAGUAbgBzAGUAPQAxADwALwBMAEEAXwBVAFIATAA+ADwALwBEAEEAVABBAD4APAAvAFcAUgBNAEgARQBBAEQARQBSAD4A' } ]
                     },
+                    
+    'mp4-multikey' :    {   initDataType: 'cenc',
+                            audio:  {   type:   'audio/mp4;codecs="mp4a.40.2"',
+                                        path:   '/encrypted-media/content/audio_aac-lc-128k_2keys.mp4' },
+                            video:  {   type:   'video/mp4;codecs="avc1.4d401e"',
+                                        path:   '/encrypted-media/content/video_512x288_h264-360k_enc_2keys.mp4' },
+                            keys: [ {   kid:    [ 0x3632e83458fc3465d04bb39c5126efd0 ],
+                                        key:    [ 0x00f95bde444e0cce0e37afbb08a9bbad ],
+                                        initDataType: 'cenc',
+                                        initData: 'AAAAiXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAGkIARIQNjLoNFj8NGXQS7OcUSbv0BoIY2FzdGxhYnMiQGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRiWFZzZEdraUxDSjJZWEpwWVc1MFNXUWlPaUpyWlhreEluMD0yB2RlZmF1bHQAAAMacHNzaAAAAACaBPB5mEBChquS5lvgiF+VAAAC+voCAAABAAEA8AI8AFcAUgBNAEgARQBBAEQARQBSACAAeABtAGwAbgBzAD0AIgBoAHQAdABwADoALwAvAHMAYwBoAGUAbQBhAHMALgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAC8ARABSAE0ALwAyADAAMAA3AC8AMAAzAC8AUABsAGEAeQBSAGUAYQBkAHkASABlAGEAZABlAHIAIgAgAHYAZQByAHMAaQBvAG4APQAiADQALgAwAC4AMAAuADAAIgA+ADwARABBAFQAQQA+ADwAUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEUAWQBMAEUATgA+ADEANgA8AC8ASwBFAFkATABFAE4APgA8AEEATABHAEkARAA+AEEARQBTAEMAVABSADwALwBBAEwARwBJAEQAPgA8AC8AUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEkARAA+AE4ATwBnAHkATgB2AHgAWQBaAFQAVABRAFMANwBPAGMAVQBTAGIAdgAwAEEAPQA9ADwALwBLAEkARAA+ADwAQwBIAEUAQwBLAFMAVQBNAD4AcQBGAGQAMgB5AHIARQB3AHMALwBBAD0APAAvAEMASABFAEMASwBTAFUATQA+ADwATABBAF8AVQBSAEwAPgBoAHQAdABwADoALwAvAHAAbABhAHkAcgBlAGEAZAB5AC4AZABpAHIAZQBjAHQAdABhAHAAcwAuAG4AZQB0AC8AcAByAC8AcwB2AGMALwByAGkAZwBoAHQAcwBtAGEAbgBhAGcAZQByAC4AYQBzAG0AeAA/AFAAbABhAHkAUgBpAGcAaAB0AD0AMQAmAGEAbQBwADsAVQBzAGUAUwBpAG0AcABsAGUATgBvAG4AUABlAHIAcwBpAHMAdABlAG4AdABMAGkAYwBlAG4AcwBlAD0AMQA8AC8ATABBAF8AVQBSAEwAPgA8AC8ARABBAFQAQQA+ADwALwBXAFIATQBIAEUAQQBEAEUAUgA+AA==' },
+                                    {   kid:    [ ],
+                                        key:    [ ],
+                                        initDataType: 'cenc',
+                                        initData: 'AAAAiXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAGkIARIQ3cNyLYU+/qoJTg3dwJ9mmBoIY2FzdGxhYnMiQGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRiWFZzZEdraUxDSjJZWEpwWVc1MFNXUWlPaUpyWlhreUluMD0yB2RlZmF1bHQAAAMacHNzaAAAAACaBPB5mEBChquS5lvgiF+VAAAC+voCAAABAAEA8AI8AFcAUgBNAEgARQBBAEQARQBSACAAeABtAGwAbgBzAD0AIgBoAHQAdABwADoALwAvAHMAYwBoAGUAbQBhAHMALgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAC8ARABSAE0ALwAyADAAMAA3AC8AMAAzAC8AUABsAGEAeQBSAGUAYQBkAHkASABlAGEAZABlAHIAIgAgAHYAZQByAHMAaQBvAG4APQAiADQALgAwAC4AMAAuADAAIgA+ADwARABBAFQAQQA+ADwAUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEUAWQBMAEUATgA+ADEANgA8AC8ASwBFAFkATABFAE4APgA8AEEATABHAEkARAA+AEEARQBTAEMAVABSADwALwBBAEwARwBJAEQAPgA8AC8AUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEkARAA+AEwAWABMAEQAMwBUADYARgBxAHYANABKAFQAZwAzAGQAdwBKADkAbQBtAEEAPQA9ADwALwBLAEkARAA+ADwAQwBIAEUAQwBLAFMAVQBNAD4AZABFAFMAMAArAFgAMwBSAFoANgBzAD0APAAvAEMASABFAEMASwBTAFUATQA+ADwATABBAF8AVQBSAEwAPgBoAHQAdABwADoALwAvAHAAbABhAHkAcgBlAGEAZAB5AC4AZABpAHIAZQBjAHQAdABhAHAAcwAuAG4AZQB0AC8AcAByAC8AcwB2AGMALwByAGkAZwBoAHQAcwBtAGEAbgBhAGcAZQByAC4AYQBzAG0AeAA/AFAAbABhAHkAUgBpAGcAaAB0AD0AMQAmAGEAbQBwADsAVQBzAGUAUwBpAG0AcABsAGUATgBvAG4AUABlAHIAcwBpAHMAdABlAG4AdABMAGkAYwBlAG4AcwBlAD0AMQA8AC8ATABBAF8AVQBSAEwAPgA8AC8ARABBAFQAQQA+ADwALwBXAFIATQBIAEUAQQBEAEUAUgA+AA==' } ]
+                            },
+                                   
                                 
 
     'webm' :        {   audio : {   type:   'audio/webm; codecs="opus"' },
@@ -90,6 +106,40 @@ function getInitData( contentitem, initDataType )
         return toUtf8( { kids: contentitem.keys.map( function( k ) { return base64urlEncode( new Uint8Array( k.kid ) ); } ) } );
     }
     throw 'initDataType ' + initDataType + ' not supported.';
+}
+
+function getSingleKeyInitData( kid, initDataType )
+{
+    if (initDataType == 'webm') {
+      return new Uint8Array( kid );
+    }
+
+    if (initDataType == 'cenc') {
+
+        var size = 52;
+
+        return new Uint8Array(Array.prototype.concat.call( [
+            0x00, 0x00, size / 256, size % 256, // size
+            0x70, 0x73, 0x73, 0x68, // 'pssh'
+            0x01, // version = 1
+            0x00, 0x00, 0x00, // flags
+            0x10, 0x77, 0xEF, 0xEC, 0xC0, 0xB2, 0x4D, 0x02, // Common SystemID
+            0xAC, 0xE3, 0x3C, 0x1E, 0x52, 0xE2, 0xFB, 0x4B,
+            0x00, 0x00, 0x00, 0x01 ], // key count ]
+            kid,
+          [ 0x00, 0x00, 0x00, 0x00 ]// datasize
+        ));
+    }
+    if (initDataType == 'keyids') {
+
+        return toUtf8( { kids: [ base64urlEncode( new Uint8Array( kid ) ) ] } );
+    }
+    throw 'initDataType ' + initDataType + ' not supported.';
+}
+
+function getMultikeyInitDatas( contentitem, initDataType )
+{
+    return contentitem.keys.map( function( k ) { return getSingleKeyInitData( k.kid, initDataType ); } );
 }
 
 function getProprietaryInitDatas( contentitem )

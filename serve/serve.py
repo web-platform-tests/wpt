@@ -23,6 +23,15 @@ from mod_pywebsocket import standalone as pywebsocket
 
 repo_root = localpaths.repo_root
 
+def replace_end(s, old, new):
+    """
+    Given a string `s` that ends with `old`, replace that occurrence of `old`
+    with `new`.
+    """
+    assert s.endswith(old)
+    return s[:-len(old)] + new
+
+
 class WorkersHandler(object):
     def __init__(self):
         self.handler = handlers.handler(self.handle_request)
@@ -31,7 +40,7 @@ class WorkersHandler(object):
         return self.handler(request, response)
 
     def handle_request(self, request, response):
-        worker_path = request.url_parts.path.replace(".worker", ".worker.js")
+        worker_path = replace_end(request.url_parts.path, ".worker", ".worker.js")
         return """<!doctype html>
 <meta charset=utf-8>
 <script src="/resources/testharness.js"></script>
@@ -41,6 +50,52 @@ class WorkersHandler(object):
 fetch_tests_from_worker(new Worker("%s"));
 </script>
 """ % (worker_path,)
+
+
+class AnyHtmlHandler(object):
+    def __init__(self):
+        self.handler = handlers.handler(self.handle_request)
+
+    def __call__(self, request, response):
+        return self.handler(request, response)
+
+    def handle_request(self, request, response):
+        test_path = replace_end(request.url_parts.path, ".any.html", ".any.js")
+        return """\
+<!doctype html>
+<meta charset=utf-8>
+<script>
+self.GLOBAL = {
+  isWindow: function() { return true; },
+  isWorker: function() { return false; },
+};
+</script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script src="%s"></script>
+""" % (test_path,)
+
+
+class AnyWorkerHandler(object):
+    def __init__(self):
+        self.handler = handlers.handler(self.handle_request)
+
+    def __call__(self, request, response):
+        return self.handler(request, response)
+
+    def handle_request(self, request, response):
+        test_path = replace_end(request.url_parts.path, ".any.worker.js", ".any.js")
+        return """\
+self.GLOBAL = {
+  isWindow: function() { return false; },
+  isWorker: function() { return true; },
+};
+importScripts("/resources/testharness.js");
+importScripts("%s");
+done();
+""" % (test_path,)
+
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
@@ -61,7 +116,11 @@ class RoutesBuilder(object):
                           ("*", "{spec}/tools/*", handlers.ErrorHandler(404)),
                           ("*", "/serve.py", handlers.ErrorHandler(404))]
 
-        self.static = [("GET", "*.worker", WorkersHandler())]
+        self.static = [
+            ("GET", "*.worker", WorkersHandler()),
+            ("GET", "*.any.html", AnyHtmlHandler()),
+            ("GET", "*.any.worker.js", AnyWorkerHandler()),
+        ]
 
         self.mountpoint_routes = OrderedDict()
 

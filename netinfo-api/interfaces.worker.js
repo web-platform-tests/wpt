@@ -4,7 +4,7 @@ importScripts("/resources/testharness.js");
 importScripts("/resources/WebIDLParser.js", "/resources/idlharness.js");
 
 var request = new XMLHttpRequest();
-request.open("GET", "interfaces.idl");
+request.open("GET", "interfaces.worker.idl");
 request.send();
 request.onload = function() {
   var idlArray = new IdlArray();

@@ -1,5 +1,5 @@
-[Exposed=(Window)]
-partial interface Navigator{
+[Exposed=(Worker)]
+partial interface WorkerNavigator{
    readonly attribute NetworkInformation connection;
 };
 

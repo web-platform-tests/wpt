@@ -15,12 +15,12 @@ test(function(t) {
     anim.currentTime = seconds * MS_PER_SEC;
     assert_equals(anim.effect.getComputedTiming().localTime, seconds * MS_PER_SEC);
   }
-}, 'Local time is current time for animation effects associated with an animation.');
+}, 'Local time is current time for animation effects associated with an animation');
 
 test(function(t) {
   var effect = new KeyframeEffect(createDiv(t), null, 10 * MS_PER_SEC);
   assert_equals(effect.getComputedTiming().localTime, null);
-}, 'Local time is unresolved for animation effects not associated with an animation.');
+}, 'Local time is unresolved for animation effects not associated with an animation');
 
 </script>
 </body>

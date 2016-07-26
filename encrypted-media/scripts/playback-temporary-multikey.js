@@ -2,7 +2,8 @@ function runTest(config) {
 
     var testname = config.keysystem + ', successful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', separate av keys / sessions, set src before setMediaKeys';
+                                    + ', multiple keys / sessions, '
+                                    + config.testcase;
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],

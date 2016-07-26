@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: Successful Playback, Temporary session with Clear Key, mp4, multiple keys</title>
+    <title>Encrypted Media Extensions: Successful Playback, Temporary session with Clear Key, mp4, multiple keys for audio/video</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -29,7 +29,7 @@
   <body>
     <h1 class="instructions">Description</h1>
     <p class="instructions">
-      This test verifies successful playback for a temporary session with Clear Key, mp4/cenc and multiple keys.
+      This test verifies successful playback for a temporary session with Clear Key, mp4/cenc and multiple keys for audio/video.
     </p>
 
     <div id='log'></div>
@@ -49,7 +49,8 @@
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
                         initData:           getMultikeyInitDatas(contentitem,'keyids'),
-                        duration:           5 };
+                        duration:           5,
+                        testcase:           'audio/video' };
 
         runTest(config);
     </script>

@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: Successful Playback, Temporary session with DRM, mp4, multiple keys</title>
+    <title>Encrypted Media Extensions: Successful Playback, Temporary session with DRM, mp4, multiple keys in sequence</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -29,7 +29,7 @@
   <body>
     <h1 class="instructions">Description</h1>
     <p class="instructions">
-      This test verifies successful playback for a temporary session with DRM, mp4/cenc and multiple keys.
+      This test verifies successful playback for a temporary session with DRM, mp4/cenc and multiple keys in sequence.
     </p>
 
     <div id='log'></div>
@@ -39,7 +39,7 @@
     </div>
 
     <script>
-        var contentitem = content['mp4-av-multikey'],
+        var contentitem = content['mp4-multikey'],
             config = {  video:              document.getElementById('videoelement'),
                         keysystem:          getSupportedKeySystem(),
                         messagehandler:     messagehandler.bind( contentitem ),
@@ -49,7 +49,7 @@
                         videoType:          contentitem.video.type,
                         initDataType:       contentitem.initDataType,
                         duration:           5,
-                        testcase:           'audio/video' };
+                        testcase:           'sequential' };
 
         runTest(config);
     </script>

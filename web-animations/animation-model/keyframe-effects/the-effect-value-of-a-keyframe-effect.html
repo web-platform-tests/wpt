@@ -109,6 +109,21 @@ test(function(t) {
 
 }, "Test visibility clamping behavior with an easing that has a negative component");
 
+test(function(t) {
+  var div = createDiv(t);
+  div.style.fontSize = '100px';
+  assert_equals(getComputedStyle(div).fontSize, '100px',
+                'Inline style should appear in getComputedStyle');
+
+  div.animate({'font-size': '200px'}, {fill: 'forwards'});
+  assert_equals(getComputedStyle(div).fontSize, '100px',
+                'Hyphenated property name should not have an effect on style');
+
+  div.animate({fontSize: '300px'}, {fill: 'forwards'});
+  assert_equals(getComputedStyle(div).fontSize, '300px',
+                'Camel cased property should have an effect on style');
+}, 'Hyphenated CSS property names are ignored in keyframes');
+
 done();
 </script>
 </body>

@@ -1,0 +1,30 @@
+[Exposed=(Window)]
+partial interface Navigator{
+   readonly attribute NetworkInformation connection;
+};
+
+[Exposed=(Worker)]
+partial interface WorkerNavigator{
+   readonly attribute NetworkInformation connection;
+};
+
+[Exposed=(Window,Worker)]
+interface NetworkInformation : EventTarget{
+  readonly attribute ConnectionType type;
+  readonly attribute Megabit downlinkMax;
+  attribute EventHandler onchange;
+};
+
+typedef unrestricted double Megabit;
+
+enum ConnectionType{
+  "bluetooth",
+  "cellular",
+  "ethernet",
+  "mixed",
+  "none",
+  "other",
+  "unknown",
+  "wifi",
+  "wimax",
+};

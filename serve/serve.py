@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import print_function
+
 import argparse
 import json
 import os
@@ -204,10 +207,10 @@ class ServerProc(object):
             self.daemon = init_func(host, port, paths, routes, bind_hostname, external_config,
                                     ssl_config, **kwargs)
         except socket.error:
-            print >> sys.stderr, "Socket error on port %s" % port
+            print("Socket error on port %s" % port, file=sys.stderr)
             raise
         except:
-            print >> sys.stderr, traceback.format_exc()
+            print(traceback.format_exc(), file=sys.stderr)
             raise
 
         if self.daemon:
@@ -218,7 +221,7 @@ class ServerProc(object):
                 except KeyboardInterrupt:
                     pass
             except:
-                print >> sys.stderr, traceback.format_exc()
+                print(traceback.format_exc(), file=sys.stderr)
                 raise
 
     def wait(self):
@@ -343,7 +346,7 @@ class WebSocketDaemon(object):
             elif pywebsocket._import_pyopenssl():
                 tls_module = pywebsocket._TLS_BY_PYOPENSSL
             else:
-                print "No SSL module available"
+                print("No SSL module available")
                 sys.exit(1)
 
             cmd_args += ["--tls",

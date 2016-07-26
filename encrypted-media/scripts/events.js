@@ -3,7 +3,7 @@ function runTest(config) {
     var testname = config.keysystem + ', events';
 
     var configuration = getSimpleConfigurationForContent( config.content );
-    
+
     if ( config.initDataType && config.initData ) configuration.initDataTypes = [ config.initDataType ]
 
     async_test(function(test)
@@ -39,9 +39,9 @@ function runTest(config) {
         }
 
         navigator.requestMediaKeySystemAccess( config.keysystem, [ configuration ] ).then(function(access) {
-        
+
             initDataType = access.getConfiguration().initDataTypes[0];
-            
+
             if ( config.initDataType && config.initData )
             {
                 initData = config.initData;
@@ -50,7 +50,7 @@ function runTest(config) {
             {
                 initData = getInitData(config.content, initDataType);
             }
-            
+
             return access.createMediaKeys();
         }).then(test.step_func(function(mediaKeys) {
             mediaKeySession = mediaKeys.createSession();

@@ -13,7 +13,7 @@ var All_Pointer_Events = [
 // Check for conformance to PointerEvent interface
 // TA: 1.1, 1.2, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11, 1.12, 1.13
 function check_PointerEvent(event) {
-    let pointerTestName = event.pointerType + ' ' + event.type;
+    var pointerTestName = event.pointerType + ' ' + event.type;
     test(function () {
         assert_true(event instanceof PointerEvent, "event is a PointerEvent event");
     }, pointerTestName + " event is a PointerEvent event");

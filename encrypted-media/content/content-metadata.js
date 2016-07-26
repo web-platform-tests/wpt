@@ -1,13 +1,30 @@
 content = addMemberListToObject( {
-    'mp4-basic' : {     initDataType:       'cenc',                             // This is the type of the embedded initData
+    'mp4-basic' : {     initDataType:   'cenc',
                         audio : {   type:   'audio/mp4;codecs="mp4a.40.2"',
                                     path:   '/encrypted-media/content/audio_aac-lc_128k_dashinit.mp4' },
                         video : {   type:   'video/mp4;codecs="avc1.4d401e"',
                                     path:   '/encrypted-media/content/video_512x288_h264-360k_enc_dashinit.mp4' },
                         keys :  [ { kid: [ 0xad, 0x13, 0xf9, 0xea, 0x2b, 0xe6, 0x98, 0xb8, 0x75, 0xf5, 0x04, 0xa8, 0xe3, 0xcc, 0xea, 0x64 ],
-                                    key: [ 0xbe, 0x7d, 0xf8, 0xa3, 0x66, 0x7a, 0x6a, 0x8f, 0xd5, 0x64, 0xd0, 0xed, 0x81, 0x33, 0x9a, 0x95 ] } ],
-                        initData: 'AAAAcXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAFEIARIQrRP56ivmmLh19QSo48zqZBoIY2FzdGxhYnMiKGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRjMmx1WjJ4bEluMD0yB2RlZmF1bHQAAAMacHNzaAAAAACaBPB5mEBChquS5lvgiF+VAAAC+voCAAABAAEA8AI8AFcAUgBNAEgARQBBAEQARQBSACAAeABtAGwAbgBzAD0AIgBoAHQAdABwADoALwAvAHMAYwBoAGUAbQBhAHMALgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAC8ARABSAE0ALwAyADAAMAA3AC8AMAAzAC8AUABsAGEAeQBSAGUAYQBkAHkASABlAGEAZABlAHIAIgAgAHYAZQByAHMAaQBvAG4APQAiADQALgAwAC4AMAAuADAAIgA+ADwARABBAFQAQQA+ADwAUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEUAWQBMAEUATgA+ADEANgA8AC8ASwBFAFkATABFAE4APgA8AEEATABHAEkARAA+AEEARQBTAEMAVABSADwALwBBAEwARwBJAEQAPgA8AC8AUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEkARAA+ADYAdgBrAFQAcgBlAFkAcgB1AEoAaAAxADkAUQBTAG8ANAA4AHoAcQBaAEEAPQA9ADwALwBLAEkARAA+ADwAQwBIAEUAQwBLAFMAVQBNAD4AagBZAEYATgBmADAAeQBmADQAaQBzAD0APAAvAEMASABFAEMASwBTAFUATQA+ADwATABBAF8AVQBSAEwAPgBoAHQAdABwADoALwAvAHAAbABhAHkAcgBlAGEAZAB5AC4AZABpAHIAZQBjAHQAdABhAHAAcwAuAG4AZQB0AC8AcAByAC8AcwB2AGMALwByAGkAZwBoAHQAcwBtAGEAbgBhAGcAZQByAC4AYQBzAG0AeAA/AFAAbABhAHkAUgBpAGcAaAB0AD0AMQAmAGEAbQBwADsAVQBzAGUAUwBpAG0AcABsAGUATgBvAG4AUABlAHIAcwBpAHMAdABlAG4AdABMAGkAYwBlAG4AcwBlAD0AMQA8AC8ATABBAF8AVQBSAEwAPgA8AC8ARABBAFQAQQA+ADwALwBXAFIATQBIAEUAQQBEAEUAUgA+AA=='
+                                    key: [ 0xbe, 0x7d, 0xf8, 0xa3, 0x66, 0x7a, 0x6a, 0x8f, 0xd5, 0x64, 0xd0, 0xed, 0x81, 0x33, 0x9a, 0x95 ],
+                                    initDataType: 'cenc',
+                                    initData: 'AAAAcXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAFEIARIQrRP56ivmmLh19QSo48zqZBoIY2FzdGxhYnMiKGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRjMmx1WjJ4bEluMD0yB2RlZmF1bHQAAAMacHNzaAAAAACaBPB5mEBChquS5lvgiF+VAAAC+voCAAABAAEA8AI8AFcAUgBNAEgARQBBAEQARQBSACAAeABtAGwAbgBzAD0AIgBoAHQAdABwADoALwAvAHMAYwBoAGUAbQBhAHMALgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAC8ARABSAE0ALwAyADAAMAA3AC8AMAAzAC8AUABsAGEAeQBSAGUAYQBkAHkASABlAGEAZABlAHIAIgAgAHYAZQByAHMAaQBvAG4APQAiADQALgAwAC4AMAAuADAAIgA+ADwARABBAFQAQQA+ADwAUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEUAWQBMAEUATgA+ADEANgA8AC8ASwBFAFkATABFAE4APgA8AEEATABHAEkARAA+AEEARQBTAEMAVABSADwALwBBAEwARwBJAEQAPgA8AC8AUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEkARAA+ADYAdgBrAFQAcgBlAFkAcgB1AEoAaAAxADkAUQBTAG8ANAA4AHoAcQBaAEEAPQA9ADwALwBLAEkARAA+ADwAQwBIAEUAQwBLAFMAVQBNAD4AagBZAEYATgBmADAAeQBmADQAaQBzAD0APAAvAEMASABFAEMASwBTAFUATQA+ADwATABBAF8AVQBSAEwAPgBoAHQAdABwADoALwAvAHAAbABhAHkAcgBlAGEAZAB5AC4AZABpAHIAZQBjAHQAdABhAHAAcwAuAG4AZQB0AC8AcAByAC8AcwB2AGMALwByAGkAZwBoAHQAcwBtAGEAbgBhAGcAZQByAC4AYQBzAG0AeAA/AFAAbABhAHkAUgBpAGcAaAB0AD0AMQAmAGEAbQBwADsAVQBzAGUAUwBpAG0AcABsAGUATgBvAG4AUABlAHIAcwBpAHMAdABlAG4AdABMAGkAYwBlAG4AcwBlAD0AMQA8AC8ATABBAF8AVQBSAEwAPgA8AC8ARABBAFQAQQA+ADwALwBXAFIATQBIAEUAQQBEAEUAUgA+AA==' } ]
                     },
+                    
+    'mp4-av-multikey' : {  initDataType:   'cenc',
+                        audio:  {   type:   'audio/mp4;codecs="mp4a.40.2"',
+                                    path:   '/encrypted-media/content/audio_aac-lc-128k_enc.mp4' },
+                        video : {   type:   'video/mp4;codecs="avc1.4d401e"',
+                                    path:   '/encrypted-media/content/video_512x288_h264-360k_enc_dashinit.mp4' },
+                        keys :  [ { kid: [ 0xad, 0x13, 0xf9, 0xea, 0x2b, 0xe6, 0x98, 0xb8, 0x75, 0xf5, 0x04, 0xa8, 0xe3, 0xcc, 0xea, 0x64 ],
+                                    key: [ 0xbe, 0x7d, 0xf8, 0xa3, 0x66, 0x7a, 0x6a, 0x8f, 0xd5, 0x64, 0xd0, 0xed, 0x81, 0x33, 0x9a, 0x95 ],
+                                    initDataType: 'cenc',
+                                    initData: 'AAAAcXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAFEIARIQrRP56ivmmLh19QSo48zqZBoIY2FzdGxhYnMiKGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRjMmx1WjJ4bEluMD0yB2RlZmF1bHQAAAMacHNzaAAAAACaBPB5mEBChquS5lvgiF+VAAAC+voCAAABAAEA8AI8AFcAUgBNAEgARQBBAEQARQBSACAAeABtAGwAbgBzAD0AIgBoAHQAdABwADoALwAvAHMAYwBoAGUAbQBhAHMALgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAC8ARABSAE0ALwAyADAAMAA3AC8AMAAzAC8AUABsAGEAeQBSAGUAYQBkAHkASABlAGEAZABlAHIAIgAgAHYAZQByAHMAaQBvAG4APQAiADQALgAwAC4AMAAuADAAIgA+ADwARABBAFQAQQA+ADwAUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEUAWQBMAEUATgA+ADEANgA8AC8ASwBFAFkATABFAE4APgA8AEEATABHAEkARAA+AEEARQBTAEMAVABSADwALwBBAEwARwBJAEQAPgA8AC8AUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEkARAA+ADYAdgBrAFQAcgBlAFkAcgB1AEoAaAAxADkAUQBTAG8ANAA4AHoAcQBaAEEAPQA9ADwALwBLAEkARAA+ADwAQwBIAEUAQwBLAFMAVQBNAD4AagBZAEYATgBmADAAeQBmADQAaQBzAD0APAAvAEMASABFAEMASwBTAFUATQA+ADwATABBAF8AVQBSAEwAPgBoAHQAdABwADoALwAvAHAAbABhAHkAcgBlAGEAZAB5AC4AZABpAHIAZQBjAHQAdABhAHAAcwAuAG4AZQB0AC8AcAByAC8AcwB2AGMALwByAGkAZwBoAHQAcwBtAGEAbgBhAGcAZQByAC4AYQBzAG0AeAA/AFAAbABhAHkAUgBpAGcAaAB0AD0AMQAmAGEAbQBwADsAVQBzAGUAUwBpAG0AcABsAGUATgBvAG4AUABlAHIAcwBpAHMAdABlAG4AdABMAGkAYwBlAG4AcwBlAD0AMQA8AC8ATABBAF8AVQBSAEwAPgA8AC8ARABBAFQAQQA+ADwALwBXAFIATQBIAEUAQQBEAEUAUgA+AA==' },
+                                  { kid: [ 0x55, 0x8e, 0xe5, 0x41, 0xb9, 0x0a, 0xb2, 0xf3, 0x95, 0x0d, 0x00, 0xad, 0xe3, 0x76, 0x0d, 0x45 ],
+                                    key: [ 0x91, 0x03, 0x92, 0x63, 0x01, 0x6d, 0xa6, 0x35, 0x77, 0x0d, 0x57, 0xdb, 0x92, 0xf9, 0x8b, 0xd0 ],
+                                    initDataType : 'cenc',
+                                    initData: 'AAAcXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAFEIARIQVY7lQbkKsvOVDQCt43YNRRoIY2FzdGxhYnMiKGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRjMmx1WjJ4bEluMD0yB2RlZmF1bHQAAAxpwc3NoAAAAAJoE8HmYQEKGq5LmW+CIX5UAAAL6+gIAAAEAAQDwAjwAVwBSAE0ASABFAEEARABFAFIAIAB4AG0AbABuAHMAPQAiAGgAdAB0AHAAOgAvAC8AcwBjAGgAZQBtAGEAcwAuAG0AaQBjAHIAbwBzAG8AZgB0AC4AYwBvAG0ALwBEAFIATQAvADIAMAAwADcALwAwADMALwBQAGwAYQB5AFIAZQBhAGQAeQBIAGUAYQBkAGUAcgAiACAAdgBlAHIAcwBpAG8AbgA9ACIANAAuADAALgAwAC4AMAAiAD4APABEAEEAVABBAD4APABQAFIATwBUAEUAQwBUAEkATgBGAE8APgA8AEsARQBZAEwARQBOAD4AMQA2ADwALwBLAEUAWQBMAEUATgA+ADwAQQBMAEcASQBEAD4AQQBFAFMAQwBUAFIAPAAvAEEATABHAEkARAA+ADwALwBQAFIATwBUAEUAQwBUAEkATgBGAE8APgA8AEsASQBEAD4AUQBlAFcATwBWAFEAcQA1ADgANwBLAFYARABRAEMAdAA0ADMAWQBOAFIAUQA9AD0APAAvAEsASQBEAD4APABDAEgARQBDAEsAUwBVAE0APgBZAGkATwAvADEANgBMAHMAOQA2AEUAPQA8AC8AQwBIAEUAQwBLAFMAVQBNAD4APABMAEEAXwBVAFIATAA+AGgAdAB0AHAAOgAvAC8AcABsAGEAeQByAGUAYQBkAHkALgBkAGkAcgBlAGMAdAB0AGEAcABzAC4AbgBlAHQALwBwAHIALwBzAHYAYwAvAHIAaQBnAGgAdABzAG0AYQBuAGEAZwBlAHIALgBhAHMAbQB4AD8AUABsAGEAeQBSAGkAZwBoAHQAPQAxACYAYQBtAHAAOwBVAHMAZQBTAGkAbQBwAGwAZQBOAG8AbgBQAGUAcgBzAGkAcwB0AGUAbgB0AEwAaQBjAGUAbgBzAGUAPQAxADwALwBMAEEAXwBVAFIATAA+ADwALwBEAEEAVABBAD4APAAvAFcAUgBNAEgARQBBAEQARQBSAD4A' } ]
+                    },
+                                
 
     'webm' :        {   audio : {   type:   'audio/webm; codecs="opus"' },
                         video : {   type:   'video/webm; codecs="vp8"',
@@ -75,6 +92,13 @@ function getInitData( contentitem, initDataType )
     throw 'initDataType ' + initDataType + ' not supported.';
 }
 
+function getProprietaryInitDatas( contentitem )
+{
+    return { initDataType: contentitem.initDataType,
+             initDatas : contentitem.keys.filter( function( k ) { return k.initData; } )
+                                    .map( function( k ) { return k.initData; } ) };
+}
+
 // Returns a promise that resolves to true or false depending on whether the content is supported with the key system and one of the initDataTypes
 function isContentSupportedForInitDataTypes( keysystem, intiDataTypes, contentitem )
 {
@@ -83,22 +107,37 @@ function isContentSupportedForInitDataTypes( keysystem, intiDataTypes, contentit
                             videoCapabilities: [ { contentType: contentitem.video.type } ]
                         };
     return navigator.requestMediaKeySystemAccess( keysystem, [ configuration ] )
-    .then(function() { return true; }, function() { return false; } );
+    .then(  function( access ) {
+                return { content: contentitem, supported: true, initDataTypes: access.getConfiguration().initDataTyes };
+            },
+            function() {
+                return { content: contentitem, supported: false };
+            } );
 }
 
-// Returns a promise that resolves to true or false depending on whether the content is supported with the key system
+// Returns a promise that resolves to { content:, supported:, initDataTypes: } object
 function isContentSupported( keysystem, contentitem )
 {
     return isContentSupportedForInitDataTypes( keysystem, [ 'cenc', 'webm', 'keyids' ], contentitem );
 }
 
-// returns a Promise resolving to an array of supported content for the key system
+// Returns a Promise resolving to an array of supported content for the key system
 function getSupportedContent( keysystem )
 {
     return Promise.all( content._items.map( isContentSupported.bind( null, keysystem ) ) ).
-    then( function( supported )
+    then( function( results )
     {
-        return content._items.filter( function( item, i ) { return supported[ i ] && item.keys.length > 0; } );
+        return results.filter( function( r ) { return r.supported; } ).map( function( r ) { return r.content; } );
+    } );
+}
+
+// Returns a Promise resolving to an array of { content:, initDataType: } pairs for the key system
+function getSupportedContentAndInitDataTypes( keysystem )
+{
+    return Promise.all( content._items.map( isContentSupported.bind( null, keysystem ) ) ).
+    then( function( results )
+    {
+        return results.filter( function( r ) { return r.supported; } );
     } );
 }
 

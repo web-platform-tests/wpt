@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: Verify MediaKeySession.keyStatuses with multiple sessions, DRM</title>
+    <title>Encrypted Media Extensions: Verify MediaKeySession.keyStatuses with multiple sessions, Clear Key</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -29,7 +29,7 @@
   <body>
     <h1 class="instructions">Description</h1>
     <p class="instructions">
-      This test verifies expected behaviour of MediaKeySession.keyStatuses with multiple sessions and DRM
+      This test verifies expected behaviour of MediaKeySession.keyStatuses with multiple sessions and Clear Key
     </p>
 
     <div id='log'></div>
@@ -37,19 +37,19 @@
     <script>
         getSupportedContent( 'org.w3.clearkey' )
         .then( function( contents ) {
-
+        
             // Select a content item with multiple keys
             var contentitem = contents.filter( function( item ) { return item.keys.length > 1; } )[ 0 ];
-
+            
             var config = {  keysystem:          'org.w3.clearkey',
                             content:            contentitem,
                             messagehandler:     messagehandler.bind( contentitem ),
                             initDataType:       'keyids',
                             initData:           getMultikeyInitDatas(contentitem,'keyids'),
                         };
-
+            
             runTest(config);
-
+        
         } );
     </script>
   </body>

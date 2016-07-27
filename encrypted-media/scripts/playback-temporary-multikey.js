@@ -10,24 +10,26 @@ function runTest(config) {
                             videoCapabilities: [ { contentType: config.videoType } ],
                             sessionTypes: [ 'temporary' ] };
 
+    consoleWrite(JSON.stringify(config));
+
     async_test( function( test ) {
 
         var _video = config.video,
             _mediaKeys,
             _mediaKeySessions = [ ],
             _mediaSource;
-            
+
         function onEncrypted(event) {
             assert_equals(event.target, _video);
             assert_true(event instanceof window.MediaEncryptedEvent);
             assert_equals(event.type, 'encrypted');
-            
+
             assert_any( assert_equals, _mediaKeySessions.length, [ 0, 1 ] );
-            
+
             var mediaKeySession = _mediaKeys.createSession( 'temporary' );
-            
+
             waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
-            
+
             var initDataType, initData;
             if ( config.initDataType && config.initData )
             {
@@ -39,9 +41,9 @@ function runTest(config) {
                 initDataType = event.initDataType;
                 initData = event.initData;
             }
-            
+
             _mediaKeySessions.push( mediaKeySession );
-             
+
             mediaKeySession.generateRequest( initDataType, initData )
             .catch(function(error) {
                 forceTestFailureFromPromise(test, error);
@@ -59,7 +61,7 @@ function runTest(config) {
 
             config.messagehandler( config.keysystem, event.messageType, event.message )
             .then( function( response ) {
-            
+
                 event.target.update( response )
                 .catch(function(error) {
                     forceTestFailureFromPromise(test, error);
@@ -73,9 +75,10 @@ function runTest(config) {
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', onTimeupdate, true);
         }
-        
+
         function onTimeupdate(event) {
             if ( _video.currentTime > ( config.duration || 5 ) ) {
+
                 _video.pause();
                 test.done();
             }

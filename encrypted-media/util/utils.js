@@ -14,7 +14,7 @@ function getInitData(initDataType) {
 
     if (initDataType == 'cenc') {
         return new Uint8Array([
-            0x00, 0x00, 0x00, 0x00, // size = 0
+            0x00, 0x00, 0x00, 0x34,   // size
             0x70, 0x73, 0x73, 0x68, // 'pssh'
             0x01, // version = 1
             0x00, 0x00, 0x00, // flags
@@ -165,4 +165,61 @@ function getSupportedInitDataTypes( keysystem )
 {
     return [ 'cenc', 'keyids', 'webm' ].filter( isInitDataTypeSupported.bind( null, keysystem ) );
 }
+
+function arrayBufferAsString(buffer)
+{
+    var array = [];
+    Array.prototype.push.apply( array, new Uint8Array( buffer ) );
+    return '0x' + array.map( function( x ) { return x < 16 ? '0'+x.toString(16) : x.toString(16); } ).join('');
+}
+
+function dumpKeyStatuses(keyStatuses)
+{
+    consoleWrite("for (var entry of keyStatuses)");
+    for (var entry of keyStatuses) {
+        consoleWrite(arrayBufferAsString(entry[0]) + ": " + entry[1]);
+    }
+    consoleWrite("for (var keyId of keyStatuses.keys())");
+    for (var keyId of keyStatuses.keys()) {
+        consoleWrite(arrayBufferAsString(keyId));
+    }
+    consoleWrite("for (var status of keyStatuses.values())");
+    for (var status of keyStatuses.values()) {
+        consoleWrite(status);
+    }
+    consoleWrite("for (var entry of keyStatuses.entries())");
+    for (var entry of keyStatuses.entries()) {
+        consoleWrite(arrayBufferAsString(entry[0]) + ": " + entry[1]);
+    }
+    consoleWrite("keyStatuses.forEach()");
+    keyStatuses.forEach(function(status, keyId) {
+        consoleWrite(arrayBufferAsString(keyId) + ": " + status);
+    });
+}
+
+// Verify that |keyStatuses| contains just the keys in |keys.expected|
+// and none of the keys in |keys.unexpected|. All keys should have status
+// 'usable'. Example call: verifyKeyStatuses(mediaKeySession.keyStatuses,
+// { expected: [key1], unexpected: [key2] });
+function verifyKeyStatuses(keyStatuses, keys)
+{
+    var expected = keys.expected || [];
+    var unexpected = keys.unexpected || [];
+
+    // |keyStatuses| should have same size as number of |keys.expected|.
+    assert_equals(keyStatuses.size, expected.length);
+
+    // All |keys.expected| should be found.
+    expected.map(function(key) {
+        assert_true(keyStatuses.has(key));
+        assert_equals(keyStatuses.get(key), 'usable');
+    });
+
+    // All |keys.unexpected| should not be found.
+    unexpected.map(function(key) {
+        assert_false(keyStatuses.has(key));
+        assert_equals(keyStatuses.get(key), undefined);
+    });
+}
+
 

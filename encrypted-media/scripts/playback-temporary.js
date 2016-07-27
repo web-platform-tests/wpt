@@ -44,7 +44,7 @@ function runTest(config) {
             .catch(function(error) {
                 forceTestFailureFromPromise(test, error);
             });
-            
+
             _video.setMediaKeys(_mediaKeys);
         }
 

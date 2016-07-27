@@ -63,9 +63,9 @@ function runTest(config) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-            
+
             _video.setMediaKeys(_mediaKeys);
-            
+
             _mediaKeySession = _mediaKeys.createSession( 'temporary' );
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);

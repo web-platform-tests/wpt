@@ -8,18 +8,16 @@ function runTest(config) {
                             audioCapabilities: [ { contentType: config.audioType } ],
                             videoCapabilities: [ { contentType: config.videoType } ],
                             sessionTypes: [ 'temporary' ] };
-    
+
     promise_test(function(test)
     {
         var promises = config.video.map( function( video ) { return play_video_as_promise( test, video ); } );
-        
-        return Promise.all(promises);
-        
-    }, testname );
-    
-    
-    function play_video_as_promise( test, _video ) {
 
+        return Promise.all(promises);
+
+    }, testname );
+
+    function play_video_as_promise( test, _video ) {
         var _mediaKeys,
             _mediaKeySession,
             _mediaSource;
@@ -47,16 +45,16 @@ function runTest(config) {
             assert_equals(event.type, 'encrypted');
 
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
-            
+
             _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
                                                 config.initData || event.initData )
             .catch(function(error) {
                 forceTestFailureFromPromise(test, error);
             });
-            
+
             _video.setMediaKeys(_mediaKeys);
         }
-        
+
         function wait_for_timeupdate_message(video)
         {
             return new Promise(function(resolve) {

@@ -2,7 +2,7 @@ function runTest(config) {
 
     var testname = config.keysystem + ', successful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', multiple keys, single session, '
+                                    + ', multiple keys and sessions, '
                                     + config.testcase;
 
     var configuration = {   initDataTypes: [ config.initDataType ],
@@ -22,8 +22,7 @@ function runTest(config) {
             assert_true(event instanceof window.MediaEncryptedEvent);
             assert_equals(event.type, 'encrypted');
 
-            // Only create a session for the first encrypted event
-            if ( _mediaKeySessions.length > 0 ) return;
+            assert_any( assert_equals, _mediaKeySessions.length, [ 0, 1 ] );
 
             var mediaKeySession = _mediaKeys.createSession( 'temporary' );
 
@@ -33,7 +32,7 @@ function runTest(config) {
             if ( config.initDataType && config.initData )
             {
                 initDataType = config.initDataType;
-                initData = config.initData;
+                initData = config.initData[ _mediaKeySessions.length ];
             }
             else
             {
@@ -80,6 +79,8 @@ function runTest(config) {
 
                 consoleWrite("Session 0:");
                 dumpKeyStatuses( _mediaKeySessions[ 0 ].keyStatuses );
+                consoleWrite("Session 1:");
+                dumpKeyStatuses( _mediaKeySessions[ 1 ].keyStatuses );
 
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();

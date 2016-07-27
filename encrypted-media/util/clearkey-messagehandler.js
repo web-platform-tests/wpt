@@ -34,5 +34,5 @@ function messagehandler( keysystem, messageType, message )
         return Promise.resolve( toUtf8( { kids: release.kids } ) );
     }
 
-    throw new TypeError( 'Unsupported message type for ClearKey' );
+    throw new TypeError( 'Unsupported message type for ClearKey' + messageType );
 };

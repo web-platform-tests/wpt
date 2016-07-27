@@ -27,11 +27,6 @@
 
   </head>
   <body>
-    <h1 class="instructions">Description</h1>
-    <p class="instructions">
-      This test verifies successful playback for a temporary session with Clear Key and mp4/cenc content.
-    </p>
-
     <div id='log'></div>
 
     <div id='video'>
@@ -49,7 +44,7 @@
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
                         initData:           getInitData(contentitem,'keyids'),
-                        duration:           5 };
+                        duration:           2 };
 
         runTest(config);
     </script>

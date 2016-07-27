@@ -27,11 +27,6 @@
 
   </head>
   <body>
-    <h1 class="instructions">Description</h1>
-    <p class="instructions">
-      This test verifies successful playback for a temporary session with DRM, mp4/cenc and multiple keys.
-    </p>
-
     <div id='log'></div>
 
     <div id='video'>
@@ -48,7 +43,7 @@
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
                         initDataType:       contentitem.initDataType,
-                        duration:           5,
+                        duration:           2,
                         testcase:           'audio/video' };
 
         runTest(config);

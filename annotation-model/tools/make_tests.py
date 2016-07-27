@@ -27,8 +27,8 @@ args = parser.parse_args()
 
 # pull in the template
 
-manualTemplate = open(MANUAL_TEMPLATE).read()
-autoTemplate = open(JS_TEMPLATE).read()
+manualTemplate = open(MANUAL_TEMPLATE, "r").read()
+autoTemplate = open(JS_TEMPLATE, "r").read()
 
 defList = []
 defnames = ""

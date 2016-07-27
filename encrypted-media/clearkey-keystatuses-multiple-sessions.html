@@ -37,19 +37,19 @@
     <script>
         getSupportedContent( 'org.w3.clearkey' )
         .then( function( contents ) {
-        
+
             // Select a content item with multiple keys
             var contentitem = contents.filter( function( item ) { return item.keys.length > 1; } )[ 0 ];
-            
+
             var config = {  keysystem:          'org.w3.clearkey',
                             content:            contentitem,
                             messagehandler:     messagehandler.bind( contentitem ),
                             initDataType:       'keyids',
                             initData:           getMultikeyInitDatas(contentitem,'keyids'),
                         };
-            
+
             runTest(config);
-        
+
         } );
     </script>
   </body>

@@ -10,8 +10,6 @@ function runTest(config) {
                             videoCapabilities: [ { contentType: config.videoType } ],
                             sessionTypes: [ 'temporary' ] };
 
-    consoleWrite(JSON.stringify(config));
-
     async_test( function( test ) {
 
         var _video = config.video,
@@ -79,6 +77,12 @@ function runTest(config) {
         function onTimeupdate(event) {
             if ( _video.currentTime > ( config.duration || 5 ) ) {
 
+                consoleWrite("Session 0:");
+                dumpKeyStatuses( _mediaKeySessions[ 0 ].keyStatuses );
+                consoleWrite("Session 1:");
+                dumpKeyStatuses( _mediaKeySessions[ 1 ].keyStatuses );
+
+                _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
                 test.done();
             }

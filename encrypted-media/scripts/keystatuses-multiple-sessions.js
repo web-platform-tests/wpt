@@ -5,10 +5,7 @@ function runTest(config)
     var configuration = getSimpleConfigurationForContent( config.content );
 
     if ( config.initDataType && config.initData ) configuration.initDataTypes = [ config.initDataType ];
-    
-    consoleWrite( config.content.audio.path );
-    consoleWrite( config.content.video.path );
-    
+
     async_test(function(test)
     {
         var mediaKeySession1;

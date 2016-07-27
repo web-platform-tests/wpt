@@ -87,10 +87,8 @@ function waitForEventAndRunStep(eventName, element, func, stepTest)
         if (func)
             func(event);
     }
-    if (stepTest)
-        eventCallback = stepTest.step_func(eventCallback);
 
-    element.addEventListener(eventName, eventCallback, true);
+    element.addEventListener(eventName, stepTest.step_func(eventCallback), true);
 }
 
 var consoleDiv = null;

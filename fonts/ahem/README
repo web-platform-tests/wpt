@@ -25,17 +25,17 @@ Most other US-ASCII characters in the font have the same glyph as X.
 Additionally, the following Unicode formatting characters are assigned
 appropriate glyphs so that they may safely be used in tests as well:
 
-  U+2002 - en-space
+  U+2002 - en-space (0.5em)
   U+2003 - em-space
   U+2004 - 3-per-em space
   U+2005 - 4-per-em space
   U+2006 - six-per-em space
-  U+2009 - thin space
-  U+200A - hair space
+  U+2009 - thin space (0.2em)
+  U+200A - hair space (0.1em)
   U+200B - zero-width space
   U+200C - zero-width non-joiner
   U+200D - zero-width joiner
-  U+3000 - ideographic space
+  U+3000 - ideographic space (1em)
   U+FEFF - zero-width non-breaking space
 
 The Ahem font belongs to the public domain as described in COPYING.

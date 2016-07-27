@@ -340,6 +340,33 @@ class SourceFile(object):
         graph (i.e. if it contains any <link rel=[mis]match>"""
         return bool(self.references)
 
+    @cached_property
+    def css_flag_nodes(self):
+        """List of ElementTree Elements corresponding to nodes representing a
+        flag <meta>"""
+        if not self.root:
+            return []
+        return self.root.findall(".//{http://www.w3.org/1999/xhtml}meta[@name='flags']")
+
+    @cached_property
+    def css_flags(self):
+        """Set of flags specified in the file"""
+        rv = set()
+        for item in self.css_flag_nodes:
+            if "content" in item.attrib:
+                for flag in item.attrib["content"].split():
+                    rv.add(flag)
+        return rv
+
+    @cached_property
+    def content_is_css_manual(self):
+        """Boolean indicating whether the file content represents a
+        CSS WG-style manual test"""
+        if not self.root:
+            return None
+        # return True if the intersection between the two sets is non-empty
+        return bool(self.css_flags & {"animated", "font", "history", "interact", "paged", "speech", "userstyle"})
+
     def manifest_items(self):
         """List of manifest items corresponding to the file. There is typically one
         per test, but in the case of reftests a node may have corresponding manifest
@@ -372,6 +399,9 @@ class SourceFile(object):
 
         elif self.name_is_webdriver:
             rv = WebdriverSpecTest.item_type, [WebdriverSpecTest(self, self.url)]
+
+        elif self.content_is_css_manual and not self.name_is_reference:
+            rv = ManualTest.item_type, [ManualTest(self, self.url)]
 
         elif self.content_is_testharness:
             rv = TestharnessTest.item_type, []

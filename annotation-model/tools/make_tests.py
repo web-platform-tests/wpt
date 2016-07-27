@@ -52,7 +52,7 @@ if (len(defList)):
 # iterate over the folders looking for .test files
 
 for curdir, subdirList, fileList in os.walk(TESTTREE, topdown=True):
-  # sjip the definitions directory
+  # skip the definitions directory
   subdirList[:] = [d for d in subdirList if d != "definitions"]
   # skip the examples directory
   if args.examples != 1:

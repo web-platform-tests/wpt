@@ -1,6 +1,8 @@
 // Expect utf8decoder and utf8decoder to be TextEncoder('utf-8') and TextDecoder('utf-8') respectively
 function messagehandler(keysystem, messageType, message) {
 
+    var contentmetadata = this;
+
     const keySystems = {
         'com.widevine.alpha': {
             responseType: 'json',
@@ -94,7 +96,7 @@ function messagehandler(keysystem, messageType, message) {
                 body: keySystems[keysystem].getLicenseRequestFromMessage(message)
             }).then(function(response) {
                 if(response.status !== 200) {
-                    reject('DRM: ' + keySystemString + ' update, XHR status is "' + response.statusText + '" (' + response.status + '), expected to be 200. readyState is ' + response.readyState + '.  Response is ' + ((response) ? keySystems[keysystem].getErrorResponse(response) : 'NONE'));
+                    reject('DRM: ' + keysystem + ' update, XHR status is "' + response.statusText + '" (' + response.status + '), expected to be 200. readyState is ' + response.readyState + '.  Response is ' + ((response) ? keySystems[keysystem].getErrorResponse(response) : 'NONE'));
                     return;
                 } else {
                     return response.json();

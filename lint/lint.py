@@ -48,26 +48,25 @@ def check_path_length(repo_root, path):
 def set_type(error_type, errors):
     return [(error_type,) + error for error in errors]
 
-def parse_whitelist_file(filename):
+def parse_whitelist(f):
     """
-    Parse the whitelist file at `filename`, and return the parsed structure.
+    Parse the whitelist file given by `f`, and return the parsed structure.
     """
 
     data = defaultdict(lambda:defaultdict(set))
 
-    with open(filename) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            parts = [item.strip() for item in line.split(":")]
-            if len(parts) == 2:
-                parts.append(None)
-            else:
-                parts[-1] = int(parts[-1])
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [item.strip() for item in line.split(":")]
+        if len(parts) == 2:
+            parts.append(None)
+        else:
+            parts[-1] = int(parts[-1])
 
-            error_type, file_match, line_number = parts
-            data[file_match][error_type].add(line_number)
+        error_type, file_match, line_number = parts
+        data[file_match][error_type].add(line_number)
 
     return data
 
@@ -317,7 +316,8 @@ def lint(repo_root, paths, output_json):
     error_count = defaultdict(int)
     last = None
 
-    whitelist = parse_whitelist_file(os.path.join(repo_root, "lint.whitelist"))
+    with open(os.path.join(repo_root, "lint.whitelist")) as f:
+        whitelist = parse_whitelist(f)
 
     if output_json:
         output_errors = output_errors_json

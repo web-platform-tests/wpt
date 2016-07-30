@@ -118,7 +118,7 @@ function runTest(config, testname) {
 
                 _video.src = "";
                 _video.setMediaKeys( null ).then( function() { test.done() } );
-                
+
             } ), 0 );
         }
 

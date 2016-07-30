@@ -31,7 +31,7 @@ function runTest(config, testname) {
                 forceTestFailureFromPromise(test, error);
             });
         }
-        
+
         function onMessage(event) {
             assert_equals( event.target, _mediaKeySession );
             assert_true( event instanceof window.MediaKeyMessageEvent );
@@ -47,7 +47,7 @@ function runTest(config, testname) {
                 });
             });
         }
-        
+
         function onPlaying(event) {
 
             // Not using waitForEventAndRunStep() to avoid too many
@@ -63,47 +63,46 @@ function runTest(config, testname) {
                 _video.pause();
 
                 _mediaKeySession.closed.then( test.step_func( onClosed ) );
-               
+
                 _mediaKeySession.close();
             }
         }
-        
+
         function onClosed(event) {
 
             _video.src = "";
             _video.setMediaKeys( null );
-            
+
             var win = window.open( config.windowscript );
             window.addEventListener('message', test.step_func(function( event ) {
-                
+
                 event.data.forEach(test.step_func(function( assertion ) {
-                
+
                     assert_equals(assertion.actual, assertion.expected, assertion.message);
-                    
+
                 }));
-                
+
                 win.close();
-                
+
                 test.done();
             }));
-            
+
             delete config.video;
             delete config.messagehandler;
-            
+
             win.onload = function() {
-                
+
                 win.postMessage( { config: config, sessionId: _sessionId }, '*' );
             }
-
         }
 
         navigator.requestMediaKeySystemAccess(config.keysystem, [ configuration ]).then(function(access) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-            
+
             _video.setMediaKeys( mediaKeys );
-            
+
             _mediaKeySession = _mediaKeys.createSession( 'persistent-usage-record' );
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);

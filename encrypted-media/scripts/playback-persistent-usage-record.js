@@ -22,7 +22,7 @@ function runTest(config, testname) {
             assert_equals( event.target, _mediaKeySession );
             assert_true( event instanceof window.MediaKeyMessageEvent );
             assert_equals( event.type, 'message');
-            
+
             if ( !_releaseSequence )
             {
                 assert_in_array( event.messageType, [ 'license-request', 'individualization-request' ] );
@@ -61,9 +61,9 @@ function runTest(config, testname) {
 
         function onTimeupdate(event) {
             if ( _video.currentTime > ( config.duration || 5 ) && !_releaseSequence ) {
-            
+
                 _video.removeEventListener('timeupdate', onTimeupdate );
-            
+
                 _video.pause();
 
                 _releaseSequence = true;
@@ -72,7 +72,7 @@ function runTest(config, testname) {
                 _mediaKeySession.remove().catch(function(error) {
                     forceTestFailureFromPromise(test, error);
                 });
-               
+
                 _video.removeEventListener('timeupdate', onTimeupdate );
             }
         }

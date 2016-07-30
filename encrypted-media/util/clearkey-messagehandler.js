@@ -1,9 +1,7 @@
 // Expect utf8decoder and utf8decoder to be TextEncoder('utf-8') and TextDecoder('utf-8') respectively
 function messagehandler( keysystem, messageType, message )
 {
-    var keys = { 'AAAAAAPS_EEAAAAAAAAAAA' : 'rzQTSR-sLD46a4jgU4RCBg' };
-
-    var self = this;
+    var contentmetadata = this;
 
     if ( messageType === 'license-request' )
     {
@@ -11,7 +9,17 @@ function messagehandler( keysystem, messageType, message )
 
         var keys = request.kids.map( function( kid ) {
 
-            return { kty: 'oct', kid: kid, k: keys[ kid ] };
+            var key;
+            for( var i=0; i < contentmetadata.keys.length; ++i )
+            {
+                if ( base64urlEncode( contentmetadata.keys[ i ].kid ) === kid )
+                {
+                    key = base64urlEncode( contentmetadata.keys[ i ].key );
+                    break;
+                }
+            }
+
+            return { kty: 'oct', kid: kid, k: key };
 
         } );
 

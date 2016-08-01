@@ -41,7 +41,7 @@ function runTest(config) {
             // Not using waitForEventAndRunStep() to avoid too many
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', onTimeupdate, true);
-            
+
         }
 
         function onTimeupdate(event) {
@@ -66,20 +66,20 @@ function runTest(config) {
             _video.setMediaKeys(_mediaKeys);
 
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-            
+
             config.initData.forEach( function( initData ) {
-            
+
                 var mediaKeySession = _mediaKeys.createSession( 'temporary' );
 
                 waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
-                
+
                 _mediaKeySessions.push( mediaKeySession );
 
                 mediaKeySession.generateRequest( config.initDataType, initData )
                 .catch(function(error) {
                     forceTestFailureFromPromise(test, error);
                 });
-            
+
             } );
 
         }).then(function() {

@@ -19,7 +19,7 @@ function get_host_info() {
     HTTP_PORT2 = eval('{{ports[http][1]}}');
     HTTPS_PORT = eval('{{ports[https][0]}}');
     ORIGINAL_HOST = eval('\'{{host}}\'');
-    REMOTE_HOST = (ORIGIN_HOST === 'localhost') ? '127.0.0.1' : ('www1.' + ORIGINAL_HOST);
+    REMOTE_HOST = (ORIGINAL_HOST === 'localhost') ? '127.0.0.1' : ('www1.' + ORIGINAL_HOST);
   } catch (e) {
   }
   return {

@@ -7,6 +7,11 @@
 
 ## Whitespace rules that we can't enforce yet ##
 
+## REMOVE ME: temporary whitelist to unblock commit activity
+CONSOLE: webaudio/the-audio-api/the-pannernode-interface/test-pannernode-automation.html
+PRINT STATEMENT: XMLHttpRequest/resources/parse-headers.py
+## --------
+
 CR AT EOL: svg/import/*
 
 INDENT TABS: .gitmodules
@@ -26,6 +31,7 @@ INDENT TABS: webaudio/*
 INDENT TABS: webvtt/*
 INDENT TABS: XMLHttpRequest/*
 INDENT TABS: encoding/legacy*/*
+INDENT TABS: encrypted-media/polyfill/Makefile
 
 TRAILING WHITESPACE: app-uri/*
 TRAILING WHITESPACE: battery-status/*

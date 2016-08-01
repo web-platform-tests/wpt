@@ -102,6 +102,9 @@ scheme host and port.""")
 
     debugging_group.add_argument('--pause-on-unexpected', action="store_true",
                                  help="Halt the test runner when an unexpected result is encountered")
+    debugging_group.add_argument('--no-restart-on-unexpected', dest="restart_on_unexpected",
+                                 default=True, action="store_false",
+                                 help="Don't restart on an unexpected result")
 
     debugging_group.add_argument("--symbols-path", action="store", type=url_or_path,
                                  help="Path or url to symbols file used to analyse crash minidumps.")

@@ -45,7 +45,7 @@ class WebDriverServer(object):
     def make_command(self):
         """Returns the full command for starting the server process as a list."""
 
-    def start(self, block=True):
+    def start(self, block=False):
         try:
             self._run(block)
         except KeyboardInterrupt:
@@ -135,6 +135,17 @@ class ChromeDriverServer(WebDriverServer):
         return [self.binary,
                 cmd_arg("port", str(self.port)),
                 cmd_arg("url-base", self.base_path) if self.base_path else ""]
+
+
+class EdgeDriverServer(WebDriverServer):
+    def __init__(self, logger, binary="MicrosoftWebDriver.exe", port=None,
+                 base_path="", host="localhost"):
+        WebDriverServer.__init__(
+            self, logger, binary, host=host, port=port)
+
+    def make_command(self):
+        return [self.binary,
+                "--port=%s" % str(self.port)]
 
 
 class GeckoDriverServer(WebDriverServer):

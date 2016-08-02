@@ -52,7 +52,7 @@ function corsPreflight(desc, corsUrl, method, allowed, headers, safeHeaders) {
               assert_in_array(header[0].toLowerCase(), actualHeaders, "Preflight asked permission for header: " + header);
 
             let accessControlAllowHeaders = headerNames(headers).sort().join(",");
-            assert_equals(resp.headers.get("x-control-request-headers").replace(" ", ""), accessControlAllowHeaders, "Access-Control-Allow-Headers value");
+            assert_equals(resp.headers.get("x-control-request-headers").replace(new RegExp(" ", "g"), ""), accessControlAllowHeaders, "Access-Control-Allow-Headers value");
             return fetch(RESOURCES_DIR + "clean-stash.py?token=" + uuid_token);
           }
         });
@@ -79,11 +79,8 @@ corsPreflight("CORS [NEW], server refuses", corsUrl, "NEW", false);
 corsPreflight("CORS [GET] [x-test-header: allowed], server allows", corsUrl, "GET", true, [["x-test-header1", "allowed"]]);
 corsPreflight("CORS [GET] [x-test-header: refused], server refuses", corsUrl, "GET", false, [["x-test-header1", "refused"]]);
 
-var unsafeHeaderCount = 7;
 var headers = [
-    // Not safe
     ["x-test-header1", "allowedOrRefused"],
-    ["x-test-header2", "allowedOrRefused"],
     ["x-test-header2", "allowedOrRefused"],
     ["X-test-header3", "allowedOrRefused"],
     ["x-test-header-b", "allowedOrRefused"],

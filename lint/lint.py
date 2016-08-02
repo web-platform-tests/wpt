@@ -268,8 +268,12 @@ def check_python_ast(repo_root, path, f):
     if not path.endswith(".py"):
         return []
 
+    try:
+        root = ast.parse(f.read())
+    except SyntaxError as e:
+        return [("PARSE-FAILED", "Unable to parse file", path, e.lineno)]
+
     errors = []
-    root = ast.parse(f.read())
     for checker in ast_checkers:
         for lineno in checker.check(root):
             errors.append((checker.error, checker.description, path, lineno))

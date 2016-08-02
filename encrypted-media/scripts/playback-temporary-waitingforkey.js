@@ -54,7 +54,7 @@ function runTest(config) {
             _mediaKeys = mediaKeys;
             _video.setMediaKeys(_mediaKeys);
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);
-            
+
             // Not using waitForEventAndRunStep() to avoid too many
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', onTimeupdate, true);

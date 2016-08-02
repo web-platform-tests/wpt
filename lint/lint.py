@@ -276,6 +276,21 @@ def check_python_ast(repo_root, path, f):
     return errors
 
 
+def check_path(repo_root, path):
+    """
+    Runs lints that check the file path.
+
+    :param repo_root: the repository root
+    :param path: the path of the file within the repository
+    :returns: a list of errors found in ``path``
+    """
+
+    errors = []
+    for path_fn in path_lints:
+        errors.extend(path_fn(repo_root, path))
+    return errors
+
+
 def check_file_contents(repo_root, path, f):
     """
     Runs lints that check the file contents.
@@ -367,9 +382,9 @@ def lint(repo_root, paths, output_json):
         abs_path = os.path.join(repo_root, path)
         if not os.path.exists(abs_path):
             continue
-        for path_fn in path_lints:
-            errors = path_fn(repo_root, path)
-            last = process_errors(path, errors) or last
+
+        errors = check_path(repo_root, path)
+        last = process_errors(path, errors) or last
 
         if not os.path.isdir(abs_path):
             with open(abs_path) as f:

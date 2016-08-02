@@ -1,5 +1,6 @@
 
 function run_test() {
+    var subtle = crypto.subtle;
 
     var rawAesKeyData = [
         new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]),
@@ -128,6 +129,40 @@ function run_test() {
         return "{" + keyValuePairs.join(", ") + "}";
     }
 
+    function equalBuffers(a, b) {
+        if (a.byteLength !== b.byteLength) {
+            return false;
+        }
+
+        var aBytes = new Uint8Array(a);
+        var bBytes = new Uint8Array(b);
+
+        for (var i=0; i<a.byteLength; i++) {
+            if (aBytes[i] !== bBytes[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function equalJwk(expected, got) {
+        var fields = Object.keys(expected);
+        var fieldName;
+
+        for(var i=0; i<fields.length; i++) {
+            fieldName = fields[i];
+            if (!(fieldName in got)) {
+                return false;
+            }
+            if (expected[fieldName] !== got[fieldName]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     aesTestVectors.forEach(function(vector) {
         var algorithm = {name: vector.name};
         if ("hash" in vector) {
@@ -142,9 +177,18 @@ function run_test() {
                     // Test raw format first
                     if (vector.formats.includes("raw")) {
                         promise_test(function(test) {
-                            return window.crypto.subtle.importKey("raw", keyData, algorithm, extractable, usages).
+                            return subtle.importKey("raw", keyData, algorithm, extractable, usages).
                             then(function(key) {
-                                assert_equals(key.constructor, CryptoKey, "Created a CryptoKey");
+                                assert_equals(key.constructor, CryptoKey, "Imported a CryptoKey object");
+                                if (!extractable) {
+                                    return;
+                                }
+                                return subtle.exportKey("raw", key).
+                                then(function(bytes) {
+                                    assert_true(equalBuffers(keyData, bytes), "Round trip works");
+                                }, function(err) {
+                                    assert_unreached("Threw an unexpected error: " + err.toString());
+                                });
                             }, function(err) {
                                 assert_unreached("Threw an unexpected error: " + err.toString());
                             });
@@ -156,9 +200,19 @@ function run_test() {
                     if (vector.formats.includes("jwk")) {
                         data = jwkData(keyData, algorithm);
                         promise_test(function(test) {
-                            return window.crypto.subtle.importKey("jwk", data, algorithm, extractable, usages).
+                            return subtle.importKey("jwk", data, algorithm, extractable, usages).
                             then(function(key) {
                                 assert_equals(key.constructor, CryptoKey, "Created a CryptoKey");
+                                if (!extractable) {
+                                    return;
+                                }
+                                return subtle.exportKey("jwk", key).
+                                then(function(exported) {
+                                    //assert_true(equalBuffers(keyData, bytes), "Round trip works");
+                                    assert_true(equalJwk(data, exported), "Round trip works");
+                                }, function(err) {
+                                    assert_unreached("Threw an unexpected error: " + err.toString());
+                                });
                             }, function(err) {
                                 assert_unreached("Threw an unexpected error: " + err.toString());
                             });

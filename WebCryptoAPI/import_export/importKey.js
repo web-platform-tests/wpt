@@ -14,6 +14,10 @@ function run_test() {
         {name: "AES-CBC", legalUsages: ["encrypt", "decrypt"], extractable: [true, false], formats: ["raw", "jwk"]},
         {name: "AES-GCM", legalUsages: ["encrypt", "decrypt"], extractable: [true, false], formats: ["raw", "jwk"]},
         {name: "AES-KW",  legalUsages: ["wrapKey", "unwrapKey"], extractable: [true, false], formats: ["raw", "jwk"]},
+        {name: "HMAC",  hash: "SHA-1", legalUsages: ["sign", "verify"], extractable: [false], formats: ["raw", "jwk"]},
+        {name: "HMAC",  hash: "SHA-256", legalUsages: ["sign", "verify"], extractable: [false], formats: ["raw", "jwk"]},
+        {name: "HMAC",  hash: "SHA-384", legalUsages: ["sign", "verify"], extractable: [false], formats: ["raw", "jwk"]},
+        {name: "HMAC",  hash: "SHA-512", legalUsages: ["sign", "verify"], extractable: [false], formats: ["raw", "jwk"]},
         {name: "HKDF",  legalUsages: ["deriveBits", "deriveKey"], extractable: [false], formats: ["raw"]},
         {name: "PBKDF2",  legalUsages: ["deriveBits", "deriveKey"], extractable: [false], formats: ["raw"]}
     ];
@@ -59,6 +63,20 @@ function run_test() {
         }
 
         return results;
+    }
+
+    function jwkData(keyData, algorithm) {
+        var result = {
+            kty: "oct",
+            k: byteArrayToUnpaddedBase64(keyData)
+        };
+
+        if (algorithm.name.substring(0, 3) === "AES") {
+            result.alg = "A" + (8 * keyData.byteLength).toString() + algorithm.name.substring(4);
+        } else if (algorithm.name === "HMAC") {
+            result.alg = "HS" + algorithm.hash.substring(4);
+        }
+        return result;
     }
 
     function allValidUsages(possibleUsages, requiredUsages) {
@@ -112,12 +130,14 @@ function run_test() {
 
     aesTestVectors.forEach(function(vector) {
         var algorithm = {name: vector.name};
+        if ("hash" in vector) {
+            algorithm.hash = vector.hash;
+        }
 
         rawAesKeyData.forEach(function(keyData) {
-            var jwkData;
-
             allValidUsages(vector.legalUsages, []).forEach(function(usages) {
                 vector.extractable.forEach(function(extractable) {
+                    var data;
 
                     // Test raw format first
                     if (vector.formats.includes("raw")) {
@@ -128,26 +148,21 @@ function run_test() {
                             }, function(err) {
                                 assert_unreached("Threw an unexpected error: " + err.toString());
                             });
-                        }, "Good parameters: " + (8 * keyData.byteLength).toString() + " bits " + parameterString("raw", algorithm, extractable, usages));
+                        }, "Good parameters: " + (8 * keyData.byteLength).toString() + " bits " + parameterString("raw", keyData.byteLength.toString() + " byte buffer", algorithm, extractable, usages));
                     }
 
                     // Test jwk format next
 
                     if (vector.formats.includes("jwk")) {
-                        jwkData = {
-                            kty: "oct",
-                            alg: "A" + (8 * keyData.byteLength).toString() + algorithm.name.substring(4),
-                            k: byteArrayToUnpaddedBase64(keyData)
-                        };
-
+                        data = jwkData(keyData, algorithm);
                         promise_test(function(test) {
-                            return window.crypto.subtle.importKey("jwk", jwkData, algorithm, extractable, usages).
+                            return window.crypto.subtle.importKey("jwk", data, algorithm, extractable, usages).
                             then(function(key) {
                                 assert_equals(key.constructor, CryptoKey, "Created a CryptoKey");
                             }, function(err) {
                                 assert_unreached("Threw an unexpected error: " + err.toString());
                             });
-                        }, "Good parameters: " + (8 * keyData.byteLength).toString() + " bits " + parameterString("jwk", jwkData, algorithm, extractable, usages));
+                        }, "Good parameters: " + (8 * keyData.byteLength).toString() + " bits " + parameterString("jwk", data, algorithm, extractable, usages));
                     }
                 });
             });

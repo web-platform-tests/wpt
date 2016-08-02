@@ -134,7 +134,7 @@ class Webidl2Regexp(Regexp):
 class ConsoleRegexp(Regexp):
     pattern = b"console\.[a-zA-Z]+\s*\("
     error = "CONSOLE"
-    file_extensions = [".html", ".htm", ".js", ".xht", ".html", ".svg"]
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
     description = "Console logging API used"
 
 class PrintRegexp(Regexp):

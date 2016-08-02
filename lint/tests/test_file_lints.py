@@ -80,8 +80,8 @@ def test_webidl2_js():
 def test_console():
     error_map = check_with_files(b"console.log('error');\nconsole.error ('log')\n")
 
-    for (filename, (errors, _)) in error_map.items():
-        if any(filename.endswith(ext) for ext in [".htm", ".html", ".js", ".svg", ".xht"]):
+    for (filename, (errors, kind)) in error_map.items():
+        if kind == "web":
             assert errors == [
                 ("CONSOLE", "Console logging API used", filename, 1),
                 ("CONSOLE", "Console logging API used", filename, 2),

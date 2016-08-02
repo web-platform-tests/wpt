@@ -96,7 +96,7 @@
       promise_test(function(test) {
         var stream = new ReadableStream({
           start: function(controller) {
-            controller.enqueue((stringToArray(streamData)));
+            controller.enqueue(stringToArray(streamData));
             controller.close();
           }
         });

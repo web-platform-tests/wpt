@@ -324,15 +324,26 @@ def lint(repo_root, paths, output_json):
     else:
         output_errors = output_errors_text
 
-    def process_errors(path, errors, last):
+    def process_errors(path, errors):
+        """
+        Filters and prints the errors, and updates the ``error_count`` object.
+
+        :param path: the path of the file that contains the errors
+        :param errors: a list of error tuples (error type, message, path, line number)
+        :returns: ``None`` if there were no errors, or
+                  a tuple of the error type and the path otherwise
+        """
+
         errors = filter_whitelist_errors(whitelist, path, errors)
-        if errors:
-            last = (errors[-1][0], path)
+
+        if not errors:
+            return None
 
         output_errors(errors)
         for error_type, error, path, line in errors:
             error_count[error_type] += 1
-        return last
+
+        return (errors[-1][0], path)
 
     for path in paths:
         abs_path = os.path.join(repo_root, path)
@@ -340,13 +351,13 @@ def lint(repo_root, paths, output_json):
             continue
         for path_fn in path_lints:
             errors = path_fn(repo_root, path)
-            last = process_errors(path, errors, last)
+            last = process_errors(path, errors) or last
 
         if not os.path.isdir(abs_path):
             with open(abs_path) as f:
                 for file_fn in file_lints:
                     errors = file_fn(repo_root, path, f)
-                    last = process_errors(path, errors, last)
+                    last = process_errors(path, errors) or last
                     f.seek(0)
 
     if not output_json:

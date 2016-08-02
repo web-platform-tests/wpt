@@ -324,8 +324,8 @@ def lint(repo_root, paths, output_json):
     else:
         output_errors = output_errors_text
 
-    def run_lint(path, fn, last, *args):
-        errors = filter_whitelist_errors(whitelist, path, fn(repo_root, path, *args))
+    def process_errors(path, errors, last):
+        errors = filter_whitelist_errors(whitelist, path, errors)
         if errors:
             last = (errors[-1][0], path)
 
@@ -339,12 +339,14 @@ def lint(repo_root, paths, output_json):
         if not os.path.exists(abs_path):
             continue
         for path_fn in path_lints:
-            last = run_lint(path, path_fn, last)
+            errors = path_fn(repo_root, path)
+            last = process_errors(path, errors, last)
 
         if not os.path.isdir(abs_path):
             with open(abs_path) as f:
                 for file_fn in file_lints:
-                    last = run_lint(path, file_fn, last, f)
+                    errors = file_fn(repo_root, path, f)
+                    last = process_errors(path, errors, last)
                     f.seek(0)
 
     if not output_json:

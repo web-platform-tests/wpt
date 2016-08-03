@@ -14,7 +14,7 @@ import html5lib
 
 from . import vcs
 from .item import Stub, ManualTest, WebdriverSpecTest, RefTest, TestharnessTest
-from .utils import rel_path_to_url, is_blacklisted, ContextManagerStringIO, cached_property
+from .utils import rel_path_to_url, is_blacklisted, ContextManagerBytesIO, cached_property
 
 wd_pattern = "*.py"
 
@@ -89,7 +89,7 @@ class SourceFile(object):
         if self.use_committed:
             git = vcs.get_git_func(os.path.dirname(__file__))
             blob = git("show", "HEAD:%s" % self.rel_path)
-            file_obj = ContextManagerStringIO(blob)
+            file_obj = ContextManagerBytesIO(blob)
         else:
             file_obj = open(self.path, 'rb')
         return file_obj

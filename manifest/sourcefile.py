@@ -32,7 +32,8 @@ class SourceFile(object):
                "xhtml":ElementTree.parse,
                "svg":ElementTree.parse}
 
-    def __init__(self, tests_root, rel_path, url_base, use_committed=False):
+    def __init__(self, tests_root, rel_path, url_base, use_committed=False,
+                 contents=None):
         """Object representing a file in a source tree.
 
         :param tests_root: Path to the root of the source tree
@@ -40,12 +41,16 @@ class SourceFile(object):
         :param url_base: Base URL used when converting file paths to urls
         :param use_committed: Work with the last committed version of the file
                               rather than the on-disk version.
+        :param contents: Byte array of the contents of the file or ``None``.
         """
+
+        assert not (use_committed and contents)
 
         self.tests_root = tests_root
         self.rel_path = rel_path
         self.url_base = url_base
         self.use_committed = use_committed
+        self.contents = contents
 
         self.url = rel_path_to_url(rel_path, url_base)
         self.path = os.path.join(tests_root, rel_path)
@@ -79,14 +84,22 @@ class SourceFile(object):
 
     def is_dir(self):
         """Return whether this file represents a directory."""
+        if self.contents:
+            return False
+
         return os.path.isdir(self.rel_path)
 
     def open(self):
-        """Return a File object opened for reading the file contents,
-        or the contents of the file when last committed, if
-        use_comitted is true."""
+        """
+        Return either
+        * the contents specified in the constructor, if any;
+        * the contents of the file when last committed, if use_committed is true; or
+        * a File object opened for reading the file contents.
+        """
 
-        if self.use_committed:
+        if self.contents:
+            file_obj = ContextManagerBytesIO(self.contents)
+        elif self.use_committed:
             git = vcs.get_git_func(os.path.dirname(__file__))
             blob = git("show", "HEAD:%s" % self.rel_path)
             file_obj = ContextManagerBytesIO(blob)

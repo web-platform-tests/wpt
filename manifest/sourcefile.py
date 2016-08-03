@@ -77,6 +77,10 @@ class SourceFile(object):
         :param prefix: The prefix to check"""
         return self.name.startswith(prefix)
 
+    def is_dir(self):
+        """Return whether this file represents a directory."""
+        return os.path.isdir(self.rel_path)
+
     def open(self):
         """Return a File object opened for reading the file contents,
         or the contents of the file when last committed, if
@@ -94,7 +98,7 @@ class SourceFile(object):
     def name_is_non_test(self):
         """Check if the file name matches the conditions for the file to
         be a non-test file"""
-        return (os.path.isdir(self.rel_path) or
+        return (self.is_dir() or
                 self.name_prefix("MANIFEST") or
                 self.filename.startswith(".") or
                 is_blacklisted(self.url))

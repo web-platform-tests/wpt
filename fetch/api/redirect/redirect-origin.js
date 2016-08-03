@@ -34,6 +34,7 @@ for (var code of [301, 302, 303, 307, 308]) {
     testOriginAfterRedirection("Same origin to same origin redirection " + code, redirectUrl, locationUrl, code, null);
     testOriginAfterRedirection("Same origin to other origin redirection " + code, redirectUrl, corsLocationUrl, code, get_host_info().HTTP_ORIGIN);
     testOriginAfterRedirection("Other origin to other origin redirection " + code, corsRedirectUrl, corsLocationUrl, code, get_host_info().HTTP_ORIGIN);
+    testOriginAfterRedirection("Other origin to same origin redirection " + code, corsRedirectUrl, locationUrl + "&cors", code, "null");
 }
 
 done();

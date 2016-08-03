@@ -13,6 +13,7 @@ from collections import defaultdict
 
 from . import fnmatch
 from ..localpaths import repo_root
+from .gitignore import PathFilter
 
 from manifest.sourcefile import SourceFile
 from six import iteritems, itervalues
@@ -39,6 +40,22 @@ def all_git_paths(repo_root):
     for item in output.split("\n"):
         yield item
 
+def all_filesystem_paths(repo_root):
+    path_filter = PathFilter(repo_root, extras=[".git/*"])
+    for dirpath, dirnames, filenames in os.walk(repo_root):
+        for filename in filenames:
+            path = os.path.relpath(os.path.join(dirpath, filename), repo_root)
+            if path_filter(path):
+                yield path
+        dirnames[:] = [item for item in dirnames if
+                       path_filter(os.path.relpath(os.path.join(dirpath, item) + "/",
+                                                   repo_root))]
+
+
+def all_paths(repo_root, ignore_local):
+    fn = all_git_paths if ignore_local else all_filesystem_paths
+    for item in fn(repo_root):
+        yield item
 
 def check_path_length(repo_root, path):
     if len(path) + 1 > 150:
@@ -360,11 +377,13 @@ def parse_args():
                         help="List of paths to lint")
     parser.add_argument("--json", action="store_true",
                         help="Output machine-readable JSON format")
+    parser.add_argument("--ignore-local", action="store_true",
+                        help="Ignore locally added files in the working directory (requires git).")
     return parser.parse_args()
 
 def main():
     args = parse_args()
-    paths = args.paths if args.paths else all_git_paths(repo_root)
+    paths = args.paths if args.paths else all_paths(repo_root, args.ignore_local)
     return lint(repo_root, paths, args.json)
 
 def lint(repo_root, paths, output_json):

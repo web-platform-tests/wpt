@@ -74,10 +74,12 @@ function createKeyIDs() {
 function getSupportedKeySystem() {
     var userAgent = navigator.userAgent.toLowerCase();
     var keysystem = undefined;
-    if( userAgent.indexOf('chrome') > -1 || userAgent.indexOf('firefox') > -1 ) {
-        keysystem = 'com.widevine.alpha';
-    } else if (userAgent.indexOf('edge') > -1 ) {
+    if(userAgent.indexOf('edge') > -1) {
         keysystem = 'com.microsoft.playready';
+    } else if(/CrKey\/[0-9]+\.[0-9a-z]+\.[0-9a-z]+/i.exec( navigator.userAgent )) {
+        keysystem = 'com.chromecast.playready';
+    } else if(userAgent.indexOf('chrome') > -1) {
+        keysystem = 'com.widevine.alpha';
     }
     return keysystem;
 }

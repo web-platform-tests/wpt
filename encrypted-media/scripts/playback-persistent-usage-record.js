@@ -35,6 +35,10 @@ function runTest(config, testname) {
             config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
                 _mediaKeySession.update( response ).catch(function(error) {
                     forceTestFailureFromPromise(test, error);
+                }).then(function() {
+                    if(event.messageType === 'license-request') {
+                        _video.setMediaKeys(_mediaKeys);
+                    }
                 });
             });
         }
@@ -88,7 +92,6 @@ function runTest(config, testname) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-            _video.setMediaKeys(_mediaKeys);
             _mediaKeySession = _mediaKeys.createSession( 'persistent-usage-record' );
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);

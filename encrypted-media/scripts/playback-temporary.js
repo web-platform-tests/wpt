@@ -29,6 +29,10 @@ function runTest(config) {
 
                 _mediaKeySession.update( response ).catch(function(error) {
                     forceTestFailureFromPromise(test, error);
+                }).then(function() {
+                    if(event.messageType === 'license-request') {
+                        _video.setMediaKeys(_mediaKeys);
+                    }
                 });
             });
         }
@@ -44,8 +48,6 @@ function runTest(config) {
             .catch(function(error) {
                 forceTestFailureFromPromise(test, error);
             });
-
-            _video.setMediaKeys(_mediaKeys);
         }
 
         function onTimeupdate(event) {

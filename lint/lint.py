@@ -134,7 +134,7 @@ class Webidl2Regexp(Regexp):
 class ConsoleRegexp(Regexp):
     pattern = b"console\.[a-zA-Z]+\s*\("
     error = "CONSOLE"
-    file_extensions = [".html", ".htm", ".js", ".xht", ".html", ".svg"]
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
     description = "Console logging API used"
 
 class PrintRegexp(Regexp):
@@ -268,12 +268,49 @@ def check_python_ast(repo_root, path, f):
     if not path.endswith(".py"):
         return []
 
+    try:
+        root = ast.parse(f.read())
+    except SyntaxError as e:
+        return [("PARSE-FAILED", "Unable to parse file", path, e.lineno)]
+
     errors = []
-    root = ast.parse(f.read())
     for checker in ast_checkers:
         for lineno in checker.check(root):
             errors.append((checker.error, checker.description, path, lineno))
     return errors
+
+
+def check_path(repo_root, path):
+    """
+    Runs lints that check the file path.
+
+    :param repo_root: the repository root
+    :param path: the path of the file within the repository
+    :returns: a list of errors found in ``path``
+    """
+
+    errors = []
+    for path_fn in path_lints:
+        errors.extend(path_fn(repo_root, path))
+    return errors
+
+
+def check_file_contents(repo_root, path, f):
+    """
+    Runs lints that check the file contents.
+
+    :param repo_root: the repository root
+    :param path: the path of the file within the repository
+    :param f: a file-like object with the file contents
+    :returns: a list of errors found in ``f``
+    """
+
+    errors = []
+    for file_fn in file_lints:
+        errors.extend(file_fn(repo_root, path, f))
+        f.seek(0)
+    return errors
+
 
 def output_errors_text(errors):
     for error_type, description, path, line_number in errors:
@@ -324,28 +361,39 @@ def lint(repo_root, paths, output_json):
     else:
         output_errors = output_errors_text
 
-    def run_lint(path, fn, last, *args):
-        errors = filter_whitelist_errors(whitelist, path, fn(repo_root, path, *args))
-        if errors:
-            last = (errors[-1][0], path)
+    def process_errors(path, errors):
+        """
+        Filters and prints the errors, and updates the ``error_count`` object.
+
+        :param path: the path of the file that contains the errors
+        :param errors: a list of error tuples (error type, message, path, line number)
+        :returns: ``None`` if there were no errors, or
+                  a tuple of the error type and the path otherwise
+        """
+
+        errors = filter_whitelist_errors(whitelist, path, errors)
+
+        if not errors:
+            return None
 
         output_errors(errors)
         for error_type, error, path, line in errors:
             error_count[error_type] += 1
-        return last
+
+        return (errors[-1][0], path)
 
     for path in paths:
         abs_path = os.path.join(repo_root, path)
         if not os.path.exists(abs_path):
             continue
-        for path_fn in path_lints:
-            last = run_lint(path, path_fn, last)
+
+        errors = check_path(repo_root, path)
+        last = process_errors(path, errors) or last
 
         if not os.path.isdir(abs_path):
             with open(abs_path) as f:
-                for file_fn in file_lints:
-                    last = run_lint(path, file_fn, last, f)
-                    f.seek(0)
+                errors = check_file_contents(repo_root, path, f)
+                last = process_errors(path, errors) or last
 
     if not output_json:
         output_error_count(error_count)

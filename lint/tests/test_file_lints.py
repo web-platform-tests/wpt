@@ -114,3 +114,35 @@ def test_print_function():
             ]
         else:
             assert errors == []
+
+
+open_mode_code = """
+def first():
+    return {0}("test.png")
+
+def second():
+    return {0}("test.png", "r")
+
+def third():
+    return {0}("test.png", "rb")
+
+def fourth():
+    return {0}("test.png", encoding="utf-8")
+
+def fifth():
+    return {0}("test.png", mode="rb")
+"""
+
+
+def test_open_mode():
+    for method in ["open", "file"]:
+        code = open_mode_code.format(method).encode("utf-8")
+        errors = check_file_contents("", "test.py", six.BytesIO(code))
+
+        message = ("File opened without providing an explicit mode (note: " +
+                   "binary files must be read with 'b' in the mode flags)")
+
+        assert errors == [
+            ("OPEN-NO-MODE", message, "test.py", 3),
+            ("OPEN-NO-MODE", message, "test.py", 12),
+        ]

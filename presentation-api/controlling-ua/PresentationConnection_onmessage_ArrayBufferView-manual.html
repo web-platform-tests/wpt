@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Presentation API, Onmessage tests for Controlling User Agent (success - manual test)</title>
+<link rel="author" title="Franck William Taffo" href="http://www.fokus.fraunhofer.de">
+<link rel="help" href="http://w3c.github.io/presentation-api/#dfn-controlling-user-agent">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<p>Click the button below to start the test.</p>
+<button id="presentStartBtn" onclick="startPresentation()">Start Presentation Test</button>
+
+<script>
+    setup({explicit_timeout: true});
+    var startPresentation = function () {
+        async_test(function (t) {
+            var client_id = String(new Date().getTime()) + String(Math.floor(Math.random() * 1e5));
+            var url = "support/presentation.html#__castAppId__=C2335F62/__castClientId__=" + client_id;
+            var request = new PresentationRequest(url);
+            request.start()
+                    .then(function (connection) {
+                        connection.onconnect = function () {
+                            // send initial message to presentation page
+
+                            //ArrayBufferView is a helper type representing some JavaScript TypedArray including 'DataView':
+                            var buffer = new ArrayBuffer(12);
+                            var data = new DataView(buffer);
+                            this.send(data);
+                        };
+                        // register message handler after 5 second
+                        t.step_timeout(function () {
+                            connection.onmessage = function (message) {
+                                if (message) {
+                                    //Check if "message.data" value is not null or undefined
+                                    assert_true(message.data, "message.data from type ArrayBufferView should not be undefined or null");
+
+                                    //Check the instanceof of message.data
+                                    assert_true(message.data instanceof DataView, "message.data should be an instance of DataView");
+                                }
+                                else {
+                                    assert_unreached("message is undefined");
+                                }
+                            };
+                            t.done();
+                        }, 50000);
+                        connection.close();
+                    })
+                    .catch(function (ex) {
+                        assert_unreached(ex.name + ":" + ex.message);
+                    });
+        }, "the ArrayBufferView data exchange between the controller and the presentation was successful");
+    }
+</script>

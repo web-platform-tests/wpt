@@ -163,3 +163,59 @@ def test_relative_testharness_xhtml():
         assert not s.content_is_testharness
 
         assert items(s) == []
+
+
+def test_testharness_svg():
+    content = b"""\
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml"
+     version="1.1"
+     width="100%" height="100%" viewBox="0 0 400 400">
+<title>Null test</title>
+<h:script src="/resources/testharness.js"/>
+<h:script src="/resources/testharnessreport.js"/>
+</svg>
+"""
+
+    filename = "html/test.svg"
+    s = create(filename, content)
+
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+
+    assert s.root
+    assert s.content_is_testharness
+
+    assert items(s) == [("testharness", "/" + filename)]
+
+
+def test_relative_testharness_svg():
+    content = b"""\
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml"
+     version="1.1"
+     width="100%" height="100%" viewBox="0 0 400 400">
+<title>Null test</title>
+<h:script src="../resources/testharness.js"/>
+<h:script src="../resources/testharnessreport.js"/>
+</svg>
+"""
+
+    filename = "html/test.svg"
+    s = create(filename, content)
+
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+
+    assert s.root
+    assert not s.content_is_testharness
+
+    assert items(s) == []

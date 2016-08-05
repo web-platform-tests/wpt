@@ -78,26 +78,36 @@ def test_multi_global():
 
 
 def test_testharness():
-    s = create("html/test.html", b"<script src=/resources/testharness.js></script>")
-    assert not s.name_is_non_test
-    assert not s.name_is_manual
-    assert not s.name_is_multi_global
-    assert not s.name_is_worker
-    assert not s.name_is_reference
+    content = b"<script src=/resources/testharness.js></script>"
 
-    assert s.content_is_testharness
+    for ext in ["htm", "html"]:
+        filename = "html/test." + ext
+        s = create(filename, content)
 
-    assert items(s) == [("testharness", "/html/test.html")]
+        assert not s.name_is_non_test
+        assert not s.name_is_manual
+        assert not s.name_is_multi_global
+        assert not s.name_is_worker
+        assert not s.name_is_reference
+
+        assert s.content_is_testharness
+
+        assert items(s) == [("testharness", "/" + filename)]
 
 
 def test_relative_testharness():
-    s = create("html/test.html", b"<script src=../resources/testharness.js></script>")
-    assert not s.name_is_non_test
-    assert not s.name_is_manual
-    assert not s.name_is_multi_global
-    assert not s.name_is_worker
-    assert not s.name_is_reference
+    content = b"<script src=../resources/testharness.js></script>"
 
-    assert not s.content_is_testharness
+    for ext in ["htm", "html"]:
+        filename = "html/test." + ext
+        s = create(filename, content)
 
-    assert items(s) == []
+        assert not s.name_is_non_test
+        assert not s.name_is_manual
+        assert not s.name_is_multi_global
+        assert not s.name_is_worker
+        assert not s.name_is_reference
+
+        assert not s.content_is_testharness
+
+        assert items(s) == []

@@ -1,6 +1,7 @@
 from ..sourcefile import SourceFile
 
 def create(filename, contents=b""):
+    assert isinstance(contents, bytes)
     return SourceFile("/", filename, "/", contents=contents)
 
 
@@ -26,6 +27,8 @@ def test_name_is_non_test():
         s = create(rel_path)
         assert s.name_is_non_test
 
+        assert not s.content_is_testharness
+
         assert items(s) == []
 
 
@@ -40,6 +43,8 @@ def test_name_is_manual():
         assert not s.name_is_non_test
         assert s.name_is_manual
 
+        assert not s.content_is_testharness
+
         assert items(s) == [("manual", "/" + rel_path)]
 
 
@@ -51,6 +56,8 @@ def test_worker():
     assert s.name_is_worker
     assert not s.name_is_reference
 
+    assert not s.content_is_testharness
+
     assert items(s) == [("testharness", "/html/test.worker")]
 
 
@@ -61,6 +68,8 @@ def test_multi_global():
     assert s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
+
+    assert not s.content_is_testharness
 
     assert items(s) == [
         ("testharness", "/html/test.any.html"),

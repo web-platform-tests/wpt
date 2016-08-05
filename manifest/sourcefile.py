@@ -44,7 +44,7 @@ class SourceFile(object):
         :param contents: Byte array of the contents of the file or ``None``.
         """
 
-        assert not (use_committed and contents)
+        assert not (use_committed and contents is not None)
 
         self.tests_root = tests_root
         self.rel_path = rel_path
@@ -84,7 +84,7 @@ class SourceFile(object):
 
     def is_dir(self):
         """Return whether this file represents a directory."""
-        if self.contents:
+        if self.contents is not None:
             return False
 
         return os.path.isdir(self.rel_path)
@@ -97,7 +97,7 @@ class SourceFile(object):
         * a File object opened for reading the file contents.
         """
 
-        if self.contents:
+        if self.contents is not None:
             file_obj = ContextManagerBytesIO(self.contents)
         elif self.use_committed:
             git = vcs.get_git_func(os.path.dirname(__file__))

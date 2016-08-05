@@ -22,9 +22,14 @@ matrix:
 before_install:
   - mv `pwd` /tmp/tools
   - cd /tmp/tools
+  - export TRAVIS_BUILD_DIR=/tmp/tools
 
 install:
-  - pip install -U tox
+  - pip install -U tox codecov
 
 script:
   - tox
+
+after_success:
+  - coverage combine
+  - codecov

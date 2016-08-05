@@ -21,7 +21,7 @@ function runTest(config, testname) {
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }
-        
+
         function onMessage(event) {
             assert_equals( event.target, _mediaKeySession );
             assert_true( event instanceof window.MediaKeyMessageEvent );

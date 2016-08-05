@@ -16,7 +16,7 @@ function runTest(config, testname) {
             _mediaKeySession,
             _mediaSource,
             _sessionId;
-            
+
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }

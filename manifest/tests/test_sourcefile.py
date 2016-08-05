@@ -219,3 +219,21 @@ def test_relative_testharness_svg():
     assert not s.content_is_testharness
 
     assert items(s) == []
+
+
+def test_testharness_ext():
+    content = b"<script src=/resources/testharness.js></script>"
+
+    for filename in ["test", "test.test"]:
+        s = create("html/" + filename, content)
+
+        assert not s.name_is_non_test
+        assert not s.name_is_manual
+        assert not s.name_is_multi_global
+        assert not s.name_is_worker
+        assert not s.name_is_reference
+
+        assert not s.root
+        assert not s.content_is_testharness
+
+        assert items(s) == []

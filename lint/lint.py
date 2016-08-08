@@ -163,7 +163,7 @@ def check_regexp_line(repo_root, path, f):
     return errors
 
 def check_parsed(repo_root, path, f):
-    source_file = SourceFile(repo_root, path, "/")
+    source_file = SourceFile(repo_root, path, "/", contents=f.read())
 
     errors = []
 

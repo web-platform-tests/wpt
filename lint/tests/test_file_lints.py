@@ -138,6 +138,26 @@ def test_meta_timeout():
             ]
 
 
+def test_early_testharnessreport():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js"></script>
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("EARLY-TESTHARNESSREPORT", "testharnessreport.js script seen before testharness.js script", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
+
 @pytest.mark.skipif(six.PY3, reason="Cannot parse print statements from python 3")
 def test_print_statement():
     error_map = check_with_files(b"def foo():\n  print 'statement'\n  print\n")

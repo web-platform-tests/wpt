@@ -9,10 +9,12 @@ INTERESTING_FILE_NAMES = {
     "python": [
         "test.py",
     ],
+    "js": [
+        "test.js",
+    ],
     "web-lax": [
         "test.htm",
         "test.html",
-        "test.js",
     ],
     "web-strict": [
         "test.svg",
@@ -104,13 +106,37 @@ def test_console():
     error_map = check_with_files(b"<script>\nconsole.log('error');\nconsole.error ('log')\n</script>")
 
     for (filename, (errors, kind)) in error_map.items():
-        if kind in ["web-lax", "web-strict"]:
+        if kind in ["web-lax", "web-strict", "js"]:
             assert errors == [
                 ("CONSOLE", "Console logging API used", filename, 2),
                 ("CONSOLE", "Console logging API used", filename, 3),
             ]
         else:
             assert errors == [("PARSE-FAILED", "Unable to parse file", filename, 1)]
+
+
+def test_meta_timeout():
+    code = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta name="timeout" />
+<meta name="timeout" content="short" />
+<meta name="timeout" content="long" />
+</html>
+"""
+    error_map = check_with_files(code)
+
+    for (filename, (errors, kind)) in error_map.items():
+        if kind in ["web-lax", "web-strict"]:
+            assert errors == [
+                ("MULTIPLE-TIMEOUT", "More than one meta name='timeout'", filename, None),
+                ("INVALID-TIMEOUT", "Invalid timeout value ", filename, None),
+                ("INVALID-TIMEOUT", "Invalid timeout value short", filename, None),
+            ]
+        elif kind == "python":
+            assert errors == [
+                ("PARSE-FAILED", "Unable to parse file", filename, 2),
+            ]
+
 
 @pytest.mark.skipif(six.PY3, reason="Cannot parse print statements from python 3")
 def test_print_statement():

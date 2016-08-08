@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<head>
+<title>Microtasks: clean up after running script </title>
+<link rel=author title="Aleks Totic" href="mailto:atotic@chromium.org">
+<link rel=help href="https://html.spec.whatwg.org/#clean-up-after-running-script">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/common.js"></script>
+</head>
+<body style="height:2000px;">
+<script>
+/*
+Test1:
+https://html.spec.whatwg.org/#clean-up-after-running-script
+If the JavaScript execution context stack is now empty, perform a microtask checkpoint.
+
+Tests whether microtask checkpoint is performed immediately calling script.
+
+Test3:
+https://html.spec.whatwg.org/#perform-a-microtask-checkpoint
+"perform a microtask checkpoint" runs in a loop until all microtasks have been delivered.
+*/
+
+var test1 = async_test("Microtask immediately after script");
+var test2 = async_test("2nd microtask immediately after script");
+var test3 = async_test("Microtask queued in checkpoint delivered immediately");
+
+window.requestAnimationFrame( function() {
+    var events = [];
+    Promise.resolve()
+    .then(function() {
+        test1.step(function() {
+            events.push("promise 1");
+            assert_equals(events[0],
+                "promise 1", "timeout/scroll should not fire before Promise.then");
+            test1.done();
+        });
+        return Promise.resolve();
+    })
+    .then(function() {
+        test3.step(function() {
+            events.push("promise 1 child");
+            // console.log(events);
+            assert_equals(events[events.length-2], "promise 2", "Fires immediately after promise 2");
+            test3.done();
+        });
+    });
+
+    Promise.resolve()
+    .then(function() {
+        test2.step(function() {
+            events.push("promise 2");
+            assert_equals(events[events.length-2], "promise 1", "Fires immediately after promise 1");
+            test2.done();
+        });
+    });
+
+    // Set up events that must be executed after Promise.
+    window.setTimeout(function() {
+        events.push('timeout');
+    }, 0);
+    window.addEventListener('scroll', function() {
+        events.push('scroll');
+    });
+    window.scrollBy(0,10);
+
+});
+</script>
+</body>

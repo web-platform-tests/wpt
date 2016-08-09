@@ -20,10 +20,10 @@ interface PaymentRequest : EventTarget {
     readonly attribute PaymentAddress? shippingAddress;
     readonly attribute DOMString?      shippingOption;
 
-    // Supports "shippingaddresschange" event 
+    // Supports "shippingaddresschange" event
              attribute EventHandler    onshippingaddresschange;
 
-    // Supports "shippingoptionchange" event 
+    // Supports "shippingoptionchange" event
              attribute EventHandler    onshippingoptionchange;
 };
 

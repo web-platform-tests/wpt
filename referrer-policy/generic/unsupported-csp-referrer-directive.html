@@ -20,7 +20,7 @@
       var url = location.protocol + "//www1." + location.hostname + ":" + location.port +
                 urlPath;
       queryImage(url, test.step_func(function(message) {
-	    assert_equals(message.referrer, document.location.href);
+        assert_equals(message.referrer, document.location.href);
         test.done();
       }));
     </script>

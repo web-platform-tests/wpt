@@ -1300,7 +1300,7 @@ interface HTMLMediaElement : HTMLElement {
   readonly attribute boolean ended;
            attribute boolean autoplay;
            attribute boolean loop;
-  void play();
+  Promise<void> play();
   void pause();
 
   // media controller

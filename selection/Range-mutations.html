@@ -6,7 +6,7 @@
 <div id=log></div>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
-<script src=../common.js></script>
+<script src=../dom/common.js></script>
 <script>
 "use strict";
 
@@ -64,12 +64,7 @@ function doTests(sourceTests, descFn, testFn) {
     var params = sourceTests[i];
     var len = params.length;
     tests.push([
-      descFn(params) + ", with unselected " + describeRange(params[len - 4], params[len - 3], params[len - 2], params[len - 1]),
-      // The closure here ensures that the params that testFn get are the
-      // current version of params, not the version from the last
-      // iteration of this loop.  We test that none of the parameters
-      // evaluate to undefined to catch bugs in our eval'ing, like
-      // mistyping a property name.
+      descFn(params) + ", with selected " + describeRange(params[len - 4], params[len - 3], params[len - 2], params[len - 1]),
       function(params) { return function() {
         var evaledParams = params.map(eval);
         for (var i = 0; i < evaledParams.length; i++) {
@@ -108,7 +103,26 @@ function doTest(callback, startContainer, startOffset, endContainer, endOffset) 
   range.setStart(startContainer, startOffset);
   range.setEnd(endContainer, endOffset);
 
+  getSelection().removeAllRanges();
+  getSelection().addRange(range);
+
+  assert_equals(getSelection().rangeCount, 1,
+    "Sanity check: selection must have exactly one range after adding the range");
+  assert_equals(getSelection().getRangeAt(0), range,
+    "Sanity check: selection's range must initially be the same as the range we added");
+  assert_equals(range.startContainer, startContainer,
+    "Sanity check: range's startContainer must initially be the one we set");
+  assert_equals(range.endContainer, endContainer,
+    "Sanity check: range's endContainer must initially be the one we set");
+  assert_equals(range.startOffset, startOffset,
+    "Sanity check: range's startOffset must initially be the one we set");
+  assert_equals(range.endOffset, endOffset,
+    "Sanity check: range's endOffset must initially be the one we set");
+
   var expected = callback();
+
+  assert_equals(getSelection().getRangeAt(0), range,
+    "The range we added must not be removed from the selection");
 
   assert_equals(range.startContainer, expected[0],
     "Wrong start container");

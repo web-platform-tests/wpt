@@ -1,0 +1,15 @@
+<!doctype html>
+<title>Navigate to a redirect to a 204</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>var n = 0</script>
+<iframe onload='console.log("load " + n++)' name=test></iframe>
+<script>
+  onload = function() {
+    frames[0].onbeforeunload = function() { return "test" }
+    frames[0].onunload = function() { console.log("unload " + n++) }
+    //frames[0].location = "support/redirect.py?r=status.py?s=204"
+  }
+</script>
+<a href=support/redirect.py?r=status.py?s=204 target=test>test</a>

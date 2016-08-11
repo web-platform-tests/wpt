@@ -40,7 +40,6 @@ window.requestAnimationFrame( function() {
     .then(function() {
         test3.step(function() {
             events.push("promise 1 child");
-            // console.log(events);
             assert_equals(events[events.length-2], "promise 2", "Fires immediately after promise 2");
             test3.done();
         });

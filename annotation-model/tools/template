@@ -26,14 +26,13 @@ var runningTest = new JSONtest( {
 </script>
 </head>
 <body>
-<p>Fill the textarea below with  JSON output from your annotation client
+<p>Fill the textarea below with JSON output from your annotation client
 implementation that supports the following criteria:</p>
 <div id="testDescription"></div>
 <p>Specifically, the following assertions will be evaluated:</p>
 <div id="assertion"></div>
 <form name="annotation" id="annotation">
-    <textarea name="annotation-input" id="annotation-input" style="width: 90%; height: 10em" >
-    </textarea>
+    <textarea name="annotation-input" id="annotation-input" style="width: 90%; height: 10em" ></textarea>
     <p><input type="button" id="annotation-run" name="Loading..." value="Loading...">
        <input style="display: none" type="button" id="annotation-close"
        name="Close" value="Close"></p>

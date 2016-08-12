@@ -1,14 +1,28 @@
+#innerFrame {
+position: absolute;
+left: 200px;
+top: 150px;
+height: 100px;
+width: 100px;
+}
+
 .spacer {
 height: 100px;
 }
 
 #square1 {
-background: black;
 top: 150px;
 left: 100px;
 }
 
+#square2 {
+top: 50px;
+left: 30px;
+visibility: hidden;
+}
+
 .square {
+background: black;
 height: 20px;
 width: 20px;
 position: absolute;

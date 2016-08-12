@@ -343,7 +343,7 @@ JSONtest.prototype = {
       assertions.forEach( function(assert, num) {
 
         var expected = assert.hasOwnProperty('expectedResult') ? assert.expectedResult : 'valid' ;
-        var message = assert.hasOwnProperty('message') ? assert.message : "Result was not " + expected;
+        var message = assert.hasOwnProperty('errorMessage') ? assert.errorMessage : "Result was not " + expected;
         var type = assert.hasOwnProperty('assertionType') ? assert.assertionType : "must" ;
         if (!typeMap.hasOwnProperty(type)) {
           type = "must";

@@ -351,15 +351,16 @@ Object.keys(encodingMap).forEach(function(name) {
     var t3 = async_test("Name " + format_value(name) +
                        " has label " + format_value(label) + " (charset)");
     iframe.src = "encoding.py?label=" + label;
-    iframe.onload = function() {
+    iframe.onload = function () {
+      var lowerCaseName = name.toLowerCase();
       t.step(function() {
-        assert_equals(iframe.contentDocument.characterSet, name);
+        assert_equals(iframe.contentDocument.characterSet.toLowerCase(), lowerCaseName);
       });
       t2.step(function() {
-        assert_equals(iframe.contentDocument.inputEncoding, name);
+        assert_equals(iframe.contentDocument.inputEncoding.toLowerCase(), lowerCaseName);
       });
       t3.step(function() {
-        assert_equals(iframe.contentDocument.charset, name);
+        assert_equals(iframe.contentDocument.charset.toLowerCase(), lowerCaseName);
       });
       document.body.removeChild(iframe);
       t.done();

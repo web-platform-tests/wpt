@@ -116,9 +116,8 @@
                     gestureExitFullscreenTest.step(function() {
                         assert_true(document.pointerLockElement === null, "pointer is sucessfully exited");
                         assert_true(FullscreenElement() === null, "fullscreen is sucessfully exited");
-                    });
-                    
-                    gestureExitFullscreenTest.done();
+                });
+                gestureExitFullscreenTest.done();
                 }
             }
         }
@@ -136,9 +135,9 @@
                     assert_true(document.pointerLockElement === null, "pointer is sucessfully exited");
                     assert_true(FullscreenElement() === null, "fullscreen is sucessfully exited");
                 });
-                
-                gestureExitFullscreenTest.done();
-            } else {
+
+            gestureExitFullscreenTest.done();
+        } else {
                 gestureExit_fs = true;
             }
         }

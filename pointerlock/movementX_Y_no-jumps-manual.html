@@ -118,8 +118,7 @@
         document.addEventListener("mouseenter", function (e) {
             if(click_counter === 1) {
 	            movementX_Y_outside_window_Test.step(function() {
-                    assert_greater_than(Math.abs(e.clientX-clientX_last) + Math.abs(e.clientY-clientY_last), 
-	            		100, "Test requires mouse to be moved at least 100 pixels outside of window.");
+                    assert_greater_than(Math.abs(e.clientX-clientX_last) + Math.abs(e.clientY-clientY_last), 100, "Test requires mouse to be moved at least 100 pixels outside of window.");
 	            });
 	        }
         });

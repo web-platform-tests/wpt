@@ -7,7 +7,7 @@
 		</style>
 	</head>
 	<body>
-		<h1>WOFF 2.0: User Agent Test Suite (299 tests)</h1>
+		<h1>WOFF 2.0: User Agent Test Suite (303 tests)</h1>
 		<p class="installFontsNote">All of these tests require special fonts to be installed. The fonts can be obtained <a href="../../FontsToInstall">here</a>.</p>
 
 		<h2 class="testCategory">Valid WOFFs</h2>
@@ -299,6 +299,38 @@
 				</div>
 				<div class="testCaseExpectations">
 					<p>SFNT Expectation: Display (<a href="http://dev.w3.org/webfonts/WOFF2/spec/#conform-mustNotUseReservedValue">conform-mustNotUseReservedValue</a>)</p>
+					<p>Metadata Expectation: None</p>
+				</div>
+			</div>
+		</div>
+		<div class="testCase" id="header-totalsfntsize-001">
+			<div class="testCaseOverview">
+				<h3><a href="#header-totalsfntsize-001">header-totalsfntsize-001</a>: Header TotalSfntSize Too Small</h3>
+				<p>The totalSfntSize field contains a too small incorrect value.</p>
+			</div>
+			<div class="testCaseDetails">
+				<div class="testCasePages">
+					<p><a href="header-totalsfntsize-001.xht">Test</a></p>
+					<p><a href="header-totalsfntsize-001-ref.xht">Reference Rendering</a></p>
+				</div>
+				<div class="testCaseExpectations">
+					<p>SFNT Expectation: Display (<a href="http://dev.w3.org/webfonts/WOFF2/spec/#conform-mustNotRejectIncorrectTotalSize">conform-mustNotRejectIncorrectTotalSize</a>)</p>
+					<p>Metadata Expectation: None</p>
+				</div>
+			</div>
+		</div>
+		<div class="testCase" id="header-totalsfntsize-002">
+			<div class="testCaseOverview">
+				<h3><a href="#header-totalsfntsize-002">header-totalsfntsize-002</a>: Header TotalSfntSize Too Big</h3>
+				<p>The totalSfntSize field contains a too big incorrect value.</p>
+			</div>
+			<div class="testCaseDetails">
+				<div class="testCasePages">
+					<p><a href="header-totalsfntsize-002.xht">Test</a></p>
+					<p><a href="header-totalsfntsize-002-ref.xht">Reference Rendering</a></p>
+				</div>
+				<div class="testCaseExpectations">
+					<p>SFNT Expectation: Display (<a href="http://dev.w3.org/webfonts/WOFF2/spec/#conform-mustNotRejectIncorrectTotalSize">conform-mustNotRejectIncorrectTotalSize</a>)</p>
 					<p>Metadata Expectation: None</p>
 				</div>
 			</div>
@@ -801,6 +833,38 @@
 				</div>
 				<div class="testCaseExpectations">
 					<p>SFNT Expectation: Reject (<a href="http://dev.w3.org/webfonts/WOFF2/spec/#conform-mustCheckLSBFlags">conform-mustCheckLSBFlags</a>)</p>
+					<p>Metadata Expectation: None</p>
+				</div>
+			</div>
+		</div>
+		<div class="testCase" id="tabledata-glyf-origlength-001">
+			<div class="testCaseOverview">
+				<h3><a href="#tabledata-glyf-origlength-001">tabledata-glyf-origlength-001</a>: Glyf OrigLength Too Small</h3>
+				<p>The origLength field of glyf table contains a too small incorrect value.</p>
+			</div>
+			<div class="testCaseDetails">
+				<div class="testCasePages">
+					<p><a href="tabledata-glyf-origlength-001.xht">Test</a></p>
+					<p><a href="tabledata-glyf-origlength-001-ref.xht">Reference Rendering</a></p>
+				</div>
+				<div class="testCaseExpectations">
+					<p>SFNT Expectation: Display (<a href="http://dev.w3.org/webfonts/WOFF2/spec/#conform-mustNotRejectGlyfSizeMismatch">conform-mustNotRejectGlyfSizeMismatch</a>)</p>
+					<p>Metadata Expectation: None</p>
+				</div>
+			</div>
+		</div>
+		<div class="testCase" id="tabledata-glyf-origlength-002">
+			<div class="testCaseOverview">
+				<h3><a href="#tabledata-glyf-origlength-002">tabledata-glyf-origlength-002</a>: Glyf OrigLength Too Big</h3>
+				<p>The origLength field of glyf table contains a too big incorrect value.</p>
+			</div>
+			<div class="testCaseDetails">
+				<div class="testCasePages">
+					<p><a href="tabledata-glyf-origlength-002.xht">Test</a></p>
+					<p><a href="tabledata-glyf-origlength-002-ref.xht">Reference Rendering</a></p>
+				</div>
+				<div class="testCaseExpectations">
+					<p>SFNT Expectation: Display (<a href="http://dev.w3.org/webfonts/WOFF2/spec/#conform-mustNotRejectGlyfSizeMismatch">conform-mustNotRejectGlyfSizeMismatch</a>)</p>
 					<p>Metadata Expectation: None</p>
 				</div>
 			</div>

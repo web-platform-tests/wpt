@@ -1,4 +1,4 @@
-CSS tests have some particular requirements for metadata.
+CSS tests have some additional requirements for metadata.
 
 ### Specification Links
 
@@ -40,58 +40,6 @@ href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
 href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
 <link rel="help"
 href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
-```
-
-### Reference Links
-
-*Reftests only*
-
-``` html
-<link rel="match" href="RELATIVE_PATH_TO_REFERENCE_FILE" />
-<link rel="mismatch" href="RELATIVE_PATH_TO_REFERENCE_FILE" />
-```
-
-The reference link elements are used in reftests and provide
-the list of reference file(s) that the test should be compared to.
-
-* ```match``` references must be files that render identically to
-  the test, but use an alternate means to do so
-* Multiple match references are used when the test can match any of
-  the reference files
-  * If a test requires multiple match references that all need to
-    match (for example, to catch when a reference fails in the same
-    way the test does), then chain the references together, i.e.:
-    place reference links to the additional match references in the
-    reference files. It is recommended that the chained reference
-    files form a loop (e.g.: a → b → c → a) so that a test linking
-    to any reference in the chain will find all the references.
-* ```mismatch``` references are files that render differently than
-  the test file. A test may have any number of mismatch references.
-  The test is considered to fail if it renders the same as any of
-  the mismatch references.
-  * Note that reference files may themselves have mismatch
-    references. In that case the reference file must not render the
-    same as any of its mismatch references in order to be considered
-    valid.  If a reference is considered invalid (by the fact of not
-    matching any of its match references, or matching any of its
-    mismatch references), then a test that refers to the reference
-    will be considered to have failed.
-* Reference files may be dedicated reference files, images, or other
-  tests
-
-Example 1:
-
-``` html
-<link rel="match" href="green-box-ref.xht" />
-```
-
-Example 2:
-
-``` html
-<link rel="match" href="green-box-ref.xht" />
-<link rel="match" href="blue-box-ref.xht" />
-<link rel="mismatch" href="red-box-notref.xht" />
-<link rel="mismatch" href="red-box-notref.xht" />
 ```
 
 ### Requirement Flags

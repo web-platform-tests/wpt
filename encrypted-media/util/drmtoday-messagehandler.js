@@ -19,6 +19,30 @@ function messagehandler(keysystem, messageType, message) {
                 return null;
             }
         },
+        'com.chromecast.playready': {
+            responseType: 'arraybuffer',
+            getLicenseMessage: function(response) {
+                return response;
+            },
+            getErrorResponse: function(response) {
+                return String.fromCharCode.apply(null, new Uint8Array(response));
+            },
+            getLicenseRequestFromMessage: function(message) {
+                var msg;
+                var licenseRequest = null;
+                var dataview = new Uint8Array(message);
+
+                licenseRequest = String.fromCharCode.apply(null, dataview);
+
+                return licenseRequest;
+            },
+            getRequestHeadersFromMessage: function(/*message*/) {
+                var headers = {};
+
+                headers['Content-Type'] = 'text/xml';
+                return headers;
+            }
+        },
         'com.microsoft.playready': {
             responseType: 'arraybuffer',
             getLicenseMessage: function(response) {
@@ -84,9 +108,10 @@ function messagehandler(keysystem, messageType, message) {
             if (protData) {
                 if (protData.serverURL) {
                     url = protData.serverURL;
-                    if(url.indexOf("azurewebsites") > 0) {
-                        url += "SecureStop=1&UseSimpleNonPersistentLicense=1";
-                        url += "&ContentKey=" + btoa(String.fromCharCode.apply(null, contentmetadata.keys[0].key));
+                    if((url.indexOf("azurewebsites") > 0 || url.indexOf("directtaps") > 0) && messageType === 'license-request'){
+                        url += "SecureStop=1&";
+                        url += "UseSimpleNonPersistentLicense=1&";
+                        url += "ContentKey=" + btoa(String.fromCharCode.apply(null, contentmetadata.keys[0].key));
                     }
                 } else {
                     reject('Undefined serverURL');

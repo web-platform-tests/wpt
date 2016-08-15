@@ -1,6 +1,7 @@
 awkprog = /<\/head>/	{ print "    <script src=/encrypted-media/polyfill/chrome-polyfill.js></script>";      \
                           print "    <script src=/encrypted-media/polyfill/firefox-polyfill.js></script>";     \
                           print "    <script src=/encrypted-media/polyfill/cast-polyfill.js></script>";        \
+                          print "    <script src=/encrypted-media/polyfill/edge-polyfill.js></script>";        \
                           print "    <script src=/encrypted-media/polyfill/clearkey-polyfill.js></script>"; }; \
 						{ print $$0 }
 

@@ -5,7 +5,16 @@
             "dt-custom-data": "eyJ1c2VySWQiOiIxMjM0NSIsInNlc3Npb25JZCI6ImV3b2dJQ0p3Y205bWFXeGxJaUE2SUhzS0lDQWdJQ0p3ZFhKamFHRnpaU0lnT2lCN0lIMEtJQ0I5TEFvZ0lDSnZkWFJ3ZFhSUWNtOTBaV04wYVc5dUlpQTZJSHNLSUNBZ0lDSmthV2RwZEdGc0lpQTZJR1poYkhObExBb2dJQ0FnSW1GdVlXeHZaM1ZsSWlBNklHWmhiSE5sTEFvZ0lDQWdJbVZ1Wm05eVkyVWlJRG9nWm1Gc2MyVUtJQ0I5TEFvZ0lDSnpkRzl5WlV4cFkyVnVjMlVpSURvZ1ptRnNjMlVLZlFvSyIsIm1lcmNoYW50IjoiY2FibGVsYWJzIn0K"
         }
     },
+    "com.microsoft.playready2": {
+        "serverURL": "http://playready-testserver.azurewebsites.net/rightsmanager.asmx?"
+    },
     "com.microsoft.playready": {
+        "serverURL": "http://playready.directtaps.net/pr/svc/rightsmanager.asmx?"
+    },
+    "com.chromecast.playready1": {
+        "serverURL": "http://playready.directtaps.net/pr/svc/rightsmanager.asmx?"
+    },
+    "com.chromecast.playready": {
         "serverURL": "http://playready-testserver.azurewebsites.net/rightsmanager.asmx?"
     },
     "com.microsoft.playready1": {

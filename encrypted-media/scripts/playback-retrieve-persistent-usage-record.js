@@ -41,8 +41,9 @@ function runTest(config, testname) {
 
             config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
 
-                _mediaKeySession.update( response )
-                .catch(function(error) {
+                _mediaKeySession.update( response ).then(function() {
+                    _video.setMediaKeys(_mediaKeys);
+                }).catch(function(error) {
                     forceTestFailureFromPromise(test, error);
                 });
             });
@@ -107,6 +108,10 @@ function runTest(config, testname) {
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
+        }).then(function() {
+            var certBytes = atob(config.playreadyMeteringCert);
+            certBytes = stringToUint8Array(certBytes);
+            return _mediaKeys.setServerCertificate(certBytes);
         }).then(function() {
             return testmediasource(config);
         }).then(function(source) {

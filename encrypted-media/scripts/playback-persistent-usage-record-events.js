@@ -47,6 +47,9 @@ function runTest(config, testname) {
                 waitForEventAndRunStep('keystatuseschange', _mediaKeySession, onKeyStatusesChange, test);
                 _mediaKeySession.update( response ).then( function() {
                     _events.push('updated');
+                    if ( event.messageType === 'license-request' ) {
+                        _video.setMediaKeys(_mediaKeys);
+                    }
                 }).catch(function(error) {
                     forceTestFailureFromPromise(test, error);
                 });
@@ -59,7 +62,7 @@ function runTest(config, testname) {
             assert_equals(event.type, 'keystatuseschange' );
 
             var hasKeys = false, pendingKeys = false;
-            _mediaKeySession.keyStatuses.forEach( function( value, keyid ) {
+            _mediaKeySession.keyStatuses.forEach( function( keyid, value ) {
                 assert_any( assert_equals, value, [ 'status-pending', 'usable' ] );
 
                 hasKeys = true;
@@ -155,6 +158,10 @@ function runTest(config, testname) {
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
+        }).then(function() {
+            var certBytes = atob(config.playreadyMeteringCert);
+            certBytes = stringToUint8Array(certBytes);
+            return _mediaKeys.setServerCertificate(certBytes);
         }).then(function() {
             return testmediasource(config);
         }).then(function(source) {

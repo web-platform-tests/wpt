@@ -19,11 +19,11 @@
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
 
-    <!-- Message handler for DRM servers -->
+    <!-- Message handler for DRM server -->
     <script src=/encrypted-media/util/drmtoday-messagehandler.js></script>
 
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/playback-persistent-usage-record.js></script>
+    <script src=/encrypted-media/scripts/playback-retrieve-persistent-usage-record.js></script>
 
   </head>
   <body>
@@ -44,7 +44,8 @@
                         videoType:              contentitem.video.type,
                         initDataType:           contentitem.initDataType,
                         playreadyMeteringCert:  getPlayreadyMeteringCert("Microsoft"),
-                        duration:               2 };
+                        duration:               2,
+                        windowscript:           'resources/retrieve-persistent-usage-record.html' };
 
         runTest(config);
     </script>

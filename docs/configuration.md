@@ -40,11 +40,11 @@ update all submodules:
 
 ## Font Files
 
-Many layout tests require a set of test-specific fonts, notably
-Ahem. These are available from the
-[CSS Fonts](http://www.w3.org/Style/CSS/Test/Fonts/) website. These
-must be installed according to the normal font-install procedure for
-your operating system.
+A number of tests rely upon a set of custom fonts, with
+[Ahem](https://github.com/w3c/csswg-test/raw/master/fonts/ahem/ahem.ttf)
+being required to be installed according to the normal font-install
+procedure for your operating system. Other tests which require other
+fonts explicitly state this and provide links to required fonts.
 
 ## Running the Test Server
 

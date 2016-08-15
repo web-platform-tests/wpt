@@ -77,3 +77,21 @@ like:
 ```
 "ssl": {"openssl": {"binary": "/path/to/openssl"}}
 ```
+
+### Windows Notes
+
+Running wptserve with SSL enabled on Windows typically requires
+installing an OpenSSL distribution.
+[Shining Light](http://slproweb.com/products/Win32OpenSSL.html)
+provide a convenient installer that is known to work, but requires a
+little extra setup.
+
+After installation ensure that the path to OpenSSL is on your `%Path%`
+environment variable.
+
+Then set the path to the default OpenSSL configuration file (usually
+something like `C:\OpenSSL-Win32\bin\openssl.cfg` in the server
+configuration. To do this copy `config.default.json` in the
+web-platform-tests root to `config.json`. Then edit the JSON so that
+the key `ssl/openssl/base_conf_path` has a value that is the path to
+the OpenSSL config file.

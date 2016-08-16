@@ -37,7 +37,7 @@ function MessageHandler( keysystem, content, sessionType ) {
     this._content = content;
     this._sessionType = sessionType || "temporary";
     this._drmconfig = drmconfig[ this._keysystem ];
-    
+
     this.messagehandler = MessageHandler.prototype.messagehandler.bind( this );
     if ( this._drmconfig && this._drmconfig.servercertificate ) {
         this.servercertificate = stringToUint8Array( atob( this._drmconfig.servercertificate ) );
@@ -114,7 +114,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             }
         }
     };
-    
+
     const serverTypes = {
         'drmtoday': {
             constructLicenseRequestUrl : function( serverURL, sessionType, content ) {
@@ -143,19 +143,19 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             url = undefined,
             requestheaders = {},
             credentials = undefined;
-        
+
         if ( !this._drmconfig || !keysystemfns || !this._drmconfig.servertype || !serverTypes[this._drmconfig.servertype] ) {
             reject('Unsupported Key System');
             return;
         }
-        
+
         serverfns = serverTypes[this._drmconfig.servertype];
-        
+
         if ( !this._drmconfig.serverURL ) {
             reject('Undefined serverURL');
             return;
         }
-        
+
         url = serverfns.constructLicenseRequestUrl( this._drmconfig.serverURL, this._sessionType, this._content );
 
         // Ensure valid license server URL
@@ -197,7 +197,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                             + ' Response is ' + ((fetchresponse) ? keysystemfns.getErrorResponse(fetchresponse) : 'NONE' ));
                 return;
             }
-            
+
             if(keysystemfns.responseType === 'json') {
                 return fetchresponse.json();
             } else if(keysystemfns.responseType === 'arraybuffer') {

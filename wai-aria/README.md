@@ -3,24 +3,24 @@ Wai-aria: Tests for the WAI-ARIA Recommendations
 
 The [WAI ARIA Recommendations](https://www.w3.org/TR/wai-aria)
 define extensions to HTML4/5 for support of extended semantics.  These
-semantics make it easier for Assistive Technologies to intepret and 
-present content to users with varying physical and cognitive abilities.  
+semantics make it easier for Assistive Technologies to intepret and
+present content to users with varying physical and cognitive abilities.
 
-The purpose of these tests is to help ensure that user agents support the 
+The purpose of these tests is to help ensure that user agents support the
 requirements of the Recommendations.
 
 The general approach for this testing is to enable both manual and automated
-testing, with a preference for automation. 
+testing, with a preference for automation.
 
 
 Running Tests
 -------------
 
-In order to run these tests in an automated fashion, you will need to have a 
+In order to run these tests in an automated fashion, you will need to have a
 special Assistive Technology Test Adapter (ATTA)  for the platform under test.  We will
 provide a list of these for popular platforms here as they are made available.
 
-The ATTA will monitor the window under test via the platforms Accessibility 
+The ATTA will monitor the window under test via the platforms Accessibility
 Layer, forwarding information about the Accessibility Tree to the running test
 so that it can evaluate support for the various features under test.
 
@@ -31,7 +31,7 @@ The workflow for running these tests is something like:
 2. Start up the test driver window and select the wai-aria tests to be run
    (e.g., the ARIA 1.1 tests) - click "Start"
 3. A window pops up that shows a test - the description of which tells the
-   tester what is being tested.  In an automated test, the test with proceed 
+   tester what is being tested.  In an automated test, the test with proceed
    without user intervention.  In a manual test, some user input may be required
    in order to stimulate the test.
 4. The test runs.  Success or failure is determined and reported to the test
@@ -45,7 +45,7 @@ The workflow for running these tests is something like:
 their other (important) purpose is to increase confidence that there are
 interoperable implementations.** So, implementers are the audience, but these
 tests are not meant to be a comprehensive collection of tests for a client that
-might implement the Recommendation.  
+might implement the Recommendation.
 
 
 Capturing and Reporting Results

@@ -10,7 +10,6 @@ function runTest(config, testname) {
 
 
     async_test( function( test ) {
-
         var _video = config.video,
             _mediaKeys,
             _mediaKeySession,
@@ -29,7 +28,6 @@ function runTest(config, testname) {
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
             _mediaKeySession.generateRequest(   config.initDataType || event.initDataType,
                                                 config.initData || event.initData ).then( function() {
-
                 _sessionId = _mediaKeySession.sessionId;
             }).catch(onFailure);
         }
@@ -42,14 +40,12 @@ function runTest(config, testname) {
             assert_in_array(  event.messageType, [ 'license-request', 'individualization-request' ] );
 
             config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
-
                 _mediaKeySession.update( response )
                 .catch(onFailure);
             });
         }
 
         function onPlaying(event) {
-
             // Not using waitForEventAndRunStep() to avoid too many
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', onTimeupdate, true);
@@ -68,15 +64,14 @@ function runTest(config, testname) {
             }
         }
 
-        function onClosed(event) {
-
+        function onClosed() {
             _video.src = "";
             _video.setMediaKeys( null );
 
             var win = window.open( config.windowscript );
-            window.addEventListener('message', test.step_func(function( event ) {
+            window.addEventListener('message', test.step_func(function( messageEvent ) {
 
-                event.data.forEach(test.step_func(function( assertion ) {
+                messageEvent.data.forEach(test.step_func(function( assertion ) {
 
                     assert_equals(assertion.actual, assertion.expected, assertion.message);
 
@@ -87,6 +82,7 @@ function runTest(config, testname) {
                 test.done();
             }));
 
+            // Delete things which can't be cloned and posted over to the new window
             delete config.video;
             delete config.messagehandler;
 

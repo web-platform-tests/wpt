@@ -16,7 +16,7 @@ function runTest(config, testname) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource,
-            _releaseSequence = false;
+            _startedReleaseSequence = false;
 
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
@@ -27,12 +27,9 @@ function runTest(config, testname) {
             assert_true( event instanceof window.MediaKeyMessageEvent );
             assert_equals( event.type, 'message');
 
-            if ( !_releaseSequence )
-            {
+            if ( !_startedReleaseSequence ) {
                 assert_in_array( event.messageType, [ 'license-request', 'individualization-request' ] );
-            }
-            else
-            {
+            } else {
                 assert_equals( event.messageType, 'license-release' );
             }
 
@@ -62,13 +59,13 @@ function runTest(config, testname) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) && !_releaseSequence ) {
+            if ( _video.currentTime > ( config.duration || 5 ) && !_startedReleaseSequence ) {
 
                 _video.removeEventListener('timeupdate', onTimeupdate );
 
                 _video.pause();
 
-                _releaseSequence = true;
+                _startedReleaseSequence = true;
 
                 _mediaKeySession.closed.then( test.step_func( onClosed ) );
                 _mediaKeySession.remove().catch(onFailure);
@@ -88,7 +85,8 @@ function runTest(config, testname) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-            _video.setMediaKeys(_mediaKeys);
+            return _video.setMediaKeys(_mediaKeys);
+        }).then(function() {
             _mediaKeySession = _mediaKeys.createSession( 'persistent-license' );
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);

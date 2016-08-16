@@ -17,10 +17,10 @@ function runTest(config, testname) {
             _mediaKeySession,
             _mediaSource,
             _sessionId,
-            _allKeysUsableEvent = false,
-            _playingEvent = false,
-            _timeupdateEvent = false,
-            _releaseSequence = false,
+            _receivedAllKeysUsableEvent = false,
+            _receivedPlayingEvent = false,
+            _receivedTimeupdateEvent = false,
+            _startedReleaseSequence = false,
             _events = [ ];
 
         function onMessage(event) {
@@ -28,10 +28,11 @@ function runTest(config, testname) {
             assert_true( event instanceof window.MediaKeyMessageEvent );
             assert_equals( event.type, 'message');
 
-            assert_any( assert_equals,
-                        event.messageType,
-                        _releaseSequence    ? [ 'license-release' ]
-                                            : [ 'license-request', 'individualization-request' ] );
+            if ( !_startedReleaseSequence ) {
+                assert_in_array( event.messageType, [ 'license-request', 'individualization-request' ] );
+            } else {
+                assert_equals( event.messageType, 'license-release' );
+            }
 
             if ( event.messageType !== 'individualization-request' ) {
                 _events.push( event.messageType );
@@ -64,13 +65,11 @@ function runTest(config, testname) {
 
                 hasKeys = true;
                 pendingKeys = pendingKeys || ( value === 'status-pending' );
-
             });
 
-            if ( !_allKeysUsableEvent && hasKeys && !pendingKeys ) {
-                _allKeysUsableEvent = true;
+            if ( !_receivedAllKeysUsableEvent && hasKeys && !pendingKeys ) {
+                _receivedAllKeysUsableEvent = true;
                 _events.push( 'allkeysusable' );
-                _video.setMediaKeys(_mediaKeys);
             }
 
             if ( !hasKeys ) {
@@ -98,7 +97,6 @@ function runTest(config, testname) {
             _events.push( 'closed-promise' );
 
             setTimeout( test.step_func( function() {
-
                 assert_array_equals( _events,
                                     [
                                         'generaterequest',
@@ -116,18 +114,17 @@ function runTest(config, testname) {
                                     ],
                                     "Expected events sequence" );
 
-                _video.src = "";
                 _video.setMediaKeys( null ).then( function() { test.done() } );
-
             } ), 0 );
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) && !_timeupdateEvent ) {
-                _timeupdateEvent = true;
+            if ( _video.currentTime > ( config.duration || 5 ) && !_receivedTimeupdateEvent ) {
+                _receivedTimeupdateEvent = true;
                 _video.pause();
+                _video.src = "";
 
-                _releaseSequence = true;
+                _startedReleaseSequence = true;
 
                 _mediaKeySession.closed.then( test.step_func( onClosed ) );
                 _mediaKeySession.remove().then( function() {
@@ -139,7 +136,7 @@ function runTest(config, testname) {
         }
 
         function onPlaying(event) {
-            _playingEvent = true;
+            _receivedPlayingEvent = true;
             _events.push( 'playing' );
 
             // Not using waitForEventAndRunStep() to avoid too many
@@ -151,6 +148,8 @@ function runTest(config, testname) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
+            return _video.setMediaKeys(_mediaKeys);
+        }).then(function() {
             _mediaKeySession = _mediaKeys.createSession( 'persistent-license' );
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);

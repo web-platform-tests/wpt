@@ -11,25 +11,27 @@ drmconfig = {
     "com.widevine.alpha": {
         "serverURL": "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
         "servertype" : "drmtoday",
-        "httpRequestHeaders": {
-            "dt-custom-data": "eyJ1c2VySWQiOiIxMjM0NSIsInNlc3Npb25JZCI6ImV3b2dJQ0p3Y205bWFXeGxJaUE2SUhzS0lDQWdJQ0p3ZFhKamFHRnpaU0lnT2lCN0lIMEtJQ0I5TEFvZ0lDSnZkWFJ3ZFhSUWNtOTBaV04wYVc5dUlpQTZJSHNLSUNBZ0lDSmthV2RwZEdGc0lpQTZJR1poYkhObExBb2dJQ0FnSW1GdVlXeHZaM1ZsSWlBNklHWmhiSE5sTEFvZ0lDQWdJbVZ1Wm05eVkyVWlJRG9nWm1Gc2MyVUtJQ0I5TEFvZ0lDSnpkRzl5WlV4cFkyVnVjMlVpSURvZ1ptRnNjMlVLZlFvSyIsIm1lcmNoYW50IjoiY2FibGVsYWJzIn0K"
-        }
+        "userId" : "12345",
+        "merchant" : "cablelabs"
     },
-/*
+
     "com.microsoft.playready": {
-        "serverURL": "http://playready-testthis._drmconfigazurewebsites.net/rightsmanager.asmx?"
+        "serverURL": "http://playready-testserver.azurewebsites.net/rightsmanager.asmx",
+        "servertype": "microsoft"
     },
-    "com.microsoft.playready": {
-        "serverURL": "http://playready.directtaps.net/pr/svc/rightsmanager.asmx?"
+/*    "com.microsoft.playready": {
+        "serverURL": "http://playready.directtaps.net/pr/svc/rightsmanager.asmx",
+        "servertype": "microsoft"
     },
 */
+/*
     "com.microsoft.playready": {
         "serverURL": "https://lic.staging.drmtoday.com/license-proxy-headerauth/drmtoday/RightsManager.asmx",
         "servertype" : "drmtoday",
-        "httpRequestHeaders": {
-            "http-header-CustomData": "eyJ1c2VySWQiOiIxMjM0NSIsInNlc3Npb25JZCI6ImV3b2dJQ0p3Y205bWFXeGxJaUE2SUhzS0lDQWdJQ0p3ZFhKamFHRnpaU0lnT2lCN0lIMEtJQ0I5TEFvZ0lDSnZkWFJ3ZFhSUWNtOTBaV04wYVc5dUlpQTZJSHNLSUNBZ0lDSmthV2RwZEdGc0lpQTZJR1poYkhObExBb2dJQ0FnSW1GdVlXeHZaM1ZsSWlBNklHWmhiSE5sTEFvZ0lDQWdJbVZ1Wm05eVkyVWlJRG9nWm1Gc2MyVUtJQ0I5TEFvZ0lDSnpkRzl5WlV4cFkyVnVjMlVpSURvZ1ptRnNjMlVLZlFvSyIsIm1lcmNoYW50IjoiY2FibGVsYWJzIn0K"
-        }
+        "userId" : "12345",
+        "merchant" : "cablelabs"
     }
+*/
 };
 
 function MessageHandler( keysystem, content, sessionType ) {
@@ -119,6 +121,15 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
         'drmtoday': {
             constructLicenseRequestUrl : function( serverURL, sessionType, content ) {
                 return serverURL;
+            },
+            getCustomHeaders : function( drmconfig, sessionType ) {
+                var customToken = { outputProtection: { digital : false, analogue: false, enforce: false },
+                                    profile: { purchase: { } },
+                                    storeLicense: ( sessionType === 'persistent-license' ) };
+                var customHeader = {    userId: drmconfig.userId,
+                                        merchant: drmconfig.merchant,
+                                        sessionId: btoa( JSON.stringify( customToken )) };
+                return { "dt-custom-data" : btoa( JSON.stringify( customHeader ) ) };
             }
         },
         'microsoft': {
@@ -130,9 +141,11 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                 if ( sessionType === 'persistent-usage-record' ) {
                     url += "SecureStop=1&";
                 }
+                url += "PlayEnablers=B621D91F-EDCC-4035-8D4B-DC71760D43E9&";    // disable output protection
                 url += "ContentKey=" + btoa(String.fromCharCode.apply(null, content.keys[0].key));
                 return url;
-            }
+            },
+            getCustomHeaders : function() { return {}; }
         }
     };
 
@@ -177,7 +190,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             }
         };
 
-        updateHeaders(this._drmconfig.httpRequestHeaders);
+        updateHeaders(serverfns.getCustomHeaders( this._drmconfig, this._sessionType ) );
         updateHeaders(keysystemfns.getRequestHeadersFromMessage(message));
 
         // Set withCredentials property from server

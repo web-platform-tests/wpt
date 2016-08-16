@@ -17,11 +17,10 @@ function createTestImage() {
 
 test(function() {
   var ctx = document.createElement('canvas').getContext('2d');
-  var old = ctx.imageSmoothingEnabled;
   ctx.save();
   ctx.imageSmoothingEnabled = false;
   ctx.restore();
-  assert_equals(ctx.imageSmoothingEnabled, old);
+  assert_equals(ctx.imageSmoothingEnabled, true);
 }, "Test that restore() undoes any modifications to imageSmoothingEnabled.");
 
 test(function() {

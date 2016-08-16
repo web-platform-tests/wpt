@@ -198,6 +198,11 @@ def check_parsed(repo_root, path, f):
                 errors.append(("MULTIPLE-TESTHARNESSREPORT",
                                "More than one <script src='/resources/testharnessreport.js'>", path, None))
 
+        testharnesscss_nodes = source_file.root.findall(".//{http://www.w3.org/1999/xhtml}link[@href='/resources/testharness.css']")
+        if testharnesscss_nodes:
+            errors.append(("PRESENT-TESTHARNESSCSS",
+                           "Explicit link to testharness.css present", path, None))
+
         for element in source_file.variant_nodes:
             if "content" not in element.attrib:
                 errors.append(("VARIANT-MISSING",

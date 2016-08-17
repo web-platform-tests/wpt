@@ -89,4 +89,4 @@ response_codes = {
     504: ('Gateway Timeout',
           'The gateway server did not receive a timely response'),
     505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
-    }
+}

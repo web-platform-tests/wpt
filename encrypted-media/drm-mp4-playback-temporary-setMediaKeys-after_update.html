@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: Successful Playback, Temporary session with Clear Key, mp4</title>
+    <title>Encrypted Media Extensions: Successful Playback, Temporary session with DRM, mp4</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -12,15 +12,15 @@
 
     <!-- Helper scripts for Encrypted Media Extensions tests  -->
     <script src=/encrypted-media/util/utils.js></script>
+    <script src=/encrypted-media/util/utf8.js></script>
     <script src=/encrypted-media/util/fetch.js></script>
     <script src=/encrypted-media/util/testmediasource.js></script>
-    <script src=/encrypted-media/util/utf8.js></script>
 
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
 
-    <!-- Message handler for Clear Key keysystem -->
-    <script src=/encrypted-media/util/clearkey-messagehandler.js></script>
+    <!-- Message handler for DRM servers -->
+    <script src=/encrypted-media/util/drmtoday-messagehandler.js></script>
 
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/playback-temporary-setMediaKeys.js></script>
@@ -36,16 +36,15 @@
     <script>
         var contentitem = content['mp4-basic'],
             config = {  video:              document.getElementById('videoelement'),
-                        keysystem:          'org.w3.clearkey',
+                        keysystem:          getSupportedKeySystem(),
                         messagehandler:     messagehandler.bind( contentitem ),
                         audioPath:          contentitem.audio.path,
                         videoPath:          contentitem.video.path,
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
-                        initDataType:       'keyids',
-                        initData:           getInitData(contentitem,'keyids'),
+                        initDataType:       contentitem.initDataType,
                         duration:           2,
-                        testcase:           SETMEDIAKEYS_FIRST };
+                        testcase:           SETMEDIAKEYS_AFTER_UPDATE };
 
         runTest(config);
     </script>

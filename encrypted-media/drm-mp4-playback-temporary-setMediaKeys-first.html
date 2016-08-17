@@ -23,7 +23,7 @@
     <script src=/encrypted-media/util/drmtoday-messagehandler.js></script>
 
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/playback-temporary-setMediaKeys-first.js></script>
+    <script src=/encrypted-media/scripts/playback-temporary-setMediaKeys.js></script>
 
   </head>
   <body>
@@ -43,7 +43,8 @@
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
                         initDataType:       contentitem.initDataType,
-                        duration:           2 };
+                        duration:           2,
+                        testcase:           SETMEDIAKEYS_FIRST };
 
         runTest(config);
     </script>

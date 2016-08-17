@@ -122,16 +122,14 @@ test(function(t) {
 
 async_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
-  animation.ready.then(function() {
-    t.step(function() {
-      t.unreached_func('Promise should not resolve when animation cancelled');
-    });
-  }, function(e) {
-    t.step(function() {
-      assert_equals(e.code, DOMException.ABORT_ERR);
-    });
-    t.done();
-  });
+  animation.ready.then(
+      t.unreached_func('Promise should not resolve when animation cancelled'),
+      function(e) {
+          t.step(function() {
+            assert_equals(e.code, DOMException.ABORT_ERR);
+          });
+          t.done();
+      });
   animation.cancel();
 }, 'A pending ready promise should be rejected when the animation is cancelled');
 

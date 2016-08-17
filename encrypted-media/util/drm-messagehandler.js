@@ -136,11 +136,11 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             }
         },
         'microsoft': {
-            constructLicenseRequestUrl : function( serverURL, sessionType, messageType, content ) {                
+            constructLicenseRequestUrl : function( serverURL, sessionType, messageType, content ) {
                 if ( messageType !== 'license-request' ) {
                     return serverURL;
                 }
-                
+
                 var url = serverURL + "?";
                 if ( sessionType === 'temporary' || sessionType === 'persistent-usage-record' ) {
                     url += "UseSimpleNonPersistentLicense=1&";

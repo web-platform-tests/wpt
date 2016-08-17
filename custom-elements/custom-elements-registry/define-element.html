@@ -7,9 +7,6 @@
 <script src="resources/custom-elements-helpers.js"></script>
 <body>
 <script>
-// TODO(dominicc): Merge these tests with
-// https://github.com/w3c/web-platform-tests/pull/2940
-
 'use strict';
 
 test_with_window((w) => {
@@ -299,6 +296,8 @@ test_with_window((w) => {
     'should not execute if attributeChangedCallback is undefined');
 
 // step 2
+// TODO(davaajav): move this test to its appropriate place when 
+// https://github.com/w3c/webcomponents/issues/541 is closed
 // 2. If constructor is an interface object whose corresponding interface either is 
 //    HTMLElement or has HTMLElement in its set of inherited interfaces, throw 
 //    a TypeError and abort these steps.
@@ -306,29 +305,10 @@ test_with_window((w) => {
 //    and abort these steps.
 test_with_window((w) => {
   let invalid_name = 'annotation-xml';
-  // TODO(davaajav): change this to TypeError, when we add a failure expectation to this file
-  assert_throws_dom_exception(w, 'SYNTAX_ERR', () => {
-    w.customElements.define(invalid_name, HTMLElement);
+  assert_throws(TypeError.prototype, () => {
+    w.customElements.define(invalid_name, HTMLButtonElement);
   }, 'defining a constructor that is an interface object whose interface is HTMLElement' + 
        'should throw TypeError not SyntaxError');
-}, 'Invalid constructor');
-
-// step 2
-test_with_window((w) => {
-  let invalid_name = 'annotation-xml';
-  assert_throws_dom_exception(w, 'SYNTAX_ERR', () => {
-    w.customElements.define(invalid_name, HTMLButtonElement);
-  }, 'defining a constructor that is an interface object who has HTMLElement' + 
-       'in its set of inhertied interfaces should throw TypeError not SyntaxError');
-}, 'Invalid constructor');
-
-// step 2
-test_with_window((w) => {
-  let invalid_name = 'annotation-xml';
-  assert_throws_dom_exception(w, 'SYNTAX_ERR', () => {
-    w.customElements.define(invalid_name, class extends HTMLElement {});
-  }, 'defining author-defined custom element constructor' + 
-       'should pass this step without throwing TypeError');
 }, 'Invalid constructor');
 </script>
 </body>

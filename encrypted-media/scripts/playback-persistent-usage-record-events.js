@@ -59,13 +59,15 @@ function runTest(config, testname) {
             assert_equals(event.type, 'keystatuseschange' );
 
             var hasKeys = false, pendingKeys = false;
-            _mediaKeySession.keyStatuses.forEach( function( value, keyid ) {
-                assert_any( assert_equals, value, [ 'status-pending', 'usable' ] );
+            _mediaKeySession.keyStatuses.forEach( test.step_func( function( value, keyid ) {
+                assert_equals( typeof value, 'string', "KeyStatus should be a string" );
+                assert_equals( typeof keyid, '[object ArrayBuffer]', "Key ID should be an ArrayBuffer" );
+                assert_in_array( value, [ 'status-pending', 'usable' ] );
 
                 hasKeys = true;
                 pendingKeys = pendingKeys || ( value === 'status-pending' );
 
-            });
+            }) );
 
             if ( !_allKeysUsableEvent && hasKeys && !pendingKeys ) {
                 _allKeysUsableEvent = true;

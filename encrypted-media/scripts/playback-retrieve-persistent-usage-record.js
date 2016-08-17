@@ -15,7 +15,8 @@ function runTest(config, testname) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource,
-            _sessionId;
+            _sessionId,
+            _isClosing = false;
 
         function onEncrypted(event) {
             assert_equals(event.target, _video);
@@ -56,20 +57,16 @@ function runTest(config, testname) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) ) {
-
+            if ( !_isClosing && _video.currentTime > ( config.duration || 2 ) ) {
+                _isClosing = true;
                 _video.removeEventListener('timeupdate', onTimeupdate );
-
                 _video.pause();
-
                 _mediaKeySession.closed.then( test.step_func( onClosed ) );
-
                 _mediaKeySession.close();
             }
         }
 
         function onClosed(event) {
-
             _video.src = "";
             _video.setMediaKeys( null );
 

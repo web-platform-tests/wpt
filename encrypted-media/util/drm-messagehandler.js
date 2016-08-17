@@ -51,6 +51,11 @@ function MessageHandler( keysystem, content, sessionType ) {
 
 MessageHandler.prototype.messagehandler = function messagehandler( messageType, message) {
 
+    // For the DRM Today server, mapping between Key System messages and server protocol messages depends on
+    // the Key System, so we provide key-system-specific functions here to perform the mapping.
+    //
+    // For the Microsoft server, the mapping for PlayReady is the same as for the DRM Today server
+    //
     const keySystems = {
         'com.widevine.alpha': {
             responseType: 'json',
@@ -108,9 +113,8 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                 for (var i = 0; i < headerNameList.length; i++) {
                     headers[headerNameList[i].childNodes[0].nodeValue] = headerValueList[i].childNodes[0].nodeValue;
                 }
-                // some versions of the PlayReady CDM return 'Content' instead of 'Content-Type'.
-                // this is NOT w3c conform and license servers may reject the request!
-                // -> rename it to proper w3c definition!
+                // some versions of the PlayReady CDM return 'Content' instead of 'Content-Type',
+                // but the license server expects 'Content-Type', so we fix it up here.
                 if (headers.hasOwnProperty('Content')) {
                     headers['Content-Type'] = headers.Content;
                     delete headers.Content;
@@ -120,6 +124,8 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
         }
     };
 
+    // License request parameters are communicated to the DRM Today and Microsoft servers in different ways,
+    // using a custom HTTP headers (DRM Today) and URL parameters (Microsoft).
     const serverTypes = {
         'drmtoday': {
             constructLicenseRequestUrl : function( serverURL, sessionType, messageType, content ) {
@@ -157,7 +163,6 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
     };
 
     return new Promise(function(resolve, reject) {
-
         var keysystemfns = keySystems[this._keysystem],
             serverfns,
             url = undefined,

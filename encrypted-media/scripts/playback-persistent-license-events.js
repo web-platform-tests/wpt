@@ -83,7 +83,7 @@ function runTest(config, testname) {
             assert_equals(event.type, 'encrypted');
 
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
-            _mediaKeySession.generateRequest(   config.initDataType || event.initDataType,
+            _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
                                                 config.initData || event.initData ).then( function() {
 
                 _events.push( 'generaterequest' );
@@ -122,7 +122,8 @@ function runTest(config, testname) {
             if ( _video.currentTime > ( config.duration || 5 ) && !_receivedTimeupdateEvent ) {
                 _receivedTimeupdateEvent = true;
                 _video.pause();
-                _video.src = "";
+                _video.removeAttribute('src');
+                _video.load();
 
                 _startedReleaseSequence = true;
 

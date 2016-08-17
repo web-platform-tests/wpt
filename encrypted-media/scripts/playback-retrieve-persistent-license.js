@@ -26,7 +26,7 @@ function runTest(config, testname) {
             assert_equals(event.type, 'encrypted');
 
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
-            _mediaKeySession.generateRequest(   config.initDataType || event.initDataType,
+            _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
                                                 config.initData || event.initData ).then( function() {
                 _sessionId = _mediaKeySession.sessionId;
             }).catch(onFailure);
@@ -53,13 +53,12 @@ function runTest(config, testname) {
 
         function onTimeupdate(event) {
             if ( _video.currentTime > ( config.duration || 5 ) ) {
-
                 _video.removeEventListener('timeupdate', onTimeupdate );
-
                 _video.pause();
+                _video.removeAttribute('src');
+                _video.load()
 
                 _mediaKeySession.closed.then( test.step_func( onClosed ) );
-
                 _mediaKeySession.close();
             }
         }
@@ -68,17 +67,16 @@ function runTest(config, testname) {
             _video.src = "";
             _video.setMediaKeys( null );
 
+            // Open a new window in which we will attempt to play with the persisted license
             var win = window.open( config.windowscript );
+
+            // Lisen for an event from the new window containing its test assertions
             window.addEventListener('message', test.step_func(function( messageEvent ) {
-
                 messageEvent.data.forEach(test.step_func(function( assertion ) {
-
                     assert_equals(assertion.actual, assertion.expected, assertion.message);
-
                 }));
 
                 win.close();
-
                 test.done();
             }));
 
@@ -86,8 +84,8 @@ function runTest(config, testname) {
             delete config.video;
             delete config.messagehandler;
 
+            // Post the config and session id to the new window when it is ready
             win.onload = function() {
-
                 win.postMessage( { config: config, sessionId: _sessionId }, '*' );
             }
         }

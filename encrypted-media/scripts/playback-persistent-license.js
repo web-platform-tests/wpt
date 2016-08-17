@@ -47,8 +47,7 @@ function runTest(config, testname) {
 
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
             _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
-                                                config.initData || event.initData )
-            .catch(onFailure);
+                                                config.initData || event.initData ).catch(onFailure);
         }
 
         function onClosed(event) {

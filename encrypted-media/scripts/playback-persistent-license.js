@@ -50,31 +50,21 @@ function runTest(config, testname) {
                                                 config.initData || event.initData ).catch(onFailure);
         }
 
-        function onClosed(event) {
-            _video.src = "";
-            _video.setMediaKeys( null ).then(function(){
-                    test.done();
-            });
-        }
-
         function onTimeupdate(event) {
             if ( _video.currentTime > ( config.duration || 5 ) && !_startedReleaseSequence ) {
-
                 _video.removeEventListener('timeupdate', onTimeupdate );
-
                 _video.pause();
+                _video.removeAttribute('src');
+                _video.load();
 
                 _startedReleaseSequence = true;
 
-                _mediaKeySession.closed.then( test.step_func( onClosed ) );
+                _mediaKeySession.closed.then( function() { test.done(); } );
                 _mediaKeySession.remove().catch(onFailure);
-
-                _video.removeEventListener('timeupdate', onTimeupdate );
             }
         }
 
         function onPlaying(event) {
-
             // Not using waitForEventAndRunStep() to avoid too many
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', onTimeupdate, true);

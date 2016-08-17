@@ -9,18 +9,20 @@
 <script>
 'use strict';
 
-function validateFinishEvent(t, event, animation) {
+function validateFinishEvent(t, event, animation, expectedEventTime) {
   t.step(function() {
     assert_equals(event.target, animation, "Animation should be event target");
-    assert_times_equal(event.currentTime, animation.currentTime, "Event currentTime should be animation currentTime");
-    assert_times_equal(event.timelineTime, animation.timeline.currentTime, "Event timelineTime should be animation timeline's currentTime");
+    assert_times_equal(event.currentTime, expectedEventTime,
+        "Event currentTime should be the given expected value");
+    assert_times_equal(event.timelineTime, animation.startTime + expectedEventTime,
+        "Event timelineTime should be the animation's start time plus the given expected value");
   });
 }
 
-function awaitFinishEventAndPromise(t, animation) {
+function awaitFinishEventAndPromise(t, animation, expectedEventTime) {
   var eventPromise = new Promise(function(resolve) {
     animation.onfinish = function(event) {
-      validateFinishEvent(t, event, animation);
+      validateFinishEvent(t, event, animation, expectedEventTime);
       resolve();
     };
   });
@@ -29,57 +31,58 @@ function awaitFinishEventAndPromise(t, animation) {
     assert_equals(target, animation);
   });
 
-  return Promise.all([eventPromise, finishedPromise]);
+  var timeout = waitForAnimationFrames(3).then(function() {
+    return Promise.reject("Expected finish notifications did not occur");
+  });
+
+  return Promise.race([timeout,Promise.all([eventPromise, finishedPromise])]);
 }
 
-async_test(function(t) {
+promise_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 1);
-  animation.onfinish = function(event) {
-    t.unreached_func("Seeking to finish should not fire finish event");
-  };
-  animation.finished.then(function() {
-    t.unreached_func("Seeking to finish should not resolve finished promise");
-  })
-  animation.finish();
+  animation.onfinish = t.unreached_func("Seeking to finish should not fire finish event");
+  animation.finished.then(t.unreached_func("Seeking to finish should not resolve finished promise"));
+  animation.currentTime = 1;
   animation.currentTime = 0;
   animation.pause();
-  t.done();
+  return waitForAnimationFrames(3);
 }, "Finish notification steps don't run when the animation seeks to finish and then seeks back again");
 
-async_test(function(t) {
+promise_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 1);
-  animation.onfinish = function(event) {
-    t.unreached_func("Seeking past finish should not fire finish event");
-  };
-  animation.finished.then(function() {
-    t.unreached_func("Seeking past finish should not resolve finished promise");
-  })
+  animation.onfinish = t.unreached_func("Seeking past finish should not fire finish event");
+  animation.finished.then(t.unreached_func("Seeking past finish should not resolve finished promise"));
   animation.currentTime = 10;
   animation.currentTime = 0;
   animation.pause();
-  t.done();
+  return waitForAnimationFrames(3);
 }, "Finish notification steps don't run when the animation seeks past finish and then seeks back again");
 
 promise_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 1);
   animation.finish();
-  return awaitFinishEventAndPromise(t, animation);
-}, "Finish notification steps run when the animation completes with .finish()");
+  animation.currentTime = 0;
+  animation.pause();
+  var expectedEventTime = 1;
+  return awaitFinishEventAndPromise(t, animation, expectedEventTime);
+}, "Finish notification steps run when the animation completes with .finish(), even if we then seek away");
 
 promise_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 1);
   animation.currentTime = 10;
-  return awaitFinishEventAndPromise(t, animation);
+  var expectedEventTime = 10;
+  return awaitFinishEventAndPromise(t, animation, expectedEventTime);
 }, "Finish notification steps run when the animation seeks past finish");
 
 promise_test(function(t) {
   var div = createDiv(t);
   var animation = div.animate(null, 1);
-  return awaitFinishEventAndPromise(t, animation);
+  var expectedEventTime = 1;
+  return awaitFinishEventAndPromise(t, animation, expectedEventTime);
 }, "Finish notification steps run when the animation completes");
 
 promise_test(function(t) {

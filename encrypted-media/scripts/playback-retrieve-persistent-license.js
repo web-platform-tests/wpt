@@ -39,7 +39,7 @@ function runTest(config, testname) {
 
             assert_in_array(  event.messageType, [ 'license-request', 'individualization-request' ] );
 
-            config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
+            config.messagehandler( event.messageType, event.message ).then( function( response ) {
                 _mediaKeySession.update( response )
                 .catch(onFailure);
             });

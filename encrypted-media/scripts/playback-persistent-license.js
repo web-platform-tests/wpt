@@ -33,7 +33,7 @@ function runTest(config, testname) {
                 assert_equals( event.messageType, 'license-release' );
             }
 
-            config.messagehandler( config.keysystem, event.messageType, event.message )
+            config.messagehandler( event.messageType, event.message )
             .then( function( response ) {
                 _mediaKeySession.update( response )
                 .catch(onFailure);

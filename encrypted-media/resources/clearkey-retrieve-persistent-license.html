@@ -37,7 +37,7 @@
             var _mediaKeySession;
 
             config.video = document.getElementById('videoelement');
-            config.messagehandler = messagehandler;
+            config.messagehandler = (new MessageHandler( 'org.w3.clearkey')).messagehandler;
 
         function onFailure(error) {
             assertions.push( { actual: false, expected: true, message: error.toString() } );
@@ -52,7 +52,7 @@
             assert_in_array( event.messageType,
                             [ 'license-request', 'individualization-request', 'license-release' ] );
 
-            config.messagehandler( config.keysystem, event.messageType, event.message )
+            config.messagehandler( event.messageType, event.message )
             .then( function( response ) {
                 event.target.update( response ).catch(onFailure);
             });

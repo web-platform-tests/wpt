@@ -38,7 +38,7 @@ function runTest(config, testname) {
                 _events.push( event.messageType );
             }
 
-            config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
+            config.messagehandler( event.messageType, event.message ).then( function( response ) {
                 if ( event.messageType === 'license-request' ) {
                     _events.push( 'license-response' );
                 } else if ( event.messageType === 'license-release' ) {

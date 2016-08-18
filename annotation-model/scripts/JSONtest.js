@@ -163,13 +163,14 @@ function JSONtest(params) {
               // accumulate the assertions - but only when level is 0
               var list = [] ;
 
+              var type = "";
               if (assertions) {
                 if (typeof assertions === "object" && assertions.hasOwnProperty('assertions')) {
                   // this is a conditionObject
                   if (level === 0) {
                     list.push(assertContents[assertIdx]);
                   }
-                  var type = assertContents[assertIdx].hasOwnProperty('assertionType') ? assertContents[assertIdx].assertionType : "must" ;
+                  type = assertContents[assertIdx].hasOwnProperty('assertionType') ? assertContents[assertIdx].assertionType : "must" ;
 
                   // ensure type defaults to must
                   if (!typeMap.hasOwnProperty(type)) {
@@ -183,13 +184,6 @@ function JSONtest(params) {
                 } else {
                   // it is NOT a conditionObject - must be an array
                   assertions.forEach( function(assert) {
-                    var type = assert.hasOwnProperty('assertionType') ? assert.assertionType : "must" ;
-
-                    // ensure type defaults to must
-                    if (!typeMap.hasOwnProperty(type)) {
-                      type = "must";
-                    }
-
                     if (typeof assert === "object" && Array.isArray(assert)) {
                       this.AssertionText += "<ol>";
                       // it is a nested list - recurse
@@ -199,6 +193,13 @@ function JSONtest(params) {
                       if (level === 0) {
                         list.push(assertContents[assertIdx]);
                       }
+                      type = assertContents[assertIdx].hasOwnProperty('assertionType') ? assertContents[assertIdx].assertionType : "must" ;
+
+                      // ensure type defaults to must
+                      if (!typeMap.hasOwnProperty(type)) {
+                        type = "must";
+                      }
+
                       // there is a condition object in the array
                       this.AssertionText += "<li>" + typeMap[type] + assertContents[assertIdx++].title;
                       this.AssertionText += "<ol>";
@@ -208,6 +209,13 @@ function JSONtest(params) {
                       if (level === 0) {
                         list.push(assertContents[assertIdx]);
                       }
+                      type = assertContents[assertIdx].hasOwnProperty('assertionType') ? assertContents[assertIdx].assertionType : "must" ;
+
+                      // ensure type defaults to must
+                      if (!typeMap.hasOwnProperty(type)) {
+                        type = "must";
+                      }
+
                       this.AssertionText += "<li>" + typeMap[type] + assertContents[assertIdx++].title + "</li>\n";
                     }
                   }.bind(this));

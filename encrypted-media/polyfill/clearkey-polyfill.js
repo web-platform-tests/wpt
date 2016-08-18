@@ -341,7 +341,7 @@
     {
         return new Promise( function( resolve, reject ) {
 
-            switch( this._state )
+            switch( this._state ) {
 
                 case 'active' :
 

@@ -10,7 +10,7 @@ function runTest(config) {
                     : ( config.testcase === SETMEDIAKEYS_ONENCRYPTED ) ? 'setMediaKeys in encrypted event'
                     : ( config.testcase === SETMEDIAKEYS_AFTER_UPDATE ) ? 'setMediaKeys after updating session'
                     : 'unknown';
-    
+
     var testname = config.keysystem + ', sucessful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
                                     + ', ' + testcase;
@@ -26,7 +26,7 @@ function runTest(config) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource;
-            
+
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }
@@ -53,11 +53,11 @@ function runTest(config) {
             assert_equals(event.target, _video);
             assert_true(event instanceof window.MediaEncryptedEvent);
             assert_equals(event.type, 'encrypted');
-            
+
             var promise = ( config.testcase === SETMEDIAKEYS_ONENCRYPTED )
                                 ? _video.setMediaKeys( _mediaKeys )
                                 : Promise.resolve();
-               
+
             promise.then( function() {
                 waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
                 return _mediaKeySession.generateRequest(config.initData ? config.initDataType : event.initDataType,
@@ -87,13 +87,13 @@ function runTest(config) {
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-        }).then(function() {
+        }).then(test.step_func(function() {
             if ( config.testcase === SETMEDIAKEYS_FIRST ) {
                 return _video.setMediaKeys( _mediaKeys );
             }
-        }).then(function() {
+        })).then(function() {
             return testmediasource(config);
-        }).then(function(source) {
+        }).then(test.step_func(function(source) {
             _mediaSource = source;
             _video.src = URL.createObjectURL(_mediaSource);
             _video.play();
@@ -101,6 +101,6 @@ function runTest(config) {
             if ( config.testcase === SETMEDIAKEYS_AFTER_SRC ) {
                 return _video.setMediaKeys( _mediaKeys );
             }
-        }).catch(onFailure);
+        })).catch(onFailure);
     }, testname);
 }

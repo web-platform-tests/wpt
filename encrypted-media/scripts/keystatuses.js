@@ -71,7 +71,7 @@ function runTest(config)
             assert_array_equals(result,
                                 ['usable', 'usable'],
                                 'keyStatuses.values() fails');
-            
+
             // Check |keyStatuses.entries()|.
             result = [];
             for (var entry of mediaKeySession.keyStatuses.entries()) {
@@ -89,7 +89,7 @@ function runTest(config)
             assert_object_equals(result,
                                  expected,
                                  'keyStatuses.forEach() fails');
-            
+
             // has() and get() should return the expected values.
             assert_true(mediaKeySession.keyStatuses.has(key1), "keyStatuses should have key1");
             assert_true(mediaKeySession.keyStatuses.has(key2), "keyStatuses should have key2");

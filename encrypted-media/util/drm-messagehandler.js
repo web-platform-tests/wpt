@@ -86,7 +86,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                 var dataview = new Uint16Array(message);
 
                 msg = String.fromCharCode.apply(null, dataview);
-                
+
                 xmlDoc = parser.parseFromString(msg, 'application/xml');
 
                 if (xmlDoc.getElementsByTagName('Challenge')[0]) {

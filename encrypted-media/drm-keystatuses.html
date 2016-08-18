@@ -20,7 +20,7 @@
     <script src=/encrypted-media/content/content-metadata.js></script>
 
     <!-- Message handler for DRM -->
-    <script src=/encrypted-media/util/drmtoday-messagehandler.js></script>
+    <script src=/encrypted-media/util/drm-messagehandler.js></script>
 
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/keystatuses.js></script>
@@ -37,6 +37,7 @@
             var contentitem = contents.filter( function( item ) {
                 return item.keys.length > 1 && item.initDataType && item.associatedInitData;
             } )[ 0 ];
+            
             var handler = new MessageHandler( keysystem, contentitem );
             var config = {  keysystem:          keysystem,
                             content:            contentitem,

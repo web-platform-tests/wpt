@@ -44,8 +44,8 @@ function runTest(config)
 
             // Check |keyStatuses| for 2 entries.
             var result = [];
-            for (let [keyId, status] of mediaKeySession.keyStatuses) {
-                result.push({ key: arrayBufferAsString(keyId), value: status });
+            for (let item of mediaKeySession.keyStatuses) {
+                result.push({ key: arrayBufferAsString(item[0]), value: item[1] });
             }
             function lexicographical( a, b ) { return a < b ? -1 : a === b ? 0 : +1; }
             function lexicographicalkey( a, b ) { return lexicographical( a.key, b.key ); }
@@ -71,7 +71,7 @@ function runTest(config)
             assert_array_equals(result,
                                 ['usable', 'usable'],
                                 'keyStatuses.values() fails');
-
+            
             // Check |keyStatuses.entries()|.
             result = [];
             for (var entry of mediaKeySession.keyStatuses.entries()) {
@@ -83,18 +83,18 @@ function runTest(config)
 
             // forEach() should return both entries.
             result = [];
-            mediaKeySession.keyStatuses.forEach(function(status, keyId) {
+            mediaKeySession.keyStatuses.forEach(function(keyId, status) {
                 result.push({ key: arrayBufferAsString(keyId), value: status });
             });
             assert_object_equals(result,
                                  expected,
                                  'keyStatuses.forEach() fails');
-
+            
             // has() and get() should return the expected values.
-            assert_true(mediaKeySession.keyStatuses.has(key1));
-            assert_true(mediaKeySession.keyStatuses.has(key2));
-            assert_equals(mediaKeySession.keyStatuses.get(key1), 'usable');
-            assert_equals(mediaKeySession.keyStatuses.get(key2), 'usable');
+            assert_true(mediaKeySession.keyStatuses.has(key1), "keyStatuses should have key1");
+            assert_true(mediaKeySession.keyStatuses.has(key2), "keyStatuses should have key2");
+            assert_equals(mediaKeySession.keyStatuses.get(key1), 'usable', "key1 should have status 'usable'");
+            assert_equals(mediaKeySession.keyStatuses.get(key2), 'usable', "key2 should have status 'usable'");
 
             // Try some invalid keyIds.
             var invalid1 = key1.subarray(0, key1.length - 1);

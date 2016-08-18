@@ -37,10 +37,10 @@
             var contentitem = contents.filter( function( item ) {
                 return item.keys.length > 1 && item.initDataType && item.associatedInitData;
             } )[ 0 ];
-
+            var handler = new MessageHandler( keysystem, contentitem );
             var config = {  keysystem:          keysystem,
                             content:            contentitem,
-                            messagehandler:     messagehandler.bind( contentitem ),
+                            messagehandler:     handler.messagehandler,
                             initDataType:       contentitem.initDataType,
                             initData:           base64DecodeToUnit8Array( getProprietaryInitDatas(contentitem).initDatas[ 0 ] ),
                         };

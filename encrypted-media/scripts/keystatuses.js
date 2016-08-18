@@ -32,7 +32,7 @@ function runTest(config)
             waitForEventAndRunStep('keystatuseschange', mediaKeySession, processKeyStatusesChange, test);
 
             // Add keys to session
-            config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
+            config.messagehandler( event.messageType, event.message ).then( function( response ) {
                 event.target.update( response ).catch(onFailure);
             });
         }

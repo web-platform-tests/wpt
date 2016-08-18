@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-colgroup-span">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#limited-to-only-non-negative-numbers-greater-than-zero-with-fallback">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<table id="sudoku">
+ <colgroup><col><col><col>
+ <colgroup><col><col><col>
+ <colgroup><col><col><col>
+ <tbody>
+  <tr> <td> 1 <td>   <td> 3 <td> 6 <td>   <td> 4 <td> 7 <td>   <td> 9
+  <tr> <td>   <td> 2 <td>   <td>   <td> 9 <td>   <td>   <td> 1 <td>
+  <tr> <td> 7 <td>   <td>   <td>   <td>   <td>   <td>   <td>   <td> 6
+ <tbody>
+  <tr> <td> 2 <td>   <td> 4 <td>   <td> 3 <td>   <td> 9 <td>   <td> 8
+  <tr> <td>   <td>   <td>   <td>   <td>   <td>   <td>   <td>   <td>
+  <tr> <td> 5 <td>   <td>   <td> 9 <td>   <td> 7 <td>   <td>   <td> 1
+ <tbody>
+  <tr> <td> 6 <td>   <td>   <td>   <td> 5 <td>   <td>   <td>   <td> 2
+  <tr> <td>   <td>   <td>   <td>   <td> 7 <td>   <td>   <td>   <td>
+  <tr> <td> 9 <td>   <td>   <td> 8 <td>   <td> 2 <td>   <td>   <td> 5
+</table>
+
+<script>
+"use strict";
+
+test(() => {
+    const colgroup = document.querySelector("colgroup");
+
+    assert_equals(colgroup.span, 1);
+}, "colgroup's initial default span value must be 1");
+
+test(() => {
+    const colgroup = document.querySelector("colgroup");
+    colgroup.span = 2;
+
+    assert_equals(colgroup.getAttribute("span"), "2");
+}, "setting colgroup's span to 2 sets the relevant content attribute");
+
+test(() => {
+    const colgroup = document.querySelector("colgroup");
+    colgroup.span = 0;
+
+    assert_equals(colgroup.getAttribute("span"), "1", "testing content attribute");
+    assert_equals(colgroup.span, 1, "testing IDL attribute");
+}, "setting colgroup's span IDL attribute to 0 causes content = 1, IDL = 1");
+
+test(() => {
+    const colgroup = document.querySelector("colgroup");
+    colgroup.span = 2147483649;
+
+    assert_equals(colgroup.getAttribute("span"), "1", "testing content attribute");
+    assert_equals(colgroup.span, 1, "testing IDL attribute");
+}, "setting colgroup's span IDL attribute to 2147483649 causes content = 1, IDL = 1");
+
+test(() => {
+    const colgroup = document.querySelector("colgroup");
+    colgroup.setAttribute("span", "2147483649");
+
+    assert_equals(colgroup.getAttribute("span"), "2147483649", "testing content attribute");
+    assert_equals(colgroup.span, 1, "testing IDL attribute");
+}, "setting colgroup's span content attribute to 2147483649 causes content = 2147483649, IDL = 1");
+
+</script>

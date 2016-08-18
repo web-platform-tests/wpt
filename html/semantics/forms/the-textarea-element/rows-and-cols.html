@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-textarea-cols">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-textarea-rows">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#limited-to-only-non-negative-numbers-greater-than-zero-with-fallback">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<textarea></textarea>
+
+<script>
+"use strict";
+
+const defaults = {
+  cols: 20,
+  rows: 2
+};
+
+for (let attr of Object.keys(defaults)) {
+  const defaultValue = defaults[attr];
+
+  test(() => {
+      const textarea = document.querySelector("textarea");
+
+      assert_equals(textarea[attr], defaultValue);
+  }, `textarea's initial default ${attr} value must be ${defaultValue}`);
+
+  test(() => {
+      const textarea = document.querySelector("textarea");
+      textarea[attr] = 30;
+
+      assert_equals(textarea.getAttribute(attr), "30");
+  }, `setting textarea's ${attr} to 30 sets the relevant content attribute`);
+
+  test(() => {
+      const textarea = document.querySelector("textarea");
+      textarea[attr] = 0;
+
+      assert_equals(textarea.getAttribute(attr), `${defaultValue}`, "testing content attribute");
+      assert_equals(textarea[attr], defaultValue, "testing IDL attribute");
+  }, `setting textarea's ${attr} IDL attribute to 0 causes content = ${defaultValue}, IDL = ${defaultValue}`);
+
+  test(() => {
+      const textarea = document.querySelector("textarea");
+      textarea[attr] = 2147483649;
+
+      assert_equals(textarea.getAttribute(attr), `${defaultValue}`, "testing content attribute");
+      assert_equals(textarea[attr], defaultValue, "testing IDL attribute");
+  }, `setting textarea's ${attr} IDL attribute to 2147483649 causes content = ${defaultValue}, IDL = ${defaultValue}`);
+
+  test(() => {
+      const textarea = document.querySelector("textarea");
+      textarea.setAttribute(attr, "2147483649");
+
+      try {
+        assert_equals(textarea.getAttribute(attr), "2147483649", "testing content attribute");
+        assert_equals(textarea[attr], defaultValue, "testing IDL attribute");
+      } finally {
+        // Otherwise Chrome gets very confused on failure
+        textarea.setAttribute(attr, "30");
+      }
+  }, `setting textarea's ${attr} content attribute to 2147483649 causes content = 2147483649, IDL = ${defaultValue}`);
+}
+
+</script>

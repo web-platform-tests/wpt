@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-input-size">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#limited-to-only-non-negative-numbers-greater-than-zero">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<input>
+
+<script>
+"use strict";
+
+test(() => {
+    const input = document.querySelector("input");
+
+    assert_equals(input.size, 20);
+}, "input's initial default size value must be 20");
+
+test(() => {
+    const input = document.querySelector("input");
+    input.size = 2;
+
+    assert_equals(input.getAttribute("size"), "2");
+}, "setting input's size to 2 sets the relevant content attribute");
+
+test(() => {
+    const input = document.querySelector("input");
+
+    assert_throws("IndexSizeError", () => {
+      input.size = 0;
+    }, "testing throwing behavior");
+
+    assert_equals(input.getAttribute("size"), "2", "testing content attribute");
+    assert_equals(input.size, 2, "testing IDL attribute");
+}, "setting input's size IDL attribute to 0 causes a throw and the values remain the same (content = 2, IDL = 2)");
+
+test(() => {
+    const input = document.querySelector("input");
+    input.size = 2147483649;
+
+    assert_equals(input.getAttribute("size"), "20", "testing content attribute");
+    assert_equals(input.size, 20, "testing IDL attribute");
+}, "setting input's size IDL attribute to 2147483649 causes content = 20, IDL = 20");
+
+test(() => {
+    const input = document.querySelector("input");
+    input.setAttribute("size", "2147483649");
+
+    assert_equals(input.getAttribute("size"), "2147483649", "testing content attribute");
+    assert_equals(input.size, 20, "testing IDL attribute");
+}, "setting input's size content attribute to 2147483649 causes content = 2147483649, IDL = 20");
+
+</script>

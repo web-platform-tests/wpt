@@ -132,7 +132,6 @@ test_with_window((w) => {
   class C extends w.HTMLElement {
     constructor() {
       super();
-      console.log(this.getAttribute('id'));
       invocations.push(this);
     }
   }

@@ -276,7 +276,6 @@ test_with_content((w) => {
               'the element should have been created successfully');
 
   let elements = f.detached.querySelectorAll('a-a');
-  console.log(f.invocations[0].parentNode);
   assert_equals(elements.length, 2,
                 'two elements should have been created');
   assert_equals(Object.getPrototypeOf(elements[1]), w.HTMLElement.prototype,

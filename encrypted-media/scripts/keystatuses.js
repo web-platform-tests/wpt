@@ -5,7 +5,7 @@ function runTest(config)
     var configuration = getSimpleConfigurationForContent( config.content );
 
     if ( config.initDataType && config.initData ) configuration.initDataTypes = [ config.initDataType ];
-    
+
     async_test(function(test)
     {
         var mediaKeySession;
@@ -23,7 +23,7 @@ function runTest(config)
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }
-        
+
         function processMessage(event)
         {
             // No keys added yet.

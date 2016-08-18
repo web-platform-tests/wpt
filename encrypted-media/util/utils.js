@@ -206,18 +206,18 @@ function verifyKeyStatuses(keyStatuses, keys)
     var unexpected = keys.unexpected || [];
 
     // |keyStatuses| should have same size as number of |keys.expected|.
-    assert_equals(keyStatuses.size, expected.length);
+    assert_equals(keyStatuses.size, expected.length, "keystatuses has expected size");
 
     // All |keys.expected| should be found.
     expected.map(function(key) {
-        assert_true(keyStatuses.has(key));
-        assert_equals(keyStatuses.get(key), 'usable');
+        assert_true(keyStatuses.has(key), "keystatuses has expected key");
+        assert_equals(keyStatuses.get(key), 'usable', "keystatus value is usable");
     });
 
     // All |keys.unexpected| should not be found.
     unexpected.map(function(key) {
-        assert_false(keyStatuses.has(key));
-        assert_equals(keyStatuses.get(key), undefined);
+        assert_false(keyStatuses.has(key), "keystatuses does not have unexpected key");
+        assert_equals(keyStatuses.get(key), undefined, "keystatus for unexpected key is undefined");
     });
 }
 

@@ -122,8 +122,6 @@ function runTest(config, testname) {
             if ( _video.currentTime > ( config.duration || 5 ) && !_receivedTimeupdateEvent ) {
                 _receivedTimeupdateEvent = true;
                 _video.pause();
-                _video.removeAttribute('src');
-                _video.load();
 
                 _startedReleaseSequence = true;
 

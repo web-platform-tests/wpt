@@ -64,9 +64,6 @@ function runTest(config, testname) {
         }
 
         function onClosed() {
-            _video.src = "";
-            _video.setMediaKeys( null );
-
             // Open a new window in which we will attempt to play with the persisted license
             var win = window.open( config.windowscript );
 

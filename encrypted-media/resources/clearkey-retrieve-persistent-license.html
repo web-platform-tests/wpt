@@ -24,7 +24,7 @@
     </div>
 
     <script>
-
+    // Wait for a message from the main window with details of our task
     window.addEventListener( 'message', function( event ) {
 
         var config = event.data.config,
@@ -61,6 +61,7 @@
         function onTimeupdate(event) {
             if ( config.video.currentTime > ( config.duration || 5 ) ) {
                 config.video.pause();
+                _mediaKeySession.close()
                 window.opener.postMessage(assertions, '*');
             }
         }
@@ -71,7 +72,6 @@
         }).then(function(mediaKeys) {
             config.video.setMediaKeys(mediaKeys);
             config.video.addEventListener('timeupdate', onTimeupdate, true);
-            consoleWrite(event.data.sessionId);
             _mediaKeySession = mediaKeys.createSession( 'persistent-license' );
             _mediaKeySession.addEventListener( 'message', onMessage );
             return _mediaKeySession.load( event.data.sessionId );
@@ -83,8 +83,6 @@
             config.video.play();
         })
         .catch(onFailure);
-
-
     } );
 
     </script>

@@ -68,10 +68,25 @@ def test_name_is_manual(rel_path):
     assert items(s) == [("manual", "/" + rel_path)]
 
 
+@pytest.mark.parametrize("rel_path", [
+    "html/test-visual.html",
+    "html/test-visual.xhtml",
+])
+def test_name_is_visual(rel_path):
+    s = create(rel_path)
+    assert not s.name_is_non_test
+    assert s.name_is_visual
+
+    assert not s.content_is_testharness
+
+    assert items(s) == [("visual", "/" + rel_path)]
+
+
 def test_worker():
     s = create("html/test.worker.js")
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert s.name_is_worker
     assert not s.name_is_reference
@@ -85,6 +100,7 @@ def test_multi_global():
     s = create("html/test.any.js")
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
@@ -106,6 +122,7 @@ def test_testharness(ext):
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
@@ -124,6 +141,7 @@ def test_relative_testharness(ext):
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
@@ -150,6 +168,7 @@ def test_testharness_xhtml(ext):
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
@@ -176,6 +195,7 @@ def test_relative_testharness_xhtml(ext):
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
@@ -203,6 +223,7 @@ def test_testharness_svg():
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
@@ -231,6 +252,7 @@ def test_relative_testharness_svg():
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
@@ -249,6 +271,7 @@ def test_testharness_ext(filename):
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference
@@ -268,6 +291,7 @@ def test_reftest_node(ext):
 
     assert not s.name_is_non_test
     assert not s.name_is_manual
+    assert not s.name_is_visual
     assert not s.name_is_multi_global
     assert not s.name_is_worker
     assert not s.name_is_reference

@@ -913,7 +913,7 @@ interface DOMElementMap {
   deleter void (DOMString name);
 };
 
-typedef (ArrayBuffer or CanvasProxy or MessagePort) Transferable;
+typedef (ArrayBuffer or MessagePort) Transferable;
 
 callback FileCallback = void (File file);
 
@@ -1952,18 +1952,9 @@ interface HTMLCanvasElement : HTMLElement {
   RenderingContext? getContext(DOMString contextId, any... arguments);
   boolean probablySupportsContext(DOMString contextId, any... arguments);
 
-  void setContext(RenderingContext context);
-  CanvasProxy transferControlToProxy();
-
   DOMString toDataURL(optional DOMString type, any... arguments);
   void toBlob(FileCallback? _callback, optional DOMString type, any... arguments);
 };
-
-[Exposed=(Window,Worker)]
-interface CanvasProxy {
-  void setContext(RenderingContext context);
-};
-// CanvasProxy implements Transferable;
 
 typedef (HTMLImageElement or
          HTMLVideoElement or
@@ -1973,7 +1964,6 @@ typedef (HTMLImageElement or
 
 enum CanvasFillRule { "nonzero", "evenodd" };
 
-[Constructor(optional unsigned long width, unsigned long height), Exposed=(Window,Worker)]
 interface CanvasRenderingContext2D {
 
   // back-reference to the canvas
@@ -1982,9 +1972,6 @@ interface CanvasRenderingContext2D {
   // canvas dimensions
            attribute unsigned long width;
            attribute unsigned long height;
-
-  // for contexts that aren't directly fixed to a specific canvas
-  void commit(); // push the image to the output bitmap
 
   // state
   void save(); // push state on state stack
@@ -2068,7 +2055,7 @@ interface CanvasRenderingContext2D {
 CanvasRenderingContext2D implements CanvasDrawingStyles;
 CanvasRenderingContext2D implements CanvasPathMethods;
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
+[NoInterfaceObject]
 interface CanvasDrawingStyles {
   // line caps/joins
            attribute unrestricted double lineWidth; // (default 1)
@@ -2103,19 +2090,16 @@ interface CanvasPathMethods {
   void ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
 };
 
-[Exposed=(Window,Worker)]
 interface CanvasGradient {
   // opaque object
   void addColorStop(double offset, DOMString color);
 };
 
-[Exposed=(Window,Worker)]
 interface CanvasPattern {
   // opaque object
   void setTransform(SVGMatrix transform);
 };
 
-[Exposed=(Window,Worker)]
 interface TextMetrics {
   // x-direction
   readonly attribute double width; // advance width

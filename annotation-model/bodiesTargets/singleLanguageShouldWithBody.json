@@ -1,0 +1,39 @@
+ {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "singleLanguageShouldWithBody.json",
+    "assertionType": "should",
+    "expectedResult": "valid",
+    "onUnexpectedResult" : "suceedAndContinue",
+    "errorMessage": "Warning: External Web Resource Bodies, Embedded Textual Bodies, Specific Resource Bodies should each have exactly 1 language value.",    
+    "title": "Check for zero or more than 1 language per qualifying body",
+    "description": "True if all qualifying body(ies) have exactly 1 language value each (Section 3.2.1). Remains valid if no qualifying bodies.",
+    "type": "object",
+    "properties": 
+    {
+        "body":
+         { "oneOf": [
+              { "type" : ["string", "object"], 
+                "anyOf": [
+                   {"$ref": "id.json#/definitions/stringUri"}, 
+                   {"$ref": "choiceSet.json#/definitions/choiceDetected" }, 
+                   {"$ref": "choiceSet.json#/definitions/compositeDetected" }, 
+                   {"$ref": "choiceSet.json#/definitions/independentsDetected" }, 
+                   {"$ref": "choiceSet.json#/definitions/listDetected" }, 
+                   {"$ref": "bodyTarget.json#/definitions/singleLanguagePropertyFound" }
+                 ]              
+              },
+              { "type" : ["array"], 
+                "items": {"anyOf": [
+                   {"$ref": "id.json#/definitions/stringUri"}, 
+                   {"$ref": "choiceSet.json#/definitions/choiceDetected" }, 
+                   {"$ref": "choiceSet.json#/definitions/compositeDetected" }, 
+                   {"$ref": "choiceSet.json#/definitions/independentsDetected" }, 
+                   {"$ref": "choiceSet.json#/definitions/listDetected" }, 
+                   {"$ref": "bodyTarget.json#/definitions/singleLanguagePropertyFound" }
+                 ] 
+               } 
+             }
+           ]      
+        }
+     }
+ }

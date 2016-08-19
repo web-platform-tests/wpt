@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "3.3.1-annotationModifiedImplemented.json",
+    "assertionType": "may",
+    "expectedResult": "valid",
+    "onUnexpectedResult" : "passAndContinue",
+    "errorMessage": "  valid modified key not found. Annotation may have zero or exactly one modified key value.",    
+    "title": "Annotation implements exactly one modified key value.",
+    "description": "True when the Annotation implements exactly one modified key value (Section 3.3.1)",
+    "allOf": 
+    [
+        { "$ref": "otherProperties.json#/definitions/modifiedPropertyFound"}
+    ]
+}

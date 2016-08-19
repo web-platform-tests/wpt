@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "3.3.1-annotationGeneratorImplemented.json",
+    "assertionType": "may",
+    "expectedResult": "valid",
+    "onUnexpectedResult" : "passAndContinue",
+    "errorMessage": "  generator key not found. Annotation may have zero or more generators.",    
+    "title": "Annotation implements generator key.",
+    "description": "True when the Annotation implements generator key (Section 3.3.1)",
+    "allOf": 
+    [
+        { "$ref": "otherProperties.json#/definitions/generatorPropertyFound"}
+    ]
+}

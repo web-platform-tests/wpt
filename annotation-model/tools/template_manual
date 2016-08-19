@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/annotation-model/scripts/ajv.min.js"></script>
+<script src="/annotation-model/scripts/showdown.min.js"></script>
 <script src="/annotation-model/scripts/JSONtest.js"></script>
 <script>
 setup({explicit_timeout: true, explicit_done: true });

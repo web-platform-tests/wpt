@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "3.3.1-annotationGeneratedImplemented.json",
+    "assertionType": "may",
+    "expectedResult": "valid",
+    "onUnexpectedResult" : "passAndContinue",
+    "errorMessage": "  valid generated key not found. Annotation may have zero or exactly one generated key value.",    
+    "title": "Annotation implements exactly one generated key value.",
+    "description": "True when the Annotation implements exactly one generated key value (Section 3.3.1)",
+    "allOf": 
+    [
+        { "$ref": "otherProperties.json#/definitions/generatedPropertyFound"}
+    ]
+}

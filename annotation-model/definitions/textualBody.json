@@ -1,13 +1,13 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "id" : "textualBody.json",
-  "type": "object",
-  "properties":
-  {
-    "value":
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id" : "textualBody.json",
+	"type": "object",
+    "properties":
     {
-      "type": "string"
-    }
-  },
-  "required": [ "value" ]
+         "value":
+         {
+         	"type": "string"
+         }
+     },
+     "required": [ "value" ]
 }

@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "3.3.5-annotationSingleMotivationImplemented.json",
+    "assertionType": "should",
+    "expectedResult": "valid",
+    "onUnexpectedResult" : "passAndContinue",
+    "errorMessage": "  Annotation SHOULD have a motivation key with a single value from model motivation ontology.",    
+    "title": "Annotation implements motivation key with single value from model motivation ontology.",
+    "description": "True when the Annotation has motivation key with a single value from model motivation ontology (Section 3.3.5)",
+    "type": "object",
+    "allOf": [
+            { "$ref": "annotations.json#/definitions/singleMotivationPropertyFound" }
+    ]
+}

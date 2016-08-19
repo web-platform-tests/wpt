@@ -1563,8 +1563,6 @@ interface HTMLFormElement : HTMLElement {
   void reset();
   boolean checkValidity();
   boolean reportValidity();
-
-  void requestAutocomplete();
 };
 
 interface HTMLLabelElement : HTMLElement {
@@ -1836,17 +1834,6 @@ interface HTMLLegendElement : HTMLElement {
   readonly attribute HTMLFormElement? form;
 
   // also has obsolete members
-};
-
-enum AutocompleteErrorReason { "" /* empty string */, "cancel", "disabled", "invalid" };
-
-[Constructor(DOMString type, optional AutocompleteErrorEventInit eventInitDict)]
-interface AutocompleteErrorEvent : Event {
-  readonly attribute AutocompleteErrorReason reason;
-};
-
-dictionary AutocompleteErrorEventInit : EventInit {
-  AutocompleteErrorReason reason;
 };
 
 enum SelectionMode {
@@ -2464,8 +2451,6 @@ typedef OnBeforeUnloadEventHandlerNonNull? OnBeforeUnloadEventHandler;
 [NoInterfaceObject]
 interface GlobalEventHandlers {
            attribute EventHandler onabort;
-           attribute EventHandler onautocomplete;
-           attribute EventHandler onautocompleteerror;
            attribute EventHandler onblur;
            attribute EventHandler oncancel;
            attribute EventHandler oncanplay;

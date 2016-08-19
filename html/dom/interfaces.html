@@ -2575,47 +2575,49 @@ Navigator implements NavigatorID;
 Navigator implements NavigatorLanguage;
 Navigator implements NavigatorOnLine;
 Navigator implements NavigatorContentUtils;
-Navigator implements NavigatorStorageUtils;
+Navigator implements NavigatorCookies;
 Navigator implements NavigatorPlugins;
+Navigator implements NavigatorConcurrentHardware;
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
 interface NavigatorID {
-  readonly attribute DOMString appCodeName; // constant "Mozilla"
-  readonly attribute DOMString appName;
+  [Exposed=Window] readonly attribute DOMString appCodeName; // constant "Mozilla"
+  readonly attribute DOMString appName; // constant "Netscape"
   readonly attribute DOMString appVersion;
   readonly attribute DOMString platform;
-  readonly attribute DOMString product; // constant "Gecko"
-  boolean taintEnabled(); // constant false
+  [Exposed=Window] readonly attribute DOMString product; // constant "Gecko"
+  [Exposed=Window] readonly attribute DOMString productSub;
   readonly attribute DOMString userAgent;
+  [Exposed=Window] readonly attribute DOMString vendor;
+  [Exposed=Window] readonly attribute DOMString vendorSub; // constant ""
 };
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
 interface NavigatorLanguage {
-  readonly attribute DOMString? language;
-  readonly attribute DOMString[] languages;
+  readonly attribute DOMString language;
+  readonly attribute FrozenArray<DOMString> languages;
 };
 
 [NoInterfaceObject]
 interface NavigatorContentUtils {
   // content handler registration
-  void registerProtocolHandler(DOMString scheme, DOMString url, DOMString title);
-  void registerContentHandler(DOMString mimeType, DOMString url, DOMString title);
-  DOMString isProtocolHandlerRegistered(DOMString scheme, DOMString url);
-  DOMString isContentHandlerRegistered(DOMString mimeType, DOMString url);
-  void unregisterProtocolHandler(DOMString scheme, DOMString url);
-  void unregisterContentHandler(DOMString mimeType, DOMString url);
+  void registerProtocolHandler(DOMString scheme, USVString url, DOMString title);
+  void registerContentHandler(DOMString mimeType, USVString url, DOMString title);
+  DOMString isProtocolHandlerRegistered(DOMString scheme, USVString url);
+  DOMString isContentHandlerRegistered(DOMString mimeType, USVString url);
+  void unregisterProtocolHandler(DOMString scheme, USVString url);
+  void unregisterContentHandler(DOMString mimeType, USVString url);
 };
 
 [NoInterfaceObject]
-interface NavigatorStorageUtils {
+interface NavigatorCookies {
   readonly attribute boolean cookieEnabled;
-  void yieldForStorageUpdates();
 };
 
 [NoInterfaceObject]
 interface NavigatorPlugins {
-  readonly attribute PluginArray plugins;
-  readonly attribute MimeTypeArray mimeTypes;
+  [SameObject] readonly attribute PluginArray plugins;
+  [SameObject] readonly attribute MimeTypeArray mimeTypes;
   boolean javaEnabled();
 };
 
@@ -2624,6 +2626,11 @@ interface PluginArray {
   readonly attribute unsigned long length;
   getter Plugin? item(unsigned long index);
   getter Plugin? namedItem(DOMString name);
+};
+
+[NoInterfaceObject, Exposed=(Window,Worker)]
+interface NavigatorConcurrentHardware {
+  readonly attribute unsigned long long hardwareConcurrency;
 };
 
 interface MimeTypeArray {

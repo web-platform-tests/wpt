@@ -2776,16 +2776,6 @@ interface MessagePort : EventTarget {
 };
 // MessagePort implements Transferable;
 
-[Constructor, Exposed=(Window,Worker)]
-interface PortCollection {
-  void add(MessagePort port);
-  void remove(MessagePort port);
-  void clear();
-  void iterate(PortCollectionCallback callback);
-};
-
-callback PortCollectionCallback = void (MessagePort port);
-
 [Constructor(DOMString channel), Exposed=(Window,Worker)]
 interface BroadcastChannel : EventTarget {
   readonly attribute DOMString name;

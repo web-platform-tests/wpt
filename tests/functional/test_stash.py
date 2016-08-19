@@ -6,9 +6,14 @@ import uuid
 
 import wptserve
 from wptserve.router import any_method
+from wptserve.stash import StashServer
 from base import TestUsingServer, doc_root
 
 class TestResponseSetCookie(TestUsingServer):
+    def run(self, result=None):
+        with StashServer(None, authkey=str(uuid.uuid4())):
+            super(TestResponseSetCookie, self).run(result)
+
     def test_put_take(self):
         @wptserve.handlers.handler
         def handler(request, response):

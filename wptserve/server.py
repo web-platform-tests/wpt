@@ -187,8 +187,7 @@ class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
 
         if ((isinstance(error, socket.error) and
              isinstance(error.args, tuple) and
-             error.args[0] in self.acceptable_errors)
-            or
+             error.args[0] in self.acceptable_errors) or
             (isinstance(error, IOError) and
              error.errno in self.acceptable_errors)):
             pass  # remote hang up before the result is sent
@@ -419,7 +418,7 @@ class WebTestHttpd(object):
 
             _host, self.port = self.httpd.socket.getsockname()
         except Exception:
-            self.logger.error('Init failed! You may need to modify your hosts file. Refer to README.md.');
+            self.logger.error('Init failed! You may need to modify your hosts file. Refer to README.md.')
             raise
 
     def start(self, block=False):

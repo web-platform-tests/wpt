@@ -72,7 +72,7 @@ class DirectoryHandler(object):
 %(items)s
 </ul>
 """ % {"path": cgi.escape(request.url_parts.path),
-       "items": "\n".join(self.list_items(request, path))}
+       "items": "\n".join(self.list_items(request, path))}  # flake8: noqa
 
     def list_items(self, request, path):
         # TODO: this won't actually list all routes, only the

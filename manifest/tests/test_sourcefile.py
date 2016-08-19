@@ -300,3 +300,31 @@ def test_reftest_node(ext):
     assert s.content_is_ref_node
 
     assert items(s) == [("reftest_node", "/" + filename)]
+
+
+@pytest.mark.parametrize("ext", ["xht", "html", "xhtml", "htm", "xml", "svg"])
+def test_css_visual(ext):
+    content = b"""
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="help" href="http://www.w3.org/TR/CSS21/box.html#bidi-box-model"/>
+</head>
+<body></body>
+</html>
+"""
+
+    filename = "html/test." + ext
+    s = create(filename, content)
+
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert not s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+    assert not s.content_is_testharness
+    assert not s.content_is_ref_node
+
+    assert s.content_is_css_visual
+
+    assert items(s) == [("visual", "/" + filename)]

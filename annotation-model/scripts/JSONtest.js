@@ -170,7 +170,8 @@ function JSONtest(params) {
                   if (level === 0) {
                     list.push(assertContents[assertIdx]);
                   }
-                  type = assertContents[assertIdx].hasOwnProperty('assertionType') ? assertContents[assertIdx].assertionType : "must" ;
+                  type = assertContents[assertIdx].hasOwnProperty('assertionType') ?
+                    assertContents[assertIdx].assertionType : "must" ;
 
                   // ensure type defaults to must
                   if (!typeMap.hasOwnProperty(type)) {
@@ -189,11 +190,14 @@ function JSONtest(params) {
                       // it is a nested list - recurse
                       buildList(assert, level+1) ;
                       this.AssertionText += "</ol>\n";
-                    } else if (typeof assert === "object" && !Array.isArray(assert) && assert.hasOwnProperty('assertions')) {
+                    } else if (typeof assert === "object" &&
+                        !Array.isArray(assert) &&
+                        assert.hasOwnProperty('assertions')) {
                       if (level === 0) {
                         list.push(assertContents[assertIdx]);
                       }
-                      type = assertContents[assertIdx].hasOwnProperty('assertionType') ? assertContents[assertIdx].assertionType : "must" ;
+                      type = assertContents[assertIdx].hasOwnProperty('assertionType') ?
+                        assertContents[assertIdx].assertionType : "must" ;
 
                       // ensure type defaults to must
                       if (!typeMap.hasOwnProperty(type)) {
@@ -209,7 +213,8 @@ function JSONtest(params) {
                       if (level === 0) {
                         list.push(assertContents[assertIdx]);
                       }
-                      type = assertContents[assertIdx].hasOwnProperty('assertionType') ? assertContents[assertIdx].assertionType : "must" ;
+                      type = assertContents[assertIdx].hasOwnProperty('assertionType') ?
+                        assertContents[assertIdx].assertionType : "must" ;
 
                       // ensure type defaults to must
                       if (!typeMap.hasOwnProperty(type)) {
@@ -381,9 +386,12 @@ JSONtest.prototype = {
 
       assertions.forEach( function(assert, num) {
 
-        var expected = assert.hasOwnProperty('expectedResult') ? assert.expectedResult : 'valid' ;
-        var message = assert.hasOwnProperty('errorMessage') ? assert.errorMessage : "Result was not " + expected;
-        var type = assert.hasOwnProperty('assertionType') ? assert.assertionType : "must" ;
+        var expected = assert.hasOwnProperty('expectedResult') ?
+          assert.expectedResult : 'valid' ;
+        var message = assert.hasOwnProperty('errorMessage') ?
+          assert.errorMessage : "Result was not " + expected;
+        var type = assert.hasOwnProperty('assertionType') ?
+          assert.assertionType : "must" ;
         if (!typeMap.hasOwnProperty(type)) {
           type = "must";
         }

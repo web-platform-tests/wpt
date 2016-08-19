@@ -1505,8 +1505,6 @@ interface HTMLTableElement : HTMLElement {
   readonly attribute HTMLCollection rows;
   HTMLElement insertRow(optional long index = -1);
   void deleteRow(long index);
-           attribute boolean sortable;
-  void stopSorting();
 
   // also has obsolete members
 };
@@ -2474,7 +2472,6 @@ interface GlobalEventHandlers {
            attribute EventHandler onseeking;
            attribute EventHandler onselect;
            attribute EventHandler onshow;
-           attribute EventHandler onsort;
            attribute EventHandler onstalled;
            attribute EventHandler onsubmit;
            attribute EventHandler onsuspend;

@@ -1,15 +1,15 @@
 {
-	"$schema": "http://json-schema.org/draft-04/schema#",
-	"id": "processingLanguageDetected.json",
-	"title": "Definition: processingLanguage property",
-	"description": "True when the object has a valid processingLanguage property (Section 3.2.1)",
-	"type": "object", 
-    "properties":
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "processingLanguageDetected.json",
+  "title": "Definition: processingLanguage property",
+  "description": "True when the object has a valid processingLanguage property (Section 3.2.1)",
+  "type": "object",
+  "properties":
+  {
+    "processingLanguage":
     {
-        "processingLanguage": 
-  		{
-             "type": "string"
-        }
-     },
-     "required": [ "processingLanguage" ]  
+      "type": "string"
+    }
+  },
+  "required": [ "processingLanguage" ]
 }

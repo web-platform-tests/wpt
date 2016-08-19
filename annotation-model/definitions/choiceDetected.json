@@ -1,20 +1,20 @@
 {
-	"$schema": "http://json-schema.org/draft-04/schema#",
-	"id": "choiceDetected.json",
-	"title": "Definition: Choice Object",
-	"description": "True when the object's type is 'Choice' and the object has at valid items (Section 3.2.7).",
-	"type": "object", 
-    "properties":
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "choiceDetected.json",
+  "title": "Definition: Choice Object",
+  "description": "True when the object's type is 'Choice' and the object has at valid items (Section 3.2.7).",
+  "type": "object",
+  "properties":
+  {
+    "type":
     {
-         "type": 
-         {
-             "type": "string",
-             "enum": ["Choice"]
-         },
-         "items":
-         {
-             "$ref": "itemsDetected.json"
-         }
+      "type": "string",
+      "enum": ["Choice"]
     },
-     "required": [ "type", "items" ]  
+    "items":
+    {
+      "$ref": "itemsDetected.json"
+    }
+  },
+  "required": [ "type", "items" ]
 }

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
 <html>
     <head>
         <title>Checks MediaSource.activeSourceBuffers and changes to selected/enabled track state</title>
@@ -21,11 +22,13 @@
               MediaSourceUtil.fetchManifestAndData(test, manifestFilenameAudio, function (typeAudio, dataAudio)
               {
                   var sourceBuffer = mediaSource.addSourceBuffer(typeAudio);
+                  assert_equals(mediaSource.sourceBuffers.length, 1,
+                    "sourceBuffers list contains one SourceBuffer");
                   assert_equals(mediaSource.activeSourceBuffers.length, 0,
                     "activeSourceBuffers is empty to start with");
 
-                  test.expectEvent(mediaElement, "loadedmetadata");
                   test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
+                  test.expectEvent(mediaElement, "loadedmetadata");
                   sourceBuffer.appendBuffer(dataAudio);
 
                   test.waitForExpectedEvents(function()
@@ -46,11 +49,13 @@
               MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function (typeVideo, dataVideo)
               {
                   var sourceBuffer = mediaSource.addSourceBuffer(typeVideo);
+                  assert_equals(mediaSource.sourceBuffers.length, 1,
+                    "sourceBuffers list contains one SourceBuffer");
                   assert_equals(mediaSource.activeSourceBuffers.length, 0,
                     "activeSourceBuffers is empty to start with");
 
-                  test.expectEvent(mediaElement, "loadedmetadata");
                   test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
+                  test.expectEvent(mediaElement, "loadedmetadata");
                   sourceBuffer.appendBuffer(dataVideo);
 
                   test.waitForExpectedEvents(function()
@@ -64,44 +69,65 @@
               });
           }, "SourceBuffer added to activeSourceBuffers list when its only video track gets loaded (and thus becomes selected).");
 
-
-          mediasource_test(function(test, mediaElement, mediaSource)
+          function mediaSourceActiveSourceBufferOrderTest(addAudioFirst, appendAudioFirst)
           {
-              mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
-              MediaSourceUtil.fetchManifestAndData(test, manifestFilenameAudio, function (typeAudio, dataAudio)
+              mediasource_test(function(test, mediaElement, mediaSource)
               {
-                  MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function (typeVideo, dataVideo)
+                  mediaElement.addEventListener("error", test.unreached_func("Unexpected event 'error'"));
+                  MediaSourceUtil.fetchManifestAndData(test, manifestFilenameAudio, function (typeAudio, dataAudio)
                   {
-                      var sourceBufferAudio = mediaSource.addSourceBuffer(typeAudio);
-                      var sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
-                      assert_equals(mediaSource.activeSourceBuffers.length, 0,
-                        "activeSourceBuffers is empty to start with");
-                      assert_equals(mediaSource.sourceBuffers.length, 2,
-                        "sourceBuffers list contains both SourceBuffers");
-                      assert_equals(mediaSource.sourceBuffers[0], sourceBufferAudio,
-                        "first SourceBuffer is the audio one");
-                      assert_equals(mediaSource.sourceBuffers[1], sourceBufferVideo,
-                        "second SourceBuffer is the video one");
-
-                      test.expectEvent(mediaElement, "loadedmetadata");
-                      test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
-                      sourceBufferAudio.appendBuffer(dataAudio);
-                      sourceBufferVideo.appendBuffer(dataVideo);
-
-                      test.waitForExpectedEvents(function()
+                      MediaSourceUtil.fetchManifestAndData(test, manifestFilenameVideo, function (typeVideo, dataVideo)
                       {
-                          assert_equals(mediaSource.activeSourceBuffers.length, 2,
-                            "activeSourceBuffers list updated when tracks are loaded");
-                          assert_equals(mediaSource.activeSourceBuffers[0], sourceBufferAudio,
-                            "first active SourceBuffer is the audio one");
-                          assert_equals(mediaSource.activeSourceBuffers[1], sourceBufferVideo,
-                            "second active SourceBuffer is the video one");
-                          test.done();
+                          var sourceBufferAudio, sourceBufferVideo, expectedFirstSB, expectedSecondSB;
+                          if (addAudioFirst) {
+                              expectedFirstSB = sourceBufferAudio = mediaSource.addSourceBuffer(typeAudio);
+                              expectedSecondSB = sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
+                          } else {
+                              expectedFirstSB = sourceBufferVideo = mediaSource.addSourceBuffer(typeVideo);
+                              expectedSecondSB = sourceBufferAudio = mediaSource.addSourceBuffer(typeAudio);
+                          }
+
+                          assert_equals(mediaSource.activeSourceBuffers.length, 0,
+                            "activeSourceBuffers is empty to start with");
+                          assert_equals(mediaSource.sourceBuffers.length, 2,
+                            "sourceBuffers list contains both SourceBuffers");
+                          assert_equals(mediaSource.sourceBuffers[0], expectedFirstSB,
+                            "first SourceBuffer matches expectation");
+                          assert_equals(mediaSource.sourceBuffers[1], expectedSecondSB,
+                            "second SourceBuffer matches expectation");
+                          test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
+                          test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
+                          test.expectEvent(mediaElement, "loadedmetadata");
+                          if (appendAudioFirst) {
+                              sourceBufferAudio.appendBuffer(dataAudio);
+                              sourceBufferVideo.appendBuffer(dataVideo);
+                          } else {
+                              sourceBufferVideo.appendBuffer(dataVideo);
+                              sourceBufferAudio.appendBuffer(dataAudio);
+                          }
+
+                          test.waitForExpectedEvents(function()
+                          {
+                              assert_equals(mediaSource.activeSourceBuffers.length, 2,
+                                "activeSourceBuffers list updated when tracks are loaded");
+                              assert_equals(mediaSource.activeSourceBuffers[0], mediaSource.sourceBuffers[0],
+                                "first active SourceBuffer matches first SourceBuffer");
+                              assert_equals(mediaSource.activeSourceBuffers[1], mediaSource.sourceBuffers[1],
+                                "second active SourceBuffer matches second SourceBuffer");
+                              test.done();
+                          });
                       });
                   });
-              });
-          }, "Active SourceBuffers must appear in the same order as they appear in the sourceBuffers attribute.");
+              },
+              "Active SourceBuffers must appear in the same order as they appear in the sourceBuffers attribute: " +
+                (addAudioFirst ? "audio is first sourceBuffer" : "video is first sourceBuffer") + ", " +
+                (appendAudioFirst ? "audio media appended first" : "video media appended first"));
+          }
 
+          mediaSourceActiveSourceBufferOrderTest(true, true);
+          mediaSourceActiveSourceBufferOrderTest(true, false);
+          mediaSourceActiveSourceBufferOrderTest(false, true);
+          mediaSourceActiveSourceBufferOrderTest(false, false);
 
           mediasource_test(function(test, mediaElement, mediaSource)
           {
@@ -129,28 +155,28 @@
 
                           test.expectEvent(mediaSource.activeSourceBuffers, "removesourcebuffer");
                           sourceBufferAudio.audioTracks[0].enabled = false;
+                      });
 
-                          test.waitForExpectedEvents(function()
-                          {
-                              assert_equals(mediaSource.activeSourceBuffers.length, 1,
-                                "audio source buffer no longer in the activeSourceBuffers list");
-                              assert_equals(mediaSource.activeSourceBuffers[0], sourceBufferVideo,
-                                "activeSourceBuffers list only contains the video SourceBuffer");
+                      test.waitForExpectedEvents(function()
+                      {
+                          assert_equals(mediaSource.activeSourceBuffers.length, 1,
+                            "audio source buffer no longer in the activeSourceBuffers list");
+                          assert_equals(mediaSource.activeSourceBuffers[0], sourceBufferVideo,
+                            "activeSourceBuffers list only contains the video SourceBuffer");
 
-                              test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
-                              test.expectEvent(mediaSource.activeSourceBuffers, "removesourcebuffer");
-                              sourceBufferAudio.audioTracks[0].enabled = true;
-                              sourceBufferVideo.videoTracks[0].selected = false;
+                          test.expectEvent(mediaSource.activeSourceBuffers, "addsourcebuffer");
+                          test.expectEvent(mediaSource.activeSourceBuffers, "removesourcebuffer");
+                          sourceBufferAudio.audioTracks[0].enabled = true;
+                          sourceBufferVideo.videoTracks[0].selected = false;
+                      });
 
-                              test.waitForExpectedEvents(function()
-                              {
-                                  assert_equals(mediaSource.activeSourceBuffers.length, 1,
-                                    "video source buffer no longer in the activeSourceBuffers list");
-                                  assert_equals(mediaSource.activeSourceBuffers[0], sourceBufferAudio,
-                                    "activeSourceBuffers list only contains the audio SourceBuffer");
-                                  test.done();
-                              });
-                          });
+                      test.waitForExpectedEvents(function()
+                      {
+                          assert_equals(mediaSource.activeSourceBuffers.length, 1,
+                            "video source buffer no longer in the activeSourceBuffers list");
+                          assert_equals(mediaSource.activeSourceBuffers[0], sourceBufferAudio,
+                            "activeSourceBuffers list only contains the audio SourceBuffer");
+                          test.done();
                       });
                   });
               });
@@ -186,23 +212,23 @@
                       // AudioTrack/VideoTrack instance
                       test.expectEvent(sourceBuffer.audioTracks, "change");
                       sourceBuffer.audioTracks[0].enabled = false;
+                  });
 
-                      test.waitForExpectedEvents(function()
-                      {
-                          assert_equals(mediaSource.activeSourceBuffers.length, 1,
-                            "activeSourceBuffers list unchanged");
+                  test.waitForExpectedEvents(function()
+                  {
+                      assert_equals(mediaSource.activeSourceBuffers.length, 1,
+                        "activeSourceBuffers list unchanged");
 
-                          test.expectEvent(sourceBuffer.videoTracks, "change");
-                          sourceBuffer.audioTracks[0].enabled = true;
-                          sourceBuffer.videoTracks[0].selected = false;
+                      test.expectEvent(sourceBuffer.videoTracks, "change");
+                      sourceBuffer.audioTracks[0].enabled = true;
+                      sourceBuffer.videoTracks[0].selected = false;
+                  });
 
-                          test.waitForExpectedEvents(function()
-                          {
-                              assert_equals(mediaSource.activeSourceBuffers.length, 1,
-                                "activeSourceBuffers list unchanged");
-                              test.done();
-                          });
-                      });
+                  test.waitForExpectedEvents(function()
+                  {
+                      assert_equals(mediaSource.activeSourceBuffers.length, 1,
+                        "activeSourceBuffers list unchanged");
+                      test.done();
                   });
               });
           }, "Active SourceBuffers list ignores changes to selected audio/video tracks " +

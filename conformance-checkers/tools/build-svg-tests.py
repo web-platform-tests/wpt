@@ -156,35 +156,6 @@ def build_html_testfiles(svgdirectory,htmldirectory):
         pass
     pass
 
-    indexpathname = "index-isvalid.html"
-    build_html_index_file(indexpathname, testfiles)
-
-
-def build_html_index_file(indexpathname, testfiles):
-    """Builds HTML test index."""
-
-    htmlfile = open(indexpathname, "w")
-
-    htmlfile.write("<!DOCTYPE html>\n")
-    htmlfile.write("<html lang='en'>\n")
-
-    htmlfile.write("<head>\n")
-    htmlfile.write(" <title>SVG in HTML Test Index</title>\n")
-    htmlfile.write(" <meta charset='utf-8'>\n")
-    htmlfile.write("</head>\n")
-
-    htmlfile.write("<body>\n")
-    htmlfile.write("<h1>SVG in HTML Test Index</h1>\n")
-
-    for filename in testfiles:
-        if filename.find("-isvalid") > 0:
-            htmlfile.write(" <p><a href='%s'>%s</a></p>\n" % (filename, filename))
-
-    htmlfile.write("</body>\n")
-
-    htmlfile.write("</html>\n")
-    htmlfile.close()
-
 
 def build_html_test_file(filename, svgdirectory, htmldirectory):
     """Builds HTML test file by wrapping input SVG in boilerplate HTML."""

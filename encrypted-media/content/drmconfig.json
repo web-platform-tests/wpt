@@ -11,10 +11,10 @@
     "com.microsoft.playready": {
         "serverURL": "http://playready.directtaps.net/pr/svc/rightsmanager.asmx?"
     },
-    "com.chromecast.playready1": {
+    "com.chromecast.playready": {
         "serverURL": "http://playready.directtaps.net/pr/svc/rightsmanager.asmx?"
     },
-    "com.chromecast.playready": {
+    "com.chromecast.playready1": {
         "serverURL": "http://playready-testserver.azurewebsites.net/rightsmanager.asmx?"
     },
     "com.microsoft.playready1": {

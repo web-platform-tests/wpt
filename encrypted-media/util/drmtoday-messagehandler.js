@@ -105,12 +105,19 @@ function messagehandler(keysystem, messageType, message) {
                 reqheaders = {},
                 credentials = undefined;
 
+            if(keysystem !== 'com.chromecast.playready' && messageType === 'license-release') {
+                var ssAck = toUtf8('secure-stop-release');
+                resolve(ssAck);
+            }
+
             if (protData) {
                 if (protData.serverURL) {
                     url = protData.serverURL;
                     if((url.indexOf("azurewebsites") > 0 || url.indexOf("directtaps") > 0) && messageType === 'license-request'){
-                        url += "SecureStop=1&";
-                        url += "UseSimpleNonPersistentLicense=1&";
+                        if(keysystem !== 'com.chromecast.playready') {
+                            url += "SecureStop=1&";
+                            url += "UseSimpleNonPersistentLicense=1&";
+                        }
                         url += "ContentKey=" + btoa(String.fromCharCode.apply(null, contentmetadata.keys[0].key));
                     }
                 } else {

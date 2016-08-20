@@ -73,7 +73,7 @@
                 return _requestMediaKeySystemAccess( keysystem, supportedConfigurations );
             }
 
-            supportedConfigurations[0].sessionTypes[0] = 'persistent-license';
+            supportedConfigurations[0].sessionTypes = ['persistent-license'];
             return _requestMediaKeySystemAccess( keysystem, supportedConfigurations )
             .then( function( access ) { return new MediaKeySystemAccess( access ); } );
         };

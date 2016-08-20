@@ -262,8 +262,9 @@ def main():
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     logging.debug('main: IN')
 
-    svgdirectory = "../../svg/import"
-    htmldirectory = "../html-svg"
+    ccdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    svgdirectory = os.path.join(os.path.dirname(ccdir), "svg", "import")
+    htmldirectory = os.path.join(ccdir, "html-svg")
 
     try:
         opts, args = getopt.getopt(sys.argv[1:],"",["svgdir=","outdir="])

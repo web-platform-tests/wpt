@@ -6,10 +6,7 @@ if (this.document === undefined) {
 
 function runTest(url, init, expectedReferrer, title) {
     promise_test(function(test) {
-        if (url.indexOf('?') !== -1)
-            url += "&headers=referer&cors";
-        else
-            url += "?headers=referer&cors";
+        url += (url.indexOf('?') !== -1 ? '&' : '?') + "headers=referer&cors";
 
         return fetch(url , init).then(function(resp) {
             assert_equals(resp.status, 200, "HTTP status is 200");

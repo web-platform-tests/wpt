@@ -1298,10 +1298,6 @@ interface HTMLMediaElement : HTMLElement {
   Promise<void> play();
   void pause();
 
-  // media controller
-           attribute DOMString mediaGroup;
-           attribute MediaController? controller;
-
   // controls
            attribute boolean controls;
            attribute double volume;
@@ -1358,46 +1354,6 @@ interface VideoTrack {
   readonly attribute DOMString label;
   readonly attribute DOMString language;
            attribute boolean selected;
-};
-
-enum MediaControllerPlaybackState { "waiting", "playing", "ended" };
-[Constructor]
-interface MediaController : EventTarget {
-  readonly attribute unsigned short readyState; // uses HTMLMediaElement.readyState's values
-
-  readonly attribute TimeRanges buffered;
-  readonly attribute TimeRanges seekable;
-  readonly attribute unrestricted double duration;
-           attribute double currentTime;
-
-  readonly attribute boolean paused;
-  readonly attribute MediaControllerPlaybackState playbackState;
-  readonly attribute TimeRanges played;
-  void pause();
-  void unpause();
-  void play(); // calls play() on all media elements as well
-
-           attribute double defaultPlaybackRate;
-           attribute double playbackRate;
-
-           attribute double volume;
-           attribute boolean muted;
-
-           attribute EventHandler onemptied;
-           attribute EventHandler onloadedmetadata;
-           attribute EventHandler onloadeddata;
-           attribute EventHandler oncanplay;
-           attribute EventHandler oncanplaythrough;
-           attribute EventHandler onplaying;
-           attribute EventHandler onended;
-           attribute EventHandler onwaiting;
-
-           attribute EventHandler ondurationchange;
-           attribute EventHandler ontimeupdate;
-           attribute EventHandler onplay;
-           attribute EventHandler onpause;
-           attribute EventHandler onratechange;
-           attribute EventHandler onvolumechange;
 };
 
 interface TextTrackList : EventTarget {
@@ -3262,7 +3218,6 @@ window.onload = function() {
     AudioTrack: [],
     VideoTrackList: [],
     VideoTrack: [],
-    MediaController: ['new MediaController()'],
     TextTrackList: ['document.createElement("video").textTracks'],
     TextTrack: ['document.createElement("track").track'],
     TextTrackCueList: ['document.createElement("video").addTextTrack("subtitles").cues'],

@@ -1,4 +1,5 @@
 import hashlib
+import re
 import os
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
@@ -13,6 +14,8 @@ from .item import Stub, ManualTest, WebdriverSpecTest, RefTestNode, RefTest, Tes
 from .utils import rel_path_to_url, ContextManagerBytesIO, cached_property
 
 wd_pattern = "*.py"
+
+reference_file_re = re.compile(r'-(not)?ref[0-9]*(-|$)')
 
 def replace_end(s, old, new):
     """
@@ -195,7 +198,7 @@ class SourceFile(object):
     def name_is_reference(self):
         """Check if the file name matches the conditions for the file to
         be a reference file (not a reftest)"""
-        return self.type_flag in ("ref", "notref")
+        return "/reference/" in self.url or "/reftest/" in self.url or bool(reference_file_re.search(self.name))
 
     @property
     def markup_type(self):

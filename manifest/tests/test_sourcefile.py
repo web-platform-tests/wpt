@@ -86,6 +86,28 @@ def test_name_is_visual(rel_path):
     assert items(s) == [("visual", "/" + rel_path)]
 
 
+@pytest.mark.parametrize("rel_path", [
+    "css-namespaces-3/reftest/ref-lime-1.xml",
+    "css21/reference/pass_if_box_ahem.html",
+    "css21/csswg-issues/submitted/css2.1/reference/ref-green-box-100x100.xht",
+    "selectors-3/selectors-empty-001-ref.xml",
+    "css21/text/text-indent-wrap-001-notref-block-margin.xht",
+    "css21/text/text-indent-wrap-001-notref-block-margin.xht",
+    "css21/css-e-notation-ref-1.html",
+    "css21/floats/floats-placement-vertical-004-ref2.xht",
+    "css21/box/rtl-linebreak-notref1.xht",
+    "css21/box/rtl-linebreak-notref2.xht"
+])
+def test_name_is_reference(rel_path):
+    s = create(rel_path)
+    assert not s.name_is_non_test
+    assert s.name_is_reference
+
+    assert not s.content_is_testharness
+
+    assert items(s) == []
+
+
 def test_worker():
     s = create("html/test.worker.js")
     assert not s.name_is_non_test

@@ -76,7 +76,7 @@ function getSupportedKeySystem() {
     var keysystem = undefined;
     if (userAgent.indexOf('edge') > -1 ) {
         keysystem = 'com.microsoft.playready';
-    } else if( userAgent.indexOf('chrome') > -1 || userAgent.indexOf('firefox') > -1 ) {
+    } else if ( userAgent.indexOf('chrome') > -1 || userAgent.indexOf('firefox') > -1 ) {
         keysystem = 'com.widevine.alpha';
     }
     return keysystem;

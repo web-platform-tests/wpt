@@ -23,6 +23,8 @@ def items(s):
     "resources/test.html",
     "common/test.html",
     "support/test.html",
+    "css21/archive/test.html",
+    "work-in-progress/test.html",
     "conformance-checkers/test.html",
     "conformance-checkers/README.md",
     "conformance-checkers/html/Makefile",
@@ -44,6 +46,8 @@ def test_name_is_non_test(rel_path):
     "foo/common/test.html",
     "foo/conformance-checkers/test.html",
     "foo/_certs/test.html",
+    "foo/css21/archive/test.html",
+    "foo/work-in-progress/test.html",
 ])
 def test_not_name_is_non_test(rel_path):
     s = create(rel_path)

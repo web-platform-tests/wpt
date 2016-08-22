@@ -28,11 +28,14 @@ class SourceFile(object):
                "xhtml":ElementTree.parse,
                "svg":ElementTree.parse}
 
-    root_dir_non_test = set(["common"])
+    root_dir_non_test = set(["common",
+                             "work-in-progress"])
 
     dir_non_test = set(["resources",
                         "support",
                         "tools"])
+
+    dir_path_non_test = {("css21", "archive")}
 
     def __init__(self, tests_root, rel_path, url_base, contents=None):
         """Object representing a file in a source tree.
@@ -118,6 +121,10 @@ class SourceFile(object):
             return True
         elif any(item in self.dir_non_test for item in parts):
             return True
+        else:
+            for path in self.dir_path_non_test:
+                if parts[:len(path)] == list(path):
+                    return True
         return False
 
     def in_conformance_checker_dir(self):

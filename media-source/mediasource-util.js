@@ -1,3 +1,5 @@
+// Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang).
+
 (function(window) {
     var SEGMENT_INFO_LIST = [
         {
@@ -359,6 +361,9 @@
         return media_test(function(test)
         {
             var mediaTag = document.createElement("video");
+            if (!document.body) {
+                document.body = document.createElement("body");
+            }
             document.body.appendChild(mediaTag);
 
             test.removeMediaElement_ = true;

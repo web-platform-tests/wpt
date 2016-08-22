@@ -1,11 +1,11 @@
-SETMEDIAKEYS_FIRST = 0;
+SETMEDIAKEYS_IMMEDIATELY = 0;
 SETMEDIAKEYS_AFTER_SRC = 1;
 SETMEDIAKEYS_ONENCRYPTED = 2;
 SETMEDIAKEYS_AFTER_UPDATE = 3;
 
 function runTest(config) {
 
-    var testcase = ( config.testcase === SETMEDIAKEYS_FIRST ) ? 'setMediaKeys first'
+    var testcase = ( config.testcase === SETMEDIAKEYS_IMMEDIATELY ) ? 'setMediaKeys first'
                     : ( config.testcase === SETMEDIAKEYS_AFTER_SRC ) ? 'setMediaKeys after setting video.src'
                     : ( config.testcase === SETMEDIAKEYS_ONENCRYPTED ) ? 'setMediaKeys in encrypted event'
                     : ( config.testcase === SETMEDIAKEYS_AFTER_UPDATE ) ? 'setMediaKeys after updating session'
@@ -80,18 +80,17 @@ function runTest(config) {
 
         navigator.requestMediaKeySystemAccess(config.keysystem, [ configuration ]).then(function(access) {
             return access.createMediaKeys();
-        }).then(function(mediaKeys) {
+        }).then(test.step_func(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-
+            if ( config.testcase === SETMEDIAKEYS_IMMEDIATELY ) {
+                return _video.setMediaKeys( _mediaKeys );
+            }
+        })).then(function(){
             _mediaKeySession = _mediaKeys.createSession( 'temporary' );
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-        }).then(test.step_func(function() {
-            if ( config.testcase === SETMEDIAKEYS_FIRST ) {
-                return _video.setMediaKeys( _mediaKeys );
-            }
-        })).then(function() {
+
             return testmediasource(config);
         }).then(test.step_func(function(source) {
             _mediaSource = source;

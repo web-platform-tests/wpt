@@ -968,42 +968,41 @@ partial /*sealed*/ interface Document {
   // also has obsolete members
 };
 Document implements GlobalEventHandlers;
+Document implements DocumentAndElementEventHandlers;
+
+[NoInterfaceObject]
+interface ElementContentEditable {
+  [CEReactions] attribute DOMString contentEditable;
+  readonly attribute boolean isContentEditable;
+};
 
 interface HTMLElement : Element {
   // metadata attributes
-           attribute DOMString title;
-           attribute DOMString lang;
-           attribute boolean translate;
-           attribute DOMString dir;
-  readonly attribute DOMStringMap dataset;
+  [CEReactions] attribute DOMString title;
+  [CEReactions] attribute DOMString lang;
+  [CEReactions] attribute boolean translate;
+  [CEReactions] attribute DOMString dir;
+  [SameObject] readonly attribute DOMStringMap dataset;
 
   // user interaction
-           attribute boolean hidden;
+  [CEReactions] attribute boolean hidden;
   void click();
-           attribute long tabIndex;
+  [CEReactions] attribute long tabIndex;
   void focus();
   void blur();
-           attribute DOMString accessKey;
+  [CEReactions] attribute DOMString accessKey;
   readonly attribute DOMString accessKeyLabel;
-           attribute boolean draggable;
-  [PutForwards=value] readonly attribute DOMTokenList dropzone;
-           attribute DOMString contentEditable;
-  readonly attribute boolean isContentEditable;
-           attribute HTMLMenuElement? contextMenu;
-           attribute boolean spellcheck;
+  [CEReactions] attribute boolean draggable;
+  [CEReactions, SameObject, PutForwards=value] readonly attribute DOMTokenList dropzone;
+  [CEReactions] attribute HTMLMenuElement? contextMenu;
+  [CEReactions] attribute boolean spellcheck;
   void forceSpellCheck();
 
   [CEReactions, TreatNullAs=EmptyString] attribute DOMString innerText;
-
-  // command API
-  readonly attribute DOMString? commandType;
-  readonly attribute DOMString? commandLabel;
-  readonly attribute DOMString? commandIcon;
-  readonly attribute boolean? commandHidden;
-  readonly attribute boolean? commandDisabled;
-  readonly attribute boolean? commandChecked;
 };
 HTMLElement implements GlobalEventHandlers;
+HTMLElement implements DocumentAndElementEventHandlers;
+HTMLElement implements ElementContentEditable;
 
 interface HTMLUnknownElement : HTMLElement { };
 
@@ -2463,6 +2462,13 @@ interface GlobalEventHandlers {
            attribute EventHandler ontoggle;
            attribute EventHandler onvolumechange;
            attribute EventHandler onwaiting;
+};
+
+[NoInterfaceObject]
+interface DocumentAndElementEventHandlers {
+           attribute EventHandler oncopy;
+           attribute EventHandler oncut;
+           attribute EventHandler onpaste;
 };
 
 [NoInterfaceObject]

@@ -1044,9 +1044,9 @@ interface HTMLMetaElement : HTMLElement {
 };
 
 interface HTMLStyleElement : HTMLElement {
-           attribute DOMString media;
-           attribute DOMString type;
-           attribute boolean scoped;
+  [CEReactions] attribute DOMString media;
+  [CEReactions] attribute DOMString nonce;
+  [CEReactions] attribute DOMString type;
 };
 HTMLStyleElement implements LinkStyle;
 

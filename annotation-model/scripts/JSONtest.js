@@ -27,6 +27,7 @@ function JSONtest(params) {
   this.Base = null;         // URI "base" for the test suite being run
   this.TestDir = null;      // URI "base" for the test case being run
   this.Params = null;       // paramaters passed in
+  this.Promise = null;             // master Promise that resolves when intialization is complete
   this.Properties = null;   // testharness_properties from the opening window
   this.Test = null;         // test being run
   this.AssertionCounter = 0;// keeps track of which assertion is being processed
@@ -105,6 +106,28 @@ function JSONtest(params) {
         this.DescriptionText = test.description;
       }
 
+      if (test.content) {
+        // we have content
+        if (typeof test.content === "string") {
+          // the test content is a string - meaning it is a reference to a file of content
+          var cPromise = new Promise(function(resolve, reject) {
+            this.loadDefinition(test.content)
+              .then(function(content) {
+                if (typeof content === 'string') {
+                  content = JSON.parse(content) ;
+                }
+                test.content = content;
+                resolve(true);
+              }.bind(this))
+            .catch(function(err) {
+              reject("Loading " + test.content + ": " + JSON.stringify(err));
+            });
+
+          }.bind(this));
+          pending.push(cPromise);
+        }
+      }
+
       return new Promise(function(resolve, reject) {
         if (test.assertions &&
             typeof test.assertions === "object") {
@@ -121,6 +144,12 @@ function JSONtest(params) {
           .then(function (assertContents) {
             // assertContents has assertions in document order
 
+            var typeMap = {
+              'must'   : "<b>[MANDATORY]</b> ",
+              'may'    : "<b>[OPTIONAL]</b> ",
+              'should' : "<b>[RECOMMENDED]</b> "
+            };
+
             var assertIdx = 0;
 
             // populate the display of assertions that are being exercised
@@ -134,14 +163,22 @@ function JSONtest(params) {
               // accumulate the assertions - but only when level is 0
               var list = [] ;
 
+              var type = "";
               if (assertions) {
                 if (typeof assertions === "object" && assertions.hasOwnProperty('assertions')) {
                   // this is a conditionObject
                   if (level === 0) {
                     list.push(assertContents[assertIdx]);
                   }
+                  type = assertContents[assertIdx].hasOwnProperty('assertionType') ?
+                    assertContents[assertIdx].assertionType : "must" ;
 
-                  this.AssertionText += "<li>" + assertContents[assertIdx++].title;
+                  // ensure type defaults to must
+                  if (!typeMap.hasOwnProperty(type)) {
+                    type = "must";
+                  }
+
+                  this.AssertionText += "<li>" + typeMap[type] + assertContents[assertIdx++].title;
                   this.AssertionText += "<ol>";
                   buildList(assertions.assertions, level+1) ;
                   this.AssertionText += "</ol></li>\n";
@@ -153,12 +190,22 @@ function JSONtest(params) {
                       // it is a nested list - recurse
                       buildList(assert, level+1) ;
                       this.AssertionText += "</ol>\n";
-                    } else if (typeof assert === "object" && !Array.isArray(assert) && assert.hasOwnProperty('assertions')) {
+                    } else if (typeof assert === "object" &&
+                        !Array.isArray(assert) &&
+                        assert.hasOwnProperty('assertions')) {
                       if (level === 0) {
                         list.push(assertContents[assertIdx]);
                       }
+                      type = assertContents[assertIdx].hasOwnProperty('assertionType') ?
+                        assertContents[assertIdx].assertionType : "must" ;
+
+                      // ensure type defaults to must
+                      if (!typeMap.hasOwnProperty(type)) {
+                        type = "must";
+                      }
+
                       // there is a condition object in the array
-                      this.AssertionText += "<li>" + assertContents[assertIdx++].title;
+                      this.AssertionText += "<li>" + typeMap[type] + assertContents[assertIdx++].title;
                       this.AssertionText += "<ol>";
                       buildList(assert, level+1) ; // capture the children too
                       this.AssertionText += "</ol></li>\n";
@@ -166,7 +213,15 @@ function JSONtest(params) {
                       if (level === 0) {
                         list.push(assertContents[assertIdx]);
                       }
-                      this.AssertionText += "<li>" + assertContents[assertIdx++].title + "</li>\n";
+                      type = assertContents[assertIdx].hasOwnProperty('assertionType') ?
+                        assertContents[assertIdx].assertionType : "must" ;
+
+                      // ensure type defaults to must
+                      if (!typeMap.hasOwnProperty(type)) {
+                        type = "must";
+                      }
+
+                      this.AssertionText += "<li>" + typeMap[type] + assertContents[assertIdx++].title + "</li>\n";
                     }
                   }.bind(this));
                 }
@@ -191,19 +246,23 @@ function JSONtest(params) {
       }.bind(this));
     }.bind(this)));
 
-  // once the DOM and the test / assertions are loaded... set us up
-  Promise.all(pending)
-  .then(function() {
-    this.loading = false;
-    this.init();
-  }.bind(this))
-  .catch(function(err) {
-    // loading the components failed somehow - report the errors and mark the test failed
-    test( function() {
-      assert_true(false, "Loading of test components failed: " +JSON.stringify(err)) ;
-    }, "Loading test components");
-    done() ;
-    return ;
+  this.Promise = new Promise(function(resolve, reject) {
+    // once the DOM and the test / assertions are loaded... set us up
+    Promise.all(pending)
+    .then(function() {
+      this.loading = false;
+      this.init();
+      resolve(this);
+    }.bind(this))
+    .catch(function(err) {
+      // loading the components failed somehow - report the errors and mark the test failed
+      test( function() {
+        assert_true(false, "Loading of test components failed: " +JSON.stringify(err)) ;
+      }, "Loading test components");
+      done() ;
+      reject("Loading of test components failed: "+JSON.stringify(err));
+      return ;
+    }.bind(this));
   }.bind(this));
 
   return this;
@@ -224,8 +283,10 @@ JSONtest.prototype = {
     var desc  = document.getElementById("testDescription") ;
 
     if (!this.loading) {
-      runButton.disabled = false;
-      runButton.value = "Check JSON";
+      if (runButton) {
+        runButton.disabled = false;
+        runButton.value = "Check JSON";
+      }
       if (desc) {
         desc.innerHTML = this.DescriptionText;
       }
@@ -251,32 +312,34 @@ JSONtest.prototype = {
       }.bind(this));
     }
 
-    on_event(runButton, "click", function() {
-      // user clicked
-      var content = testInput.value;
-      runButton.disabled = true;
+    if (runButton) {
+      on_event(runButton, "click", function() {
+        // user clicked
+        var content = testInput.value;
+        runButton.disabled = true;
 
-      // make sure content is an object
-      if (typeof content === "string") {
-        try {
-          content = JSON.parse(content) ;
-        } catch(err) {
-          // if the parsing failed, create a special test and mark it failed
-          test( function() {
-            assert_true(false, "Parse of JSON failed: " + err) ;
-          }, "Parsing submitted input");
-          // and just give up
-          done();
-          return ;
+        // make sure content is an object
+        if (typeof content === "string") {
+          try {
+            content = JSON.parse(content) ;
+          } catch(err) {
+            // if the parsing failed, create a special test and mark it failed
+            test( function() {
+              assert_true(false, "Parse of JSON failed: " + err) ;
+            }, "Parsing submitted input");
+            // and just give up
+            done();
+            return ;
+          }
         }
-      }
 
-      // iterate over all of the tests for this instance
-      this.runTests(this.Assertions, content);
+        // iterate over all of the tests for this instance
+        this.runTests(this.Assertions, content);
 
-      // explicitly tell the test framework we are done
-      done();
-    }.bind(this));
+        // explicitly tell the test framework we are done
+        done();
+      }.bind(this));
+    }
   },
 
   // runTests - process tests
@@ -306,6 +369,13 @@ JSONtest.prototype = {
       compareWith = 'and';
     }
 
+    var typeMap = {
+      'must'   : "",
+      'may'    : "INFORMATIONAL: ",
+      'should' : "WARNING: "
+    };
+
+
     // for each assertion (in order) load the external json schema if
     // one is referenced, or use the inline schema if supplied
     // validate content against the referenced schema
@@ -316,8 +386,15 @@ JSONtest.prototype = {
 
       assertions.forEach( function(assert, num) {
 
-        var expected = assert.hasOwnProperty('expectedResult') ? assert.expectedResult : 'valid' ;
-        var message = assert.hasOwnProperty('message') ? assert.message : "Result was not " + expected;
+        var expected = assert.hasOwnProperty('expectedResult') ?
+          assert.expectedResult : 'valid' ;
+        var message = assert.hasOwnProperty('errorMessage') ?
+          assert.errorMessage : "Result was not " + expected;
+        var type = assert.hasOwnProperty('assertionType') ?
+          assert.assertionType : "must" ;
+        if (!typeMap.hasOwnProperty(type)) {
+          type = "must";
+        }
 
         // first - what is the type of the assert
         if (typeof assert === "object" && !Array.isArray(assert)) {
@@ -442,7 +519,7 @@ JSONtest.prototype = {
             }
             if (result === false) {
               // test result was unexpected; use message
-              assert_true(result, message + err);
+              assert_true(result, typeMap[type] + message + err);
             } else {
               assert_true(result, err) ;
             }

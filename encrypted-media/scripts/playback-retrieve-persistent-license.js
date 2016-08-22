@@ -52,7 +52,7 @@ function runTest(config, testname) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) ) {
+            if ( _video.currentTime > ( config.duration || 2 ) ) {
                 _video.removeEventListener('timeupdate', onTimeupdate );
                 _video.pause();
                 _video.removeAttribute('src');

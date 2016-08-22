@@ -119,7 +119,7 @@ function runTest(config, testname) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) && !_receivedTimeupdateEvent ) {
+            if ( _video.currentTime > ( config.duration || 2 ) && !_receivedTimeupdateEvent ) {
                 _receivedTimeupdateEvent = true;
                 _video.pause();
 

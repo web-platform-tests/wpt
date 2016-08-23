@@ -102,6 +102,9 @@ External references are used when the "assertion" is a common one that needs to
 be checked on many different test cases (e.g., that there is an @context in the
 supplied annotation).
 
+NOTE: The title property of an assertionObject can contain markdown.  This can
+help improve readability of the rendered assertions and debugging output.
+
 NOTE: The content property does not yet have a defined use.  One potential use would
 be to act as a pointer to a URI that can supply annotations from an implementation.
 In that case the URI would take a parameter with the test name as a way of telling

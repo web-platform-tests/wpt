@@ -64,7 +64,7 @@ function runTest(config, testname) {
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', onTimeupdate, true);
         }
-        
+
         function onClosed() {
             // Try and reload and check this fails
             var mediaKeySession = _mediaKeys.createSession( 'persistent-license' );

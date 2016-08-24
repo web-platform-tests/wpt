@@ -19,7 +19,7 @@ function runTest(config, testname) {
             _receivedTimeupdateEvent = false,
             _startedReleaseSequence = false,
             _events = [ ];
-        
+
         function recordEventFunc( eventType ) {
             return function() { _events.push( eventType ); };
         }
@@ -27,7 +27,7 @@ function runTest(config, testname) {
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }
-        
+
         function onMessage(event) {
             assert_equals( event.target, _mediaKeySession );
             assert_true( event instanceof window.MediaKeyMessageEvent );

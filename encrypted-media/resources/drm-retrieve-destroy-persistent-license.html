@@ -11,7 +11,7 @@
     <script src=/encrypted-media/util/fetch.js></script>
     <script src=/encrypted-media/util/utf8.js></script>
     <script src=/encrypted-media/util/testmediasource.js></script>
-    
+
     <!-- Message handler for DRM keysystem -->
     <script src=/encrypted-media/util/drm-messagehandler.js></script>
 
@@ -37,7 +37,7 @@
         var _mediaKeys,
             _mediaKeySession;
         config.video = document.getElementById('videoelement');
-            
+
 function onComplete() {
             window.opener.postMessage(assertions, '*');
         }
@@ -67,7 +67,7 @@ function onComplete() {
                 _mediaKeySession.remove();
             }
         }
-        
+
         function onClosed() {
             // Try and reload and check this fails
             var mediaKeySession = _mediaKeys.createSession( 'persistent-license' );

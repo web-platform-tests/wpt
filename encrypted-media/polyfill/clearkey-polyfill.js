@@ -309,7 +309,7 @@
 
                     return;
                 }
-                
+
                 this._sessionId = sessionId;
 
                 if ( this._sessionType === 'persistent-usage-record' )
@@ -414,7 +414,7 @@
 
         return this._session.close()
         .then( function() {
-        
+
             var msg = { kids: this._kids };
 
             if ( this._sessionType === 'persistent-usage-record' )

@@ -354,3 +354,21 @@ def test_css_visual(ext):
     assert s.content_is_css_visual
 
     assert items(s) == [("visual", "/" + filename)]
+
+
+@pytest.mark.parametrize("ext", ["xht", "xhtml", "xml"])
+def test_xhtml_with_entity(ext):
+    content = b"""
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+&nbsp;
+</html>
+"""
+
+    filename = "html/test." + ext
+    s = create(filename, content)
+
+    assert s.root is not None
+
+    assert items(s) == []

@@ -44,3 +44,11 @@ def test_comment():
     d = p.close()
     assert d.tag == u"foo"
     assert len(d) == 0
+
+
+def test_unsupported_encoding():
+    p = XMLParser()
+    p.feed(u"<?xml version='1.0' encoding='Shift-JIS'?><foo>\u3044</foo>".encode("shift-jis"))
+    d = p.close()
+    assert d.tag == u"foo"
+    assert d.text == u"\u3044"

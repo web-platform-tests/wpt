@@ -26,21 +26,37 @@ def _fixname(key):
 
 
 class XMLParser(object):
-    def __init__(self):
-        self._parser = expat.ParserCreate(None, "}")
+    """
+    An XML parser with support for XHTML DTDs and all Python-supported encodings
+
+    This implements the API defined by
+    xml.etree.ElementTree.XMLParser, but supports XHTML DTDs
+    (therefore allowing XHTML entities) and supports all encodings
+    Python does, rather than just those supported by expat.
+    """
+    def __init__(self, encoding=None):
+        self._parser = expat.ParserCreate(encoding, "}")
         self._target = etree.TreeBuilder()
         # parser settings
         self._parser.buffer_text = 1
         self._parser.ordered_attributes = 1
         self._parser.SetParamEntityParsing(expat.XML_PARAM_ENTITY_PARSING_UNLESS_STANDALONE)
         # parser callbacks
+        self._parser.XmlDeclHandler = self._xml_decl
         self._parser.StartElementHandler = self._start
         self._parser.EndElementHandler = self._end
         self._parser.CharacterDataHandler = self._data
         self._parser.ExternalEntityRefHandler = self._external
         self._parser.SkippedEntityHandler = self._skipped
+        # used for our horrible re-encoding hack
+        self._fed_data = []
+        self._read_encoding = None
+
+    def _xml_decl(self, version, encoding, standalone):
+        self._read_encoding = encoding
 
     def _start(self, tag, attrib_in):
+        self._fed_data = None
         tag = _fixname(tag)
         attrib = OrderedDict()
         if attrib_in:
@@ -84,12 +100,22 @@ class XMLParser(object):
         err.offset = self._parser.ErrorColumnNumber
         raise err
 
-
     def feed(self, data):
+        if self._fed_data is not None:
+            self._fed_data.append(data)
         try:
             self._parser.Parse(data, False)
         except expat.error as v:
             _wrap_error(v)
+        except ValueError as e:
+            if e.args[0] == 'multi-byte encodings are not supported':
+                assert self._read_encoding is not None
+                xml = b"".join(self._fed_data).decode(self._read_encoding).encode("utf-8")
+                new_parser = XMLParser("utf-8")
+                self._parser = new_parser._parser
+                self._target = new_parser._target
+                self._fed_data = None
+                self.feed(xml)
 
     def close(self):
         try:

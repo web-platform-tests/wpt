@@ -2,10 +2,13 @@
 <!-- Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
 <html>
     <head>
-        <title>Clear Key Playback</title>
+        <title>Reloading during encrypted media playback</title>
         <script src="encrypted-media-utils.js"></script>
+<!--
+		Test requires Chromium specific content and is being disabled.
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
+-->
     </head>
     <body>
         <video id="testVideo"></video>
@@ -15,7 +18,8 @@
             {
                 var video = document.getElementById('testVideo');
                 var content = 'webm/test-encrypted.webm';
-                var isUpdatePromiseResolved = false;
+                var mediaKeySession = null;
+                var hasSessionUpdateSucceeded = false;
                 var encryptedEventCount = 0;
 
                 var rawKey = new Uint8Array([0xeb, 0xdd, 0x62, 0xf1, 0x68, 0x14, 0xd2, 0x7b,
@@ -36,7 +40,7 @@
                     if (++encryptedEventCount != 2)
                         return;
 
-                    var mediaKeySession = video.mediaKeys.createSession();
+                    mediaKeySession = video.mediaKeys.createSession();
                     waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
                     mediaKeySession.generateRequest(event.initDataType, event.initData).catch(function(error) {
                         forceTestFailureFromPromise(test, error);
@@ -46,13 +50,14 @@
                 function onMessage(event)
                 {
                     assert_true(event instanceof window.MediaKeyMessageEvent);
+                    assert_equals(event.target, mediaKeySession);
                     assert_equals(event.type, 'message');
                     assert_equals(event.messageType, 'license-request');
 
                     var keyId = extractSingleKeyIdFromMessage(event.message);
                     var jwkSet = stringToUint8Array(createJWKSet(createJWK(keyId, rawKey)));
-                    event.target.update(jwkSet).then(function(result) {
-                        isUpdatePromiseResolved = true;
+                    mediaKeySession.update(jwkSet).then(function(result) {
+                        hasSessionUpdateSucceeded = true;
                     }).catch(function(error) {
                         forceTestFailureFromPromise(test, error);
                     });
@@ -67,27 +72,32 @@
 
                 function onTimeUpdate(event)
                 {
-                    if (event.target.currentTime < 0.2 || !isUpdatePromiseResolved)
+                    if (event.target.currentTime < 0.2 || !hasSessionUpdateSucceeded)
                         return;
 
-                    test.done();
+                    // Reload the page to catch any possible teardown issues.
+                    if (location.hash == '#x') {
+                        test.done();
+                        return;
+                    }
+
+                    location.hash += 'x';
+                    location.reload();
                 }
 
                 navigator.requestMediaKeySystemAccess('org.w3.clearkey', getConfigurationForFile(content)).then(function(access) {
                     return access.createMediaKeys();
                 }).then(function(mediaKeys) {
-
                     waitForEventAndRunStep('encrypted', video, onEncrypted, test);
                     waitForEventAndRunStep('playing', video, onPlaying, test);
-
+                    video.src = content;
                     return video.setMediaKeys(mediaKeys);
                 }).then(function(result) {
-                    video.src = content;
                     video.play();
                 }).catch(function(error) {
                     forceTestFailureFromPromise(test, error);
                 });
-            }, 'Playback using Clear Key key system, calling setMediaKeys() before setting src attribute.');
+            }, 'Reloading during encrypted media playback.');
         </script>
     </body>
 </html>

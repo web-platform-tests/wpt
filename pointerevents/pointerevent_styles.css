@@ -1,7 +1,7 @@
 #innerFrame {
 position: absolute;
+top: 250px;
 left: 200px;
-top: 150px;
 height: 100px;
 width: 100px;
 }
@@ -11,18 +11,19 @@ height: 100px;
 }
 
 #square1 {
-top: 150px;
+top: 250px;
 left: 100px;
+background: black;
 }
 
 #square2 {
 top: 50px;
 left: 30px;
 visibility: hidden;
+background: red;
 }
 
 .square {
-background: black;
 height: 20px;
 width: 20px;
 position: absolute;

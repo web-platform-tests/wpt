@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: Playback using retrieved stored persistent-license</title>
+    <title>Encrypted Media Extensions: Retrieve stored persistent-license</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Helper scripts for Encrypted Media Extensions tests  -->
@@ -32,9 +32,8 @@
             assertions = [ ];
 
         var _mediaKeySession;
-
         config.video = document.getElementById('videoelement');
-
+            
         function onComplete() {
             window.opener.postMessage(assertions, '*');
         }

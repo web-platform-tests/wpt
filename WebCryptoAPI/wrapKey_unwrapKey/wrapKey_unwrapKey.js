@@ -38,7 +38,7 @@ function run_test() {
         var parameters = [
             {
                 name: "RSA-OAEP",
-                generateParameters: {name: "RSA-OAEP", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"},
+                generateParameters: {name: "RSA-OAEP", modulusLength: 4096, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"},
                 wrapParameters: {name: "RSA-OAEP", label: new Uint8Array(8)}
             },
             {
@@ -117,13 +117,18 @@ function run_test() {
 
     // Can we successfully "round-trip" (wrap, then unwrap, a key)?
     function testWrapping(wrapper, toWrap) {
-        var originalJwk;    // Check that the wrapped then unwrapped key has the same JWK representation as at first
+        if (wrapper.parameters.name === "RSA-OAEP" && toWrap.name.includes("private")) {
+            return; // Can't wrap large objects with RSA
+        }
 
         promise_test(function(test) {
+            var originalJwk;
+
             return subtle.exportKey("jwk", toWrap.key)
             .then(function(jwk) {
                 originalJwk = jwk;
-            }).then(function() {
+                return jwk;
+            }).then(function(jwk) {
                 return subtle.wrapKey("jwk", toWrap.key, wrapper.wrappingKey, wrapper.parameters.wrapParameters);
             }).then(function(wrappedResult) {
                 return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages)

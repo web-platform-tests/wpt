@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Request ETag</title>
+    <meta name="help" href="https://fetch.spec.whatwg.org/#request">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+    promise_test(function() {
+      var URL = "resources/reflector.py";
+
+      var etag;
+      // make the first request
+      return fetch(URL).then(function(response) {
+        // capture the server-provided ETag -- XXX: redundant (see below)
+        etag = response.headers.get("ETag");
+
+        assert_true(etag && etag.length > 2); // enclosed in quotes
+        assert_equals(response.status, 200);
+
+        return response.text();
+      }).then(function(ifNoneMatch) {
+        // ensure If-None-Match request header was not present initially
+        assert_equals(ifNoneMatch, "N/A");
+
+        // make a second request
+        return fetch(URL);
+      }).then(function(response) {
+        // 304 indicates the previously captured ETag was sent as
+        // If-None-Match request header
+        assert_equals(response.status, 304);
+
+        return response.text();
+      }).then(function(ifNoneMatch) {
+        // ensure If-None-Match request header was present -- XXX: redundant
+        assert_equals(ifNoneMatch, etag);
+      });
+    }, "Testing ETag handling");
+
+    done();
+    </script>
+  </body>
+</html>

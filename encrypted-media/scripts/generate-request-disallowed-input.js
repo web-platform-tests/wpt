@@ -1,4 +1,4 @@
-function runTest(config) {
+function runTest(config,qualifier) {
 
     // Create a session and call generateRequest() with |initDataType|
     // and |initData|. generateRequest() should fail with an
@@ -29,19 +29,19 @@ function runTest(config) {
     {
         var initData = new Uint8Array(70000);
         return test_session(config.keysystem,'webm', initData);
-    }, config.keysystem + ': generateRequest() with webm initData longer than 64Kb characters.');
+    }, ( qualifier || '' ) + config.keysystem + ': generateRequest() with webm initData longer than 64Kb characters.');
 
     promise_test(function()
     {
         var initData = new Uint8Array(70000);
         return test_session(config.keysystem,'cenc', initData);
-    }, config.keysystem + ': generateRequest() with cenc initData longer than 64Kb characters.');
+    }, ( qualifier || '' ) + config.keysystem + ': generateRequest() with cenc initData longer than 64Kb characters.');
 
     promise_test(function()
     {
         var initData = new Uint8Array(70000);
         return test_session(config.keysystem,'keyids', initData);
-    }, config.keysystem + ': generateRequest() with keyids initData longer than 64Kb characters.');
+    }, ( qualifier || '' ) + config.keysystem + ': generateRequest() with keyids initData longer than 64Kb characters.');
 
     promise_test(function()
     {
@@ -57,7 +57,7 @@ function runTest(config) {
             0x00, 0x00, 0x00, 0x00                           // datasize
         ]);
         return test_session(config.keysystem,'cenc', initData);
-    }, config.keysystem + ': generateRequest() with invalid pssh data.');
+    }, ( qualifier || '' ) + config.keysystem + ': generateRequest() with invalid pssh data.');
 
     promise_test(function()
     {
@@ -72,7 +72,7 @@ function runTest(config) {
             0x00, 0x00, 0x00, 0x00                           // datasize
         ]);
         return test_session(config.keysystem,'cenc', initData);
-    }, config.keysystem + ': generateRequest() with non pssh data.');
+    }, ( qualifier || '' ) + config.keysystem + ': generateRequest() with non pssh data.');
 
     promise_test(function()
     {
@@ -80,7 +80,7 @@ function runTest(config) {
         var keyId = new Uint8Array(0);
         var initData = stringToUint8Array(createKeyIDs(keyId));
         return test_session(config.keysystem,'keyids', initData);
-    }, config.keysystem + ': generateRequest() with too short key ID.');
+    }, ( qualifier || '' ) + config.keysystem + ': generateRequest() with too short key ID.');
 
     promise_test(function()
     {
@@ -88,5 +88,5 @@ function runTest(config) {
         var keyId = new Uint8Array(600);
         var initData = stringToUint8Array(createKeyIDs(keyId));
         return test_session(config.keysystem,'keyids', initData);
-    }, config.keysystem + ': generateRequest() with too long key ID.');
+    }, ( qualifier || '' ) + config.keysystem + ': generateRequest() with too long key ID.');
 }

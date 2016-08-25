@@ -1,6 +1,7 @@
-function runTest(config, testname) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', retrieve persistent-usage-record in new window, '
+    var testname = ( qualifier || '' ) + config.keysystem
+                                    + ', retrieve persistent-usage-record in new window, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ];
 
     var configuration = {   initDataTypes: [ config.initDataType ],

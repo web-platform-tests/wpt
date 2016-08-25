@@ -23,7 +23,7 @@
     <script src=/encrypted-media/util/clearkey-messagehandler.js></script>
 
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/playback-temporary-setMediaKeys-first.js></script>
+    <script src=/encrypted-media/scripts/playback-temporary-setMediaKeys.js></script>
 
   </head>
   <body>
@@ -45,7 +45,8 @@
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
                         initData:           getInitData(contentitem,'keyids'),
-                        duration:           2 };
+                        duration:           2,
+                        testcase:           SETMEDIAKEYS_IMMEDIATELY };
 
         runTest(config);
     </script>

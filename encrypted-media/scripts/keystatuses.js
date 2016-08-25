@@ -50,9 +50,9 @@ function runTest(config)
             function lexicographical( a, b ) { return a < b ? -1 : a === b ? 0 : +1; }
             function lexicographicalkey( a, b ) { return lexicographical( a.key, b.key ); }
             var expected = [{ key: key1String, value: 'usable'}, { key: key2String, value: 'usable'}].sort( lexicographicalkey );
-            assert_object_equals(result,
-                                 expected,
-                                 'keyStatuses fails');
+            assert_equals(JSON.stringify(result),
+                          JSON.stringify(expected),
+                                 "keystatuses should have the two expected keys with keystatus 'usable'");
 
             // |keyStatuses| must contain both keys.
             result = [];
@@ -61,7 +61,7 @@ function runTest(config)
             }
             assert_array_equals(result,
                                 [key1String, key2String].sort( lexicographical ),
-                                'keyStatuses.keys() fails');
+                                "keyStatuses.keys() should return an iterable over the two expected keys");
 
             // Both values in |mediaKeySession| should be 'usable'.
             result = [];
@@ -70,25 +70,25 @@ function runTest(config)
             }
             assert_array_equals(result,
                                 ['usable', 'usable'],
-                                'keyStatuses.values() fails');
+                                "keyStatuses.values() should return an iterable with two 'usable' values");
 
             // Check |keyStatuses.entries()|.
             result = [];
             for (var entry of mediaKeySession.keyStatuses.entries()) {
                 result.push({ key: arrayBufferAsString(entry[0]), value: entry[1] });
             }
-            assert_object_equals(result,
-                                 expected,
-                                 'keyStatuses.entries() fails');
+            assert_equals(JSON.stringify(result),
+                          JSON.stringify(expected),
+                                 "keyStatuses.entries() should return an iterable over the two expected keys, with keystatus 'usable'");
 
             // forEach() should return both entries.
             result = [];
-            mediaKeySession.keyStatuses.forEach(function(keyId, status) {
+            mediaKeySession.keyStatuses.forEach(function(status, keyId) {
                 result.push({ key: arrayBufferAsString(keyId), value: status });
             });
-            assert_object_equals(result,
-                                 expected,
-                                 'keyStatuses.forEach() fails');
+            assert_equals(JSON.stringify(result),
+                          JSON.stringify(expected),
+                                 "keyStatuses.forEach() should iterate over the two expected keys, with keystatus 'usable'");
 
             // has() and get() should return the expected values.
             assert_true(mediaKeySession.keyStatuses.has(key1), "keyStatuses should have key1");

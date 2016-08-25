@@ -21,6 +21,7 @@ class TestFileHandler(TestUsingServer):
         # This will fail if it isn't a valid uuid
         uuid.UUID(resp.info()["Another-Header"])
         self.assertEqual(resp.info()["Same-Value-Header"], resp.info()["Another-Header"])
+        self.assertEqual(resp.info()["Double-Header"], "PA, SS")
 
 
     def test_range(self):

@@ -83,49 +83,6 @@ test(function() {
 }, 'Creating a PaymentRequest with null optional parameters should not throw or crash.');
 
 test(function() {
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails('shippingOptions.0', {'id': 'standard'}));
-    assert_equals(null, request.shippingOption);
-}, 'Shipping option identifier should be null if shipping request is omitted.');
-
-test(function() {
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails('shippingOptions.0', {'id': 'standard'}), {'requestShipping': false});
-    assert_equals(null, request.shippingOption);
-}, 'Shipping option identifier should be null if shipping is explicitly not requested.');
-
-test(function() {
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': [buildItem()]}, {'requestShipping': true});
-    assert_equals(null, request.shippingOption);
-}, 'Shipping option identifier should be null if no shipping options are provided.');
-
-test(function() {
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails('shippingOptions.0', {'selected': false}), {'requestShipping': true});
-    assert_equals(null, request.shippingOption);
-}, 'Shipping option identifier should be null if the single provided option is not selected.');
-
-test(function() {
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails('shippingOptions.0', {'id': 'standard', 'selected': true}), {'requestShipping': true});
-    assert_equals('standard', request.shippingOption);
-}, 'Shipping option identifier should default to the single provided option if it is selected.');
-
-test(function() {
-    var shippingOptions = [buildItem({'id': 'standard'}), buildItem({'id': 'express'})];
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': [buildItem()], 'shippingOptions': shippingOptions}, {'requestShipping': true});
-    assert_equals(null, request.shippingOption);
-}, 'Shipping option identifier should be null if multiple unselected shipping options are provided.');
-
-test(function() {
-    var shippingOptions = [buildItem({'id': 'standard', 'selected': true}), buildItem({'id': 'express'})];
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': [buildItem()], 'shippingOptions': shippingOptions}, {'requestShipping': true});
-    assert_equals('standard', request.shippingOption);
-}, 'Shipping option identifier should default to the selected shipping option.');
-
-test(function() {
-    var shippingOptions = [buildItem({'id': 'standard', 'selected': true}), buildItem({'id': 'express', 'selected': true})];
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': [buildItem()], 'shippingOptions': shippingOptions}, {'requestShipping': true});
-    assert_equals('express', request.shippingOption);
-}, 'Shipping option identifier should default to the last selected shipping option, if multiple are selected.');
-
-test(function() {
     new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'displayItems': undefined});
 }, 'Undefined display items should not throw.');
 

@@ -905,12 +905,6 @@ interface DOMStringMap {
   deleter void (DOMString name);
 };
 
-interface DOMElementMap {
-  getter Element (DOMString name);
-  setter creator void (DOMString name, Element value);
-  deleter void (DOMString name);
-};
-
 typedef (ArrayBuffer or MessagePort) Transferable;
 
 callback FileCallback = void (File file);
@@ -3166,7 +3160,6 @@ window.onload = function() {
     RadioNodeList: [],
     HTMLOptionsCollection: ['document.createElement("select").options'],
     DOMStringMap: ['document.head.dataset'],
-    DOMElementMap: ['document.cssElementMap'],
     Transferable: [],
     Document: ['iframe.contentDocument', 'new Document()'],
     XMLDocument: ['document.implementation.createDocument(null, "", null)'],

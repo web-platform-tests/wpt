@@ -85,7 +85,7 @@ function run_test() {
             {algorithm: {name: "RSA-PSS", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"}, privateUsages: ["sign"], publicUsages: ["verify"]},
             {algorithm: {name: "RSA-OAEP", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"}, privateUsages: ["decrypt"], publicUsages: ["encrypt"]},
             {algorithm: {name: "ECDSA", namedCurve: "P-256"}, privateUsages: ["sign"], publicUsages: ["verify"]},
-            {algorithm: {name: "ECDH", namedCurve: "P-256"}, privateUsages: ["deriveBits"], publicUsages: ["deriveBits"]},
+            {algorithm: {name: "ECDH", namedCurve: "P-256"}, privateUsages: ["deriveBits"], publicUsages: []},
             {algorithm: {name: "AES-CTR", length: 128}, usages: ["encrypt", "decrypt"]},
             {algorithm: {name: "AES-CBC", length: 128}, usages: ["encrypt", "decrypt"]},
             {algorithm: {name: "AES-GCM", length: 128}, usages: ["encrypt", "decrypt"]},
@@ -117,31 +117,64 @@ function run_test() {
 
     // Can we successfully "round-trip" (wrap, then unwrap, a key)?
     function testWrapping(wrapper, toWrap) {
-        if (wrapper.parameters.name === "RSA-OAEP" && toWrap.name.includes("private")) {
-            return; // Can't wrap large objects with RSA
+        var formats;
+
+        if (toWrap.name.includes("private")) {
+            formats = ["pkcs8", "jwk"];
+        } else if (toWrap.name.includes("public")) {
+            formats = ["spki", "jwk"]
+        } else {
+            formats = ["raw", "jwk"]
         }
 
-        promise_test(function(test) {
-            var originalJwk;
+        formats.forEach(function(fmt) {
+            var originalExport;
 
-            return subtle.exportKey("jwk", toWrap.key)
-            .then(function(jwk) {
-                originalJwk = jwk;
-                return jwk;
-            }).then(function(jwk) {
-                return subtle.wrapKey("jwk", toWrap.key, wrapper.wrappingKey, wrapper.parameters.wrapParameters);
-            }).then(function(wrappedResult) {
-                return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages)
-            }).then(function(unwrappedResult) {
-                return subtle.exportKey("jwk", unwrappedResult)
-            }).then(function(roundTripJwk) {
-                console.log(originalJwk, roundTripJwk);
-                assert_true(true, "Got to the end, anyway");
-            }).catch(function(err) {
-                assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
-            });
+            promise_test(function(test) {
+                return subtle.exportKey(fmt, toWrap.key)
+                .then(function(exportedKey) {
+                    originalExport = exportedKey;
+                    return exportedKey;
+                }).then(function(exportedKey) {
+                    return subtle.wrapKey(fmt, toWrap.key, wrapper.wrappingKey, wrapper.parameters.wrapParameters);
+                }).then(function(wrappedResult) {
+                    return subtle.unwrapKey(fmt, wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages)
+                }).then(function(unwrappedResult) {
+                    return subtle.exportKey(fmt, unwrappedResult)
+                }).then(function(roundTripExport) {
+                    assert_true(true, "Got to the end, anyway");
+                }).catch(function(err) {
+                    if (wrappingIsPossible(originalExport, wrapper.parameters.name)) {
+                        assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
+                    } else {
+                        assert_true(true, "Skipped test due to key length restrictions");
+                    }
+                })
+            }, "Can wrap and unwrap " + toWrap.name + " keys using " + fmt + " and " + wrapper.parameters.name);
 
-        }, "Can wrap and unwrap " + toWrap.name + " keys using " + wrapper.parameters.name);
+        });
 
+    }
+
+
+    // RSA-OAEP can only wrap relatively small payloads. AES-KW can only
+    // wrap payloads a multiple of 8 bytes long.
+    //
+    // Note that JWK payloads will be converted to ArrayBuffer for wrapping,
+    // and should automatically be padded if needed for AES-KW.
+    function wrappingIsPossible(exportedKey, algorithmName) {
+        if ("byteLength" in exportedKey && algorithmName === "AES-KW") {
+            return exportedKey.byteLength % 8 === 0;
+        }
+
+        if ("byteLength" in exportedKey && algorithmName === "RSA-OAEP") {
+            return exportedKey.byteLength <= 478;
+        }
+
+        if ("kty" in exportedKey && algorithmName === "RSA-OAEP") {
+            return JSON.stringify(exportedKey).length <= 478;
+        }
+
+        return true;
     }
 }

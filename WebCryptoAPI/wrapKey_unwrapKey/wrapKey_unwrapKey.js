@@ -15,7 +15,7 @@ function run_test() {
                 testWrapping(wrapper, key);
             })
         });
-    }, function(error) {
+    }, function(err) {
         promise_test(function(test) {
             assert_unreached("A key failed to generate: " + err.name + ": " + err.message)
         }, "Could not run all tests")
@@ -81,11 +81,11 @@ function run_test() {
 
     function generateKeysToWrap() {
         var parameters = [
-            {algorithm: {name: "RSASSA-PKCS1-v1_5", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"}, usages: ["sign", "verify"]},
-            {algorithm: {name: "RSA-PSS", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"}, usages: ["sign", "verify"]},
-            {algorithm: {name: "RSA-OAEP", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"}, usages: ["encrypt", "decrypt"]},
-            {algorithm: {name: "ECDSA", namedCurve: "P-256"}, usages: ["sign", "verify"]},
-            {algorithm: {name: "ECDH", namedCurve: "P-256"}, usages: ["deriveBits"]},
+            {algorithm: {name: "RSASSA-PKCS1-v1_5", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"}, privateUsages: ["sign"], publicUsages: ["verify"]},
+            {algorithm: {name: "RSA-PSS", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"}, privateUsages: ["sign"], publicUsages: ["verify"]},
+            {algorithm: {name: "RSA-OAEP", modulusLength: 1024, publicExponent: new Uint8Array([1,0,1]), hash: "SHA-256"}, privateUsages: ["decrypt"], publicUsages: ["encrypt"]},
+            {algorithm: {name: "ECDSA", namedCurve: "P-256"}, privateUsages: ["sign"], publicUsages: ["verify"]},
+            {algorithm: {name: "ECDH", namedCurve: "P-256"}, privateUsages: ["deriveBits"], publicUsages: ["deriveBits"]},
             {algorithm: {name: "AES-CTR", length: 128}, usages: ["encrypt", "decrypt"]},
             {algorithm: {name: "AES-CBC", length: 128}, usages: ["encrypt", "decrypt"]},
             {algorithm: {name: "AES-GCM", length: 128}, usages: ["encrypt", "decrypt"]},
@@ -94,13 +94,20 @@ function run_test() {
         ];
 
         return Promise.all(parameters.map(function(params) {
-            return subtle.generateKey(params.algorithm, true, params.usages)
+            var usages;
+            if ("usages" in params) {
+                usages = params.usages;
+            } else {
+                usages = params.publicUsages.concat(params.privateUsages);
+            }
+
+            return subtle.generateKey(params.algorithm, true, usages)
             .then(function(result) {
                 if (result.constructor === CryptoKey) {
                     keys.push({name: params.algorithm.name, algorithm: params.algorithm, usages: params.usages, key: result});
                 } else {
-                    keys.push({name: params.algorithm.name + " public key", algorithm: params.algorithm, usages: params.usages, key: result.publicKey});
-                    keys.push({name: params.algorithm.name + " private key", algorithm: params.algorithm, usages: params.usages, key: result.privateKey});
+                    keys.push({name: params.algorithm.name + " public key", algorithm: params.algorithm, usages: params.publicUsages, key: result.publicKey});
+                    keys.push({name: params.algorithm.name + " private key", algorithm: params.algorithm, usages: params.privateUsages, key: result.privateKey});
                 }
                 return true;
             });

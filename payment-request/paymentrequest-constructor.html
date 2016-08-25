@@ -83,18 +83,6 @@ test(function() {
 }, 'Creating a PaymentRequest with null optional parameters should not throw or crash.');
 
 test(function() {
-    var request = new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails());
-    request.show();
-    request.abort();
-}, 'PaymentRequest.abort() and PaymentRequest.show() should take no parameters.');
-
-test(function() {
-    var request = new PaymentRequest([{'supportedMethods': ['foo'], 'data': {'foo': {'gateway': 'bar'}}}], buildDetails(), {'requestShipping': true});
-    request.show();
-    request.abort();
-}, 'Valid data causes no errors.');
-
-test(function() {
     var request = new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails('shippingOptions.0', {'id': 'standard'}));
     assert_equals(null, request.shippingOption);
 }, 'Shipping option identifier should be null if shipping request is omitted.');
@@ -160,10 +148,6 @@ test(function() {
 test(function() {
     new PaymentRequest([{'supportedMethods': ['foo']}], {'total': buildItem(), 'modifiers': [{'supportedMethods': ['foo'], 'total': buildItem({'value': '0.0'})}]});
 }, 'Non-negative total value in PaymentDetailsModifier should not throw.');
-
-promise_test(function(t) {
-    return promise_rejects(t, null, new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails()).abort());
-}, 'abort() without show() should reject with error');
 
 generate_tests(assert_throws, [
     ['PaymentRequest constructor should throw for incorrect parameter types.', null, function() {

@@ -132,7 +132,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                 return serverURL;
             },
             getCustomHeaders : function( drmconfig, sessionType, messageType ) {
-                
+
                 var customToken;
                 if ( messageType === 'license-request' ) {
                     var customToken = { outputProtection: { digital : false, analogue: false, enforce: false },
@@ -141,7 +141,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                 } else {
                     customToken = {};
                 }
-                
+
                 var customHeader = {    userId: drmconfig.userId,
                                         merchant: drmconfig.merchant,
                                         sessionId: btoa( JSON.stringify( customToken )) };

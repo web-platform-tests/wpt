@@ -80,7 +80,7 @@ function runTest(config, testname) {
 
                 }));
 
-                //win.close();
+                win.close();
 
                 test.done();
             }));

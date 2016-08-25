@@ -1,7 +1,7 @@
 (function() {
 
     // This polyfill fixes the following problems with Edge browser
-    // (1) To retrieve a persisted usage record, you must use session type 'persistent-release-message' instead of 'ppersistent-usage-record'
+    // (1) To retrieve a persisted usage record, you must use session type 'persistent-release-message' instead of 'persistent-usage-record'
     // (2) To retrieve a persisted usage record, you must call remove() after calling load()
     // (3) On providing a license release acknowledgement, the session does not automatically close as is should
     // (4) Retrieval of the usage record at the end of an active session is not supported
@@ -103,7 +103,7 @@
         //
         MediaKeySession.prototype.close = function close()
         {
-            if (!this._removing) return this._session.close();
+            if ( !this._removing ) return this._session.close();
             this._resolveClosed();
             return Promise.resolve();
         };

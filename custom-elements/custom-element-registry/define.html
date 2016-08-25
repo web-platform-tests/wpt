@@ -110,7 +110,7 @@
     }, `Element names: defining an element named ${name} should throw a SyntaxError`);
   });
 
-  // 3. If this CustomElementsRegistry contains an entry with name name,
+  // 3. If this CustomElementRegistry contains an entry with name name,
   // then throw a NotSupportedError and abort these steps.
   test(() =>  {
     customElements.define('test-define-dup-name', class {});
@@ -119,7 +119,7 @@
     });
   }, 'If the name is already defined, should throw a NotSupportedError');
 
-  // 5. If this CustomElementsRegistry contains an entry with constructor constructor,
+  // 5. If this CustomElementRegistry contains an entry with constructor constructor,
   // then throw a NotSupportedError and abort these steps.
   test(() =>  {
     class TestDupConstructor {};

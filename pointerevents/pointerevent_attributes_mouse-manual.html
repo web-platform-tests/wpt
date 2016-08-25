@@ -17,7 +17,7 @@
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
 
-            function checkPointerEventAttributes(event, targetBoundingClientRect, testNamePrefix, pointerEventInterface) {
+            function checkPointerEventAttributes(event, targetBoundingClientRect, testNamePrefix) {
                 if (detected_eventTypes[event.type])
                     return;
                 detected_eventTypes[event.type] = true;
@@ -67,7 +67,7 @@
                     assert_equals(event.isPrimary, true, "isPrimary should be true");
                 }, pointerTestName + ".isPrimary attribute is correct.");
 
-                check_PointerEvent(event, testNamePrefix, pointerEventInterface);
+                check_PointerEvent(event, testNamePrefix);
             }
 
             function run() {
@@ -90,7 +90,7 @@
                         }
                     });
                     on_event(square2, eventName, function (event) {
-                        checkPointerEventAttributes(event, rectSquare2, "Inner frame ", innerFrame.contentWindow.PointerEvent);
+                        checkPointerEventAttributes(event, rectSquare2, "Inner frame ");
                         if (Object.keys(detected_eventTypes).length == eventList.length) {
                             square2.style.visibility = 'hidden';
                             test_pointerEvent.done();
@@ -110,7 +110,7 @@
                  <li>When red square appears move your mouse over the red square and click on it.</li>
                  <li>Then move it off the red square.</li>
             </ol>
- 
+
             Test passes if the proper behavior of the events is observed.
         </h4>
         <div id="square1" class="square"></div>

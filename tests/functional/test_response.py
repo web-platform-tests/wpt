@@ -27,9 +27,9 @@ class TestResponse(TestUsingServer):
         route = ("GET", "/test/test_head_without_body", handler)
         self.server.router.register(*route)
         resp = self.request(route[1], method="HEAD")
-        self.assertEquals("6", resp.info()['Content-Length'])
-        self.assertEquals("TEST", resp.info()['x-Test'])
-        self.assertEquals("", resp.info()['x-body'])
+        self.assertEqual("6", resp.info()['Content-Length'])
+        self.assertEqual("TEST", resp.info()['x-Test'])
+        self.assertEqual("", resp.info()['x-body'])
 
     def test_head_with_body(self):
         @wptserve.handlers.handler
@@ -43,9 +43,9 @@ class TestResponse(TestUsingServer):
         route = ("GET", "/test/test_head_with_body", handler)
         self.server.router.register(*route)
         resp = self.request(route[1], method="HEAD")
-        self.assertEquals("6", resp.info()['Content-Length'])
-        self.assertEquals("TEST", resp.info()['x-Test'])
-        self.assertEquals("body", resp.info()['X-Body'])
+        self.assertEqual("6", resp.info()['Content-Length'])
+        self.assertEqual("TEST", resp.info()['x-Test'])
+        self.assertEqual("body", resp.info()['X-Body'])
 
 if __name__ == '__main__':
     unittest.main()

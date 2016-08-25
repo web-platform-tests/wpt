@@ -64,7 +64,7 @@ function buildDetails(optionalDetailName, optionalSubstituteKeyValuePairs) {
 
 test(function() {
     new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(), {});
-}, 'Creating a PaymentRequest with empty parameters should not throw or crash.');
+}, 'Creating a PaymentRequest with empty optional parameters should not throw or crash.');
 
 test(function() {
     new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(), {}, '');
@@ -349,7 +349,7 @@ for (var i in detailNames) {
         }],
         [`Undefined "value" field should throw (${detailNames[i]})`, null, function() {
             assert_true("PaymentRequest" in self);
-            // throws "required member value  is undefined"
+            // throws "required member value is undefined"
             new PaymentRequest([{'supportedMethods': ['foo']}], buildDetails(detailNames[i], {'value': undefined}))
         }],
     ]);

@@ -142,8 +142,12 @@ function run_test() {
                 }).then(function(unwrappedResult) {
                     return subtle.exportKey(fmt, unwrappedResult)
                 }).then(function(roundTripExport) {
-                    assert_true(true, "Got to the end, anyway");
-                }).catch(function(err) {
+                    if ("byteLength" in originalExport) {
+                        assert_true(equalBuffers(originalExport, roundTripExport), "Post-wrap export matches original export");
+                    } else {
+                        assert_true(equalJwk(originalExport, roundTripExport), "Post-wrap export matches original export.");
+                    }
+                }, function(err) {
                     if (wrappingIsPossible(originalExport, wrapper.parameters.name)) {
                         assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
                     } else {
@@ -177,4 +181,82 @@ function run_test() {
 
         return true;
     }
+
+
+    // Helper methods follow:
+
+    // Are two array buffers the same?
+    function equalBuffers(a, b) {
+        if (a.byteLength !== b.byteLength) {
+            return false;
+        }
+
+        var aBytes = new Uint8Array(a);
+        var bBytes = new Uint8Array(b);
+
+        for (var i=0; i<a.byteLength; i++) {
+            if (aBytes[i] !== bBytes[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Are two Jwk objects "the same"? That is, does the object returned include
+    // matching values for each property that was expected? It's okay if the
+    // returned object has extra methods; they aren't checked.
+    function equalJwk(expected, got) {
+        var fields = Object.keys(expected);
+        var fieldName;
+
+        for(var i=0; i<fields.length; i++) {
+            fieldName = fields[i];
+            if (!(fieldName in got)) {
+                return false;
+            }
+            if (objectToString(expected[fieldName]) !== objectToString(got[fieldName])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Character representation of any object we may use as a parameter.
+    function objectToString(obj) {
+        var keyValuePairs = [];
+
+        if (Array.isArray(obj)) {
+            return "[" + obj.map(function(elem){return objectToString(elem);}).join(", ") + "]";
+        } else if (typeof obj === "object") {
+            Object.keys(obj).sort().forEach(function(keyName) {
+                keyValuePairs.push(keyName + ": " + objectToString(obj[keyName]));
+            });
+            return "{" + keyValuePairs.join(", ") + "}";
+        } else if (typeof obj === "undefined") {
+            return "undefined";
+        } else {
+            return obj.toString();
+        }
+
+        var keyValuePairs = [];
+
+        Object.keys(obj).sort().forEach(function(keyName) {
+            var value = obj[keyName];
+            if (typeof value === "object") {
+                value = objectToString(value);
+            } else if (typeof value === "array") {
+                value = "[" + value.map(function(elem){return objectToString(elem);}).join(", ") + "]";
+            } else {
+                value = value.toString();
+            }
+
+            keyValuePairs.push(keyName + ": " + value);
+        });
+
+        return "{" + keyValuePairs.join(", ") + "}";
+    }
+
+
 }

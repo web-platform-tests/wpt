@@ -4,9 +4,8 @@ import base64
 import logging
 import os
 import unittest
-import urlparse
 
-from six.moves.urllib.parse import urlencode
+from six.moves.urllib.parse import urlencode, urlunsplit
 from six.moves.urllib.request import Request as BaseRequest
 from six.moves.urllib.request import urlopen
 
@@ -45,7 +44,7 @@ class TestUsingServer(unittest.TestCase):
         self.server.stop()
 
     def abs_url(self, path, query=None):
-        return urlparse.urlunsplit(("http", "%s:%i" % (self.server.host, self.server.port), path, query, None))
+        return urlunsplit(("http", "%s:%i" % (self.server.host, self.server.port), path, query, None))
 
     def request(self, path, query=None, method="GET", headers=None, body=None, auth=None):
         req = Request(self.abs_url(path, query))

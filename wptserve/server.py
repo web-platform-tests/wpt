@@ -11,6 +11,8 @@ import traceback
 import types
 import urlparse
 
+from six.moves.urllib.parse import urlunsplit
+
 from . import routes as default_routes
 from .logger import get_logger
 from .request import Server, Request
@@ -97,7 +99,7 @@ class RequestRewriter(object):
                              (request_handler.path, destination))
                 new_url = list(split_url)
                 new_url[2] = destination
-                new_url = urlparse.urlunsplit(new_url)
+                new_url = urlunsplit(new_url)
                 request_handler.path = new_url
 
 
@@ -456,6 +458,6 @@ class WebTestHttpd(object):
         if not self.started:
             return None
 
-        return urlparse.urlunsplit(("http" if not self.use_ssl else "https",
-                                    "%s:%s" % (self.host, self.port),
-                                    path, query, fragment))
+        return urlunsplit(("http" if not self.use_ssl else "https",
+                           "%s:%s" % (self.host, self.port),
+                           path, query, fragment))

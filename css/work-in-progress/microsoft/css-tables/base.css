@@ -8,6 +8,7 @@
 	x-tfoot { display: table-footer-group; }
 	x-tr { display: table-row; }
 	x-td { display: table-cell; }
+	x-caption { display: table-caption; }
 
 /* layout of the page */
 	

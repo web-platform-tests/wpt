@@ -8,6 +8,7 @@ import urllib2
 import urlparse
 
 from six.moves.urllib.parse import urlencode
+from six.moves.urllib.request import urlopen
 
 import wptserve
 
@@ -61,4 +62,4 @@ class TestUsingServer(unittest.TestCase):
         if auth is not None:
             req.add_header("Authorization", "Basic %s" % base64.b64encode('%s:%s' % auth))
 
-        return urllib2.urlopen(req)
+        return urlopen(req)

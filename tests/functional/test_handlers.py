@@ -5,7 +5,7 @@ import urllib2
 import uuid
 
 import wptserve
-from base import TestUsingServer, doc_root
+from .base import TestUsingServer, doc_root
 
 class TestFileHandler(TestUsingServer):
     def test_GET(self):

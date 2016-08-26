@@ -1,4 +1,4 @@
-import utils
+from . import utils
 
 content_types = utils.invert_dict({"text/html": ["htm", "html"],
                                    "application/json": ["json"],

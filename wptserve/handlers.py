@@ -5,12 +5,12 @@ import traceback
 import urllib
 import urlparse
 
-from constants import content_types
-from pipes import Pipeline, template
-from ranges import RangeParser
-from request import Authentication
-from response import MultipartContent
-from utils import HTTPException
+from .constants import content_types
+from .pipes import Pipeline, template
+from .ranges import RangeParser
+from .request import Authentication
+from .response import MultipartContent
+from .utils import HTTPException
 
 __all__ = ["file_handler", "python_script_handler",
            "FunctionHandler", "handler", "json_handler",

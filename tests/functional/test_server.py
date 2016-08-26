@@ -1,10 +1,8 @@
-import os
 import unittest
 import urllib2
-import json
 
 import wptserve
-from base import TestUsingServer, doc_root
+from .base import TestUsingServer
 
 class TestFileHandler(TestUsingServer):
     def test_not_handled(self):

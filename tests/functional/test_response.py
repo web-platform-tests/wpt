@@ -1,12 +1,8 @@
-import os
 import unittest
-import urllib2
-import json
-import time
 from types import MethodType
 
 import wptserve
-from base import TestUsingServer, doc_root
+from .base import TestUsingServer
 
 def send_body_as_header(self):
     if self._response.add_required_headers:

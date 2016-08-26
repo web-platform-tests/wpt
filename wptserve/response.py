@@ -6,8 +6,8 @@ import types
 import uuid
 import socket
 
-from constants import response_codes
-from logger import get_logger
+from .constants import response_codes
+from .logger import get_logger
 
 missing = object()
 

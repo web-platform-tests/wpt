@@ -1,11 +1,7 @@
-import os
 import unittest
-import urllib2
-import json
-import time
 
 import wptserve
-from base import TestUsingServer, doc_root
+from .base import TestUsingServer
 
 class TestInputFile(TestUsingServer):
     def test_seek(self):

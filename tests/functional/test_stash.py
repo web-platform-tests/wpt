@@ -1,13 +1,10 @@
-import os
 import unittest
-import urllib2
-import json
 import uuid
 
 import wptserve
 from wptserve.router import any_method
 from wptserve.stash import StashServer
-from base import TestUsingServer, doc_root
+from .base import TestUsingServer
 
 class TestResponseSetCookie(TestUsingServer):
     def run(self, result=None):

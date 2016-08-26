@@ -2,7 +2,7 @@ import itertools
 import re
 import types
 
-from logger import get_logger
+from .logger import get_logger
 
 any_method = object()
 

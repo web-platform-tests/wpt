@@ -240,6 +240,14 @@ def check_parsed(repo_root, path, f):
             if all(seen_elements[name] for name in required_elements):
                 break
 
+
+    for element in source_file.root.findall(".//{http://www.w3.org/1999/xhtml}script[@src]"):
+        src = element.attrib["src"]
+        for name in ["testharness", "testharnessreport"]:
+            if "%s.js" % name == src or ("/%s.js" % name in src and src != "/resources/%s.js" % name):
+                errors.append(("%s-PATH" % name.upper(), "%s.js script seen with incorrect path" % name, path, None))
+
+
     return errors
 
 class ASTCheck(object):

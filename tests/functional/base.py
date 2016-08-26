@@ -4,9 +4,10 @@ import base64
 import logging
 import os
 import unittest
-import urllib
 import urllib2
 import urlparse
+
+from six.moves.urllib.parse import urlencode
 
 import wptserve
 
@@ -25,7 +26,7 @@ class Request(urllib2.Request):
 
     def add_data(self, data):
         if hasattr(data, "iteritems"):
-            data = urllib.urlencode(data)
+            data = urlencode(data)
         print(data)
         self.add_header("Content-Length", str(len(data)))
         urllib2.Request.add_data(self, data)

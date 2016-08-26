@@ -3,7 +3,8 @@ import json
 import os
 import traceback
 import urllib
-import urlparse
+
+from six.moves.urllib.parse import parse_qs, urljoin
 
 from .constants import content_types
 from .pipes import Pipeline, template
@@ -85,7 +86,7 @@ class DirectoryHandler(object):
         if not base_path.endswith("/"):
             base_path += "/"
         if base_path != "/":
-            link = urlparse.urljoin(base_path, "..")
+            link = urljoin(base_path, "..")
             yield ("""<li class="dir"><a href="%(link)s">%(name)s</a></li>""" %
                    {"link": link, "name": ".."})
         for item in sorted(os.listdir(path)):
@@ -131,7 +132,7 @@ class FileHandler(object):
                 byte_ranges = None
             data = self.get_data(response, path, byte_ranges)
             response.content = data
-            query = urlparse.parse_qs(request.url_parts.query)
+            query = parse_qs(request.url_parts.query)
 
             pipeline = None
             if "pipe" in query:

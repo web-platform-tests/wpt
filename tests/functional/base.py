@@ -4,10 +4,10 @@ import base64
 import logging
 import os
 import unittest
-import urllib2
 import urlparse
 
 from six.moves.urllib.parse import urlencode
+from six.moves.urllib.request import Request as BaseRequest
 from six.moves.urllib.request import urlopen
 
 import wptserve
@@ -17,9 +17,9 @@ logging.basicConfig()
 here = os.path.split(__file__)[0]
 doc_root = os.path.join(here, "docroot")
 
-class Request(urllib2.Request):
+class Request(BaseRequest):
     def __init__(self, *args, **kwargs):
-        urllib2.Request.__init__(self, *args, **kwargs)
+        BaseRequest.__init__(self, *args, **kwargs)
         self.method = "GET"
 
     def get_method(self):
@@ -30,7 +30,7 @@ class Request(urllib2.Request):
             data = urlencode(data)
         print(data)
         self.add_header("Content-Length", str(len(data)))
-        urllib2.Request.add_data(self, data)
+        BaseRequest.add_data(self, data)
 
 class TestUsingServer(unittest.TestCase):
     def setUp(self):

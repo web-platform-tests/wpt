@@ -1,6 +1,4 @@
-# All mask properties test cases are meant to be failed
-# until bug 1251161 is fixed, which means enabling mask shorthand.
-# To enable it in compile time, refer to bug 1243734
+# For those test items with failure type fuzzy-if added, please refer to bug 1231643#c10.
 
 # mask-composite test cases
 == mask-composite-1a.html mask-composite-1-ref.html

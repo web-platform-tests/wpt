@@ -9,9 +9,8 @@ import threading
 import time
 import traceback
 import types
-import urlparse
 
-from six.moves.urllib.parse import urlunsplit
+from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from . import routes as default_routes
 from .logger import get_logger
@@ -91,7 +90,7 @@ class RequestRewriter(object):
         :param request_handler: BaseHTTPRequestHandler for which to
                                 rewrite the request.
         """
-        split_url = urlparse.urlsplit(request_handler.path)
+        split_url = urlsplit(request_handler.path)
         if split_url.path in self.rules:
             methods, destination = self.rules[split_url.path]
             if "*" in methods or request_handler.command in methods:

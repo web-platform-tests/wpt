@@ -5,6 +5,8 @@ import StringIO
 import tempfile
 import urlparse
 
+from six.moves.urllib.parse import urlsplit
+
 from . import stash
 from .utils import HTTPException
 
@@ -265,7 +267,7 @@ class Request(object):
                                       host,
                                       port,
                                       self.request_path)
-        self.url_parts = urlparse.urlsplit(self.url)
+        self.url_parts = urlsplit(self.url)
 
         self._raw_headers = request_handler.headers
 

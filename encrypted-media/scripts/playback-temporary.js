@@ -1,6 +1,7 @@
-function runTest(config) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', sucessful playback, temporary, '
+    var testname = ( qualifier || '' ) + config.keysystem
+                                    + ', sucessful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
                                     + ', set src before setMediaKeys';
 

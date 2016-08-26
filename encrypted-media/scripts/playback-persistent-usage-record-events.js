@@ -1,6 +1,7 @@
-function runTest(config, testname) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', persistent-usage-record, playback, '
+    var testname = ( qualifier || '' ) + config.keysystem
+                                    + ', persistent-usage-record, playback, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
                                     + ', event sequence';
 

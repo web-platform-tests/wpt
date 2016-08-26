@@ -3,7 +3,7 @@ SETMEDIAKEYS_AFTER_SRC = 1;
 SETMEDIAKEYS_ONENCRYPTED = 2;
 SETMEDIAKEYS_AFTER_UPDATE = 3;
 
-function runTest(config) {
+function runTest(config,qualifier) {
 
     var testcase = ( config.testcase === SETMEDIAKEYS_IMMEDIATELY ) ? 'setMediaKeys first'
                     : ( config.testcase === SETMEDIAKEYS_AFTER_SRC ) ? 'setMediaKeys after setting video.src'
@@ -11,7 +11,8 @@ function runTest(config) {
                     : ( config.testcase === SETMEDIAKEYS_AFTER_UPDATE ) ? 'setMediaKeys after updating session'
                     : 'unknown';
 
-    var testname = config.keysystem + ', sucessful playback, temporary, '
+    var testname = ( qualifier || '' ) + config.keysystem
+                                    + ', sucessful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
                                     + ', ' + testcase;
 

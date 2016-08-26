@@ -280,7 +280,7 @@ class WebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 # Ensure that the whole request has been read from the socket
                 request.raw_input.read()
 
-        except socket.timeout, e:
+        except socket.timeout as e:
             self.log_error("Request timed out: %r", e)
             self.close_connection = True
             return

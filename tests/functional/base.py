@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import base64
 import logging
 import os
@@ -24,7 +26,7 @@ class Request(urllib2.Request):
     def add_data(self, data):
         if hasattr(data, "iteritems"):
             data = urllib.urlencode(data)
-        print data
+        print(data)
         self.add_header("Content-Length", str(len(data)))
         urllib2.Request.add_data(self, data)
 

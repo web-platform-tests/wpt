@@ -10,33 +10,23 @@
   <body>
     <script>
     promise_test(function() {
-      var URL = "resources/reflector.py";
+      var URL = "resources/cache.py";
 
-      var etag;
       // make the first request
       return fetch(URL).then(function(response) {
-        // capture the server-provided ETag -- XXX: redundant (see below)
-        etag = response.headers.get("ETag");
-
-        assert_true(etag && etag.length > 2); // enclosed in quotes
+        // ensure we're getting the regular, uncached response
         assert_equals(response.status, 200);
 
-        return response.text();
-      }).then(function(ifNoneMatch) {
-        // ensure If-None-Match request header was not present initially
-        assert_equals(ifNoneMatch, "N/A");
-
+        return response.text(); // consuming the body, just to be safe
+      }).then(function(body) {
         // make a second request
         return fetch(URL);
       }).then(function(response) {
-        // 304 indicates the previously captured ETag was sent as
+        // a 304 response indicates our browser sent the correct
         // If-None-Match request header
         assert_equals(response.status, 304);
 
-        return response.text();
-      }).then(function(ifNoneMatch) {
-        // ensure If-None-Match request header was present -- XXX: redundant
-        assert_equals(ifNoneMatch, etag);
+        return response.text(); // consuming the body, just to be safe
       });
     }, "Testing ETag handling");
 

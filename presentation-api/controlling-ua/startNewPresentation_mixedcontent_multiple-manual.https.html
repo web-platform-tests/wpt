@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Presentation API - controlling ua - mixed content (multiple URLs) - manual test</title>
+<title>Calling "start" with a set of URLs containing an a priori unauthenticated URL in an HTTPS context throws a SecurityError exception.</title>
 <link rel="author" title="Francois Daoust" href="https://www.w3.org/People/#fd">
 <link rel="help" href="http://w3c.github.io/presentation-api/#dom-presentationrequest-start">
 <script src="/resources/testharness.js"></script>
@@ -23,9 +23,10 @@
     };
 
     function startPresentationTest() {
+        presentBtn.disabled = true;
         promise_test(function (t) {
             return promise_rejects(t, 'SecurityError', startPresentation());
-        }, 'Calling "start" with a set of URLs containing an a priori unauthenticated URL in an HTTPS context throws a SecurityError exception.');
+        });
     }
 </script>
 

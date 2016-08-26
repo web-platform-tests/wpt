@@ -4,14 +4,28 @@
 <script src='/resources/testharnessreport.js'></script>
 <link rel='stylesheet' href='/resources/testharness.css'>
 <link rel='stylesheet' href='../base.css' />
+<style>
+    x-table span {
+        display: inline-block;
+        background: green;
+        height: 100px;
+    }
+</style>
 <main>
     <h1>Width Distribution</h1>
     <h4>"Computing the table width"</h4>
-    <p>This is testing that the table root's minimum is max(table-root width, capmin, gridmin)
+    <p>This is testing that the table root's width when the TABLEROOT width is auto</p>
     <x-table id="one">
-        <x-caption><span style="display: inline-block; height: 100px; width: 100px; background: blue;"></x-caption>
+        <x-caption>
+            <span style="width: 100px; background: blue;"></span>
+        </x-caption>
         <x-tr>
-            <x-td></x-td>
+            <x-td>
+                <span style="width: 100px;"></span>
+            </x-td>
+            <x-td>
+                <span style="width: 200px"></span>
+            </x-td>
         </x-tr>
     </x-table>
 </main>
@@ -25,11 +39,10 @@
 
     var i = 1;
 	generate_tests(assert_equals, [
-        [  
-             // TEST ONE
-            "Width is 100px due to 100px content size of caption",
+        [
+            'The box should be 300px since that is the size of the content',
             document.getElementById('one').offsetWidth,
-            100
+            300
         ]
     ]);
 </script>

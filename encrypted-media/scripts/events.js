@@ -1,6 +1,6 @@
-function runTest(config) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', events';
+    var testname = ( qualifier || '' ) + config.keysystem + ', events';
 
     var configuration = getSimpleConfigurationForContent( config.content );
 

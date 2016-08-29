@@ -1,6 +1,7 @@
-function runTest(config, testname) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', persistent-license, ' + config.testcase + ', '
+    var testname = ( qualifier || '' ) + config.keysystem
+                                    + ', persistent-license, ' + config.testcase + ', '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ];
 
     var configuration = {   initDataTypes: [ config.initDataType ],

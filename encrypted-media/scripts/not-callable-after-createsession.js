@@ -1,4 +1,4 @@
- function runTest(config) {
+ function runTest(config,qualifier) {
     // After creation, the MediaKeySession object is not
     // callable, and we should get a InvalidStateError.
 
@@ -16,7 +16,7 @@
                 assert_equals(error.name, 'InvalidStateError');
             });
         });
-    }, config.keysystem + ': Update() immediately after CreateSession().');
+    }, ( qualifier || '' ) + config.keysystem + ': Update() immediately after CreateSession().');
 
     promise_test(function()
     {
@@ -31,7 +31,7 @@
                 assert_equals(error.name, 'InvalidStateError');
             });
         });
-    }, config.keysystem + ': Close() immediately after CreateSession().');
+    }, ( qualifier || '' ) + config.keysystem + ': Close() immediately after CreateSession().');
 
     promise_test(function()
     {
@@ -46,5 +46,5 @@
                 assert_equals(error.name, 'InvalidStateError');
             });
         });
-    }, config.keysystem + ': Remove() immediately after CreateSession().');
+    }, ( qualifier || '' ) + config.keysystem + ': Remove() immediately after CreateSession().');
 }

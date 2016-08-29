@@ -1,6 +1,7 @@
-function runTest(config) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', successful playback, temporary, '
+    var testname = ( qualifier || '' ) + config.keysystem
+                                    + ', successful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
                                     + ', multiple keys, single session, '
                                     + config.testcase;

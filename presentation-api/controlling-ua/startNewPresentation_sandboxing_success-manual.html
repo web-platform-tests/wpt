@@ -20,11 +20,11 @@
         presentBtn.disabled = true;
         async_test(function (t) {
             childFrame.contentWindow.postMessage('start', '*');
-            window.onmessage = t.step_func(function (ev) {
+            window.addEventListener('message', t.step_func(function (ev) {
                 assert_equals(ev.data, 'success',
                     'Presentation could not be started from nested frame.');
                 t.done();
-            });
+            }));
         });
     }
 </script>

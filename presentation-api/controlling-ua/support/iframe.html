@@ -6,8 +6,8 @@
 <script>
     window.onmessage = function (ev) {
       try {
+        var request = new PresentationRequest('presentation.html');;
         if (ev.data === 'start') {
-          var request = new PresentationRequest('presentation.html');
           request.start()
             .then(function () {
               parent.window.postMessage('success', '*');
@@ -26,10 +26,34 @@
               }
             });
         }
+        else if (ev.data === 'reconnect') {
+          request.reconnect('someid')
+            .then(function () {
+              parent.window.postMessage('success', '*');
+            })
+            .catch(function (err) {
+              parent.window.postMessage(err.name, '*');
+            });
+        }
+        else if (ev.data === 'getAvailability') {
+          request.getAvailability()
+            .then(function () {
+              parent.window.postMessage('success', '*');
+            })
+            .catch(function (err) {
+              if (err.name === 'NotSupportedError') {
+                parent.window.postMessage('success', '*');
+              }
+              else {
+                parent.window.postMessage(err.name, '*');
+              }
+            });
+        }
       }
       catch (err) {
         parent.window.postMessage('Could not create PresentationRequest', '*');
       }
     }
+    parent.window.postMessage('ready', '*');
 </script>
 

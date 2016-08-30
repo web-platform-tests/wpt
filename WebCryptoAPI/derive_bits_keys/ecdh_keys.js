@@ -37,7 +37,7 @@ function run_test() {
         Object.keys(sizes).forEach(function(namedCurve) {
             // Basic success case
             promise_test(function(test) {
-                return subtle.deriveKey({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_true(equalBuffers(exportedKey, derivations[namedCurve], 8 * exportedKey.length), "Derived correct key");
@@ -48,7 +48,7 @@ function run_test() {
 
             // Case insensitivity check
             promise_test(function(test) {
-                return subtle.deriveKey({name: "EcDh", public: publicKeys[namedCurve]}, privateKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "EcDh", public: publicKeys[namedCurve]}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_true(equalBuffers(exportedKey, derivations[namedCurve], 8 * exportedKey.length), "Derived correct key");
@@ -60,7 +60,7 @@ function run_test() {
 
             // - missing public property TypeError
             promise_test(function(test) {
-                return subtle.deriveKey({name: "ECDH"}, privateKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "ECDH"}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_unreached("deriveKey succeeded but should have failed with TypeError");
@@ -71,7 +71,7 @@ function run_test() {
 
             // - Non CryptoKey public property TypeError
             promise_test(function(test) {
-                return subtle.deriveKey({name: "ECDH", public: {message: "Not a CryptoKey"}}, privateKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "ECDH", public: {message: "Not a CryptoKey"}}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_unreached("deriveKey succeeded but should have failed with TypeError");
@@ -86,7 +86,7 @@ function run_test() {
                 if (namedCurve === "P-256") {
                     publicKey = publicKeys["P-384"];
                 }
-                return subtle.deriveKey({name: "ECDH", public: publicKey}, privateKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "ECDH", public: publicKey}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_unreached("deriveKey succeeded but should have failed with InvalidAccessError");
@@ -97,7 +97,7 @@ function run_test() {
 
             // - not ECDH public property InvalidAccessError
             promise_test(function(test) {
-                return subtle.deriveKey({name: "ECDH", public: ecdsaKeyPairs[namedCurve].publicKey}, privateKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "ECDH", public: ecdsaKeyPairs[namedCurve].publicKey}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_unreached("deriveKey succeeded but should have failed with InvalidAccessError");
@@ -108,7 +108,7 @@ function run_test() {
 
             // - No deriveKey usage in baseKey InvalidAccessError
             promise_test(function(test) {
-                return subtle.deriveKey({name: "ECDH", public: publicKeys[namedCurve]}, noDeriveKeyKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "ECDH", public: publicKeys[namedCurve]}, noDeriveKeyKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_unreached("deriveKey succeeded but should have failed with InvalidAccessError");
@@ -119,7 +119,7 @@ function run_test() {
 
             // - Use public key for baseKey InvalidAccessError
             promise_test(function(test) {
-                return subtle.deriveKey({name: "ECDH", public: publicKeys[namedCurve]}, publicKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "ECDH", public: publicKeys[namedCurve]}, publicKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_unreached("deriveKey succeeded but should have failed with InvalidAccessError");
@@ -130,7 +130,7 @@ function run_test() {
 
             // - Use private key for public property InvalidAccessError
             promise_test(function(test) {
-                return subtle.deriveKey({name: "ECDH", public: privateKeys[namedCurve]}, privateKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.deriveKey({name: "ECDH", public: privateKeys[namedCurve]}, privateKeys[namedCurve], {name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                 .then(function(exportedKey) {
                     assert_unreached("deriveKey succeeded but should have failed with InvalidAccessError");
@@ -141,9 +141,9 @@ function run_test() {
 
             // - Use secret key for public property InvalidAccessError
             promise_test(function(test) {
-                return subtle.generateKey({name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                return subtle.generateKey({name: "HMAC", hash: "SHA-256", length: 256}, true, ["sign", "verify"])
                 .then(function(secretKey) {
-                    subtle.deriveKey({name: "ECDH", public: secretKey}, privateKeys[namedCurve], {name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
+                    subtle.deriveKey({name: "ECDH", public: secretKey}, privateKeys[namedCurve], {name: "AES-CBC", length: 256}, true, ["sign", "verify"])
                     .then(function(key) {return crypto.subtle.exportKey("raw", key);})
                     .then(function(exportedKey) {
                         assert_unreached("deriveKey succeeded but should have failed with InvalidAccessError");

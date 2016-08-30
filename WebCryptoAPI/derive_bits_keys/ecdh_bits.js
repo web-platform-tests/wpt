@@ -37,7 +37,7 @@ function run_test() {
         Object.keys(sizes).forEach(function(namedCurve) {
             // Basic success case
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
                 }, function(err) {
@@ -47,7 +47,7 @@ function run_test() {
 
             // Case insensitivity check
             promise_test(function(test) {
-                return subtle.deriveBits({name: "EcDh", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "EcDh", public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
                 }, function(err) {
@@ -57,7 +57,7 @@ function run_test() {
 
             // Null length
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], null)
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], null)
                 .then(function(derivation) {
                     assert_true(equalBuffers(derivation, derivations[namedCurve]), "Derived correct bits");
                 }, function(err) {
@@ -67,7 +67,7 @@ function run_test() {
 
             // Shorter than entire derivation per algorithm
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] - 32)
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] - 32)
                 .then(function(derivation) {
                     assert_true(equalBuffers(derivation, derivations[namedCurve], 8 * sizes[namedCurve] - 32), "Derived correct bits");
                 }, function(err) {
@@ -77,7 +77,7 @@ function run_test() {
 
             // Non-multiple of 8
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] - 11)
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] - 11)
                 .then(function(derivation) {
                     assert_true(equalBuffers(derivation, derivations[namedCurve], 8 * sizes[namedCurve] - 11), "Derived correct bits");
                 }, function(err) {
@@ -89,7 +89,7 @@ function run_test() {
 
             // - missing public property TypeError
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH"}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_unreached("deriveBits succeeded but should have failed with TypeError");
                 }, function(err) {
@@ -99,7 +99,7 @@ function run_test() {
 
             // - Non CryptoKey public property TypeError
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: {message: "Not a CryptoKey"}}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH", public: {message: "Not a CryptoKey"}}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_unreached("deriveBits succeeded but should have failed with TypeError");
                 }, function(err) {
@@ -113,7 +113,7 @@ function run_test() {
                 if (namedCurve === "P-256") {
                     publicKey = publicKeys["P-384"];
                 }
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH", public: publicKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
                 }, function(err) {
@@ -123,7 +123,7 @@ function run_test() {
 
             // - not ECDH public property InvalidAccessError
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: ecdsaKeyPairs[namedCurve].publicKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH", public: ecdsaKeyPairs[namedCurve].publicKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
                 }, function(err) {
@@ -133,7 +133,7 @@ function run_test() {
 
             // - No deriveBits usage in baseKey InvalidAccessError
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, noDeriveBitsKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, noDeriveBitsKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
                 }, function(err) {
@@ -143,7 +143,7 @@ function run_test() {
 
             // - Use public key for baseKey InvalidAccessError
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, publicKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, publicKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
                 }, function(err) {
@@ -153,7 +153,7 @@ function run_test() {
 
             // - Use private key for public property InvalidAccessError
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: privateKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                return subtle.deriveBits({name: "ECDH", public: privateKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                 .then(function(derivation) {
                     assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
                 }, function(err) {
@@ -165,7 +165,7 @@ function run_test() {
             promise_test(function(test) {
                 return subtle.generateKey({name: "AES-CBC", length: 128}, true, ["encrypt", "decrypt"])
                 .then(function(secretKey) {
-                    subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: secretKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
+                    subtle.deriveBits({name: "ECDH", public: secretKey}, privateKeys[namedCurve], 8 * sizes[namedCurve])
                     .then(function(derivation) {
                         assert_unreached("deriveBits succeeded but should have failed with InvalidAccessError");
                     }, function(err) {
@@ -176,7 +176,7 @@ function run_test() {
 
             // - Length greater than 256, 384, 521 for particular curves OperationError
             promise_test(function(test) {
-                return subtle.deriveBits({name: "ECDH", namedCurve: namedCurve, public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] + 8)
+                return subtle.deriveBits({name: "ECDH", public: publicKeys[namedCurve]}, privateKeys[namedCurve], 8 * sizes[namedCurve] + 8)
                 .then(function(derivation) {
                     assert_unreached("deriveBits succeeded but should have failed with OperationError");
                 }, function(err) {

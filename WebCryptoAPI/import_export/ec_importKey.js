@@ -1,4 +1,4 @@
-// Test importKey and exportKey for non-PKC algorithms. Only "happy paths" are
+// Test importKey and exportKey for EC algorithms. Only "happy paths" are
 // currently tested - those where the operation should succeed.
 
 function run_test() {

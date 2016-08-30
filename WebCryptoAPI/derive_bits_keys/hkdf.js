@@ -6,7 +6,7 @@ function run_test() {
     // hkdf2_vectors sets up test data with the correct derivations for each
     // test case.
     var testData = getTestData();
-    var passwords = testData.passwords;
+    var derivedKeys = testData.derivedKeys;
     var salts = testData.salts;
     var derivations = testData.derivations;
     var infos = testData.infos;
@@ -14,7 +14,7 @@ function run_test() {
     // What kinds of keys can be created with deriveKey? The following:
     var derivedKeyTypes = testData.derivedKeyTypes;
 
-    setUpBaseKeys(passwords)
+    setUpBaseKeys(derivedKeys)
     .then(function(allKeys) {
         // We get several kinds of base keys. Normal ones that can be used for
         // derivation operations, ones that lack the deriveBits usage, ones
@@ -25,14 +25,14 @@ function run_test() {
         var noKey = allKeys.noKey;
         var wrongKey = allKeys.wrongKey;
 
-        // Test each combination of password size, salt size, hash function,
+        // Test each combination of derivedKey size, salt size, hash function,
         // and number of iterations. The derivations object is structured in
         // that way, so navigate it to run tests and compare with correct results.
-        Object.keys(derivations).forEach(function(passwordSize) {
-            Object.keys(derivations[passwordSize]).forEach(function(saltSize) {
-                Object.keys(derivations[passwordSize][saltSize]).forEach(function(hashName) {
-                    Object.keys(derivations[passwordSize][saltSize][hashName]).forEach(function(infoSize) {
-                        var testName = passwordSize + " password, " + saltSize + " salt, " + hashName + ", with " + infoSize + " info";
+        Object.keys(derivations).forEach(function(derivedKeySize) {
+            Object.keys(derivations[derivedKeySize]).forEach(function(saltSize) {
+                Object.keys(derivations[derivedKeySize][saltSize]).forEach(function(hashName) {
+                    Object.keys(derivations[derivedKeySize][saltSize][hashName]).forEach(function(infoSize) {
+                        var testName = derivedKeySize + " derivedKey, " + saltSize + " salt, " + hashName + ", with " + infoSize + " info";
                         var algorithm = {name: "HKDF", salt: salts[saltSize], hash: hashName};
                         if (infoSize !== "missing") {
                             algorithm.info = infos[infoSize];
@@ -40,9 +40,9 @@ function run_test() {
 
                         // Check for correct deriveBits result
                         promise_test(function(test) {
-                            return subtle.deriveBits(algorithm, baseKeys[passwordSize], 256)
+                            return subtle.deriveBits(algorithm, baseKeys[derivedKeySize], 256)
                             .then(function(derivation) {
-                                assert_true(equalBuffers(derivation, derivations[passwordSize][saltSize][hashName][infoSize]), "Derived correct key");
+                                assert_true(equalBuffers(derivation, derivations[derivedKeySize][saltSize][hashName][infoSize]), "Derived correct key");
                             }, function(err) {
                                 assert_unreached("deriveBits failed with error " + err.name + ": " + err.message);
                             });
@@ -50,7 +50,7 @@ function run_test() {
 
                         // 0 length (OperationError)
                         promise_test(function(test) {
-                            return subtle.deriveBits(algorithm, baseKeys[passwordSize], 0)
+                            return subtle.deriveBits(algorithm, baseKeys[derivedKeySize], 0)
                             .then(function(derivation) {
                                 assert_equals(derivation.byteLength, 0, "Derived correctly empty key");
                             }, function(err) {
@@ -65,16 +65,16 @@ function run_test() {
                             Object.keys(derivedKeyType.algorithm).forEach(function(prop) {
                                 testName += prop + ": " + derivedKeyType.algorithm[prop] + " ";
                             });
-                            testName += " using " + passwordSize + " password, " + saltSize + " salt, " + hashName + ", with " + infoSize + " info";
+                            testName += " using " + derivedKeySize + " derivedKey, " + saltSize + " salt, " + hashName + ", with " + infoSize + " info";
 
                             // Test the particular key derivation.
                             promise_test(function(test) {
-                                return subtle.deriveKey(algorithm, baseKeys[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
+                                return subtle.deriveKey(algorithm, baseKeys[derivedKeySize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     // Need to export the key to see that the correct bits were set.
                                     return subtle.exportKey("raw", key)
                                     .then(function(buffer) {
-                                        assert_true(equalBuffers(buffer, derivations[passwordSize][saltSize][hashName][infoSize].slice(0, derivedKeyType.algorithm.length/8)), "Exported key matches correct value");
+                                        assert_true(equalBuffers(buffer, derivations[derivedKeySize][saltSize][hashName][infoSize].slice(0, derivedKeyType.algorithm.length/8)), "Exported key matches correct value");
                                     }, function(err) {
                                         assert_unreached("Exporting derived key failed with error " + err.name + ": " + err.message);
                                     });
@@ -90,7 +90,7 @@ function run_test() {
                             var badHash = hashName.substring(0, 3) + hashName.substring(4);
                             promise_test(function(test) {
                                 var badAlgorithm = {name: "HKDF", salt: salts[saltSize], hash: badHash};
-                                return subtle.deriveKey(badAlgorithm, baseKeys[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
+                                return subtle.deriveKey(badAlgorithm, baseKeys[derivedKeySize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     assert_unreached("bad hash name should have thrown an NotSupportedError");
                                 }, function(err) {
@@ -100,7 +100,7 @@ function run_test() {
 
                             // - baseKey usages missing "deriveKey" (InvalidAccessError)
                             promise_test(function(test) {
-                                return subtle.deriveKey(algorithm, noKey[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
+                                return subtle.deriveKey(algorithm, noKey[derivedKeySize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                                 .then(function(key) {
                                     assert_unreached("missing deriveKey usage should have thrown an InvalidAccessError");
                                 }, function(err) {
@@ -123,7 +123,7 @@ function run_test() {
                         // Test various error conditions for deriveBits below:
                         // length null (OperationError)
                         promise_test(function(test) {
-                            return subtle.deriveBits(algorithm, baseKeys[passwordSize], null)
+                            return subtle.deriveBits(algorithm, baseKeys[derivedKeySize], null)
                             .then(function(derivation) {
                                 assert_unreached("null length should have thrown an TypeError");
                             }, function(err) {
@@ -133,7 +133,7 @@ function run_test() {
 
                         // length not multiple of 8 (OperationError)
                         promise_test(function(test) {
-                            return subtle.deriveBits(algorithm, baseKeys[passwordSize], 44)
+                            return subtle.deriveBits(algorithm, baseKeys[derivedKeySize], 44)
                             .then(function(derivation) {
                                 assert_unreached("non-multiple of 8 length should have thrown an OperationError");
                             }, function(err) {
@@ -145,7 +145,7 @@ function run_test() {
                         var badHash = hashName.substring(0, 3) + hashName.substring(4);
                         promise_test(function(test) {
                             var badAlgorithm = {name: "HKDF", salt: salts[saltSize], hash: badHash};
-                            return subtle.deriveBits(badAlgorithm, baseKeys[passwordSize], 256)
+                            return subtle.deriveBits(badAlgorithm, baseKeys[derivedKeySize], 256)
                             .then(function(derivation) {
                                 assert_unreached("bad hash name should have thrown an NotSupportedError");
                             }, function(err) {
@@ -155,7 +155,7 @@ function run_test() {
 
                         // - baseKey usages missing "deriveBits" (InvalidAccessError)
                         promise_test(function(test) {
-                            return subtle.deriveBits(algorithm, noBits[passwordSize], 256)
+                            return subtle.deriveBits(algorithm, noBits[derivedKeySize], 256)
                             .then(function(derivation) {
                                 assert_unreached("missing deriveBits usage should have thrown an InvalidAccessError");
                             }, function(err) {
@@ -178,14 +178,14 @@ function run_test() {
                 // - legal algorithm name but not digest one (e.g., PBKDF2) (NotSupportedError)
                 var nonDigestHash = "PBKDF2";
                 Object.keys(infos).forEach(function(infoSize) {
-                    var testName = passwordSize + " password, " + saltSize + " salt, " + nonDigestHash + ", with " + infoSize + " info";
+                    var testName = derivedKeySize + " derivedKey, " + saltSize + " salt, " + nonDigestHash + ", with " + infoSize + " info";
                     var algorithm = {name: "HKDF", salt: salts[saltSize], hash: nonDigestHash};
                     if (infoSize !== "missing") {
                         algorithm.info = infos[infoSize];
                     }
 
                     promise_test(function(test) {
-                        return subtle.deriveBits(algorithm, baseKeys[passwordSize], 256)
+                        return subtle.deriveBits(algorithm, baseKeys[derivedKeySize], 256)
                         .then(function(derivation) {
                             assert_unreached("non-digest algorithm should have thrown an NotSupportedError");
                         }, function(err) {
@@ -198,10 +198,10 @@ function run_test() {
                         Object.keys(derivedKeyType.algorithm).forEach(function(prop) {
                             testName += prop + ": " + derivedKeyType.algorithm[prop] + " ";
                         });
-                        testName += " using " + passwordSize + " password, " + saltSize + " salt, " + nonDigestHash + ", with " + infoSize + " info";
+                        testName += " using " + derivedKeySize + " derivedKey, " + saltSize + " salt, " + nonDigestHash + ", with " + infoSize + " info";
 
                         promise_test(function(test) {
-                            return subtle.deriveKey(algorithm, baseKeys[passwordSize], derivedKeyType.algorithm, true, derivedKeyType.usages)
+                            return subtle.deriveKey(algorithm, baseKeys[derivedKeySize], derivedKeyType.algorithm, true, derivedKeyType.usages)
                             .then(function(derivation) {
                                 assert_unreached("non-digest algorithm should have thrown an NotSupportedError");
                             }, function(err) {
@@ -224,9 +224,9 @@ function run_test() {
     });
 
     // Deriving bits and keys requires starting with a base key, which is created
-    // by importing a password. setUpBaseKeys returns a promise that yields the
+    // by importing a derivedKey. setUpBaseKeys returns a promise that yields the
     // necessary base keys.
-    function setUpBaseKeys(passwords) {
+    function setUpBaseKeys(derivedKeys) {
         var promises = [];
 
         var baseKeys = {};
@@ -234,28 +234,28 @@ function run_test() {
         var noKey = {};
         var wrongKey = null;
 
-        Object.keys(passwords).forEach(function(passwordSize) {
-            var promise = subtle.importKey("raw", passwords[passwordSize], {name: "HKDF"}, false, ["deriveKey", "deriveBits"])
+        Object.keys(derivedKeys).forEach(function(derivedKeySize) {
+            var promise = subtle.importKey("raw", derivedKeys[derivedKeySize], {name: "HKDF"}, false, ["deriveKey", "deriveBits"])
             .then(function(baseKey) {
-                baseKeys[passwordSize] = baseKey;
+                baseKeys[derivedKeySize] = baseKey;
             }, function(err) {
-                baseKeys[passwordSize] = null;
+                baseKeys[derivedKeySize] = null;
             });
             promises.push(promise);
 
-            promise = subtle.importKey("raw", passwords[passwordSize], {name: "HKDF"}, false, ["deriveBits"])
+            promise = subtle.importKey("raw", derivedKeys[derivedKeySize], {name: "HKDF"}, false, ["deriveBits"])
             .then(function(baseKey) {
-                noKey[passwordSize] = baseKey;
+                noKey[derivedKeySize] = baseKey;
             }, function(err) {
-                noKey[passwordSize] = null;
+                noKey[derivedKeySize] = null;
             });
             promises.push(promise);
 
-            promise = subtle.importKey("raw", passwords[passwordSize], {name: "HKDF"}, false, ["deriveKey"])
+            promise = subtle.importKey("raw", derivedKeys[derivedKeySize], {name: "HKDF"}, false, ["deriveKey"])
             .then(function(baseKey) {
-                noBits[passwordSize] = baseKey;
+                noBits[derivedKeySize] = baseKey;
             }, function(err) {
-                noBits[passwordSize] = null;
+                noBits[derivedKeySize] = null;
             });
             promises.push(promise);
         });

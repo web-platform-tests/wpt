@@ -2,7 +2,7 @@
 function getTestData() {
 
     // deriveBits and deriveKey take as input:
-    // - password (actually, a CryptoKey representing a password)
+    // - derivedKey (actually, a CryptoKey representing a derivedKey)
     // - salt (BufferSource)
     // - hash (which one to use)
     // - iterations (how many times to use it)
@@ -12,7 +12,7 @@ function getTestData() {
     // - note that result of length(n) is first n bits of length(m) if m>n
 
     // Variations to test:
-    // - empty, short, and fairly long password
+    // - empty, short, and fairly long derivedKey
     // - empty, short, and fairly long salt
     // - SHA-1, SHA-256, SHA-384, SHA-512 hash
     // - 1, 1000, and 100000 million iterations
@@ -47,7 +47,7 @@ function getTestData() {
         {algorithm: {name: "HMAC", hash: "SHA-512", length: 256}, usages: ["sign", "verify"]}
     ];
 
-    var passwords = {
+    var derivedKeys = {
         "short": new Uint8Array([80, 64, 115, 115, 119, 48, 114, 100]),
         "long": new Uint8Array([85, 115, 101, 114, 115, 32, 115, 104, 111, 117, 108, 100, 32, 112, 105, 99, 107, 32, 108, 111, 110, 103, 32, 112, 97, 115, 115, 112, 104, 114, 97, 115, 101, 115, 32, 40, 110, 111, 116, 32, 117, 115, 101, 32, 115, 104, 111, 114, 116, 32, 112, 97, 115, 115, 119, 111, 114, 100, 115, 41, 33]),
         "empty": new Uint8Array([])
@@ -272,5 +272,5 @@ function getTestData() {
         }
     };
 
-    return {passwords: passwords, salts: salts, derivations: derivations, derivedKeyTypes: derivedKeyTypes, infos: infos};
+    return {derivedKeys: derivedKeys, salts: salts, derivations: derivations, derivedKeyTypes: derivedKeyTypes, infos: infos};
 }

@@ -17,68 +17,92 @@
             // will fail unless the async_test is created with the var name "test_pointerEvent".
             add_completion_callback(showPointerTypes);
 
+            function checkPointerEventAttributes(event, targetBoundingClientRect, testNamePrefix) {
+                if (detected_eventTypes[event.type])
+                    return;
+                detected_eventTypes[event.type] = true;
+                var pointerTestName = testNamePrefix + ' ' + event.pointerType + ' ' + event.type;
+                test(function () {
+                    assert_equals(event.pointerType, 'mouse', 'pointerType should be mouse');
+                }, pointerTestName + ".pointerType attribute is correct.");
+
+                detected_pointertypes[event.pointerType] = true;
+                // Test button and buttons
+                if (event.type == 'pointerdown') {
+                    test(function() {
+                        assert_true(event.button == 0, "Button attribute is 0")
+                    }, pointerTestName + "'s button attribute is 0 when left mouse button is pressed.");
+                    test(function() {
+                        assert_true(event.buttons == 1, "Buttons attribute is 1")
+                    }, pointerTestName + "'s buttons attribute is 1 when left mouse button is pressed.");
+                } else if (event.type == 'pointerup') {
+                    test(function() {
+                        assert_true(event.button == 0, "Button attribute is 0")
+                    }, pointerTestName + "'s button attribute is 0 when left mouse button is just released.");
+                    test(function() {
+                        assert_true(event.buttons == 0, "Buttons attribute is 0")
+                    }, pointerTestName + "'s buttons attribute is 0 when left mouse button is just released.");
+                } else {
+                    test(function() {
+                        assert_true(event.button == -1, "Button attribute is -1")
+                    }, pointerTestName + "'s button is -1 when mouse buttons are in released state.");
+                    test(function() {
+                        assert_true(event.buttons == 0, "Buttons attribute is 0")
+                    }, pointerTestName + "'s buttons is 0 when mouse buttons are in released state.");
+                }
+
+                // Test clientX and clientY
+                if (event.type != 'pointerout' && event.type != 'pointerleave' ) {
+                    test(function () {
+                        assert_true(event.clientX >= targetBoundingClientRect.left && event.clientX < targetBoundingClientRect.right && event.clientY >= targetBoundingClientRect.top && event.clientY < targetBoundingClientRect.bottom, "ClientX/Y should be in the boundaries of the black box");
+                    }, pointerTestName + "'s ClientX and ClientY attributes are correct.");
+                } else {
+                    test(function () {
+                        assert_true(event.clientX < targetBoundingClientRect.left || event.clientX > targetBoundingClientRect.right - 1 || event.clientY < targetBoundingClientRect.top || event.clientY > targetBoundingClientRect.bottom - 1, "ClientX/Y should be out of the boundaries of the black box");
+                    }, pointerTestName + "'s ClientX and ClientY attributes are correct.");
+                }
+
+                // Test isPrimary
+                test(function () {
+                    assert_equals(event.isPrimary, true, "isPrimary should be true");
+                }, pointerTestName + ".isPrimary attribute is correct.");
+
+                // Test width and height
+                test(function () {
+                  assert_equals(event.width, 1, "width of mouse should be 1");
+                }, pointerTestName + ".width attribute is correct.");
+                test(function () {
+                  assert_equals(event.height, 1, "height of mouse should be 1");
+                }, pointerTestName + ".height attribute is correct.");
+
+                check_PointerEvent(event, testNamePrefix);
+            }
+
             function run() {
                 var square1 = document.getElementById("square1");
                 var rectSquare1 = square1.getBoundingClientRect();
-                var pointerover_event;
+                var innerFrame = document.getElementById('innerFrame');
+                var square2 = innerFrame.contentDocument.getElementById('square2');
+                var rectSquare2 = square2.getBoundingClientRect();
 
                 var eventList = ['pointerenter', 'pointerover', 'pointermove', 'pointerdown', 'pointerup', 'pointerout', 'pointerleave'];
                 eventList.forEach(function(eventName) {
                     on_event(square1, eventName, function (event) {
-                        if (detected_eventTypes[event.type])
+                        if (square1.style.visibility == 'hidden')
                             return;
-                        detected_pointertypes[event.pointerType] = true;
-                        test(function () {
-                            assert_equals(event.pointerType, 'mouse', 'pointerType should be mouse');
-                        }, event.type + ".pointerType attribute is correct.");
-
-                        // Test button and buttons
-                        if (event.type == 'pointerdown') {
-                            test(function() {
-                                assert_true(event.button == 0, "If left mouse button is pressed button attribute is 0")
-                            }, event.type + "'s button attribute is 0 when left mouse button is pressed.");
-                            test(function() {
-                                assert_true(event.buttons == 1, "If left mouse button is pressed buttons attribute is 1")
-                            }, event.type + "'s buttons attribute is 1 when left mouse button is pressed.");
-                        } else if (event.type == 'pointerup') {
-                            test(function() {
-                                assert_true(event.button == 0, "If left mouse button is just released button attribute is 0")
-                            }, event.type + "'s button attribute is 0 when left mouse button is just released.");
-                            test(function() {
-                                assert_true(event.buttons == 0, "If left mouse button is just released buttons attribute is 0")
-                            }, event.type + "'s buttons attribute is 0 when left mouse button is just released.");
-                        } else {
-                            test(function() {
-                                assert_true(event.button == -1, "If mouse buttons are released button attribute is -1")
-                            }, event.type + "'s button is -1 when mouse buttons are released.");
-                            test(function() {
-                                assert_true(event.buttons == 0, "If mouse buttons are released buttons attribute is 0")
-                            }, event.type + "'s buttons is 0 when mouse buttons are released.");
+                        checkPointerEventAttributes(event, rectSquare1, "");
+                        if (Object.keys(detected_eventTypes).length == eventList.length) {
+                            square1.style.visibility = 'hidden';
+                            detected_eventTypes = {};
+                            square2.style.visibility = 'visible';
                         }
-
-                        // Test clientX and clientY
-                        if (event.type != 'pointerout' && event.type != 'pointerleave' ) {
-                            test(function () {
-                                assert_true(event.clientX >= rectSquare1.left && event.clientX < rectSquare1.right, "ClientX should be in the boundaries of the black box");
-                            }, event.type + ".clientX attribute is correct.");
-                            test(function () {
-                              assert_true(event.clientY >= rectSquare1.top && event.clientY < rectSquare1.bottom, "ClientY should be in the boundaries of the black box");
-                            }, event.type + ".clientY attribute is correct.");
-                        } else {
-                            test(function () {
-                                assert_true(event.clientX < rectSquare1.left || event.clientX > rectSquare1.right - 1 || event.clientY < rectSquare1.top || event.clientY > rectSquare1.bottom - 1, "ClientX/Y should be out of the boundaries of the black box");
-                            }, event.type + "'s ClientX and ClientY attributes are correct.");
-                        }
-
-                        // Test isPrimary
-                        test(function () {
-                            assert_equals(event.isPrimary, true, "isPrimary should be true");
-                        }, event.type + ".isPrimary attribute is correct.");
-
-                        check_PointerEvent(event);
-                        detected_eventTypes[event.type] = true;
-                        if (Object.keys(detected_eventTypes).length == eventList.length)
+                    });
+                    on_event(square2, eventName, function (event) {
+                        checkPointerEventAttributes(event, rectSquare2, "Inner frame ");
+                        if (Object.keys(detected_eventTypes).length == eventList.length) {
+                            square2.style.visibility = 'hidden';
                             test_pointerEvent.done();
+                        }
                     });
                 });
             }
@@ -87,10 +111,18 @@
     <body onload="run()">
         <h1>Pointer Events pointerdown tests</h1>
         <h4>
-            Test Description: This test checks the properties of mouse pointer events. Move your mouse over the black square and click on it. Then move it off the black square.
+            Test Description: This test checks the properties of mouse pointer events.
+            <ol>
+                 <li>Move your mouse over the black square and click on it.</li>
+                 <li>Then move it off the black square so that it disappears.</li>
+                 <li>When red square appears move your mouse over the red square and click on it.</li>
+                 <li>Then move it off the red square.</li>
+            </ol>
+
+            Test passes if the proper behavior of the events is observed.
         </h4>
-        Test passes if the proper behavior of the events is observed.
         <div id="square1" class="square"></div>
+        <iframe id="innerFrame" src="resources/pointerevent_attributes_mouse-iframe.html"></iframe>
         <div class="spacer"></div>
         <div id="complete-notice">
             <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>

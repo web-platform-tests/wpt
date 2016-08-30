@@ -1,11 +1,26 @@
+#innerFrame {
+position: absolute;
+top: 250px;
+left: 200px;
+height: 100px;
+width: 100px;
+}
+
 .spacer {
 height: 100px;
 }
 
 #square1 {
-background: black;
-top: 150px;
+top: 250px;
 left: 100px;
+background: black;
+}
+
+#square2 {
+top: 50px;
+left: 30px;
+visibility: hidden;
+background: red;
 }
 
 .square {
@@ -29,6 +44,10 @@ color: white;
 white-space: nowrap;
 overflow-y: auto;
 overflow-x: auto;
+}
+
+#scrollTarget {
+  background: darkblue;
 }
 
 .touchActionNone {

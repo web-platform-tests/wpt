@@ -51,7 +51,10 @@ function addTest(fun, desc) { testList.push([fun, desc]); }
  */
 
 addTest(function() {
-  assert_equals(location.host, '{{domains[]}}:{{location[port]}}', 'Need to run the top-level test from {{domains[]}}:{{location[port]}}');
+  // Note: we do not check location.hostname as its default port semantics are hard to reflect
+  //       statically
+  assert_equals(location.hostname, '{{domains[]}}', 'Need to run the top-level test from domain {{domains[]}}');
+  assert_equals(location.port, '{{location[port]}}', 'Need to run the top-level test from port {{location[port]}}')
   assert_equals(B.parent, window, "window.parent works same-origin");
   assert_equals(C.parent, window, "window.parent works cross-origin");
   assert_equals(B.location.pathname, path, "location.href works same-origin");
@@ -189,6 +192,8 @@ addTest(function() {
  * [[Delete]]
  */
 addTest(function() {
+  assert_throws(null, function() { delete C[0]; }, "Can't delete cross-origin indexed property");
+  assert_throws(null, function() { delete C[100]; }, "Can't delete cross-origin indexed property");
   assert_throws(null, function() { delete C.location; }, "Can't delete cross-origin property");
   assert_throws(null, function() { delete C.parent; }, "Can't delete cross-origin property");
   assert_throws(null, function() { delete C.length; }, "Can't delete cross-origin property");

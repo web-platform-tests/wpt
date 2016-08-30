@@ -172,7 +172,11 @@ function run_test() {
         }
 
         if ("byteLength" in exportedKey && algorithmName === "RSA-OAEP") {
-            return exportedKey.byteLength <= 478;
+            // RSA-OAEP can only encrypt payloads with lengths shorter
+            // than modulusLength - 2*hashLength - 1 bytes long. For
+            // a 4096 bit modulus and SHA-256, that comes to
+            // 4096/8 - 2*(256/8) - 1 = 512 - 2*32 - 1 = 447 bytes.
+            return exportedKey.byteLength <= 446;
         }
 
         if ("kty" in exportedKey && algorithmName === "RSA-OAEP") {

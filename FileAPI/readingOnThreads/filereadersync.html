@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: filereadersync</title>
+    <link rel="author" title="Intel" href="www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#FileReaderSync">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+      var worker = new Worker("filereadersync.js");
+
+      setup({explicit_done: true});
+      setup({timeout: 5000});
+
+      on_event(worker, "message", function(message) {
+        var type = message.data.type;
+
+        if (type == "constructor") {
+          test(function() {
+            assert_true(message.data.content, "FileReaderSync has correct methods");
+          }, "Check if the FileReaderSync object has correct methods");
+        }
+
+        if (type == "arraybuffer") {
+          test(function() {
+            assert_true(message.data.content instanceof ArrayBuffer, "The object is ArrayBuffer instance");
+            assert_equals(message.data.content.byteLength, 19, "The byte length is 19");
+          }, "Check if the readasArrayBuffer works");
+        }
+
+        if (type == "text") {
+          test(function() {
+            assert_equals(typeof message.data.content, "string", "The type is string");
+            assert_equals(message.data.content, "Test FileReaderSync", "The value is 'Test FileReaderSync'");
+          }, "Check if the value readAsText works");
+        }
+
+        if (type == "text_utf16") {
+          test(function() {
+            assert_equals(typeof message.data.content, "string", "The type is string");
+            assert_not_equals(message.data.content, "Test FileReaderSync", "The value is not 'Test FileReaderSync'");
+          }, "Check if the readAsText works with encoding utf-16");
+        }
+
+        if (type == "dataurl") {
+          test(function() {
+            assert_equals(typeof message.data.content, "string", "The type is string");
+            assert_equals(message.data.content.indexOf("data"), 0, "The string starts with 'data'");
+            assert_true(message.data.content.indexOf("base64") > 0, "The string contains 'base64'");
+          }, "Check if the readAsDataURL works");
+
+          done();
+        }
+      });
+    </script>
+  </body>
+</html>

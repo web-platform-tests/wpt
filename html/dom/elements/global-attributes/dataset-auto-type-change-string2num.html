@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>dataset: should auto change string type to number for property who's data-* properties has value of "2"(int) or "1.1"(float)</title>
+    <link rel="author" title="materliu" href="mailto:materliu@gmail.com">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!--<script src="/Users/mater/Dropbox/workspace/testharness.js/testharness.js"></script>-->
+    <!--<script src="/Users/mater/Dropbox/workspace/testharness.js/testharnessreport.js"></script>-->
+</head>
+<body>
+<div id="autochange1" style="display: none" data-number-property="0"></div>
+<div id="autochange2" style="display: none" data-number-property="2.1"></div>
+<div id="log"></div>
+<script>
+    var autoChange1 = document.getElementById("autochange1");
+    var autoChange2 = document.getElementById("autochange2");
+    test(function() {
+        assert_true(typeof autoChange1.dataset.numberProperty === "number", "dataset-type-auto-change", {
+            help:   "http://www.w3.org/TR/html5-author/global-attributes.html#embedding-custom-non-visible-data-with-the-data-*-attributes",
+            assert: ["dataset: should auto change string type to number for property who's data-* properties has value of \"2\"(int) or \"1.1\"(float), though It's just recommendation"],
+            author: "materliu"
+        });
+        assert_true(typeof autoChange2.dataset.numberProperty === "number", "dataset-type-auto-change", {
+            help:   "http://www.w3.org/TR/html5-author/global-attributes.html#embedding-custom-non-visible-data-with-the-data-*-attributes",
+            assert: ["dataset: should auto change string type to number for property who's data-* properties has value of \"2\"(int) or \"1.1\"(float), though It's just recommendation"],
+            author: "materliu"
+        });
+
+    }, "dataset: should auto change string type to boolean for property who's data-* properties has value of \"2\"(int) or \"1.1\"(float)");
+</script>
+</body>
+</html>

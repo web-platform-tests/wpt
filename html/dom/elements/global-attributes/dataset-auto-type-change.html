@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>dataset: should auto change string type to boolean for property who's data-* properties has value of "true" or "false"</title>
+    <link rel="author" title="materliu" href="mailto:materliu@gmail.com">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!--<script src="/Users/mater/Dropbox/workspace/testharness.js/testharness.js"></script>-->
+    <!--<script src="/Users/mater/Dropbox/workspace/testharness.js/testharnessreport.js"></script>-->
+</head>
+<body>
+<div id="autochange" style="display: none" data-boolean-property="true"></div>
+<div id="log"></div>
+<script>
+    var autoChange = document.getElementById("autochange");
+    test(function() {
+        assert_true(autoChange.dataset.booleanProperty, "dataset-type-auto-change", {
+            help:   "http://www.w3.org/TR/html5-author/global-attributes.html#embedding-custom-non-visible-data-with-the-data-*-attributes",
+            assert: ["dataset: should auto change string type to boolean for property who's data-* properties has value of \"true\" or \"false\", though It's just recommendation"],
+            author: "materliu"
+        });
+
+    }, "dataset: should auto change string type to boolean for property who's data-* properties has value of \"true\" or \"false\"");
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: output_idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-output-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <p>This test verifies the HTMLOutputElement interface included in the HTML5.0 specification</p>
+
+    <pre id="untested_idl" style="display:none">
+      interface HTMLElement {
+      };
+      interface HTMLFormElement {
+      };
+      interface ValidityState {
+      };
+      interface NodeList {
+      };
+    </pre>
+
+    <pre id="idl" style="display:none">
+      interface HTMLOutputElement : HTMLElement {
+        [PutForwards=value] readonly attribute DOMSettableTokenList htmlFor;
+        readonly attribute HTMLFormElement? form;
+                 attribute DOMString name;
+
+        readonly attribute DOMString type;
+                 attribute DOMString defaultValue;
+                 attribute DOMString value;
+
+        readonly attribute boolean willValidate;
+        readonly attribute ValidityState validity;
+        readonly attribute DOMString validationMessage;
+        boolean checkValidity();
+        void setCustomValidity(DOMString error);
+
+       readonly attribute NodeList labels;
+      };
+    </pre>
+
+    <output id="output" style="display:none"></output>
+
+    <div id="log"></div>
+
+    <script>
+        (function() {
+            var idl_array = new IdlArray();
+
+            idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+            idl_array.add_idls(document.getElementById("idl").textContent);
+
+            var testElement = document.getElementById("output");
+
+            idl_array.add_objects({HTMLOutputElement: [testElement]});
+
+            idl_array.test();
+        })();
+    </script>
+  </body>
+</html>

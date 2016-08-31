@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: textarea_idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-textarea-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <p>This test verifies the HTMLTextAreaElement interface included in the HTML5.0 specification</p>
+
+    <pre id="untested_idl" style="display: none">
+      interface HTMLElement {
+      };
+      interface HTMLFormElement {
+      };
+      interface ValidityState {
+      };
+      interface NodeList {
+      };
+    </pre>
+
+    <pre id="idl" style="display: none">
+      interface HTMLTextAreaElement : HTMLElement {
+                 attribute boolean autofocus;
+                 attribute unsigned long cols;
+                 attribute DOMString dirName;
+                 attribute boolean disabled;
+        readonly attribute HTMLFormElement? form;
+                 attribute long maxLength;
+                 attribute DOMString name;
+                 attribute DOMString placeholder;
+                 attribute boolean readOnly;
+                 attribute boolean required;
+                 attribute unsigned long rows;
+                 attribute DOMString wrap;
+
+        readonly attribute DOMString type;
+                 attribute DOMString defaultValue;
+        [TreatNullAs=EmptyString] attribute DOMString value;
+        readonly attribute unsigned long textLength;
+
+        readonly attribute boolean willValidate;
+        readonly attribute ValidityState validity;
+        readonly attribute DOMString validationMessage;
+        boolean checkValidity();
+        void setCustomValidity(DOMString error);
+
+        readonly attribute NodeList labels;
+
+        void select();
+                 attribute unsigned long selectionStart;
+                 attribute unsigned long selectionEnd;
+                 attribute DOMString selectionDirection;
+
+        void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
+      };
+    </pre>
+
+    <textarea id="testElement" style="display:none"></textarea>
+
+    <div id="log"></div>
+
+    <script>
+        (function() {
+            var idl_array = new IdlArray();
+
+            idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+            idl_array.add_idls(document.getElementById("idl").textContent);
+
+            var testElement = document.getElementById("testElement");
+
+            idl_array.add_objects({HTMLTextAreaElement: [testElement]});
+
+            idl_array.test();
+        })();
+    </script>
+  </body>
+</html>

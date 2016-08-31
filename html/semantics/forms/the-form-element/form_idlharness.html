@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: form_idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-form-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <p>This test verifies the HTMLFormElement interface included in the HTML5.0 specification</p>
+
+    <pre id='untested_idl' style='display:none'>
+      interface HTMLElement {
+      };
+      interface HTMLFormControlsCollection {
+      };
+    </pre>
+
+    <pre id='idl' style='display:none'>
+      interface HTMLFormElement : HTMLElement {
+                 attribute DOMString acceptCharset;
+                 attribute DOMString action;
+                 attribute DOMString autocomplete;
+                 attribute DOMString enctype;
+                 attribute DOMString encoding;
+                 attribute DOMString method;
+                 attribute DOMString name;
+                 attribute boolean noValidate;
+                 attribute DOMString target;
+
+        readonly attribute HTMLFormControlsCollection elements;
+        readonly attribute long length;
+        getter Element (unsigned long index);
+        getter object (DOMString name);
+
+        void submit();
+        void reset();
+        boolean checkValidity();
+      };
+    </pre>
+
+    <div>
+      <form id="testElement" style="display:none">
+      </form>
+    </div>
+
+    <div id="log"></div>
+
+    <script>
+        (function() {
+            var idl_array = new IdlArray();
+
+            idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+            idl_array.add_idls(document.getElementById("idl").textContent);
+
+            var testElement = document.getElementById("testElement");
+
+            idl_array.add_objects({HTMLFormElement: [testElement]});
+
+            idl_array.test();
+        })();
+    </script>
+  </body>
+</html>

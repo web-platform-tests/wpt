@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: input_idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-input-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <p>This test verifies the HTMLInputElement interface included in the HTML5.0 specification</p>
+
+    <pre id="untested_idl" style="display:none">
+      interface HTMLElement {
+      };
+      interface HTMLFormElement {
+      };
+      interface FileList {
+      };
+      interface Date {
+      };
+      interface ValidityState {
+      };
+    </pre>
+
+    <pre id="idl" style="display:none">
+      interface HTMLInputElement : HTMLElement {
+                 attribute DOMString accept;
+                 attribute DOMString alt;
+                 attribute DOMString autocomplete;
+                 attribute boolean autofocus;
+                 attribute boolean defaultChecked;
+                 attribute boolean checked;
+                 attribute DOMString dirName;
+                 attribute boolean disabled;
+        readonly attribute HTMLFormElement? form;
+        readonly attribute FileList? files;
+                 attribute DOMString formAction;
+                 attribute DOMString formEnctype;
+                 attribute DOMString formMethod;
+                 attribute boolean formNoValidate;
+                 attribute DOMString formTarget;
+                 attribute unsigned long height;
+                 attribute boolean indeterminate;
+        readonly attribute HTMLElement? list;
+                 attribute DOMString max;
+                 attribute long maxLength;
+                 attribute DOMString min;
+                 attribute boolean multiple;
+                 attribute DOMString name;
+                 attribute DOMString pattern;
+                 attribute DOMString placeholder;
+                 attribute boolean readOnly;
+                 attribute boolean required;
+                 attribute unsigned long size;
+                 attribute DOMString src;
+                 attribute DOMString step;
+                 attribute DOMString type;
+                 attribute DOMString defaultValue;
+        [TreatNullAs=EmptyString] attribute DOMString value;
+                 attribute Date? valueAsDate;
+                 attribute unrestricted double valueAsNumber;
+                 attribute unsigned long width;
+
+        void stepUp(optional long n);
+        void stepDown(optional long n);
+
+        readonly attribute boolean willValidate;
+        readonly attribute ValidityState validity;
+        readonly attribute DOMString validationMessage;
+        boolean checkValidity();
+        void setCustomValidity(DOMString error);
+
+        readonly attribute NodeList labels;
+
+        void select();
+                 attribute unsigned long selectionStart;
+                 attribute unsigned long selectionEnd;
+                 attribute DOMString selectionDirection;
+
+        void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
+      };
+    </pre>
+
+    <div>
+      <form style="display:none">
+        <input id="testInput" type="text">
+      </form>
+    </div>
+
+    <div id="log"></div>
+
+    <script>
+        (function() {
+            var idl_array = new IdlArray();
+
+            idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+            idl_array.add_idls(document.getElementById("idl").textContent);
+
+            var testElement = document.getElementById("testInput");
+
+            idl_array.add_objects({HTMLInputElement: [testElement]});
+
+            idl_array.test();
+        })();
+    </script>
+  </body>
+</html>

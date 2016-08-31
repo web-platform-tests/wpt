@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: fieldset_idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-fieldset-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <p>This test verifies the HTMLFieldSetElement interface included in the HTML5.0 specification</p>
+
+    <pre id='untested_idl' style='display:none'>
+      interface HTMLElement {
+      };
+      interface HTMLFormElement {
+      };
+      interface HTMLFormControlsCollection {
+      };
+      interface ValidityState {
+      };
+    </pre>
+
+    <pre id='idl' style='display:none'>
+      interface HTMLFieldSetElement : HTMLElement {
+                 attribute boolean disabled;
+        readonly attribute HTMLFormElement? form;
+                 attribute DOMString name;
+
+        readonly attribute DOMString type;
+
+        readonly attribute HTMLFormControlsCollection elements;
+
+        readonly attribute boolean willValidate;
+        readonly attribute ValidityState validity;
+        readonly attribute DOMString validationMessage;
+        boolean checkValidity();
+        void setCustomValidity(DOMString error);
+      };
+    </pre>
+
+    <div>
+      <form style="display:none">
+        <fieldset id="testElement"></fieldset>
+      </form>
+    </div>
+
+    <div id="log"></div>
+
+    <script>
+        (function() {
+            var idl_array = new IdlArray();
+
+            idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+            idl_array.add_idls(document.getElementById("idl").textContent);
+
+            var testElement = document.getElementById("testElement");
+
+            idl_array.add_objects({HTMLFieldSetElement: [testElement]});
+
+            idl_array.test();
+        })();
+    </script>
+  </body>
+</html>

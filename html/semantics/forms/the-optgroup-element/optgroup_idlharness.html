@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML Test: optgroup_idlharness</title>
+    <link rel="author" title="Intel" href="http://www.intel.com/">
+    <link rel="help" href="http://www.w3.org/TR/2012/CR-html5-20121217/forms.html#the-optgroup-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/webidl2/lib/webidl2.js"></script>
+    <script src="/resources/idlharness.js"></script>
+  </head>
+  <body>
+    <p>This test verifies the HTMLOptGroupElement interface included in the HTML5.0 specification</p>
+
+    <pre id='untested_idl' style='display:none'>
+      interface HTMLElement {
+      };
+    </pre>
+
+    <pre id='idl' style='display:none'>
+      interface HTMLOptGroupElement : HTMLElement {
+           attribute boolean disabled;
+           attribute DOMString label;
+      };
+    </pre>
+
+    <div>
+      <form id="testForm" name="testForm" style="display:none">
+        <p>
+        <select name="c">
+          <optgroup label="8.01 Physics I: Classical Mechanics" id="optgroup1">
+            <option value="8.01.1">Lecture 01: Powers of Ten
+            <option value="8.01.2">Lecture 02: 1D Kinematics
+            <option value="8.01.3">Lecture 03: Vectors
+          <optgroup label="8.02 Electricity and Magnestism">
+            <option value="8.02.1">Lecture 01: What holds our world together?
+            <option value="8.02.2">Lecture 02: Electric Field
+            <option value="8.02.3">Lecture 03: Electric Flux
+        </select>
+      </form>
+    </div>
+
+    <div id="log"></div>
+
+    <script>
+        (function() {
+            var idl_array = new IdlArray();
+
+            idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+            idl_array.add_idls(document.getElementById("idl").textContent);
+
+            var testElement = document.getElementById("optgroup1");
+
+            idl_array.add_objects({HTMLOptGroupElement: [testElement]});
+
+            idl_array.test();
+        })();
+    </script>
+  </body>
+</html>

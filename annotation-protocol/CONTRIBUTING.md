@@ -9,16 +9,13 @@ below.  Then submit them as a pull request so they can be evaluated
 Structure
 ---------
 
-Tests are organized by client or server, and then by major section of the Annotation
-Protocol specification.  The folders associated with these are:
+Tests are designed to exercise a Protocol Server.  The folder associated with these is:
 
-* client - tests a client needs to run
 * server - tests to be run against a server
 
-Within these folders, special files ending with the suffix ".html" provide the source
+Within this folder, special files ending with the suffix ".html" provide the source
 for the test as a set javascript calls to perform the test.
 
-* scripts - JavaScript that are included by tests
 * tools - supporting scripts and files
 
 Client Test Cases

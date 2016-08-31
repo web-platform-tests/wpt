@@ -42,7 +42,8 @@ The workflow for running these tests is something like:
    either client or server - then click "Start".
 2. A window pops up that shows a test - the description of which tells the
    tester what is required.  The window will contain fields into which some
-   information is provided.
+   information is provided - although it is also possible to supply this
+   information via a URL query string.
 3. In the case of client testing the tester (presumably in another window) brings up their
    annotation client and points it at the supplied endpoint.  They they perform the
    action specified (annotating content in the test window, requesting an annotation from the server, etc.).

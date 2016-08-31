@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<title>document.lastModified</title>
+<link rel="author" title="kyo_ago" href="mailto:kyo.ago1983@gmail.com">
+<link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#dom-document-lastmodified">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  assert_regexp_match(
+    document.lastModified,
+    /\d\d\/\d\d\/\d{4} \d\d:\d\d:\d\d/
+  );
+}, 'Check format');
+
+var lmHeaderTest = async_test("Equals Last-Modified header");
+lmHeaderTest.step(function () {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', location.href);
+  xhr.onreadystatechange = lmHeaderTest.step_func(function () {
+    if (xhr.readyState !== 4) {
+      return;
+    }
+    var lastModified = xhr.getResponseHeader("Last-Modified");
+
+    assert_equals(
+      formatDateTime(new Date(lastModified)),
+      formatDateTime(new Date(document.lastModified))
+    );
+    xhrTest.done();
+  })
+  xhr.send();
+});
+
+var iframe = document.createElement('iframe');
+iframe.src = URL.createObjectURL(new Blob([[
+  '<!DOCTYPE html>',
+  '<html>',
+  '<head><title><\/title><\/head>',
+  '<body><\/body>',
+  '<\/html>'
+].join('\n')], { 'type' : 'text/html' }));
+document.body.appendChild(iframe);
+
+var lmNullTest = async_test("Testing null lastModified");
+iframe.addEventListener('load', lmNullTest.step_func(function () {
+  var lastModified = formatDateTime(new Date());
+  assert_equals(iframe.contentDocument.lastModified, lastModified);
+  lmNullTest.done();
+}));
+
+var lmCurrentTest = async_test("Testing count up lastModified");
+iframe.addEventListener('load', lmCurrentTest.step_func(function () {
+  setTimeout(lmCurrentTest.step_func(function () {
+    var lastModified = formatDateTime(new Date());
+    assert_equals(iframe.contentDocument.lastModified, lastModified);
+    lmCurrentTest.done();
+  // Waiting to change the seconds.
+  }), 1100);
+}));
+
+function formatDateTime (now) {
+  //Format MM/DD/YYYY hh:mm:ss
+  var pad = function (x) {
+    var str = String(x);
+    return (str.length === 1) ? ('0' + str) : str;
+  }
+
+  var date = [
+    pad(now.getMonth() + 1),
+    pad(now.getDate()),
+    now.getFullYear()
+  ].join('/');
+  var time = [
+    pad(now.getHours()),
+    pad(now.getMinutes()),
+    pad(now.getSeconds())
+  ].join(':');
+
+  return date + ' ' + time;
+}
+
+</script>

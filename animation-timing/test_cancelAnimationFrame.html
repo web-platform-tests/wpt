@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>cancelAnimationFrmae cancel the RequestFrameCallback</title>
+<link rel="author" title="Kensaku Komatsu" href="mailto:kensaku.komatsu@gmail.com" />
+<link rel="help" href="http://www.w3.org/TR/animation-timing/#dom-windowanimationtiming-cancelanimationframe"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css" />
+<script>
+(function(){
+  setup({explicit_done: true});
+
+  // avoid script errors
+  if(window.requestAnimationFrame === undefined || window.cancelAnimationFrame === undefined) {
+    done();
+    return;
+  }
+
+  var id; // store identifier for each FrameRequest
+  var called = false; // true if FrameRequestCallback called
+
+  // define FrameRequestCallback
+  // but it won't be called in this test.
+  var fr_callback = function(){
+    called = true;
+  }
+
+  id = requestAnimationFrame(fr_callback)
+  cancelAnimationFrame(id);
+  
+
+  // after 1 second, assert called is still false
+  setTimeout(function(e){
+    var msg = "cancelAnimationFrame() cancels request.";
+    test(function(){
+      assert_false(called, msg);
+    }, msg);
+
+    done();
+  }, 1000);
+}());
+</script>
+</head>
+<body>
+<h1>Description</h1>
+<p>This test validates the feature of cancelAnimationFrame.</p>
+
+<p>In this test, cancelAnimationFrame is called right after requestAnimationFrame called with handle,
+FrameRequestCallback must not be called. To check this feature, callback has not been called is checked after 1 second.
+</p>
+
+<div id="log"></div>
+</body>
+</html>

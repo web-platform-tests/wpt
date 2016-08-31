@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WebIDL Tests: HTML Sections</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/sections.html#the-body-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/sections.html#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src=/resources/webidl2.js></script>
+    <script src="/resources/idlharness.js"></script>
+</head>
+<body>
+
+<h1>idlharness test</h1>
+<p>This test validates the WebIDL contained within the HTML5 CR "sections" section.</p>
+
+<div style='display:none'>
+
+    <h1 id="test_h1">Test This</h1>
+    <h2 id="test_h2">Test This</h2>
+    <h3 id="test_h3">Test This</h3>
+    <h4 id="test_h4">Test This</h4>
+    <h5 id="test_h5">Test This</h5>
+    <h6 id="test_h6">Test This</h6>
+
+</div>
+
+<pre id='idl'>
+
+    interface HTMLBodyElement : HTMLElement {
+           attribute EventHandler onafterprint;
+           attribute EventHandler onbeforeprint;
+           attribute EventHandler onbeforeunload;
+           attribute EventHandler onblur;
+           attribute OnErrorEventHandler onerror;
+           attribute EventHandler onfocus;
+           attribute EventHandler onhashchange;
+           attribute EventHandler onload;
+           attribute EventHandler onmessage;
+           attribute EventHandler onoffline;
+           attribute EventHandler ononline;
+           attribute EventHandler onpopstate;
+           attribute EventHandler onpagehide;
+           attribute EventHandler onpageshow;
+           attribute EventHandler onresize;
+           attribute EventHandler onscroll;
+           attribute EventHandler onstorage;
+           attribute EventHandler onunload;
+    };
+
+    interface HTMLHeadingElement : HTMLElement {};
+
+</pre>
+
+<pre id='untested_idl' style='display:none'>
+    
+    interface HTMLElement : Element {};
+    interface Element : Node {};
+    interface Node : EventTarget {};
+    interface EventTarget {};
+
+    [TreatNonCallableAsNull]
+    callback EventHandlerNonNull = any (Event event);
+    typedef EventHandlerNonNull? EventHandler;
+
+    [TreatNonCallableAsNull]
+    callback OnErrorEventHandlerNonNull = any ((Event or DOMString) event, DOMString source, unsigned long lineno, unsigned long column);
+    typedef OnErrorEventHandlerNonNull? OnErrorEventHandler;
+
+</pre>
+
+<script>
+
+    (function() {
+
+        var idl_array = new IdlArray();
+
+        idl_array.add_idls(document.getElementById("idl").textContent);
+        idl_array.add_untested_idls(document.getElementById("untested_idl").textContent);
+        idl_array.add_objects({
+            HTMLBodyElement: ["document.body"],
+            HTMLHeadingElement: ["document.getElementById('test_h1')",
+                                 "document.getElementById('test_h2')",
+                                 "document.getElementById('test_h3')",
+                                 "document.getElementById('test_h4')",
+                                 "document.getElementById('test_h5')",
+                                 "document.getElementById('test_h6')"]
+        });
+        idl_array.test();
+    })();
+
+</script>
+
+<div id="log"></div>
+
+</body>
+</html>

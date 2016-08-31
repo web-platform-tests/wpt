@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>fileAPI test:</title>
+    <link rel="author" href="mailto:jfengsky@gmail.com"/>
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#dfn-file"/>
+    <meta name="flags" content="dom"/>
+    <meta name="assert" content="get filelist need select and check type of file size,name,type" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <link rel="stylesheet" href="/resources/testharness.css"/>
+</head>
+<body>
+<p>fileAPI filelist test: get filelist need select and check type of file size,name,type</p>
+<input type="file" name="" id="J_file" multiple="multiple">
+
+<div id="log"></div>
+<script>
+    var fileInput = document.getElementById('J_file');
+
+    setup({explicit_done:true});
+    test(function(){
+
+        on_event(fileInput, 'change', function(event){
+            var fileList = event.target.files;
+
+            test(function(){
+                assert_not_equals(fileList.length, 0, 'filelist length is 0 while no select');
+            }, 'filelist length is 0 while no select');
+
+            test(function(){
+                assert_equals(typeof(fileList.item(0).size), "number", 'filesize should be number');
+            }, 'filesize should be number');
+
+            test(function(){
+                assert_equals(typeof(fileList.item(0).name), "string", 'filename should be string');
+            }, 'filename should be string');
+
+            test(function(){
+                assert_equals(typeof(fileList.item(0).type),"string", 'filetype should be string');
+            }, 'filetype should be string');
+
+            done();
+        });
+    }, 'get filelist need to select files');
+</script>
+</body>
+</html>

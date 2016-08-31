@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<script src="/resources/testharnessreport.js"></script>	
+	<script src="/resources/testharness.js"></script>
+	<title id='title'>nextElementSibling</title>
+</head>
+
+<body>
+
+  <h1 id='h1'>Test of nextElementSibling</h1>
+  <p id="parentEl">This <span id="first_element_child"><span>is</span> a <span>test</span></span> for the 
+  <span id="middle_element_child">ElementTraversal specification</span>  
+  <span id="last_element_child" style="display:none;">display: none &nbsp;</span>.</p>
+
+  <div id="log">Running test...</div>
+
+	<script>
+	  test(function() {
+                assert_true(!!document.getElementById("parentEl").nextElementSibling);
+               }, "nextElementSibling must exist");
+	  test(function() {
+                assert_equals( document.getElementById("last_element_child").nextElementSibling, null);
+                assert_equals( document.getElementById("title").nextElementSibling, null);
+               }, "nextElementSibling must return null if no next element");
+	  test(function() {
+                function recurse(element) {
+                  var node = element.firstChild;
+                  while (node != null) {                    
+	            if (node.nodeType == 1) {
+	              if (node.nextElementSibling != null)
+                        assert_equals(node.nextElementSibling.nodeType, 1);
+                      recurse(node);
+                    }
+	            node = node.nextSibling;
+                  }
+                }
+	        var root = document.documentElement;
+                assert_equals( root.nextElementSibling, null);
+               }, "nextElementSibling must only return element nodes");
+	  test(function() {
+	        var middle = document.getElementById("middle_element_child");	        
+                assert_not_equals( middle.nextElementSibling, null);
+                assert_equals( middle.nextElementSibling.getAttribute("id"), "last_element_child");
+               }, "nextElementSibling must return the next element child");
+	  test(function() {
+	        var parentEl = document.getElementById("parentEl");	        
+	        var last = document.getElementById("last_element_child");	        
+                assert_equals( last.nextElementSibling, null);
+	        var span = document.createElement("span");
+	        span.setAttribute("id", "dummy");
+	        parentEl.appendChild(span);
+                assert_not_equals(last.nextElementSibling, null);
+                assert_equals( last.nextElementSibling.getAttribute("id"), "dummy");
+	        parentEl.removeChild(span);
+                assert_equals(last.nextElementSibling, null);
+               }, "nextElementSibling must be dynamically updated");
+	  test(function() {
+                assert_readonly(document.getElementById("parentEl"), "nextElementSibling");
+               }, "nextElementSibling must be readonly");
+	</script>
+</body>
+</html>

@@ -1,9 +1,9 @@
 function runTest(config,qualifier) {
 
-    var testname = ( qualifier || '' ) + config.keysystem
-                                    + ', successful playback, temporary, '
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', multiple keys, single session, '
+                                    + ', playback with multiple keys, single session, '
                                     + config.testcase;
 
     var configuration = {   initDataTypes: [ config.initDataType ],

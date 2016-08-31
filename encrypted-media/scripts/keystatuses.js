@@ -1,6 +1,6 @@
 function runTest(config,qualifier)
 {
-    var testname = ( qualifier || '' ) + config.keysystem + ', keystatuses';
+    var testname = testnamePrefix( qualifier, config.keysystem ) + ', temporary, keystatuses';
 
     var configuration = getSimpleConfigurationForContent( config.content );
 

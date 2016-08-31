@@ -1,3 +1,7 @@
+function testnamePrefix( qualifier, keysystem ) {
+    return ( qualifier || '' ) + ( keysystem === 'org.w3.clearkey' ? keysystem : 'drm' );
+}
+
 function getInitData(initDataType) {
 
     // FIXME: This is messed up, because here we are hard coding the key ids for the different content

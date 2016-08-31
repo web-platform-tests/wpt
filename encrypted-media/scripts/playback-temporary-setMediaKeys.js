@@ -11,10 +11,10 @@ function runTest(config,qualifier) {
                     : ( config.testcase === SETMEDIAKEYS_AFTER_UPDATE ) ? 'setMediaKeys after updating session'
                     : 'unknown';
 
-    var testname = ( qualifier || '' ) + config.keysystem
-                                    + ', sucessful playback, temporary, '
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', ' + testcase;
+                                    + ', playback, ' + testcase;
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],

@@ -1,9 +1,9 @@
 function runTest(config,qualifier) {
 
-    var testname = ( qualifier || '' ) + config.keysystem
-                                    + ', successful playback, persistent-usage-record, '
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', persistent-usage-record, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', set src before setMediaKeys';
+                                    + 'playback';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],

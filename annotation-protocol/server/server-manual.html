@@ -253,6 +253,45 @@ function runTests( container_url, annotation_url ) {
     });
   }, "Annotation deletion with DELETE method MUST return a 204 status" );
 
+  // SHOULD tests
+
+  test(function() {
+    assert_equals("https", container_url.toLowerCase().substr(0,5), "Server is not using HTTPS");
+    }, "Annotation server SHOULD use HTTPS rather than HTTP");
+
+  var thePrefRequest = request("GET", container_url).set('Prefer', 'return=representation;include="http://www.w3.org/ns/ldp#PreferMinimalContainer"');
+
+  promise_test(function() {
+    return thePrefRequest
+      .then(function(res) {
+        var f = res.body.first;
+        request("GET", f).then(function(fres) {
+          fres.body.items.forEach(function(item) {
+            assert_true('@context' in item, "Annotation does not contain `@context`");
+            });
+          });
+        });
+      }, "SHOULD return the full annotation descriptions");
+
+
+  makePromiseTests( thePrefRequest, [
+      { test: function(res) { return ('total' in res.body); }, assertion: "SHOULD include the total property with the total number of annotations in the container" },
+      { test: function(res) { return ('first' in res.body); }, assertion: "SHOULD have a link to the first page of its contents using `first`" },
+      { test: function(res) { return ('last' in res.body); }, assertion: "SHOULD have a link to the last page of its contents using `last`" },
+      { test: function(res) { return (!('items' in res.body)); }, assertion: "Response contains annotations via `items` when it SHOULD NOT"},
+      { test: function(res) { return (!('ldp:contains' in res.body)); }, assertion: "Response contains annotations via `ldp:contains` when it SHOULD NOT" },
+      { header: 'Vary', pat: /Prefer/, assertion: "SHOULD include Prefer in the Vary header" },
+      { test: function(res) { return (('id' in res.body) && (res.body.id.search(container_url) > -1));}, assertion: "Created Annotation MUST have an id that starts with the Container IRI" }
+    ]);
+
+  promise_test(function() {
+    return thePrefRequest
+      .then(function(res) {
+        var h = res.xhr.getResponseHeader('Prefer');
+        assert_true(h === null, "Reponse contains the `Prefer` header when it SHOULD NOT");
+        });
+      }, 'SHOULD NOT [receive] the Prefer header when requesting the page');
+
 }
 
 // set up an event handler one the document is loaded that will run the tests once we
@@ -275,12 +314,12 @@ on_event(document, "DOMContentLoaded", function() {
 </script>
 </head>
 <body>
-<p>The scripts associated with this test will exercise all of the MUST requirements
+<p>The scripts associated with this test will exercise all of the MUST and SHOULD requirements
 for an Annotation Protocol server implementation.  In order to do so, the server must have
 its CORS settings configured such that your test machine can access the annotations and containers
 and such that it can get certain information from the headers.  In particular, the container and
 annotations within the container
-under test must permit access to the Allow, Content-Location, ETag, Link, Location, and Vary headers.</p>
+under test must permit access to the Allow, Content-Location, Content-Type, ETag, Link, Location, Prefer, and Vary headers.</p>
 <p>Provide endpoint and annotation URIs and select "Go" to start testing.</p>
 <form name="endpoint">
   <p><label for="uri">Endpoint URI:</label> <input type="text" size="50" id="uri" name="uri"></p>

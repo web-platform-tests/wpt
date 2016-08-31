@@ -1,0 +1,16 @@
+<!doctype html>
+<title>NO stable state when returning from a nested script</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<video></video>
+<script>
+test(function() {
+  var v = document.querySelector('video');
+  var script = document.createElement('script');
+  script.textContent = 'document.querySelector("video").load();';
+  assert_equals(v.networkState, v.NETWORK_EMPTY);
+  document.head.appendChild(script);
+  assert_equals(v.networkState, v.NETWORK_NO_SOURCE);
+});
+</script>

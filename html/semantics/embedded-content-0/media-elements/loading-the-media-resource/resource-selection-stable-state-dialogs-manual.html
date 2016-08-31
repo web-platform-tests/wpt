@@ -1,0 +1,16 @@
+<!doctype html>
+<title>stable state in blocking dialogs</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+['alert', 'confirm', 'prompt'].forEach(function(dialog) {
+  test(function() {
+    var v = document.createElement('video');
+    v.load();
+    assert_equals(v.networkState, v.NETWORK_NO_SOURCE, 'networkState after load()');
+    window[dialog]('dismiss this dialog');
+    assert_equals(v.networkState, v.NETWORK_EMPTY, 'networkState after alert()');
+  }, 'stable state in ' + dialog + '()');
+});
+</script>

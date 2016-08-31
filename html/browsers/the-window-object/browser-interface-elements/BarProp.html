@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML Test: BarProp interface</title>
+<link rel="author" title="intel" href="http://www.intel.com">
+<link rel="help" href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#browser-interface-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+
+["locationbar", "menubar", "personalbar", "scrollbars", "statusbar", "toolbar"].forEach(function (bar) {
+  test(function() {
+    assert_inherits(window, bar);
+    assert_true(window[bar] instanceof window.BarProp);
+    assert_class_string(window[bar], "BarProp");
+  }, "The type of window." + bar + " should be 'BarProp'");
+
+  test(function() {
+    var visible = window[bar].visible;
+    assert_equals(typeof window[bar].visible, "boolean", "The type of visible attribute should be 'boolean'.");
+
+    window[bar].visible = !visible;
+    assert_equals(window[bar].visible, visible, "The visible attribute shoud not be changed");
+  }, "On setting, the new value of visible attribute of window." + bar + " should be discarded");
+});
+
+</script>

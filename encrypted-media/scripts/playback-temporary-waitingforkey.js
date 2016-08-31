@@ -3,7 +3,7 @@ function runTest(config,qualifier) {
     // config.initData contains a list of keys. We expect those to be needed in order and get
     // one waitingforkey event for each one.
 
-    var testname = ( qualifier || '' ) + config.keysystem
+    var testname = testnamePrefix( qualifier, config.keysystem )
                                     + ', successful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
                                     + ', waitingforkey event, '

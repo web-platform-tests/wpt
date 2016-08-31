@@ -16,7 +16,7 @@
                 assert_equals(error.name, 'InvalidStateError');
             });
         });
-    }, ( qualifier || '' ) + config.keysystem + ': Update() immediately after CreateSession().');
+    }, testnamePrefix( qualifier, config.keysystem ) + ', temporary, update() immediately after createSession()');
 
     promise_test(function()
     {
@@ -31,7 +31,7 @@
                 assert_equals(error.name, 'InvalidStateError');
             });
         });
-    }, ( qualifier || '' ) + config.keysystem + ': Close() immediately after CreateSession().');
+    }, testnamePrefix( qualifier, config.keysystem ) + ', temporary, close() immediately after createSession()');
 
     promise_test(function()
     {
@@ -46,5 +46,5 @@
                 assert_equals(error.name, 'InvalidStateError');
             });
         });
-    }, ( qualifier || '' ) + config.keysystem + ': Remove() immediately after CreateSession().');
+    }, testnamePrefix( qualifier, config.keysystem ) + ', temporary, remove() immediately after createSession()');
 }

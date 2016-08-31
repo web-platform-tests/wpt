@@ -21,15 +21,15 @@
     promise_test(function()
     {
         return checkInitDataType('webm');
-    }, ( qualifier || '' ) + config.keysystem + ' support for "webm".');
+    }, testnamePrefix( qualifier, config.keysystem )  + ' support for "webm".');
 
     promise_test(function()
     {
         return checkInitDataType('cenc');
-    }, ( qualifier || '' ) + config.keysystem + ' support for "cenc".');
+    }, testnamePrefix( qualifier, config.keysystem ) + ' support for "cenc".');
 
     promise_test(function()
     {
         return checkInitDataType('keyids');
-    }, ( qualifier || '' ) + config.keysystem + ' support for "keyids".');
+    }, testnamePrefix( qualifier, config.keysystem ) + ' support for "keyids".');
 }

@@ -1,7 +1,9 @@
-function runTest(config, testname) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', successful playback, persistent-license, playback, destroy and acknowledge, '
-                                    + /video\/([^;]*)/.exec( config.videoType )[ 1 ];
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                        + ', persistent-license, '
+                        + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
+                        + ', playback, destroy and acknowledge';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],

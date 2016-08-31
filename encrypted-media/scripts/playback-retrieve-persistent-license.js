@@ -1,8 +1,9 @@
 function runTest(config,qualifier) {
 
-    var testname = ( qualifier || '' ) + config.keysystem
-                                    + ', persistent-license, ' + config.testcase + ', '
-                                    + /video\/([^;]*)/.exec( config.videoType )[ 1 ];
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', persistent-license, '
+                                    + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
+                                    + ', ' + config.testcase;
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],

@@ -1,6 +1,6 @@
 function runTest(config,qualifier) {
 
-    var testname = ( qualifier || '' ) + config.keysystem + ', events';
+    var testname = testnamePrefix( qualifier, config.keysystem ) + ', basic events';
 
     var configuration = getSimpleConfigurationForContent( config.content );
 
@@ -22,7 +22,6 @@ function runTest(config,qualifier) {
                         [ 'license-request', 'individualization-request' ] );
 
             config.messagehandler( event.messageType, event.message ).then( function( response ) {
-
                 waitForEventAndRunStep('keystatuseschange', mediaKeySession, test.step_func(processKeyStatusesChange), test);
                 mediaKeySession.update( response ).catch(function(error) {
                     forceTestFailureFromPromise(test, error);
@@ -39,15 +38,11 @@ function runTest(config,qualifier) {
         }
 
         navigator.requestMediaKeySystemAccess( config.keysystem, [ configuration ] ).then(function(access) {
-
             initDataType = access.getConfiguration().initDataTypes[0];
 
-            if ( config.initDataType && config.initData )
-            {
+            if ( config.initDataType && config.initData ) {
                 initData = config.initData;
-            }
-            else
-            {
+            } else {
                 initData = getInitData(config.content, initDataType);
             }
 

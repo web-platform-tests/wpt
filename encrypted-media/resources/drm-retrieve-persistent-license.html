@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: persistent-license, retrieve and playback, ClearKey</title>
+    <title>Encrypted Media Extensions: persistent-license, retrieve and playback, DRM</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Helper scripts for Encrypted Media Extensions tests  -->
@@ -11,7 +11,6 @@
     <script src=/encrypted-media/util/fetch.js></script>
     <script src=/encrypted-media/util/utf8.js></script>
     <script src=/encrypted-media/util/testmediasource.js></script>
-
   </head>
   <body>
     <div id='log'></div>
@@ -32,7 +31,6 @@
             assertions = [ ];
 
         var _mediaKeySession;
-
         config.video = document.getElementById('videoelement');
 
         function onComplete() {

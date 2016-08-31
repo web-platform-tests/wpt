@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <title>Encrypted Media Extensions: persistent-license playback, retrieve and playback with Clear Key, mp4</title>
+    <title>Encrypted Media Extensions: persistent-license, playback, destroy license with Clear Key, mp4</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -22,7 +22,7 @@
     <script src=/encrypted-media/util/clearkey-messagehandler.js></script>
 
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/playback-retrieve-persistent-license.js></script>
+    <script src=/encrypted-media/scripts/playback-destroy-persistent-license.js></script>
 
   </head>
   <body>
@@ -44,8 +44,7 @@
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
                         initData:           getInitData(contentitem,'keyids'),
-                        windowscript:       'resources/clearkey-retrieve-persistent-license.html',
-                        testcase:           'playback, retrieve and playback' };
+                    };
 
         runTest(config);
     </script>

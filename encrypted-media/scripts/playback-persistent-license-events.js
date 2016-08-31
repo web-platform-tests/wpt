@@ -17,12 +17,17 @@ function runTest(config,qualifier) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource,
-            _sessionId,
-            _receivedAllKeysUsableEvent = false,
-            _receivedPlayingEvent = false,
             _receivedTimeupdateEvent = false,
             _startedReleaseSequence = false,
             _events = [ ];
+
+        function recordEventFunc( eventType ) {
+            return function() { _events.push( eventType ); };
+        }
+
+        function onFailure(error) {
+            forceTestFailureFromPromise(test, error);
+        }
 
         function onMessage(event) {
             assert_equals( event.target, _mediaKeySession );
@@ -40,18 +45,29 @@ function runTest(config,qualifier) {
             }
 
             config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                if ( event.messageType === 'license-request' ) {
-                    _events.push( 'license-response' );
-                } else if ( event.messageType === 'license-release' ) {
-                    _events.push( 'release-response' );
-                }
-
-                waitForEventAndRunStep('keystatuseschange', _mediaKeySession, onKeyStatusesChange, test);
-                _mediaKeySession.update( response ).then( function() {
+                _events.push( event.messageType + '-response');
+                _mediaKeySession.update( response ).then( test.step_func( function() {
                     _events.push('updated');
-                }).catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                });
+                    if ( event.messageType === 'license-release' ) {
+                        assert_array_equals( _events,
+                                    [
+                                        'generaterequest',
+                                        'license-request',
+                                        'license-request-response',
+                                        'updated',
+                                        'keystatuseschange',
+                                        'playing',
+                                        'remove',
+                                        'keystatuseschange',
+                                        'license-release',
+                                        'license-release-response',
+                                        'closed-promise',
+                                        'updated'
+                                    ],
+                                    "Expected events sequence" );
+                        test.done();
+                    }
+                })).catch(onFailure);
             });
         }
 
@@ -59,23 +75,7 @@ function runTest(config,qualifier) {
             assert_equals(event.target, _mediaKeySession );
             assert_true(event instanceof window.Event );
             assert_equals(event.type, 'keystatuseschange' );
-
-            var hasKeys = false, pendingKeys = false;
-            _mediaKeySession.keyStatuses.forEach( function( value, keyid ) {
-                assert_any( assert_equals, value, [ 'status-pending', 'usable' ] );
-
-                hasKeys = true;
-                pendingKeys = pendingKeys || ( value === 'status-pending' );
-            });
-
-            if ( !_receivedAllKeysUsableEvent && hasKeys && !pendingKeys ) {
-                _receivedAllKeysUsableEvent = true;
-                _events.push( 'allkeysusable' );
-            }
-
-            if ( !hasKeys ) {
-                _events.push( 'emptykeyslist' );
-            }
+            _events.push('keystatuseschange');
         }
 
         function onEncrypted(event) {
@@ -83,65 +83,25 @@ function runTest(config,qualifier) {
             assert_true(event instanceof window.MediaEncryptedEvent);
             assert_equals(event.type, 'encrypted');
 
-            waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
             _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
-                                                config.initData || event.initData ).then( function() {
-
-                _events.push( 'generaterequest' );
-                _sessionId = _mediaKeySession.sessionId;
-            }).catch(function(error) {
-                forceTestFailureFromPromise(test, error);
-            });
-        }
-
-        function onClosed(event) {
-            _events.push( 'closed-promise' );
-
-            setTimeout( test.step_func( function() {
-                assert_array_equals( _events,
-                                    [
-                                        'generaterequest',
-                                        'license-request',
-                                        'license-response',
-                                        'updated',
-                                        'allkeysusable',
-                                        'playing',
-                                        'remove',
-                                        'emptykeyslist',
-                                        'license-release',
-                                        'release-response',
-                                        'closed-promise',
-                                        'updated'
-                                    ],
-                                    "Expected events sequence" );
-
-                _video.setMediaKeys( null ).then( function() { test.done() } );
-            } ), 0 );
+                                                config.initData || event.initData ).then( recordEventFunc( 'generaterequest' )
+            ).catch(onFailure);
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) && !_receivedTimeupdateEvent ) {
+            if ( _video.currentTime > ( config.duration || 1 ) && !_receivedTimeupdateEvent ) {
                 _receivedTimeupdateEvent = true;
                 _video.pause();
+                _video.removeAttribute('src');
+                _video.load();
 
                 _startedReleaseSequence = true;
-
-                _mediaKeySession.closed.then( test.step_func( onClosed ) );
-                _mediaKeySession.remove().then( function() {
-                    _events.push( 'remove' );
-                }).catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                });
+                _mediaKeySession.remove().then( recordEventFunc( 'remove' ) ).catch(onFailure);
             }
         }
 
         function onPlaying(event) {
-            _receivedPlayingEvent = true;
             _events.push( 'playing' );
-
-            // Not using waitForEventAndRunStep() to avoid too many
-            // EVENT(onTimeUpdate) logs.
-            _video.addEventListener('timeupdate', onTimeupdate, true);
         }
 
         navigator.requestMediaKeySystemAccess(config.keysystem, [ configuration ]).then(function(access) {
@@ -150,11 +110,15 @@ function runTest(config,qualifier) {
             _mediaKeys = mediaKeys;
             return _video.setMediaKeys(_mediaKeys);
         }).then(function() {
-            _mediaKeySession = _mediaKeys.createSession( 'persistent-license' );
-
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-        }).then(function() {
+            // Not using waitForEventAndRunStep() to avoid too many
+            // EVENT(onTimeUpdate) logs.
+            _video.addEventListener('timeupdate', onTimeupdate, true);
+            _mediaKeySession = _mediaKeys.createSession( 'persistent-license' );
+            waitForEventAndRunStep('keystatuseschange', _mediaKeySession, onKeyStatusesChange, test);
+            waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
+            _mediaKeySession.closed.then( recordEventFunc( 'closed-promise' ) );
             return testmediasource(config);
         }).then(function(source) {
             _mediaSource = source;

@@ -3,7 +3,7 @@ function runTest(config,qualifier) {
     var testname = testnamePrefix( qualifier, config.keysystem )
                                     + ', persistent-license, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', playback, retrieve and playback in new window';
+                                    + ', ' + config.testcase;
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],
@@ -54,7 +54,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) ) {
+            if ( _video.currentTime > ( config.duration || 1 ) ) {
                 _video.removeEventListener('timeupdate', onTimeupdate );
                 _video.pause();
                 _video.removeAttribute('src');
@@ -93,11 +93,8 @@ function runTest(config,qualifier) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-
             _video.setMediaKeys( mediaKeys );
-
             _mediaKeySession = _mediaKeys.createSession( 'persistent-license' );
-
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
         }).then(function() {

@@ -130,10 +130,17 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             constructLicenseRequestUrl : function( serverURL, sessionType, messageType, content ) {
                 return serverURL;
             },
-            getCustomHeaders : function( drmconfig, sessionType ) {
-                var customToken = { outputProtection: { digital : false, analogue: false, enforce: false },
-                                    profile: { purchase: { } },
-                                    storeLicense: ( sessionType === 'persistent-license' ) };
+            getCustomHeaders : function( drmconfig, sessionType, messageType ) {
+
+                var customToken;
+                if ( messageType === 'license-request' ) {
+                    var customToken = { outputProtection: { digital : false, analogue: false, enforce: false },
+                                        profile: { purchase: { } },
+                                        storeLicense: ( sessionType === 'persistent-license' ) };
+                } else {
+                    customToken = {};
+                }
+
                 var customHeader = {    userId: drmconfig.userId,
                                         merchant: drmconfig.merchant,
                                         sessionId: btoa( JSON.stringify( customToken )) };
@@ -201,7 +208,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             }
         };
 
-        updateHeaders(serverfns.getCustomHeaders( this._drmconfig, this._sessionType ) );
+        updateHeaders(serverfns.getCustomHeaders( this._drmconfig, this._sessionType, messageType ) );
         updateHeaders(keysystemfns.getRequestHeadersFromMessage(message));
 
         // Set withCredentials property from server

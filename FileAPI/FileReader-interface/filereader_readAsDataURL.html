@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: filereader_readAsDataURL</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#readAsDataURL">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+      var blob = new Blob(["TEST"]);
+      var reader = new FileReader();
+
+      setup({explicit_done: true});
+
+      on_event(reader, "load", function() {
+        test(function() {
+          assert_equals(typeof reader.result, "string", "The result is string");
+        }, "Check if the result attribute is string when readAsDataURL invoked");
+
+        test(function() {
+          assert_equals(reader.result.indexOf("data:"), 0, "The result attribute starts with 'data'");
+          assert_true(reader.result.indexOf("base64") > 0, "The result attribute contains 'base64'");
+        }, "Check if the readAsDataURL method returns base64 string");
+
+        test(function() {
+          assert_equals(reader.readyState, reader.DONE, "The readyState");
+        }, "Check if the load event occurred when reads succeed");
+
+        done();
+      });
+
+      on_event(reader, "loadstart", function() {
+        test(function() {
+          assert_equals(reader.readyState, reader.LOADING, "The readyState");
+        }, "Check if the readyState is LOADING when load starts");
+      });
+
+      on_event(reader, "progress", function() {
+        test(function() {
+          assert_equals(reader.readyState, reader.LOADING, "The readyState");
+        }, "Check if the the readyState is LOADING when progress");
+      });
+
+      reader.readAsDataURL(blob);
+    </script>
+  </body>
+</html>

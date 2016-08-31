@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: filereader_result</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#filedata-attr">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+      var blob = new Blob(["This test the result attribute"]);
+      var readText = new FileReader();
+      var readDataURL = new FileReader();
+      var readArrayBuffer = new FileReader();
+
+      setup({explicit_done: true});
+      setup({explicit_timeout: true});
+
+      test(function() {
+        assert_equals(readText.result, null, "The result is null");
+      }, "Check if the result is null when no read method invoked");
+
+      on_event(readText, "loadend", function() {
+        test(function() {
+          assert_equals(typeof readText.result, "string", "The result type is string");
+        }, "Check if the result is typeof string");
+
+        test(function() {
+          assert_equals(readText.result, "This test the result attribute", "The result is correct");
+        }, "Check if the result returns string when processing readAsText");
+
+        readDataURL.readAsDataURL(blob);
+      });
+
+      on_event(readDataURL, "loadend", function() {
+        test(function() {
+          assert_equals(typeof readDataURL.result, "string", "The result type is string");
+        }, "Check if the result is typeof string when readDataURL invoked");
+
+        test(function() {
+          assert_true(readDataURL.result.indexOf("VGhpcyB0ZXN0IHRoZSByZXN1bHQgYXR0cmlidXRl") != -1, "return the right base64 string");
+        }, "Check if the result is base64 string");
+
+        readArrayBuffer.readAsArrayBuffer(blob);
+      });
+
+      on_event(readArrayBuffer, "loadend", function() {
+        test(function() {
+          assert_true(readArrayBuffer.result instanceof ArrayBuffer, "The result is instanceof ArrayBuffer");
+        }, "Check if the result is instanceof ArrayBuffer");
+
+        done();
+      });
+
+      readText.readAsText(blob);
+    </script>
+  </body>
+</html>

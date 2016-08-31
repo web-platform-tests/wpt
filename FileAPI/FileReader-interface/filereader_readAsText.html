@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>FileAPI Test: filereader_readAsText</title>
+    <link rel="author" title="Intel" href="http://www.intel.com">
+    <link rel="help" href="http://www.w3.org/TR/FileAPI/#readAsDataText">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+
+    <script>
+      var blob = new Blob(["TEST"]);
+      var reader = new FileReader();
+      var reader_UTF16 = new FileReader();
+
+      setup({explicit_done: true});
+
+      on_event(reader, "load", function() {
+        test(function() {
+          assert_equals(typeof reader.result, "string", "The result is typeof string");
+        }, "Check if the result is typeof string");
+
+        test(function() {
+          assert_equals(reader.result, "TEST", "The result is TEST");
+        }, "Check if the readAsText method returns text");
+
+        reader_UTF16.readAsText(blob, "UTF-16");
+      });
+
+      on_event(reader, "loadstart", function() {
+        test(function() {
+          assert_equals(reader.readyState, reader.LOADING, "The readyState");
+        }, "Check if the readyState is LOADING when load will start");
+      });
+
+      on_event(reader, "progress", function() {
+        test(function() {
+          assert_equals(reader.readyState, reader.LOADING, "The readyState");
+        }, "Check if the readyState is LOADING when read progress");
+      });
+
+      on_event(reader_UTF16, "load", function() {
+        test(function() {
+          assert_equals(reader_UTF16.readyState, reader.DONE, "The readyState");
+          assert_not_equals(reader_UTF16.result, "TEST", "The result is not TEST");
+        }, "Check if the readAsText method returns string with encoding is UTF-16");
+
+        done();
+      });
+
+      reader.readAsText(blob);
+    </script>
+  </body>
+</html>

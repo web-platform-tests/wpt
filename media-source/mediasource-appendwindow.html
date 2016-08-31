@@ -77,7 +77,7 @@
                   function() { sourceBuffer.appendWindowEnd = undefined; },
                   "set appendWindowEnd throws an exception if undefined.");
 
-              assert_throws({name: "TypeError"},
+              assert_throws(new TypeError(),
                   function() { sourceBuffer.appendWindowStart = undefined; },
                   "set appendWindowStart throws an exception if undefined.");
 

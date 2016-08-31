@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>ShadowRoot Object: Don't reset style inheritance</title>
+  <link rel="author" title="thujikun" href="mailto:tsuji.0107@gmail.com">
+  <link rel="help" href="http://www.w3.org/TR/shadow-dom/">
+<meta name="assert" content="ShadowRoot Object: attribute bool resetStyleInheritance. If true, the properties don`t continue to inherit CSS styles">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="../../../testcommon.js"></script>
+ </head>
+ <body>
+    <h1>ShadowRoot Object: Don`t reset style inheritance</h1>
+
+    <style>
+      #wrap {
+        font-size: 50px;
+      }
+    </style>
+    <div id="wrap"></div>
+    <template id="shadow-template">
+      <div id="shadow">
+      </div>
+    </template>
+
+    <div id="log"></div>
+    <script>
+        test(function() {
+            var wrap = document.getElementById('wrap'),
+                shadowRoot = createSR(wrap),
+                shadow = document.getElementById('shadow-template').content,
+                getComputedStyle = document.defaultView.getComputedStyle;
+
+            shadowRoot.appendChild(shadow);
+
+            shadowRoot.resetStyleInheritance = false;
+
+            assert_equals(getComputedStyle(shadowRoot.querySelector('#shadow')).fontSize, '50px');
+
+        }, 'reset style inheritance');
+    </script>
+ </body>
+</html>

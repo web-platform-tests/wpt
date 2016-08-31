@@ -463,14 +463,13 @@ interface DOMTokenList {
   readonly attribute unsigned long length;
   getter DOMString? item(unsigned long index);
   boolean contains(DOMString token);
-  void add(DOMString... tokens);
-  void remove(DOMString... tokens);
-  boolean toggle(DOMString token, optional boolean force);
-  void replace(DOMString token, DOMString newToken);
+  [CEReactions] void add(DOMString... tokens);
+  [CEReactions] void remove(DOMString... tokens);
+  [CEReactions] boolean toggle(DOMString token, optional boolean force);
+  [CEReactions] void replace(DOMString token, DOMString newToken);
   boolean supports(DOMString token);
-           attribute DOMString value;
-  stringifier;
-//  iterable<DOMString>;
+  [CEReactions] stringifier attribute DOMString value;
+  //  iterable<DOMString>;
 };</script>
 <!-- UI Events IDLs -->
 <script type=text/plain class=untested>

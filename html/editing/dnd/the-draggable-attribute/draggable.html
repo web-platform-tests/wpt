@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Test Draggable Attribute</title>
+  <link rel='author' title='Ling Sun' href='sunling621@gmail.com'>
+  <link rel='help' href='http://www.w3.org/TR/html/editing.html#the-draggable-attribute'>
+  <script src="testharness.js"></script>
+  <script src="testharnessreport.js"></script>
+ </head>
+
+ <body>
+ <div style="display:none"> 
+
+  <p id="draggable" draggable="true">You can drag wherever you want!</p>
+  <button id="non-draggable" draggable="false" >Non-draggable</button>
+  <input id="auto" draggable="auto" type="text"/>
+  <input id="unparseable" draggable="ejafopsakopfkpej90rq20awps" type="text"/>
+
+  </div>
+
+  <script>
+	  test(function(){
+		  assert_equals(document.getElementById("draggable").getAttribute('draggable'), "true");
+	  },"The draggable attribute is true.");
+
+	  test(function(){
+		  assert_equals(document.getElementById("non-draggable").getAttribute('draggable'), "false");
+	  },"The draggable attribute is false.");
+
+	  test(function(){
+		  assert_equals(document.getElementById("auto").getAttribute('draggable'), "auto");
+	  },"The draggable attribute is auto.");
+
+	  test(function(){
+		  assert_equals(document.getElementById("unparseable").getAttribute('draggable'), "ejafopsakopfkpej90rq20awps");
+	  },"The draggable attribute accepts arbitrary values.");
+
+  </script>
+  <div id="log" />
+ </body>
+</html>

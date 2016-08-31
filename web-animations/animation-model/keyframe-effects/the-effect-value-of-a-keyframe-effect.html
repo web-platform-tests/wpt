@@ -109,6 +109,17 @@ test(function(t) {
 
 }, "Test visibility clamping behavior with an easing that has a negative component");
 
+test(function(t) {
+  var div = createDiv(t);
+  var anim = div.animate({ WebkitTransform: ['translateX(100px)', 'translateX(100px)'],
+                           webkitTransform: ['translateX(100px)', 'translateX(100px)'] },
+                         { duration: 100 * MS_PER_SEC, fill: 'both' });
+
+  anim.currentTime = 0;
+  assert_not_equals(getComputedStyle(div).getPropertyValue('-webkit-transform'), 'translateX(100px)');
+
+}, "Test prefixed properties are not supported");
+
 done();
 </script>
 </body>

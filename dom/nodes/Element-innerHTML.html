@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>Element.innerHTML</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<div id="test"></div>
+<script>
+test(function() {
+  var el = document.createElement("div");
+  el.innerHTML = "foo";
+  assert_equals(el.innerHTML, "foo");
+}, "set innerHTML to text")
+
+test(function() {
+  var el = document.createElement("div");
+  el.innerHTML = "<div></div>";
+  assert_equals(el.innerHTML, "<div></div>");
+}, "set innerHTML to div");
+
+test(function() {
+  var parent = document.createElement("div");
+  var child = document.createElement("div");
+  parent.appendChild(child);
+
+  assert_equals("<div></div>", parent.innerHTML);
+  parent.innerHTML = "";
+  assert_equals(parent.innerHTML, "");
+  assert_equals(parent.children.length, 0);
+  assert_equals(child.parentNode, null);
+}, "remove elements with innerHTML");
+
+test(function() {
+  var parent = document.createElement("div");
+  var child = document.createElement("p");
+  var grandchild  = document.createElement("span");
+  parent.appendChild(child);
+  child.appendChild(grandchild);
+
+  assert_equals("<p><span></span></p>", parent.innerHTML);
+  parent.innerHTML = "";
+
+  assert_equals(parent.innerHTML, "");
+  assert_equals(parent.children.length, 0);
+
+  assert_equals(child.parentNode, null);
+  assert_equals(child.children.length, 1);
+  assert_equals(child.innerHTML, "<span></span>");
+
+  assert_equals(grandchild.parentNode, child);
+}, "remove nested elements with innerHTML");
+</script>

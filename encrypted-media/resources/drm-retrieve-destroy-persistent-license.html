@@ -36,7 +36,9 @@
 
         var _mediaKeys,
             _mediaKeySession;
+            
         config.video = document.getElementById('videoelement');
+        config.messagehandler = (new MessageHandler( config.keysystem, undefined, 'persistent-license' ) ).messagehandler;
 
 function onComplete() {
             window.opener.postMessage(assertions, '*');

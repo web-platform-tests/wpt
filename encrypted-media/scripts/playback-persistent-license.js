@@ -1,4 +1,4 @@
-function runTest(config,qualfier) {
+function runTest(config,qualifier) {
 
     var testname = ( qualifier || '' ) + config.keysystem
                                     + ', successful playback, persistent-license, '
@@ -48,6 +48,7 @@ function runTest(config,qualfier) {
 
         function onTimeupdate(event) {
             if ( _video.currentTime > ( config.duration || 1 ) ) {
+                _video.pause();
                 test.done();
             }
         }

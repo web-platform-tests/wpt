@@ -3,25 +3,30 @@ Annotation-Protocol: Tests for the Web Annotation Protocol
 
 The [Web Annotation Protocol](https://www.w3.org/TR/annotation-protocol)
 specification presents set of messages to allow Annotation clients and servers
-to interact seamlessly.  
+to interact seamlessly.
 
-The purpose of these tests is to help validate that clients send and are capable 
-of receiving correctly formatted messages, and that servers are able to receive and 
-respond to correctly structured requests.  
+The purpose of these tests is to help validate that clients send and are
+capable of receiving correctly formatted messages, and that servers are
+able to receive and respond to correctly structured requests.
 
-The general approach for this testing is to enable both manual and automated
-testing. However, since the specification has no actual user interface
-requirements, there is no general automation mechanism that can be presented
-for testing clients.  Instead, the automation mechanism is one where client
-implementors could take advantage of the plumbing we provide here to help their
-implementations talk to the endpoint we provide.  This assumes
-knowledge of the requirements of each test / collection of tests so that the
-input data is relevant.  Each test or test collection contains information
+The general approach for this testing is to enable both manual and
+automated testing. However, since the specification has no actual user
+interface requirements, there is no general automation mechanism that
+can be presented for testing clients.  Also the server tests need to be
+pointed at a server implementation to exercise.  However, once provided
+the basic information, testing is automated.
+
+Implementors could take advantage of the plumbing we provide here to
+help their implementations talk to the endpoint we provide or exercise
+their endpoint with the provided server tests.  This assumes knowledge
+of the requirements of each test / collection of tests so that the input
+data is relevant.  Each test or test collection contains information
 sufficient for the task.
 
-With regard to server tests, the browser tests we provide can be pointed at an endpoint 
-and will exercise that endpoint using well defined messages.  This is done 
-semi-automatically, although some set-up is required.
+With regard to server tests, the browser tests we provide can be
+pointed at an endpoint and will exercise that endpoint using well
+defined messages.  This is done semi-automatically, although some set-up
+is required.
 
 Running Tests
 -------------
@@ -36,13 +41,12 @@ The workflow for running these tests is something like:
 1. Start up the test driver window and select the annotation-protocol tests -
    either client or server - then click "Start".
 2. A window pops up that shows a test - the description of which tells the
-   tester what is required.  The window will contain fields into which some 
-   information is provided - although it is also possible to supply this 
-   information via a URL query string.
-3. In the case of client testing the tester (presumably in another window) brings up their 
-   annotation client and points it at the supplied endpoint.  They they perform the 
+   tester what is required.  The window will contain fields into which some
+   information is provided.
+3. In the case of client testing the tester (presumably in another window) brings up their
+   annotation client and points it at the supplied endpoint.  They they perform the
    action specified (annotating content in the test window, requesting an annotation from the server, etc.).
-4. The server receives the information from the client, evaluates it, and reports the result of testing.  
+4. The server receives the information from the client, evaluates it, and reports the result of testing.
    In the event of multi-step messages, the cycle repeats until complete.
 5. Repeat steps 2-4 until done.
 6. Download the JSON format report of test results, which can then be visually
@@ -53,7 +57,7 @@ The workflow for running these tests is something like:
 their other (important) purpose is to increase confidence that there are
 interoperable implementations.** So, implementers are our audience, but these
 tests are not meant to be a comprehensive collection of tests for an implementor.
-The bulk of the tests are manual because there are no UI requirements in the 
+The bulk of the tests are manual because there are no UI requirements in the
 Recommendation that would make it possible to effectively stimulate every client portably.
 
 Having said that, because the structure of these "manual" tests is very rigid,

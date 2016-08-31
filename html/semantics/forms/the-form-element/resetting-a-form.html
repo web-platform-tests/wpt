@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<title>resetting a form</title>
+<link rel="author" title="Will Kennedy" href="mailto:wikenned@microsoft.com">
+<link rel="help" href="http://www.w3.org/TR/html51/forms.html#resetting-a-form">
+<!--
+When a form element form is reset, the user agent must fire a simple event named reset, that is cancelable, at form, and then, if that event is not canceled, must invoke the reset algorithm of each resettable element whose form owner is form.
+
+Each resettable element defines its own reset algorithm. Changes made to form controls as part of these algorithms do not count as changes caused by the user (and thus, e.g., do not cause input events to fire).
+
+Tests:
+The user agent fires a simple event named reset
+	reset is cancelable at form
+	if not cancelled, fires reset on each resettable element
+Changes made to form controls as part of reset algos are not treated as user caused (don't cause input events to fire)
+-->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="log"></div>
+<div id="test">
+	<form id="form">
+		<input id="inputEl" value="originalValue"></input>
+		<!--<keygen id="keygenEl" challenge="originalValue" keytype="type"></keygen>-->
+		<output id="outputEl" value="originalValue"></output>
+		<select id="selectEl">
+			<option value="originalValue" selected></option>
+			<option value="changedvalue"></option>
+		</select>
+		<textarea id="textareaEl">originalValue</textarea>
+	</form>
+</div>
+<script>
+test(function() {
+  var isFormReset = false,
+    form = document.getElementById("form"),
+    resetEvent =  function(){ isFormReset=true; };
+
+  form.addEventListener("reset", resetEvent, false);
+  
+  form.reset();
+  
+  assert_true(isFormReset);
+
+  form.removeEventListener("reset", resetEvent);
+}, "when a form element is reset, the user agent fires a simple event named reset");
+
+test(function() {
+  // See: cancelable, preventDefault(), defaultPrevented @ https://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#interface-event
+  var formResetCanceled = false,
+    form = document.getElementById("form"),
+    resetEvent = function(e) {
+    	if (e.cancelable) {
+    		e.preventDefault();
+    		formResetCanceled = e.defaultPrevented;
+    	}
+    };
+
+  form.addEventListener("reset", resetEvent, false);
+  form.reset();
+  assert_true(formResetCanceled);
+  form.removeEventListener("reset", resetEvent);
+}, "when a form element is reset, the reset event is cancelable at form");
+
+// See: Resettable Elements @ http://www.w3.org/TR/html51/forms.html#categories
+test(function() {
+  var form = document.getElementById("form"),
+    inputEl = document.getElementById("inputEl");
+
+  inputEl.value = "changedValue";
+  form.reset();
+  assert_equals(inputEl.value, "originalValue", "reset input to default value");
+}, "when a form element is reset, and the reset event is not cancelled, resets input element");
+
+test(function() {
+  var form = document.getElementById("form"),
+    outputEl = document.getElementById("outputEl");
+
+  outputEl.value = "changedValue";
+  form.reset();
+  assert_equals(outputEl.value, "", "reset output to default value");
+}, "when a form element is reset, and the reset event is not cancelled, resets output element");
+
+test(function() {
+  var form = document.getElementById("form"),
+    selectEl = document.getElementById("selectEl");
+
+  selectEl.value = "changedValue";
+  form.reset();
+  assert_equals(selectEl.value, "originalValue", "reset select to default value");
+}, "when a form element is reset, and the reset event is not cancelled, resets select element");
+
+test(function() {
+  var form = document.getElementById("form"),
+    textareaEl = document.getElementById("textareaEl");
+
+  textareaEl.value = "changedValue";
+  form.reset();
+  assert_equals(textareaEl.value, "originalValue", "reset textarea to default value");
+}, "when a form element is reset, and the reset event is not cancelled, resets textarea element");
+
+/*
+test(function() {
+}, "when a form element is reset, and the reset event is not cancelled, resets keygen element");*/
+
+test(function() {
+
+}, "when a form element is reset, child form controls don't treat changes as user initiated");
+
+
+</script>

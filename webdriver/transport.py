@@ -70,7 +70,7 @@ class HTTPWireProtocol(object):
         try:
             data = json.loads(resp_body)
         except:
-            raise IOError("Could not parse response body as JSON: %s" % body)
+            raise IOError("Could not parse response body as JSON: '%s'" % resp_body)
 
         if resp.status != 200:
             cls = error.get(data.get("error"))

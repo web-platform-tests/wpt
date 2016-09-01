@@ -26,7 +26,7 @@ class HTTPWireProtocol(object):
 
         self.host = host
         self.port = port
-        self.path_prefix = url_prefix
+        self.url_prefix = url_prefix
 
         self._timeout = timeout
 
@@ -56,7 +56,7 @@ class HTTPWireProtocol(object):
         if headers is None:
             headers = {}
 
-        url = self.path_prefix + url
+        url = self.url_prefix + url
         
         conn = httplib.HTTPConnection(
             self.host, self.port, strict=True, timeout=self._timeout)

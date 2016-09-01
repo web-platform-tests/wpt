@@ -41,7 +41,8 @@ with webdriver.Session("127.0.0.1", 4444) as session:
     print "The current URL is %s" % session.url
 ```
 
-If you wish to manually control the session:
+Functionally equivalent to the above,
+but giving you manual control of the session:
 
 ```py
 import webdriver

@@ -58,13 +58,13 @@ class HTTPWireProtocol(object):
 
         url = self.url_prefix + url
         
+        print body
         conn = httplib.HTTPConnection(
             self.host, self.port, strict=True, timeout=self._timeout)
         conn.request(method, url, body, headers)
 
         resp = conn.getresponse()
         resp_body = resp.read()
-
         conn.close()
 
         try:

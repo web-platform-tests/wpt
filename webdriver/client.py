@@ -172,7 +172,8 @@ class Session(object):
             caps["desiredCapabilities"] = self.desired_capabilities
         if self.required_capabilities is not None:
             caps["requiredCapabilities"] = self.required_capabilities
-        body["capabilities"] = caps
+        #body["capabilities"] = caps
+        body = caps
 
         resp = self.transport.send("POST", "session", body=body)
         self.session_id = resp["sessionId"]

@@ -4,6 +4,7 @@
 
 import urlparse
 
+import error
 import transport
 
 
@@ -200,6 +201,8 @@ class Session(object):
             raise Exception(resp)
 
     def send_command(self, method, url, body=None, key=None):
+        if self.session_id is None:
+            raise error.SessionNotCreatedException()
         url = urlparse.urljoin("session/%s/" % self.session_id, url)
         return self.transport.send(method, url, body, key=key)
 

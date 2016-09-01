@@ -197,7 +197,6 @@ class Session(object):
         self.window = None
         self.find = None
         self.extension = None
-        self.transport.disconnect()
 
     def send_command(self, method, url, body=None, key=None):
         if self.session_id is None:

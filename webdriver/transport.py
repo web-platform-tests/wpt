@@ -13,7 +13,7 @@ import urlparse
 import error
 
 
-HTTP_TIMEOUT = 5
+HTTP_TIMEOUT = 1
 
 
 class HTTPWireProtocol(object):

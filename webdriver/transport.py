@@ -62,7 +62,8 @@ class HTTPWireProtocol(object):
 
         url = self.path_prefix + url
         
-        conn = httplib.HTTPConnection(self.host, self.port, timeout=self._timeout)
+        conn = httplib.HTTPConnection(
+            self.host, self.port, strict=True, timeout=self._timeout)
         conn.request(method, url, body, headers)
 
         resp = conn.getresponse()

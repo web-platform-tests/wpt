@@ -13,11 +13,11 @@ in the [Web Platform Tests](https://github.com/w3c/web-platform-tests).
 ## Installation
 
 To install the package individually
-in your virtualenv or system-wide::
+in your virtualenv or system-wide:
 
     % python setup.py install
 
-Or if you want to contribute patches::
+Or if you want to contribute patches:
 
     % python setup.py develop
 

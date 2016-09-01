@@ -30,6 +30,19 @@ that is checked out in `./tools`.
 
 ## Usage
 
+You can use the built-in context manager
+to manage the lifetime of the session:
+
+```py
+import webdriver
+
+with webdriver.Session("127.0.0.1", 4444) as session:
+    session.url = "https://mozilla.org"
+    print "The current URL is %s" % session.url
+```
+
+If you wish to manually control the session:
+
 ```py
 import webdriver
 

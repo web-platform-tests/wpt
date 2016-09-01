@@ -136,7 +136,8 @@ class Cookies(object):
 
 class Session(object):
     def __init__(self, host, port, url_prefix="", desired_capabilities=None,
-                 required_capabilities=None, timeout=60, extension=None):
+                 required_capabilities=None, timeout=transport.HTTP_TIMEOUT,
+                 extension=None):
         self.transport = transport.HTTPWireProtocol(
             host, port, url_prefix, timeout=timeout)
         self.desired_capabilities = desired_capabilities

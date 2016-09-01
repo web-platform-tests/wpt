@@ -33,7 +33,7 @@ that is checked out in `./tools`.
 ```py
 import webdriver
 
-session = webdriver.Session("127.0.0.1", "4444")
+session = webdriver.Session("127.0.0.1", 4444)
 session.start()
 
 session.url = "https://mozilla.org"

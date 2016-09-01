@@ -158,6 +158,9 @@ class Session(object):
     def __exit__(self, *args, **kwargs):
         self.end()
 
+    def __del__(self):
+        self.end()
+
     def start(self):
         if self.session_id is not None:
             return

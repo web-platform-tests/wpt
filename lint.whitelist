@@ -118,9 +118,7 @@ CR AT EOL: annotation-model/scripts/showdown.min.js
 
 # use of console in a public library - annotation-protocol ensures
 # it is not actually used
-CONSOLE:annotation-protocol/scripts/superagent.js
 CONSOLE:annotation-protocol/scripts/uuid.js
-CR AT EOL: annotation-model/scripts/superagent.js
 
 # Lint doesn't know about sub.svg I guess
 PARSE-FAILED:content-security-policy/svg/including.sub.svg

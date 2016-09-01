@@ -151,6 +151,13 @@ class Session(object):
         self.extension = None
         self.extension_cls = extension
 
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self.end()
+
     def start(self):
         if self.session_id is not None:
             return
@@ -188,17 +195,6 @@ class Session(object):
         self.find = None
         self.extension = None
         self.transport.disconnect()
-
-    def __enter__(self):
-        resp = self.start()
-        if resp.error:
-            raise Exception(resp)
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        resp = self.end()
-        if resp.error:
-            raise Exception(resp)
 
     def send_command(self, method, url, body=None, key=None):
         if self.session_id is None:

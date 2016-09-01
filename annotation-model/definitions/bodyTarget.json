@@ -26,24 +26,24 @@
     {
       "type": "object",
       "properties":
-        {
-          "source": {"$ref": "#/definitions/externalWebResourceDetected"}
-        }
-    },    
+      {
+        "source": {"$ref": "#/definitions/externalWebResourceDetected"}
+      }
+    },
 
     "itemEwrDetected":
     {
       "type": "object",
       "properties":
-        {
-          "items": {
-             "type": "array",
-             "minItems": 1,
-             "not": 
-                { "items": {"not": { "$ref": "#/definitions/externalWebResourceDetected" } } }
-          }
+      {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          { "items": {"not": { "$ref": "#/definitions/externalWebResourceDetected" } } }
         }
-    },    
+      }
+    },
 
     "textualBodyFound" :
     {
@@ -65,15 +65,15 @@
     {
       "type": "object",
       "properties":
-        {
-          "items": {
-             "type": "array",
-             "minItems": 1,
-             "not": 
-                { "items": {"not": { "$ref": "#/definitions/textualBodyFound" } } }
-          }
+      {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          { "items": {"not": { "$ref": "#/definitions/textualBodyFound" } } }
         }
-    },    
+      }
+    },
 
     "targetResourcesFound" :
     {
@@ -297,18 +297,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/recognizedTypeFound" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/recognizedTypeFound" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "sourceRecognizedTypeFound":
@@ -319,14 +319,14 @@
       "type": "object",
       "properties":
       {
-          "source": 
-          {
-              "type": "object",
-              "required": ["type"] ,
-              "$ref": "#/definitions/resourceTypeRecognizedIfPresent" 
-          }
+        "source":
+        {
+          "type": "object",
+          "required": ["type"] ,
+          "$ref": "#/definitions/resourceTypeRecognizedIfPresent"
+        }
       },
-      "required": ["source"]      
+      "required": ["source"]
     },
 
     "formatValueCheck":
@@ -408,18 +408,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/formatPropertyFound" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/formatPropertyFound" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "sourceFormatPropertyFound":
@@ -430,14 +430,14 @@
       "type": "object",
       "properties":
       {
-          "source": 
-          {
-              "type": "object",
-              "required": ["format"] ,
-              "$ref": "#/definitions/formatValidIfPresent" 
-          }
+        "source":
+        {
+          "type": "object",
+          "required": ["format"] ,
+          "$ref": "#/definitions/formatValidIfPresent"
+        }
       },
-      "required": ["source"]      
+      "required": ["source"]
     },
 
     "singleFormatPropertyFound":
@@ -466,18 +466,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/singleFormatPropertyFound" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/singleFormatPropertyFound" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "sourceSingleFormatPropertyFound":
@@ -488,14 +488,14 @@
       "type": "object",
       "properties":
       {
-          "source": 
-          {
-              "type": "object",
-              "required": ["format"] ,
-              "$ref": "#/definitions/formatSingularIfPresent" 
-          }
+        "source":
+        {
+          "type": "object",
+          "required": ["format"] ,
+          "$ref": "#/definitions/formatSingularIfPresent"
+        }
       },
-      "required": ["source"]      
+      "required": ["source"]
     },
 
     "languageValueCheck" :
@@ -582,18 +582,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/languagePropertyFound" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/languagePropertyFound" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "sourceLanguagePropertyFound":
@@ -604,14 +604,14 @@
       "type": "object",
       "properties":
       {
-          "source": 
-          {
-              "type": "object",
-              "required": ["language"] ,
-              "$ref": "#/definitions/languageValidIfPresent" 
-          }
+        "source":
+        {
+          "type": "object",
+          "required": ["language"] ,
+          "$ref": "#/definitions/languageValidIfPresent"
+        }
       },
-      "required": ["source"]      
+      "required": ["source"]
     },
 
     "singleLanguagePropertyFound":
@@ -640,18 +640,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/singleLanguagePropertyFound" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/singleLanguagePropertyFound" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "sourceSingleLanguagePropertyFound":
@@ -662,14 +662,14 @@
       "type": "object",
       "properties":
       {
-          "source": 
-          {
-              "type": "object",
-              "required": ["language"] ,
-              "$ref": "#/definitions/languageSingularIfPresent" 
-          }
+        "source":
+        {
+          "type": "object",
+          "required": ["language"] ,
+          "$ref": "#/definitions/languageSingularIfPresent"
+        }
       },
-      "required": ["source"]      
+      "required": ["source"]
     },
 
     "processingLanguageValidIfPresent":
@@ -720,18 +720,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/processingLanguagePropertyFound" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/processingLanguagePropertyFound" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "sourceProcessingLanguagePropertyFound":
@@ -742,14 +742,14 @@
       "type": "object",
       "properties":
       {
-          "source": 
-          {
-              "type": "object",
-              "required": ["processingLanguage"] ,
-              "$ref": "#/definitions/processingLanguageValidIfPresent" 
-          }
+        "source":
+        {
+          "type": "object",
+          "required": ["processingLanguage"] ,
+          "$ref": "#/definitions/processingLanguageValidIfPresent"
+        }
       },
-      "required": ["source"]      
+      "required": ["source"]
     },
 
     "textDirectionValidIfPresent":
@@ -802,18 +802,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/textDirectionPropertyFound" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/textDirectionPropertyFound" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "sourceTextDirectionPropertyFound":
@@ -824,50 +824,50 @@
       "type": "object",
       "properties":
       {
-          "source": 
-          {
-              "type": "object",
-              "required": ["textDirection"] ,
-              "$ref": "#/definitions/textDirectionValidIfPresent" 
-          }
+        "source":
+        {
+          "type": "object",
+          "required": ["textDirection"] ,
+          "$ref": "#/definitions/textDirectionValidIfPresent"
+        }
       },
-      "required": ["source"]      
+      "required": ["source"]
     },
 
     "ewrWithItems" :
-    { 
+    {
       "type": "object",
       "allOf":
         [
         { "$ref": "#/definitions/externalWebResourceDetected"},
         { "required": [ "items" ] }
-        ] 
+        ]
     },
-    
+
     "sourceEwrWithItems":
     {
       "type": "object",
       "properties":
-        {
-          "source": {"$ref": "#/definitions/ewrWithItems"}
-        },
+      {
+        "source": {"$ref": "#/definitions/ewrWithItems"}
+      },
       "required": ["source"]
-    },    
+    },
 
     "itemEwrWithItems":
     {
       "type": "object",
       "properties":
-        {
-          "items": {
-             "type": "array",
-             "minItems": 1,
-             "not": 
-                { "items": {"not": { "$ref": "#/definitions/ewrWithItems" } } }
-          }
-        },
+      {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          { "items": {"not": { "$ref": "#/definitions/ewrWithItems" } } }
+        }
+      },
       "required": ["items"]
-    },    
+    },
 
     "ewrWithPurpose" :
     {
@@ -875,33 +875,33 @@
         [
         { "$ref": "#/definitions/externalWebResourceDetected"},
         { "required": [ "purpose" ] }
-        ] 
+        ]
     },
 
     "sourceEwrWithPurpose":
     {
       "type": "object",
       "properties":
-        {
-          "source": {"$ref": "#/definitions/ewrWithPurpose"}
-        },
+      {
+        "source": {"$ref": "#/definitions/ewrWithPurpose"}
+      },
       "required": ["source"]
-    },    
+    },
 
     "itemEwrWithPurpose":
     {
       "type": "object",
       "properties":
-        {
-          "items": {
-             "type": "array",
-             "minItems": 1,
-             "not": 
-                { "items": {"not": { "$ref": "#/definitions/ewrWithPurpose" } } }
-          }
-        },
+      {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          { "items": {"not": { "$ref": "#/definitions/ewrWithPurpose" } } }
+        }
+      },
       "required": ["items"]
-    },    
+    },
 
     "embeddedTextualBodyWithItems" :
     {
@@ -909,23 +909,23 @@
         [
         { "$ref": "#/definitions/textualBodyFound"},
         { "required": [ "items" ] }
-        ] 
+        ]
     },
 
     "itemETBWithItems":
     {
       "type": "object",
       "properties":
-        {
-          "items": {
-             "type": "array",
-             "minItems": 1,
-             "not": 
-                { "items": {"not": { "$ref": "#/definitions/embeddedTextualBodyWithItems" } } }
-          }
-        },
+      {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          { "items": {"not": { "$ref": "#/definitions/embeddedTextualBodyWithItems" } } }
+        }
+      },
       "required": ["items"]
-    },    
+    },
 
     "embeddedTextualBodyWithSource" :
     {
@@ -933,116 +933,116 @@
         [
         { "$ref": "#/definitions/textualBodyFound"},
         { "required": [ "source" ] }
-        ] 
+        ]
     },
-    
+
     "itemETBWithSource":
     {
       "type": "object",
       "properties":
-        {
-          "items": {
-             "type": "array",
-             "minItems": 1,
-             "not": 
-                { "items": {"not": { "$ref": "#/definitions/embeddedTextualBodyWithSource" } } }
-          }
-        },
+      {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          { "items": {"not": { "$ref": "#/definitions/embeddedTextualBodyWithSource" } } }
+        }
+      },
       "required": ["items"]
-    },    
+    },
 
     "embeddedTextTypeIncludesTextualBody":
     {
-        "allOf":
+      "allOf":
         [
-          { "$ref": "#/definitions/textualBodyFound" }, 
-          { "required": ["type"] }, 
-          { "properties":
-           {
-               "type":
-               {
-                   "oneOf": 
-                   [
-                       { "type": "string",
-                         "enum": ["TextualBody"] },
-                       { "type": "array",
-                         "minItems": 1,
-                         "not":
-                         { "items":
-                             { "not": { "enum": [ "TextualBody"] } }                          
-                         }
-                       }
-                   ]
-               }
-           }
-          }
-        ]
-    }, 
-    
-    "itemEmbeddedTextTypeIncludesTextualBody":
-    {
-        "type": "object",
-        "properties":
-        {
-           "items":
-           {
-               "type": "array",
-               "minItems": 1,
-               "not":
-                 {
-                   "items":
-                    { "not": { "$ref": "#/definitions/embeddedTextTypeIncludesTextualBody" } }
-                 }
-           }
-        },
-        "required": ["items"]
-    },
-    
-    "embeddedTextTypeIncludesText":
-    {
-        "allOf":
-        [
-          { "$ref": "#/definitions/textualBodyFound" }, 
-          { "required": ["type"] }, 
-          { "properties":
+        { "$ref": "#/definitions/textualBodyFound" },
+        { "required": ["type"] },
+        { "properties":
+          {
+            "type":
             {
-               "type":
-               {
-                   "oneOf": 
-                   [
-                       { "type": "string",
-                         "enum": ["Text"] },
-                       { "type": "array",
-                         "minItems": 1,
-                         "not":
-                         { "items":
-                             { "not": { "enum": [ "Text"] } }                          
-                         }
-                       }
-                   ]
-               }
+              "oneOf":
+                [
+                { "type": "string",
+                  "enum": ["TextualBody"] },
+                { "type": "array",
+                  "minItems": 1,
+                  "not":
+                  { "items":
+                    { "not": { "enum": [ "TextualBody"] } }
+                  }
+                }
+                ]
             }
           }
-        ]
+        }
+      ]
+    },
+
+    "itemEmbeddedTextTypeIncludesTextualBody":
+    {
+      "type": "object",
+      "properties":
+      {
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          {
+            "items":
+            { "not": { "$ref": "#/definitions/embeddedTextTypeIncludesTextualBody" } }
+          }
+        }
+      },
+      "required": ["items"]
+    },
+
+    "embeddedTextTypeIncludesText":
+    {
+      "allOf":
+        [
+        { "$ref": "#/definitions/textualBodyFound" },
+        { "required": ["type"] },
+        { "properties":
+          {
+            "type":
+            {
+              "oneOf":
+                [
+                { "type": "string",
+                  "enum": ["Text"] },
+                { "type": "array",
+                  "minItems": 1,
+                  "not":
+                  { "items":
+                    { "not": { "enum": [ "Text"] } }
+                  }
+                }
+                ]
+            }
+          }
+        }
+      ]
     },
 
     "itemEmbeddedTextTypeIncludesText":
     {
-        "type": "object",
-        "properties":
+      "type": "object",
+      "properties":
+      {
+        "items":
         {
-           "items":
-           {
-               "type": "array",
-               "minItems": 1,
-               "not":
-                 {
-                   "items":
-                    { "not": { "$ref": "#/definitions/embeddedTextTypeIncludesText" } }
-                 }
-           }
-        },
-        "required": ["items"]
+          "type": "array",
+          "minItems": 1,
+          "not":
+          {
+            "items":
+            { "not": { "$ref": "#/definitions/embeddedTextTypeIncludesText" } }
+          }
+        }
+      },
+      "required": ["items"]
     }
 
   }

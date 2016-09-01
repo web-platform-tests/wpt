@@ -16,12 +16,12 @@
         {
           "type": ["string", "object" ],
           "oneOf": [
-             { "$ref": "id.json#/definitions/stringUri" },
-             { "$ref": "bodyTarget.json#/definitions/externalWebResourceDetected"}
+          { "$ref": "id.json#/definitions/stringUri" },
+          { "$ref": "bodyTarget.json#/definitions/externalWebResourceDetected"}
           ]
         }
       },
-      "required": ["source"]   
+      "required": ["source"]
     },
 
     "specificeResourceDetected":
@@ -29,17 +29,17 @@
       "title": "Detection: Specific Resource",
       "description": "True when object has exactly 1 source value and at least one of purpose, selector, state, styleClass, renderedVia, scope (Section 4)",
       "type": "object",
-      "$ref": "#/definitions/sourceDetected",
+        "$ref": "#/definitions/sourceDetected",
       "anyOf": [
-        { "$ref": "otherProperties.json#/definitions/purposeRecognizedIfPresent", "required": ["purpose"] },
-        { "$ref": "#/definitions/selectorDetected" },
-        { "$ref": "#/definitions/stateDetected" },
+      { "$ref": "otherProperties.json#/definitions/purposeRecognizedIfPresent", "required": ["purpose"] },
+      { "$ref": "#/definitions/selectorDetected" },
+      { "$ref": "#/definitions/stateDetected" },
         { "$ref": "#/definitions/styleClassDetected" },
         { "$ref": "#/definitions/renderedViaDetected" },
-        { "$ref": "#/definitions/scopeDetected" }
+          { "$ref": "#/definitions/scopeDetected" }
       ]
     },
-        
+
     "itemSpecificResourceDetected":
     {
       "title": "Detection: Specific Resource as item member of a Choice or Set",
@@ -47,18 +47,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/specificeResourceDetected" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/specificeResourceDetected" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "selectorDetected":
@@ -226,13 +226,13 @@
         "^(startSelector|endSelector)$":
         { "type": "object",
           "oneOf": [
-            {"$ref": "#/definitions/fragmentSelectorDetected"},
-            {"$ref": "#/definitions/cssSelectorDetected"},
-            {"$ref": "#/definitions/xpathSelectorDetected"},
+          {"$ref": "#/definitions/fragmentSelectorDetected"},
+          {"$ref": "#/definitions/cssSelectorDetected"},
+          {"$ref": "#/definitions/xpathSelectorDetected"},
             {"$ref": "#/definitions/textQuoteSelectorDetected"},
             {"$ref": "#/definitions/textPositionSelectorDetected"},
-            {"$ref": "#/definitions/dataPositionSelectorDetected"},
-            {"$ref": "#/definitions/svgSelectorDetected"}
+              {"$ref": "#/definitions/dataPositionSelectorDetected"},
+              {"$ref": "#/definitions/svgSelectorDetected"}
           ]
         }
       },
@@ -244,43 +244,43 @@
       "title": "Detection: refinedBy selector or state",
       "description": "True when object is a refinedBy selelctor or state (Section 4.2.8, 4.3.3)",
       "oneOf":
-      [
-         { "$ref": "id.json#/definitions/arraySingleStringUri" },
-         {
+        [
+        { "$ref": "id.json#/definitions/arraySingleStringUri" },
+        {
           "type": "object",
           "oneOf": [
-            {"$ref": "#/definitions/fragmentSelectorDetected"},
-            {"$ref": "#/definitions/cssSelectorDetected"},
-            {"$ref": "#/definitions/xpathSelectorDetected"},
+          {"$ref": "#/definitions/fragmentSelectorDetected"},
+          {"$ref": "#/definitions/cssSelectorDetected"},
+          {"$ref": "#/definitions/xpathSelectorDetected"},
             {"$ref": "#/definitions/textQuoteSelectorDetected"},
             {"$ref": "#/definitions/textPositionSelectorDetected"},
-            {"$ref": "#/definitions/dataPositionSelectorDetected"},
-            {"$ref": "#/definitions/rangeSelectorDetected"},
-            {"$ref": "#/definitions/svgSelectorDetected"},
-            {"$ref": "#/definitions/timeStateDetected"},
-            {"$ref": "#/definitions/requestHeaderStateDetected"}
+              {"$ref": "#/definitions/dataPositionSelectorDetected"},
+              {"$ref": "#/definitions/rangeSelectorDetected"},
+                {"$ref": "#/definitions/svgSelectorDetected"},
+                {"$ref": "#/definitions/timeStateDetected"},
+                  {"$ref": "#/definitions/requestHeaderStateDetected"}
           ]
-         },
-         {
-             "type": "array",
-             "minItems": 1,
-             "items":
-             {
-               "oneOf": [
-                 { "$ref": "id.json#/definitions/arraySingleStringUri" },
-                 {"$ref": "#/definitions/fragmentSelectorDetected"},
-                 {"$ref": "#/definitions/cssSelectorDetected"},
-                 {"$ref": "#/definitions/xpathSelectorDetected"},
-                 {"$ref": "#/definitions/textQuoteSelectorDetected"},
-                 {"$ref": "#/definitions/textPositionSelectorDetected"},
-                 {"$ref": "#/definitions/dataPositionSelectorDetected"},
-                 {"$ref": "#/definitions/rangeSelectorDetected"},
-                 {"$ref": "#/definitions/svgSelectorDetected"},
-                 {"$ref": "#/definitions/timeStateDetected"},
-                 {"$ref": "#/definitions/requestHeaderStateDetected"}
-               ]                 
-             }
-         }
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items":
+          {
+            "oneOf": [
+            { "$ref": "id.json#/definitions/arraySingleStringUri" },
+            {"$ref": "#/definitions/fragmentSelectorDetected"},
+            {"$ref": "#/definitions/cssSelectorDetected"},
+              {"$ref": "#/definitions/xpathSelectorDetected"},
+              {"$ref": "#/definitions/textQuoteSelectorDetected"},
+                {"$ref": "#/definitions/textPositionSelectorDetected"},
+                {"$ref": "#/definitions/dataPositionSelectorDetected"},
+                  {"$ref": "#/definitions/rangeSelectorDetected"},
+                  {"$ref": "#/definitions/svgSelectorDetected"},
+                    {"$ref": "#/definitions/timeStateDetected"},
+                    {"$ref": "#/definitions/requestHeaderStateDetected"}
+            ]
+          }
+        }
       ]
     },
 
@@ -294,30 +294,30 @@
         "state":
         {
           "oneOf": [
-            { "$ref": "id.json#/definitions/stringUri" },
-            { "type": "object",
-              "anyOf": [
+          { "$ref": "id.json#/definitions/stringUri" },
+          { "type": "object",
+            "anyOf": [
+            {"$ref": "id.json#/definitions/idValueFound"},
+            {"$ref": "#/definitions/timeStateDetected"},
+            {"$ref": "#/definitions/requestHeaderStateDetected"}
+            ]
+          },
+          {
+            "type": "array",
+            "minItems": 1,
+            "items":
+            { "oneOf": [
+              { "$ref": "id.json#/definitions/stringUri" },
+              { "type": "object",
+                "anyOf": [
                 {"$ref": "id.json#/definitions/idValueFound"},
                 {"$ref": "#/definitions/timeStateDetected"},
                 {"$ref": "#/definitions/requestHeaderStateDetected"}
-              ]
-            },
-            {
-              "type": "array",
-              "minItems": 1,
-              "items":
-              { "oneOf": [
-                 { "$ref": "id.json#/definitions/stringUri" },
-                 { "type": "object",
-                   "anyOf": [
-                     {"$ref": "id.json#/definitions/idValueFound"},
-                     {"$ref": "#/definitions/timeStateDetected"},
-                     {"$ref": "#/definitions/requestHeaderStateDetected"}
-                   ]
-                 }
                 ]
               }
+            ]
             }
+          }
           ]
         }
       }
@@ -330,24 +330,24 @@
       "type": "object",
       "properties":
       {
-         "type": { "type": "string", "enum": ["TimeState"] },
-         "sourceDate": 
-            { "oneOf": [
-              { "type": "string",
-                "format": "date-time"},
-              { "type": "array",
-                "minItems": 1,
-                "items":
-                  {"type": "string", "format": "date-time"}
-               }
-              ]
-            },
-          "sourceDateStart": { "type": "string", "format": "date-time"},
-          "sourceDateEnd": { "type": "string", "format": "date-time"},
-          "cached": { "type": "string", "format": "uri"}
+        "type": { "type": "string", "enum": ["TimeState"] },
+        "sourceDate":
+        { "oneOf": [
+          { "type": "string",
+            "format": "date-time"},
+          { "type": "array",
+            "minItems": 1,
+            "items":
+            {"type": "string", "format": "date-time"}
+          }
+        ]
+        },
+        "sourceDateStart": { "type": "string", "format": "date-time"},
+        "sourceDateEnd": { "type": "string", "format": "date-time"},
+        "cached": { "type": "string", "format": "uri"}
       },
-        "required": ["type"],
-        "dependencies" :
+      "required": ["type"],
+      "dependencies" :
       {
         "sourceDateStart" : ["sourceDateEnd"],
         "sourceDateEnd": ["sourceDateStart"]
@@ -364,7 +364,7 @@
       "properties":
       {
         "type": { "type": "string", "enum": ["HttpRequestState"] },
-          "value": { "type": "string"}
+        "value": { "type": "string"}
       },
       "required": ["type", "value"]
     },
@@ -384,9 +384,9 @@
       "title": "Collate: styleClass key with qualifying body/target classes",
       "description": "Supports implementation check of styleClass (if/when) used on Specific Resources (Sections 4.4)",
       "allOf": [
-         { "$ref": "#/definitions/sourceDetected" },
-         { "required": ["styleClass"]},
-         { "$ref": "#/definitions/styleClassDefinition"}
+      { "$ref": "#/definitions/sourceDetected" },
+      { "required": ["styleClass"]},
+      { "$ref": "#/definitions/styleClassDefinition"}
       ]
     },
 
@@ -398,18 +398,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/styleClassDetected" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/styleClassDetected" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "renderedViaDefinition":
@@ -445,9 +445,9 @@
       "title": "Collate: renderedVia key with qualifying body/target classes",
       "description": "Supports implementation check of renderedVia (if/when) used on Specific Resources (Sections 4.4)",
       "allOf": [
-         { "$ref": "#/definitions/sourceDetected" },      
-         { "required": ["renderedVia"] },
-         { "$ref": "#/definitions/renderedViaDefinition" }
+      { "$ref": "#/definitions/sourceDetected" },
+      { "required": ["renderedVia"] },
+      { "$ref": "#/definitions/renderedViaDefinition" }
       ]
     },
 
@@ -459,18 +459,18 @@
       "type": "object",
       "properties":
       {
-          "items": 
+        "items":
+        {
+          "type": "array",
+          "minItems": 1,
+          "not":
           {
-              "type": "array",
-              "minItems": 1,
-              "not": 
-              {
-                  "items":
-                  { "not": { "$ref": "#/definitions/renderedViaDetected" } }
-              }
+            "items":
+            { "not": { "$ref": "#/definitions/renderedViaDetected" } }
           }
+        }
       },
-      "required": ["items"]      
+      "required": ["items"]
     },
 
     "scopeDefinition":
@@ -499,162 +499,162 @@
       "description": "Supports implementation check of scope (if/when) used on Specific Resource Body (Sections 4.6)",
       "$ref": "#/definitions/sourceDetected",
       "allOf": [
-         {"required": ["scope"]},
-         {"$ref": "#/definitions/scopeDefinition"}
+      {"required": ["scope"]},
+      {"$ref": "#/definitions/scopeDefinition"}
       ]
     },
-        
-        "sourceWithCreated":
-        {
-            "description": "True if no source, or source is uri, or source is object that does not have created key, or if source is object that has only 1 created key of date-time format",
-            "type": "object",
-            "properties":
-            {
-                "source":
-                {
-                    "oneOf":
-                    [
-                        { "$ref": "id.json#/definitions/arraySingleStringUri" },
-                        { "$ref": "otherProperties.json#/definitions/createdValidIfPresent" }                        
-                    ]
-                }
-            }
-        },
-        
-       "sourceWithModified":
-        {
-            "description": "True if no source, or source is uri, or source is object that does not have modified key, or if source is object that has only 1 modified key of date-time format",
-            "type": "object",
-            "properties":
-            {
-                "source":
-                {
-                    "oneOf":
-                    [
-                        { "$ref": "id.json#/definitions/arraySingleStringUri" },
-                        { "$ref": "otherProperties.json#/definitions/modifiedValidIfPresent" }                        
-                    ]
-                }
-            }
-        },
-        
-        "sourceWithRights":
-        {
-            "description": "True if no source, or source is uri, or source is object that does not have rights key, or if source is object that has rights key with all values of uri format",
-            "type": "object",
-            "properties":
-            {
-                "source":
-                {
-                    "oneOf":
-                    [
-                        { "$ref": "id.json#/definitions/arraySingleStringUri" },
-                        { "$ref": "otherProperties.json#/definitions/rightsValidIfPresent" }                        
-                    ]
-                }
-            }
-        },
-        
-       "sourceWithCanonical":
-        {
-            "description": "True if no source, or source is uri, or source is object that does not have canonical key, or if source is object that has only 1 canonical key of uri format",
-            "type": "object",
-            "properties":
-            {
-                "source":
-                {
-                    "oneOf":
-                    [
-                        { "$ref": "id.json#/definitions/arraySingleStringUri" },
-                        { "$ref": "otherProperties.json#/definitions/canonicalValidIfPresent" }                        
-                    ]
-                }
-            }
-        },         
-        
-       "sourceWithVia":
-        {
-            "description": "True if no source, or source is uri, or source is object that does not have via key, or if source is object that has via key with all values of uri format",
-            "type": "object",
-            "properties":
-            {
-                "source":
-                {
-                    "oneOf":
-                    [
-                        { "$ref": "id.json#/definitions/arraySingleStringUri" },
-                        { "$ref": "otherProperties.json#/definitions/viaValidIfPresent" }                        
-                    ]
-                }
-            }
-        },
-        
-        "sourceWithTextDirection":
-        {
-            "description": "True if no source, or source is uri, or source is object that does not have textDirection key, or if source is object that has only 1 textDirectoin key, one of ltr, rtl, auto",
-            "type": "object",
-            "properties":
-            {
-                "source":
-                {
-                    "oneOf":
-                    [
-                        { "$ref": "id.json#/definitions/arraySingleStringUri" },
-                        { "$ref": "bodyTarget.json#/definitions/textDirectionValidIfPresent" }                        
-                    ]
-                }
-            }            
-        },
 
-        "specificResourceWithItems" :
+    "sourceWithCreated":
+    {
+      "description": "True if no source, or source is uri, or source is object that does not have created key, or if source is object that has only 1 created key of date-time format",
+      "type": "object",
+      "properties":
+      {
+        "source":
         {
-           "description": "True if both source and items keys are present.",
-           "allOf":
-               [
-                { "$ref": "#/definitions/sourceDetected"},
-                { "required": [ "items" ] }
-               ] 
-        },
+          "oneOf":
+            [
+            { "$ref": "id.json#/definitions/arraySingleStringUri" },
+            { "$ref": "otherProperties.json#/definitions/createdValidIfPresent" }
+            ]
+        }
+      }
+    },
+
+    "sourceWithModified":
+    {
+      "description": "True if no source, or source is uri, or source is object that does not have modified key, or if source is object that has only 1 modified key of date-time format",
+      "type": "object",
+      "properties":
+      {
+        "source":
+        {
+          "oneOf":
+            [
+            { "$ref": "id.json#/definitions/arraySingleStringUri" },
+            { "$ref": "otherProperties.json#/definitions/modifiedValidIfPresent" }
+            ]
+        }
+      }
+    },
+
+    "sourceWithRights":
+    {
+      "description": "True if no source, or source is uri, or source is object that does not have rights key, or if source is object that has rights key with all values of uri format",
+      "type": "object",
+      "properties":
+      {
+        "source":
+        {
+          "oneOf":
+            [
+            { "$ref": "id.json#/definitions/arraySingleStringUri" },
+            { "$ref": "otherProperties.json#/definitions/rightsValidIfPresent" }
+            ]
+        }
+      }
+    },
+
+    "sourceWithCanonical":
+    {
+      "description": "True if no source, or source is uri, or source is object that does not have canonical key, or if source is object that has only 1 canonical key of uri format",
+      "type": "object",
+      "properties":
+      {
+        "source":
+        {
+          "oneOf":
+            [
+            { "$ref": "id.json#/definitions/arraySingleStringUri" },
+            { "$ref": "otherProperties.json#/definitions/canonicalValidIfPresent" }
+            ]
+        }
+      }
+    },
+
+    "sourceWithVia":
+    {
+      "description": "True if no source, or source is uri, or source is object that does not have via key, or if source is object that has via key with all values of uri format",
+      "type": "object",
+      "properties":
+      {
+        "source":
+        {
+          "oneOf":
+            [
+            { "$ref": "id.json#/definitions/arraySingleStringUri" },
+            { "$ref": "otherProperties.json#/definitions/viaValidIfPresent" }
+            ]
+        }
+      }
+    },
+
+    "sourceWithTextDirection":
+    {
+      "description": "True if no source, or source is uri, or source is object that does not have textDirection key, or if source is object that has only 1 textDirectoin key, one of ltr, rtl, auto",
+      "type": "object",
+      "properties":
+      {
+        "source":
+        {
+          "oneOf":
+            [
+            { "$ref": "id.json#/definitions/arraySingleStringUri" },
+            { "$ref": "bodyTarget.json#/definitions/textDirectionValidIfPresent" }
+            ]
+        }
+      }
+    },
+
+    "specificResourceWithItems" :
+    {
+      "description": "True if both source and items keys are present.",
+      "allOf":
+        [
+        { "$ref": "#/definitions/sourceDetected"},
+        { "required": [ "items" ] }
+        ]
+    },
 
     "itemSRWithItems":
     {
       "type": "object",
       "properties":
-        {
-          "items": {
-             "type": "array",
-             "minItems": 1,
-             "not": 
-                { "items": {"not": { "$ref": "#/definitions/specificResourceWithItems" } } }
-          }
-        },
+      {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          { "items": {"not": { "$ref": "#/definitions/specificResourceWithItems" } } }
+        }
+      },
       "required": ["items"]
-    },    
+    },
 
-        "specificResourceWithValue" :
-        {
-           "description": "True if both source and value keys are present.",
-            "allOf":
-               [
-                { "$ref": "#/definitions/sourceDetected"},
-                { "required": [ "value" ] }
-               ] 
-        },
-        
+    "specificResourceWithValue" :
+    {
+      "description": "True if both source and value keys are present.",
+      "allOf":
+        [
+        { "$ref": "#/definitions/sourceDetected"},
+        { "required": [ "value" ] }
+        ]
+    },
+
     "itemSRWithValue":
     {
       "type": "object",
       "properties":
-        {
-          "items": {
-             "type": "array",
-             "minItems": 1,
-             "not": 
-                { "items": {"not": { "$ref": "#/definitions/specificResourceWithValue" } } }
-          }
-        },
+      {
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "not":
+          { "items": {"not": { "$ref": "#/definitions/specificResourceWithValue" } } }
+        }
+      },
       "required": ["items"]
-    }        
+    }
 
   }
 }

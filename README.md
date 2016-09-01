@@ -1,7 +1,7 @@
 # WebDriver client for Python
 
 This package provides a WebDriver client compatible with
- the [W3C browser automation specification](https://w3c.github.io/webdriver/webdriver-spec.html).
+the [W3C browser automation specification](https://w3c.github.io/webdriver/webdriver-spec.html).
 
 The client is written with determining
 implementation compliance to the specification in mind,

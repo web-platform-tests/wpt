@@ -26,7 +26,7 @@ function runTest(config,qualifier) {
         }
 
         function onMessage(event) {
-            config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
+            config.messagehandler( event.messageType, event.message ).then( function( response ) {
                 event.target.update( response ).catch(onFailure);
             });
         }
@@ -41,7 +41,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) ) {
+            if ( _video.currentTime > ( config.duration || 2 ) ) {
                 assert_equals( _mediaKeySessions.length, config.initData.length );
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
@@ -53,7 +53,8 @@ function runTest(config,qualifier) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-            _video.setMediaKeys(_mediaKeys);
+            return _video.setMediaKeys(_mediaKeys);
+        }).then(function(){
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);
 
             // Not using waitForEventAndRunStep() to avoid too many

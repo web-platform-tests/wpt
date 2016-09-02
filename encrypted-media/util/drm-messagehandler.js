@@ -37,7 +37,7 @@ drmconfig = {
 
 function MessageHandler( keysystem, content, sessionType ) {
     sessionType = sessionType || "temporary";
-    
+
     this._keysystem = keysystem;
     this._content = content;
     this._sessionType = sessionType;

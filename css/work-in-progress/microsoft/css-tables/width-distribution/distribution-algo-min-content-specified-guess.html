@@ -16,25 +16,19 @@
     x-table span {
         display: inline-block;
         background: green;
-        height: 100px;
+        height: 50px;
     }
 </style>
 <main>
     <h1>Width Distribution</h1>
     <h4>"Distribution Algorithm - min-content-specified guess"</h4>
-    <p>Tests that the size of the column is given the max(%width, min-content width)
+    <p>Tests that the size of the column as the spec states that if the cell is constrained then the 
          <a href="https://drafts.csswg.org/css-tables-3/#width-distribution-algorithm">Spec Text</a>
     </p>
-    <x-table id="one" style="width: 400px;">
+    <x-table style="width: 50px; border: 1px solid black;">
         <x-tr>
-            <x-td id="two" style="min-width: 50%">
-                <span style="width: 100%">Cell 1</span>
-            </x-td>
-            <x-td id="three" style="width: 100px;">
-                <span style="width: 50px;">Cell 2</span>
-            </x-td>
-            <x-td id="four">
-                <span style="width: 50px;">Cell 3</span>
+            <x-td id="one" style="width: 100px;">
+                <span style="width: 75px;">Cell 2</span>
             </x-td>
         </x-tr>
     </x-table>
@@ -50,19 +44,9 @@
     var i = 1;
 	generate_tests(assert_equals, [
         [
-            'The box should be 400px since that is the size of the content',
+            'The box should be 75px due to its min-content size.',
             document.getElementById('one').offsetWidth,
-            400
-        ],
-        [
-            'The first cell is 200px due to its 50% specified width is greater than ',
-            document.getElementById('two').offsetWidth,
-            200
-        ],
-        [
-            'This box should be 50px wide as it is the max-content of the column',
-            document.getElementById('three').offsetWidth,
-            50
+            75
         ]
     ]);
 </script>

@@ -7,6 +7,7 @@
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#security-location">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <div id=log></div>
 <iframe id="B"></iframe>
 <iframe id="C"></iframe>
@@ -16,13 +17,14 @@
  * Setup boilerplate. This gives us a same-origin window "B" and a cross-origin
  * window "C".
  */
+var host_info = get_host_info();
 
 setup({explicit_done: true});
 path = location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/frame.html';
 var B = document.getElementById('B').contentWindow;
 var C = document.getElementById('C').contentWindow;
 B.frameElement.uriToLoad = path;
-C.frameElement.uriToLoad = '//{{domains[www1]}}:' + location.port + path;
+C.frameElement.uriToLoad = get_host_info().HTTP_REMOTE_ORIGIN + path;
 
 function reloadSubframes(cb) {
   var iframes = document.getElementsByTagName('iframe');
@@ -51,10 +53,9 @@ function addTest(fun, desc) { testList.push([fun, desc]); }
  */
 
 addTest(function() {
-  // Note: we do not check location.hostname as its default port semantics are hard to reflect
-  //       statically
-  assert_equals(location.hostname, '{{domains[]}}', 'Need to run the top-level test from domain {{domains[]}}');
-  assert_equals(location.port, '{{location[port]}}', 'Need to run the top-level test from port {{location[port]}}')
+  // Note: we do not check location.hostname as its default port semantics are hard to reflect statically
+  assert_equals(location.hostname, host_info.ORIGINAL_HOST, 'Need to run the top-level test from domain ' + host_info.ORIGINAL_HOST);
+  assert_equals(location.port, host_info.HTTP_PORT, 'Need to run the top-level test from port ' + host_info.HTTP_PORT);
   assert_equals(B.parent, window, "window.parent works same-origin");
   assert_equals(C.parent, window, "window.parent works cross-origin");
   assert_equals(B.location.pathname, path, "location.href works same-origin");
@@ -311,20 +312,6 @@ addTest(function() {
   checkFunction(set_href_B, B.Function.prototype);
 }, "Same-origin observers get different accessors for cross-origin Location");
 
-function doDocumentDomainTest(cb) {
-  window.addEventListener('message', function onmessage(evt) {
-    window.removeEventListener('message', onmessage);
-    test(function() {
-      var results = evt.data;
-      assert_true(results.length > 0, 'Need results');
-      results.forEach(function(r) { assert_true(r.pass, r.message); });
-    }, "Cross-origin object identity preserved across document.domain");
-    win.close();
-    cb();
-  });
-  var win = window.open('win-documentdomain.sub.html');
-}
-
 // We do a fresh load of the subframes for each test to minimize side-effects.
 // It would be nice to reload ourselves as well, but we can't do that without
 // disrupting the test harness.
@@ -334,7 +321,7 @@ function runNextTest() {
   if (testList.length != 0)
     reloadSubframes(runNextTest);
   else
-    doDocumentDomainTest(done); // Asynchronous.
+    done();
 }
 reloadSubframes(runNextTest);
 

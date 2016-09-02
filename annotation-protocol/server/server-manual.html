@@ -4,7 +4,7 @@
 <title>Annotation Protocol Must Tests</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/annotation-protocol/scripts/uuid.js"></script>
+<script src="/common/utils.js"></script>
 <script type="application/javascript">
 /* globals header, assert_equals, promise_test, assert_true, uuid, assert_regexp_match */
 
@@ -284,7 +284,7 @@ function runTests( container_url, annotation_url ) {
       "value": "I like this page!"
     },
     "target": "http://www.example.com/index.html",
-    "canonical": 'urn:uuid:' + uuid.v4()
+    "canonical": 'urn:uuid:' + token()
   };
 
   var theCreation = request("POST", container_url, [ [ 'Content-Type', MEDIA_TYPE ] ], theAnnotation);

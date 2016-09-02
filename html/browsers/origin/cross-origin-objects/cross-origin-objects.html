@@ -53,7 +53,7 @@ function addTest(fun, desc) { testList.push([fun, desc]); }
  */
 
 addTest(function() {
-  // Note: we do not check location.hostname as its default port semantics are hard to reflect statically
+  // Note: we do not check location.host as its default port semantics are hard to reflect statically
   assert_equals(location.hostname, host_info.ORIGINAL_HOST, 'Need to run the top-level test from domain ' + host_info.ORIGINAL_HOST);
   assert_equals(location.port, host_info.HTTP_PORT, 'Need to run the top-level test from port ' + host_info.HTTP_PORT);
   assert_equals(B.parent, window, "window.parent works same-origin");

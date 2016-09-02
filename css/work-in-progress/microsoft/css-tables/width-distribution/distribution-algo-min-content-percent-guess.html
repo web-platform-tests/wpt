@@ -9,6 +9,10 @@
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#width-distribution" />
 
 <style>
+    x-td {
+        background: blue;
+    }
+
     x-table span {
         display: inline-block;
         background: green;
@@ -17,18 +21,17 @@
 </style>
 <main>
     <h1>Width Distribution</h1>
-    <h4>"Distribution Algorithm"</h4>
-    <p>Tests the first step that all cells get their min content guess which is that 
-        of their min content
-         <a href="https://drafts.csswg.org/css-tables-3/#width-distribution">Spec Text</a>
+    <h4>"Distribution Algorithm - min-content-percent guess"</h4>
+    <p>Tests that the size of the column is given the max(%width, min-content width)
+         <a href="https://drafts.csswg.org/css-tables-3/#width-distribution-algorithm">Spec Text</a>
     </p>
-    <x-table id="one">
+    <x-table id="one" style="width: 400px;">
         <x-tr>
-            <x-td id="two">
-                <span style="width: 100px;"></span>
+            <x-td id="two" style="width: 50%">
+                <span style="width: 100%">Cell 1</span>
             </x-td>
             <x-td id="three">
-                <span style="width: 200px"></span>
+                <span style="width: 100%">Cell 2</span>
             </x-td>
         </x-tr>
     </x-table>
@@ -44,17 +47,17 @@
     var i = 1;
 	generate_tests(assert_equals, [
         [
-            'The box should be 300px since that is the size of the content',
+            'The box should be 400px since that is the size of the content',
             document.getElementById('one').offsetWidth,
-            300
+            400
         ],
         [
-            'The first cell is 100px wide due to its content\'s size',
+            'The first cell is 200px due to its 50% specified width is greater than ',
             document.getElementById('two').offsetWidth,
-            100
+            200
         ],
         [
-            'The first cell is 200px wide due to its content\'s size',
+            'The second cell is 200px due to the 50% set on the first cell and the second gets distributed the remaining space since its auto',
             document.getElementById('three').offsetWidth,
             200
         ]

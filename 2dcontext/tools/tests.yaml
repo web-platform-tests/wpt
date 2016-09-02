@@ -876,8 +876,9 @@
     - security.drawImage.image
     - security.toDataURL
     - security.getImageData
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     ctx.drawImage(document.getElementById('yellow.png'), 0, 0);
     @assert throws SECURITY_ERR canvas.toDataURL();
@@ -888,8 +889,9 @@
   mozilla: { disabled } # relies on external resources
   testing:
     - security.drawImage.canvas
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -905,8 +907,9 @@
   mozilla: { disabled } # relies on external resources
   testing:
     - security.start
-  images:
-    - http://{{domains[www]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     canvas.toDataURL();
@@ -918,8 +921,9 @@
   mozilla: { disabled } # relies on external resources
   testing:
     - security.start
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -940,8 +944,9 @@
   testing:
     - security.start
     - security.fillStyle.canvas
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -962,8 +967,9 @@
   mozilla: { disabled } # relies on external resources
   testing:
     - security.fillStyle.image
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     ctx.fillStyle = p;
@@ -976,8 +982,9 @@
   mozilla: { bug: 354127, disabled } # relies on external resources
   testing:
     - security.fillStyle.canvas
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -995,8 +1002,9 @@
   mozilla: { disabled } # relies on external resources
   testing:
     - security.strokeStyle.image
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     ctx.strokeStyle = p;
@@ -1009,8 +1017,9 @@
   mozilla: { bug: 354127, disabled } # relies on external resources
   testing:
     - security.strokeStyle.canvas
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -1048,8 +1057,9 @@
   mozilla: { disabled } # relies on external resources
   testing:
     - initial.reset
-  images:
-    - http://{{domains[www2]}}:{{ports[http][0]}}/images/yellow.png
+  scripts:
+    - /common/get-host-info.sub.js
+    - data:text/javascript,addCrossOriginYellowImage()
   code: |
     canvas.width = 50;
     ctx.drawImage(document.getElementById('yellow.png'), 0, 0);

@@ -386,7 +386,14 @@ for an Annotation Protocol server implementation.  In order to do so, the server
 its CORS settings configured such that your test machine can access the annotations and containers
 and such that it can get certain information from the headers.  In particular, the container and
 annotations within the container
-under test must permit access to the Allow, Content-Location, Content-Type, ETag, Link, Location, Prefer, and Vary headers.</p>
+under test must permit access to the Allow, Content-Location, Content-Type, ETag, Link, Location, Prefer, and Vary headers.
+Correct CORS access can be achieved with headers like:</p>
+<pre>
+Access-Control-Allow-Headers: Content-Type, Prefer
+Access-Control-Allow-Methods: GET,HEAD,OPTIONS,DELETE,PUT
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: ETag, Allow, Vary, Link, Content-Type, Location, Content-Location, Prefer
+</pre>
 <p>Provide endpoint and annotation URIs and select "Go" to start testing.</p>
 <form name="endpoint">
   <p><label for="uri">Endpoint URI:</label> <input type="text" size="50" id="uri" name="uri"></p>

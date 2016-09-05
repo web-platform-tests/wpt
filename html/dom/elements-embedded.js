@@ -142,7 +142,7 @@ var embeddedElements = {
     type: "string",
 
     // HTMLHyperlinkElementUtils
-    href: "url",
+    href: "hyperlink href",
 
     // Obsolete
     noHref: "boolean"

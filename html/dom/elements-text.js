@@ -4,14 +4,14 @@ var textElements = {
     // Conforming
     target: "string",
     download: "string",
-    ping: "urls",
+    ping: "string",
     rel: "string",
     relList: {type: "tokenlist", domAttrName: "rel"},
     hreflang: "string",
     type: "string",
 
     // HTMLHyperlinkElementUtils
-    href: "url",
+    href: "hyperlink href",
 
     // Obsolete
     coords: "string",

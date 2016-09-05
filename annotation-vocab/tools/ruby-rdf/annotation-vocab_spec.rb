@@ -39,6 +39,7 @@ describe "Web Annotation Vocab" do
 
       it "lint #{file.split('/').last}" do
         gjld = RDF::Graph.load(file, format: :jsonld)
+        gjld.entail!
         expect(gjld.lint).to be_empty
       end
     end
@@ -85,7 +86,8 @@ describe "Web Annotation Vocab" do
 
   context "The ontology is internally consistent with respect to domains, ranges, inverses, and any other ontology features specified." do
     it "lints cleanly" do
-      expect(vocab_graph.lint).to be_empty
+      entailed_graph = vocab_graph.dup.entail!
+      expect(entailed_graph.lint).to be_empty
     end
 
     RDF::Vocab::OA.each do |term|

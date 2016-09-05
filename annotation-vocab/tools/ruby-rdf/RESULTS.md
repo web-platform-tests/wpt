@@ -283,363 +283,319 @@ a {
   <dl style="margin-left: 0px;">
   <dt id="example_group_1" class="passed">Web Annotation Vocab</dt>
     <script type="text/javascript">moveProgressBar('0.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">The JSON-LD context document can be parsed without errors by JSON-LD validators</span><span class='duration'>0.31640s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">The JSON-LD context document can be parsed without errors by JSON-LD validators</span><span class='duration'>0.30938s</span></dd>
   </dl>
 </div>
 <div id="div_group_2" class="example_group passed">
   <dl style="margin-left: 15px;">
   <dt id="example_group_2" class="passed">The JSON-LD context document can be used to convert JSON-LD serialized Annotations into RDF triples</dt>
     <script type="text/javascript">moveProgressBar('0.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno1.json</span><span class='duration'>0.62707s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno1.json</span><span class='duration'>0.80304s</span></dd>
     <script type="text/javascript">moveProgressBar('0.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno1.json</span><span class='duration'>0.40957s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno1.json</span><span class='duration'>0.43467s</span></dd>
     <script type="text/javascript">moveProgressBar('1.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno10.json</span><span class='duration'>0.41295s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno10.json</span><span class='duration'>0.40896s</span></dd>
     <script type="text/javascript">moveProgressBar('1.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno10.json</span><span class='duration'>0.43963s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno10.json</span><span class='duration'>0.51588s</span></dd>
     <script type="text/javascript">moveProgressBar('1.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno11.json</span><span class='duration'>0.40967s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno11.json</span><span class='duration'>0.42429s</span></dd>
     <script type="text/javascript">moveProgressBar('2.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno11.json</span><span class='duration'>0.44147s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno11.json</span><span class='duration'>0.57976s</span></dd>
     <script type="text/javascript">moveProgressBar('2.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno12.json</span><span class='duration'>0.40497s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno12.json</span><span class='duration'>0.41441s</span></dd>
     <script type="text/javascript">moveProgressBar('2.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno12.json</span><span class='duration'>0.44146s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno12.json</span><span class='duration'>0.54601s</span></dd>
     <script type="text/javascript">moveProgressBar('3.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno13.json</span><span class='duration'>0.40965s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno13.json</span><span class='duration'>0.40948s</span></dd>
     <script type="text/javascript">moveProgressBar('3.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno13.json</span><span class='duration'>0.45694s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno13.json</span><span class='duration'>0.51779s</span></dd>
     <script type="text/javascript">moveProgressBar('3.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno14.json</span><span class='duration'>0.40708s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno14.json</span><span class='duration'>0.42774s</span></dd>
     <script type="text/javascript">moveProgressBar('4.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno14.json</span><span class='duration'>0.44362s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno14.json</span><span class='duration'>0.49913s</span></dd>
     <script type="text/javascript">moveProgressBar('4.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno15.json</span><span class='duration'>0.40709s</span></dd>
-    <script type="text/javascript">makeRed('rspec-header');</script>
-    <script type="text/javascript">makeRed('div_group_2');</script>
-    <script type="text/javascript">makeRed('example_group_2');</script>
+    <dd class="example passed"><span class="passed_spec_name">anno15.json</span><span class='duration'>0.40941s</span></dd>
     <script type="text/javascript">moveProgressBar('4.9');</script>
-    <dd class="example failed">
-      <span class="failed_spec_name">lint anno15.json</span>
-      <span class="duration">0.48277s</span>
-      <div class="failure" id="failure_1">
-        <div class="message"><pre>Failure/Error: expect(gjld.lint).to be_empty
-  expected `{:property=&gt;{&quot;dc:creator&quot;=&gt;[&quot;Object &lt;http://example.org/user1&gt; not compatible with range (dc:Agent)&quot;]}}.empty?` to return true, got false</pre></div>
-        <div class="backtrace"><pre>./annotation-vocab_spec.rb:42:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
-    <pre class="ruby"><code><span class="linenum">40</span>      it "lint #{file.split('/').last}" do
-<span class="linenum">41</span>        gjld = RDF::Graph.load(file, format: :jsonld)
-<span class="offending"><span class="linenum">42</span>        expect(gjld.lint).to be_empty</span>
-<span class="linenum">43</span>      end
-<span class="linenum">44</span>    end
-<span class="linenum">45</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
-      </div>
-    </dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno15.json</span><span class='duration'>0.59250s</span></dd>
     <script type="text/javascript">moveProgressBar('5.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno16.json</span><span class='duration'>0.39919s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno16.json</span><span class='duration'>0.40033s</span></dd>
     <script type="text/javascript">moveProgressBar('5.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno16.json</span><span class='duration'>0.42687s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno16.json</span><span class='duration'>0.50194s</span></dd>
     <script type="text/javascript">moveProgressBar('5.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno17.json</span><span class='duration'>0.39708s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno17.json</span><span class='duration'>0.39887s</span></dd>
     <script type="text/javascript">moveProgressBar('6.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno17.json</span><span class='duration'>0.42427s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno17.json</span><span class='duration'>0.45927s</span></dd>
     <script type="text/javascript">moveProgressBar('6.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno18.json</span><span class='duration'>0.40447s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno18.json</span><span class='duration'>0.41306s</span></dd>
     <script type="text/javascript">moveProgressBar('6.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno18.json</span><span class='duration'>0.45829s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno18.json</span><span class='duration'>0.50191s</span></dd>
     <script type="text/javascript">moveProgressBar('7.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno19.json</span><span class='duration'>0.40730s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno19.json</span><span class='duration'>0.40131s</span></dd>
     <script type="text/javascript">moveProgressBar('7.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno19.json</span><span class='duration'>0.41278s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno19.json</span><span class='duration'>0.45638s</span></dd>
     <script type="text/javascript">moveProgressBar('7.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno2.json</span><span class='duration'>0.40955s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno2.json</span><span class='duration'>0.40516s</span></dd>
     <script type="text/javascript">moveProgressBar('8.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno2.json</span><span class='duration'>0.42216s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno2.json</span><span class='duration'>0.47703s</span></dd>
     <script type="text/javascript">moveProgressBar('8.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno20.json</span><span class='duration'>0.40304s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno20.json</span><span class='duration'>0.41045s</span></dd>
     <script type="text/javascript">moveProgressBar('8.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno20.json</span><span class='duration'>0.42408s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno20.json</span><span class='duration'>0.45945s</span></dd>
     <script type="text/javascript">moveProgressBar('9.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno21.json</span><span class='duration'>0.40826s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno21.json</span><span class='duration'>0.40024s</span></dd>
     <script type="text/javascript">moveProgressBar('9.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno21.json</span><span class='duration'>0.42770s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno21.json</span><span class='duration'>0.49023s</span></dd>
     <script type="text/javascript">moveProgressBar('9.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno22.json</span><span class='duration'>0.41106s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno22.json</span><span class='duration'>0.40515s</span></dd>
     <script type="text/javascript">moveProgressBar('10.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno22.json</span><span class='duration'>0.42462s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno22.json</span><span class='duration'>0.46393s</span></dd>
     <script type="text/javascript">moveProgressBar('10.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno23.json</span><span class='duration'>0.40377s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno23.json</span><span class='duration'>0.40987s</span></dd>
     <script type="text/javascript">moveProgressBar('10.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno23.json</span><span class='duration'>0.43595s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno23.json</span><span class='duration'>0.50851s</span></dd>
     <script type="text/javascript">moveProgressBar('11.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno24.json</span><span class='duration'>0.40651s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno24.json</span><span class='duration'>0.40625s</span></dd>
     <script type="text/javascript">moveProgressBar('11.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno24.json</span><span class='duration'>0.44270s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno24.json</span><span class='duration'>0.48927s</span></dd>
     <script type="text/javascript">moveProgressBar('11.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno25.json</span><span class='duration'>0.40763s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno25.json</span><span class='duration'>0.41398s</span></dd>
     <script type="text/javascript">moveProgressBar('12.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno25.json</span><span class='duration'>0.44709s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno25.json</span><span class='duration'>0.48518s</span></dd>
     <script type="text/javascript">moveProgressBar('12.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno26.json</span><span class='duration'>0.42352s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno26.json</span><span class='duration'>0.41400s</span></dd>
     <script type="text/javascript">moveProgressBar('12.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno26.json</span><span class='duration'>0.44761s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno26.json</span><span class='duration'>0.47813s</span></dd>
     <script type="text/javascript">moveProgressBar('13.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno27.json</span><span class='duration'>0.41346s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno27.json</span><span class='duration'>0.40741s</span></dd>
     <script type="text/javascript">moveProgressBar('13.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno27.json</span><span class='duration'>0.44578s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno27.json</span><span class='duration'>0.49167s</span></dd>
     <script type="text/javascript">moveProgressBar('13.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno28.json</span><span class='duration'>0.41519s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno28.json</span><span class='duration'>0.40747s</span></dd>
     <script type="text/javascript">moveProgressBar('14.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno28.json</span><span class='duration'>0.42383s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno28.json</span><span class='duration'>0.46512s</span></dd>
     <script type="text/javascript">moveProgressBar('14.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno29.json</span><span class='duration'>0.40529s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno29.json</span><span class='duration'>0.41369s</span></dd>
     <script type="text/javascript">moveProgressBar('14.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno29.json</span><span class='duration'>0.42249s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno29.json</span><span class='duration'>0.48182s</span></dd>
     <script type="text/javascript">moveProgressBar('15.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno3.json</span><span class='duration'>0.40673s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno3.json</span><span class='duration'>0.40200s</span></dd>
     <script type="text/javascript">moveProgressBar('15.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno3.json</span><span class='duration'>0.44063s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno3.json</span><span class='duration'>0.46531s</span></dd>
     <script type="text/javascript">moveProgressBar('15.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno30.json</span><span class='duration'>0.42673s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno30.json</span><span class='duration'>0.39699s</span></dd>
     <script type="text/javascript">moveProgressBar('16.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno30.json</span><span class='duration'>0.45672s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno30.json</span><span class='duration'>0.49227s</span></dd>
     <script type="text/javascript">moveProgressBar('16.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno31.json</span><span class='duration'>0.41474s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno31.json</span><span class='duration'>0.40427s</span></dd>
     <script type="text/javascript">moveProgressBar('16.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno31.json</span><span class='duration'>0.45595s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno31.json</span><span class='duration'>0.52688s</span></dd>
     <script type="text/javascript">moveProgressBar('17.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno32.json</span><span class='duration'>0.41379s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno32.json</span><span class='duration'>0.41372s</span></dd>
     <script type="text/javascript">moveProgressBar('17.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno32.json</span><span class='duration'>0.44416s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno32.json</span><span class='duration'>0.49349s</span></dd>
     <script type="text/javascript">moveProgressBar('17.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno33.json</span><span class='duration'>0.41504s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno33.json</span><span class='duration'>0.40037s</span></dd>
     <script type="text/javascript">moveProgressBar('18.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno33.json</span><span class='duration'>0.41902s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno33.json</span><span class='duration'>0.44566s</span></dd>
     <script type="text/javascript">moveProgressBar('18.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno34.json</span><span class='duration'>0.40820s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno34.json</span><span class='duration'>0.40696s</span></dd>
     <script type="text/javascript">moveProgressBar('18.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno34.json</span><span class='duration'>0.44185s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno34.json</span><span class='duration'>0.47969s</span></dd>
     <script type="text/javascript">moveProgressBar('19.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno35.json</span><span class='duration'>0.40803s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno35.json</span><span class='duration'>0.40632s</span></dd>
     <script type="text/javascript">moveProgressBar('19.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno35.json</span><span class='duration'>0.42963s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno35.json</span><span class='duration'>0.45517s</span></dd>
     <script type="text/javascript">moveProgressBar('19.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno36.json</span><span class='duration'>0.40525s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno36.json</span><span class='duration'>0.41007s</span></dd>
     <script type="text/javascript">moveProgressBar('20.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno36.json</span><span class='duration'>0.46188s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno36.json</span><span class='duration'>0.51666s</span></dd>
     <script type="text/javascript">moveProgressBar('20.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno37.json</span><span class='duration'>0.40973s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno37.json</span><span class='duration'>0.40744s</span></dd>
     <script type="text/javascript">moveProgressBar('20.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno37.json</span><span class='duration'>0.41883s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno37.json</span><span class='duration'>0.45697s</span></dd>
     <script type="text/javascript">moveProgressBar('21.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno38.json</span><span class='duration'>0.40858s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno38.json</span><span class='duration'>0.41814s</span></dd>
     <script type="text/javascript">moveProgressBar('21.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno38.json</span><span class='duration'>0.42859s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno38.json</span><span class='duration'>0.47516s</span></dd>
     <script type="text/javascript">moveProgressBar('21.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno39.json</span><span class='duration'>0.40895s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno39.json</span><span class='duration'>0.40740s</span></dd>
     <script type="text/javascript">moveProgressBar('22.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno39.json</span><span class='duration'>0.43305s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno39.json</span><span class='duration'>0.47724s</span></dd>
     <script type="text/javascript">moveProgressBar('22.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno4.json</span><span class='duration'>0.40418s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno4.json</span><span class='duration'>0.40581s</span></dd>
     <script type="text/javascript">moveProgressBar('22.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno4.json</span><span class='duration'>0.41959s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno4.json</span><span class='duration'>0.44846s</span></dd>
     <script type="text/javascript">moveProgressBar('23.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno40.json</span><span class='duration'>0.40339s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno40.json</span><span class='duration'>0.40389s</span></dd>
     <script type="text/javascript">moveProgressBar('23.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno40.json</span><span class='duration'>0.41272s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno40.json</span><span class='duration'>0.45315s</span></dd>
     <script type="text/javascript">moveProgressBar('23.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno41-example44.json</span><span class='duration'>0.44075s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno41-example44.json</span><span class='duration'>0.44327s</span></dd>
     <script type="text/javascript">moveProgressBar('24.1');</script>
-    <dd class="example failed">
-      <span class="failed_spec_name">lint anno41-example44.json</span>
-      <span class="duration">0.61425s</span>
-      <div class="failure" id="failure_2">
-        <div class="message"><pre>Failure/Error: expect(gjld.lint).to be_empty
-  expected `{:property=&gt;{&quot;dc:creator&quot;=&gt;[&quot;Object &lt;http://example.org/user1&gt; not compatible with range (dc:Agent)&quot;, &quot;Object &lt;http://example.org/user2&gt; not compatible with range (dc:Agent)&quot;]}}.empty?` to return true, got false</pre></div>
-        <div class="backtrace"><pre>./annotation-vocab_spec.rb:42:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
-    <pre class="ruby"><code><span class="linenum">40</span>      it "lint #{file.split('/').last}" do
-<span class="linenum">41</span>        gjld = RDF::Graph.load(file, format: :jsonld)
-<span class="offending"><span class="linenum">42</span>        expect(gjld.lint).to be_empty</span>
-<span class="linenum">43</span>      end
-<span class="linenum">44</span>    end
-<span class="linenum">45</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
-      </div>
-    </dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno41-example44.json</span><span class='duration'>0.95925s</span></dd>
     <script type="text/javascript">moveProgressBar('24.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno5.json</span><span class='duration'>0.41703s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno5.json</span><span class='duration'>0.40697s</span></dd>
     <script type="text/javascript">moveProgressBar('24.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno5.json</span><span class='duration'>0.42511s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno5.json</span><span class='duration'>0.45264s</span></dd>
     <script type="text/javascript">moveProgressBar('25.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno6.json</span><span class='duration'>0.39802s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno6.json</span><span class='duration'>0.40170s</span></dd>
     <script type="text/javascript">moveProgressBar('25.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno6.json</span><span class='duration'>0.42097s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno6.json</span><span class='duration'>0.42104s</span></dd>
     <script type="text/javascript">moveProgressBar('25.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno7.json</span><span class='duration'>0.40464s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno7.json</span><span class='duration'>0.41376s</span></dd>
     <script type="text/javascript">moveProgressBar('26.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno7.json</span><span class='duration'>0.42926s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno7.json</span><span class='duration'>0.46606s</span></dd>
     <script type="text/javascript">moveProgressBar('26.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno8.json</span><span class='duration'>0.40094s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno8.json</span><span class='duration'>0.39724s</span></dd>
     <script type="text/javascript">moveProgressBar('26.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno8.json</span><span class='duration'>0.40893s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno8.json</span><span class='duration'>0.41084s</span></dd>
     <script type="text/javascript">moveProgressBar('27.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno9.json</span><span class='duration'>0.42327s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno9.json</span><span class='duration'>0.40194s</span></dd>
     <script type="text/javascript">moveProgressBar('27.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint anno9.json</span><span class='duration'>0.45722s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint anno9.json</span><span class='duration'>0.46460s</span></dd>
     <script type="text/javascript">moveProgressBar('27.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">collection1.json</span><span class='duration'>0.91762s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">collection1.json</span><span class='duration'>0.90573s</span></dd>
     <script type="text/javascript">moveProgressBar('28.1');</script>
-    <dd class="example failed">
-      <span class="failed_spec_name">lint collection1.json</span>
-      <span class="duration">1.86126s</span>
-      <div class="failure" id="failure_3">
-        <div class="message"><pre>Failure/Error: expect(gjld.lint).to be_empty
-  expected `{:property=&gt;{&quot;dc:creator&quot;=&gt;[&quot;Object &lt;http://example.org/user1&gt; not compatible with range (dc:Agent)&quot;, &quot;Object &lt;http://example.org/user2&gt; not compatible with range (dc:Agent)&quot;]}}.empty?` to return true, got false</pre></div>
-        <div class="backtrace"><pre>./annotation-vocab_spec.rb:42:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
-    <pre class="ruby"><code><span class="linenum">40</span>      it "lint #{file.split('/').last}" do
-<span class="linenum">41</span>        gjld = RDF::Graph.load(file, format: :jsonld)
-<span class="offending"><span class="linenum">42</span>        expect(gjld.lint).to be_empty</span>
-<span class="linenum">43</span>      end
-<span class="linenum">44</span>    end
-<span class="linenum">45</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
-      </div>
-    </dd>
+    <dd class="example passed"><span class="passed_spec_name">lint collection1.json</span><span class='duration'>4.26839s</span></dd>
     <script type="text/javascript">moveProgressBar('28.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">example41.json</span><span class='duration'>0.40848s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">example41.json</span><span class='duration'>0.40925s</span></dd>
     <script type="text/javascript">moveProgressBar('28.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint example41.json</span><span class='duration'>0.41538s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint example41.json</span><span class='duration'>0.47124s</span></dd>
     <script type="text/javascript">moveProgressBar('29.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">example42.json</span><span class='duration'>0.41295s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">example42.json</span><span class='duration'>0.40436s</span></dd>
     <script type="text/javascript">moveProgressBar('29.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint example42.json</span><span class='duration'>0.44755s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint example42.json</span><span class='duration'>0.51869s</span></dd>
     <script type="text/javascript">moveProgressBar('29.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">example43.json</span><span class='duration'>0.41095s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">example43.json</span><span class='duration'>0.40405s</span></dd>
     <script type="text/javascript">moveProgressBar('30.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">lint example43.json</span><span class='duration'>0.44209s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">lint example43.json</span><span class='duration'>0.51149s</span></dd>
   </dl>
 </div>
 <div id="div_group_3" class="example_group passed">
   <dl style="margin-left: 15px;">
   <dt id="example_group_3" class="passed">detects errors in incorrect examples</dt>
     <script type="text/javascript">moveProgressBar('30.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno1.json</span><span class='duration'>0.00127s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno1.json</span><span class='duration'>0.00135s</span></dd>
     <script type="text/javascript">moveProgressBar('30.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno10.json</span><span class='duration'>0.00088s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno10.json</span><span class='duration'>0.00081s</span></dd>
     <script type="text/javascript">moveProgressBar('31.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno11.json</span><span class='duration'>0.20298s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno11.json</span><span class='duration'>0.20265s</span></dd>
     <script type="text/javascript">moveProgressBar('31.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno12.json</span><span class='duration'>0.00138s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno12.json</span><span class='duration'>0.00122s</span></dd>
     <script type="text/javascript">moveProgressBar('31.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno13.json</span><span class='duration'>0.00115s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno13.json</span><span class='duration'>0.00105s</span></dd>
     <script type="text/javascript">moveProgressBar('32.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno14.json</span><span class='duration'>0.00113s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno14.json</span><span class='duration'>0.00106s</span></dd>
     <script type="text/javascript">moveProgressBar('32.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno15.json</span><span class='duration'>0.00084s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno15.json</span><span class='duration'>0.00102s</span></dd>
     <script type="text/javascript">moveProgressBar('32.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno16.json</span><span class='duration'>0.00102s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno16.json</span><span class='duration'>0.00099s</span></dd>
     <script type="text/javascript">moveProgressBar('33.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno17.json</span><span class='duration'>0.00125s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno17.json</span><span class='duration'>0.00124s</span></dd>
     <script type="text/javascript">moveProgressBar('33.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno18.json</span><span class='duration'>0.00113s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno18.json</span><span class='duration'>0.00107s</span></dd>
     <script type="text/javascript">moveProgressBar('33.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno19.json</span><span class='duration'>0.00100s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno19.json</span><span class='duration'>0.00085s</span></dd>
+    <script type="text/javascript">makeRed('rspec-header');</script>
     <script type="text/javascript">makeRed('div_group_3');</script>
     <script type="text/javascript">makeRed('example_group_3');</script>
     <script type="text/javascript">moveProgressBar('34.1');</script>
     <dd class="example failed">
       <span class="failed_spec_name">anno2.json</span>
-      <span class="duration">0.01808s</span>
-      <div class="failure" id="failure_4">
+      <span class="duration">0.04773s</span>
+      <div class="failure" id="failure_1">
         <div class="message"><pre>Failure/Error: expect {RDF::Graph.load(file, validate: true, format: :jsonld, logger: false)}.to raise_error(RDF::ReaderError)
   expected RDF::ReaderError but nothing was raised</pre></div>
-        <div class="backtrace"><pre>./annotation-vocab_spec.rb:50:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
-    <pre class="ruby"><code><span class="linenum">48</span>    INCORRECT.each do |file|
-<span class="linenum">49</span>      it "#{file.split('/').last}" do
-<span class="offending"><span class="linenum">50</span>        expect {RDF::Graph.load(file, validate: true, format: :jsonld, logger: false)}.to raise_error(RDF::ReaderError)</span>
-<span class="linenum">51</span>      end
-<span class="linenum">52</span>    end
-<span class="linenum">53</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
+        <div class="backtrace"><pre>./annotation-vocab_spec.rb:51:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
+    <pre class="ruby"><code><span class="linenum">49</span>    INCORRECT.each do |file|
+<span class="linenum">50</span>      it "#{file.split('/').last}" do
+<span class="offending"><span class="linenum">51</span>        expect {RDF::Graph.load(file, validate: true, format: :jsonld, logger: false)}.to raise_error(RDF::ReaderError)</span>
+<span class="linenum">52</span>      end
+<span class="linenum">53</span>    end
+<span class="linenum">54</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
       </div>
     </dd>
     <script type="text/javascript">moveProgressBar('34.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno20.json</span><span class='duration'>0.00134s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno20.json</span><span class='duration'>0.00171s</span></dd>
     <script type="text/javascript">moveProgressBar('34.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno21.json</span><span class='duration'>0.00110s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno21.json</span><span class='duration'>0.00091s</span></dd>
     <script type="text/javascript">moveProgressBar('35.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno22.json</span><span class='duration'>0.00119s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno22.json</span><span class='duration'>0.00085s</span></dd>
     <script type="text/javascript">moveProgressBar('35.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno23.json</span><span class='duration'>0.00113s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno23.json</span><span class='duration'>0.00097s</span></dd>
     <script type="text/javascript">moveProgressBar('35.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno24.json</span><span class='duration'>0.00093s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno24.json</span><span class='duration'>0.00083s</span></dd>
     <script type="text/javascript">moveProgressBar('36.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno25.json</span><span class='duration'>0.00151s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno25.json</span><span class='duration'>0.00103s</span></dd>
     <script type="text/javascript">moveProgressBar('36.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno26.json</span><span class='duration'>0.20230s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno26.json</span><span class='duration'>0.20674s</span></dd>
     <script type="text/javascript">moveProgressBar('36.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno27.json</span><span class='duration'>0.20121s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno27.json</span><span class='duration'>0.19945s</span></dd>
     <script type="text/javascript">moveProgressBar('37.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno28.json</span><span class='duration'>0.20662s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno28.json</span><span class='duration'>0.20435s</span></dd>
     <script type="text/javascript">moveProgressBar('37.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno29.json</span><span class='duration'>0.20218s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno29.json</span><span class='duration'>0.20321s</span></dd>
     <script type="text/javascript">moveProgressBar('37.7');</script>
     <dd class="example failed">
       <span class="failed_spec_name">anno3.json</span>
-      <span class="duration">0.00147s</span>
-      <div class="failure" id="failure_5">
+      <span class="duration">0.00145s</span>
+      <div class="failure" id="failure_2">
         <div class="message"><pre>Failure/Error: expect {RDF::Graph.load(file, validate: true, format: :jsonld, logger: false)}.to raise_error(RDF::ReaderError)
   expected RDF::ReaderError but nothing was raised</pre></div>
-        <div class="backtrace"><pre>./annotation-vocab_spec.rb:50:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
-    <pre class="ruby"><code><span class="linenum">48</span>    INCORRECT.each do |file|
-<span class="linenum">49</span>      it "#{file.split('/').last}" do
-<span class="offending"><span class="linenum">50</span>        expect {RDF::Graph.load(file, validate: true, format: :jsonld, logger: false)}.to raise_error(RDF::ReaderError)</span>
-<span class="linenum">51</span>      end
-<span class="linenum">52</span>    end
-<span class="linenum">53</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
+        <div class="backtrace"><pre>./annotation-vocab_spec.rb:51:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
+    <pre class="ruby"><code><span class="linenum">49</span>    INCORRECT.each do |file|
+<span class="linenum">50</span>      it "#{file.split('/').last}" do
+<span class="offending"><span class="linenum">51</span>        expect {RDF::Graph.load(file, validate: true, format: :jsonld, logger: false)}.to raise_error(RDF::ReaderError)</span>
+<span class="linenum">52</span>      end
+<span class="linenum">53</span>    end
+<span class="linenum">54</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
       </div>
     </dd>
     <script type="text/javascript">moveProgressBar('38.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno30.json</span><span class='duration'>0.19868s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno30.json</span><span class='duration'>0.19957s</span></dd>
     <script type="text/javascript">moveProgressBar('38.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno31.json</span><span class='duration'>0.19989s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno31.json</span><span class='duration'>0.19605s</span></dd>
     <script type="text/javascript">moveProgressBar('38.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno32.json</span><span class='duration'>0.20629s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno32.json</span><span class='duration'>0.20219s</span></dd>
     <script type="text/javascript">moveProgressBar('39.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno33.json</span><span class='duration'>0.20429s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno33.json</span><span class='duration'>0.20425s</span></dd>
     <script type="text/javascript">moveProgressBar('39.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno34.json</span><span class='duration'>0.20031s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno34.json</span><span class='duration'>0.19847s</span></dd>
     <script type="text/javascript">moveProgressBar('39.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno35.json</span><span class='duration'>0.20237s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno35.json</span><span class='duration'>0.19727s</span></dd>
     <script type="text/javascript">moveProgressBar('40.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno36.json</span><span class='duration'>0.21067s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno36.json</span><span class='duration'>0.20083s</span></dd>
     <script type="text/javascript">moveProgressBar('40.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno37.json</span><span class='duration'>0.00117s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno37.json</span><span class='duration'>0.00093s</span></dd>
     <script type="text/javascript">moveProgressBar('40.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno38.json</span><span class='duration'>0.20173s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno38.json</span><span class='duration'>0.20592s</span></dd>
     <script type="text/javascript">moveProgressBar('41.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno39.json</span><span class='duration'>0.20124s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno39.json</span><span class='duration'>0.20149s</span></dd>
     <script type="text/javascript">moveProgressBar('41.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno4.json</span><span class='duration'>0.00386s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno4.json</span><span class='duration'>0.00369s</span></dd>
     <script type="text/javascript">moveProgressBar('41.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno5.json</span><span class='duration'>0.11288s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno5.json</span><span class='duration'>0.55317s</span></dd>
     <script type="text/javascript">moveProgressBar('42.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno6.json</span><span class='duration'>0.20330s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno6.json</span><span class='duration'>0.22529s</span></dd>
     <script type="text/javascript">moveProgressBar('42.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno7.json</span><span class='duration'>0.20365s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno7.json</span><span class='duration'>0.19962s</span></dd>
     <script type="text/javascript">moveProgressBar('42.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno8.json</span><span class='duration'>0.20176s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno8.json</span><span class='duration'>0.20848s</span></dd>
     <script type="text/javascript">moveProgressBar('43.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">anno9.json</span><span class='duration'>0.20546s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">anno9.json</span><span class='duration'>0.20712s</span></dd>
   </dl>
 </div>
 <div id="div_group_4" class="example_group passed">
   <dl style="margin-left: 15px;">
   <dt id="example_group_4" class="passed">The ontology documents can be parsed without errors by RDF Schema validators</dt>
     <script type="text/javascript">moveProgressBar('43.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">JSON-LD version is isomorphic to jsonld</span><span class='duration'>0.39309s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">JSON-LD version is isomorphic to jsonld</span><span class='duration'>0.34922s</span></dd>
     <script type="text/javascript">moveProgressBar('43.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">JSON-LD version is isomorphic to rdfa</span><span class='duration'>0.28674s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">JSON-LD version is isomorphic to rdfa</span><span class='duration'>0.26817s</span></dd>
     <script type="text/javascript">moveProgressBar('44.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">JSON-LD version is isomorphic to rdfxml</span><span class='duration'>0.51650s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">JSON-LD version is isomorphic to rdfxml</span><span class='duration'>0.42203s</span></dd>
     <script type="text/javascript">moveProgressBar('44.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">JSON-LD version is isomorphic to ttl</span><span class='duration'>0.73507s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">JSON-LD version is isomorphic to ttl</span><span class='duration'>0.51753s</span></dd>
   </dl>
 </div>
 <div id="div_group_5" class="example_group passed">
@@ -650,8 +606,8 @@ a {
     <script type="text/javascript">moveProgressBar('44.7');</script>
     <dd class="example failed">
       <span class="failed_spec_name">rdfa</span>
-      <span class="duration">0.70652s</span>
-      <div class="failure" id="failure_6">
+      <span class="duration">0.49624s</span>
+      <div class="failure" id="failure_3">
         <div class="message"><pre>Failure/Error: expect(fg).to be_equivalent_graph(vocab_graph)
 
   Graph entry counts differ:
@@ -1075,9 +1031,9 @@ a {
 
   oa: a owl:Ontology;
      dc11:title &quot;Web Annotation Ontology&quot;;
-     dc:creator &quot;Benjamin Young&quot;,
-       &quot;Paolo Ciccarese&quot;,
-       &quot;Robert Sanderson&quot;;
+     dc:creator &quot;Paolo Ciccarese&quot;,
+       &quot;Robert Sanderson&quot;,
+       &quot;Benjamin Young&quot;;
      dc:modified &quot;2016-06-03T14:54:43Z&quot;;
      rdfs:comment &quot;The Web Annotation ontology defines the terms of the Web Annotation vocabulary&quot;;
      rdfs:seeAlso &lt;http://www.w3.org/TR/annotation-vocab/&gt;;
@@ -1111,27 +1067,27 @@ a {
      foaf:name &quot;Benjamin Young&quot;
    ]) .
 
-  _:g70121934222540 a foaf:Person;
+  _:g70104632253540 a foaf:Person;
      foaf:homepage &lt;http://www.stanford.edu/~azaroth/&gt;;
      foaf:mbox &lt;mailto:azaroth42@gmail.com&gt;;
      foaf:name &quot;Robert Sanderson&quot;;
      foaf:workplaceHomepage &lt;http://www.stanford.edu/&gt; .
 
   Debug:</pre></div>
-        <div class="backtrace"><pre>./annotation-vocab_spec.rb:81:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
-    <pre class="ruby"><code><span class="linenum">79</span>        # XXX Normalize whitespace in literals to ease comparision
-<span class="linenum">80</span>        fg.each_object {|o| o.squish! if o.literal?}
-<span class="offending"><span class="linenum">81</span>        expect(fg).to be_equivalent_graph(vocab_graph)</span>
-<span class="linenum">82</span>      end
-<span class="linenum">83</span>    end
-<span class="linenum">84</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
+        <div class="backtrace"><pre>./annotation-vocab_spec.rb:82:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
+    <pre class="ruby"><code><span class="linenum">80</span>        # XXX Normalize whitespace in literals to ease comparision
+<span class="linenum">81</span>        fg.each_object {|o| o.squish! if o.literal?}
+<span class="offending"><span class="linenum">82</span>        expect(fg).to be_equivalent_graph(vocab_graph)</span>
+<span class="linenum">83</span>      end
+<span class="linenum">84</span>    end
+<span class="linenum">85</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
       </div>
     </dd>
     <script type="text/javascript">moveProgressBar('45.0');</script>
     <dd class="example failed">
       <span class="failed_spec_name">rdfxml</span>
-      <span class="duration">1.17725s</span>
-      <div class="failure" id="failure_7">
+      <span class="duration">0.89500s</span>
+      <div class="failure" id="failure_4">
         <div class="message"><pre>Failure/Error: expect(fg).to be_equivalent_graph(vocab_graph)
 
   Graphs differ
@@ -1553,9 +1509,9 @@ a {
 
   oa: a owl:Ontology;
      dc11:title &quot;Web Annotation Ontology&quot;;
-     dc:creator &quot;Benjamin Young&quot;,
-       &quot;Paolo Ciccarese&quot;,
-       &quot;Robert Sanderson&quot;;
+     dc:creator &quot;Paolo Ciccarese&quot;,
+       &quot;Robert Sanderson&quot;,
+       &quot;Benjamin Young&quot;;
      dc:modified &quot;2016-06-03T14:54:43Z&quot;;
      rdfs:comment &quot;The Web Annotation ontology defines the terms of the Web Annotation vocabulary&quot;;
      rdfs:seeAlso &lt;http://www.w3.org/TR/annotation-vocab/&gt;;
@@ -1977,9 +1933,9 @@ a {
 
   oa: a owl:Ontology;
      dc11:title &quot;Web Annotation Ontology&quot;;
-     dc:creator &quot;Benjamin Young&quot;,
+     dc:creator &quot;Paolo Ciccarese&quot;,
        &quot;Robert Sanderson&quot;,
-       &quot;Paolo Ciccarese&quot;;
+       &quot;Benjamin Young&quot;;
      dc:modified &quot;2016-06-03T14:54:43Z&quot;;
      rdfs:comment &quot;The Web Annotation ontology defines the terms of the Web Annotation vocabulary&quot;;
      rdfs:seeAlso &lt;http://www.w3.org/TR/annotation-vocab/&gt;;
@@ -1987,17 +1943,17 @@ a {
      owl:versionInfo &quot;2016-06-03T14:54:43Z&quot; .
 
   Debug:</pre></div>
-        <div class="backtrace"><pre>./annotation-vocab_spec.rb:81:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
-    <pre class="ruby"><code><span class="linenum">79</span>        # XXX Normalize whitespace in literals to ease comparision
-<span class="linenum">80</span>        fg.each_object {|o| o.squish! if o.literal?}
-<span class="offending"><span class="linenum">81</span>        expect(fg).to be_equivalent_graph(vocab_graph)</span>
-<span class="linenum">82</span>      end
-<span class="linenum">83</span>    end
-<span class="linenum">84</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
+        <div class="backtrace"><pre>./annotation-vocab_spec.rb:82:in `block (4 levels) in &lt;top (required)&gt;&#39;</pre></div>
+    <pre class="ruby"><code><span class="linenum">80</span>        # XXX Normalize whitespace in literals to ease comparision
+<span class="linenum">81</span>        fg.each_object {|o| o.squish! if o.literal?}
+<span class="offending"><span class="linenum">82</span>        expect(fg).to be_equivalent_graph(vocab_graph)</span>
+<span class="linenum">83</span>      end
+<span class="linenum">84</span>    end
+<span class="linenum">85</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
       </div>
     </dd>
     <script type="text/javascript">moveProgressBar('45.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">ttl</span><span class='duration'>0.64352s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">ttl</span><span class='duration'>0.58140s</span></dd>
   </dl>
 </div>
 <div id="div_group_6" class="example_group passed">
@@ -2008,17 +1964,17 @@ a {
     <script type="text/javascript">moveProgressBar('45.6');</script>
     <dd class="example failed">
       <span class="failed_spec_name">lints cleanly</span>
-      <span class="duration">1.30993s</span>
-      <div class="failure" id="failure_8">
-        <div class="message"><pre>Failure/Error: expect(vocab_graph.lint).to be_empty
-  expected `{:class=&gt;{&quot;http://www.w3.org/ns/oa#rdf:Resource&quot;=&gt;[&quot;No class definition found&quot;]}, :property=&gt;{&quot;owl:pr...atible with range (dc:Agent)&quot;, &quot;Object \&quot;Robert Sanderson\&quot; not compatible with range (dc:Agent)&quot;]}}.empty?` to return true, got false</pre></div>
-        <div class="backtrace"><pre>./annotation-vocab_spec.rb:88:in `block (3 levels) in &lt;top (required)&gt;&#39;</pre></div>
-    <pre class="ruby"><code><span class="linenum">86</span>  context "The ontology is internally consistent with respect to domains, ranges, inverses, and any other ontology features specified." do
-<span class="linenum">87</span>    it "lints cleanly" do
-<span class="offending"><span class="linenum">88</span>      expect(vocab_graph.lint).to be_empty</span>
-<span class="linenum">89</span>    end
-<span class="linenum">90</span>
-<span class="linenum">91</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
+      <span class="duration">2.54825s</span>
+      <div class="failure" id="failure_5">
+        <div class="message"><pre>Failure/Error: expect(entailed_graph.lint).to be_empty
+  expected `{:class=&gt;{&quot;http://www.w3.org/ns/oa#rdf:Resource&quot;=&gt;[&quot;No class definition found&quot;]}, :property=&gt;{&quot;dc:con...mpatible with range (dc:Agent)&quot;, &quot;Object \&quot;Benjamin Young\&quot; not compatible with range (dc:Agent)&quot;]}}.empty?` to return true, got false</pre></div>
+        <div class="backtrace"><pre>./annotation-vocab_spec.rb:90:in `block (3 levels) in &lt;top (required)&gt;&#39;</pre></div>
+    <pre class="ruby"><code><span class="linenum">88</span>    it "lints cleanly" do
+<span class="linenum">89</span>      entailed_graph = vocab_graph.dup.entail!
+<span class="offending"><span class="linenum">90</span>      expect(entailed_graph.lint).to be_empty</span>
+<span class="linenum">91</span>    end
+<span class="linenum">92</span>
+<span class="linenum">93</span><span class="comment"># Install the coderay gem to get syntax highlighting</span></code></pre>
       </div>
     </dd>
   </dl>
@@ -2027,106 +1983,106 @@ a {
   <dl style="margin-left: 30px;">
   <dt id="example_group_7" class="passed">oa:Annotation</dt>
     <script type="text/javascript">moveProgressBar('46.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00039s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00021s</span></dd>
     <script type="text/javascript">moveProgressBar('46.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00177s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00092s</span></dd>
   </dl>
 </div>
 <div id="div_group_8" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_8" class="passed">oa:Choice</dt>
     <script type="text/javascript">moveProgressBar('46.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00445s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00314s</span></dd>
     <script type="text/javascript">moveProgressBar('47.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00146s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00057s</span></dd>
   </dl>
 </div>
 <div id="div_group_9" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_9" class="passed">oa:Composite</dt>
     <script type="text/javascript">moveProgressBar('47.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00486s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00341s</span></dd>
     <script type="text/javascript">moveProgressBar('47.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00147s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00055s</span></dd>
   </dl>
 </div>
 <div id="div_group_10" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_10" class="passed">oa:CssSelector</dt>
     <script type="text/javascript">moveProgressBar('48.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00219s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00099s</span></dd>
     <script type="text/javascript">moveProgressBar('48.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00088s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00090s</span></dd>
   </dl>
 </div>
 <div id="div_group_11" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_11" class="passed">oa:CssStyle</dt>
     <script type="text/javascript">moveProgressBar('48.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00168s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00130s</span></dd>
     <script type="text/javascript">moveProgressBar('49.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00081s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00059s</span></dd>
   </dl>
 </div>
 <div id="div_group_12" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_12" class="passed">oa:DataPositionSelector</dt>
     <script type="text/javascript">moveProgressBar('49.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00132s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00100s</span></dd>
     <script type="text/javascript">moveProgressBar('49.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00068s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00053s</span></dd>
   </dl>
 </div>
 <div id="div_group_13" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_13" class="passed">oa:Direction</dt>
     <script type="text/javascript">moveProgressBar('50.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00016s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00020s</span></dd>
     <script type="text/javascript">moveProgressBar('50.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00098s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00080s</span></dd>
   </dl>
 </div>
 <div id="div_group_14" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_14" class="passed">oa:FragmentSelector</dt>
     <script type="text/javascript">moveProgressBar('50.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00157s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00135s</span></dd>
     <script type="text/javascript">moveProgressBar('50.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00070s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00060s</span></dd>
   </dl>
 </div>
 <div id="div_group_15" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_15" class="passed">oa:HttpRequestState</dt>
     <script type="text/javascript">moveProgressBar('51.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00112s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00102s</span></dd>
     <script type="text/javascript">moveProgressBar('51.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00083s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00086s</span></dd>
   </dl>
 </div>
 <div id="div_group_16" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_16" class="passed">oa:Independents</dt>
     <script type="text/javascript">moveProgressBar('51.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00361s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00279s</span></dd>
     <script type="text/javascript">moveProgressBar('52.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00100s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00054s</span></dd>
   </dl>
 </div>
 <div id="div_group_17" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_17" class="passed">oa:List</dt>
     <script type="text/javascript">moveProgressBar('52.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00435s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00335s</span></dd>
     <script type="text/javascript">moveProgressBar('52.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00094s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00055s</span></dd>
   </dl>
 </div>
 <div id="div_group_18" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_18" class="passed">oa:Motivation</dt>
     <script type="text/javascript">moveProgressBar('53.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.01775s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00143s</span></dd>
     <script type="text/javascript">moveProgressBar('53.6');</script>
     <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00079s</span></dd>
   </dl>
@@ -2135,489 +2091,489 @@ a {
   <dl style="margin-left: 30px;">
   <dt id="example_group_19" class="passed">oa:RangeSelector</dt>
     <script type="text/javascript">moveProgressBar('53.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00110s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00127s</span></dd>
     <script type="text/javascript">moveProgressBar('54.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00078s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00053s</span></dd>
   </dl>
 </div>
 <div id="div_group_20" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_20" class="passed">oa:ResourceSelection</dt>
     <script type="text/javascript">moveProgressBar('54.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00025s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00013s</span></dd>
     <script type="text/javascript">moveProgressBar('54.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00101s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00057s</span></dd>
   </dl>
 </div>
 <div id="div_group_21" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_21" class="passed">oa:Selector</dt>
     <script type="text/javascript">moveProgressBar('55.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00024s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('55.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00072s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00065s</span></dd>
   </dl>
 </div>
 <div id="div_group_22" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_22" class="passed">oa:SpecificResource</dt>
     <script type="text/javascript">moveProgressBar('55.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00118s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00153s</span></dd>
     <script type="text/javascript">moveProgressBar('56.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00091s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00064s</span></dd>
   </dl>
 </div>
 <div id="div_group_23" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_23" class="passed">oa:State</dt>
     <script type="text/javascript">moveProgressBar('56.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00016s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00013s</span></dd>
     <script type="text/javascript">moveProgressBar('56.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00098s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00058s</span></dd>
   </dl>
 </div>
 <div id="div_group_24" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_24" class="passed">oa:Style</dt>
     <script type="text/javascript">moveProgressBar('57.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00031s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('57.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00078s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00055s</span></dd>
   </dl>
 </div>
 <div id="div_group_25" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_25" class="passed">oa:SvgSelector</dt>
     <script type="text/javascript">moveProgressBar('57.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00128s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00138s</span></dd>
     <script type="text/javascript">moveProgressBar('58.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00085s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00080s</span></dd>
   </dl>
 </div>
 <div id="div_group_26" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_26" class="passed">oa:TextPositionSelector</dt>
     <script type="text/javascript">moveProgressBar('58.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00157s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00100s</span></dd>
     <script type="text/javascript">moveProgressBar('58.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00065s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00051s</span></dd>
   </dl>
 </div>
 <div id="div_group_27" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_27" class="passed">oa:TextQuoteSelector</dt>
     <script type="text/javascript">moveProgressBar('59.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00134s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00118s</span></dd>
     <script type="text/javascript">moveProgressBar('59.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00098s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00085s</span></dd>
   </dl>
 </div>
 <div id="div_group_28" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_28" class="passed">oa:TextualBody</dt>
     <script type="text/javascript">moveProgressBar('59.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00024s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00014s</span></dd>
     <script type="text/javascript">moveProgressBar('60.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00109s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00066s</span></dd>
   </dl>
 </div>
 <div id="div_group_29" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_29" class="passed">oa:TimeState</dt>
     <script type="text/javascript">moveProgressBar('60.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00129s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00097s</span></dd>
     <script type="text/javascript">moveProgressBar('60.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00060s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00053s</span></dd>
   </dl>
 </div>
 <div id="div_group_30" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_30" class="passed">oa:XPathSelector</dt>
     <script type="text/javascript">moveProgressBar('61.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00122s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subClassOf</span><span class='duration'>0.00128s</span></dd>
     <script type="text/javascript">moveProgressBar('61.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00076s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentClass</span><span class='duration'>0.00068s</span></dd>
   </dl>
 </div>
 <div id="div_group_31" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_31" class="passed">oa:annotationService</dt>
     <script type="text/javascript">moveProgressBar('61.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00014s</span></dd>
     <script type="text/javascript">moveProgressBar('62.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00026s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00016s</span></dd>
     <script type="text/javascript">moveProgressBar('62.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00020s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00012s</span></dd>
     <script type="text/javascript">moveProgressBar('62.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00013s</span></dd>
   </dl>
 </div>
 <div id="div_group_32" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_32" class="passed">oa:bodyValue</dt>
     <script type="text/javascript">moveProgressBar('63.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00016s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('63.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00141s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00098s</span></dd>
     <script type="text/javascript">moveProgressBar('63.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00140s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00087s</span></dd>
     <script type="text/javascript">moveProgressBar('64.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00024s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00019s</span></dd>
   </dl>
 </div>
 <div id="div_group_33" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_33" class="passed">oa:cachedSource</dt>
     <script type="text/javascript">moveProgressBar('64.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00020s</span></dd>
     <script type="text/javascript">moveProgressBar('64.9');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00144s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00154s</span></dd>
     <script type="text/javascript">moveProgressBar('65.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00017s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('65.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00014s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00012s</span></dd>
   </dl>
 </div>
 <div id="div_group_34" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_34" class="passed">oa:canonical</dt>
     <script type="text/javascript">moveProgressBar('65.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00015s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('66.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('66.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00013s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('66.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00028s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00016s</span></dd>
   </dl>
 </div>
 <div id="div_group_35" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_35" class="passed">oa:end</dt>
     <script type="text/javascript">moveProgressBar('67.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00023s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('67.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00025s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('67.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00170s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00131s</span></dd>
     <script type="text/javascript">moveProgressBar('68.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00029s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00023s</span></dd>
   </dl>
 </div>
 <div id="div_group_36" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_36" class="passed">oa:exact</dt>
     <script type="text/javascript">moveProgressBar('68.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00018s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('68.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00014s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00012s</span></dd>
     <script type="text/javascript">moveProgressBar('69.2');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00133s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00115s</span></dd>
     <script type="text/javascript">moveProgressBar('69.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00026s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00012s</span></dd>
   </dl>
 </div>
 <div id="div_group_37" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_37" class="passed">oa:hasBody</dt>
     <script type="text/javascript">moveProgressBar('69.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('70.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00157s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00105s</span></dd>
     <script type="text/javascript">moveProgressBar('70.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('70.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00013s</span></dd>
   </dl>
 </div>
 <div id="div_group_38" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_38" class="passed">oa:hasEndSelector</dt>
     <script type="text/javascript">moveProgressBar('71.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00018s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00017s</span></dd>
     <script type="text/javascript">moveProgressBar('71.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00119s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00143s</span></dd>
     <script type="text/javascript">moveProgressBar('71.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00141s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00117s</span></dd>
     <script type="text/javascript">moveProgressBar('72.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00025s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00021s</span></dd>
   </dl>
 </div>
 <div id="div_group_39" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_39" class="passed">oa:hasPurpose</dt>
     <script type="text/javascript">moveProgressBar('72.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00013s</span></dd>
     <script type="text/javascript">moveProgressBar('72.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00023s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('73.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00123s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00101s</span></dd>
     <script type="text/javascript">moveProgressBar('73.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00015s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00020s</span></dd>
   </dl>
 </div>
 <div id="div_group_40" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_40" class="passed">oa:hasScope</dt>
     <script type="text/javascript">moveProgressBar('73.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00013s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00020s</span></dd>
     <script type="text/javascript">moveProgressBar('74.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00137s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00117s</span></dd>
     <script type="text/javascript">moveProgressBar('74.5');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00018s</span></dd>
     <script type="text/javascript">moveProgressBar('74.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00027s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00014s</span></dd>
   </dl>
 </div>
 <div id="div_group_41" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_41" class="passed">oa:hasSelector</dt>
     <script type="text/javascript">moveProgressBar('75.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00029s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('75.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00157s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00100s</span></dd>
     <script type="text/javascript">moveProgressBar('75.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00111s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00092s</span></dd>
     <script type="text/javascript">moveProgressBar('76.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00023s</span></dd>
   </dl>
 </div>
 <div id="div_group_42" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_42" class="passed">oa:hasSource</dt>
     <script type="text/javascript">moveProgressBar('76.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00023s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00015s</span></dd>
     <script type="text/javascript">moveProgressBar('76.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00172s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00132s</span></dd>
     <script type="text/javascript">moveProgressBar('77.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00018s</span></dd>
     <script type="text/javascript">moveProgressBar('77.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00026s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00013s</span></dd>
   </dl>
 </div>
 <div id="div_group_43" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_43" class="passed">oa:hasStartSelector</dt>
     <script type="text/javascript">moveProgressBar('77.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00020s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('78.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00154s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00109s</span></dd>
     <script type="text/javascript">moveProgressBar('78.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00142s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00094s</span></dd>
     <script type="text/javascript">moveProgressBar('78.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00023s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00026s</span></dd>
   </dl>
 </div>
 <div id="div_group_44" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_44" class="passed">oa:hasState</dt>
     <script type="text/javascript">moveProgressBar('79.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00015s</span></dd>
     <script type="text/javascript">moveProgressBar('79.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00150s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00124s</span></dd>
     <script type="text/javascript">moveProgressBar('79.8');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00120s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00108s</span></dd>
     <script type="text/javascript">moveProgressBar('80.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00023s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00013s</span></dd>
   </dl>
 </div>
 <div id="div_group_45" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_45" class="passed">oa:hasTarget</dt>
     <script type="text/javascript">moveProgressBar('80.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00012s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('80.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00158s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00100s</span></dd>
     <script type="text/javascript">moveProgressBar('81.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00017s</span></dd>
     <script type="text/javascript">moveProgressBar('81.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00024s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00021s</span></dd>
   </dl>
 </div>
 <div id="div_group_46" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_46" class="passed">oa:motivatedBy</dt>
     <script type="text/javascript">moveProgressBar('81.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00016s</span></dd>
     <script type="text/javascript">moveProgressBar('82.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00117s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00137s</span></dd>
     <script type="text/javascript">moveProgressBar('82.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00112s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00100s</span></dd>
     <script type="text/javascript">moveProgressBar('82.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00013s</span></dd>
   </dl>
 </div>
 <div id="div_group_47" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_47" class="passed">oa:prefix</dt>
     <script type="text/javascript">moveProgressBar('83.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00018s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('83.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00023s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00012s</span></dd>
     <script type="text/javascript">moveProgressBar('83.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00135s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00096s</span></dd>
     <script type="text/javascript">moveProgressBar('84.1');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00020s</span></dd>
   </dl>
 </div>
 <div id="div_group_48" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_48" class="passed">oa:processingLanguage</dt>
     <script type="text/javascript">moveProgressBar('84.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00015s</span></dd>
     <script type="text/javascript">moveProgressBar('84.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00025s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00013s</span></dd>
     <script type="text/javascript">moveProgressBar('85.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00108s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00122s</span></dd>
     <script type="text/javascript">moveProgressBar('85.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00017s</span></dd>
   </dl>
 </div>
 <div id="div_group_49" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_49" class="passed">oa:refinedBy</dt>
     <script type="text/javascript">moveProgressBar('85.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00015s</span></dd>
     <script type="text/javascript">moveProgressBar('86.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00016s</span></dd>
     <script type="text/javascript">moveProgressBar('86.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('86.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00026s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00012s</span></dd>
   </dl>
 </div>
 <div id="div_group_50" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_50" class="passed">oa:renderedVia</dt>
     <script type="text/javascript">moveProgressBar('87.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('87.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00162s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00115s</span></dd>
     <script type="text/javascript">moveProgressBar('87.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00112s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00149s</span></dd>
     <script type="text/javascript">moveProgressBar('88.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00024s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00015s</span></dd>
   </dl>
 </div>
 <div id="div_group_51" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_51" class="passed">oa:sourceDate</dt>
     <script type="text/javascript">moveProgressBar('88.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('88.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00148s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00097s</span></dd>
     <script type="text/javascript">moveProgressBar('89.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00123s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00085s</span></dd>
     <script type="text/javascript">moveProgressBar('89.4');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00012s</span></dd>
   </dl>
 </div>
 <div id="div_group_52" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_52" class="passed">oa:sourceDateEnd</dt>
     <script type="text/javascript">moveProgressBar('89.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00014s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00016s</span></dd>
     <script type="text/javascript">moveProgressBar('90.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00107s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00127s</span></dd>
     <script type="text/javascript">moveProgressBar('90.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00128s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00108s</span></dd>
     <script type="text/javascript">moveProgressBar('90.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00024s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00014s</span></dd>
   </dl>
 </div>
 <div id="div_group_53" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_53" class="passed">oa:sourceDateStart</dt>
     <script type="text/javascript">moveProgressBar('91.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00013s</span></dd>
     <script type="text/javascript">moveProgressBar('91.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00140s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00101s</span></dd>
     <script type="text/javascript">moveProgressBar('91.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00106s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00094s</span></dd>
     <script type="text/javascript">moveProgressBar('92.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00023s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00022s</span></dd>
   </dl>
 </div>
 <div id="div_group_54" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_54" class="passed">oa:start</dt>
     <script type="text/javascript">moveProgressBar('92.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00017s</span></dd>
     <script type="text/javascript">moveProgressBar('92.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00016s</span></dd>
     <script type="text/javascript">moveProgressBar('93.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00151s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00126s</span></dd>
     <script type="text/javascript">moveProgressBar('93.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00024s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00015s</span></dd>
   </dl>
 </div>
 <div id="div_group_55" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_55" class="passed">oa:styleClass</dt>
     <script type="text/javascript">moveProgressBar('93.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00026s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00015s</span></dd>
     <script type="text/javascript">moveProgressBar('94.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00117s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00111s</span></dd>
     <script type="text/javascript">moveProgressBar('94.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00135s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00123s</span></dd>
     <script type="text/javascript">moveProgressBar('94.7');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00033s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00019s</span></dd>
   </dl>
 </div>
 <div id="div_group_56" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_56" class="passed">oa:styledBy</dt>
     <script type="text/javascript">moveProgressBar('95.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00015s</span></dd>
     <script type="text/javascript">moveProgressBar('95.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00147s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00133s</span></dd>
     <script type="text/javascript">moveProgressBar('95.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00116s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00096s</span></dd>
     <script type="text/javascript">moveProgressBar('96.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00026s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00014s</span></dd>
   </dl>
 </div>
 <div id="div_group_57" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_57" class="passed">oa:suffix</dt>
     <script type="text/javascript">moveProgressBar('96.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00018s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('96.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00026s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('97.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00136s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00132s</span></dd>
     <script type="text/javascript">moveProgressBar('97.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00028s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00019s</span></dd>
   </dl>
 </div>
 <div id="div_group_58" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_58" class="passed">oa:textDirection</dt>
     <script type="text/javascript">moveProgressBar('97.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00022s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00011s</span></dd>
     <script type="text/javascript">moveProgressBar('98.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00017s</span></dd>
     <script type="text/javascript">moveProgressBar('98.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00123s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00122s</span></dd>
     <script type="text/javascript">moveProgressBar('98.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00017s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00012s</span></dd>
   </dl>
 </div>
 <div id="div_group_59" class="example_group passed">
   <dl style="margin-left: 30px;">
   <dt id="example_group_59" class="passed">oa:via</dt>
     <script type="text/javascript">moveProgressBar('99.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00021s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">subPropertyOf</span><span class='duration'>0.00018s</span></dd>
     <script type="text/javascript">moveProgressBar('99.3');</script>
-    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00016s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">domain</span><span class='duration'>0.00010s</span></dd>
     <script type="text/javascript">moveProgressBar('99.6');</script>
-    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00019s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">range</span><span class='duration'>0.00013s</span></dd>
     <script type="text/javascript">moveProgressBar('100.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00025s</span></dd>
+    <dd class="example passed"><span class="passed_spec_name">equivalentProperty</span><span class='duration'>0.00012s</span></dd>
   </dl>
 </div>
-<script type="text/javascript">document.getElementById('duration').innerHTML = "Finished in <strong>50.74409 seconds</strong>";</script>
-<script type="text/javascript">document.getElementById('totals').innerHTML = "302 examples, 8 failures";</script>
+<script type="text/javascript">document.getElementById('duration').innerHTML = "Finished in <strong>56.38077 seconds</strong>";</script>
+<script type="text/javascript">document.getElementById('totals').innerHTML = "302 examples, 5 failures";</script>
 </div>
 </div>
 </body>

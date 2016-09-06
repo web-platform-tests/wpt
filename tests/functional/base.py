@@ -12,6 +12,8 @@ import wptserve
 
 logging.basicConfig()
 
+wptserve.logger.set_logger(logging.getLogger())
+
 here = os.path.split(__file__)[0]
 doc_root = os.path.join(here, "docroot")
 

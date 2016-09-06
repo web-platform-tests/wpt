@@ -15,7 +15,9 @@ var All_Pointer_Events = [
 function check_PointerEvent(event, testNamePrefix) {
     if (testNamePrefix === undefined)
         testNamePrefix = "";
-    var pointerTestName = testNamePrefix + ' ' + event.pointerType + ' ' + event.type;
+
+    // Use expectedPointerType if set otherwise just use the incoming event pointerType in the test name.
+    var pointerTestName = testNamePrefix + ' ' + (expectedPointerType == null ? event.pointerType : expectedPointerType) + ' ' + event.type;
 
     if (expectedPointerType != null) {
         test(function () {
@@ -196,46 +198,43 @@ function rPointerCapture(e) {
 
 var globalPointerEventTest = null;
 var expectedPointerType = null;
-
 var HOVERABLE_POINTERS = ['mouse', 'pen'];
 
 function MultiPointerTypeTest(testName, types) {
     this.testName = testName;
     this.types = types;
     this.currentTypeIndex = 0;
+    this.currentTest = null;
     this.createNextTest();
 }
 
 MultiPointerTypeTest.prototype.skip = function() {
-    this.createNextTest().timeout();
+    var prevTest = this.currentTest;
+    this.createNextTest();
+    prevTest.timeout();
 }
 
 MultiPointerTypeTest.prototype.done = function() {
-    this.createNextTest().done();
+    var prevTest = this.currentTest;
+    this.createNextTest();
+    if (prevTest != null)
+        prevTest.done();
 }
 
 MultiPointerTypeTest.prototype.createNextTest = function() {
-    var prevTest = this.currentTest;
     if (this.currentTypeIndex < this.types.length) {
-       var pointerTypeDescription = document.getElementById('pointerTypeDescription');
-       document.getElementById('pointerTypeDescription').innerHTML = "Follow the test instructions with <span style='color: red'>" + this.types[this.currentTypeIndex] + "</span>. If you don't have the device <a href='javascript:;' onclick='globalPointerEventTest.skip()'>skip it</a>.";
-       this.currentTest = async_test(this.types[this.currentTypeIndex] + ' ' + this.testName);
-       expectedPointerType = this.types[this.currentTypeIndex];
-       this.currentTypeIndex++;
+        var pointerTypeDescription = document.getElementById('pointerTypeDescription');
+        document.getElementById('pointerTypeDescription').innerHTML = "Follow the test instructions with <span style='color: red'>" + this.types[this.currentTypeIndex] + "</span>. If you don't have the device <a href='javascript:;' onclick='globalPointerEventTest.skip()'>skip it</a>.";
+        this.currentTest = async_test(this.types[this.currentTypeIndex] + ' ' + this.testName);
+        expectedPointerType = this.types[this.currentTypeIndex];
+        this.currentTypeIndex++;
     } else {
         document.getElementById('pointerTypeDescription').innerHTML = "";
     }
-   resetTestState();
-   return prevTest;
+    resetTestState();
 }
 
 
-function setup_pointerevent_test(testName) {
-    if (typeof supported_pointerTypes != 'undefined') {
-      return globalPointerEventTest = new MultiPointerTypeTest(testName, supported_pointerTypes);
-    } else { // Multi-device test is not supported
-      // showPointerTypes is defined in pointerevent_support.js
-      add_completion_callback(showPointerTypes);
-      return async_test(testName);
-    }
+function setup_pointerevent_test(testName, supportedPointerTypes) {
+   return globalPointerEventTest = new MultiPointerTypeTest(testName, supportedPointerTypes);
 }

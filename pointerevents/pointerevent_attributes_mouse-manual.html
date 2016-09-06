@@ -9,7 +9,6 @@
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script>
-            var supported_pointerTypes = HOVERABLE_POINTERS;
             var detected_pointertypes = {};
             var detected_eventTypes = {};
 
@@ -22,7 +21,7 @@
                 if (detected_eventTypes[event.type])
                     return;
                 detected_eventTypes[event.type] = true;
-                var pointerTestName = testNamePrefix + ' ' + event.pointerType + ' ' + event.type;
+                var pointerTestName = testNamePrefix + ' ' + expectedPointerType + ' ' + event.type;
 
                 detected_pointertypes[event.pointerType] = true;
                 // Test button and buttons
@@ -69,7 +68,7 @@
             }
 
             function run() {
-                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes");
+                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", HOVERABLE_POINTERS);
                 var square1 = document.getElementById("square1");
                 var rectSquare1 = square1.getBoundingClientRect();
                 var innerFrame = document.getElementById('innerFrame');

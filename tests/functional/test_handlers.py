@@ -1,5 +1,6 @@
 import json
 import os
+import pytest
 import unittest
 import urllib2
 import uuid
@@ -95,6 +96,19 @@ class TestFunctionHandler(TestUsingServer):
         self.assertEqual("9", resp.info()["Content-Length"])
         self.assertEqual("test data", resp.read())
 
+    def test_tuple_1_rv(self):
+        @wptserve.handlers.handler
+        def handler(request, response):
+            return ()
+
+        route = ("GET", "/test/test_tuple_1_rv", handler)
+        self.server.router.register(*route)
+
+        with pytest.raises(urllib2.HTTPError) as cm:
+            self.request(route[1])
+
+        assert cm.value.code == 500
+
     def test_tuple_2_rv(self):
         @wptserve.handlers.handler
         def handler(request, response):
@@ -132,6 +146,32 @@ class TestFunctionHandler(TestUsingServer):
         self.assertEqual("Some Status", resp.msg)
         self.assertEqual("test-value", resp.info()["test-header"])
         self.assertEqual("test data", resp.read())
+
+    def test_tuple_4_rv(self):
+        @wptserve.handlers.handler
+        def handler(request, response):
+            return 202, [("test-header", "test-value")], "test data", "garbage"
+
+        route = ("GET", "/test/test_tuple_1_rv", handler)
+        self.server.router.register(*route)
+
+        with pytest.raises(urllib2.HTTPError) as cm:
+            self.request(route[1])
+
+        assert cm.value.code == 500
+
+    def test_none_rv(self):
+        @wptserve.handlers.handler
+        def handler(request, response):
+            return None
+
+        route = ("GET", "/test/test_none_rv", handler)
+        self.server.router.register(*route)
+        resp = self.request(route[1])
+        assert resp.getcode() == 200
+        assert "Content-Length" not in resp.info()
+        assert resp.read() == b""
+
 
 class TestJSONHandler(TestUsingServer):
     def test_json_0(self):
@@ -192,12 +232,43 @@ class TestPythonHandler(TestUsingServer):
         self.assertEqual("PASS", resp.info()["X-Test"])
         self.assertEqual("PASS", resp.read())
 
+    def test_no_main(self):
+        with pytest.raises(urllib2.HTTPError) as cm:
+            self.request("/no_main.py")
+
+        assert cm.value.code == 500
+
+    def test_invalid(self):
+        with pytest.raises(urllib2.HTTPError) as cm:
+            self.request("/invalid.py")
+
+        assert cm.value.code == 500
+
+    def test_missing(self):
+        with pytest.raises(urllib2.HTTPError) as cm:
+            self.request("/missing.py")
+
+        assert cm.value.code == 404
+
+
 class TestDirectoryHandler(TestUsingServer):
     def test_directory(self):
         resp = self.request("/")
         self.assertEqual(200, resp.getcode())
         self.assertEqual("text/html", resp.info()["Content-Type"])
         #Add a check that the response is actually sane
+
+    def test_subdirectory_trailing_slash(self):
+        resp = self.request("/subdir/")
+        assert resp.getcode() == 200
+        assert resp.info()["Content-Type"] == "text/html"
+
+    def test_subdirectory_no_trailing_slash(self):
+        with pytest.raises(urllib2.HTTPError) as cm:
+            self.request("/subdir")
+
+        assert cm.value.code == 404
+
 
 class TestAsIsHandler(TestUsingServer):
     def test_as_is(self):

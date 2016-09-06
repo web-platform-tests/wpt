@@ -17,7 +17,7 @@ function resolve(url) {
 }
 
 var tests = [
-  {input:'', expectedIDL:'', desc:'empty string'},
+  {input:'', expectedIDL:resolve(''), desc:'empty string'},
   {input:'http://foo bar', expectedIDL:'http://foo bar', desc:'unresolvable value'},
   {input:'test', expectedIDL:resolve('test'), desc:'resolvable value'},
   // Leading and trailing C0 controls and space is stripped per url spec.

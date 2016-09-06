@@ -86,8 +86,6 @@
       }, "Consume " + bodyType  + " request's body as JSON");
     }
 
-    var formData = new FormData();
-    formData.append("name", "value")
     var textData = JSON.stringify("This is response's body");
     var blob = new Blob([textData], { "type" : "text/plain" });
 
@@ -117,6 +115,8 @@
     checkRequestBody(new DataView(getArrayBufferWithZeros(), 1, 8), string, "DataView");
 
     promise_test(function(test) {
+      var formData = new FormData();
+      formData.append("name", "value")
       var request = new Request("", {"method": "POST", "body": formData });
       assert_false(request.bodyUsed, "bodyUsed is false at init");
       return checkBodyFormData(request, formData);

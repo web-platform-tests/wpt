@@ -25,30 +25,6 @@ ReflectionTests.start = new Date().getTime();
  */
 ReflectionTests.resolveUrl = function(url) {
     url = String(url);
-    if (url === "") {
-      return url;
-    }
-    return ReflectionTests.hyperlinkHref(url);
-};
-
-/**
- * HTMLHyperLinkElementUtils href
- *
- * The href attribute's getter must run these steps:
- *
- * 1. Reinitialize url.
- * 2. Let url be this element's url.
- * 3. If url is null and this element has no href content attribute, return the
- *    empty string.
- * 4. Otherwise, if url is null, return this element's href content attribute's
- *    value.
- * 5. Return url, serialized.
- *
- * The href attribute's setter must set this element's href content attribute's
- * value to the given value.
- */
-ReflectionTests.hyperlinkHref = function(url) {
-    url = String(url);
     var el = document.createElement("a");
     el.href = url;
     var ret = el.protocol + "//" + el.host + el.pathname + el.search + el.hash;
@@ -185,6 +161,8 @@ ReflectionTests.typeMap = {
      * value of the content attribute must be returned instead, converted to a
      * USVString. On setting, the content attribute must be set to the specified
      * new value."
+     *
+     * Also HTMLHyperLinkElementUtils href, used by a.href and area.href
      */
     "url": {
         "jsType": "string",
@@ -196,20 +174,6 @@ ReflectionTests.typeMap = {
                      {"valueOf":function(){return "test-valueOf";}, toString:null}],
         "domExpected": ReflectionTests.resolveUrl,
         "idlIdlExpected": ReflectionTests.resolveUrl
-    },
-    /**
-     * HTMLHyperLinkElementUtils href, used by a.href and area.href
-     */
-    "hyperlink href": {
-        "jsType": "string",
-        "defaultVal": "",
-        "domTests": ["", " foo   ", "http://site.example/ foo  bar   baz",
-                     "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
-                     false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null,
-                     {"toString":function(){return "test-toString";}},
-                     {"valueOf":function(){return "test-valueOf";}, toString:null}],
-        "domExpected": ReflectionTests.hyperlinkHref,
-        "idlIdlExpected": ReflectionTests.hyperlinkHref
     },
     /**
      * "If a reflecting IDL attribute is a DOMString whose content attribute is

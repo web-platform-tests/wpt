@@ -11,7 +11,7 @@ var textElements = {
     type: "string",
 
     // HTMLHyperlinkElementUtils
-    href: "hyperlink href",
+    href: "url",
 
     // Obsolete
     coords: "string",

@@ -1,9 +1,10 @@
 # WebDriver client for Python
 
-This package provides a WebDriver client compatible with
-the [W3C browser automation specification](https://w3c.github.io/webdriver/webdriver-spec.html).
+This package provides Python bindings
+that conform to the [W3C WebDriver standard](https://w3c.github.io/webdriver/webdriver-spec.html),
+which specifies a remote control protocol for web browsers.
 
-The client is written with determining
+These bindings are written with determining
 implementation compliance to the specification in mind,
 so that different remote end drivers
 can determine whether they meet the recognised standard.
@@ -30,8 +31,12 @@ that is checked out in `./tools`.
 
 ## Usage
 
-You can use the built-in context manager
-to manage the lifetime of the session:
+You can use the built-in
+[context manager](https://docs.python.org/2/reference/compound_stmts.html#the-with-statement)
+to manage the lifetime of the session.
+The session is started implicitly
+at the first call to a command if it has not already been started,
+and will implicitly be ended when exiting the context:
 
 ```py
 import webdriver
@@ -41,7 +46,7 @@ with webdriver.Session("127.0.0.1", 4444) as session:
     print "The current URL is %s" % session.url
 ```
 
-Functionally equivalent to the above,
+The following is functionally equivalent to the above,
 but giving you manual control of the session:
 
 ```py

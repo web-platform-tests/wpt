@@ -1,4 +1,4 @@
 importScripts("/resources/testharness.js");
-importScripts("ecdh_keys.js");
-
+importScripts("rsa_importKey.js");
 run_test();
+done();

@@ -9,22 +9,20 @@
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="pointerevent_support.js"></script>
         <script>
+            var supported_pointerTypes = HOVERABLE_POINTERS;
             var detected_pointertypes = {};
             var detected_eventTypes = {};
-            var test_pointerEvent = async_test("pointerevent attributes");
-            // showPointerTypes is defined in pointerevent_support.js
-            // Requirements: the callback function will reference the test_pointerEvent object and
-            // will fail unless the async_test is created with the var name "test_pointerEvent".
-            add_completion_callback(showPointerTypes);
 
+            function resetTestState() {
+                detected_eventTypes = {};
+                document.getElementById("square1").style.visibility = 'visible';
+                document.getElementById('innerFrame').contentDocument.getElementById("square2").style.visibility = 'hidden';
+            }
             function checkPointerEventAttributes(event, targetBoundingClientRect, testNamePrefix) {
                 if (detected_eventTypes[event.type])
                     return;
                 detected_eventTypes[event.type] = true;
                 var pointerTestName = testNamePrefix + ' ' + event.pointerType + ' ' + event.type;
-                test(function () {
-                    assert_equals(event.pointerType, 'mouse', 'pointerType should be mouse');
-                }, pointerTestName + ".pointerType attribute is correct.");
 
                 detected_pointertypes[event.pointerType] = true;
                 // Test button and buttons
@@ -54,11 +52,11 @@
                 // Test clientX and clientY
                 if (event.type != 'pointerout' && event.type != 'pointerleave' ) {
                     test(function () {
-                        assert_true(event.clientX >= targetBoundingClientRect.left && event.clientX < targetBoundingClientRect.right && event.clientY >= targetBoundingClientRect.top && event.clientY < targetBoundingClientRect.bottom, "ClientX/Y should be in the boundaries of the black box");
+                        assert_true(event.clientX >= targetBoundingClientRect.left && event.clientX < targetBoundingClientRect.right && event.clientY >= targetBoundingClientRect.top && event.clientY < targetBoundingClientRect.bottom, "ClientX/Y should be in the boundaries of the box");
                     }, pointerTestName + "'s ClientX and ClientY attributes are correct.");
                 } else {
                     test(function () {
-                        assert_true(event.clientX < targetBoundingClientRect.left || event.clientX > targetBoundingClientRect.right - 1 || event.clientY < targetBoundingClientRect.top || event.clientY > targetBoundingClientRect.bottom - 1, "ClientX/Y should be out of the boundaries of the black box");
+                        assert_true(event.clientX < targetBoundingClientRect.left || event.clientX > targetBoundingClientRect.right - 1 || event.clientY < targetBoundingClientRect.top || event.clientY > targetBoundingClientRect.bottom - 1, "ClientX/Y should be out of the boundaries of the box");
                     }, pointerTestName + "'s ClientX and ClientY attributes are correct.");
                 }
 
@@ -67,18 +65,11 @@
                     assert_equals(event.isPrimary, true, "isPrimary should be true");
                 }, pointerTestName + ".isPrimary attribute is correct.");
 
-                // Test width and height
-                test(function () {
-                  assert_equals(event.width, 1, "width of mouse should be 1");
-                }, pointerTestName + ".width attribute is correct.");
-                test(function () {
-                  assert_equals(event.height, 1, "height of mouse should be 1");
-                }, pointerTestName + ".height attribute is correct.");
-
                 check_PointerEvent(event, testNamePrefix);
             }
 
             function run() {
+                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes");
                 var square1 = document.getElementById("square1");
                 var rectSquare1 = square1.getBoundingClientRect();
                 var innerFrame = document.getElementById('innerFrame');
@@ -109,13 +100,14 @@
         </script>
     </head>
     <body onload="run()">
-        <h1>Pointer Events pointerdown tests</h1>
+        <h1>Pointer Events hoverable pointer attributes test</h1>
+        <h2 id="pointerTypeDescription"></h2>
         <h4>
-            Test Description: This test checks the properties of mouse pointer events.
+            Test Description: This test checks the properties of hoverable pointer events. If you are using hoverable pen don't leave the range of digitizer while doing the instructions.
             <ol>
-                 <li>Move your mouse over the black square and click on it.</li>
+                 <li>Move your pointer over the black square and click on it.</li>
                  <li>Then move it off the black square so that it disappears.</li>
-                 <li>When red square appears move your mouse over the red square and click on it.</li>
+                 <li>When red square appears move your pointer over the red square and click on it.</li>
                  <li>Then move it off the red square.</li>
             </ol>
 

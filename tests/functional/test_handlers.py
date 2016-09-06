@@ -1,5 +1,6 @@
 import json
 import os
+import pytest
 import unittest
 import urllib2
 import uuid
@@ -198,6 +199,18 @@ class TestDirectoryHandler(TestUsingServer):
         self.assertEqual(200, resp.getcode())
         self.assertEqual("text/html", resp.info()["Content-Type"])
         #Add a check that the response is actually sane
+
+    def test_subdirectory_trailing_slash(self):
+        resp = self.request("/subdir/")
+        assert resp.getcode() == 200
+        assert resp.info()["Content-Type"] == "text/html"
+
+    def test_subdirectory_no_trailing_slash(self):
+        with pytest.raises(urllib2.HTTPError) as cm:
+            self.request("/subdir")
+
+        assert cm.value.code == 404
+
 
 class TestAsIsHandler(TestUsingServer):
     def test_as_is(self):

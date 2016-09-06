@@ -18,9 +18,17 @@ in your virtualenv or system-wide:
 
     % python setup.py install
 
-Or if you want to contribute patches:
+Since this package does not have any external dependencies,
+you can also use the client directly from the checkout directory,
+which is useful if you want to contribute patches back:
 
-    % python setup.py develop
+    % cd /path/to/wdclient
+    % python
+    Python 2.7.12+ (default, Aug  4 2016, 20:04:34) 
+    [GCC 6.1.1 20160724] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import webdriver
+    >>> 
 
 If you are writing WebDriver specification tests for
 [WPT](https://github.com/w3c/web-platform-tests),

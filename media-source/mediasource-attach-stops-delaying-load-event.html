@@ -8,18 +8,23 @@
 async_test(function(test)
 {
     var receivedLoadEvent = false;
+    var receivedSourceOpenEvent = false;
 
     window.addEventListener("load", test.step_func(function() {
         assert_false(receivedLoadEvent, "window should not receive multiple load events");
         receivedLoadEvent = true;
+        assert_equals(document.readyState, "complete", "document should be complete");
+        if (receivedLoadEvent && receivedSourceOpenEvent) {
+            test.done();
+        }
     }));
 
     assert_equals(document.readyState, "loading", "document should not be complete yet");
     var video = document.createElement("video");
     var mediaSource = new MediaSource();
 
-    // |video| should stop delaying the load event long before either a
-    // "progress", "stalled" or "suspend" event are enqueued.
+    // |video| should stop delaying the load event long and complete the MediaSource attachment
+    // before either a "progress", "stalled" or "suspend" event are enqueued.
     video.addEventListener("suspend", test.unreached_func("unexpected 'suspend' event"));
     video.addEventListener("stalled", test.unreached_func("unexpected 'stalled' event"));
     video.addEventListener("progress", test.unreached_func("unexpected 'progress' event"));
@@ -28,11 +33,13 @@ async_test(function(test)
     video.addEventListener("error", test.unreached_func("unexpected 'error' event"));
 
     mediaSource.addEventListener("sourceopen", test.step_func(function() {
-        assert_true(receivedLoadEvent, "load event should have been received first");
+        assert_false(receivedSourceOpenEvent, "only one sourceopen event should occur in this test");
+        receivedSourceOpenEvent = true;
         assert_equals(video.networkState, video.NETWORK_LOADING);
         assert_equals(video.readyState, video.HAVE_NOTHING);
-        assert_equals(document.readyState, "complete", "document should be complete");
-        test.done();
+        if (receivedLoadEvent && receivedSourceOpenEvent) {
+            test.done();
+        }
     }));
 
     var mediaSourceURL = URL.createObjectURL(mediaSource);

@@ -7,7 +7,6 @@
 <script>
 test(function() {
 
-
 var fset = document.createElement("frameset");
 document.documentElement.appendChild(fset);
 
@@ -17,7 +16,6 @@ document.linkColor = "blue";
 document.vlinkColor = "blue";
 document.alinkColor = "blue";
 
-
 assert_equals(document.fgColor,"");
 assert_equals(document.bgColor,"");
 assert_equals(document.linkColor,"");
@@ -26,9 +24,9 @@ assert_equals(document.alinkColor,"");
 
 document.documentElement.removeChild(fset);
 
-} //setting the document color attributes with a frameset ); 
-
-
+}
+//setting the document color attributes with a frameset
+); 
 
 test(function() {
 
@@ -49,7 +47,7 @@ assert_equals(document.alinkColor,"");
 
 document.removeChild(fset);
 
-} //getting the document color attributes with a frameset  );
-
-
+}
+//getting the document color attributes with a frameset 
+);
 </script>

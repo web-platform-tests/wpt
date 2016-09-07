@@ -58,20 +58,23 @@
 
                   test.waitForExpectedEvents(function()
                   {
-                      // remove will not remove partial frames. The truncated duration is as such the highest end time
-                      // of the intersected track buffer ranges, and is greater than or equal to the highest coded frame
-                      // presentation time across all track buffer ranges.
-                      truncatedDuration = sourceBuffer.buffered.end(sourceBuffer.buffered.length-1);
                       assert_greater_than_equal(mediaElement.currentTime, seekTo, 'Playback time has reached seekTo');
-                      test.expectEvent(mediaElement, 'seeking', 'Seeking to truncated duration');
-
                       assert_false(sourceBuffer.updating, 'sourceBuffer.updating');
 
+                      // Remove will not remove partial frames, so the resulting duration is the highest end time
+                      // of the track buffer ranges, and is greater than or equal to the highest coded frame
+                      // presentation time across all track buffer ranges. We first obtain the intersected track buffer
+                      // ranges end time and set the duration to that value.
+                      truncatedDuration = sourceBuffer.buffered.end(sourceBuffer.buffered.length-1);
+                      assert_less_than(truncatedDuration, seekTo,
+                                       'remove has removed the current playback position from at least one track buffer');
+
                       mediaSource.duration = truncatedDuration;
+                      test.expectEvent(mediaElement, 'seeking', 'Seeking to truncated duration');
 
                       // The actual duration may be slightly higher than truncatedDuration because the
                       // duration is adjusted upwards if necessary to be the highest end time across all track buffer
-                      // ranges. Allow a slight increase here.
+                      // ranges. Allow that increase here.
                       assert_less_than_equal(truncatedDuration, mediaSource.duration,
                                               'Duration should not be less than what was set');
                       // Here, we assume no test media coded frame duration is longer than 100ms.

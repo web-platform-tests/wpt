@@ -82,6 +82,21 @@ class TestFileHandler(TestUsingServer):
             self.request("/document.txt", headers={"Range":"bytes=%i-%i" % (len(expected), len(expected) + 10)})
         self.assertEqual(cm.exception.code, 416)
 
+    def test_sub_config(self):
+        resp = self.request("/sub.sub.txt")
+        expected = b"localhost localhost %i" % self.server.port
+        assert resp.read().rstrip() == expected
+
+    def test_sub_headers(self):
+        resp = self.request("/sub_headers.sub.txt", headers={"X-Test": "PASS"})
+        expected = b"PASS"
+        assert resp.read().rstrip() == expected
+
+    def test_sub_params(self):
+        resp = self.request("/sub_params.sub.txt", query="test=PASS")
+        expected = b"PASS"
+        assert resp.read().rstrip() == expected
+
 
 class TestFunctionHandler(TestUsingServer):
     def test_string_rv(self):

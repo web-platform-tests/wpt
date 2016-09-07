@@ -69,6 +69,17 @@
 
                       mediaSource.duration = truncatedDuration;
 
+                      // The actual duration may be slightly higher than truncatedDuration because the
+                      // duration is adjusted upwards if necessary to be the highest end time across all track buffer
+                      // ranges. Allow a slight increase here.
+                      assert_less_than_equal(truncatedDuration, mediaSource.duration,
+                                              'Duration should not be less than what was set');
+                      // Here, we assume no test media coded frame duration is longer than 100ms.
+                      assert_less_than(mediaSource.duration - truncatedDuration, 0.1);
+
+                      // Update our truncatedDuration to be the actual new duration.
+                      truncatedDuration = mediaSource.duration;
+
                       assert_true(mediaElement.seeking, 'Seeking after setting truncatedDuration');
                   });
 

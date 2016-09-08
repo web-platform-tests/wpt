@@ -19,7 +19,7 @@
 
         var i = document.createElement('iframe');
         i.src = "data:text/html,<script>" +
-                "  window.top.postMessage('Hello!', '*');" +
+                "  window.parent.postMessage('Hello!', '*');" +
                 "</scr" + "ipt>";
         document.body.appendChild(i);
       }, "The origin of a 'data:' document in a frame is opaque.");

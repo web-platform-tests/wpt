@@ -139,6 +139,7 @@ enum TrackDefaultType {
 </script>
 <script>
 "use strict";
+setup({ explicit_done: true });
 var mediaSource;
 var sourceBuffer;
 var video = document.createElement("video");
@@ -159,6 +160,7 @@ var idlCheck = function() {
     TrackDefaultList: ['sourceBuffer.trackDefaults']
   });
   idlArray.test();
+  done();
 }
 mediaSource = new MediaSource();
 video.src = URL.createObjectURL(mediaSource);

@@ -5,6 +5,6 @@
   "label": "no source for specific resource",
   "body": "http://example.org/post1",
   "target": {
-    "type": "SpecificResource",
-  }  	
+    "type": "SpecificResource"
+  }
 }

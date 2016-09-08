@@ -7,8 +7,8 @@
   "target": {
     "type": "SpecificResource",
     "selector": {
-    	"type": "FragmentSelector",
-    	"value": ["xxx", "yyy"]
+      "type": "FragmentSelector",
+      "value": ["xxx", "yyy"]
     }
-  }  	
+  }
 }

@@ -7,7 +7,7 @@
   "target": {
     "type": "SpecificResource",
     "selector": {
-    	"type": "FragmentSelector"
+      "type": "FragmentSelector"
     }
-  }  	
+  }
 }

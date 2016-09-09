@@ -1,0 +1,20 @@
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Specific Resources have all required keys and all SR-level keys used meet required value constraints",
+  "description": "Specific Resources used as bodies or targets of Web Annotations: <ul> <li>MUST include certain properties (keys)</li> <li>Must meet constraints for Specific Resource as appropriate</li> <li>MUST satisfy model constraints on values of required and any optional Specific Resource-level keys used</li> </ul> Note: Optional Speicific Resource-level keys, optional constraints on key values, and optional and required details of Annotation, Agents and target(s) checked by other tests.",
+  "testType": "manual",
+  "ref": "https://www.w3.org/TR/annotation-model/#specific-resources",
+  "assertions": [
+    "specificResource/4.2-selectorValidIfPresent.json",
+    "specificResource/4.3-stateValidIfPresent.json",
+    "specificResource/4.3.3-refinedByValidated.json",
+    "specificResource/4.4-styleClassValidIfPresent.json",
+    "specificResource/4.2-fragmentCssXPathSelectorValid.json",
+    "specificResource/4.2.4-textQuoteSelectorValid.json",
+    "specificResource/4.2-TextDataPositionSelectorValid.json",
+    "specificResource/4.2.7-svgSelectorValid.json",
+    "specificResource/4.2.8-rangeSelectorValid.json",
+    "specificResource/4.3.1-timeStateValid.json",
+    "specificResource/4.3.2-httpRequestStateValid.json"
+  ]
+}

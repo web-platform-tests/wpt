@@ -1,0 +1,25 @@
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Bodies have all required keys and all Body-level keys used meet required value constraints",
+  "description": "Bodies of Web Annotations: <ul> <li>MUST include certain properties (keys)</li> <li>Must meet constraints for Choice, Set, Textual Body, Specific Resource as appropriate</li> <li>MUST satisfy model constraints on values of required and any optional Body-level keys used</li> </ul> Note: Optional Body-level keys, optional constraints on key values, and optional and required details of Annotation, Agents and target(s) checked by other tests.",
+  "testType": "manual",
+  "ref": "https://www.w3.org/TR/annotation-model/#bodies-and-targets",
+  "assertions": [
+    "annotations/3.2-bodyObjectsRecognized.json",
+    "bodiesTargets/3.2.1-bodyTextDirectionValidated.json",
+    "bodiesTargets/3.3.1-bodyCreatedValidated.json",
+    "bodiesTargets/3.3.1-bodyModifiedValidated.json",
+    "bodiesTargets/3.3.6-bodyRightsValidated.json",
+    "bodiesTargets/3.3.7-bodyCanonicalValidated.json",
+    "bodiesTargets/3.3.7-bodyViaValidated.json",
+    "bodiesTargets/3.2.7-bodyEWRNoItems.json",
+    "bodiesTargets/3.3.5-bodyEWRNoPurpose.json",
+    "bodiesTargets/3.2.4-bodyChoiceSetNoValue.json",
+    "bodiesTargets/4-bodyChoiceSetNoSource.json",
+    "bodiesTargets/3.3.5-bodyChoiceSetNoPurpose.json",
+    "bodiesTargets/3.2.7-bodyEmbeddedTextualNoItems.json",
+    "bodiesTargets/4-bodyEmbeddedTextualNoSource.json",
+    "bodiesTargets/3.2.7-bodySpecificResourceNoItems.json",
+    "bodiesTargets/4-bodySpecificResourceNoValue.json"
+  ]
+}

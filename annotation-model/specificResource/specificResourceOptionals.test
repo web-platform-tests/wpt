@@ -1,0 +1,27 @@
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Specific Resources have optional and recommended keys and best practices for values",
+  "description": "Specific Resources used as bodies or targets of Web Annotations: <ul> <li>Should include certain properties (keys)</li> <li>May include additional keys</li> <li>should have Annotation key values that conform to model recommended constraints</li> </ul> Note: On this test failing an assertion indicates that a recommended or optional feature has not been implemented or has not been implemented correctly, it does not mean the annotation is invalid.",
+  "testType": "manual",
+  "ref": "https://www.w3.org/TR/annotation-model/#specific-resources",
+  "assertions": [
+    "specificResource/4.2.1-conformsTo.json",
+    "specificResource/4.2.4-prefix.json",
+    "specificResource/4.2.4-suffix.json",
+    "specificResource/4.4-styleClass.json",
+    "specificResource/4.5-renderedVia.json",
+    "specificResource/4.6-scope.json",
+    "specificResource/4.2.1-fragmentSelector.json",
+    "specificResource/4.2.2-cssSelector.json",
+    "specificResource/4.2.3-xpathSelector.json",
+    "specificResource/4.2.4-textQuoteSelector.json",
+    "specificResource/4.2.5-textPositionSelector.json",
+    "specificResource/4.2.6-dataPositionSelector.json",
+    "specificResource/4.2.7-svgSelector.json",
+    "specificResource/4.2.8-rangeSelector.json",
+    "specificResource/4.3.1-timeState.json",
+    "specificResource/4.3.2-requestHeaderState.json",
+    "specificResource/4.3.1-cached.json",
+    "specificResource/4.3.3-refinedBy.json"
+  ]
+}

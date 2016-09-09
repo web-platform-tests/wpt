@@ -1,0 +1,25 @@
+{
+  "@context": "https://www.w3.org/ns/JSONtest-v1.jsonld",
+  "name": "Body or Target implements optional keys and meets optional key value constraints for Creator  Agents",
+  "description": "Agents (Creators) involved in a Body or Target: <ul> <li>Should include certain properties (keys)</li> <li>May include additional keys</li> <li>should have Agent key values that conform to model recommended constraints</li> </ul> Note: failing an assertion indicates that a recommended or optional feature has not been implemented or has not been implemented correctly. The Annotation may still be valid",
+  "testType": "manual",
+  "ref": "https://www.w3.org/TR/annotation-model/#other-properties",
+  "assertions": [
+    "bodiesTargets/3.3.2-bodyCreatorAgentIdImplemented.json",
+    "bodiesTargets/3.3.2-targCreatorAgentIdImplemented.json",
+    "bodiesTargets/3.3.2-bodyCreatorAgentTypeImplemented.json",
+    "bodiesTargets/3.3.2-targCreatorAgentTypeImplemented.json",
+    "bodiesTargets/3.3.2-bodyCreatorAgentNicknameImplemented.json",
+    "bodiesTargets/3.3.2-targCreatorAgentNicknameImplemented.json",
+    "bodiesTargets/3.3.2-bodyCreatorAgentSingleNameImplemented.json",
+    "bodiesTargets/3.3.2-targCreatorAgentSingleNameImplemented.json",
+    "bodiesTargets/3.3.2-bodyCreatorAgentNameImplemented.json",
+    "bodiesTargets/3.3.2-targCreatorAgentNameImplemented.json",
+    "bodiesTargets/3.3.2-bodyCreatorAgentEmailImplemented.json",
+    "bodiesTargets/3.3.2-targCreatorAgentEmailImplemented.json",
+    "bodiesTargets/3.3.2-bodyCreatorAgentEmail_sha1Implemented.json",
+    "bodiesTargets/3.3.2-targCreatorAgentEmail_sha1Implemented.json",
+    "bodiesTargets/3.3.2-bodyCreatorAgentHomepageImplemented.json",
+    "bodiesTargets/3.3.2-targCreatorAgentHomepageImplemented.json"
+  ]
+}

@@ -57,7 +57,7 @@ function runTest(config,qualifier) {
             return _video.setMediaKeys(_mediaKeys);
         }).then(function() {
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-            
+
             config.initData.forEach( function( initData ) {
                 var mediaKeySession = _mediaKeys.createSession( 'temporary' );
                 waitForEventAndRunStep('message', mediaKeySession, onMessage, test);

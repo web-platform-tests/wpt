@@ -16,7 +16,7 @@ function runTest(config,qualifier) {
         var _video = config.video,
             _mediaKeys,
             _mediaKeySessions = [ ];
-            
+
         function onFailure( error ) {
             forceTestFailureFromPromise(test, error);
         }
@@ -32,7 +32,7 @@ function runTest(config,qualifier) {
                 event.target.update( response ).catch(onFailure);
             });
         }
-        
+
         function onWaitingForKey(event) {
             consoleWrite( "waitingforkey");
         }
@@ -43,7 +43,7 @@ function runTest(config,qualifier) {
             waitForEventAndRunStep('waiting', _video, onStopped, test);
             waitForEventAndRunStep('stalled', _video, onStopped, test);
         }
-        
+
         function onStopped(event) {
             consoleWrite( event.type );
             if ( _mediaKeySessions.length < config.initData.length ) {
@@ -71,7 +71,7 @@ function runTest(config,qualifier) {
         }).then(function(){
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-            
+
             // Not using waitForEventAndRunStep() to avoid too many
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', onTimeupdate, true);

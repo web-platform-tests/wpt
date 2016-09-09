@@ -16,11 +16,11 @@ function runTest(config,qualifier) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource;
-            
+
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }
-        
+
         function onEncrypted(event) {
             assert_equals(event.target, _video);
             assert_true(event instanceof window.MediaEncryptedEvent);
@@ -28,10 +28,10 @@ function runTest(config,qualifier) {
 
             // Only create the session for the firs encrypted event
             if ( _mediaKeySession !== undefined ) return;
-            
+
             var initDataType = config.initData ? config.initDataType : event.initDataType;
             var initData = config.initData || event.initData;
-            
+
             _mediaKeySession = _mediaKeys.createSession( 'temporary' );
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
             _mediaKeySession.generateRequest( initDataType, initData ).catch(onFailure);
@@ -50,7 +50,7 @@ function runTest(config,qualifier) {
                 event.target.update( response ).catch(onFailure);
             });
         }
-        
+
         function onPlaying(event) {
             // Not using waitForEventAndRunStep() to avoid too many
             // EVENT(onTimeUpdate) logs.

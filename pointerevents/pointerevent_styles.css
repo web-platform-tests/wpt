@@ -1,6 +1,6 @@
 #innerFrame {
 position: absolute;
-top: 250px;
+top: 300px;
 left: 200px;
 height: 100px;
 width: 100px;
@@ -11,8 +11,8 @@ height: 100px;
 }
 
 #square1 {
-top: 250px;
-left: 100px;
+top: 330px;
+left: 150px;
 background: black;
 }
 

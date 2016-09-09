@@ -19,6 +19,11 @@
   <legend id=legend></legend>
  </fieldset>
 </form>
+
+<form hidden action="isindex-support.txt" target=isindex_iframe id=isindex_form>
+ <input name=isindex value=x>
+ <iframe name=isindex_iframe id=isindex_iframe></iframe>
+</form>
 <script>
 var tags = ['form', 'label', 'input', 'button', 'select', 'datalist',
 'optgroup', 'option', 'textarea', 'progress', 'meter', 'fieldset', 'legend'];
@@ -67,4 +72,14 @@ t('form', 'meter');
 // removed in https://github.com/whatwg/html/commit/da87ab9009d5aeca95a602e718439e35b00d0731
 t('item', 'form');
 t('namedItem', 'form');
+
+// <input name=isindex>
+// removed in https://github.com/whatwg/html/commit/5c44abc734eb483f9a7ec79da5844d2fe63d9c3b
+async_test(function() {
+  var iframe = document.getElementById('isindex_iframe');
+  iframe.onload = this.step_func_done(function() {
+    assert_regexp_match(iframe.contentWindow.location.href, /\?isindex=x$/);
+  });
+  document.getElementById('isindex_form').submit();
+}, '<input name=isindex> should not be supported');
 </script>

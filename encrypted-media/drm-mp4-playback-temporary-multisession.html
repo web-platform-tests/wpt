@@ -23,7 +23,7 @@
     <script src=/encrypted-media/util/drm-messagehandler.js></script>
 
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/playback-temporary-multikey-multisession.js></script>
+    <script src=/encrypted-media/scripts/playback-temporary-multisession.js></script>
 
   </head>
   <body>
@@ -46,7 +46,7 @@
                         videoType:          contentitem.video.type,
                         initDataType:       contentitem.initDataType,
                         initData:           getProprietaryInitDatas(contentitem).initDatas.map( base64DecodeToUnit8Array ),
-                        testcase:           'sequential' };
+                        testcase:           'multikey video' };
 
         runTest(config);
     </script>

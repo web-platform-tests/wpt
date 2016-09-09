@@ -1,9 +1,11 @@
 function runTest(config,qualifier) {
 
+    // This test assumes one session is required for each provided initData
+
     var testname = testnamePrefix( qualifier, config.keysystem )
                                     + ', temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', playback with multiple keys, single session, '
+                                    + ', playback with multiple sessions, '
                                     + config.testcase;
 
     var configuration = {   initDataTypes: [ config.initDataType ],
@@ -21,44 +23,13 @@ function runTest(config,qualifier) {
         function onFailure( error ) {
             forceTestFailureFromPromise(test, error);
         }
-        
-        function onEncrypted(event) {
-            assert_equals(event.target, _video);
-            assert_true(event instanceof window.MediaEncryptedEvent);
-            assert_equals(event.type, 'encrypted');
-
-            // Only create a session for the first encrypted event
-            if ( _mediaKeySessions.length > 0 ) return;
-
-            var mediaKeySession = _mediaKeys.createSession( 'temporary' );
-
-            waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
-
-            var initDataType, initData;
-            if ( config.initDataType && config.initData )
-            {
-                initDataType = config.initDataType;
-                initData = config.initData;
-            }
-            else
-            {
-                initDataType = event.initDataType;
-                initData = event.initData;
-            }
-
-            _mediaKeySessions.push( mediaKeySession );
-
-            mediaKeySession.generateRequest( initDataType, initData )
-            .catch(onFailure);
-        }
 
         function onMessage(event) {
             assert_any( assert_equals, event.target, _mediaKeySessions );
             assert_true( event instanceof window.MediaKeyMessageEvent );
             assert_equals( event.type, 'message');
 
-            assert_in_array( event.messageType,
-                             [ 'license-request', 'individualization-request' ] );
+            assert_in_array( event.messageType, [ 'license-request', 'individualization-request' ] );
 
             config.messagehandler( event.messageType, event.message ).then( function( response ) {
                 event.target.update( response ).catch(onFailure);
@@ -72,7 +43,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) ) {
+            if ( _video.currentTime > ( config.duration || 2 ) ) {
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
                 test.done();
@@ -85,9 +56,15 @@ function runTest(config,qualifier) {
             _mediaKeys = mediaKeys;
             return _video.setMediaKeys(_mediaKeys);
         }).then(function() {
-            waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-        }).then(function() {
+            
+            config.initData.forEach( function( initData ) {
+                var mediaKeySession = _mediaKeys.createSession( 'temporary' );
+                waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
+                _mediaKeySessions.push( mediaKeySession );
+                mediaKeySession.generateRequest( config.initDataType, initData ).catch( onFailure );
+            } );
+
             return testmediasource(config);
         }).then(function(source) {
             _mediaSource = source;

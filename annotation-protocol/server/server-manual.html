@@ -15,6 +15,8 @@ setup( { explicit_timeout: true, explicit_done: true } );
 // just ld+json here as the full profile'd media type is a SHOULD
 var MEDIA_TYPE = 'application/ld+json';
 var MEDIA_TYPE_REGEX = /application\/ld\+json/;
+var CONTAINER_LINK_TYPE_WITH_REL_REGEX = /\<http:\/\/www.w3.org\/ns\/(ldp#BasicContainer|oa#AnnotationCollection)\>; *rel="type"/;
+var ANNOTATION_LINK_TYPE_WITH_REL_REGEX = /\<http:\/\/www.w3.org\/ns\/ldp#Resource\>; *rel="type"/;
 // a request timeout if there is not one specified in the parent window
 
 var myTimeout = 5000;
@@ -188,7 +190,7 @@ function runTests( container_url, annotation_url ) {
       { header: 'Link', pat: /(.*)/, assertion: 'Containers MUST return a Link header (rfc5988) on all responses' },
       { header: 'ETag', pat: /(.*)/, assertion: 'Containers MUST have an ETag header'},
       { header: 'Vary', pat: /Accept/, assertion: 'Containers MUST have a Vary header with Accept in the value'},
-      { header: 'Link', pat: /rel\=\"type\"|\/ns\/ldp#|Container/, assertion: 'Containers MUST advertise its type by including a link where the rel parameter value is type and the target IRI is the appropriate Container Type'},
+      { header: 'Link', pat: CONTAINER_LINK_TYPE_WITH_REL_REGEX, assertion: 'Containers MUST advertise its type by including a link where the rel parameter value is type and the target IRI is the appropriate Container Type'},
       { header: 'Link', pat: /rel\=\"type\"|\/ns\/ldp#|Container/,
         assertion: 'Containers MUST advertise that it imposes Annotation protocol specific' +
                    ' constraints by including a link where the target IRI is' +
@@ -256,7 +258,7 @@ function runTests( container_url, annotation_url ) {
       { header: 'Allow', pat: /HEAD/, assertion: "Annotations MUST support HEAD (check Allow on GET)" },
       { header: 'Allow', pat: /OPTIONS/, assertion: "Annotations MUST support OPTIONS (check Allow on GET)" },
       { header: 'Content-Type', pat: MEDIA_TYPE_REGEX, assertion: 'Annotations MUST have a Content-Type header with the application/ld+json media type'},
-      { header: 'Link', string: '<http://www.w3.org/ns/ldp#Resource>; rel="type"', assertion: 'Annotations MUST have a Link header entry where the target IRI is http://www.w3.org/ns/ldp#Resource and the rel parameter value is type'},
+      { header: 'Link', pat: ANNOTATION_LINK_TYPE_WITH_REL_REGEX , assertion: 'Annotations MUST have a Link header entry where the target IRI is http://www.w3.org/ns/ldp#Resource and the rel parameter value is type'},
       { header: 'ETag', pat: /(.*)/, assertion: 'Annotations MUST have an ETag header'},
       { header: 'Vary', pat: /Accept/, assertion: 'Annotations MUST have a Vary header with Accept in the value'},
       ] );
@@ -294,7 +296,7 @@ function runTests( container_url, annotation_url ) {
       { test: function(res) { return (('id' in res.body) && (res.body.id.search(container_url) > -1));}, assertion: "Created Annotation MUST have an id that starts with the Container IRI" },
       { test: function(res) { return ( 'canonical' in res.body && res.body.canonical === theAnnotation.canonical ); }, assertion: "Created Annotation MUST preserve any canonical IRI" },
       { test: function(res) { return ( res.status === 201 ) ; }, assertion: "Annotation Server MUST respond with a 201 Created code if the creation is successful" },
-      { header: "Location", test: function(res) { return res.body.id === res.xhr.getResponseHeader('location') ; } , assertion: "Location header SHOULD match the id of the new Annotation" },
+      { header: "Location", test: function(res) { return res.body.id === res.xhr.getResponseHeader('location') ; } , assertion: "[RECOMMENDED] Location header SHOULD match the id of the new Annotation" },
       ]);
 
   promise_test(function() {
@@ -324,7 +326,7 @@ function runTests( container_url, annotation_url ) {
 
   test(function() {
     assert_equals("https", container_url.toLowerCase().substr(0,5), "Server is not using HTTPS");
-    }, "Annotation server SHOULD use HTTPS rather than HTTP");
+    }, "[RECOMMENDED] Annotation server SHOULD use HTTPS rather than HTTP");
 
   var thePrefRequest = request("GET", container_url,
       [['Prefer', 'return=representation;include="http://www.w3.org/ns/ldp#PreferMinimalContainer"']]);
@@ -343,12 +345,12 @@ function runTests( container_url, annotation_url ) {
 
 
   makePromiseTests( thePrefRequest, [
-      { test: function(res) { return ('total' in res.body); }, assertion: "SHOULD include the total property with the total number of annotations in the container" },
-      { test: function(res) { return ('first' in res.body); }, assertion: "SHOULD have a link to the first page of its contents using `first`" },
-      { test: function(res) { return ('last' in res.body); }, assertion: "SHOULD have a link to the last page of its contents using `last`" },
-      { test: function(res) { return (!('items' in res.body)); }, assertion: "Response contains annotations via `items` when it SHOULD NOT"},
-      { test: function(res) { return (!('ldp:contains' in res.body)); }, assertion: "Response contains annotations via `ldp:contains` when it SHOULD NOT" },
-      { header: 'Vary', pat: /Prefer/, assertion: "SHOULD include Prefer in the Vary header" }
+      { test: function(res) { return ('total' in res.body); }, assertion: "[RECOMMENDED] SHOULD include the total property with the total number of annotations in the container" },
+      { test: function(res) { return ('first' in res.body); }, assertion: "[RECOMMENDED] SHOULD have a link to the first page of its contents using `first`" },
+      { test: function(res) { return ('last' in res.body); }, assertion: "[RECOMMENDED] SHOULD have a link to the last page of its contents using `last`" },
+      { test: function(res) { return (!('items' in res.body)); }, assertion: "[RECOMMENDED] Response contains annotations via `items` when it SHOULD NOT"},
+      { test: function(res) { return (!('ldp:contains' in res.body)); }, assertion: "[RECOMMENDED] Response contains annotations via `ldp:contains` when it SHOULD NOT" },
+      { header: 'Vary', pat: /Prefer/, assertion: "[RECOMMENDED] SHOULD include Prefer in the Vary header" }
     ]);
 
   promise_test(function() {
@@ -357,7 +359,7 @@ function runTests( container_url, annotation_url ) {
         var h = res.xhr.getResponseHeader('Prefer');
         assert_true(h === null, "Reponse contains the `Prefer` header when it SHOULD NOT");
         });
-      }, 'SHOULD NOT [receive] the Prefer header when requesting the page');
+      }, '[RECOMMENDED] SHOULD NOT [receive] the Prefer header when requesting the page');
 
 }
 

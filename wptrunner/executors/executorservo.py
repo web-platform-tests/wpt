@@ -221,8 +221,8 @@ class ServoRefTestExecutor(ProcessTestExecutor):
             for stylesheet in self.browser.user_stylesheets:
                 command += ["--user-stylesheet", stylesheet]
 
-            for pref in test.environment.get('prefs', {}):
-                command += ["--pref", pref]
+            for pref, value in test.environment.get('prefs', {}).iteritems():
+                command += ["--pref", "%s=%s" % (pref, value)]
 
             command += ["--resolution", viewport_size or "800x600"]
 

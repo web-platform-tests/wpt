@@ -1,8 +1,9 @@
-function runTest(config, testname) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', successful playback, persistent-license, '
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', persistent-license, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', set src before setMediaKeys';
+                                    + 'playback';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],
@@ -15,8 +16,7 @@ function runTest(config, testname) {
         var _video = config.video,
             _mediaKeys,
             _mediaKeySession,
-            _mediaSource,
-            _startedReleaseSequence = false;
+            _mediaSource;
 
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
@@ -27,11 +27,7 @@ function runTest(config, testname) {
             assert_true( event instanceof window.MediaKeyMessageEvent );
             assert_equals( event.type, 'message');
 
-            if ( !_startedReleaseSequence ) {
-                assert_in_array( event.messageType, [ 'license-request', 'individualization-request' ] );
-            } else {
-                assert_equals( event.messageType, 'license-release' );
-            }
+            assert_in_array( event.messageType, [ 'license-request', 'individualization-request' ] );
 
             config.messagehandler( event.messageType, event.message )
             .then( function( response ) {
@@ -51,16 +47,9 @@ function runTest(config, testname) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) && !_startedReleaseSequence ) {
-                _video.removeEventListener('timeupdate', onTimeupdate );
+            if ( _video.currentTime > ( config.duration || 1 ) ) {
                 _video.pause();
-                _video.removeAttribute('src');
-                _video.load();
-
-                _startedReleaseSequence = true;
-
-                _mediaKeySession.closed.then( function() { test.done(); } );
-                _mediaKeySession.remove().catch(onFailure);
+                test.done();
             }
         }
 
@@ -77,7 +66,6 @@ function runTest(config, testname) {
             return _video.setMediaKeys(_mediaKeys);
         }).then(function() {
             _mediaKeySession = _mediaKeys.createSession( 'persistent-license' );
-
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
         }).then(function() {

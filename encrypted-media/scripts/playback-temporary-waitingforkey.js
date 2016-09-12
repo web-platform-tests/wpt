@@ -1,9 +1,10 @@
-function runTest(config) {
+function runTest(config,qualifier) {
 
     // config.initData contains a list of keys. We expect those to be needed in order and get
     // one waitingforkey event for each one.
 
-    var testname = config.keysystem + ', successful playback, temporary, '
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', successful playback, temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
                                     + ', waitingforkey event, '
                                     + config.initData.length + ' key' + ( config.initData.length > 1 ? 's' : '' );
@@ -25,7 +26,7 @@ function runTest(config) {
         }
 
         function onMessage(event) {
-            config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
+            config.messagehandler( event.messageType, event.message ).then( function( response ) {
                 event.target.update( response ).catch(onFailure);
             });
         }
@@ -40,7 +41,7 @@ function runTest(config) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) ) {
+            if ( _video.currentTime > ( config.duration || 2 ) ) {
                 assert_equals( _mediaKeySessions.length, config.initData.length );
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
@@ -52,7 +53,8 @@ function runTest(config) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-            _video.setMediaKeys(_mediaKeys);
+            return _video.setMediaKeys(_mediaKeys);
+        }).then(function(){
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);
 
             // Not using waitForEventAndRunStep() to avoid too many

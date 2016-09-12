@@ -1,7 +1,9 @@
-function runTest(config, testname) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', retrieve persistent-usage-record in new window, '
-                                    + /video\/([^;]*)/.exec( config.videoType )[ 1 ];
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', persistent-usage-record, '
+                                    + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
+                                    + ', playback, retrieve in new window';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],
@@ -15,7 +17,8 @@ function runTest(config, testname) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource,
-            _sessionId;
+            _sessionId,
+            _isClosing = false;
 
         function onEncrypted(event) {
             assert_equals(event.target, _video);
@@ -57,20 +60,16 @@ function runTest(config, testname) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) ) {
-
+            if ( !_isClosing && _video.currentTime > ( config.duration || 2 ) ) {
+                _isClosing = true;
                 _video.removeEventListener('timeupdate', onTimeupdate );
-
                 _video.pause();
-
                 _mediaKeySession.closed.then( test.step_func( onClosed ) );
-
                 _mediaKeySession.close();
             }
         }
 
         function onClosed(event) {
-
             _video.src = "";
             _video.setMediaKeys( null );
 

@@ -26,7 +26,6 @@ var embeddedElements = {
     srcdoc: "string",
     name: "string",
     sandbox: "settable tokenlist",
-    seamless: "boolean",
     allowFullscreen: "boolean",
     width: "string",
     height: "string",

@@ -38,7 +38,7 @@ var expected = [
   "CanvasGradient",
   "CanvasPattern",
   "Path",
-  "TextMetrics"
+  "TextMetrics",
 ];
 for (var i = 0; i < expected.length; ++i) {
   test(function () {

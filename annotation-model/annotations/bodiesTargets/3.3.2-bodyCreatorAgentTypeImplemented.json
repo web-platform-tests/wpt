@@ -7,7 +7,7 @@
   "errorMessage": "Type (Person, Organization, Software) for Body Creator (Agent) not found. Agents should have one or more type values.",
   "title": "Implements Body-level creator (Agent) **_type_ key** with one or more values from **model-recommended list (Person, Organization, Software)** - [model 3.2.2](https://www.w3.org/TR/annotation-model/#agents)",
   "description": "True when type for Body Creator (Agent) is implemented (Section 3.3.2)",
-    "required": [ "body" ], 
+    "required": [ "body" ],
     "properties":
     {
         "body":

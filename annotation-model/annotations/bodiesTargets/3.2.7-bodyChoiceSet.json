@@ -8,7 +8,7 @@
     "title": "Implements **Choice or Set** with type and items key as a body - [model 3.2.7](https://www.w3.org/TR/annotation-model/#choice-of-bodies-and-targets)",
     "description": "True when a Choice or Set is used as a body. (Section 3.2.7)",
     "type": "object",
-    "required": ["body"], 
+    "required": ["body"],
     "properties":
     {
         "body":

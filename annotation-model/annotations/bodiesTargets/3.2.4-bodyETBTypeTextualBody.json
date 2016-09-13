@@ -8,7 +8,7 @@
     "title": "Implements **Embedded Textual Body _type_ key** which includes a value of **TextualBody** [model 3.2.4](https://www.w3.org/TR/annotation-model/#embedded-textual-body)",
     "description": "True when Annotation includes one or more Embedded Textual Bodies (incl. as part of body Choice or Set), one or more of which includes a type key which includes a value of TextualBody. (Section 3.2.4)",
     "type": "object",
-    "required": ["body"], 
+    "required": ["body"],
     "properties":
     {
         "body":

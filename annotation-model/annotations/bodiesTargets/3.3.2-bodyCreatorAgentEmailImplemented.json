@@ -7,7 +7,7 @@
   "errorMessage": "Email for Body Creator (Agent) not found. Agents may have one or more email values.",
   "title": "Implements Body-level creator (Agent) **_email_ key** with one or more values, each of which is a **mailto: uri** - [model 3.2.2](https://www.w3.org/TR/annotation-model/#agents)",
   "description": "True when one or more email values for Body Creator (Agent) is implemented (Section 3.3.2)",
-    "required": [ "body" ], 
+    "required": [ "body" ],
     "properties":
     {
         "body":

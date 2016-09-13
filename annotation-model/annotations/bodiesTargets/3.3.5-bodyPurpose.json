@@ -8,7 +8,7 @@
     "title": "Implements **body _purpose_ key** with one or more values are each drawn from **model's list of Motivations** [model 3.3.5](https://www.w3.org/TR/annotation-model/#motivation-and-purpose)",
     "description": "True when Annotation includes one or more Bodies, one or more of which include purpose key with one or more values that are each drawn from model's list of Motivations. (Section 3.3.5)",
     "type": "object",
-    "required": ["body"], 
+    "required": ["body"],
     "properties":
     {
         "body":

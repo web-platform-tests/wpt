@@ -7,7 +7,7 @@
   "errorMessage": "Name for Body Creator (Agent) not found. Agents may have one or more name values.",
   "title": "Implements Body-level creator (Agent) **_name_ key** with one or more values - [model 3.2.2](https://www.w3.org/TR/annotation-model/#agents)",
   "description": "True when one or more name values for Body Creator (Agent) is implemented (Section 3.3.2)",
-    "required": [ "body" ], 
+    "required": [ "body" ],
     "properties":
     {
         "body":

@@ -8,7 +8,7 @@
     "title": "Implements **Embedded Textual Body** with **_value_ key** as a body of the Annotation  [model 3.2.4](https://www.w3.org/TR/annotation-model/#embedded-textual-body)",
     "description": "True when Annotation includes one or more Embedded Textual Bodies as Annotation body(ies). (Section 3.2.4)",
     "type": "object",
-    "required": ["body"], 
+    "required": ["body"],
     "properties":
     {
         "body":

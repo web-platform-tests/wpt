@@ -8,7 +8,7 @@
     "title": "Implements **body _accessibility_ key** which has one or more values - [model 3.3.4](#https://www.w3.org/TR/annotation-model/#accessibility-of-content)",
     "description": "True when Annotation includes one or more Bodies, one or more of which include accessibility key which has one or more values. (Section 3.3.4)",
     "type": "object",
-    "required": ["body"], 
+    "required": ["body"],
     "properties":
     {
         "body":

@@ -327,7 +327,7 @@ class ServoWdspecProtocol(Protocol):
     def do_delayed_imports(self):
         global pytestrunner, webdriver
         from . import pytestrunner
-        from tools import webdriver
+        import webdriver
 
 
 class ServoWdspecExecutor(WdspecExecutor):

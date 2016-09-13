@@ -16,6 +16,9 @@ var unexpected = [
   "DrawingStyle",
   "CanvasGradient",
   "CanvasPattern",
+  "PopStateEvent",
+  "HashChangeEvent",
+  "PageTransitionEvent",
   // https://dom.spec.whatwg.org/
   "DOMImplementation",
   // https://streams.spec.whatwg.org/

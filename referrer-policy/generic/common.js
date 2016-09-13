@@ -125,7 +125,7 @@ function queryImage(url, callback, referrer_policy) {
         var topLevelData = decodeImageData(extractImageData(img));
         console.log(topLevelData);
         assert_equals(srcdocData.referrer, topLevelData.referrer, "Referrer inside 'srcdoc' should be the same as embedder's referrer.");
-        callback(wrapResult(url, topLevelData), url); 
+        callback(wrapResult(url, topLevelData), url);
       }, referrer_policy, window);
     }, referrer_policy, i.contentWindow);
   };

@@ -120,10 +120,8 @@ function queryImage(url, callback, referrer_policy) {
   i.onload = function () {
     loadImageInWindow(url, function (img) {
       var srcdocData = decodeImageData(extractImageData(img));
-      console.log(srcdocData);
       loadImageInWindow(url, function (img) {
         var topLevelData = decodeImageData(extractImageData(img));
-        console.log(topLevelData);
         assert_equals(srcdocData.referrer, topLevelData.referrer, "Referrer inside 'srcdoc' should be the same as embedder's referrer.");
         callback(wrapResult(url, topLevelData), url);
       }, referrer_policy, window);

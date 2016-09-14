@@ -52,6 +52,7 @@ def parse_whitelist(f):
     """
 
     data = defaultdict(lambda:defaultdict(set))
+    ignored_files = set()
 
     for line in f:
         line = line.strip()
@@ -64,9 +65,13 @@ def parse_whitelist(f):
             parts[-1] = int(parts[-1])
 
         error_type, file_match, line_number = parts
-        data[file_match][error_type].add(line_number)
 
-    return data
+        if error_type == "*":
+            ignored_files.add(file_match)
+        else:
+            data[file_match][error_type].add(line_number)
+
+    return data, ignored_files
 
 
 def filter_whitelist_errors(data, path, errors):
@@ -79,9 +84,7 @@ def filter_whitelist_errors(data, path, errors):
     for file_match, whitelist_errors in iteritems(data):
         if fnmatch.fnmatch(path, file_match):
             for i, (error_type, msg, path, line) in enumerate(errors):
-                if "*" in whitelist_errors:
-                    whitelisted[i] = True
-                elif error_type in whitelist_errors:
+                if error_type in whitelist_errors:
                     allowed_lines = whitelist_errors[error_type]
                     if None in allowed_lines or line in allowed_lines:
                         whitelisted[i] = True
@@ -365,7 +368,7 @@ def lint(repo_root, paths, output_json):
     last = None
 
     with open(os.path.join(repo_root, "lint.whitelist")) as f:
-        whitelist = parse_whitelist(f)
+        whitelist, ignored_files = parse_whitelist(f)
 
     if output_json:
         output_errors = output_errors_json
@@ -396,6 +399,9 @@ def lint(repo_root, paths, output_json):
     for path in paths:
         abs_path = os.path.join(repo_root, path)
         if not os.path.exists(abs_path):
+            continue
+
+        if any(fnmatch.fnmatch(path, file_match) for file_match in ignored_files):
             continue
 
         errors = check_path(repo_root, path)

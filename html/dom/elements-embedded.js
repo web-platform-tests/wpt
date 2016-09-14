@@ -137,8 +137,6 @@ var embeddedElements = {
     ping: "urls",
     rel: "string",
     relList: {type: "tokenlist", domAttrName: "rel"},
-    hreflang: "string",
-    type: "string",
 
     // HTMLHyperlinkElementUtils
     href: "url",

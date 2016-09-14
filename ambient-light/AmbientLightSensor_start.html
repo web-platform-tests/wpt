@@ -15,10 +15,6 @@ setup(function() {
 });
 
 test(function() {
-  assert_equals(sensor.state, "activating");
-}, "the sensor.state is activating after executing start() method");
-
-test(function() {
   assert_equals(String(sensor.reading), "[object AmbientLightSensorReading]");
 }, "the sensor.reading is AmbientLightSensorReading after executing start() method");
 

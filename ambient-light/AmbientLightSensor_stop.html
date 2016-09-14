@@ -16,10 +16,6 @@ setup(function() {
 });
 
 test(function() {
-  assert_equals(sensor.state, "idle");
-}, "the sensor.state is idle after executing stop() method");
-
-test(function() {
   assert_equals(String(sensor.reading), "null");
 }, "the sensor.reading is null after executing stop() method");
 

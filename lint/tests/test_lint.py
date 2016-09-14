@@ -65,7 +65,6 @@ CONSOLE:streams/resources/test-utils.js: 12
     assert ignored == expected_ignored
 
 
-@pytest.mark.skipif(six.PY3, reason="lint.lint doesn't support Python 3")
 def test_lint_no_files(capsys):
     rv = lint(_dummy_repo, [], False)
     assert rv == 0
@@ -74,7 +73,6 @@ def test_lint_no_files(capsys):
     assert err == ""
 
 
-@pytest.mark.skipif(six.PY3, reason="lint.lint doesn't support Python 3")
 def test_lint_ignored_file(capsys):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
@@ -87,7 +85,6 @@ def test_lint_ignored_file(capsys):
     assert err == ""
 
 
-@pytest.mark.skipif(six.PY3, reason="lint.lint doesn't support Python 3")
 def test_lint_not_existing_file(capsys):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
@@ -102,7 +99,6 @@ def test_lint_not_existing_file(capsys):
     assert err == ""
 
 
-@pytest.mark.skipif(six.PY3, reason="lint.lint doesn't support Python 3")
 def test_lint_passing(capsys):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
@@ -115,7 +111,6 @@ def test_lint_passing(capsys):
     assert err == ""
 
 
-@pytest.mark.skipif(six.PY3, reason="lint.lint doesn't support Python 3")
 def test_lint_failing(capsys):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:
@@ -129,7 +124,6 @@ def test_lint_failing(capsys):
     assert err == ""
 
 
-@pytest.mark.skipif(six.PY3, reason="lint.lint doesn't support Python 3")
 def test_lint_passing_and_failing(capsys):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:

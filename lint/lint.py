@@ -15,7 +15,7 @@ from collections import defaultdict
 from .. import localpaths
 
 from manifest.sourcefile import SourceFile
-from six import iteritems
+from six import iteritems, itervalues
 from six.moves import range
 
 here = os.path.abspath(os.path.split(__file__)[0])
@@ -408,7 +408,7 @@ def lint(repo_root, paths, output_json):
         last = process_errors(path, errors) or last
 
         if not os.path.isdir(abs_path):
-            with open(abs_path) as f:
+            with open(abs_path, 'rb') as f:
                 errors = check_file_contents(repo_root, path, f)
                 last = process_errors(path, errors) or last
 
@@ -416,7 +416,7 @@ def lint(repo_root, paths, output_json):
         output_error_count(error_count)
         if error_count:
             print(ERROR_MSG % (last[0], last[1], last[0], last[1]))
-    return sum(error_count.itervalues())
+    return sum(itervalues(error_count))
 
 path_lints = [check_path_length]
 file_lints = [check_regexp_line, check_parsed, check_python_ast]

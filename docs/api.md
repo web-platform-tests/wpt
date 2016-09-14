@@ -216,11 +216,11 @@ Here's an example of how to use `EventWatcher`:
 var t = async_test("Event order on animation start");
 
 var animation = watchedNode.getAnimations()[0];
-var eventWatcher = new EventWatcher(watchedNode, ['animationstart',
-                                                  'animationiteration',
-                                                  'animationend']);
+var eventWatcher = new EventWatcher(t, watchedNode, ['animationstart',
+                                                     'animationiteration',
+                                                     'animationend']);
 
-eventWatcher.wait_for(t, 'animationstart').then(t.step_func(function() {
+eventWatcher.wait_for('animationstart').then(t.step_func(function() {
   assertExpectedStateAtStartOfAnimation();
   animation.currentTime = END_TIME; // skip to end
   // We expect two animationiteration events then an animationend event on

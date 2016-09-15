@@ -1,4 +1,12 @@
 content = addMemberListToObject( {
+
+    'mp4-clear' : {     initDataType:   'cenc',
+                        audio : {   type:   'audio/mp4;codecs="mp4a.40.2"',
+                                    path:   '/encrypted-media/content/audio_aac-lc_128k_dashinit.mp4' },
+                        video : {   type:   'video/mp4;codecs="avc1.4d401e"',
+                                    path:   '/encrypted-media/content/video_512x288_h264-360k_clear_dashinit.mp4' }
+                    },
+
     'mp4-basic' : {     initDataType:   'cenc',
                         audio : {   type:   'audio/mp4;codecs="mp4a.40.2"',
                                     path:   '/encrypted-media/content/audio_aac-lc_128k_dashinit.mp4' },

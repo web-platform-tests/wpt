@@ -135,7 +135,7 @@ var embeddedElements = {
     shape: "string",
     target: "string",
     download: "string",
-    ping: "urls",
+    ping: "string",
     rel: "string",
     relList: {type: "tokenlist", domAttrName: "rel"},
     hreflang: "string",

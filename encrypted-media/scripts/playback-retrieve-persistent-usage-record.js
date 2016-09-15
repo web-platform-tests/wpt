@@ -19,7 +19,7 @@ function runTest(config,qualifier) {
             _mediaSource,
             _sessionId,
             _isClosing = false;
-            
+
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }

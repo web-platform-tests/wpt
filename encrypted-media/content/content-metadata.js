@@ -169,10 +169,10 @@ function isContentSupportedForInitDataTypes( keysystem, initDataTypes, contentit
             return { supported: false };
         } );
     } ) ).then( function( results ) {
-    
+
         var initDataTypes = results.filter( function( result ) { return result.supported; } )
                                     .map( function( result ) { return result.initDataType; } );
-               
+
         return initDataTypes.length > 0 ?
                     { content: contentitem, supported: true, initDataTypes: initDataTypes }
                     : { content: contentitem, supported: false };

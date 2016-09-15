@@ -18,7 +18,7 @@ function runTest(config,qualifier) {
             _allKeysUsableEvent = false,
             _timeupdateEvent = false,
             _events = [ ];
-            
+
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }

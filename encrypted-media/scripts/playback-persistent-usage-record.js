@@ -18,7 +18,7 @@ function runTest(config,qualifier) {
             _mediaKeySession,
             _mediaSource,
             _releaseSequence = false;
-            
+
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }

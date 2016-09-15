@@ -17,7 +17,7 @@ function runTest(configEncrypted,configClear,qualifier) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource;
-            
+
         function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }
@@ -45,7 +45,7 @@ function runTest(configEncrypted,configClear,qualifier) {
 
             _video.setMediaKeys(_mediaKeys);
         }
-        
+
         function onPlaying(event)
         {
             // Not using waitForEventAndRunStep() to avoid too many
@@ -56,9 +56,9 @@ function runTest(configEncrypted,configClear,qualifier) {
         function onTimeUpdate(event) {
             if ( _video.currentTime < ( configEncrypted.duration || 1 ) )
                 return;
-            
+
             _video.removeEventListener('timeupdate', onTimeUpdate, true);
-            
+
             resetSrc().then(function(){
                 if (playbackCount > 2) {
                     test.done();
@@ -68,7 +68,7 @@ function runTest(configEncrypted,configClear,qualifier) {
                 }
             }).catch(onFailure);
         }
-        
+
         function resetSrc() {
             _video.pause();
             _video.removeAttribute('src');
@@ -100,7 +100,7 @@ function runTest(configEncrypted,configClear,qualifier) {
                 }).catch(onFailure);
             }
         }
-               
+
         waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
         waitForEventAndRunStep('playing', video, onPlaying, test);
         startPlayback();

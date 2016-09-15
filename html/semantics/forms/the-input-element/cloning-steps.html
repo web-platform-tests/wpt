@@ -13,39 +13,39 @@
 <script>
 "use strict";
 
-test(() => {
-  const input = document.createElement("input");
+test(function() {
+  var input = document.createElement("input");
   input.value = "foo bar";
 
-  const copy = input.cloneNode();
+  var copy = input.cloneNode();
   assert_equals(copy.value, "foo bar");
 }, "input element's value should be cloned");
 
-test(() => {
-  const input = document.createElement("input");
+test(function() {
+  var input = document.createElement("input");
   input.value = "foo bar";
 
-  const copy = input.cloneNode();
+  var copy = input.cloneNode();
   copy.setAttribute("value", "something else");
 
   assert_equals(copy.value, "foo bar");
 }, "input element's dirty value flag should be cloned, so setAttribute doesn't affect the cloned input's value");
 
-test(() => {
-  const input = document.createElement("input");
+test(function() {
+  var input = document.createElement("input");
   input.setAttribute("type", "radio");
   input.checked = true;
 
-  const copy = input.cloneNode();
+  var copy = input.cloneNode();
   assert_equals(copy.checked, true);
 }, "input element's checkedness should be cloned");
 
-test(() => {
-  const input = document.createElement("input");
+test(function() {
+  var input = document.createElement("input");
   input.setAttribute("type", "radio");
   input.checked = false;
 
-  const copy = input.cloneNode();
+  var copy = input.cloneNode();
   copy.setAttribute("checked", "checked");
 
   assert_equals(copy.checked, false);

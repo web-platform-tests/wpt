@@ -35,6 +35,12 @@ support child_navigates_parent_submit-3.html
 child_navigates_parent_submit.html
 support click.html
 support href.html
+support navigation-unload-form-submit-1.html
+support navigation-unload-form-submit-2.html
+navigation-unload-form-submit.html
+support navigation-unload-same-origin-fragment-1.html
+support navigation-unload-same-origin-fragment-2.html
+navigation-unload-same-origin-fragment.html
 support navigation_unload_data_url-1.html
 navigation_unload_data_url.html
 support navigation_unload_same_origin-1.html

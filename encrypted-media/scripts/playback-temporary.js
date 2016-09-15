@@ -50,7 +50,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) ) {
+            if ( _video.currentTime > ( config.duration || 1 ) ) {
                 _video.pause();
                 test.done();
             }
@@ -67,7 +67,6 @@ function runTest(config,qualifier) {
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
             _mediaKeySession = _mediaKeys.createSession( 'temporary' );
-
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
         }).then(function() {

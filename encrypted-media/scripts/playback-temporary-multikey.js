@@ -77,11 +77,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) ) {
-
-                consoleWrite("Session 0:");
-                dumpKeyStatuses( _mediaKeySessions[ 0 ].keyStatuses );
-
+            if ( _video.currentTime > ( config.duration || 1 ) ) {
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
                 test.done();
@@ -92,12 +88,9 @@ function runTest(config,qualifier) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-
             _video.setMediaKeys(_mediaKeys);
-
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-
         }).then(function() {
             return testmediasource(config);
         }).then(function(source) {

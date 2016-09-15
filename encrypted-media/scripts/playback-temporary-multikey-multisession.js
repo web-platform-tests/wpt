@@ -46,13 +46,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) ) {
-
-                consoleWrite("Session 0:");
-                dumpKeyStatuses( _mediaKeySessions[ 0 ].keyStatuses );
-                consoleWrite("Session 1:");
-                dumpKeyStatuses( _mediaKeySessions[ 1 ].keyStatuses );
-
+            if ( _video.currentTime > ( config.duration || 1 ) ) {
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
                 test.done();

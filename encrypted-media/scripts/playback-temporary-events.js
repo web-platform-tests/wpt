@@ -16,7 +16,6 @@ function runTest(config,qualifier) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource,
-            _allKeysUsableEvent = false,
             _playingEvent = false,
             _timeupdateEvent = false,
             _events = [ ];
@@ -61,8 +60,7 @@ function runTest(config,qualifier) {
 
             if ( !hasKeys ) {
                 _events.push( 'emptykeyslist' );
-            } else if ( !_allKeysUsableEvent && !pendingKeys ) {
-                _allKeysUsableEvent = true;
+            } else if (!pendingKeys ) {
                 _events.push( 'allkeysusable' );
                 _video.setMediaKeys(_mediaKeys);
             } else {

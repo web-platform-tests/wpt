@@ -59,12 +59,12 @@ function runTest(config,qualifier) {
 
             });
 
-            if ( !_allKeysUsableEvent && hasKeys && !pendingKeys ) {
+            if ( !hasKeys ) {
+                _events.push( 'emptykeyslist' );
+            } else if ( !_allKeysUsableEvent && !pendingKeys ) {
                 _allKeysUsableEvent = true;
                 _events.push( 'allkeysusable' );
                 _video.setMediaKeys(_mediaKeys);
-            } else if ( !hasKeys ) {
-                _events.push( 'emptykeyslist' );
             } else {
                 assert_unreached('unexpected ' + event.type + ' event');
             }

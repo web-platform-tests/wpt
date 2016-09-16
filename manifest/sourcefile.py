@@ -1,3 +1,4 @@
+import hashlib
 import os
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
@@ -8,9 +9,8 @@ except ImportError:
 
 import html5lib
 
-from . import vcs
-from .item import Stub, ManualTest, WebdriverSpecTest, RefTest, TestharnessTest
-from .utils import rel_path_to_url, is_blacklisted, ContextManagerBytesIO, cached_property
+from .item import Stub, ManualTest, WebdriverSpecTest, RefTestNode, RefTest, TestharnessTest, SupportFile, ConformanceCheckerTest
+from .utils import rel_path_to_url, ContextManagerBytesIO, cached_property
 
 wd_pattern = "*.py"
 
@@ -28,30 +28,27 @@ class SourceFile(object):
                "xhtml":ElementTree.parse,
                "svg":ElementTree.parse}
 
-    def __init__(self, tests_root, rel_path, url_base, use_committed=False,
-                 contents=None):
+    root_dir_non_test = set(["common"])
+
+    dir_non_test = set(["resources",
+                        "support",
+                        "tools"])
+
+    def __init__(self, tests_root, rel_path, url_base, contents=None):
         """Object representing a file in a source tree.
 
         :param tests_root: Path to the root of the source tree
         :param rel_path: File path relative to tests_root
         :param url_base: Base URL used when converting file paths to urls
-        :param use_committed: Work with the last committed version of the file
-                              rather than the on-disk version.
         :param contents: Byte array of the contents of the file or ``None``.
         """
 
-        assert not (use_committed and contents is not None)
-
         self.tests_root = tests_root
-        self.rel_path = rel_path
+        self.rel_path = os.path.normcase(rel_path)  # does slash normalization on Windows
         self.url_base = url_base
-        self.use_committed = use_committed
         self.contents = contents
 
-        self.url = rel_path_to_url(rel_path, url_base)
-        self.path = os.path.join(tests_root, rel_path)
-
-        self.dir_path, self.filename = os.path.split(self.path)
+        self.dir_path, self.filename = os.path.split(self.rel_path)
         self.name, self.ext = os.path.splitext(self.filename)
 
         self.type_flag = None
@@ -89,19 +86,43 @@ class SourceFile(object):
         """
         Return either
         * the contents specified in the constructor, if any;
-        * the contents of the file when last committed, if use_committed is true; or
         * a File object opened for reading the file contents.
         """
 
         if self.contents is not None:
             file_obj = ContextManagerBytesIO(self.contents)
-        elif self.use_committed:
-            git = vcs.get_git_func(os.path.dirname(self.tests_root))
-            blob = git("show", "HEAD:%s" % self.rel_path)
-            file_obj = ContextManagerBytesIO(blob)
         else:
             file_obj = open(self.path, 'rb')
         return file_obj
+
+    @cached_property
+    def path(self):
+        return os.path.join(self.tests_root, self.rel_path)
+
+    @cached_property
+    def url(self):
+        return rel_path_to_url(self.rel_path, self.url_base)
+
+    @cached_property
+    def hash(self):
+        with self.open() as f:
+            return hashlib.sha1(f.read()).hexdigest()
+
+    def in_non_test_dir(self):
+        if self.dir_path == "":
+            return True
+
+        parts = self.dir_path.split(os.path.sep)
+
+        if parts[0] in self.root_dir_non_test:
+            return True
+        elif any(item in self.dir_non_test for item in parts):
+            return True
+        return False
+
+    def in_conformance_checker_dir(self):
+        return (self.dir_path == "conformance-checkers" or
+                self.dir_path.startswith("conformance-checkers" + os.path.sep))
 
     @property
     def name_is_non_test(self):
@@ -110,7 +131,16 @@ class SourceFile(object):
         return (self.is_dir() or
                 self.name_prefix("MANIFEST") or
                 self.filename.startswith(".") or
-                is_blacklisted(self.url))
+                self.in_non_test_dir())
+
+    @property
+    def name_is_conformance(self):
+        return (self.in_conformance_checker_dir() and
+                self.type_flag in ("is-valid", "no-valid"))
+
+    @property
+    def name_is_conformance_support(self):
+        return self.in_conformance_checker_dir()
 
     @property
     def name_is_stub(self):
@@ -316,38 +346,44 @@ class SourceFile(object):
         items without being a test itself."""
 
         if self.name_is_non_test:
-            rv = []
+            rv = "support", [SupportFile(self)]
 
         elif self.name_is_stub:
-            rv = [Stub(self, self.url)]
+            rv = Stub.item_type, [Stub(self, self.url)]
 
         elif self.name_is_manual:
-            rv = [ManualTest(self, self.url)]
+            rv = ManualTest.item_type, [ManualTest(self, self.url)]
+
+        elif self.name_is_conformance:
+            rv = ConformanceCheckerTest.item_type, [ConformanceCheckerTest(self, self.url)]
+
+        elif self.name_is_conformance_support:
+            rv = "support", [SupportFile(self)]
 
         elif self.name_is_multi_global:
-            rv = [
+            rv = TestharnessTest.item_type, [
                 TestharnessTest(self, replace_end(self.url, ".any.js", ".any.html")),
                 TestharnessTest(self, replace_end(self.url, ".any.js", ".any.worker.html")),
             ]
 
         elif self.name_is_worker:
-            rv = [TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.html"))]
+            rv = (TestharnessTest.item_type,
+                  [TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.html"))])
 
         elif self.name_is_webdriver:
-            rv = [WebdriverSpecTest(self, self.url)]
+            rv = WebdriverSpecTest.item_type, [WebdriverSpecTest(self, self.url)]
 
         elif self.content_is_testharness:
-            rv = []
+            rv = TestharnessTest.item_type, []
             for variant in self.test_variants:
                 url = self.url + variant
-                rv.append(TestharnessTest(self, url, timeout=self.timeout))
+                rv[1].append(TestharnessTest(self, url, timeout=self.timeout))
 
         elif self.content_is_ref_node:
-            rv = [RefTest(self, self.url, self.references, timeout=self.timeout,
-                          viewport_size=self.viewport_size, dpi=self.dpi)]
-
+            rv = (RefTestNode.item_type,
+                  [RefTestNode(self, self.url, self.references, timeout=self.timeout,
+                               viewport_size=self.viewport_size, dpi=self.dpi)])
         else:
-            # If nothing else it's a helper file, which we don't have a specific type for
-            rv = []
+            rv = "support", [SupportFile(self)]
 
         return rv

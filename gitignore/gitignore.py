@@ -1,9 +1,9 @@
 import itertools
 import re
-import fnmatch
 import os
 
 end_space = re.compile(r"([^\\]\s)*$")
+
 
 def fnmatch_translate(pat, path_name=False):
     parts = []
@@ -69,6 +69,7 @@ def fnmatch_translate(pat, path_name=False):
     except:
         raise
 
+
 def parse_line(line):
     line = line.rstrip()
     if not line or line[0] == "#":
@@ -84,6 +85,7 @@ def parse_line(line):
         line = line[:-1]
 
     return invert, dir_only, fnmatch_translate(line, "/" in line)
+
 
 class PathFilter(object):
     def __init__(self, root, extras=None):
@@ -124,6 +126,9 @@ class PathFilter(object):
             self.rules_file.append((regexp, invert))
 
     def __call__(self, path):
+        if os.path.sep != "/":
+            path = path.replace(os.path.sep, "/")
+
         if self.trivial:
             return True
 

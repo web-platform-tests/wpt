@@ -6,10 +6,11 @@ def create(filename, contents=b""):
 
 
 def items(s):
-    return [
-        (item.item_type, item.url)
-        for item in s.manifest_items()
-    ]
+    item_type, items = s.manifest_items()
+    if item_type == "support":
+        return []
+    else:
+        return [(item_type, item.url) for item in items]
 
 
 def test_name_is_non_test():
@@ -20,16 +21,37 @@ def test_name_is_non_test():
         "tools/test.html",
         "resources/test.html",
         "common/test.html",
+        "support/test.html",
         "conformance-checkers/test.html",
+        "conformance-checkers/README.md",
+        "conformance-checkers/html/Makefile",
+        "conformance-checkers/html/test.html",
+        "foo/tools/test.html",
+        "foo/resources/test.html",
+        "foo/support/test.html",
     ]
 
     for rel_path in non_tests:
         s = create(rel_path)
-        assert s.name_is_non_test
+        assert s.name_is_non_test or s.name_is_conformance_support
 
         assert not s.content_is_testharness
 
         assert items(s) == []
+
+
+def test_not_name_is_non_test():
+    tests = [
+        "foo/common/test.html",
+        "foo/conformance-checkers/test.html",
+        "foo/_certs/test.html",
+    ]
+
+    for rel_path in tests:
+        s = create(rel_path)
+        assert not (s.name_is_non_test or s.name_is_conformance_support)
+        # We aren't actually asserting what type of test these are, just their
+        # name doesn't prohibit them from being tests.
 
 
 def test_name_is_manual():
@@ -239,3 +261,22 @@ def test_testharness_ext():
         assert not s.content_is_testharness
 
         assert items(s) == []
+
+
+@pytest.mark.parametrize("ext", ["htm", "html"])
+def test_reftest_node(ext):
+    content = b"<link rel=match href=ref.html>"
+
+    filename = "foo/test." + ext
+    s = create(filename, content)
+
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+    assert not s.content_is_testharness
+
+    assert s.content_is_ref_node
+
+    assert items(s) == [("reftest_node", "/" + filename)]

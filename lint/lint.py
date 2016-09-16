@@ -13,7 +13,7 @@ from collections import defaultdict
 
 from . import fnmatch
 from ..localpaths import repo_root
-from .gitignore import PathFilter
+from ..gitignore.gitignore import PathFilter
 
 from manifest.sourcefile import SourceFile
 from six import iteritems, itervalues

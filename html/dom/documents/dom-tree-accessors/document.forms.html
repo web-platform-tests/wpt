@@ -53,7 +53,7 @@ test(function() {
   for (var p in document.forms) {
     result.push(p);
   }
-  assert_array_equals(result, ["0", "1", "2", "item", "namedItem", "length"])
+  assert_array_equals(result.sort(), ["0", "1", "2", "item", "namedItem", "length"].sort())
 }, "document.forms iteration")
 
 test(function() {

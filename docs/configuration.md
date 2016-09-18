@@ -82,7 +82,7 @@ like:
 
 Running wptserve with SSL enabled on Windows typically requires
 installing an OpenSSL distribution.
-[Shining Light](http://slproweb.com/products/Win32OpenSSL.html)
+[Shining Light](https://slproweb.com/products/Win32OpenSSL.html)
 provide a convenient installer that is known to work, but requires a
 little extra setup.
 

@@ -42,7 +42,9 @@ function runTest(config,qualifier) {
         function onMessage(event) {
             consoleWrite("message");
             config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                event.target.update( response ).catch(onFailure);
+                event.target.update( response ).then( function() {
+                    dumpKeyStatuses(event.target.keyStatuses);
+                }).catch(onFailure);
             });
         }
 

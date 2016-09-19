@@ -60,7 +60,7 @@ function checkEvents() {
     || targets.length != events.length) {
     return false;
   }
-  
+
   for (var i = 0; i < order.length; ++i) {
     for (var j = 0; j < targets_num; ++j) {
       if (events[i * targets_num + j] != order[i]

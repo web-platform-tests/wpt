@@ -135,7 +135,8 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             getCustomHeaders : function( drmconfig, sessionType, messageType ) {
                 var customHeader = {    merchant: drmconfig.merchant,
                                         userId: "purchase",
-                                        sessionId: "a0d0f0p" + ( sessionType === 'persistent-license' ) ? "1" : "0" };
+                                        sessionId: "a0d0f0p" + ( ( sessionType === 'persistent-license' ) ? "1" : "0" ) };
+                consoleWrite( JSON.stringify( customHeader ) );
                 return { "dt-custom-data" : btoa( JSON.stringify( customHeader ) ) };
             }
         },

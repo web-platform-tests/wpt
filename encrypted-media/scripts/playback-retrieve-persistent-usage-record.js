@@ -106,15 +106,8 @@ function runTest(config, testname) {
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
         }).then(function() {
-<<<<<<< HEAD
-            var certBytes = atob(config.playreadyMeteringCert);
-            certBytes = stringToUint8Array(certBytes);
-            return _mediaKeys.setServerCertificate(certBytes);
-        }).then(function() {
-=======
             return config.servercertificate ? _mediaKeys.setServerCertificate( config.servercertificate ) : true;
         }).then(function( success ) {
->>>>>>> upstream/master
             return testmediasource(config);
         }).then(function(source) {
             _mediaSource = source;

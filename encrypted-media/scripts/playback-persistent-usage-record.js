@@ -38,11 +38,7 @@ function runTest(config, testname) {
                     forceTestFailureFromPromise(test, error);
                 }).then(function() {
                     if(event.messageType === 'license-request') {
-<<<<<<< HEAD
                         // _video.setMediaKeys(_mediaKeys);
-=======
-                        _video.setMediaKeys(_mediaKeys);
->>>>>>> upstream/master
                     } else if(event.messageType === 'license-release') {
                         test.done();
                     }
@@ -102,10 +98,6 @@ function runTest(config, testname) {
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
             _video.setMediaKeys(_mediaKeys);
-        }).then(function() {
-            var certBytes = atob(config.playreadyMeteringCert);
-            certBytes = stringToUint8Array(certBytes);
-            return _mediaKeys.setServerCertificate(certBytes);
         }).then(function() {
             return config.servercertificate ? _mediaKeys.setServerCertificate( config.servercertificate ) : true;
         }).then(function( success ) {

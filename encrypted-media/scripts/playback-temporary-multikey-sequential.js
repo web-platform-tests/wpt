@@ -20,13 +20,13 @@ function runTest(config,qualifier) {
             _mediaKeySessions = [ ],
             _mediaSource,
             _playbackStarted = false;
-            
+
         function dumpTimeRanges( ranges ) {
             for( var i=0; i < ranges.length; ++i ) {
                 consoleWrite( ranges.start( i ) + "-" + ranges.end( i ) );
             }
         }
-        
+
         function startNewSession() {
             assert_less_than( _mediaKeySessions.length, config.initData.length );
             var mediaKeySession = _mediaKeys.createSession( 'temporary' );
@@ -55,11 +55,11 @@ function runTest(config,qualifier) {
         function onWaitingForKey(event) {
             consoleWrite("waitingforkey");
         }
-        
+
         function onPlaying(event) {
             consoleWrite("playing");
             assert_equals( _mediaKeySessions.length, 1, "Playback should start with a single key / session" );
-            
+
             consoleWrite("videoelement buffered");
             dumpTimeRanges(_video.buffered);
             consoleWrite("source[0] buffered");
@@ -67,25 +67,25 @@ function runTest(config,qualifier) {
             consoleWrite("source[1] buffered");
             dumpTimeRanges( _mediaSource.sourceBuffers[ 1 ].buffered );
         }
-        
+
         function onPause(event) {
             consoleWrite("pause");
         }
-        
+
         function onWaiting(event) {
             consoleWrite("waiting");
         }
-        
+
         function onStalled(event) {
             consoleWrite("stalled");
-            
+
             // Fetch a new key each time the video stalls
             startNewSession();
         }
 
         function onTimeupdate(event) {
             consoleWrite("timeupdate: " + _video.currentTime );
-            
+
             if ( _video.currentTime > ( config.duration || 6 ) ) {
                 assert_equals( _mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content" );
                 _video.pause();
@@ -102,14 +102,14 @@ function runTest(config,qualifier) {
             // Not using waitForEventAndRunStep() to avoid too many
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', test.step_func( onTimeupdate ), true);
-            
+
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
             waitForEventAndRunStep('pause', _video, onPause, test);
             waitForEventAndRunStep('waiting', _video, onWaiting, test);
             waitForEventAndRunStep('stalled', _video, onStalled, test);
-            
+
             startNewSession();
 
             return testmediasource(config);

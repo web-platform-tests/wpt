@@ -10,7 +10,8 @@
   <body>
     <script>
     promise_test(function() {
-      var endpoint = "resources/cache.py";
+      var cacheBuster = Math.random(); // ensures first request is uncached
+      var endpoint = "resources/cache.py?v=" + cacheBuster;
 
       // make the first request
       return fetch(endpoint).then(function(response) {
@@ -28,7 +29,7 @@
 
         return response.text(); // consuming the body, just to be safe
       });
-    }, "Testing ETag handling");
+    }, "Testing conditional GET with ETags");
 
     done();
     </script>

@@ -13,23 +13,23 @@
             var keyStatuses = [];
             this._session.keyStatuses.forEach( function( keyId, status ) {
                 var newKeyId = new Uint8Array( keyId );
-                
+
                 function swap( arr, a, b ) { var t = arr[a]; arr[a] = arr[b]; arr[b] = t; }
                 swap( newKeyId, 0, 3 );
                 swap( newKeyId, 1, 2 );
                 swap( newKeyId, 4, 5 );
                 swap( newKeyId, 6, 7 );
-                
+
                 keyStatuses.push( { key: newKeyId, status: status, ord: arrayBufferAsString( newKeyId ) } );
             });
- 
+
             function lexicographical( a, b ) { return a < b ? -1 : a === b ? 0 : +1; }
             function lexicographicalkey( a, b ) { return lexicographical( a.ord, b.ord ); }
 
             keyStatuses.sort( lexicographicalkey ).forEach( function( obj ) {
                 this._keyStatuses._set( obj.key, obj.status );
             }.bind( this ) );
- 
+
             this.dispatchEvent( event );
         };
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@
         MediaKeys.prototype.createSession = function ( sessionType ) {
             return new MediaKeySession( _mediaKeysCreateSession.call( this, sessionType ) );
         };
- 
+
         // MediaKeySession proxy
         function MediaKeySession( session ) {
             EventTarget.call( this );
@@ -57,22 +57,22 @@
             closed:     { get: function() { return this._session.closed; } },
             keyStatuses:{ get: function() { return this._keyStatuses; } }
         });
- 
+
         [ "generateRequest", "load", "update", "remove", "close" ].forEach( function( fnname ) {
             MediaKeySession.prototype[ fnname ] = function() {
                 return window.MediaKeySession.prototype[ fnname ].apply( this._session, arguments );
             }
         } );
- 
+
         MediaKeySession.prototype._onKeyStatusesChange = _proxyKeyStatusesChange;
- 
+
         // MediaKeyStatusMap proxy
         //
         // We need a proxy class to replace the broken MediaKeyStatusMap one. We cannot use a
         // regular Map directly because we need get and has methods to compare by value not
         // as references.
         function MediaKeyStatusMap() { this._map = new Map(); }
- 
+
         Object.defineProperties( MediaKeyStatusMap.prototype, {
             size:               { get: function() { return this._map.size; } },
             forEach:            { get: function() { return function( f ) { return this._map.forEach( f ); } } },
@@ -80,29 +80,29 @@
             values:             { get: function() { return function() { return this._map.values(); } } },
             keys:               { get: function() { return function() { return this._map.keys(); } } },
             clear:              { get: function() { return function() { return this._map.clear(); } } } } );
- 
+
         MediaKeyStatusMap.prototype[ Symbol.iterator ] = function() { return this._map[ Symbol.iterator ]() };
 
         MediaKeyStatusMap.prototype.has = function has( keyId ) {
             for ( var k of this._map.keys() ) { if ( arrayBufferEqual( k, keyId ) ) return true; }
             return false;
         };
- 
+
         MediaKeyStatusMap.prototype.get = function get( keyId ) {
             for ( var k of this._map.entries() ) { if ( arrayBufferEqual( k[ 0 ], keyId ) ) return k[ 1 ]; }
         };
- 
+
         MediaKeyStatusMap.prototype._set = function _set( keyId, status ) {
             this._map.set( new Uint8Array( keyId ), status );
         };
- 
+
         function arrayBufferEqual(buf1, buf2)
         {
             if (buf1.byteLength !== buf2.byteLength) return false;
             var a1 = Array.from( new Int8Array(buf1) ), a2 = Array.from( new Int8Array(buf2) );
             return a1.every( function( x, i ) { return x === a2[i]; } );
         }
- 
+
         // EventTarget
         function EventTarget(){
             this.listeners = {};

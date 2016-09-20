@@ -2,7 +2,7 @@ function runTest(config,qualifier) {
 
     // Create a "temporary" session for |keysystem| and call generateRequest()
     // with the provided initData. generateRequest() should fail with an
-    // InvalidAccessError. Returns a promise that is resolved
+    // TypeError. Returns a promise that is resolved
     // if the error occurred and rejected otherwise.
     function test_session(keysystem, initDataType, initData)
     {
@@ -19,7 +19,7 @@ function runTest(config,qualifier) {
             }).then(function() {
                 assert_unreached('generateRequest() succeeded unexpectedly');
             }, function(error) {
-                assert_equals(error.name, 'InvalidAccessError');
+                assert_equals(error.name, 'TypeError');
                 return Promise.resolve('success');
             });
         })

@@ -55,8 +55,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            consoleWrite( "timeupdate " + _video.currentTime);
-            if ( _video.currentTime > ( config.duration || 5 ) ) {
+            if ( _video.currentTime > ( config.duration || 1 ) ) {
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
                 test.done();

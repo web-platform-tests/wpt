@@ -43,7 +43,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) ) {
+            if ( _video.currentTime > ( config.duration || 1 ) ) {
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
                 test.done();
@@ -64,7 +64,6 @@ function runTest(config,qualifier) {
                 _mediaKeySessions.push( mediaKeySession );
                 mediaKeySession.generateRequest( config.initDataType, initData ).catch( onFailure );
             } );
-
             return testmediasource(config);
         }).then(function(source) {
             _mediaSource = source;

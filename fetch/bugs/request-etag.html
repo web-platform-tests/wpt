@@ -10,17 +10,17 @@
   <body>
     <script>
     promise_test(function() {
-      var URL = "resources/cache.py";
+      var endpoint = "resources/cache.py";
 
       // make the first request
-      return fetch(URL).then(function(response) {
+      return fetch(endpoint).then(function(response) {
         // ensure we're getting the regular, uncached response
         assert_equals(response.status, 200);
 
         return response.text(); // consuming the body, just to be safe
       }).then(function(body) {
         // make a second request
-        return fetch(URL);
+        return fetch(endpoint);
       }).then(function(response) {
         // a 304 response indicates our browser sent the correct
         // If-None-Match request header

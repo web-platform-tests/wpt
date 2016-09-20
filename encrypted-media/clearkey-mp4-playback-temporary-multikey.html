@@ -22,7 +22,7 @@
     <script src=/encrypted-media/util/clearkey-messagehandler.js></script>
 
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/playback-temporary-multikey.js></script>
+    <script src=/encrypted-media/scripts/playback-temporary.js></script>
 
   </head>
   <body>
@@ -44,7 +44,8 @@
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
                         initData:           getInitData(contentitem,'keyids'),
-                        testcase:           'audio/video' };
+                        testcase:           'multikey audio/video' };
+
 
         runTest(config);
     </script>

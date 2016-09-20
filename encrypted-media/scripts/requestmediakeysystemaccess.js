@@ -63,12 +63,12 @@ function runTest( config, qualifier ) {
     expect_error('.'+config.keysystem, [{}], 'NotSupportedError', 'Leading dot in key systems name');
     expect_error(config.keysystem.substr(0,6)+'.'+config.keysystem.substr(6), [{}], 'NotSupportedError', 'Trailing dot in key systems name (1)');
     expect_error(config.keysystem+'.', [{}], 'NotSupportedError', 'Trailing dot in key systems name (2)');
-    
+
     // Key system name is case sensitive.
     if ( config.keysystem !== config.keysystem.toUpperCase() ) {
         expect_error(config.keysystem.toUpperCase(), [{}], 'NotSupportedError', 'Key system name is case sensitive');
     }
-    
+
     if ( config.keysystem !== config.keysystem.toLowerCase() ) {
         expect_error(config.keysystem.toLowerCase(), [{}], 'NotSupportedError', 'Key system name is case sensitive');
     }
@@ -113,7 +113,7 @@ function runTest( config, qualifier ) {
     expect_error(config.keysystem, [{
         audioCapabilities: [{contentType: 'audio/webm; codecs=fake'}],
     }], 'NotSupportedError', 'Unsupported audio codec');
-    
+
     expect_error(config.keysystem, [{
         audioCapabilities: [{contentType: 'video/webm; codecs=fake'}],
     }], 'NotSupportedError', 'Unsupported video codec');
@@ -139,7 +139,7 @@ function runTest( config, qualifier ) {
             {contentType: 'audio/webm; codecs=avc1.42e01e'}
         ],
     }], 'NotSupportedError', 'Mismatched audio container/codec (2)');
-    
+
     expect_error(config.keysystem, [{
         audioCapabilities: [
             {contentType: 'audio/mp4; codecs=vorbis'}
@@ -268,11 +268,11 @@ function runTest( config, qualifier ) {
     expect_error(config.keysystem, [{
       videoCapabilities: [{contentType: 'video/webm; foo="bar"'}],
     }], 'NotSupportedError', 'Unrecognized foo with webm');
-    
+
     expect_error(config.keysystem, [{
       videoCapabilities: [{contentType: 'video/mp4; foo="bar"'}],
     }], 'NotSupportedError', 'Unrecognized foo with mp4');
-    
+
     expect_error(config.keysystem, [{
       videoCapabilities: [{contentType: config.videoType+'; foo="bar"'}],
     }], 'NotSupportedError', 'Unrecognized foo with codecs');
@@ -297,7 +297,7 @@ function runTest( config, qualifier ) {
             videoCapabilities: [{contentType: t[1]+t[2].toUpperCase()+t[3] }],
         }], 'NotSupportedError', 'codecs Vp8');
     }
-    
+
     if ( t[2] !== t[2].toLowerCase() ) {
         expect_error(config.keysystem, [{
             videoCapabilities: [{contentType: t[1]+t[2].toLowerCase()+t[3] }],

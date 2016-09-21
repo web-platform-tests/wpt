@@ -31,7 +31,7 @@ test(function() {
 
 // a MediaStreamTrack instance is needed to test, any instance will do.
 promise_test(function() {
-  return navigator.mediaDevices.getUserMedia({ video: true })
+  return navigator.mediaDevices.getUserMedia({ audio: true })
     .then(function(stream) {
       var track = stream.getTracks()[0];
       assert_true(track instanceof MediaStreamTrack);

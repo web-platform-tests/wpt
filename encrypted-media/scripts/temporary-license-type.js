@@ -29,7 +29,7 @@ function runTest(config,qualifier) {
                 mediaKeySession.update( response ).then( test.step_func( function() {
                     if ( event.messageType !== 'license-request' )
                         return;
-                        
+                       
                     assert_unreached( "Update with incorrect license type should fail" )
                 } ) ).catch( test.step_func( function( error ) {
                     if ( event.messageType !== 'license-request' ) {

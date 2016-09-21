@@ -69,7 +69,7 @@ function runTest(config,qualifier)
             for (var value of mediaKeySession.keyStatuses.values()) {
                 result.push(value);
             }
-            
+
             assert_equals( result.length, 2, "keyStatuses.values() should have two elements" );
             assert_equals( result[0], result[1], "the values in keyStatuses.values() should be equal" );
             assert_in_array( result[0], [ 'usable', 'status-pending' ] );

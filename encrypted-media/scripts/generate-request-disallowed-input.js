@@ -3,7 +3,7 @@ function runTest(config,qualifier) {
     function push_test( keysystem, initDataType, initData, testname ) {
         tests.push( { keysystem: keysystem, initDataType: initDataType, initData: initData, testname: testname } );
     }
-    
+
     initData = new Uint8Array(70000);
     push_test(config.keysystem, 'webm', initData, testnamePrefix( qualifier, config.keysystem ) + ', temporary, webm, initData longer than 64Kb characters');
 
@@ -47,7 +47,7 @@ function runTest(config,qualifier) {
     keyId = new Uint8Array(600);
     initData = stringToUint8Array(createKeyIDs(keyId));
     push_test(config.keysystem, 'keyids', initData, testnamePrefix( qualifier, config.keysystem ) + ', temporary, keyids, invalid initdata (too long key ID)');
-    
+
     Promise.all( tests.map( function( testspec ) {
         return isInitDataTypeSupported(testspec.keysystem,testspec.initDataType);
     })).then( function( results ) {

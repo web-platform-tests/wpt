@@ -15,7 +15,6 @@ function runTest(config,qualifier) {
             _mediaKeys,
             _mediaKeySession,
             _mediaSource,
-            _allKeysUsableEvent = false,
             _timeupdateEvent = false,
             _events = [ ];
 
@@ -47,7 +46,6 @@ function runTest(config,qualifier) {
             assert_equals(event.target, _mediaKeySession );
             assert_true(event instanceof window.Event );
             assert_equals(event.type, 'keystatuseschange' );
-
             var hasKeys = false, pendingKeys = false;
             _mediaKeySession.keyStatuses.forEach( function( value, keyid ) {
                 assert_any( assert_equals, value, [ 'status-pending', 'usable' ] );
@@ -56,14 +54,13 @@ function runTest(config,qualifier) {
 
             });
 
-            if ( !_allKeysUsableEvent && hasKeys && !pendingKeys ) {
-                _allKeysUsableEvent = true;
-                _events.push( 'allkeysusable' );
-                _video.setMediaKeys(_mediaKeys).catch(onFailure);
-            }
-
             if ( !hasKeys ) {
                 _events.push( 'emptykeyslist' );
+            } else if (!pendingKeys ) {
+                _events.push( 'allkeysusable' );
+                _video.setMediaKeys(_mediaKeys).catch(onFailure);
+            } else {
+                assert_unreached('unexpected ' + event.type + ' event');
             }
         }
 

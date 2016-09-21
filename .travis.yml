@@ -8,3 +8,4 @@ before_install:
 script:
   - ./lint
   - ./manifest
+  - ./diff-manifest.py

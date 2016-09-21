@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Mousemove handling between elements</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#outer,
+#inner,
+#released {
+  padding: 10px;
+  margin: 10px;
+  height: 15px;
+}
+</style>
+<p>
+  Steps:
+
+  <ol>
+    <li>Move your mouse over the blue <code>&lt;div&gt;</code> element, later
+      over the green one, later back to the blue one.
+    <li>Move the mouse from the blue element to the yellow one, later to the
+      white background.
+  </ol>
+</p>
+
+<div id="released"></div>
+<div id="outer">
+  <div id="inner"></div>
+</div>
+
+<script>
+setup({explicit_timeout: true});
+var done = false;
+var events = [];
+var targets = [];
+var relevantEvents = [
+    "mousemove",
+    "mouseover",
+    "mouseenter",
+    "mouseout",
+    "mouseleave"
+];
+function checkOrder() {
+    var eventOrder = [];
+    var targetOrder = [];
+    var repeated = [];
+    console.log(events);
+    console.log(order);
+    return true;
+}
+window.onload = function() {
+    var outer = document.getElementById("outer");
+    var inner = document.getElementById("inner");
+    var released = document.getElementById("released");
+    var inputs = [outer, inner, released];
+    for (var i = 0; i < inputs.length; i++) {
+    for (var k = 0; k < relevantEvents.length; k++) {
+      inputs[i].addEventListener(relevantEvents[k], record, false);
+    }
+    async_test(function(t) {
+        released.addEventListener('mouseleave', function() {
+            t.step(function() {
+                assert_true(checkEvents());;
+                t.done();
+            });
+        }, false);
+    }, 'Mousemove events between elements should fire in the correct order.')
+  }
+}

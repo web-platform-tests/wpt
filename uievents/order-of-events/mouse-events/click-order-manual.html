@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8">
     <title>Click-related events should fire in the correct order</title>
-    <link rel="author" title="Sandra Sun">
     <link rel="help" href="https://w3c.github.io/uievents/#events-clickevent-event-order">
     <meta name="flags" content="interact">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/event_order.js"></script>
   </head>
   <body>
     <ol>
@@ -19,7 +19,6 @@
 </body>
 <script>
 setup({explicit_timeout: true});
-var done = false;
 var started = false;
 var events = [];
 var targets = [];
@@ -28,7 +27,8 @@ function record(e) {
   if (e.type == 'mousedown') {
     started = true;
   }
-  if (!started || done) {
+  assert_true(e.bubbles);
+  if (!started) {
     return;
   }
   events.push(e.type);
@@ -43,48 +43,6 @@ var relevantEvents = [
   'dblclick'
 ];
 
-function finish() {
-  done = true;
-}
-
-function checkOrder(event_types) {
-  var order = ['initial', 'mousedown', 'mousemove', 'mouseup', 'click',
-    'mousemove', 'mousedown', 'mousemove', 'mouseup', 'click', 'dblclick',
-    'mousemove'];
-  var optional = [false, false, true, false, false,
-    true, false, true, false, false, false, true];
-  var state = 0;
-
-  for (var i = 0; i < event_types.length; ++i) {
-    // Move to the next state.
-    if (state + 1 < order.length && event_types[i] == order[state + 1]) {
-      state = state + 1;
-      continue;
-    }
-    // Stay at the current state.
-    if (optional[state] && event_types[i] == order[state]) {
-        continue;
-    }
-    // Jump over the next state.
-    if (state + 2 < order.length && optional[state + 1]
-      && event_types[i] == order[state + 2]) {
-      state += 2;
-      continue;
-    }
-    return false;
-  }
-
-  return (state >= order.length - 2);
-}
-
-function checkTarget(event_targets) {
-  for (var i = 0; i < event_targets.length; ++i) {
-    if (event_targets[i] != 'blue')
-      return false;
-  }
-  return true;
-}
-
 window.onload = function () {
   var blue = document.getElementById('blue');
 
@@ -92,17 +50,20 @@ window.onload = function () {
     blue.addEventListener(relevantEvents[i], record, false);
   }
 
+  var eventOrder = ['mousedown', 'mousemove', 'mouseup', 'click',
+    'mousemove', 'mousedown', 'mousemove', 'mouseup', 'click', 'dblclick',
+    'mousemove'];
+  var frequency = ['1', '*', '1', '1',
+    '*', '1', '*', '1', '1', '1', '*'];
+  var targetOrder = ['blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue',
+    'blue', 'blue', 'blue', 'blue',];
   async_test(function(t) {
     document.getElementById('done').addEventListener('click', function () {
       finish();
       t.step(function () {
         assert_true(
-          checkOrder(events),
+          checkOrder(events, targets, eventOrder, targetOrder, frequency),
           'Click-related events should fire in the correct order'
-        );
-        assert_true(
-          checkTarget(targets),
-          'Click-related events should fire at the correct targets'
         );
         t.done();
       });

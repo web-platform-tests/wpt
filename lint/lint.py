@@ -12,7 +12,7 @@ import sys
 
 from collections import defaultdict
 
-from .. import localpaths
+from ..localpaths import repo_root
 
 from manifest.sourcefile import SourceFile
 from six import iteritems, itervalues
@@ -358,7 +358,6 @@ def parse_args():
     return parser.parse_args()
 
 def main():
-    repo_root = localpaths.repo_root
     args = parse_args()
     paths = args.paths if args.paths else all_git_paths(repo_root)
     return lint(repo_root, paths, args.json)

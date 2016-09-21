@@ -65,7 +65,7 @@ function runTest(config,qualifier) {
                 }).then(test.step_func(function() {
                     assert_unreached('generateRequest() succeeded unexpectedly');
                 }), test.step_func(function(error) {
-                    assert_equals(error.name, 'InvalidAccessError');
+                    assert_equals(error.name, 'TypeError');
                     test.done();
                 }));
             },testspec.testname);

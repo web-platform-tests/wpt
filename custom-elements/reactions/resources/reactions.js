@@ -10,7 +10,9 @@ function defineNewCustomElement(observedAttributes) {
             super();
             log.push({type: 'constructed', element: this});
         }
-        attributeChangedCallback(name, oldValue, newValue) { log.push({type: 'attributeChanged', element: this, name: name, oldValue: oldValue, newValue: newValue}); }
+        attributeChangedCallback(name, oldValue, newValue, namespace) {
+            log.push({type: 'attributeChanged', element: this, name: name, oldValue: oldValue, newValue: newValue, namespace: namespace});
+        }
         connectedCallback() { log.push({type: 'connected', element: this}); }
         disconnectedCallback() { log.push({type: 'disconnected', element: this}); }
         adoptedCallback(oldDocument, newDocument) { log.push({type: 'adopted', element: this, oldDocument: oldDocument, newDocument: newDocument}); }
@@ -87,6 +89,7 @@ function testReflectAttribute(jsAttributeName, contentAttributeName, validValue1
         assert_equals(logEntries.log().name, contentAttributeName);
         assert_equals(logEntries.log().oldValue, null);
         assert_equals(logEntries.log().newValue, validValue1);
+        assert_equals(logEntries.log().namespace, null);
     }, name + ' must enqueue a attributeChanged reaction when adding ' + contentAttributeName + ' content attribute');
 
     test(function () {
@@ -100,6 +103,7 @@ function testReflectAttribute(jsAttributeName, contentAttributeName, validValue1
         assert_equals(logEntries.log().name, contentAttributeName);
         assert_equals(logEntries.log().oldValue, validValue1);
         assert_equals(logEntries.log().newValue, validValue2);
+        assert_equals(logEntries.log().namespace, null);
     }, name + ' must enqueue a attributeChanged reaction when replacing an existing attribute');
 }
 
@@ -114,6 +118,7 @@ function testAttributeAdder(testFunction, name) {
         assert_equals(logEntries.log().name, 'id');
         assert_equals(logEntries.log().oldValue, null);
         assert_equals(logEntries.log().newValue, 'foo');
+        assert_equals(logEntries.log().namespace, null);
     }, name + ' must enqueue a attributeChanged reaction when adding an attribute');
 
     test(function () {
@@ -135,6 +140,7 @@ function testAttributeAdder(testFunction, name) {
         assert_equals(logEntries.log().name, 'title');
         assert_equals(logEntries.log().oldValue, 'hello');
         assert_equals(logEntries.log().newValue, 'world');
+        assert_equals(logEntries.log().namespace, null);
     }, name + ' must enqueue a attributeChanged reaction when replacing an existing attribute');
 
     test(function () {
@@ -159,6 +165,7 @@ function testAttributeMutator(testFunction, name) {
         assert_equals(logEntries.log().name, 'title');
         assert_equals(logEntries.log().oldValue, 'hello');
         assert_equals(logEntries.log().newValue, 'world');
+        assert_equals(logEntries.log().namespace, null);
     }, name + ' must enqueue a attributeChanged reaction when replacing an existing attribute');
 
     test(function () {
@@ -200,6 +207,7 @@ function testAttributeRemover(testFunction, name) {
         assert_equals(logEntries.log().name, 'title');
         assert_equals(logEntries.log().oldValue, 'hello');
         assert_equals(logEntries.log().newValue, null);
+        assert_equals(logEntries.log().namespace, null);
     }, name + ' must enqueue a attributeChanged reaction when removing an existing attribute');
 
     test(function () {

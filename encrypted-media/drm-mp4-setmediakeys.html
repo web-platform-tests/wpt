@@ -34,9 +34,7 @@
 
     <script>
         var keysystem = getSupportedKeySystem();
-        getSupportedContent( keysystem )
-        .then( function( contents )
-        {
+        getSupportedContent( keysystem ).then( function( contents ) {
             runTest( {  video:              document.getElementById('videoelement'),
                         keysystem:          keysystem,
                         content:            contents[ 0 ]

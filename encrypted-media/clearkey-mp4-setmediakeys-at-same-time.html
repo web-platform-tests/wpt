@@ -33,9 +33,7 @@
     </div>
 
     <script>
-        getSupportedContent( 'org.w3.clearkey' )
-        .then( function( contents )
-        {
+        getSupportedContent( 'org.w3.clearkey' ).then( function( contents ) {
             runTest( {  video:              document.getElementById('videoelement'),
                         keysystem:          'org.w3.clearkey',
                         content:            contents[ 0 ]

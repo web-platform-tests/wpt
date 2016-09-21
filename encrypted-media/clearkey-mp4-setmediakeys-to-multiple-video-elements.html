@@ -2,7 +2,6 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <meta name="timeout" content="long">
     <title>Encrypted Media Extensions: Events with Clear Key</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
@@ -36,9 +35,7 @@
     </div>
 
     <script>
-        getSupportedContent( 'org.w3.clearkey' )
-        .then( function( contents )
-        {
+        getSupportedContent( 'org.w3.clearkey' ).then( function( contents ) {
             runTest( {  video1:              document.getElementById('videoelement1'),
                         video2:              document.getElementById('videoelement2'),
                         keysystem:          'org.w3.clearkey',

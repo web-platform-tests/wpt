@@ -2,7 +2,6 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <meta name="timeout" content="long">
     <title>Encrypted Media Extensions: Events with Clear Key</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
@@ -37,9 +36,7 @@
         var keysystem = getSupportedKeySystem(),
             contentitem = content['mp4-basic'],
             handler = new MessageHandler(keysystem, contentitem );
-        getSupportedContent( keysystem )
-        .then( function( contents )
-        {
+        getSupportedContent( keysystem ).then( function( contents ) {
             runTest( {  video:              document.getElementById('videoelement'),
                         keysystem:          keysystem,
                         messagehandler:     handler.messagehandler,

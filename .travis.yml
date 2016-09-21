@@ -5,4 +5,6 @@ python:
 before_install:
   - git submodule update --init --recursive
 # command to run tests, e.g. python setup.py test
-script:  ./lint
+script:
+  - ./lint
+  - ./manifest

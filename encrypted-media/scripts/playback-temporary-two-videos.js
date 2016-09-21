@@ -1,8 +1,9 @@
-function runTest(config) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', sucessful playback, temporary, '
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', set src before setMediaKeys';
+                                    + ', playback two videos';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],
@@ -12,7 +13,6 @@ function runTest(config) {
     promise_test(function(test)
     {
         var promises = config.video.map( function( video ) { return play_video_as_promise( test, video ); } );
-
         return Promise.all(promises);
 
     }, testname );
@@ -21,6 +21,10 @@ function runTest(config) {
         var _mediaKeys,
             _mediaKeySession,
             _mediaSource;
+
+        function onFailure(error) {
+            forceTestFailureFromPromise(test, error);
+        }
 
         function onMessage(event) {
             assert_equals( event.target, _mediaKeySession );
@@ -32,10 +36,7 @@ function runTest(config) {
                         [ 'license-request', 'individualization-request' ] );
 
             config.messagehandler( event.messageType, event.message ).then( function( response ) {
-
-                _mediaKeySession.update( response ).catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                });
+                _mediaKeySession.update( response ).catch(onFailure);
             });
         }
 
@@ -48,18 +49,14 @@ function runTest(config) {
 
             _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
                                                 config.initData || event.initData )
-            .catch(function(error) {
-                forceTestFailureFromPromise(test, error);
-            });
-
-            _video.setMediaKeys(_mediaKeys);
+            .catch(onFailure);
         }
 
         function wait_for_timeupdate_message(video)
         {
             return new Promise(function(resolve) {
                 video.addEventListener('timeupdate', function listener(event) {
-                    if ( event.target.currentTime > ( config.duration || 2 ) )
+                    if ( event.target.currentTime > ( config.duration || 1 ) )
                     {
                         video.removeEventListener('timeupdate', listener);
                         resolve(event);
@@ -72,19 +69,16 @@ function runTest(config) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
-            _mediaKeySession = _mediaKeys.createSession( 'temporary' );
-
-            waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
-
+            return _video.setMediaKeys(_mediaKeys);
         }).then(function() {
+            _mediaKeySession = _mediaKeys.createSession( 'temporary' );
+            waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             return testmediasource(config);
         }).then(function(source) {
             _mediaSource = source;
             _video.src = URL.createObjectURL(_mediaSource);
             _video.play();
             return wait_for_timeupdate_message(_video);
-        }).catch(function(error) {
-            forceTestFailureFromPromise(test, error);
-        });
+        }).catch(onFailure);
     }
 }

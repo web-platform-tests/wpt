@@ -1,3 +1,7 @@
+function testnamePrefix( qualifier, keysystem ) {
+    return ( qualifier || '' ) + ( keysystem === 'org.w3.clearkey' ? keysystem : 'drm' );
+}
+
 function getInitData(initDataType) {
 
     // FIXME: This is messed up, because here we are hard coding the key ids for the different content
@@ -74,30 +78,14 @@ function createKeyIDs() {
 function getSupportedKeySystem() {
     var userAgent = navigator.userAgent.toLowerCase();
     var keysystem = undefined;
-<<<<<<< HEAD
-    if(userAgent.indexOf('edge') > -1) {
+    if (userAgent.indexOf('edge') > -1 ) {
         keysystem = 'com.microsoft.playready';
     } else if(/CrKey\/[0-9]+\.[0-9a-z]+\.[0-9a-z]+/i.exec( navigator.userAgent )) {
         keysystem = 'com.chromecast.playready';
-    } else if(userAgent.indexOf('chrome') > -1) {
-=======
-    if (userAgent.indexOf('edge') > -1 ) {
-        keysystem = 'com.microsoft.playready';
-    } else if( userAgent.indexOf('chrome') > -1 || userAgent.indexOf('firefox') > -1 ) {
->>>>>>> upstream/master
+    } else if ( userAgent.indexOf('chrome') > -1 || userAgent.indexOf('firefox') > -1 ) {
         keysystem = 'com.widevine.alpha';
     }
     return keysystem;
-}
-
-function getPlayreadyMeteringCert(server) {
-    var playreadyMeteringCert = undefined;
-    if(server.toLowerCase().indexOf('microsoft') > -1) {
-        playreadyMeteringCert = "Q0hBSQAAAAEAAAUEAAAAAAAAAAJDRVJUAAAAAQAAAfQAAAFkAAEAAQAAAFjt9G6KdSncCkrjbTQPN+/2AAAAAAAAAAAAAAAJIPbrW9dj0qydQFIomYFHOwbhGZVGP2ZsPwcvjh+NFkP/////AAAAAAAAAAAAAAAAAAAAAAABAAoAAABYxw6TjIuUUmvdCcl00t4RBAAAADpodHRwOi8vcGxheXJlYWR5LmRpcmVjdHRhcHMubmV0L3ByL3N2Yy9yaWdodHNtYW5hZ2VyLmFzbXgAAAAAAQAFAAAADAAAAAAAAQAGAAAAXAAAAAEAAQIAAAAAADBRmRRpqV4cfRLcWz9WoXIGZ5qzD9xxJe0CSI2mXJQdPHEFZltrTkZtdmurwVaEI2etJY0OesCeOCzCqmEtTkcAAAABAAAAAgAAAAcAAAA8AAAAAAAAAAVEVEFQAAAAAAAAABVNZXRlcmluZyBDZXJ0aWZpY2F0ZQAAAAAAAAABAAAAAAABAAgAAACQAAEAQGHic/IPbmLCKXxc/MH20X/RtjhXH4jfowBWsQE1QWgUUBPFId7HH65YuQJ5fxbQJCT6Hw0iHqKzaTkefrhIpOoAAAIAW+uRUsdaChtq/AMUI4qPlK2Bi4bwOyjJcSQWz16LAFfwibn5yHVDEgNA4cQ9lt3kS4drx7pCC+FR/YLlHBAV7ENFUlQAAAABAAAC/AAAAmwAAQABAAAAWMk5Z0ovo2X0b2C9K5PbFX8AAAAAAAAAAAAAAARTYd1EkpFovPAZUjOj2doDLnHiRSfYc89Fs7gosBfar/////8AAAAAAAAAAAAAAAAAAAAAAAEABQAAAAwAAAAAAAEABgAAAGAAAAABAAECAAAAAABb65FSx1oKG2r8AxQjio+UrYGLhvA7KMlxJBbPXosAV/CJufnIdUMSA0DhxD2W3eRLh2vHukIL4VH9guUcEBXsAAAAAgAAAAEAAAAMAAAABwAAAZgAAAAAAAAAgE1pY3Jvc29mdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgFBsYXlSZWFkeSBTTDAgTWV0ZXJpbmcgUm9vdCBDQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgDEuMC4wLjEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEACAAAAJAAAQBArAKJsEIDWNG5ulOgLvSUb8I2zZ0c5lZGYvpIO56Z0UNk/uC4Mq3jwXQUUN6m/48V5J/vuLDhWu740aRQc1dDDAAAAgCGTWHP8iVuQixWizwoABz7PhUnZYWEugUht5sYKNk23h2Cao/D5uf6epDVyilG8fZKLvufXc/+fkNOtEKT+sWr";
-    } else if(server.toLowerCase().indexOf('drmtoday')) {
-        // Add DRMToday cert here
-    }
-    return playreadyMeteringCert;
 }
 
 function waitForEventAndRunStep(eventName, element, func, stepTest)
@@ -224,18 +212,18 @@ function verifyKeyStatuses(keyStatuses, keys)
     var unexpected = keys.unexpected || [];
 
     // |keyStatuses| should have same size as number of |keys.expected|.
-    assert_equals(keyStatuses.size, expected.length);
+    assert_equals(keyStatuses.size, expected.length, "keystatuses should have expected size");
 
     // All |keys.expected| should be found.
     expected.map(function(key) {
-        assert_true(keyStatuses.has(key));
-        assert_equals(keyStatuses.get(key), 'usable');
+        assert_true(keyStatuses.has(key), "keystatuses should have the expected keys");
+        assert_equals(keyStatuses.get(key), 'usable', "keystatus value should be 'usable'");
     });
 
     // All |keys.unexpected| should not be found.
     unexpected.map(function(key) {
-        assert_false(keyStatuses.has(key));
-        assert_equals(keyStatuses.get(key), undefined);
+        assert_false(keyStatuses.has(key), "keystatuses should not have unexpected keys");
+        assert_equals(keyStatuses.get(key), undefined, "keystatus for unexpected key should be undefined");
     });
 }
 

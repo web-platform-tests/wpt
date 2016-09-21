@@ -1,4 +1,4 @@
-/* globals add_completion_callback, Promise, done, assert_true, Ajv, on_event */
+/* globals add_completion_callback, Promise, showdown, done, assert_true, Ajv, on_event */
 
 /**
  * Creates a JSONtest object.  If the parameters are supplied
@@ -32,9 +32,25 @@ function JSONtest(params) {
   this.Test = null;         // test being run
   this.AssertionCounter = 0;// keeps track of which assertion is being processed
 
-  this._assertionText = []; // Array of text or nested arrays of assertions
   this._assertionCache = [];// Array to put loaded assertions into
+  this._assertionText = []; // Array of text or nested arrays of assertions
   this._loading = true;
+
+  showdown.extension('strip', function() {
+    return [
+    { type: 'output',
+      regex: /<p>/,
+      replace: ''
+    },
+    { type: 'output',
+      regex: /<\/p>$/,
+      replace: ''
+    }
+    ];
+  });
+
+
+  this.markdown = new showdown.Converter({ extensions: [ 'strip' ] }) ;
 
   var pending = [] ;
 
@@ -178,7 +194,7 @@ function JSONtest(params) {
                     type = "must";
                   }
 
-                  this.AssertionText += "<li>" + typeMap[type] + assertContents[assertIdx++].title;
+                  this.AssertionText += "<li>" + typeMap[type] + this.markdown.makeHtml(assertContents[assertIdx++].title);
                   this.AssertionText += "<ol>";
                   buildList(assertions.assertions, level+1) ;
                   this.AssertionText += "</ol></li>\n";
@@ -205,7 +221,7 @@ function JSONtest(params) {
                       }
 
                       // there is a condition object in the array
-                      this.AssertionText += "<li>" + typeMap[type] + assertContents[assertIdx++].title;
+                      this.AssertionText += "<li>" + typeMap[type] + this.markdown.makeHtml(assertContents[assertIdx++].title);
                       this.AssertionText += "<ol>";
                       buildList(assert, level+1) ; // capture the children too
                       this.AssertionText += "</ol></li>\n";
@@ -221,7 +237,7 @@ function JSONtest(params) {
                         type = "must";
                       }
 
-                      this.AssertionText += "<li>" + typeMap[type] + assertContents[assertIdx++].title + "</li>\n";
+                      this.AssertionText += "<li>" + typeMap[type] + this.markdown.makeHtml(assertContents[assertIdx++].title) + "</li>\n";
                     }
                   }.bind(this));
                 }

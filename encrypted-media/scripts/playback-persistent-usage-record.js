@@ -1,8 +1,9 @@
-function runTest(config, testname) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', successful playback, persistent-usage-record, '
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', persistent-usage-record, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', set src before setMediaKeys';
+                                    + 'playback';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],
@@ -17,6 +18,10 @@ function runTest(config, testname) {
             _mediaKeySession,
             _mediaSource,
             _releaseSequence = false;
+
+        function onFailure(error) {
+            forceTestFailureFromPromise(test, error);
+        }
 
         function onMessage(event) {
             assert_equals( event.target, _mediaKeySession );
@@ -34,19 +39,13 @@ function runTest(config, testname) {
             }
 
             config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                _mediaKeySession.update( response ).catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                }).then(function() {
+                _mediaKeySession.update( response ).then(function() {
                     if(event.messageType === 'license-request') {
-<<<<<<< HEAD
-                        // _video.setMediaKeys(_mediaKeys);
-=======
-                        _video.setMediaKeys(_mediaKeys);
->>>>>>> upstream/master
+                        return _video.setMediaKeys(_mediaKeys);
                     } else if(event.messageType === 'license-release') {
                         test.done();
                     }
-                });
+                }).catch(onFailure);
             });
         }
 
@@ -58,9 +57,7 @@ function runTest(config, testname) {
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
             _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
                                                 config.initData || event.initData )
-            .catch(function(error) {
-                forceTestFailureFromPromise(test, error);
-            });
+            .catch(onFailure);
         }
 
         function onClosed(event) {
@@ -69,18 +66,13 @@ function runTest(config, testname) {
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 2 ) && !_releaseSequence ) {
-
+            if ( _video.currentTime > ( config.duration || 1 ) && !_releaseSequence ) {
                 _video.removeEventListener('timeupdate', onTimeupdate );
-
                 _video.pause();
-
                 _releaseSequence = true;
 
                 _mediaKeySession.closed.then( test.step_func( onClosed ) );
-                _mediaKeySession.remove().catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                });
+                _mediaKeySession.remove().catch(onFailure);
 
                 _video.removeEventListener('timeupdate', onTimeupdate );
             }
@@ -98,14 +90,8 @@ function runTest(config, testname) {
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
             _mediaKeySession = _mediaKeys.createSession( 'persistent-usage-record' );
-
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-            _video.setMediaKeys(_mediaKeys);
-        }).then(function() {
-            var certBytes = atob(config.playreadyMeteringCert);
-            certBytes = stringToUint8Array(certBytes);
-            return _mediaKeys.setServerCertificate(certBytes);
         }).then(function() {
             return config.servercertificate ? _mediaKeys.setServerCertificate( config.servercertificate ) : true;
         }).then(function( success ) {
@@ -114,8 +100,6 @@ function runTest(config, testname) {
             _mediaSource = source;
             _video.src = URL.createObjectURL(_mediaSource);
             _video.play();
-        }).catch(function(error) {
-            forceTestFailureFromPromise(test, error);
-        });
+        }).catch(onFailure);
     }, testname);
 }

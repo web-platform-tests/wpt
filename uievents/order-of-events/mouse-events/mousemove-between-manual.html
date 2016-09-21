@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Mousemove handling between elements</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/event_order.js"></script>
+<style>
+#a {
+  height: 120px;
+  width: 200px;
+  background: blue;
+  display: flex;
+  justify-content: center;
+}
+#b {
+  height: 60px;
+  width: 100px;
+  margin: auto;
+  background: green;
+}
+#c {
+  height: 120px;
+  width: 200px;
+  background: yellow;
+}
+</style>
+<p>
+  Steps:
+
+  <ol>
+    <li>Move your mouse over the blue <code>&lt;div&gt;</code> element, later
+      over the green one, later back to the blue one.
+    <li>Move the mouse from the blue element to the yellow one, later to the
+      white background.
+  </ol>
+</p>
+
+
+<div id="a">
+  <div id="b" align="center"></div>
+</div>
+<div id="c"></div>
+
+<script>
+setup({explicit_timeout: true});
+var done = false;
+var events = [];
+var targets = [];
+var relevantEvents = [
+  "mousemove",
+  "mouseover",
+  "mouseenter",
+  "mouseout",
+  "mouseleave"
+];
+
+function record(e) {
+  if (e.type != "mouseenter" && e.type != "mouseleave")
+    assert_true(e.bubbles);
+  event.stopPropagation();
+  events.push(e.type);
+  targets.push(e.target.id);
+}
+
+window.onload = function() {
+  var a = document.getElementById("a");
+  var b = document.getElementById("b");
+  var c = document.getElementById("c");
+  var inputs = [a, b, c];
+  for (var i = 0; i < inputs.length; i++) {
+    for (var k = 0; k < relevantEvents.length; k++) {
+      inputs[i].addEventListener(relevantEvents[k], record, false);
+    }
+  }
+  var eventOrder = ["mouseover", "mouseenter", "mousemove", "mouseout", "mouseover",
+    "mouseenter", "mousemove", "mouseout", "mouseleave", "mouseover", "mousemove",
+    "mouseout", "mouseleave", "mouseover", "mouseenter", "mousemove", "mouseout",
+    "mouseleave"];
+  var targetOrder = ["a", "a", "a", "a", "b", "b", "b", "b", "b",
+    "a", "a", "a", "a", "c", "c", "c", "c", "c"];
+  var frequency = ["1", "1", "+", "1", "1",
+    "1", "+", "1", "1", "1", "+",
+    "1", "1", "1", "1", "+", "1",
+    "1"];
+  async_test(function(t) {
+    c.addEventListener("mouseleave", function() {
+      t.step(function() {
+        assert_true(checkOrder(events, targets, eventOrder, targetOrder, frequency));
+        t.done();
+      });
+    }, false);
+  }, "Mousemove events between elements should fire in the correct order.")
+};
+</script>

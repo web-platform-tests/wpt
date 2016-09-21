@@ -1,8 +1,9 @@
-function runTest(config) {
+function runTest(config,qualifier) {
 
-    var testname = config.keysystem + ', sucessful playback and events, temporary, '
+    var testname = testnamePrefix( qualifier, config.keysystem )
+                                    + ', temporary, '
                                     + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
-                                    + ', set src before setMediaKeys';
+                                    + ', playback, check events';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
                             audioCapabilities: [ { contentType: config.audioType } ],
@@ -10,38 +11,35 @@ function runTest(config) {
                             sessionTypes: [ 'temporary' ] };
 
     async_test( function( test ) {
-
         var _video = config.video,
             _mediaKeys,
             _mediaKeySession,
             _mediaSource,
             _allKeysUsableEvent = false,
-            _playingEvent = false,
             _timeupdateEvent = false,
             _events = [ ];
+
+        function onFailure(error) {
+            forceTestFailureFromPromise(test, error);
+        }
 
         function onMessage(event) {
             assert_equals( event.target, _mediaKeySession );
             assert_true( event instanceof window.MediaKeyMessageEvent );
             assert_equals( event.type, 'message');
 
-            assert_any( assert_equals,
-                        event.messageType,
-                        [ 'license-request', 'individualization-request' ] );
+            assert_in_array(  event.messageType, [ 'license-request', 'individualization-request' ] );
 
             if ( event.messageType !== 'individualization-request' ) {
                 _events.push( event.messageType );
             }
 
-            config.messagehandler( config.keysystem, event.messageType, event.message ).then( function( response ) {
+            config.messagehandler( event.messageType, event.message ).then( function( response ) {
                 _events.push( 'license-response' );
-
                 waitForEventAndRunStep('keystatuseschange', _mediaKeySession, onKeyStatusesChange, test);
                 _mediaKeySession.update( response ).then( function() {
                     _events.push('updated');
-                }).catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                });
+                }).catch(onFailure);
             });
         }
 
@@ -53,7 +51,6 @@ function runTest(config) {
             var hasKeys = false, pendingKeys = false;
             _mediaKeySession.keyStatuses.forEach( function( value, keyid ) {
                 assert_any( assert_equals, value, [ 'status-pending', 'usable' ] );
-
                 hasKeys = true;
                 pendingKeys = pendingKeys || ( value === 'status-pending' );
 
@@ -62,7 +59,7 @@ function runTest(config) {
             if ( !_allKeysUsableEvent && hasKeys && !pendingKeys ) {
                 _allKeysUsableEvent = true;
                 _events.push( 'allkeysusable' );
-                _video.setMediaKeys(_mediaKeys);
+                _video.setMediaKeys(_mediaKeys).catch(onFailure);
             }
 
             if ( !hasKeys ) {
@@ -79,17 +76,12 @@ function runTest(config) {
             _mediaKeySession.generateRequest(   config.initData ? config.initDataType : event.initDataType,
                                                 config.initData || event.initData ).then( function() {
                 _events.push( 'generaterequest' );
-            }).catch(function(error) {
-                forceTestFailureFromPromise(test, error);
-            });
+            }).catch(onFailure);
         }
 
         function onClosed(event) {
-
             _events.push( 'closed-promise' );
-
             setTimeout( test.step_func( function() {
-
                 assert_array_equals( _events,
                                     [
                                         'generaterequest',
@@ -103,30 +95,23 @@ function runTest(config) {
                                         'emptykeyslist'
                                     ],
                                     "Expected events sequence" );
-
-                _video.src = "";
-                _video.setMediaKeys( null ).then(function(){
-                    test.done();
-                });
+                test.done();
             } ), 0 );
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 5 ) && !_timeupdateEvent ) {
+            if ( _video.currentTime > ( config.duration || 1 ) && !_timeupdateEvent ) {
                 _timeupdateEvent = true;
                 _video.pause();
 
                 _mediaKeySession.closed.then( test.step_func( onClosed ) );
                 _mediaKeySession.close().then( function() {
                     _events.push( 'closed' );
-                }).catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                });
+                }).catch(onFailure);
             }
         }
 
         function onPlaying(event) {
-            _playingEvent = true;
             _events.push( 'playing' );
 
             // Not using waitForEventAndRunStep() to avoid too many
@@ -148,8 +133,6 @@ function runTest(config) {
             _mediaSource = source;
             _video.src = URL.createObjectURL(_mediaSource);
             _video.play();
-        }).catch(function(error) {
-            forceTestFailureFromPromise(test, error);
-        });
+        }).catch(onFailure);
     }, testname);
 }

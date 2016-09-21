@@ -177,7 +177,10 @@
         {
             case 'loading':
                 this._session.update( toUtf8( { keys: this._keys } ) )
-                .then( this._loaded );
+                .then( function() {
+                    this._state = 'active';
+                    this._loaded( true );
+                }.bind(this)).catch( this._loadfailed );
 
                 break;
 
@@ -307,6 +310,8 @@
                     return;
                 }
 
+                this._sessionId = sessionId;
+
                 if ( this._sessionType === 'persistent-usage-record' )
                 {
                     var msg = { kids: this._kids };
@@ -324,6 +329,8 @@
                     this._createSession();
 
                     this._state = 'loading';
+                    this._loaded = resolve;
+                    this._loadfailed = reject;
 
                     var initData = { kids: this._kids };
 
@@ -341,7 +348,7 @@
     {
         return new Promise( function( resolve, reject ) {
 
-            switch( this._state )
+            switch( this._state ) {
 
                 case 'active' :
 
@@ -399,7 +406,7 @@
 
     MediaKeySessionProxy.prototype.remove = function remove()
     {
-        if ( this._state !== 'active' || !this._session ) return Promise.reject( new DOMException('InvalidStateError') );
+        if ( this._state !== 'active' || !this._session ) return Promise.reject( new DOMException('InvalidStateError('+this._state+')') );
 
         this._state = 'removing';
 
@@ -414,10 +421,6 @@
             {
                 if ( this._firstTime ) msg.firstTime = this._firstTime;
                 if ( this._latestTime ) msg.latestTime = this._latestTime;
-            }
-            else
-            {
-                this._clear();
             }
 
             this._queueMessage( 'license-release', msg );

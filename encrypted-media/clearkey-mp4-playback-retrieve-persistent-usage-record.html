@@ -2,8 +2,7 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: Successful Playback, persistent-usage-record session with Clear Key, mp4, event sequence</title>
+    <title>Encrypted Media Extensions: persistent-usage-record, playback and retrieve record in new window, Clear Key, mp4</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -35,16 +34,16 @@
 
     <script>
         var contentitem = content['mp4-basic'],
+            handler = new MessageHandler( 'org.w3.clearkey', contentitem ),
             config = {  video:              document.getElementById('videoelement'),
                         keysystem:          'org.w3.clearkey',
-                        messagehandler:     messagehandler.bind( contentitem ),
+                        messagehandler:     handler.messagehandler,
                         audioPath:          contentitem.audio.path,
                         videoPath:          contentitem.video.path,
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
                         initData:           getInitData(contentitem,'keyids'),
-                        duration:           2,
                         windowscript:       'resources/retrieve-persistent-usage-record.html' };
 
         runTest(config);

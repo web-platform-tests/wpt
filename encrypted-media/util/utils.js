@@ -1,3 +1,7 @@
+function testnamePrefix( qualifier, keysystem ) {
+    return ( qualifier || '' ) + ( keysystem === 'org.w3.clearkey' ? keysystem : 'drm' );
+}
+
 function getInitData(initDataType) {
 
     // FIXME: This is messed up, because here we are hard coding the key ids for the different content
@@ -74,10 +78,10 @@ function createKeyIDs() {
 function getSupportedKeySystem() {
     var userAgent = navigator.userAgent.toLowerCase();
     var keysystem = undefined;
-    if( userAgent.indexOf('chrome') > -1 || userAgent.indexOf('firefox') > -1 ) {
-        keysystem = 'com.widevine.alpha';
-    } else if (userAgent.indexOf('edge') > -1 ) {
+    if (userAgent.indexOf('edge') > -1 ) {
         keysystem = 'com.microsoft.playready';
+    } else if ( userAgent.indexOf('chrome') > -1 || userAgent.indexOf('firefox') > -1 ) {
+        keysystem = 'com.widevine.alpha';
     }
     return keysystem;
 }
@@ -206,18 +210,18 @@ function verifyKeyStatuses(keyStatuses, keys)
     var unexpected = keys.unexpected || [];
 
     // |keyStatuses| should have same size as number of |keys.expected|.
-    assert_equals(keyStatuses.size, expected.length);
+    assert_equals(keyStatuses.size, expected.length, "keystatuses should have expected size");
 
     // All |keys.expected| should be found.
     expected.map(function(key) {
-        assert_true(keyStatuses.has(key));
-        assert_equals(keyStatuses.get(key), 'usable');
+        assert_true(keyStatuses.has(key), "keystatuses should have the expected keys");
+        assert_equals(keyStatuses.get(key), 'usable', "keystatus value should be 'usable'");
     });
 
     // All |keys.unexpected| should not be found.
     unexpected.map(function(key) {
-        assert_false(keyStatuses.has(key));
-        assert_equals(keyStatuses.get(key), undefined);
+        assert_false(keyStatuses.has(key), "keystatuses should not have unexpected keys");
+        assert_equals(keyStatuses.get(key), undefined, "keystatus for unexpected key should be undefined");
     });
 }
 

@@ -2,8 +2,7 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: Successful Playback, Temporary session with DRM, mp4, multiple keys</title>
+    <title>Encrypted Media Extensions: Successful playback, temporary session with DRM, mp4, multiple keys</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -20,10 +19,10 @@
     <script src=/encrypted-media/content/content-metadata.js></script>
 
     <!-- Message handler for DRM keysystem -->
-    <script src=/encrypted-media/util/drmtoday-messagehandler.js></script>
+    <script src=/encrypted-media/util/drm-messagehandler.js></script>
 
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/playback-temporary-multikey.js></script>
+    <script src=/encrypted-media/scripts/playback-temporary.js></script>
 
   </head>
   <body>
@@ -34,18 +33,19 @@
     </div>
 
     <script>
-        var contentitem = content['mp4-av-multikey'],
+        var keysystem = getSupportedKeySystem(),
+            contentitem = content['mp4-av-multikey'],
+            handler = new MessageHandler( keysystem, contentitem ),
             config = {  video:              document.getElementById('videoelement'),
-                        keysystem:          getSupportedKeySystem(),
-                        messagehandler:     messagehandler.bind( contentitem ),
+                        keysystem:          keysystem,
+                        messagehandler:     handler.messagehandler,
                         audioPath:          contentitem.audio.path,
                         videoPath:          contentitem.video.path,
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
                         initDataType:       contentitem.initDataType,
-                        duration:           2,
-                        testcase:           'audio/video' };
-
+                        testcase:           'multikey audio/video'
+                        };
         runTest(config);
     </script>
   </body>

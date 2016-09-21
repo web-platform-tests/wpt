@@ -2,7 +2,6 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <meta name="timeout" content="long">
     <title>Encrypted Media Extensions: Events with DRM</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
@@ -20,7 +19,7 @@
     <script src=/encrypted-media/content/content-metadata.js></script>
 
     <!-- Message handler for DRM servers -->
-    <script src=/encrypted-media/util/drmtoday-messagehandler.js></script>
+    <script src=/encrypted-media/util/drm-messagehandler.js></script>
 
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/events.js></script>
@@ -57,9 +56,11 @@
                 initData = getInitData( content, initDataType );
             }
 
+            var handler = new MessageHandler( keysystem, content );
+
             runTest( {  keysystem:          keysystem,
                         content:            content,
-                        messagehandler:     messagehandler.bind( content ),
+                        messagehandler:     handler.messagehandler,
                         initDataType:       initDataType,
                         initData:           initData
                     } );

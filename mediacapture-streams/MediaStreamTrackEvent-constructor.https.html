@@ -29,15 +29,14 @@ test(function() {
   });
 }, "The eventInitDict's track member is required.");
 
-// a MediaStreamTrack instance is needed to test, any instance will do.
-promise_test(function() {
-  return navigator.mediaDevices.getUserMedia({ video: true })
-    .then(function(stream) {
-      var track = stream.getTracks()[0];
-      assert_true(track instanceof MediaStreamTrack);
-      var event = new MediaStreamTrackEvent("type", { track: track });
-      assert_equals(event.type, "type");
-      assert_equals(event.track, track);
-    });
+test(function() {
+  // a MediaStreamTrack instance is needed to test, any instance will do.
+  var context = new AudioContext();
+  var dest = context.createMediaStreamDestination();
+  var track = dest.stream.getTracks()[0];
+  assert_true(track instanceof MediaStreamTrack);
+  var event = new MediaStreamTrackEvent("type", { track: track });
+  assert_equals(event.type, "type");
+  assert_equals(event.track, track);
 }, "The MediaStreamTrackEvent instance's track attribute is set.");
 </script>

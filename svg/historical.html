@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<title>Historical SVG features must be removed</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+var removedInterfaces = [
+  "SVGAnimatedPathData",
+  "SVGColor",
+  "SVGDocument",
+  "SVGElementInstanceList",
+  "SVGExternalResourcesRequired",
+  "SVGFilterPrimitiveStandardAttributes",
+  "SVGICCColor",
+  "SVGLangSpace",
+  "SVGPaint",
+  "SVGPathSeg",
+  "SVGStylable",
+  "SVGViewSpec",
+  "SVGZoomEvent"
+]
+for (var name of removedInterfaces) {
+ test(function() {
+   assert_false(name in window)
+ }, name + " interface must be removed")
+}
+
+var mixinInterfaces = [
+  "GetSVGDocument",
+  "SVGAnimatedPoints",
+  "SVGElementInstance",
+  "SVGFitToViewBox",
+  "SVGTests",
+  "SVGURIReference",
+  "SVGUnitTypes",
+  "SVGZoomAndPan"
+]
+for (var name of mixinInterfaces) {
+  test(function() {
+    assert_false(name in window)
+  }, name + " mixin interface must not be exposed")
+}
+
+var removedMembers = {
+  "SVGElement": [
+    "getPresentationAttribute",
+    "xmlbase",
+    "xmllang",
+    "xmlspace"
+  ],
+  "SVGGraphicsElement": [
+    "getStrokeBBox",
+    "getTransformToElement",
+    "hasExtension",
+    "requiredFeatures"
+  ],
+  "SVGPathElement": [
+    "getPointAtLength",
+    "getTotalLength",
+    "pathLength"
+  ],
+  "SVGSVGElement": [
+    "currentView",
+    "useCurrentView",
+    "viewport"
+  ]
+}
+for (var name in removedMembers) {
+  for (var member of removedMembers[name]) {
+    test(function() {
+      assert_false(member in window[name].prototype)
+    }, name + ".prototype." + member + " must be removed")
+  }
+}
+</script>

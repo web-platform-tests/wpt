@@ -98,6 +98,12 @@ function waitForEventAndRunStep(eventName, element, func, stepTest)
     element.addEventListener(eventName, stepTest.step_func(eventCallback), true);
 }
 
+function waitForEvent(eventName, element) {
+    return new Promise(function(resolve) {
+        element.addEventListener(eventName, resolve, true);
+    })
+}
+
 var consoleDiv = null;
 
 function consoleWrite(text)

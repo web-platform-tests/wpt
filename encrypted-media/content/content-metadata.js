@@ -1,5 +1,6 @@
 content = addMemberListToObject( {
-    'mp4-basic' : {     initDataType:   'cenc',
+    'mp4-basic' : {     assetId:        'mp4-basic',
+                        initDataType:   'cenc',
                         audio : {   type:   'audio/mp4;codecs="mp4a.40.2"',
                                     path:   '/encrypted-media/content/audio_aac-lc_128k_dashinit.mp4' },
                         video : {   type:   'video/mp4;codecs="avc1.4d401e"',
@@ -11,6 +12,7 @@ content = addMemberListToObject( {
                     },
 
     'mp4-av-multikey' : {
+                        assetId:        'mp4-basic',
                         initDataType:   'cenc',
                         associatedInitData: true,       // indicates that initData for one key causes other keys to be returned as well
                         audio:  {   type:   'audio/mp4;codecs="mp4a.40.2"',
@@ -27,7 +29,8 @@ content = addMemberListToObject( {
                                     initData: 'AAAAcXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAFEIARIQVY7lQbkKsvOVDQCt43YNRRoIY2FzdGxhYnMiKGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRjMmx1WjJ4bEluMD0yB2RlZmF1bHQAAAMacHNzaAAAAACaBPB5mEBChquS5lvgiF+VAAAC+voCAAABAAEA8AI8AFcAUgBNAEgARQBBAEQARQBSACAAeABtAGwAbgBzAD0AIgBoAHQAdABwADoALwAvAHMAYwBoAGUAbQBhAHMALgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAC8ARABSAE0ALwAyADAAMAA3AC8AMAAzAC8AUABsAGEAeQBSAGUAYQBkAHkASABlAGEAZABlAHIAIgAgAHYAZQByAHMAaQBvAG4APQAiADQALgAwAC4AMAAuADAAIgA+ADwARABBAFQAQQA+ADwAUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEUAWQBMAEUATgA+ADEANgA8AC8ASwBFAFkATABFAE4APgA8AEEATABHAEkARAA+AEEARQBTAEMAVABSADwALwBBAEwARwBJAEQAPgA8AC8AUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEkARAA+AFEAZQBXAE8AVgBRAHEANQA4ADcASwBWAEQAUQBDAHQANAAzAFkATgBSAFEAPQA9ADwALwBLAEkARAA+ADwAQwBIAEUAQwBLAFMAVQBNAD4AWQBpAE8ALwAxADYATABzADkANgBFAD0APAAvAEMASABFAEMASwBTAFUATQA+ADwATABBAF8AVQBSAEwAPgBoAHQAdABwADoALwAvAHAAbABhAHkAcgBlAGEAZAB5AC4AZABpAHIAZQBjAHQAdABhAHAAcwAuAG4AZQB0AC8AcAByAC8AcwB2AGMALwByAGkAZwBoAHQAcwBtAGEAbgBhAGcAZQByAC4AYQBzAG0AeAA/AFAAbABhAHkAUgBpAGcAaAB0AD0AMQAmAGEAbQBwADsAVQBzAGUAUwBpAG0AcABsAGUATgBvAG4AUABlAHIAcwBpAHMAdABlAG4AdABMAGkAYwBlAG4AcwBlAD0AMQA8AC8ATABBAF8AVQBSAEwAPgA8AC8ARABBAFQAQQA+ADwALwBXAFIATQBIAEUAQQBEAEUAUgA+AA==' } ]
                     },
 
-    'mp4-multikey' :  {     initDataType:   'cenc',
+    'mp4-multikey' :  {     assetId: 'mp4-multikey',
+                            initDataType:   'cenc',
                             audio:  {   type:   'audio/mp4;codecs="mp4a.40.2"',
                                         path:   '/encrypted-media/content/audio_aac-lc_128k_2keys_2sess.mp4' },
                             video:  {   type:   'video/mp4;codecs="avc1.4d401e"',
@@ -41,7 +44,9 @@ content = addMemberListToObject( {
                                         initDataType: 'cenc',
                                         initData: 'AAAAjXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAG0IARIQ7nNWTsiokPB472hx+kvhixoIY2FzdGxhYnMiRGV5SmhjM05sZEVsa0lqb2laVzFsTFhSbGMzUXRNbk5sYzNOcGIyNGlMQ0oyWVhKcFlXNTBTV1FpT2lKclpYa3lJbjA9MgdkZWZhdWx0AAADwnBzc2gAAAAAmgTweZhAQoarkuZb4IhflQAAA6KiAwAAAQABAJgDPABXAFIATQBIAEUAQQBEAEUAUgAgAHgAbQBsAG4AcwA9ACIAaAB0AHQAcAA6AC8ALwBzAGMAaABlAG0AYQBzAC4AbQBpAGMAcgBvAHMAbwBmAHQALgBjAG8AbQAvAEQAUgBNAC8AMgAwADAANwAvADAAMwAvAFAAbABhAHkAUgBlAGEAZAB5AEgAZQBhAGQAZQByACIAIAB2AGUAcgBzAGkAbwBuAD0AIgA0AC4AMAAuADAALgAwACIAPgA8AEQAQQBUAEEAPgA8AFAAUgBPAFQARQBDAFQASQBOAEYATwA+ADwASwBFAFkATABFAE4APgAxADYAPAAvAEsARQBZAEwARQBOAD4APABBAEwARwBJAEQAPgBBAEUAUwBDAFQAUgA8AC8AQQBMAEcASQBEAD4APAAvAFAAUgBPAFQARQBDAFQASQBOAEYATwA+ADwASwBJAEQAPgBUAGwAWgB6ADcAcQBqAEkAOABKAEIANAA3ADIAaAB4ACsAawB2AGgAaQB3AD0APQA8AC8ASwBJAEQAPgA8AEwAQQBfAFUAUgBMAD4AaAB0AHQAcABzADoALwAvAGwAaQBjAC4AcwB0AGEAZwBpAG4AZwAuAGQAcgBtAHQAbwBkAGEAeQAuAGMAbwBtAC8AbABpAGMAZQBuAHMAZQAtAHAAcgBvAHgAeQAtAGgAZQBhAGQAZQByAGEAdQB0AGgALwBkAHIAbQB0AG8AZABhAHkALwBSAGkAZwBoAHQAcwBNAGEAbgBhAGcAZQByAC4AYQBzAG0AeAA8AC8ATABBAF8AVQBSAEwAPgA8AEwAVQBJAF8AVQBSAEwAPgBoAHQAdABwAHMAOgAvAC8AbABpAGMALgBzAHQAYQBnAGkAbgBnAC4AZAByAG0AdABvAGQAYQB5AC4AYwBvAG0ALwBsAGkAYwBlAG4AcwBlAC0AcAByAG8AeAB5AC0AaABlAGEAZABlAHIAYQB1AHQAaAAvAGQAcgBtAHQAbwBkAGEAeQAvAFIAaQBnAGgAdABzAE0AYQBuAGEAZwBlAHIALgBhAHMAbQB4ADwALwBMAFUASQBfAFUAUgBMAD4APABDAEgARQBDAEsAUwBVAE0APgB4AEQASwBBAFkAMAB2AFoAaABVAFUAPQA8AC8AQwBIAEUAQwBLAFMAVQBNAD4APAAvAEQAQQBUAEEAPgA8AC8AVwBSAE0ASABFAEEARABFAFIAPgA=' } ] },
                                 
-    'mp4-basic-key1' :          {   initDataType:   'cenc',
+    'mp4-basic-key1' :          {   assetId:    'mp4-multikey-sequential',
+                                    variantId:  'key1',
+                                    initDataType:   'cenc',
                                     audio: {    type:   'audio/mp4;codecs="mp4a.40.2"',
                                                 path:   '/encrypted-media/content/bbb_aac_lc_clear.mp4' },
                                     video: {    type:   'video/mp4;codecs="avc1.4d401e"',
@@ -51,7 +56,9 @@ content = addMemberListToObject( {
                                                 initDataType:   'cenc',
                                                 initData: 'AAAAlXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAHUIARIQig2FRSEF1BU1j+qPaObBkRoIY2FzdGxhYnMiTGV5SmhjM05sZEVsa0lqb2liWEEwTFcxMWJIUnBhMlY1TFhObGNYVmxiblJwWVd3aUxDSjJZWEpwWVc1MFNXUWlPaUpyWlhreEluMD0yB2RlZmF1bHQAAANYcHNzaAAAAACaBPB5mEBChquS5lvgiF+VAAADODgDAAABAAEALgM8AFcAUgBNAEgARQBBAEQARQBSACAAeABtAGwAbgBzAD0AIgBoAHQAdABwADoALwAvAHMAYwBoAGUAbQBhAHMALgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAC8ARABSAE0ALwAyADAAMAA3AC8AMAAzAC8AUABsAGEAeQBSAGUAYQBkAHkASABlAGEAZABlAHIAIgAgAHYAZQByAHMAaQBvAG4APQAiADQALgAwAC4AMAAuADAAIgA+ADwARABBAFQAQQA+ADwAUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEUAWQBMAEUATgA+ADEANgA8AC8ASwBFAFkATABFAE4APgA8AEEATABHAEkARAA+AEEARQBTAEMAVABSADwALwBBAEwARwBJAEQAPgA8AC8AUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEkARAA+AFIAWQBVAE4AaQBnAFUAaABGAGQAUQAxAGoAKwBxAFAAYQBPAGIAQgBrAFEAPQA9ADwALwBLAEkARAA+ADwATABBAF8AVQBSAEwAPgBoAHQAdABwAHMAOgAvAC8AbABpAGMALgBzAHQAYQBnAGkAbgBnAC4AZAByAG0AdABvAGQAYQB5AC4AYwBvAG0ALwBsAGkAYwBlAG4AcwBlAC0AcAByAG8AeAB5AC0AaABlAGEAZABlAHIAYQB1AHQAaAAvAGQAcgBtAHQAbwBkAGEAeQAvAFIAaQBnAGgAdABzAE0AYQBuAGEAZwBlAHIALgBhAHMAbQB4ADwALwBMAEEAXwBVAFIATAA+ADwATABVAEkAXwBVAFIATAA+AGgAdAB0AHAAcwA6AC8ALwBwAGwAYQB5AHIAZQBhAGQAeQAtAHUAaQAuAGUAeABhAG0AcABsAGUALgBjAG8AbQA8AC8ATABVAEkAXwBVAFIATAA+ADwAQwBIAEUAQwBLAFMAVQBNAD4AcQBOAEkAZQBiAFQAWABzAG8AcgBnAD0APAAvAEMASABFAEMASwBTAFUATQA+ADwALwBEAEEAVABBAD4APAAvAFcAUgBNAEgARQBBAEQARQBSAD4A' } ]
                                 },
-    'mp4-basic-key2' :          {   initDataType:   'cenc',
+    'mp4-basic-key2' :          {   assetId:    'mp4-multikey-sequential',
+                                    variantId:  'key2',
+                                    initDataType:   'cenc',
                                     audio: {    type:   'audio/mp4;codecs="mp4a.40.2"',
                                                 path:   '/encrypted-media/content/bbb_aac_lc_clear.mp4' },
                                     video: {    type:   'video/mp4;codecs="avc1.4d401e"',
@@ -61,7 +68,8 @@ content = addMemberListToObject( {
                                                 initDataType:   'cenc',
                                                 initData: 'AAAAlXBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAAHUIARIQ+7S380q9MYc0S87EX5ZoiBoIY2FzdGxhYnMiTGV5SmhjM05sZEVsa0lqb2liWEEwTFcxMWJIUnBhMlY1TFhObGNYVmxiblJwWVd3aUxDSjJZWEpwWVc1MFNXUWlPaUpyWlhreUluMD0yB2RlZmF1bHQAAANYcHNzaAAAAACaBPB5mEBChquS5lvgiF+VAAADODgDAAABAAEALgM8AFcAUgBNAEgARQBBAEQARQBSACAAeABtAGwAbgBzAD0AIgBoAHQAdABwADoALwAvAHMAYwBoAGUAbQBhAHMALgBtAGkAYwByAG8AcwBvAGYAdAAuAGMAbwBtAC8ARABSAE0ALwAyADAAMAA3AC8AMAAzAC8AUABsAGEAeQBSAGUAYQBkAHkASABlAGEAZABlAHIAIgAgAHYAZQByAHMAaQBvAG4APQAiADQALgAwAC4AMAAuADAAIgA+ADwARABBAFQAQQA+ADwAUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEUAWQBMAEUATgA+ADEANgA8AC8ASwBFAFkATABFAE4APgA8AEEATABHAEkARAA+AEEARQBTAEMAVABSADwALwBBAEwARwBJAEQAPgA8AC8AUABSAE8AVABFAEMAVABJAE4ARgBPAD4APABLAEkARAA+ADgANwBlADAAKwA3ADEASwBoAHoARQAwAFMAOAA3AEUAWAA1AFoAbwBpAEEAPQA9ADwALwBLAEkARAA+ADwATABBAF8AVQBSAEwAPgBoAHQAdABwAHMAOgAvAC8AbABpAGMALgBzAHQAYQBnAGkAbgBnAC4AZAByAG0AdABvAGQAYQB5AC4AYwBvAG0ALwBsAGkAYwBlAG4AcwBlAC0AcAByAG8AeAB5AC0AaABlAGEAZABlAHIAYQB1AHQAaAAvAGQAcgBtAHQAbwBkAGEAeQAvAFIAaQBnAGgAdABzAE0AYQBuAGEAZwBlAHIALgBhAHMAbQB4ADwALwBMAEEAXwBVAFIATAA+ADwATABVAEkAXwBVAFIATAA+AGgAdAB0AHAAcwA6AC8ALwBwAGwAYQB5AHIAZQBhAGQAeQAtAHUAaQAuAGUAeABhAG0AcABsAGUALgBjAG8AbQA8AC8ATABVAEkAXwBVAFIATAA+ADwAQwBIAEUAQwBLAFMAVQBNAD4ARgB0AGkASQBoADYAUwBKAG0AcABZAD0APAAvAEMASABFAEMASwBTAFUATQA+ADwALwBEAEEAVABBAD4APAAvAFcAUgBNAEgARQBBAEQARQBSAD4A' } ] },
                                 
-    'mp4-multikey-sequential' : {   initDataType:   'cenc',
+    'mp4-multikey-sequential' : {   assetId:    'mp4-multikey-sequential',
+                                    initDataType:   'cenc',
                                     audio: {    type:   'audio/mp4;codecs="mp4a.40.2"',
                                                 path:   '/encrypted-media/content/bbb_aac_lc_clear.mp4' },
                                     video: {    type:   'video/mp4;codecs="avc1.4d401e"',

@@ -39,13 +39,18 @@ function MessageHandler( keysystem, content, sessionType ) {
     this._keysystem = keysystem;
     this._content = content;
     this._sessionType = sessionType;
-    this._drmconfig = drmconfig[ this._keysystem ].filter( function( drmconfig ) {
-        return drmconfig.sessionTypes === undefined || ( drmconfig.sessionTypes.indexOf( sessionType ) !== -1 );
-    } )[ 0 ];
+    try {
+        this._drmconfig = drmconfig[this._keysystem].filter(function (drmconfig) {
+            return drmconfig.sessionTypes === undefined || ( drmconfig.sessionTypes.indexOf(sessionType) !== -1 );
+        })[0];
 
-    this.messagehandler = MessageHandler.prototype.messagehandler.bind( this );
-    if ( this._drmconfig && this._drmconfig.certificate ) {
-        this.servercertificate = stringToUint8Array( atob( this._drmconfig.certificate ) );
+        this.messagehandler = MessageHandler.prototype.messagehandler.bind(this);
+        if (this._drmconfig && this._drmconfig.certificate) {
+            this.servercertificate = stringToUint8Array(atob(this._drmconfig.certificate));
+        }
+    }
+    catch(e) {
+        return null;
     }
 }
 

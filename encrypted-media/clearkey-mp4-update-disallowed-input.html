@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test handling of invalid responses for update().</title>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+
+        <script src=/encrypted-media/util/utils.js></script>
+
+        <script src=/encrypted-media/scripts/update-disallowed-input.js></script>
+    </head>
+    <body>
+        <div id="log"></div>
+        <script>
+
+            config = {
+                keysystem: 'org.w3.clearkey',
+            };
+            runTest(config);
+
+        </script>
+    </body>
+</html>

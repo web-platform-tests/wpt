@@ -1,7 +1,7 @@
 import os
 from six import BytesIO
 
-blacklist = ["/tools/", "/resources/", "/common/", "/conformance-checkers/", "_certs"]
+blacklist = ["/tools/", "/resources/", "/common/", "/conformance-checkers/", "/_certs/"]
 
 def rel_path_to_url(rel_path, url_base="/"):
     assert not os.path.isabs(rel_path)

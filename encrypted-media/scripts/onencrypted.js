@@ -8,32 +8,30 @@ function runTest(config) {
     var currentData;
 
     async_test(function (test) {
-        var video = config.video,
-          mediaSource,
-          onEncrypted = function (event) {
-              currentData = new Uint8Array(event.initData);
-              assert_equals(event.target, config.video);
-              assert_true(event instanceof window.MediaEncryptedEvent);
-              assert_equals(event.type, 'encrypted');
-              assert_equals(event.initDataType, 'cenc');
-              // at this point we do not know if the event is related to audio or video. So check for both expected init data
-              // TODO improve this
-              if (checkInitData(currentData, expectedInitData[0]) || checkInitData(currentData, expectedInitData[1])) {
-                  assert_true(true, true);
-              } else {
-                  forceTestFailureFromPromise(test, new Error('Invalid init data'));
-              }
-              if (--expectedEvents == 0)
-                  test.done();
-          };
+          var video = config.video,
+            mediaSource,
+            onEncrypted = function (event) {
+                currentData = new Uint8Array(event.initData);
+                assert_equals(event.target, config.video);
+                assert_true(event instanceof window.MediaEncryptedEvent);
+                assert_equals(event.type, 'encrypted');
+                assert_equals(event.initDataType, 'cenc');
+                // at this point we do not know if the event is related to audio or video. So check for both expected init data
+                assert_true(checkInitData(currentData, expectedInitData[0]) || checkInitData(currentData, expectedInitData[1]));
 
-        waitForEventAndRunStep('encrypted', video, onEncrypted, test);
-        return testmediasource(config).then(test.step_func(function (source) {
-            mediaSource = source;
-            config.video.src = URL.createObjectURL(mediaSource);
-            video.play();
-        }));
-    }, 'encrypted fired on encrypted media file.');
+                if (--expectedEvents == 0) {
+                    test.done();
+                }
+            };
+
+          waitForEventAndRunStep('encrypted', video, onEncrypted, test);
+          return testmediasource(config).then(test.step_func(function (source) {
+              mediaSource = source;
+              config.video.src = URL.createObjectURL(mediaSource);
+              video.play();
+          }));
+      }, 'encrypted fired on encrypted media file.'
+    );
 }
 
 function checkInitData(data, expectedData) {

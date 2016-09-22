@@ -1,7 +1,7 @@
 import os
 from six import BytesIO
 
-blacklist = ["/", "/tools/", "/resources/", "/common/", "/conformance-checkers/", "_certs"]
+blacklist = ["/tools/", "/resources/", "/common/", "/conformance-checkers/", "_certs"]
 
 def rel_path_to_url(rel_path, url_base="/"):
     assert not os.path.isabs(rel_path)
@@ -12,11 +12,10 @@ def rel_path_to_url(rel_path, url_base="/"):
     return url_base + rel_path.replace(os.sep, "/")
 
 def is_blacklisted(url):
+    if "/" not in url[1:]:
+        return True
     for item in blacklist:
-        if item == "/":
-            if "/" not in url[1:]:
-                return True
-        elif url.startswith(item):
+        if url.startswith(item):
             return True
     return False
 

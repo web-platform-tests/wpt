@@ -34,7 +34,7 @@ function runTest(config, qualifier) {
                 test.done();
             });
 
-            // release() should result in the closed promise being
+            // close() should result in the closed promise being
             // fulfilled.
             return mediaKeySession.close();
         }).catch(function(error) {

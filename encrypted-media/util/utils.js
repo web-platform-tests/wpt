@@ -225,36 +225,4 @@ function verifyKeyStatuses(keyStatuses, keys)
     });
 }
 
-// For Clear Key, the License Format is a JSON Web Key (JWK) Set, which contains
-// a set of cryptographic keys represented by JSON. These helper functions help
-// wrap raw keys into a JWK set.
-// See:
-// https://w3c.github.io/encrypted-media/#clear-key-license-format
-// http://tools.ietf.org/html/draft-ietf-jose-json-web-key
-//
-// Creates a JWK from raw key ID and key.
-// |keyId| and |key| are expected to be ArrayBufferViews, not base64-encoded.
-function createJWK(keyId, key)
-{
-    var jwk = '{"kty":"oct","alg":"A128KW","kid":"';
-    jwk += base64urlEncode(keyId);
-    jwk += '","k":"';
-    jwk += base64urlEncode(key);
-    jwk += '"}';
-    return jwk;
-}
-
-// Creates a JWK Set from multiple JWKs.
-function createJWKSet()
-{
-    var jwkSet = '{"keys":[';
-    for (var i = 0; i < arguments.length; i++) {
-        if (i != 0)
-            jwkSet += ',';
-        jwkSet += arguments[i];
-    }
-    jwkSet += ']}';
-    return jwkSet;
-}
-
 

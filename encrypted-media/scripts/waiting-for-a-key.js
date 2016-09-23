@@ -78,16 +78,9 @@ function runTest(config) {
           })
           .then(function () {
               // generateRequest() will cause a 'message' event to
-              // occur specifying the keyId that is needed, but for Clearkey we
-              // ignore it since we already know what keyId is needed.
+              // occur specifying the keyId that is needed
               // Add the key needed to decrypt.
-              if (handler) {
-                  return wait_for_message_event(mediaKeySession, handler, test)
-              } else {
-                  var jwkSet = stringToUint8Array(createJWKSet(createJWK(keyId, rawKey)));
-                  debugMessage = 'update()';
-                  return mediaKeySession.update(jwkSet);
-              }
+              return wait_for_message_event(mediaKeySession, handler, test)
           })
           .then(function () {
               // Video should start playing now that it can decrypt the
@@ -106,8 +99,7 @@ function runTest(config) {
         // is actually called (instead of simply aborting the test).
     }, 'Waiting for a key.', {timeout: 5000});
 
-// Wait for a pair of 'encrypted' events. Promise resolved on
-// second event.
+// Wait for an 'encrypted' event
     function wait_for_encrypted_event(video) {
         return new Promise(function (resolve) {
             video.addEventListener('encrypted', function listener(e) {

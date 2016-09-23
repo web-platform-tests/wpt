@@ -29,12 +29,10 @@
 
 <script>
     var contentItem = content['mp4-av-multikey'],
-            alternateContentItem = content['mp4-multikey'],
             config = {
                 video: document.getElementById('videoelement'),
                 keysystem: 'org.w3.clearkey',
                 content: contentItem,
-                alternateContent: alternateContentItem,
                 initDataType:       'keyids',
                 initData: getInitData(contentItem,'keyids'),
                 audioType: contentItem.audio.type,

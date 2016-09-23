@@ -5,15 +5,14 @@ function runTest(config) {
         var encryptedEventIndex = 0;
         var video = config.video;
         var keysystem = config.keysystem;
-        var configuration = {   initDataTypes: [ config.initDataType ],
-            audioCapabilities: [ { contentType: config.audioType } ],
-            videoCapabilities: [ { contentType: config.videoType } ],
-            sessionTypes: [ 'temporary' ] };
+        var configuration = {
+            initDataTypes: [config.initDataType],
+            audioCapabilities: [{contentType: config.audioType}],
+            videoCapabilities: [{contentType: config.videoType}],
+            sessionTypes: ['temporary']
+        };
 
         assert_not_equals(video, null);
-
-        // Alternate content to be played. These files must be the same format.
-        var alternateContent = config.alternateContent;
 
         var onEncrypted = function (event) {
             ++encryptedEventIndex;
@@ -23,9 +22,7 @@ function runTest(config) {
             // This event is fired once for the audio stream and once
             // for the video stream each time .src is set.
             if (encryptedEventIndex == 2) {
-                // Finished first video; set src to a different video.
-                config.videoPath = alternateContent.video.path;
-                //TODO set different audio path, audio content needed
+                // Finished first video; Create new media source and wait for two more encrypted events
                 return testmediasource(config)
                   .then(function (source) {
                       video.src = URL.createObjectURL(source);

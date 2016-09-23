@@ -9,3 +9,7 @@ script:
   - ./lint
   - ./manifest
   - ./diff-manifest.py
+notifications:
+  email:
+    on_success: never
+    on_failure: always

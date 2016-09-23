@@ -9,8 +9,8 @@ var removedInterfaces = [
   "SVGDocument",
   "SVGElementInstanceList",
   "SVGExternalResourcesRequired",
-  "SVGFilterPrimitiveStandardAttributes",
   "SVGICCColor",
+  "SVGLocatable",
   "SVGLangSpace",
   "SVGPaint",
   "SVGPathSeg",
@@ -28,6 +28,7 @@ var mixinInterfaces = [
   "GetSVGDocument",
   "SVGAnimatedPoints",
   "SVGElementInstance",
+  "SVGFilterPrimitiveStandardAttributes",
   "SVGFitToViewBox",
   "SVGTests",
   "SVGURIReference",
@@ -48,7 +49,6 @@ var removedMembers = {
     "xmlspace"
   ],
   "SVGGraphicsElement": [
-    "getStrokeBBox",
     "getTransformToElement",
     "hasExtension",
     "requiredFeatures"
@@ -70,5 +70,17 @@ for (var name in removedMembers) {
       assert_false(member in window[name].prototype)
     }, name + ".prototype." + member + " must be removed")
   }
+}
+
+var movedPathMembers = [
+  "getPointAtLength",
+  "getTotalLength",
+  "pathLength"
+]
+for (var member of movedPathMembers) {
+  test(function() {
+    assert_false(SVGPathElement.prototype.hasOwnProperty(member))
+    assert_true(SVGGeometryElement.prototype.hasOwnProperty(member))
+  }, "SVGPathElement.prototype." + member + " must be moved to SVGGeometryElement.prototype")
 }
 </script>

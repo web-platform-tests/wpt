@@ -19,11 +19,12 @@ def get_manifest(rev):
 
 
 def main():
-    head = os.environ['TRAVIS_COMMIT']
+    after = get_manifest("HEAD")
+
     call("git", "fetch", "origin", "master:master")
-    merge_base = call("git", "merge-base", "master", head).strip()
+    merge_base = call("git", "merge-base", "master", "HEAD").strip()
     before = get_manifest(merge_base)
-    after = get_manifest(head)
+
     diff = difflib.unified_diff(before, after,
                                 fromfile='before.json', tofile='after.json')
     for line in diff:

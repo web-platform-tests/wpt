@@ -12,11 +12,11 @@
     <script>
     promise_test(function() {
       var cacheBuster = token(); // ensures first request is uncached
-      var endpoint = "resources/cache.py?v=" + cacheBuster;
+      var url = "../resources/cache.py?v=" + cacheBuster;
       var etag;
 
       // make the first request
-      return fetch(endpoint).then(function(response) {
+      return fetch(url).then(function(response) {
         // ensure we're getting the regular, uncached response
         assert_equals(response.status, 200);
         assert_equals(response.headers.get("X-HTTP-STATUS"), null)
@@ -24,7 +24,7 @@
         return response.text(); // consuming the body, just to be safe
       }).then(function(body) {
         // make a second request
-        return fetch(endpoint);
+        return fetch(url);
       }).then(function(response) {
         // while the server responds with 304 if our browser sent the correct
         // If-None-Match request header, at the JavaScript level this surfaces
@@ -38,7 +38,7 @@
       }).then(function(body) {
         // make a third request, explicitly setting If-None-Match request header
         var headers = { "If-None-Match": etag }
-        return fetch(endpoint, { headers: headers })
+        return fetch(url, { headers: headers })
       }).then(function(response) {
         // 304 now surfaces thanks to the explicit If-None-Match request header
         assert_equals(response.status, 304);

@@ -3,7 +3,6 @@ function runTest(config,qualifier) {
     var testname = testnamePrefix( qualifier, config.keysystem ) + ', expiration';
 
     var configuration = getSimpleConfigurationForContent( config.content );
-    
     if ( config.initDataType && config.initData ) {
         configuration.initDataTypes = [ config.initDataType ];
     }

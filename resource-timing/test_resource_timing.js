@@ -108,6 +108,8 @@ onload = function()
 };
 
 function poll_for_stylesheet_load(expected_entry) {
+    var t = tests[expected_entry.initiatorType];
+
     function inner() {
         for(var i=0; i<document.styleSheets.length; i++) {
             var sheet = document.styleSheets[i];
@@ -120,14 +122,14 @@ function poll_for_stylesheet_load(expected_entry) {
                     hasRules = false;
                 }
                 if (hasRules) {
-                    setTimeout(function() {
+                    t["entry"].step_timeout(function() {
                         resource_load(expected_entry);
                     }, 200);
                     return;
                 }
             }
         }
-        setTimeout(inner, 100);
+        t["entry"].step_timeout(inner, 100);
     }
     inner();
 }

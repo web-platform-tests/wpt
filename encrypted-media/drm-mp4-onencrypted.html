@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<head>
+  <head>
     <meta charset=utf-8>
     <title>Encrypted Media Extensions: Encrypted fired on encrypted media file.</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
@@ -21,16 +21,16 @@
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/onencrypted.js></script>
 
-</head>
-<body>
-<div id='log'></div>
+  </head>
+  <body>
+    <div id='log'></div>
 
-<div id='video'>
-    <video id="videoelement" width="200px"></video>
-</div>
+    <div id='video'>
+        <video id="videoelement" width="200px"></video>
+    </div>
 
-<script>
-    var contentitem = content['mp4-av-multikey'],
+    <script>
+        var contentitem = content['mp4-av-multikey'],
             config = {
                 video: document.getElementById('videoelement'),
                 content: contentitem,
@@ -41,7 +41,7 @@
                 initDataType: contentitem.initDataType,
                 keys: contentitem.keys
             };
-    runTest(config);
-</script>
-</body>
+        runTest(config);
+    </script>
+  </body>
 </html>

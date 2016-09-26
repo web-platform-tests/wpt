@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<head>
+  <head>
     <meta charset=utf-8>
     <title>Encrypted Media Extensions: Test handling of invalid DRM license</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
@@ -17,18 +17,16 @@
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/invalid-license.js></script>
 
-</head>
-<body>
-<div id='log'></div>
+  </head>
+  <body>
+    <div id='log'></div>
 
-<script>
-    var keysystem = getSupportedKeySystem(),
-    config = {
-        keysystem: keysystem
-    };
-
-    runTest(config);
-
-</script>
-</body>
+    <script>
+        var keysystem = getSupportedKeySystem(),
+            config = {
+                keysystem: keysystem
+            };
+        runTest(config);
+    </script>
+  </body>
 </html>

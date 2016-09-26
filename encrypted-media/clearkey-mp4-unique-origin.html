@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<head>
+  <head>
     <meta charset=utf-8>
     <title>Encrypted Media Extensions: Unique origin</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
@@ -19,15 +19,15 @@
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/unique-origin.js></script>
 
-</head>
-<body>
-<div id='log'></div>
-<div id='video'>
-    <video id="videoelement" width="200px"></video>
-</div>
+  </head>
+  <body>
+    <div id='log'></div>
+    <div id='video'>
+        <video id="videoelement" width="200px"></video>
+    </div>
 
-<script>
-    var contentItem = content['mp4-av-multikey'],
+    <script>
+        var contentItem = content['mp4-av-multikey'],
             config = {
                 video: document.getElementById('videoelement'),
                 keysystem: 'org.w3.clearkey',
@@ -35,10 +35,9 @@
                 audioType: contentItem.audio.type,
                 videoType: contentItem.video.type,
                 audioPath: contentItem.audio.path,
-                videoPath: contentItem.video.path,
+                videoPath: contentItem.video.path
             };
-    runTest(config);
-
-</script>
-</body>
+        runTest(config);
+    </script>
+  </body>
 </html>

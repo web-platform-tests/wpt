@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-<head>
+  <head>
     <meta charset=utf-8>
     <title>Encrypted Media Extensions: Test Clear Key handling of non-ASCII responses for update().</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
@@ -19,18 +19,18 @@
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/clearkey-update-non-ascii-input.js></script>
 
-</head>
-<body>
-<div id='log'></div>
+  </head>
+  <body>
+    <div id='log'></div>
 
-<script>
-    var contentitem = content['mp4-basic']
-    var config = {
-        keysystem: 'org.w3.clearkey',
-        content: contentitem,
-        initDataType: "keyids"
-    };
-    runTest(config);
-</script>
-</body>
+    <script>
+        var contentitem = content['mp4-basic'],
+            config = {
+                keysystem: 'org.w3.clearkey',
+                content: contentitem,
+                initDataType: "keyids"
+            };
+        runTest(config);
+    </script>
+  </body>
 </html>

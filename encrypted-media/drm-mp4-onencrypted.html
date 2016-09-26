@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <title>Encrypted Media Extensions: Encrypted fired on encrypted media file.</title>
+    <title>Encrypted Media Extensions: Encrypted fired on encrypted media file with DRM, mp4</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -30,16 +30,16 @@
     </div>
 
     <script>
-        var contentitem = content['mp4-av-multikey'],
+        var contentItem = content['mp4-av-multikey'],
             config = {
                 video: document.getElementById('videoelement'),
-                content: contentitem,
-                audioType: contentitem.audio.type,
-                videoType: contentitem.video.type,
-                audioPath: contentitem.audio.path,
-                videoPath: contentitem.video.path,
-                initDataType: contentitem.initDataType,
-                keys: contentitem.keys
+                content: contentItem,
+                audioType: contentItem.audio.type,
+                videoType: contentItem.video.type,
+                audioPath: contentItem.audio.path,
+                videoPath: contentItem.video.path,
+                initDataType: contentItem.initDataType,
+                keys: contentItem.keys
             };
         runTest(config);
     </script>

@@ -30,7 +30,6 @@ function runTest(config,qualifier) {
                     if ( event.messageType !== 'license-request' ) {
                         return;
                     }
-                       
                     assert_unreached( "Update with incorrect license type should fail" )
                 } ) ).catch( test.step_func( function( error ) {
                     if ( event.messageType !== 'license-request' ) {

@@ -138,7 +138,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             },
             getCustomHeaders : function( drmconfig, sessionType, messageType, content, expiration ) {
             
-                var optData = JSON.stringify( { merchant: drmconfig.merchant, /*userId: expiration ? "rental1" : "purchase" */} );
+                var optData = JSON.stringify( { merchant: drmconfig.merchant } );
                 
                 var crt = {};
                 if ( messageType === 'license-request' ) {

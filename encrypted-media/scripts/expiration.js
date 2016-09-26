@@ -4,7 +4,9 @@ function runTest(config,qualifier) {
 
     var configuration = getSimpleConfigurationForContent( config.content );
     
-    if ( config.initDataType && config.initData ) configuration.initDataTypes = [ config.initDataType ];
+    if ( config.initDataType && config.initData ) {
+        configuration.initDataTypes = [ config.initDataType ];
+    }
 
     async_test( function( test ) {
 
@@ -20,9 +22,7 @@ function runTest(config,qualifier) {
             assert_true( event instanceof window.MediaKeyMessageEvent );
             assert_equals( event.type, 'message');
 
-            assert_any( assert_equals,
-                        event.messageType,
-                        [ 'license-request', 'individualization-request' ] );
+            assert_in_array(  event.messageType, [ 'license-request', 'individualization-request' ] );
 
             config.messagehandler( event.messageType, event.message, config.expiration ).then( function( response ) {
                 return event.target.update( response );

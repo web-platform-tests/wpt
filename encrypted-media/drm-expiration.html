@@ -31,11 +31,9 @@
     <script>
         var keysystem = getSupportedKeySystem();
 
-        getSupportedContentAndInitDataTypes( keysystem )
-        .then( function( supported )
-        {
+        getSupportedContentAndInitDataTypes( keysystem ).then( function( supported ) {
             // This test requires initData for supported content.
-            // We prefer explciit initData configured for the content, but
+            // We prefer explicit initData configured for the content, but
             // otherwise we will generate initData for a supported initDataType
             // FIXME: Move me to a utility function
             var content,
@@ -43,14 +41,11 @@
                 initData;
 
             var contentWithExplicitInitData = supported.filter( function( s ) { return s.content.initDataType; } );
-            if ( contentWithExplicitInitData.length > 0 )
-            {
+            if ( contentWithExplicitInitData.length > 0 ) {
                 content = contentWithExplicitInitData[ 0 ].content;
                 initDataType = content.keys[ 0 ].initDataType;
                 initData = base64DecodeToUnit8Array( content.keys[ 0 ].initData );
-            }
-            else
-            {
+            } else {
                 content = supported[ 0 ].content;
                 initDataType = supported[ 0 ].initDataTypes[ 0 ];
                 initData = getInitData( content, initDataType );

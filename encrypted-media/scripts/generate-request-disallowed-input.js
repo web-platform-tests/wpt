@@ -1,7 +1,7 @@
 function runTest(config,qualifier) {
     var tests = [ ], initData, keyId;
-    function push_test( keysystem, initDataType, initData, testname ) {
-        tests.push( { keysystem: keysystem, initDataType: initDataType, initData: initData, testname: testname } );
+    function push_test(keysystem, initDataType, initData, testname) {
+        tests.push({ keysystem: keysystem, initDataType: initDataType, initData: initData, testname: testname });
     }
 
     initData = new Uint8Array(70000);
@@ -48,11 +48,11 @@ function runTest(config,qualifier) {
     initData = stringToUint8Array(createKeyIDs(keyId));
     push_test(config.keysystem, 'keyids', initData, testnamePrefix( qualifier, config.keysystem ) + ', temporary, keyids, invalid initdata (too long key ID)');
 
-    Promise.all( tests.map( function( testspec ) {
+    Promise.all( tests.map(function(testspec) {
         return isInitDataTypeSupported(testspec.keysystem,testspec.initDataType);
-    })).then( function( results ) {
-        tests.filter( function( testspec, i ) { return results[ i ]; } ).forEach( function( testspec ) {
-            async_test( function( test ) {
+    })).then(function(results) {
+        tests.filter(function(testspec, i) { return results[i]; } ).forEach(function(testspec) {
+            async_test(function(test) {
                 // Create a "temporary" session for |keysystem| and call generateRequest()
                 // with the provided initData. generateRequest() should fail with an
                 // InvalidAccessError. Returns a promise that is resolved

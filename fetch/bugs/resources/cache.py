@@ -7,6 +7,7 @@ def main(request, response):
     # let caching kick in if possible (conditional GET)
     etag = request.headers.get("If-None-Match", None)
     if etag == ETAG:
+        response.headers.set("X-HTTP-STATUS", 304)
         response.status = (304, "Not Modified")
         return ""
 

@@ -1,48 +1,57 @@
 function runTest( config, qualifier ) {
 
-    var testname = testnamePrefix( qualifier, config.keysystem ) + ', requestMediaKeySystemAccess';
+    var prefix = testnamePrefix( qualifier, config.keysystem ) + ', requestMediaKeySystemAccess: ';
 
     function expect_error(keySystem, configurations, expectedError, testname) {
+        
+        var audioCapabilities = configurations.length ? configurations[0].audioCapabilities : undefined,
+            videoCapabilities = configurations.length ? configurations[0].videoCapabilities : undefined,
+            audiocontenttypes = audioCapabilities ? audioCapabilities.map( function( ac ) { return "'" + ac.contentType + "'"; } ).join(',') : '',
+            videocontenttypes = videoCapabilities ? videoCapabilities.map( function( ac ) { return "'" + ac.contentType + "'"; } ).join(',') : '',
+            modifiedtestname = testname.replace( '%ks', keySystem ).replace( '%audiocontenttype', audiocontenttypes ).replace( '%videocontenttype', videocontenttypes );
+        
         promise_test(function(test) {
             return navigator.requestMediaKeySystemAccess(keySystem, configurations).then(function(a) {
                 assert_unreached('Unexpected requestMediaKeySystemAccess() success.');
             }, function(e) {
                 assert_equals(e.name, expectedError);
             });
-        }, testname);
+        }, prefix + modifiedtestname + ' should result in ' + expectedError );
     }
 
     function assert_subset(actual, expected, path) {
         if (typeof expected == 'string') {
             assert_equals(actual, expected, path);
         } else {
-            if (expected.hasOwnProperty('length'))
+            if (expected.hasOwnProperty('length')) {
                 assert_equals(actual.length, expected.length, path + '.length');
-            for (property in expected)
+            }
+            for (property in expected) {
                 assert_subset(actual[property], expected[property], path + '.' + property);
+            }
         }
     }
 
     function expect_config(keySystem, configurations, expectedConfiguration, testname) {
         promise_test(function(test) {
             return navigator.requestMediaKeySystemAccess(keySystem, configurations).then(function(a) {
-                assert_subset(a.getConfiguration(), expectedConfiguration, 'getConfiguration()');
+                assert_subset(a.getConfiguration(), expectedConfiguration, testname + ': ');
             });
         }, testname);
     }
 
     // Tests for Key System.
-    expect_error('', [{}], 'InvalidAccessError', 'Empty Key System');
-    expect_error('com.example.unsupported', [{}], 'NotSupportedError', 'Unsupported Key System');
-    expect_error(config.keysystem + '.', [{}], 'NotSupportedError', 'Key System ends with "."');
-    expect_error(config.keysystem, [{}], 'NotSupportedError', 'Capitalized Key System');
-    expect_error(config.keysystem + '\u028F', [{}], 'NotSupportedError', 'Non-ASCII Key System');
+    expect_error('', [{}], 'InvalidAccessError', 'Empty Key System (%ks)');
+    expect_error('com.example.unsupported', [{}], 'NotSupportedError', 'Unsupported Key System (%ks)');
+    expect_error(config.keysystem + '.', [{}], 'NotSupportedError', 'Key System ending in "." (%ks)');
+    expect_error(config.keysystem.toUpperCase(), [{}], 'NotSupportedError', 'Capitalized Key System (%ks)');
+    expect_error(config.keysystem + '\u028F', [{}], 'NotSupportedError', 'Non-ASCII Key System (%ks)');
 
     // Parent of Clear Key not supported.
-    expect_error(config.keysystem.match(/^(.*?)\./)[1], [{}], 'NotSupportedError', 'Root domain of Key System');
-    expect_error(config.keysystem.match(/^(.*?)\./)[0], [{}], 'NotSupportedError', 'Root domain of Key System, with dot');
-    expect_error(config.keysystem.match(/^(.*?\..*?)\./)[1], [{}], 'NotSupportedError', 'Domain of Key System');
-    expect_error(config.keysystem.match(/^(.*?\..*?)\./)[0], [{}], 'NotSupportedError', 'Domain of Key System, woth dot');
+    expect_error(config.keysystem.match(/^(.*?)\./)[1], [{}], 'NotSupportedError', 'Root domain of Key System alone (%ks)');
+    expect_error(config.keysystem.match(/^(.*?)\./)[0], [{}], 'NotSupportedError', 'Root domain of Key System, with dot (%ks)');
+    expect_error(config.keysystem.match(/^(.*?\..*?)\./)[1], [{}], 'NotSupportedError', 'Domain of Key System along (%ks)');
+    expect_error(config.keysystem.match(/^(.*?\..*?)\./)[0], [{}], 'NotSupportedError', 'Domain of Key System, with dot (%ks)');
 
     // Child of Clear Key not supported.
     expect_error(config.keysystem+'.foo', [{}], 'NotSupportedError', 'Child of Key System');
@@ -51,26 +60,26 @@ function runTest( config, qualifier ) {
     expect_error('webkit-'+config.keysystem, [{}], 'NotSupportedError', 'Prefixed Key System');
 
     // Incomplete names.
-    expect_error(config.keysystem.substr(0,7)+config.keysystem.substr(8), [{}], 'NotSupportedError', 'Incomplete Key System name (1)');
-    expect_error(config.keysystem.substr(0,config.keysystem.length-1), [{}], 'NotSupportedError', 'Incomplete Key System name (2)');
+    expect_error(config.keysystem.substr(0,7)+config.keysystem.substr(8), [{}], 'NotSupportedError', 'Incomplete Key System name (%ks)');
+    expect_error(config.keysystem.substr(0,config.keysystem.length-1), [{}], 'NotSupportedError', 'Incomplete Key System name (%ks)');
 
     // Spaces in key system name not supported.
-    expect_error(' '+config.keysystem, [{}], 'NotSupportedError', 'Leading space in key system name');
-    expect_error(config.keysystem.substr(0,6)+' '+config.keysystem.substr(6), [{}], 'NotSupportedError', 'Extra space in key system name');
-    expect_error(config.keysystem+' ', [{}], 'NotSupportedError', 'Trailing space in key system name');
+    expect_error(' '+config.keysystem, [{}], 'NotSupportedError', 'Leading space in Key System name (%ks)');
+    expect_error(config.keysystem.substr(0,6) + ' ' + config.keysystem.substr(6), [{}], 'NotSupportedError', 'Extra space in Key System name (%ks)');
+    expect_error(config.keysystem + ' ', [{}], 'NotSupportedError', 'Trailing space in Key System name (%ks)');
 
     // Extra dots in key systems names not supported.
-    expect_error('.'+config.keysystem, [{}], 'NotSupportedError', 'Leading dot in key systems name');
-    expect_error(config.keysystem.substr(0,6)+'.'+config.keysystem.substr(6), [{}], 'NotSupportedError', 'Trailing dot in key systems name (1)');
-    expect_error(config.keysystem+'.', [{}], 'NotSupportedError', 'Trailing dot in key systems name (2)');
+    expect_error('.' + config.keysystem, [{}], 'NotSupportedError', 'Leading dot in Key System name (%ks)');
+    expect_error(config.keysystem.substr(0,6) + '.' + config.keysystem.substr(6), [{}], 'NotSupportedError', 'Trailing dot in Key System name (%ks)');
+    expect_error(config.keysystem + '.', [{}], 'NotSupportedError', 'Trailing dot in Key System name (%ks)');
 
     // Key system name is case sensitive.
     if ( config.keysystem !== config.keysystem.toUpperCase() ) {
-        expect_error(config.keysystem.toUpperCase(), [{}], 'NotSupportedError', 'Key system name is case sensitive');
+        expect_error(config.keysystem.toUpperCase(), [{}], 'NotSupportedError', 'Key System name is case sensitive (%ks)');
     }
 
     if ( config.keysystem !== config.keysystem.toLowerCase() ) {
-        expect_error(config.keysystem.toLowerCase(), [{}], 'NotSupportedError', 'Key system name is case sensitive');
+        expect_error(config.keysystem.toLowerCase(), [{}], 'NotSupportedError', 'Key System name is case sensitive (%ks)');
     }
 
     // Tests for trivial configurations.
@@ -112,39 +121,39 @@ function runTest( config, qualifier ) {
 
     expect_error(config.keysystem, [{
         audioCapabilities: [{contentType: 'audio/webm; codecs=fake'}],
-    }], 'NotSupportedError', 'Unsupported audio codec');
+    }], 'NotSupportedError', 'Unsupported audio codec (%audiocontenttype)');
 
     expect_error(config.keysystem, [{
         audioCapabilities: [{contentType: 'video/webm; codecs=fake'}],
-    }], 'NotSupportedError', 'Unsupported video codec');
+    }], 'NotSupportedError', 'Unsupported video codec (%videocontenttype)');
 
     expect_error(config.keysystem, [{
         audioCapabilities: [
             {contentType: 'audio/webm; codecs=mp4a'},
             {contentType: 'audio/webm; codecs=mp4a.40.2'}
         ],
-    }], 'NotSupportedError', 'Mismatched audio container/codec (1)');
+    }], 'NotSupportedError', 'Mismatched audio container/codec (%audiocontenttype)');
 
     expect_error(config.keysystem, [{
         audioCapabilities: [{contentType: config.videoType}],
-    }], 'NotSupportedError', 'Video codec specified in audio field');
+    }], 'NotSupportedError', 'Video codec specified in audio field (%audiocontenttype)');
 
     expect_error(config.keysystem, [{
         videoCapabilities: [{contentType: config.audioType}],
-    }], 'NotSupportedError', 'Audio codec specified in video field');
+    }], 'NotSupportedError', 'Audio codec specified in video field (%videocontenttype)');
 
     expect_error(config.keysystem, [{
         audioCapabilities: [
             {contentType: 'audio/webm; codecs=avc1'},
             {contentType: 'audio/webm; codecs=avc1.42e01e'}
         ],
-    }], 'NotSupportedError', 'Mismatched audio container/codec (2)');
+    }], 'NotSupportedError', 'Mismatched audio container/codec (%audiocontenttype)');
 
     expect_error(config.keysystem, [{
         audioCapabilities: [
             {contentType: 'audio/mp4; codecs=vorbis'}
         ],
-    }], 'NotSupportedError', 'Mismatched audio container/codec (3)');
+    }], 'NotSupportedError', 'Mismatched audio container/codec (%audiocontenttype)');
 
     expect_config(config.keysystem, [
         {initDataTypes: ['fakeidt']},
@@ -163,14 +172,14 @@ function runTest( config, qualifier ) {
             {contentType: 'audio/webm; codecs="vorbis, vp8"'},
             {contentType: 'audio/webm; codecs="vp8"'}
         ],
-    }], 'NotSupportedError', 'Audio MIME type does not support video codecs (webm)');
+    }], 'NotSupportedError', 'Audio MIME type does not support video codecs (webm) (%audiocontenttype)');
 
     expect_error(config.keysystem, [{
         audioCapabilities: [
             {contentType: 'audio/mp4; codecs="avc1"'},
             {contentType: 'audio/mp4; codecs="avc1.4d401e"'},
         ],
-    }], 'NotSupportedError', 'Audio MIME type does not support video codecs (mp4)');
+    }], 'NotSupportedError', 'Audio MIME type does not support video codecs (mp4) (%audiocontenttype)');
 
     // Video MIME type does not support audio codecs.
     expect_error(config.keysystem, [{
@@ -179,14 +188,14 @@ function runTest( config, qualifier ) {
             {contentType: 'video/webm; codecs="vorbis, vp8"'},
             {contentType: 'video/webm; codecs="vorbis"'}
         ],
-    }], 'NotSupportedError', 'Video MIME type does not support audio codecs (webm).');
+    }], 'NotSupportedError', 'Video MIME type does not support audio codecs (webm) (%videocontenttype)');
 
     expect_error(config.keysystem, [{
         videoCapabilities: [
             {contentType: 'video/mp4; codecs="mp4a"'},
             {contentType: 'video/mp4; codecs="mp4a.40.2"'}
         ],
-    }], 'NotSupportedError', 'Video MIME type does not support audio codecs (mp4).');
+    }], 'NotSupportedError', 'Video MIME type does not support audio codecs (mp4) (%videocontenttype)');
 
     // WebM does not support AVC1/AAC.
     expect_error(config.keysystem, [{
@@ -195,7 +204,7 @@ function runTest( config, qualifier ) {
             {contentType: 'audio/webm; codecs="avc1"'},
             {contentType: 'audio/webm; codecs="vp8,aac"'}
         ],
-    }], 'NotSupportedError', 'WebM audio does not support AVC1/AAC.');
+    }], 'NotSupportedError', 'WebM audio does not support AVC1/AAC (%audiocontenttype)');
 
     expect_error(config.keysystem, [{
         videoCapabilities: [
@@ -203,7 +212,7 @@ function runTest( config, qualifier ) {
             {contentType: 'video/webm; codecs="avc1"'},
             {contentType: 'video/webm; codecs="vp8,aac"'}
         ],
-    }], 'NotSupportedError', 'WebM video does not support AVC1/AAC.');
+    }], 'NotSupportedError', 'WebM video does not support AVC1/AAC (%videocontenttype)');
 
     // Extra space is allowed in contentType.
     expect_config(config.keysystem, [{
@@ -220,9 +229,9 @@ function runTest( config, qualifier ) {
 
 
     expect_config(config.keysystem, [{
-      videoCapabilities: [{contentType: config.videoType+' '}],
+      videoCapabilities: [{contentType: config.videoType + ' '}],
     }], {
-      videoCapabilities: [{contentType: config.videoType+' '}],
+      videoCapabilities: [{contentType: config.videoType + ' '}],
     }, 'Trailing space in contentType');
 
     expect_config(config.keysystem, [{
@@ -239,9 +248,9 @@ function runTest( config, qualifier ) {
 
     // contentType is not case sensitive (except the codec names).
     expect_config(config.keysystem, [{
-        videoCapabilities: [{contentType: 'V'+config.videoType.substr(1)}],
+        videoCapabilities: [{contentType: 'V' + config.videoType.substr(1)}],
     }], {
-        videoCapabilities: [{contentType: 'V'+config.videoType.substr(1)}],
+        videoCapabilities: [{contentType: 'V' + config.videoType.substr(1)}],
     }, 'Video/' );
 
     expect_config(config.keysystem, [{
@@ -252,60 +261,60 @@ function runTest( config, qualifier ) {
 
     var t = config.videoType.match( /(.*?)(;.*)/ );
     expect_config(config.keysystem, [{
-        videoCapabilities: [{contentType: t[1].toUpperCase()+t[2]}],
+        videoCapabilities: [{contentType: t[1].toUpperCase() + t[2]}],
     }], {
-        videoCapabilities: [{contentType: t[1].toUpperCase()+t[2]}],
+        videoCapabilities: [{contentType: t[1].toUpperCase() + t[2]}],
     }, 'Upper case MIME type');
 
     t = config.videoType.match( /(.*?)codecs(.*)/ );
     expect_config(config.keysystem, [{
-        videoCapabilities: [{contentType: t[1]+'CODECS'+t[2]}],
+        videoCapabilities: [{contentType: t[1] + 'CODECS' + t[2]}],
     }], {
-        videoCapabilities: [{contentType: t[1]+'CODECS'+t[2]}],
+        videoCapabilities: [{contentType: t[1] + 'CODECS' + t[2]}],
     }, 'CODECS=');
 
     // Unrecognized attributes are not allowed.
     expect_error(config.keysystem, [{
       videoCapabilities: [{contentType: 'video/webm; foo="bar"'}],
-    }], 'NotSupportedError', 'Unrecognized foo with webm');
+    }], 'NotSupportedError', 'Unrecognized foo with webm (%videocontenttype)');
 
     expect_error(config.keysystem, [{
       videoCapabilities: [{contentType: 'video/mp4; foo="bar"'}],
-    }], 'NotSupportedError', 'Unrecognized foo with mp4');
+    }], 'NotSupportedError', 'Unrecognized foo with mp4 (%videocontenttype)');
 
     expect_error(config.keysystem, [{
-      videoCapabilities: [{contentType: config.videoType+'; foo="bar"'}],
-    }], 'NotSupportedError', 'Unrecognized foo with codecs');
+      videoCapabilities: [{contentType: config.videoType + '; foo="bar"'}],
+    }], 'NotSupportedError', 'Unrecognized foo with codecs (%videocontenttype)');
 
     // Invalid contentTypes.
     expect_error(config.keysystem, [{
         videoCapabilities: [{contentType: 'fake'}],
-    }], 'NotSupportedError', 'contentType fake');
+    }], 'NotSupportedError', 'contentType: %videocontenttype');
 
     expect_error(config.keysystem, [{
         audioCapabilities: [{contentType: 'audio/fake'}],
-    }], 'NotSupportedError', 'contentType audio/fake');
+    }], 'NotSupportedError', 'contentType: %audiocontenttype');
 
     expect_error(config.keysystem, [{
         videoCapabilities: [{contentType: 'video/fake'}],
-    }], 'NotSupportedError', 'contentType video/fake');
+    }], 'NotSupportedError', 'contentType: %videocontenttype');
 
     // The actual codec names are case sensitive.
     t = config.videoType.match( /(.*?codecs=\")(.*?\")(.*)/ );
     if ( t[2] !== t[2].toUpperCase() ) {
         expect_error(config.keysystem, [{
-            videoCapabilities: [{contentType: t[1]+t[2].toUpperCase()+t[3] }],
-        }], 'NotSupportedError', 'codecs Vp8');
+            videoCapabilities: [{contentType: t[1] + t[2].toUpperCase() + t[3] }],
+        }], 'NotSupportedError', 'contentType: %videocontenttype');
     }
 
     if ( t[2] !== t[2].toLowerCase() ) {
         expect_error(config.keysystem, [{
-            videoCapabilities: [{contentType: t[1]+t[2].toLowerCase()+t[3] }],
-        }], 'NotSupportedError', 'codecs Vp8');
+            videoCapabilities: [{contentType: t[1] + t[2].toLowerCase() + t[3] }],
+        }], 'NotSupportedError', 'contentType: %videocontenttype');
     }
 
     // Extra comma is not allowed in codecs.
     expect_error(config.keysystem, [{
-        videoCapabilities: [{contentType: t[1]+','+t[2]+t[3] }],
-    }], 'NotSupportedError', 'Leading , in codecs');
+        videoCapabilities: [{contentType: t[1] + ',' + t[2] + t[3] }],
+    }], 'NotSupportedError', 'contentType: %videocontenttype');
 }

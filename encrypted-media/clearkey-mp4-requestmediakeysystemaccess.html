@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <meta name="timeout" content="long">
-    <title>Encrypted Media Extensions: Successful Playback, Temporary session with Clear Key, mp4</title>
+    <title>Encrypted Media Extensions: requestMediaKeySystemAccess tests, Clear Key</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -28,11 +28,10 @@
 
     <script>
         var contentitem = content['mp4-basic'],
-            keysystem = getSupportedKeysystem(),
-            config = {  keysystem:          keysystem,
+            config = {  keysystem:          'org.w3.clearkey',
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
-                        initDataType:       'cenc'
+                        initDataType:       'keyids'
                     };
 
         runTest(config);

@@ -1,13 +1,13 @@
-function runTest( config, qualifier ) {
+function runTest(config, qualifier) {
 
-    var prefix = testnamePrefix( qualifier, config.keysystem ) + ', requestMediaKeySystemAccess: ';
+    var prefix = testnamePrefix(qualifier, config.keysystem) + ', requestMediaKeySystemAccess: ';
 
     function expect_error(keySystem, configurations, expectedError, testname) {
 
         var audioCapabilities = configurations.length ? configurations[0].audioCapabilities : undefined,
             videoCapabilities = configurations.length ? configurations[0].videoCapabilities : undefined,
-            audiocontenttypes = audioCapabilities ? audioCapabilities.map( function( ac ) { return "'" + ac.contentType + "'"; } ).join(',') : '',
-            videocontenttypes = videoCapabilities ? videoCapabilities.map( function( ac ) { return "'" + ac.contentType + "'"; } ).join(',') : '',
+            audiocontenttypes = audioCapabilities ? audioCapabilities.map( function(ac) { return "'" + ac.contentType + "'"; } ).join(',') : '',
+            videocontenttypes = videoCapabilities ? videoCapabilities.map( function(ac) { return "'" + ac.contentType + "'"; } ).join(',') : '',
             modifiedtestname = testname.replace( '%ks', keySystem ).replace( '%audiocontenttype', audiocontenttypes ).replace( '%videocontenttype', videocontenttypes );
 
         promise_test(function(test) {
@@ -74,11 +74,11 @@ function runTest( config, qualifier ) {
     expect_error(config.keysystem + '.', [{}], 'NotSupportedError', 'Trailing dot in Key System name (%ks)');
 
     // Key system name is case sensitive.
-    if ( config.keysystem !== config.keysystem.toUpperCase() ) {
+    if (config.keysystem !== config.keysystem.toUpperCase()) {
         expect_error(config.keysystem.toUpperCase(), [{}], 'NotSupportedError', 'Key System name is case sensitive (%ks)');
     }
 
-    if ( config.keysystem !== config.keysystem.toLowerCase() ) {
+    if (config.keysystem !== config.keysystem.toLowerCase()) {
         expect_error(config.keysystem.toLowerCase(), [{}], 'NotSupportedError', 'Key System name is case sensitive (%ks)');
     }
 
@@ -114,9 +114,9 @@ function runTest( config, qualifier ) {
     }, 'Supported audio codec');
 
     expect_config(config.keysystem, [{
-        audioCapabilities: [{contentType: config.audioType.replace( /^(.*?);(.*)/, "$1;  $2")}],
+        audioCapabilities: [{contentType: config.audioType.replace(/^(.*?);(.*)/, "$1;  $2")}],
     }], {
-        audioCapabilities: [{contentType: config.audioType.replace( /^(.*?);(.*)/, "$1;  $2")}],
+        audioCapabilities: [{contentType: config.audioType.replace(/^(.*?);(.*)/, "$1;  $2")}],
     }, 'ContentType formatting must be preserved');
 
     expect_error(config.keysystem, [{
@@ -259,14 +259,14 @@ function runTest( config, qualifier ) {
         videoCapabilities: [{contentType: config.videoType.replace( /^(.*?)c(odecs.*)/, "$1C$2")}],
     }, 'Codecs=');
 
-    var t = config.videoType.match( /(.*?)(;.*)/ );
+    var t = config.videoType.match(/(.*?)(;.*)/);
     expect_config(config.keysystem, [{
         videoCapabilities: [{contentType: t[1].toUpperCase() + t[2]}],
     }], {
         videoCapabilities: [{contentType: t[1].toUpperCase() + t[2]}],
     }, 'Upper case MIME type');
 
-    t = config.videoType.match( /(.*?)codecs(.*)/ );
+    t = config.videoType.match(/(.*?)codecs(.*)/);
     expect_config(config.keysystem, [{
         videoCapabilities: [{contentType: t[1] + 'CODECS' + t[2]}],
     }], {
@@ -301,13 +301,13 @@ function runTest( config, qualifier ) {
 
     // The actual codec names are case sensitive.
     t = config.videoType.match( /(.*?codecs=\")(.*?\")(.*)/ );
-    if ( t[2] !== t[2].toUpperCase() ) {
+    if (t[2] !== t[2].toUpperCase()) {
         expect_error(config.keysystem, [{
             videoCapabilities: [{contentType: t[1] + t[2].toUpperCase() + t[3] }],
         }], 'NotSupportedError', 'contentType: %videocontenttype');
     }
 
-    if ( t[2] !== t[2].toLowerCase() ) {
+    if (t[2] !== t[2].toLowerCase()) {
         expect_error(config.keysystem, [{
             videoCapabilities: [{contentType: t[1] + t[2].toLowerCase() + t[3] }],
         }], 'NotSupportedError', 'contentType: %videocontenttype');

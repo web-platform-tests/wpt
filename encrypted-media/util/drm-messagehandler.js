@@ -137,15 +137,15 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                 return serverURL;
             },
             getCustomHeaders : function( drmconfig, sessionType, messageType, content, expiration ) {
-            
+
                 var optData = JSON.stringify( { merchant: drmconfig.merchant, /*userId: expiration ? "rental1" : "purchase" */} );
-                
+
                 var crt = {};
                 if ( messageType === 'license-request' ) {
                     crt = { assetId: content.name,
                             outputProtection: { digital : false, analogue: false, enforce: false },
                             storeLicense: ( sessionType === 'persistent-license' ) };
-                    
+
                     if ( expiration === undefined ) {
                         crt.profile = { purchase: {} };
                     } else {
@@ -265,7 +265,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
     function b64url2str(b64)    { return atob(b64pad(b64.replace(/\-/g, "+").replace(/\_/g, "/"))); }
     function str2ab( str )      { return Uint8Array.from( str.split(''), function(s){return s.charCodeAt(0)} ); }
     function ab2str( ab )       { return String.fromCharCode.apply(null, new Uint8Array(ab)); }
-    
+
     function jwt2webcrypto( alg ) {
         if ( alg === "HS256" ) return { name: "HMAC", hash: "SHA-256", length: 256 };
         else if ( alg === "HS384" ) return { name: "HMAC", hash: "SHA-384", length: 384 };
@@ -277,14 +277,14 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
         encode: function encode( alg, claims, secret ) {
             var algorithm = jwt2webcrypto( alg );
             if ( secret.byteLength !== algorithm.length / 8 ) throw new Error( "Unexpected secret length: " + secret.byteLength );
-            
+
             if ( !claims.iat ) claims.iat = ( Date.now() / 1000 ) | 0;
             if ( !claims.jti ) {
                 var nonce = new Uint8Array( 16 );
                 window.crypto.getRandomValues( nonce );
                 claims.jti = str2b64url( ab2str( nonce ) );
             }
-            
+
             var header = { typ: "JWT", alg: alg };
             var plaintext = str2b64url(JSON.stringify(header)) + '.' + str2b64url(JSON.stringify(claims));
             return subtlecrypto.importKey( "raw", secret, algorithm, false, [ "sign" ] ).then( function( key ) {
@@ -293,7 +293,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                 return plaintext + '.' + str2b64url(ab2str(hmac));
             });
         },
-        
+
         decode: function decode( jwt, secret ) {
             var jwtparts = jwt.split('.');
             var header = JSON.parse( b64url2str( jwtparts[0] ) );
@@ -301,7 +301,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             var hmac = str2ab( b64url2str( jwtparts[2] ) );
             var algorithm = jwt2webcrypto( header.alg );
             if ( secret.byteLength !== algorithm.length / 8 ) throw new Error( "Unexpected secret length: " + secret.byteLength );
-            
+
             return subtlecrypto.importKey( "raw", secret, algorithm, false, [ "sign", "verify" ] ).then( function( key ) {
                 return subtlecrypto.verify( algorithm, key, hmac, str2ab( jwtparts[0] + '.' + jwtparts[1] ) );
             }).then(function(success){

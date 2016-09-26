@@ -3,13 +3,13 @@ function runTest( config, qualifier ) {
     var prefix = testnamePrefix( qualifier, config.keysystem ) + ', requestMediaKeySystemAccess: ';
 
     function expect_error(keySystem, configurations, expectedError, testname) {
-        
+
         var audioCapabilities = configurations.length ? configurations[0].audioCapabilities : undefined,
             videoCapabilities = configurations.length ? configurations[0].videoCapabilities : undefined,
             audiocontenttypes = audioCapabilities ? audioCapabilities.map( function( ac ) { return "'" + ac.contentType + "'"; } ).join(',') : '',
             videocontenttypes = videoCapabilities ? videoCapabilities.map( function( ac ) { return "'" + ac.contentType + "'"; } ).join(',') : '',
             modifiedtestname = testname.replace( '%ks', keySystem ).replace( '%audiocontenttype', audiocontenttypes ).replace( '%videocontenttype', videocontenttypes );
-        
+
         promise_test(function(test) {
             return navigator.requestMediaKeySystemAccess(keySystem, configurations).then(function(a) {
                 assert_unreached('Unexpected requestMediaKeySystemAccess() success.');

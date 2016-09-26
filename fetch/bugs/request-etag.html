@@ -6,11 +6,12 @@
     <meta name="help" href="https://fetch.spec.whatwg.org/#request">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/utils.js"></script>
   </head>
   <body>
     <script>
     promise_test(function() {
-      var cacheBuster = Math.random(); // ensures first request is uncached
+      var cacheBuster = token(); // ensures first request is uncached
       var endpoint = "resources/cache.py?v=" + cacheBuster;
 
       // make the first request

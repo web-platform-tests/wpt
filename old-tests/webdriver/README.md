@@ -107,6 +107,7 @@ Note: Sections that likely have enough tests for now are marked in <span style="
 ** Add Cookie 
 ** Delete Cookie
 ** Delete All Cookies
+* <span style="color:red;">Actions
 ** Input State
 ** Processing Actions Requests
 ** Dispatching Actions

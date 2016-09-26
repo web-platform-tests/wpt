@@ -36,10 +36,11 @@ function runTest(config, qualifier) {
 
         function playVideoAndWaitForTimeupdate()
         {
-            _mediaKeySession = _mediaKeys.createSession('temporary');
-            waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
-            _video.src = URL.createObjectURL(_mediaSource);
             return new Promise(function(resolve) {
+                testmediasource(config).then(function(source) {
+                    _mediaKeySession = _mediaKeys.createSession('temporary');
+                    _video.src = URL.createObjectURL(source);
+                });
                 _video.addEventListener('timeupdate', function listener(event) {
                     if (event.target.currentTime < (config.duration || 1))
                         return;
@@ -49,6 +50,7 @@ function runTest(config, qualifier) {
             });
         }
 
+        waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
         navigator.requestMediaKeySystemAccess(config.keysystem, [configuration]).then(function(access) {
             _access = access;
             return _access.createMediaKeys();
@@ -58,9 +60,6 @@ function runTest(config, qualifier) {
         }).then(function() {
             return config.servercertificate ? _mediaKeys.setServerCertificate( config.servercertificate ) : true;
         }).then(function( success ) {
-            return testmediasource(config);
-        }).then(function(source) {
-            _mediaSource = source;
             return playVideoAndWaitForTimeupdate();
         }).then(function(results) {
             return _access.createMediaKeys();
@@ -73,6 +72,7 @@ function runTest(config, qualifier) {
         }).then(function( success ) {
             return playVideoAndWaitForTimeupdate();
         }).then(function() {
+            _video.src = '';
             test.done();
         }).catch(onFailure);
     }, testname);

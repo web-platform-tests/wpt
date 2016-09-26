@@ -1,14 +1,5 @@
 (function(){
 
-    if(
-        ( /CrKey\/[0-9]+\.[0-9a-z]+\.[0-9a-z]+/i.exec( navigator.userAgent ) ) ||
-        ( navigator.userAgent.toLowerCase().indexOf('edge') === -1
-            && navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
-        ( navigator.userAgent.toLowerCase().indexOf('edge') > -1 ) ||
-        (navigator.userAgent.toLowerCase().indexOf('firefox') > -1)    ) {
-        return;
-    }
-
     // Save platform functions that will be modified
     var _requestMediaKeySystemAccess = navigator.requestMediaKeySystemAccess.bind( navigator ),
         _setMediaKeys = HTMLMediaElement.prototype.setMediaKeys;

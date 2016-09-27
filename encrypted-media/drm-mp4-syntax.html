@@ -14,7 +14,7 @@
     <script src=/encrypted-media/util/utf8.js></script>
     <script src=/encrypted-media/util/fetch.js></script>
     <!-- Message handler for DRM servers -->
-    <script src=/encrypted-media/util/clearkey-messagehandler.js></script>
+    <script src=/encrypted-media/util/drm-messagehandler.js></script>
 
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
@@ -28,15 +28,16 @@
       <video id="videoelement" width="200px"></video>
     </div>
     <script>
+        var keysystem = getSupportedKeySystem();
         var contentItem = content['mp4-basic'],
-            handler = new MessageHandler('org.w3.clearkey', contentItem),
+            handler = new MessageHandler(keysystem, contentItem),
             config = {
                 video: document.getElementById('videoelement'),
-                keysystem: 'org.w3.clearkey',
+                keysystem: keysystem,
                 content: contentItem,
                 handler: handler,
-                initDataType: 'keyids',
-                initData: getInitData(contentItem, 'keyids'),
+                initDataType: contentItem.initDataTyp,
+                initData: getInitData(contentItem, 'cenc'),
                 audioType: contentItem.audio.type,
                 videoType: contentItem.video.type,
                 audioPath: contentItem.audio.path,

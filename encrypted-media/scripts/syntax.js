@@ -28,13 +28,13 @@ function runTest(config) {
         // FIXME: Remove try/catch once they become failed promises.
         try {
             return func.apply(null, args).then(
-              function (result) {
-                  assert_unreached(format_value(func));
-              },
-              function (error) {
-                  assert_equals(error.name, exception, format_value(func));
-                  assert_not_equals(error.message, "", format_value(func));
-              }
+                function (result) {
+                    assert_unreached(format_value(func));
+                },
+                function (error) {
+                    assert_equals(error.name, exception, format_value(func));
+                    assert_not_equals(error.message, "", format_value(func));
+                }
             );
         } catch (e) {
             // Only allow 'TypeError' exceptions to be thrown.
@@ -51,15 +51,15 @@ function runTest(config) {
                 assert_equals(e.type, 'message');
                 video.removeEventListener('message', listener);
                 return handler(e.messageType, e.message)
-                  .then(function (response) {
-                      return e.target.update(response)
-                  })
-                  .then(function () {
-                      resolve();
-                  })
-                  .catch(function (error) {
-                      forceTestFailureFromPromise(test, error);
-                  })
+                    .then(function (response) {
+                        return e.target.update(response)
+                    })
+                    .then(function () {
+                        resolve();
+                    })
+                    .catch(function (error) {
+                        forceTestFailureFromPromise(test, error);
+                    })
             });
         });
     }
@@ -283,23 +283,23 @@ function runTest(config) {
 
     async_test(function (test) {
         navigator.requestMediaKeySystemAccess(keysystem, [configuration])
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              var sessionPromises = kCreateSessionExceptionsTestCases.map(function (testCase) {
-                  return test_exception(testCase, mediaKeys);
-              });
-              sessionPromises = sessionPromises.concat(test_unsupported_sessionType(mediaKeys));
-              assert_not_equals(sessionPromises.length, 0);
-              return Promise.all(sessionPromises);
-          })
-          .then(function (result) {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'createSession() tests failed');
-          });
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                var sessionPromises = kCreateSessionExceptionsTestCases.map(function (testCase) {
+                    return test_exception(testCase, mediaKeys);
+                });
+                sessionPromises = sessionPromises.concat(test_unsupported_sessionType(mediaKeys));
+                assert_not_equals(sessionPromises.length, 0);
+                return Promise.all(sessionPromises);
+            })
+            .then(function (result) {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'createSession() tests failed');
+            });
     }, 'Test MediaKeys createSession() exceptions.');
 
     var kGenerateRequestExceptionsTestCases = [
@@ -466,26 +466,26 @@ function runTest(config) {
 
     async_test(function (test) {
         isInitDataTypeSupported(keysystem, initDataType)
-          .then(function (isTypeSupported) {
-              assert_true(isTypeSupported);
-              return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-          })
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              var mp4SessionPromises = kTypeSpecificGenerateRequestExceptionsTestCases.map(function (testCase) {
-                  return test_exception(testCase, mediaKeys, initDataType, initData);
-              });
-              assert_not_equals(mp4SessionPromises.length, 0);
-              return Promise.all(mp4SessionPromises);
-          })
-          .then(function (result) {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'generateRequest() tests failed');
-          });
+            .then(function (isTypeSupported) {
+                assert_true(isTypeSupported);
+                return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+            })
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                var mp4SessionPromises = kTypeSpecificGenerateRequestExceptionsTestCases.map(function (testCase) {
+                    return test_exception(testCase, mediaKeys, initDataType, initData);
+                });
+                assert_not_equals(mp4SessionPromises.length, 0);
+                return Promise.all(mp4SessionPromises);
+            })
+            .then(function (result) {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'generateRequest() tests failed');
+            });
     }, 'Test MediaKeys generateRequest() exceptions.');
 
     var kLoadExceptionsTestCases = [
@@ -526,22 +526,22 @@ function runTest(config) {
 
     async_test(function (test) {
         navigator.requestMediaKeySystemAccess(keysystem, [configuration])
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              var sessionPromises = kLoadExceptionsTestCases.map(function (testCase) {
-                  return test_exception(testCase, mediaKeys);
-              });
-              assert_not_equals(sessionPromises.length, 0);
-              return Promise.all(sessionPromises);
-          })
-          .then(function () {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'load() tests failed');
-          });
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                var sessionPromises = kLoadExceptionsTestCases.map(function (testCase) {
+                    return test_exception(testCase, mediaKeys);
+                });
+                assert_not_equals(sessionPromises.length, 0);
+                return Promise.all(sessionPromises);
+            })
+            .then(function () {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'load() tests failed');
+            });
     }, 'Test MediaKeys load() exceptions.');
 
 // All calls to |func| in this group are supposed to succeed.
@@ -556,20 +556,23 @@ function runTest(config) {
             func: function (mk) {
                 return mk.createSession();
             },
-            isNotSupportedAllowed: false
+            isNotSupportedAllowed: false,
+            testCaseName: "createSession()"
         },
         // Try variations of sessionType.
         {
             func: function (mk) {
                 return mk.createSession('temporary');
             },
-            isNotSupportedAllowed: false
+            isNotSupportedAllowed: false,
+            testCaseName: "createSession('temporary')"
         },
         {
             func: function (mk) {
                 return mk.createSession(undefined);
             },
-            isNotSupportedAllowed: false
+            isNotSupportedAllowed: false,
+            testCaseName: "createSession(undefined)"
         },
         {
             // Since this is optional, some Clear Key implementations
@@ -578,61 +581,144 @@ function runTest(config) {
             func: function (mk) {
                 return mk.createSession('persistent-license');
             },
-            isNotSupportedAllowed: true
+            isNotSupportedAllowed: true,
+            testCaseName: "createSession('persistent-license')"
         },
         // Try additional parameter, which should be ignored.
         {
             func: function (mk) {
                 return mk.createSession('temporary', 'extra');
             },
-            isNotSupportedAllowed: false
+            isNotSupportedAllowed: false,
+            testCaseName: "createSession('temporary', 'extra')"
         }
     ];
 
-// This function checks that calling |testCase.func| creates a
-// MediaKeySession object with some default values. It also
-// allows for an NotSupportedError to be generated and treated as a
+// These tests check that calling |testCase.func| creates a
+// MediaKeySession object with some default values. They also
+// allow NotSupportedErrors to be generated and treated as a
 // success, if allowed. See comment above kCreateSessionTestCases.
-    function test_createSession(testCase, mediaKeys) {
-        var mediaKeySession;
-        try {
-            mediaKeySession = testCase.func.call(null, mediaKeys);
-        } catch (e) {
-            assert_true(testCase.isNotSupportedAllowed);
-            return;
-        }
-
-        assert_equals(typeof mediaKeySession, 'object');
-        assert_equals(typeof mediaKeySession.addEventListener, 'function');
-        assert_equals(typeof mediaKeySession.sessionId, 'string');
-        assert_equals(typeof mediaKeySession.expiration, 'number');
-        assert_equals(typeof mediaKeySession.closed, 'object');
-        assert_equals(typeof mediaKeySession.keyStatuses, 'object');
-        assert_equals(typeof mediaKeySession.onkeystatuseschange, 'object');
-        assert_equals(typeof mediaKeySession.onmessage, 'object'); //FAME this fails but should not?
-        assert_equals(typeof mediaKeySession.generateRequest, 'function');
-        assert_equals(typeof mediaKeySession.load, 'function');
-        assert_equals(typeof mediaKeySession.update, 'function');
-        assert_equals(typeof mediaKeySession.close, 'function');
-        assert_equals(typeof mediaKeySession.remove, 'function');
-        assert_equals(mediaKeySession.sessionId, '');
+    try {
+        navigator.requestMediaKeySystemAccess(keysystem, [configuration])
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                runCreateSessionTests(mediaKeys)
+            }
+        );
+    } catch (e) {
+        consoleWrite(e);
+        runCreateSessionTests()
     }
 
-    async_test(function (test) {
-        navigator.requestMediaKeySystemAccess(keysystem, [configuration])
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              kCreateSessionTestCases.map(function (testCase) {
-                  test_createSession(testCase, mediaKeys);
-              });
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'createSession() tests failed');
-          });
-    }, 'Test MediaKeys createSession().');
+    function runCreateSessionTests(mediaKeys) {
+        kCreateSessionTestCases.map(function (testCase, index) {
+            var mediaKeySession = undefined;
+            test(function (test) {
+                try {
+                    mediaKeySession = testCase.func.call(null, mediaKeys);
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                    test.done();
+                }
+            }, "Test MediaKeys " + testCase.testCaseName);
+            //if (mediaKeySession) {
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.addEventListener, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.addEventListener is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.expiration, 'number');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.expiration is of type number");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.closed, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.closed is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.keyStatuses, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.keyStatuses is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.onkeystatuseschange, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.onkeystatuseschange is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.onmessage, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.onmessage is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.generateRequest, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.generateRequest is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.load, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.load is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.update, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.update is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.close, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.close is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.remove, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.remove is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(mediaKeySession.sessionId, '');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.sessionId is ''");
+            //}
+        });
+    }
+
 
 // This function checks that calling generateRequest() works for
 // various sessions. |testCase.func| creates a MediaKeySession
@@ -649,30 +735,30 @@ function runTest(config) {
     }
 
     async_test(function (test) {
-          isInitDataTypeSupported(keysystem, initDataType)
-            .then(function (isTypeSupported) {
-                assert_true(isTypeSupported);
-                return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-            })
-            .then(function (access) {
-                return access.createMediaKeys();
-            })
-            .then(function (mediaKeys) {
-                var mp4SessionPromises = kCreateSessionTestCases.map(function (testCase) {
-                    return test_generateRequest(testCase, mediaKeys, initDataType, initData);
+            isInitDataTypeSupported(keysystem, initDataType)
+                .then(function (isTypeSupported) {
+                    assert_true(isTypeSupported);
+                    return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+                })
+                .then(function (access) {
+                    return access.createMediaKeys();
+                })
+                .then(function (mediaKeys) {
+                    var mp4SessionPromises = kCreateSessionTestCases.map(function (testCase) {
+                        return test_generateRequest(testCase, mediaKeys, initDataType, initData);
+                    });
+                    assert_not_equals(mp4SessionPromises.length, 0);
+                    return Promise.all(mp4SessionPromises);
+                })
+                .then(function () {
+                    test.done();
+                })
+                .catch(function (error) {
+                    forceTestFailureFromPromise(test, error, 'generateRequest() tests failed');
                 });
-                assert_not_equals(mp4SessionPromises.length, 0);
-                return Promise.all(mp4SessionPromises);
-            })
-            .then(function () {
-                test.done();
-            })
-            .catch(function (error) {
-                forceTestFailureFromPromise(test, error, 'generateRequest() tests failed');
-            });
-      }
-      ,
-      'Test MediaKeys generateRequest().'
+        }
+        ,
+        'Test MediaKeys generateRequest().'
     );
 
     var kUpdateSessionExceptionsTestCases = [
@@ -723,29 +809,29 @@ function runTest(config) {
 
     async_test(function (test) {
         isInitDataTypeSupported(keysystem, initDataType)
-          .then(function (isTypeSupported) {
-              assert_true(isTypeSupported);
-              return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-          })
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              var mp4SessionPromises = kUpdateSessionExceptionsTestCases.map(function (testCase) {
-                  var mediaKeySession = mediaKeys.createSession();
-                  return mediaKeySession.generateRequest(initDataType, initData).then(function (result) {
-                      return test_exception(testCase, mediaKeySession);
-                  });
-              });
-              assert_not_equals(mp4SessionPromises.length, 0);
-              return Promise.all(mp4SessionPromises);
-          })
-          .then(function () {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'update() tests failed');
-          });
+            .then(function (isTypeSupported) {
+                assert_true(isTypeSupported);
+                return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+            })
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                var mp4SessionPromises = kUpdateSessionExceptionsTestCases.map(function (testCase) {
+                    var mediaKeySession = mediaKeys.createSession();
+                    return mediaKeySession.generateRequest(initDataType, initData).then(function (result) {
+                        return test_exception(testCase, mediaKeySession);
+                    });
+                });
+                assert_not_equals(mp4SessionPromises.length, 0);
+                return Promise.all(mp4SessionPromises);
+            })
+            .then(function () {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'update() tests failed');
+            });
     }, 'Test MediaKeySession update() exceptions.');
 
     function create_update_test(mediaKeys, type, initData, test) {
@@ -763,131 +849,131 @@ function runTest(config) {
 
     async_test(function (test) {
         isInitDataTypeSupported(keysystem, initDataType)
-          .then(function (isTypeSupported) {
-              assert_true(isTypeSupported);
-              return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-          })
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              return create_update_test(mediaKeys, initDataType, initData, test);
-          })
-          .then(function () {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'update() tests failed');
-          });
+            .then(function (isTypeSupported) {
+                assert_true(isTypeSupported);
+                return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+            })
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                return create_update_test(mediaKeys, initDataType, initData, test);
+            })
+            .then(function () {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'update() tests failed');
+            });
     }, 'Test MediaKeySession update().');
 
     function create_close_exception_test(mediaKeys) {
         var mediaKeySession = mediaKeys.createSession();
         return mediaKeySession.close()
-          .then(function (result) {
-              assert_unreached('close() should not succeed if session uninitialized');
-          })
-          .catch(function (error) {
-              assert_equals(error.name, 'InvalidStateError');
-              // Return something so the promise resolves.
-              return Promise.resolve();
-          });
+            .then(function (result) {
+                assert_unreached('close() should not succeed if session uninitialized');
+            })
+            .catch(function (error) {
+                assert_equals(error.name, 'InvalidStateError');
+                // Return something so the promise resolves.
+                return Promise.resolve();
+            });
     }
 
     async_test(function (test) {
         isInitDataTypeSupported(keysystem, initDataType)
-          .then(function (isTypeSupported) {
-              assert_true(isTypeSupported);
-              return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-          })
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              return create_close_exception_test(mediaKeys);
-          })
-          .then(function () {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'close() exception tests failed');
-          });
+            .then(function (isTypeSupported) {
+                assert_true(isTypeSupported);
+                return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+            })
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                return create_close_exception_test(mediaKeys);
+            })
+            .then(function () {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'close() exception tests failed');
+            });
     }, 'Test MediaKeySession close() exceptions.');
 
 
     function create_close_test(mediaKeys, type, initData) {
         var mediaKeySession = mediaKeys.createSession();
         var promise = mediaKeySession.generateRequest(type, initData)
-          .then(function (result) {
-              return mediaKeySession.close();
-          })
-          .then(function (result) {
-              // Call close() again with an extra parameter. The extra
-              // parameter is ignored.
-              return mediaKeySession.close('extra');
-          });
+            .then(function (result) {
+                return mediaKeySession.close();
+            })
+            .then(function (result) {
+                // Call close() again with an extra parameter. The extra
+                // parameter is ignored.
+                return mediaKeySession.close('extra');
+            });
         return promise;
     }
 
     async_test(function (test) {
         isInitDataTypeSupported(keysystem, initDataType)
-          .then(function (isTypeSupported) {
-              assert_true(isTypeSupported);
-              return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-          })
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              return create_close_test(mediaKeys, initDataType, initData);
-          })
-          .then(function () {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'close() tests failed');
-          });
+            .then(function (isTypeSupported) {
+                assert_true(isTypeSupported);
+                return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+            })
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                return create_close_test(mediaKeys, initDataType, initData);
+            })
+            .then(function () {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'close() tests failed');
+            });
     }, 'Test MediaKeySession close().');
 
     function create_remove_exception_test(mediaKeys, type, initData) {
         // remove() on an uninitialized session should fail.
         var mediaKeySession = mediaKeys.createSession('temporary');
         return mediaKeySession.remove()
-          .then(function (result) {
-              assert_unreached('remove() should not succeed if session uninitialized');
-          }, function (error) {
-              assert_equals(error.name, 'InvalidStateError');
-              // remove() on a temporary session should fail.
-              return mediaKeySession.generateRequest(type, initData);
-          })
-          .then(function (result) {
-              return mediaKeySession.remove();
-          })
-          .then(function (result) {
-              assert_unreached('remove() should not succeed for temporary sessions');
-          }, function (error) {
-              assert_equals(error.name, 'InvalidAccessError');
-          });
+            .then(function (result) {
+                assert_unreached('remove() should not succeed if session uninitialized');
+            }, function (error) {
+                assert_equals(error.name, 'InvalidStateError');
+                // remove() on a temporary session should fail.
+                return mediaKeySession.generateRequest(type, initData);
+            })
+            .then(function (result) {
+                return mediaKeySession.remove();
+            })
+            .then(function (result) {
+                assert_unreached('remove() should not succeed for temporary sessions');
+            }, function (error) {
+                assert_equals(error.name, 'InvalidAccessError');
+            });
     }
 
     async_test(function (test) {
         isInitDataTypeSupported(keysystem, initDataType)
-          .then(function (isTypeSupported) {
-              assert_true(isTypeSupported);
-              return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-          })
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              return create_remove_exception_test(mediaKeys, initDataType, initData);
-          })
-          .then(function () {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'remove() exception tests failed');
-          });
+            .then(function (isTypeSupported) {
+                assert_true(isTypeSupported);
+                return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+            })
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                return create_remove_exception_test(mediaKeys, initDataType, initData);
+            })
+            .then(function () {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'remove() exception tests failed');
+            });
     }, 'Test MediaKeySession remove() exceptions.');
 
     function create_remove_test(mediaKeys, type, initData) {
@@ -907,22 +993,22 @@ function runTest(config) {
 
     async_test(function (test) {
         isInitDataTypeSupported(keysystem, initDataType)
-          .then(function (isTypeSupported) {
-              assert_true(isTypeSupported)
-              return navigator.requestMediaKeySystemAccess(keysystem, [{}]);
-          })
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              return create_remove_test(mediaKeys, initDataType, initData);
-          })
-          .then(function (result) {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'remove() tests failed');
-          });
+            .then(function (isTypeSupported) {
+                assert_true(isTypeSupported)
+                return navigator.requestMediaKeySystemAccess(keysystem, [{}]);
+            })
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                return create_remove_test(mediaKeys, initDataType, initData);
+            })
+            .then(function (result) {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'remove() tests failed');
+            });
     }, 'Test MediaKeySession remove().');
 
     var kSetServerCertificateExceptionsTestCases = [
@@ -969,22 +1055,22 @@ function runTest(config) {
 
     async_test(function (test) {
         navigator.requestMediaKeySystemAccess(keysystem, [configuration])
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              var promises = kSetServerCertificateExceptionsTestCases.map(function (testCase) {
-                  return test_exception(testCase, mediaKeys);
-              });
-              assert_not_equals(promises.length, 0);
-              return Promise.all(promises);
-          })
-          .then(function (result) {
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'setServerCertificate() exception tests failed');
-          });
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                var promises = kSetServerCertificateExceptionsTestCases.map(function (testCase) {
+                    return test_exception(testCase, mediaKeys);
+                });
+                assert_not_equals(promises.length, 0);
+                return Promise.all(promises);
+            })
+            .then(function (result) {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'setServerCertificate() exception tests failed');
+            });
     }, 'Test MediaKeys setServerCertificate() exceptions.');
 
 // All calls to |func| in this group are expected to resolve.
@@ -1012,27 +1098,27 @@ function runTest(config) {
     async_test(function (test) {
         var expected_result;
         navigator.requestMediaKeySystemAccess(keysystem, [configuration])
-          .then(function (access) {
-              return access.createMediaKeys();
-          })
-          .then(function (mediaKeys) {
-              var promises = kSetServerCertificateTestCases.map(function (testCase) {
-                  return testCase.func.call(null, mediaKeys);
-              });
-              expected_result = kSetServerCertificateTestCases.map(function (testCase) {
-                  return testCase.expected;
-              });
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                var promises = kSetServerCertificateTestCases.map(function (testCase) {
+                    return testCase.func.call(null, mediaKeys);
+                });
+                expected_result = kSetServerCertificateTestCases.map(function (testCase) {
+                    return testCase.expected;
+                });
 
-              assert_not_equals(promises.length, 0);
-              return Promise.all(promises);
-          })
-          .then(function (result) {
-              assert_array_equals(result, expected_result);
-              test.done();
-          })
-          .catch(function (error) {
-              forceTestFailureFromPromise(test, error, 'setServerCertificate() test failed');
-          });
+                assert_not_equals(promises.length, 0);
+                return Promise.all(promises);
+            })
+            .then(function (result) {
+                assert_array_equals(result, expected_result);
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'setServerCertificate() test failed');
+            });
     }, 'Test MediaKeys setServerCertificate().');
 }
 // FIXME: Add syntax checks for MediaKeys.IsTypeSupported().

@@ -1,10 +1,12 @@
 function runTest(config,qualifier)
 {
-    var testname = testnamePrefix( qualifier, config.keysystem ) + ', temporary, keystatuses';
+    var testname = testnamePrefix(qualifier, config.keysystem) + ', temporary, keystatuses';
 
-    var configuration = getSimpleConfigurationForContent( config.content );
+    var configuration = getSimpleConfigurationForContent(config.content);
 
-    if ( config.initDataType && config.initData ) configuration.initDataTypes = [ config.initDataType ];
+    if (config.initDataType && config.initData) {
+        configuration.initDataTypes = [config.initDataType];
+    }
 
     async_test(function(test)
     {
@@ -15,8 +17,8 @@ function runTest(config,qualifier)
 
         // Even though key ids are uint8, using printable values so that
         // they can be verified easily.
-        var key1 = new Uint8Array( config.content.keys[ 0 ].kid ),
-            key2 = new Uint8Array( config.content.keys[ 1 ].kid ),
+        var key1 = new Uint8Array(config.content.keys[0].kid),
+            key2 = new Uint8Array(config.content.keys[1].kid),
             key1String = arrayBufferAsString(key1),
             key2String = arrayBufferAsString(key2);
 
@@ -32,9 +34,9 @@ function runTest(config,qualifier)
             waitForEventAndRunStep('keystatuseschange', mediaKeySession, processKeyStatusesChange, test);
 
             // Add keys to session
-            config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                event.target.update( response ).catch(onFailure);
-            });
+            config.messagehandler(event.messageType, event.message).then(function(response) {
+                return event.target.update(response);
+            }).catch(onFailure);
         }
 
         function checkKeyStatusFor2Keys()
@@ -130,7 +132,7 @@ function runTest(config,qualifier)
 
         function processKeyStatusesChange(event)
         {
-            if ( !closed )
+            if (!closed)
             {
                 // The first keystatuseschange (caused by update())
                 // should include both keys.
@@ -148,7 +150,7 @@ function runTest(config,qualifier)
             }
         }
 
-        navigator.requestMediaKeySystemAccess( config.keysystem, [ configuration ] ).then(function(access) {
+        navigator.requestMediaKeySystemAccess(config.keysystem, [configuration]).then(function(access) {
             return access.createMediaKeys();
         }).then(test.step_func(function(mediaKeys) {
             mediaKeySession = mediaKeys.createSession();

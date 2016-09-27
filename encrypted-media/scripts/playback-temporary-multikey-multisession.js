@@ -1,8 +1,8 @@
 function runTest(config,qualifier) {
 
-    var testname = testnamePrefix( qualifier, config.keysystem )
+    var testname = testnamePrefix(qualifier, config.keysystem)
                                     + ', temporary, '
-                                    + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
+                                    + /video\/([^;]*)/.exec(config.videoType)[1]
                                     + ', playback with multiple keys and sessions, '
                                     + config.testcase;
 
@@ -11,34 +11,34 @@ function runTest(config,qualifier) {
                             videoCapabilities: [ { contentType: config.videoType } ],
                             sessionTypes: [ 'temporary' ] };
 
-    async_test( function( test ) {
+    async_test(function(test) {
 
         var _video = config.video,
             _mediaKeys,
-            _mediaKeySessions = [ ];
+            _mediaKeySessions = [];
 
-        function onFailure( error ) {
+        function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }
 
         function onMessage(event) {
-            consoleWrite( "message " + event.messageType );
-            assert_any( assert_equals, event.target, _mediaKeySessions );
-            assert_true( event instanceof window.MediaKeyMessageEvent );
-            assert_equals( event.type, 'message');
-            assert_in_array( event.messageType, [ 'license-request', 'individualization-request' ] );
+            consoleWrite("message " + event.messageType);
+            assert_any(assert_equals, event.target, _mediaKeySessions);
+            assert_true(event instanceof window.MediaKeyMessageEvent);
+            assert_equals(event.type, 'message');
+            assert_in_array(event.messageType, ['license-request', 'individualization-request']);
 
-            config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                event.target.update( response ).catch(onFailure);
-            });
+            config.messagehandler(event.messageType, event.message).then(function(response) {
+                return event.target.update(response);
+            }).catch(onFailure);
         }
 
         function onWaitingForKey(event) {
-            consoleWrite( "waitingforkey");
+            consoleWrite("waitingforkey");
         }
 
         function onPlaying(event) {
-            consoleWrite( "playing");
+            consoleWrite("playing");
             waitForEventAndRunStep('pause', _video, onStopped, test);
             waitForEventAndRunStep('waiting', _video, onStopped, test);
             waitForEventAndRunStep('stalled', _video, onStopped, test);
@@ -46,23 +46,23 @@ function runTest(config,qualifier) {
 
         function onStopped(event) {
             consoleWrite( event.type );
-            if ( _mediaKeySessions.length < config.initData.length ) {
-                var mediaKeySession = _mediaKeys.createSession( 'temporary' );
+            if (_mediaKeySessions.length < config.initData.length) {
+                var mediaKeySession = _mediaKeys.createSession('temporary');
                 waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
-                mediaKeySession.generateRequest( config.initDataType, config.initData[ _mediaKeySessions.length ] ).catch(onFailure);
-                _mediaKeySessions.push( mediaKeySession );
+                mediaKeySession.generateRequest(config.initDataType, config.initData[_mediaKeySessions.length]).catch(onFailure);
+                _mediaKeySessions.push(mediaKeySession);
             }
         }
 
         function onTimeupdate(event) {
-            if ( _video.currentTime > ( config.duration || 1 ) ) {
+            if ( _video.currentTime > (config.duration || 1)) {
                 _video.removeEventListener('timeupdate', onTimeupdate);
                 _video.pause();
                 test.done();
             }
         }
 
-        navigator.requestMediaKeySystemAccess(config.keysystem, [ configuration ]).then(function(access) {
+        navigator.requestMediaKeySystemAccess(config.keysystem, [configuration]).then(function(access) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;
@@ -75,10 +75,10 @@ function runTest(config,qualifier) {
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', onTimeupdate, true);
 
-            var mediaKeySession = _mediaKeys.createSession( 'temporary' );
+            var mediaKeySession = _mediaKeys.createSession('temporary');
             waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
-            _mediaKeySessions.push( mediaKeySession );
-            return mediaKeySession.generateRequest( config.initDataType, config.initData[ 0 ] );
+            _mediaKeySessions.push(mediaKeySession);
+            return mediaKeySession.generateRequest(config.initDataType, config.initData[0]);
         }).then(function() {
             return testmediasource(config);
         }).then(function(source) {

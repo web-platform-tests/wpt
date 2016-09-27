@@ -41,7 +41,7 @@
 
         function MediaKeySystemAccess( access )
         {
-            this._access = access;
+            this._access = mediaKeySystemAccess;
         }
 
         Object.defineProperty( MediaKeySystemAccess.prototype, 'keySystem', { get: function() { return this._access.keySystem; } } );
@@ -50,7 +50,7 @@
 
         MediaKeySystemAccess.prototype.createMediaKeys = function createMediaKeys() {
 
-            return this._access.createMediaKeys().then( function( mediaKeys ) { return new MediaKeys( mediaKeys ); } );
+            return this._access.createMediaKey().then( function( mediaKeys ) { return new MediaKeys( mediaKeys ); } );
 
         };
 
@@ -73,7 +73,6 @@
                 return _requestMediaKeySystemAccess( keysystem, supportedConfigurations );
             }
 
-            supportedConfigurations[0].sessionTypes = ['persistent-license'];
             return _requestMediaKeySystemAccess( keysystem, supportedConfigurations )
             .then( function( access ) { return new MediaKeySystemAccess( access ); } );
         };

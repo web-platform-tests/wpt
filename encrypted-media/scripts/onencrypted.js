@@ -19,7 +19,7 @@ function runTest(config) {
                 // At this point we do not know if the event is related to audio or video. So check for both expected init data
                 assert_true(checkInitData(currentData, expectedInitData[0]) || checkInitData(currentData, expectedInitData[1]));
 
-                if (--expectedEvents == 0) {
+                if (--expectedEvents === 0) {
                     test.done();
                 }
             };

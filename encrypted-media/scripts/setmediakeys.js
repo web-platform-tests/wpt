@@ -20,16 +20,16 @@ function runTest(config, qualifier) {
             forceTestFailureFromPromise(test, error);
         }
 
-        // Try setting mediaKeys to null
+        // Try setting mediaKeys to null.
         _video.setMediaKeys(null).then(function(result) {
             assert_equals(_video.mediaKeys, null);
 
-            // Try setting mediakeys to the wrong type of object.
+            // setMediaKeys should fail when setting to the wrong type of object - Date.
             return _video.setMediaKeys(new Date());
         }).then(function (result) {
             assert_unreached('setMediaKeys did not fail when setting to Date()');
         }, function(error) {
-            // TypeError
+            // TypeError.
             assert_equals(error.name, 'TypeError');
             return navigator.requestMediaKeySystemAccess(config.keysystem, [configuration]);
         }).then(function(access) {
@@ -42,7 +42,7 @@ function runTest(config, qualifier) {
             return _video.setMediaKeys(_mediaKeys);
         }).then(function(result) {
             assert_not_equals(_video.mediaKeys, null);
-            assert_true(_video.mediaKeys === _mediaKeys);
+            assert_equals(_video.mediaKeys, _mediaKeys);
             test.done();
         }).catch(onFailure);
     }, testname);

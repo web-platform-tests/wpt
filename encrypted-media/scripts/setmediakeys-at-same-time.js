@@ -4,10 +4,6 @@ function runTest(config, qualifier) {
 
     var configuration = getSimpleConfigurationForContent( config.content );
 
-    if ( config.initDataType && config.initData ) {
-        configuration.initDataTypes = [ config.initDataType ];
-    }
-
     async_test (function (test) {
         var _video = config.video,
             _access,

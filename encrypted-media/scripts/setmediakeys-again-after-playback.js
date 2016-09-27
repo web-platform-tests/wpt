@@ -1,6 +1,6 @@
 function runTest(config, qualifier) {
     var testname = testnamePrefix( qualifier, config.keysystem )
-                                    + ', setmediakeys again after resetting src';
+                                    + ', setmediakeys again after playback';
 
     var configuration = getSimpleConfigurationForContent( config.content );
 

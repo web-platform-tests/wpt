@@ -4,10 +4,6 @@ function runTest(config, qualifier) {
 
     var configuration = getSimpleConfigurationForContent( config.content );
 
-    if ( config.initDataType && config.initData ) {
-        configuration.initDataTypes = [ config.initDataType ];
-    }
-
     async_test (function (test) {
         var _video = config.video,
             _access,
@@ -37,11 +33,11 @@ function runTest(config, qualifier) {
             // Set _mediaKeys1 on video.
             return _video.setMediaKeys(_mediaKeys1);
         }).then(function() {
-            assert_true(_video.mediaKeys === _mediaKeys1);
+            assert_equals(_video.mediaKeys, _mediaKeys1);
             // Set _mediaKeys2 on video (switching MediaKeys).
             return _video.setMediaKeys(_mediaKeys2);
         }).then(function() {
-            assert_true(_video.mediaKeys === _mediaKeys2);
+            assert_equals(_video.mediaKeys, _mediaKeys2);
             // Clear mediaKeys from video.
             return _video.setMediaKeys(null);
         }).then(function() {
@@ -49,7 +45,7 @@ function runTest(config, qualifier) {
             // Set _mediaKeys1 on video again.
             return _video.setMediaKeys(_mediaKeys1);
         }).then(function() {
-            assert_true(_video.mediaKeys === _mediaKeys1);
+            assert_equals(_video.mediaKeys, _mediaKeys1);
             return testmediasource(config);
         }).then(function(source) {
             // Set src attribute on Video Element
@@ -60,12 +56,12 @@ function runTest(config, qualifier) {
         }).then(function() {
             // Switching setMediaKeys after setting src attribute on video element
             // is not required to fail.
-            assert_true(_video2.mediaKeys === _mediaKeys2);
+            assert_equals(_video2.mediaKeys, _mediaKeys2);
             fail = false;
             return Promise.resolve();
         }, function(error) {
             fail = true;
-            assert_true(_video.mediaKeys === _mediaKeys1);
+            assert_equals(_video.mediaKeys, _mediaKeys1);
             assert_equals(error.name, 'InvalidStateError');
             assert_not_equals(error.message, '');
             // Return something so the promise resolves properly.
@@ -77,10 +73,11 @@ function runTest(config, qualifier) {
         }).then(function() {
             assert_unreached('Clearing mediaKeys after setting src should have failed.');
         }, function(error) {
-            if(fail)
-                assert_true(_video.mediaKeys === _mediaKeys1)
-            else
-                assert_true(_video.mediaKeys === _mediaKeys2)
+            if(fail) {
+                assert_equals(_video.mediaKeys, _mediaKeys1);
+            } else {
+                assert_equals(_video.mediaKeys, _mediaKeys2);
+            }
             assert_true(error.name === 'InvalidStateError' || error.name === 'ReferenceError');
             assert_not_equals(error.message, '');
             test.done();

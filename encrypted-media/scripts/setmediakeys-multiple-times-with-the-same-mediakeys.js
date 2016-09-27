@@ -27,11 +27,11 @@ function runTest(config, qualifier) {
             // Set mediaKeys for first time on video should work.
             return _video.setMediaKeys(_mediaKeys);
         }).then(function(result) {
-            assert_true(_video.mediaKeys === _mediaKeys);
+            assert_equals(_video.mediaKeys, _mediaKeys);
             // Set mediaKeys on video again should return a resolved promise.
             return _video.setMediaKeys(_mediaKeys);
         }).then(function (result) {
-            assert_true(_video.mediaKeys === _mediaKeys);
+            assert_equals(_video.mediaKeys, _mediaKeys);
             return testmediasource(config);
         }).then(function(source) {
             // Set src attribute on Video Element
@@ -39,7 +39,7 @@ function runTest(config, qualifier) {
             // Set mediaKeys again on video should still return a resolved promise.
             return _video.setMediaKeys(_mediaKeys);
         }).then(function() {
-            assert_true(_video.mediaKeys === _mediaKeys);
+            assert_equals(_video.mediaKeys, _mediaKeys);
             test.done();
         }).catch(onFailure);
     }, testname);

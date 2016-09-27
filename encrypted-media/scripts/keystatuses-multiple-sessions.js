@@ -13,8 +13,12 @@ function runTest(config,qualifier)
 
         // Even though key ids are uint8, using printable values so that
         // they can be verified easily.
-        var key1 = new Uint8Array( config.content.keys[ 0 ].kid ),
-            key2 = new Uint8Array( config.content.keys[ 1 ].kid );
+        var key1 = new Uint8Array(config.content.keys[ 0 ].kid),
+            key2 = new Uint8Array(config.content.keys[ 1 ].kid);
+
+        function onFailure(error) {
+            forceTestFailureFromPromise(error);
+        }
 
         function processMessage1(event)
         {
@@ -25,12 +29,9 @@ function runTest(config,qualifier)
             verifyKeyStatuses(mediaKeySession1.keyStatuses, { expected: [], unexpected: [key1, key2] });
 
             // Add key1 to session1.
-            config.messagehandler( event.messageType, event.message ).then( function( response ) {
-
-                event.target.update( response ).catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                });
-            });
+            config.messagehandler(event.messageType, event.message).then(function(response) {
+                return event.target.update( response );
+            }).catch(onFailure);
 
         }
 
@@ -43,9 +44,7 @@ function runTest(config,qualifier)
             verifyKeyStatuses(mediaKeySession1.keyStatuses, { expected: [key1], unexpected: [key2] });
 
             // Now trigger a message event on session2.
-            mediaKeySession2.generateRequest(config.initDataType, config.initData[ 1 ]).catch(function(error) {
-                forceTestFailureFromPromise(test, error);
-            });
+            mediaKeySession2.generateRequest(config.initDataType, config.initData[ 1 ]).catch(onFailure);
         }
 
         function processMessage2(event)
@@ -60,12 +59,9 @@ function runTest(config,qualifier)
             verifyKeyStatuses(mediaKeySession1.keyStatuses, { expected: [key1], unexpected: [key2] });
 
             // Add key2 to session2.
-            config.messagehandler( event.messageType, event.message ).then( function( response ) {
-
-                event.target.update( response ).catch(function(error) {
-                    forceTestFailureFromPromise(test, error);
-                });
-            });
+            config.messagehandler(event.messageType, event.message).then(function(response) {
+                return event.target.update(response);
+            }).catch(onFailure);
         }
 
         function processKeyStatusesChange2(event)
@@ -82,7 +78,7 @@ function runTest(config,qualifier)
             test.done();
         }
 
-        navigator.requestMediaKeySystemAccess( config.keysystem, [ configuration ] ).then(function(access) {
+        navigator.requestMediaKeySystemAccess(config.keysystem, [configuration]).then(function(access) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             mediaKeySession1 = mediaKeys.createSession();
@@ -99,9 +95,7 @@ function runTest(config,qualifier)
             waitForEventAndRunStep('keystatuseschange', mediaKeySession2, processKeyStatusesChange2, test);
 
             // Generate a request on session1.
-            return mediaKeySession1.generateRequest(config.initDataType, config.initData[ 0 ] );
-        }).catch(function(error) {
-            forceTestFailureFromPromise(test, error);
-        });
+            return mediaKeySession1.generateRequest(config.initDataType, config.initData[0]);
+        }).catch(onFailure);
     },  testname );
 }

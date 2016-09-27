@@ -4,14 +4,16 @@ function runTest(config, qualifier) {
 
     var configuration = getSimpleConfigurationForContent(config.content);
 
-    if (config.initDataType && config.initData) configuration.initDataTypes = [config.initDataType];
+    if (config.initDataType) {
+        configuration.initDataTypes = [config.initDataType];
+    }
 
     async_test(function (test) {
         var initDataType;
         var initData;
         var mediaKeySession;
 
-        // Clear Key JSON Web Key needs to be Ascii encoded
+        // Clear Key JSON Web Key needs to be ASCII encoded
         function processMessage(event) {
                 // |jwkSet| contains a  non-ASCII character \uDC00.
                 var jwkSet = '{"keys":[{'
@@ -22,7 +24,7 @@ function runTest(config, qualifier) {
 
 
                 event.target.update(stringToUint8Array(jwkSet)).then(function () {
-                    forceTestFailureFromPromise(test, 'Error: update() succeeded');
+                    forceTestFailureFromPromise(test, 'Error: update() should fail because the processed message has non-ASCII character.');
                 }, function (error) {
                     assert_equals(error.name, 'InvalidAccessError');
                     test.done();

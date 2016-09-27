@@ -1046,7 +1046,7 @@ function runTest(config) {
         },
         // Empty array.
         {
-            exception: 'InvalidAccessError',
+            exception: 'TypeError',
             func: function (mk) {
                 return mk.setServerCertificate(new Uint8Array(0));
             }
@@ -1073,25 +1073,43 @@ function runTest(config) {
             });
     }, 'Test MediaKeys setServerCertificate() exceptions.');
 
-// All calls to |func| in this group are expected to resolve.
+// All calls to |func| in this group resolve. setServerCertificate with these cert may either resolve with true
+// for clearkey or throw a DOMException
     var kSetServerCertificateTestCases = [
         {
             // Pass in ArrayBufferView
             func: function (mk) {
                 var cert = new Uint8Array(200);
                 assert_true(ArrayBuffer.isView(cert));
-                return mk.setServerCertificate(cert);
+
+                return new Promise(function(resolve,reject){
+                    mk.setServerCertificate(cert).then(function(value){
+                        resolve(value);
+                    }).catch(function(error){
+                        if(Object.prototype.toString.call(error) === "[object DOMException]"){
+                            resolve(false);
+                        };
+                    });
+                })
             },
-            expected: false,
+            expected: false
         },
         {
-            // Pass in ArrayBuffer
+            // Pass in ArrayBuffer.
             func: function (mk) {
-                var buffer = new ArrayBuffer(200);
-                assert_false(ArrayBuffer.isView(buffer));
-                return mk.setServerCertificate(buffer);
+                var cert = new ArrayBuffer(200);
+                assert_false(ArrayBuffer.isView(cert));
+                return new Promise(function(resolve){
+                    mk.setServerCertificate(cert).then(function(resolveValue){
+                        resolve(resolveValue);
+                    }).catch(function(error){
+                        if(Object.prototype.toString.call(error) === "[object DOMException]"){
+                            resolve(false);
+                        };
+                    });
+                })
             },
-            expected: false,
+            expected: false
         }
     ];
 
@@ -1103,12 +1121,11 @@ function runTest(config) {
             })
             .then(function (mediaKeys) {
                 var promises = kSetServerCertificateTestCases.map(function (testCase) {
-                    return testCase.func.call(null, mediaKeys);
+                        return testCase.func.call(null, mediaKeys);
                 });
                 expected_result = kSetServerCertificateTestCases.map(function (testCase) {
                     return testCase.expected;
                 });
-
                 assert_not_equals(promises.length, 0);
                 return Promise.all(promises);
             })
@@ -1117,6 +1134,7 @@ function runTest(config) {
                 test.done();
             })
             .catch(function (error) {
+           //    var t =  Object.prototype.toString.call(error) === "[object DOMException]";
                 forceTestFailureFromPromise(test, error, 'setServerCertificate() test failed');
             });
     }, 'Test MediaKeys setServerCertificate().');

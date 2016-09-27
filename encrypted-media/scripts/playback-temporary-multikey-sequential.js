@@ -3,9 +3,9 @@ function runTest(config,qualifier) {
     // config.initData contains a list of keys. We expect those to be needed in order and get
     // one waitingforkey event for each one.
 
-    var testname = testnamePrefix( qualifier, config.keysystem )
+    var testname = testnamePrefix(qualifier, config.keysystem)
                                     + ', successful playback, temporary, '
-                                    + /video\/([^;]*)/.exec( config.videoType )[ 1 ]
+                                    + /video\/([^;]*)/.exec(config.videoType)[1]
                                     + ', multiple keys, sequential';
 
     var configuration = {   initDataTypes: [ config.initDataType ],
@@ -13,17 +13,17 @@ function runTest(config,qualifier) {
                             videoCapabilities: [ { contentType: config.videoType } ],
                             sessionTypes: [ 'temporary' ] };
 
-    async_test( function( test ) {
+    async_test(function(test) {
 
         var _video = config.video,
             _mediaKeys,
-            _mediaKeySessions = [ ],
+            _mediaKeySessions = [],
             _mediaSource,
             _playbackStarted = false;
 
-        function dumpTimeRanges( ranges ) {
-            for( var i=0; i < ranges.length; ++i ) {
-                consoleWrite( ranges.start( i ) + "-" + ranges.end( i ) );
+        function dumpTimeRanges(ranges) {
+            for(var i=0; i < ranges.length; ++i) {
+                consoleWrite(ranges.start(i) + "-" + ranges.end(i) );
             }
         }
 
@@ -31,21 +31,21 @@ function runTest(config,qualifier) {
             assert_less_than( _mediaKeySessions.length, config.initData.length );
             var mediaKeySession = _mediaKeys.createSession( 'temporary' );
             waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
-            _mediaKeySessions.push( mediaKeySession );
-            mediaKeySession.generateRequest( config.initDataType, config.initData[ _mediaKeySessions.length - 1 ] ).catch(onFailure);
+            _mediaKeySessions.push(mediaKeySession);
+            mediaKeySession.generateRequest(config.initDataType, config.initData[ _mediaKeySessions.length - 1 ]).catch(onFailure);
         }
 
-        function onFailure( error ) {
+        function onFailure(error) {
             forceTestFailureFromPromise(test, error);
         }
 
         function onMessage(event) {
             consoleWrite("message");
-            config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                event.target.update( response ).then( function() {
-                    dumpKeyStatuses(event.target.keyStatuses);
-                }).catch(onFailure);
-            });
+            config.messagehandler( event.messageType, event.message ).then(function(response) {
+                return event.target.update(response);
+            }).then(function() {
+                dumpKeyStatuses(event.target.keyStatuses);
+            }).catch(onFailure);
         }
 
         function onEncrypted(event) {
@@ -63,9 +63,9 @@ function runTest(config,qualifier) {
             consoleWrite("videoelement buffered");
             dumpTimeRanges(_video.buffered);
             consoleWrite("source[0] buffered");
-            dumpTimeRanges( _mediaSource.sourceBuffers[ 0 ].buffered );
+            dumpTimeRanges(_mediaSource.sourceBuffers[ 0 ].buffered);
             consoleWrite("source[1] buffered");
-            dumpTimeRanges( _mediaSource.sourceBuffers[ 1 ].buffered );
+            dumpTimeRanges(_mediaSource.sourceBuffers[ 1 ].buffered);
         }
 
         function onPause(event) {
@@ -84,10 +84,10 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            consoleWrite("timeupdate: " + _video.currentTime );
+            consoleWrite("timeupdate: " + _video.currentTime);
 
-            if ( _video.currentTime > ( config.duration || 6 ) ) {
-                assert_equals( _mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content" );
+            if (_video.currentTime > (config.duration || 6)) {
+                assert_equals(_mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content");
                 _video.pause();
                 test.done();
             }
@@ -101,7 +101,7 @@ function runTest(config,qualifier) {
         }).then(function(){
             // Not using waitForEventAndRunStep() to avoid too many
             // EVENT(onTimeUpdate) logs.
-            _video.addEventListener('timeupdate', test.step_func( onTimeupdate ), true);
+            _video.addEventListener('timeupdate', test.step_func(onTimeupdate), true);
 
             waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);

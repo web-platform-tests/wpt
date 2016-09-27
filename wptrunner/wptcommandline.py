@@ -174,10 +174,6 @@ scheme host and port.""")
     gecko_group.add_argument("--disable-e10s", dest="gecko_e10s", action="store_false", default=True,
                              help="Run tests without electrolysis preferences")
 
-    b2g_group = parser.add_argument_group("B2G-specific")
-    b2g_group.add_argument("--b2g-no-backup", action="store_true", default=False,
-                           help="Don't backup device before testrun with --product=b2g")
-
     servo_group = parser.add_argument_group("Servo-specific")
     servo_group.add_argument("--user-stylesheet",
                              default=[], action="append", dest="user_stylesheets",

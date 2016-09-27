@@ -68,10 +68,7 @@ class WdspecSubtestResult(SubtestResult):
 
 
 def get_run_info(metadata_root, product, **kwargs):
-    if product == "b2g":
-        return B2GRunInfo(metadata_root, product, **kwargs)
-    else:
-        return RunInfo(metadata_root, product, **kwargs)
+    return RunInfo(metadata_root, product, **kwargs)
 
 
 class RunInfo(dict):
@@ -99,12 +96,6 @@ class RunInfo(dict):
             path = os.path.split(path)[0]
 
         mozinfo.find_and_update_from_json(*dirs)
-
-
-class B2GRunInfo(RunInfo):
-    def __init__(self, *args, **kwargs):
-        RunInfo.__init__(self, *args, **kwargs)
-        self["os"] = "b2g"
 
 
 class Test(object):

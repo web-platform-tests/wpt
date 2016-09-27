@@ -52,12 +52,12 @@ function runTest(config,qualifier) {
         return isInitDataTypeSupported(testspec.keysystem,testspec.initDataType);
     })).then(function(results) {
         tests.filter(function(testspec, i) { return results[i]; } ).forEach(function(testspec) {
-            async_test(function(test) {
+            promise_test(function(test) {
                 // Create a "temporary" session for |keysystem| and call generateRequest()
                 // with the provided initData. generateRequest() should fail with an
                 // InvalidAccessError. Returns a promise that is resolved
                 // if the error occurred and rejected otherwise.
-                navigator.requestMediaKeySystemAccess(testspec.keysystem, getSimpleConfigurationForInitDataType(testspec.initDataType)).then(function(access) {
+                return navigator.requestMediaKeySystemAccess(testspec.keysystem, getSimpleConfigurationForInitDataType(testspec.initDataType)).then(function(access) {
                     return access.createMediaKeys();
                 }).then(function(mediaKeys) {
                     var mediaKeySession = mediaKeys.createSession("temporary");
@@ -66,7 +66,6 @@ function runTest(config,qualifier) {
                     assert_unreached('generateRequest() succeeded unexpectedly');
                 }), test.step_func(function(error) {
                     assert_equals(error.name, 'TypeError');
-                    test.done();
                 }));
             },testspec.testname);
         });

@@ -1,11 +1,11 @@
 # WebDriver specification tests
 
-Herein lies a set of conformance tests 
-for the W3C web browser automation specification 
-known as [WebDriver](http://w3c.github.io/webdriver/webdriver-spec.html). 
-The purpose of these tests is determine implementation compliance 
-so that different driver implementations can determine 
-whether they meet the recognised standard. 
+Herein lies a set of conformance tests
+for the W3C web browser automation specification
+known as [WebDriver](http://w3c.github.io/webdriver/webdriver-spec.html).
+The purpose of these tests is determine implementation compliance
+so that different driver implementations can determine
+whether they meet the recognised standard.
 
 ## Chapters of the Spec that still need tests
 
@@ -35,7 +35,7 @@ Note: Sections that likely have enough tests for now are marked in <span style="
 * Resizing and Positioning Windows
 ** Get Window Size
 ** Set Window Size
-** Get Window Position 
+** Get Window Position
 ** Set Window Position
 ** Maximize Window
 ** Minimize Window
@@ -74,7 +74,7 @@ Note: Sections that likely have enough tests for now are marked in <span style="
 * Cookies
 ** Get All Cookies
 ** Get Named Cookies
-** Add Cookie 
+** Add Cookie
 ** Delete Cookie
 ** Delete All Cookies
 * <span style="color:red;">Actions

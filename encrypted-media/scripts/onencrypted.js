@@ -16,7 +16,7 @@ function runTest(config) {
                 assert_true(event instanceof window.MediaEncryptedEvent);
                 assert_equals(event.type, 'encrypted');
                 assert_equals(event.initDataType, 'cenc');
-                // at this point we do not know if the event is related to audio or video. So check for both expected init data
+                // At this point we do not know if the event is related to audio or video. So check for both expected init data
                 assert_true(checkInitData(currentData, expectedInitData[0]) || checkInitData(currentData, expectedInitData[1]));
 
                 if (--expectedEvents == 0) {

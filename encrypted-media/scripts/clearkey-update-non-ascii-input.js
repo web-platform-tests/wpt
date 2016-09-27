@@ -1,4 +1,4 @@
-//this test is only applicable to clearkey
+// This test is only applicable to clearkey
 function runTest(config, qualifier) {
     var testname = testnamePrefix(qualifier, config.keysystem) + ' test handling of non-ASCII responses for update()';
 
@@ -11,7 +11,7 @@ function runTest(config, qualifier) {
         var initData;
         var mediaKeySession;
 
-        //clearkey JSON Web Key needs to be Ascii encoded
+        // Clear Key JSON Web Key needs to be Ascii encoded
         function processMessage(event) {
                 // |jwkSet| contains a  non-ASCII character \uDC00.
                 var jwkSet = '{"keys":[{'

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Elements: CEReactions on Node interface</title>
+<meta name="author" title="Ryosuke Niwa" href="mailto:rniwa@webkit.org">
+<meta name="assert" content="nodeValue, textContent, normalize, cloneNode, insertBefore, appendChild, replaceChild, and removeChild of Node interface must have CEReactions">
+<meta name="help" content="https://dom.spec.whatwg.org/#node">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./resources/reactions.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+testAttributeMutator(function (element, name, value) {
+    element.getAttributeNode(name).nodeValue = value;
+}, 'nodeValue on Node');
+
+testAttributeMutator(function (element, name, value) {
+    element.getAttributeNode(name).textContent = value;
+}, 'textContent on Node');
+
+// FIXME: Add a test for normalize()
+
+test(function () {
+    var element = defineNewCustomElement();
+    var instance = document.createElement(element.name);
+    instance.setAttribute('id', 'foo');
+    assert_array_equals(element.log().types(), ['constructed', 'attributeChanged']);
+    var newInstance = instance.cloneNode(false);
+    var logEntries = element.log();
+    assert_array_equals(logEntries.types(), ['constructed', 'attributeChanged']);
+    assert_equals(logEntries.log().name, 'id');
+    assert_equals(logEntries.log().oldValue, null);
+    assert_equals(logEntries.log().newValue, 'foo');
+}, 'cloneNode on Node must enqueue a attributeChanged reaction when cloning an element with an attribute');
+
+test(function () {
+    var element = defineNewCustomElement();
+    var instance = document.createElement(element.name);
+    instance.setAttribute('lang', 'en');
+    assert_array_equals(element.log().types(), ['constructed']);
+    var newInstance = instance.cloneNode(false);
+    assert_array_equals(element.log().types(), ['constructed']);
+}, 'cloneNode on Node must not enqueue a attributeChanged reaction when cloning an element with an attribute');
+
+
+testNodeConnector(function (newContainer, customElement) {
+    newContainer.insertBefore(customElement, newContainer.firstChild);
+}, 'insertBefore on ChildNode');
+
+testNodeConnector(function (newContainer, customElement) {
+    newContainer.appendChild(customElement);
+}, 'appendChild on ChildNode');
+
+testNodeConnector(function (newContainer, customElement) {
+    newContainer.replaceChild(customElement, newContainer.firstChild);
+}, 'replaceChild on ChildNode');
+
+testNodeDisconnector(function (customElement) {
+    customElement.parentNode.removeChild(customElement);
+}, 'removeChild on ChildNode');
+
+</script>
+</body>
+</html>

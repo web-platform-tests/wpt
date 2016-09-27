@@ -36,4 +36,3 @@ Be sure not to commit your _webdriver.cfg_ changes when your create or modify te
    should be stored in a folder named 'res'.
 3. Test name should explain the intention of the test e.g. `def
    test_navigate_and_return_title(self):`
-   

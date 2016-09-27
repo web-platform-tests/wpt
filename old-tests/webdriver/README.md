@@ -12,12 +12,12 @@ whether they meet the recognized standard.
 3. Run the test against a different config specified in webdriver.cfg:
    `WD_BROWSER=chrome python runtests.py`
 
-To run a specific test file you can just run `python test_file.py`
+To be run a specific test file you can just run `python test_file.py`
 
-Similarly you can specify a different browser to run against in webdriver.cfg:
+Similarly you can specify a different browser to run against if in webdriver.cfg:
   `WD_BROWSER=chrome python ecmascript/ecmascript_test.py`
 
-Note: that you will likely need to start the driver's server before running.
+Note: that you will need likely need to start the driver's server before running.
 
 ## Updating configuration
 
@@ -36,3 +36,4 @@ Be sure not to commit your _webdriver.cfg_ changes when your create or modify te
    should be stored in a folder named 'res'.
 3. Test name should explain the intention of the test e.g. `def
    test_navigate_and_return_title(self):`
+   

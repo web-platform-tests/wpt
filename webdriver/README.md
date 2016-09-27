@@ -7,38 +7,6 @@ The purpose of these tests is determine implementation compliance
 so that different driver implementations can determine 
 whether they meet the recognised standard. 
 
-## How to run the tests
-
-1. Go to the WebDriver tests: `cd _WEBDRIVER_TEST_ROOT_`
-2. Run the tests: `python runtests.py`
-3. Run the test against a different config specified in webdriver.cfg:
-   `WD_BROWSER=chrome python runtests.py`
-
-To run a specific test file you can just run `python test_file.py`
-
-Similarly you can specify a different browser to run against in webdriver.cfg:
-  `WD_BROWSER=chrome python ecmascript/ecmascript_test.py`
-
-Note: that you will likely need to start the driver's server before running.
-
-## Updating configuration
-
-The _webdriver.cfg_ file holds any configuration that the tests might
-require.  Change the value of browser to your needs.  This will then
-be picked up by WebDriverBaseTest when tests are run.
-
-Be sure not to commit your _webdriver.cfg_ changes when your create or modify tests.
-
-## How to write tests
-
-1. Create a test file per section from the specification.
-2. For each test there needs to be one or more corresponding HTML
-   files that will be used for testing.  HTML files are not to be
-   reused between tests. HTML files and other support files
-   should be stored in a folder named 'res'.
-3. Test name should explain the intention of the test e.g. `def
-   test_navigate_and_return_title(self):`
-
 ## Chapters of the Spec that still need tests
 
 Note: Sections that are currently we believe are not quite stable enough for tests yet are in <span style="color:red;">red</span>.

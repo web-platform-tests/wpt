@@ -150,7 +150,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                         crt.profile = { rental: {   absoluteExpiration: (new Date( expiration )).toISOString(),
                                                     playDuration: 3600000 } };
                     }
-                    
+
                     if ( variantId !== undefined ) {
                         crt.variantId = variantId;
                     }

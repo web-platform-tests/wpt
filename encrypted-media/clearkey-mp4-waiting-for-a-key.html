@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
-<head>
+  <head>
     <meta charset=utf-8>
-    <title>Encrypted Media Extensions - Waiting for a key</title>
+    <title>Encrypted Media Extensions - Waiting for a key for Clear Key, mp4</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -14,23 +14,25 @@
     <script src=/encrypted-media/util/utf8.js></script>
     <script src=/encrypted-media/util/testmediasource.js></script>
     <script src=/encrypted-media/util/fetch.js></script>
+
     <!-- Message handler for DRM servers -->
     <script src=/encrypted-media/util/clearkey-messagehandler.js></script>
 
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
+    
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/waiting-for-a-key.js></script>
 
-</head>
-<body>
-<div id='log'></div>
-<div id='video'>
-    <video id="videoelement" width="200px"></video>
-</div>
+  </head>
+  <body>
+    <div id='log'></div>
+    <div id='video'>
+      <video id="videoelement" width="200px"></video>
+    </div>
 
-<script>
-    var contentItem = content['mp4-basic'],
+    <script>
+        var contentItem = content['mp4-basic'],
             handler = new MessageHandler('org.w3.clearkey', contentItem),
             config = {
                 video: document.getElementById('videoelement'),
@@ -44,8 +46,7 @@
                 audioPath: contentItem.audio.path,
                 videoPath: contentItem.video.path,
             };
-    runTest(config);
-
-</script>
-</body>
+        runTest(config);
+    </script>
+  </body>
 </html>

@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
-<head>
+  <head>
     <meta charset=utf-8>
-    <title>Test MediaKeySession closed event.</title>
+    <title>Encrypted Media Extensions - Test MediaKeySession closed event with Clear Key, mp4</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -19,22 +19,22 @@
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/events-session-closed-event.js></script>
 
-</head>
-<body>
-<div id='log'></div>
+  </head>
+  <body>
+    <div id='log'></div>
 
-<script>
-    var keysystem = 'org.w3.clearkey';
-    var contentitem = content['mp4-basic'];
-    var config = {
-        keysystem: keysystem,
-        content: contentitem,
-        initDataType: "keyids",
-        initData: getInitData(contentitem,'keyids'),
-        audioType:          contentitem.audio.type,
-        videoType:          contentitem.video.type
-    };
-    runTest(config);
-</script>
-</body>
+    <script>
+        var keysystem = 'org.w3.clearkey',
+            contentItem = content['mp4-basic'],
+            config = {
+                keysystem: keysystem,
+                content: contentItem,
+                initDataType: 'keyids',
+                initData: getInitData(contentItem,'keyids'),
+                audioType: contentitem.audio.type,
+                videoType: contentitem.video.type
+            };
+        runTest(config);
+    </script>
+  </body>
 </html>

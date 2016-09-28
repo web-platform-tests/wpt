@@ -1,8 +1,8 @@
 <!doctype html>
 <html>
-<head>
+  <head>
     <meta charset=utf-8>
-    <title>Encrypted Media Extensions</title>
+    <title>Encrypted Media Extensions - Reset MediaSource after setMediaKeys for DRM, mp4</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -20,15 +20,15 @@
     <!-- The script for this specific test -->
     <script src=/encrypted-media/scripts/reset-src-after-setmediakeys.js></script>
 
-</head>
-<body>
-<div id='log'></div>
-<div id='video'>
-    <video id="videoelement" width="200px"></video>
-</div>
+  </head>
+  <body>
+    <div id='log'></div>
+    <div id='video'>
+      <video id="videoelement" width="200px"></video>
+    </div>
 
-<script>
-    var contentItem = content['mp4-av-multikey'],
+    <script>
+        var contentItem = content['mp4-av-multikey'],
             keysystem = getSupportedKeySystem(),
             config = {
                 video: document.getElementById('videoelement'),
@@ -40,8 +40,7 @@
                 audioPath: contentItem.audio.path,
                 videoPath: contentItem.video.path,
             };
-    runTest(config);
-
-</script>
-</body>
+        runTest(config);
+    </script>
+  </body>
 </html>

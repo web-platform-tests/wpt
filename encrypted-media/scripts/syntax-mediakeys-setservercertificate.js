@@ -210,7 +210,97 @@ function runTest(config) {
         });
     }, 'Test MediaKeySystemAccess createMediaKeys().');
 
+    var kCreateSessionExceptionsTestCases = [
+        // Tests in this set use a shortened parameter name due to
+        // format_value() only returning the first 60 characters as the
+        // result. With a longer name the first 60 characters is not
+        // enough to determine which test failed.
 
+        // Invalid parameters.
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.createSession();
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.createSession('');
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.createSession(null);
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.createSession(undefined);
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.createSession(1);
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.createSession(new Uint8Array(0));
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.createSession('TEMPORARY');
+            }
+        }
+    ];
+
+// This function checks that calling createSession() with an
+// unsupported session type doesn't create a MediaKeySession object.
+// Since requestMediaKeySystemAccess() is called without specifying
+// persistent sessions, only temporary sessions will be allowed.
+    function test_unsupported_sessionType(mediaKeys) {
+        var mediaKeySession = 'test';
+
+        try {
+            mediaKeySession = mediaKeys.createSession('persistent-license');
+            assert_unreached('Session should not be created.');
+        } catch (error) {
+            assert_equals(error.name, 'NotSupportedError');
+            assert_not_equals(error.message, "");
+
+            // Since createSession() failed, |mediaKeySession| is not
+            // touched.
+            assert_equals(mediaKeySession, 'test');
+        }
+    };
+
+    async_test(function (test) {
+        navigator.requestMediaKeySystemAccess(keysystem, [configuration])
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                var sessionPromises = kCreateSessionExceptionsTestCases.map(function (testCase) {
+                    return test_exception(testCase, mediaKeys);
+                });
+                sessionPromises = sessionPromises.concat(test_unsupported_sessionType(mediaKeys));
+                assert_not_equals(sessionPromises.length, 0);
+                return Promise.all(sessionPromises);
+            })
+            .then(function (result) {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'createSession() tests failed');
+            });
+    }, 'Test MediaKeys createSession() exceptions.');
 
     var kGenerateRequestExceptionsTestCases = [
         // Tests in this set use a shortened parameter name due to
@@ -454,7 +544,180 @@ function runTest(config) {
             });
     }, 'Test MediaKeys load() exceptions.');
 
+// All calls to |func| in this group are supposed to succeed.
+// However, the spec notes that some things are optional for
+// Clear Key. In particular, support for persistent sessions
+// is optional. Since some implementations won't support some
+// features, a NotSupportedError is treated as a success
+// if |isNotSupportedAllowed| is true.
+    var kCreateSessionTestCases = [
+        // Use the default sessionType.
+        {
+            func: function (mk) {
+                return mk.createSession();
+            },
+            isNotSupportedAllowed: false,
+            testCaseName: "createSession()"
+        },
+        // Try variations of sessionType.
+        {
+            func: function (mk) {
+                return mk.createSession('temporary');
+            },
+            isNotSupportedAllowed: false,
+            testCaseName: "createSession('temporary')"
+        },
+        {
+            func: function (mk) {
+                return mk.createSession(undefined);
+            },
+            isNotSupportedAllowed: false,
+            testCaseName: "createSession(undefined)"
+        },
+        {
+            // Since this is optional, some Clear Key implementations
+            // will succeed, others will return a "NotSupportedError".
+            // Both are allowed results.
+            func: function (mk) {
+                return mk.createSession('persistent-license');
+            },
+            isNotSupportedAllowed: true,
+            testCaseName: "createSession('persistent-license')"
+        },
+        // Try additional parameter, which should be ignored.
+        {
+            func: function (mk) {
+                return mk.createSession('temporary', 'extra');
+            },
+            isNotSupportedAllowed: false,
+            testCaseName: "createSession('temporary', 'extra')"
+        }
+    ];
 
+// These tests check that calling |testCase.func| creates a
+// MediaKeySession object with some default values. They also
+// allow NotSupportedErrors to be generated and treated as a
+// success, if allowed. See comment above kCreateSessionTestCases.
+    try {
+        navigator.requestMediaKeySystemAccess(keysystem, [configuration])
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                runCreateSessionTests(mediaKeys)
+            }
+        );
+    } catch (e) {
+        consoleWrite(e);
+        runCreateSessionTests()
+    }
+
+    function runCreateSessionTests(mediaKeys) {
+        kCreateSessionTestCases.map(function (testCase, index) {
+            var mediaKeySession = undefined;
+            test(function (test) {
+                try {
+                    mediaKeySession = testCase.func.call(null, mediaKeys);
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                    test.done();
+                }
+            }, "Test MediaKeys " + testCase.testCaseName);
+            //if (mediaKeySession) {
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.addEventListener, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.addEventListener is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.expiration, 'number');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.expiration is of type number");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.closed, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.closed is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.keyStatuses, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.keyStatuses is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.onkeystatuseschange, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.onkeystatuseschange is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.onmessage, 'object');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.onmessage is of type object");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.generateRequest, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.generateRequest is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.load, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.load is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.update, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.update is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.close, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.close is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(typeof mediaKeySession.remove, 'function');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.remove is of type function");
+            test(function (test) {
+                try {
+                    assert_equals(mediaKeySession.sessionId, '');
+                } catch (e) {
+                    assert_true(testCase.isNotSupportedAllowed);
+                }
+            }, testCase.testCaseName + " mediaKeySession.sessionId is ''");
+            //}
+        });
+    }
 
 
 // This function checks that calling generateRequest() works for
@@ -747,7 +1010,67 @@ function runTest(config) {
                 forceTestFailureFromPromise(test, error, 'remove() tests failed');
             });
     }, 'Test MediaKeySession remove().');
+
+    var kSetServerCertificateExceptionsTestCases = [
+        // Too few parameters.
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.setServerCertificate();
+            }
+        },
+        // Invalid parameters.
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.setServerCertificate('');
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.setServerCertificate(null);
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.setServerCertificate(undefined);
+            }
+        },
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.setServerCertificate(1);
+            }
+        },
+        // Empty array.
+        {
+            exception: 'TypeError',
+            func: function (mk) {
+                return mk.setServerCertificate(new Uint8Array(0));
+            }
+        }
+    ];
+
+    async_test(function (test) {
+        navigator.requestMediaKeySystemAccess(keysystem, [configuration])
+            .then(function (access) {
+                return access.createMediaKeys();
+            })
+            .then(function (mediaKeys) {
+                var promises = kSetServerCertificateExceptionsTestCases.map(function (testCase) {
+                    return test_exception(testCase, mediaKeys);
+                });
+                assert_not_equals(promises.length, 0);
+                return Promise.all(promises);
+            })
+            .then(function (result) {
+                test.done();
+            })
+            .catch(function (error) {
+                forceTestFailureFromPromise(test, error, 'setServerCertificate() exception tests failed');
+            });
+    }, 'Test MediaKeys setServerCertificate() exceptions.');
+
 }
-// FIXME: Add syntax checks for MediaKeys.IsTypeSupported().
-// FIXME: Add syntax checks for MediaKeyError and MediaKeySession events.
-// FIXME: Add HTMLMediaElement syntax checks, e.g. setMediaKeys, mediakeys, onencrypted.

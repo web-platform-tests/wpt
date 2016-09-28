@@ -1,0 +1,18 @@
+<!doctype html>
+<title>Sandboxed document.domain</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(function() {
+    assert_throws("SecurityError", function() { document.domain = document.domain })
+  })
+  test(function() {
+    assert_throws("SecurityError", function() { (new Document).domain = document.domain })
+  })
+  test(function() {
+    assert_throws("SecurityError", function() { document.implementation.createHTMLDocument().domain = document.domain })
+  })
+  test(function() {
+    assert_throws("SecurityError", function() { document.implementation.createDocument(null, "").domain = document.domain })
+  })
+</script>

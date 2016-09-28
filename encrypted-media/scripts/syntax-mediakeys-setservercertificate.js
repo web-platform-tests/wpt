@@ -99,7 +99,10 @@ function runTest(config) {
                 test.done();
             })
             .catch(function (error) {
-                forceTestFailureFromPromise(test, error, 'setServerCertificate() exception tests failed');
+                test.step(function(){
+                    assert_true(false, error.message);
+                });
+                test.done();
             });
     }, testname + ' test MediaKeys setServerCertificate() exceptions.');
 

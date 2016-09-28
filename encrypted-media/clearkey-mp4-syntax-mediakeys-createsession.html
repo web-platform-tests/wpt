@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <title>
-        Encrypted Media Extensions - DRM, MP4, check Mediakeys.createSession() error syntax and MediaKeys attribute
+        Encrypted Media Extensions - Clear Key, MP4, check Mediakeys.createSession() error syntax and MediaKeys attribute
         syntax
     </title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
@@ -28,16 +28,15 @@
       <video id="videoelement" width="200px"></video>
     </div>
     <script>
-        var keysystem = getSupportedKeySystem();
         var contentItem = content['mp4-basic'],
-            config = {
-                keysystem: keysystem,
-                content: contentItem,
-                initData: stringToUint8Array(atob(contentItem.keys[0].initData)),
-                initDataType: contentItem.initDataType,
-                audioType: contentItem.audio.type,
-                videoType: contentItem.video.type
-            };
+                config = {
+                    keysystem: 'org.w3.clearkey',
+                    content: contentItem,
+                    initDataType: 'keyids',
+                    initData: getInitData(contentItem, 'keyids'),
+                    audioType: contentItem.audio.type,
+                    videoType: contentItem.video.type
+                };
         runTest(config);
     </script>
   </body>

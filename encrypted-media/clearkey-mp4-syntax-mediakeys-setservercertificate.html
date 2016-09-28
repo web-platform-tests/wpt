@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <title>Encrypted Media Extensions - Syntax Tests</title>
+    <title>Encrypted Media Extensions - Clearkey, MP4, check Mediakeys.setServerCertificate() error syntax</title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -13,13 +13,10 @@
     <script src=/encrypted-media/util/utils.js></script>
     <script src=/encrypted-media/util/utf8.js></script>
     <script src=/encrypted-media/util/fetch.js></script>
-    <!-- Message handler for DRM servers -->
-    <script src=/encrypted-media/util/clearkey-messagehandler.js></script>
-
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/syntax.js></script>
+    <script src=/encrypted-media/scripts/syntax-mediakeys-setservercertificate.js></script>
 
   </head>
   <body>
@@ -29,18 +26,13 @@
     </div>
     <script>
         var contentItem = content['mp4-basic'],
-            handler = new MessageHandler('org.w3.clearkey', contentItem),
             config = {
-                video: document.getElementById('videoelement'),
                 keysystem: 'org.w3.clearkey',
                 content: contentItem,
-                handler: handler,
                 initDataType: 'keyids',
                 initData: getInitData(contentItem, 'keyids'),
                 audioType: contentItem.audio.type,
-                videoType: contentItem.video.type,
-                audioPath: contentItem.audio.path,
-                videoPath: contentItem.video.path,
+                videoType: contentItem.video.type
             };
         runTest(config);
     </script>

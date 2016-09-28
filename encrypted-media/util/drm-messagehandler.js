@@ -53,7 +53,7 @@ function MessageHandler( keysystem, content, sessionType ) {
     }
 }
 
-MessageHandler.prototype.messagehandler = function messagehandler( messageType, message, expiration ) {
+MessageHandler.prototype.messagehandler = function messagehandler( messageType, message, expiration, variantId ) {
 
     // For the DRM Today server, mapping between Key System messages and server protocol messages depends on
     // the Key System, so we provide key-system-specific functions here to perform the mapping.
@@ -136,11 +136,11 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             constructLicenseRequestUrl : function( serverURL, sessionType, messageType, content ) {
                 return serverURL;
             },
-            getCustomHeaders : function( drmconfig, sessionType, messageType, content, expiration ) {
+            getCustomHeaders : function( drmconfig, sessionType, messageType, content, expiration, variantId ) {
                 var optData = JSON.stringify( { merchant: drmconfig.merchant } );
                 var crt = {};
                 if ( messageType === 'license-request' ) {
-                    crt = { assetId: content.name,
+                    crt = { assetId: content.assetId,
                             outputProtection: { digital : false, analogue: false, enforce: false },
                             storeLicense: ( sessionType === 'persistent-license' ) };
 
@@ -149,6 +149,10 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                     } else {
                         crt.profile = { rental: {   absoluteExpiration: (new Date( expiration )).toISOString(),
                                                     playDuration: 3600000 } };
+                    }
+                    
+                    if ( variantId !== undefined ) {
+                        crt.variantId = variantId;
                     }
                 }
 
@@ -218,7 +222,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             }
         };
 
-        serverfns.getCustomHeaders( this._drmconfig, this._sessionType, messageType, this._content, expiration ).then(function(customHeaders) {
+        serverfns.getCustomHeaders( this._drmconfig, this._sessionType, messageType, this._content, expiration, variantId ).then(function(customHeaders) {
 
             updateHeaders( customHeaders );
             updateHeaders( keysystemfns.getRequestHeadersFromMessage(message) );

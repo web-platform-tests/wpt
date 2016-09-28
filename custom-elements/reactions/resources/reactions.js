@@ -17,7 +17,7 @@ function defineNewCustomElement(observedAttributes) {
         disconnectedCallback() { log.push({type: 'disconnected', element: this}); }
         adoptedCallback(oldDocument, newDocument) { log.push({type: 'adopted', element: this, oldDocument: oldDocument, newDocument: newDocument}); }
     }
-    CustomElement.observedAttributes = observedAttributes || ['id', 'title'];
+    CustomElement.observedAttributes = observedAttributes;
 
     customElements.define(name, CustomElement);
 
@@ -37,7 +37,7 @@ function testNodeConnector(testFunction, name) {
     let container = document.createElement('div');
     container.appendChild(document.createElement('div'));
     document.body.appendChild(container);
- 
+
     test(function () {
         var element = defineNewCustomElement();
         var instance = document.createElement(element.name);
@@ -78,6 +78,38 @@ function testNodeDisconnector(testFunction, name) {
     container.parentNode.removeChild(container);
 }
 
+function testCloner(testFunction, name) {
+    let container = document.createElement('div');
+    container.appendChild(document.createElement('div'));
+    document.body.appendChild(container);
+
+    test(function () {
+        var element = defineNewCustomElement(['id']);
+        var instance = document.createElement(element.name);
+        container.appendChild(instance);
+
+        instance.setAttribute('id', 'foo');
+        assert_array_equals(element.log().types(), ['constructed', 'connected', 'attributeChanged']);
+        var newInstance = testFunction(instance);
+        var logEntries = element.log();
+        assert_array_equals(logEntries.types(), ['constructed', 'attributeChanged']);
+        assert_equals(logEntries.log().name, 'id');
+        assert_equals(logEntries.log().oldValue, null);
+        assert_equals(logEntries.log().newValue, 'foo');
+    }, name + ' must enqueue a attributeChanged reaction when cloning an element with an observed attribute');
+
+    test(function () {
+        var element = defineNewCustomElement(['id']);
+        var instance = document.createElement(element.name);
+        container.appendChild(instance);
+
+        instance.setAttribute('lang', 'en');
+        assert_array_equals(element.log().types(), ['constructed', 'connected']);
+        var newInstance = testFunction(instance);
+        assert_array_equals(element.log().types(), ['constructed']);
+    }, name + ' must not enqueue a attributeChanged reaction when cloning an element with an unobserved attribute');
+}
+
 function testReflectAttribute(jsAttributeName, contentAttributeName, validValue1, validValue2, name) {
     test(function () {
         var element = defineNewCustomElement([contentAttributeName]);
@@ -109,7 +141,7 @@ function testReflectAttribute(jsAttributeName, contentAttributeName, validValue1
 
 function testAttributeAdder(testFunction, name) {
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement(['id']);
         var instance = document.createElement(element.name);
         assert_array_equals(element.log().types(), ['constructed']);
         testFunction(instance, 'id', 'foo');
@@ -122,7 +154,7 @@ function testAttributeAdder(testFunction, name) {
     }, name + ' must enqueue a attributeChanged reaction when adding an attribute');
 
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement([]);
         var instance = document.createElement(element.name);
         assert_array_equals(element.log().types(), ['constructed']);
         testFunction(instance, 'data-lang', 'en');
@@ -130,7 +162,7 @@ function testAttributeAdder(testFunction, name) {
     }, name + ' must not enqueue a attributeChanged reaction when adding an unobserved attribute');
 
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement(['title']);
         var instance = document.createElement(element.name);
         instance.setAttribute('title', 'hello');
         assert_array_equals(element.log().types(), ['constructed', 'attributeChanged']);
@@ -144,7 +176,7 @@ function testAttributeAdder(testFunction, name) {
     }, name + ' must enqueue a attributeChanged reaction when replacing an existing attribute');
 
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement([]);
         var instance = document.createElement(element.name);
         instance.setAttribute('data-lang', 'zh');
         assert_array_equals(element.log().types(), ['constructed']);
@@ -155,7 +187,7 @@ function testAttributeAdder(testFunction, name) {
 
 function testAttributeMutator(testFunction, name) {
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement(['title']);
         var instance = document.createElement(element.name);
         instance.setAttribute('title', 'hello');
         assert_array_equals(element.log().types(), ['constructed', 'attributeChanged']);
@@ -169,18 +201,18 @@ function testAttributeMutator(testFunction, name) {
     }, name + ' must enqueue a attributeChanged reaction when replacing an existing attribute');
 
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement([]);
         var instance = document.createElement(element.name);
         instance.setAttribute('data-lang', 'zh');
         assert_array_equals(element.log().types(), ['constructed']);
         testFunction(instance, 'data-lang', 'en');
         assert_array_equals(element.log().types(), []);
-    }, name + ' must enqueue a attributeChanged reaction when replacing an existing unobserved attribute');
+    }, name + ' must not enqueue a attributeChanged reaction when replacing an existing unobserved attribute');
 }
 
 function testAttributeRemover(testFunction, name) {
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement(['title']);
         var instance = document.createElement(element.name);
         assert_array_equals(element.log().types(), ['constructed']);
         testFunction(instance, 'title');
@@ -188,16 +220,16 @@ function testAttributeRemover(testFunction, name) {
     }, name + ' must not enqueue a attributeChanged reaction when removing an attribute that does not exist');
 
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement([]);
         var instance = document.createElement(element.name);
         instance.setAttribute('data-lang', 'hello');
         assert_array_equals(element.log().types(), ['constructed']);
         testFunction(instance, 'data-lang');
         assert_array_equals(element.log().types(), []);
-    }, name + ' must not enqueue a attributeChanged reaction when removing an unobserved attribute that does not exist');
+    }, name + ' must not enqueue a attributeChanged reaction when removing an unobserved attribute');
 
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement(['title']);
         var instance = document.createElement(element.name);
         instance.setAttribute('title', 'hello');
         assert_array_equals(element.log().types(), ['constructed', 'attributeChanged']);
@@ -211,7 +243,7 @@ function testAttributeRemover(testFunction, name) {
     }, name + ' must enqueue a attributeChanged reaction when removing an existing attribute');
 
     test(function () {
-        var element = defineNewCustomElement();
+        var element = defineNewCustomElement([]);
         var instance = document.createElement(element.name);
         instance.setAttribute('data-lang', 'ja');
         assert_array_equals(element.log().types(), ['constructed']);

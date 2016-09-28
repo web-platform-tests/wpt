@@ -25,12 +25,12 @@ testAttributeAdder(function (element, name, value) {
     element.setAttributeNS(null, name, value);
 }, 'setAttributeNS on Element');
 
-testAttributeRemover(function (element, name, value) {
-    element.removeAttribute(name, value);
+testAttributeRemover(function (element, name) {
+    element.removeAttribute(name);
 }, 'removeAttribute on Element');
 
-testAttributeRemover(function (element, name, value) {
-    element.removeAttributeNS(null, name, value);
+testAttributeRemover(function (element, name) {
+    element.removeAttributeNS(null, name);
 }, 'removeAttributeNS on Element');
 
 testAttributeAdder(function (element, name, value) {
@@ -45,7 +45,7 @@ testAttributeAdder(function (element, name, value) {
     element.setAttributeNodeNS(attr);
 }, 'setAttributeNodeNS on Element');
 
-testAttributeRemover(function (element, name, value) {
+testAttributeRemover(function (element, name) {
     var attr = element.getAttributeNode(name);
     if (attr)
         element.removeAttributeNode(element.getAttributeNode(name));

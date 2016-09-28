@@ -30,7 +30,7 @@ function runTest(config,qualifier) {
 
             assert_in_array(event.messageType, ['license-request', 'individualization-request']);
 
-            config.messagehandler(event.messageType, event.message).then(function(response) {
+            config.messagehandler(event.messageType, event.message, undefined, event.target._variantId ).then(function(response) {
                 return event.target.update(response);
             }).catch(onFailure);
         }
@@ -57,8 +57,9 @@ function runTest(config,qualifier) {
         }).then(function() {
             waitForEventAndRunStep('playing', _video, onPlaying, test);
 
-            config.initData.forEach(function(initData) {
+            config.initData.forEach(function(initData,i) {
                 var mediaKeySession = _mediaKeys.createSession( 'temporary' );
+                mediaKeySession._variantId = config.variantIds[i];
                 waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
                 _mediaKeySessions.push(mediaKeySession);
                 mediaKeySession.generateRequest(config.initDataType, initData).catch(onFailure);

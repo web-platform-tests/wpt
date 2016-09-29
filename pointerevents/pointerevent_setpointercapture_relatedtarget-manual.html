@@ -71,7 +71,7 @@
                     log("pointerover", document.getElementById('target0'));
                     if(isPointerCapture && isPointeroverGot) {
                         test(function() {
-                            assert_true(event.relatedTarget!=null, "relatedTarget should not be null even when the capture is set")
+                            assert_not_equals(event.relatedTarget, null, "relatedTarget should not be null even when the capture is set")
                         }, "relatedTarget should not be null even when the capture is set.");
                         done();
                     }

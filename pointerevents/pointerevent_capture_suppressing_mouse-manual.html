@@ -90,14 +90,14 @@
                         test_pointerover_capture.done();
                         if (!isRelatedTargetValueTested) {
                             test(function() {
-                                assert_true(event.relatedTarget != null, "relatedTarget should behave the same as when the capture is not set")
+                                assert_not_equals(event.relatedTarget, null, "relatedTarget should behave the same as when the capture is not set")
                             }, "relatedTarget is not null for boundary events even when the capture is set.");
                             isRelatedTargetValueTested = true;
                         }
                         var hitTest = document.elementFromPoint(event.clientX, event.clientY);
                         if(event.target !== hitTest && !isTargetAuthenticityTested) {
                             test(function () {
-                                assert_true(event.target !== hitTest, "pointerover should be fired on capture target even if the pointer it not over the capture target");
+                                assert_not_equals(event.target, hitTest, "pointerover should be fired on capture target even if the pointer it not over the capture target");
                             }, "pointerover should trigger the black rectangle even when pointer is not over black rectangle.");
                             isTargetAuthenticityTested = true;
                         }

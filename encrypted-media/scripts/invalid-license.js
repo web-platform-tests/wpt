@@ -19,7 +19,7 @@ function runTest(config) {
             messageEventFired = true;
             return messageEvent.target.update(invalidLicense);
         }).then(function (messageEvent) {
-            assert_unreached('Error: update() succeeded unexpectedly.');
+            assert_unreached('Error: update() should fail because of an invalid license.');
         }).catch(function (error) {
             if(messageEventFired) {
                 assert_equals(error.name, 'InvalidAccessError');
@@ -28,5 +28,5 @@ function runTest(config) {
                 forceTestFailureFromPromise(test, error);
             }
         });
-    }, 'Invalid Key License.');
+    }, 'Update with invalid Clear Key license');
 }

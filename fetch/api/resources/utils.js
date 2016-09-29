@@ -53,12 +53,13 @@ function stringToArray(str) {
 
 function validateBufferFromString(buffer, expectedValue, message)
 {
-  return assert_array_equals(new Uint8Array(buffer), stringToArray(expectedValue), message);
+  return assert_array_equals(new Uint8Array(buffer !== undefined ? buffer : []), stringToArray(expectedValue), message);
 }
 
 function validateStreamFromString(reader, expectedValue, retrievedArrayBuffer) {
   return reader.read().then(function(data) {
     if (!data.done) {
+      assert_true(data.value instanceof Uint8Array, "Fetch ReadableStream chunks should be Uint8Array");
       var newBuffer;
       if (retrievedArrayBuffer) {
         newBuffer =  new ArrayBuffer(data.value.length + retrievedArrayBuffer.length);
@@ -70,5 +71,13 @@ function validateStreamFromString(reader, expectedValue, retrievedArrayBuffer) {
       return validateStreamFromString(reader, expectedValue, newBuffer);
     }
     validateBufferFromString(retrievedArrayBuffer, expectedValue, "Retrieve and verify stream");
+  });
+}
+
+// From streams tests
+function delay(milliseconds)
+{
+  return new Promise(function(resolve) {
+    step_timeout(resolve, milliseconds);
   });
 }

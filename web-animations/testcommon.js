@@ -8,21 +8,42 @@ policies and contribution forms [3].
 [3] http://www.w3.org/2004/10/27-testcases
  */
 
-"use strict";
+'use strict';
+
 var MS_PER_SEC = 1000;
+
+// The recommended minimum precision to use for time values[1].
+//
+// [1] https://w3c.github.io/web-animations/#precision-of-time-values
+var TIME_PRECISION = 0.0005; // ms
+
+// Allow implementations to substitute an alternative method for comparing
+// times based on their precision requirements.
+if (!window.assert_times_equal) {
+  window.assert_times_equal = function(actual, expected, description) {
+    assert_approx_equals(actual, expected, TIME_PRECISION, description);
+  }
+}
 
 // creates div element, appends it to the document body and
 // removes the created element during test cleanup
 function createDiv(test, doc) {
+  return createElement(test, 'div', doc);
+}
+
+// creates element of given tagName, appends it to the document body and
+// removes the created element during test cleanup
+// if tagName is null or undefined, returns div element
+function createElement(test, tagName, doc) {
   if (!doc) {
     doc = document;
   }
-  var div = doc.createElement('div');
-  doc.body.appendChild(div);
+  var element = doc.createElement(tagName || 'div');
+  doc.body.appendChild(element);
   test.add_cleanup(function() {
-    div.remove();
+    element.remove();
   });
-  return div;
+  return element;
 }
 
 // Creates a style element with the specified rules, appends it to the document

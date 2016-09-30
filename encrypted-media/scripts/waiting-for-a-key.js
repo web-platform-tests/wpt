@@ -37,20 +37,18 @@ function runTest(config)
         // Use the message handler for non clearkey drm
         var handler = config.messageHandler || null;
 
+        // Override timeout() to use custom message instead of default
+        // message "Test timed out"
         test.timeout = function () {
             var message = 'timeout. message = ' + debugMessage
               + ', encrypted: ' + debugEncryptedEventFired
               + ', waitingforkey: ' + debugWaitingForKeyEventFired
               + ', timeupdate count: ' + debugTimeUpdateEventCount;
-            // It seems there is a bug in testharness: According to the function name and testharness
-            // docs: " it is possible to use test.force_timeout() in place of assert_unreached(),
-            // to immediately fail the test but with a status of TIMEOUT. ", but it doesn't fail the test
-            // immediately. If this will be fixed, then nothing after force_timeout will be executed.
-            // Need to check this again once the bug is fixed
-            test.force_timeout();
-            test.timeout_id = null;
-            test.set_status(test.TIMEOUT, message);
-            test.done();
+
+            this.timeout_id = null;
+            this.set_status(this.TIMEOUT, message);
+            this.phase = this.phases.HAS_RESULT;
+            this.done();
         };
 
         return navigator.requestMediaKeySystemAccess(keysystem, [configuration]).then(function (access) {
@@ -90,7 +88,7 @@ function runTest(config)
             // generateRequest() will cause a 'message' event to
             // occur specifying the keyId that is needed
             // Add the key needed to decrypt.
-            return wait_for_message_event(mediaKeySession, handler, test);
+            return wait_for_message_event(mediaKeySession, handler);
         }).then(function () {
             // Video should start playing now that it can decrypt the
             // streams, so wait until a little bit of the video has
@@ -98,7 +96,7 @@ function runTest(config)
             debugMessage = 'wait_for_timeupdate_event()';
             return wait_for_timeupdate_event(video);
         }).catch(function (error) {
-            assert_unreached('Error: '+error.name);
+            assert_unreached('Error: ' + error.name);
         });
 
         // Typical test duration is 6 seconds on release builds
@@ -152,23 +150,16 @@ function runTest(config)
     };
 
     // We need to wait for the message even if for non clearkey DRMs.
-    function wait_for_message_event(mediaKeySession, handler, test)
+    function wait_for_message_event(mediaKeySession, handler)
     {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             mediaKeySession.addEventListener('message', function listener(e) {
                 assert_equals(e.target, mediaKeySession);
                 assert_equals(e.type, 'message');
                 video.removeEventListener('message', listener);
-                return handler(e.messageType, e.message)
-                  .then(function (response) {
-                      return e.target.update(response)
-                  })
-                  .then(function () {
-                      resolve();
-                  })
-                  .catch(function (error) {
-                      forceTestFailureFromPromise(test, error);
-                  })
+                return handler(e.messageType, e.message).then(function (response) {
+                    return e.target.update(response)
+                }).then(resolve, reject);
             });
         });
     }

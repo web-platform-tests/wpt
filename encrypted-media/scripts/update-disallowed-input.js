@@ -8,19 +8,6 @@ function runTest(config)
         var keySystem = config.keysystem;
         var mediaKeySession;
 
-        function createFromPattern(pattern, count)
-        {
-            var result = '';
-            while (count > 1) {
-                if (count & 1) {
-                    result += pattern;
-                }
-                count >>= 1;
-                pattern += pattern;
-            }
-            return result + pattern;
-        }
-
         function createReallyLongJWKSet()
         {
             // This is just a standard JWKSet with a lot of
@@ -31,7 +18,7 @@ function runTest(config)
                        +     '"k":"MDEyMzQ1Njc4OTAxMjM0NQ",'
                        +     '"kid":"MDEyMzQ1Njc4OTAxMjM0NQ"'
                        + '}]';
-            return jwkSet + createFromPattern(',"test":"unknown"', 4000) + '}';
+            return jwkSet + ',"test":"unknown"'.repeat(4000) + '}';
         }
 
         return navigator.requestMediaKeySystemAccess(keySystem, getSimpleConfiguration()).then(function(access) {

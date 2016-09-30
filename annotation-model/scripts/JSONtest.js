@@ -514,7 +514,6 @@ JSONtest.prototype = {
 
         if (testAction === 'continue') {
           // a previous test told us to not run this test; skip it
-          // console.log("SKIPPED: " + assert.title);
           // test(function() { }, "SKIPPED: " + assert.title);
           // start an actual sub-test
           var valid = validate(content) ;

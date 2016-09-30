@@ -18,7 +18,7 @@ function runTest(config) {
         }).then(function (messageEvent) {
             messageEventFired = true;
             return messageEvent.target.update(invalidLicense);
-        }).then(function (messageEvent) {
+        }).then(function () {
             assert_unreached('Error: update() should fail because of an invalid license.');
         }).catch(function (error) {
             if(messageEventFired) {

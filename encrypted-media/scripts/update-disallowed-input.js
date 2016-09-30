@@ -50,9 +50,9 @@ function runTest(config)
             var jwkSetArray = stringToUint8Array(jwkSet);
             return mediaKeySession.update(jwkSetArray);
         }).then(function () {
-            assert_unreached('Error: update() with a response longer than 64Kb characters should fail');
+            assert_unreached('update() with a response longer than 64Kb succeed');
         }).catch(function (error) {
             assert_equals(error.name, 'InvalidAccessError');
         });
-    }, 'update() with response longer than 64Kb characters.');
+    }, 'update() with invalid response (longer than 64Kb characters) should fail.');
 }

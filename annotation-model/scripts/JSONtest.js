@@ -512,11 +512,10 @@ JSONtest.prototype = {
           return ;
         }
 
-        if (testAction !== 'continue') {
+        if (testAction === 'continue') {
           // a previous test told us to not run this test; skip it
-          console.log("SKIPPED: " + assert.title);
+          // console.log("SKIPPED: " + assert.title);
           // test(function() { }, "SKIPPED: " + assert.title);
-        } else {
           // start an actual sub-test
           var valid = validate(content) ;
 

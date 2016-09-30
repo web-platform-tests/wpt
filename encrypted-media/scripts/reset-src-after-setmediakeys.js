@@ -39,10 +39,10 @@ function runTest(config)
         };
 
         // Create a MediaKeys object and assign it to video.
-        return navigator.requestMediaKeySystemAccess(keysystem, [configuration]).then(step_func(function (access) {
+        return navigator.requestMediaKeySystemAccess(keysystem, [configuration]).then(test.step_func(function (access) {
             assert_equals(access.keySystem, keysystem);
             return access.createMediaKeys();
-        }).then(function (result) {
+        })).then(function (result) {
             mediaKeys = result;
             assert_not_equals(mediaKeys, null);
             return video.setMediaKeys(mediaKeys);
@@ -55,7 +55,7 @@ function runTest(config)
             video.src = URL.createObjectURL(mediaSource);
         }).catch(function (error) {
             forceTestFailureFromPromise(test, error);
-        }));
+        });
 
     }, 'Reset src after setMediaKeys().');
 }

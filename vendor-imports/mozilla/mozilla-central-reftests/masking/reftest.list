@@ -104,3 +104,5 @@ default-preferences
 == mask-opacity-1a.html mask-opacity-1-ref.html
 == mask-opacity-1b.html mask-opacity-1-ref.html
 == mask-opacity-1c.html mask-opacity-1-ref.html
+
+== clip-path-mix-blend-mode-1.html clip-path-mix-blend-mode-1-ref.html

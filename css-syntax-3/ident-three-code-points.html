@@ -1,0 +1,114 @@
+<!doctype html>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<link rel='stylesheet' href='/resources/testharness.css'>
+<link rel='stylesheet' href='../base.css' />
+
+<link rel="author" title="Greg Whitworth" href="gwhit@microsoft.com" />
+<link rel="help" href="https://drafts.csswg.org/css-syntax/#would-start-an-identifier" />
+<style>
+    main div {
+      background-color:red;
+    }
+
+    #1 {
+      background-color:green;
+    }
+
+    #-2 {
+      background-color:green;
+    }
+
+    #--3 {
+      background-color:green;
+    }
+
+    #---4 {
+      background-color:green;
+    }
+
+    #a {
+      background-color:green;
+    }
+
+    #-b {
+      background-color:green;
+    }
+
+    #--c {
+      background-color:green;
+    }
+
+    #---d {
+      background-color:green;
+    }
+</style>
+<body>
+    <main>
+        <div id="1" class="item" name="one">test1</div>
+        <div id="-2" class="item" name="two">test2</div>
+        <div id="--3" class="item" name="three">test3</div>
+        <div id="---4" class="item" name="four">test4</div>
+
+        <div id="a" class="item" name="five">test A</div>
+        <div id="-b" class="item" name="six">test B</div>
+        <div id="--c" class="item" name="seven">test C</div>
+        <div id="---d" class="item" name="eight">test D</div>
+    </main>
+
+    <script>
+        var items = document.getElementsByClassName('item');
+
+        generate_tests(assert_equals, [
+            [
+                // One
+                items[0].getAttribute('name') + " should be red",
+                window.getComputedStyle(document.getElementsByClassName('item')[0]).getPropertyValue('background-color'),
+                "rgb(255, 0, 0)"
+            ],
+            [
+                // Two
+                items[1].getAttribute('name') + " should be red",
+                window.getComputedStyle(document.getElementsByClassName('item')[1]).getPropertyValue('background-color'),
+                "rgb(255, 0, 0)"
+            ],
+            [
+                // Three
+                items[2].getAttribute('name') + " should be green",
+                window.getComputedStyle(document.getElementsByClassName('item')[2]).getPropertyValue('background-color'),
+                "rgb(0, 128, 0)"
+            ],
+            [
+                // Four
+                items[3].getAttribute('name') + " should be red",
+                window.getComputedStyle(document.getElementsByClassName('item')[3]).getPropertyValue('background-color'),
+                "rgb(255, 0, 0)"
+            ],
+            [
+                // Five
+                items[4].getAttribute('name') + " should be green",
+                window.getComputedStyle(document.getElementsByClassName('item')[4]).getPropertyValue('background-color'),
+                "rgb(0, 128, 0)"
+            ],
+            [
+                // Six
+                items[5].getAttribute('name') + " should be green",
+                window.getComputedStyle(document.getElementsByClassName('item')[5]).getPropertyValue('background-color'),
+                "rgb(0, 128, 0)"
+            ],
+            [
+                // Seven
+                items[6].getAttribute('name') + " should be green",
+                window.getComputedStyle(document.getElementsByClassName('item')[6]).getPropertyValue('background-color'),
+                "rgb(0, 128, 0)"
+            ],
+            [
+                // Eight
+                items[7].getAttribute('name') + " should be red",
+                window.getComputedStyle(document.getElementsByClassName('item')[7]).getPropertyValue('background-color'),
+                "rgb(255, 0, 0)"
+            ]
+        ]);
+    </script>
+</body>
+</html>

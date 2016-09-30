@@ -48,8 +48,7 @@ function MessageHandler( keysystem, content, sessionType ) {
         if (this._drmconfig && this._drmconfig.certificate) {
             this.servercertificate = stringToUint8Array(atob(this._drmconfig.certificate));
         }
-    }
-    catch(e) {
+    } catch(e) {
         return null;
     }
 }

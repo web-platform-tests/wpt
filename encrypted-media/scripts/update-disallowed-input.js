@@ -1,17 +1,20 @@
-function runTest(config) {
-// This test passes |response| to update() as a JSON Web Key Set.
-// CDMs other than Clear Key won't expect |response| in this format.
-    async_test(function(test)
-    {
+function runTest(config)
+{
+    // This test passes |response| to update() as a JSON Web Key Set.
+    // CDMs other than Clear Key won't expect |response| in this format.
+    promise_test(function(test) {
         var initDataType;
         var initData;
         var keySystem = config.keysystem;
         var mediaKeySession;
 
-        function repeat(pattern, count) {
+        function createFromPattern(pattern, count)
+        {
             var result = '';
             while (count > 1) {
-                if (count & 1) result += pattern;
+                if (count & 1) {
+                    result += pattern;
+                }
                 count >>= 1;
                 pattern += pattern;
             }
@@ -28,30 +31,28 @@ function runTest(config) {
                        +     '"k":"MDEyMzQ1Njc4OTAxMjM0NQ",'
                        +     '"kid":"MDEyMzQ1Njc4OTAxMjM0NQ"'
                        + '}]';
-            return jwkSet + repeat(',"test":"unknown"', 4000) + '}';
+            return jwkSet + createFromPattern(',"test":"unknown"', 4000) + '}';
         }
 
-        function processMessage(event)
-        {
-            var jwkSet = createReallyLongJWKSet();
-            assert_greater_than(jwkSet.length, 65536);
-            var jwkSetArray = stringToUint8Array(jwkSet);
-            mediaKeySession.update(jwkSetArray).then(function() {
-                forceTestFailureFromPromise(test, 'Error: update() succeeded');
-            }, function(error) {
-                assert_equals(error.name, 'InvalidAccessError');
-                test.done();
-            });
-        }
-
-        navigator.requestMediaKeySystemAccess(keySystem, getSimpleConfiguration()).then(function(access) {
+        return navigator.requestMediaKeySystemAccess(keySystem, getSimpleConfiguration()).then(function(access) {
             initDataType = access.getConfiguration().initDataTypes[0];
             initData = getInitData(initDataType);
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             mediaKeySession = mediaKeys.createSession();
-            waitForEventAndRunStep('message', mediaKeySession, processMessage, test);
-            return mediaKeySession.generateRequest(initDataType, initData);
-        })
-    }, 'update() with response longer than 64Kb characters.');
+            var eventWatcher = new EventWatcher(test, mediaKeySession, ['message']);
+            var promise = eventWatcher.wait_for('message');
+            mediaKeySession.generateRequest(initDataType, initData);
+            return promise;
+        }).then(function () {
+            var jwkSet = createReallyLongJWKSet();
+            assert_greater_than(jwkSet.length, 65536);
+            var jwkSetArray = stringToUint8Array(jwkSet);
+            return mediaKeySession.update(jwkSetArray);
+        }).then(function () {
+            assert_unreached('update() with a response longer than 64Kb succeed');
+        }).catch(function (error) {
+            assert_equals(error.name, 'InvalidAccessError');
+        });
+    }, 'update() with invalid response (longer than 64Kb characters) should fail.');
 }

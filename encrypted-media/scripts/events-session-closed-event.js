@@ -3,14 +3,14 @@ function runTest(config, qualifier)
     var testname = testnamePrefix(qualifier, config.keysystem) + ' test MediaKeySession closed event.';
 
     var configuration = {
-        initDataTypes: [ config.initDataType ],
-        audioCapabilities: [ {
+        initDataTypes: [config.initDataType],
+        audioCapabilities: [{
             contentType: config.audioType
-        } ],
-        videoCapabilities: [ {
+        }],
+        videoCapabilities: [{
             contentType: config.videoType
-        } ],
-        sessionTypes: [ 'temporary' ]
+        }],
+        sessionTypes: ['temporary']
     };
 
     promise_test(function (test) {
@@ -46,7 +46,7 @@ function runTest(config, qualifier)
         }).then(function (result) {
             assert_equals(result, undefined);
         }).catch(function(error) {
-            assert_unreached('Error: '+error.name);
+            assert_unreached('Error: ' + error.name);
         });
     }, testname);
 }

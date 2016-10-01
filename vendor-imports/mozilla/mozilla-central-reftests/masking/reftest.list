@@ -98,6 +98,8 @@
 == clip-path-viewBox-1c.html clip-path-geometryBox-1-ref.html
 == clip-path-geometryBox-2.html clip-path-geometryBox-2-ref.html
 
+== clip-path-localRef-1.html clip-path-localRef-1-ref.html
+
 default-preferences
 
 # mask with opacity test cases

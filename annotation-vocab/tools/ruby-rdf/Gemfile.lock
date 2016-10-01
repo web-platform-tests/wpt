@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/ruby-rdf/rdf.git
-  revision: a50598660492ed0d34cf7770129e2c63ff8fd298
+  revision: 2f54dd5cb62ac44f2df059f1cdd6aff2c8b713b4
   branch: develop
   specs:
     rdf (2.1.0)
@@ -14,7 +14,7 @@ GEM
     bcp47 (0.3.3)
       i18n
     builder (3.2.2)
-    byebug (9.0.5)
+    byebug (9.0.6)
     concurrent-ruby (1.0.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -72,9 +72,9 @@ GEM
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
-    oj (2.17.3)
+    oj (2.17.4)
     pkg-config (1.1.7)
-    rake (11.2.2)
+    rake (11.3.0)
     rdf-aggregate-repo (2.0.0)
       rdf (~> 2.0)
     rdf-isomorphic (2.0.0)
@@ -134,7 +134,7 @@ GEM
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
       rspec-mocks (~> 3.5.0)
-    rspec-core (3.5.3)
+    rspec-core (3.5.4)
       rspec-support (~> 3.5.0)
     rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -155,7 +155,7 @@ GEM
       rdf-xsd (~> 2.0)
       sparql-client (~> 2.0)
       sxp (~> 1.0)
-    sparql-client (2.0.1)
+    sparql-client (2.1.0)
       net-http-persistent (~> 2.9)
       rdf (~> 2.0)
     sxp (1.0.0)

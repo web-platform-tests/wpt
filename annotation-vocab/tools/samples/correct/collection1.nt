@@ -83,6 +83,7 @@ _:b11 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "tag1" .
 _:b11 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa#TextualBody> .
 _:b20 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://example.org/page6> .
 _:b20 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:b21 .
+_:b111 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa#HttpRequestState> .
 _:b111 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "Accept: application/xml" .
 _:b111 <http://www.w3.org/ns/oa#refinedBy> _:b112 .
 _:b70 <http://www.w3.org/ns/oa#hasSource> <http://example.org/map1> .
@@ -257,6 +258,7 @@ _:b85 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa
 <http://example.com/image1#xywh=100,100,300,300> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/dc/dcmitype/StillImage> .
 _:b81 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://example.org/anno33> .
 _:b81 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:b83 .
+_:b88 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa#HttpRequestState> .
 _:b88 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "Accept: application/pdf" .
 _:b57 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "/html/body/p[2]/table/tr[2]/td[3]/span" .
 _:b57 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa#XPathSelector> .
@@ -337,6 +339,7 @@ _:b45 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa
 <http://example.org/anno20> <http://www.w3.org/ns/oa#canonical> <urn:uuid:dbfb1861-0ecf-41ad-be94-a584e5c4f1df> .
 _:b44 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://example.org/anno21> .
 _:b44 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:b46 .
+_:b92 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa#HttpRequestState> .
 _:b92 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "Accept: application/pdf" .
 _:b92 <http://www.w3.org/ns/oa#refinedBy> _:b93 .
 <http://example.org/anno37> <http://www.w3.org/ns/oa#hasTarget> _:b95 .

@@ -48,6 +48,7 @@ describe "Web Annotation Vocab" do
   context "detects errors in incorrect examples" do
     INCORRECT.each do |file|
       it "#{file.split('/').last}" do
+        pending "Empty Documents are invalid" if file =~ /anno2.json|anno3.json/
         expect {RDF::Graph.load(file, validate: true, format: :jsonld, logger: false)}.to raise_error(RDF::ReaderError)
       end
     end

@@ -10,6 +10,7 @@ _:b10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa
 <http://example.org/comment1> <http://purl.org/dc/terms/creator> <http://example.org/user2> .
 <http://example.org/comment1> <http://purl.org/dc/elements/1.1/format> "audio/mpeg" .
 _:b7 <http://www.w3.org/ns/oa#refinedBy> _:b8 .
+_:b7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa#HttpRequestState> .
 _:b7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "Accept: application/xml" .
 _:b3 <http://purl.org/dc/elements/1.1/language> "en" .
 _:b3 <http://www.w3.org/ns/oa#hasPurpose> <http://www.w3.org/ns/oa#describing> .

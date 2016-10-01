@@ -1,3 +1,4 @@
+_:b2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/oa#HttpRequestState> .
 _:b2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "Accept: application/pdf" .
 _:b2 <http://www.w3.org/ns/oa#refinedBy> _:b3 .
 _:b0 <http://www.w3.org/ns/oa#hasSource> <http://example.org/ebook1> .

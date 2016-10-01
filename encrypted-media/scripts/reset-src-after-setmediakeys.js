@@ -42,14 +42,14 @@ function runTest(config)
         return navigator.requestMediaKeySystemAccess(keysystem, [configuration]).then(test.step_func(function (access) {
             assert_equals(access.keySystem, keysystem);
             return access.createMediaKeys();
-        })).then(function (result) {
+        })).then(test.step_func(function (result) {
             mediaKeys = result;
             assert_not_equals(mediaKeys, null);
             return video.setMediaKeys(mediaKeys);
-        }).then(function (result) {
+        })).then(test.step_func(function () {
             assert_equals(video.mediaKeys, mediaKeys);
             return testmediasource(config);
-        }).then(function (source) {
+        })).then(function (source) {
             waitForEventAndRunStep('encrypted', video, onEncrypted, test);
             mediaSource = source;
             video.src = URL.createObjectURL(mediaSource);

@@ -103,5 +103,5 @@ class Session(object):
         """
         if exclude is None:
             exclude = []
-        wins = [w for w in self.client.window_handles if w not in exclude]
+        wins = [w for w in self.client.handles if w not in exclude]
         return set(wins)

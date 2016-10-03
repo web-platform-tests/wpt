@@ -77,7 +77,8 @@ class Window(object):
     @property
     @command
     def size(self):
-        return self.session.send_command("GET", "window/size")
+        resp = self.session.send_command("GET", "window/size")
+        return (resp["width"], resp["height"])
 
     @size.setter
     @command

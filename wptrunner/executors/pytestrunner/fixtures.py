@@ -5,6 +5,9 @@
 import pytest
 import webdriver
 
+import contextlib
+import httplib
+
 
 """pytest fixtures for use in Python-based WPT tests.
 
@@ -105,3 +108,29 @@ class Session(object):
             exclude = []
         wins = [w for w in self.client.handles if w not in exclude]
         return set(wins)
+
+
+class HTTPRequest(object):
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+
+    def head(self, path):
+        return self._request("HEAD", path)
+
+    def get(self, path):
+        return self._request("GET", path)
+
+    @contextlib.contextmanager
+    def _request(self, method, path):
+        conn = httplib.HTTPConnection(self.host, self.port)
+        try:
+            conn.request(method, path)
+            yield conn.getresponse()
+        finally:
+            conn.close()
+
+
+@pytest.fixture(scope="module")
+def http(session):
+    return HTTPRequest(session.transport.host, session.transport.port)

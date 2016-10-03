@@ -160,8 +160,8 @@ class GeckoDriverServer(WebDriverServer):
         return [self.binary,
                 "--connect-existing",
                 "--marionette-port", str(self.marionette_port),
-                "--webdriver-host", self.host,
-                "--webdriver-port", str(self.port)]
+                "--host", self.host,
+                "--port", str(self.port)]
 
 
 class ServoDriverServer(WebDriverServer):

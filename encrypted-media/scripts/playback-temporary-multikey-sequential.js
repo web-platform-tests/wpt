@@ -14,24 +14,18 @@ function runTest(config,qualifier) {
                             sessionTypes: [ 'temporary' ] };
 
     async_test(function(test) {
-
         var _video = config.video,
             _mediaKeys,
             _mediaKeySessions = [],
             _mediaSource,
             _playbackStarted = false;
 
-        function dumpTimeRanges(ranges) {
-            for(var i=0; i < ranges.length; ++i) {
-                consoleWrite(ranges.start(i) + "-" + ranges.end(i) );
-            }
-        }
-
         function startNewSession() {
             assert_less_than( _mediaKeySessions.length, config.initData.length );
             var mediaKeySession = _mediaKeys.createSession( 'temporary' );
             waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
             _mediaKeySessions.push(mediaKeySession);
+            mediaKeySession.variantId = config.variantIds ? config.variantIds[ _mediaKeySessions.length - 1 ] : undefined;
             mediaKeySession.generateRequest(config.initDataType, config.initData[ _mediaKeySessions.length - 1 ]).catch(onFailure);
         }
 
@@ -40,53 +34,21 @@ function runTest(config,qualifier) {
         }
 
         function onMessage(event) {
-            consoleWrite("message");
-            config.messagehandler( event.messageType, event.message ).then(function(response) {
+            config.messagehandler( event.messageType, event.message, undefined, event.target.variantId ).then(function(response) {
                 return event.target.update(response);
-            }).then(function() {
-                dumpKeyStatuses(event.target.keyStatuses);
             }).catch(onFailure);
         }
 
-        function onEncrypted(event) {
-            consoleWrite("encrypted");
-        }
-
         function onWaitingForKey(event) {
-            consoleWrite("waitingforkey");
-        }
-
-        function onPlaying(event) {
-            consoleWrite("playing");
-            assert_equals( _mediaKeySessions.length, 1, "Playback should start with a single key / session" );
-
-            consoleWrite("videoelement buffered");
-            dumpTimeRanges(_video.buffered);
-            consoleWrite("source[0] buffered");
-            dumpTimeRanges(_mediaSource.sourceBuffers[ 0 ].buffered);
-            consoleWrite("source[1] buffered");
-            dumpTimeRanges(_mediaSource.sourceBuffers[ 1 ].buffered);
-        }
-
-        function onPause(event) {
-            consoleWrite("pause");
-        }
-
-        function onWaiting(event) {
-            consoleWrite("waiting");
-        }
-
-        function onStalled(event) {
-            consoleWrite("stalled");
-
-            // Fetch a new key each time the video stalls
             startNewSession();
         }
 
-        function onTimeupdate(event) {
-            consoleWrite("timeupdate: " + _video.currentTime);
+        function onPlaying(event) {
+            assert_equals( _mediaKeySessions.length, 1, "Playback should start with a single key / session" );
+        }
 
-            if (_video.currentTime > (config.duration || 6)) {
+        function onTimeupdate(event) {
+            if (_video.currentTime > config.duration) {
                 assert_equals(_mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content");
                 _video.pause();
                 test.done();
@@ -103,12 +65,8 @@ function runTest(config,qualifier) {
             // EVENT(onTimeUpdate) logs.
             _video.addEventListener('timeupdate', test.step_func(onTimeupdate), true);
 
-            waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
-            waitForEventAndRunStep('pause', _video, onPause, test);
-            waitForEventAndRunStep('waiting', _video, onWaiting, test);
-            waitForEventAndRunStep('stalled', _video, onStalled, test);
 
             startNewSession();
 

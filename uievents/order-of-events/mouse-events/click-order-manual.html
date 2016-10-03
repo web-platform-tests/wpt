@@ -7,7 +7,7 @@
     <meta name="flags" content="interact">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <script src="/resources/event_order.js"></script>
+    <script src="/uievents/resources/eventrecorder.js"></script>
   </head>
   <body>
     <ol>
@@ -19,56 +19,52 @@
 </body>
 <script>
 setup({explicit_timeout: true});
-var started = false;
-var events = [];
-var targets = [];
 
-function record(e) {
-  if (e.type == 'mousedown') {
-    started = true;
-  }
+function bubbles(e) {
   assert_true(e.bubbles);
-  if (!started) {
-    return;
-  }
-  events.push(e.type);
-  targets.push(e.target.id);
 }
 
 var relevantEvents = [
-  'mousedown',
-  'mouseup',
-  'mousemove',
-  'click',
-  'dblclick'
+  "mousedown",
+  "mouseup",
+  "mousemove",
+  "click",
+  "dblclick"
 ];
 
 window.onload = function () {
-  var blue = document.getElementById('blue');
+  var blue = document.getElementById("blue");
+  var inputs = [blue];
+  EventRecorder.configure({
+    objectMap: {
+      "blue": blue
+    }
+  });
 
-  for (var i = 0; i < relevantEvents.length; i++) {
-    blue.addEventListener(relevantEvents[i], record, false);
-  }
+  EventRecorder.addEventListenersForNodes(relevantEvents, inputs, bubbles);
+  var expected = [
+    {type: "mousemove", target: "blue", optional: true},
+    {type: "mousedown", target: "blue"},
+    {type: "mousemove", target: "blue", optional: true},
+    {type: "mouseup", target: "blue"},
+    {type: "click", target: "blue"},
+    {type: "mousemove", target: "blue"},
+    {type: "mousedown", target: "blue"},
+    {type: "mousemove", target: "blue", optional: true},
+    {type: "mouseup", target: "blue"},
+    {type: "click", target: "blue"},
+    {type: "dblclick", target: "blue"},
+    {type: "mousemove", target: "blue", optional: true}];
 
-  var eventOrder = ['mousedown', 'mousemove', 'mouseup', 'click',
-    'mousemove', 'mousedown', 'mousemove', 'mouseup', 'click', 'dblclick',
-    'mousemove'];
-  var frequency = ['1', '*', '1', '1',
-    '*', '1', '*', '1', '1', '1', '*'];
-  var targetOrder = ['blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue',
-    'blue', 'blue', 'blue', 'blue',];
   async_test(function(t) {
-    document.getElementById('done').addEventListener('click', function () {
-      finish();
+    document.getElementById("done").addEventListener("click", function () {
       t.step(function () {
-        assert_true(
-          checkOrder(events, targets, eventOrder, targetOrder, frequency),
-          'Click-related events should fire in the correct order'
-        );
+        assert_true(EventRecorder.checkRecords(expected));
         t.done();
       });
     }, false);
-  }, 'Click-related events should fire in the correct order');
+  }, "Click-related events should fire in the correct order");
+  EventRecorder.start();
 };
     </script>
 </html>

@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>Focus-related events should fire in the correct order</title>
-  <link rel="author" title="Chris Rebert" href="http://chrisrebert.com">
   <link rel="help" href="https://w3c.github.io/uievents/#events-focusevent-event-order">
   <meta name="flags" content="interact">
   <script src="/resources/testharness.js"></script>
@@ -13,29 +12,27 @@
 
 <body>
   <ol>
-    <li>Click into the first text input.</li>
-    <li>Click into the second text input.</li>
+    <li>Click into the text input.</li>
+    <li>Click just below the text input.</li>
+    <li>Click into the text input again.</li>
     <li>Click the "Done" button.</li>
   </ol>
-  <input type="text" id="a" value="First">
-  <br>
-  <input type="text" id="b" value="Second">
-  <br>
+  <div id="a" tabindex="1" style="width:400px; height:300px">
+    <br /><br /><br />
+    <input type="text", id="b"></div>
+  </div>
   <button type="button" id="done">Done</button>
 </body>
 
 <script>
 setup({explicit_timeout: true});
 function stopPropagation(e) {
-  if (event.type == "focusin" || event.type == "focusout")
-    assert_true(event.bubbles);
   e.stopPropagation();
 }
 var relevantEvents = [
   "focus",
   "blur",
   "focusin",
-  "mousemove",
   "focusout"
 ];
 window.onload = function () {
@@ -52,14 +49,17 @@ window.onload = function () {
 
   EventRecorder.addEventListenersForNodes(relevantEvents, inputs, stopPropagation);
   var expected = [
+  {type: "focusin", target: "b"},
+  {type: "focus", target: "b"},
+  {type: "focusout", target: "b"},
   {type: "focusin", target: "a"},
+  {type: "blur", target: "b"},
   {type: "focus", target: "a"},
   {type: "focusout", target: "a"},
   {type: "focusin", target: "b"},
   {type: "blur", target: "a"},
   {type: "focus", target: "b"},
   {type: "focusout", target: "b"},
-  {type: "focusin", target: "a"},
   {type: "blur", target: "b"}];
 
   async_test(function(t) {

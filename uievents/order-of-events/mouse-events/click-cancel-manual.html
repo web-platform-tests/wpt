@@ -20,19 +20,19 @@
 setup({explicit_timeout: true});
 
 window.onload = function () {
-  var box = document.getElementById('checkbox');
+  var box = document.getElementById("checkbox");
   box.addEventListener("click", function(event) {
     event.preventDefault();
   })
 
   async_test(function(t) {
-    document.getElementById('done').addEventListener('mouseover', function () {
+    document.getElementById("done").addEventListener("mouseover", function () {
       t.step(function () {
         assert_false(box.checked);
         t.done();
       });
     }, false);
-  }, 'Default event is canceled if the click event is canceled');
+  }, "Default event is canceled if the click event is canceled");
 };
     </script>
 </html>

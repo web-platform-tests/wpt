@@ -88,6 +88,18 @@ class Window(object):
 
     @property
     @command
+    def position(self):
+        resp = self.session.send_command("GET", "window/position")
+        return (resp["x"], resp["y"])
+
+    @position.setter
+    @command
+    def position(self, (x, y)):
+        body = {"x": x, "y": y}
+        self.session.send_command("POST", "window/position", body)
+
+    @property
+    @command
     def maximize(self):
         return self.session.send_command("POST", "window/maximize")
 

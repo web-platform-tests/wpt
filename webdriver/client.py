@@ -81,11 +81,9 @@ class Window(object):
 
     @size.setter
     @command
-    def size(self, (height, width)):
-        body = {"width": width,
-                "height": height}
-
-        return self.session.send_command("POST", "window/size", body)
+    def size(self, (width, height)):
+        body = {"width": width, "height": height}
+        self.session.send_command("POST", "window/size", body)
 
     @property
     @command

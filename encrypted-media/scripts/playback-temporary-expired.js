@@ -43,7 +43,7 @@ function runTest(config,qualifier) {
             assert_equals(event.type, 'message');
 
             assert_in_array(event.messageType, ['license-request', 'individualization-request']);
-            
+
             var expiration = Date.now().valueOf();
             config.messagehandler(event.messageType, event.message, expiration).then(function(response) {
                 return event.target.update(response);

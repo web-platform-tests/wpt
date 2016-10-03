@@ -134,6 +134,30 @@ class Cookies(object):
         self.session.send_command("POST", "cookie/%s" % name, {}, key="value")
 
 
+class UserPrompt(object):
+    def __init__(self, session):
+        self.session = session
+
+    @command
+    def dismiss(self):
+        self.session.send_command("POST", "alert/dismiss")
+
+    @command
+    def accept(self):
+        self.session.send_command("POST", "alert/accept")
+
+    @property
+    @command
+    def text(self):
+        return self.session.send_command("GET", "alert/text", key="value")
+
+    @text.setter
+    @command
+    def text(self, value):
+        body = {"value": list(value)}
+        self.session.send_command("POST", "alert/text", body=body)
+
+
 class Session(object):
     def __init__(self, host, port, url_prefix="/", desired_capabilities=None,
                  required_capabilities=None, timeout=transport.HTTP_TIMEOUT,
@@ -153,6 +177,7 @@ class Session(object):
         self.timeouts = Timeouts(self)
         self.window = Window(self)
         self.find = Find(self)
+        self.alert = UserPrompt(self)
 
     def __enter__(self):
         self.start()

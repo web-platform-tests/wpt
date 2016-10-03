@@ -9,7 +9,6 @@ cache:
 
 env:
   - TOXENV="{py27,pypy}-base"
-  - TOXENV="{py27,pypy}-b2g"
   - TOXENV="{py27,pypy}-chrome"
   - TOXENV="{py27,pypy}-firefox"
   - TOXENV="{py27,pypy}-servo"

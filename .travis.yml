@@ -8,16 +8,11 @@ cache:
     - $HOME/.cache/pip
 
 env:
-  - TOXENV=py27-base
-  - TOXENV=py27-b2g
-  - TOXENV=py27-chrome
-  - TOXENV=py27-firefox
-  - TOXENV=py27-servo
-  - TOXENV=pypy-base
-  - TOXENV=pypy-b2g
-  - TOXENV=pypy-chrome
-  - TOXENV=pypy-firefox
-  - TOXENV=pypy-servo
+  - TOXENV="{py27,pypy}-base"
+  - TOXENV="{py27,pypy}-b2g"
+  - TOXENV="{py27,pypy}-chrome"
+  - TOXENV="{py27,pypy}-firefox"
+  - TOXENV="{py27,pypy}-servo"
 
 install:
   - pip install -U tox

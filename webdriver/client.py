@@ -151,6 +151,10 @@ class Session(object):
         self.extension = None
         self.extension_cls = extension
 
+        self.timeouts = Timeouts(self)
+        self.window = Window(self)
+        self.find = Find(self)
+
     def __enter__(self):
         self.start()
         return self
@@ -178,9 +182,6 @@ class Session(object):
         resp = self.transport.send("POST", "session", body=body)
         self.session_id = resp["sessionId"]
 
-        self.timeouts = Timeouts(self)
-        self.window = Window(self)
-        self.find = Find(self)
         if self.extension_cls:
             self.extension = self.extension_cls(self)
 

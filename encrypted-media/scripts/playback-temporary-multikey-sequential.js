@@ -8,10 +8,10 @@ function runTest(config,qualifier) {
                                     + /video\/([^;]*)/.exec(config.videoType)[1]
                                     + ', multiple keys, sequential';
 
-    var configuration = {   initDataTypes: [ config.initDataType ],
-                            audioCapabilities: [ { contentType: config.audioType } ],
-                            videoCapabilities: [ { contentType: config.videoType } ],
-                            sessionTypes: [ 'temporary' ] };
+    var configuration = {   initDataTypes: [config.initDataType],
+                            audioCapabilities: [{contentType: config.audioType}],
+                            videoCapabilities: [{contentType: config.videoType}],
+                            sessionTypes: ['temporary'] };
 
     async_test(function(test) {
         var _video = config.video,
@@ -21,12 +21,12 @@ function runTest(config,qualifier) {
             _playbackStarted = false;
 
         function startNewSession() {
-            assert_less_than( _mediaKeySessions.length, config.initData.length );
-            var mediaKeySession = _mediaKeys.createSession( 'temporary' );
+            assert_less_than(_mediaKeySessions.length, config.initData.length);
+            var mediaKeySession = _mediaKeys.createSession('temporary');
             waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
             _mediaKeySessions.push(mediaKeySession);
-            mediaKeySession.variantId = config.variantIds ? config.variantIds[ _mediaKeySessions.length - 1 ] : undefined;
-            mediaKeySession.generateRequest(config.initDataType, config.initData[ _mediaKeySessions.length - 1 ]).catch(onFailure);
+            mediaKeySession.variantId = config.variantIds ? config.variantIds[_mediaKeySessions.length - 1] : undefined;
+            mediaKeySession.generateRequest(config.initDataType, config.initData[_mediaKeySessions.length - 1]).catch(onFailure);
         }
 
         function onFailure(error) {
@@ -34,7 +34,7 @@ function runTest(config,qualifier) {
         }
 
         function onMessage(event) {
-            config.messagehandler( event.messageType, event.message, undefined, event.target.variantId ).then(function(response) {
+            config.messagehandler(event.messageType, event.message, undefined, event.target.variantId).then(function(response) {
                 return event.target.update(response);
             }).catch(onFailure);
         }
@@ -44,7 +44,7 @@ function runTest(config,qualifier) {
         }
 
         function onPlaying(event) {
-            assert_equals( _mediaKeySessions.length, 1, "Playback should start with a single key / session" );
+            assert_equals(_mediaKeySessions.length, 1, "Playback should start with a single key / session");
         }
 
         function onTimeupdate(event) {
@@ -55,7 +55,7 @@ function runTest(config,qualifier) {
             }
         }
 
-        navigator.requestMediaKeySystemAccess(config.keysystem, [ configuration ]).then(function(access) {
+        navigator.requestMediaKeySystemAccess(config.keysystem, [configuration]).then(function(access) {
             return access.createMediaKeys();
         }).then(function(mediaKeys) {
             _mediaKeys = mediaKeys;

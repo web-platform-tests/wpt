@@ -179,7 +179,7 @@ function arrayBufferAsString(buffer)
 function dumpKeyStatuses(keyStatuses)
 {
     var userAgent = navigator.userAgent.toLowerCase();
-    if ( userAgent.indexOf('edge') === -1 ) {
+    if (userAgent.indexOf('edge') === -1) {
         consoleWrite("for (var entry of keyStatuses)");
         for (var entry of keyStatuses) {
             consoleWrite(arrayBufferAsString(entry[0]) + ": " + entry[1]);

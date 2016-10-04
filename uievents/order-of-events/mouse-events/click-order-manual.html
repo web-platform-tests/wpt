@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Click-related events should fire in the correct order</title>
+    <link rel="help" href="https://w3c.github.io/uievents/#events-clickevent-event-order">
+    <meta name="flags" content="interact">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/event_order.js"></script>
+  </head>
+  <body>
+    <ol>
+      <li>Double-click into the blue area.</li>
+      <li>Click the "Done" button.</li>
+    </ol>
+    <div id="blue" style="width:400px; height:300px; background-color: blue;"></div>
+    <button type="button" id="done">Done</button>
+</body>
+<script>
+setup({explicit_timeout: true});
+var started = false;
+var events = [];
+var targets = [];
+
+function record(e) {
+  if (e.type == 'mousedown') {
+    started = true;
+  }
+  assert_true(e.bubbles);
+  if (!started) {
+    return;
+  }
+  events.push(e.type);
+  targets.push(e.target.id);
+}
+
+var relevantEvents = [
+  'mousedown',
+  'mouseup',
+  'mousemove',
+  'click',
+  'dblclick'
+];
+
+window.onload = function () {
+  var blue = document.getElementById('blue');
+
+  for (var i = 0; i < relevantEvents.length; i++) {
+    blue.addEventListener(relevantEvents[i], record, false);
+  }
+
+  var eventOrder = ['mousedown', 'mousemove', 'mouseup', 'click',
+    'mousemove', 'mousedown', 'mousemove', 'mouseup', 'click', 'dblclick',
+    'mousemove'];
+  var frequency = ['1', '*', '1', '1',
+    '*', '1', '*', '1', '1', '1', '*'];
+  var targetOrder = ['blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue',
+    'blue', 'blue', 'blue', 'blue',];
+  async_test(function(t) {
+    document.getElementById('done').addEventListener('click', function () {
+      finish();
+      t.step(function () {
+        assert_true(
+          checkOrder(events, targets, eventOrder, targetOrder, frequency),
+          'Click-related events should fire in the correct order'
+        );
+        t.done();
+      });
+    }, false);
+  }, 'Click-related events should fire in the correct order');
+};
+    </script>
+</html>

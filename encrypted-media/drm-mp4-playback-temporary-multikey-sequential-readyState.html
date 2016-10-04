@@ -36,7 +36,7 @@
     <script>
         var keysystem = getSupportedKeySystem(),
             contentitem = content['mp4-multikey-sequential'],
-            handler = new MessageHandler( keysystem, contentitem ),
+            handler = new MessageHandler(keysystem, contentitem),
             initdatas = getProprietaryInitDatas(contentitem),
             config = {  video:              document.getElementById('videoelement'),
                         keysystem:          keysystem,

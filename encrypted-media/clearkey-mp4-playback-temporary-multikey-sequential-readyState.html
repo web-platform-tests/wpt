@@ -35,7 +35,7 @@
 
     <script>
         var contentitem = content['mp4-multikey-sequential'],
-            handler = new MessageHandler( 'org.w3.clearkey', contentitem ),
+            handler = new MessageHandler('org.w3.clearkey', contentitem),
             config = {  video:              document.getElementById('videoelement'),
                         keysystem:          'org.w3.clearkey',
                         messagehandler:     handler.messagehandler,
@@ -44,7 +44,7 @@
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
-                        initData:           getMultikeyInitDatas(contentitem,'keyids'),
+                        initData:           getMultikeyInitDatas(contentitem, 'keyids'),
                         duration:           5,
                         checkReadyState:    true
                      };

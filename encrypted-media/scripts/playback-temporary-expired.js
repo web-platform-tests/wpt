@@ -49,10 +49,10 @@ function runTest(config,qualifier) {
                 return event.target.update(response);
             }).then(test.step_func(function(){
                 assert_approx_equals(event.target.expiration, expiration, 2000, "expiration attribute should equal provided expiration time");
-                test.step_timeout(test.step_func(function() {
+                test.step_timeout(function() {
                     _video.play();
-                    test.step_timeout(test.step_func(function() { test.done(); }), 2000);
-                }), 5000);
+                    test.step_timeout(function() { test.done(); }, 2000);
+                }, 5000);
             })).catch(onFailure);
         }
 

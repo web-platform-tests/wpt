@@ -159,7 +159,7 @@ MessageHandler = function(keysystem, content, sessionType) {
         this._requestConstructor = requestConstructors[this._drmconfig.servertype];
 
         this.messagehandler = keySystemWrappers[keysystem].bind(this, MessageHandler.prototype.messagehandler);
- 
+
         if (this._drmconfig && this._drmconfig.certificate) {
             this.servercertificate = stringToUint8Array(atob(this._drmconfig.certificate));
         }
@@ -169,7 +169,7 @@ MessageHandler = function(keysystem, content, sessionType) {
 }
 
 MessageHandler.prototype.messagehandler = function messagehandler(messageType, message, responseType, headers, params) {
- 
+
     var variantId = params ? params.variantId : undefined;
     var key;
     if( variantId ) {
@@ -179,11 +179,11 @@ MessageHandler.prototype.messagehandler = function messagehandler(messageType, m
     if (!key) {
         key = this._content.keys[0].key;
     }
- 
+
     var content = { assetId:    this._content.assetId,
                     variantId:  variantId,
                     key:        key };
- 
+
     return this._requestConstructor(this._drmconfig, this._sessionType, content, messageType, message, headers, params).then(function(request){
         return fetch(request.url, {
                         method:     'POST',
@@ -193,7 +193,7 @@ MessageHandler.prototype.messagehandler = function messagehandler(messageType, m
         if(fetchresponse.status !== 200) {
             throw fetchresponse;
         }
-    
+
         if(responseType === 'json') {
             return fetchresponse.json();
         } else if(responseType === 'arraybuffer') {

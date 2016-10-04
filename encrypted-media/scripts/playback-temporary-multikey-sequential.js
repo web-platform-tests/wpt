@@ -6,7 +6,8 @@ function runTest(config,qualifier) {
     var testname = testnamePrefix(qualifier, config.keysystem)
                                     + ', successful playback, temporary, '
                                     + /video\/([^;]*)/.exec(config.videoType)[1]
-                                    + ', multiple keys, sequential';
+                                    + ', multiple keys, sequential'
+                                    + (config.checkReadyState ? ', readyState' : '');
 
     var configuration = {   initDataTypes: [config.initDataType],
                             audioCapabilities: [{contentType: config.audioType}],
@@ -40,6 +41,9 @@ function runTest(config,qualifier) {
         }
 
         function onWaitingForKey(event) {
+            if (config.checkReadyState) {
+                assert_equals(_video.readyState, _video.HAVE_METADATA, "Video readyState should be HAVE_METADATA on watingforkey event");
+            }
             startNewSession();
         }
 

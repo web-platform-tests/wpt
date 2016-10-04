@@ -23,10 +23,10 @@ function runTest(config,qualifier) {
 
             assert_in_array(event.messageType, [ 'license-request', 'individualization-request' ] );
 
-            config.messagehandler(event.messageType, event.message, config.expiration).then(function(response) {
+            config.messagehandler(event.messageType, event.message, {expiration: config.expiration}).then(function(response) {
                 return event.target.update(response);
             }).then(test.step_func(function() {
-                assert_approx_equals(event.target.expiration, config.expiration, 2000, "expiration attribute should equal provided expiration time");
+                assert_approx_equals(event.target.expiration, config.expiration, 4000, "expiration attribute should equal provided expiration time");
                 test.done();
             })).catch(onFailure);
         }

@@ -34,7 +34,7 @@ function runTest(config,qualifier) {
         }
 
         function onMessage(event) {
-            config.messagehandler(event.messageType, event.message, undefined, event.target.variantId).then(function(response) {
+            config.messagehandler(event.messageType, event.message, {variantId: event.target.variantId}).then(function(response) {
                 return event.target.update(response);
             }).catch(onFailure);
         }

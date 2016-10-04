@@ -34,7 +34,7 @@
 
     <script>
         var contentitem = content['mp4-clear-encrypted'],
-            handler = new MessageHandler( 'org.w3.clearkey', contentitem ),
+            handler = new MessageHandler('org.w3.clearkey', contentitem),
             config = {  video:              document.getElementById('videoelement'),
                         keysystem:          'org.w3.clearkey',
                         messagehandler:     handler.messagehandler,
@@ -43,7 +43,7 @@
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
-                        initData:           getInitData(contentitem,'keyids'),
+                        initData:           getInitData(contentitem, 'keyids'),
                         duration:           4,
                         testcase:           'single key, clear then encrypted content' };
 

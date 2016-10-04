@@ -7,7 +7,7 @@ function runTest(config,qualifier) {
 
     var configuration = {   initDataTypes: [config.initDataType],
                             audioCapabilities: [{contentType: config.audioType}],
-                            videoCapabilities: [{ contentType: config.videoType}],
+                            videoCapabilities: [{contentType: config.videoType}],
                             sessionTypes: ['temporary'] };
 
     async_test(function(test) {
@@ -26,7 +26,7 @@ function runTest(config,qualifier) {
             assert_true(event instanceof window.MediaEncryptedEvent);
             assert_equals(event.type, 'encrypted');
 
-            // Only create the session for the firs encrypted event
+            // Only create the session for the first encrypted event
             if (_mediaKeySession !== undefined) return;
 
             var initDataType = config.initData ? config.initDataType : event.initDataType;
@@ -34,7 +34,7 @@ function runTest(config,qualifier) {
 
             _mediaKeySession = _mediaKeys.createSession('temporary');
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
-            _mediaKeySession.generateRequest( initDataType, initData ).catch(onFailure);
+            _mediaKeySession.generateRequest(initDataType, initData).catch(onFailure);
         }
 
         function onMessage(event) {
@@ -49,9 +49,9 @@ function runTest(config,qualifier) {
                 return event.target.update(response);
             }).then(test.step_func(function(){
                 assert_approx_equals(event.target.expiration, expiration, 2000, "expiration attribute should equal provided expiration time");
-                setTimeout(test.step_func(function() {
+                test.step_timeout(test.step_func(function() {
                     _video.play();
-                    setTimeout(test.step_func(function() { test.done(); }),2000);
+                    test.step_timeout(test.step_func(function() { test.done(); }), 2000);
                 }), 5000);
             })).catch(onFailure);
         }
@@ -64,7 +64,7 @@ function runTest(config,qualifier) {
 
         function onTimeupdate(event) {
             _video.pause();
-            assert_unreached( "Playback should not start with expired license" );
+            assert_unreached("Playback should not start with expired license");
         }
 
         navigator.requestMediaKeySystemAccess(config.keysystem, [configuration]).then(function(access) {

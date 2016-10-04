@@ -1,3 +1,4 @@
+(function(){
 // Expect utf8decoder and utf8decoder to be TextEncoder('utf-8') and TextDecoder('utf-8') respectively
 //
 // drmconfig format:
@@ -37,7 +38,115 @@ drmconfig = {
     } ]
 };
 
-function MessageHandler( keysystem, content, sessionType ) {
+
+var keySystemWrappers = {
+    // Key System wrappers map messages and pass to a handler, then map the response and return to caller
+    //
+    // function wrapper(handler, messageType, message, params)
+    //
+    // where:
+    //      Promise<response> handler(messageType, message, responseType, headers, params);
+    //
+
+    'com.widevine.alpha': function(handler, messageType, message, params) {
+        return handler.call(this, messageType, new Uint8Array(message), 'json', null, params).then(function(response){
+            return base64DecodeToUnit8Array(response.license);
+        });
+    },
+
+    'com.microsoft.playready': function(handler, messageType, message, params) {
+        var msg, xmlDoc;
+        var licenseRequest = null;
+        var headers = {};
+        var parser = new DOMParser();
+        var dataview = new Uint16Array(message);
+
+        msg = String.fromCharCode.apply(null, dataview);
+        xmlDoc = parser.parseFromString(msg, 'application/xml');
+
+        if (xmlDoc.getElementsByTagName('Challenge')[0]) {
+            var challenge = xmlDoc.getElementsByTagName('Challenge')[0].childNodes[0].nodeValue;
+            if (challenge) {
+                licenseRequest = atob(challenge);
+            }
+        }
+
+        var headerNameList = xmlDoc.getElementsByTagName('name');
+        var headerValueList = xmlDoc.getElementsByTagName('value');
+        for (var i = 0; i < headerNameList.length; i++) {
+            headers[headerNameList[i].childNodes[0].nodeValue] = headerValueList[i].childNodes[0].nodeValue;
+        }
+        // some versions of the PlayReady CDM return 'Content' instead of 'Content-Type',
+        // but the license server expects 'Content-Type', so we fix it up here.
+        if (headers.hasOwnProperty('Content')) {
+            headers['Content-Type'] = headers.Content;
+            delete headers.Content;
+        }
+
+        return handler.call(this, messageType, licenseRequest, 'arraybuffer', headers, params).catch(function(response){
+            throw String.fromCharCode.apply(null, new Uint16Array(response));
+        });
+    }
+};
+
+const requestConstructors = {
+    // Server request construction functions
+    //
+    // Promise<request> constructRequest(config, sessionType, content, messageType, message, params)
+    //
+    // request = { url: ..., headers: ..., body: ... }
+    //
+    // content = { assetId: ..., variantId: ..., key: ... }
+    // params = { expiration: ... }
+
+    'drmtoday': function(config, sessionType, content, messageType, message, headers, params) {
+        var optData = JSON.stringify( { merchant: config.merchant } );
+        var crt = {};
+        if ( messageType === 'license-request' ) {
+            crt = { assetId: content.assetId,
+                    outputProtection: { digital : false, analogue: false, enforce: false },
+                    storeLicense: ( sessionType === 'persistent-license' ) };
+
+            if ( !params || params.expiration === undefined ) {
+                crt.profile = { purchase: {} };
+            } else {
+                crt.profile = { rental: {   absoluteExpiration: (new Date(params.expiration)).toISOString(),
+                                            playDuration: 3600000 } };
+            }
+
+            if ( content.variantId !== undefined ) {
+                crt.variantId = content.variantId;
+            }
+        }
+
+        return JWT.encode( "HS256", { optData: optData, crt: JSON.stringify([crt]) }, config.secret ).then(function(jwt){
+            headers = headers || {};
+            headers['x-dt-auth-token'] = jwt;
+            return { url: config.serverURL, headers: headers, body: message };
+        });
+    },
+
+    'microsoft': function(config, sessionType, content, messageType, message, headers, params) {
+        var url = config.serverURL;
+        if ( messageType === 'license-request' ) {
+            url += "?";
+            if ( sessionType === 'temporary' || sessionType === 'persistent-usage-record' ) {
+                url += "UseSimpleNonPersistentLicense=1&";
+            }
+            if ( sessionType === 'persistent-usage-record' ) {
+                url += "SecureStop=1&";
+            }
+            url += "PlayEnablers=B621D91F-EDCC-4035-8D4B-DC71760D43E9&";    // disable output protection
+            url += "ContentKey=" + btoa(String.fromCharCode.apply(null, content.key));
+            return url;
+        }
+
+        // TODO: Include expiration time in URL
+        return Promise.resolve({url: url, headers: headers, body: message});
+    }
+};
+
+MessageHandler = function(keysystem, content, sessionType) {
     sessionType = sessionType || "temporary";
 
     this._keysystem = keysystem;
@@ -45,10 +154,12 @@ function MessageHandler( keysystem, content, sessionType ) {
     this._sessionType = sessionType;
     try {
         this._drmconfig = drmconfig[this._keysystem].filter(function (drmconfig) {
-            return drmconfig.sessionTypes === undefined || ( drmconfig.sessionTypes.indexOf(sessionType) !== -1 );
+            return drmconfig.sessionTypes === undefined || (drmconfig.sessionTypes.indexOf(sessionType) !== -1);
         })[0];
+        this._requestConstructor = requestConstructors[this._drmconfig.servertype];
 
-        this.messagehandler = MessageHandler.prototype.messagehandler.bind(this);
+        this.messagehandler = keySystemWrappers[keysystem].bind(this, MessageHandler.prototype.messagehandler);
+ 
         if (this._drmconfig && this._drmconfig.certificate) {
             this.servercertificate = stringToUint8Array(atob(this._drmconfig.certificate));
         }
@@ -57,209 +168,41 @@ function MessageHandler( keysystem, content, sessionType ) {
     }
 }
 
-MessageHandler.prototype.messagehandler = function messagehandler( messageType, message, expiration, variantId ) {
-
-    // For the DRM Today server, mapping between Key System messages and server protocol messages depends on
-    // the Key System, so we provide key-system-specific functions here to perform the mapping.
-    //
-    // For the Microsoft server, the mapping for PlayReady is the same as for the DRM Today server
-    //
-    const keySystems = {
-        'com.widevine.alpha': {
-            responseType: 'json',
-            getLicenseMessage: function(response) {
-                return base64DecodeToUnit8Array( response.license );
-            },
-            getErrorResponse: function(response) {
-                return response;
-            },
-            getLicenseRequestFromMessage: function(message) {
-                return new Uint8Array(message);
-            },
-            getRequestHeadersFromMessage: function(/*message*/) {
-                return null;
-            }
-        },
-        'com.microsoft.playready': {
-            responseType: 'arraybuffer',
-            getLicenseMessage: function(response) {
-                return response;
-            },
-            getErrorResponse: function(response) {
-                return String.fromCharCode.apply(null, new Uint16Array(response));
-            },
-            getLicenseRequestFromMessage: function(message) {
-                var msg,
-                    xmlDoc;
-                var licenseRequest = null;
-                var parser = new DOMParser();
-                var dataview = new Uint16Array(message);
-
-                msg = String.fromCharCode.apply(null, dataview);
-
-                xmlDoc = parser.parseFromString(msg, 'application/xml');
-
-                if (xmlDoc.getElementsByTagName('Challenge')[0]) {
-                    var Challenge = xmlDoc.getElementsByTagName('Challenge')[0].childNodes[0].nodeValue;
-                    if (Challenge) {
-                        licenseRequest = atob(Challenge);
-                    }
-                }
-                return licenseRequest;
-            },
-            getRequestHeadersFromMessage: function(message) {
-                var msg,
-                    xmlDoc;
-                var headers = {};
-                var parser = new DOMParser();
-                var dataview = new Uint16Array(message);
-
-                msg = String.fromCharCode.apply(null, dataview);
-                xmlDoc = parser.parseFromString(msg, 'application/xml');
-
-                var headerNameList = xmlDoc.getElementsByTagName('name');
-                var headerValueList = xmlDoc.getElementsByTagName('value');
-                for (var i = 0; i < headerNameList.length; i++) {
-                    headers[headerNameList[i].childNodes[0].nodeValue] = headerValueList[i].childNodes[0].nodeValue;
-                }
-                // some versions of the PlayReady CDM return 'Content' instead of 'Content-Type',
-                // but the license server expects 'Content-Type', so we fix it up here.
-                if (headers.hasOwnProperty('Content')) {
-                    headers['Content-Type'] = headers.Content;
-                    delete headers.Content;
-                }
-                return headers;
-            }
+MessageHandler.prototype.messagehandler = function messagehandler(messageType, message, responseType, headers, params) {
+ 
+    var variantId = params ? params.variantId : undefined;
+    var key;
+    if( variantId ) {
+        var keys = this._content.keys.filter(function(k){return k.variantId === variantId;});
+        if (keys[0]) key = keys[0].key;
+    }
+    if (!key) {
+        key = this._content.keys[0].key;
+    }
+ 
+    var content = { assetId:    this._content.assetId,
+                    variantId:  variantId,
+                    key:        key };
+ 
+    return this._requestConstructor(this._drmconfig, this._sessionType, content, messageType, message, headers, params).then(function(request){
+        return fetch(request.url, {
+                        method:     'POST',
+                        headers:    request.headers,
+                        body:       request.body    });
+    }).then(function(fetchresponse){
+        if(fetchresponse.status !== 200) {
+            throw fetchresponse;
         }
-    };
-
-    // License request parameters are communicated to the DRM Today and Microsoft servers in different ways,
-    // using a custom HTTP headers (DRM Today) and URL parameters (Microsoft).
-    const serverTypes = {
-        'drmtoday': {
-            constructLicenseRequestUrl : function( serverURL, sessionType, messageType, content ) {
-                return serverURL;
-            },
-            getCustomHeaders : function( drmconfig, sessionType, messageType, content, expiration, variantId ) {
-                var optData = JSON.stringify( { merchant: drmconfig.merchant } );
-                var crt = {};
-                if ( messageType === 'license-request' ) {
-                    crt = { assetId: content.assetId,
-                            outputProtection: { digital : false, analogue: false, enforce: false },
-                            storeLicense: ( sessionType === 'persistent-license' ) };
-
-                    if ( expiration === undefined ) {
-                        crt.profile = { purchase: {} };
-                    } else {
-                        crt.profile = { rental: {   absoluteExpiration: (new Date( expiration )).toISOString(),
-                                                    playDuration: 3600000 } };
-                    }
-
-                    if ( variantId !== undefined ) {
-                        crt.variantId = variantId;
-                    }
-                }
-
-                return JWT.encode( "HS256", { optData: optData, crt: JSON.stringify( [ crt ] ) }, drmconfig.secret ).then(function(jwt){
-                    return { "x-dt-auth-token" : jwt };
-                });
-            }
-        },
-        'microsoft': {
-            constructLicenseRequestUrl : function( serverURL, sessionType, messageType, content ) {
-                if ( messageType !== 'license-request' ) {
-                    return serverURL;
-                }
-
-                var url = serverURL + "?";
-                if ( sessionType === 'temporary' || sessionType === 'persistent-usage-record' ) {
-                    url += "UseSimpleNonPersistentLicense=1&";
-                }
-                if ( sessionType === 'persistent-usage-record' ) {
-                    url += "SecureStop=1&";
-                }
-                url += "PlayEnablers=B621D91F-EDCC-4035-8D4B-DC71760D43E9&";    // disable output protection
-                url += "ContentKey=" + btoa(String.fromCharCode.apply(null, content.keys[0].key));
-                return url;
-            },
-            getCustomHeaders : function() { return Promise.resolve({}); }
+    
+        if(responseType === 'json') {
+            return fetchresponse.json();
+        } else if(responseType === 'arraybuffer') {
+            return fetchresponse.arrayBuffer();
         }
-    };
+    });
+}
 
-    return new Promise(function(resolve, reject) {
-        var keysystemfns = keySystems[this._keysystem],
-            serverfns,
-            url = undefined,
-            requestheaders = {},
-            credentials = undefined;
-
-        if ( !this._drmconfig || !keysystemfns || !this._drmconfig.servertype || !serverTypes[this._drmconfig.servertype] ) {
-            reject('Unsupported Key System');
-            return;
-        }
-
-        serverfns = serverTypes[this._drmconfig.servertype];
-
-        if ( !this._drmconfig.serverURL ) {
-            reject('Undefined serverURL');
-            return;
-        }
-
-        url = serverfns.constructLicenseRequestUrl( this._drmconfig.serverURL, this._sessionType, messageType, this._content );
-
-        // Ensure valid license server URL
-        if (!url) {
-            reject('No license server URL specified!');
-            return;
-        }
-
-        // Set optional XMLHttpRequest headers from protection data and message
-        var updateHeaders = function(headers) {
-            var key;
-            if (headers) {
-                for (key in headers) {
-                    if ('authorization' === key.toLowerCase()) {
-                        credentials = 'include';
-                    }
-                    requestheaders[key] = headers[key];
-                }
-            }
-        };
-
-        serverfns.getCustomHeaders( this._drmconfig, this._sessionType, messageType, this._content, expiration, variantId ).then(function(customHeaders) {
-
-            updateHeaders( customHeaders );
-            updateHeaders( keysystemfns.getRequestHeadersFromMessage(message) );
-
-            // Set withCredentials property from server
-            if ( this._drmconfig.withCredentials ) {
-                credentials = 'include';
-            }
-
-            return fetch(url, {
-                method: 'POST',
-                headers: requestheaders,
-                credentials: credentials,
-                body: keysystemfns.getLicenseRequestFromMessage(message)
-            })
-        }.bind(this)).then(function(fetchresponse) {
-            if(fetchresponse.status !== 200) {
-                reject( this._keysystem + ' update, XHR status is "' + fetchresponse.statusText
-                            + '" (' + fetchresponse.status + '), expected to be 200. readyState is ' + fetchresponse.readyState + '.'
-                            + ' Response is ' + ((fetchresponse) ? keysystemfns.getErrorResponse(fetchresponse) : 'NONE' ));
-                return;
-            }
-
-            if(keysystemfns.responseType === 'json') {
-                return fetchresponse.json();
-            } else if(keysystemfns.responseType === 'arraybuffer') {
-                return fetchresponse.arrayBuffer();
-            }
-        }.bind( this )).then(function(response){
-            resolve(keysystemfns.getLicenseMessage(response));
-        }).catch(reject);
-    }.bind( this ));
-};
+})();
 
 (function() {
 

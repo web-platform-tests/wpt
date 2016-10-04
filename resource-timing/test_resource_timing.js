@@ -13,7 +13,8 @@ setup(function() {
             "entry": async_test("window.performance.getEntriesByName() and window.performance.getEntriesByNameType() return same data (" + type + ")"),
             "simple_attrs": async_test("PerformanceEntry has correct name, initiatorType, startTime, and duration (" + type + ")"),
             "timing_attrs": async_test("PerformanceEntry has correct order of timing attributes (" + type + ")"),
-            "network_attrs": async_test("PerformanceEntry has correct network transfer attributes (" + type + ")")
+            "network_attrs": async_test("PerformanceEntry has correct network transfer attributes (" + type + ")"),
+            "protocol": async_test("PerformanceEntry has correct protocol attribute (" + type + ")")
         };
     }
 });
@@ -45,7 +46,6 @@ onload = function()
     var type;
     var startTime;
     var element;
-    var transferSize;
     var encodedBodySize;
     var decodedBodySize;
     for (var i in initiatorTypes) {
@@ -60,14 +60,12 @@ onload = function()
         case "iframe":
             url = resolve("resources/resource_timing_test0.html");
             element.src = url;
-            transferSize = 352;
             encodedBodySize = 215;
             decodedBodySize = 215;
             break;
         case "img":
             url = resolve("resources/resource_timing_test0.png");
             element.src = url;
-            transferSize = 386;
             encodedBodySize = 249;
             decodedBodySize = 249;
             break;
@@ -75,7 +73,6 @@ onload = function()
             element.rel = "stylesheet";
             url = resolve("resources/resource_timing_test0.css");
             element.href = url;
-            transferSize = 179;
             encodedBodySize = 44;
             decodedBodySize = 44;
             break;
@@ -83,7 +80,6 @@ onload = function()
             element.type = "text/javascript";
             url = resolve("resources/resource_timing_test0.js");
             element.src = url;
-            transferSize = 276;
             encodedBodySize = 133;
             decodedBodySize = 133;
             break;
@@ -92,7 +88,6 @@ onload = function()
             url = resolve("resources/gzip_xml.py");
             xmlhttp.open('GET', url, true);
             xmlhttp.send();
-            transferSize = 274;
             encodedBodySize = 112;
             decodedBodySize = 125;
             break;
@@ -101,7 +96,6 @@ onload = function()
         expected_entry = {name:url,
                           startTime: startTime,
                           initiatorType: type,
-                          transferSize: transferSize,
                           encodedBodySize: encodedBodySize,
                           decodedBodySize: decodedBodySize
                          };
@@ -210,10 +204,19 @@ function resource_load(expected)
 
     t["network_attrs"].step(function test() {
         var actual = window.performance.getEntriesByName(expected.name)[0];
+        assert_equals(actual.encodedBodySize, expected.encodedBodySize, "encodedBodySize size");
+        assert_equals(actual.decodedBodySize, expected.decodedBodySize, "decodedBodySize size");
+
+        // Transfer size will vary from browser to browser based on default headers, etc. This
+        // test verifies that transferSize for uncached resources is greater than on-the-wire
+        // body size.
+        assert_greater_than(actual.transferSize, actual.encodedBodySize, "transferSize size");
+        this.done();
+    });
+
+    t["protocol"].step(function() {
+        var actual = window.performance.getEntriesByName(expected.name)[0];
         assert_equals(actual.nextHopProtocol, "http/1.1", "expected protocol");
-        assert_equals(actual.transferSize, expected.transferSize, "transferSize time");
-        assert_equals(actual.encodedBodySize, expected.encodedBodySize, "encodedBodySize time");
-        assert_equals(actual.decodedBodySize, expected.decodedBodySize, "decodedBodySize time");
         this.done();
     });
 

@@ -7,11 +7,14 @@
 //                      "certificate"           : <base64 encoded server certificate> } }
 //
 
+drmtodaysecret = Uint8Array.from( [144, 34, 109, 76, 134, 7, 97, 107, 98, 251, 140, 28, 98, 79, 153, 222, 231, 245, 154, 226, 193, 1, 213, 207, 152, 204, 144, 15, 13, 2, 37, 236] );
+
 drmconfig = {
     "com.widevine.alpha": [ {
         "serverURL": "https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
         "servertype" : "drmtoday",
         "merchant" : "w3c-eme-test",
+        "secret" : drmtodaysecret
     } ],
     "com.microsoft.playready": [ {
         "serverURL": "http://playready-testserver.azurewebsites.net/rightsmanager.asmx",
@@ -29,7 +32,8 @@ drmconfig = {
         "serverURL": "https://lic.staging.drmtoday.com/license-proxy-headerauth/drmtoday/RightsManager.asmx",
         "servertype" : "drmtoday",
         "sessionTypes" : [ "temporary", "persistent-usage-record", "persistent-license" ],
-        "merchant" : "w3c-eme-test"
+        "merchant" : "w3c-eme-test",
+        "secret" : drmtodaysecret
     } ]
 };
 
@@ -39,17 +43,21 @@ function MessageHandler( keysystem, content, sessionType ) {
     this._keysystem = keysystem;
     this._content = content;
     this._sessionType = sessionType;
-    this._drmconfig = drmconfig[ this._keysystem ].filter( function( drmconfig ) {
-        return drmconfig.sessionTypes === undefined || ( drmconfig.sessionTypes.indexOf( sessionType ) !== -1 );
-    } )[ 0 ];
+    try {
+        this._drmconfig = drmconfig[this._keysystem].filter(function (drmconfig) {
+            return drmconfig.sessionTypes === undefined || ( drmconfig.sessionTypes.indexOf(sessionType) !== -1 );
+        })[0];
 
-    this.messagehandler = MessageHandler.prototype.messagehandler.bind( this );
-    if ( this._drmconfig && this._drmconfig.certificate ) {
-        this.servercertificate = stringToUint8Array( atob( this._drmconfig.certificate ) );
+        this.messagehandler = MessageHandler.prototype.messagehandler.bind(this);
+        if (this._drmconfig && this._drmconfig.certificate) {
+            this.servercertificate = stringToUint8Array(atob(this._drmconfig.certificate));
+        }
+    } catch(e) {
+        return null;
     }
 }
 
-MessageHandler.prototype.messagehandler = function messagehandler( messageType, message) {
+MessageHandler.prototype.messagehandler = function messagehandler( messageType, message, expiration, variantId ) {
 
     // For the DRM Today server, mapping between Key System messages and server protocol messages depends on
     // the Key System, so we provide key-system-specific functions here to perform the mapping.
@@ -132,11 +140,29 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             constructLicenseRequestUrl : function( serverURL, sessionType, messageType, content ) {
                 return serverURL;
             },
-            getCustomHeaders : function( drmconfig, sessionType, messageType ) {
-                var customHeader = {    merchant: drmconfig.merchant,
-                                        userId: "purchase",
-                                        sessionId: "a0d0f0p" + ( ( sessionType === 'persistent-license' ) ? "1" : "0" ) };
-                return { "dt-custom-data" : btoa( JSON.stringify( customHeader ) ) };
+            getCustomHeaders : function( drmconfig, sessionType, messageType, content, expiration, variantId ) {
+                var optData = JSON.stringify( { merchant: drmconfig.merchant } );
+                var crt = {};
+                if ( messageType === 'license-request' ) {
+                    crt = { assetId: content.assetId,
+                            outputProtection: { digital : false, analogue: false, enforce: false },
+                            storeLicense: ( sessionType === 'persistent-license' ) };
+
+                    if ( expiration === undefined ) {
+                        crt.profile = { purchase: {} };
+                    } else {
+                        crt.profile = { rental: {   absoluteExpiration: (new Date( expiration )).toISOString(),
+                                                    playDuration: 3600000 } };
+                    }
+
+                    if ( variantId !== undefined ) {
+                        crt.variantId = variantId;
+                    }
+                }
+
+                return JWT.encode( "HS256", { optData: optData, crt: JSON.stringify( [ crt ] ) }, drmconfig.secret ).then(function(jwt){
+                    return { "x-dt-auth-token" : jwt };
+                });
             }
         },
         'microsoft': {
@@ -156,7 +182,7 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
                 url += "ContentKey=" + btoa(String.fromCharCode.apply(null, content.keys[0].key));
                 return url;
             },
-            getCustomHeaders : function() { return {}; }
+            getCustomHeaders : function() { return Promise.resolve({}); }
         }
     };
 
@@ -200,20 +226,23 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
             }
         };
 
-        updateHeaders(serverfns.getCustomHeaders( this._drmconfig, this._sessionType, messageType ) );
-        updateHeaders(keysystemfns.getRequestHeadersFromMessage(message));
+        serverfns.getCustomHeaders( this._drmconfig, this._sessionType, messageType, this._content, expiration, variantId ).then(function(customHeaders) {
 
-        // Set withCredentials property from server
-        if ( this._drmconfig.withCredentials ) {
-            credentials = 'include';
-        }
+            updateHeaders( customHeaders );
+            updateHeaders( keysystemfns.getRequestHeadersFromMessage(message) );
 
-        fetch(url, {
-            method: 'POST',
-            headers: requestheaders,
-            credentials: credentials,
-            body: keysystemfns.getLicenseRequestFromMessage(message)
-        }).then(function(fetchresponse) {
+            // Set withCredentials property from server
+            if ( this._drmconfig.withCredentials ) {
+                credentials = 'include';
+            }
+
+            return fetch(url, {
+                method: 'POST',
+                headers: requestheaders,
+                credentials: credentials,
+                body: keysystemfns.getLicenseRequestFromMessage(message)
+            })
+        }.bind(this)).then(function(fetchresponse) {
             if(fetchresponse.status !== 200) {
                 reject( this._keysystem + ' update, XHR status is "' + fetchresponse.statusText
                             + '" (' + fetchresponse.status + '), expected to be 200. readyState is ' + fetchresponse.readyState + '.'
@@ -231,3 +260,60 @@ MessageHandler.prototype.messagehandler = function messagehandler( messageType, 
         }).catch(reject);
     }.bind( this ));
 };
+
+(function() {
+
+    var subtlecrypto = window.crypto.subtle;
+
+    // Encoding / decoding utilities
+    function b64pad(b64)        { return b64+"==".substr(0,(b64.length%4)?(4-b64.length%4):0); }
+    function str2b64url(str)    { return btoa(str).replace(/=+$/g, '').replace(/\+/g, "-").replace(/\//g, "_"); }
+    function b64url2str(b64)    { return atob(b64pad(b64.replace(/\-/g, "+").replace(/\_/g, "/"))); }
+    function str2ab( str )      { return Uint8Array.from( str.split(''), function(s){return s.charCodeAt(0)} ); }
+    function ab2str( ab )       { return String.fromCharCode.apply(null, new Uint8Array(ab)); }
+
+    function jwt2webcrypto( alg ) {
+        if ( alg === "HS256" ) return { name: "HMAC", hash: "SHA-256", length: 256 };
+        else if ( alg === "HS384" ) return { name: "HMAC", hash: "SHA-384", length: 384 };
+        else if ( alg === "HS512" ) return { name: "HMAC", hash: "SHA-512", length: 512 };
+        else throw new Error( "Unrecognized JWT algorithm: " + alg );
+    }
+
+    JWT = {
+        encode: function encode( alg, claims, secret ) {
+            var algorithm = jwt2webcrypto( alg );
+            if ( secret.byteLength !== algorithm.length / 8 ) throw new Error( "Unexpected secret length: " + secret.byteLength );
+
+            if ( !claims.iat ) claims.iat = ( Date.now() / 1000 ) | 0;
+            if ( !claims.jti ) {
+                var nonce = new Uint8Array( 16 );
+                window.crypto.getRandomValues( nonce );
+                claims.jti = str2b64url( ab2str( nonce ) );
+            }
+
+            var header = { typ: "JWT", alg: alg };
+            var plaintext = str2b64url(JSON.stringify(header)) + '.' + str2b64url(JSON.stringify(claims));
+            return subtlecrypto.importKey( "raw", secret, algorithm, false, [ "sign" ] ).then( function( key ) {
+                return subtlecrypto.sign( algorithm, key, str2ab(plaintext) );
+            }).then(function(hmac){
+                return plaintext + '.' + str2b64url(ab2str(hmac));
+            });
+        },
+
+        decode: function decode( jwt, secret ) {
+            var jwtparts = jwt.split('.');
+            var header = JSON.parse( b64url2str( jwtparts[0] ) );
+            var claims = JSON.parse( b64url2str( jwtparts[1] ) );
+            var hmac = str2ab( b64url2str( jwtparts[2] ) );
+            var algorithm = jwt2webcrypto( header.alg );
+            if ( secret.byteLength !== algorithm.length / 8 ) throw new Error( "Unexpected secret length: " + secret.byteLength );
+
+            return subtlecrypto.importKey( "raw", secret, algorithm, false, [ "sign", "verify" ] ).then( function( key ) {
+                return subtlecrypto.verify( algorithm, key, hmac, str2ab( jwtparts[0] + '.' + jwtparts[1] ) );
+            }).then(function(success){
+                if ( !success ) throw new Error("Invalid signature");
+                return claims;
+            });
+        }
+    };
+})();

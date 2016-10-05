@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom Elements: attributeChangedCallback</title>
+<meta name="author" title="Ryosuke Niwa" href="mailto:rniwa@webkit.org">
+<meta name="assert" content="attributeChangedCallback must be enqueued whenever custom element's attribute is added, changed or removed">
+<link rel="help" href="https://w3c.github.io/webcomponents/spec/custom/#dfn-attribute-changed-callback">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<script>
+
+var argumentList = [];
+class MyCustomElement extends HTMLElement {
+    attributeChangedCallback(name, oldValue, newValue, namespace) {
+        argumentList.push({arguments: arguments, value: this.getAttributeNS(namespace, name)});
+    }
+}
+MyCustomElement.observedAttributes = ['title', 'id', 'r'];
+customElements.define('my-custom-element', MyCustomElement);
+
+test(function () {
+    var instance = document.createElement('my-custom-element');
+    argumentList = [];
+
+    instance.setAttribute('title', 'foo');
+    assert_equals(instance.getAttribute('title'), 'foo');
+    assert_equals(argumentList.length, 1);
+    assert_equals(argumentList[0].value, 'foo');
+    assert_array_equals(argumentList[0].arguments, ['title', null, 'foo', null]);
+
+    instance.removeAttribute('title');
+    assert_equals(instance.getAttribute('title'), null);
+    assert_equals(argumentList.length, 2);
+    assert_equals(argumentList[1].value, null);
+    assert_array_equals(argumentList[1].arguments, ['title', 'foo', null, null]);
+
+}, 'setAttribute and removeAttribute must enqueue and invoke attributeChangedCallback');
+
+test(function () {
+    var instance = document.createElement('my-custom-element');
+    argumentList = [];
+
+    instance.setAttributeNS('http://www.w3.org/2000/svg', 'title', 'hello');
+    assert_equals(instance.getAttribute('title'), 'hello');
+    assert_equals(argumentList.length, 1);
+    assert_equals(argumentList[0].value, 'hello');
+    assert_array_equals(argumentList[0].arguments, ['title', null, 'hello', 'http://www.w3.org/2000/svg']);
+
+    instance.removeAttributeNS('http://www.w3.org/2000/svg', 'title');
+    assert_equals(instance.getAttribute('title'), null);
+    assert_equals(argumentList.length, 2);
+    assert_equals(argumentList[1].value, null);
+    assert_array_equals(argumentList[1].arguments, ['title', 'hello', null, 'http://www.w3.org/2000/svg']);
+
+}, 'setAttributeNS and removeAttributeNS must enqueue and invoke attributeChangedCallback');
+
+test(function () {
+    var instance = document.createElement('my-custom-element');
+    argumentList = [];
+
+    var attr = document.createAttribute('id');
+    attr.value = 'bar';
+    instance.setAttributeNode(attr);
+
+    assert_equals(instance.getAttribute('id'), 'bar');
+    assert_equals(argumentList.length, 1);
+    assert_equals(argumentList[0].value, 'bar');
+    assert_array_equals(argumentList[0].arguments, ['id', null, 'bar', null]);
+
+    instance.removeAttributeNode(attr);
+    assert_equals(instance.getAttribute('id'), null);
+    assert_equals(argumentList.length, 2);
+    assert_equals(argumentList[1].value, null);
+    assert_array_equals(argumentList[1].arguments, ['id', 'bar', null, null]);
+
+}, 'setAttributeNode and removeAttributeNS must enqueue and invoke attributeChangedCallback');
+
+test(function () {
+    var instance = document.createElement('my-custom-element');
+    argumentList = [];
+
+    var attr = document.createAttributeNS('http://www.w3.org/2000/svg', 'r');
+    attr.value = '100';
+    instance.setAttributeNode(attr);
+
+    assert_equals(instance.getAttribute('r'), '100');
+    assert_equals(argumentList.length, 1);
+    assert_equals(argumentList[0].value, '100');
+    assert_array_equals(argumentList[0].arguments, ['r', null, '100', 'http://www.w3.org/2000/svg']);
+
+    instance.removeAttributeNode(attr);
+    assert_equals(instance.getAttribute('r'), null);
+    assert_equals(argumentList.length, 2);
+    assert_equals(argumentList[1].value, null);
+    assert_array_equals(argumentList[1].arguments, ['r', '100', null, 'http://www.w3.org/2000/svg']);
+}, 'setAttributeNode and removeAttributeNS must enqueue and invoke attributeChangedCallback');
+
+test(function () {
+    var callsToOld = [];
+    var callsToNew = [];
+    class CustomElement extends HTMLElement { }
+    CustomElement.prototype.attributeChangedCallback = function () {
+        callsToOld.push(Array.from(arguments));
+    }
+    CustomElement.observedAttributes = ['title'];
+    customElements.define('element-with-mutated-attribute-changed-callback', CustomElement);
+    CustomElement.prototype.attributeChangedCallback = function () {
+        callsToNew.push(Array.from(arguments));
+    }
+
+    var instance = document.createElement('element-with-mutated-attribute-changed-callback');
+    instance.setAttribute('title', 'hi');
+    assert_equals(instance.getAttribute('title'), 'hi');
+    assert_array_equals(callsToNew, []);
+    assert_equals(callsToOld.length, 1);
+    assert_array_equals(callsToOld[0], ['title', null, 'hi', null]);
+}, 'Mutating attributeChangedCallback after calling customElements.define must not affect the callback being invoked');
+
+test(function () {
+    var calls = [];
+    class CustomElement extends HTMLElement {
+        attributeChangedCallback() {
+            calls.push(Array.from(arguments));
+        }
+    }
+    CustomElement.observedAttributes = ['title'];
+    customElements.define('element-not-observing-id-attribute', CustomElement);
+
+    var instance = document.createElement('element-not-observing-id-attribute');
+    instance.setAttribute('title', 'hi');
+    assert_equals(calls.length, 1);
+    assert_array_equals(calls[0], ['title', null, 'hi', null]);
+    instance.setAttribute('id', 'some');
+    assert_equals(calls.length, 1);
+}, 'attributedChangedCallback must not be invoked when the observed attributes does not contain the attribute.');
+
+test(function () {
+    var calls = [];
+    class CustomElement extends HTMLElement { }
+    CustomElement.prototype.attributeChangedCallback = function () {
+        calls.push(Array.from(arguments));
+    }
+    CustomElement.observedAttributes = ['title', 'lang'];
+    customElements.define('element-with-mutated-observed-attributes', CustomElement);
+    CustomElement.observedAttributes = ['title', 'id'];
+
+    var instance = document.createElement('element-with-mutated-observed-attributes');
+    instance.setAttribute('title', 'hi');
+    assert_equals(calls.length, 1);
+    assert_array_equals(calls[0], ['title', null, 'hi', null]);
+
+    instance.setAttribute('id', 'some');
+    assert_equals(calls.length, 1);
+
+    instance.setAttribute('lang', 'en');
+    assert_equals(calls.length, 2);
+    assert_array_equals(calls[0], ['title', null, 'hi', null]);
+    assert_array_equals(calls[1], ['lang', null, 'en', null]);
+}, 'Mutating observedAttributes after calling customElements.define must not affect the set of attributes for which attributedChangedCallback is invoked');
+
+test(function () {
+    var calls = [];
+    class CustomElement extends HTMLElement { }
+    CustomElement.prototype.attributeChangedCallback = function () {
+        calls.push(Array.from(arguments));
+    }
+    CustomElement.observedAttributes = { [Symbol.iterator]: function *() { yield 'lang'; yield 'style'; } };
+    customElements.define('element-with-generator-observed-attributes', CustomElement);
+
+    var instance = document.createElement('element-with-generator-observed-attributes');
+    instance.setAttribute('lang', 'en');
+    assert_equals(calls.length, 1);
+    assert_array_equals(calls[0], ['lang', null, 'en', null]);
+
+    instance.setAttribute('lang', 'ja');
+    assert_equals(calls.length, 2);
+    assert_array_equals(calls[1], ['lang', 'en', 'ja', null]);
+
+    instance.setAttribute('title', 'hello');
+    assert_equals(calls.length, 2);
+
+    instance.setAttribute('style', 'font-size: 2rem');
+    assert_equals(calls.length, 3);
+    assert_array_equals(calls[2], ['style', null, 'font-size: 2rem', null]);
+}, 'attributedChangedCallback must be enqueued for attributes specified in a non-Array iterable observedAttributes');
+
+</script>
+</body>
+</html>

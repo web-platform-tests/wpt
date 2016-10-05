@@ -23,28 +23,9 @@ testAttributeMutator(function (element, name, value) {
 
 // FIXME: Add a test for normalize()
 
-test(function () {
-    var element = defineNewCustomElement();
-    var instance = document.createElement(element.name);
-    instance.setAttribute('id', 'foo');
-    assert_array_equals(element.log().types(), ['constructed', 'attributeChanged']);
-    var newInstance = instance.cloneNode(false);
-    var logEntries = element.log();
-    assert_array_equals(logEntries.types(), ['constructed', 'attributeChanged']);
-    assert_equals(logEntries.log().name, 'id');
-    assert_equals(logEntries.log().oldValue, null);
-    assert_equals(logEntries.log().newValue, 'foo');
-}, 'cloneNode on Node must enqueue a attributeChanged reaction when cloning an element with an attribute');
-
-test(function () {
-    var element = defineNewCustomElement();
-    var instance = document.createElement(element.name);
-    instance.setAttribute('lang', 'en');
-    assert_array_equals(element.log().types(), ['constructed']);
-    var newInstance = instance.cloneNode(false);
-    assert_array_equals(element.log().types(), ['constructed']);
-}, 'cloneNode on Node must not enqueue a attributeChanged reaction when cloning an element with an attribute');
-
+testCloner(function (customElement) {
+    return customElement.cloneNode(false);
+}, 'cloneNode on Node');
 
 testNodeConnector(function (newContainer, customElement) {
     newContainer.insertBefore(customElement, newContainer.firstChild);

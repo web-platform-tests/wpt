@@ -57,7 +57,7 @@ class SourceFile(object):
 
         self.type_flag = None
         if "-" in self.name:
-            self.type_flag = self.name.rsplit("-", 1)[1]
+            self.type_flag = self.name.rsplit("-", 1)[1].split(".")[0]
 
         self.meta_flags = self.name.split(".")[1:]
 

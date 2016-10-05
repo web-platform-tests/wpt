@@ -36,6 +36,8 @@ def test_name_is_manual():
     manual_tests = [
         "html/test-manual.html",
         "html/test-manual.xhtml",
+        "html/test-manual.https.html",
+        "html/test-manual.https.xhtml"
     ]
 
     for rel_path in manual_tests:

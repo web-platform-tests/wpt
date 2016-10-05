@@ -3,8 +3,7 @@
   <head>
     <meta charset=utf-8>
     <title>
-        Encrypted Media Extensions - Clear Key, MP4, check Mediakeys.createSession() error syntax and MediaKeys attribute
-        syntax
+        Encrypted Media Extensions - Clear Key, MP4, test MediaKeys attribute, setServerCertificate and setServerCertificate exception syntax.
     </title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
@@ -19,7 +18,7 @@
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/syntax-mediakeys-createsession.js></script>
+    <script src=/encrypted-media/scripts/syntax-mediakeys.js></script>
 
   </head>
   <body>
@@ -29,13 +28,13 @@
     </div>
     <script>
         var contentItem = content['mp4-basic'],
-                config = {
-                    keysystem: 'org.w3.clearkey',
-                    content: contentItem,
-                    initDataType: 'keyids',
-                    initData: getInitData(contentItem, 'keyids'),
-                    audioType: contentItem.audio.type,
-                    videoType: contentItem.video.type
+            config = {
+                keysystem: 'org.w3.clearkey',
+                content: contentItem,
+                initDataType: 'keyids',
+                initData: getInitData(contentItem, 'keyids'),
+                audioType: contentItem.audio.type,
+                videoType: contentItem.video.type
                 };
         runTest(config);
     </script>

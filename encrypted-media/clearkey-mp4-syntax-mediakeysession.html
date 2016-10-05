@@ -2,7 +2,9 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <title>Encrypted Media Extensions - Syntax Tests</title>
+    <title>
+        Encrypted Media Extensions - Clear Key, MP4, test MediaKeySession attribute and function syntax
+    </title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -13,13 +15,10 @@
     <script src=/encrypted-media/util/utils.js></script>
     <script src=/encrypted-media/util/utf8.js></script>
     <script src=/encrypted-media/util/fetch.js></script>
-    <!-- Message handler for DRM servers -->
-    <script src=/encrypted-media/util/drm-messagehandler.js></script>
-
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/syntax.js></script>
+    <script src=/encrypted-media/scripts/syntax-mediakeysession.js></script>
 
   </head>
   <body>
@@ -28,21 +27,15 @@
       <video id="videoelement" width="200px"></video>
     </div>
     <script>
-        var keysystem = getSupportedKeySystem();
         var contentItem = content['mp4-basic'],
-            handler = new MessageHandler(keysystem, contentItem),
             config = {
-                video: document.getElementById('videoelement'),
-                keysystem: keysystem,
+                keysystem: 'org.w3.clearkey',
                 content: contentItem,
-                initData: stringToUint8Array(atob(contentItem.keys[0].initData)),
-                handler: handler,
-                initDataType: contentItem.initDataType,
+                initDataType: 'keyids',
+                initData: getInitData(contentItem, 'keyids'),
                 audioType: contentItem.audio.type,
-                videoType: contentItem.video.type,
-                audioPath: contentItem.audio.path,
-                videoPath: contentItem.video.path,
-            };
+                videoType: contentItem.video.type
+                };
         runTest(config);
     </script>
   </body>

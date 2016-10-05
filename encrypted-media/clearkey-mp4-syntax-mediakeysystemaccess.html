@@ -2,7 +2,9 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <title>Encrypted Media Extensions - Clearkey, MP4, check Mediakeys.setServerCertificate() error syntax</title>
+    <title>
+        Encrypted Media Extensions - Clear Key, MP4, check navigator.requestmediakeysystemaccess exception and MediaKeySystemAccess attribute syntax
+    </title>
     <link rel="help" href="https://w3c.github.io/encrypted-media/">
 
     <!-- Web Platform Test Harness scripts -->
@@ -16,7 +18,7 @@
     <!-- Content metadata -->
     <script src=/encrypted-media/content/content-metadata.js></script>
     <!-- The script for this specific test -->
-    <script src=/encrypted-media/scripts/syntax-mediakeys-setservercertificate.js></script>
+    <script src=/encrypted-media/scripts/syntax-mediakeysystemaccess.js></script>
 
   </head>
   <body>
@@ -33,7 +35,7 @@
                 initData: getInitData(contentItem, 'keyids'),
                 audioType: contentItem.audio.type,
                 videoType: contentItem.video.type
-            };
+                };
         runTest(config);
     </script>
   </body>

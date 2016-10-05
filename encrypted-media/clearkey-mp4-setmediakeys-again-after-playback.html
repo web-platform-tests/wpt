@@ -34,8 +34,8 @@
 
     <script>
         var contentitem = content['mp4-basic'],
-            handler = new MessageHandler( 'org.w3.clearkey', contentitem );
-        getSupportedContent( 'org.w3.clearkey' ).then( function( contents ) {
+            handler = new MessageHandler('org.w3.clearkey', contentitem);
+        getSupportedContent('org.w3.clearkey').then( function(contents) {
             runTest( {  video:              document.getElementById('videoelement'),
                         keysystem:          'org.w3.clearkey',
                         messagehandler:     handler.messagehandler,
@@ -45,7 +45,7 @@
                         audioType:          contentitem.audio.type,
                         videoType:          contentitem.video.type,
                         initDataType:       'keyids',
-                        initData:           getInitData(contentitem,'keyids')
+                        initData:           getInitData(contentitem, 'keyids')
                      } );
         } );
     </script>

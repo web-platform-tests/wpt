@@ -1,14 +1,14 @@
 function runTest(config, qualifier) {
-    var testname = testnamePrefix( qualifier, config.keysystem )
+    var testname = testnamePrefix(qualifier, config.keysystem)
                                      + ', setmediakeys again after resetting src';
 
-    var configuration = getSimpleConfigurationForContent( config.content );
+    var configuration = getSimpleConfigurationForContent(config.content);
 
-    if ( config.initDataType && config.initData ) {
-        configuration.initDataTypes = [ config.initDataType ];
+    if (config.initDataType && config.initData) {
+        configuration.initDataTypes = [config.initDataType];
     }
 
-    async_test (function (test) {
+    async_test(function(test) {
         var _video = config.video,
             _access,
             _mediaKeys,
@@ -20,8 +20,8 @@ function runTest(config, qualifier) {
         }
 
         function onMessage(event) {
-            config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                _mediaKeySession.update( response ).catch(onFailure).then(function() {
+            config.messagehandler(event.messageType, event.message).then(function(response) {
+                _mediaKeySession.update(response).catch(onFailure).then(function() {
                     _video.play();
                 });
             });

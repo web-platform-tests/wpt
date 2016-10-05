@@ -1,6 +1,6 @@
 function runTest(config)
 {
-    async_test(function (test) {
+    async_test(function(test) {
         var mediaKeys;
         var mediaSource;
         var encryptedEventIndex = 0;
@@ -19,7 +19,7 @@ function runTest(config)
 
         assert_not_equals(video, null);
 
-        var onEncrypted = function (event) {
+        var onEncrypted = function(event) {
             ++encryptedEventIndex;
             assert_equals(video.mediaKeys, mediaKeys);
 

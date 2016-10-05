@@ -1,8 +1,8 @@
 function runTest(config, qualifier) {
-    var testname = testnamePrefix( qualifier, config.keysystem )
+    var testname = testnamePrefix(qualifier, config.keysystem)
                                  + ', setMediaKeys to multiple video elements';
 
-    var configuration = getSimpleConfigurationForContent( config.content );
+    var configuration = getSimpleConfigurationForContent(config.content);
 
     if ( config.initDataType && config.initData ) {
         configuration.initDataTypes = [ config.initDataType ];

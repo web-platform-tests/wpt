@@ -1,10 +1,10 @@
 function runTest(config, qualifier) {
-    var testname = testnamePrefix( qualifier, config.keysystem )
+    var testname = testnamePrefix(qualifier, config.keysystem)
                                              + ', setmediakeys at same time';
 
-    var configuration = getSimpleConfigurationForContent( config.content );
+    var configuration = getSimpleConfigurationForContent(config.content);
 
-    async_test (function (test) {
+    async_test(function(test) {
         var _video = config.video,
             _access,
             _mediaKeys1,
@@ -52,7 +52,7 @@ function runTest(config, qualifier) {
             ]);
         }).then(function(results) {
             var sum = results.reduce((a, b) => a + b, 0);
-            assert_true(sum === 1 || sum === 5);
+            assert_in_array(sum,[1,5]);
             test.done();
         }).catch(onFailure);
     }, testname);

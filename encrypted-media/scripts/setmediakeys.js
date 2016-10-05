@@ -27,10 +27,10 @@ function runTest(config, qualifier) {
             // setMediaKeys should fail when setting to the wrong type of object - Date.
             return _video.setMediaKeys(new Date());
         }).then(function (result) {
-            assert_unreached('setMediaKeys did not fail when setting to Date()');
+            assert_unreached('setMediaKeys should fail when setting to wrong kind of object (Date)');
         }, function(error) {
-            // TypeError.
-            assert_equals(error.name, 'TypeError');
+            // The error should be TypeError.
+            assert_equals(error.name, 'setMediaKeys should return a TypeError when setting to wrong kind of object (Date)');
             return navigator.requestMediaKeySystemAccess(config.keysystem, [configuration]);
         }).then(function(access) {
             assert_equals(access.keySystem, config.keysystem)

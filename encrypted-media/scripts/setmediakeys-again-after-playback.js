@@ -1,14 +1,14 @@
 function runTest(config, qualifier) {
-    var testname = testnamePrefix( qualifier, config.keysystem )
+    var testname = testnamePrefix(qualifier, config.keysystem)
                                     + ', setmediakeys again after playback';
 
-    var configuration = getSimpleConfigurationForContent( config.content );
+    var configuration = getSimpleConfigurationForContent(config.content);
 
-    if ( config.initDataType && config.initData ) {
-        configuration.initDataTypes = [ config.initDataType ];
+    if (config.initDataType && config.initData) {
+        configuration.initDataTypes = [config.initDataType];
     }
 
-    async_test (function (test) {
+    async_test(function(test) {
         var _video = config.video,
             _access,
             _mediaKeys,
@@ -20,8 +20,8 @@ function runTest(config, qualifier) {
         }
 
         function onMessage(event) {
-            config.messagehandler( event.messageType, event.message ).then( function( response ) {
-                _mediaKeySession.update( response ).catch(onFailure).then(function() {
+            config.messagehandler(event.messageType, event.message).then( function(response) {
+                _mediaKeySession.update(response).catch(onFailure).then(function() {
                     _video.play();
                 });
             });
@@ -62,18 +62,18 @@ function runTest(config, qualifier) {
         }).then(function(result) {
             _mediaKeys = result;
             return waitForEvent('playing', _video);
-        }).then(function(result) {
+        }).then(test.step_func(function(result) {
             assert_false(_video.ended);
             return _video.setMediaKeys(_mediaKeys);
-        }).then(function() {
+        })).then(function() {
             // Able to change MediaKeys while playing.
             // This is not required to fail.
             _video.src='';
             test.done();
-        }, function(error) {
-            assert_equals(error.name, 'InvalidStateError');
+        }, test.step_func(function(error) {
+            assert_in_array(error.name, ['InvalidStateError','NotSupportedError']);
             _video.src='';
             test.done();
-        }).catch(onFailure);
+        })).catch(onFailure);
     }, testname);
 }

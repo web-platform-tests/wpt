@@ -36,7 +36,7 @@
         var keysystem = getSupportedKeySystem(),
             encryptedcontentitem = content['mp4-basic'],
             clearcontentitem = content['mp4-clear'],
-            handler = new MessageHandler( keysystem, encryptedcontentitem ),
+            handler = new MessageHandler(keysystem, encryptedcontentitem),
             configEncrypted = { video:              document.getElementById('videoelement'),
                                 keysystem:          keysystem,
                                 messagehandler:     handler.messagehandler,

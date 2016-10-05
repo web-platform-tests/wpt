@@ -9,8 +9,8 @@ function runTest(config) {
         sessionTypes: ['temporary']
     };
 
-    function createMediaKeysAttributeTest(){
-        return new Promise(function(resolve, reject){
+    function createMediaKeysAttributeTest() {
+        return new Promise(function (resolve, reject) {
             var access;
             isInitDataTypeSupported(keysystem, initDataType)
                 .then(function (isTypeSupported) {
@@ -41,7 +41,7 @@ function runTest(config) {
             });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return createMediaKeysAttributeTest();
     }, testname + ' test MediaKeys attribute syntax')
 
@@ -88,8 +88,8 @@ function runTest(config) {
     ];
 
 
-    function setServerCertificateTestExceptions(){
-        return new Promise(function(resolve, reject){
+    function setServerCertificateTestExceptions() {
+        return new Promise(function(resolve, reject) {
             isInitDataTypeSupported(keysystem, initDataType)
                     .then(function (isTypeSupported) {
                         assert_equals(typeof navigator.requestMediaKeySystemAccess, 'function');
@@ -110,11 +110,7 @@ function runTest(config) {
                         resolve();
                     })
                     .catch(function (error) {
-                        try{
-                            reject(error);
-                        }catch(e){
-                            console.log(e)
-                        }
+                        reject(error);
                     });
         })
     }

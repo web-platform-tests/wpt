@@ -239,4 +239,33 @@ function verifyKeyStatuses(keyStatuses, keys)
     });
 }
 
+// This function checks that calling |testCase.func| returns a
+// rejected Promise with the error.name equal to
+// |testCase.exception|.
+function test_exception(testCase /*...*/) {
+    var func = testCase.func;
+    var exception = testCase.exception;
+    var args = Array.prototype.slice.call(arguments, 1);
+
+    // Currently blink throws for TypeErrors rather than returning
+    // a rejected promise (http://crbug.com/359386).
+    // FIXME: Remove try/catch once they become failed promises.
+    try {
+        return func.apply(null, args).then(
+            function (result) {
+                assert_unreached(format_value(func));
+            },
+            function (error) {
+                assert_equals(error.name, exception, format_value(func));
+                assert_not_equals(error.message, "", format_value(func));
+            }
+        );
+    } catch (e) {
+        // Only allow 'TypeError' exceptions to be thrown.
+        // Everything else should be a failed promise.
+        assert_equals('TypeError', exception, format_value(func));
+        assert_equals(e.name, exception, format_value(func));
+    }
+}
+
 

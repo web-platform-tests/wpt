@@ -518,6 +518,9 @@
                 assert_equals(typeof mediaKeySession.close, 'function');
                 assert_equals(typeof mediaKeySession.remove, 'function');
                 assert_equals(mediaKeySession.sessionId, '');
+                assert_equals(typeof mediaKeySession.onopen, 'undefined');
+                assert_equals(typeof mediaKeySession.onclose, 'undefined');
+                assert_equals(typeof mediaKeySession.onerror, 'undefined');
             }
 
             async_test(function(test)

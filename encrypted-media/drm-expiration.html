@@ -40,7 +40,7 @@
                 initDataType,
                 initData;
 
-            var contentWithExplicitInitData = supported.filter( function( s ) { return s.content.initDataType; } );
+            var contentWithExplicitInitData = supported.filter( function( s ) { return s.content.initDataType && s.content.keys; } );
             if ( contentWithExplicitInitData.length > 0 ) {
                 content = contentWithExplicitInitData[ 0 ].content;
                 initDataType = content.keys[ 0 ].initDataType;

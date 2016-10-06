@@ -28,7 +28,7 @@ function runTest(config,qualifier) {
             assert_equals(event.type, 'message');
             assert_in_array(event.messageType, ['license-request', 'individualization-request']);
 
-            config.messagehandler(event.messageType, event.message).then(function(response) {
+            config.messagehandler(event.messageType, event.message, {variantId: event.target._variantId}).then(function(response) {
                 return event.target.update(response);
             }).catch(onFailure);
         }
@@ -49,6 +49,7 @@ function runTest(config,qualifier) {
             if (_mediaKeySessions.length < config.initData.length) {
                 var mediaKeySession = _mediaKeys.createSession('temporary');
                 waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
+                mediaKeySession._variantId = config.variantIds ? config.variantIds[_mediaKeySessions.length] : undefined;
                 mediaKeySession.generateRequest(config.initDataType, config.initData[_mediaKeySessions.length]).catch(onFailure);
                 _mediaKeySessions.push(mediaKeySession);
             }
@@ -78,6 +79,7 @@ function runTest(config,qualifier) {
             var mediaKeySession = _mediaKeys.createSession('temporary');
             waitForEventAndRunStep('message', mediaKeySession, onMessage, test);
             _mediaKeySessions.push(mediaKeySession);
+            mediaKeySession._variantId = config.variantIds ? config.variantIds[0] : undefined;
             return mediaKeySession.generateRequest(config.initDataType, config.initData[0]);
         }).then(function() {
             return testmediasource(config);

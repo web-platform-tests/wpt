@@ -29,7 +29,7 @@
     // -------------------------------------------
     var startPresentation = function () {
         promise_test(function (t) {
-            return promise_rejects(t, 'NotAllowedError', request.start());
+            return promise_rejects(t, new DOMException('', 'NotAllowedError'), request.start());
         });
     };
     // -----------------------------------------

@@ -28,7 +28,7 @@
     // -------------------------------------------
     var startPresentation = function () {
         promise_test(function (t) {
-            request1.start();
+            request1.start().catch(function(){});
             return promise_rejects(t, 'OperationError', new Promise(function(fulfill, reject) {
                 setTimeout(function() {
                     request2.start().then(fulfill, reject);

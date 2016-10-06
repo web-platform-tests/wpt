@@ -6,3 +6,5 @@ The latest Editor's Draft of Web Workers is: <http://dev.w3.org/html5/workers/>.
 
 The latest W3C Technical Report of Web Workers is <http://www.w3.org/TR/workers/>.
 
+TEST ALL THE THINGS.
+

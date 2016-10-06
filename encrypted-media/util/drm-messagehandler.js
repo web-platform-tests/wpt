@@ -84,7 +84,7 @@ var keySystemWrappers = {
         }
 
         return handler.call(this, messageType, licenseRequest, 'arraybuffer', headers, params).catch(function(response){
-            throw String.fromCharCode.apply(null, new Uint16Array(response));
+            return response.text().then( function( error ) { throw error; } );
         });
     }
 };
@@ -100,7 +100,7 @@ const requestConstructors = {
     // params = { expiration: ... }
 
     'drmtoday': function(config, sessionType, content, messageType, message, headers, params) {
-        var optData = JSON.stringify({merchant: config.merchant});
+        var optData = JSON.stringify({merchant: config.merchant, userId:"12345", sessionId:""});
         var crt = {};
         if (messageType === 'license-request') {
             crt = {assetId: content.assetId,

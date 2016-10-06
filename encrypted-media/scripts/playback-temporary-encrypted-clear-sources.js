@@ -52,14 +52,14 @@ function runTest(configEncrypted,configClear,qualifier) {
         }
 
         function onTimeUpdate(event) {
-            if (_video.currentTime < (configEncrypted.duration || 1)) {
+            if (_video.currentTime < (configEncrypted.duration || 0.5)) {
                 return;
             }
 
             _video.removeEventListener('timeupdate', onTimeUpdate, true);
 
             resetSrc().then(function(){
-                if (playbackCount > 2) {
+                if (playbackCount >= 2) {
                     test.done();
                 } else {
                     playbackCount++;

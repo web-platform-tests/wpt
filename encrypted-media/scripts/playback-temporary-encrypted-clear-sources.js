@@ -59,7 +59,7 @@ function runTest(configEncrypted,configClear,qualifier) {
             _video.removeEventListener('timeupdate', onTimeUpdate, true);
 
             resetSrc().then(function(){
-                if (playbackCount > 2) {
+                if (playbackCount >= 2) {
                     test.done();
                 } else {
                     playbackCount++;

@@ -52,7 +52,7 @@ function runTest(configEncrypted,configClear,qualifier) {
         }
 
         function onTimeUpdate(event) {
-            if (_video.currentTime < (configEncrypted.duration || 1)) {
+            if (_video.currentTime < (configEncrypted.duration || 0.5)) {
                 return;
             }
 

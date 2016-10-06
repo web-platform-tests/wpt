@@ -70,7 +70,7 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
       t._expectedReferrerUrl = referrerUrlResolver[t._scenario.referrer_url]();
     },
 
-    _invokeSubresource: function(callback) {
+    _invokeSubresource: function(test, callback) {
       var invoker = subresourceInvoker[t._scenario.subresource];
 
       // Depending on the delivery method, extend the subresource element with
@@ -83,11 +83,12 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
       var delivery_method = t._scenario.delivery_method;
 
       if (delivery_method in elementAttributesForDeliveryMethod) {
-        invoker(t._subresourceUrl,
+        invoker(test,
+                t._subresourceUrl,
                 callback,
                 elementAttributesForDeliveryMethod[delivery_method]);
       } else {
-        invoker(t._subresourceUrl, callback);
+        invoker(test, t._subresourceUrl, callback);
       }
 
     },
@@ -98,7 +99,7 @@ function ReferrerPolicyTestCase(scenario, testDescription, sanityChecker) {
 
       var test = async_test(t._testDescription);
 
-      t._invokeSubresource(function(result) {
+      t._invokeSubresource(test, function(result) {
         // Check if the result is in valid format. NOOP in release.
         sanityChecker.checkSubresourceResult(
             test, t._scenario, t._subresourceUrl, result);

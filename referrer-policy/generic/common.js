@@ -99,7 +99,7 @@ function wrapResult(url, server_data) {
   }
 }
 
-function queryIframe(url, callback, referrer_policy) {
+function queryIframe(test, url, callback, referrer_policy) {
   var iframe = appendIframeToBody(url, referrer_policy);
   var listener = function(event) {
     if (event.source != iframe.contentWindow)
@@ -111,13 +111,13 @@ function queryIframe(url, callback, referrer_policy) {
   window.addEventListener("message", listener);
 }
 
-function queryImage(url, callback, referrer_policy) {
+function queryImage(test, url, callback, referrer_policy) {
   decodeImage(url, function(server_data) {
     callback(wrapResult(url, server_data), url);
   }, referrer_policy)
 }
 
-function queryXhr(url, callback) {
+function queryXhr(test, url, callback) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.onreadystatechange = function(e) {
@@ -129,7 +129,7 @@ function queryXhr(url, callback) {
   xhr.send();
 }
 
-function queryWorker(url, callback) {
+function queryWorker(test, url, callback) {
   var worker = new Worker(url);
   worker.onmessage = function(event) {
     var server_data = event.data;
@@ -137,7 +137,7 @@ function queryWorker(url, callback) {
   };
 }
 
-function queryFetch(url, callback) {
+function queryFetch(test, url, callback) {
   fetch(url).then(function(response) {
       response.json().then(function(server_data) {
         callback(wrapResult(url, server_data), url);
@@ -146,7 +146,7 @@ function queryFetch(url, callback) {
   );
 }
 
-function queryNavigable(element, url, callback, attributes) {
+function queryNavigable(test, element, url, callback, attributes) {
   var navigable = element
   navigable.href = url;
   navigable.target = "helper-iframe";
@@ -174,21 +174,21 @@ function queryNavigable(element, url, callback, attributes) {
   navigable.click();
 }
 
-function queryLink(url, callback, referrer_policy) {
+function queryLink(test, url, callback, referrer_policy) {
   var a = document.createElement("a");
   a.innerHTML = "Link to subresource";
   document.body.appendChild(a);
-  queryNavigable(a, url, callback, referrer_policy)
+  queryNavigable(test, a, url, callback, referrer_policy)
 }
 
-function queryAreaLink(url, callback, referrer_policy) {
+function queryAreaLink(test, url, callback, referrer_policy) {
   var area = document.createElement("area");
   // TODO(kristijanburnik): Append to map and add image.
   document.body.appendChild(area);
-  queryNavigable(area, url, callback, referrer_policy)
+  queryNavigable(test, area, url, callback, referrer_policy)
 }
 
-function queryScript(url, callback) {
+function queryScript(test, url, callback) {
   var script = document.createElement("script");
   script.src = url;
 

@@ -19,7 +19,7 @@
     // Request init
     // ------------
     var validUnixDate = new Date().getTime() + String(Math.floor(Math.random() * 1e5)),
-            validPresURL = 'https://google.com/cast#__castAppId__=2334D33A/__castClientId__=' + validUnixDate,
+            validPresURL = '../receiving-ua/idlharness.html#__castAppId__=2334D33A/__castClientId__=' + validUnixDate,
             request1 = new PresentationRequest(validPresURL),
             request2 = new PresentationRequest(validPresURL);
 

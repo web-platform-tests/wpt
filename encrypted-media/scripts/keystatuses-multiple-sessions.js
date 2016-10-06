@@ -1,10 +1,10 @@
 function runTest(config,qualifier)
 {
-    var testname = testnamePrefix( qualifier, config.keysystem ) + ', temporary, keystatuses, multiple sessions';
+    var testname = testnamePrefix(qualifier, config.keysystem) + ', temporary, keystatuses, multiple sessions';
 
-    var configuration = getSimpleConfigurationForContent( config.content );
+    var configuration = getSimpleConfigurationForContent(config.content);
 
-    if ( config.initDataType && config.initData ) configuration.initDataTypes = [ config.initDataType ];
+    if (config.initDataType && config.initData) configuration.initDataTypes = [config.initDataType];
 
     async_test(function(test)
     {
@@ -13,11 +13,13 @@ function runTest(config,qualifier)
 
         // Even though key ids are uint8, using printable values so that
         // they can be verified easily.
-        var key1 = new Uint8Array(config.content.keys[ 0 ].kid),
-            key2 = new Uint8Array(config.content.keys[ 1 ].kid);
+        var key1 = new Uint8Array(config.content.keys[0].kid),
+            key2 = new Uint8Array(config.content.keys[1].kid),
+            variant1 = config.content.keys[0].variantId,
+            variant2 = config.content.keys[1].variantId;
 
         function onFailure(error) {
-            forceTestFailureFromPromise(error);
+            forceTestFailureFromPromise(test,error);
         }
 
         function processMessage1(event)
@@ -26,11 +28,11 @@ function runTest(config,qualifier)
             assert_equals(event.target, mediaKeySession1);
 
             // No keys added yet.
-            verifyKeyStatuses(mediaKeySession1.keyStatuses, { expected: [], unexpected: [key1, key2] });
+            verifyKeyStatuses(mediaKeySession1.keyStatuses, {expected: [], unexpected: [key1, key2]});
 
             // Add key1 to session1.
-            config.messagehandler(event.messageType, event.message).then(function(response) {
-                return event.target.update( response );
+            config.messagehandler(event.messageType, event.message, {variantId:variant1}).then(function(response) {
+                return event.target.update(response);
             }).catch(onFailure);
 
         }
@@ -41,10 +43,10 @@ function runTest(config,qualifier)
             assert_equals(event.target, mediaKeySession1);
 
             // Check that keyStatuses contains the expected key1 only.
-            verifyKeyStatuses(mediaKeySession1.keyStatuses, { expected: [key1], unexpected: [key2] });
+            verifyKeyStatuses(mediaKeySession1.keyStatuses, {expected: [key1], unexpected: [key2]});
 
             // Now trigger a message event on session2.
-            mediaKeySession2.generateRequest(config.initDataType, config.initData[ 1 ]).catch(onFailure);
+            mediaKeySession2.generateRequest(config.initDataType, config.initData[1]).catch(onFailure);
         }
 
         function processMessage2(event)
@@ -53,13 +55,13 @@ function runTest(config,qualifier)
             assert_equals(event.target, mediaKeySession2);
 
             // session2 has no keys added yet.
-            verifyKeyStatuses(mediaKeySession2.keyStatuses, { expected: [], unexpected: [key1, key2] });
+            verifyKeyStatuses(mediaKeySession2.keyStatuses, {expected: [], unexpected: [key1, key2]});
 
             // session1 should still have 1 key.
-            verifyKeyStatuses(mediaKeySession1.keyStatuses, { expected: [key1], unexpected: [key2] });
+            verifyKeyStatuses(mediaKeySession1.keyStatuses, {expected: [key1], unexpected: [key2]});
 
             // Add key2 to session2.
-            config.messagehandler(event.messageType, event.message).then(function(response) {
+            config.messagehandler(event.messageType, event.message, {variantId:variant2}).then(function(response) {
                 return event.target.update(response);
             }).catch(onFailure);
         }
@@ -70,10 +72,10 @@ function runTest(config,qualifier)
             assert_equals(event.target, mediaKeySession2);
 
             // Check that keyStatuses contains the expected key2 only.
-            verifyKeyStatuses(mediaKeySession2.keyStatuses, { expected: [key2], unexpected: [key1] });
+            verifyKeyStatuses(mediaKeySession2.keyStatuses, {expected: [key2], unexpected: [key1]});
 
             // session1 should still have 1 key.
-            verifyKeyStatuses(mediaKeySession1.keyStatuses, { expected: [key1], unexpected: [key2] });
+            verifyKeyStatuses(mediaKeySession1.keyStatuses, {expected: [key1], unexpected: [key2]});
 
             test.done();
         }
@@ -85,8 +87,8 @@ function runTest(config,qualifier)
             mediaKeySession2 = mediaKeys.createSession();
 
             // There should be no keys defined on either session.
-            verifyKeyStatuses(mediaKeySession1.keyStatuses, { expected: [], unexpected: [key1, key2] });
-            verifyKeyStatuses(mediaKeySession2.keyStatuses, { expected: [], unexpected: [key1, key2] });
+            verifyKeyStatuses(mediaKeySession1.keyStatuses, {expected: [], unexpected: [key1, key2]});
+            verifyKeyStatuses(mediaKeySession2.keyStatuses, {expected: [], unexpected: [key1, key2]});
 
             // Bind all the event handlers now.
             waitForEventAndRunStep('message', mediaKeySession1, processMessage1, test);

@@ -201,7 +201,7 @@ function runTest(config) {
                 }).then(function () {
                    resolve();
                 }).catch(function (error) {
-                   reject(error)
+                   reject(error);
                 });
         })
     }
@@ -432,7 +432,7 @@ function runTest(config) {
                     kCreateSessionTestCases.map(function (testCase) {
                         test_createSession(testCase, mediaKeys);
                     });
-                    resolve()
+                    resolve();
                 }).catch(function (error) {
                     reject(error);
                 });

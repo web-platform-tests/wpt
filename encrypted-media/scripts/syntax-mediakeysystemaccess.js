@@ -133,7 +133,7 @@ function runTest(config) {
                     assert_equals(typeof access.createMediaKeys, 'function');
                     resolve();
                 }).catch(function(error){
-                    reject(error)
+                    reject(error);
                 })
         })
     }

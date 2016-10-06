@@ -45,13 +45,13 @@ function runTest(config) {
             }
         },
         {
-            exception: 'InvalidAccessError',
+            exception: 'NotSupportedError',
             func: function () {
                 return navigator.requestMediaKeySystemAccess(new Uint8Array(0), [{}]);
             }
         },
         {
-            exception: 'InvalidAccessError',
+            exception: 'NotSupportedError',
             func: function () {
                 return navigator.requestMediaKeySystemAccess('', [{}]);
             }
@@ -71,32 +71,32 @@ function runTest(config) {
         },
         // Empty sequence of MediaKeySystemConfiguration.
         {
-            exception: 'InvalidAccessError',
+            exception: 'NotSupportedError',
             func: function () {
                 return navigator.requestMediaKeySystemAccess(keysystem, []);
             }
         },
         // Invalid sequences of MediaKeySystemConfigurations.
         {
-            exception: 'TypeError',
+            exception: 'NotSupportedError',
             func: function () {
                 return navigator.requestMediaKeySystemAccess(keysystem, {});
             }
         },
         {
-            exception: 'TypeError',
+            exception: 'NotSupportedError',
             func: function () {
                 return navigator.requestMediaKeySystemAccess(keysystem, "invalid");
             }
         },
         {
-            exception: 'TypeError',
+            exception: 'NotSupportedError',
             func: function () {
                 return navigator.requestMediaKeySystemAccess(keysystem, [{}, 6]);
             }
         },
         {
-            exception: 'TypeError',
+            exception: 'NotSupportedError',
             func: function () {
                 return navigator.requestMediaKeySystemAccess(keysystem, ["invalid", "upsupported"]);
             }

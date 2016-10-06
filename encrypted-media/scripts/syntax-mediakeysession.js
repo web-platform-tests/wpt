@@ -94,28 +94,26 @@ function runTest(config) {
                 return mk1.createSession('temporary').load();
             }
         },
-        // 'temporary' sessions are never allowed, so always return
-        // 'InvalidAccessError'.
         {
-            exception: 'InvalidAccessError',
+            exception: 'TypeError',
             func: function (mk3) {
                 return mk3.createSession('temporary').load('');
             }
         },
         {
-            exception: 'InvalidAccessError',
+            exception: 'TypeError',
             func: function (mk4) {
                 return mk4.createSession('temporary').load(1);
             }
         },
         {
-            exception: 'InvalidAccessError',
+            exception: 'TypeError',
             func: function (mk5) {
                 return mk5.createSession('temporary').load('!@#$%^&*()');
             }
         },
         {
-            exception: 'InvalidAccessError',
+            exception: 'TypeError',
             func: function (mk6) {
                 return mk6.createSession('temporary').load('1234');
             }

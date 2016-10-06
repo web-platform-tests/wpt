@@ -96,33 +96,33 @@ window.onload = function() {
     });
   EventRecorder.addEventListenersForNodes(relevantEvents, inputs, stopPropagation);
   var expected = [
-  {type: "mouseover", target: "a"},
-  {type: "mouseenter", target: "c"},
-  {type: "mouseenter", target: "b"},
-  {type: "mouseenter", target: "a"},
-  {type: "mousemove", target: "a", optional: true},
-  {type: "mouseout", target: "a"},
-  {type: "mouseleave", target: "a"},
-  {type: "mouseleave", target: "b"},
-  {type: "mouseover", target: "c"},
-  {type: "mousemove", target: "c", optional: true},
-  {type: "mouseout", target: "c"},
-  {type: "mouseleave", target: "c"},
-  {type: "mouseover", target: "a1"},
-  {type: "mouseenter", target: "c1"},
-  {type: "mouseenter", target: "b1"},
-  {type: "mouseenter", target: "a1"},
-  {type: "mousemove", target: "a1", optional: true},
-  {type: "mouseout", target: "a1"},
-  {type: "mouseleave", target: "a1"},
-  {type: "mouseleave", target: "b1"},
-  {type: "mouseover", target: "c1"},
-  {type: "mousemove", target: "c1", optional: true},
-  {type: "mouseout", target: "c1"},
-  {type: "mouseleave", target: "c1"},
+    {type: "mouseover", target: "a"},
+    {type: "mouseenter", target: "c"},
+    {type: "mouseenter", target: "b"},
+    {type: "mouseenter", target: "a"},
+    {type: "mousemove", target: "a", optional: true},
+    {type: "mouseout", target: "a"},
+    {type: "mouseleave", target: "a"},
+    {type: "mouseleave", target: "b"},
+    {type: "mouseover", target: "c"},
+    {type: "mousemove", target: "c", optional: true},
+    {type: "mouseout", target: "c"},
+    {type: "mouseleave", target: "c"},
+    {type: "mouseover", target: "a1"},
+    {type: "mouseenter", target: "c1"},
+    {type: "mouseenter", target: "b1"},
+    {type: "mouseenter", target: "a1"},
+    {type: "mousemove", target: "a1", optional: true},
+    {type: "mouseout", target: "a1"},
+    {type: "mouseleave", target: "a1"},
+    {type: "mouseleave", target: "b1"},
+    {type: "mouseover", target: "c1"},
+    {type: "mousemove", target: "c1", optional: true},
+    {type: "mouseout", target: "c1"},
+    {type: "mouseleave", target: "c1"},
   ];
   async_test(function(t) {
-    a1.addEventListener("mousemove", function() {
+    c1.addEventListener("mouseleave", function() {
       t.step(function() {
         assert_true(EventRecorder.checkRecords(expected));
         t.done();

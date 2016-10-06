@@ -36,6 +36,7 @@ window.onload = function () {
   var blue = document.getElementById("blue");
   var inputs = [blue];
   EventRecorder.configure({
+    mergeEventTypes: ["mousemove"],
     objectMap: {
       "blue": blue
     }
@@ -48,13 +49,14 @@ window.onload = function () {
     {type: "mousemove", target: "blue", optional: true},
     {type: "mouseup", target: "blue"},
     {type: "click", target: "blue"},
-    {type: "mousemove", target: "blue"},
+    {type: "mousemove", target: "blue", optional: true},
     {type: "mousedown", target: "blue"},
     {type: "mousemove", target: "blue", optional: true},
     {type: "mouseup", target: "blue"},
     {type: "click", target: "blue"},
     {type: "dblclick", target: "blue"},
-    {type: "mousemove", target: "blue", optional: true}];
+    {type: "mousemove", target: "blue", optional: true}
+  ];
 
   async_test(function(t) {
     document.getElementById("done").addEventListener("click", function () {

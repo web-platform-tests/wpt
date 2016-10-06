@@ -148,7 +148,10 @@
                var j = 0;
                for (var i = 0; i < expected.length; ++i) {
                   if (j >= allRecords.length) {
-                     break;
+                     if (expected[i].optional) {
+                        continue;
+                     }
+                     return false;
                   }
                   if (expected[i].type == allRecords[j].event.type && expected[i].target == allRecords[j].event.currentTarget) {
                      ++j;

@@ -73,24 +73,25 @@ window.onload = function() {
     });
   EventRecorder.addEventListenersForNodes(relevantEvents, inputs, stopPropagation);
   var expected = [
-  {type: "mouseover", target: "a"},
-  {type: "mouseenter", target: "a"},
-  {type: "mousemove", target: "a", optional: true},
-  {type: "mouseout", target: "a"},
-  {type: "mouseover", target: "b"},
-  {type: "mouseenter", target: "b"},
-  {type: "mousemove", target: "b", optional: true},
-  {type: "mouseout", target: "b"},
-  {type: "mouseleave", target: "b"},
-  {type: "mouseover", target: "a"},
-  {type: "mousemove", target: "a", optional: true},
-  {type: "mouseout", target: "a"},
-  {type: "mouseleave", target: "a"},
-  {type: "mouseover", target: "c"},
-  {type: "mouseenter", target: "c"},
-  {type: "mousemove", target: "c", optional: true},
-  {type: "mouseout", target: "c"},
-  {type: "mouseleave", target: "c"}];
+    {type: "mouseover", target: "a"},
+    {type: "mouseenter", target: "a"},
+    {type: "mousemove", target: "a", optional: true},
+    {type: "mouseout", target: "a"},
+    {type: "mouseover", target: "b"},
+    {type: "mouseenter", target: "b"},
+    {type: "mousemove", target: "b", optional: true},
+    {type: "mouseout", target: "b"},
+    {type: "mouseleave", target: "b"},
+    {type: "mouseover", target: "a"},
+    {type: "mousemove", target: "a", optional: true},
+    {type: "mouseout", target: "a"},
+    {type: "mouseleave", target: "a"},
+    {type: "mouseover", target: "c"},
+    {type: "mouseenter", target: "c"},
+    {type: "mousemove", target: "c", optional: true},
+    {type: "mouseout", target: "c"},
+    {type: "mouseleave", target: "c"}
+  ];
   async_test(function(t) {
     c.addEventListener("mouseleave", function() {
       EventRecorder.stop();

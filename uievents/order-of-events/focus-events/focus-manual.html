@@ -35,7 +35,6 @@ var relevantEvents = [
   "focus",
   "blur",
   "focusin",
-  "mousemove",
   "focusout"
 ];
 window.onload = function () {
@@ -43,7 +42,6 @@ window.onload = function () {
   var b = document.getElementById("b");
   var inputs = [a, b];
   EventRecorder.configure({
-      mergeEventTypes: ["mousemove"],
       objectMap: {
          "a": a,
          "b": b,
@@ -52,14 +50,15 @@ window.onload = function () {
 
   EventRecorder.addEventListenersForNodes(relevantEvents, inputs, stopPropagation);
   var expected = [
-  {type: "focusin", target: "a"},
-  {type: "focus", target: "a"},
-  {type: "focusout", target: "a"},
-  {type: "focusin", target: "b"},
-  {type: "blur", target: "a"},
-  {type: "focus", target: "b"},
-  {type: "focusout", target: "b"},
-  {type: "blur", target: "b"}];
+    {type: "focusin", target: "a"},
+    {type: "focus", target: "a"},
+    {type: "focusout", target: "a"},
+    {type: "focusin", target: "b"},
+    {type: "blur", target: "a"},
+    {type: "focus", target: "b"},
+    {type: "focusout", target: "b"},
+    {type: "blur", target: "b"}
+  ];
 
   async_test(function(t) {
     document.getElementById("done").addEventListener("click", function () {

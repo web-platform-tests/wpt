@@ -115,14 +115,13 @@ function runTest(config) {
             });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return requestMediaKeySystemAccessTestExceptions();
-    }, testname + ' test requestMediaKeySystemAccess() exceptions.')
+    }, testname + ' test requestMediaKeySystemAccess() exceptions.');
 
     function requestMediaKeySystemAccessTestAttributes(){
         return new Promise(function(resolve, reject){
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                     assert_equals(typeof navigator.requestMediaKeySystemAccess, 'function');
                     assert_true(isTypeSupported, "initDataType not supported");
                     return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
@@ -138,8 +137,8 @@ function runTest(config) {
                 })
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return requestMediaKeySystemAccessTestAttributes();
-    }, testname + ' test MediaKeySystemAccess attribute syntax.')
+    }, testname + ' test MediaKeySystemAccess attribute syntax.');
 
 }

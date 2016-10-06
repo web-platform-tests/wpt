@@ -12,12 +12,11 @@ function runTest(config) {
     function createMediaKeysAttributeTest() {
         return new Promise(function (resolve, reject) {
             var access;
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
-                    assert_equals(typeof navigator.requestMediaKeySystemAccess, 'function');
-                    assert_true(isTypeSupported, "initDataType not supported");
-                    return navigator.requestMediaKeySystemAccess(keysystem, [configuration])
-                }).then(function (result) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
+                assert_equals(typeof navigator.requestMediaKeySystemAccess, 'function');
+                assert_true(isTypeSupported, "initDataType should be supported");
+                return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+            }).then(function (result) {
                 access = result;
                 assert_equals(access.keySystem, keysystem);
                 return access.createMediaKeys();
@@ -41,9 +40,10 @@ function runTest(config) {
             });
         })
     }
+
     promise_test(function() {
         return createMediaKeysAttributeTest();
-    }, testname + ' test MediaKeys attribute syntax')
+    }, testname + ' test MediaKeys attribute syntax');
 
     var kSetServerCertificateExceptionsTestCases = [
         // Too few parameters.
@@ -90,33 +90,28 @@ function runTest(config) {
 
     function setServerCertificateTestExceptions() {
         return new Promise(function(resolve, reject) {
-            isInitDataTypeSupported(keysystem, initDataType)
-                    .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                         assert_equals(typeof navigator.requestMediaKeySystemAccess, 'function');
                         assert_true(isTypeSupported, "initDataType not supported");
-                        return navigator.requestMediaKeySystemAccess(keysystem, [configuration])
-                    })
-                    .then(function (access) {
+                        return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+                    }).then(function (access) {
                         return access.createMediaKeys();
-                    })
-                    .then(function (mediaKeys) {
+                    }).then(function (mediaKeys) {
                         var promises = kSetServerCertificateExceptionsTestCases.map(function (testCase) {
                             return test_exception(testCase, mediaKeys);
                         });
                         assert_not_equals(promises.length, 0);
                         return Promise.all(promises);
-                    })
-                    .then(function () {
+                    }).then(function () {
                         resolve();
-                    })
-                    .catch(function (error) {
+                    }).catch(function (error) {
                         reject(error);
                     });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return setServerCertificateTestExceptions();
-    }, testname + ' test MediaKeys setServerCertificate() exceptions.')
+    }, testname + ' test MediaKeys setServerCertificate() exceptions.');
 
     // All calls to |func| in this group resolve. setServerCertificate with these cert may either resolve with true
     // for clearkey or throw a DOMException.
@@ -160,16 +155,13 @@ function runTest(config) {
     function setServerCertificateTest(){
         return new Promise(function(resolve, reject){
             var expected_result;
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                     assert_equals(typeof navigator.requestMediaKeySystemAccess, 'function');
                     assert_true(isTypeSupported, "initDataType not supported");
-                    return navigator.requestMediaKeySystemAccess(keysystem, [configuration])
-                })
-                .then(function (access) {
+                    return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
+                }).then(function (access) {
                     return access.createMediaKeys();
-                })
-                .then(function (mediaKeys) {
+                }).then(function (mediaKeys) {
                     var promises = kSetServerCertificateTestCases.map(function (testCase) {
                         return testCase.func.call(null, mediaKeys);
                     });
@@ -178,17 +170,15 @@ function runTest(config) {
                     });
                     assert_not_equals(promises.length, 0);
                     return Promise.all(promises);
-                })
-                .then(function (result) {
+                }).then(function (result) {
                     assert_array_equals(result, expected_result);
                     resolve();
-                })
-                .catch(function (error) {
+                }).catch(function (error) {
                     reject(error);
                 });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
        return  setServerCertificateTest();
-    }, testname + ' test MediaKeys setServerCertificate() syntax with non-empty certificate.')
+    }, testname + ' test MediaKeys setServerCertificate() syntax with non-empty certificate.');
 }

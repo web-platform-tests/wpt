@@ -59,32 +59,27 @@ function runTest(config) {
     ];
     function generateRequestTestExceptions(){
         return new Promise(function(resolve, reject){
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                     assert_true(isTypeSupported, "initDataType not supported");
                     return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-                })
-                .then(function (access) {
+                }).then(function (access) {
                     return access.createMediaKeys();
-                })
-                .then(function (mediaKeys) {
+                }).then(function (mediaKeys) {
                     var mp4SessionPromises = kTypeSpecificGenerateRequestExceptionsTestCases.map(function (testCase) {
                         return test_exception(testCase, mediaKeys, initDataType, initData);
                     });
                     assert_not_equals(mp4SessionPromises.length, 0);
                     return Promise.all(mp4SessionPromises);
-                })
-                .then(function (result) {
-                    resolve()
-                })
-                .catch(function (error) {
+                }).then(function (result) {
+                    resolve();
+                }).catch(function (error) {
                     reject(error);
                 });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return generateRequestTestExceptions();
-    }, testname + ' test MediaKeySession generateRequest() exceptions.')
+    }, testname + ' test MediaKeySession generateRequest() exceptions.');
 
     var kLoadExceptionsTestCases = [
         // Too few parameters.
@@ -121,32 +116,27 @@ function runTest(config) {
     ];
     function loadTestExceptions(){
         return new Promise(function(resolve, reject){
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                     assert_true(isTypeSupported, "initDataType not supported");
                     return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-                })
-                .then(function (access) {
+                }).then(function (access) {
                     return access.createMediaKeys();
-                })
-                .then(function (mediaKeys) {
+                }).then(function (mediaKeys) {
                     var sessionPromises = kLoadExceptionsTestCases.map(function (testCase) {
                         return test_exception(testCase, mediaKeys);
                     });
                     assert_not_equals(sessionPromises.length, 0);
                     return Promise.all(sessionPromises);
-                })
-                .then(function () {
-                    resolve()
-                })
-                .catch(function (error) {
+                }).then(function () {
+                    resolve();
+                }).catch(function (error) {
                    reject(error);
                 });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return loadTestExceptions();
-    }, testname + ' test MediaKeySession load() exceptions.')
+    }, testname + ' test MediaKeySession load() exceptions.');
 
     // All calls to |func| in this group are supposed to succeed.
     // However, the spec notes that some things are optional for
@@ -197,32 +187,27 @@ function runTest(config) {
     }
     function generateRequestForVariousSessions(){
         return new Promise(function(resolve, reject){
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
-                    assert_true(isTypeSupported, "initDataType not supported");
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
+                    assert_true(isTypeSupported, "initDataType should be supported");
                     return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-                })
-                .then(function (access) {
+                }).then(function (access) {
                     return access.createMediaKeys();
-                })
-                .then(function (mediaKeys) {
+                }).then(function (mediaKeys) {
                     var mp4SessionPromises = kCreateSessionTestCases.map(function (testCase) {
                         return test_generateRequest(testCase, mediaKeys, initDataType, initData);
                     });
                     assert_not_equals(mp4SessionPromises.length, 0);
                     return Promise.all(mp4SessionPromises);
-                })
-                .then(function () {
-                   resolve()
-                })
-                .catch(function (error) {
+                }).then(function () {
+                   resolve();
+                }).catch(function (error) {
                    reject(error)
                 });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return generateRequestForVariousSessions();
-    }, testname + ' test if MediaKeySession generateRequest() resolves for various sessions')
+    }, testname + ' test if MediaKeySession generateRequest() resolves for various sessions');
 
     var kUpdateSessionExceptionsTestCases = [
         // Tests in this set use a shortened parameter name due to
@@ -272,15 +257,12 @@ function runTest(config) {
 
     function updateTestExceptions(){
         return new Promise(function(resolve, reject){
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                     assert_true(isTypeSupported, "initDataType not supported");
                     return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-                })
-                .then(function (access) {
+                }).then(function (access) {
                     return access.createMediaKeys();
-                })
-                .then(function (mediaKeys) {
+                }).then(function (mediaKeys) {
                     var mp4SessionPromises = kUpdateSessionExceptionsTestCases.map(function (testCase) {
                         var mediaKeySession = mediaKeys.createSession();
                         return mediaKeySession.generateRequest(initDataType, initData).then(function (result) {
@@ -289,26 +271,22 @@ function runTest(config) {
                     });
                     assert_not_equals(mp4SessionPromises.length, 0);
                     return Promise.all(mp4SessionPromises);
-                })
-                .then(function () {
-                    resolve()
-                })
-                .catch(function (error) {
+                }).then(function () {
+                    resolve();
+                }).catch(function (error) {
                     reject(error);
                 });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return updateTestExceptions();
-    }, testname + ' test MediaKeySession update() exceptions.')
+    }, testname + ' test MediaKeySession update() exceptions.');
 
     function create_close_exception_test(mediaKeys) {
         var mediaKeySession = mediaKeys.createSession();
-        return mediaKeySession.close()
-            .then(function (result) {
+        return mediaKeySession.close().then(function (result) {
                 assert_unreached('close() should not succeed if session uninitialized');
-            })
-            .catch(function (error) {
+            }).catch(function (error) {
                 assert_equals(error.name, 'InvalidStateError');
                 // Return something so the promise resolves.
                 return Promise.resolve();
@@ -316,46 +294,36 @@ function runTest(config) {
     }
     function closeTestExceptions(){
         return new Promise(function(resolve, reject){
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                     assert_true(isTypeSupported, "initDataType not supported");
                     return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-                })
-                .then(function (access) {
+                }).then(function (access) {
                     return access.createMediaKeys();
-                })
-                .then(function (mediaKeys) {
+                }).then(function (mediaKeys) {
                     return create_close_exception_test(mediaKeys);
-                })
-                .then(function () {
+                }).then(function () {
                     resolve();
-                })
-                .catch(function (error) {
+                }).catch(function (error) {
                     reject(error);
                 });
         });
     }
-    promise_test(function(){
+    promise_test(function() {
         return closeTestExceptions();
-    }, testname + ' test MediaKeySession close() exceptions.')
-
-
+    }, testname + ' test MediaKeySession close() exceptions.');
 
     function create_remove_exception_test(mediaKeys, type, initData) {
         // remove() on an uninitialized session should fail.
         var mediaKeySession = mediaKeys.createSession('temporary');
-        return mediaKeySession.remove()
-            .then(function (result) {
+        return mediaKeySession.remove().then(function (result) {
                 assert_unreached('remove() should not succeed if session uninitialized');
             }, function (error) {
                 assert_equals(error.name, 'InvalidStateError');
                 // remove() on a temporary session should fail.
                 return mediaKeySession.generateRequest(type, initData);
-            })
-            .then(function (result) {
+            }).then(function (result) {
                 return mediaKeySession.remove();
-            })
-            .then(function () {
+            }).then(function () {
                 assert_unreached('remove() should not succeed for temporary sessions');
             }, function (error) {
                 assert_equals(error.name, 'InvalidAccessError');
@@ -363,28 +331,23 @@ function runTest(config) {
     }
     function removeTestException(){
         return new Promise(function(resolve, reject){
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                     assert_true(isTypeSupported, "initDataType not supported");
                     return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-                })
-                .then(function (access) {
+                }).then(function (access) {
                     return access.createMediaKeys();
-                })
-                .then(function (mediaKeys) {
+                }).then(function (mediaKeys) {
                     return create_remove_exception_test(mediaKeys, initDataType, initData);
-                })
-                .then(function () {
+                }).then(function () {
                     resolve();
-                })
-                .catch(function (error) {
+                }).catch(function (error) {
                     reject(error);
                 });
         });
     }
-    promise_test(function(){
+    promise_test(function() {
         return removeTestException();
-    }, testname + ' test MediaKeySession remove() exceptions.')
+    }, testname + ' test MediaKeySession remove() exceptions.');
 
     // All calls to |func| in this group are supposed to succeed.
     // However, the spec notes that some things are optional for
@@ -460,28 +423,24 @@ function runTest(config) {
     }
     function createSessionTest(){
         return new Promise(function(resolve, reject){
-            isInitDataTypeSupported(keysystem, initDataType)
-                .then(function (isTypeSupported) {
+            isInitDataTypeSupported(keysystem, initDataType).then(function (isTypeSupported) {
                     assert_true(isTypeSupported, "initDataType not supported");
                     return navigator.requestMediaKeySystemAccess(keysystem, [configuration]);
-                })
-                .then(function (access) {
+                }).then(function (access) {
                     return access.createMediaKeys();
-                })
-                .then(function (mediaKeys) {
+                }).then(function (mediaKeys) {
                     kCreateSessionTestCases.map(function (testCase) {
                         test_createSession(testCase, mediaKeys);
                     });
                     resolve()
-                })
-                .catch(function (error) {
+                }).catch(function (error) {
                     reject(error);
                 });
         })
     }
-    promise_test(function(){
+    promise_test(function() {
         return createSessionTest();
-    }, testname + ' test MediaKeySession attribute syntax.')
+    }, testname + ' test MediaKeySession attribute syntax.');
 
 
 }

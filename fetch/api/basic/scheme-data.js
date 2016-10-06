@@ -3,10 +3,11 @@ if (this.document === undefined) {
   importScripts("../resources/utils.js");
 }
 
-function checkFetchResponse(url, data, mime, fetchMode) {
+<<<<<<< b45946c54935c6113fefb5199b3fe0e4bf087777
+function checkFetchResponse(url, data, mime, fetchMode, method) {
   var cut = (url.length >= 40) ? "[...]" : "";
-  desc = "Fetching " + url.substring(0, 40) + cut + " is OK";
-  var init = { };
+  desc = "Fetching " + (method ? "[" + method + "] " : "") + url.substring(0, 40) + cut + " is OK";
+  var init = {"method": method || "GET"};
   if (fetchMode) {
     init.mode = fetchMode;
     desc += " (" + fetchMode + ")";
@@ -31,6 +32,8 @@ checkFetchResponse("data:text/plain;base64,cmVzcG9uc2UncyBib2R5", "response's bo
 checkFetchResponse("data:image/png;base64,cmVzcG9uc2UncyBib2R5",
                    "response's body",
                    "image/png");
+checkFetchResponse("data:,response%27s%20body", "response's body", "text/plain;charset=US-ASCII", null, "POST");
+checkFetchResponse("data:,response%27s%20body", "response's body", "text/plain;charset=US-ASCII", null, "HEAD");
 
 function checkKoUrl(url, method, desc) {
   var cut = (url.length >= 40) ? "[...]" : "";
@@ -41,7 +44,5 @@ function checkKoUrl(url, method, desc) {
 }
 
 checkKoUrl("data:notAdataUrl.com", "GET");
-checkKoUrl("data:,response%27s%20body", "POST");
-checkKoUrl("data:,response%27s%20body", "HEAD");
 
 done();

@@ -38,20 +38,20 @@ function runTest(config,qualifier) {
             config.messagehandler(event.messageType, event.message, {variantId: event.target.variantId}).then(function(response) {
                 return event.target.update(response);
             }).then(function(){
-                if (!_waitingForKey) {
+                if (!video.src) {
                     _video.src = URL.createObjectURL(_mediaSource);
                     _video.play();
-                } else {
+                } else if (event.target.keyStatuses.size > 0){
                     _waitingForKey = false;
                 }
             }).catch(onFailure);
         }
 
         function onWaitingForKey(event) {
+            _waitingForKey = true;
             if (config.checkReadyState) {
                 assert_equals(_video.readyState, _video.HAVE_METADATA, "Video readyState should be HAVE_METADATA on watingforkey event");
             }
-            _waitingForKey = true;
             startNewSession();
         }
 
@@ -85,7 +85,6 @@ function runTest(config,qualifier) {
             return testmediasource(config);
         }).then(function(source) {
             _mediaSource = source;
-            
             startNewSession();
         }).catch(onFailure);
     }, testname);

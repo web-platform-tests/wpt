@@ -19,7 +19,7 @@ function runTest(config,qualifier) {
             _mediaKeys,
             _mediaKeySessions = [],
             _mediaSource,
-            _playbackStarted = false;
+            _waitingForKey = false;
 
         function startNewSession() {
             assert_less_than(_mediaKeySessions.length, config.initData.length);
@@ -37,6 +37,13 @@ function runTest(config,qualifier) {
         function onMessage(event) {
             config.messagehandler(event.messageType, event.message, {variantId: event.target.variantId}).then(function(response) {
                 return event.target.update(response);
+            }).then(function(){
+                if (!_waitingForKey) {
+                    _video.src = URL.createObjectURL(_mediaSource);
+                    _video.play();
+                } else {
+                    _waitingForKey = false;
+                }
             }).catch(onFailure);
         }
 
@@ -44,6 +51,7 @@ function runTest(config,qualifier) {
             if (config.checkReadyState) {
                 assert_equals(_video.readyState, _video.HAVE_METADATA, "Video readyState should be HAVE_METADATA on watingforkey event");
             }
+            _waitingForKey = true;
             startNewSession();
         }
 
@@ -52,6 +60,8 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
+            assert_false(_waitingForKey, "Should not continue playing whilst waiting for a key");
+
             if (_video.currentTime > config.duration) {
                 assert_equals(_mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content");
                 _video.pause();
@@ -72,13 +82,11 @@ function runTest(config,qualifier) {
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
 
-            startNewSession();
-
             return testmediasource(config);
         }).then(function(source) {
             _mediaSource = source;
-            _video.src = URL.createObjectURL(_mediaSource);
-            _video.play();
+            
+            startNewSession();
         }).catch(onFailure);
     }, testname);
 }

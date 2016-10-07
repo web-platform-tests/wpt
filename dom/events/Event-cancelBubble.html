@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Event.cancelBubble</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  var event = new Event('type');
+  assert_equals(event.cancelBubble, false);
+}, "initial value");
+test(function() {
+  var event = new Event('type');
+  event.cancelBubble = true;
+  assert_equals(event.cancelBubble, true);
+}, "set to true");
+test(function() {
+  var event = new Event('type');
+  event.cancelBubble = true;
+  event.cancelBubble = false;
+  // setting to false is a no-op
+  assert_equals(event.cancelBubble, true);
+}, "set to false");
+test(function() {
+  assert_unreached();
+}, "EXAMPLE: correct test per spec that will pass after a follow-up");
+</script>

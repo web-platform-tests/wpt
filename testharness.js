@@ -2463,6 +2463,11 @@ policies and contribution forms [3].
             }
         }
 
+        // 'Error.stack' is not supported in all browsers/versions
+        if (!stack) {
+            return "(Stack trace unavailable)";
+        }
+
         var lines = stack.split("\n");
 
         // Create a pattern to match stack frames originating within testharness.js.  These include the

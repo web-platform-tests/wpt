@@ -22,7 +22,7 @@ function run_test() {
     })
     .then(function() {
         done();
-    }, function(error) {
+    }, function(err) {
         promise_test(function(test) {
             assert_unreached("A test failed to run: " + err.name + ": " + err.message)
         }, "Could not run all tests")
@@ -157,7 +157,45 @@ function run_test() {
             }, "Can wrap and unwrap " + toWrap.name + " keys using " + fmt + " and " + wrapper.parameters.name);
 
         });
+        
+        if (canJwkWrapByHand(wrapper.wrappingKey, wrapper.parameters.wrapParameters)
+                    && canCompareNonExtractableKeys(toWrap.key)) {
+            promise_test(function(test){
+                return wrapAsNonExtractableJwk(toWrap.key,wrapper.wrappingKey,wrapper.parameters.wrapParameters)
+                .then(function(wrappedResult){
+                    return subtle.unwrapKey("jwk",wrappedResult,wrapper.unwrappingKey,wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
+                }).then(function(unwrappedResult){
+                    assert_false(unwrappedResult.extractable, "Unwrapped key is non-extractable");
+                    return equalKeys(toWrap.key,unwrappedResult);
+                }).then(function(result){
+                    assert_true(result, "Unwrapped key matches original");
+                }).catch(function(err){
+                    assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
+                });
+            }, "Can unwrap " + toWrap.name + " non-extractable keys using jwk and " + wrapper.parameters.name);
+        }
 
+    }
+    
+    // Test if we can perform wrapping by hand
+    function canJwkWrapByHand(wrappingKey, wrapParameters){
+        return (wrapParameters.name === "AES-CTR");
+    }
+    
+    // Implement key wrapping by hand to wrap a key as non-extractable JWK
+    function wrapAsNonExtractableJwk(key,wrappingKey,wrapParameters){
+        var encryptKey;
+        return subtle.exportKey("raw",wrappingKey)
+        .then(function(rawWrappingKey){
+            return subtle.importKey("raw", rawWrappingKey, {name: "AES-CTR", length: 128}, true, ["encrypt"]);
+        }).then(function(importedWrappingKey){
+            encryptKey = importedWrappingKey;
+            return subtle.exportKey("jwk",key);
+        }).then(function(exportedKey){
+            exportedKey.ext = false;
+            var jwk = str2ab(JSON.stringify(exportedKey));
+            return subtle.encrypt(wrapParameters,encryptKey,jwk);
+        });
     }
 
 
@@ -261,6 +299,41 @@ function run_test() {
 
         return "{" + keyValuePairs.join(", ") + "}";
     }
+    
+    // Can we compare key values by using them
+    function canCompareNonExtractableKeys(key){
+        if (key.algorithm.name !== "AES-CTR") {
+            return false;
+        }
+        for(var i = 0; i < key.usages.length; ++i){
+            if ( key.usages[i] === "decrypt" ) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Compare two keys by using them (works for non-extractable keys)
+    function equalKeys(expected, got){
+        if ( expected.algorithm.name !== got.algorithm.name ) {
+            return Promise.resolve(false);
+        }
+        
+        return subtle.exportKey("raw",expected)
+        .then(function(rawExpectedKey){
+            return subtle.importKey("raw",rawExpectedKey,{name: "AES-CTR", length: 128}, true, ["encrypt"]);
+        }).then(function(expectedEncryptKey){
+            return subtle.encrypt({name: "AES-CTR", counter: new Uint8Array(16), length: 64}, expectedEncryptKey, new Uint8Array(32));
+        }).then(function(encryptedData){
+            return subtle.decrypt({name: "AES-CTR", counter: new Uint8Array(16), length: 64}, got, encryptedData);
+        }).then(function(decryptedData){
+            var result = new Uint8Array(decryptedData);
+            return !result.some(x => x);
+        });
+    }
+    
+    function str2ab(str)        { return Uint8Array.from( str.split(''), function(s){return s.charCodeAt(0)} ); }
+    function ab2str(ab)         { return String.fromCharCode.apply(null, new Uint8Array(ab)); }
 
 
 }

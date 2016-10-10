@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>data URL and scripts</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+  setup({allow_uncaught_exception:true,explicit_done:true})
+  var counter = 0
+  window.onerror = (message, x, xx, xxx, e) => {
+    assert_equals(typeof e, "number")
+    assert_not_equals(message, "Script error.")
+    if(counter == 2) {
+      done()
+    }
+    counter++
+  }
+</script>
+<script src="data:,throw 1"></script>
+<script src="data:,throw 2" crossorigin></script>
+<script src="data:,throw 3" crossorigin=use-credentials></script>

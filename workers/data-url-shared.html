@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<title>data URL shared worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+var worker = new SharedWorker("data:,onconnect = (e) => { fetch('/').then(() => e.ports[0].postMessage('fail'), () => e.ports[0].postMessage('pass')) }") // not same-origin
+worker.port.onmessage = (e) => {
+  assert_equals(e.data, "pass")
+  done()
+}
+</script>

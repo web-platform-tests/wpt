@@ -8,11 +8,12 @@
   setup({allow_uncaught_exception:true})
   var t = async_test()
   t.step(() => {
-    var counter = 0
+    var counter = 1
     window.onerror = t.step_func((message, x, xx, xxx, e) => {
       assert_equals(typeof e, "number")
-      assert_not_equals(message, "Script error.")
-      if(counter == 2) {
+      assert_equals(e, counter)
+      assert_not_equals(message, "Script error.") // Cannot be "muted" as data URLs are same-origin
+      if(counter == 3) {
         t.done()
       }
       counter++

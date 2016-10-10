@@ -1,4 +1,13 @@
 function run_test() {
+  var compatibilityMode;
+  if (navigator.userAgent.includes("Chrome")) {
+    compatibilityMode = "Chrome";
+  } else if (navigator.userAgent.includes("WebKit")) {
+    compatibilityMode = "WebKit";
+  } else {
+    compatibilityMode = "Gecko";
+  }
+
   test(function() {
     assert_equals(navigator.appCodeName, "Mozilla");
   }, "appCodeName");
@@ -23,13 +32,10 @@ function run_test() {
 
   test(function() {
     if ("window" in self) {
-      if (navigator.userAgent.indexOf("Chrome") != -1 ||
-          navigator.userAgent.indexOf("WebKit") != -1) {
-        // "If the navigator compatibility mode is Chrome or WebKit"
-        assert_equals(navigator.productSub, "20030107");
-      } else {
-        // "If the navigator compatibility mode is Gecko"
+      if (compatibilityMode == "Gecko") {
         assert_equals(navigator.productSub, "20100101");
+      } else {
+        assert_equals(navigator.productSub, "20030107");
       }
     } else {
       assert_false("productSub" in navigator);
@@ -56,14 +62,11 @@ function run_test() {
 
   test(function() {
     if ("window" in self) {
-      if (navigator.userAgent.indexOf("Chrome") != -1) {
-        // "If the navigator compatibility mode is Chrome"
+      if (compatibilityMode == "Chrome") {
         assert_equals(navigator.vendor, "Google Inc.");
-      } else if (navigator.userAgent.indexOf("WebKit") != -1) {
-        // "If the navigator compatibility mode is WebKit"
+      } else if (compatibilityMode == "WebKit") {
         assert_equals(navigator.vendor, "Apple Computer, Inc.");
       } else {
-        // "If the navigator compatibility mode is Gecko"
         assert_equals(navigator.vendor, "");
       }
     } else {
@@ -85,7 +88,7 @@ function run_test() {
   // https://www.w3.org/Bugs/Public/show_bug.cgi?id=27820
 
   test(function() {
-    if ("window" in self && navigator.userAgent.indexOf("WebKit") == -1) {
+    if ("window" in self && compatibilityMode == "Gecko") {
       assert_false(navigator.taintEnabled());
     } else {
       assert_false("taintEnabled" in navigator);
@@ -93,7 +96,7 @@ function run_test() {
   }, "taintEnabled");
 
   test(function() {
-    if ("window" in self && navigator.userAgent.indexOf("WebKit") == -1) {
+    if ("window" in self && compatibilityMode == "Gecko") {
       assert_equals(typeof navigator.oscpu, "string",
                     "navigator.oscpu should be a string");
     } else {

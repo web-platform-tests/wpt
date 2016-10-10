@@ -161,9 +161,9 @@ function run_test() {
         if (canJwkWrapByHand(wrapper.wrappingKey, wrapper.parameters.wrapParameters)
                     && canCompareNonExtractableKeys(toWrap.key)) {
             promise_test(function(test){
-                return wrapAsNonExtractableJwk(toWrap.key,wrapper.wrappingKey,wrapper.parameters.wrapParameters)
+                return wrapAsNonExtractableJwk(toWrap.key,wrapper.wrappingKey,wrapper.parameters.generateParameters,wrapper.parameters.wrapParameters)
                 .then(function(wrappedResult){
-                    return subtle.unwrapKey("jwk",wrappedResult,wrapper.unwrappingKey,wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
+                    return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
                 }).then(function(unwrappedResult){
                     assert_false(unwrappedResult.extractable, "Unwrapped key is non-extractable");
                     return equalKeys(toWrap.key,unwrappedResult);
@@ -179,22 +179,30 @@ function run_test() {
     
     // Test if we can perform wrapping by hand
     function canJwkWrapByHand(wrappingKey, wrapParameters){
-        return (wrapParameters.name === "AES-CTR");
+        return (["AES-CTR", "AES-CBC", "AES-GCM", "AES-KW"].indexOf(wrappingKey.algorithm.name) !== -1);
     }
     
     // Implement key wrapping by hand to wrap a key as non-extractable JWK
-    function wrapAsNonExtractableJwk(key,wrappingKey,wrapParameters){
+    function wrapAsNonExtractableJwk(key, wrappingKey, importParameters, wrapParameters){
         var encryptKey;
+        var params = Object.create(importParameters);
+        if(params.name === "AES-KW") {
+            params.name = "AES-CBC";
+        }
         return subtle.exportKey("raw",wrappingKey)
         .then(function(rawWrappingKey){
-            return subtle.importKey("raw", rawWrappingKey, {name: "AES-CTR", length: 128}, true, ["encrypt"]);
+            return subtle.importKey("raw", rawWrappingKey, params, true, ["encrypt"]);
         }).then(function(importedWrappingKey){
             encryptKey = importedWrappingKey;
             return subtle.exportKey("jwk",key);
         }).then(function(exportedKey){
             exportedKey.ext = false;
-            var jwk = str2ab(JSON.stringify(exportedKey));
-            return subtle.encrypt(wrapParameters,encryptKey,jwk);
+            var jwk = JSON.stringify(exportedKey)
+            if (wrappingKey.algorithm.name === "AES-KW") {
+                return aeskw(encryptKey, str2ab(jwk.slice(0,-1) + " ".repeat(jwk.length%8 ? 8-jwk.length%8 : 0) + "}"));
+            } else {
+                return subtle.encrypt(wrapParameters,encryptKey,str2ab(jwk));
+            }
         });
     }
 
@@ -302,7 +310,7 @@ function run_test() {
     
     // Can we compare key values by using them
     function canCompareNonExtractableKeys(key){
-        if (key.algorithm.name !== "AES-CTR") {
+        if (["AES-CTR", "AES-CBC", "AES-GCM"].indexOf(key.algorithm.name) === -1) {
             return false;
         }
         for(var i = 0; i < key.usages.length; ++i){
@@ -319,17 +327,84 @@ function run_test() {
             return Promise.resolve(false);
         }
         
+        var importParams, cryptParams;
+        switch(expected.algorithm.name){
+            case "AES-CTR" :
+                importParams = {name: "AES-CTR", length: 128};
+                cryptParams = {name: "AES-CTR", counter: new Uint8Array(16), length: 64};
+                break;
+            case "AES-CBC" :
+                importParams = {name: "AES-CBC", length: 128};
+                cryptParams = {name: "AES-CBC", iv: new Uint8Array(16) };
+                break;
+            case "AES-GCM" :
+                importParams = {name: "AES-GCM", length: 128};
+                cryptParams = {name: "AES-GCM", iv: new Uint8Array(16) };
+                break;
+            default:
+                throw new Error("Unsupported algorithm for key comparison");
+        }
+        
         return subtle.exportKey("raw",expected)
         .then(function(rawExpectedKey){
-            return subtle.importKey("raw",rawExpectedKey,{name: "AES-CTR", length: 128}, true, ["encrypt"]);
+            return subtle.importKey("raw", rawExpectedKey, importParams, true, ["encrypt"]);
         }).then(function(expectedEncryptKey){
-            return subtle.encrypt({name: "AES-CTR", counter: new Uint8Array(16), length: 64}, expectedEncryptKey, new Uint8Array(32));
+            return subtle.encrypt(cryptParams, expectedEncryptKey, new Uint8Array(32));
         }).then(function(encryptedData){
-            return subtle.decrypt({name: "AES-CTR", counter: new Uint8Array(16), length: 64}, got, encryptedData);
+            return subtle.decrypt(cryptParams, got, encryptedData);
         }).then(function(decryptedData){
             var result = new Uint8Array(decryptedData);
             return !result.some(x => x);
         });
+    }
+    
+    // Raw AES encryption
+    function aes( k, p ) {
+        return subtle.encrypt({name: "AES-CBC", iv: new Uint8Array(16) }, k, p).then(function(ciphertext){return ciphertext.slice(0,16);});
+    }
+    
+    // AES Key Wrap
+    function aeskw(key, data) {
+        if (data.byteLength % 8 !== 0) {
+            throw new Error("AES Key Wrap data must be a multiple of 8 bytes in length");
+        }
+    
+        var A = Uint8Array.from([0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0xA6, 0, 0, 0, 0, 0, 0, 0, 0]),
+            Av = new DataView(A.buffer),
+            R = [],
+            n = data.byteLength / 8;
+        
+        for(var i = 0; i<data.byteLength; i+=8) {
+            R.push(new Uint8Array(data.slice(i,i+8)));
+        }
+        
+        function aeskw_step(j, i, final, B) {
+            A.set(new Uint8Array(B.slice(0,8)));
+            Av.setUint32(4,Av.getUint32(4) ^ (n*j+i+1));
+            R[i] = new Uint8Array(B.slice(8,16));
+            if (final) {
+                R.unshift(A.slice(0,8));
+                var result = new Uint8Array(R.length * 8);
+                R.forEach(function(Ri,i){ result.set(Ri, i*8); });
+                return result;
+            } else {
+                A.set(R[(i+1)%n],8);
+                return aes(key,A);
+            }
+        }
+        
+        var p = new Promise(function(resolve){
+            A.set(R[0],8);
+            resolve(aes(key,A));
+        });
+        
+        for(var j=0;j<6;++j) {
+            for(var i=0;i<n;++i) {
+                p = p.then(aeskw_step.bind(undefined, j, i,j===5 && i===(n-1)));
+            }
+        }
+        
+        return p;
     }
     
     function str2ab(str)        { return Uint8Array.from( str.split(''), function(s){return s.charCodeAt(0)} ); }

@@ -11,11 +11,13 @@ function run_test() {
     // to test wrapping and unwrapping.
     Promise.all([generateWrappingKeys(), generateKeysToWrap(), generateEcdhPeerKey()])
     .then(function(results) {
+        var promises = [];
         wrappers.forEach(function(wrapper) {
             keys.forEach(function(key) {
-                testWrapping(wrapper, key);
+                promises.push(testWrapping(wrapper, key));
             })
         });
+        return Promise.all(promises);
     }, function(err) {
         promise_test(function(test) {
             assert_unreached("A key failed to generate: " + err.name + ": " + err.message)
@@ -134,56 +136,45 @@ function run_test() {
             formats = ["raw", "jwk"]
         }
 
-        formats.forEach(function(fmt) {
+        return Promise.all(formats.map(function(fmt) {
             var originalExport;
+            return subtle.exportKey(fmt, toWrap.key).then(function(exportedKey) {
+                originalExport = exportedKey;
+                if (wrappingIsPossible(originalExport, wrapper.parameters.name)) {
+                    promise_test(function(test) {
+                        return subtle.wrapKey(fmt, toWrap.key, wrapper.wrappingKey, wrapper.parameters.wrapParameters)
+                        .then(function(wrappedResult) {
+                            return subtle.unwrapKey(fmt, wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages)
+                        }).then(function(unwrappedResult) {
+                            return subtle.exportKey(fmt, unwrappedResult)
+                        }).then(function(roundTripExport) {
+                            if ("byteLength" in originalExport) {
+                                assert_true(equalBuffers(originalExport, roundTripExport), "Post-wrap export matches original export");
+                            } else {
+                                assert_true(equalJwk(originalExport, roundTripExport), "Post-wrap export matches original export.");
+                            }
+                        }, function(err) {
+                            assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
+                        });
+                    }, "Can wrap and unwrap " + toWrap.name + " keys using " + fmt + " and " + wrapper.parameters.name);
 
-            promise_test(function(test) {
-                return subtle.exportKey(fmt, toWrap.key)
-                .then(function(exportedKey) {
-                    originalExport = exportedKey;
-                    return exportedKey;
-                }).then(function(exportedKey) {
-                    return subtle.wrapKey(fmt, toWrap.key, wrapper.wrappingKey, wrapper.parameters.wrapParameters);
-                }).then(function(wrappedResult) {
-                    return subtle.unwrapKey(fmt, wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages)
-                }).then(function(unwrappedResult) {
-                    return subtle.exportKey(fmt, unwrappedResult)
-                }).then(function(roundTripExport) {
-                    if ("byteLength" in originalExport) {
-                        assert_true(equalBuffers(originalExport, roundTripExport), "Post-wrap export matches original export");
-                    } else {
-                        assert_true(equalJwk(originalExport, roundTripExport), "Post-wrap export matches original export.");
+                    if (fmt === "jwk" && canCompareNonExtractableKeys(toWrap.key)) {
+                        promise_test(function(test){
+                            return wrapAsNonExtractableJwk(toWrap.key,wrapper).then(function(wrappedResult){
+                                return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
+                            }).then(function(unwrappedResult){
+                                assert_false(unwrappedResult.extractable, "Unwrapped key is non-extractable");
+                                return equalKeys(toWrap.key,unwrappedResult);
+                            }).then(function(result){
+                                assert_true(result, "Unwrapped key matches original");
+                            }).catch(function(err){
+                                assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
+                            });
+                        }, "Can unwrap " + toWrap.name + " non-extractable keys using jwk and " + wrapper.parameters.name);
                     }
-                }, function(err) {
-                    if (wrappingIsPossible(originalExport, wrapper.parameters.name)) {
-                        assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
-                    } else {
-                        assert_true(true, "Skipped test due to key length restrictions");
-                    }
-                })
-            }, "Can wrap and unwrap " + toWrap.name + " keys using " + fmt + " and " + wrapper.parameters.name);
-
-        });
-
-        if (canCompareNonExtractableKeys(toWrap.key)) {
-            promise_test(function(test){
-                return wrapAsNonExtractableJwk(toWrap.key,wrapper)
-                .then(function(wrappedResult){
-                    return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
-                }).then(function(unwrappedResult){
-                    assert_false(unwrappedResult.extractable, "Unwrapped key is non-extractable");
-                    return equalKeys(toWrap.key,unwrappedResult);
-                }).then(function(result){
-                    assert_true(result, "Unwrapped key matches original");
-                }).catch(function(err){
-                    if (err.name !== "ExceededLengthRestriction") {
-                        assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
-                    } else {
-                        assert_true(true, "Skipped test due to key length restrictions");
-                    }
-                });
-            }, "Can unwrap " + toWrap.name + " non-extractable keys using jwk and " + wrapper.parameters.name);
-        }
+                }
+            });
+        }));
     }
 
     // Implement key wrapping by hand to wrap a key as non-extractable JWK
@@ -213,13 +204,7 @@ function run_test() {
             if (wrappingKey.algorithm.name === "AES-KW") {
                 return aeskw(encryptKey, str2ab(jwk.slice(0,-1) + " ".repeat(jwk.length%8 ? 8-jwk.length%8 : 0) + "}"));
             } else {
-                if (encryptKey.algorithm.name === "RSA-OAEP" && jwk.length > 478) {
-                    var e = new Error("JWK exceeds maximum size for RSA-OAEP wrapping");
-                    e.name = "ExceededLengthRestriction";
-                    throw e;
-                } else {
-                    return subtle.encrypt(wrapper.parameters.wrapParameters,encryptKey,str2ab(jwk));
-                }
+                return subtle.encrypt(wrapper.parameters.wrapParameters,encryptKey,str2ab(jwk));
             }
         });
     }

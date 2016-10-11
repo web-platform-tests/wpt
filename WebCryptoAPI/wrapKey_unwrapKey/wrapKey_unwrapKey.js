@@ -162,9 +162,9 @@ function run_test() {
             promise_test(function(test){
                 return wrapAsNonExtractableJwk(toWrap.key,wrapper)
                 .then(function(wrappedResult){
-                    return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages);
+                    return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
                 }).then(function(unwrappedResult){
-                    //assert_false(unwrappedResult.extractable, "Unwrapped key is non-extractable");
+                    assert_false(unwrappedResult.extractable, "Unwrapped key is non-extractable");
                     return equalKeys(toWrap.key,unwrappedResult);
                 }).then(function(result){
                     assert_true(result, "Unwrapped key matches original");
@@ -201,7 +201,7 @@ function run_test() {
             encryptKey = importedWrappingKey;
             return subtle.exportKey("jwk",key);
         }).then(function(exportedKey){
-            //exportedKey.ext = false;
+            exportedKey.ext = false;
             var jwk = JSON.stringify(exportedKey)
             if (wrappingKey.algorithm.name === "AES-KW") {
                 return aeskw(encryptKey, str2ab(jwk.slice(0,-1) + " ".repeat(jwk.length%8 ? 8-jwk.length%8 : 0) + "}"));

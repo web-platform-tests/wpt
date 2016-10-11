@@ -16,7 +16,7 @@ function testmediasource(config) {
             // Create media source
             var source = new MediaSource();
             source.done = new Promise(function(resolvesource,rejectsource){
-            
+
                 // Create and fill source buffers when the media source is opened
                 source.addEventListener('sourceopen', onSourceOpen);
                 resolve(source);
@@ -24,13 +24,13 @@ function testmediasource(config) {
                 function onSourceOpen(event) {
                     var audioSourceBuffer = source.addSourceBuffer(config.audioType),
                         videoSourceBuffer = source.addSourceBuffer(config.videoType);
-                        
+
                     audioSourceBuffer.addEventListener('updateend',onUpdateEnd);
                     videoSourceBuffer.addEventListener('updateend',onUpdateEnd);
-                    
+
                     audioSourceBuffer.appendBuffer(config.audioMedia);
                     videoSourceBuffer.appendBuffer(config.videoMedia);
-                    
+
                     function onUpdateEnd(event){
                         event.target.removeEventListener('updateend', onUpdateEnd);
                         if (!audioSourceBuffer.updating && !videoSourceBuffer.updating) {

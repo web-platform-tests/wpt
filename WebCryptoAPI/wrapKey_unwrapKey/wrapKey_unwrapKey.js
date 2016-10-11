@@ -5,10 +5,11 @@ function run_test() {
 
     var wrappers = [];  // Things we wrap (and upwrap) keys with
     var keys = [];      // Things to wrap and unwrap
+    var ecdhPeerKey;    // ECDH peer public key needed for non-extractable ECDH key comparison
 
     // Generate all the keys needed, then iterate over all combinations
     // to test wrapping and unwrapping.
-    Promise.all([generateWrappingKeys(), generateKeysToWrap()])
+    Promise.all([generateWrappingKeys(), generateKeysToWrap(), generateEcdhPeerKey()])
     .then(function(results) {
         wrappers.forEach(function(wrapper) {
             keys.forEach(function(key) {
@@ -114,6 +115,12 @@ function run_test() {
         }));
     }
 
+    function generateEcdhPeerKey() {
+        return subtle.generateKey({name: "ECDH", namedCurve: "P-256"},true,["deriveBits"])
+        .then(function(result){
+            ecdhPeerKey = result.publicKey;
+        });
+    }
 
     // Can we successfully "round-trip" (wrap, then unwrap, a key)?
     function testWrapping(wrapper, toWrap) {
@@ -321,9 +328,6 @@ function run_test() {
 
     // Can we compare key values by using them
     function canCompareNonExtractableKeys(key){
-        if (["AES-CTR", "AES-CBC", "AES-GCM", "RSA-OAEP", "RSASSA-PKCS1-v1_5", "RSA-PSS", "ECDSA", "HMAC", "AES-KW"].indexOf(key.algorithm.name) === -1) {
-            return false;
-        }
         if (key.usages.indexOf("decrypt") !== -1) {
             return true;
         }
@@ -331,6 +335,9 @@ function run_test() {
             return true;
         }
         if (key.usages.indexOf("wrapKey") !== -1) {
+            return true;
+        }
+        if (key.usages.indexOf("deriveBits") !== -1) {
             return true;
         }
         return false;
@@ -342,7 +349,7 @@ function run_test() {
             return Promise.resolve(false);
         }
 
-        var cryptParams, signParams, wrapParams;
+        var cryptParams, signParams, wrapParams, deriveParams;
         switch(expected.algorithm.name){
             case "AES-CTR" :
                 cryptParams = {name: "AES-CTR", counter: new Uint8Array(16), length: 64};
@@ -370,6 +377,9 @@ function run_test() {
                 break;
             case "AES-KW" :
                 wrapParams = {name: "AES-KW"};
+                break;
+            case "ECDH" :
+                deriveParams = {name: "ECDH", public: ecdhPeerKey};
                 break;
             default:
                 throw new Error("Unsupported algorithm for key comparison");
@@ -409,7 +419,7 @@ function run_test() {
             }).then(function(signature){
                 return subtle.verify(signParams, verifyKey, signature, new Uint8Array(32));
             });
-        } else {
+        } else if (wrapParams) {
             var aKeyToWrap, wrappedWithExpected;
             return subtle.importKey("raw", new Uint8Array(16), "AES-CBC", true, ["encrypt"])
             .then(function(key){
@@ -421,6 +431,16 @@ function run_test() {
             }).then(function(wrapResult){
                 var wrappedWithGot = Array.from((new Uint8Array(wrapResult)).values());
                 return wrappedWithGot.every((x,i) => x === wrappedWithExpected[i]);
+            });
+        } else {
+            var expectedDerivedBits;
+            return subtle.deriveBits(deriveParams, expected, 128)
+            .then(function(result){
+                expectedDerivedBits = Array.from((new Uint8Array(result)).values());
+                return subtle.deriveBits(deriveParams, got, 128);
+            }).then(function(result){
+                var gotDerivedBits = Array.from((new Uint8Array(result)).values());
+                return gotDerivedBits.every((x,i) => x === expectedDerivedBits[i]);
             });
         }
     }

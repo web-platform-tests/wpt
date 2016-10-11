@@ -2628,9 +2628,9 @@ interface MessageEvent : Event {
   readonly attribute DOMString origin;
   readonly attribute DOMString lastEventId;
   readonly attribute (WindowProxy or MessagePort)? source;
-  readonly attribute MessagePort[]? ports;
+  readonly attribute FrozenArray<MessagePort> ports;
 
-  void initMessageEvent(DOMString typeArg, boolean canBubbleArg, boolean cancelableArg, any dataArg, DOMString originArg, DOMString lastEventIdArg, (WindowProxy or MessagePort) sourceArg, MessagePort[]? portsArg);
+  void initMessageEvent(DOMString type, boolean bubbles, boolean cancelable, any data, DOMString origin, DOMString lastEventId, (WindowProxy or MessagePort) source, sequence<MessagePort> ports);
 };
 
 dictionary MessageEventInit : EventInit {

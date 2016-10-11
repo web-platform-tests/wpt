@@ -167,6 +167,9 @@ function makePromiseTests( thennable, criteria ) {
 }
 
 function runTests( container_url, annotation_url ) {
+  // trim whitespace from incoming variables
+  container_url = container_url.trim();
+  annotation_url = annotation_url.trim();
 
   // Section 4 has a requirement that the URL end in a slash, so...
   // ensure the url has a length

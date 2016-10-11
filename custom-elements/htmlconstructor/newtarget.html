@@ -90,7 +90,7 @@ test_with_window(w => {
 
     returnNotAnObject = true;
     new ElementWithDynamicPrototype();
-  }, "If prototype is not object, derives the fallback from NewTarget's realm (autonomous custom elements)");
+  }, "If prototype is not object (" + notAnObject + "), derives the fallback from NewTarget's realm (autonomous custom elements)");
 });
 
 [null, undefined, 5, "string"].forEach(function (notAnObject) {
@@ -121,7 +121,7 @@ test_with_window(w => {
 
     returnNotAnObject = true;
     new ElementWithDynamicPrototype();
-  }, "If prototype is not object, derives the fallback from NewTarget's realm (customized built-in elements)");
+  }, "If prototype is not object (" + notAnObject + "), derives the fallback from NewTarget's realm (customized built-in elements)");
 });
 
 </script>

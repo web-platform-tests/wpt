@@ -38,7 +38,7 @@ function runTest(config,qualifier) {
             config.messagehandler(event.messageType, event.message, {variantId: event.target.variantId}).then(function(response) {
                 return event.target.update(response);
             }).then(function(){
-                if (!video.src) {
+                if (!_video.src) {
                     _video.src = URL.createObjectURL(_mediaSource);
                     _video.play();
                 } else if (event.target.keyStatuses.size > 0){

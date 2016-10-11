@@ -321,13 +321,16 @@ function run_test() {
 
     // Can we compare key values by using them
     function canCompareNonExtractableKeys(key){
-        if (["AES-CTR", "AES-CBC", "AES-GCM", "RSA-OAEP", "RSASSA-PKCS1-v1_5", "RSA-PSS", "ECDSA", "HMAC"].indexOf(key.algorithm.name) === -1) {
+        if (["AES-CTR", "AES-CBC", "AES-GCM", "RSA-OAEP", "RSASSA-PKCS1-v1_5", "RSA-PSS", "ECDSA", "HMAC", "AES-KW"].indexOf(key.algorithm.name) === -1) {
             return false;
         }
         if (key.usages.indexOf("decrypt") !== -1) {
             return true;
         }
         if (key.usages.indexOf("sign") !== -1) {
+            return true;
+        }
+        if (key.usages.indexOf("wrapKey") !== -1) {
             return true;
         }
         return false;
@@ -339,7 +342,7 @@ function run_test() {
             return Promise.resolve(false);
         }
 
-        var cryptParams, signParams;
+        var cryptParams, signParams, wrapParams;
         switch(expected.algorithm.name){
             case "AES-CTR" :
                 cryptParams = {name: "AES-CTR", counter: new Uint8Array(16), length: 64};
@@ -365,6 +368,9 @@ function run_test() {
             case "HMAC" :
                 signParams = {name: "HMAC"};
                 break;
+            case "AES-KW" :
+                wrapParams = {name: "AES-KW"};
+                break;
             default:
                 throw new Error("Unsupported algorithm for key comparison");
         }
@@ -385,7 +391,7 @@ function run_test() {
                 var result = new Uint8Array(decryptedData);
                 return !result.some(x => x);
             });
-        } else {
+        } else if (signParams) {
             var verifyKey;
             return subtle.exportKey("jwk",expected)
             .then(function(jwkExpectedKey){
@@ -402,6 +408,19 @@ function run_test() {
                 return subtle.sign(signParams, got, new Uint8Array(32));
             }).then(function(signature){
                 return subtle.verify(signParams, verifyKey, signature, new Uint8Array(32));
+            });
+        } else {
+            var aKeyToWrap, wrappedWithExpected;
+            return subtle.importKey("raw", new Uint8Array(16), "AES-CBC", true, ["encrypt"])
+            .then(function(key){
+                aKeyToWrap = key;
+                return subtle.wrapKey("raw", aKeyToWrap, expected, wrapParams);
+            }).then(function(wrapResult){
+                wrappedWithExpected = Array.from((new Uint8Array(wrapResult)).values());
+                return subtle.wrapKey("raw", aKeyToWrap, got, wrapParams);
+            }).then(function(wrapResult){
+                var wrappedWithGot = Array.from((new Uint8Array(wrapResult)).values());
+                return wrappedWithGot.every((x,i) => x === wrappedWithExpected[i]);
             });
         }
     }

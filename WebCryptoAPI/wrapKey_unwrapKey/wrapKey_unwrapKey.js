@@ -321,13 +321,14 @@ function run_test() {
 
     // Can we compare key values by using them
     function canCompareNonExtractableKeys(key){
-        if (["AES-CTR", "AES-CBC", "AES-GCM", "RSA-OAEP"].indexOf(key.algorithm.name) === -1) {
+        if (["AES-CTR", "AES-CBC", "AES-GCM", "RSA-OAEP", "RSASSA-PKCS1-v1_5", "RSA-PSS", "ECDSA", "HMAC"].indexOf(key.algorithm.name) === -1) {
             return false;
         }
-        for(var i = 0; i < key.usages.length; ++i){
-            if ( key.usages[i] === "decrypt" ) {
-                return true;
-            }
+        if (key.usages.indexOf("decrypt") !== -1) {
+            return true;
+        }
+        if (key.usages.indexOf("sign") !== -1) {
+            return true;
         }
         return false;
     }
@@ -338,44 +339,71 @@ function run_test() {
             return Promise.resolve(false);
         }
 
-        var importParams, cryptParams;
+        var cryptParams, signParams;
         switch(expected.algorithm.name){
             case "AES-CTR" :
-                importParams = {name: "AES-CTR", length: 128};
                 cryptParams = {name: "AES-CTR", counter: new Uint8Array(16), length: 64};
                 break;
             case "AES-CBC" :
-                importParams = {name: "AES-CBC", length: 128};
                 cryptParams = {name: "AES-CBC", iv: new Uint8Array(16) };
                 break;
             case "AES-GCM" :
-                importParams = {name: "AES-GCM", length: 128};
                 cryptParams = {name: "AES-GCM", iv: new Uint8Array(16) };
                 break;
             case "RSA-OAEP" :
-                importParams = {name: "RSA-OAEP", hash: "SHA-256"};
                 cryptParams = {name: "RSA-OAEP", label: new Uint8Array(8) };
+                break;
+            case "RSASSA-PKCS1-v1_5" :
+                signParams = {name: "RSASSA-PKCS1-v1_5"};
+                break;
+            case "RSA-PSS" :
+                signParams = {name: "RSA-PSS", saltLength: 32 };
+                break;
+            case "ECDSA" :
+                signParams = {name: "ECDSA", hash: "SHA-256"};
+                break;
+            case "HMAC" :
+                signParams = {name: "HMAC"};
                 break;
             default:
                 throw new Error("Unsupported algorithm for key comparison");
         }
 
-        return subtle.exportKey("jwk",expected)
-        .then(function(jwkExpectedKey){
-            if (expected.algorithm.name === "RSA-OAEP") {
-                ["d","p","q","dp","dq","qi","oth"].forEach(function(field){ delete jwkExpectedKey[field]; });
-            }
-            jwkExpectedKey.key_ops = ["encrypt"];
-            return subtle.importKey("jwk", jwkExpectedKey, importParams, true, ["encrypt"])
-            .catch(function(error){console.log(JSON.stringify(jwkExpectedKey)+", "+JSON.stringify(importParams)); throw error;});
-        }).then(function(expectedEncryptKey){
-            return subtle.encrypt(cryptParams, expectedEncryptKey, new Uint8Array(32));
-        }).then(function(encryptedData){
-            return subtle.decrypt(cryptParams, got, encryptedData);
-        }).then(function(decryptedData){
-            var result = new Uint8Array(decryptedData);
-            return !result.some(x => x);
-        });
+        if (cryptParams) {
+            return subtle.exportKey("jwk",expected)
+            .then(function(jwkExpectedKey){
+                if (expected.algorithm.name === "RSA-OAEP") {
+                    ["d","p","q","dp","dq","qi","oth"].forEach(function(field){ delete jwkExpectedKey[field]; });
+                }
+                jwkExpectedKey.key_ops = ["encrypt"];
+                return subtle.importKey("jwk", jwkExpectedKey, expected.algorithm, true, ["encrypt"]);
+            }).then(function(expectedEncryptKey){
+                return subtle.encrypt(cryptParams, expectedEncryptKey, new Uint8Array(32));
+            }).then(function(encryptedData){
+                return subtle.decrypt(cryptParams, got, encryptedData);
+            }).then(function(decryptedData){
+                var result = new Uint8Array(decryptedData);
+                return !result.some(x => x);
+            });
+        } else {
+            var verifyKey;
+            return subtle.exportKey("jwk",expected)
+            .then(function(jwkExpectedKey){
+                if (expected.algorithm.name === "RSA-PSS" || expected.algorithm.name === "RSASSA-PKCS1-v1_5") {
+                    ["d","p","q","dp","dq","qi","oth"].forEach(function(field){ delete jwkExpectedKey[field]; });
+                }
+                if (expected.algorithm.name === "ECDSA") {
+                    delete jwkExpectedKey["d"];
+                }
+                jwkExpectedKey.key_ops = ["verify"];
+                return subtle.importKey("jwk", jwkExpectedKey, expected.algorithm, true, ["verify"]);
+            }).then(function(expectedVerifyKey){
+                verifyKey = expectedVerifyKey;
+                return subtle.sign(signParams, got, new Uint8Array(32));
+            }).then(function(signature){
+                return subtle.verify(signParams, verifyKey, signature, new Uint8Array(32));
+            });
+        }
     }
 
     // Raw AES encryption

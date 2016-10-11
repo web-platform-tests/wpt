@@ -64,7 +64,7 @@ function runTest(config, qualifier) {
             // Changing the Media Keys object failed
             _usingMediaKeys2 = false;
             assert_equals(_video.mediaKeys, _mediaKeys1);
-            // The specification allows wither NotSupportedError or InvalidStateError depending on
+            // The specification allows either NotSupportedError or InvalidStateError depending on
             // whether the failure was because changing Media Keys object is not supported
             // or just not allowed at this time, respectively.
             assert_in_array(error.name, ['InvalidStateError','NotSupportedError']);
@@ -87,7 +87,7 @@ function runTest(config, qualifier) {
             } else {
                 assert_equals(_video.mediaKeys, _mediaKeys2);
             }
-            // The specification allows wither NotSupportedError or InvalidStateError depending on
+            // The specification allows either NotSupportedError or InvalidStateError depending on
             // whether the failure was because changing Media Keys object is not supported
             // or just not allowed at this time, respectively.
             assert_in_array(error.name, ['InvalidStateError','NotSupportedError']);

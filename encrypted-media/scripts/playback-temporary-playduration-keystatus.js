@@ -52,7 +52,7 @@ function runTest(config,qualifier) {
         function onPlaying(event) {
             waitForEventAndRunStep('keystatuseschange', _mediaKeySession, onKeystatuseschange, test);
         }
-        
+
         function onKeystatuseschange(event) {
             for (var status of event.target.keyStatuses.values()) {
                 assert_equals(status, "expired", "All keys should have keyStatus expired");

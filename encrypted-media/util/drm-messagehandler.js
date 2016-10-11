@@ -112,7 +112,7 @@ const requestConstructors = {
             } else {
                 var expiration = params.expiration || (Date.now().valueOf() + 3600000),
                     playDuration = params.playDuration || 3600000;
- 
+
                 crt.profile = {rental: {absoluteExpiration: (new Date(expiration)).toISOString(),
                                         playDuration: playDuration } };
             }

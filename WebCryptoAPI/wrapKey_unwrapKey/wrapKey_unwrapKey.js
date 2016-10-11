@@ -158,10 +158,9 @@ function run_test() {
 
         });
 
-        if (canJwkWrapByHand(wrapper.wrappingKey, wrapper.parameters.wrapParameters)
-                    && canCompareNonExtractableKeys(toWrap.key)) {
+        if (canCompareNonExtractableKeys(toWrap.key)) {
             promise_test(function(test){
-                return wrapAsNonExtractableJwk(toWrap.key,wrapper.wrappingKey,wrapper.parameters.generateParameters,wrapper.parameters.wrapParameters)
+                return wrapAsNonExtractableJwk(toWrap.key,wrapper)
                 .then(function(wrappedResult){
                     return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
                 }).then(function(unwrappedResult){
@@ -177,21 +176,26 @@ function run_test() {
 
     }
 
-    // Test if we can perform wrapping by hand
-    function canJwkWrapByHand(wrappingKey, wrapParameters){
-        return (["AES-CTR", "AES-CBC", "AES-GCM", "AES-KW"].indexOf(wrappingKey.algorithm.name) !== -1);
-    }
-
     // Implement key wrapping by hand to wrap a key as non-extractable JWK
-    function wrapAsNonExtractableJwk(key, wrappingKey, importParameters, wrapParameters){
-        var encryptKey;
-        var params = Object.create(importParameters);
-        if(params.name === "AES-KW") {
-            params.name = "AES-CBC";
-        }
-        return subtle.exportKey("raw",wrappingKey)
-        .then(function(rawWrappingKey){
-            return subtle.importKey("raw", rawWrappingKey, params, true, ["encrypt"]);
+    function wrapAsNonExtractableJwk(key, wrapper){
+        var wrappingKey = wrapper.wrappingKey,
+            encryptKey;
+        
+
+
+        return subtle.exportKey("jwk",wrappingKey)
+        .then(function(jwkWrappingKey){
+            // Update the key generation parameters to work as key import parameters
+            var params = Object.create(wrapper.parameters.generateParameters);
+            if(params.name === "AES-KW") {
+                params.name = "AES-CBC";
+                jwkWrappingKey.alg = "A"+params.length+"CBC";
+            } else if (params.name === "RSA-OAEP") {
+                params.modulusLength = undefined;
+                params.publicExponent = undefined;
+            }
+            jwkWrappingKey.key_ops = ["encrypt"];
+            return subtle.importKey("jwk", jwkWrappingKey, params, true, ["encrypt"]);
         }).then(function(importedWrappingKey){
             encryptKey = importedWrappingKey;
             return subtle.exportKey("jwk",key);
@@ -201,7 +205,7 @@ function run_test() {
             if (wrappingKey.algorithm.name === "AES-KW") {
                 return aeskw(encryptKey, str2ab(jwk.slice(0,-1) + " ".repeat(jwk.length%8 ? 8-jwk.length%8 : 0) + "}"));
             } else {
-                return subtle.encrypt(wrapParameters,encryptKey,str2ab(jwk));
+                return subtle.encrypt(wrapper.parameters.wrapParameters,encryptKey,str2ab(jwk));
             }
         });
     }

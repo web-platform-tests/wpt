@@ -79,6 +79,7 @@ function runTest(config,qualifier) {
         }).then(function(source) {
             _mediaSource = source;
             _video.src = URL.createObjectURL(_mediaSource);
+            return source.done;
         }).catch(onFailure);
     }, testname);
 }

@@ -85,6 +85,8 @@ function runTest(config,qualifier) {
             return testmediasource(config);
         }).then(function(source) {
             _video.src = URL.createObjectURL(source);
+            return source.done;
+        }).then(function(){
             _video.play();
         }).catch(onFailure);
     }, testname);

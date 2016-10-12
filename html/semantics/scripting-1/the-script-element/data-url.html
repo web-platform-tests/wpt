@@ -6,14 +6,13 @@
 <div id=log></div>
 <script>
   setup({allow_uncaught_exception:true})
-  var t = async_test()
-  t.step(() => {
+  async_test(t => {
     var counter = 1
     window.onerror = t.step_func((message, x, xx, xxx, e) => {
       assert_equals(typeof e, "number")
       assert_equals(e, counter)
       assert_not_equals(message, "Script error.") // Cannot be "muted" as data URLs are same-origin
-      if(counter == 3) {
+      if (counter == 3) {
         t.done()
       }
       counter++

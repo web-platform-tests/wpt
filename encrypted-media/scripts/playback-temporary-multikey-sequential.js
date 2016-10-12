@@ -35,7 +35,7 @@ function runTest(config,qualifier) {
         }
 
         function onMessage(event) {
-            var firstMessage = !video.src;
+            var firstMessage = !_video.src;
             config.messagehandler(event.messageType, event.message, {variantId: event.target.variantId}).then(function(response) {
                 return event.target.update(response);
             }).then(function(){

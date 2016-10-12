@@ -41,7 +41,7 @@ function runTest(config, qualifier) {
     }
 
     // Tests for Key System.
-    expect_error('', [{}], 'InvalidAccessError', 'Empty Key System');
+    expect_error('', [{}], 'TypeError', 'Empty Key System');
     expect_error('com.example.unsupported', [{}], 'NotSupportedError', 'Unsupported Key System');
     expect_error(config.keysystem + '.', [{}], 'NotSupportedError', 'Key System ending in "."');
     expect_error(config.keysystem.toUpperCase(), [{}], 'NotSupportedError', 'Capitalized Key System');
@@ -83,7 +83,7 @@ function runTest(config, qualifier) {
     }
 
     // Tests for trivial configurations.
-    expect_error(config.keysystem, [], 'InvalidAccessError', 'Empty supportedConfigurations');
+    expect_error(config.keysystem, [], 'TypeError', 'Empty supportedConfigurations');
     expect_config(config.keysystem, [{}], {}, 'Empty configuration');
 
     // Various combinations of supportedConfigurations.

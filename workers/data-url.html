@@ -4,9 +4,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-var worker = new Worker("data:,fetch('/').then(() => self.postMessage('fail'), () => self.postMessage('pass'))") // not same-origin
-worker.onmessage = (e) => {
-  assert_equals(e.data, "pass")
-  done()
-}
+async_test(t => {
+  var worker = new Worker("data:,fetch('/').then(() => self.postMessage('fail'), () => self.postMessage('pass'))") // not same-origin
+  worker.onmessage = t.step_func_done(e => {
+    assert_equals(e.data, "pass")
+  })
+})
 </script>

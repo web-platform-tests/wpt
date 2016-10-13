@@ -50,8 +50,10 @@ function runTest(config) {
                 return mk5.createSession().generateRequest(type, 1);
             }
         },
+        // (new Uint8Array(0)) returns empty array. So 'TypeError' should
+        // be returned.
         {
-            exception: 'InvalidAccessError',
+            exception: 'TypeError',
             func: function (mk6, type) {
                 return mk6.createSession().generateRequest(type, new Uint8Array(0));
             }
@@ -247,8 +249,10 @@ function runTest(config) {
                 return s.update(1);
             }
         },
+        // (new Uint8Array(0)) returns empty array. So 'TypeError' should
+        // be returned.
         {
-            exception: 'InvalidAccessError',
+            exception: 'TypeError',
             func: function (s) {
                 return s.update(new Uint8Array(0));
             }

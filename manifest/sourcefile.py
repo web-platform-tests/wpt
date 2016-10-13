@@ -1,4 +1,3 @@
-import imp
 import os
 from six.moves.urllib.parse import urljoin
 from fnmatch import fnmatch
@@ -328,11 +327,11 @@ class SourceFile(object):
         elif self.name_is_multi_global:
             rv = [
                 TestharnessTest(self, replace_end(self.url, ".any.js", ".any.html")),
-                TestharnessTest(self, replace_end(self.url, ".any.js", ".any.worker")),
+                TestharnessTest(self, replace_end(self.url, ".any.js", ".any.worker.html")),
             ]
 
         elif self.name_is_worker:
-            rv = [TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker"))]
+            rv = [TestharnessTest(self, replace_end(self.url, ".worker.js", ".worker.html"))]
 
         elif self.name_is_webdriver:
             rv = [WebdriverSpecTest(self, self.url)]

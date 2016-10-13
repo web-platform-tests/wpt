@@ -60,7 +60,7 @@ def test_worker():
 
     assert not s.content_is_testharness
 
-    assert items(s) == [("testharness", "/html/test.worker")]
+    assert items(s) == [("testharness", "/html/test.worker.html")]
 
 
 def test_multi_global():
@@ -75,7 +75,7 @@ def test_multi_global():
 
     assert items(s) == [
         ("testharness", "/html/test.any.html"),
-        ("testharness", "/html/test.any.worker"),
+        ("testharness", "/html/test.any.worker.html"),
     ]
 
 

@@ -48,6 +48,7 @@ test(function() {
 
     var evt = document.createEvent("Event");
     evt.initEvent(event, true, true);
+    // TODO: Also test setting cancelBubble to true.
     evt.stopPropagation();
     target.dispatchEvent(evt);
 

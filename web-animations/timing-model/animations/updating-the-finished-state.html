@@ -10,28 +10,6 @@
 <script>
 'use strict';
 
-//
-// NOTE TO THE POOR PERSON WHO HAS TO MERGE THIS WITH THE TEST OF THE SAME
-// NAME FROM BLINK
-//
-// There is a pull request from Blink at:
-//
-//   https://github.com/w3c/web-platform-tests/pull/3328
-//
-// which this file will surely conflict with.
-//
-// However, those tests cover a different part of the same algorithm. They
-// are mostly concerned with testing events and promises rather than the
-// timing part of the algorithm.
-//
-// The tests below cover the first part of the algorithm. So, please keep both
-// sets of tests and delete this comment. Preferably put the tests in this
-// file first.
-//
-// Thank you!
-//
-
-
 // CASE 1: playback rate > 0 and current time >= target effect end
 // (Also the start time is resolved and there is pending task)
 
@@ -326,6 +304,136 @@ test(function(t) {
                 'The animation start time should not be updated');
 }, 'Updating the finished state when start time is unresolved and'
    + ' did seek = true');
+
+////////////////////
+
+function validateFinishEvent(t, event, animation, expectedEventTime, expectedTimelineTime) {
+  t.step(function() {
+    assert_equals(event.target, animation, "Animation should be event target");
+    assert_times_equal(event.currentTime, expectedEventTime,
+        "Event currentTime should be the given expected value");
+    assert_times_equal(event.timelineTime, expectedTimelineTime,
+        "Event timelineTime should be the given expected value");
+  });
+}
+
+function awaitFinishEventAndPromise(t, animation, expectedEventTime, expectedTimelineTime) {
+  var eventPromise = new Promise(function(resolve) {
+    animation.onfinish = function(event) {
+      validateFinishEvent(t, event, animation, expectedEventTime, expectedTimelineTime);
+      resolve();
+    };
+  });
+
+  var finishedPromise = animation.finished.then(function(target) {
+    assert_equals(target, animation);
+  });
+
+  var timeout = waitForAnimationFrames(3).then(function() {
+    return Promise.reject("Expected finish notifications did not occur");
+  });
+
+  return Promise.race([timeout,Promise.all([eventPromise, finishedPromise])]);
+}
+
+promise_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 1);
+  animation.onfinish = t.unreached_func("Seeking to finish should not fire finish event");
+  animation.finished.then(t.unreached_func("Seeking to finish should not resolve finished promise"));
+  animation.currentTime = 1;
+  animation.currentTime = 0;
+  animation.pause();
+  return waitForAnimationFrames(3);
+}, "Finish notification steps don't run when the animation seeks to finish and then seeks back again");
+
+promise_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 1);
+  animation.onfinish = t.unreached_func("Seeking past finish should not fire finish event");
+  animation.finished.then(t.unreached_func("Seeking past finish should not resolve finished promise"));
+  animation.currentTime = 10;
+  animation.currentTime = 0;
+  animation.pause();
+  return waitForAnimationFrames(3);
+}, "Finish notification steps don't run when the animation seeks past finish and then seeks back again");
+
+promise_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 1);
+  return animation.ready.then(function() {
+    animation.finish();
+    var oldStartTime = animation.startTime;
+    animation.currentTime = 0;
+    animation.pause();
+    var expectedEventTime = 1;
+    var expectedTimelineTime = oldStartTime + expectedEventTime;
+    return awaitFinishEventAndPromise(t, animation, expectedEventTime, expectedTimelineTime);
+  });
+}, "Finish notification steps run when the animation completes with .finish(), even if we then seek away");
+
+promise_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 1);
+  return animation.ready.then(function() {
+    animation.currentTime = 10;
+    var expectedEventTime = 10;
+    var expectedTimelineTime = animation.startTime + expectedEventTime;
+    return awaitFinishEventAndPromise(t, animation, expectedEventTime, expectedTimelineTime);
+  });
+}, "Finish notification steps run when the animation seeks past finish");
+
+promise_test(function(t) {
+  var div = createDiv(t);
+  var animation = div.animate(null, 1);
+  return animation.ready.then(function() {
+    var expectedEventTime = 1;
+    var expectedTimelineTime = animation.startTime + expectedEventTime;
+    return awaitFinishEventAndPromise(t, animation, expectedEventTime, expectedTimelineTime);
+  });
+}, "Finish notification steps run when the animation completes");
+
+promise_test(function(t) {
+  var animation = createDiv(t).animate(null, 1);
+  var firstPromise = animation.finished;
+
+  return firstPromise.then(function(target) {
+    animation.currentTime = 0;
+    assert_not_equals(firstPromise, animation.finished);
+    return animation.finished;
+  });
+}, "Animation finished promise is replaced after seeking back to start");
+
+promise_test(function(t) {
+  var animation = createDiv(t).animate(null, 1);
+  var firstPromise = animation.finished;
+
+  return firstPromise.then(function(target) {
+    animation.play();
+    assert_not_equals(firstPromise, animation.finished);
+    return animation.finished;
+  });
+}, "Animation finished promise is replaced after replaying from start");
+
+async_test(function(t) {
+  var animation = createDiv(t).animate(null, 1);
+  animation.onfinish = function(event) {
+    animation.currentTime = 0;
+    animation.onfinish = function(event) {
+      t.done();
+    };
+  };
+}, "Animation finish event is fired again after seeking back to start");
+
+async_test(function(t) {
+  var animation = createDiv(t).animate(null, 1);
+  animation.onfinish = function(event) {
+    animation.play();
+    animation.onfinish = function(event) {
+      t.done();
+    };
+  };
+}, "Animation finish event is fired again after replaying from start");
 
 </script>
 </body>

@@ -1,7 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Test that javascript: evaluation only performs a navigation to the
-  result when the result is a string value.</title>
+<title>javascript: URL return value handling</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <iframe src="javascript:'1'"></iframe>
@@ -11,22 +10,59 @@
 <iframe src="javascript:null"></iframe>
 <iframe src="javascript:true"></iframe>
 <iframe src="javascript:new String('1')"></iframe>
+<iframe src="javascript:throw new Error('boo')"></iframe>
 <script>
-  var t = async_test();
-  onload = t.step_func_done(function() {
-    assert_equals(frames[0].document.documentElement.textContent,
-                  "1", "string return should cause navigation");
-    assert_equals(frames[1].document.documentElement.textContent,
-                  "", "number return should not cause navigation");
-    assert_equals(frames[2].document.documentElement.textContent,
-                  "", "object return should not cause navigation");
-    assert_equals(frames[3].document.documentElement.textContent,
-                  "", "undefined return should not cause navigation");
-    assert_equals(frames[4].document.documentElement.textContent,
-                  "", "null return should not cause navigation");
-    assert_equals(frames[5].document.documentElement.textContent,
-                  "", "null return should not cause navigation");
-    assert_equals(frames[6].document.documentElement.textContent,
-                  "", "String object return should not cause navigation");
-  });
+  "use strict";
+
+  async_test(t => {
+    onload = t.step_func_done(() => {
+      assert_equals(frames[0].document.documentElement.textContent,
+                    "1", "string return should load as response body");
+      assert_equals(frames[1].document.documentElement.textContent,
+                    "", "number return should load an empty response body");
+      assert_equals(frames[2].document.documentElement.textContent,
+                    "", "object return should load an empty response body");
+      assert_equals(frames[3].document.documentElement.textContent,
+                    "", "undefined return should load an empty response body");
+      assert_equals(frames[4].document.documentElement.textContent,
+                    "", "null return should load an empty response body");
+      assert_equals(frames[5].document.documentElement.textContent,
+                    "", "null return should load an empty response body");
+      assert_equals(frames[6].document.documentElement.textContent,
+                    "", "String object return should load an empty response body");
+      assert_equals(frames[7].document.documentElement.textContent,
+                    "", "Throwing an exception should load an empty response body");
+    });
+  }, "The basics: javascript: URL return values translating to response bodies");
+
+  const expected = {
+    "'1'": "1",
+    "1": "",
+    "({ toString: function() { return '1'; } })": "",
+    "undefined": "",
+    "null": "",
+    "true": "",
+    "new String('1')": "",
+    "throw Error('boo')": ""
+  };
+
+  for (let jsURLData of Object.keys(expected)) {
+    async_test(t => {
+      const blob = new Blob(["Original document"], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+
+      const iframe = document.createElement("iframe");
+      iframe.onload = t.step_func(() => {
+        assert_equals(iframe.contentWindow.document.body.textContent, "Original document",
+          "Sanity check that original document loaded");
+
+        iframe.onload = t.step_func_done(() => {
+          assert_equals(iframe.contentWindow.document.body.textContent, expected[jsURLData]);
+        });
+        iframe.src = "javascript:" + jsURLData;
+      });
+      iframe.src = url;
+      document.body.appendChild(iframe);
+    }, `javascript:${jsURLData} should cause a navigation to a document containing "${expected[jsURLData]}"`);
+  }
 </script>

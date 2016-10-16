@@ -35,14 +35,20 @@ function runTest(config,qualifier) {
         }
 
         function onMessage(event) {
+            var firstMessage = !_video.src;
             config.messagehandler(event.messageType, event.message, {variantId: event.target.variantId}).then(function(response) {
                 return event.target.update(response);
             }).then(function(){
-                if (!video.src) {
+                if (firstMessage) {
                     _video.src = URL.createObjectURL(_mediaSource);
-                    _video.play();
+                    return _mediaSource.done;
                 } else if (event.target.keyStatuses.size > 0){
                     _waitingForKey = false;
+                    return Promise.resolve();
+                }
+            }).then(function(){
+                if (firstMessage) {
+                    _video.play();
                 }
             }).catch(onFailure);
         }

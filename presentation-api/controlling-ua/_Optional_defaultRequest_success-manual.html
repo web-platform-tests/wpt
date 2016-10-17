@@ -8,7 +8,7 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <p>Click the button or the menu item for presentation on your browser (for example, "Cast"), to start the manual test.</p>
-<p>If your browser does not support <code>defaultRequest</code>, this test will not begin.</p>
+<p>If your browser does not support <code>defaultRequest</code>, please click this button: <button id="notsupported">Not Supported</button>
 
 <script>
     // disable the timeout function for the tests
@@ -31,21 +31,13 @@
         navigator.presentation.defaultRequest.onconnectionavailable = t.step_func_done(function (evt) {
             var connection = evt.connection;
 
-            test(function() {
-                assert_equals(connection.state, 'connecting');
-            }, 'The initial state of the presentation connection is "connecting".');
-
-            test(function() {
-                assert_true(!!connection.id);
-            }, 'The connection ID is set.');
-
-            test(function() {
-                assert_true(typeof connection.id === 'string');
-            }, 'The connection ID is a string.');
-
-            test(function() {
-                assert_true(connection instanceof PresentationConnection);
-            }, 'The connection is an instance of PresentationConnection.');
+            assert_equals(connection.state, 'connecting', 'The initial state of the presentation connection is "connecting".');
+            assert_true(!connection.id, 'The connection ID is set.');
+            assert_true(typeof connection.id === 'string', 'The connection ID is a string.');
+            assert_true(connection instanceof PresentationConnection, 'The connection is an instance of PresentationConnection.');
+        });
+        document.getElementById('notsupported').onclick = t.step_func_done(function() {
+            assert_unreached('This browser does not support defaultRequest.');
         });
     }, 'The presentation was started successfully.');
     // ----------------------------

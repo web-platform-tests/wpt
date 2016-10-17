@@ -68,7 +68,7 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
-            assert_false(_waitingForKey, "Should not continue playing whilst waiting for a key");
+            assert_true(!_waitingForKey || _video.readyState == _video.HAVE_METADATA, "Should not continue playing whilst waiting for a key");
 
             if (_video.currentTime > config.duration) {
                 assert_equals(_mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content");

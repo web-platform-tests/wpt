@@ -19,7 +19,8 @@ function runTest(config,qualifier) {
             _mediaKeys,
             _mediaKeySessions = [],
             _mediaSource,
-            _waitingForKey = false;
+            _waitingForKey = false,
+            _playingCount = 0;
 
         function startNewSession() {
             assert_less_than(_mediaKeySessions.length, config.initData.length);
@@ -62,7 +63,8 @@ function runTest(config,qualifier) {
         }
 
         function onPlaying(event) {
-            assert_equals(_mediaKeySessions.length, 1, "Playback should start with a single key / session");
+            _playingCount++;
+            assert_equals(_mediaKeySessions.length, _playingCount, "Should get one 'playing' event per key / session played");
         }
 
         function onTimeupdate(event) {

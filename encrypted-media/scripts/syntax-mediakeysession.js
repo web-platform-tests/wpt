@@ -323,14 +323,6 @@ function runTest(config) {
                 assert_unreached('remove() should not succeed if session uninitialized');
             }, function (error) {
                 assert_equals(error.name, 'InvalidStateError');
-                // remove() on a temporary session should fail.
-                return mediaKeySession.generateRequest(type, initData);
-            }).then(function (result) {
-                return mediaKeySession.remove();
-            }).then(function () {
-                assert_unreached('remove() should not succeed for temporary sessions');
-            }, function (error) {
-                assert_equals(error.name, 'InvalidAccessError');
             });
     }
     function removeTestException(){

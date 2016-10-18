@@ -49,28 +49,22 @@ function runTest(config,qualifier) {
             }).then(test.step_func(function() {
                 _events.push('updated');
                 if (event.messageType === 'license-release') {
-                    var events1 = ['generaterequest'];
-                    var events2 = ['license-request', 'license-request-response', 'updated'];
-                    var events3 = [ 'keystatuseschange',
-                                    'playing',
-                                    'remove',
-                                    'keystatuseschange',
-                                    'license-release',
-                                    'license-release-response',
-                                    'closed-promise',
-                                    'updated' ];
-                    assert_array_equals(_events.slice(0,events1.length), events1, "Expected initial events");
-                    var i = events1.length;
-                    for(; i < _events.length-events3.length; i+=events2.length) {
-                        assert_array_equals(_events.slice(i,i+events2.length), events2, "Expected one or more license request sequences");
-                    }
-                    assert_greater_than(i,events1.length, "Expected at least one license request sequence");
-                    assert_array_equals(_events.slice(i), events3, "Expected events sequence" );
+                    checkEventSequence( _events,
+                                    ['generaterequest',
+                                        ['license-request', 'license-request-response', 'updated'], // potentially repeating
+                                        'keystatuseschange',
+                                        'playing',
+                                        'remove',
+                                        'keystatuseschange',
+                                        'license-release',
+                                        'license-release-response',
+                                        'closed-promise',
+                                        'updated' ]);
                     test.done();
                 }
             })).catch(onFailure);
         }
-
+               
         function onKeyStatusesChange(event) {
             assert_equals(event.target, _mediaKeySession);
             assert_true(event instanceof window.Event);

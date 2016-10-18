@@ -49,21 +49,21 @@ function runTest(config,qualifier) {
             }).then(test.step_func(function() {
                 _events.push('updated');
                 if (event.messageType === 'license-release') {
-                    assert_array_equals(_events,
-                                [
-                                    'generaterequest',
-                                    'license-request',
-                                    'license-request-response',
-                                    'updated',
-                                    'keystatuseschange',
-                                    'playing',
-                                    'remove',
-                                    'keystatuseschange',
-                                    'license-release',
-                                    'license-release-response',
-                                    'closed-promise',
-                                    'updated'
-                                ],
+                    assert_equals(_events[0], 'generaterequest',"First event is generateRequest");
+                    var i = 1;
+                    for(; i < _events.length-8; i+=3 ) {
+                        assert_array_equals(_events.slice(i,i+3),['license-request', 'license-request-response', 'updated'],
+                                "Expected one or more license request sequences");
+                    }
+                    assert_greater_than(i,1,"Expected at least one license request sequence");
+                    assert_array_equals(_events.slice(i), [ 'keystatuseschange',
+                                                            'playing',
+                                                            'remove',
+                                                            'keystatuseschange',
+                                                            'license-release',
+                                                            'license-release-response',
+                                                            'closed-promise',
+                                                            'updated' ],
                                 "Expected events sequence" );
                     test.done();
                 }

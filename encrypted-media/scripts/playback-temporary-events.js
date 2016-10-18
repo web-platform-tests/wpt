@@ -78,19 +78,22 @@ function runTest(config,qualifier) {
         function onClosed(event) {
             _events.push('closed-promise');
             setTimeout(test.step_func(function() {
-                assert_array_equals(_events,
-                                    [
-                                        'generaterequest',
-                                        'license-request',
-                                        'license-response',
-                                        'updated',
-                                        'allkeysusable',
-                                        'playing',
-                                        'closed',
-                                        'closed-promise',
-                                        'emptykeyslist'
-                                    ],
-                                    "Expected events sequence");
+                assert_equals(_events[0], 'generaterequest', "First event is generateRequest");
+                var i = 1;
+                for(; i < _events.length-5; i+=3 ) {
+                    assert_array_equals(_events.slice(i,i+3),['license-request', 'license-response', 'updated'],
+                            "Expected one or more license request sequences");
+                }
+                assert_greater_than(i,1,"Expected at least one license request sequence");
+                assert_array_equals(_events.slice(i), [ 'allkeysusable',
+                                                        'playing',
+                                                        'closed',
+                                                        'closed-promise',
+                                                        'emptykeyslist' ],
+                            "Expected events sequence" );
+                                    
+                                    
+                                    
                 test.done();
             } ), 0);
         }

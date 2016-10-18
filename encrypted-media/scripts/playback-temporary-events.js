@@ -78,22 +78,20 @@ function runTest(config,qualifier) {
         function onClosed(event) {
             _events.push('closed-promise');
             setTimeout(test.step_func(function() {
-                assert_equals(_events[0], 'generaterequest', "First event is generateRequest");
-                var i = 1;
-                for(; i < _events.length-5; i+=3 ) {
-                    assert_array_equals(_events.slice(i,i+3),['license-request', 'license-response', 'updated'],
-                            "Expected one or more license request sequences");
+                var events1 = ['generaterequest'];
+                var events2 = ['license-request', 'license-response', 'updated'];
+                var events3 = ['allkeysusable',
+                                'playing',
+                                'closed',
+                                'closed-promise',
+                                'emptykeyslist'];
+                assert_array_equals(_events.slice(0,events1.length), events1, "Expected initial events");
+                var i = events1.length;
+                for(; i < _events.length-events3.length; i+=events2.length) {
+                    assert_array_equals(_events.slice(i,i+events2.length), events2, "Expected one or more license request sequences");
                 }
-                assert_greater_than(i,1,"Expected at least one license request sequence");
-                assert_array_equals(_events.slice(i), [ 'allkeysusable',
-                                                        'playing',
-                                                        'closed',
-                                                        'closed-promise',
-                                                        'emptykeyslist' ],
-                            "Expected events sequence" );
-                                    
-                                    
-                                    
+                assert_greater_than(i,events1.length, "Expected at least one license request sequence");
+                assert_array_equals(_events.slice(i), events3, "Expected events sequence" );
                 test.done();
             } ), 0);
         }

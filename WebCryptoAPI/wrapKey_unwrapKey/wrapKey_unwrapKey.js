@@ -144,33 +144,54 @@ function run_test() {
                     promise_test(function(test) {
                         return subtle.wrapKey(fmt, toWrap.key, wrapper.wrappingKey, wrapper.parameters.wrapParameters)
                         .then(function(wrappedResult) {
-                            return subtle.unwrapKey(fmt, wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages)
+                            return subtle.unwrapKey(fmt, wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages);
                         }).then(function(unwrappedResult) {
+                            assert_true(unwrappedResult.extractable, "Unwrapped result is extractable");
                             return subtle.exportKey(fmt, unwrappedResult)
                         }).then(function(roundTripExport) {
-                            if ("byteLength" in originalExport) {
-                                assert_true(equalBuffers(originalExport, roundTripExport), "Post-wrap export matches original export");
-                            } else {
-                                assert_true(equalJwk(originalExport, roundTripExport), "Post-wrap export matches original export.");
-                            }
+                            assert_true(equalExport(originalExport, roundTripExport), "Post-wrap export matches original export");
                         }, function(err) {
-                            assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
+                            assert_unreached("Round trip for extractable key threw an error - " + err.name + ': "' + err.message + '"');
                         });
                     }, "Can wrap and unwrap " + toWrap.name + " keys using " + fmt + " and " + wrapper.parameters.name);
-
-                    if (fmt === "jwk" && canCompareNonExtractableKeys(toWrap.key)) {
+                    
+                    if (canCompareNonExtractableKeys(toWrap.key)) {
                         promise_test(function(test){
-                            return wrapAsNonExtractableJwk(toWrap.key,wrapper).then(function(wrappedResult){
-                                return subtle.unwrapKey("jwk", wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
+                            return subtle.wrapKey(fmt, toWrap.key, wrapper.wrappingKey, wrapper.parameters.wrapParameters)
+                            .then(function(wrappedResult) {
+                                return subtle.unwrapKey(fmt, wrappedResult, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
                             }).then(function(unwrappedResult){
-                                assert_false(unwrappedResult.extractable, "Unwrapped key is non-extractable");
-                                return equalKeys(toWrap.key,unwrappedResult);
+                                assert_false(unwrappedResult.extractable, "Unwrapped result is non-extractable");
+                                return equalKeys(toWrap.key, unwrappedResult);
                             }).then(function(result){
                                 assert_true(result, "Unwrapped key matches original");
                             }).catch(function(err){
-                                assert_unreached("Round trip threw an error - " + err.name + ': "' + err.message + '"');
+                                assert_unreached("Round trip for key unwrapped non-extractable threw an error - " + err.name + ': "' + err.message + '"');
                             });
-                        }, "Can unwrap " + toWrap.name + " non-extractable keys using jwk and " + wrapper.parameters.name);
+                        }, "Can wrap and unwrap " + toWrap.name + " keys as non-extractable using " + fmt + " and " + wrapper.parameters.name);
+
+                        if (fmt === "jwk") {
+                            promise_test(function(test){
+                                var wrappedKey;
+                                return wrapAsNonExtractableJwk(toWrap.key,wrapper).then(function(wrappedResult){
+                                    wrappedKey = wrappedResult;
+                                    return subtle.unwrapKey("jwk", wrappedKey, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, false, toWrap.usages);
+                                }).then(function(unwrappedResult){
+                                    assert_false(unwrappedResult.extractable, "Unwrapped key is non-extractable");
+                                    return equalKeys(toWrap.key,unwrappedResult);
+                                }).then(function(result){
+                                    assert_true(result, "Unwrapped key matches original");
+                                }).catch(function(err){
+                                    assert_unreached("Round trip for non-extractable key threw an error - " + err.name + ': "' + err.message + '"');
+                                }).then(function(){
+                                    return subtle.unwrapKey("jwk", wrappedKey, wrapper.unwrappingKey, wrapper.parameters.wrapParameters, toWrap.algorithm, true, toWrap.usages);
+                                }).then(function(unwrappedResult){
+                                    assert_unreached("Unwrapping a non-extractable JWK as extractable should fail");
+                                }).catch(function(err){
+                                    assert_equals(err.name, "DataError", "Unwrapping a non-extractable JWK as extractable fails with DataError");
+                                });
+                            }, "Can unwrap " + toWrap.name + " non-extractable keys using jwk and " + wrapper.parameters.name);
+                        }
                     }
                 }
             });
@@ -237,6 +258,15 @@ function run_test() {
 
 
     // Helper methods follow:
+    
+    // Are two exported keys equal
+    function equalExport(originalExport, roundTripExport) {
+        if ("byteLength" in originalExport) {
+            return equalBuffers(originalExport, roundTripExport);
+        } else {
+            return equalJwk(originalExport, roundTripExport);
+        }
+    }
 
     // Are two array buffers the same?
     function equalBuffers(a, b) {

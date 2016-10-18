@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Custom Elements: Changes to the HTML parser</title>
+<title>Custom Elements: HTML parser must use the owner document's custom element registry</title>
 <meta name="author" title="Ryosuke Niwa" href="mailto:rniwa@webkit.org">
 <meta name="assert" content="HTML parser must use the owner document's custom element registry">
 <link rel="help" href="https://html.spec.whatwg.org/#create-an-element-for-the-token">
@@ -92,6 +92,34 @@ test(function () {
     assert_false(instance instanceof MyCustomElement);
 
 }, 'HTML parser must use the registry of window.document in a document created by document.implementation.createXHTMLDocument()');
+
+test(function () {
+    var windowlessDocument = new Document;
+    windowlessDocument.appendChild(windowlessDocument.createElement('html'));
+    windowlessDocument.documentElement.innerHTML = '<my-custom-element></my-custom-element>';
+
+    var instance = windowlessDocument.querySelector('my-custom-element');
+
+    assert_true(instance instanceof Element);
+    assert_false(instance instanceof MyCustomElement);
+
+}, 'HTML parser must use the registry of window.document in a document created by new Document');
+
+test(function () {
+    new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'resources/empty-html-document.html');
+        xhr.overrideMimeType('text/html');
+        xhr.onload = function () { resolve(xhr.responseXML); }
+        xhr.onerror = function () { reject('Failed to fetch the document'); }
+        xhr.send();
+    }).then(function (doc) {
+        doc.write('<my-custom-element></my-custom-element>');
+        var instance = doc.querySelector('my-custom-element');
+        assert_true(instance instanceof Element);
+        assert_false(instance instanceof MyCustomElement);        
+    });
+}, 'HTML parser must use the registry of window.document in a document created by XMLHttpRequest');
 
 </script>
 </body>

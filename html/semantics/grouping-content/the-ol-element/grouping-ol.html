@@ -245,19 +245,19 @@
             assert_equals(document.getElementById("letter").start, 1, "start of A -> 1 (default)");
         }, "IDL and content attribute parse start of 'A' correctly.");
 
-        // basicRevGoodName - default should be 3
+        // basicRevGoodName - default should be 1
         test(function() {
-            assert_equals(document.getElementById("basicRevGoodName").start, 1, "no start attribute provided -> 3");
+            assert_equals(document.getElementById("basicRevGoodName").start, 1, "no start attribute provided -> 1");
         }, "Default start value (if none provided) for reversed list = 1.");
 
-        // basicRevEmpty - default should be 3
+        // basicRevEmpty - default should be 1
         test(function() {
-            assert_equals(document.getElementById("basicRevEmpty").start, 1, "start of A -> 3 (default)");
+            assert_equals(document.getElementById("basicRevEmpty").start, 1, "start of A -> 1 (default)");
         }, "Default start value (if failed to parse) for reversed list = 1.");
 
-        // lots - default should be 3
+        // lots - default should be 1
         test(function() {
-            assert_equals(document.getElementById("lots").start, 1, "no start attribute -> 3 (default)");
+            assert_equals(document.getElementById("lots").start, 1, "no start attribute -> 1 (default)");
         }, "Default start value for reversed list = 1 (even with tons of other child elements).");
 
         // adding child element changes default start value for reversed list

@@ -1,0 +1,125 @@
+<svg width="100%" height="100%" viewBox="0 0 480 360"
+  xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <clipPath id="overflowHiddenClip1" clipPathUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="2" height="2"/>
+      </clipPath>
+      <clipPath id="overflowHiddenClip" clipPathUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="4" height="4"/>
+      </clipPath>
+    </defs>
+    <g fill="green">
+      <text x="125" y="30" font-size="14" fill="black">Marker Rendering Properties</text>
+      <!-- Fill property -->
+      <g fill="black" stroke="none" stroke-width="8">
+        <text x="100" y="140" font-size="10" fill="black" stroke="none">Fill Property</text>
+        <!-- Generate the equivalent SVG -->
+          <path d="M 30 60 L 80 60 L 80 110 Z"/>
+          <g transform="translate(30,60) scale(8) translate(-1, -1)">
+            <g clip-path="url(#overflowHiddenClip1)">
+              <g transform="scale(0.2, 0.2)">
+                <rect width="10" height="10"/>
+              </g>
+            </g>
+          </g>
+          <g transform="translate(80,60) scale(8) translate(-1, -1)">
+            <g clip-path="url(#overflowHiddenClip1)">
+              <g transform="scale(0.2, 0.2)">
+                <rect width="10" height="10"/>
+              </g>
+            </g>
+          </g>
+          <g transform="translate(80,110) scale(8) translate(-1, -1)">
+            <g clip-path="url(#overflowHiddenClip1)">
+              <g transform="scale(0.2, 0.2)">
+                <rect width="10" height="10"/>
+              </g>
+            </g>
+          </g>
+        </g>
+      <!-- Stroke property -->
+      <g fill="none" stroke="black" stroke-width="4">
+        <text x="340" y="140" font-size="10" fill="black" stroke="none">Stroke Property</text>
+        <!-- Generate the equivalent SVG -->
+          <path d="M 270 60 L 320 60 L 320 110 Z"/>
+          <g transform="translate(270,60) scale(4) translate(-2, -2)">
+            <g clip-path="url(#overflowHiddenClip)">
+              <g transform="scale(0.2, 0.2)">
+                <rect width="20" height="20"/>
+              </g>
+            </g>
+          </g>
+          <g transform="translate(320,60) scale(4) translate(-2, -2)">
+            <g clip-path="url(#overflowHiddenClip)">
+              <g transform="scale(0.2, 0.2)">
+                <rect width="20" height="20"/>
+              </g>
+            </g>
+          </g>
+          <g transform="translate(320, 110) scale(4) translate(-2, -2)">
+            <g clip-path="url(#overflowHiddenClip)">
+              <g transform="scale(0.2, 0.2)">
+                <rect width="20" height="20"/>
+              </g>
+            </g>
+          </g>
+      </g>
+      <!-- Parent and specified properties -->
+      <g fill="orange" stroke="blue">
+        <text x="90" y="270" font-size="10" fill="black" stroke="none">Mixed Properties</text>
+        <!-- Generate the equivalent SVG -->
+          <path stroke="purple" stroke-width="4" d="M 30 190 L 80 190 L 80 240 Z"/>
+          <g fill="green" stroke="black" stroke-width="8">
+            <g transform="translate(30,190) scale(4) translate(-2, -2)">
+              <g clip-path="url(#overflowHiddenClip)">
+                <g transform="scale(.2, .2)">
+                  <rect width="20" height="20"/>
+                </g>
+              </g>
+            </g>
+            <g transform="translate(80,190) scale(4) translate(-2, -2)">
+              <g clip-path="url(#overflowHiddenClip)">
+                <g transform="scale(0.2, 0.2)">
+                  <rect width="20" height="20"/>
+                </g>
+              </g>
+            </g>
+            <g transform="translate(80,240) scale(4) translate(-2, -2)">
+              <g clip-path="url(#overflowHiddenClip)">
+                <g transform="scale(0.2, 0.2)">
+                  <rect width="20" height="20"/>
+                </g>
+              </g>
+            </g>
+          </g>
+      </g>
+      <g fill="orange" stroke="green">
+        <text x="340" y="270" font-size="10" fill="black" stroke="none">Mixed Properties</text>
+        <!-- Generate the equivalent SVG -->
+          <path stroke="purple" stroke-width="4" d="M 270 190 L 320 190 L 320 240 Z"/>
+          <g fill="black" stroke="blue" stroke-width="4">
+            <g transform="translate(270,190) scale(4) translate(-2, -2)">
+              <g clip-path="url(#overflowHiddenClip)">
+                <g transform="scale(0.4, 0.4)">
+                  <rect width="10" height="10"/>
+                </g>
+              </g>
+            </g>
+            <g transform="translate(320,190) scale(4) translate(-2, -2)">
+              <g clip-path="url(#overflowHiddenClip)">
+                <g transform="scale(0.4, 0.4)">
+                  <rect width="10" height="10"/>
+                </g>
+              </g>
+            </g>
+            <g transform="translate(320,240) scale(4) translate(-2, -2)">
+              <g clip-path="url(#overflowHiddenClip)">
+                <g transform="scale(0.4, 0.4)">
+                  <rect width="10" height="10"/>
+                </g>
+              </g>
+            </g>
+          </g>
+      </g>
+    </g>
+</svg>

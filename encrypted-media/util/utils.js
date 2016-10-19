@@ -118,16 +118,7 @@ function consoleWrite(text)
 
 function forceTestFailureFromPromise(test, error, message)
 {
-    // Promises convert exceptions into rejected Promises. Since there is
-    // currently no way to report a failed test in the test harness, errors
-    // are reported using force_timeout().
-    if (message)
-        consoleWrite(message + ': ' + error.message);
-    else if (error)
-        consoleWrite(error);
-
-    test.force_timeout();
-    test.done();
+    test.step_func(assert_unreached)(message ? message + ': ' + error.message : error);
 }
 
 // Returns an array of audioCapabilities that includes entries for a set of

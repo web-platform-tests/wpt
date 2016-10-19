@@ -227,13 +227,12 @@ MessageHandler.prototype.messagehandler = function messagehandler(messageType, m
             var algorithm = jwt2webcrypto(alg);
             if (secret.byteLength !== algorithm.length / 8) throw new Error("Unexpected secret length: " + secret.byteLength);
 
-            if (!claims.iat) claims.iat = (Date.now() / 1000) | 0;
+            if (!claims.iat) claims.iat = ((Date.now() / 1000) | 0) - 60;
             if (!claims.jti) {
                 var nonce = new Uint8Array(16);
                 window.crypto.getRandomValues(nonce);
                 claims.jti = str2b64url( ab2str(nonce) );
             }
-
             var header = {typ: "JWT", alg: alg};
             var plaintext = str2b64url(JSON.stringify(header)) + '.' + str2b64url(JSON.stringify(claims));
             return subtlecrypto.importKey("raw", secret, algorithm, false, [ "sign" ]).then( function(key) {

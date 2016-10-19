@@ -103,7 +103,7 @@ function runTest(configEncrypted,configClear,qualifier) {
         }
 
         waitForEventAndRunStep('encrypted', _video, onEncrypted, test);
-        waitForEventAndRunStep('playing', video, onPlaying, test);
+        waitForEventAndRunStep('playing', _video, onPlaying, test);
         startPlayback();
     }, testname);
 }

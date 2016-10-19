@@ -86,7 +86,7 @@
       <marker id="hmarkerStart" viewBox="0 0 10 10" markerWidth="2" markerHeight="2" refX="7.5" refY="7.5" markerUnits="strokeWidth" overflow="hidden">
         <rect width="15" height="15" fill="purple" stroke="none"/>
       </marker>
-      <marker id="hmarkerMiddle" viewBox="0 0 8 8" markerWidth="2" markerHeight="2" refX="4" refY="" markerUnits="strokeWidth" overflow="hidden">
+      <marker id="hmarkerMiddle" viewBox="0 0 8 8" markerWidth="2" markerHeight="2" refX="4" refY="4" markerUnits="strokeWidth" overflow="hidden">
         <circle cx="4" cy="4" r="8" fill="green" stroke="none"/>
       </marker>
       <marker id="hmarkerEnd" viewBox="0 0 10 10" markerWidth="2" markerHeight="2" refX="10" refY="10" markerUnits="strokeWidth" overflow="hidden">

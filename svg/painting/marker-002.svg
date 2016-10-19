@@ -3,7 +3,7 @@
   xmlns:html="http://www.w3.org/1999/xhtml">
     <!--
     Tests the rendering of markers, specifically property inheritance. For the four
-    tests, there should be two identical paths with markers drawn. 
+    tests, there should be two identical paths with markers drawn.
 
     The top two tests examine the rendering of markers when the marker and the path
     referencing it share the same parent and all painting properties are specfied

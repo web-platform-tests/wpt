@@ -2,7 +2,7 @@
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
     <!--
-    Tests the basic support for markers. 
+    Tests the basic support for markers.
 
     The top test examines the basic support for the marker element and style. The
     markers are purple rectangles.

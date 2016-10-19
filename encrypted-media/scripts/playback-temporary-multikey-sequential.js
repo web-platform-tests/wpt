@@ -20,7 +20,8 @@ function runTest(config,qualifier) {
             _mediaKeySessions = [],
             _mediaSource,
             _waitingForKey = false,
-            _playingCount = 0;
+            _playingCount = 0,
+            _canplayCount = 0;
 
         function startNewSession() {
             assert_less_than(_mediaKeySessions.length, config.initData.length);
@@ -65,6 +66,13 @@ function runTest(config,qualifier) {
         function onPlaying(event) {
             _playingCount++;
             assert_equals(_mediaKeySessions.length, _playingCount, "Should get one 'playing' event per key / session played");
+            assert_less_than_equal(_playingCount, 2, "Should not get more than two 'playing' events.");
+        }
+
+        function onCanPlay(event) {
+            _canplayCount++;
+            assert_equals(_mediaKeySessions.length, _canplayCount, "Should get one 'canplay' event per key / session played");
+            assert_less_than_equal(_canplayCount, 2, "Should not get more than two 'canplay' events.");
         }
 
         function onTimeupdate(event) {
@@ -89,6 +97,7 @@ function runTest(config,qualifier) {
 
             waitForEventAndRunStep('waitingforkey', _video, onWaitingForKey, test);
             waitForEventAndRunStep('playing', _video, onPlaying, test);
+            waitForEventAndRunStep('canplay', _video, onCanPlay, test);
 
             return testmediasource(config);
         }).then(function(source) {

@@ -6,7 +6,7 @@
     <script src='/resources/testharness.js' nonce='dummy'></script>
     <script src='/resources/testharnessreport.js' nonce='dummy'></script>
     <script src='../support/checkSecurityPolicyViolations.sub.js' nonce='dummy'></script>
-    <!-- CSP served: script-src 'strict-dynamic' 'nonce-dummy' 'sha256-yU6Q7nD1TCBB9JvY06iIJ8ONLOPU4g8ml5JCDgXkv+M=' -->
+    <!-- CSP served: script-src 'strict-dynamic' 'nonce-dummy' 'sha256-yU6Q7nD1TCBB9JvY06iIJ8ONLOPU4g8ml5JCDgXkv+M=' 'sha256-q4UENJJRiH+iLoSx96J5lQojiaYlWVmU4RqZGDUBvE8=' -->
 </head>
 
 <body>
@@ -27,6 +27,20 @@
             assert_true(hashScriptRan);
             t.done();
         }, "Script matching SHA256 hash is allowed with `strict-dynamic`.");
+    </script>
+
+    <!-- Hash: 'sha256-q4UENJJRiH+iLoSx96J5lQojiaYlWVmU4RqZGDUBvE8=' -->
+    <script>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            var e = document.createElement('script');
+            e.src = 'simpleSourcedScript.js';
+            e.onload = t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            });
+            e.onerror = t.unreached_func('Error should not be triggered.');
+            document.body.appendChild(e);
+        }, 'Script injected via `appendChild` from a script matching SHA256 hash is allowed with `strict-dynamic`.');
     </script>
 
     <script nonce='dummy'>

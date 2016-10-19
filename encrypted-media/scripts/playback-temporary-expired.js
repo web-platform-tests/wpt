@@ -44,16 +44,18 @@ function runTest(config,qualifier) {
 
             assert_in_array(event.messageType, ['license-request', 'individualization-request']);
 
-            var expiration = Date.now().valueOf();
-            config.messagehandler(event.messageType, event.message, expiration).then(function(response) {
-                return event.target.update(response);
-            }).then(test.step_func(function(){
-                assert_approx_equals(event.target.expiration, expiration, 2000, "expiration attribute should equal provided expiration time");
-                test.step_timeout(function() {
-                    _video.play();
-                    test.step_timeout(function() { test.done(); }, 2000);
-                }, 5000);
-            })).catch(onFailure);
+            var expiration = Date.now().valueOf() - 60000;
+            config.messagehandler(event.messageType, event.message, {expiration: expiration}).then(function(response) {
+                // Server may return license with expiration time of now, possibly with a few seconds clock skew
+                // so we should wait a while to be sure it is expired.
+                test.step_timeout(function(){
+                    event.target.update(response).then(test.step_func(function(){
+                        assert_less_than(event.target.expiration, Date.now().valueOf(), "expiration attribute should indicate license expired in the past");
+                        _video.play();
+                        test.step_timeout(function() { test.done(); }, 2000);
+                    })).catch(onFailure);
+                }, 2000);
+            }).catch(onFailure);
         }
 
         function onPlaying(event) {

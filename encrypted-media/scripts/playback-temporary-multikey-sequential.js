@@ -76,6 +76,11 @@ function runTest(config,qualifier) {
         }
 
         function onTimeupdate(event) {
+            // We should not receive 'timeupdate' events due to playing while waiting for a key, except
+            // when we first start waiting for key we should change the readyState to HAVE_METADATA
+            // which will trigger the "If the previous ready state was HAVE_FUTURE_DATA or more, and
+            // the new ready state is HAVE_CURRENT_DATA or less" case of the readyState change
+            // algorithm which requires a "timeupdate" event be fired.
             assert_true(!_waitingForKey || _video.readyState == _video.HAVE_METADATA, "Should not continue playing whilst waiting for a key");
 
             if (_video.currentTime > config.duration) {

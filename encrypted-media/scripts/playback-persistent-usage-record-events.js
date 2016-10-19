@@ -5,10 +5,10 @@ function runTest(config,qualifier) {
                                     + /video\/([^;]*)/.exec(config.videoType)[1]
                                     + ', playback, check events';
 
-    var configuration = {   initDataTypes: [ config.initDataType ],
-                            audioCapabilities: [ { contentType: config.audioType } ],
-                            videoCapabilities: [ { contentType: config.videoType } ],
-                            sessionTypes: [ 'persistent-usage-record' ] };
+    var configuration = {   initDataTypes: [config.initDataType ],
+                            audioCapabilities: [{contentType: config.audioType}],
+                            videoCapabilities: [{contentType: config.videoType}],
+                            sessionTypes: ['persistent-usage-record']};
 
 
     async_test(function(test) {
@@ -28,12 +28,12 @@ function runTest(config,qualifier) {
         }
 
         function onMessage(event) {
-            assert_equals( event.target, _mediaKeySession );
-            assert_true( event instanceof window.MediaKeyMessageEvent );
-            assert_equals( event.type, 'message');
+            assert_equals(event.target, _mediaKeySession);
+            assert_true(event instanceof window.MediaKeyMessageEvent);
+            assert_equals(event.type, 'message');
 
-            if ( event.messageType !== 'individualization-request' ) {
-                _events.push( event.messageType );
+            if (event.messageType !== 'individualization-request') {
+                _events.push(event.messageType);
             }
 
             config.messagehandler(event.messageType, event.message).then(function(response) {
@@ -42,23 +42,23 @@ function runTest(config,qualifier) {
             }).then(test.step_func(function() {
                 _events.push('update-done');
                 if (event.messageType === 'license-release') {
-                    consoleWrite(_events);
-                    assert_array_equals(_events,
-                                    [   'encrypted',
-                                        'generaterequest-done',
-                                        'license-request',
-                                        'license-request-response',
-                                        'update-done',
-                                        'keystatuseschange',
-                                        'playing',
-                                        'remove-done',
-                                        'keystatuseschange',
-                                        'license-release',
-                                        'license-release-response',
-                                        'closed-promise',
-                                        'update-done'
-                                    ],
-                                    "Expected events sequence" );
+                    var events1 = ['encrypted','generaterequest-done'];
+                    var events2 = ['license-request', 'license-request-response', 'update-done'];
+                    var events3 = [ 'keystatuseschange',
+                                    'playing',
+                                    'remove-done',
+                                    'keystatuseschange',
+                                    'license-release',
+                                    'license-release-response',
+                                    'closed-promise',
+                                    'update-done' ];
+                    assert_array_equals(_events.slice(0,events1.length), events1, "Expected initial events");
+                    var i = events1.length;
+                    for(; i < _events.length-events3.length; i+=events2.length) {
+                        assert_array_equals(_events.slice(i,i+events2.length), events2, "Expected one or more license request sequences");
+                    }
+                    assert_greater_than(i,events1.length, "Expected at least one license request sequence");
+                    assert_array_equals(_events.slice(i), events3, "Expected events sequence" );
                     test.done();
                 }
 

@@ -57,7 +57,7 @@ function runTest(config, qualifier) {
         }).then(test.step_func(function() {
             // Changing the Media Keys object succeeded
             _usingMediaKeys2 = true;
-            assert_equals(_video2.mediaKeys, _mediaKeys2);
+            assert_equals(_video.mediaKeys, _mediaKeys2);
             // Return something so the promise resolves properly.
             return Promise.resolve();
         }), test.step_func(function(error) {

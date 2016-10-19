@@ -18,7 +18,7 @@
   }
 </style>
 <script>
-  var epsilon = 1;
+  var epsilon = .5;
 
   function getBox(aId) {
     return document.getElementById(aId).getBoundingClientRect();
@@ -31,31 +31,31 @@
 
   function runTests() {
     test(function() {
-      assert_approx_equals(getBox("unitCm").width, 96, epsilon, "cm");
-      assert_approx_equals(getBox("unitEm").width, 120, epsilon, "em");
-      assert_approx_equals(getBox("unitEx").width, 500, epsilon, "ex");
-      assert_approx_equals(getBox("unitIn").width, 288, epsilon, "in");
-      assert_approx_equals(getBox("unitNamed").width, 389, epsilon, "namedspace");
-      assert_approx_equals(getBox("unitMm").width, 576, epsilon, "mm");
-      assert_approx_equals(getBox("unitPc").width, 96, epsilon, "pc");
-      assert_approx_equals(getBox("unitPercentage").width, 60, epsilon, "%");
-      assert_approx_equals(getBox("unitPt").width, 96, epsilon, "pt");
-      assert_approx_equals(getBox("unitPx").width, 123, epsilon, "px");
-      assert_approx_equals(getBox("unitNone").width, 150, epsilon, "Unitless");
+      assert_equals(getBox("unitCm").width, 96, "cm");
+      assert_equals(getBox("unitEm").width, 120, "em");
+      assert_equals(getBox("unitEx").width, 500, "ex");
+      assert_equals(getBox("unitIn").width, 288, "in");
+      assert_equals(getBox("unitNamed").width, 700, "namedspace");
+      assert_equals(getBox("unitMm").width, 576, "mm");
+      assert_equals(getBox("unitPc").width, 96, "pc");
+      assert_equals(getBox("unitPercentage").width, 60, "%");
+      assert_equals(getBox("unitPt").width, 96, "pt");
+      assert_equals(getBox("unitPx").width, 123, "px");
+      assert_equals(getBox("unitNone").width, 150, "Unitless");
     }, "Units");
 
     test(function() {
-      assert_approx_equals(getBox("spaceCm").width, 96, epsilon, "cm");
-      assert_approx_equals(getBox("spaceEm").width, 120, epsilon, "em");
-      assert_approx_equals(getBox("spaceEx").width, 500, epsilon, "ex");
-      assert_approx_equals(getBox("spaceIn").width, 288, epsilon, "in");
-      assert_approx_equals(getBox("spaceNamed").width, 389, epsilon, "namedspace");
-      assert_approx_equals(getBox("spaceMm").width, 576, epsilon, "mm");
-      assert_approx_equals(getBox("spacePc").width, 96, epsilon, "pc");
-      assert_approx_equals(getBox("spacePercentage").width, 60, epsilon, "%");
-      assert_approx_equals(getBox("spacePt").width, 96, epsilon, "pt");
-      assert_approx_equals(getBox("spacePx").width, 123, epsilon, "px");
-      assert_approx_equals(getBox("spaceNone").width, 150, epsilon, "Unitless");
+      assert_equals(getBox("spaceCm").width, 96, "cm");
+      assert_equals(getBox("spaceEm").width, 120, "em");
+      assert_equals(getBox("spaceEx").width, 500, "ex");
+      assert_equals(getBox("spaceIn").width, 288, "in");
+      assert_equals(getBox("spaceNamed").width, 700, "namedspace");
+      assert_equals(getBox("spaceMm").width, 576, "mm");
+      assert_equals(getBox("spacePc").width, 96, "pc");
+      assert_equals(getBox("spacePercentage").width, 60, "%");
+      assert_equals(getBox("spacePt").width, 96, "pt");
+      assert_equals(getBox("spacePx").width, 123, "px");
+      assert_equals(getBox("spaceNone").width, 150, "Unitless");
     }, "Trimming of space");
 
     test(function() {
@@ -98,7 +98,7 @@
       <mspace id="unitEm" width="12em"/>
       <mspace id="unitEx" width="100ex"/>
       <mspace id="unitIn" width="3in"/>
-      <mspace style="font-size: 1000px" id="unitNamed" width="veryverythickmathspace"/>
+      <mspace style="font-size: 1800px" id="unitNamed" width="veryverythickmathspace"/>
       <mspace id="unitMm" width="152.4mm"/>
       <mspace id="unitPc" width="6pc"/>
       <mstyle mathsize="200%"><mspace id="unitPercentage" width="3em"/></mstyle>
@@ -113,7 +113,7 @@
       <mspace id="spaceEm" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;12em&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
       <mspace id="spaceEx" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;100ex&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
       <mspace id="spaceIn" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;3in&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
-      <mspace style="font-size: 1000px" id="spaceNamed" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;veryverythickmathspace&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
+      <mspace style="font-size: 1800px" id="spaceNamed" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;veryverythickmathspace&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
       <mspace id="spaceMm" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;152.4mm&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
       <mspace id="spacePc" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;6pc&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/>
       <mstyle mathsize="200%"><mspace id="spacePercentage" width="&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;3em&#x20;&#x9;&#xA;&#xD;&#x20;&#x9;&#xA;&#xD;"/></mstyle>

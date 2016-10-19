@@ -14,6 +14,7 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 install:
   - pip install -U setuptools
+  - pip install -U requests
 matrix:
   include:
     - os: linux
@@ -39,6 +40,7 @@ matrix:
             - libappindicator1
             - fonts-liberation
       env:
+        - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
         - SCRIPT=ci_stability.sh
         - PRODUCT=chrome
 script:

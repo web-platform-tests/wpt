@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Parser-inserted scripts with a correct nonce are allowed with `strict-dynamic` in the script-src directive.</title>
+    <script src='/resources/testharness.js' nonce='dummy'></script>
+    <script src='/resources/testharnessreport.js' nonce='dummy'></script>
+    <script src='../support/checkSecurityPolicyViolations.sub.js' nonce='dummy'></script>
+    <!-- CSP served: script-src 'strict-dynamic' 'nonce-dummy' -->
+</head>
+
+<body>
+    <h1>Parser-inserted scripts with a correct nonce are allowed with `strict-dynamic` in the script-src directive.</h1>
+    <div id='log'></div>
+
+    <script nonce='dummy'>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            document.write('<scr' + 'ipt nonce="dummy" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            setTimeout(t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            }), 1000);
+        }, 'Parser-inserted script via `document.write` with a correct nonce is allowed with `strict-dynamic`.');
+    </script>
+
+    <script nonce='dummy'>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            document.writeln('<scr' + 'ipt nonce="dummy" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            setTimeout(t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            }), 1000);
+        }, 'Parser-inserted script via `document.writeln` with a correct nonce is allowed with `strict-dynamic`.');
+    </script>
+
+    <script nonce='dummy'>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            document.write('<scr' + 'ipt defer nonce="dummy" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            setTimeout(t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            }), 1000);
+        }, 'Parser-inserted deferred script via `document.write` with a correct nonce is allowed with `strict-dynamic`.');
+    </script>
+
+    <script nonce='dummy'>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            document.writeln('<scr' + 'ipt defer nonce="dummy" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            setTimeout(t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            }), 1000);
+        }, 'Parser-inserted deferred script via `document.writeln` with a correct nonce is allowed with `strict-dynamic`.');
+    </script>
+
+    <script nonce='dummy'>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            document.write('<scr' + 'ipt async nonce="dummy" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            setTimeout(t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            }), 1000);
+        }, 'Parser-inserted async script via `document.write` with a correct nonce is allowed with `strict-dynamic`.');
+    </script>
+
+    <script nonce='dummy'>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            document.writeln('<scr' + 'ipt async nonce="dummy" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            setTimeout(t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            }), 1000);
+        }, 'Parser-inserted async script via `document.writeln` with a correct nonce is allowed with `strict-dynamic`.');
+    </script>
+
+    <script nonce='dummy'>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            document.write('<scr' + 'ipt defer async nonce="dummy" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            setTimeout(t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            }), 1000);
+        }, 'Parser-inserted deferred async script via `document.write` with a correct nonce is allowed with `strict-dynamic`.');
+    </script>
+
+    <script nonce='dummy'>
+        var simpleSourcedScriptRan = false;
+        async_test(function(t) {
+            document.writeln('<scr' + 'ipt defer async nonce="dummy" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            setTimeout(t.step_func_done(function() {
+                assert_true(simpleSourcedScriptRan);
+            }), 1000);
+        }, 'Parser-inserted deferred async script via `document.writeln` with a correct nonce is allowed with `strict-dynamic`.');
+    </script>
+
+    <script nonce='dummy'>
+        async_test(function(t) {
+            setTimeout(t.step_func_done(function() {
+                assert_no_violations();
+            }), 1000);
+        }, 'No CSP violation report has been fired.');
+    </script>
+
+</body>
+
+</html>

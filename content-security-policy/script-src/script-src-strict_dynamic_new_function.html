@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Scripts injected via `new Function()` are not allowed with `strict-dynamic` without `unsafe-eval`.</title>
+    <script src='/resources/testharness.js' nonce='dummy'></script>
+    <script src='/resources/testharnessreport.js' nonce='dummy'></script>
+    <script src='../support/checkSecurityPolicyViolations.sub.js' nonce='dummy'></script>
+    <!-- CSP served: script-src 'strict-dynamic' 'nonce-dummy' -->
+</head>
+
+<body>
+    <h1>Scripts injected via `new Function()` are not allowed with `strict-dynamic` without `unsafe-eval`.</h1>
+    <div id='log'></div>
+
+    <script nonce='dummy'>
+        var newFunctionScriptRan = false;
+        async_test(function(t) {
+            assert_throws(new Error(),
+                function() {
+                    try {
+                        new Function('newFunctionScriptRan = true;')();
+                    } catch (e) {
+                        throw new Error();
+                    }
+                },
+                "Script injected via 'new Function()' is not allowed with 'strict-dynamic' without 'unsafe-eval'.");
+            assert_false(newFunctionScriptRan);
+            t.done();
+        }, "Script injected via 'eval' is not allowed with 'strict-dynamic' without 'unsafe-eval'.");
+    </script>
+
+    <script nonce='dummy'>
+        async_test(function(t) {
+            setTimeout(t.step_func_done(function() {
+                assert_violations({
+                    'script-src': 1
+                });
+            }), 1000);
+        }, 'All the CSP violation reports have been fired.');
+    </script>
+
+</body>
+
+</html>

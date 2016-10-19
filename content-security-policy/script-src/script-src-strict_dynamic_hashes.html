@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>`strict-dynamic` allows scripts matching hashes present in the policy.</title>
+    <script src='/resources/testharness.js' nonce='dummy'></script>
+    <script src='/resources/testharnessreport.js' nonce='dummy'></script>
+    <script src='../support/checkSecurityPolicyViolations.sub.js' nonce='dummy'></script>
+    <!-- CSP served: script-src 'strict-dynamic' 'nonce-dummy' 'sha256-yU6Q7nD1TCBB9JvY06iIJ8ONLOPU4g8ml5JCDgXkv+M=' -->
+</head>
+
+<body>
+    <h1>`strict-dynamic` allows scripts matching hashes present in the policy.</h1>
+    <div id='log'></div>
+
+    <script nonce='dummy'>
+        var hashScriptRan = false;
+    </script>
+
+    <!-- Hash: 'sha256-yU6Q7nD1TCBB9JvY06iIJ8ONLOPU4g8ml5JCDgXkv+M=' -->
+    <script>
+        hashScriptRan = true;
+    </script>
+
+    <script nonce='dummy'>
+        async_test(function(t) {
+            assert_true(hashScriptRan);
+            t.done();
+        }, "Script matching SHA256 hash is allowed with `strict-dynamic`.");
+    </script>
+
+    <script nonce='dummy'>
+        async_test(function(t) {
+            setTimeout(t.step_func_done(function() {
+                assert_no_violations();
+            }), 1000);
+        }, 'No CSP violation report has been fired.');
+    </script>
+
+</body>
+
+</html>

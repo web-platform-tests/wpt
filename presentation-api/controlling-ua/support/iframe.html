@@ -3,10 +3,11 @@
 <title>Presentation API - controlling ua - sandboxing</title>
 <link rel="author" title="Francois Daoust" href="https://www.w3.org/People/#fd">
 <link rel="help" href="http://w3c.github.io/presentation-api/#dom-presentationrequest-start">
+<script src="../common.js"></script>
 <script>
     window.onmessage = function (ev) {
       try {
-        var request = new PresentationRequest('presentation.html');;
+        var request = new PresentationRequest(presentationUrls);
         if (ev.data === 'start') {
           request.start()
             .then(function () {

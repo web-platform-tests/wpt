@@ -12,10 +12,7 @@
      * Test if reconnect returns a NotFoundError() by wrong presentation ID
      */
 
-    var client_id = String(new Date().getTime()) + String(Math.floor(Math.random() * 1e5));
-    //relative presentation URL
-    var presentation_url = "../receiving-ua/idlharness.html#__castAppId__=2334D33A/__castClientId__="+ client_id;
-    var request = new PresentationRequest(presentation_url);
+    var request = new PresentationRequest('presentation.html');
     var wrong_presentationId = null;
 
     var reconnect = function () {

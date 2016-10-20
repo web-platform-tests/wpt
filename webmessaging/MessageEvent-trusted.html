@@ -26,13 +26,12 @@ async_test(t => {
 async_test(t => {
   assert_true("BroadcastChannel" in self, "The browser must support BroadcastChannel");
 
-  const channel = new BroadcastChannel("name");
+  new Worker("MessageEvent-trusted-worker.js");
+  const channel = new BroadcastChannel("channel name");
 
   channel.onmessage = t.step_func_done(e => {
     assert_equals(e.isTrusted, true);
   });
-
-  channel.postMessage("ping");
 }, "With a BroadcastChannel");
 
 async_test(t => {

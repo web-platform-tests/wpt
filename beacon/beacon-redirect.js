@@ -1,8 +1,8 @@
 "use strict";
 
 if (!this.document) {
-    importScripts("../resources/testharness.js");
-    importScripts("../common/utils.js");
+    importScripts("/resources/testharness.js");
+    importScripts("/common/utils.js");
     importScripts("beacon-common.js?pipe=sub");
 }
 
@@ -19,7 +19,7 @@ if (!this.document) {
     // Implement the self.buildTargetUrl extension to inject a redirect to
     // the sendBeacon target.
     self.buildTargetUrl = function(targetUrl) {
-        return `../common/redirect.py?status=${status}&location=${encodeURIComponent(targetUrl)}`;
+        return `/common/redirect.py?status=${status}&location=${encodeURIComponent(targetUrl)}`;
     };
 
     runTests(sampleTests);

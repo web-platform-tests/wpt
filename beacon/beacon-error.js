@@ -1,8 +1,8 @@
 "use strict";
 
 if (!this.document) {
-    importScripts("../resources/testharness.js");
-    importScripts("../common/utils.js");
+    importScripts("/resources/testharness.js");
+    importScripts("/common/utils.js");
     importScripts("beacon-common.js?pipe=sub");
 }
 

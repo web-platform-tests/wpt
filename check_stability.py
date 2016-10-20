@@ -113,6 +113,8 @@ def get_files_changed(root):
     git = get_git_cmd("%s/w3c/web-platform-tests" % root)
     branch_point = git("merge-base", "HEAD", "master").strip()
     files = git("diff", "--name-only", "-z", "%s.." % branch_point)
+    if not files:
+        return []
     assert files[-1] == "\0"
     return ["%s/w3c/web-platform-tests/%s" % (root, item)
             for item in files[:-1].split("\0")]
@@ -235,6 +237,9 @@ def main():
     # For now just pass the whole list of changed files to wptrunner and
     # assume that it will run everything that's actually a test
     files_changed = get_files_changed(args.root)
+
+    if not files_changed:
+        return 0
 
     logger.info("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
 

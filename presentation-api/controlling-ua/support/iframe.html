@@ -7,7 +7,17 @@
 <script>
     window.onmessage = function (ev) {
       try {
-        var request = new PresentationRequest(presentationUrls);
+        // Presentation URLs are relative to the "controlling-ua" folder,
+        // update relative URLs for this folder
+        var urls = presentationUrls.map(function (url) {
+          if (/:\/\//.test(url)) {
+            return url;
+          }
+          else {
+            return '../' + url;
+          }
+        });
+        var request = new PresentationRequest(urls);
         if (ev.data === 'start') {
           request.start()
             .then(function () {

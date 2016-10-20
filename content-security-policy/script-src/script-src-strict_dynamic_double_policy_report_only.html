@@ -5,7 +5,7 @@
     <title>A separate Report-Only policy does not influence `strict-dynamic` in the script-src directive.</title>
     <script src='/resources/testharness.js' nonce='dummy'></script>
     <script src='/resources/testharnessreport.js' nonce='dummy'></script>
-    <script src='../support/checkSecurityPolicyViolations.sub.js' nonce='dummy'></script>
+
     <!-- CSP served:
     1) Content-Security-Policy: script-src 'strict-dynamic' 'nonce-dummy'
     2) Content-Security-Policy-Report-Only: script-src 'none'
@@ -17,27 +17,23 @@
     <div id='log'></div>
 
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
         async_test(function(t) {
+            var handler = function(e) {
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                // Check that every violation comes from the Report-Only policy.
+                assert_equals(e.originalPolicy.trim(), "script-src 'none'");
+            };
+            document.addEventListener('securitypolicyviolation', handler);
             var e = document.createElement('script');
+            e.id = 'appendChild-reportOnly';
             e.src = 'simpleSourcedScript.js';
             e.onload = t.step_func_done(function() {
-                assert_true(simpleSourcedScriptRan);
+                assert_equals(document.getElementById('appendChild-reportOnly').getAttribute('executed'), '1');
             });
             e.onerror = t.unreached_func('Error should not be triggered.');
             document.body.appendChild(e);
         }, 'Script injected via `appendChild` is allowed with `strict-dynamic` + Report-Only `script-src \'none\'` policy.');
     </script>
-
-    <script nonce='dummy'>
-        async_test(function(t) {
-            setTimeout(t.step_func_done(function() {
-                // Check that every violation comes from the Report-Only policy.
-                assert_original_policies(["script-src 'none'"]);
-            }), 1000);
-        }, 'All the expected CSP violation reports have been fired.');
-    </script>
-
 </body>
 
 </html>

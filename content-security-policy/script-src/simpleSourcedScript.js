@@ -1,1 +1,1 @@
-simpleSourcedScriptRan = true;
+document.currentScript.setAttribute('executed', '1');

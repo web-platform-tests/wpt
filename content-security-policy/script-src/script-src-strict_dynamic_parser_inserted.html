@@ -5,7 +5,7 @@
     <title>Parser-inserted scripts without a correct nonce are not allowed with `strict-dynamic` in the script-src directive.</title>
     <script src='/resources/testharness.js' nonce='dummy'></script>
     <script src='/resources/testharnessreport.js' nonce='dummy'></script>
-    <script src='../support/checkSecurityPolicyViolations.sub.js' nonce='dummy'></script>
+
     <!-- CSP served: script-src 'strict-dynamic' 'nonce-dummy' -->
 </head>
 
@@ -14,119 +14,157 @@
     <div id='log'></div>
 
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
         async_test(function(t) {
-            document.write('<scr' + 'ipt src="simpleSourcedScript.js"></scr' + 'ipt>');
-            setTimeout(t.step_func_done(function() {
-                assert_false(simpleSourcedScriptRan);
-            }), 1000);
+            var handler = function(e) {
+                assert_equals(document.getElementById('documentWrite').getAttribute('executed'), null);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+
+            document.write('<scr' + 'ipt id="documentWrite" src="simpleSourcedScript.js"></scr' + 'ipt>');
         }, 'Parser-inserted script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
-        async_test(function(t) {
-            document.writeln('<scr' + 'ipt src="simpleSourcedScript.js"></scr' + 'ipt>');
-            setTimeout(t.step_func_done(function() {
-                assert_false(simpleSourcedScriptRan);
-            }), 1000);
+        test(function(t) {
+            var handler = function(e) {
+                assert_equals(document.getElementById('documentWriteln').getAttribute('executed'), null);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+
+            document.writeln('<scr' + 'ipt id="documentWriteln" src="simpleSourcedScript.js"></scr' + 'ipt>');
         }, 'Parser-inserted script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
-        async_test(function(t) {
-            document.write('<scr' + 'ipt defer src="simpleSourcedScript.js"></scr' + 'ipt>');
-            setTimeout(t.step_func_done(function() {
-                assert_false(simpleSourcedScriptRan);
-            }), 1000);
+        test(function(t) {
+            var handler = function(e) {
+                assert_equals(document.getElementById('documentWrite-deferred').getAttribute('executed'), null);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+
+            document.write('<scr' + 'ipt defer id="documentWrite-deferred" src="simpleSourcedScript.js"></scr' + 'ipt>');
         }, 'Parser-inserted deferred script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
-        async_test(function(t) {
-            document.writeln('<scr' + 'ipt defer src="simpleSourcedScript.js"></scr' + 'ipt>');
-            setTimeout(t.step_func_done(function() {
-                assert_false(simpleSourcedScriptRan);
-            }), 1000);
+        test(function(t) {
+            var handler = function(e) {
+                assert_equals(document.getElementById('documentWriteln-deferred').getAttribute('executed'), null);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+
+            document.writeln('<scr' + 'ipt defer id="documentWriteln-deferred" src="simpleSourcedScript.js"></scr' + 'ipt>');
         }, 'Parser-inserted deferred script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
-        async_test(function(t) {
-            document.write('<scr' + 'ipt async src="simpleSourcedScript.js"></scr' + 'ipt>');
-            setTimeout(t.step_func_done(function() {
-                assert_false(simpleSourcedScriptRan);
-            }), 1000);
+        test(function(t) {
+            var handler = function(e) {
+                assert_equals(document.getElementById('documentWrite-async').getAttribute('executed'), null);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+
+            document.write('<scr' + 'ipt async id="documentWrite-async" src="simpleSourcedScript.js"></scr' + 'ipt>');
         }, 'Parser-inserted async script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
-        async_test(function(t) {
-            document.writeln('<scr' + 'ipt async src="simpleSourcedScript.js"></scr' + 'ipt>');
-            setTimeout(t.step_func_done(function() {
-                assert_false(simpleSourcedScriptRan);
-            }), 1000);
+        test(function(t) {
+            var handler = function(e) {
+                assert_equals(document.getElementById('documentWriteln-async').getAttribute('executed'), null);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+
+            document.writeln('<scr' + 'ipt async id="documentWriteln-async" src="simpleSourcedScript.js"></scr' + 'ipt>');
         }, 'Parser-inserted async script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
-        async_test(function(t) {
-            document.write('<scr' + 'ipt defer async src="simpleSourcedScript.js"></scr' + 'ipt>');
-            setTimeout(t.step_func_done(function() {
-                assert_false(simpleSourcedScriptRan);
-            }), 1000);
+        test(function(t) {
+            var handler = function(e) {
+                assert_equals(document.getElementById('documentWrite-deferred-async').getAttribute('executed'), null);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+
+            document.write('<scr' + 'ipt defer async id="documentWrite-deferred-async" src="simpleSourcedScript.js"></scr' + 'ipt>');
         }, 'Parser-inserted deferred async script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
-        var simpleSourcedScriptRan = false;
-        async_test(function(t) {
-            document.writeln('<scr' + 'ipt defer async src="simpleSourcedScript.js"></scr' + 'ipt>');
-            setTimeout(t.step_func_done(function() {
-                assert_false(simpleSourcedScriptRan);
-            }), 1000);
+        test(function(t) {
+            var handler = function(e) {
+                assert_equals(document.getElementById('documentWriteln-deferred-async'), null);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+
+            document.writeln('<scr' + 'ipt defer async id="documentWriteln-deferred-async " src="simpleSourcedScript.js"></scr' + 'ipt>');
         }, 'Parser-inserted deferred async script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
         var innerHTMLScriptRan = false;
-        async_test(function(t) {
-            var e = document.createElement('div');
-            e.innerHTML = "<img src='/nonexisting.jpg' onerror='innerHTMLScriptRan = true'>";
-            document.body.appendChild(e);
-            setTimeout(t.step_func_done(function() {
+        test(function(t) {
+            var handler = function(e) {
                 assert_false(innerHTMLScriptRan);
-            }), 1000);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+            var e = document.createElement('div');
+            e.innerHTML = "<img src='/nonexisting.jpg' onerror='innerHTMLScriptRan = true;' style='display:none'>";
+            document.body.appendChild(e);
         }, 'Script injected via `innerHTML` is not allowed with `strict-dynamic`.');
     </script>
 
+    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
         var insertAdjacentHTMLScriptRan = false;
-        async_test(function(t) {
-            var e = document.createElement('div');
-            e.insertAdjacentHTML('afterbegin', "<img src='/nonexisting.jpg' onerror='insertAdjacentHTMLScriptRan = true'>");
-            document.body.appendChild(e);
-            setTimeout(t.step_func_done(function() {
+        test(function(t) {
+            var handler = function(e) {
                 assert_false(insertAdjacentHTMLScriptRan);
-            }), 1000);
+                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                document.removeEventListener('securitypolicyviolation', handler);
+                t.done();
+            };
+            document.addEventListener('securitypolicyviolation', handler);
+            var e = document.createElement('div');
+            e.insertAdjacentHTML('afterbegin', "<img src='/nonexisting.jpg' onerror='insertAdjacentHTMLScriptRan = true;' style='display:none'>");
+            document.body.appendChild(e);
         }, 'Script injected via `insertAdjacentHTML` is not allowed with `strict-dynamic`.');
     </script>
-
-    <script nonce='dummy'>
-        async_test(function(t) {
-            setTimeout(t.step_func_done(function() {
-                assert_violations({
-                    'script-src': 10
-                });
-            }), 1000);
-        }, 'All the expected CSP violation reports have been fired.');
-    </script>
-
 </body>
 
 </html>

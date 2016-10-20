@@ -5,7 +5,7 @@
     <title>Scripts injected via `new Function()` are allowed with `strict-dynamic` with `unsafe-eval`.</title>
     <script src='/resources/testharness.js' nonce='dummy'></script>
     <script src='/resources/testharnessreport.js' nonce='dummy'></script>
-    <script src='../support/checkSecurityPolicyViolations.sub.js' nonce='dummy'></script>
+
     <!-- CSP served: script-src 'strict-dynamic' 'nonce-dummy' 'unsafe-eval' -->
 </head>
 
@@ -16,6 +16,7 @@
     <script nonce='dummy'>
         var newFunctionScriptRan = false;
         async_test(function(t) {
+            document.addEventListener('securitypolicyviolation', t.unreached_func('No CSP violation report has fired.'));
             try {
                 new Function('newFunctionScriptRan = true;')();
             } catch (e) {
@@ -25,15 +26,6 @@
             t.done();
         }, "Script injected via `new Function()` is allowed with `strict-dynamic` with `unsafe-eval`.");
     </script>
-
-    <script nonce='dummy'>
-        async_test(function(t) {
-            setTimeout(t.step_func_done(function() {
-                assert_no_violations();
-            }), 1000);
-        }, 'No CSP violation report has been fired.');
-    </script>
-
 </body>
 
 </html>

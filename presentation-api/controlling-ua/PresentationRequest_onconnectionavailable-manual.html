@@ -38,7 +38,7 @@
                     resolve(evt.connection);
                 };
                 request.start().then(function() {
-                    // This test fails if request.onconnectionavailable is not invoked regardless of starting the presentation
+                    // This test fails if request.onconnectionavailable is not invoked although the presentation is started successfully
                     t.step_timeout(function() { reject('The connectionavailable was not fired.') }, 5000);
                 }, function() {
                     // This test fails if the presentation is not started successfully

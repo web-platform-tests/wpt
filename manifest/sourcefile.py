@@ -96,7 +96,7 @@ class SourceFile(object):
         if self.contents is not None:
             file_obj = ContextManagerBytesIO(self.contents)
         elif self.use_committed:
-            git = vcs.get_git_func(os.path.dirname(__file__))
+            git = vcs.get_git_func(os.path.dirname(self.tests_root))
             blob = git("show", "HEAD:%s" % self.rel_path)
             file_obj = ContextManagerBytesIO(blob)
         else:

@@ -105,16 +105,16 @@ test(function () {
 
 }, 'HTML parser must use the registry of window.document in a document created by new Document');
 
-test(function () {
-    new Promise(function (resolve, reject) {
+promise_test(function () {
+    return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'resources/empty-html-document.html');
-        xhr.overrideMimeType('text/html');
+        xhr.open('GET', '../resources/empty-html-document.html');
+        xhr.overrideMimeType('text/xml');
         xhr.onload = function () { resolve(xhr.responseXML); }
         xhr.onerror = function () { reject('Failed to fetch the document'); }
         xhr.send();
     }).then(function (doc) {
-        doc.write('<my-custom-element></my-custom-element>');
+        doc.documentElement.innerHTML = '<my-custom-element></my-custom-element>';
         var instance = doc.querySelector('my-custom-element');
         assert_true(instance instanceof Element);
         assert_false(instance instanceof MyCustomElement);        

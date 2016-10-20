@@ -7,10 +7,13 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <p>Click the button below and select the available presentation display, to start the manual test.</p>
-<button id="presentBtn" onclick="startPresentation()">Start Presentation Test</button>
+<button id="presentBtn">Start Presentation Test</button>
 
 
 <script>
+    // disable the timeout function for the tests
+    setup({explicit_timeout: true});
+
     // ----------
     // DOM Object
     // ----------
@@ -27,10 +30,21 @@
     // Start New PresentationRequest.onconnectionavailable Test (success) - begin
     // --------------------------------------------------------------------------
     var startPresentation = function () {
-        async_test(function (t) {
-            request.onconnectionavailable = t.step_func_done(function (evt) {
-                var connection = evt.connection;
-
+        promise_test(function (t) {
+            // Note: During starting a presentation, the connectionavailable event is fired (step 20)
+            //       after the promise P is resolved (step 19).
+            return new Promise(function(resolve, reject) {
+                request.onconnectionavailable = function (evt) {
+                    resolve(evt.connection);
+                };
+                request.start().then(function() {
+                    // This test fails if request.onconnectionavailable is not invoked regardless of starting the presentation
+                    t.step_timeout(function() { reject('The connectionavailable was not fired.') }, 5000);
+                }, function() {
+                    // This test fails if the presentation is not started successfully
+                    reject('The presentation failed to be started.');
+                });
+            }).then(function(connection) {
                 // Check the initial state of a presentation connection
                 assert_equals(connection.state, 'connecting', 'The initial state of the presentation connection is "connecting".');
 
@@ -43,10 +57,9 @@
                 // Check the instance of the connection
                 assert_true(connection instanceof PresentationConnection, 'The connection is an instance of PresentationConnection.');
             });
-
-            request.start();
-        }, 'The presentation was started successfully.');
+        }, 'The connectionavailable event was fired successfully.');
     }
+    presentBtn.onclick = startPresentation;
     // ------------------------------------------------------------------------
     // Start New PresentationRequest.onconnectionavailable Test (success) - end
     // ------------------------------------------------------------------------

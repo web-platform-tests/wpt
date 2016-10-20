@@ -8,10 +8,13 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <p>Click the button below and select the available presentation display, to start the manual test.</p>
-<button id="presentBtn" onclick="startPresentation()">Start Presentation Test</button>
+<button id="presentBtn">Start Presentation Test</button>
 
 
 <script>
+    // disable the timeout function for the tests
+    setup({explicit_timeout: true});
+
     // ----------
     // DOM Object
     // ----------
@@ -45,7 +48,8 @@
                         assert_true(connection instanceof PresentationConnection, 'The connection is an instance of PresentationConnection.');
                     });
         }, "The presentation was started successfully.");
-    }
+    };
+    presentBtn.onclick = startPresentation;
     // -------------------------------------------
     // Start New Presentation Test (success) - end
     // -------------------------------------------

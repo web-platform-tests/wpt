@@ -7,14 +7,7 @@
   // on something that directly or indirectly maps to a resource on the W3C test
   // server.
   var castAppId = '915D2A2C';
-
-  // NB: the Cast-friendly URL will likely need to be adjusted afterwards as
-  // well, e.g. to use another scheme.
-  var castClientId = String(new Date().getTime()) +
-    String(Math.floor(Math.random() * 1e5));
-  var castUrl = 'support/presentation.html#' +
-    '__castAppId__=' + castAppId +
-    '/__castClientId__=' + castClientId;
+  var castUrl = 'https://google.com/cast#__castAppId__=' + castAppId;
 
   window.presentationUrls = [
     'support/presentation.html',

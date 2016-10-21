@@ -180,10 +180,15 @@ function runTest(config) {
     // allows for an NotSupportedError to be generated and treated as a
     // success, if allowed. See comment above kCreateSessionTestCases.
     function test_generateRequest(testCase, mediaKeys, type, initData) {
-        var mediaKeySession = testCase.func.call(null, mediaKeys);
-        return mediaKeySession.generateRequest(type, initData).catch(function (e) {
+        var mediaKeySession;
+        try {
+            mediaKeySession = testCase.func.call(null, mediaKeys);
+        } catch (e) {
             assert_true(testCase.isNotSupportedAllowed);
-        });
+            assert_equals(e.name, 'NotSupportedError');
+            return Promise.resolve('not supported');
+        }
+        return mediaKeySession.generateRequest(type, initData);
     }
     function generateRequestForVariousSessions(){
         return new Promise(function(resolve, reject){

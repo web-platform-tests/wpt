@@ -1,13 +1,3 @@
-<!doctype html>
-<title>Range mutation tests</title>
-<link rel="author" title="Aryeh Gregor" href=ayg@aryeh.name>
-<meta name=timeout content=long>
-
-<div id=log></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=../common.js></script>
-<script>
 "use strict";
 
 // These tests probably use too much abstraction and too little copy-paste.
@@ -929,22 +919,3 @@ var removeChildTests = [
 
   ["foreignDoc.documentElement", "foreignDoc", 0, "foreignDoc", "foreignDoc.childNodes.length"],
 ];
-
-
-// Finally run everything.  All grouped together at the end so that I can
-// easily comment out some of them, so I don't have to wait for all test types
-// to debug only some of them.
-doTests(splitTextTests, function(params) { return params[0] + ".splitText(" + params[1] + ")" }, testSplitText);
-doTests(insertDataTests, function(params) { return params[0] + ".insertData(" + params[1] + ", " + params[2] + ")" }, testInsertData);
-doTests(appendDataTests, function(params) { return params[0] + ".appendData(" + params[1] + ")" }, testAppendData);
-doTests(deleteDataTests, function(params) { return params[0] + ".deleteData(" + params[1] + ", " + params[2] + ")" }, testDeleteData);
-doTests(replaceDataTests, function(params) { return params[0] + ".replaceData(" + params[1] + ", " + params[2] + ", " + params[3] + ")" }, testReplaceData);
-doTests(dataChangeTests, function(params) { return params[0] + "." + eval(params[1]) + " " + eval(params[2]) + ' ' + params[3] }, testDataChange);
-doTests(insertBeforeTests, function(params) { return params[0] + ".insertBefore(" + params[1] + ", " + params[2] + ")" }, testInsertBefore);
-doTests(replaceChildTests, function(params) { return params[0] + ".replaceChild(" + params[1] + ", " + params[2] + ")" }, testReplaceChild);
-doTests(appendChildTests, function(params) { return params[0] + ".appendChild(" + params[1] + ")" }, testAppendChild);
-doTests(removeChildTests, function(params) { return params[0] + ".parentNode.removeChild(" + params[0] + ")" }, testRemoveChild);
-
-
-testDiv.style.display = "none";
-</script>

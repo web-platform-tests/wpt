@@ -96,6 +96,7 @@ install_chromedriver() {
 
 test_stability() {
     cd $WPT_HOME
+    echo "python check_stability.py --root $BUILD_HOME --comment-pr ${TRAVIS_PULL_REQUEST} --gh-token ${GH_TOKEN} $PRODUCT"
     python check_stability.py --root $BUILD_HOME --comment-pr ${TRAVIS_PULL_REQUEST} --gh-token ${GH_TOKEN} $PRODUCT
 }
 

@@ -78,10 +78,10 @@ var globalCounter = 0 // sorry
 async_test(function(t) { // as above with <a>
   var i = 0
   var link = document.createElement("a")
-  link.href = "javascript:globalCounter--" // must not be triggered
+  link.href = "javascript:(function(){globalCounter--})()" // must not be triggered
   dump.appendChild(link)
   var child = link.appendChild(document.createElement("a"))
-  child.href = "javascript:globalCounter++"
+  child.href = "javascript:(function(){globalCounter++})()"
   child.dispatchEvent(new MouseEvent("click", {bubbles:true}))
   assert_equals(globalCounter, 1)
   t.done()
@@ -136,7 +136,7 @@ async_test(function(t) {
   var form = document.createElement("form")
   form.onsubmit = t.step_func(() => {
     if(state == "start" || state == "checkbox") {
-      assert_unreached()
+      state = "failure"
     } else if(state == "form") {
       state = "done"
     }
@@ -156,10 +156,12 @@ async_test(function(t) {
   })
   checkbox.disabled = true
   checkbox.click()
+  assert_equals(state, "start")
 
   state = "checkbox"
   checkbox.disabled = false
   checkbox.click()
+  assert_equals(state, "checkbox")
 
   state = "form"
   button.click()

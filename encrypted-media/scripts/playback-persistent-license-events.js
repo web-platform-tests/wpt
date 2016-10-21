@@ -64,7 +64,7 @@ function runTest(config,qualifier) {
                 }
             })).catch(onFailure);
         }
-               
+
         function onKeyStatusesChange(event) {
             assert_equals(event.target, _mediaKeySession);
             assert_true(event instanceof window.Event);

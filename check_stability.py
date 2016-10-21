@@ -4,16 +4,29 @@ import logging
 import os
 import subprocess
 import sys
+import tarfile
 import traceback
+import zipfile
+from cStringIO import StringIO
 from collections import defaultdict
+from urlparse import urljoin
 
 import requests
 
-from wptrunner import wptrunner
-from wptrunner import wptcommandline
-from mozlog import reader
+wptrunner = None
+wptcommandline = None
+reader = None
+LogHandler = None
 
 logger = logging.getLogger(os.path.splitext(__file__)[0])
+
+
+def do_delayed_imports():
+    global wptrunner, wptcommandline, reader
+    from wptrunner import wptrunner
+    from wptrunner import wptcommandline
+    from mozlog import reader
+    setup_log_handler()
 
 
 def setup_logging():
@@ -26,27 +39,58 @@ def setup_logging():
 setup_logging()
 
 
-def setup_github_logging(args):
-    gh_handler = None
-    if args.comment_pr:
-        if args.gh_token:
-            try:
-                pr_number = int(args.comment_pr)
-            except ValueError:
-                pass
-            else:
-                gh_handler = GitHubCommentHandler(args.gh_token, pr_number)
-                logger.debug("Setting up GitHub logging")
-                logger.addHandler(gh_handler)
-        else:
-            logger.error("Must provide --comment-pr and --github-token together")
-    return gh_handler
+class GitHub(object):
+    def __init__(self, org, repo, token):
+        self.token = token
+        self.headers = {"Accept": "application/vnd.github.v3+json"}
+        self.auth = (self.token, "x-oauth-basic")
+        self.org = org
+        self.repo = repo
+        self.base_url = "https://api.github.com/repos/%s/%s/" % (org, repo)
+
+    def _headers(self, headers):
+        if headers is None:
+            headers = {}
+        rv = self.headers.copy()
+        rv.update(headers)
+        return rv
+
+    def post(self, url, data, headers=None):
+        logger.debug("POST %s" % url)
+        if data is not None:
+            data = json.dumps(data)
+        resp = requests.post(
+            url,
+            data=data,
+            headers=self._headers(headers),
+            auth=self.auth
+        )
+        resp.raise_for_status()
+        return resp
+
+    def get(self, url, headers=None):
+        logger.debug("GET %s" % url)
+        resp = requests.get(
+            url,
+            headers=self._headers(headers),
+            auth=self.auth
+        )
+        resp.raise_for_status()
+        return resp
+
+    def post_comment(self, issue_number, body):
+        url = urljoin(self.base_url, "issues/%s/comments" % issue_number)
+        return self.post(url, {"body": body})
+
+    def releases(self):
+        url = urljoin(self.base_url, "releases/latest")
+        return self.get(url)
 
 
 class GitHubCommentHandler(logging.Handler):
-    def __init__(self, token, pull_number):
+    def __init__(self, github, pull_number):
         logging.Handler.__init__(self)
-        self.token = token
+        self.github = github
         self.pull_number = pull_number
         self.log_data = []
 
@@ -58,22 +102,37 @@ class GitHubCommentHandler(logging.Handler):
             self.handleError(record)
 
     def send(self):
-        headers = {"Accept": "application/vnd.github.v3+json"}
-        auth = (self.token, "x-oauth-basic")
-        url = "https://api.github.com/repos/w3c/web-platform-tests/issues/%s/comments" %(
-            self.pull_number,)
-        resp = requests.post(
-            url,
-            data=json.dumps({"body": "\n".join(self.log_data)}),
-            headers=headers,
-            auth=auth
-        )
-        resp.raise_for_status()
+        self.github.post_comment(self.pull_number, "\n".join(self.log_data))
         self.log_data = []
 
 
-class Firefox(object):
+class Browser(object):
+    product = None
+
+    def __init__(self, github_token):
+        self.github_token = github_token
+
+
+class Firefox(Browser):
     product = "firefox"
+
+    def install(self):
+        call("pip", "install", "-r", "w3c/wptrunner/requirements_firefox.txt")
+        resp = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-52.0a1.en-US.linux-x86_64.tar.bz2")
+        untar(resp.raw)
+
+        if not os.path.exists("profiles"):
+            os.mkdir("profiles")
+        with open(os.path.join("profiles", "prefs_general.js"), "wb") as f:
+            resp = get("https://hg.mozilla.org/mozilla-central/raw-file/tip/testing/profiles/prefs_general.js")
+            f.write(resp.content)
+
+    def install_webdriver(self):
+        github = GitHub("mozilla", "geckodriver", self.github_token)
+        releases = github.releases().json()
+        url = (item["browser_download_url"] for item in releases["assets"]
+               if "linux64" in item["browser_download_url"]).next()
+        untar(get(url).raw)
 
     def wptrunner_args(self, root):
         return {
@@ -85,8 +144,18 @@ class Firefox(object):
         }
 
 
-class Chrome(object):
+class Chrome(Browser):
     product = "chrome"
+
+    def install(self):
+        latest = get("https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2FLAST_CHANGE?alt=media").text.strip()
+        url = "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%%2F%s%%2Fchrome-linux.zip?alt=media" % latest
+        unzip(get(url).raw)
+
+    def install_webdriver(self):
+        latest = get("http://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
+        url = "http://chromedriver.storage.googleapis.com/%s/chromedriver_linux64.zip" % latest
+        unzip(get(url).raw)
 
     def wptrunner_args(self, root):
         return {
@@ -95,6 +164,18 @@ class Chrome(object):
             "webdriver_binary": "%s/chromedriver" % root,
             "test_types": ["testharness", "reftest"]
         }
+
+
+def get(url):
+    logger.debug("GET %s" % url)
+    resp = requests.get(url, stream=True)
+    resp.raise_for_status()
+    return resp
+
+
+def call(*args):
+    logger.debug("%s" % " ".join(args))
+    return subprocess.check_output(args)
 
 
 def get_git_cmd(repo_path):
@@ -109,7 +190,85 @@ def get_git_cmd(repo_path):
     return git
 
 
-def get_files_changed(root):
+def seekable(fileobj):
+    try:
+        fileobj.seek(fileobj.tell())
+    except Exception:
+        return StringIO(fileobj.read())
+    else:
+        return fileobj
+
+
+def untar(fileobj):
+    logger.debug("untar")
+    fileobj = seekable(fileobj)
+    tar_data = tarfile.open(fileobj=fileobj)
+    tar_data.extractall()
+
+
+def unzip(fileobj):
+    logger.debug("unzip")
+    fileobj = seekable(fileobj)
+    zip_data = zipfile.ZipFile(fileobj)
+    zip_data.extractall()
+
+
+def setup_github_logging(args):
+    gh_handler = None
+    if args.comment_pr:
+        github = GitHub("w3c", "web-platform-tests", args.gh_token)
+        try:
+            pr_number = int(args.comment_pr)
+        except ValueError:
+            pass
+        else:
+            gh_handler = GitHubCommentHandler(github, pr_number)
+            gh_handler.setLevel(logging.INFO)
+            logger.debug("Setting up GitHub logging")
+            logger.addHandler(gh_handler)
+    else:
+        logger.warning("No PR number found; not posting to GitHub")
+    return gh_handler
+
+
+class pwd(object):
+    def __init__(self, dir):
+        self.dir = dir
+        self.old_dir = None
+
+    def __enter__(self):
+        self.old_dir = os.path.abspath(os.curdir)
+        os.chdir(self.dir)
+
+    def __exit__(self, *args, **kwargs):
+        os.chdir(self.old_dir)
+        self.old_dir = None
+
+
+def fetch_wpt_master():
+    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    git("fetch", "https://github.com/w3c/web-platform-tests.git", "master:master")
+
+
+def get_sha1():
+    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    return git("rev-parse", "HEAD").text.strip()
+
+def build_manifest():
+    with pwd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests")):
+        # TODO: Call the manifest code directly
+        call("python", "manifest")
+
+
+def install_wptrunner():
+    call("git", "clone", "--depth=1", "https://github.com/w3c/wptrunner.git", "w3c/wptrunner")
+    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "wptrunner"))
+    git("submodule", "update", "--init", "--recursive")
+    call("pip", "install", os.path.join("w3c", "wptrunner"))
+
+
+def get_files_changed():
+    root = os.path.abspath(os.curdir)
     git = get_git_cmd("%s/w3c/web-platform-tests" % root)
     branch_point = git("merge-base", "HEAD", "master").strip()
     files = git("diff", "--name-only", "-z", "%s.." % branch_point)
@@ -138,27 +297,34 @@ def wptrunner_args(root, files_changed, iterations, browser):
     return args
 
 
-class LogHandler(reader.LogHandler):
-    def __init__(self):
-        self.results = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+def setup_log_handler():
+    global LogHandler
 
-    def test_status(self, data):
-        self.results[data["test"]][data.get("subtest")][data["status"]] += 1
+    class LogHandler(reader.LogHandler):
+        def __init__(self):
+            self.results = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
-    def test_end(self, data):
-        self.results[data["test"]][None][data["status"]] += 1
+        def test_status(self, data):
+            self.results[data["test"]][data.get("subtest")][data["status"]] += 1
+
+        def test_end(self, data):
+            self.results[data["test"]][None][data["status"]] += 1
 
 
 def is_inconsistent(results_dict, iterations):
     return len(results_dict) > 1 or sum(results_dict.values()) != iterations
 
 
-def err_string(results_dict):
+def err_string(results_dict, iterations):
     rv = []
+    total_results = sum(results_dict.values())
     for key, value in sorted(results_dict.items()):
-        rv.append("%s: %i" % (key, value))
-    rv = " ".join(rv)
-    if len(results_dict) > 1:
+        rv.append("%s%s" %
+                  (key, ": %s/%s" % (value, iterations) if value != iterations else ""))
+    rv = ", ".join(rv)
+    if total_results < iterations:
+        rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
+    if len(results_dict) > 1 or total_results != iterations:
         rv = "**%s**" % rv
     return rv
 
@@ -175,25 +341,26 @@ def process_results(log, iterations):
     return results, inconsistent
 
 
-def write_inconsistent(inconsistent):
-    logger.error("## Unstable results ##\n")
+def write_inconsistent(inconsistent, iterations):
+    logger.error("# Unstable results #\n")
     logger.error("| Test | Subtest | Results |")
     logger.error("|------|---------|---------|")
     for test, subtest, results in inconsistent:
         logger.error("%s | %s | %s" % (test,
-                                       subtest if subtest else "(parent)",
-                                       err_string(results)))
+                                       subtest if subtest else "",
+                                       err_string(results, iterations)))
 
 
 def write_results(results, iterations):
-    logger.info("## All results ##\n")
-    logger.info("| Test | Subtest | Results |")
-    logger.info("|------|---------|---------|")
+    logger.info("# All results #\n")
     for test, test_results in results.iteritems():
+        logger.info("## %s ##" % test)
+        logger.info("| Subtest | Results |")
+        logger.info("|---------|---------|")
         parent = test_results.pop(None)
-        logger.info("| %s |  | %s |" % (test, err_string(parent)))
+        logger.info("|  | %s |" % (err_string(parent, iterations)))
         for subtest, result in test_results.iteritems():
-            logger.info("|  | %s | %s |" % (subtest, err_string(result)))
+            logger.info("| %s | %s |" % (subtest, err_string(result, iterations)))
 
 
 def get_parser():
@@ -209,9 +376,11 @@ def get_parser():
                         help="Number of times to run tests")
     parser.add_argument("--gh-token",
                         action="store",
+                        default=os.environ.get("GH_TOKEN"),
                         help="OAuth token to use for accessing GitHub api")
     parser.add_argument("--comment-pr",
                         action="store",
+                        default=os.environ.get("TRAVIS_PULL_REQUEST"),
                         help="PR to comment on with stability results")
     parser.add_argument("browser",
                         action="store",
@@ -224,6 +393,16 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
+    if not os.path.exists(args.root):
+        logger.critical("Root directory %s does not exist" % args.root)
+        return 1
+
+    os.chdir(args.root)
+
+    if args.gh_token is None:
+        logger.critical("Must provide a GitHub token via --gh-token or $GITHUB_TOKEN")
+        return 1
+
     gh_handler = setup_github_logging(args)
 
     logger.info("Testing in **%s**" % args.browser.title())
@@ -232,25 +411,39 @@ def main():
                    "chrome": Chrome}.get(args.browser)
     if browser_cls is None:
         logger.critical("Unrecognised browser %s" % args.browser)
-        return 2
+        return 1
+
+    fetch_wpt_master()
+
+    head_sha1 = get_sha1()
+    logger.info("Testing revision %s" % head_sha1)
 
     # For now just pass the whole list of changed files to wptrunner and
     # assume that it will run everything that's actually a test
-    files_changed = get_files_changed(args.root)
+    files_changed = get_files_changed()
 
     if not files_changed:
+        logger.info("No files changed")
         return 0
 
-    logger.info("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
+    build_manifest()
+    install_wptrunner()
+    do_delayed_imports()
 
-    browser = browser_cls()
+    logger.debug("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
+
+    browser = browser_cls(args.gh_token)
+
+    browser.install()
+    browser.install_webdriver()
+
     kwargs = wptrunner_args(args.root,
                             files_changed,
                             args.iterations,
                             browser)
     with open("raw.log", "wb") as log:
         wptrunner.setup_logging(kwargs,
-                                {"mach": sys.stdout,
+                                {"tbpl": sys.stdout,
                                  "raw": log})
         wptrunner.run_tests(**kwargs)
 
@@ -259,8 +452,8 @@ def main():
 
     if results:
         if inconsistent:
-            write_inconsistent(inconsistent)
-            retcode = 1
+            write_inconsistent(inconsistent, args.iterations)
+            retcode = 2
         else:
             logger.info("All results were stable\n")
         write_results(results, args.iterations)

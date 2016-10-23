@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import stat
 import subprocess
 import sys
@@ -129,11 +130,27 @@ class Firefox(Browser):
             f.write(resp.content)
         call("pip", "install", "-r", os.path.join("w3c", "wptrunner", "requirements_firefox.txt"))
 
+    def _latest_geckodriver_version(self):
+        # This is used rather than an API call to avoid rate limits
+        tags = call("git", "ls-remote", "--tags", "--refs",
+                    "https://github.com/mozilla/geckodriver.git")
+        logger.debug("Found tags:\n%s" % tags)
+        release_re = re.compile(".*refs/tags/v(\d+)\.(\d+)\.(\d+)")
+        latest_release = 0
+        for item in tags.split("\n"):
+            m = release_re.match(item)
+            if m:
+                version = [int(item) for item in m.groups()]
+                if version > latest_release:
+                    latest_release = version
+        assert latest_release != 0
+        return "v%s.%s.%s" % tuple(str(item) for item in latest_release)
+
+
     def install_webdriver(self):
-        github = GitHub("mozilla", "geckodriver", self.github_token)
-        releases = github.releases().json()
-        url = (item["browser_download_url"] for item in releases["assets"]
-               if "linux64" in item["browser_download_url"]).next()
+        version = self._latest_geckodriver_version()
+        logger.debug("Latest geckodriver release %s" % version)
+        url = "https://github.com/mozilla/geckodriver/releases/download/%s/geckodriver-%s-linux64.tar.gz" % (version, version)
         untar(get(url).raw)
 
     def wptrunner_args(self, root):
@@ -352,26 +369,37 @@ def process_results(log, iterations):
     return results, inconsistent
 
 
+def table(headings, data, log):
+    cols = range(len(headings))
+    assert all(len(item) == len(cols) for item in data)
+    max_widths = reduce(lambda prev, cur: [(len(cur[i]) + 2)
+                                           if (len(cur[i]) + 2) > prev[i]
+                                           else prev[i]
+                                           for i in cols],
+                        data,
+                        [len(item) + 2 for item in headings])
+    log("|%s|" % "|".join(item.center(max_widths[i]) for i, item in enumerate(headings)))
+    log("|%s|" % "|".join("-" * max_widths[i] for i in cols))
+    for row in data:
+        log("|%s|" % "|".join(" %s" % row[i].ljust(max_widths[i] - 1) for i in cols))
+
+
 def write_inconsistent(inconsistent, iterations):
     logger.error("## Unstable results ##\n")
-    logger.error("| Test | Subtest | Results |")
-    logger.error("|------|---------|---------|")
-    for test, subtest, results in inconsistent:
-        logger.error("%s | %s | %s" % (test,
-                                       subtest if subtest else "",
-                                       err_string(results, iterations)))
+    strings = [(test, subtest if subtest else "", err_string(results, iterations))
+                for test, subtest, results in inconsistent]
+    table(["Test", "Subtest", "Results"], strings, logger.error)
 
 
 def write_results(results, iterations):
     logger.info("## All results ##\n")
     for test, test_results in results.iteritems():
         logger.info("### %s ###" % test)
-        logger.info("| Subtest | Results |")
-        logger.info("|---------|---------|")
         parent = test_results.pop(None)
-        logger.info("|  | %s |" % (err_string(parent, iterations)))
-        for subtest, result in test_results.iteritems():
-            logger.info("| %s | %s |" % (subtest, err_string(result, iterations)))
+        strings = [("", err_string(parent, iterations))]
+        strings.extend(((subtest if subtest else "", err_string(results, iterations))
+                        for subtest, results in test_results.iteritems()))
+        table(["Subtest", "Results"], strings, logger.info)
 
 
 def get_parser():
@@ -410,12 +438,13 @@ def main():
 
     os.chdir(args.root)
 
-    if args.gh_token is None:
-        logger.critical("Must provide a GitHub token via --gh-token or $GITHUB_TOKEN")
-        return 1
+    if args.gh_token:
+        gh_handler = setup_github_logging(args)
+    else:
+        logger.warning("Can't log to GitHub")
+        gh_handler = None
 
-    gh_handler = setup_github_logging(args)
-
+    print >> sys.stderr, "travis_fold:start:browser_setup"
     logger.info("# %s #" % args.browser.title())
 
     browser_cls = {"firefox": Firefox,
@@ -452,6 +481,9 @@ def main():
                             files_changed,
                             args.iterations,
                             browser)
+
+    print >> sys.stderr, "travis_fold:end:browser_setup"
+    print >> sys.stderr, "travis_fold:start:running_tests"
     with open("raw.log", "wb") as log:
         wptrunner.setup_logging(kwargs,
                                 {"tbpl": sys.stdout,
@@ -461,13 +493,17 @@ def main():
     with open("raw.log", "rb") as log:
         results, inconsistent = process_results(log, args.iterations)
 
+    print >> sys.stderr, "travis_fold:end:running_tests"
+
     if results:
         if inconsistent:
             write_inconsistent(inconsistent, args.iterations)
             retcode = 2
         else:
             logger.info("All results were stable\n")
+        print >> sys.stderr, "travis_fold:start:full_results"
         write_results(results, args.iterations)
+        print >> sys.stderr, "travis_fold:end:full_results"
     else:
         logger.info("No tests run.")
 

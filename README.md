@@ -1,7 +1,6 @@
 The Web Platform Tests Project [![IRC chat](https://goo.gl/6nCIks)](http://irc.w3.org/?channels=testing)
 ==============================
 
-
 The Web Platform Tests Project is a W3C-coordinated attempt to build a
 cross-browser testsuite for the Web-platform stack.  However, for mainly
 historic reasons, the CSS WG testsuite is in a separate repository,

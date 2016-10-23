@@ -1,6 +1,7 @@
-set -ex
+set -e
 
 hosts_fixup() {
+    echo "travis_fold:start:hosts_fixup"
     echo "== /etc/hosts =="
     cat /etc/hosts
     echo "----------------"
@@ -16,6 +17,7 @@ hosts_fixup() {
     echo "== /etc/hosts =="
     cat /etc/hosts
     echo "----------------"
+    echo "travis_fold:end:hosts_fixup"
 }
 
 

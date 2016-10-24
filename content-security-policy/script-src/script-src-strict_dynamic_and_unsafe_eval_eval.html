@@ -16,7 +16,7 @@
     <script nonce='dummy'>
         var evalScriptRan = false;
         async_test(function(t) {
-            document.addEventListener('securitypolicyviolation', t.unreached_func('No CSP violation report has fired.'));
+            window.addEventListener('securitypolicyviolation', t.unreached_func('No CSP violation report has fired.'));
             try {
                 eval("evalScriptRan = true;");
             } catch (e) {

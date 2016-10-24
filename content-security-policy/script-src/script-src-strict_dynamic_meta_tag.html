@@ -15,80 +15,62 @@
     <div id='log'></div>
 
     <script nonce='dummy'>
-    document.addEventListener('securitypolicyviolation', function(e) {
-        assert_unreached('No CSP violation report has fired.');
-    });
-
-    async_test(function(t) {
-        var e = document.createElement('script');
-        e.id = 'appendChild';
-        e.src = 'simpleSourcedScript.js';
-        e.onload = t.step_func_done(function() {
-            assert_equals(document.getElementById('appendChild').getAttribute('executed'), '1');
+        window.addEventListener('securitypolicyviolation', function(e) {
+            assert_unreached('No CSP violation report has fired.');
         });
-        e.onerror = t.unreached_func('Error should not be triggered.');
-        document.body.appendChild(e);
-    }, 'Script injected via `appendChild` is allowed with `strict-dynamic`.');
-</script>
 
-<script nonce='dummy'>
-    async_test(function(t) {
-        var e = document.createElement('script');
-        e.id = 'appendChild-incorrectNonce';
-        e.src = 'simpleSourcedScript.js';
-        e.setAttribute('nonce', 'wrong');
-        e.onload = t.step_func_done(function() {
-            assert_equals(document.getElementById('appendChild-incorrectNonce').getAttribute('executed'), '1');
-        });
-        e.onerror = t.unreached_func('Error should not be triggered.');
-        document.body.appendChild(e);
-    }, 'Script injected via `appendChild` is allowed with `strict-dynamic`, even if it carries an incorrect nonce.');
-</script>
+        async_test(function(t) {
+            window.addEventListener('message', t.step_func(function(e) {
+                if (e.data === 'appendChild') {
+                    t.done();
+                }
+            }));
+            var e = document.createElement('script');
+            e.id = 'appendChild';
+            e.src = 'simpleSourcedScript.js';
+            e.onerror = t.unreached_func('Error should not be triggered.');
+            document.body.appendChild(e);
+        }, 'Script injected via `appendChild` is allowed with `strict-dynamic`.');
+    </script>
 
-<script nonce='dummy'>
-    async_test(function(t) {
-        var e = document.createElement('script');
-        e.id = 'appendChild-textContent';
-        e.setAttribute('executed', '0');
-        e.textContent = "document.currentScript.setAttribute('executed', '1');";
-        e.onerror = t.unreached_func('Error should not be triggered.');
-        var observer = new MutationObserver(function(mutations) {
-            var node = mutations.filter(m => m.type === 'childList' && m.addedNodes.length).map(m => m.addedNodes).map(n => n[0]).filter(n => n.id === 'appendChild-textContent');
+    <script nonce='dummy'>
+        async_test(function(t) {
+            window.addEventListener('message', t.step_func(function(e) {
+                if (e.data === 'appendChild-incorrectNonce') {
+                    t.done();
+                }
+            }));
+            var e = document.createElement('script');
+            e.id = 'appendChild-incorrectNonce';
+            e.src = 'simpleSourcedScript.js';
+            e.setAttribute('nonce', 'wrong');
+            e.onerror = t.unreached_func('Error should not be triggered.');
+            document.body.appendChild(e);
+        }, 'Script injected via `appendChild` is allowed with `strict-dynamic`, even if it carries an incorrect nonce.');
+    </script>
 
-            assert_equals(node[0].getAttribute('executed'), '1');
-            observer.disconnect();
-            t.done();
-        });
-        observer.observe(document.body, {
-            attributes: true,
-            childList: true
-        });
-        document.body.appendChild(e);
-    }, 'Script injected via `appendChild` populated via `textContent` is allowed with `strict-dynamic`.');
-</script>
+    <script nonce='dummy'>
+        async_test(function(t) {
+            window.appendChildViaTextContent = t.step_func_done();
+            var e = document.createElement('script');
+            e.id = 'appendChild-textContent';
+            e.textContent = "appendChildViaTextContent();";
+            e.onerror = t.unreached_func('Error should not be triggered.');
+            document.body.appendChild(e);
+        }, 'Script injected via `appendChild` populated via `textContent` is allowed with `strict-dynamic`.');
+    </script>
 
-<script nonce='dummy'>
-    async_test(function(t) {
-        var e = document.createElement('script');
-        e.id = 'appendChild-textContent-incorrectNonce';
-        e.setAttribute('executed', '0');
-        e.setAttribute('nonce', 'wrong');
-        e.textContent = "document.currentScript.setAttribute('executed', '1');";
-        e.onerror = t.unreached_func('Error should not be triggered.');
-        var observer = new MutationObserver(function(mutations) {
-            var node = mutations.filter(m => m.type === 'childList' && m.addedNodes.length).map(m => m.addedNodes).map(n => n[0]).filter(n => n.id === 'appendChild-textContent-incorrectNonce');
-
-            assert_equals(node[0].getAttribute('executed'), '1');
-            observer.disconnect();
-            t.done();
-        });
-        observer.observe(document.body, {
-            attributes: true,
-            childList: true
-        });
-        document.body.appendChild(e);
-    }, 'Script injected via `appendChild` populated via `textContent` is allowed with `strict-dynamic`, even if it carries an incorrect nonce.');
-</script>
+    <script nonce='dummy'>
+        async_test(function(t) {
+            window.appendChildViaTextContentIncorrectNonce = t.step_func_done();
+            var e = document.createElement('script');
+            e.id = 'appendChild-textContent-incorrectNonce';
+            e.setAttribute('nonce', 'wrong');
+            e.textContent = "appendChildViaTextContentIncorrectNonce();";
+            e.onerror = t.unreached_func('Error should not be triggered.');
+            document.body.appendChild(e);
+        }, 'Script injected via `appendChild` populated via `textContent` is allowed with `strict-dynamic`, even if it carries an incorrect nonce.');
+    </script>
 </body>
 
 </html>

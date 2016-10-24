@@ -17,7 +17,7 @@
         var newFunctionScriptRan = false;
 
         async_test(function(t) {
-            document.addEventListener('securitypolicyviolation', t.step_func_done(function(e) {
+            window.addEventListener('securitypolicyviolation', t.step_func_done(function(e) {
                 assert_false(newFunctionScriptRan);
                 assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
             }));

@@ -1,1 +1,1 @@
-document.currentScript.setAttribute('executed', '1');
+window.postMessage(document.currentScript.id, "*");

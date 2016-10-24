@@ -18,34 +18,35 @@
 
     <script nonce='dummy'>
         async_test(function(t) {
-            var handler = function(e) {
-                document.removeEventListener('securitypolicyviolation', handler);
-                t.unreached_func('No CSP violation report has fired.');
-            };
-            document.addEventListener('securitypolicyviolation', handler);
+            window.addEventListener('message', t.step_func(function(e) {
+                if (e.data === 'whitelisted-appendChild') {
+                    t.done();
+                }
+            }));
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.target.id !== 'whitelisted-appendChild') {
+                    return;
+                }
+                assert_unreached('Script injected via `appendChild` is allowed with `strict-dynamic` + a nonce+whitelist double policy.');
+            }));
 
             var e = document.createElement('script');
             e.id = 'whitelisted-appendChild';
             e.src = 'simpleSourcedScript.js';
-            e.onload = t.step_func_done(function() {
-                assert_equals(document.getElementById('whitelisted-appendChild').getAttribute('executed'), '1');
-            });
             e.onerror = t.unreached_func('Error should not be triggered.');
             document.body.appendChild(e);
         }, 'Script injected via `appendChild` is allowed with `strict-dynamic` + a nonce+whitelist double policy.');
     </script>
 
-    <!-- This test must be synchronous because we have to wait until the old event handler is removed. -->
     <script nonce='dummy'>
-        test(function(t) {
-            var handler = function(e) {
-                assert_equals(document.getElementById('nonWhitelisted-appendChild').getAttribute('executed'), null);
-                assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
-                assert_equals(e.originalPolicy.trim(), "script-src 'self' 'nonce-dummy'");
-                document.removeEventListener('securitypolicyviolation', handler);
-                t.done();
-            };
-            document.addEventListener('securitypolicyviolation', handler);
+        async_test(function(t) {
+            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
+                if (violation.target.id !== 'nonWhitelisted-appendChild') {
+                    return;
+                }
+                assert_equals(violation.effectiveDirective, 'script-src');
+                assert_equals(violation.originalPolicy, "script-src 'self' 'nonce-dummy'");
+            }));
 
             var e = document.createElement('script');
             e.id = 'nonWhitelisted-appendChild';

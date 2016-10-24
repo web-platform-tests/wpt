@@ -40,25 +40,19 @@ function runTest(config,qualifier) {
                 _events.push(event.messageType + '-response');
                 return _mediaKeySession.update(response);
             }).then(test.step_func(function() {
-                _events.push('update-done');
+                _events.push('updated');
                 if (event.messageType === 'license-release') {
-                    var events1 = ['encrypted','generaterequest-done'];
-                    var events2 = ['license-request', 'license-request-response', 'update-done'];
-                    var events3 = [ 'keystatuseschange',
-                                    'playing',
-                                    'remove-done',
-                                    'keystatuseschange',
-                                    'license-release',
-                                    'license-release-response',
-                                    'closed-promise',
-                                    'update-done' ];
-                    assert_array_equals(_events.slice(0,events1.length), events1, "Expected initial events");
-                    var i = events1.length;
-                    for(; i < _events.length-events3.length; i+=events2.length) {
-                        assert_array_equals(_events.slice(i,i+events2.length), events2, "Expected one or more license request sequences");
-                    }
-                    assert_greater_than(i,events1.length, "Expected at least one license request sequence");
-                    assert_array_equals(_events.slice(i), events3, "Expected events sequence" );
+                    checkEventSequence( _events,
+                                    ['encrypted','generaterequest-done',
+                                        ['license-request', 'license-request-response', 'updated'], // potentially repeating
+                                        'keystatuseschange',
+                                        'playing',
+                                        'removed',
+                                        'keystatuseschange',
+                                        'license-release',
+                                        'license-release-response',
+                                        'closed-promise',
+                                        'updated' ]);
                     test.done();
                 }
 
@@ -83,7 +77,7 @@ function runTest(config,qualifier) {
             if (_video.currentTime > (config.duration || 1) && !_timeupdateEvent) {
                 _timeupdateEvent = true;
                 _video.pause();
-                _mediaKeySession.remove().then(recordEventFunc('remove-done')).catch(onFailure);
+                _mediaKeySession.remove().then(recordEventFunc('removed')).catch(onFailure);
             }
         }
 

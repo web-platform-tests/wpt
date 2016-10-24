@@ -2,9 +2,9 @@ set -e
 
 hosts_fixup() {
     echo "travis_fold:start:hosts_fixup"
-    echo "== /etc/hosts =="
+    echo "Rewriting hosts file"
+    echo "## /etc/hosts ##"
     cat /etc/hosts
-    echo "----------------"
     sudo sed -i 's/^::1\s*localhost/::1/' /etc/hosts
     sudo sh -c 'echo "
 127.0.0.1 web-platform.test

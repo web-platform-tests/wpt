@@ -10,6 +10,9 @@
 
 <div id="log"></div>
 
+<img src="/images/threecolors.png" usemap="#sanityCheck" width="300" height="300">
+<map name="sanityCheck"><area shape="rect" coords="0,0,300,300"></map>
+
 <img src="/images/threecolors.png" usemap="#sImPlE" width="300" height="300">
 <map name="simple"><area shape="rect" coords="0,0,300,300"></map>
 <map name="SIMPLE"><area shape="rect" coords="0,0,300,300"></map>
@@ -58,7 +61,18 @@
 setup({ explicit_done: true });
 
 onload = () => {
-  const images = Array.from(document.querySelectorAll("img"));
+  test(() => {
+    const image = document.querySelector(`img[usemap="#sanityCheck"]`);
+    const imageRect = image.getBoundingClientRect();
+    const x = imageRect.left + imageRect.width / 2;
+    const y = imageRect.top + imageRect.height / 2;
+    const element = document.elementFromPoint(x, y);
+    const area = document.querySelector(`map[name="sanityCheck"] > area`);
+
+    assert_equals(element, area);
+  }, `Image with usemap of #sanityCheck should match the area with map named sanityCheck`);
+
+  const images = Array.from(document.querySelectorAll(`img:not([usemap="#sanityCheck"])`));
 
   for (let image of images) {
     test(() => {

@@ -233,7 +233,6 @@ MessageHandler.prototype.messagehandler = function messagehandler(messageType, m
                 window.crypto.getRandomValues(nonce);
                 claims.jti = str2b64url( ab2str(nonce) );
             }
-
             var header = {typ: "JWT", alg: alg};
             var plaintext = str2b64url(JSON.stringify(header)) + '.' + str2b64url(JSON.stringify(claims));
             return subtlecrypto.importKey("raw", secret, algorithm, false, [ "sign" ]).then( function(key) {

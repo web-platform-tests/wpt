@@ -40,6 +40,7 @@ errors = {
     "div-splitting-groups-3": "<dl><div><dt>1</div><div><dt>2<dd>b</div></dl>",
     "div-contains-text": "<dl><div>x</div><dt>2<dd>b</div></dl>",
     "div-contains-dl": "<dl><div><dl></dl></div><dt>2<dd>b</div></dl>",
+    "div-multiple-groups": "<dl><div><dt>1<dd>a<dt>2<dd>a<dd>b<dt>3<dt>4<dt>5<dd>a</div></dl>",
 }
 
 non_errors_in_head = {

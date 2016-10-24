@@ -34,7 +34,7 @@ function runTest(config,qualifier) {
             }
 
             config.messagehandler(event.messageType, event.message).then(function(response) {
-                _events.push('license-response');
+                _events.push('license-request-response');
                 waitForEventAndRunStep('keystatuseschange', _mediaKeySession, onKeyStatusesChange, test);
                 return _mediaKeySession.update( response );
             }).then(function() {
@@ -78,20 +78,14 @@ function runTest(config,qualifier) {
         function onClosed(event) {
             _events.push('closed-promise');
             setTimeout(test.step_func(function() {
-                var events1 = ['generaterequest'];
-                var events2 = ['license-request', 'license-response', 'updated'];
-                var events3 = ['allkeysusable',
-                                'playing',
-                                'closed',
-                                'closed-promise',
-                                'emptykeyslist'];
-                assert_array_equals(_events.slice(0,events1.length), events1, "Expected initial events");
-                var i = events1.length;
-                for(; i < _events.length-events3.length; i+=events2.length) {
-                    assert_array_equals(_events.slice(i,i+events2.length), events2, "Expected one or more license request sequences");
-                }
-                assert_greater_than(i,events1.length, "Expected at least one license request sequence");
-                assert_array_equals(_events.slice(i), events3, "Expected events sequence" );
+                checkEventSequence( _events,
+                                    ['generaterequest',
+                                        ['license-request', 'license-request-response', 'updated'], // potentially repeating
+                                        'allkeysusable',
+                                        'playing',
+                                        'closed',
+                                        'closed-promise',
+                                        'emptykeyslist']);
                 test.done();
             } ), 0);
         }

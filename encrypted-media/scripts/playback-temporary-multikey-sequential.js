@@ -21,7 +21,8 @@ function runTest(config,qualifier) {
             _mediaSource,
             _waitingForKey = false,
             _playingCount = 0,
-            _canplayCount = 0;
+            _canplayCount = 0,
+            _timeupdateWhileWaiting = 0;
 
         function startNewSession() {
             assert_less_than(_mediaKeySessions.length, config.initData.length);
@@ -81,11 +82,14 @@ function runTest(config,qualifier) {
 
         function onTimeupdate(event) {
             // We should not receive 'timeupdate' events due to playing while waiting for a key, except
-            // when we first start waiting for key we should change the readyState to HAVE_METADATA
+            // when we first start waiting for key we should change the readyState to HAVE_CURRENT_DATA
             // which will trigger the "If the previous ready state was HAVE_FUTURE_DATA or more, and
             // the new ready state is HAVE_CURRENT_DATA or less" case of the readyState change
             // algorithm which requires a "timeupdate" event be fired.
-            assert_true(!_waitingForKey || _video.readyState == _video.HAVE_METADATA, "Should not continue playing whilst waiting for a key");
+             if (_waitingForKey) {
+                assert_equals(++_timeupdateWhileWaiting, 1, "Should only receive one timeupdate while waiting for key");
+                assert_equals(_video.readyState, _video.HAVE_CURRENT_DATA, "Should not continue playing whilst waiting for a key");
+            }
 
             if (_video.currentTime > config.duration) {
                 assert_equals(_mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content");

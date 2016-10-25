@@ -58,7 +58,11 @@ function runTest(config,qualifier) {
         function onWaitingForKey(event) {
             _waitingForKey = true;
             if (config.checkReadyState) {
-                assert_equals(_video.readyState, _video.HAVE_METADATA, "Video readyState should be HAVE_METADATA on watingforkey event");
+                // This test does not start playing until the first license has been provided,
+                // so this event should occur when transitioning between keys.
+                // Thus, the frame at the current playback position is available and readyState
+                // should be HAVE_CURRENT_DATA.
+                assert_equals(_video.readyState, _video.HAVE_CURRENT_DATA, "Video readyState should be HAVE_CURRENT_DATA on watingforkey event");
             }
             startNewSession();
         }

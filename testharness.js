@@ -527,7 +527,11 @@ policies and contribution forms [3].
             tests.promise_tests = Promise.resolve();
         }
         tests.promise_tests = tests.promise_tests.then(function() {
-            return Promise.resolve(test.step(func, test, test))
+            var promise = test.step(func, test, test);
+            test.step(function() {
+                assert_not_equals(promise, undefined);
+            });
+            return Promise.resolve(promise)
                 .then(
                     function() {
                         test.done();

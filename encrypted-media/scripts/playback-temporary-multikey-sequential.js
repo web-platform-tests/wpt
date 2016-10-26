@@ -22,7 +22,7 @@ function runTest(config,qualifier) {
             _waitingForKey = false,
             _playingCount = 0,
             _canplayCount = 0,
-            _timeupdateWhileWaiting = 0;
+            _timeupdateWhileWaitingCount = 0;
 
         function startNewSession() {
             assert_less_than(_mediaKeySessions.length, config.initData.length);
@@ -70,13 +70,13 @@ function runTest(config,qualifier) {
 
         function onPlaying(event) {
             _playingCount++;
-            assert_equals(_mediaKeySessions.length, _playingCount, "Should get one 'playing' event per key / session played");
+            assert_equals(_mediaKeySessions.length, _playingCount, "Should get one 'playing' event per key / session added");
             assert_less_than_equal(_playingCount, 2, "Should not get more than two 'playing' events.");
         }
 
         function onCanPlay(event) {
             _canplayCount++;
-            assert_equals(_mediaKeySessions.length, _canplayCount, "Should get one 'canplay' event per key / session played");
+            assert_equals(_mediaKeySessions.length, _canplayCount, "Should get one 'canplay' event per key / session added");
             assert_less_than_equal(_canplayCount, 2, "Should not get more than two 'canplay' events.");
         }
 
@@ -87,12 +87,13 @@ function runTest(config,qualifier) {
             // the new ready state is HAVE_CURRENT_DATA or less" case of the readyState change
             // algorithm which requires a "timeupdate" event be fired.
              if (_waitingForKey) {
-                assert_equals(++_timeupdateWhileWaiting, 1, "Should only receive one timeupdate while waiting for key");
-                assert_equals(_video.readyState, _video.HAVE_CURRENT_DATA, "Should not continue playing whilst waiting for a key");
+                assert_equals(++_timeupdateWhileWaitingCount, 1, "Should only receive one timeupdate while waiting for key");
+                assert_equals(_video.readyState, _video.HAVE_CURRENT_DATA, "Video readyState should be HAVE_CURRENT_DATA while wating for key");
             }
 
             if (_video.currentTime > config.duration) {
                 assert_equals(_mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content");
+                assert_equals(_timeupdateWhileWaitingCount, 1, "Should have only received one timeupdate while waiting for key");
                 _video.pause();
                 test.done();
             }

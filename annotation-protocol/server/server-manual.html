@@ -63,16 +63,22 @@ function request(method, url, headers, content) {
         resp.text = d;
         // we have it; what is it?
         var type = xhr.getResponseHeader('Content-Type');
-        resp.type = type.split(';')[0];
-        if (resp.type === MEDIA_TYPE) {
-          try {
-            d = JSON.parse(d);
-            resp.body = d;
+        if (type) {
+          resp.type = type.split(';')[0];
+          if (resp.type === MEDIA_TYPE) {
+            try {
+              d = JSON.parse(d);
+              resp.body = d;
+            }
+            catch(err) {
+              resp.body = null;
+            }
           }
-          catch(err) {
-            resp.body = null;
-          }
+        } else {
+          resp.type = null;
+          resp.body = null;
         }
+
       }
       resolve(resp);
     };

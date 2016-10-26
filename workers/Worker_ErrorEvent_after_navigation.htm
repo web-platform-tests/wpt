@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Worker error reporting in navigated-away-from documents</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe src="Worker_ErrorEvent_after_navigation_support-1.htm"></iframe>
+<iframe id="navigate-me" src="Worker_ErrorEvent_after_navigation_support-1.htm"></iframe>
+
+<script>
+setup({ allow_uncaught_exception: true });
+
+async_test(t => {
+  window.addEventListener("load", t.step_func(() => {
+    frames[0].doWorkerStuffAndExpectError(t);
+  }));
+}, "Worker error reporting must work as normal, when no navigation is involved");
+
+async_test(t => {
+  const iframe = document.querySelector("#navigate-me");
+  const windowProxy = iframe.contentWindow;
+
+  window.addEventListener("load", t.step_func(() => {
+    windowProxy.onerror = t.unreached_func("The navigated-away-from Window error event must never fire");
+    windowProxy.doWorkerStuffAndExpectNoError(t);
+
+    iframe.addEventListener("load", t.step_func(() => {
+      // The test passes if no error events have been fired within this time.
+      t.step_timeout(t.step_func_done(), 2000);
+    }));
+    windowProxy.location.href = "Worker_ErrorEvent_after_navigation_support-2.htm";
+  }));
+}, "Worker error reporting must not work at all if the creator document has been navigated away from");
+</script>

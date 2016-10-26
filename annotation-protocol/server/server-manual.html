@@ -326,7 +326,7 @@ function runTests( container_url, annotation_url ) {
   // SHOULD tests
 
   test(function() {
-    assert_equals("https", container_url.toLowerCase().substr(0,5), "Server is not using HTTPS");
+    assert_equals(container_url.toLowerCase().substr(0,5), "https", "Server is not using HTTPS");
     }, "Annotation server SHOULD use HTTPS rather than HTTP");
 
   var thePrefRequest = request("GET", container_url,

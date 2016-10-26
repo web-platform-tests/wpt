@@ -427,7 +427,9 @@ def write_inconsistent(inconsistent, iterations):
 def write_results(results, iterations):
     logger.info("## All results ##\n")
     for test, test_results in results.iteritems():
-        logger.info("### %s ###" % test)
+        baseurl = "https://w3c-test.org/submissions"
+        pr = os.environ['TRAVIS_PULL_REQUEST']
+        logger.info("### [%s](%s/%s%s) ###" % (test, baseurl, pr, test))
         parent = test_results.pop(None)
         strings = [("", err_string(parent, iterations))]
         strings.extend(((subtest if subtest else "", err_string(results, iterations))

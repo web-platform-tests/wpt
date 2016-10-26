@@ -409,6 +409,8 @@ def annotation_delete(request, response):
 
 if __name__ == '__main__':
     print 'http://' + myhost + ':{0}/'.format(port)
+    print 'container URI is http://' + myhost + ':{0}/'.format(port) + "/annotations/"
+    print 'example annotation URI is http://' + myhost + ':{0}/'.format(port) + "/annotations/anno1.json"
 
     routes = [
         ("GET", "", wptserve.handlers.file_handler),

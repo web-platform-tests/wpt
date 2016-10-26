@@ -76,7 +76,7 @@ function runTest(config,qualifier) {
         }
 
         function onClosed(event) {
-            _events.push('closed-method-promise-resolved');
+            _events.push('closed-attribute-resolved');
             setTimeout(test.step_func(function() {
                 checkEventSequence( _events,
                                     ['generaterequest',
@@ -97,7 +97,7 @@ function runTest(config,qualifier) {
 
                 _mediaKeySession.closed.then(test.step_func(onClosed));
                 _mediaKeySession.close().then(function() {
-                    _events.push('closed-attribute-resolved');
+                    _events.push('closed-method-promise-resolved');
                 }).catch(onFailure);
             }
         }

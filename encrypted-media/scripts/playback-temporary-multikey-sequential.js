@@ -93,7 +93,7 @@ function runTest(config,qualifier) {
 
             if (_video.currentTime > config.duration) {
                 assert_equals(_mediaKeySessions.length, config.initData.length, "It should require all keys to reach end of content");
-                assert_equals(_timeupdateWhileWaitingCount, 1, "Should have only received one timeupdate while waiting for key");
+                assert_equals(_timeupdateWhileWaitingCount, 1, "Should have only received exactly one timeupdate while waiting for key");
                 _video.pause();
                 test.done();
             }

@@ -312,7 +312,7 @@ def annotation_head(request, response):
         response.status = 404
 
     add_cors_headers(response)
-    response.content = "Annotation Options\n"
+    # response.content = "Annotation Options\n"
 
 @wptserve.handlers.handler
 def annotation_options(request, response):
@@ -331,7 +331,7 @@ def annotation_options(request, response):
         response.status = 404
 
     add_cors_headers(response)
-    response.content = "Annotation Options\n"
+    # response.content = "Annotation Options\n"
 
 
 def create_annotation(body):

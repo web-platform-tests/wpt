@@ -162,9 +162,11 @@ class RoutesBuilder(object):
 
 def build_routes(aliases):
     builder = RoutesBuilder()
-    for url, directory in aliases.items():
+    for alias in aliases.items():
+        url = alias["url-path"]
+        directory = alias["local-dir"]
         if not url.startswith("/") or len(directory) == 0:
-            logger.error("A map entry of 'aliases' must be \"/<url-path>\": \"<local-directory>\"")
+            logger.error("\"url-path\" value must start with '/'.")
             continue
         if url.endswith("/"):
             builder.add_mount_point(url, directory)
@@ -513,7 +515,7 @@ def set_computed_defaults(config):
         config["ws_doc_root"] = os.path.join(root, "websockets", "handlers")
 
     if not value_set(config, "aliases"):
-        config["aliases"] = {}
+        config["aliases"] = []
 
 
 def merge_json(base_obj, override_obj):

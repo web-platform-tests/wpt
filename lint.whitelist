@@ -80,6 +80,7 @@ W3C-TEST.ORG:tools/*
 PRINT STATEMENT:tools/*
 W3C-TEST.ORG:*/tools/*
 PRINT STATEMENT:*/tools/*
+W3C-TEST.ORG:check_stability.py
 
 ### Test exclusions ##
 

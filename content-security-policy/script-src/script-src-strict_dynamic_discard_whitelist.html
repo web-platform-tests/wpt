@@ -20,8 +20,9 @@
                     assert_unreached('Whitelisted script without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(e) {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(e) {
                 assert_equals(e.violatedDirective.split(' ')[0], 'script-src');
+                t.done();
             }));
         }, 'Whitelisted script without a correct nonce is not allowed with `strict-dynamic`.');
     </script>

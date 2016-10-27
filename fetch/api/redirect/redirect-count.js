@@ -25,9 +25,10 @@ function redirectCount(desc, redirectUrl, redirectLocation, redirectStatus, maxC
 
       return fetch(url + urlParameters, requestInit).then(function(resp) {
         assert_equals(resp.status, 200, "Response's status is 200");
+        return resp.text();
+      }).then(function(body) {
+        assert_equals(body, maxCount.toString(), "Redirected " + maxCount + " times");
       });
-    }).then(function(body) {
-      assert_equals(body, maxCount.toString(), "Redirected " + maxCount + "times");
     });
   }, desc);
 }

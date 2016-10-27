@@ -783,8 +783,8 @@ IdlInterface.prototype.test_self = function()
 
         if (this.is_callback()) {
             // "The internal [[Prototype]] property of an interface object for
-            // a callback interface MUST be the Object.prototype object."
-            assert_equals(Object.getPrototypeOf(self[this.name]), Object.prototype,
+            // a callback interface must be the Function.prototype object."
+            assert_equals(Object.getPrototypeOf(self[this.name]), Function.prototype,
                           "prototype of self's property " + format_value(this.name) + " is not Object.prototype");
 
             return;

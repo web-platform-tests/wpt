@@ -51,7 +51,7 @@ function runTest(config,qualifier) {
                                         'keystatuseschange',
                                         'license-release',
                                         'license-release-response',
-                                        'closed-promise',
+                                        'closed-attribute-resolved',
                                         'updated' ]);
                     test.done();
                 }
@@ -95,7 +95,7 @@ function runTest(config,qualifier) {
             _mediaKeySession = _mediaKeys.createSession( 'persistent-usage-record' );
             waitForEventAndRunStep('message', _mediaKeySession, onMessage, test);
             waitForEventAndRunStep('keystatuseschange', _mediaKeySession, recordEventFunc('keystatuseschange'), test);
-            _mediaKeySession.closed.then(recordEventFunc('closed-promise'));
+            _mediaKeySession.closed.then(recordEventFunc('closed-attribute-resolved'));
             return config.servercertificate ? _mediaKeys.setServerCertificate(config.servercertificate) : true;
         }).then(function( success ) {
             return testmediasource(config);

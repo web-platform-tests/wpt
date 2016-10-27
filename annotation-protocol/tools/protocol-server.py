@@ -312,7 +312,7 @@ def annotation_head(request, response):
         response.status = 404
 
     add_cors_headers(response)
-    response.content = "Annotation Options\n"
+    # response.content = "Annotation Options\n"
 
 @wptserve.handlers.handler
 def annotation_options(request, response):
@@ -331,7 +331,7 @@ def annotation_options(request, response):
         response.status = 404
 
     add_cors_headers(response)
-    response.content = "Annotation Options\n"
+    # response.content = "Annotation Options\n"
 
 
 def create_annotation(body):
@@ -409,6 +409,8 @@ def annotation_delete(request, response):
 
 if __name__ == '__main__':
     print 'http://' + myhost + ':{0}/'.format(port)
+    print 'container URI is http://' + myhost + ':{0}/'.format(port) + "/annotations/"
+    print 'example annotation URI is http://' + myhost + ':{0}/'.format(port) + "/annotations/anno1.json"
 
     routes = [
         ("GET", "", wptserve.handlers.file_handler),

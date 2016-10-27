@@ -415,6 +415,7 @@ def table(headings, data, log):
     log("|%s|" % "|".join("-" * max_widths[i] for i in cols))
     for row in data:
         log("|%s|" % "|".join(" %s" % row[i].ljust(max_widths[i] - 1) for i in cols))
+    log("")
 
 
 def write_inconsistent(inconsistent, iterations):

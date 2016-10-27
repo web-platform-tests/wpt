@@ -80,7 +80,6 @@ W3C-TEST.ORG:tools/*
 PRINT STATEMENT:tools/*
 W3C-TEST.ORG:*/tools/*
 PRINT STATEMENT:*/tools/*
-W3C-TEST.ORG:check_stability.py
 
 ### Test exclusions ##
 
@@ -136,6 +135,7 @@ TRAILING WHITESPACE:webgl/tools/*.patch
 
 # CI scripts
 PRINT STATEMENT:check_stability.py
+W3C-TEST.ORG:check_stability.py
 
 # Git submodules are not currently scanned
 *:tools/*

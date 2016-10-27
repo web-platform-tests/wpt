@@ -428,7 +428,7 @@ def write_results(results, iterations, comment_pr):
     logger.info("## All results ##\n")
     for test, test_results in results.iteritems():
         baseurl = "http://w3c-test.org/submissions"
-        if test.split('.')[-2] == "https":
+        if os.path.splitext(s)[0].split(".")[1:][0] == "https":
             baseurl = "https://w3c-test.org/submissions"
         pr_number = None
         if comment_pr:
@@ -436,7 +436,7 @@ def write_results(results, iterations, comment_pr):
                 pr_number = int(comment_pr)
             except ValueError:
                 pass
-        if (pr_number):
+        if pr_number:
             logger.info("### [%s](%s/%s%s) ###" % (test, baseurl, pr_number, test))
         else:
             logger.info("### %s ###" % test)

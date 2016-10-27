@@ -424,10 +424,22 @@ def write_inconsistent(inconsistent, iterations):
     table(["Test", "Subtest", "Results"], strings, logger.error)
 
 
-def write_results(results, iterations):
+def write_results(results, iterations, comment_pr):
     logger.info("## All results ##\n")
     for test, test_results in results.iteritems():
-        logger.info("### %s ###" % test)
+        baseurl = "http://w3c-test.org/submissions"
+        if os.path.splitext(s)[0].split(".")[1:][0] == "https":
+            baseurl = "https://w3c-test.org/submissions"
+        pr_number = None
+        if comment_pr:
+            try:
+                pr_number = int(comment_pr)
+            except ValueError:
+                pass
+        if pr_number:
+            logger.info("### [%s](%s/%s%s) ###" % (test, baseurl, pr_number, test))
+        else:
+            logger.info("### %s ###" % test)
         parent = test_results.pop(None)
         strings = [("", err_string(parent, iterations))]
         strings.extend(((subtest if subtest else "", err_string(results, iterations))
@@ -547,7 +559,7 @@ def main():
         else:
             logger.info("All results were stable\n")
         print >> sys.stderr, "travis_fold:start:full_results"
-        write_results(results, args.iterations)
+        write_results(results, args.iterations, args.comment_pr)
         print >> sys.stderr, "travis_fold:end:full_results"
     else:
         logger.info("No tests run.")

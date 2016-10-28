@@ -1785,7 +1785,7 @@
   {
     "input": "http://example.com/foo/%2e%2",
     "base": "about:blank",
-    "href": "http://example.com/foo/.%2",
+    "href": "http://example.com/foo/%2e%2",
     "origin": "http://example.com",
     "protocol": "http:",
     "username": "",
@@ -1793,14 +1793,14 @@
     "host": "example.com",
     "hostname": "example.com",
     "port": "",
-    "pathname": "/foo/.%2",
+    "pathname": "/foo/%2e%2",
     "search": "",
     "hash": ""
   },
   {
     "input": "http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar",
     "base": "about:blank",
-    "href": "http://example.com/..bar",
+    "href": "http://example.com/%2e.bar",
     "origin": "http://example.com",
     "protocol": "http:",
     "username": "",
@@ -1808,7 +1808,7 @@
     "host": "example.com",
     "hostname": "example.com",
     "port": "",
-    "pathname": "/..bar",
+    "pathname": "/%2e.bar",
     "search": "",
     "hash": ""
   },

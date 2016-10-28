@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebAuthn WebIDL Tests</title>
+<link rel="author" title="Adam Powers" href="mailto:adam@fidoalliance.org">
+<link rel="help" href="https://w3c.github.io/webauthn/#iface-credential">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<!-- for testing WebIDL -->
+<script src=/resources/WebIDLParser.js></script>
+<script src=/resources/idlharness.js></script>
+<body></body>
+<script>
+// IIFE for namespace cleanliness
+(function() {
+    "use strict";
+
+    // XXX for development mode only!!
+    // if the WebAuthn API doesn't exist load a polyfill for testing
+    // this block of code is only required until browsers implement WebAuthn
+    var debug = function() {}; // for debugging purposes... we can drop this later if it is considered ugly
+    function ensureInterface() {
+        return new Promise(function(resolve, reject) {
+            if (typeof navigator.authentication !== "object") {
+                debug("!!! XXX - LOADING POLYFILL FOR WEBAUTHN TESTING - XXX !!!");
+                debug = window.console.log;
+
+                // dynamic loading of polyfill script by creating new <script> tag and seeing the src=
+                var scriptElem = document.createElement("script");
+                if (typeof scriptElem !== "object") {
+                    debug("ensureInterface: Error creating script element while loading polyfill");
+                    return reject(new Error("ensureInterface: Error creating script element while loading polyfill"));
+                }
+                scriptElem.type = "application/javascript";
+                scriptElem.onload = function() {
+                    debug("Done loading webauthn polyfill...");
+                    return resolve();
+                };
+                scriptElem.onerror = function() {
+                    debug("Failed to load polyfill...");
+                    return reject(new Error("navigator.authentication does not exist"));
+                };
+                scriptElem.src = "/webauthn/webauthn-polyfill/webauthn-polyfill.js";
+                if (document.body) {
+                    document.body.appendChild(scriptElem);
+                } else {
+                    debug("ensureInterface: DOM has no body");
+                    return reject("ensureInterface: DOM has no body");
+                }
+            }
+        });
+    }
+
+    // loads an IDL file from the webserver
+    function fetchIdl(idlUrl) {
+        return new Promise(function(resolve, reject) {
+            if (typeof idlUrl !== "string") {
+                return reject("fetchIdl: expected argument to be URL string");
+            }
+            var request = new XMLHttpRequest();
+            request.open("GET", idlUrl);
+            request.send();
+            request.onload = function() {
+                var idls = request.responseText;
+                debug("Loaded", idlUrl);
+                return resolve(idls);
+            };
+        });
+    }
+
+    // this does the real work of running the IDL tests
+    function runIdlTests(idls) {
+        return new Promise(function(resolve, reject) {
+            var idlArray = new window.IdlArray();
+            debug("Got idls:", idls);
+
+            // static IDL tests
+            idlArray.add_untested_idls("interface Navigator { };");
+            // TODO: change to "tested" for real browsers?
+            idlArray.add_untested_idls("partial interface Navigator { readonly attribute WebAuthentication authentication; };");
+            idlArray.add_objects({
+                WebAuthentication: ["navigator.authentication"]
+            });
+
+            // run test WebIDL tests loaded from the idls file
+            idlArray.add_idls(idls);
+            return resolve(idlArray.test());
+        });
+    }
+
+    // test harness function
+    window.promise_test(function() {
+        return ensureInterface() // ensure we have navigator.authentication ...
+            .then(function() { // ... then load the IDL file ...
+                return fetchIdl("interfaces.idl");
+            })
+            .then(function(idls) { // ... then run the tests.
+                debug("Running tests...");
+                return runIdlTests(idls);
+            });
+    }, "Validate WebAuthn IDL");
+}());
+</script>

@@ -23,11 +23,13 @@
                     t.done();
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
+                if (violation.target.id !== 'appendChild-reportOnly') {
+                    return;
+                }
                 assert_equals(violation.effectiveDirective, 'script-src');
                 // Check that the violation comes from the Report-Only policy.
                 assert_equals(violation.originalPolicy, "script-src 'none'");
-                t.done();
             }));
             var e = document.createElement('script');
             e.id = 'appendChild-reportOnly';

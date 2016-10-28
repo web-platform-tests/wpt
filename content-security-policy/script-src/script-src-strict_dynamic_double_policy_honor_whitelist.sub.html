@@ -17,18 +17,18 @@
     <div id='log'></div>
 
     <script nonce='dummy'>
-        var cspViolationHandler;
-        test(function(t) {
+        async_test(function(t) {
             window.addEventListener('message', t.step_func(function(e) {
                 if (e.data === 'whitelisted-appendChild') {
                     t.done();
                 }
             }));
-
-            cspViolationHandler = t.step_func(function(violation) {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.target.id !== 'whitelisted-appendChild') {
+                    return;
+                }
                 assert_unreached('Script injected via `appendChild` is allowed with `strict-dynamic` + a nonce+whitelist double policy.');
-            });
-            window.addEventListener('securitypolicyviolation', cspViolationHandler);
+            }));
 
             var e = document.createElement('script');
             e.id = 'whitelisted-appendChild';
@@ -39,13 +39,13 @@
     </script>
 
     <script nonce='dummy'>
-        test(function(t) {
-            window.removeEventListener('securitypolicyviolation', cspViolationHandler);
-
-            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+        async_test(function(t) {
+            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
+                if (violation.target.id !== 'nonWhitelisted-appendChild') {
+                    return;
+                }
                 assert_equals(violation.effectiveDirective, 'script-src');
                 assert_equals(violation.originalPolicy, "script-src 'self' 'nonce-dummy'");
-                t.done();
             }));
 
             var e = document.createElement('script');

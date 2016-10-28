@@ -17,19 +17,19 @@
     <div id='log'></div>
 
     <script nonce='dummy'>
-        var cspViolationHandler;
-        test(function(t) {
+        async_test(function(t) {
             window.addEventListener('message', t.step_func(function(e) {
                 if (e.data === 'unNonced-appendChild') {
                     assert_unreached('Unnonced script injected via `appendChild` is not allowed with `strict-dynamic` + a nonce-only double policy.');
                 }
             }));
 
-            cspViolationHandler = t.step_func(function(violation) {
+            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
+                if (violation.target.id !== 'unNonced-appendChild') {
+                    return;
+                }
                 assert_equals(violation.effectiveDirective, 'script-src');
-                t.done();
-            });
-            window.addEventListener('securitypolicyviolation', cspViolationHandler);
+            }));
 
             var e = document.createElement('script');
             e.id = 'unNonced-appendChild';
@@ -40,9 +40,7 @@
     </script>
 
     <script nonce='dummy'>
-        test(function(t) {
-            window.removeEventListener('securitypolicyviolation', cspViolationHandler);
-
+        async_test(function(t) {
             window.addEventListener('message', t.step_func(function(e) {
                 if (e.data === 'nonced-appendChild') {
                     t.done();
@@ -50,6 +48,9 @@
             }));
 
             window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.target.id !== 'nonced-appendChild') {
+                    return;
+                }
                 assert_unreached('No CSP violation report has fired.');
             }));
 

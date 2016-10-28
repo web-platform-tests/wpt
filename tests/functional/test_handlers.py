@@ -2,8 +2,9 @@ import json
 import os
 import pytest
 import unittest
-import urllib2
 import uuid
+
+from six.moves.urllib.error import HTTPError
 
 import wptserve
 from .base import TestUsingServer, doc_root
@@ -74,12 +75,12 @@ class TestFileHandler(TestUsingServer):
             self.assertEqual(expected_part[1] + "\r\n", body)
 
     def test_range_invalid(self):
-        with self.assertRaises(urllib2.HTTPError) as cm:
+        with self.assertRaises(HTTPError) as cm:
             self.request("/document.txt", headers={"Range":"bytes=11-10"})
         self.assertEqual(cm.exception.code, 416)
 
         expected = open(os.path.join(doc_root, "document.txt"), 'rb').read()
-        with self.assertRaises(urllib2.HTTPError) as cm:
+        with self.assertRaises(HTTPError) as cm:
             self.request("/document.txt", headers={"Range":"bytes=%i-%i" % (len(expected), len(expected) + 10)})
         self.assertEqual(cm.exception.code, 416)
 

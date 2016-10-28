@@ -429,7 +429,7 @@ def write_results(results, iterations, comment_pr):
     logger.info("## All results ##\n")
     for test, test_results in results.iteritems():
         baseurl = "http://w3c-test.org/submissions"
-        if "".join(os.path.splitext(test)[0].split(".")[1:]) == "https":
+        if "https" in os.path.splitext(test)[0].split(".")[1:]:
             baseurl = "https://w3c-test.org/submissions"
         pr_number = None
         if comment_pr:

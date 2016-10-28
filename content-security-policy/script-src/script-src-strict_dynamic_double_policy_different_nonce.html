@@ -24,16 +24,17 @@
                 }
             }));
 
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'unNonced-appendChild') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'unNonced-appendChild') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
             var e = document.createElement('script');
             e.id = 'unNonced-appendChild';
-            e.src = 'simpleSourcedScript.js';
+            e.src = 'simpleSourcedScript.js?' + e.id;
             e.onload = t.unreached_func('OnLoad should not be triggered.');
             document.body.appendChild(e);
         }, 'Unnonced script injected via `appendChild` is not allowed with `strict-dynamic` + a nonce-only double policy.');
@@ -48,7 +49,7 @@
             }));
 
             window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
-                if (violation.target.id !== 'nonced-appendChild') {
+                if (violation.blockedURI.split('?')[1] !== 'nonced-appendChild') {
                     return;
                 }
                 assert_unreached('No CSP violation report has fired.');
@@ -57,7 +58,7 @@
             var e = document.createElement('script');
             e.setAttribute('nonce', 'dummy2');
             e.id = 'nonced-appendChild';
-            e.src = 'simpleSourcedScript.js';
+            e.src = 'simpleSourcedScript.js?' + e.id;
             e.onerror = t.unreached_func('Error should not be triggered.');
             document.body.appendChild(e);
         }, 'Script injected via `appendChild` with a correct nonce is allowed with `strict-dynamic` + a nonce-only double policy.');

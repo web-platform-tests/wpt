@@ -42,7 +42,7 @@
             }));
             var e = document.createElement('script');
             e.id = 'hashScript';
-            e.src = 'simpleSourcedScript.js';
+            e.src = 'simpleSourcedScript.js?' + e.id;
             e.onerror = t.unreached_func('Error should not be triggered.');
             document.body.appendChild(e);
         }, 'Script injected via `appendChild` from a script matching SHA256 hash is allowed with `strict-dynamic`.');

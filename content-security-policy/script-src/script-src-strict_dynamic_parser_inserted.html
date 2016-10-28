@@ -20,14 +20,15 @@
                     assert_unreached('Parser-inserted script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'documentWrite') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'documentWrite') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
-            document.write('<scr' + 'ipt id="documentWrite" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt id="documentWrite" src="simpleSourcedScript.js?documentWrite"></scr' + 'ipt>');
         }, 'Parser-inserted script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
@@ -38,14 +39,15 @@
                     assert_unreached('Parser-inserted script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'documentWriteln') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'documentWriteln') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
-            document.writeln('<scr' + 'ipt id="documentWriteln" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            document.writeln('<scr' + 'ipt id="documentWriteln" src="simpleSourcedScript.js?documentWriteln"></scr' + 'ipt>');
         }, 'Parser-inserted script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
@@ -56,14 +58,15 @@
                     assert_unreached('Parser-inserted deferred script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'documentWrite-deferred') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'documentWrite-deferred') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
-            document.write('<scr' + 'ipt defer id="documentWrite-deferred" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt defer id="documentWrite-deferred" src="simpleSourcedScript.js?documentWrite-deferred"></scr' + 'ipt>');
         }, 'Parser-inserted deferred script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
@@ -74,14 +77,15 @@
                     assert_unreached('Parser-inserted deferred script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'documentWriteln-deferred') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'documentWriteln-deferred') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
-            document.writeln('<scr' + 'ipt defer id="documentWriteln-deferred" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            document.writeln('<scr' + 'ipt defer id="documentWriteln-deferred" src="simpleSourcedScript.js?documentWriteln-deferred"></scr' + 'ipt>');
         }, 'Parser-inserted deferred script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
@@ -92,14 +96,15 @@
                     assert_unreached('Parser-inserted async script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'documentWrite-async') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'documentWrite-async') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
-            document.write('<scr' + 'ipt async id="documentWrite-async" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt async id="documentWrite-async" src="simpleSourcedScript.js?documentWrite-async"></scr' + 'ipt>');
         }, 'Parser-inserted async script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
@@ -110,14 +115,15 @@
                     assert_unreached('Parser-inserted async script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'documentWriteln-async') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'documentWriteln-async') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
-            document.writeln('<scr' + 'ipt async id="documentWriteln-async" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            document.writeln('<scr' + 'ipt async id="documentWriteln-async" src="simpleSourcedScript.js?documentWriteln-async"></scr' + 'ipt>');
         }, 'Parser-inserted async script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
@@ -128,14 +134,15 @@
                     assert_unreached('Parser-inserted deferred async script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'documentWrite-deferred-async') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'documentWrite-deferred-async') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
-            document.write('<scr' + 'ipt defer async id="documentWrite-deferred-async" src="simpleSourcedScript.js"></scr' + 'ipt>');
+            document.write('<scr' + 'ipt defer async id="documentWrite-deferred-async" src="simpleSourcedScript.js?documentWrite-deferred-async"></scr' + 'ipt>');
         }, 'Parser-inserted deferred async script via `document.write` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
@@ -146,27 +153,30 @@
                     assert_unreached('Parser-inserted deferred async script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'documentWriteln-deferred-async') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'documentWriteln-deferred-async') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
 
-            document.writeln('<scr' + 'ipt defer async id="documentWriteln-deferred-async " src="simpleSourcedScript.js"></scr' + 'ipt>');
+            document.writeln('<scr' + 'ipt defer async id="documentWriteln-deferred-async " src="simpleSourcedScript.js?documentWriteln-deferred-async "></scr' + 'ipt>');
         }, 'Parser-inserted deferred async script via `document.writeln` without a correct nonce is not allowed with `strict-dynamic`.');
     </script>
 
     <script nonce='dummy'>
         var innerHTMLScriptRan = false;
         async_test(function(t) {
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
                 if (violation.target.id !== 'innerHTML') {
                     return;
                 }
                 assert_false(innerHTMLScriptRan);
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
+
             var e = document.createElement('div');
             e.innerHTML = "<img id='innerHTML' src='/nonexisting.jpg' onerror='innerHTMLScriptRan = true;' style='display:none'>";
             document.body.appendChild(e);
@@ -176,13 +186,15 @@
     <script nonce='dummy'>
         var insertAdjacentHTMLScriptRan = false;
         async_test(function(t) {
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
                 if (violation.target.id !== 'insertAdjacentHTML') {
                     return;
                 }
                 assert_false(insertAdjacentHTMLScriptRan);
                 assert_equals(violation.effectiveDirective, 'script-src');
+                t.done();
             }));
+
             var e = document.createElement('div');
             e.insertAdjacentHTML('afterbegin', "<img id='insertAdjacentHTML' src='/nonexisting.jpg' onerror='insertAdjacentHTMLScriptRan = true;' style='display:none'>");
             document.body.appendChild(e);

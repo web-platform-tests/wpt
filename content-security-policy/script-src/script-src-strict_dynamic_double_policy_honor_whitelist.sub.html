@@ -24,7 +24,7 @@
                 }
             }));
             window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
-                if (violation.target.id !== 'whitelisted-appendChild') {
+                if (violation.blockedURI.split('?')[1] !== 'whitelisted-appendChild') {
                     return;
                 }
                 assert_unreached('Script injected via `appendChild` is allowed with `strict-dynamic` + a nonce+whitelist double policy.');
@@ -32,7 +32,7 @@
 
             var e = document.createElement('script');
             e.id = 'whitelisted-appendChild';
-            e.src = 'simpleSourcedScript.js';
+            e.src = 'simpleSourcedScript.js?' + e.id;
             e.onerror = t.unreached_func('Error should not be triggered.');
             document.body.appendChild(e);
         }, 'Script injected via `appendChild` is allowed with `strict-dynamic` + a nonce+whitelist double policy.');
@@ -40,17 +40,18 @@
 
     <script nonce='dummy'>
         async_test(function(t) {
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'nonWhitelisted-appendChild') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'nonWhitelisted-appendChild') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
                 assert_equals(violation.originalPolicy, "script-src 'self' 'nonce-dummy'");
+                t.done();
             }));
 
             var e = document.createElement('script');
             e.id = 'nonWhitelisted-appendChild';
-            e.src = '{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/nonexisting.js';
+            e.src = '{{location[scheme]}}://{{domains[www2]}}:{{ports[http][0]}}/nonexisting.js?' + e.id;
             e.onload = t.unreached_func('OnLoad should not be triggered.');
             document.body.appendChild(e);
         }, 'Non-whitelisted script injected via `appendChild` is not allowed with `strict-dynamic` + a nonce+whitelist double policy.');

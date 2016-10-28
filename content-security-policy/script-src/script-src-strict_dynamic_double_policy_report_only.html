@@ -23,17 +23,18 @@
                     t.done();
                 }
             }));
-            window.addEventListener('securitypolicyviolation', t.step_func_done(function(violation) {
-                if (violation.target.id !== 'appendChild-reportOnly') {
+            window.addEventListener('securitypolicyviolation', t.step_func(function(violation) {
+                if (violation.blockedURI.split('?')[1] !== 'appendChild-reportOnly') {
                     return;
                 }
                 assert_equals(violation.effectiveDirective, 'script-src');
                 // Check that the violation comes from the Report-Only policy.
                 assert_equals(violation.originalPolicy, "script-src 'none'");
+                t.done();
             }));
             var e = document.createElement('script');
             e.id = 'appendChild-reportOnly';
-            e.src = 'simpleSourcedScript.js';
+            e.src = 'simpleSourcedScript.js?' + e.id;
             e.onerror = t.unreached_func('Error should not be triggered.');
             document.body.appendChild(e);
         }, 'Script injected via `appendChild` is allowed with `strict-dynamic` + Report-Only `script-src \'none\'` policy.');

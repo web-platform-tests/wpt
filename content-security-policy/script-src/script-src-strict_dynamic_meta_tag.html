@@ -27,7 +27,7 @@
             }));
             var e = document.createElement('script');
             e.id = 'appendChild';
-            e.src = 'simpleSourcedScript.js';
+            e.src = 'simpleSourcedScript.js?' + e.id;
             e.onerror = t.unreached_func('Error should not be triggered.');
             document.body.appendChild(e);
         }, 'Script injected via `appendChild` is allowed with `strict-dynamic`.');
@@ -42,7 +42,7 @@
             }));
             var e = document.createElement('script');
             e.id = 'appendChild-incorrectNonce';
-            e.src = 'simpleSourcedScript.js';
+            e.src = 'simpleSourcedScript.js?' + e.id;
             e.setAttribute('nonce', 'wrong');
             e.onerror = t.unreached_func('Error should not be triggered.');
             document.body.appendChild(e);

@@ -14,29 +14,33 @@
 (function() {
     "use strict";
 
+
+    //************* BEGIN DELETE AFTER 1/1/2017 *************** //
     // XXX for development mode only!!
+    // debug() for debugging purposes... we can drop this later if it is considered ugly
+    // note that debug is currently an empty function (i.e. - prints no output)
+    // and debug only prints output if the polyfill is loaded
+    var debug = function() {}; 
     // if the WebAuthn API doesn't exist load a polyfill for testing
-    // this block of code is only required until browsers implement WebAuthn
-    var debug = function() {}; // for debugging purposes... we can drop this later if it is considered ugly
+    // note that the polyfill only gets loaded if navigator.authentication doesn't exist
+    // AND if the polyfill script is found at the right path (i.e. - the polyfill is opt-in)
     function ensureInterface() {
         return new Promise(function(resolve, reject) {
             if (typeof navigator.authentication !== "object") {
-                debug("!!! XXX - LOADING POLYFILL FOR WEBAUTHN TESTING - XXX !!!");
-                debug = window.console.log;
 
                 // dynamic loading of polyfill script by creating new <script> tag and seeing the src=
                 var scriptElem = document.createElement("script");
                 if (typeof scriptElem !== "object") {
-                    debug("ensureInterface: Error creating script element while loading polyfill");
+                    debug("ensureInterface: Error creating script element while attempting loading polyfill");
                     return reject(new Error("ensureInterface: Error creating script element while loading polyfill"));
                 }
                 scriptElem.type = "application/javascript";
                 scriptElem.onload = function() {
-                    debug("Done loading webauthn polyfill...");
+                    debug("!!! XXX - LOADING POLYFILL FOR WEBAUTHN TESTING - XXX !!!");
+                    debug = console.log;
                     return resolve();
                 };
                 scriptElem.onerror = function() {
-                    debug("Failed to load polyfill...");
                     return reject(new Error("navigator.authentication does not exist"));
                 };
                 scriptElem.src = "/webauthn/webauthn-polyfill/webauthn-polyfill.js";
@@ -44,11 +48,12 @@
                     document.body.appendChild(scriptElem);
                 } else {
                     debug("ensureInterface: DOM has no body");
-                    return reject("ensureInterface: DOM has no body");
+                    return reject(new Error("ensureInterface: DOM has no body"));
                 }
             }
         });
     }
+    //************* END DELETE AFTER 1/1/2017 *************** //
 
     // loads an IDL file from the webserver
     function fetchIdl(idlUrl) {
@@ -61,7 +66,6 @@
             request.send();
             request.onload = function() {
                 var idls = request.responseText;
-                debug("Loaded", idlUrl);
                 return resolve(idls);
             };
         });
@@ -71,7 +75,6 @@
     function runIdlTests(idls) {
         return new Promise(function(resolve, reject) {
             var idlArray = new window.IdlArray();
-            debug("Got idls:", idls);
 
             // static IDL tests
             idlArray.add_untested_idls("interface Navigator { };");
@@ -94,7 +97,6 @@
                 return fetchIdl("interfaces.idl");
             })
             .then(function(idls) { // ... then run the tests.
-                debug("Running tests...");
                 return runIdlTests(idls);
             });
     }, "Validate WebAuthn IDL");

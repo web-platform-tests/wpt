@@ -402,6 +402,14 @@ def process_results(log, iterations):
     return results, inconsistent
 
 
+def markdown_adjust(s):
+    s = s.replace('\t', u'\\t')
+    s = s.replace('\n', u'\\n')
+    s = s.replace('\r', u'\\r')
+    s = s.replace('`',  u'\\`')
+    return s
+
+
 def table(headings, data, log):
     cols = range(len(headings))
     assert all(len(item) == len(cols) for item in data)
@@ -420,7 +428,7 @@ def table(headings, data, log):
 
 def write_inconsistent(inconsistent, iterations):
     logger.error("## Unstable results ##\n")
-    strings = [(test, subtest if subtest else "", err_string(results, iterations))
+    strings = [("`%s`" % markdown_adjust(test), ("`%s`" % markdown_adjust(subtest)) if subtest else "", err_string(results, iterations))
                 for test, subtest, results in inconsistent]
     table(["Test", "Subtest", "Results"], strings, logger.error)
 
@@ -443,7 +451,7 @@ def write_results(results, iterations, comment_pr):
             logger.info("### %s ###" % test)
         parent = test_results.pop(None)
         strings = [("", err_string(parent, iterations))]
-        strings.extend(((subtest if subtest else "", err_string(results, iterations))
+        strings.extend(((("`%s`" % markdown_adjust(subtest)) if subtest else "", err_string(results, iterations))
                         for subtest, results in test_results.iteritems()))
         table(["Subtest", "Results"], strings, logger.info)
 

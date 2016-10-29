@@ -20,13 +20,14 @@
     // debug() for debugging purposes... we can drop this later if it is considered ugly
     // note that debug is currently an empty function (i.e. - prints no output)
     // and debug only prints output if the polyfill is loaded
-    var debug = function() {}; 
+    var debug = function() {};
     // if the WebAuthn API doesn't exist load a polyfill for testing
     // note that the polyfill only gets loaded if navigator.authentication doesn't exist
     // AND if the polyfill script is found at the right path (i.e. - the polyfill is opt-in)
     function ensureInterface() {
         return new Promise(function(resolve, reject) {
             if (typeof navigator.authentication !== "object") {
+                debug = console.log;
 
                 // dynamic loading of polyfill script by creating new <script> tag and seeing the src=
                 var scriptElem = document.createElement("script");
@@ -37,7 +38,6 @@
                 scriptElem.type = "application/javascript";
                 scriptElem.onload = function() {
                     debug("!!! XXX - LOADING POLYFILL FOR WEBAUTHN TESTING - XXX !!!");
-                    debug = console.log;
                     return resolve();
                 };
                 scriptElem.onerror = function() {

@@ -79,6 +79,9 @@ def filter_whitelist_errors(data, path, errors):
     Filter out those errors that are whitelisted in `data`.
     """
 
+    if not errors:
+        return []
+
     whitelisted = [False for item in range(len(errors))]
 
     for file_match, whitelist_errors in iteritems(data):

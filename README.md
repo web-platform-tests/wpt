@@ -86,12 +86,21 @@ After installation ensure that the path to OpenSSL is on your `%Path%`
 environment variable.
 
 Then set the path to the default OpenSSL configuration file (usually
-something like `C:\OpenSSL-Win32\bin\openssl.cfg` in the server
+something like `"C:\\OpenSSL-Win32\\bin\\openssl.cfg"` in the server
 configuration. To do this copy `config.default.json` in the
 web-platform-tests root to `config.json`. Then edit the JSON so that
 the key `ssl/openssl/base_conf_path` has a value that is the path to
 the OpenSSL config file.
 
+Ensure that the path to GIT is on your `%Path%` environment variable.
+
+The test environment can then be started using
+
+```
+py serve
+```
+
+NOTE: Do not use serve.py in the command line.
 
 Test Runner
 ===========

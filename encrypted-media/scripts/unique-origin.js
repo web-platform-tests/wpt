@@ -44,7 +44,7 @@ function runTest(config) {
           '<\/script>';
 
         // Verify that this page can create a MediaKeys first.
-        navigator.requestMediaKeySystemAccess(config.keysystem, [{
+        return navigator.requestMediaKeySystemAccess(config.keysystem, [{
             initDataTypes: [config.initDataType],
             audioCapabilities: [
                 {contentType: config.audioType},

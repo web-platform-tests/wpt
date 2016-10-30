@@ -9,7 +9,13 @@
 var events = {
   'KeyboardEvent': {
     'constructor': function() { return new KeyboardEvent("type", {key: "A"}); },
-    'init': function(ev) { ev.initKeyboardEvent("type2", true, true, null, "a", 1, "", true, "") },
+    'init': function(ev) {
+      // These initializers are optional per spec.  If they're not supported,
+      // don't call them, and we'll pass automatically.
+      if ("initKeyboardEvent" in ev) {
+        ev.initKeyboardEvent("type2", true, true, null, "a", 1, "", true, "")
+      }
+    },
     'check': function(ev) {
        assert_equals(ev.key, "A", "initKeyboardEvent key setter should short-circuit");
        assert_false(ev.repeat, "initKeyboardEvent repeat setter should short-circuit");
@@ -18,7 +24,11 @@ var events = {
   },
   'MouseEvent': {
     'constructor': function() { return new MouseEvent("type"); },
-    'init': function(ev) { ev.initMouseEvent("type2", true, true, null, 0, 1, 1, 1, 1, true, true, true, true, 1, null) },
+    'init': function(ev) {
+      if ("initMouseEvent" in ev) {
+        ev.initMouseEvent("type2", true, true, null, 0, 1, 1, 1, 1, true, true, true, true, 1, null)
+      }
+    },
     'check': function(ev) {
       assert_equals(ev.screenX, 0, "initMouseEvent screenX setter should short-circuit");
       assert_equals(ev.screenY, 0, "initMouseEvent screenY setter should short-circuit");
@@ -40,7 +50,11 @@ var events = {
   },
   'UIEvent': {
     'constructor': function() { return new UIEvent("type") },
-    'init': function(ev) { ev.initUIEvent("type2", true, true, window, 1) },
+    'init': function(ev) {
+      if ("initUIEvent" in ev) {
+        ev.initUIEvent("type2", true, true, window, 1)
+      }
+    },
     'check': function(ev) {
       assert_equals(ev.view, null, "initUIEvent view setter should short-circuit");
       assert_equals(ev.detail, 0, "initUIEvent detail setter should short-circuit");

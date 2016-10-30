@@ -108,9 +108,8 @@ instance --use-fake-device-for-media-stream for Chrome.
 
   // This function starts the test.
   test.step(function() {
-    navigator.getUserMedia({ video: true, audio: true },
-        getUserMediaOkCallback,
-        failed('getUserMedia'));
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(getUserMediaOkCallback, failed('getUserMedia'));
   });
 </script>
 

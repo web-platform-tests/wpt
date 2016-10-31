@@ -64,7 +64,6 @@ non_errors = {
     "h4-in-dd": "<dl><dt>text<dd><h4>text</h4></dl>",
     "h5-in-dd": "<dl><dt>text<dd><h5>text</h5></dl>",
     "h6-in-dd": "<dl><dt>text<dd><h6>text</h6></dl>",
-    "hgroup-in-dd": "<dl><dt>text<dd><hgroup><h1>text</h1></hgroup></dl>",
     "p-in-dt": "<dl><dt><p>1<p>1<dd>a</dl>",
     "dl-in-dt": "<dl><dt><dl><dt>1<dd>a</dl><dd>b</dl>",
     "dl-in-dd": "<dl><dt>1<dd><dl><dt>2<dd>a</dl></dl>",

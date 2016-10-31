@@ -2,6 +2,7 @@ import itertools
 import os
 import shutil
 import subprocess
+import sys
 
 import vcs
 
@@ -191,7 +192,13 @@ def main():
     setup_virtualenv()
     fetch_submodules()
     update_dist()
-    for changeset in get_new_commits():
+    changesets = get_new_commits()
+    print >> sys.stderr, "Building %d changesets:" % len(changesets)
+    print >> sys.stderr, "\n".join(changesets)
+    if len(changesets) > 50:
+        raise Exception("Building more than 50 changesets, giving up")
+
+    for changeset in changesets:
         update_to_changeset(changeset)
         remove_current_files()
         build_tests()

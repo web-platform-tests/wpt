@@ -1,6 +1,8 @@
 sudo: false
 language: python
-script: python tools/travis/build.py
+script:
+  - ./lint
+  - python tools/travis/build.py
 cache:
   directories:
     - tools/apiclient

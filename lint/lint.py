@@ -3,7 +3,6 @@ from __future__ import print_function, unicode_literals
 import abc
 import argparse
 import ast
-import fnmatch
 import json
 import os
 import re
@@ -12,6 +11,7 @@ import sys
 
 from collections import defaultdict
 
+from . import fnmatch
 from ..localpaths import repo_root
 
 from manifest.sourcefile import SourceFile

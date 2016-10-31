@@ -28,36 +28,149 @@ def create(aName):
     return mathFont
 
 def drawRectangleGlyph(aGlyph, aWidth, aAscent, aDescent):
-    aGlyph.width = aWidth
     p = aGlyph.glyphPen()
     p.moveTo(0, -aDescent)
     p.lineTo(0, aAscent)
     p.lineTo(aWidth, aAscent)
     p.lineTo(aWidth, -aDescent)
     p.closePath();
+    aGlyph.width = aWidth
 
 def createSquareGlyph(aFont, aCodePoint):
     g = aFont.createChar(aCodePoint)
     drawRectangleGlyph(g, em, em, 0)
 
-def createGlyphFromValue(aFont, aCodePoint, aWidth, aValue, aNumberOfBits):
-    g = aFont.createChar(aCodePoint)
-    g.width = aWidth
-    rectangleWidth = g.width / aNumberOfBits
-    p = g.glyphPen()
-    for i in range(0, aNumberOfBits):
-        x = i * rectangleWidth
-        y1 = (i % 2) * em / 2
-        y1 += (aValue % 2) * em / 4
-        y2 = y1 + em / 8
-        p.moveTo(x, y1)
-        p.lineTo(x, y2)
-        p.lineTo(x + rectangleWidth, y2)
-        p.lineTo(x + rectangleWidth, y1)
-        p.closePath();
-        aValue /= 2
+def drawHexaDigit(aGlyph, aX, aValue):
+    t = em / 10
+    p = aGlyph.glyphPen(replace = False)
+    if aValue == 0:
+        p.moveTo(aX + t, t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.closePath()
+    elif aValue == 1:
+        p.moveTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.endPath()
+    elif aValue == 2:
+        p.moveTo(aX + t, em - t)
+        p.lineTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + em / 2 - t, em / 2)
+        p.lineTo(aX + t, em / 2)
+        p.lineTo(aX + t, t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.endPath()
+    elif aValue == 3:
+        p.moveTo(aX + t, em - t)
+        p.lineTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.lineTo(aX + t, t)
+        p.endPath()
+        p.moveTo(aX + t, em / 2)
+        p.lineTo(aX + em / 2 - 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 4:
+        p.moveTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.endPath()
+        p.moveTo(aX + t, em - t)
+        p.lineTo(aX + t, em / 2)
+        p.lineTo(aX + em / 2 - 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 5:
+        p.moveTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + t, em / 2)
+        p.lineTo(aX + em / 2 - t, em / 2)
+        p.lineTo(aX + em / 2 - t, t)
+        p.lineTo(aX + t, t)
+        p.endPath()
+    elif aValue == 6:
+        p.moveTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + t, t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.lineTo(aX + em / 2 - t, em / 2)
+        p.lineTo(aX + 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 7:
+        p.moveTo(aX + t, em - t)
+        p.lineTo(aX + em / 2  - t, em - t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.endPath()
+    elif aValue == 8:
+        p.moveTo(aX + t, t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.closePath()
+        p.moveTo(aX + 2.5 * t, em / 2)
+        p.lineTo(aX + em / 2 - 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 9:
+        p.moveTo(aX + t, t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.lineTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + t, em / 2)
+        p.lineTo(aX + em / 2 - 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 10: # A
+        p.moveTo(aX + t, t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.endPath()
+        p.moveTo(aX + 2.5 * t, em / 2)
+        p.lineTo(aX + em / 2 - 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 11: # b
+        p.moveTo(aX + t, em - t)
+        p.lineTo(aX + t, t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.lineTo(aX + em / 2 - t, em / 2)
+        p.lineTo(aX + 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 12: # C
+        p.moveTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + t, t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.endPath()
+    elif aValue == 13: # d
+        p.moveTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.lineTo(aX + t, t)
+        p.lineTo(aX + t, em / 2)
+        p.lineTo(aX + em / 2 - 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 14: # E
+        p.moveTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + t, t)
+        p.lineTo(aX + em / 2 - t, t)
+        p.endPath()
+        p.moveTo(aX + em / 2 - t, em / 2)
+        p.lineTo(aX + 2.5 * t, em / 2)
+        p.endPath()
+    elif aValue == 15: # F
+        p.moveTo(aX + em / 2 - t, em - t)
+        p.lineTo(aX + t, em - t)
+        p.lineTo(aX + t, t)
+        p.endPath()
+        p.moveTo(aX + em / 2 - t, em / 2)
+        p.lineTo(aX + 2.5 * t, em / 2)
+        p.endPath()
 
-    assert aValue == 0, "Not enough bits to encode that value!"
+def createGlyphFromValue(aFont, aCodePoint):
+    g = aFont.createChar(aCodePoint)
+    value = aCodePoint
+    for i in range(0, 5):
+        drawHexaDigit(g, (5 - (i + 1)) * em / 2, value % 16)
+        value /= 16
+    g.width = 5 * em / 2
+    g.stroke("circular", em / 10, "square", "miter", "cleanup")
 
 def save(aFont):
     aFont.em = em

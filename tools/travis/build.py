@@ -192,7 +192,7 @@ def main():
     setup_virtualenv()
     fetch_submodules()
     update_dist()
-    changesets = get_new_commits()
+    changesets = list(get_new_commits())
     print >> sys.stderr, "Building %d changesets:" % len(changesets)
     print >> sys.stderr, "\n".join(changesets)
     if len(changesets) > 50:

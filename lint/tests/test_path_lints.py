@@ -22,4 +22,4 @@ def test_forbidden_path_length():
         message = "/%s longer than maximum path length (%s > 150)" % (filename, 146 + idx)
 
         errors = check_path("/foo/", filename)
-        assert errors == [("PATH LENGTH", message, None)]
+        assert errors == [("PATH LENGTH", message, filename, None)]

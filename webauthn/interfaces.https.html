@@ -16,7 +16,6 @@ standardSetup(function() {
 
     // loads an IDL file from the webserver
     function fetchIdl(idlUrl) {
-        console.log ("fetching idl");
         return new Promise(function(resolve, reject) {
             if (typeof idlUrl !== "string") {
                 return reject("fetchIdl: expected argument to be URL string");

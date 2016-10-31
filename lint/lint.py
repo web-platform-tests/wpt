@@ -65,6 +65,7 @@ def parse_whitelist(f):
             parts[-1] = int(parts[-1])
 
         error_type, file_match, line_number = parts
+        file_match = os.path.normcase(file_match)
 
         if error_type == "*":
             ignored_files.add(file_match)
@@ -83,9 +84,10 @@ def filter_whitelist_errors(data, path, errors):
         return []
 
     whitelisted = [False for item in range(len(errors))]
+    normpath = os.path.normcase(path)
 
     for file_match, whitelist_errors in iteritems(data):
-        if fnmatch.fnmatch(path, file_match):
+        if fnmatch.fnmatchcase(path, file_match):
             for i, (error_type, msg, path, line) in enumerate(errors):
                 if error_type in whitelist_errors:
                     allowed_lines = whitelist_errors[error_type]

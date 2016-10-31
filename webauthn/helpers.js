@@ -131,11 +131,11 @@ class MakeCredentialTest extends TestCase {
         // var challenge = Uint8Array.from("Y2xpbWIgYSBtb3VudGFpbg");
         this.testObject = {
             accountInformation: {
-                rpDisplayName: "PayPal",
+                rpDisplayName: "ACME",
                 displayName: "John P. Smith",
-                name: "johnpsmith@gmail.com",
+                name: "johnpsmith@example.com",
                 id: "1098237235409872",
-                imageUri: "https://pics.paypal.com/00/p/aBjjjpqPb.png"
+                imageUri: "https://pics.acme.com/00/p/aBjjjpqPb.png"
             },
             cryptoParameters: [{
                 type: "ScopedCred",
@@ -157,3 +157,53 @@ class MakeCredentialTest extends TestCase {
         if (arguments.length) this.modify(...arguments);
     }
 }
+
+//************* BEGIN DELETE AFTER 1/1/2017 *************** //
+// XXX for development mode only!!
+// debug() for debugging purposes... we can drop this later if it is considered ugly
+// note that debug is currently an empty function (i.e. - prints no output)
+// and debug only prints output if the polyfill is loaded
+var debug = function() {};
+// if the WebAuthn API doesn't exist load a polyfill for testing
+// note that the polyfill only gets loaded if navigator.authentication doesn't exist
+// AND if the polyfill script is found at the right path (i.e. - the polyfill is opt-in)
+function ensureInterface() {
+    return new Promise(function(resolve, reject) {
+        if (typeof navigator.authentication !== "object") {
+            debug = console.log;
+
+            // dynamic loading of polyfill script by creating new <script> tag and seeing the src=
+            var scriptElem = document.createElement("script");
+            if (typeof scriptElem !== "object") {
+                debug("ensureInterface: Error creating script element while attempting loading polyfill");
+                return reject(new Error("ensureInterface: Error creating script element while loading polyfill"));
+            }
+            scriptElem.type = "application/javascript";
+            scriptElem.onload = function() {
+                debug("!!! XXX - LOADING POLYFILL FOR WEBAUTHN TESTING - XXX !!!");
+                return resolve();
+            };
+            scriptElem.onerror = function() {
+                return reject(new Error("navigator.authentication does not exist"));
+            };
+            scriptElem.src = "/webauthn/webauthn-polyfill/webauthn-polyfill.js";
+            if (document.body) {
+                document.body.appendChild(scriptElem);
+            } else {
+                debug("ensureInterface: DOM has no body");
+                return reject(new Error("ensureInterface: DOM has no body"));
+            }
+        }
+    });
+}
+
+function standardSetup(cb) {
+    return ensureInterface()
+        .then(() => {
+            if (cb) return cb();
+        })
+        .catch((err) => {
+            return (err);
+        });
+}
+//************* END DELETE AFTER 1/1/2017 *************** //

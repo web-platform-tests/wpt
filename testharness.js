@@ -2669,7 +2669,7 @@ policies and contribution forms [3].
 
     var tests = new Tests();
 
-    addEventListener("error", function(e) {
+    var error_handler = function(e) {
         if (tests.file_is_test) {
             var test = tests.tests[0];
             if (test.phase >= test.phases.HAS_RESULT) {
@@ -2684,7 +2684,10 @@ policies and contribution forms [3].
             tests.status.message = e.message;
             tests.status.stack = e.stack;
         }
-    });
+    };
+
+    addEventListener("error", error_handler);
+    addEventListener("unhandledrejection", function(e){ error_handler(e.reason); });
 
     test_environment.on_tests_ready();
 

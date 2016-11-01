@@ -722,31 +722,45 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
     }
 
     for (var i = 0; i < idlTests.length; i++) {
+        var valueDesc = ReflectionHarness.stringRep(idlTests[i]);
         if ((data.type == "limited long" && idlTests[i] < 0) ||
             (data.type == "limited unsigned long" && idlTests[i] == 0)) {
             ReflectionHarness.testException("INDEX_SIZE_ERR", function() {
                 idlObj[idlName] = idlTests[i];
-            }, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " must throw INDEX_SIZE_ERR");
+            }, "IDL set to " + valueDesc + " must throw INDEX_SIZE_ERR");
         } else {
-            ReflectionHarness.run(function() {
-                idlObj[idlName] = idlTests[i];
-                if (data.type == "boolean") {
-                    // Special case yay
-                    ReflectionHarness.test(domObj.hasAttribute(domName), Boolean(idlTests[i]), "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by hasAttribute()");
-                } else if (idlDomExpected[i] !== null || data.isNullable) {
-                    var expected = idlDomExpected[i] + "";
-                    if (data.isNullable && idlDomExpected[i] === null) {
-                        expected = null;
-                    }
-                    ReflectionHarness.test(domObj.getAttribute(domName), expected, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by getAttribute()");
+            var descPrefix = ReflectionHarness.getTypeDescription() + ": IDL set to " + valueDesc;
+            var testOnlyNoThrow = true;
+            if (data.type == "boolean") {
+                // Special case yay
+                test(function() {
+                    idlObj[idlName] = idlTests[i];
+                    assert_equals(domObj.hasAttribute(domName), Boolean(idlTests[i]));
+                }, descPrefix + " followed by hasAttribute()");
+                testOnlyNoThrow = false;
+            } else if (idlDomExpected[i] !== null || data.isNullable) {
+                var expected = idlDomExpected[i] + "";
+                if (data.isNullable && idlDomExpected[i] === null) {
+                    expected = null;
                 }
-                if (idlIdlExpected[i] !== null || data.isNullable) {
-                    ReflectionHarness.test(idlObj[idlName], idlIdlExpected[i], "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by IDL get");
-                }
-                if (ReflectionHarness.catchUnexpectedExceptions) {
-                    ReflectionHarness.success();
-                }
-            }, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " should not throw");
+                test(function() {
+                    idlObj[idlName] = idlTests[i];
+                    assert_equals(domObj.getAttribute(domName), expected);
+                }, descPrefix + " followed by getAttribute()");
+                testOnlyNoThrow = false;
+            }
+            if (idlIdlExpected[i] !== null || data.isNullable) {
+                test(function() {
+                    idlObj[idlName] = idlTests[i];
+                    assert_equals(idlObj[idlName], idlIdlExpected[i]);
+                }, descPrefix + " followed by IDL get");
+                testOnlyNoThrow = false;
+            }
+            if (testOnlyNoThrow) {
+                test(function() {
+                    idlObj[idlName] = idlTests[i];
+                }, descPrefix + " should not throw");
+            }
         }
     }
 };

@@ -13,10 +13,10 @@
          ]
       },
       { "type": "object",
-        "properties": 
-         {"first": 
+        "properties":
+         {"first":
            { "$ref": "collections.json#/definitions/totalFound" }
-         }, 
+         },
         "required": [ "first" ]
       }
   ]

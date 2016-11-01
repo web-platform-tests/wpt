@@ -11,20 +11,20 @@
       { "allOf": [
            { "$ref": "otherProperties.json#/definitions/rightsValidIfPresent" },
            { "type": "object",
-             "required": [ "rights" ]},           
+             "required": [ "rights" ]},
            { "$ref": "collections.json#/definitions/annotationPageTypeValueFound"  }
          ]
       },
       { "type": "object",
-        "properties": 
-         {"first": 
+        "properties":
+         {"first":
            { "allOf": [
                { "$ref": "otherProperties.json#/definitions/rightsValidIfPresent" },
                { "type": "object",
                  "required": [ "rights" ]}
               ]
            }
-         }, 
+         },
         "required": [ "first" ]
       }
   ]

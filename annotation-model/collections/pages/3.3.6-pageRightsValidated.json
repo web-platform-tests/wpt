@@ -14,10 +14,10 @@
            { "$ref": "collections.json#/definitions/annotationPageTypeValueFound"  }
          ]
       },
-      { "properties": 
-         {"first": 
+      { "properties":
+         {"first":
            { "$ref": "otherProperties.json#/definitions/rightsValidIfPresent" }
-         }, 
+         },
         "required": [ "first" ]
       }
   ]

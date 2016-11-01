@@ -63,7 +63,7 @@
         }
       }
     },
-    
+
     "annotationPageTypeValueRecognized": {
       "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "Definition: Valid AnnotationPage type value string included in Page description",
@@ -123,7 +123,7 @@
         }
       }
     },
-    
+
     "labelFound":
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -134,7 +134,7 @@
       {"$ref": "#/definitions/labelDefinition"}
       ]
     },
-    
+
     "totalDefinition":
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -159,7 +159,7 @@
         }
       }
     },
-    
+
     "totalFound":
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -170,7 +170,7 @@
       {"$ref": "#/definitions/totalDefinition"}
       ]
     },
-    
+
     "totalMoreThanZero":
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -198,7 +198,7 @@
       },
       "required": [ "total" ]
     },
-    
+
     "firstValidIfPresent":
     {   "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "Validation: first value (Annotation Collection)",
@@ -206,7 +206,7 @@
       "type": "object",
       "properties": {"first":
         { "oneOf": [
-          { 
+          {
             "oneOf": [
               { "$ref": "id.json#/definitions/stringUri" },
               { "$ref": "#/definitions/annotationPageTypeValueFound" }
@@ -215,18 +215,18 @@
           { "type": "array",
             "minItems": 1,
             "maxItems": 1,
-            "items": { 
+            "items": {
                 "oneOf": [
                   { "$ref": "id.json#/definitions/stringUri" },
                   { "$ref": "#/definitions/annotationPageTypeValueFound" }
                ]
-             } 
+             }
           }
          ]
         }
       }
     },
-    
+
     "firstFound":
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -237,24 +237,24 @@
       {"$ref": "#/definitions/firstValidIfPresent"}
       ]
     },
-    
+
     "firstRequiredIfTotalMoreThanZero":
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "If total greater than zero, check for implementation of Annotation Collection first key",
-      "description": "True when the object has no total or has total = zero or has exactly one first value (Section 5.1)", 
+      "description": "True when the object has no total or has total = zero or has exactly one first value (Section 5.1)",
       "type": "object",
       "oneOf": [
         {
-          "allOf": [          
+          "allOf": [
              { "$ref": "#/definitions/totalMoreThanZero" },
              { "$ref": "#/definitions/firstFound" }
           ]
         },
-        { "not": { "$ref": "#/definitions/totalMoreThanZero" } }          
+        { "not": { "$ref": "#/definitions/totalMoreThanZero" } }
       ]
     },
-    
+
     "lastValidIfPresent":
     {   "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "Validation: last value (Annotation Collection)",
@@ -266,7 +266,7 @@
           { "type": "array",
             "minItems": 1,
             "maxItems": 1,
-            "items": { "$ref": "id.json#/definitions/stringUri" } 
+            "items": { "$ref": "id.json#/definitions/stringUri" }
           }
          ]
         }
@@ -283,7 +283,7 @@
       {"$ref": "#/definitions/lastValidIfPresent"}
       ]
     },
-    
+
     "partOfValidIfPresent":
     {   "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "Validation: partOf value (Annotation Page)",
@@ -295,7 +295,7 @@
           { "type": "array",
             "minItems": 1,
             "maxItems": 1,
-            "items": { "$ref": "id.json#/definitions/stringUri" } 
+            "items": { "$ref": "id.json#/definitions/stringUri" }
           }
          ]
         }
@@ -312,7 +312,7 @@
       {"$ref": "#/definitions/partOfValidIfPresent"}
       ]
     },
-    
+
     "nextValidIfPresent":
     {   "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "Validation: next value (Annotation Page)",
@@ -324,7 +324,7 @@
           { "type": "array",
             "minItems": 1,
             "maxItems": 1,
-            "items": { "$ref": "id.json#/definitions/stringUri" } 
+            "items": { "$ref": "id.json#/definitions/stringUri" }
           }
          ]
         }
@@ -341,7 +341,7 @@
       {"$ref": "#/definitions/nextValidIfPresent"}
       ]
     },
-    
+
     "prevValidIfPresent":
     {   "$schema": "http://json-schema.org/draft-04/schema#",
       "title": "Validation: prev value (Annotation Page)",
@@ -353,7 +353,7 @@
           { "type": "array",
             "minItems": 1,
             "maxItems": 1,
-            "items": { "$ref": "id.json#/definitions/stringUri" } 
+            "items": { "$ref": "id.json#/definitions/stringUri" }
           }
          ]
         }
@@ -370,7 +370,7 @@
       {"$ref": "#/definitions/prevValidIfPresent"}
       ]
     },
-    
+
     "startIndexDefinition":
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -395,7 +395,7 @@
         }
       }
     },
-    
+
     "startIndexFound":
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -420,13 +420,13 @@
                "oneOf":[
                    { "$ref": "annotations.json#/definitions/annotationTypeValueFound" },
                    { "type": "string",
-                     "format": "uri" }    
+                     "format": "uri" }
                 ]
-              }      
+              }
           }
       },
       "required": [ "items" ]
     }
-    
+
   }
 }

@@ -14,10 +14,10 @@
          ]
       },
       { "type": "object",
-        "properties": 
-         {"first": 
+        "properties":
+         {"first":
            { "$ref": "#/definitions/creatorImplemented" }
-         }, 
+         },
         "required": [ "first" ]
       }
   ],
@@ -31,6 +31,6 @@
         { "type": "object",
           "required": [ "creator" ] }
        ]
-    }    
+    }
   }
 }

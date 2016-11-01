@@ -9,10 +9,10 @@
   "oneOf": [
       { "$ref": "collections.json#/definitions/partOfFound" },
       { "type": "object",
-        "properties": 
-         {"first": 
+        "properties":
+         {"first":
            { "$ref": "collections.json#/definitions/partOfFound" }
-         }, 
+         },
         "required": [ "first" ]
       }
   ]

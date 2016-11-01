@@ -567,7 +567,7 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
     // probably safe enough.  Just don't read stuff that will change.
     ReflectionHarness.currentTestInfo = {data: data, idlName: idlName, idlObj: idlObj, domName: domName, domObj: domObj};
 
-    ReflectionHarness.testWrapper(function() {
+    ReflectionHarness.test(function() {
         ReflectionTests.doReflects(data, idlName, idlObj, domName, domObj);
     });
 };
@@ -593,7 +593,7 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
     // Test that typeof idlObj[idlName] is correct.  If not, further tests are
     // probably pointless, so bail out.
     var isDefaultValueNull = data.isNullable && data.defaultVal === null;
-    if (!ReflectionHarness.test(typeof idlObj[idlName], isDefaultValueNull ? "object" : typeInfo.jsType, "typeof IDL attribute")) {
+    if (!ReflectionHarness.assertEquals(typeof idlObj[idlName], isDefaultValueNull ? "object" : typeInfo.jsType, "typeof IDL attribute")) {
         return;
     }
 
@@ -603,7 +603,7 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
         defaultVal = typeInfo.defaultVal;
     }
     if (defaultVal !== null || data.isNullable) {
-        ReflectionHarness.test(idlObj[idlName], defaultVal, "IDL get with DOM attribute unset");
+        ReflectionHarness.assertEquals(idlObj[idlName], defaultVal, "IDL get with DOM attribute unset");
     }
 
     var domTests = typeInfo.domTests.slice(0);
@@ -706,8 +706,8 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
             }
             try {
                 domObj.setAttribute(domName, domTests[i]);
-                ReflectionHarness.test(domObj.getAttribute(domName), String(domTests[i]), "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
-                ReflectionHarness.test(idlObj[idlName], domExpected[i], "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by IDL get");
+                ReflectionHarness.assertEquals(domObj.getAttribute(domName), String(domTests[i]), "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
+                ReflectionHarness.assertEquals(idlObj[idlName], domExpected[i], "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by IDL get");
                 if (ReflectionHarness.catchUnexpectedExceptions) {
                     ReflectionHarness.success();
                 }
@@ -724,7 +724,7 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
     for (var i = 0; i < idlTests.length; i++) {
         if ((data.type == "limited long" && idlTests[i] < 0) ||
             (data.type == "limited unsigned long" && idlTests[i] == 0)) {
-            ReflectionHarness.testException("INDEX_SIZE_ERR", function() {
+            ReflectionHarness.assertThrows("INDEX_SIZE_ERR", function() {
                 idlObj[idlName] = idlTests[i];
             }, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " must throw INDEX_SIZE_ERR");
         } else {
@@ -732,16 +732,16 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
                 idlObj[idlName] = idlTests[i];
                 if (data.type == "boolean") {
                     // Special case yay
-                    ReflectionHarness.test(domObj.hasAttribute(domName), Boolean(idlTests[i]), "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by hasAttribute()");
+                    ReflectionHarness.assertEquals(domObj.hasAttribute(domName), Boolean(idlTests[i]), "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by hasAttribute()");
                 } else if (idlDomExpected[i] !== null || data.isNullable) {
                     var expected = idlDomExpected[i] + "";
                     if (data.isNullable && idlDomExpected[i] === null) {
                         expected = null;
                     }
-                    ReflectionHarness.test(domObj.getAttribute(domName), expected, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by getAttribute()");
+                    ReflectionHarness.assertEquals(domObj.getAttribute(domName), expected, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by getAttribute()");
                 }
                 if (idlIdlExpected[i] !== null || data.isNullable) {
-                    ReflectionHarness.test(idlObj[idlName], idlIdlExpected[i], "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by IDL get");
+                    ReflectionHarness.assertEquals(idlObj[idlName], idlIdlExpected[i], "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by IDL get");
                 }
                 if (ReflectionHarness.catchUnexpectedExceptions) {
                     ReflectionHarness.success();

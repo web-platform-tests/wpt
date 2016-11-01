@@ -90,7 +90,7 @@ ReflectionHarness.currentTestInfo = {};
  * For the original harness, it does nothing special (just calls the function),
  * but for testharness.js, it can wrap everything in a test() call.
  */
-ReflectionHarness.testWrapper = function(fn) {
+ReflectionHarness.test = function(fn) {
   fn();
 }
 
@@ -102,7 +102,7 @@ ReflectionHarness.testWrapper = function(fn) {
  *
  * @public
  */
-ReflectionHarness.test = function(expected, actual, description) {
+ReflectionHarness.assertEquals = function(expected, actual, description) {
   // Special-case -0 yay!
   if (expected === 0 && actual === 0 && 1/expected === 1/actual) {
     this.increment(this.passed);
@@ -132,7 +132,7 @@ ReflectionHarness.run = function(fun, description) {
  *
  * @public
  */
-ReflectionHarness.testException = function(exceptionName, fn, description) {
+ReflectionHarness.assertThrows = function(exceptionName, fn, description) {
   try {
     fn();
   } catch (e) {

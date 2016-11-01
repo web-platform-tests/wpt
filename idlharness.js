@@ -49,14 +49,19 @@ policies and contribution forms [3].
 (function(){
 "use strict";
 /// Helpers ///
-function constValue (cnt) {
+function constValue (cnt)
+//@{
+{
     if (cnt.type === "null") return null;
     if (cnt.type === "NaN") return NaN;
     if (cnt.type === "Infinity") return cnt.negative ? -Infinity : Infinity;
     return cnt.value;
 }
 
-function minOverloadLength(overloads) {
+//@}
+function minOverloadLength(overloads)
+//@{
+{
     if (!overloads.length) {
         return 0;
     }
@@ -69,7 +74,10 @@ function minOverloadLength(overloads) {
     .reduce(function(m, n) { return Math.min(m, n); });
 }
 
-function throwOrReject(a_test, operation, fn, obj, args,  message, cb) {
+//@}
+function throwOrReject(a_test, operation, fn, obj, args,  message, cb)
+//@{
+{
     if (operation.idlType.generic !== "Promise") {
         assert_throws(new TypeError(), function() {
             fn.apply(obj, args);
@@ -87,7 +95,10 @@ function throwOrReject(a_test, operation, fn, obj, args,  message, cb) {
     }
 }
 
-function awaitNCallbacks(n, cb, ctx) {
+//@}
+function awaitNCallbacks(n, cb, ctx)
+//@{
+{
     var counter = 0;
     return function() {
         counter++;
@@ -97,7 +108,10 @@ function awaitNCallbacks(n, cb, ctx) {
     };
 }
 
-var fround = (function(){
+//@}
+var fround =
+//@{
+(function(){
     if (Math.fround) return Math.fround;
 
     var arr = new Float32Array(1);
@@ -106,6 +120,7 @@ var fround = (function(){
         return arr[0];
     };
 })();
+//@}
 
 /// IdlArray ///
 // Entry point
@@ -650,7 +665,9 @@ function IdlDictionary(obj)
 IdlDictionary.prototype = Object.create(IdlObject.prototype);
 
 /// IdlInterface ///
-function IdlInterface(obj, is_callback) {
+function IdlInterface(obj, is_callback)
+//@{
+{
     /**
      * obj is an object produced by the WebIDLParser.js "interface" production.
      */
@@ -687,6 +704,7 @@ function IdlInterface(obj, is_callback) {
 
     this._is_callback = is_callback;
 }
+//@}
 IdlInterface.prototype = Object.create(IdlObject.prototype);
 IdlInterface.prototype.is_callback = function()
 //@{

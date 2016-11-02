@@ -162,7 +162,7 @@ class RoutesBuilder(object):
 
 def build_routes(aliases):
     builder = RoutesBuilder()
-    for alias in aliases.items():
+    for alias in aliases:
         url = alias["url-path"]
         directory = alias["local-dir"]
         if not url.startswith("/") or len(directory) == 0:

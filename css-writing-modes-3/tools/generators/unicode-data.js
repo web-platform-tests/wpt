@@ -108,9 +108,12 @@ module.exports = (function () {
       return code > 0x3400 && code < 0x4DB5 || // CJK Unified Ideographs Extension A
         code > 0x4E00 && code < 0x9FCC || // CJK Unified Ideographs (Han)
         code > 0xAC00 && code < 0xD7A3 || // Hangul Syllables
+        code > 0x17000 && code < 0x187EC || // Tangut
+        code > 0x18800 && code < 0x18AF2 || // Tangut Components
         code > 0x20000 && code < 0x2A6D6 || // CJK Unified Ideographs Extension B
         code > 0x2A700 && code < 0x2B734 || // CJK Unified Ideographs Extension C
-        code > 0x2B740 && code < 0x2B81D; // CJK Unified Ideographs Extension D
+        code > 0x2B740 && code < 0x2B81D || // CJK Unified Ideographs Extension D
+        code > 0x2B820 && code < 0x2CEA1; // CJK Unified Ideographs Extension E
     },
     codePointsFromRanges: function (ranges, skipFunc) {
       var codePoints = [];

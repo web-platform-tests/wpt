@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Writing Modes Test: Test orientation of characters where vo=U (#4/12, 2048 code points in U+1338C-17514).</title>
+<title>CSS Writing Modes Test: Test orientation of characters where vo=U (#4/6, 2048 code points in U+1338C-1F0E1).</title>
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
-<meta name="assert" content="Test orientation of characters where vo=U (#4/12, 2048 code points in U+1338C-17514)">
+<meta name="assert" content="Test orientation of characters where vo=U (#4/6, 2048 code points in U+1338C-1F0E1)">
 <meta name="flags" content="dom font">
 <link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
 <script src="/resources/testharness.js"></script>
@@ -72,47 +72,71 @@ summary {
 <div class="line">𖿠</div>
 </div>
 <div data-block="Tangut">
-<div class="line">𗀀𗀁𗀂𗀃𗀄𗀅𗀆𗀇𗀈𗀉𗀊𗀋𗀌𗀍𗀎𗀏𗀐𗀑𗀒𗀓𗀔𗀕𗀖𗀗𗀘𗀙𗀚𗀛𗀜𗀝𗀞𗀟</div>
-<div class="line">𗀠𗀡𗀢𗀣𗀤𗀥𗀦𗀧𗀨𗀩𗀪𗀫𗀬𗀭𗀮𗀯𗀰𗀱𗀲𗀳𗀴𗀵𗀶𗀷𗀸𗀹𗀺𗀻𗀼𗀽𗀾𗀿</div>
-<div class="line">𗁀𗁁𗁂𗁃𗁄𗁅𗁆𗁇𗁈𗁉𗁊𗁋𗁌𗁍𗁎𗁏𗁐𗁑𗁒𗁓𗁔𗁕𗁖𗁗𗁘𗁙𗁚𗁛𗁜𗁝𗁞𗁟</div>
-<div class="line">𗁠𗁡𗁢𗁣𗁤𗁥𗁦𗁧𗁨𗁩𗁪𗁫𗁬𗁭𗁮𗁯𗁰𗁱𗁲𗁳𗁴𗁵𗁶𗁷𗁸𗁹𗁺𗁻𗁼𗁽𗁾𗁿</div>
-<div class="line">𗂀𗂁𗂂𗂃𗂄𗂅𗂆𗂇𗂈𗂉𗂊𗂋𗂌𗂍𗂎𗂏𗂐𗂑𗂒𗂓𗂔𗂕𗂖𗂗𗂘𗂙𗂚𗂛𗂜𗂝𗂞𗂟</div>
-<div class="line">𗂠𗂡𗂢𗂣𗂤𗂥𗂦𗂧𗂨𗂩𗂪𗂫𗂬𗂭𗂮𗂯𗂰𗂱𗂲𗂳𗂴𗂵𗂶𗂷𗂸𗂹𗂺𗂻𗂼𗂽𗂾𗂿</div>
-<div class="line">𗃀𗃁𗃂𗃃𗃄𗃅𗃆𗃇𗃈𗃉𗃊𗃋𗃌𗃍𗃎𗃏𗃐𗃑𗃒𗃓𗃔𗃕𗃖𗃗𗃘𗃙𗃚𗃛𗃜𗃝𗃞𗃟</div>
-<div class="line">𗃠𗃡𗃢𗃣𗃤𗃥𗃦𗃧𗃨𗃩𗃪𗃫𗃬𗃭𗃮𗃯𗃰𗃱𗃲𗃳𗃴𗃵𗃶𗃷𗃸𗃹𗃺𗃻𗃼𗃽𗃾𗃿</div>
-<div class="line">𗄀𗄁𗄂𗄃𗄄𗄅𗄆𗄇𗄈𗄉𗄊𗄋𗄌𗄍𗄎𗄏𗄐𗄑𗄒𗄓𗄔𗄕𗄖𗄗𗄘𗄙𗄚𗄛𗄜𗄝𗄞𗄟</div>
-<div class="line">𗄠𗄡𗄢𗄣𗄤𗄥𗄦𗄧𗄨𗄩𗄪𗄫𗄬𗄭𗄮𗄯𗄰𗄱𗄲𗄳𗄴𗄵𗄶𗄷𗄸𗄹𗄺𗄻𗄼𗄽𗄾𗄿</div>
-<div class="line">𗅀𗅁𗅂𗅃𗅄𗅅𗅆𗅇𗅈𗅉𗅊𗅋𗅌𗅍𗅎𗅏𗅐𗅑𗅒𗅓𗅔𗅕𗅖𗅗𗅘𗅙𗅚𗅛𗅜𗅝𗅞𗅟</div>
-<div class="line">𗅠𗅡𗅢𗅣𗅤𗅥𗅦𗅧𗅨𗅩𗅪𗅫𗅬𗅭𗅮𗅯𗅰𗅱𗅲𗅳𗅴𗅵𗅶𗅷𗅸𗅹𗅺𗅻𗅼𗅽𗅾𗅿</div>
-<div class="line">𗆀𗆁𗆂𗆃𗆄𗆅𗆆𗆇𗆈𗆉𗆊𗆋𗆌𗆍𗆎𗆏𗆐𗆑𗆒𗆓𗆔𗆕𗆖𗆗𗆘𗆙𗆚𗆛𗆜𗆝𗆞𗆟</div>
-<div class="line">𗆠𗆡𗆢𗆣𗆤𗆥𗆦𗆧𗆨𗆩𗆪𗆫𗆬𗆭𗆮𗆯𗆰𗆱𗆲𗆳𗆴𗆵𗆶𗆷𗆸𗆹𗆺𗆻𗆼𗆽𗆾𗆿</div>
-<div class="line">𗇀𗇁𗇂𗇃𗇄𗇅𗇆𗇇𗇈𗇉𗇊𗇋𗇌𗇍𗇎𗇏𗇐𗇑𗇒𗇓𗇔𗇕𗇖𗇗𗇘𗇙𗇚𗇛𗇜𗇝𗇞𗇟</div>
-<div class="line">𗇠𗇡𗇢𗇣𗇤𗇥𗇦𗇧𗇨𗇩𗇪𗇫𗇬𗇭𗇮𗇯𗇰𗇱𗇲𗇳𗇴𗇵𗇶𗇷𗇸𗇹𗇺𗇻𗇼𗇽𗇾𗇿</div>
-<div class="line">𗈀𗈁𗈂𗈃𗈄𗈅𗈆𗈇𗈈𗈉𗈊𗈋𗈌𗈍𗈎𗈏𗈐𗈑𗈒𗈓𗈔𗈕𗈖𗈗𗈘𗈙𗈚𗈛𗈜𗈝𗈞𗈟</div>
-<div class="line">𗈠𗈡𗈢𗈣𗈤𗈥𗈦𗈧𗈨𗈩𗈪𗈫𗈬𗈭𗈮𗈯𗈰𗈱𗈲𗈳𗈴𗈵𗈶𗈷𗈸𗈹𗈺𗈻𗈼𗈽𗈾𗈿</div>
-<div class="line">𗉀𗉁𗉂𗉃𗉄𗉅𗉆𗉇𗉈𗉉𗉊𗉋𗉌𗉍𗉎𗉏𗉐𗉑𗉒𗉓𗉔𗉕𗉖𗉗𗉘𗉙𗉚𗉛𗉜𗉝𗉞𗉟</div>
-<div class="line">𗉠𗉡𗉢𗉣𗉤𗉥𗉦𗉧𗉨𗉩𗉪𗉫𗉬𗉭𗉮𗉯𗉰𗉱𗉲𗉳𗉴𗉵𗉶𗉷𗉸𗉹𗉺𗉻𗉼𗉽𗉾𗉿</div>
-<div class="line">𗊀𗊁𗊂𗊃𗊄𗊅𗊆𗊇𗊈𗊉𗊊𗊋𗊌𗊍𗊎𗊏𗊐𗊑𗊒𗊓𗊔𗊕𗊖𗊗𗊘𗊙𗊚𗊛𗊜𗊝𗊞𗊟</div>
-<div class="line">𗊠𗊡𗊢𗊣𗊤𗊥𗊦𗊧𗊨𗊩𗊪𗊫𗊬𗊭𗊮𗊯𗊰𗊱𗊲𗊳𗊴𗊵𗊶𗊷𗊸𗊹𗊺𗊻𗊼𗊽𗊾𗊿</div>
-<div class="line">𗋀𗋁𗋂𗋃𗋄𗋅𗋆𗋇𗋈𗋉𗋊𗋋𗋌𗋍𗋎𗋏𗋐𗋑𗋒𗋓𗋔𗋕𗋖𗋗𗋘𗋙𗋚𗋛𗋜𗋝𗋞𗋟</div>
-<div class="line">𗋠𗋡𗋢𗋣𗋤𗋥𗋦𗋧𗋨𗋩𗋪𗋫𗋬𗋭𗋮𗋯𗋰𗋱𗋲𗋳𗋴𗋵𗋶𗋷𗋸𗋹𗋺𗋻𗋼𗋽𗋾𗋿</div>
-<div class="line">𗌀𗌁𗌂𗌃𗌄𗌅𗌆𗌇𗌈𗌉𗌊𗌋𗌌𗌍𗌎𗌏𗌐𗌑𗌒𗌓𗌔𗌕𗌖𗌗𗌘𗌙𗌚𗌛𗌜𗌝𗌞𗌟</div>
-<div class="line">𗌠𗌡𗌢𗌣𗌤𗌥𗌦𗌧𗌨𗌩𗌪𗌫𗌬𗌭𗌮𗌯𗌰𗌱𗌲𗌳𗌴𗌵𗌶𗌷𗌸𗌹𗌺𗌻𗌼𗌽𗌾𗌿</div>
-<div class="line">𗍀𗍁𗍂𗍃𗍄𗍅𗍆𗍇𗍈𗍉𗍊𗍋𗍌𗍍𗍎𗍏𗍐𗍑𗍒𗍓𗍔𗍕𗍖𗍗𗍘𗍙𗍚𗍛𗍜𗍝𗍞𗍟</div>
-<div class="line">𗍠𗍡𗍢𗍣𗍤𗍥𗍦𗍧𗍨𗍩𗍪𗍫𗍬𗍭𗍮𗍯𗍰𗍱𗍲𗍳𗍴𗍵𗍶𗍷𗍸𗍹𗍺𗍻𗍼𗍽𗍾𗍿</div>
-<div class="line">𗎀𗎁𗎂𗎃𗎄𗎅𗎆𗎇𗎈𗎉𗎊𗎋𗎌𗎍𗎎𗎏𗎐𗎑𗎒𗎓𗎔𗎕𗎖𗎗𗎘𗎙𗎚𗎛𗎜𗎝𗎞𗎟</div>
-<div class="line">𗎠𗎡𗎢𗎣𗎤𗎥𗎦𗎧𗎨𗎩𗎪𗎫𗎬𗎭𗎮𗎯𗎰𗎱𗎲𗎳𗎴𗎵𗎶𗎷𗎸𗎹𗎺𗎻𗎼𗎽𗎾𗎿</div>
-<div class="line">𗏀𗏁𗏂𗏃𗏄𗏅𗏆𗏇𗏈𗏉𗏊𗏋𗏌𗏍𗏎𗏏𗏐𗏑𗏒𗏓𗏔𗏕𗏖𗏗𗏘𗏙𗏚𗏛𗏜𗏝𗏞𗏟</div>
-<div class="line">𗏠𗏡𗏢𗏣𗏤𗏥𗏦𗏧𗏨𗏩𗏪𗏫𗏬𗏭𗏮𗏯𗏰𗏱𗏲𗏳𗏴𗏵𗏶𗏷𗏸𗏹𗏺𗏻𗏼𗏽𗏾𗏿</div>
-<div class="line">𗐀𗐁𗐂𗐃𗐄𗐅𗐆𗐇𗐈𗐉𗐊𗐋𗐌𗐍𗐎𗐏𗐐𗐑𗐒𗐓𗐔𗐕𗐖𗐗𗐘𗐙𗐚𗐛𗐜𗐝𗐞𗐟</div>
-<div class="line">𗐠𗐡𗐢𗐣𗐤𗐥𗐦𗐧𗐨𗐩𗐪𗐫𗐬𗐭𗐮𗐯𗐰𗐱𗐲𗐳𗐴𗐵𗐶𗐷𗐸𗐹𗐺𗐻𗐼𗐽𗐾𗐿</div>
-<div class="line">𗑀𗑁𗑂𗑃𗑄𗑅𗑆𗑇𗑈𗑉𗑊𗑋𗑌𗑍𗑎𗑏𗑐𗑑𗑒𗑓𗑔𗑕𗑖𗑗𗑘𗑙𗑚𗑛𗑜𗑝𗑞𗑟</div>
-<div class="line">𗑠𗑡𗑢𗑣𗑤𗑥𗑦𗑧𗑨𗑩𗑪𗑫𗑬𗑭𗑮𗑯𗑰𗑱𗑲𗑳𗑴𗑵𗑶𗑷𗑸𗑹𗑺𗑻𗑼𗑽𗑾𗑿</div>
-<div class="line">𗒀𗒁𗒂𗒃𗒄𗒅𗒆𗒇𗒈𗒉𗒊𗒋𗒌𗒍𗒎𗒏𗒐𗒑𗒒𗒓𗒔𗒕𗒖𗒗𗒘𗒙𗒚𗒛𗒜𗒝𗒞𗒟</div>
-<div class="line">𗒠𗒡𗒢𗒣𗒤𗒥𗒦𗒧𗒨𗒩𗒪𗒫𗒬𗒭𗒮𗒯𗒰𗒱𗒲𗒳𗒴𗒵𗒶𗒷𗒸𗒹𗒺𗒻𗒼𗒽𗒾𗒿</div>
-<div class="line">𗓀𗓁𗓂𗓃𗓄𗓅𗓆𗓇𗓈𗓉𗓊𗓋𗓌𗓍𗓎𗓏𗓐𗓑𗓒𗓓𗓔𗓕𗓖𗓗𗓘𗓙𗓚𗓛𗓜𗓝𗓞𗓟</div>
-<div class="line">𗓠𗓡𗓢𗓣𗓤𗓥𗓦𗓧𗓨𗓩𗓪𗓫𗓬𗓭𗓮𗓯𗓰𗓱𗓲𗓳𗓴𗓵𗓶𗓷𗓸𗓹𗓺𗓻𗓼𗓽𗓾𗓿</div>
-<div class="line">𗔀𗔁𗔂𗔃𗔄𗔅𗔆𗔇𗔈𗔉𗔊𗔋𗔌𗔍𗔎𗔏𗔐𗔑𗔒𗔓𗔔</div>
+<div class="line">𗀀𘟬𘠀𘫲</div>
+</div>
+<div data-block="Kana">
+<div class="line">𛀀𛀁</div>
+</div>
+<div data-block="Byzantine">
+<div class="line">𝀀𝀁𝀂𝀃𝀄𝀅𝀆𝀇𝀈𝀉𝀊𝀋𝀌𝀍𝀎𝀏𝀐𝀑𝀒𝀓𝀔𝀕𝀖𝀗𝀘𝀙𝀚𝀛𝀜𝀝𝀞𝀟</div>
+<div class="line">𝀠𝀡𝀢𝀣𝀤𝀥𝀦𝀧𝀨𝀩𝀪𝀫𝀬𝀭𝀮𝀯𝀰𝀱𝀲𝀳𝀴𝀵𝀶𝀷𝀸𝀹𝀺𝀻𝀼𝀽𝀾𝀿</div>
+<div class="line">𝁀𝁁𝁂𝁃𝁄𝁅𝁆𝁇𝁈𝁉𝁊𝁋𝁌𝁍𝁎𝁏𝁐𝁑𝁒𝁓𝁔𝁕𝁖𝁗𝁘𝁙𝁚𝁛𝁜𝁝𝁞𝁟</div>
+<div class="line">𝁠𝁡𝁢𝁣𝁤𝁥𝁦𝁧𝁨𝁩𝁪𝁫𝁬𝁭𝁮𝁯𝁰𝁱𝁲𝁳𝁴𝁵𝁶𝁷𝁸𝁹𝁺𝁻𝁼𝁽𝁾𝁿</div>
+<div class="line">𝂀𝂁𝂂𝂃𝂄𝂅𝂆𝂇𝂈𝂉𝂊𝂋𝂌𝂍𝂎𝂏𝂐𝂑𝂒𝂓𝂔𝂕𝂖𝂗𝂘𝂙𝂚𝂛𝂜𝂝𝂞𝂟</div>
+<div class="line">𝂠𝂡𝂢𝂣𝂤𝂥𝂦𝂧𝂨𝂩𝂪𝂫𝂬𝂭𝂮𝂯𝂰𝂱𝂲𝂳𝂴𝂵𝂶𝂷𝂸𝂹𝂺𝂻𝂼𝂽𝂾𝂿</div>
+<div class="line">𝃀𝃁𝃂𝃃𝃄𝃅𝃆𝃇𝃈𝃉𝃊𝃋𝃌𝃍𝃎𝃏𝃐𝃑𝃒𝃓𝃔𝃕𝃖𝃗𝃘𝃙𝃚𝃛𝃜𝃝𝃞𝃟</div>
+<div class="line">𝃠𝃡𝃢𝃣𝃤𝃥𝃦𝃧𝃨𝃩𝃪𝃫𝃬𝃭𝃮𝃯𝃰𝃱𝃲𝃳𝃴𝃵</div>
+</div>
+<div data-block="Musical">
+<div class="line">𝄀𝄁𝄂𝄃𝄄𝄅𝄆𝄇𝄈𝄉𝄊𝄋𝄌𝄍𝄎𝄏𝄐𝄑𝄒𝄓𝄔𝄕𝄖𝄗𝄘𝄙𝄚𝄛𝄜𝄝𝄞𝄟</div>
+<div class="line">𝄠𝄡𝄢𝄣𝄤𝄥𝄦𝄩𝄪𝄫𝄬𝄭𝄮𝄯𝄰𝄱𝄲𝄳𝄴𝄵𝄶𝄷𝄸𝄹𝄺𝄻𝄼𝄽𝄾𝄿𝅀𝅁</div>
+<div class="line">𝅂𝅃𝅄𝅅𝅆𝅇𝅈𝅉𝅊𝅋𝅌𝅍𝅎𝅏𝅐𝅑𝅒𝅓𝅔𝅕𝅖𝅗𝅘𝅙𝅚𝅛𝅜𝅝𝅗𝅥𝅘𝅥𝅘𝅥𝅮𝅘𝅥𝅯</div>
+<div class="line">𝅘𝅥𝅰𝅘𝅥𝅱𝅘𝅥𝅲𝅪𝅫𝅬𝆃𝆄𝆌𝆍𝆎𝆏𝆐𝆑𝆒𝆓𝆔𝆕𝆖𝆗𝆘𝆙𝆚𝆛𝆜𝆝𝆞𝆟𝆠𝆡𝆢𝆣</div>
+<div class="line">𝆤𝆥𝆦𝆧𝆨𝆩𝆮𝆯𝆰𝆱𝆲𝆳𝆴𝆵𝆶𝆷𝆸𝆹𝆺𝆹𝅥𝆺𝅥𝆹𝅥𝅮𝆺𝅥𝅮𝆹𝅥𝅯𝆺𝅥𝅯𝇁𝇂𝇃𝇄𝇅𝇆𝇇</div>
+<div class="line">𝇈𝇉𝇊𝇋𝇌𝇍𝇎𝇏𝇐𝇑𝇒𝇓𝇔𝇕𝇖𝇗𝇘𝇙𝇚𝇛𝇜𝇝𝇞𝇟𝇠𝇡𝇢𝇣𝇤𝇥𝇦𝇧</div>
+<div class="line">𝇨</div>
+</div>
+<div data-block="Tai">
+<div class="line">𝌀𝌁𝌂𝌃𝌄𝌅𝌆𝌇𝌈𝌉𝌊𝌋𝌌𝌍𝌎𝌏𝌐𝌑𝌒𝌓𝌔𝌕𝌖𝌗𝌘𝌙𝌚𝌛𝌜𝌝𝌞𝌟</div>
+<div class="line">𝌠𝌡𝌢𝌣𝌤𝌥𝌦𝌧𝌨𝌩𝌪𝌫𝌬𝌭𝌮𝌯𝌰𝌱𝌲𝌳𝌴𝌵𝌶𝌷𝌸𝌹𝌺𝌻𝌼𝌽𝌾𝌿</div>
+<div class="line">𝍀𝍁𝍂𝍃𝍄𝍅𝍆𝍇𝍈𝍉𝍊𝍋𝍌𝍍𝍎𝍏𝍐𝍑𝍒𝍓𝍔𝍕𝍖</div>
+</div>
+<div data-block="Counting">
+<div class="line">𝍠𝍡𝍢𝍣𝍤𝍥𝍦𝍧𝍨𝍩𝍪𝍫𝍬𝍭𝍮𝍯𝍰𝍱</div>
+</div>
+<div data-block="Sutton">
+<div class="line">𝠀𝠁𝠂𝠃𝠄𝠅𝠆𝠇𝠈𝠉𝠊𝠋𝠌𝠍𝠎𝠏𝠐𝠑𝠒𝠓𝠔𝠕𝠖𝠗𝠘𝠙𝠚𝠛𝠜𝠝𝠞𝠟</div>
+<div class="line">𝠠𝠡𝠢𝠣𝠤𝠥𝠦𝠧𝠨𝠩𝠪𝠫𝠬𝠭𝠮𝠯𝠰𝠱𝠲𝠳𝠴𝠵𝠶𝠷𝠸𝠹𝠺𝠻𝠼𝠽𝠾𝠿</div>
+<div class="line">𝡀𝡁𝡂𝡃𝡄𝡅𝡆𝡇𝡈𝡉𝡊𝡋𝡌𝡍𝡎𝡏𝡐𝡑𝡒𝡓𝡔𝡕𝡖𝡗𝡘𝡙𝡚𝡛𝡜𝡝𝡞𝡟</div>
+<div class="line">𝡠𝡡𝡢𝡣𝡤𝡥𝡦𝡧𝡨𝡩𝡪𝡫𝡬𝡭𝡮𝡯𝡰𝡱𝡲𝡳𝡴𝡵𝡶𝡷𝡸𝡹𝡺𝡻𝡼𝡽𝡾𝡿</div>
+<div class="line">𝢀𝢁𝢂𝢃𝢄𝢅𝢆𝢇𝢈𝢉𝢊𝢋𝢌𝢍𝢎𝢏𝢐𝢑𝢒𝢓𝢔𝢕𝢖𝢗𝢘𝢙𝢚𝢛𝢜𝢝𝢞𝢟</div>
+<div class="line">𝢠𝢡𝢢𝢣𝢤𝢥𝢦𝢧𝢨𝢩𝢪𝢫𝢬𝢭𝢮𝢯𝢰𝢱𝢲𝢳𝢴𝢵𝢶𝢷𝢸𝢹𝢺𝢻𝢼𝢽𝢾𝢿</div>
+<div class="line">𝣀𝣁𝣂𝣃𝣄𝣅𝣆𝣇𝣈𝣉𝣊𝣋𝣌𝣍𝣎𝣏𝣐𝣑𝣒𝣓𝣔𝣕𝣖𝣗𝣘𝣙𝣚𝣛𝣜𝣝𝣞𝣟</div>
+<div class="line">𝣠𝣡𝣢𝣣𝣤𝣥𝣦𝣧𝣨𝣩𝣪𝣫𝣬𝣭𝣮𝣯𝣰𝣱𝣲𝣳𝣴𝣵𝣶𝣷𝣸𝣹𝣺𝣻𝣼𝣽𝣾𝣿</div>
+<div class="line">𝤀𝤁𝤂𝤃𝤄𝤅𝤆𝤇𝤈𝤉𝤊𝤋𝤌𝤍𝤎𝤏𝤐𝤑𝤒𝤓𝤔𝤕𝤖𝤗𝤘𝤙𝤚𝤛𝤜𝤝𝤞𝤟</div>
+<div class="line">𝤠𝤡𝤢𝤣𝤤𝤥𝤦𝤧𝤨𝤩𝤪𝤫𝤬𝤭𝤮𝤯𝤰𝤱𝤲𝤳𝤴𝤵𝤶𝤷𝤸𝤹𝤺𝤻𝤼𝤽𝤾𝤿</div>
+<div class="line">𝥀𝥁𝥂𝥃𝥄𝥅𝥆𝥇𝥈𝥉𝥊𝥋𝥌𝥍𝥎𝥏𝥐𝥑𝥒𝥓𝥔𝥕𝥖𝥗𝥘𝥙𝥚𝥛𝥜𝥝𝥞𝥟</div>
+<div class="line">𝥠𝥡𝥢𝥣𝥤𝥥𝥦𝥧𝥨𝥩𝥪𝥫𝥬𝥭𝥮𝥯𝥰𝥱𝥲𝥳𝥴𝥵𝥶𝥷𝥸𝥹𝥺𝥻𝥼𝥽𝥾𝥿</div>
+<div class="line">𝦀𝦁𝦂𝦃𝦄𝦅𝦆𝦇𝦈𝦉𝦊𝦋𝦌𝦍𝦎𝦏𝦐𝦑𝦒𝦓𝦔𝦕𝦖𝦗𝦘𝦙𝦚𝦛𝦜𝦝𝦞𝦟</div>
+<div class="line">𝦠𝦡𝦢𝦣𝦤𝦥𝦦𝦧𝦨𝦩𝦪𝦫𝦬𝦭𝦮𝦯𝦰𝦱𝦲𝦳𝦴𝦵𝦶𝦷𝦸𝦹𝦺𝦻𝦼𝦽𝦾𝦿</div>
+<div class="line">𝧀𝧁𝧂𝧃𝧄𝧅𝧆𝧇𝧈𝧉𝧊𝧋𝧌𝧍𝧎𝧏𝧐𝧑𝧒𝧓𝧔𝧕𝧖𝧗𝧘𝧙𝧚𝧛𝧜𝧝𝧞𝧟</div>
+<div class="line">𝧠𝧡𝧢𝧣𝧤𝧥𝧦𝧧𝧨𝧩𝧪𝧫𝧬𝧭𝧮𝧯𝧰𝧱𝧲𝧳𝧴𝧵𝧶𝧷𝧸𝧹𝧺𝧻𝧼𝧽𝧾𝧿</div>
+<div class="line">𝨷𝨸𝨹𝨺𝩭𝩮𝩯𝩰𝩱𝩲𝩳𝩴𝩶𝩷𝩸𝩹𝩺𝩻𝩼𝩽𝩾𝩿𝪀𝪁𝪂𝪃𝪅𝪆𝪇𝪈𝪉𝪊</div>
+<div class="line">𝪋</div>
+</div>
+<div data-block="Mahjong">
+<div class="line">🀀🀁🀂🀃🀄🀅🀆🀇🀈🀉🀊🀋🀌🀍🀎🀏🀐🀑🀒🀓🀔🀕🀖🀗🀘🀙🀚🀛🀜🀝🀞🀟</div>
+<div class="line">🀠🀡🀢🀣🀤🀥🀦🀧🀨🀩🀪🀫</div>
+</div>
+<div data-block="Domino">
+<div class="line">🀰🀱🀲🀳🀴🀵🀶🀷🀸🀹🀺🀻🀼🀽🀾🀿🁀🁁🁂🁃🁄🁅🁆🁇🁈🁉🁊🁋🁌🁍🁎🁏</div>
+<div class="line">🁐🁑🁒🁓🁔🁕🁖🁗🁘🁙🁚🁛🁜🁝🁞🁟🁠🁡🁢🁣🁤🁥🁦🁧🁨🁩🁪🁫🁬🁭🁮🁯</div>
+<div class="line">🁰🁱🁲🁳🁴🁵🁶🁷🁸🁹🁺🁻🁼🁽🁾🁿🂀🂁🂂🂃🂄🂅🂆🂇🂈🂉🂊🂋🂌🂍🂎🂏</div>
+<div class="line">🂐🂑🂒🂓</div>
+</div>
+<div data-block="Playing">
+<div class="line">🂠🂡🂢🂣🂤🂥🂦🂧🂨🂩🂪🂫🂬🂭🂮🂱🂲🂳🂴🂵🂶🂷🂸🂹🂺🂻🂼🂽🂾🂿🃁🃂</div>
+<div class="line">🃃🃄🃅🃆🃇🃈🃉🃊🃋🃌🃍🃎🃏🃑🃒🃓🃔🃕🃖🃗🃘🃙🃚🃛🃜🃝🃞🃟🃠🃡</div>
 </div>
 </div>
 </div>

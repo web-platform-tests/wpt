@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Writing Modes Test: Test orientation of characters where vo=U (#5/12, 2048 code points in U+17515-17D14).</title>
+<title>CSS Writing Modes Test: Test orientation of characters where vo=U (#5/6, 2048 code points in U+1F0E2-2F9EA).</title>
 <link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
-<meta name="assert" content="Test orientation of characters where vo=U (#5/12, 2048 code points in U+17515-17D14)">
+<meta name="assert" content="Test orientation of characters where vo=U (#5/6, 2048 code points in U+1F0E2-2F9EA)">
 <meta name="flags" content="dom font">
 <link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
 <script src="/resources/testharness.js"></script>
@@ -39,71 +39,93 @@ summary {
 <div id="details"></div>
 <div id="container">
 <div data-vo="U" class="test">
-<div data-block="Tangut">
-<div class="line">𗔕𗔖𗔗𗔘𗔙𗔚𗔛𗔜𗔝𗔞𗔟𗔠𗔡𗔢𗔣𗔤𗔥𗔦𗔧𗔨𗔩𗔪𗔫𗔬𗔭𗔮𗔯𗔰𗔱𗔲𗔳𗔴</div>
-<div class="line">𗔵𗔶𗔷𗔸𗔹𗔺𗔻𗔼𗔽𗔾𗔿𗕀𗕁𗕂𗕃𗕄𗕅𗕆𗕇𗕈𗕉𗕊𗕋𗕌𗕍𗕎𗕏𗕐𗕑𗕒𗕓𗕔</div>
-<div class="line">𗕕𗕖𗕗𗕘𗕙𗕚𗕛𗕜𗕝𗕞𗕟𗕠𗕡𗕢𗕣𗕤𗕥𗕦𗕧𗕨𗕩𗕪𗕫𗕬𗕭𗕮𗕯𗕰𗕱𗕲𗕳𗕴</div>
-<div class="line">𗕵𗕶𗕷𗕸𗕹𗕺𗕻𗕼𗕽𗕾𗕿𗖀𗖁𗖂𗖃𗖄𗖅𗖆𗖇𗖈𗖉𗖊𗖋𗖌𗖍𗖎𗖏𗖐𗖑𗖒𗖓𗖔</div>
-<div class="line">𗖕𗖖𗖗𗖘𗖙𗖚𗖛𗖜𗖝𗖞𗖟𗖠𗖡𗖢𗖣𗖤𗖥𗖦𗖧𗖨𗖩𗖪𗖫𗖬𗖭𗖮𗖯𗖰𗖱𗖲𗖳𗖴</div>
-<div class="line">𗖵𗖶𗖷𗖸𗖹𗖺𗖻𗖼𗖽𗖾𗖿𗗀𗗁𗗂𗗃𗗄𗗅𗗆𗗇𗗈𗗉𗗊𗗋𗗌𗗍𗗎𗗏𗗐𗗑𗗒𗗓𗗔</div>
-<div class="line">𗗕𗗖𗗗𗗘𗗙𗗚𗗛𗗜𗗝𗗞𗗟𗗠𗗡𗗢𗗣𗗤𗗥𗗦𗗧𗗨𗗩𗗪𗗫𗗬𗗭𗗮𗗯𗗰𗗱𗗲𗗳𗗴</div>
-<div class="line">𗗵𗗶𗗷𗗸𗗹𗗺𗗻𗗼𗗽𗗾𗗿𗘀𗘁𗘂𗘃𗘄𗘅𗘆𗘇𗘈𗘉𗘊𗘋𗘌𗘍𗘎𗘏𗘐𗘑𗘒𗘓𗘔</div>
-<div class="line">𗘕𗘖𗘗𗘘𗘙𗘚𗘛𗘜𗘝𗘞𗘟𗘠𗘡𗘢𗘣𗘤𗘥𗘦𗘧𗘨𗘩𗘪𗘫𗘬𗘭𗘮𗘯𗘰𗘱𗘲𗘳𗘴</div>
-<div class="line">𗘵𗘶𗘷𗘸𗘹𗘺𗘻𗘼𗘽𗘾𗘿𗙀𗙁𗙂𗙃𗙄𗙅𗙆𗙇𗙈𗙉𗙊𗙋𗙌𗙍𗙎𗙏𗙐𗙑𗙒𗙓𗙔</div>
-<div class="line">𗙕𗙖𗙗𗙘𗙙𗙚𗙛𗙜𗙝𗙞𗙟𗙠𗙡𗙢𗙣𗙤𗙥𗙦𗙧𗙨𗙩𗙪𗙫𗙬𗙭𗙮𗙯𗙰𗙱𗙲𗙳𗙴</div>
-<div class="line">𗙵𗙶𗙷𗙸𗙹𗙺𗙻𗙼𗙽𗙾𗙿𗚀𗚁𗚂𗚃𗚄𗚅𗚆𗚇𗚈𗚉𗚊𗚋𗚌𗚍𗚎𗚏𗚐𗚑𗚒𗚓𗚔</div>
-<div class="line">𗚕𗚖𗚗𗚘𗚙𗚚𗚛𗚜𗚝𗚞𗚟𗚠𗚡𗚢𗚣𗚤𗚥𗚦𗚧𗚨𗚩𗚪𗚫𗚬𗚭𗚮𗚯𗚰𗚱𗚲𗚳𗚴</div>
-<div class="line">𗚵𗚶𗚷𗚸𗚹𗚺𗚻𗚼𗚽𗚾𗚿𗛀𗛁𗛂𗛃𗛄𗛅𗛆𗛇𗛈𗛉𗛊𗛋𗛌𗛍𗛎𗛏𗛐𗛑𗛒𗛓𗛔</div>
-<div class="line">𗛕𗛖𗛗𗛘𗛙𗛚𗛛𗛜𗛝𗛞𗛟𗛠𗛡𗛢𗛣𗛤𗛥𗛦𗛧𗛨𗛩𗛪𗛫𗛬𗛭𗛮𗛯𗛰𗛱𗛲𗛳𗛴</div>
-<div class="line">𗛵𗛶𗛷𗛸𗛹𗛺𗛻𗛼𗛽𗛾𗛿𗜀𗜁𗜂𗜃𗜄𗜅𗜆𗜇𗜈𗜉𗜊𗜋𗜌𗜍𗜎𗜏𗜐𗜑𗜒𗜓𗜔</div>
-<div class="line">𗜕𗜖𗜗𗜘𗜙𗜚𗜛𗜜𗜝𗜞𗜟𗜠𗜡𗜢𗜣𗜤𗜥𗜦𗜧𗜨𗜩𗜪𗜫𗜬𗜭𗜮𗜯𗜰𗜱𗜲𗜳𗜴</div>
-<div class="line">𗜵𗜶𗜷𗜸𗜹𗜺𗜻𗜼𗜽𗜾𗜿𗝀𗝁𗝂𗝃𗝄𗝅𗝆𗝇𗝈𗝉𗝊𗝋𗝌𗝍𗝎𗝏𗝐𗝑𗝒𗝓𗝔</div>
-<div class="line">𗝕𗝖𗝗𗝘𗝙𗝚𗝛𗝜𗝝𗝞𗝟𗝠𗝡𗝢𗝣𗝤𗝥𗝦𗝧𗝨𗝩𗝪𗝫𗝬𗝭𗝮𗝯𗝰𗝱𗝲𗝳𗝴</div>
-<div class="line">𗝵𗝶𗝷𗝸𗝹𗝺𗝻𗝼𗝽𗝾𗝿𗞀𗞁𗞂𗞃𗞄𗞅𗞆𗞇𗞈𗞉𗞊𗞋𗞌𗞍𗞎𗞏𗞐𗞑𗞒𗞓𗞔</div>
-<div class="line">𗞕𗞖𗞗𗞘𗞙𗞚𗞛𗞜𗞝𗞞𗞟𗞠𗞡𗞢𗞣𗞤𗞥𗞦𗞧𗞨𗞩𗞪𗞫𗞬𗞭𗞮𗞯𗞰𗞱𗞲𗞳𗞴</div>
-<div class="line">𗞵𗞶𗞷𗞸𗞹𗞺𗞻𗞼𗞽𗞾𗞿𗟀𗟁𗟂𗟃𗟄𗟅𗟆𗟇𗟈𗟉𗟊𗟋𗟌𗟍𗟎𗟏𗟐𗟑𗟒𗟓𗟔</div>
-<div class="line">𗟕𗟖𗟗𗟘𗟙𗟚𗟛𗟜𗟝𗟞𗟟𗟠𗟡𗟢𗟣𗟤𗟥𗟦𗟧𗟨𗟩𗟪𗟫𗟬𗟭𗟮𗟯𗟰𗟱𗟲𗟳𗟴</div>
-<div class="line">𗟵𗟶𗟷𗟸𗟹𗟺𗟻𗟼𗟽𗟾𗟿𗠀𗠁𗠂𗠃𗠄𗠅𗠆𗠇𗠈𗠉𗠊𗠋𗠌𗠍𗠎𗠏𗠐𗠑𗠒𗠓𗠔</div>
-<div class="line">𗠕𗠖𗠗𗠘𗠙𗠚𗠛𗠜𗠝𗠞𗠟𗠠𗠡𗠢𗠣𗠤𗠥𗠦𗠧𗠨𗠩𗠪𗠫𗠬𗠭𗠮𗠯𗠰𗠱𗠲𗠳𗠴</div>
-<div class="line">𗠵𗠶𗠷𗠸𗠹𗠺𗠻𗠼𗠽𗠾𗠿𗡀𗡁𗡂𗡃𗡄𗡅𗡆𗡇𗡈𗡉𗡊𗡋𗡌𗡍𗡎𗡏𗡐𗡑𗡒𗡓𗡔</div>
-<div class="line">𗡕𗡖𗡗𗡘𗡙𗡚𗡛𗡜𗡝𗡞𗡟𗡠𗡡𗡢𗡣𗡤𗡥𗡦𗡧𗡨𗡩𗡪𗡫𗡬𗡭𗡮𗡯𗡰𗡱𗡲𗡳𗡴</div>
-<div class="line">𗡵𗡶𗡷𗡸𗡹𗡺𗡻𗡼𗡽𗡾𗡿𗢀𗢁𗢂𗢃𗢄𗢅𗢆𗢇𗢈𗢉𗢊𗢋𗢌𗢍𗢎𗢏𗢐𗢑𗢒𗢓𗢔</div>
-<div class="line">𗢕𗢖𗢗𗢘𗢙𗢚𗢛𗢜𗢝𗢞𗢟𗢠𗢡𗢢𗢣𗢤𗢥𗢦𗢧𗢨𗢩𗢪𗢫𗢬𗢭𗢮𗢯𗢰𗢱𗢲𗢳𗢴</div>
-<div class="line">𗢵𗢶𗢷𗢸𗢹𗢺𗢻𗢼𗢽𗢾𗢿𗣀𗣁𗣂𗣃𗣄𗣅𗣆𗣇𗣈𗣉𗣊𗣋𗣌𗣍𗣎𗣏𗣐𗣑𗣒𗣓𗣔</div>
-<div class="line">𗣕𗣖𗣗𗣘𗣙𗣚𗣛𗣜𗣝𗣞𗣟𗣠𗣡𗣢𗣣𗣤𗣥𗣦𗣧𗣨𗣩𗣪𗣫𗣬𗣭𗣮𗣯𗣰𗣱𗣲𗣳𗣴</div>
-<div class="line">𗣵𗣶𗣷𗣸𗣹𗣺𗣻𗣼𗣽𗣾𗣿𗤀𗤁𗤂𗤃𗤄𗤅𗤆𗤇𗤈𗤉𗤊𗤋𗤌𗤍𗤎𗤏𗤐𗤑𗤒𗤓𗤔</div>
-<div class="line">𗤕𗤖𗤗𗤘𗤙𗤚𗤛𗤜𗤝𗤞𗤟𗤠𗤡𗤢𗤣𗤤𗤥𗤦𗤧𗤨𗤩𗤪𗤫𗤬𗤭𗤮𗤯𗤰𗤱𗤲𗤳𗤴</div>
-<div class="line">𗤵𗤶𗤷𗤸𗤹𗤺𗤻𗤼𗤽𗤾𗤿𗥀𗥁𗥂𗥃𗥄𗥅𗥆𗥇𗥈𗥉𗥊𗥋𗥌𗥍𗥎𗥏𗥐𗥑𗥒𗥓𗥔</div>
-<div class="line">𗥕𗥖𗥗𗥘𗥙𗥚𗥛𗥜𗥝𗥞𗥟𗥠𗥡𗥢𗥣𗥤𗥥𗥦𗥧𗥨𗥩𗥪𗥫𗥬𗥭𗥮𗥯𗥰𗥱𗥲𗥳𗥴</div>
-<div class="line">𗥵𗥶𗥷𗥸𗥹𗥺𗥻𗥼𗥽𗥾𗥿𗦀𗦁𗦂𗦃𗦄𗦅𗦆𗦇𗦈𗦉𗦊𗦋𗦌𗦍𗦎𗦏𗦐𗦑𗦒𗦓𗦔</div>
-<div class="line">𗦕𗦖𗦗𗦘𗦙𗦚𗦛𗦜𗦝𗦞𗦟𗦠𗦡𗦢𗦣𗦤𗦥𗦦𗦧𗦨𗦩𗦪𗦫𗦬𗦭𗦮𗦯𗦰𗦱𗦲𗦳𗦴</div>
-<div class="line">𗦵𗦶𗦷𗦸𗦹𗦺𗦻𗦼𗦽𗦾𗦿𗧀𗧁𗧂𗧃𗧄𗧅𗧆𗧇𗧈𗧉𗧊𗧋𗧌𗧍𗧎𗧏𗧐𗧑𗧒𗧓𗧔</div>
-<div class="line">𗧕𗧖𗧗𗧘𗧙𗧚𗧛𗧜𗧝𗧞𗧟𗧠𗧡𗧢𗧣𗧤𗧥𗧦𗧧𗧨𗧩𗧪𗧫𗧬𗧭𗧮𗧯𗧰𗧱𗧲𗧳𗧴</div>
-<div class="line">𗧵𗧶𗧷𗧸𗧹𗧺𗧻𗧼𗧽𗧾𗧿𗨀𗨁𗨂𗨃𗨄𗨅𗨆𗨇𗨈𗨉𗨊𗨋𗨌𗨍𗨎𗨏𗨐𗨑𗨒𗨓𗨔</div>
-<div class="line">𗨕𗨖𗨗𗨘𗨙𗨚𗨛𗨜𗨝𗨞𗨟𗨠𗨡𗨢𗨣𗨤𗨥𗨦𗨧𗨨𗨩𗨪𗨫𗨬𗨭𗨮𗨯𗨰𗨱𗨲𗨳𗨴</div>
-<div class="line">𗨵𗨶𗨷𗨸𗨹𗨺𗨻𗨼𗨽𗨾𗨿𗩀𗩁𗩂𗩃𗩄𗩅𗩆𗩇𗩈𗩉𗩊𗩋𗩌𗩍𗩎𗩏𗩐𗩑𗩒𗩓𗩔</div>
-<div class="line">𗩕𗩖𗩗𗩘𗩙𗩚𗩛𗩜𗩝𗩞𗩟𗩠𗩡𗩢𗩣𗩤𗩥𗩦𗩧𗩨𗩩𗩪𗩫𗩬𗩭𗩮𗩯𗩰𗩱𗩲𗩳𗩴</div>
-<div class="line">𗩵𗩶𗩷𗩸𗩹𗩺𗩻𗩼𗩽𗩾𗩿𗪀𗪁𗪂𗪃𗪄𗪅𗪆𗪇𗪈𗪉𗪊𗪋𗪌𗪍𗪎𗪏𗪐𗪑𗪒𗪓𗪔</div>
-<div class="line">𗪕𗪖𗪗𗪘𗪙𗪚𗪛𗪜𗪝𗪞𗪟𗪠𗪡𗪢𗪣𗪤𗪥𗪦𗪧𗪨𗪩𗪪𗪫𗪬𗪭𗪮𗪯𗪰𗪱𗪲𗪳𗪴</div>
-<div class="line">𗪵𗪶𗪷𗪸𗪹𗪺𗪻𗪼𗪽𗪾𗪿𗫀𗫁𗫂𗫃𗫄𗫅𗫆𗫇𗫈𗫉𗫊𗫋𗫌𗫍𗫎𗫏𗫐𗫑𗫒𗫓𗫔</div>
-<div class="line">𗫕𗫖𗫗𗫘𗫙𗫚𗫛𗫜𗫝𗫞𗫟𗫠𗫡𗫢𗫣𗫤𗫥𗫦𗫧𗫨𗫩𗫪𗫫𗫬𗫭𗫮𗫯𗫰𗫱𗫲𗫳𗫴</div>
-<div class="line">𗫵𗫶𗫷𗫸𗫹𗫺𗫻𗫼𗫽𗫾𗫿𗬀𗬁𗬂𗬃𗬄𗬅𗬆𗬇𗬈𗬉𗬊𗬋𗬌𗬍𗬎𗬏𗬐𗬑𗬒𗬓𗬔</div>
-<div class="line">𗬕𗬖𗬗𗬘𗬙𗬚𗬛𗬜𗬝𗬞𗬟𗬠𗬡𗬢𗬣𗬤𗬥𗬦𗬧𗬨𗬩𗬪𗬫𗬬𗬭𗬮𗬯𗬰𗬱𗬲𗬳𗬴</div>
-<div class="line">𗬵𗬶𗬷𗬸𗬹𗬺𗬻𗬼𗬽𗬾𗬿𗭀𗭁𗭂𗭃𗭄𗭅𗭆𗭇𗭈𗭉𗭊𗭋𗭌𗭍𗭎𗭏𗭐𗭑𗭒𗭓𗭔</div>
-<div class="line">𗭕𗭖𗭗𗭘𗭙𗭚𗭛𗭜𗭝𗭞𗭟𗭠𗭡𗭢𗭣𗭤𗭥𗭦𗭧𗭨𗭩𗭪𗭫𗭬𗭭𗭮𗭯𗭰𗭱𗭲𗭳𗭴</div>
-<div class="line">𗭵𗭶𗭷𗭸𗭹𗭺𗭻𗭼𗭽𗭾𗭿𗮀𗮁𗮂𗮃𗮄𗮅𗮆𗮇𗮈𗮉𗮊𗮋𗮌𗮍𗮎𗮏𗮐𗮑𗮒𗮓𗮔</div>
-<div class="line">𗮕𗮖𗮗𗮘𗮙𗮚𗮛𗮜𗮝𗮞𗮟𗮠𗮡𗮢𗮣𗮤𗮥𗮦𗮧𗮨𗮩𗮪𗮫𗮬𗮭𗮮𗮯𗮰𗮱𗮲𗮳𗮴</div>
-<div class="line">𗮵𗮶𗮷𗮸𗮹𗮺𗮻𗮼𗮽𗮾𗮿𗯀𗯁𗯂𗯃𗯄𗯅𗯆𗯇𗯈𗯉𗯊𗯋𗯌𗯍𗯎𗯏𗯐𗯑𗯒𗯓𗯔</div>
-<div class="line">𗯕𗯖𗯗𗯘𗯙𗯚𗯛𗯜𗯝𗯞𗯟𗯠𗯡𗯢𗯣𗯤𗯥𗯦𗯧𗯨𗯩𗯪𗯫𗯬𗯭𗯮𗯯𗯰𗯱𗯲𗯳𗯴</div>
-<div class="line">𗯵𗯶𗯷𗯸𗯹𗯺𗯻𗯼𗯽𗯾𗯿𗰀𗰁𗰂𗰃𗰄𗰅𗰆𗰇𗰈𗰉𗰊𗰋𗰌𗰍𗰎𗰏𗰐𗰑𗰒𗰓𗰔</div>
-<div class="line">𗰕𗰖𗰗𗰘𗰙𗰚𗰛𗰜𗰝𗰞𗰟𗰠𗰡𗰢𗰣𗰤𗰥𗰦𗰧𗰨𗰩𗰪𗰫𗰬𗰭𗰮𗰯𗰰𗰱𗰲𗰳𗰴</div>
-<div class="line">𗰵𗰶𗰷𗰸𗰹𗰺𗰻𗰼𗰽𗰾𗰿𗱀𗱁𗱂𗱃𗱄𗱅𗱆𗱇𗱈𗱉𗱊𗱋𗱌𗱍𗱎𗱏𗱐𗱑𗱒𗱓𗱔</div>
-<div class="line">𗱕𗱖𗱗𗱘𗱙𗱚𗱛𗱜𗱝𗱞𗱟𗱠𗱡𗱢𗱣𗱤𗱥𗱦𗱧𗱨𗱩𗱪𗱫𗱬𗱭𗱮𗱯𗱰𗱱𗱲𗱳𗱴</div>
-<div class="line">𗱵𗱶𗱷𗱸𗱹𗱺𗱻𗱼𗱽𗱾𗱿𗲀𗲁𗲂𗲃𗲄𗲅𗲆𗲇𗲈𗲉𗲊𗲋𗲌𗲍𗲎𗲏𗲐𗲑𗲒𗲓𗲔</div>
-<div class="line">𗲕𗲖𗲗𗲘𗲙𗲚𗲛𗲜𗲝𗲞𗲟𗲠𗲡𗲢𗲣𗲤𗲥𗲦𗲧𗲨𗲩𗲪𗲫𗲬𗲭𗲮𗲯𗲰𗲱𗲲𗲳𗲴</div>
-<div class="line">𗲵𗲶𗲷𗲸𗲹𗲺𗲻𗲼𗲽𗲾𗲿𗳀𗳁𗳂𗳃𗳄𗳅𗳆𗳇𗳈𗳉𗳊𗳋𗳌𗳍𗳎𗳏𗳐𗳑𗳒𗳓𗳔</div>
-<div class="line">𗳕𗳖𗳗𗳘𗳙𗳚𗳛𗳜𗳝𗳞𗳟𗳠𗳡𗳢𗳣𗳤𗳥𗳦𗳧𗳨𗳩𗳪𗳫𗳬𗳭𗳮𗳯𗳰𗳱𗳲𗳳𗳴</div>
-<div class="line">𗳵𗳶𗳷𗳸𗳹𗳺𗳻𗳼𗳽𗳾𗳿𗴀𗴁𗴂𗴃𗴄𗴅𗴆𗴇𗴈𗴉𗴊𗴋𗴌𗴍𗴎𗴏𗴐𗴑𗴒𗴓𗴔</div>
+<div data-block="Playing">
+<div class="line">🃢🃣🃤🃥🃦🃧🃨🃩🃪🃫🃬🃭🃮🃯🃰🃱🃲🃳🃴🃵</div>
+</div>
+<div data-block="Enclosed">
+<div class="line">🄀🄁🄂🄃🄄🄅🄆🄇🄈🄉🄊🄋🄌🄐🄑🄒🄓🄔🄕🄖🄗🄘🄙🄚🄛🄜🄝🄞🄟🄠🄡🄢</div>
+<div class="line">🄣🄤🄥🄦🄧🄨🄩🄪🄫🄬🄭🄮🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃</div>
+<div class="line">🅄🅅🅆🅇🅈🅉🅊🅋🅌🅍🅎🅏🅐🅑🅒🅓🅔🅕🅖🅗🅘🅙🅚🅛🅜🅝🅞🅟🅠🅡🅢🅣</div>
+<div class="line">🅤🅥🅦🅧🅨🅩🅪🅫🅰🅱🅲🅳🅴🅵🅶🅷🅸🅹🅺🅻🅼🅽🅾🅿🆀🆁🆂🆃🆄🆅🆆🆇</div>
+<div class="line">🆈🆉🆊🆋🆌🆍🆎🆏🆐🆑🆒🆓🆔🆕🆖🆗🆘🆙🆚🆛🆜🆝🆞🆟🆠🆡🆢🆣🆤🆥🆦🆧</div>
+<div class="line">🆨🆩🆪🆫🆬🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿🈂</div>
+<div class="line">🈐🈑🈒🈓🈔🈕🈖🈗🈘🈙🈚🈛🈜🈝🈞🈟🈠🈡🈢🈣🈤🈥🈦🈧🈨🈩🈪🈫🈬🈭🈮🈯</div>
+<div class="line">🈰🈱🈲🈳🈴🈵🈶🈷🈸🈹🈺🈻🉀🉁🉂🉃🉄🉅🉆🉇🉈🉐🉑</div>
+</div>
+<div data-block="Miscellaneous">
+<div class="line">🌀🌁🌂🌃🌄🌅🌆🌇🌈🌉🌊🌋🌌🌍🌎🌏🌐🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜🌝🌞🌟</div>
+<div class="line">🌠🌡🌢🌣🌤🌥🌦🌧🌨🌩🌪🌫🌬🌭🌮🌯🌰🌱🌲🌳🌴🌵🌶🌷🌸🌹🌺🌻🌼🌽🌾🌿</div>
+<div class="line">🍀🍁🍂🍃🍄🍅🍆🍇🍈🍉🍊🍋🍌🍍🍎🍏🍐🍑🍒🍓🍔🍕🍖🍗🍘🍙🍚🍛🍜🍝🍞🍟</div>
+<div class="line">🍠🍡🍢🍣🍤🍥🍦🍧🍨🍩🍪🍫🍬🍭🍮🍯🍰🍱🍲🍳🍴🍵🍶🍷🍸🍹🍺🍻🍼🍽🍾🍿</div>
+<div class="line">🎀🎁🎂🎃🎄🎅🎆🎇🎈🎉🎊🎋🎌🎍🎎🎏🎐🎑🎒🎓🎔🎕🎖🎗🎘🎙🎚🎛🎜🎝🎞🎟</div>
+<div class="line">🎠🎡🎢🎣🎤🎥🎦🎧🎨🎩🎪🎫🎬🎭🎮🎯🎰🎱🎲🎳🎴🎵🎶🎷🎸🎹🎺🎻🎼🎽🎾🎿</div>
+<div class="line">🏀🏁🏂🏃🏄🏅🏆🏇🏈🏉🏊🏋🏌🏍🏎🏏🏐🏑🏒🏓🏔🏕🏖🏗🏘🏙🏚🏛🏜🏝🏞🏟</div>
+<div class="line">🏠🏡🏢🏣🏤🏥🏦🏧🏨🏩🏪🏫🏬🏭🏮🏯🏰🏱🏲🏳🏴🏵🏶🏷🏸🏹🏺🏻🏼🏽🏾🏿</div>
+<div class="line">🐀🐁🐂🐃🐄🐅🐆🐇🐈🐉🐊🐋🐌🐍🐎🐏🐐🐑🐒🐓🐔🐕🐖🐗🐘🐙🐚🐛🐜🐝🐞🐟</div>
+<div class="line">🐠🐡🐢🐣🐤🐥🐦🐧🐨🐩🐪🐫🐬🐭🐮🐯🐰🐱🐲🐳🐴🐵🐶🐷🐸🐹🐺🐻🐼🐽🐾🐿</div>
+<div class="line">👀👁👂👃👄👅👆👇👈👉👊👋👌👍👎👏👐👑👒👓👔👕👖👗👘👙👚👛👜👝👞👟</div>
+<div class="line">👠👡👢👣👤👥👦👧👨👩👪👫👬👭👮👯👰👱👲👳👴👵👶👷👸👹👺👻👼👽👾👿</div>
+<div class="line">💀💁💂💃💄💅💆💇💈💉💊💋💌💍💎💏💐💑💒💓💔💕💖💗💘💙💚💛💜💝💞💟</div>
+<div class="line">💠💡💢💣💤💥💦💧💨💩💪💫💬💭💮💯💰💱💲💳💴💵💶💷💸💹💺💻💼💽💾💿</div>
+<div class="line">📀📁📂📃📄📅📆📇📈📉📊📋📌📍📎📏📐📑📒📓📔📕📖📗📘📙📚📛📜📝📞📟</div>
+<div class="line">📠📡📢📣📤📥📦📧📨📩📪📫📬📭📮📯📰📱📲📳📴📵📶📷📸📹📺📻📼📽📾📿</div>
+<div class="line">🔀🔁🔂🔃🔄🔅🔆🔇🔈🔉🔊🔋🔌🔍🔎🔏🔐🔑🔒🔓🔔🔕🔖🔗🔘🔙🔚🔛🔜🔝🔞🔟</div>
+<div class="line">🔠🔡🔢🔣🔤🔥🔦🔧🔨🔩🔪🔫🔬🔭🔮🔯🔰🔱🔲🔳🔴🔵🔶🔷🔸🔹🔺🔻🔼🔽🔾🔿</div>
+<div class="line">🕀🕁🕂🕃🕄🕅🕆🕇🕈🕉🕊🕋🕌🕍🕎🕏🕐🕑🕒🕓🕔🕕🕖🕗🕘🕙🕚🕛🕜🕝🕞🕟</div>
+<div class="line">🕠🕡🕢🕣🕤🕥🕦🕧🕨🕩🕪🕫🕬🕭🕮🕯🕰🕱🕲🕳🕴🕵🕶🕷🕸🕹🕺🕻🕼🕽🕾🕿</div>
+<div class="line">🖀🖁🖂🖃🖄🖅🖆🖇🖈🖉🖊🖋🖌🖍🖎🖏🖐🖑🖒🖓🖔🖕🖖🖗🖘🖙🖚🖛🖜🖝🖞🖟</div>
+<div class="line">🖠🖡🖢🖣🖤🖥🖦🖧🖨🖩🖪🖫🖬🖭🖮🖯🖰🖱🖲🖳🖴🖵🖶🖷🖸🖹🖺🖻🖼🖽🖾🖿</div>
+<div class="line">🗀🗁🗂🗃🗄🗅🗆🗇🗈🗉🗊🗋🗌🗍🗎🗏🗐🗑🗒🗓🗔🗕🗖🗗🗘🗙🗚🗛🗜🗝🗞🗟</div>
+<div class="line">🗠🗡🗢🗣🗤🗥🗦🗧🗨🗩🗪🗫🗬🗭🗮🗯🗰🗱🗲🗳🗴🗵🗶🗷🗸🗹🗺🗻🗼🗽🗾🗿</div>
+</div>
+<div data-block="Emoticons">
+<div class="line">😀😁😂😃😄😅😆😇😈😉😊😋😌😍😎😏😐😑😒😓😔😕😖😗😘😙😚😛😜😝😞😟</div>
+<div class="line">😠😡😢😣😤😥😦😧😨😩😪😫😬😭😮😯😰😱😲😳😴😵😶😷😸😹😺😻😼😽😾😿</div>
+<div class="line">🙀🙁🙂🙃🙄🙅🙆🙇🙈🙉🙊🙋🙌🙍🙎🙏</div>
+</div>
+<div data-block="Ornamental">
+<div class="line">🙐🙑🙒🙓🙔🙕🙖🙗🙘🙙🙚🙛🙜🙝🙞🙟🙠🙡🙢🙣🙤🙥🙦🙧🙨🙩🙪🙫🙬🙭🙮🙯</div>
+<div class="line">🙰🙱🙲🙳🙴🙵🙶🙷🙸🙹🙺🙻🙼🙽🙾🙿</div>
+</div>
+<div data-block="Transport">
+<div class="line">🚀🚁🚂🚃🚄🚅🚆🚇🚈🚉🚊🚋🚌🚍🚎🚏🚐🚑🚒🚓🚔🚕🚖🚗🚘🚙🚚🚛🚜🚝🚞🚟</div>
+<div class="line">🚠🚡🚢🚣🚤🚥🚦🚧🚨🚩🚪🚫🚬🚭🚮🚯🚰🚱🚲🚳🚴🚵🚶🚷🚸🚹🚺🚻🚼🚽🚾🚿</div>
+<div class="line">🛀🛁🛂🛃🛄🛅🛆🛇🛈🛉🛊🛋🛌🛍🛎🛏🛐🛑🛒🛠🛡🛢🛣🛤🛥🛦🛧🛨🛩🛪🛫🛬</div>
+<div class="line">🛰🛱🛲🛳🛴🛵🛶</div>
+</div>
+<div data-block="Alchemical">
+<div class="line">🜀🜁🜂🜃🜄🜅🜆🜇🜈🜉🜊🜋🜌🜍🜎🜏🜐🜑🜒🜓🜔🜕🜖🜗🜘🜙🜚🜛🜜🜝🜞🜟</div>
+<div class="line">🜠🜡🜢🜣🜤🜥🜦🜧🜨🜩🜪🜫🜬🜭🜮🜯🜰🜱🜲🜳🜴🜵🜶🜷🜸🜹🜺🜻🜼🜽🜾🜿</div>
+<div class="line">🝀🝁🝂🝃🝄🝅🝆🝇🝈🝉🝊🝋🝌🝍🝎🝏🝐🝑🝒🝓🝔🝕🝖🝗🝘🝙🝚🝛🝜🝝🝞🝟</div>
+<div class="line">🝠🝡🝢🝣🝤🝥🝦🝧🝨🝩🝪🝫🝬🝭🝮🝯🝰🝱🝲🝳</div>
+</div>
+<div data-block="Geometric">
+<div class="line">🞀🞁🞂🞃🞄🞅🞆🞇🞈🞉🞊🞋🞌🞍🞎🞏🞐🞑🞒🞓🞔🞕🞖🞗🞘🞙🞚🞛🞜🞝🞞🞟</div>
+<div class="line">🞠🞡🞢🞣🞤🞥🞦🞧🞨🞩🞪🞫🞬🞭🞮🞯🞰🞱🞲🞳🞴🞵🞶🞷🞸🞹🞺🞻🞼🞽🞾🞿</div>
+<div class="line">🟀🟁🟂🟃🟄🟅🟆🟇🟈🟉🟊🟋🟌🟍🟎🟏🟐🟑🟒🟓🟔</div>
+</div>
+<div data-block="Supplemental">
+<div class="line">🤐🤑🤒🤓🤔🤕🤖🤗🤘🤙🤚🤛🤜🤝🤞🤠🤡🤢🤣🤤🤥🤦🤧🤰🤳🤴🤵🤶🤷🤸🤹🤺</div>
+<div class="line">🤻🤼🤽🤾🥀🥁🥂🥃🥄🥅🥆🥇🥈🥉🥊🥋🥐🥑🥒🥓🥔🥕🥖🥗🥘🥙🥚🥛🥜🥝🥞🦀</div>
+<div class="line">🦁🦂🦃🦄🦅🦆🦇🦈🦉🦊🦋🦌🦍🦎🦏🦐🦑🧀</div>
+</div>
+<div data-block="CJK">
+<div class="line">𠀀𪛖𪜀𫜴𫝀𫠝𫠠𬺡丽丸乁𠄢你侮侻倂偺備僧像㒞𠘺免兔兤具𠔜㒹內再𠕋冗</div>
+<div class="line">冤仌冬况𩇟凵刃㓟刻剆割剷㔕勇勉勤勺包匆北卉卑博即卽卿卿卿𠨬灰及叟</div>
+<div class="line">𠭣叫叱吆咞吸呈周咢哶唐啓啣善善喙喫喳嗂圖嘆圗噑噴切壮城埴堍型堲報</div>
+<div class="line">墬𡓤売壷夆多夢奢𡚨𡛪姬娛娧姘婦㛮㛼嬈嬾嬾𡧈寃寘寧寳𡬘寿将当尢㞁屠</div>
+<div class="line">屮峀岍𡷤嵃𡷦嵮嵫嵼巡巢㠯巽帨帽幩㡢𢆃㡼庰庳庶廊𪎒廾𢌱𢌱舁弢弢㣇𣊸</div>
+<div class="line">𦇚形彫㣣徚忍志忹悁㤺㤜悔𢛔惇慈慌慎慌慺憎憲憤憯懞懲懶成戛扝抱拔捐</div>
+<div class="line">𢬌挽拼捨掃揤𢯱搢揅掩㨮摩摾撝摷㩬敏敬𣀊旣書晉㬙暑㬈㫤冒冕最暜肭䏙</div>
+<div class="line">朗望朡杞杓𣏃㭉柺枅桒梅𣑭梎栟椔㮝楂榣槪檨𣚣櫛㰘次𣢧歔㱎歲殟殺殻𣪍</div>
+<div class="line">𡴋𣫺汎𣲼沿泍汧洖派海流浩浸涅𣴞洴港湮㴳滋滇𣻑淹潮𣽞𣾎濆瀹瀞瀛㶖灊</div>
+<div class="line">災灷炭𠔥煅𤉣熜𤎫爨爵牐𤘈犀犕𤜵𤠔獺王㺬玥㺸㺸瑇瑜瑱璅瓊㼛甤𤰶甾𤲒</div>
+<div class="line">異𢆟瘐𤾡𤾸𥁄㿼䀈直𥃳𥃲𥄙𥄳眞真真睊䀹瞋䁆䂖𥐝硎碌磌䃣𥘦祖𥚚𥛅福秫</div>
+<div class="line">䄯穀穊穏𥥼𥪧𥪧竮䈂𥮫篆築䈧𥲀糒䊠糨糣紀𥾆絣䌁緇縂繅䌴𦈨𦉇䍙𦋙罺𦌾</div>
+<div class="line">羕翺者𦓚𦔣聠𦖨聰𣍟䏕育脃䐋脾媵𦞧𦞵𣎓𣎜舁舄辞䑫芑芋芝劳花芳芽苦𦬼</div>
+<div class="line">若茝荣莭茣莽菧著荓菊菌菜𦰶𦵫𦳕䔫蓱蓳蔖𧏊蕤𦼬䕝䕡𦾱𧃒䕫虐虜虧虩蚩</div>
+<div class="line">蚈蜎蛢蝹蜨蝫螆䗗蟡蠁䗹衠衣𧙧裗裞䘵裺㒻𧢮𧥦䚾䛇誠諭變豕𧲨貫賁贛起</div>
+<div class="line">𧼯𠠄跋趼跰𠣞軔輸𨗒𨗭邔郱鄑𨜮鄛鈸鋗鋘鉼</div>
 </div>
 </div>
 </div>

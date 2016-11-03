@@ -11,7 +11,7 @@ module.exports = (function () {
     url: {
       blocks: "http://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt",
       gc: "http://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt",
-      vo: "http://www.unicode.org/Public/vertical/revision-13/VerticalOrientation-13.txt",
+      vo: "http://www.unicode.org/Public/vertical/revision-16/VerticalOrientation-16.txt",
     },
     get: function (source, formatter) {
       formatter = formatter || this.formatAsArray;
@@ -39,6 +39,18 @@ module.exports = (function () {
         });
       }
       return deferred.promise;
+    },
+    copyToLocal: function () {
+      for (let key in unicodeData.url) {
+        let source = unicodeData.url[key];
+        let basename = path.basename(url.parse(source).path);
+        let local = "ucd/" + basename;
+        console.log(`Copying ${key}: ${source} to ${local}`);
+        http.get(source, function (res) {
+          res.pipe(fs.createWriteStream(local));
+          console.log(`Done ${key}: ${source} to ${local}`);
+        });
+      }
     },
     parseLine: function (line, formatter, results) {
       if (!line.length || line[0] == "#")

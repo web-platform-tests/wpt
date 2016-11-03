@@ -67,6 +67,11 @@ gulp.task("text-orientation", function () {
   ]).then(reload);
 });
 
+gulp.task("update", function () {
+  const unicodeData = require('./unicode-data.js');
+  unicodeData.copyToLocal();
+});
+
 function gulpTaskFromTemplateWithAffixes(name, suffix, min, lim) {
   if (argv.nocombo && min < 0)
     min = 0;

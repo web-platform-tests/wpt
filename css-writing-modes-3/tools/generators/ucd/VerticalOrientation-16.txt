@@ -1,21 +1,25 @@
-# VerticalOrientation-13.txt
-# Date: 2014-09-03, 17:30:00 GMT [EM, KI, LI]
+# VerticalOrientation-16.txt
+# Date: 2016-07-23, 01:00:00 GMT [EM, KI, LI]
+# © 2016 Unicode®, Inc.
+# Unicode and the Unicode Logo are registered trademarks of
+# Unicode, Inc. in the U.S. and other countries.
+# For terms of use, see http://www.unicode.org/terms_of_use.html
 #
-# Note: This data file is a draft which accompanies Revision 13 of
-# the Proposed Update UTR #50.
+# Note: This data file accompanies Revision 16 of Unicode Technical
+# Report #50, which has the status of Proposed Update. The approved
+# version of this data file will appear in the subsequent Revision 17.
 #
 # Vertical_Orientation (vo) Property
 #
 # This file defines the Vertical_Orientation property. The file is not
 # formally part of the Unicode Character Database.
 #
-# Copyright (c) 1991-2014 Unicode, Inc.
-# For terms of use, see http://www.unicode.org/terms_of_use.html
-# For documentation, see UTR #50: Unicode Vertical Text Layout,
-# Revision 13, at http://www.unicode.org/reports/tr50/tr50-13.html
+# For documentation, see Revision 16 of
+# Unicode Technical Report #50: Unicode Vertical Text Layout,
+# at http://www.unicode.org/reports/tr50/tr50-16.html
 #
 # The character repertoire of this revision is the repertoire of
-# Unicode Version 7.0.
+# Unicode Version 9.0.
 #
 # The format of the file is two fields separated by a semicolon.
 # Field 0: Unicode code point value or range of code point values in
@@ -124,7 +128,6 @@
 07C0..07FF ; R
 0800..083F ; R
 0840..085F ; R
-0860..089F ; R
 08A0..08FF ; R
 0900..097F ; R
 0980..09FF ; R
@@ -168,6 +171,7 @@
 1BC0..1BFF ; R
 1C00..1C4F ; R
 1C50..1C7F ; R
+1C80..1C8F ; R
 1CC0..1CCF ; R
 1CD0..1CFF ; R
 1D00..1D7F ; R
@@ -345,7 +349,9 @@
 214D ; U
 214E ; R
 214F ; U
-2150..218F ; U
+2150..2189 ; U
+218A..218B ; R
+218C..218F ; U
 2190..21FF ; R
 2200..221D ; R
 221E ; U
@@ -410,7 +416,9 @@
 2B30..2B4F ; R
 2B50..2B59 ; U
 2B5A..2BB7 ; R
-2BB8..2BFF ; U
+2BB8..2BEB ; U
+2BEC..2BEF ; R
+2BF0..2BFF ; U
 2C00..2C5F ; R
 2C60..2C7F ; R
 2C80..2CFF ; R
@@ -429,8 +437,8 @@
 2E2A..2E39 ; R
 2E3A ; R
 2E3B ; R
-2E3C..2E42 ; R
-2E43..2E7F ; R
+2E3C..2E44 ; R
+2E45..2E7F ; R
 2E80..2EFF ; U
 2F00..2FDF ; U
 2FE0..2FEF ; U
@@ -920,6 +928,7 @@ FFFF ; R
 10400..1044F ; R
 10450..1047F ; R
 10480..104AF ; R
+104B0..104FF ; R
 10500..1052F ; R
 10530..1056F ; R
 10600..1077F ; R
@@ -927,19 +936,21 @@ FFFF ; R
 10840..1085F ; R
 10860..1087F ; R
 10880..108AF ; R
-10A80..10A9F ; R
+108E0..108FF ; R
 10900..1091F ; R
 10920..1093F ; R
 10980..1099F ; U
 109A0..109FF ; R
 10A00..10A5F ; R
 10A60..10A7F ; R
+10A80..10A9F ; R
 10AC0..10AFF ; R
 10B00..10B3F ; R
 10B40..10B5F ; R
 10B60..10B7F ; R
 10B80..10BAF ; R
 10C00..10C4F ; R
+10C80..10CFF ; R
 10E60..10E7F ; R
 11000..1107F ; R
 11080..110CF ; R
@@ -949,22 +960,33 @@ FFFF ; R
 11180..111DF ; R
 111E0..111FF ; R
 11200..1124F ; R
+11280..112AF ; R
 112B0..112FF ; R
 11300..1137F ; R
+11400..1147F ; R
 11480..114DF ; R
 11580..115FF ; U
 11600..1165F ; R
+11660..1167F ; R
 11680..116CF ; R
+11700..1173F ; R
 118A0..118FF ; R
 11AC0..11AFF ; R
+11C00..11C6F ; R
+11C70..11CBF ; R
 12000..123FF ; R
 12400..1247F ; R
+12480..1254F ; R
 13000..1342F ; U
+14400..1467F ; U
 16800..16A3F ; R
 16A40..16A6F ; R
 16AD0..16AFF ; R
 16B00..16B8F ; R
 16F00..16F9F ; R
+16FE0..16FFF ; U
+17000..187FF ; U
+18800..18AFF ; U
 1B000..1B0FF ; U
 1BC00..1BC9F ; R
 1BCA0..1BCAF ; R
@@ -974,8 +996,11 @@ FFFF ; R
 1D300..1D35F ; U
 1D360..1D37F ; U
 1D400..1D7FF ; R
-1EE00..1EEFF ; R
+1D800..1DAAF ; U
+1E000..1E02F ; R
 1E800..1E8DF ; R
+1E900..1E95F ; R
+1EE00..1EEFF ; R
 1F000..1F02F ; U
 1F030..1F09F ; U
 1F0A0..1F0FF ; U
@@ -990,11 +1015,13 @@ FFFF ; R
 1F700..1F77F ; U
 1F780..1F7FF ; U
 1F800..1F8FF ; R
+1F900..1F9FF ; U
 20000..2A6DF ; U
 2A6E0..2A6FF ; U
 2A700..2B73F ; U
 2B740..2B81F ; U
-2B820..2F7FF ; U
+2B820..2CEAF ; U
+2CEB0..2F7FF ; U
 2F800..2FA1F ; U
 2FA20..2FFFD ; U
 30000..3FFFD ; U

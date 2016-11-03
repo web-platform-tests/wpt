@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Writing Modes Test: Test orientation of characters where vo=U (#7/12, 2048 code points in U+18515-1D812).</title>
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
+<meta name="assert" content="Test orientation of characters where vo=U (#7/12, 2048 code points in U+18515-1D812)">
+<meta name="flags" content="dom font">
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+@font-face {
+    font-family: "orientation";
+    src: url("support/adobe-fonts/CSSHWOrientationTest.otf");
+}
+.test {
+    font: 16px/1 "orientation";
+    height: 17em;
+    writing-mode: vertical-rl;
+}
+.line {
+    white-space: pre;
+}
+.U {
+    text-orientation: upright;
+}
+.R {
+    text-orientation: sideways;
+}
+#details {
+    margin: 1em .5em;
+}
+summary {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: .5em;
+}
+</style>
+<div id="log"></div>
+<div id="details"></div>
+<div id="container">
+<div data-vo="U" class="test">
+<div data-block="Tangut">
+<div class="line">𘔕𘔖𘔗𘔘𘔙𘔚𘔛𘔜𘔝𘔞𘔟𘔠𘔡𘔢𘔣𘔤𘔥𘔦𘔧𘔨𘔩𘔪𘔫𘔬𘔭𘔮𘔯𘔰𘔱𘔲𘔳𘔴</div>
+<div class="line">𘔵𘔶𘔷𘔸𘔹𘔺𘔻𘔼𘔽𘔾𘔿𘕀𘕁𘕂𘕃𘕄𘕅𘕆𘕇𘕈𘕉𘕊𘕋𘕌𘕍𘕎𘕏𘕐𘕑𘕒𘕓𘕔</div>
+<div class="line">𘕕𘕖𘕗𘕘𘕙𘕚𘕛𘕜𘕝𘕞𘕟𘕠𘕡𘕢𘕣𘕤𘕥𘕦𘕧𘕨𘕩𘕪𘕫𘕬𘕭𘕮𘕯𘕰𘕱𘕲𘕳𘕴</div>
+<div class="line">𘕵𘕶𘕷𘕸𘕹𘕺𘕻𘕼𘕽𘕾𘕿𘖀𘖁𘖂𘖃𘖄𘖅𘖆𘖇𘖈𘖉𘖊𘖋𘖌𘖍𘖎𘖏𘖐𘖑𘖒𘖓𘖔</div>
+<div class="line">𘖕𘖖𘖗𘖘𘖙𘖚𘖛𘖜𘖝𘖞𘖟𘖠𘖡𘖢𘖣𘖤𘖥𘖦𘖧𘖨𘖩𘖪𘖫𘖬𘖭𘖮𘖯𘖰𘖱𘖲𘖳𘖴</div>
+<div class="line">𘖵𘖶𘖷𘖸𘖹𘖺𘖻𘖼𘖽𘖾𘖿𘗀𘗁𘗂𘗃𘗄𘗅𘗆𘗇𘗈𘗉𘗊𘗋𘗌𘗍𘗎𘗏𘗐𘗑𘗒𘗓𘗔</div>
+<div class="line">𘗕𘗖𘗗𘗘𘗙𘗚𘗛𘗜𘗝𘗞𘗟𘗠𘗡𘗢𘗣𘗤𘗥𘗦𘗧𘗨𘗩𘗪𘗫𘗬𘗭𘗮𘗯𘗰𘗱𘗲𘗳𘗴</div>
+<div class="line">𘗵𘗶𘗷𘗸𘗹𘗺𘗻𘗼𘗽𘗾𘗿𘘀𘘁𘘂𘘃𘘄𘘅𘘆𘘇𘘈𘘉𘘊𘘋𘘌𘘍𘘎𘘏𘘐𘘑𘘒𘘓𘘔</div>
+<div class="line">𘘕𘘖𘘗𘘘𘘙𘘚𘘛𘘜𘘝𘘞𘘟𘘠𘘡𘘢𘘣𘘤𘘥𘘦𘘧𘘨𘘩𘘪𘘫𘘬𘘭𘘮𘘯𘘰𘘱𘘲𘘳𘘴</div>
+<div class="line">𘘵𘘶𘘷𘘸𘘹𘘺𘘻𘘼𘘽𘘾𘘿𘙀𘙁𘙂𘙃𘙄𘙅𘙆𘙇𘙈𘙉𘙊𘙋𘙌𘙍𘙎𘙏𘙐𘙑𘙒𘙓𘙔</div>
+<div class="line">𘙕𘙖𘙗𘙘𘙙𘙚𘙛𘙜𘙝𘙞𘙟𘙠𘙡𘙢𘙣𘙤𘙥𘙦𘙧𘙨𘙩𘙪𘙫𘙬𘙭𘙮𘙯𘙰𘙱𘙲𘙳𘙴</div>
+<div class="line">𘙵𘙶𘙷𘙸𘙹𘙺𘙻𘙼𘙽𘙾𘙿𘚀𘚁𘚂𘚃𘚄𘚅𘚆𘚇𘚈𘚉𘚊𘚋𘚌𘚍𘚎𘚏𘚐𘚑𘚒𘚓𘚔</div>
+<div class="line">𘚕𘚖𘚗𘚘𘚙𘚚𘚛𘚜𘚝𘚞𘚟𘚠𘚡𘚢𘚣𘚤𘚥𘚦𘚧𘚨𘚩𘚪𘚫𘚬𘚭𘚮𘚯𘚰𘚱𘚲𘚳𘚴</div>
+<div class="line">𘚵𘚶𘚷𘚸𘚹𘚺𘚻𘚼𘚽𘚾𘚿𘛀𘛁𘛂𘛃𘛄𘛅𘛆𘛇𘛈𘛉𘛊𘛋𘛌𘛍𘛎𘛏𘛐𘛑𘛒𘛓𘛔</div>
+<div class="line">𘛕𘛖𘛗𘛘𘛙𘛚𘛛𘛜𘛝𘛞𘛟𘛠𘛡𘛢𘛣𘛤𘛥𘛦𘛧𘛨𘛩𘛪𘛫𘛬𘛭𘛮𘛯𘛰𘛱𘛲𘛳𘛴</div>
+<div class="line">𘛵𘛶𘛷𘛸𘛹𘛺𘛻𘛼𘛽𘛾𘛿𘜀𘜁𘜂𘜃𘜄𘜅𘜆𘜇𘜈𘜉𘜊𘜋𘜌𘜍𘜎𘜏𘜐𘜑𘜒𘜓𘜔</div>
+<div class="line">𘜕𘜖𘜗𘜘𘜙𘜚𘜛𘜜𘜝𘜞𘜟𘜠𘜡𘜢𘜣𘜤𘜥𘜦𘜧𘜨𘜩𘜪𘜫𘜬𘜭𘜮𘜯𘜰𘜱𘜲𘜳𘜴</div>
+<div class="line">𘜵𘜶𘜷𘜸𘜹𘜺𘜻𘜼𘜽𘜾𘜿𘝀𘝁𘝂𘝃𘝄𘝅𘝆𘝇𘝈𘝉𘝊𘝋𘝌𘝍𘝎𘝏𘝐𘝑𘝒𘝓𘝔</div>
+<div class="line">𘝕𘝖𘝗𘝘𘝙𘝚𘝛𘝜𘝝𘝞𘝟𘝠𘝡𘝢𘝣𘝤𘝥𘝦𘝧𘝨𘝩𘝪𘝫𘝬𘝭𘝮𘝯𘝰𘝱𘝲𘝳𘝴</div>
+<div class="line">𘝵𘝶𘝷𘝸𘝹𘝺𘝻𘝼𘝽𘝾𘝿𘞀𘞁𘞂𘞃𘞄𘞅𘞆𘞇𘞈𘞉𘞊𘞋𘞌𘞍𘞎𘞏𘞐𘞑𘞒𘞓𘞔</div>
+<div class="line">𘞕𘞖𘞗𘞘𘞙𘞚𘞛𘞜𘞝𘞞𘞟𘞠𘞡𘞢𘞣𘞤𘞥𘞦𘞧𘞨𘞩𘞪𘞫𘞬𘞭𘞮𘞯𘞰𘞱𘞲𘞳𘞴</div>
+<div class="line">𘞵𘞶𘞷𘞸𘞹𘞺𘞻𘞼𘞽𘞾𘞿𘟀𘟁𘟂𘟃𘟄𘟅𘟆𘟇𘟈𘟉𘟊𘟋𘟌𘟍𘟎𘟏𘟐𘟑𘟒𘟓𘟔</div>
+<div class="line">𘟕𘟖𘟗𘟘𘟙𘟚𘟛𘟜𘟝𘟞𘟟𘟠𘟡𘟢𘟣𘟤𘟥𘟦𘟧𘟨𘟩𘟪𘟫𘟬𘠀𘠁𘠂𘠃𘠄𘠅𘠆𘠇</div>
+<div class="line">𘠈𘠉𘠊𘠋𘠌𘠍𘠎𘠏𘠐𘠑𘠒𘠓𘠔𘠕𘠖𘠗𘠘𘠙𘠚𘠛𘠜𘠝𘠞𘠟𘠠𘠡𘠢𘠣𘠤𘠥𘠦𘠧</div>
+<div class="line">𘠨𘠩𘠪𘠫𘠬𘠭𘠮𘠯𘠰𘠱𘠲𘠳𘠴𘠵𘠶𘠷𘠸𘠹𘠺𘠻𘠼𘠽𘠾𘠿𘡀𘡁𘡂𘡃𘡄𘡅𘡆𘡇</div>
+<div class="line">𘡈𘡉𘡊𘡋𘡌𘡍𘡎𘡏𘡐𘡑𘡒𘡓𘡔𘡕𘡖𘡗𘡘𘡙𘡚𘡛𘡜𘡝𘡞𘡟𘡠𘡡𘡢𘡣𘡤𘡥𘡦𘡧</div>
+<div class="line">𘡨𘡩𘡪𘡫𘡬𘡭𘡮𘡯𘡰𘡱𘡲𘡳𘡴𘡵𘡶𘡷𘡸𘡹𘡺𘡻𘡼𘡽𘡾𘡿𘢀𘢁𘢂𘢃𘢄𘢅𘢆𘢇</div>
+<div class="line">𘢈𘢉𘢊𘢋𘢌𘢍𘢎𘢏𘢐𘢑𘢒𘢓𘢔𘢕𘢖𘢗𘢘𘢙𘢚𘢛𘢜𘢝𘢞𘢟𘢠𘢡𘢢𘢣𘢤𘢥𘢦𘢧</div>
+<div class="line">𘢨𘢩𘢪𘢫𘢬𘢭𘢮𘢯𘢰𘢱𘢲𘢳𘢴𘢵𘢶𘢷𘢸𘢹𘢺𘢻𘢼𘢽𘢾𘢿𘣀𘣁𘣂𘣃𘣄𘣅𘣆𘣇</div>
+<div class="line">𘣈𘣉𘣊𘣋𘣌𘣍𘣎𘣏𘣐𘣑𘣒𘣓𘣔𘣕𘣖𘣗𘣘𘣙𘣚𘣛𘣜𘣝𘣞𘣟𘣠𘣡𘣢𘣣𘣤𘣥𘣦𘣧</div>
+<div class="line">𘣨𘣩𘣪𘣫𘣬𘣭𘣮𘣯𘣰𘣱𘣲𘣳𘣴𘣵𘣶𘣷𘣸𘣹𘣺𘣻𘣼𘣽𘣾𘣿𘤀𘤁𘤂𘤃𘤄𘤅𘤆𘤇</div>
+<div class="line">𘤈𘤉𘤊𘤋𘤌𘤍𘤎𘤏𘤐𘤑𘤒𘤓𘤔𘤕𘤖𘤗𘤘𘤙𘤚𘤛𘤜𘤝𘤞𘤟𘤠𘤡𘤢𘤣𘤤𘤥𘤦𘤧</div>
+<div class="line">𘤨𘤩𘤪𘤫𘤬𘤭𘤮𘤯𘤰𘤱𘤲𘤳𘤴𘤵𘤶𘤷𘤸𘤹𘤺𘤻𘤼𘤽𘤾𘤿𘥀𘥁𘥂𘥃𘥄𘥅𘥆𘥇</div>
+<div class="line">𘥈𘥉𘥊𘥋𘥌𘥍𘥎𘥏𘥐𘥑𘥒𘥓𘥔𘥕𘥖𘥗𘥘𘥙𘥚𘥛𘥜𘥝𘥞𘥟𘥠𘥡𘥢𘥣𘥤𘥥𘥦𘥧</div>
+<div class="line">𘥨𘥩𘥪𘥫𘥬𘥭𘥮𘥯𘥰𘥱𘥲𘥳𘥴𘥵𘥶𘥷𘥸𘥹𘥺𘥻𘥼𘥽𘥾𘥿𘦀𘦁𘦂𘦃𘦄𘦅𘦆𘦇</div>
+<div class="line">𘦈𘦉𘦊𘦋𘦌𘦍𘦎𘦏𘦐𘦑𘦒𘦓𘦔𘦕𘦖𘦗𘦘𘦙𘦚𘦛𘦜𘦝𘦞𘦟𘦠𘦡𘦢𘦣𘦤𘦥𘦦𘦧</div>
+<div class="line">𘦨𘦩𘦪𘦫𘦬𘦭𘦮𘦯𘦰𘦱𘦲𘦳𘦴𘦵𘦶𘦷𘦸𘦹𘦺𘦻𘦼𘦽𘦾𘦿𘧀𘧁𘧂𘧃𘧄𘧅𘧆𘧇</div>
+<div class="line">𘧈𘧉𘧊𘧋𘧌𘧍𘧎𘧏𘧐𘧑𘧒𘧓𘧔𘧕𘧖𘧗𘧘𘧙𘧚𘧛𘧜𘧝𘧞𘧟𘧠𘧡𘧢𘧣𘧤𘧥𘧦𘧧</div>
+<div class="line">𘧨𘧩𘧪𘧫𘧬𘧭𘧮𘧯𘧰𘧱𘧲𘧳𘧴𘧵𘧶𘧷𘧸𘧹𘧺𘧻𘧼𘧽𘧾𘧿𘨀𘨁𘨂𘨃𘨄𘨅𘨆𘨇</div>
+<div class="line">𘨈𘨉𘨊𘨋𘨌𘨍𘨎𘨏𘨐𘨑𘨒𘨓𘨔𘨕𘨖𘨗𘨘𘨙𘨚𘨛𘨜𘨝𘨞𘨟𘨠𘨡𘨢𘨣𘨤𘨥𘨦𘨧</div>
+<div class="line">𘨨𘨩𘨪𘨫𘨬𘨭𘨮𘨯𘨰𘨱𘨲𘨳𘨴𘨵𘨶𘨷𘨸𘨹𘨺𘨻𘨼𘨽𘨾𘨿𘩀𘩁𘩂𘩃𘩄𘩅𘩆𘩇</div>
+<div class="line">𘩈𘩉𘩊𘩋𘩌𘩍𘩎𘩏𘩐𘩑𘩒𘩓𘩔𘩕𘩖𘩗𘩘𘩙𘩚𘩛𘩜𘩝𘩞𘩟𘩠𘩡𘩢𘩣𘩤𘩥𘩦𘩧</div>
+<div class="line">𘩨𘩩𘩪𘩫𘩬𘩭𘩮𘩯𘩰𘩱𘩲𘩳𘩴𘩵𘩶𘩷𘩸𘩹𘩺𘩻𘩼𘩽𘩾𘩿𘪀𘪁𘪂𘪃𘪄𘪅𘪆𘪇</div>
+<div class="line">𘪈𘪉𘪊𘪋𘪌𘪍𘪎𘪏𘪐𘪑𘪒𘪓𘪔𘪕𘪖𘪗𘪘𘪙𘪚𘪛𘪜𘪝𘪞𘪟𘪠𘪡𘪢𘪣𘪤𘪥𘪦𘪧</div>
+<div class="line">𘪨𘪩𘪪𘪫𘪬𘪭𘪮𘪯𘪰𘪱𘪲𘪳𘪴𘪵𘪶𘪷𘪸𘪹𘪺𘪻𘪼𘪽𘪾𘪿𘫀𘫁𘫂𘫃𘫄𘫅𘫆𘫇</div>
+<div class="line">𘫈𘫉𘫊𘫋𘫌𘫍𘫎𘫏𘫐𘫑𘫒𘫓𘫔𘫕𘫖𘫗𘫘𘫙𘫚𘫛𘫜𘫝𘫞𘫟𘫠𘫡𘫢𘫣𘫤𘫥𘫦𘫧</div>
+<div class="line">𘫨𘫩𘫪𘫫𘫬𘫭𘫮𘫯𘫰𘫱𘫲</div>
+</div>
+<div data-block="Kana">
+<div class="line">𛀀𛀁</div>
+</div>
+<div data-block="Byzantine">
+<div class="line">𝀀𝀁𝀂𝀃𝀄𝀅𝀆𝀇𝀈𝀉𝀊𝀋𝀌𝀍𝀎𝀏𝀐𝀑𝀒𝀓𝀔𝀕𝀖𝀗𝀘𝀙𝀚𝀛𝀜𝀝𝀞𝀟</div>
+<div class="line">𝀠𝀡𝀢𝀣𝀤𝀥𝀦𝀧𝀨𝀩𝀪𝀫𝀬𝀭𝀮𝀯𝀰𝀱𝀲𝀳𝀴𝀵𝀶𝀷𝀸𝀹𝀺𝀻𝀼𝀽𝀾𝀿</div>
+<div class="line">𝁀𝁁𝁂𝁃𝁄𝁅𝁆𝁇𝁈𝁉𝁊𝁋𝁌𝁍𝁎𝁏𝁐𝁑𝁒𝁓𝁔𝁕𝁖𝁗𝁘𝁙𝁚𝁛𝁜𝁝𝁞𝁟</div>
+<div class="line">𝁠𝁡𝁢𝁣𝁤𝁥𝁦𝁧𝁨𝁩𝁪𝁫𝁬𝁭𝁮𝁯𝁰𝁱𝁲𝁳𝁴𝁵𝁶𝁷𝁸𝁹𝁺𝁻𝁼𝁽𝁾𝁿</div>
+<div class="line">𝂀𝂁𝂂𝂃𝂄𝂅𝂆𝂇𝂈𝂉𝂊𝂋𝂌𝂍𝂎𝂏𝂐𝂑𝂒𝂓𝂔𝂕𝂖𝂗𝂘𝂙𝂚𝂛𝂜𝂝𝂞𝂟</div>
+<div class="line">𝂠𝂡𝂢𝂣𝂤𝂥𝂦𝂧𝂨𝂩𝂪𝂫𝂬𝂭𝂮𝂯𝂰𝂱𝂲𝂳𝂴𝂵𝂶𝂷𝂸𝂹𝂺𝂻𝂼𝂽𝂾𝂿</div>
+<div class="line">𝃀𝃁𝃂𝃃𝃄𝃅𝃆𝃇𝃈𝃉𝃊𝃋𝃌𝃍𝃎𝃏𝃐𝃑𝃒𝃓𝃔𝃕𝃖𝃗𝃘𝃙𝃚𝃛𝃜𝃝𝃞𝃟</div>
+<div class="line">𝃠𝃡𝃢𝃣𝃤𝃥𝃦𝃧𝃨𝃩𝃪𝃫𝃬𝃭𝃮𝃯𝃰𝃱𝃲𝃳𝃴𝃵</div>
+</div>
+<div data-block="Musical">
+<div class="line">𝄀𝄁𝄂𝄃𝄄𝄅𝄆𝄇𝄈𝄉𝄊𝄋𝄌𝄍𝄎𝄏𝄐𝄑𝄒𝄓𝄔𝄕𝄖𝄗𝄘𝄙𝄚𝄛𝄜𝄝𝄞𝄟</div>
+<div class="line">𝄠𝄡𝄢𝄣𝄤𝄥𝄦𝄩𝄪𝄫𝄬𝄭𝄮𝄯𝄰𝄱𝄲𝄳𝄴𝄵𝄶𝄷𝄸𝄹𝄺𝄻𝄼𝄽𝄾𝄿𝅀𝅁</div>
+<div class="line">𝅂𝅃𝅄𝅅𝅆𝅇𝅈𝅉𝅊𝅋𝅌𝅍𝅎𝅏𝅐𝅑𝅒𝅓𝅔𝅕𝅖𝅗𝅘𝅙𝅚𝅛𝅜𝅝𝅗𝅥𝅘𝅥𝅘𝅥𝅮𝅘𝅥𝅯</div>
+<div class="line">𝅘𝅥𝅰𝅘𝅥𝅱𝅘𝅥𝅲𝅪𝅫𝅬𝆃𝆄𝆌𝆍𝆎𝆏𝆐𝆑𝆒𝆓𝆔𝆕𝆖𝆗𝆘𝆙𝆚𝆛𝆜𝆝𝆞𝆟𝆠𝆡𝆢𝆣</div>
+<div class="line">𝆤𝆥𝆦𝆧𝆨𝆩𝆮𝆯𝆰𝆱𝆲𝆳𝆴𝆵𝆶𝆷𝆸𝆹𝆺𝆹𝅥𝆺𝅥𝆹𝅥𝅮𝆺𝅥𝅮𝆹𝅥𝅯𝆺𝅥𝅯𝇁𝇂𝇃𝇄𝇅𝇆𝇇</div>
+<div class="line">𝇈𝇉𝇊𝇋𝇌𝇍𝇎𝇏𝇐𝇑𝇒𝇓𝇔𝇕𝇖𝇗𝇘𝇙𝇚𝇛𝇜𝇝𝇞𝇟𝇠𝇡𝇢𝇣𝇤𝇥𝇦𝇧</div>
+<div class="line">𝇨</div>
+</div>
+<div data-block="Tai">
+<div class="line">𝌀𝌁𝌂𝌃𝌄𝌅𝌆𝌇𝌈𝌉𝌊𝌋𝌌𝌍𝌎𝌏𝌐𝌑𝌒𝌓𝌔𝌕𝌖𝌗𝌘𝌙𝌚𝌛𝌜𝌝𝌞𝌟</div>
+<div class="line">𝌠𝌡𝌢𝌣𝌤𝌥𝌦𝌧𝌨𝌩𝌪𝌫𝌬𝌭𝌮𝌯𝌰𝌱𝌲𝌳𝌴𝌵𝌶𝌷𝌸𝌹𝌺𝌻𝌼𝌽𝌾𝌿</div>
+<div class="line">𝍀𝍁𝍂𝍃𝍄𝍅𝍆𝍇𝍈𝍉𝍊𝍋𝍌𝍍𝍎𝍏𝍐𝍑𝍒𝍓𝍔𝍕𝍖</div>
+</div>
+<div data-block="Counting">
+<div class="line">𝍠𝍡𝍢𝍣𝍤𝍥𝍦𝍧𝍨𝍩𝍪𝍫𝍬𝍭𝍮𝍯𝍰𝍱</div>
+</div>
+<div data-block="Sutton">
+<div class="line">𝠀𝠁𝠂𝠃𝠄𝠅𝠆𝠇𝠈𝠉𝠊𝠋𝠌𝠍𝠎𝠏𝠐𝠑𝠒</div>
+</div>
+</div>
+</div>
+<script src="support/text-orientation.js"></script>

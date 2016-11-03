@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Writing Modes Test: Test orientation of characters where vo=U (#12/12, 399 code points in U+2F88F-2FA1D).</title>
+<link rel="help" href="http://www.w3.org/TR/css-writing-modes-3/#text-orientation">
+<meta name="assert" content="Test orientation of characters where vo=U (#12/12, 399 code points in U+2F88F-2FA1D)">
+<meta name="flags" content="dom font">
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+@font-face {
+    font-family: "orientation";
+    src: url("support/adobe-fonts/CSSHWOrientationTest.otf");
+}
+.test {
+    font: 16px/1 "orientation";
+    height: 17em;
+    writing-mode: vertical-rl;
+}
+.line {
+    white-space: pre;
+}
+.U {
+    text-orientation: upright;
+}
+.R {
+    text-orientation: sideways;
+}
+#details {
+    margin: 1em .5em;
+}
+summary {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: .5em;
+}
+</style>
+<div id="log"></div>
+<div id="details"></div>
+<div id="container">
+<div data-vo="U" class="test">
+<div data-block="CJK">
+<div class="line">𪎒廾𢌱𢌱舁弢弢㣇𣊸𦇚形彫㣣徚忍志忹悁㤺㤜悔𢛔惇慈慌慎慌慺憎憲憤憯</div>
+<div class="line">懞懲懶成戛扝抱拔捐𢬌挽拼捨掃揤𢯱搢揅掩㨮摩摾撝摷㩬敏敬𣀊旣書晉㬙</div>
+<div class="line">暑㬈㫤冒冕最暜肭䏙朗望朡杞杓𣏃㭉柺枅桒梅𣑭梎栟椔㮝楂榣槪檨𣚣櫛㰘</div>
+<div class="line">次𣢧歔㱎歲殟殺殻𣪍𡴋𣫺汎𣲼沿泍汧洖派海流浩浸涅𣴞洴港湮㴳滋滇𣻑淹</div>
+<div class="line">潮𣽞𣾎濆瀹瀞瀛㶖灊災灷炭𠔥煅𤉣熜𤎫爨爵牐𤘈犀犕𤜵𤠔獺王㺬玥㺸㺸瑇</div>
+<div class="line">瑜瑱璅瓊㼛甤𤰶甾𤲒異𢆟瘐𤾡𤾸𥁄㿼䀈直𥃳𥃲𥄙𥄳眞真真睊䀹瞋䁆䂖𥐝硎</div>
+<div class="line">碌磌䃣𥘦祖𥚚𥛅福秫䄯穀穊穏𥥼𥪧𥪧竮䈂𥮫篆築䈧𥲀糒䊠糨糣紀𥾆絣䌁緇</div>
+<div class="line">縂繅䌴𦈨𦉇䍙𦋙罺𦌾羕翺者𦓚𦔣聠𦖨聰𣍟䏕育脃䐋脾媵𦞧𦞵𣎓𣎜舁舄辞䑫</div>
+<div class="line">芑芋芝劳花芳芽苦𦬼若茝荣莭茣莽菧著荓菊菌菜𦰶𦵫𦳕䔫蓱蓳蔖𧏊蕤𦼬䕝</div>
+<div class="line">䕡𦾱𧃒䕫虐虜虧虩蚩蚈蜎蛢蝹蜨蝫螆䗗蟡蠁䗹衠衣𧙧裗裞䘵裺㒻𧢮𧥦䚾䛇</div>
+<div class="line">誠諭變豕𧲨貫賁贛起𧼯𠠄跋趼跰𠣞軔輸𨗒𨗭邔郱鄑𨜮鄛鈸鋗鋘鉼鏹鐕𨯺開</div>
+<div class="line">䦕閷𨵷䧦雃嶲霣𩅅𩈚䩮䩶韠𩐊䪲𩒖頋頋頩𩖶飢䬳餩馧駂駾䯎𩬰鬒鱀鳽䳎䳭</div>
+<div class="line">鵧𪃎䳸𪄅𪈎𪊑麻䵖黹黾鼅鼏鼖鼻𪘀</div>
+</div>
+</div>
+</div>
+<script src="support/text-orientation.js"></script>

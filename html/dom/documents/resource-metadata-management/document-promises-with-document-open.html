@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>document.interactive, document.contentLoaded, and document.loaded with document.open()</title>
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-interactive">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-contentloaded">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-loaded">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe src="document-promises-with-document-open-support.html"></iframe>
+
+<script>
+"use strict";
+
+const loadPromise = new Promise(resolve => window.onload = resolve);
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+promise_test(() => {
+  let contentDoc, interactiveBefore, contentLoadedBefore, loadedBefore;
+  const fulfilled = [];
+
+  return loadPromise.then(() => {
+    contentDoc = frames[0].document;
+
+    interactiveBefore = contentDoc.interactive;
+    contentLoadedBefore = contentDoc.contentLoaded;
+    loadedBefore = contentDoc.loaded;
+
+    // Sanity check: they all work
+    return Promise.all([interactiveBefore, contentLoadedBefore, loadedBefore]);
+  })
+  .then(() => {
+    contentDoc.open();
+
+    assert_equals(contentDoc.readyState, "loading", "After document.open(), readyState must be loading");
+
+    assert_not_equals(contentDoc.interactive, interactiveBefore, "document.open() must reset document.interactive");
+    assert_not_equals(contentDoc.contentLoaded, contentLoadedBefore,
+      "document.open() must reset document.contentLoaded");
+    assert_not_equals(contentDoc.loaded, loadedBefore, "document.open() must reset document.loaded");
+
+    contentDoc.interactive.then(() => {
+      fulfilled.push("interactive");
+    });
+    contentDoc.contentLoaded.then(() => {
+      fulfilled.push("contentLoaded");
+    });
+    contentDoc.loaded.then(() => {
+      fulfilled.push("loaded");
+    });
+
+    return delay(10);
+  })
+  .then(() => {
+    assert_array_equals(fulfilled, [], "None of the promises should be fulfilled 10 ms after document.open()");
+
+    contentDoc.close();
+
+    return Promise.all([contentDoc.interactive, contentDoc.contentLoaded, contentDoc.loaded]);
+  });
+});
+</script>

@@ -915,14 +915,17 @@ enum DocumentReadyState { "loading", "interactive", "complete" };
 typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
 [OverrideBuiltins]
-partial /*sealed*/ interface Document {
+partial interface Document {
   // resource metadata management
   [PutForwards=href, Unforgeable] readonly attribute Location? location;
-           attribute USVString domain;
+  attribute USVString domain;
   readonly attribute USVString referrer;
-           attribute USVString cookie;
+  attribute USVString cookie;
   readonly attribute DOMString lastModified;
   readonly attribute DocumentReadyState readyState;
+  [Unscopable] readonly attribute Promise<void> interactive;
+  [Unscopable] readonly attribute Promise<void> contentLoaded;
+  [Unscopable] readonly attribute Promise<void> loaded;
 
   // DOM tree accessors
   getter object (DOMString name);

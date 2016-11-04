@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>document.interactive, document.contentLoaded, and document.loaded</title>
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-interactive">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-contentloaded">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-loaded">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+"use strict";
+
+let onDomContentLoadedFired = false;
+let onLoadFired = false;
+
+let interactiveFulfilled = false;
+let contentLoadedFulfilled = false;
+let loadedFulfilled = false;
+
+let interactiveAssertions, contentLoadedAssertions, loadedAssertions;
+
+test(() => {
+  document.addEventListener("DOMContentLoaded", () => {
+    onDomContentLoadedFired = true;
+  });
+
+  window.addEventListener("load", () => {
+    onLoadFired = true;
+  });
+
+  // A note on timing:
+  // The event handler function must execute before the promise fulfillment callback does, because the sequence goes:
+  // - UA code resolves the promise, thus enqueuing a microtask to call the onFulfilled
+  // - UA code fires an event
+  //   - Eventually this uses Web IDL to invoke the callback
+  //     (https://heycam.github.io/webidl/#call-a-user-objects-operation)
+  //   - *After* the callback runs, we perform a microtask checkpoint
+  // - The microtask checkpoint calls onFulfilled
+
+  interactiveAssertions = document.interactive.then(value => {
+    interactiveFulfilled = true;
+
+    assert_equals(value, undefined, "The document.interactive promise must fulfill with undefined");
+    assert_equals(document.readyState, "interactive",
+      "Inside the document.interactive fulfillment handler, readyState must be interactive");
+  });
+
+  contentLoadedAssertions = document.contentLoaded.then(value => {
+    contentLoadedFulfilled = true;
+
+    assert_equals(value, undefined, "The document.contentLoaded promise must fulfill with undefined");
+    assert_equals(document.readyState, "interactive",
+      "Inside the document.contentLoaded fulfillment handler, readyState must be interactive");
+    assert_equals(interactiveFulfilled, true,
+      "Inside the document.contentLoaded fulfillment handler, document.interactive must have already fulfilled");
+    assert_equals(onDomContentLoadedFired, true,
+      "Inside the document.contentLoaded fulfillment handler, DOMContentLoaded must have already fired");
+  });
+
+  loadedAssertions = document.loaded.then(value => {
+    loadedFulfilled = true;
+
+    assert_equals(value, undefined, "The document.loaded promise must fulfill with undefined");
+    assert_equals(document.readyState, "complete",
+      "Inside the document.loaded fulfillment handler, readyState must be complete");
+    assert_equals(interactiveFulfilled, true,
+      "Inside the document.loaded fulfillment handler, document.interactive must have already fulfilled");
+    assert_equals(contentLoadedFulfilled, true,
+      "Inside the document.loaded fulfillment handler, document.contentLoaded must have already fulfilled");
+    assert_equals(onDomContentLoadedFired, true,
+      "Inside the document.loaded fulfillment handler, DOMContentLoaded must have already fired");
+    assert_equals(onLoadFired, true,
+      "Inside the document.loaded fulfillment handler, load must have already fired");
+  });
+}, "Setup code");
+
+promise_test(() => interactiveAssertions, "document.interactive");
+promise_test(() => contentLoadedAssertions, "document.contentLoaded");
+promise_test(() => loadedAssertions, "document.loaded");
+</script>

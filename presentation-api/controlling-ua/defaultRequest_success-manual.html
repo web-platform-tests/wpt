@@ -6,6 +6,7 @@
 <link rel="help" href="http://w3c.github.io/presentation-api/#dfn-controlling-user-agent">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
 
 <p>Click the button or the menu item for presentation on your browser (for example, "Cast"), to start the manual test.</p>
 <p>If your browser does not support <code>defaultRequest</code>, please click this button: <button id="notsupported">Not Supported</button>
@@ -18,10 +19,7 @@
     // -------------------
     // defaultRequest init
     // -------------------
-    var validUnixDate = new Date().getTime() + String(Math.floor(Math.random() * 1e5)),
-            validPresURL = '../receiving-ua/idlharness.html#__castAppId__=2334D33A/__castClientId__=' + validUnixDate;
-
-    navigator.presentation.defaultRequest = new PresentationRequest(validPresURL);
+    navigator.presentation.defaultRequest = new PresentationRequest(presentationUrls);
 
     // ------------------------------
     // Start New Presentation with

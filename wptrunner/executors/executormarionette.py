@@ -542,7 +542,7 @@ class MarionetteWdspecExecutor(WdspecExecutor):
 
         success, data = WdspecRun(self.do_wdspec,
                                   self.protocol.session,
-                                  test.path,
+                                  test.abs_path,
                                   timeout).run()
 
         if success:

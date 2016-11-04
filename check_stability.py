@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import json
 import logging
@@ -80,10 +82,10 @@ class TravisFold(object):
         self.name = name
 
     def __enter__(self):
-        print >> sys.stderr, "travis_fold:start:%s" % self.name
+        print("travis_fold:start:%s" % self.name, file=sys.stderr)
 
     def __exit__(self, type, value, traceback):
-        print >> sys.stderr, "travis_fold:end:%s" % self.name
+        print("travis_fold:end:%s" % self.name, file=sys.stderr)
 
 
 class GitHub(object):

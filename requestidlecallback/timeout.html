@@ -51,7 +51,7 @@ async_test(function() {
     var start_time = performance.now();
     if (!idle_callback_scheduled) {
       idle_callback_scheduled = start_time;
-      requestIdleCallback(idle_callback, timeout);
+      requestIdleCallback(idle_callback, { timeout: timeout });
     }
 
     // Use up the whole frame budget.

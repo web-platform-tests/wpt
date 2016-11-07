@@ -24,8 +24,8 @@ async_test(function() {
   // Check whether requestIdleCallback schedules a callback which gets executed
   // and the deadline argument is passed correctly.
   requestIdleCallback(this.step_func_done(function(deadline) {
-    assert_equals(arguments.length, 1, "Only one argument should b passed to callback.");
-    assert_class_string(deadline, "IdleCallbackDeadline");
+    assert_equals(arguments.length, 1, "Only one argument should be passed to callback.");
+    assert_class_string(deadline, "IdleDeadline");
     assert_equals(typeof deadline.timeRemaining, "function", "IdleDeadline.timeRemaining MUST be a function which returns the time remaining in milliseconds");
     assert_equals(typeof deadline.timeRemaining(), "number", "IdleDeadline.timeRemaining MUST return a double of the time remaining in milliseconds");
     assert_true(deadline.timeRemaining() <= 50, "IdleDeadline.timeRemaining() MUST be less than or equal to 50ms in the future.");

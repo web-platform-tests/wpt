@@ -20,8 +20,12 @@ interface Window {
 <pre id='idl'>
 
 partial interface Window {
-    unsigned long requestIdleCallback(IdleRequestCallback callback, optional unsigned long timeout);
+    unsigned long requestIdleCallback(IdleRequestCallback callback, optional IdleRequestOptions options);
     void cancelIdleCallback(unsigned long handle);
+};
+
+dictionary IdleRequestOptions {
+    unsigned long timeout;
 };
 
 interface IdleDeadline {

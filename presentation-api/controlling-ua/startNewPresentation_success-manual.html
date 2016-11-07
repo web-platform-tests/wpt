@@ -13,12 +13,8 @@
 
 
 <script>
-    // description of event order
-    var description = [
-        "Phase #1: Promise is resolved",
-        "Phase #2: 'connectionavailable' event fired",
-        "Phase #3: 'connect' event fired"
-    ];
+    // check event order
+    var order = ['RESOLVE_START', 'FIRE_CONNECTIONAVAILABLE', 'FIRE_CONNECTED'];
     var step = 0;
 
     // presentation connection

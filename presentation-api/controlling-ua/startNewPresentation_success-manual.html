@@ -34,7 +34,14 @@
     presentBtn.onclick = function () {
         presentBtn.disabled = true;
         promise_test(function (t) {
-            var phase = -1, actual = -1;
+            var request = new PresentationRequest(presentationUrls);
+            return new Promise(function(resolve, reject) {
+                request.onconnectionavailable = t.step_func(function(evt) {
+                    // Check the order #2: "connectionavailable" event fires
+                    assert_equals(order[step], 'FIRE_CONNECTIONAVAILABLE', 'A "connectionavailable" event fires after Promise from PresentationRequest.start() resolves.');
+                    step++;
+                    assert_equals(connection, evt.connection, 'Both Promise from PresentationRequest() and a "connectionavailable" event handler receive the same presentation connection.');
+                });
 
             // increment the count in the actual event order
             var count = function(evt) { actual++; return evt; };

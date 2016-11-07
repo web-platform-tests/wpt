@@ -37,9 +37,6 @@
             assert_true(typeof connection.id === 'string', 'The connection ID is a string.');
             assert_true(connection instanceof PresentationConnection, 'The connection is an instance of PresentationConnection.');
         });
-        document.getElementById('notsupported').onclick = t.step_func_done(function() {
-            assert_unreached('This browser does not support defaultRequest.');
-        });
         button.onclick = t.step_func_done(function() {
             button.disabled = true;
             assert_unreached('This browser does not support defaultRequest.');

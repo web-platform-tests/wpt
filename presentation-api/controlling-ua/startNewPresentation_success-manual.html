@@ -9,10 +9,22 @@
 <script src="common.js"></script>
 
 <p>Click the button below and select the available presentation display, to start the manual test.</p>
-<button id="presentBtn" onclick="startPresentation()">Start Presentation Test</button>
+<button id="presentBtn">Start Presentation Test</button>
 
 
 <script>
+    // check event order 
+    var RESOLVE_START = 1,
+        FIRE_CONNECTIONAVAILABLE = 2,
+        FIRE_CONNECTED = 3;
+    var step = 1;
+
+    // presentation connection
+    var connection;
+
+    // disable the timeout function for the tests
+    setup({explicit_timeout: true});
+
     // ----------
     // DOM Object
     // ----------
@@ -21,15 +33,35 @@
     // ---------------------------------------------
     // Start New Presentation Test (success) - begin
     // ---------------------------------------------
-    var startPresentation = function () {
+    presentBtn.onclick = function () {
         presentBtn.disabled = true;
-        promise_test(function () {
+        promise_test(function (t) {
             var request = new PresentationRequest(presentationUrls);
-            return request.start()
-                    .then(function (connection) {
+            return new Promise(function(resolve, reject) {
+                request.onconnectionavailable = t.step_func(function(evt) {
+                    // Check the order #2: "connectionavailable" event fires
+                    assert_equals(step, FIRE_CONNECTIONAVAILABLE, 'A "connectionavailable" event fires after Promise from PresentationRequest.start() resolves.');
+                    step++;
+                    assert_equals(connection, evt.connection, 'Both Promise from PresentationRequest() and a "connectionavailable" event listener receive the same presentation connection.');
+                });
+
+                request.start()
+                    .then(t.step_func(function (c) {
+                        connection = c;
+
+                        // Check the order #1: Promise from start() resolves
+                        assert_equals(step, RESOLVE_START, 'Promise from PresentationRequest.start() resolves before connectionavailable event is fired.');
+                        step++;
 
                         // Check the initial state of a presentation connection
                         assert_equals(connection.state, 'connecting', 'The initial state of the presentation connection is "connecting".');
+
+                        // Check the order #3: "connected" event fires
+                        connection.onconnect = function() {
+                            assert_equals(step, FIRE_CONNECTED, 'A connected event fires after Promise from PresentationRequest.start() resolves and a "connectionavailable" event fires.');
+                            assert_equals(connection.state, 'connected', 'The state of the presentation connection is "connected" when a "connected" event fires.');
+                            resolve();
+                        };
 
                         // Check, if the connection ID is set
                         assert_true(!!connection.id, 'The connection ID is set.');
@@ -39,11 +71,11 @@
 
                         // Check the instance of the connection
                         assert_true(connection instanceof PresentationConnection, 'The connection is an instance of PresentationConnection.');
-                    });
+                    }), function(e) { reject(e); });
+            });
         }, "The presentation was started successfully.");
     }
     // -------------------------------------------
     // Start New Presentation Test (success) - end
     // -------------------------------------------
 </script>
-

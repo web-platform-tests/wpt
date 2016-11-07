@@ -56,10 +56,13 @@
 
                         // Check the order #3: "connected" event fires
                         connection.onconnect = function() {
-                            assert_equals(order[step], 'FIRE_CONNECTED', 'A connected event fires after Promise from PresentationRequest.start() resolves and a "connectionavailable" event fires.');
-                            assert_equals(connection.state, 'connected', 'The state of the presentation connection is "connected" when a "connected" event fires.');
+                            assert_equals(order[step], 'FIRE_CONNECTED', 'A connect event fires after Promise from PresentationRequest.start() resolves and a "connectionavailable" event fires.');
+                            assert_equals(connection.state, 'connected', 'The state of the presentation connection is "connected" when a "connect" event fires.');
                             resolve();
                         };
+                        t.step_timeout(function() {
+                            reject('A "connect" event did not fire when the presentation connection was established.')
+                        }, 5000);
 
                         // Check, if the connection ID is set
                         assert_true(!!connection.id, 'The connection ID is set.');

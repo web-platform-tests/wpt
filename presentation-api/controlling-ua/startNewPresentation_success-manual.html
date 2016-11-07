@@ -40,7 +40,7 @@
                     // Check the order #2: "connectionavailable" event fires
                     assert_equals(order[step], 'FIRE_CONNECTIONAVAILABLE', 'A "connectionavailable" event fires after Promise from PresentationRequest.start() resolves.');
                     step++;
-                    assert_equals(connection, evt.connection, 'Both Promise from PresentationRequest() and a "connectionavailable" event listener receive the same presentation connection.');
+                    assert_equals(connection, evt.connection, 'Both Promise from PresentationRequest() and a "connectionavailable" event handler receive the same presentation connection.');
                 });
 
                 request.start()

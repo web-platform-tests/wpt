@@ -154,7 +154,7 @@ function run_test() {
                             assert_unreached("Round trip for extractable key threw an error - " + err.name + ': "' + err.message + '"');
                         });
                     }, "Can wrap and unwrap " + toWrap.name + " keys using " + fmt + " and " + wrapper.parameters.name);
-                    
+
                     if (canCompareNonExtractableKeys(toWrap.key)) {
                         promise_test(function(test){
                             return subtle.wrapKey(fmt, toWrap.key, wrapper.wrappingKey, wrapper.parameters.wrapParameters)
@@ -258,7 +258,7 @@ function run_test() {
 
 
     // Helper methods follow:
-    
+
     // Are two exported keys equal
     function equalExport(originalExport, roundTripExport) {
         if ("byteLength" in originalExport) {

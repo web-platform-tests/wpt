@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>document.interactive, document.contentLoaded, and document.loaded when document.open() happens inside DOMContentLoaded</title>
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-interactive">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-contentloaded">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-document-loaded">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<!-- This is testing https://github.com/whatwg/html/pull/1936#issuecomment-258952129 -->
+
+<iframe src="document-promises-with-document-open-support.html"></iframe>
+
+<script>
+"use strict";
+
+async_test(t => {
+  let contentDoc, interactiveBefore, contentLoadedBefore, loadedBefore;
+  const fulfilled1 = [];
+  const fulfilled2 = [];
+
+  window.onload = t.step_func(() => {
+    contentDoc = frames[0].document;
+
+    interactiveBefore = contentDoc.interactive;
+    contentLoadedBefore = contentDoc.contentLoaded;
+    loadedBefore = contentDoc.loaded;
+
+    contentDoc.interactive.then(() => {
+      fulfilled1.push("interactive");
+    });
+    contentDoc.contentLoaded.then(() => {
+      fulfilled1.push("contentLoaded");
+    });
+    contentDoc.loaded.then(() => {
+      fulfilled1.push("loaded");
+    });
+
+    contentDoc.addEventListener("DOMContentLoaded", t.step_func(() => {
+      assert_equals(contentDoc.interactive, interactiveBefore,
+        "document.interactive must not have changed by the time a DOMContentLoaded handler fires");
+      assert_equals(contentDoc.contentLoaded, contentLoadedBefore,
+        "document.contentLoaded must not have changed by the time a DOMContentLoaded handler fires");
+      assert_equals(contentDoc.loaded, loadedBefore,
+        "document.loaded must not have changed by the time a DOMContentLoaded handler fires");
+
+      assert_array_equals(fulfilled1, ["interactive"],
+        "Only interactive must have been fulfilled by the time the DOMContentLoaded handler fires");
+
+      contentDoc.open();
+
+      assert_equals(contentDoc.readyState, "loading", "After document.open(), readyState must be loading");
+
+      assert_not_equals(contentDoc.interactive, interactiveBefore, "document.open() must reset document.interactive");
+      assert_not_equals(contentDoc.contentLoaded, contentLoadedBefore,
+        "document.open() must reset document.contentLoaded");
+      assert_not_equals(contentDoc.loaded, loadedBefore, "document.open() must reset document.loaded");
+
+      contentDoc.interactive.then(() => {
+        fulfilled2.push("interactive");
+      });
+      contentDoc.contentLoaded.then(() => {
+        fulfilled2.push("contentLoaded");
+      });
+      contentDoc.loaded.then(() => {
+        fulfilled2.push("loaded");
+      });
+
+      t.step_timeout(() => {
+        assert_array_equals(fulfilled1, ["interactive", "contentLoaded"],
+          "Of the original promises, 10 ms after document.open(), interactive and contentLoaded must have fulfilled");
+        assert_array_equals(fulfilled2, [], "None of the new promises should be fulfilled 10 ms after document.open()");
+
+        contentDoc.close();
+      }, 10);
+    }));
+  });
+});
+</script>

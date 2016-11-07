@@ -13,6 +13,7 @@
 
 let onDomContentLoadedFired = false;
 let onLoadFired = false;
+const readyStateChanges = [];
 
 let interactiveFulfilled = false;
 let contentLoadedFulfilled = false;
@@ -21,6 +22,10 @@ let loadedFulfilled = false;
 let interactiveAssertions, contentLoadedAssertions, loadedAssertions;
 
 test(() => {
+  document.addEventListener("readystatechange", () => {
+    readyStateChanges.push(document.readyState);
+  });
+
   document.addEventListener("DOMContentLoaded", () => {
     onDomContentLoadedFired = true;
   });
@@ -30,7 +35,8 @@ test(() => {
   });
 
   // A note on timing:
-  // The event handler function must execute before the promise fulfillment callback does, because the sequence goes:
+  // The readystatechange event handler function must execute before the promise fulfillment callback does, because the
+  // sequence goes:
   // - UA code resolves the promise, thus enqueuing a microtask to call the onFulfilled
   // - UA code fires an event
   //   - Eventually this uses Web IDL to invoke the callback
@@ -42,6 +48,8 @@ test(() => {
     interactiveFulfilled = true;
 
     assert_equals(value, undefined, "The document.interactive promise must fulfill with undefined");
+    assert_array_equals(readyStateChanges, ["interactive"],
+      "Inside the document.interactive fulfillment handler, the readystatechange event must have fired once already");
     assert_equals(document.readyState, "interactive",
       "Inside the document.interactive fulfillment handler, readyState must be interactive");
   });
@@ -56,6 +64,8 @@ test(() => {
       "Inside the document.contentLoaded fulfillment handler, document.interactive must have already fulfilled");
     assert_equals(onDomContentLoadedFired, true,
       "Inside the document.contentLoaded fulfillment handler, DOMContentLoaded must have already fired");
+    assert_array_equals(readyStateChanges, ["interactive"],
+      "Inside the document.interactive fulfillment handler, the readystatechange event must have fired exactly once");
   });
 
   loadedAssertions = document.loaded.then(value => {
@@ -70,8 +80,10 @@ test(() => {
       "Inside the document.loaded fulfillment handler, document.contentLoaded must have already fulfilled");
     assert_equals(onDomContentLoadedFired, true,
       "Inside the document.loaded fulfillment handler, DOMContentLoaded must have already fired");
-    assert_equals(onLoadFired, true,
-      "Inside the document.loaded fulfillment handler, load must have already fired");
+    assert_equals(onLoadFired, false,
+      "Inside the document.loaded fulfillment handler, load must not have already fired");
+    assert_array_equals(readyStateChanges, ["interactive", "complete"],
+      "Inside the document.interactive fulfillment handler, the readystatechange event must have fired exactly twice");
   });
 }, "Setup code");
 

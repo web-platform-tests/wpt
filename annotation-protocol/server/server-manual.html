@@ -63,22 +63,16 @@ function request(method, url, headers, content) {
         resp.text = d;
         // we have it; what is it?
         var type = xhr.getResponseHeader('Content-Type');
-        if (type) {
-          resp.type = type.split(';')[0];
-          if (resp.type === MEDIA_TYPE) {
-            try {
-              d = JSON.parse(d);
-              resp.body = d;
-            }
-            catch(err) {
-              resp.body = null;
-            }
+        resp.type = type.split(';')[0];
+        if (resp.type === MEDIA_TYPE) {
+          try {
+            d = JSON.parse(d);
+            resp.body = d;
           }
-        } else {
-          resp.type = null;
-          resp.body = null;
+          catch(err) {
+            resp.body = null;
+          }
         }
-
       }
       resolve(resp);
     };
@@ -172,10 +166,22 @@ function makePromiseTests( thennable, criteria ) {
   });
 }
 
-function runTests( container_url, annotation_url ) {
-  // trim whitespace from incoming variables
-  container_url = container_url.trim();
-  annotation_url = annotation_url.trim();
+function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TARGET ) {
+
+  var fixURI = function(uri) {
+    if (query_string && query_string !== "") {
+      if (uri.indexOf('?') > -1) {
+        uri += "&" + query_string;
+      } else {
+        uri += "?" + query_string;
+      }
+    }
+    return uri;
+  };
+
+  var container = fixURI(container_url);
+  var annotation = fixURI(annotation_url);
+
 
   // Section 4 has a requirement that the URL end in a slash, so...
   // ensure the url has a length
@@ -184,7 +190,7 @@ function runTests( container_url, annotation_url ) {
   }, 'Container MUST end in a "/" character');
 
   // Container tests
-  var theContainer = request("GET", container_url);
+  var theContainer = request("GET", container);
 
   makePromiseTests( theContainer, [
       { header: 'Allow', pat: /GET/, assertion: "Containers MUST support GET (check Allow on GET)" },
@@ -207,13 +213,13 @@ function runTests( container_url, annotation_url ) {
 
 
   promise_test(function() {
-      return request("HEAD", container_url).then(function(res) {
+      return request("HEAD", container).then(function(res) {
           assert_equals(res.status, 200, "HEAD request returned " + res.status);
           });
       }, "Containers MUST support HEAD method");
 
   promise_test(function() {
-      return request("OPTIONS", container_url).then(function(res) {
+      return request("OPTIONS", container).then(function(res) {
           assert_equals(res.status, 200, "OPTIONS request returned " + res.status);
           });
       }, "Containers MUST support OPTIONS method");
@@ -229,8 +235,8 @@ function runTests( container_url, annotation_url ) {
   promise_test(function() {
     return theContainer.then(function(res) {
       var f = res.body.first;
-      if (f !== undefined && f !== "") {
-        request("GET", f).then(function(lres) {
+      if (f && f !== '') {
+        request("GET", fixURI(f)).then(function(lres) {
           assert_true(('partOf' in lres.body) || ('id' in lres.body.partOf), "No partOf in response");
           });
       } else {
@@ -242,7 +248,7 @@ function runTests( container_url, annotation_url ) {
   promise_test(function() {
     return theContainer.then(function(res) {
       var l = res.body.last;
-      request("GET", l).then(function(lres) {
+      request("GET", fixURI(l)).then(function(lres) {
         assert_true(('prev' in lres.body), "No link to the previous page in response");
         });
     });
@@ -251,14 +257,14 @@ function runTests( container_url, annotation_url ) {
   promise_test(function() {
     return theContainer.then(function(res) {
       var f = res.body.first;
-      request("GET", f).then(function(lres) {
+      request("GET", fixURI(f)).then(function(lres) {
         assert_true(('next' in lres.body), "No link to the next page in response");
         });
     });
   }, "Annotation Pages MUST have a link to the next page in the sequence, using the next property (if not the last page)");
 
   // Annotation Tests
-  var theRequest = request("GET", annotation_url);
+  var theRequest = request("GET", annotation);
 
   makePromiseTests( theRequest, [
       { header: 'Allow', pat: /GET/, assertion: "Annotations MUST support GET (check Allow on GET)" },
@@ -271,13 +277,13 @@ function runTests( container_url, annotation_url ) {
       ] );
 
   promise_test(function() {
-    return request("HEAD", annotation_url).then(function(res) {
+    return request("HEAD", annotation).then(function(res) {
       assert_equals(res.status, 200, "HEAD request returned " + res.status);
       });
     }, "Annotations MUST support HEAD method");
 
   promise_test(function() {
-    return request("OPTIONS", annotation_url).then(function(res) {
+    return request("OPTIONS", annotation).then(function(res) {
         assert_equals(res.status, 200, "OPTIONS request returned " + res.status);
       });
     }, "Annotations MUST support OPTIONS method");
@@ -292,11 +298,11 @@ function runTests( container_url, annotation_url ) {
       "type": "TextualBody",
       "value": "I like this page!"
     },
-    "target": "http://www.example.com/index.html",
+    "target": TARGET,
     "canonical": 'urn:uuid:' + token()
   };
 
-  var theCreation = request("POST", container_url, [ [ 'Content-Type', MEDIA_TYPE ] ], theAnnotation);
+  var theCreation = request("POST", container, [ [ 'Content-Type', MEDIA_TYPE ] ], theAnnotation);
 
   makePromiseTests( theCreation, [
       { test: function(res) { return ('id' in res.body); }, assertion: "Created Annotation MUST have an id property" },
@@ -309,8 +315,8 @@ function runTests( container_url, annotation_url ) {
   promise_test(function() {
     return theCreation.then(function(res) {
       var newAnnotation = res.body ;
-      newAnnotation.target = "http://other.example/";
-      return request("PUT", res.body.id, [['Content-Type', MEDIA_TYPE]], newAnnotation)
+      newAnnotation.target = OTHER_TARGET ;
+      return request("PUT", fixURI(res.body.id), [['Content-Type', MEDIA_TYPE]], newAnnotation)
         .then(function(lres) {
           assert_equals(lres.body.target, newAnnotation.target, "Annotation did not update");
         })
@@ -322,7 +328,7 @@ function runTests( container_url, annotation_url ) {
 
   promise_test(function() {
     return theCreation.then(function(res) {
-      request("DELETE", res.body.id)
+      request("DELETE", fixURI(res.body.id))
         .then(function(lres) {
           assert_equals(lres.status, 204, "DELETE of " + res.body.id + " did not return a 204 Status" );
         });
@@ -332,17 +338,17 @@ function runTests( container_url, annotation_url ) {
   // SHOULD tests
 
   test(function() {
-    assert_equals(container_url.toLowerCase().substr(0,5), "https", "Server is not using HTTPS");
+    assert_equals("https", container_url.toLowerCase().substr(0,5), "Server is not using HTTPS");
     }, "Annotation server SHOULD use HTTPS rather than HTTP");
 
-  var thePrefRequest = request("GET", container_url,
+  var thePrefRequest = request("GET", container,
       [['Prefer', 'return=representation;include="http://www.w3.org/ns/ldp#PreferMinimalContainer"']]);
 
   promise_test(function() {
     return thePrefRequest
       .then(function(res) {
         var f = res.body.first;
-        request("GET", f).then(function(fres) {
+        request("GET", fixURI(f)).then(function(fres) {
           fres.body.items.forEach(function(item) {
             assert_true('@context' in item, "Annotation does not contain `@context`");
             });
@@ -375,15 +381,19 @@ function runTests( container_url, annotation_url ) {
 on_event(document, "DOMContentLoaded", function() {
     var serverURI = document.getElementById("uri") ;
     var annotationURI = document.getElementById("annotation") ;
+    var queryString = document.getElementById("query") ;
+    var targetString = document.getElementById("target") ;
+    var otherTargetString = document.getElementById("other") ;
     var runButton = document.getElementById("endpoint-submit-button") ;
     on_event(runButton, "click", function() {
         // user clicked
         var URI = serverURI.value;
         var ANN = annotationURI.value;
+        var QUERY = query.value;
         runButton.disabled = true;
 
         // okay, they clicked.  run the tests with that URI
-        runTests(URI, ANN);
+        runTests(URI, ANN, QUERY, targetString.value, otherTargetString.value);
         done();
         });
     });
@@ -406,7 +416,10 @@ Access-Control-Expose-Headers: ETag, Allow, Vary, Link, Content-Type, Location, 
 <p>Provide endpoint and annotation URIs and select "Go" to start testing.</p>
 <form name="endpoint">
   <p><label for="uri">Endpoint URI:</label> <input type="text" size="50" id="uri" name="uri"></p>
-  <p><label for="uri">Annotation URI:</label> <input type="text" size="50" id="annotation" name="annotation"></p>
+  <p><label for="annotation">Annotation URI:</label> <input type="text" size="50" id="annotation" name="annotation"></p>
+  <p><label for="query">Additional URI parameters:</label> <input type="text" size="50" id="query" name="query"></p>
+  <p><label for="target">Target for created annotation:</label> <input type="text" size="50" id="target" name="target" value="http://www.example.com/index.html"></p>
+  <p><label for="other">Target for modified annotation:</label> <input type="text" size="50" id="other" name="other" value="http://www.example.com/other.html"></p>
   <input type="button" id="endpoint-submit-button" value="Go">
 </form>
 </body>

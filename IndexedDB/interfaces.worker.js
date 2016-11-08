@@ -10,14 +10,12 @@ request.onload = function() {
   var idlArray = new IdlArray();
   var idls = request.responseText;
 
-  idlArray.add_untested_idls("interface WorkerGlobalScope {};");
-  idlArray.add_untested_idls("interface WorkerUtils {};");
-  idlArray.add_untested_idls("WorkerGlobalScope implements WorkerUtils;");
-  idlArray.add_untested_idls("interface Event { };");
-  idlArray.add_untested_idls("interface EventTarget { };");
+  idlArray.add_untested_idls("[Exposed=Worker] interface WorkerGlobalScope {};");
+  idlArray.add_untested_idls("[Exposed=(Window,Worker)] interface Event { };");
+  idlArray.add_untested_idls("[Exposed=(Window,Worker)] interface EventTarget { };");
 
   // From Indexed DB:
-  idlArray.add_idls("WorkerUtils implements IDBEnvironment;");
+  idlArray.add_idls("WorkerGlobalScope implements IDBEnvironment;");
   idlArray.add_idls(idls);
 
   idlArray.add_objects({

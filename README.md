@@ -27,12 +27,13 @@ To get the tests running, you need to set up the test domains in your
 following entries are required:
 
 ```
-127.0.0.1	web-platform.test
-127.0.0.1	www.web-platform.test
-127.0.0.1	www1.web-platform.test
-127.0.0.1	www2.web-platform.test
-127.0.0.1	xn--n8j6ds53lwwkrqhv28a.web-platform.test
-127.0.0.1	xn--lve-6lad.web-platform.test
+127.0.0.1   web-platform.test
+127.0.0.1   www.web-platform.test
+127.0.0.1   www1.web-platform.test
+127.0.0.1   www2.web-platform.test
+127.0.0.1   xn--n8j6ds53lwwkrqhv28a.web-platform.test
+127.0.0.1   xn--lve-6lad.web-platform.test
+0.0.0.0     nonexistent-origin.web-platform.test
 ```
 
 Because web-platform-tests uses git submodules, you must ensure that
@@ -44,15 +45,14 @@ git submodule update --init --recursive
 
 The test environment can then be started using
 
-```
-./serve
-```
+    ./serve
 
 This will start HTTP servers on two ports and a websockets server on
 one port. By default one web server starts on port 8000 and the other
 ports are randomly-chosen free ports. Tests must be loaded from the
-*first* HTTP server in the output. To change the ports, edit the
-`config.json` file, for example, replacing the part that reads:
+*first* HTTP server in the output. To change the ports, copy the
+`config.default.json` file to `config.json` and edit the new file,
+replacing the part that reads:
 
 ```
 "http": [8000, "auto"]
@@ -61,7 +61,7 @@ ports are randomly-chosen free ports. Tests must be loaded from the
 to some port of your choice e.g.
 
 ```
-"http":[1234, "auto"]
+"http": [1234, "auto"]
 ```
 
 If you installed OpenSSL in such a way that running `openssl` at a
@@ -78,7 +78,7 @@ like:
 
 Running wptserve with SSL enabled on Windows typically requires
 installing an OpenSSL distribution.
-[Shining Light](http://slproweb.com/products/Win32OpenSSL.html)
+[Shining Light](https://slproweb.com/products/Win32OpenSSL.html)
 provide a convenient installer that is known to work, but requires a
 little extra setup.
 

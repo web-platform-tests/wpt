@@ -81,11 +81,9 @@ interface ParentNode {
   readonly attribute Element? lastElementChild;
   readonly attribute unsigned long childElementCount;
 
-  [Unscopeable] void prepend((Node or DOMString)... nodes);
-  [Unscopeable] void append((Node or DOMString)... nodes);
+  [Unscopable] void prepend((Node or DOMString)... nodes);
+  [Unscopable] void append((Node or DOMString)... nodes);
 
-  [Unscopeable] Element? query(DOMString relativeSelectors);
-  [NewObject, Unscopeable] Elements queryAll(DOMString relativeSelectors);
   Element? querySelector(DOMString selectors);
   [NewObject] NodeList querySelectorAll(DOMString selectors);
 };
@@ -103,10 +101,10 @@ CharacterData implements NonDocumentTypeChildNode;
 
 [NoInterfaceObject]
 interface ChildNode {
-  [Unscopeable] void before((Node or DOMString)... nodes);
-  [Unscopeable] void after((Node or DOMString)... nodes);
-  [Unscopeable] void replaceWith((Node or DOMString)... nodes);
-  [Unscopeable] void remove();
+  [Unscopable] void before((Node or DOMString)... nodes);
+  [Unscopable] void after((Node or DOMString)... nodes);
+  [Unscopable] void replaceWith((Node or DOMString)... nodes);
+  [Unscopable] void remove();
 };
 DocumentType implements ChildNode;
 Element implements ChildNode;
@@ -167,7 +165,7 @@ interface Node : EventTarget {
   const unsigned short ELEMENT_NODE = 1;
   const unsigned short ATTRIBUTE_NODE = 2; // historical
   const unsigned short TEXT_NODE = 3;
-  const unsigned short CDATA_SECTION_NODE = 4; // historical
+  const unsigned short CDATA_SECTION_NODE = 4;
   const unsigned short ENTITY_REFERENCE_NODE = 5; // historical
   const unsigned short ENTITY_NODE = 6; // historical
   const unsigned short PROCESSING_INSTRUCTION_NODE = 7;
@@ -239,6 +237,7 @@ interface Document : Node {
   [NewObject] Element createElementNS(DOMString? namespace, DOMString qualifiedName);
   [NewObject] DocumentFragment createDocumentFragment();
   [NewObject] Text createTextNode(DOMString data);
+  [NewObject] CDATASection createCDATASection(DOMString data);
   [NewObject] Comment createComment(DOMString data);
   [NewObject] ProcessingInstruction createProcessingInstruction(DOMString target, DOMString data);
 
@@ -289,6 +288,7 @@ interface Element : Node {
 
   boolean hasAttributes();
   [SameObject] readonly attribute NamedNodeMap attributes;
+  sequence<DOMString> getAttributeNames();
   DOMString? getAttribute(DOMString name);
   DOMString? getAttributeNS(DOMString? namespace, DOMString localName);
   void setAttribute(DOMString name, DOMString value);
@@ -351,6 +351,10 @@ interface CharacterData : Node {
 interface Text : CharacterData {
   [NewObject] Text splitText(unsigned long offset);
   readonly attribute DOMString wholeText;
+};
+
+[Exposed=Window]
+interface CDATASection : Text {
 };
 
 interface ProcessingInstruction : CharacterData {
@@ -442,7 +446,7 @@ callback interface NodeFilter {
   const unsigned long SHOW_ELEMENT = 0x1;
   const unsigned long SHOW_ATTRIBUTE = 0x2; // historical
   const unsigned long SHOW_TEXT = 0x4;
-  const unsigned long SHOW_CDATA_SECTION = 0x8; // historical
+  const unsigned long SHOW_CDATA_SECTION = 0x8;
   const unsigned long SHOW_ENTITY_REFERENCE = 0x10; // historical
   const unsigned long SHOW_ENTITY = 0x20; // historical
   const unsigned long SHOW_PROCESSING_INSTRUCTION = 0x40;
@@ -459,14 +463,13 @@ interface DOMTokenList {
   readonly attribute unsigned long length;
   getter DOMString? item(unsigned long index);
   boolean contains(DOMString token);
-  void add(DOMString... tokens);
-  void remove(DOMString... tokens);
-  boolean toggle(DOMString token, optional boolean force);
-  void replace(DOMString token, DOMString newToken);
+  [CEReactions] void add(DOMString... tokens);
+  [CEReactions] void remove(DOMString... tokens);
+  [CEReactions] boolean toggle(DOMString token, optional boolean force);
+  [CEReactions] void replace(DOMString token, DOMString newToken);
   boolean supports(DOMString token);
-           attribute DOMString value;
-  stringifier;
-//  iterable<DOMString>;
+  [CEReactions] stringifier attribute DOMString value;
+  //  iterable<DOMString>;
 };</script>
 <!-- UI Events IDLs -->
 <script type=text/plain class=untested>
@@ -498,7 +501,7 @@ interface MouseEvent : UIEvent {
     boolean getModifierState (DOMString keyArg);
 };
 
-dictionary MouseEventInit : SharedKeyboardAndMouseEventInit {
+dictionary MouseEventInit : EventModifierInit {
     long           screenX = 0;
     long           screenY = 0;
     long           clientX = 0;
@@ -508,7 +511,7 @@ dictionary MouseEventInit : SharedKeyboardAndMouseEventInit {
     EventTarget?   relatedTarget = null;
 };
 
-dictionary SharedKeyboardAndMouseEventInit : UIEventInit {
+dictionary EventModifierInit : UIEventInit {
     boolean ctrlKey = false;
     boolean shiftKey = false;
     boolean altKey = false;
@@ -723,7 +726,6 @@ interface CSSStyleDeclaration {
            attribute DOMString marginRight;
            attribute DOMString marginBottom;
            attribute DOMString marginLeft;
-           attribute DOMString markerOffset;
            attribute DOMString marks;
            attribute DOMString maxHeight;
            attribute DOMString maxWidth;
@@ -880,7 +882,7 @@ interface HTMLAllCollection {
 
 interface HTMLFormControlsCollection : HTMLCollection {
   // inherits length and item()
-  legacycaller getter (RadioNodeList or Element)? namedItem(DOMString name); // shadows inherited namedItem()
+  getter (RadioNodeList or Element)? namedItem(DOMString name); // shadows inherited namedItem()
 };
 
 interface RadioNodeList : NodeList {
@@ -888,26 +890,15 @@ interface RadioNodeList : NodeList {
 };
 
 interface HTMLOptionsCollection : HTMLCollection {
-  // inherits item()
-           attribute unsigned long length; // shadows inherited length
-  legacycaller HTMLOptionElement? (DOMString name);
-  setter creator void (unsigned long index, HTMLOptionElement? option);
-  void add((HTMLOptionElement or HTMLOptGroupElement) element, optional (HTMLElement or long)? before = null);
-  void remove(long index);
-           attribute long selectedIndex;
-};
-
-interface HTMLPropertiesCollection : HTMLCollection {
-  // inherits length and item()
-  getter PropertyNodeList? namedItem(DOMString name); // shadows inherited namedItem()
-  readonly attribute DOMString[] names;
+  // inherits item(), namedItem()
+  attribute unsigned long length; // shadows inherited length
+  [CEReactions] setter void (unsigned long index, HTMLOptionElement? option);
+  [CEReactions] void add((HTMLOptionElement or HTMLOptGroupElement) element, optional (HTMLElement or long)? before = null);
+  [CEReactions] void remove(long index);
+  attribute long selectedIndex;
 };
 
 typedef sequence<any> PropertyValueArray;
-
-interface PropertyNodeList : NodeList {
-  PropertyValueArray getValues();
-};
 
 [OverrideBuiltins, Exposed=(Window,Worker)]
 interface DOMStringMap {
@@ -916,64 +907,56 @@ interface DOMStringMap {
   deleter void (DOMString name);
 };
 
-interface DOMElementMap {
-  getter Element (DOMString name);
-  setter creator void (DOMString name, Element value);
-  deleter void (DOMString name);
-};
-
-typedef (ArrayBuffer or CanvasProxy or MessagePort) Transferable;
+typedef (ArrayBuffer or MessagePort) Transferable;
 
 callback FileCallback = void (File file);
 
 enum DocumentReadyState { "loading", "interactive", "complete" };
+typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
 [OverrideBuiltins]
 partial /*sealed*/ interface Document {
   // resource metadata management
   [PutForwards=href, Unforgeable] readonly attribute Location? location;
-           attribute DOMString domain;
-  readonly attribute DOMString referrer;
-           attribute DOMString cookie;
+           attribute USVString domain;
+  readonly attribute USVString referrer;
+           attribute USVString cookie;
   readonly attribute DOMString lastModified;
   readonly attribute DocumentReadyState readyState;
 
   // DOM tree accessors
   getter object (DOMString name);
-           attribute DOMString title;
-           attribute DOMString dir;
-           attribute HTMLElement? body;
+  [CEReactions] attribute DOMString title;
+  [CEReactions] attribute DOMString dir;
+  [CEReactions] attribute HTMLElement? body;
   readonly attribute HTMLHeadElement? head;
-  readonly attribute HTMLCollection images;
-  readonly attribute HTMLCollection embeds;
-  readonly attribute HTMLCollection plugins;
-  readonly attribute HTMLCollection links;
-  readonly attribute HTMLCollection forms;
-  readonly attribute HTMLCollection scripts;
+  [SameObject] readonly attribute HTMLCollection images;
+  [SameObject] readonly attribute HTMLCollection embeds;
+  [SameObject] readonly attribute HTMLCollection plugins;
+  [SameObject] readonly attribute HTMLCollection links;
+  [SameObject] readonly attribute HTMLCollection forms;
+  [SameObject] readonly attribute HTMLCollection scripts;
   NodeList getElementsByName(DOMString elementName);
-  NodeList getItems(optional DOMString typeNames = ""); // microdata
-  readonly attribute DOMElementMap cssElementMap;
-  readonly attribute HTMLScriptElement? currentScript;
+  readonly attribute HTMLOrSVGScriptElement? currentScript; // classic scripts in a document tree only
 
   // dynamic markup insertion
-  Document open(optional DOMString type = "text/html", optional DOMString replace = "");
-  WindowProxy open(DOMString url, DOMString name, DOMString features, optional boolean replace = false);
-  void close();
-  void write(DOMString... text);
-  void writeln(DOMString... text);
+  [CEReactions] Document open(optional DOMString type = "text/html", optional DOMString replace = "");
+  WindowProxy open(USVString url, DOMString name, DOMString features);
+  [CEReactions] void close();
+  [CEReactions] void write(DOMString... text);
+  [CEReactions] void writeln(DOMString... text);
 
   // user interaction
   readonly attribute WindowProxy? defaultView;
   readonly attribute Element? activeElement;
   boolean hasFocus();
-           attribute DOMString designMode;
-  boolean execCommand(DOMString commandId, optional boolean showUI = false, optional DOMString value = "");
+  [CEReactions] attribute DOMString designMode;
+  [CEReactions] boolean execCommand(DOMString commandId, optional boolean showUI = false, optional DOMString value = "");
   boolean queryCommandEnabled(DOMString commandId);
   boolean queryCommandIndeterm(DOMString commandId);
   boolean queryCommandState(DOMString commandId);
   boolean queryCommandSupported(DOMString commandId);
   DOMString queryCommandValue(DOMString commandId);
-  readonly attribute HTMLCollection commands;
 
   // special event handler IDL attributes that only apply to Document objects
   [LenientThis] attribute EventHandler onreadystatechange;
@@ -981,53 +964,41 @@ partial /*sealed*/ interface Document {
   // also has obsolete members
 };
 Document implements GlobalEventHandlers;
+Document implements DocumentAndElementEventHandlers;
 
-partial interface XMLDocument {
-  boolean load(DOMString url);
+[NoInterfaceObject]
+interface ElementContentEditable {
+  [CEReactions] attribute DOMString contentEditable;
+  readonly attribute boolean isContentEditable;
 };
 
 interface HTMLElement : Element {
   // metadata attributes
-           attribute DOMString title;
-           attribute DOMString lang;
-           attribute boolean translate;
-           attribute DOMString dir;
-  readonly attribute DOMStringMap dataset;
-
-  // microdata
-           attribute boolean itemScope;
-  [PutForwards=value] readonly attribute DOMTokenList itemType;
-           attribute DOMString itemId;
-  [PutForwards=value] readonly attribute DOMTokenList itemRef;
-  [PutForwards=value] readonly attribute DOMTokenList itemProp;
-  readonly attribute HTMLPropertiesCollection properties;
-           attribute any itemValue; // acts as DOMString on setting
+  [CEReactions] attribute DOMString title;
+  [CEReactions] attribute DOMString lang;
+  [CEReactions] attribute boolean translate;
+  [CEReactions] attribute DOMString dir;
+  [SameObject] readonly attribute DOMStringMap dataset;
 
   // user interaction
-           attribute boolean hidden;
+  [CEReactions] attribute boolean hidden;
   void click();
-           attribute long tabIndex;
+  [CEReactions] attribute long tabIndex;
   void focus();
   void blur();
-           attribute DOMString accessKey;
+  [CEReactions] attribute DOMString accessKey;
   readonly attribute DOMString accessKeyLabel;
-           attribute boolean draggable;
-  [PutForwards=value] readonly attribute DOMTokenList dropzone;
-           attribute DOMString contentEditable;
-  readonly attribute boolean isContentEditable;
-           attribute HTMLMenuElement? contextMenu;
-           attribute boolean spellcheck;
+  [CEReactions] attribute boolean draggable;
+  [CEReactions, SameObject, PutForwards=value] readonly attribute DOMTokenList dropzone;
+  [CEReactions] attribute HTMLMenuElement? contextMenu;
+  [CEReactions] attribute boolean spellcheck;
   void forceSpellCheck();
 
-  // command API
-  readonly attribute DOMString? commandType;
-  readonly attribute DOMString? commandLabel;
-  readonly attribute DOMString? commandIcon;
-  readonly attribute boolean? commandHidden;
-  readonly attribute boolean? commandDisabled;
-  readonly attribute boolean? commandChecked;
+  [CEReactions, TreatNullAs=EmptyString] attribute DOMString innerText;
 };
 HTMLElement implements GlobalEventHandlers;
+HTMLElement implements DocumentAndElementEventHandlers;
+HTMLElement implements ElementContentEditable;
 
 interface HTMLUnknownElement : HTMLElement { };
 
@@ -1069,9 +1040,9 @@ interface HTMLMetaElement : HTMLElement {
 };
 
 interface HTMLStyleElement : HTMLElement {
-           attribute DOMString media;
-           attribute DOMString type;
-           attribute boolean scoped;
+  [CEReactions] attribute DOMString media;
+  [CEReactions] attribute DOMString nonce;
+  [CEReactions] attribute DOMString type;
 };
 HTMLStyleElement implements LinkStyle;
 
@@ -1130,7 +1101,7 @@ interface HTMLDivElement : HTMLElement {
 interface HTMLAnchorElement : HTMLElement {
   attribute DOMString target;
   attribute DOMString download;
-  [PutForwards=value] readonly attribute DOMTokenList ping;
+  [CEReactions] attribute USVString ping;
   attribute DOMString rel;
   [PutForwards=value] readonly attribute DOMTokenList relList;
   attribute DOMString hreflang;
@@ -1191,7 +1162,6 @@ interface HTMLIFrameElement : HTMLElement {
            attribute DOMString srcdoc;
            attribute DOMString name;
   [PutForwards=value] readonly attribute DOMTokenList sandbox;
-           attribute boolean seamless;
            attribute boolean allowFullscreen;
            attribute DOMString width;
            attribute DOMString height;
@@ -1207,7 +1177,6 @@ interface HTMLEmbedElement : HTMLElement {
            attribute DOMString width;
            attribute DOMString height;
   Document getSVGDocument();
-  legacycaller any (any... arguments);
 
   // also has obsolete members
 };
@@ -1230,8 +1199,6 @@ interface HTMLObjectElement : HTMLElement {
   boolean checkValidity();
   boolean reportValidity();
   void setCustomValidity(DOMString error);
-
-  legacycaller any (any... arguments);
 
   // also has obsolete members
 };
@@ -1319,12 +1286,8 @@ interface HTMLMediaElement : HTMLElement {
   readonly attribute boolean ended;
            attribute boolean autoplay;
            attribute boolean loop;
-  void play();
+  Promise<void> play();
   void pause();
-
-  // media controller
-           attribute DOMString mediaGroup;
-           attribute MediaController? controller;
 
   // controls
            attribute boolean controls;
@@ -1382,46 +1345,6 @@ interface VideoTrack {
   readonly attribute DOMString label;
   readonly attribute DOMString language;
            attribute boolean selected;
-};
-
-enum MediaControllerPlaybackState { "waiting", "playing", "ended" };
-[Constructor]
-interface MediaController : EventTarget {
-  readonly attribute unsigned short readyState; // uses HTMLMediaElement.readyState's values
-
-  readonly attribute TimeRanges buffered;
-  readonly attribute TimeRanges seekable;
-  readonly attribute unrestricted double duration;
-           attribute double currentTime;
-
-  readonly attribute boolean paused;
-  readonly attribute MediaControllerPlaybackState playbackState;
-  readonly attribute TimeRanges played;
-  void pause();
-  void unpause();
-  void play(); // calls play() on all media elements as well
-
-           attribute double defaultPlaybackRate;
-           attribute double playbackRate;
-
-           attribute double volume;
-           attribute boolean muted;
-
-           attribute EventHandler onemptied;
-           attribute EventHandler onloadedmetadata;
-           attribute EventHandler onloadeddata;
-           attribute EventHandler oncanplay;
-           attribute EventHandler oncanplaythrough;
-           attribute EventHandler onplaying;
-           attribute EventHandler onended;
-           attribute EventHandler onwaiting;
-
-           attribute EventHandler ondurationchange;
-           attribute EventHandler ontimeupdate;
-           attribute EventHandler onplay;
-           attribute EventHandler onpause;
-           attribute EventHandler onratechange;
-           attribute EventHandler onvolumechange;
 };
 
 interface TextTrackList : EventTarget {
@@ -1491,7 +1414,6 @@ dictionary TrackEventInit : EventInit {
 interface HTMLMapElement : HTMLElement {
            attribute DOMString name;
   readonly attribute HTMLCollection areas;
-  readonly attribute HTMLCollection images;
 };
 
 interface HTMLAreaElement : HTMLElement {
@@ -1500,7 +1422,7 @@ interface HTMLAreaElement : HTMLElement {
   attribute DOMString shape;
   attribute DOMString target;
   attribute DOMString download;
-  [PutForwards=value] readonly attribute DOMTokenList ping;
+  [CEReactions] attribute USVString ping;
   attribute DOMString rel;
   [PutForwards=value] readonly attribute DOMTokenList relList;
   // hreflang and type are not reflected
@@ -1522,8 +1444,6 @@ interface HTMLTableElement : HTMLElement {
   readonly attribute HTMLCollection rows;
   HTMLElement insertRow(optional long index = -1);
   void deleteRow(long index);
-           attribute boolean sortable;
-  void stopSorting();
 
   // also has obsolete members
 };
@@ -1556,22 +1476,14 @@ interface HTMLTableRowElement : HTMLElement {
   // also has obsolete members
 };
 
-interface HTMLTableDataCellElement : HTMLTableCellElement {
-  // also has obsolete members
-};
-
-interface HTMLTableHeaderCellElement : HTMLTableCellElement {
-           attribute DOMString scope;
-           attribute DOMString abbr;
-           attribute DOMString sorted;
-  void sort();
-};
-
 interface HTMLTableCellElement : HTMLElement {
-           attribute unsigned long colSpan;
-           attribute unsigned long rowSpan;
-  [PutForwards=value] readonly attribute DOMTokenList headers;
+  [CEReactions] attribute unsigned long colSpan;
+  [CEReactions] attribute unsigned long rowSpan;
+  [CEReactions] attribute DOMString headers;
   readonly attribute long cellIndex;
+
+  [CEReactions] attribute DOMString scope; // only conforming for th elements
+  [CEReactions] attribute DOMString abbr;  // only conforming for th elements
 
   // also has obsolete members
 };
@@ -1597,8 +1509,6 @@ interface HTMLFormElement : HTMLElement {
   void reset();
   boolean checkValidity();
   boolean reportValidity();
-
-  void requestAutocomplete();
 };
 
 interface HTMLLabelElement : HTMLElement {
@@ -1645,8 +1555,6 @@ interface HTMLInputElement : HTMLElement {
   [TreatNullAs=EmptyString] attribute DOMString value;
            attribute Date? valueAsDate;
            attribute unrestricted double valueAsNumber;
-           attribute double valueLow;
-           attribute double valueHigh;
            attribute unsigned long width;
 
   void stepUp(optional long n = 1);
@@ -1662,9 +1570,9 @@ interface HTMLInputElement : HTMLElement {
   readonly attribute NodeList labels;
 
   void select();
-           attribute unsigned long selectionStart;
-           attribute unsigned long selectionEnd;
-           attribute DOMString selectionDirection;
+           attribute unsigned long? selectionStart;
+           attribute unsigned long? selectionEnd;
+           attribute DOMString? selectionDirection;
   void setRangeText(DOMString replacement);
   void setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
   void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
@@ -1785,9 +1693,9 @@ interface HTMLTextAreaElement : HTMLElement {
   readonly attribute NodeList labels;
 
   void select();
-           attribute unsigned long selectionStart;
-           attribute unsigned long selectionEnd;
-           attribute DOMString selectionDirection;
+           attribute unsigned long? selectionStart;
+           attribute unsigned long? selectionEnd;
+           attribute DOMString? selectionDirection;
   void setRangeText(DOMString replacement);
   void setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
   void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
@@ -1872,17 +1780,6 @@ interface HTMLLegendElement : HTMLElement {
   // also has obsolete members
 };
 
-enum AutocompleteErrorReason { "" /* empty string */, "cancel", "disabled", "invalid" };
-
-[Constructor(DOMString type, optional AutocompleteErrorEventInit eventInitDict)]
-interface AutocompleteErrorEvent : Event {
-  readonly attribute AutocompleteErrorReason reason;
-};
-
-dictionary AutocompleteErrorEventInit : EventInit {
-  AutocompleteErrorReason reason;
-};
-
 enum SelectionMode {
   "select",
   "start",
@@ -1959,99 +1856,145 @@ interface HTMLTemplateElement : HTMLElement {
   readonly attribute DocumentFragment content;
 };
 
+interface HTMLSlotElement : HTMLElement {
+  /*[CEReactions]*/ attribute DOMString name;
+  sequence<Node> assignedNodes(optional AssignedNodesOptions options);
+};
+
+dictionary AssignedNodesOptions {
+  boolean flatten = false;
+};
+
 typedef (CanvasRenderingContext2D or WebGLRenderingContext) RenderingContext;
+callback BlobCallback = void (Blob? blob);
 
 interface HTMLCanvasElement : HTMLElement {
            attribute unsigned long width;
            attribute unsigned long height;
 
   RenderingContext? getContext(DOMString contextId, any... arguments);
-  boolean probablySupportsContext(DOMString contextId, any... arguments);
-
-  void setContext(RenderingContext context);
-  CanvasProxy transferControlToProxy();
 
   DOMString toDataURL(optional DOMString type, any... arguments);
-  void toBlob(FileCallback? _callback, optional DOMString type, any... arguments);
+  void toBlob(BlobCallback _callback, optional DOMString type, any... arguments);
 };
-
-[Exposed=(Window,Worker)]
-interface CanvasProxy {
-  void setContext(RenderingContext context);
-};
-// CanvasProxy implements Transferable;
 
 typedef (HTMLImageElement or
+         SVGImageElement) HTMLOrSVGImageElement;
+
+typedef (HTMLOrSVGImageElement or
          HTMLVideoElement or
          HTMLCanvasElement or
-         CanvasRenderingContext2D or
          ImageBitmap) CanvasImageSource;
 
 enum CanvasFillRule { "nonzero", "evenodd" };
 
-[Constructor(optional unsigned long width, unsigned long height), Exposed=(Window,Worker)]
-interface CanvasRenderingContext2D {
+dictionary CanvasRenderingContext2DSettings {
+  boolean alpha = true;
+};
 
+enum ImageSmoothingQuality { "low", "medium", "high" };
+
+interface CanvasRenderingContext2D {
   // back-reference to the canvas
   readonly attribute HTMLCanvasElement canvas;
+};
+CanvasRenderingContext2D implements CanvasState;
+CanvasRenderingContext2D implements CanvasTransform;
+CanvasRenderingContext2D implements CanvasCompositing;
+CanvasRenderingContext2D implements CanvasImageSmoothing;
+CanvasRenderingContext2D implements CanvasFillStrokeStyles;
+CanvasRenderingContext2D implements CanvasShadowStyles;
+CanvasRenderingContext2D implements CanvasFilters;
+CanvasRenderingContext2D implements CanvasRect;
+CanvasRenderingContext2D implements CanvasDrawPath;
+CanvasRenderingContext2D implements CanvasUserInterface;
+CanvasRenderingContext2D implements CanvasText;
+CanvasRenderingContext2D implements CanvasDrawImage;
+CanvasRenderingContext2D implements CanvasHitRegion;
+CanvasRenderingContext2D implements CanvasImageData;
+CanvasRenderingContext2D implements CanvasPathDrawingStyles;
+CanvasRenderingContext2D implements CanvasTextDrawingStyles;
+CanvasRenderingContext2D implements CanvasPath;
 
-  // canvas dimensions
-           attribute unsigned long width;
-           attribute unsigned long height;
-
-  // for contexts that aren't directly fixed to a specific canvas
-  void commit(); // push the image to the output bitmap
-
+[NoInterfaceObject]
+interface CanvasState {
   // state
   void save(); // push state on state stack
   void restore(); // pop state stack and restore state
+};
 
+[NoInterfaceObject]
+interface CanvasTransform {
   // transformations (default transform is the identity matrix)
-           attribute SVGMatrix currentTransform;
   void scale(unrestricted double x, unrestricted double y);
   void rotate(unrestricted double angle);
   void translate(unrestricted double x, unrestricted double y);
   void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+
+  [NewObject] DOMMatrix getTransform();
   void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+  void setTransform(optional DOMMatrixInit transform);
   void resetTransform();
 
+};
+
+[NoInterfaceObject]
+interface CanvasCompositing {
   // compositing
-           attribute unrestricted double globalAlpha; // (default 1.0)
-           attribute DOMString globalCompositeOperation; // (default source-over)
+  attribute unrestricted double globalAlpha; // (default 1.0)
+  attribute DOMString globalCompositeOperation; // (default source-over)
+};
 
+[NoInterfaceObject]
+interface CanvasImageSmoothing {
   // image smoothing
-           attribute boolean imageSmoothingEnabled; // (default true)
+  attribute boolean imageSmoothingEnabled; // (default true)
+  attribute ImageSmoothingQuality imageSmoothingQuality; // (default low)
 
-  // colours and styles (see also the CanvasDrawingStyles interface)
-           attribute (DOMString or CanvasGradient or CanvasPattern) strokeStyle; // (default black)
-           attribute (DOMString or CanvasGradient or CanvasPattern) fillStyle; // (default black)
+};
+
+[NoInterfaceObject]
+interface CanvasFillStrokeStyles {
+  // colours and styles (see also the CanvasPathDrawingStyles and CanvasTextDrawingStyles interfaces)
+  attribute (DOMString or CanvasGradient or CanvasPattern) strokeStyle; // (default black)
+  attribute (DOMString or CanvasGradient or CanvasPattern) fillStyle; // (default black)
   CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
   CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
-  CanvasPattern createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetition);
+  CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetition);
 
+};
+
+[NoInterfaceObject]
+interface CanvasShadowStyles {
   // shadows
-           attribute unrestricted double shadowOffsetX; // (default 0)
-           attribute unrestricted double shadowOffsetY; // (default 0)
-           attribute unrestricted double shadowBlur; // (default 0)
-           attribute DOMString shadowColor; // (default transparent black)
+  attribute unrestricted double shadowOffsetX; // (default 0)
+  attribute unrestricted double shadowOffsetY; // (default 0)
+  attribute unrestricted double shadowBlur; // (default 0)
+  attribute DOMString shadowColor; // (default transparent black)
+};
 
+[NoInterfaceObject]
+interface CanvasFilters {
+  // filters
+  attribute DOMString filter; // (default "none")
+};
+
+[NoInterfaceObject]
+interface CanvasRect {
   // rects
   void clearRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
   void fillRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
   void strokeRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
+};
 
-  // path API (see also CanvasPathMethods)
+[NoInterfaceObject]
+interface CanvasDrawPath {
+  // path API (see also CanvasPath)
   void beginPath();
   void fill(optional CanvasFillRule fillRule = "nonzero");
   void fill(Path2D path, optional CanvasFillRule fillRule = "nonzero");
   void stroke();
   void stroke(Path2D path);
-  void drawSystemFocusRing(Element element);
-  void drawSystemFocusRing(Path2D path, Element element);
-  boolean drawCustomFocusRing(Element element);
-  boolean drawCustomFocusRing(Path2D path, Element element);
-  void scrollPathIntoView();
-  void scrollPathIntoView(Path2D path);
   void clip(optional CanvasFillRule fillRule = "nonzero");
   void clip(Path2D path, optional CanvasFillRule fillRule = "nonzero");
   void resetClip();
@@ -2059,21 +2002,42 @@ interface CanvasRenderingContext2D {
   boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule fillRule = "nonzero");
   boolean isPointInStroke(unrestricted double x, unrestricted double y);
   boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
+};
 
-  // text (see also the CanvasDrawingStyles interface)
+[NoInterfaceObject]
+interface CanvasUserInterface {
+  void drawFocusIfNeeded(Element element);
+  void drawFocusIfNeeded(Path2D path, Element element);
+  void scrollPathIntoView();
+  void scrollPathIntoView(Path2D path);
+};
+
+[NoInterfaceObject]
+interface CanvasText {
+  // text (see also the CanvasPathDrawingStyles and CanvasTextDrawingStyles interfaces)
   void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
   void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
   TextMetrics measureText(DOMString text);
+};
 
+[NoInterfaceObject]
+interface CanvasDrawImage {
   // drawing images
   void drawImage(CanvasImageSource image, unrestricted double dx, unrestricted double dy);
   void drawImage(CanvasImageSource image, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
   void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
+};
 
+[NoInterfaceObject]
+interface CanvasHitRegion {
   // hit regions
   void addHitRegion(optional HitRegionOptions options);
   void removeHitRegion(DOMString id);
+  void clearHitRegions();
+};
 
+[NoInterfaceObject]
+interface CanvasImageData {
   // pixel manipulation
   ImageData createImageData(double sw, double sh);
   ImageData createImageData(ImageData imagedata);
@@ -2081,31 +2045,38 @@ interface CanvasRenderingContext2D {
   void putImageData(ImageData imagedata, double dx, double dy);
   void putImageData(ImageData imagedata, double dx, double dy, double dirtyX, double dirtyY, double dirtyWidth, double dirtyHeight);
 };
-CanvasRenderingContext2D implements CanvasDrawingStyles;
-CanvasRenderingContext2D implements CanvasPathMethods;
 
-[NoInterfaceObject, Exposed=(Window,Worker)]
-interface CanvasDrawingStyles {
+enum CanvasLineCap { "butt", "round", "square" };
+enum CanvasLineJoin { "round", "bevel", "miter"};
+enum CanvasTextAlign { "start", "end", "left", "right", "center" };
+enum CanvasTextBaseline { "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" };
+enum CanvasDirection { "ltr", "rtl", "inherit" };
+
+[NoInterfaceObject]
+interface CanvasPathDrawingStyles {
   // line caps/joins
-           attribute unrestricted double lineWidth; // (default 1)
-           attribute DOMString lineCap; // "butt", "round", "square" (default "butt")
-           attribute DOMString lineJoin; // "round", "bevel", "miter" (default "miter")
-           attribute unrestricted double miterLimit; // (default 10)
+  attribute unrestricted double lineWidth; // (default 1)
+  attribute CanvasLineCap lineCap; // (default "butt")
+  attribute CanvasLineJoin lineJoin; // (default "miter")
+  attribute unrestricted double miterLimit; // (default 10)
 
   // dashed lines
   void setLineDash(sequence<unrestricted double> segments); // default empty
   sequence<unrestricted double> getLineDash();
-           attribute unrestricted double lineDashOffset;
+  attribute unrestricted double lineDashOffset;
+};
 
+[NoInterfaceObject]
+interface CanvasTextDrawingStyles {
   // text
-           attribute DOMString font; // (default 10px sans-serif)
-           attribute DOMString textAlign; // "start", "end", "left", "right", "center" (default: "start")
-           attribute DOMString textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
-           attribute DOMString direction; // "ltr", "rtl", "inherit" (default: "inherit")
+  attribute DOMString font; // (default 10px sans-serif)
+  attribute CanvasTextAlign textAlign; // (default: "start")
+  attribute CanvasTextBaseline textBaseline; // (default: "alphabetic")
+  attribute CanvasDirection direction; // (default: "inherit")
 };
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
-interface CanvasPathMethods {
+interface CanvasPath {
   // shared path API methods
   void closePath();
   void moveTo(unrestricted double x, unrestricted double y);
@@ -2119,19 +2090,16 @@ interface CanvasPathMethods {
   void ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY, unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
 };
 
-[Exposed=(Window,Worker)]
 interface CanvasGradient {
   // opaque object
   void addColorStop(double offset, DOMString color);
 };
 
-[Exposed=(Window,Worker)]
 interface CanvasPattern {
   // opaque object
-  void setTransform(SVGMatrix transform);
+  void setTransform(optional DOMMatrixInit transform);
 };
 
-[Exposed=(Window,Worker)]
 interface TextMetrics {
   // x-direction
   readonly attribute double width; // advance width
@@ -2172,23 +2140,14 @@ interface ImageData {
   readonly attribute Uint8ClampedArray data;
 };
 
-[Constructor(optional Element scope), Exposed=(Window,Worker)]
-interface DrawingStyle { };
-DrawingStyle implements CanvasDrawingStyles;
-
 [Constructor,
  Constructor(Path2D path),
- Constructor(Path2D[] paths, optional CanvasFillRule fillRule = "nonzero"),
+ Constructor(sequence<Path2D> paths, optional CanvasFillRule fillRule = "nonzero"),
  Constructor(DOMString d), Exposed=(Window,Worker)]
 interface Path2D {
-  void addPath(Path2D path, optional SVGMatrix? transformation = null);
-  void addPathByStrokingPath(Path2D path, CanvasDrawingStyles styles, optional SVGMatrix? transformation = null);
-  void addText(DOMString text, CanvasDrawingStyles styles, SVGMatrix? transformation, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
-  void addPathByStrokingText(DOMString text, CanvasDrawingStyles styles, SVGMatrix? transformation, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
-  void addText(DOMString text, CanvasDrawingStyles styles, SVGMatrix? transformation, Path2D path, optional unrestricted double maxWidth);
-  void addPathByStrokingText(DOMString text, CanvasDrawingStyles styles, SVGMatrix? transformation, Path2D path, optional unrestricted double maxWidth);
+  void addPath(Path2D path, optional DOMMatrixInit transform);
 };
-Path2D implements CanvasPathMethods;
+Path2D implements CanvasPath;
 
 partial interface MouseEvent {
   readonly attribute DOMString? region;
@@ -2371,7 +2330,7 @@ interface BeforeUnloadEvent : Event {
            attribute DOMString returnValue;
 };
 
-[Exposed=Window,SharedWorker]
+[Exposed=(Window,SharedWorker)]
 interface ApplicationCache : EventTarget {
 
   // update status
@@ -2436,8 +2395,6 @@ typedef OnBeforeUnloadEventHandlerNonNull? OnBeforeUnloadEventHandler;
 [NoInterfaceObject]
 interface GlobalEventHandlers {
            attribute EventHandler onabort;
-           attribute EventHandler onautocomplete;
-           attribute EventHandler onautocompleteerror;
            attribute EventHandler onblur;
            attribute EventHandler oncancel;
            attribute EventHandler oncanplay;
@@ -2490,7 +2447,6 @@ interface GlobalEventHandlers {
            attribute EventHandler onseeking;
            attribute EventHandler onselect;
            attribute EventHandler onshow;
-           attribute EventHandler onsort;
            attribute EventHandler onstalled;
            attribute EventHandler onsubmit;
            attribute EventHandler onsuspend;
@@ -2498,6 +2454,13 @@ interface GlobalEventHandlers {
            attribute EventHandler ontoggle;
            attribute EventHandler onvolumechange;
            attribute EventHandler onwaiting;
+};
+
+[NoInterfaceObject]
+interface DocumentAndElementEventHandlers {
+           attribute EventHandler oncopy;
+           attribute EventHandler oncut;
+           attribute EventHandler onpaste;
 };
 
 [NoInterfaceObject]
@@ -2548,48 +2511,50 @@ Navigator implements NavigatorID;
 Navigator implements NavigatorLanguage;
 Navigator implements NavigatorOnLine;
 Navigator implements NavigatorContentUtils;
-Navigator implements NavigatorStorageUtils;
+Navigator implements NavigatorCookies;
 Navigator implements NavigatorPlugins;
+Navigator implements NavigatorConcurrentHardware;
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
 interface NavigatorID {
-  readonly attribute DOMString appCodeName; // constant "Mozilla"
-  readonly attribute DOMString appName;
+  [Exposed=Window] readonly attribute DOMString appCodeName; // constant "Mozilla"
+  readonly attribute DOMString appName; // constant "Netscape"
   readonly attribute DOMString appVersion;
   readonly attribute DOMString platform;
-  readonly attribute DOMString product; // constant "Gecko"
-  boolean taintEnabled(); // constant false
+  [Exposed=Window] readonly attribute DOMString product; // constant "Gecko"
+  [Exposed=Window] readonly attribute DOMString productSub;
   readonly attribute DOMString userAgent;
+  [Exposed=Window] readonly attribute DOMString vendor;
+  [Exposed=Window] readonly attribute DOMString vendorSub; // constant ""
 };
 
 [NoInterfaceObject, Exposed=(Window,Worker)]
 interface NavigatorLanguage {
-  readonly attribute DOMString? language;
-  readonly attribute DOMString[] languages;
+  readonly attribute DOMString language;
+  readonly attribute FrozenArray<DOMString> languages;
 };
 
 [NoInterfaceObject]
 interface NavigatorContentUtils {
   // content handler registration
-  void registerProtocolHandler(DOMString scheme, DOMString url, DOMString title);
-  void registerContentHandler(DOMString mimeType, DOMString url, DOMString title);
-  DOMString isProtocolHandlerRegistered(DOMString scheme, DOMString url);
-  DOMString isContentHandlerRegistered(DOMString mimeType, DOMString url);
-  void unregisterProtocolHandler(DOMString scheme, DOMString url);
-  void unregisterContentHandler(DOMString mimeType, DOMString url);
+  void registerProtocolHandler(DOMString scheme, USVString url, DOMString title);
+  void registerContentHandler(DOMString mimeType, USVString url, DOMString title);
+  DOMString isProtocolHandlerRegistered(DOMString scheme, USVString url);
+  DOMString isContentHandlerRegistered(DOMString mimeType, USVString url);
+  void unregisterProtocolHandler(DOMString scheme, USVString url);
+  void unregisterContentHandler(DOMString mimeType, USVString url);
 };
 
 [NoInterfaceObject]
-interface NavigatorStorageUtils {
+interface NavigatorCookies {
   readonly attribute boolean cookieEnabled;
-  void yieldForStorageUpdates();
 };
 
 [NoInterfaceObject]
 interface NavigatorPlugins {
-  readonly attribute PluginArray plugins;
-  readonly attribute MimeTypeArray mimeTypes;
-  readonly attribute boolean javaEnabled;
+  [SameObject] readonly attribute PluginArray plugins;
+  [SameObject] readonly attribute MimeTypeArray mimeTypes;
+  boolean javaEnabled();
 };
 
 interface PluginArray {
@@ -2597,6 +2562,11 @@ interface PluginArray {
   readonly attribute unsigned long length;
   getter Plugin? item(unsigned long index);
   getter Plugin? namedItem(DOMString name);
+};
+
+[NoInterfaceObject, Exposed=(Window,Worker)]
+interface NavigatorConcurrentHardware {
+  readonly attribute unsigned long long hardwareConcurrency;
 };
 
 interface MimeTypeArray {
@@ -2653,9 +2623,9 @@ interface MessageEvent : Event {
   readonly attribute DOMString origin;
   readonly attribute DOMString lastEventId;
   readonly attribute (WindowProxy or MessagePort)? source;
-  readonly attribute MessagePort[]? ports;
+  readonly attribute FrozenArray<MessagePort> ports;
 
-  void initMessageEvent(DOMString typeArg, boolean canBubbleArg, boolean cancelableArg, any dataArg, DOMString originArg, DOMString lastEventIdArg, (WindowProxy or MessagePort) sourceArg, MessagePort[]? portsArg);
+  void initMessageEvent(DOMString type, boolean bubbles, boolean cancelable, any data, DOMString origin, DOMString lastEventId, (WindowProxy or MessagePort) source, sequence<MessagePort> ports);
 };
 
 dictionary MessageEventInit : EventInit {
@@ -2748,16 +2718,6 @@ interface MessagePort : EventTarget {
 };
 // MessagePort implements Transferable;
 
-[Constructor, Exposed=(Window,Worker)]
-interface PortCollection {
-  void add(MessagePort port);
-  void remove(MessagePort port);
-  void clear();
-  void iterate(PortCollectionCallback callback);
-};
-
-callback PortCollectionCallback = void (MessagePort port);
-
 [Constructor(DOMString channel), Exposed=(Window,Worker)]
 interface BroadcastChannel : EventTarget {
   readonly attribute DOMString name;
@@ -2780,13 +2740,13 @@ interface WorkerGlobalScope : EventTarget {
   // also has additional members in a partial interface
 };
 
-[Global=Worker,DedicatedWorker]
+[Global=(Worker,DedicatedWorker),Exposed=DedicatedWorker]
 /*sealed*/ interface DedicatedWorkerGlobalScope : WorkerGlobalScope {
   void postMessage(any message, optional sequence<Transferable> transfer);
            attribute EventHandler onmessage;
 };
 
-[Global=Worker,SharedWorker]
+[Global=(Worker,SharedWorker),Exposed=SharedWorker]
 /*sealed*/ interface SharedWorkerGlobalScope : WorkerGlobalScope {
   readonly attribute DOMString name;
   readonly attribute ApplicationCache applicationCache;
@@ -2813,7 +2773,6 @@ interface SharedWorker : EventTarget {
 };
 SharedWorker implements AbstractWorker;
 
-[Exposed=Worker]
 partial interface WorkerGlobalScope { // not obsolete
   void importScripts(DOMString... urls);
   readonly attribute WorkerNavigator navigator;
@@ -3127,10 +3086,6 @@ partial interface HTMLTableCellElement {
   [TreatNullAs=EmptyString] attribute DOMString bgColor;
 };
 
-partial interface HTMLTableDataCellElement {
-           attribute DOMString abbr;
-};
-
 partial interface HTMLTableRowElement {
            attribute DOMString align;
            attribute DOMString ch;
@@ -3189,6 +3144,13 @@ setup(function() {
   iframe.hidden = true;
   document.body.appendChild(iframe);
 }, {explicit_done:true});
+
+function createInput(type) {
+  var input = document.createElement('input');
+  input.type = type;
+  return input;
+}
+
 window.onload = function() {
   idlArray.add_objects({
     NodeList: ['document.getElementsByName("name")'],
@@ -3196,66 +3158,12 @@ window.onload = function() {
     HTMLFormControlsCollection: ['document.createElement("form").elements'],
     RadioNodeList: [],
     HTMLOptionsCollection: ['document.createElement("select").options'],
-    HTMLPropertiesCollection: ['document.head.properties'],
-    PropertyNodeList: [],
     DOMStringMap: ['document.head.dataset'],
-    DOMElementMap: ['document.cssElementMap'],
     Transferable: [],
-    Document: ['iframe.contentDocument'],
+    Document: ['iframe.contentDocument', 'new Document()'],
     XMLDocument: ['document.implementation.createDocument(null, "", null)'],
-    HTMLElement: [
-      'document.createElement("noscript")',
-      'document.createElement("section")',
-      'document.createElement("nav")',
-      'document.createElement("article")',
-      'document.createElement("aside")',
-      'document.createElement("hgroup")',
-      'document.createElement("header")',
-      'document.createElement("footer")',
-      'document.createElement("address")',
-      'document.createElement("dt")',
-      'document.createElement("dd")',
-      'document.createElement("figure")',
-      'document.createElement("figcaption")',
-      'document.createElement("em")',
-      'document.createElement("strong")',
-      'document.createElement("small")',
-      'document.createElement("s")',
-      'document.createElement("cite")',
-      'document.createElement("dfn")',
-      'document.createElement("abbr")',
-      'document.createElement("code")',
-      'document.createElement("var")',
-      'document.createElement("samp")',
-      'document.createElement("kbd")',
-      'document.createElement("sub")',
-      'document.createElement("sup")',
-      'document.createElement("i")',
-      'document.createElement("b")',
-      'document.createElement("u")',
-      'document.createElement("mark")',
-      'document.createElement("ruby")',
-      'document.createElement("rt")',
-      'document.createElement("rp")',
-      'document.createElement("bdi")',
-      'document.createElement("bdo")',
-      'document.createElement("wbr")',
-      'document.createElement("summary")',
-      'document.createElement("acronym")',
-    ],
-    HTMLUnknownElement: [
-      'document.createElement("blink")',
-      'document.createElement("quasit")',
-      'document.createElement("bgsound")',
-      'document.createElement("isindex")',
-      'document.createElement("multicol")',
-      'document.createElement("nextid")',
-      'document.createElement("rb")',
-      'document.createElement("spacer")',
-      'document.createElement("basefont")',
-      'document.createElement("directory")',
-      'document.createElement("mod")',
-    ],
+    HTMLElement: ['document.createElement("noscript")'], // more tests in html/semantics/interfaces.js
+    HTMLUnknownElement: ['document.createElement("bgsound")'], // more tests in html/semantics/interfaces.js
     HTMLHtmlElement: ['document.createElement("html")'],
     HTMLHeadElement: ['document.createElement("head")'],
     HTMLTitleElement: ['document.createElement("title")'],
@@ -3265,20 +3173,12 @@ window.onload = function() {
     HTMLStyleElement: ['document.createElement("style")'],
     HTMLScriptElement: ['document.createElement("script")'],
     HTMLBodyElement: ['document.createElement("body")'],
-    HTMLHeadingElement: [
-      'document.createElement("h1")',
-      'document.createElement("h2")',
-      'document.createElement("h3")',
-      'document.createElement("h4")',
-      'document.createElement("h5")',
-      'document.createElement("h6")',
-    ],
+    HTMLHeadingElement: ['document.createElement("h1")'],
     HTMLParagraphElement: ['document.createElement("p")'],
     HTMLHRElement: ['document.createElement("hr")'],
     HTMLPreElement: [
       'document.createElement("pre")',
       'document.createElement("listing")',
-      'document.createElement("plaintext")',
       'document.createElement("xmp")',
     ],
     HTMLQuoteElement: [
@@ -3315,14 +3215,15 @@ window.onload = function() {
     AudioTrack: [],
     VideoTrackList: [],
     VideoTrack: [],
-    MediaController: ['new MediaController()'],
     TextTrackList: ['document.createElement("video").textTracks'],
     TextTrack: ['document.createElement("track").track'],
     TextTrackCueList: ['document.createElement("video").addTextTrack("subtitles").cues'],
     TextTrackCue: [],
     DataCue: [],
     TimeRanges: ['document.createElement("video").buffered'],
-    TrackEvent: ['new TrackEvent("addtrack"; {track:document.createElement("track").track})'],
+    TrackEvent: ['new TrackEvent("addtrack", {track:document.createElement("track").track})'],
+    HTMLTemplateElement: ['document.createElement("template")'],
+    HTMLSlotElement: ['document.createElement("slot")'],
     HTMLCanvasElement: ['document.createElement("canvas")'],
     CanvasRenderingContext2D: ['document.createElement("canvas").getContext("2d")'],
     CanvasGradient: [],
@@ -3343,14 +3244,39 @@ window.onload = function() {
       'document.createElement("tfoot")',
     ],
     HTMLTableRowElement: ['document.createElement("tr")'],
-    HTMLTableDataCellElement: ['document.createElement("td")'],
-    HTMLTableHeaderCellElement: ['document.createElement("th")'],
-    HTMLTableCellElement: [],
+    HTMLTableCellElement: [
+      'document.createElement("td")',
+      'document.createElement("th")',
+    ],
     HTMLFormElement: ['document.createElement("form")'],
     HTMLFieldsetElement: ['document.createElement("fieldset")'],
     HTMLLegendElement: ['document.createElement("legend")'],
     HTMLLabelElement: ['document.createElement("label")'],
-    HTMLInputElement: ['document.createElement("input")'],
+    HTMLInputElement: [
+      'document.createElement("input")',
+      'createInput("text")',
+      'createInput("hidden")',
+      'createInput("search")',
+      'createInput("tel")',
+      'createInput("url")',
+      'createInput("email")',
+      'createInput("password")',
+      'createInput("date")',
+      'createInput("month")',
+      'createInput("week")',
+      'createInput("time")',
+      'createInput("datetime-local")',
+      'createInput("number")',
+      'createInput("range")',
+      'createInput("color")',
+      'createInput("checkbox")',
+      'createInput("radio")',
+      'createInput("file")',
+      'createInput("submit")',
+      'createInput("image")',
+      'createInput("reset")',
+      'createInput("button")'
+    ],
     HTMLButtonElement: ['document.createElement("button")'],
     HTMLSelectElement: ['document.createElement("select")'],
     HTMLDataListElement: ['document.createElement("datalist")'],
@@ -3363,7 +3289,6 @@ window.onload = function() {
     HTMLMeterElement: ['document.createElement("meter")'],
     ValidityState: ['document.createElement("input").validity'],
     HTMLDetailsElement: ['document.createElement("details")'],
-    HTMLCommandElement: ['document.createElement("command")'],
     HTMLMenuElement: ['document.createElement("menu")'],
     Window: ['window'],
     BarProp: [],

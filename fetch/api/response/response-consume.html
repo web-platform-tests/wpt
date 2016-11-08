@@ -8,6 +8,7 @@
     <meta name="author" title="Canon Research France" href="https://www.crf.canon.fr">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="../resources/utils.js"></script>
   </head>
   <body>
     <script>
@@ -18,8 +19,11 @@
       });
     }
 
-    function checkBodyBlob(response, expectedBody) {
+    function checkBodyBlob(response, expectedBody, checkContentType) {
       return response.blob().then(function(bodyAsBlob) {
+        if (checkContentType)
+          assert_equals(bodyAsBlob.type, "text/plain", "Blob body type should be computed from the response Content-Type");
+
         var promise = new Promise( function (resolve, reject) {
           var reader = new FileReader();
           reader.onload = function(evt) {
@@ -39,16 +43,14 @@
 
     function checkBodyArrayBuffer(response, expectedBody) {
       return response.arrayBuffer().then( function(bodyAsArrayBuffer) {
-        var decoder = new TextDecoder("utf-8");
-        var strBody = decoder.decode(bodyAsArrayBuffer);
-        assert_equals(strBody, expectedBody, "Retrieve and verify response's body");
+        validateBufferFromString(bodyAsArrayBuffer, expectedBody, "Retrieve and verify response's body");
         assert_true(response.bodyUsed, "body as arrayBuffer: bodyUsed turned true");
       });
     }
 
-    function checkBodyJson(response, expectedBody) {
-      return response.json().then(function(bodyAsJson) {
-        var strBody = JSON.stringify(bodyAsJson)
+    function checkBodyJSON(response, expectedBody) {
+      return response.json().then(function(bodyAsJSON) {
+        var strBody = JSON.stringify(bodyAsJSON)
         assert_equals(strBody, expectedBody, "Retrieve and verify response's body");
         assert_true(response.bodyUsed, "body as json: bodyUsed turned true");
       });
@@ -61,21 +63,74 @@
      });
     }
 
-    function checkResponseBody(body, bodyType, checkFunction) {
+    function checkResponseBody(body, bodyType, bodyConsumingType, checkFunction) {
       promise_test(function(test) {
-        var response = new Response(body);
+        var response = new Response(body, { "headers": [["Content-Type", "text/PLAIN"]] });
         assert_false(response.bodyUsed, "bodyUsed is false at init");
         return checkFunction(response, body);
-      }, "Consume response's body as " + bodyType);
+      }, "Consume " + bodyType + " response's body as " + bodyConsumingType);
     }
 
     var formData = new FormData();
-    formData.append("name", "value")
-    checkResponseBody("This is response's body", "text", checkBodyText);
-    checkResponseBody("This is response's body", "blob", checkBodyBlob);
-    checkResponseBody("This is response's body", "arrayBuffer", checkBodyArrayBuffer);
-    checkResponseBody(JSON.stringify("This is response's body"), "json", checkBodyJson);
-    checkResponseBody(formData, "formData", checkBodyFormData);
+    formData.append("name", "value");
+    var textData = JSON.stringify("This is response's body");
+    var blob = new Blob([textData], { "type" : "text/plain" });
+    var urlSearchParamsData = "name=value";
+    var urlSearchParams = new URLSearchParams(urlSearchParamsData);
+
+    checkResponseBody(textData, "text", "text", checkBodyText);
+    checkResponseBody(textData, "text", "blob", function(response, body) { return checkBodyBlob(response, body, true); });
+    checkResponseBody(textData, "text", "arrayBuffer", checkBodyArrayBuffer);
+    checkResponseBody(textData, "text", "json", checkBodyJSON);
+    checkResponseBody(formData, "formdata", "formData", checkBodyFormData);
+    checkResponseBody(urlSearchParams, "URLSearchParams", "text", function(response) { return checkBodyText(response, urlSearchParamsData); });
+    checkResponseBody(urlSearchParams, "URLSearchParams", "blob", function(response, body) { return checkBodyBlob(response, urlSearchParamsData, false); });
+    checkResponseBody(urlSearchParams, "URLSearchParams", "arrayBuffer", function(response) { return checkBodyArrayBuffer(response, urlSearchParamsData); });
+
+    function checkBlobResponseBody(blobBody, blobData, bodyType, checkFunction) {
+      promise_test(function(test) {
+        var response = new Response(blobBody);
+        assert_false(response.bodyUsed, "bodyUsed is false at init");
+        return checkFunction(response, blobData);
+      }, "Consume blob response's body as " + bodyType);
+    }
+
+    checkBlobResponseBody(blob, textData, "blob", checkBodyBlob);
+    checkBlobResponseBody(blob, textData, "text", checkBodyText);
+    checkBlobResponseBody(blob, textData, "json", checkBodyJSON);
+    checkBlobResponseBody(blob, textData, "arrayBuffer", checkBodyArrayBuffer);
+
+    function checkReadableStreamResponseBody(streamData, bodyType, checkFunction) {
+      promise_test(function(test) {
+        var stream = new ReadableStream({
+          start: function(controller) {
+            controller.enqueue((stringToArray(streamData)));
+            controller.close();
+          }
+        });
+        var response = new Response(stream);
+        assert_false(response.bodyUsed, "bodyUsed is false at init");
+        return checkFunction(response, streamData);
+      }, "Consume stream response's body as " + bodyType);
+    }
+
+    checkReadableStreamResponseBody(textData, "blob", checkBodyBlob);
+    checkReadableStreamResponseBody(textData, "text", checkBodyText);
+    checkReadableStreamResponseBody(textData, "json", checkBodyJSON);
+    checkReadableStreamResponseBody(textData, "arrayBuffer", checkBodyArrayBuffer);
+
+    function checkFetchedResponseBody(bodyType, checkFunction) {
+      return promise_test(function(test) {
+        return fetch("../resources/top.txt").then(function(response) {
+          assert_false(response.bodyUsed, "bodyUsed is false at init");
+          return checkFunction(response, "top");
+        });
+      }, "Consume fetched response's body as " + bodyType);
+    }
+    checkFetchedResponseBody("blob", checkBodyBlob);
+    checkFetchedResponseBody("text", checkBodyText);
+    checkFetchedResponseBody("arrayBuffer", checkBodyArrayBuffer);
+
     </script>
   </body>
 </html>

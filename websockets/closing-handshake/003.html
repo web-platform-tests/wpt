@@ -3,6 +3,8 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../constants.js?pipe=sub></script>
+<meta name="variant" content="">
+<meta name="variant" content="?wss">
 <div id=log></div>
 <script>
 async_test(function(t) {
@@ -12,6 +14,7 @@ async_test(function(t) {
     ws.close();
   });
   ws.onclose = t.step_func(function(e) {
+    assert_equals(e.code, 1005, 'e.code');
     assert_equals(e.wasClean, true, 'e.wasClean');
     ws.onclose = t.step_func(function() {assert_unreached()});
     setTimeout(t.step_func(function() {t.done()}), 50);

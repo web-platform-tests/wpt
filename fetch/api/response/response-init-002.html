@@ -52,11 +52,19 @@
       checkResponseInit(urlSearchParams, "application/x-www-form-urlencoded;charset=UTF-8", "name=value");
       checkResponseInit(usvString, "text/plain;charset=UTF-8", "This is a USVString");
 
-      async_test(function(test) {
+      promise_test(function(test) {
         var body = "This is response body";
         var response = new Response(body);
-        readTextStream(response.body.getReader(), test, body);
+        return validateStreamFromString(response.body.getReader(), body);
       }, "Read Response's body as readableStream");
+
+      promise_test(function(test) {
+        var response = new Response("This is my fork", {"headers" : [["Content-Type", ""]]});
+        return response.blob().then(function(blob) {
+          assert_equals(blob.type, "", "Blob type should be the empty string");
+        });
+      }, "Testing empty Response Content-Type header");
+
     </script>
   </body>
 </html>

@@ -49,7 +49,7 @@ def get_tests(base_dir, file_name, tests_list):
 def process_test(test):
     (new, new_path) = tempfile.mkstemp()
     script_tag_found = False
-    with open(test) as test_file:
+    with open(test, "r") as test_file:
         for line in test_file:
             if not script_tag_found and "<script" in line:
                 indent = ' ' * line.index('<')
@@ -81,7 +81,7 @@ def main():
     else:
         directory = tempfile.mkdtemp()
         print("Cloning WebGL repository into temporary directory {}".format(directory))
-        subprocess.check_call(["git", "clone", KHRONOS_REPO_URL, directory])
+        subprocess.check_call(["git", "clone", KHRONOS_REPO_URL, directory, "--depth", "1"])
 
     suite_dir = os.path.join(directory, "conformance-suites", version)
     print("Test suite directory: {}".format(suite_dir))
@@ -109,6 +109,9 @@ def main():
 
     # Remove html files that are not tests
     for dirpath, dirnames, filenames in os.walk(destination):
+        if '/resources' in dirpath:
+          continue # Most of the files under resources directories are used
+
         for f in filenames:
             if not f.endswith('.html'):
                 continue

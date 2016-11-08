@@ -3,9 +3,6 @@ import os
 ccdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # based on https://github.com/w3c/web-platform-tests/blob/275544eab54a0d0c7f74ccc2baae9711293d8908/url/urltestdata.txt
 invalid = {
-    "scheme-trailing-tab": "a:\tfoo.com",
-    "scheme-trailing-newline": "a:\nfoo.com",
-    "scheme-trailing-cr": "a:\rfoo.com",
     "scheme-trailing-space": "a: foo.com",
     "scheme-trailing-tab": "a:\tfoo.com",
     "scheme-trailing-newline": "a:\nfoo.com",
@@ -29,6 +26,7 @@ invalid = {
     "host-newline": "http://example.\norg",
     "host-cr": "http://example.\rorg",
     "host-square-brackets-port-contains-colon": "http://[1::2]:3:4",
+    "port-999999": "http://f:999999/c",
     "port-single-letter": "http://f:b/c",
     "port-multiple-letters": "http://f:fifty-two/c",
     "port-leading-colon": "http://2001::1",
@@ -103,7 +101,6 @@ valid_absolute = {
     "port-none-but-colon": "http://f:/c",
     "port-0": "http://f:0/c",
     "port-00000000000000": "http://f:00000000000000/c",
-    "port-00000000000000000000080": "http://f:00000000000000000000080/c",
     "port-00000000000000000000080": "http://f:00000000000000000000080/c",
     "userinfo-host-port-path": "http://a:b@c:29/d",
     "userinfo-username-non-alpha": "http://foo.com:b@d/",

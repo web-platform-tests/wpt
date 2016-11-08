@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Presentation API - monitor screen availability tests for Controlling User Agent</title>
+<link rel="author" title="Marius Wessel" href="http://www.fokus.fraunhofer.de">
+<link rel="help" href="http://w3c.github.io/presentation-api/#dfn-controlling-user-agent">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
+
+<script>
+    // ---------------------------------
+    // Helper Function
+    // ---------------------------------
+    var createRequestObject = function () {
+        var request = new PresentationRequest(presentationUrls);
+        return request;
+    }
+
+    // ---------------------------------
+    // Screen Availability Tests - begin
+    // ---------------------------------
+
+    // Instance of Promise Test
+    test(function () {
+        var request = createRequestObject();
+        assert_true(request.getAvailability() instanceof Promise);
+    }, 'The request is an Promise.')
+
+    // Instance of PresentationRequest Test
+    test(function () {
+        var request = createRequestObject();
+        assert_true(request instanceof PresentationRequest);
+    }, 'The request is an instance of PresentationRequest.')
+
+    // Instance of PresentationAvailability Test
+    promise_test(function () {
+        var request = createRequestObject();
+
+        return request.getAvailability()
+                .then(function (availability) {
+                    assert_true(availability instanceof PresentationAvailability);
+                });
+    }, "The promise is an instance of PresentationAvailability");
+
+    // Availability.value is set Test
+    promise_test(function () {
+        var request = createRequestObject();
+
+        return request.getAvailability()
+                .then(function (availability) {
+                    assert_true(typeof availability.value == 'boolean');
+                });
+    }, "The availability has an boolean value.");
+
+
+    // Best Case Scenario Test
+    // -----------------------
+    promise_test(function () {
+        var request = createRequestObject();
+
+        return request.getAvailability()
+                .then(function (availability) {
+                    assert_true(availability.value);
+                });
+    }, "There is an availability.");
+    // -------------------------------
+    // Screen Availability Tests - end
+    // -------------------------------
+</script>

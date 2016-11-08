@@ -43,9 +43,9 @@ function run_test() {
     }, "Large length")
 
     test(function () {
-	var arrayA = new Int8Array(10);
-	arrayB = self.crypto.getRandomValues(arrayA);
-	assert_true( arrayA == arrayB, "arrays match");
+        var arrayA = new Int8Array(10);
+        arrayB = self.crypto.getRandomValues(arrayA);
+        assert_true( arrayA == arrayB, "arrays match");
     }, "Returned view is the same object as is passed to the function");
 
     test(function() {

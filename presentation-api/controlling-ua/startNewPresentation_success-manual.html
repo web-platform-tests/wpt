@@ -53,10 +53,6 @@
                             resolve();
                         };
 
-                        t.step_timeout(function() {
-                            reject('A "connect" event did not fire when the presentation connection was established.')
-                        }, 5000);
-
                         // Check, if the connection ID is set
                         assert_true(!!connection.id, 'The connection ID is set.');
                         // Check the type of the connection.id

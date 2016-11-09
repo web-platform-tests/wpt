@@ -13,8 +13,12 @@
 
 
 <script>
-    // check event order
-    var order = ['RESOLVE_START', 'FIRE_CONNECTIONAVAILABLE', 'FIRE_CONNECTED'];
+    // description of event order
+    var description = [
+        "Phase #1: Promise is resolved",
+        "Phase #2: 'connectionavailable' event fired",
+        "Phase #3: 'connect' event fired"
+    ];
     var step = 0;
 
     // presentation connection
@@ -34,14 +38,7 @@
     presentBtn.onclick = function () {
         presentBtn.disabled = true;
         promise_test(function (t) {
-            var request = new PresentationRequest(presentationUrls);
-            return new Promise(function(resolve, reject) {
-                request.onconnectionavailable = t.step_func(function(evt) {
-                    // Check the order #2: "connectionavailable" event fires
-                    assert_equals(order[step], 'FIRE_CONNECTIONAVAILABLE', 'A "connectionavailable" event fires after Promise from PresentationRequest.start() resolves.');
-                    step++;
-                    assert_equals(connection, evt.connection, 'Both Promise from PresentationRequest() and a "connectionavailable" event handler receive the same presentation connection.');
-                });
+            var phase = -1, actual = -1;
 
             // increment the count in the actual event order
             var count = function(evt) { actual++; return evt; };

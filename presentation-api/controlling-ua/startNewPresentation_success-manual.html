@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Presentation API, start new presentation tests for Controlling User Agent (success - manual test)</title>
+<title>Checking the chain of events when starting a new presentation</title>
 <link rel="author" title="Marius Wessel" href="http://www.fokus.fraunhofer.de">
 <link rel="author" title="Tomoyuki Shimizu" href="https://github.com/tomoyukilabs">
 <link rel="help" href="http://w3c.github.io/presentation-api/#dfn-controlling-user-agent">
@@ -9,10 +9,24 @@
 <script src="common.js"></script>
 
 <p>Click the button below and select the available presentation display, to start the manual test.</p>
-<button id="presentBtn" onclick="startPresentation()">Start Presentation Test</button>
+<button id="presentBtn">Start Presentation Test</button>
 
 
 <script>
+    // description of event order
+    var description = [
+        "Phase #1: Promise is resolved",
+        "Phase #2: 'connectionavailable' event fired",
+        "Phase #3: 'connect' event fired"
+    ];
+    var step = 0;
+
+    // presentation connection
+    var connection;
+
+    // disable the timeout function for the tests
+    setup({explicit_timeout: true});
+
     // ----------
     // DOM Object
     // ----------
@@ -21,29 +35,56 @@
     // ---------------------------------------------
     // Start New Presentation Test (success) - begin
     // ---------------------------------------------
-    var startPresentation = function () {
+    presentBtn.onclick = function () {
         presentBtn.disabled = true;
-        promise_test(function () {
+        promise_test(function (t) {
+            var phase = -1, actual = -1;
+
+            // increment the count in the actual event order
+            var count = function(evt) { actual++; return evt; };
+            // increment the count in the expected event order and compare it with the actual event order
+            var checkPhase = function(evt) { phase++; assert_equals(description[actual], description[phase], 'Event order is incorrect.'); return evt; };
+
             var request = new PresentationRequest(presentationUrls);
-            return request.start()
-                    .then(function (connection) {
+            var eventWatcher = new EventWatcher(t, request, 'connectionavailable');
+            var waitConnectionavailable = eventWatcher.wait_for('connectionavailable').then(count);
+            var waitConnect;
 
-                        // Check the initial state of a presentation connection
-                        assert_equals(connection.state, 'connecting', 'The initial state of the presentation connection is "connecting".');
+            return request.start().then(count)
+                .then(checkPhase).then(function (c) {
+                    // Phase #1: Promise is resolved
+                    connection = c;
 
-                        // Check, if the connection ID is set
-                        assert_true(!!connection.id, 'The connection ID is set.');
+                    // No more user input needed, re-enable timeout
+                    t.step_timeout(function() {
+                        t.force_timeout();
+                        t.done();
+                    }, 5000);
 
-                        // Check the type of the connection.id
-                        assert_true(typeof connection.id === 'string', 'The connection ID is a string.');
+                    // Check the initial state of the presentation connection
+                    assert_equals(connection.state, 'connecting', 'Check the initial state of the presentation connection.');
+                    assert_true(!!connection.id, 'The connection ID is set.');
+                    assert_true(typeof connection.id === 'string', 'The connection ID is a string.');
+                    assert_true(connection instanceof PresentationConnection, 'The connection is an instance of PresentationConnection.');
 
-                        // Check the instance of the connection
-                        assert_true(connection instanceof PresentationConnection, 'The connection is an instance of PresentationConnection.');
-                    });
-        }, "The presentation was started successfully.");
+                    var eventWatcher = new EventWatcher(t, connection, 'connect');
+                    waitConnect = eventWatcher.wait_for('connect').then(count);
+
+                    return waitConnectionavailable;
+                })
+                .then(checkPhase).then(function (evt) {
+                    // Phase #2: "connectionavailable" event fired
+                    assert_equals(connection, evt.connection, 'Both Promise from PresentationRequest() and a "connectionavailable" event handler receive the same presentation connection.');
+
+                    return waitConnect;
+                })
+                .then(checkPhase).then(function () {
+                    // Phase #3: "connect" event fired
+                    assert_equals(connection.state, 'connected', 'The state of the presentation connection is "connected" when a "connect" event fires.');
+                });
+        });
     }
     // -------------------------------------------
     // Start New Presentation Test (success) - end
     // -------------------------------------------
 </script>
-

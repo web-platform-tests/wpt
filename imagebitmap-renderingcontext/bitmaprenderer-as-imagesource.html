@@ -21,7 +21,7 @@ function consumeImageBitmap(image, t)
     var myCtx = myCanvas.getContext('bitmaprenderer');
     myCtx.transferFromImageBitmap(image);
 
-    return createImageBitmap(myCanvas).then(t.step_func_done(function(imageBitmap) {
+    createImageBitmap(myCanvas).then(t.step_func_done(function(imageBitmap) {
         assert_equals(imageBitmap.width, 20);
         assert_equals(imageBitmap.height, 20);
 
@@ -42,7 +42,7 @@ async_test(function(t) {
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, width, height);
     createImageBitmap(canvas).then(t.step_func(function(image) {
-        return consumeImageBitmap(image, t);
+        consumeImageBitmap(image, t);
     }));
 }, 'Test that createImageBitmap from a bitmaprenderer canvas produces correct result');
 
@@ -52,8 +52,8 @@ async_test(function(t) {
     canvas.height = height;
     var ctx = canvas.getContext('bitmaprenderer');
     createImageBitmap(canvas).then(t.step_func_done(function(image) {
-        assert_equals(image.width, 10);
-        assert_equals(image.height, 10);
+        assert_equals(image.width, width);
+        assert_equals(image.height, height);
 
         var dstCanvas = document.createElement('canvas');
         dstCanvas.width = width;
@@ -72,8 +72,8 @@ async_test(function(t) {
     var ctx = canvas.getContext('bitmaprenderer');
     ctx.transferFromImageBitmap(null);
     createImageBitmap(canvas).then(t.step_func_done(function(image) {
-        assert_equals(image.width, 10);
-        assert_equals(image.height, 10);
+        assert_equals(image.width, width);
+        assert_equals(image.height, height);
 
         var dstCanvas = document.createElement('canvas');
         dstCanvas.width = width;

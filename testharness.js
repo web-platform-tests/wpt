@@ -389,7 +389,7 @@ policies and contribution forms [3].
         self.addEventListener("connect",
                 function(message_event) {
                     this_obj._add_message_port(message_event.source);
-                });
+                }, false);
     }
     SharedWorkerTestEnvironment.prototype = Object.create(WorkerTestEnvironment.prototype);
 
@@ -430,7 +430,7 @@ policies and contribution forms [3].
                             this_obj._add_message_port(event.source);
                         }
                     }
-                });
+                }, false);
 
         // The oninstall event is received after the service worker script and
         // all imported scripts have been fetched and executed. It's the
@@ -586,7 +586,7 @@ policies and contribution forms [3].
         });
 
         for (var i = 0; i < eventTypes.length; i++) {
-            watchedNode.addEventListener(eventTypes[i], eventHandler);
+            watchedNode.addEventListener(eventTypes[i], eventHandler, false);
         }
 
         /**
@@ -611,7 +611,7 @@ policies and contribution forms [3].
 
         function stop_watching() {
             for (var i = 0; i < eventTypes.length; i++) {
-                watchedNode.removeEventListener(eventTypes[i], eventHandler);
+                watchedNode.removeEventListener(eventTypes[i], eventHandler, false);
             }
         };
 
@@ -2686,8 +2686,8 @@ policies and contribution forms [3].
         }
     };
 
-    addEventListener("error", error_handler);
-    addEventListener("unhandledrejection", function(e){ error_handler(e.reason); });
+    addEventListener("error", error_handler, false);
+    addEventListener("unhandledrejection", function(e){ error_handler(e.reason); }, false);
 
     test_environment.on_tests_ready();
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>[Optional] Starting a presentation from the browser using a default presentation request. (success - manual)</title>
+<title>[Optional] Starting a presentation from the browser using a default presentation request.</title>
 <link rel="author" title="Marius Wessel" href="http://www.fokus.fraunhofer.de">
 <link rel="author" title="Tomoyuki Shimizu" href="https://github.com/tomoyukilabs">
 <link rel="help" href="http://w3c.github.io/presentation-api/#dom-presentation-defaultrequest">
@@ -41,10 +41,6 @@
         button.onclick = t.step_func_done(function() {
             assert_unreached('This browser does not support defaultRequest.');
         });
-        // check if defaultRequest is an instance of PresentationRequest or null
-        var defaultRequest = navigator.presentation.defaultRequest;
-        assert_true(defaultRequest instanceof PresentationRequest || defaultRequest === null,
-            'navigator.presentation.defaultRequest must be an instance of PresentationRequest or null.');
         // set up a default presentation request
         var request = new PresentationRequest(presentationUrls);
         navigator.presentation.defaultRequest = request;

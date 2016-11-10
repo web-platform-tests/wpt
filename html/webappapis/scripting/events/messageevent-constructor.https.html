@@ -77,20 +77,20 @@ test(function() {
 }, "All parameters to initMessageEvent should be mandatory")
 
 promise_test(function(t) {
-    var worker_url = '/service-workers/service-worker/resources/empty-worker.js';
-    var scope = '/service-workers/service-worker/resources/';
+    var worker_url = "/service-workers/service-worker/resources/empty-worker.js";
+    var scope = "/service-workers/service-worker/resources/";
     var registration;
 
     return service_worker_unregister_and_register(t, worker_url, scope)
       .then(function(r) {
           registration = r;
-          return wait_for_state(t, r.installing, 'activated');
+          return wait_for_state(t, r.installing, "activated");
         })
       .then(function() {
           var ev = new MessageEvent("test", { source: registration.active });
           assert_equals(ev.source, registration.active, "source attribute should return the ServiceWorker");
           service_worker_unregister(t, scope);
         });
-  }, 'Passing ServiceWorker for source member');
+  }, "Passing ServiceWorker for source member");
 
 </script>

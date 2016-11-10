@@ -19,17 +19,17 @@ promise_test(function(t) {
           var w = frame.contentWindow;
           var worker = w.navigator.serviceWorker.controller;
           assert_equals(
-              ServiceWorkerMessageEvent, undefined,
-              'ServiceWorkerMessageEvent should not be defined');
+              self.ServiceWorkerMessageEvent, undefined,
+              'ServiceWorkerMessageEvent should not be defined.');
           return new Promise(function(resolve) {
               w.navigator.serviceWorker.onmessage = t.step_func(function(e) {
                   assert_true(
                       e instanceof w.MessageEvent,
-                      'message events should use MessageEvent interface');
+                      'message events should use MessageEvent interface.');
                   assert_true(e.source instanceof w.ServiceWorker);
                   assert_equals(e.type, 'message');
                   assert_equals(e.source, worker,
-                                'Source worker should equal to the controller');
+                                'source should equal to the controller.');
                   assert_equals(e.ports.length, 0);
                   resolve();
                 });

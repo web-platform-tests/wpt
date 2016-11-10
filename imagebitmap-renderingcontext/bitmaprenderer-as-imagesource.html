@@ -27,7 +27,7 @@ function consumeImageBitmap(image, t)
         // myCanvas, and hence myCanvas.width/height is ignored. Therefore,
         // this created |imageBitmap| should have the same size as the |image|.
         assert_equals(imageBitmap.width, width);
-        assert_equals(imageBitmap.height, width);
+        assert_equals(imageBitmap.height, height);
 
         var dstCanvas = document.createElement('canvas');
         dstCanvas.width = dstCanvas.height = 20;

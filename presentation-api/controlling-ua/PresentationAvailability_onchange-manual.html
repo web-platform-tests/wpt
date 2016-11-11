@@ -29,7 +29,7 @@
 
       function wait() {
         notice.textContent = 'Please wait for a moment... (It might take long time)';
-        
+
         // set timeout to observe the presentation availability
         timeout = t.step_timeout(function() {
           t.force_timeout();
@@ -71,7 +71,6 @@
         var eventWatcher = new EventWatcher(t, availability, 'change');
         return eventWatcher.wait_for(['change', 'change']);
       });
-
 
       // check the change of PresentationAvailability.value twice; "true to false" and "false to true"
       return request.getAvailability().then(check);

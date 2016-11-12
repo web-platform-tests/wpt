@@ -379,11 +379,11 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
           if (fres.body.items.length) {
             var looksGood = true;
             fres.body.items.forEach(function(item) {
-              if (!item.hasOwnProperty("@context")) {
+              if (!item.hasOwnProperty("type")) {
                 looksGood = false;
               }
             });
-            assert_true(looksGood, "All annotations in returned page contain @context");
+            assert_true(looksGood, "All annotations in returned page contain type Annotation");
           } else {
             assert_true(false, "Returned page contains annotations");
           }

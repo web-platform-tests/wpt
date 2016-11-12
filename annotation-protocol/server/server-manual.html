@@ -63,7 +63,9 @@ function request(method, url, headers, content) {
         resp.text = d;
         // we have it; what is it?
         var type = xhr.getResponseHeader('Content-Type');
-        resp.type = type.split(';')[0];
+        if (type && "string" === typeof type) {
+          resp.type = type.split(';')[0];
+        }
         if (resp.type === MEDIA_TYPE) {
           try {
             d = JSON.parse(d);
@@ -313,12 +315,27 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
 
   var theCreation = request("POST", container, [ [ 'Content-Type', MEDIA_TYPE ] ], theAnnotation);
 
+  // this will get populated when evaluating the creation
+
+  var createdAnnotation = null;
+
+  theCreation.then(function(res) {
+    if (res && typeof res === "object" && res.body && typeof res.body === "object" && res.body.id && typeof res.body.id === "string") {
+      createdAnnotation = res.body.id;
+    }
+  });
+
   makePromiseTests( theCreation, [
       { test: function(res) { return ('id' in res.body); }, assertion: "Created Annotation MUST have an id property" },
       { test: function(res) { return (('id' in res.body) && (res.body.id.search(container_url) > -1));}, assertion: "Created Annotation MUST have an id that starts with the Container IRI" },
       { test: function(res) { return ( 'canonical' in res.body && res.body.canonical === theAnnotation.canonical ); }, assertion: "Created Annotation MUST preserve any canonical IRI" },
       { test: function(res) { return ( res.status === 201 ) ; }, assertion: "Annotation Server MUST respond with a 201 Created code if the creation is successful" },
-      { header: "Location", test: function(res) { return res.body.id === res.xhr.getResponseHeader('location') ; } , assertion: "Location header SHOULD match the id of the new Annotation" },
+      { header: "Location", test: function(res) {
+          if (res && typeof res === "object" && res.body && typeof res.body === "object" && res.body.id && typeof res.body.id === "string") {
+            createdAnnotation = res.body.id;
+          }
+          return res.body.id === res.xhr.getResponseHeader('location') ;
+        } , assertion: "Location header SHOULD match the id of the new Annotation" },
       ]);
 
   promise_test(function() {
@@ -336,11 +353,9 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
   }, "Annotation update must be done with the PUT method");
 
   promise_test(function() {
-    return theCreation.then(function(res) {
-      request("DELETE", fixURI(res.body.id))
-        .then(function(lres) {
-          assert_equals(lres.status, 204, "DELETE of " + res.body.id + " did not return a 204 Status" );
-        });
+    var theDeletion = request("DELETE", fixURI(createdAnnotation));
+    return theDeletion.then(function(lres) {
+      assert_equals(lres.status, 204, "DELETE of " + createdAnnotation + " did not return a 204 Status" );
     });
   }, "Annotation deletion with DELETE method MUST return a 204 status" );
 
@@ -357,14 +372,24 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
     return thePrefRequest
       .then(function(res) {
         var f = res.body.first;
-        request("GET", fixURI(f)).then(function(fres) {
-          fres.body.items.forEach(function(item) {
-            assert_true('@context' in item, "Annotation does not contain `@context`");
+        if ("object" === typeof(f) && f.hasOwnProperty('id')) {
+          f = f.id;
+        }
+        return request("GET", fixURI(f)).then(function(fres) {
+          if (fres.body.items.length) {
+            var looksGood = true;
+            fres.body.items.forEach(function(item) {
+              if (!item.hasOwnProperty("@context")) {
+                looksGood = false;
+              }
             });
-          });
+            assert_true(looksGood, "All annotations in returned page contain @context");
+          } else {
+            assert_true(false, "Returned page contains annotations");
+          }
         });
       }, "SHOULD return the full annotation descriptions");
-
+  });
 
   makePromiseTests( thePrefRequest, [
       { test: function(res) { return ('total' in res.body); }, assertion: "SHOULD include the total property with the total number of annotations in the container" },

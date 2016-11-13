@@ -241,7 +241,7 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
         f = f.id;
       }
       if (f !== undefined && f !== "") {
-        request("GET", f).then(function(lres) {
+        request("GET", fixURI(f)).then(function(lres) {
           assert_true(('partOf' in lres.body) || ('id' in lres.body.partOf), "No partOf in response");
           });
       } else {
@@ -256,7 +256,7 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
       if ("object" === typeof(l) && l.hasOwnProperty('id')) {
         l = l.id;
       }
-      request("GET", l).then(function(lres) {
+      request("GET", fixURI(l)).then(function(lres) {
         assert_true(('prev' in lres.body), "No link to the previous page in response");
         });
     });
@@ -268,7 +268,7 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
       if ("object" === typeof(f) && f.hasOwnProperty('id')) {
         f = f.id;
       }
-      request("GET", f).then(function(lres) {
+      request("GET", fixURI(f)).then(function(lres) {
         assert_true(('next' in lres.body), "No link to the next page in response");
         });
     });

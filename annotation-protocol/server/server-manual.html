@@ -309,6 +309,16 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
       "type": "TextualBody",
       "value": "I like this page!"
     },
+    "target": TARGET
+  };
+
+  var theAnnotationCanonical = {
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "type": "Annotation",
+    "body": {
+      "type": "TextualBody",
+      "value": "I like this page with canonical property!"
+    },
     "target": TARGET,
     "canonical": 'urn:uuid:' + token()
   };
@@ -328,7 +338,6 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
   makePromiseTests( theCreation, [
       { test: function(res) { return ('id' in res.body); }, assertion: "Created Annotation MUST have an id property" },
       { test: function(res) { return (('id' in res.body) && (res.body.id.search(container_url) > -1));}, assertion: "Created Annotation MUST have an id that starts with the Container IRI" },
-      { test: function(res) { return ( 'canonical' in res.body && res.body.canonical === theAnnotation.canonical ); }, assertion: "Created Annotation MUST preserve any canonical IRI" },
       { test: function(res) { return ( res.status === 201 ) ; }, assertion: "Annotation Server MUST respond with a 201 Created code if the creation is successful" },
       { header: "Location", test: function(res) {
           if (res && typeof res === "object" && res.body && typeof res.body === "object" && res.body.id && typeof res.body.id === "string") {
@@ -358,6 +367,26 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
       assert_equals(lres.status, 204, "DELETE of " + createdAnnotation + " did not return a 204 Status" );
     });
   }, "Annotation deletion with DELETE method MUST return a 204 status" );
+
+  var theCreationCanonical = request("POST", container, [ [ 'Content-Type', MEDIA_TYPE ] ], theAnnotationCanonical);
+
+  var createdAnnotationCanonical = null;
+
+  theCreationCanonical.then(function(res) {
+    if (res && typeof res === "object" && res.body && typeof res.body === "object" && res.body.id && typeof res.body.id === "string") {
+      createdAnnotationCanonical = res.body.id;
+    }
+  });
+
+  makePromiseTests( theCreationCanonical, [
+      { test: function(res) { return ( 'canonical' in res.body && res.body.canonical === theAnnotationCanonical.canonical ); }, assertion: "Created Annotation MUST preserve any canonical IRI" },
+      { test: function(res) {
+                              if ( res.status === 201 ) {
+                                // the annotation was created... clean it up
+                                request("DELETE", fixURI(res.body.id));
+                              }
+                              return ( res.status === 201 ) ; }, assertion: "Annotation Server MUST respond with a 201 Created code if the creation is successful" },
+      ]);
 
   // SHOULD tests
 

@@ -45,6 +45,14 @@ W3C-TEST.ORG:*/tools/*
 PRINT STATEMENT:*/tools/*
 
 
+## Third party data files
+TRAILING WHITESPACE: css-writing-modes-3/tools/generators/ucd/Blocks.txt
+
+
+## Test generation files
+CONSOLE: css-writing-modes-3/tools/generators/unicode-data.js
+
+
 ## Give up on work-in-progress for now
 *: work-in-progress/*
 

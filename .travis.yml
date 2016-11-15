@@ -6,6 +6,10 @@ env:
   - SCRIPT=lint
   - SCRIPT=tools/travis/build.py
 
+matrix:
+  allow_failures:
+    - env: SCRIPT=tools/travis/build.py
+
 script:
   - python $SCRIPT
 

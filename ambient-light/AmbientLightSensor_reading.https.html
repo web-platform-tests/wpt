@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>AmbientLightSensor Test: reading</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://www.w3.org/TR/ambient-light/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+
+let sensor, sensor1, sensor2, cachedReading1, cachedReading2;
+
+setup(function() {
+  sensor = new AmbientLightSensor();
+  sensor1 = new AmbientLightSensor();
+  sensor2 = new AmbientLightSensor();
+  sensor1.start();
+  sensor2.start();
+  cachedReading1 = sensor1.reading;
+  cachedReading2 = sensor2.reading;
+});
+
+test(function() {
+  let sensor = new AmbientLightSensor();
+  sensor.start();
+  let cachedReading = sensor.reading;
+  let cachedIlluminance = cachedReading.illuminance;
+  sensor.stop();
+  assert_equals(cachedReading.illuminance, cachedIlluminance);
+}, "Test that sensor reading must be immutable.");
+
+test(function() {
+  assert_equals(cachedReading1, cachedReading2);
+}, "Test that both sensors share the same reading instance.");
+
+test(function() {
+  sensor1.stop();
+  assert_equals(sensor1.reading, null);
+  assert_equals(String(sensor2.reading), "[object AmbientLightSensorReading]");
+}, "Test that sensor is independent.");
+
+async_test(function (t) {
+  t.step_timeout(function() {
+    let cachedReading3 = sensor2.reading;
+    assert_not_equals(cachedReading2, cachedReading3);
+    sensor2.stop();
+  }, 2000);
+}, "Test that the sensor reading is updated when time passes.");
+
+</script>

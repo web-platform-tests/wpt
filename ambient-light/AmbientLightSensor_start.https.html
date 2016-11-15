@@ -7,12 +7,30 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-var sensor, start_return;
+
+let sensor, start_return;
 
 setup(function() {
   sensor = new AmbientLightSensor();
-  start_return = sensor.start();
 });
+
+test(function() {
+  assert_equals(sensor.reading, null);
+}, "The default sensor.reading is 'null'");
+
+test(function() {
+  assert_equals(sensor.state, "idle");
+}, "The default sensor.state is 'idle'");
+
+async_test(function(t) {
+  sensor.onstatechange = t.step_func_done(function(event) {
+    assert_equals(sensor.state, "activating");
+  });
+  sensor.onerror = t.step_func_done(function(event) {
+    assert_unreached(event.error.name + ":" + event.error.message);
+  });
+  start_return = sensor.start();
+}, "The sensor.state changes to 'activating' after sensor.start()");
 
 test(function() {
   assert_equals(String(sensor.reading), "[object AmbientLightSensorReading]");

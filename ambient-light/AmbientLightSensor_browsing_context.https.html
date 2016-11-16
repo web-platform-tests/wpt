@@ -22,8 +22,9 @@ async_test(function (t) {
   sensor.start();
   sensor.onchange = t.step_func_done(function() {
     assert_not_equals(sensor.reading, null);
+    let cachedReading = sensor.reading;
     let win = window.open('', '_blank');
-    assert_equals(sensor.reading, null);
+    assert_equals(sensor.reading, cachedReading);
     win.close();
     sensor.stop();
   });

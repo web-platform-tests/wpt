@@ -16,35 +16,49 @@ setup(function() {
   sensor2 = new AmbientLightSensor();
   sensor1.start();
   sensor2.start();
-  cachedReading1 = sensor1.reading;
-  cachedReading2 = sensor2.reading;
 });
 
-test(function() {
+async_test(function(t) {
   let sensor = new AmbientLightSensor();
   sensor.start();
-  let cachedReading = sensor.reading;
-  let cachedIlluminance = cachedReading.illuminance;
-  sensor.stop();
-  assert_equals(cachedReading.illuminance, cachedIlluminance);
+  sensor.onchange = t.step_func_done(function() {
+    let cachedReading = sensor.reading;
+    let cachedIlluminance = cachedReading.illuminance;
+    sensor.stop();
+    assert_equals(cachedReading.illuminance, cachedIlluminance);
+  });
+  sensor.onerror = t.step_func_done(function(event) {
+    assert_unreached(event.error.name + ":" + event.error.message);
+  });
 }, "Test that sensor reading must be immutable.");
 
-test(function() {
-  assert_equals(cachedReading1, cachedReading2);
-}, "Test that both sensors share the same reading instance.");
-
-test(function() {
-  sensor1.stop();
-  assert_equals(sensor1.reading, null);
-  assert_equals(String(sensor2.reading), "[object AmbientLightSensorReading]");
-}, "Test that sensor is independent.");
+async_test(function(t) {
+  sensor1.onchange = t.step_func_done(function() {
+    cachedReading1 = sensor1.reading;
+    cachedReading2 = sensor2.reading;
+    //both sensors share the same reading instance
+    assert_equals(cachedReading1, cachedReading2);
+    //after first sensor stops its reading is null, second sensor remains
+    sensor1.stop();
+    assert_equals(sensor1.reading, null);
+    assert_equals(String(sensor2.reading), "[object AmbientLightSensorReading]");
+  });
+  sensor1.onerror = t.step_func_done(function(event) {
+    assert_unreached(event.error.name + ":" + event.error.message);
+  });
+}, "Test that sensor reading is correct.");
 
 async_test(function (t) {
   t.step_timeout(function() {
-    let cachedReading3 = sensor2.reading;
-    assert_not_equals(cachedReading2, cachedReading3);
-    sensor2.stop();
-  }, 2000);
+    sensor2.onchange = t.step_func_done(function() {
+      let cachedReading3 = sensor2.reading;
+      assert_not_equals(cachedReading2, cachedReading3);
+      sensor2.stop();
+    });
+    sensor2.onerror = t.step_func_done(function(event) {
+      assert_unreached(event.error.name + ":" + event.error.message);
+    });
+  }, 1000);
 }, "Test that the sensor reading is updated when time passes.");
 
 </script>

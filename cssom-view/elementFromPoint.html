@@ -100,6 +100,7 @@
 
       test(function () {
              var svg = document.getElementById('squiggle');
+             svg.scrollIntoView();
              var svgRect = svg.getBoundingClientRect();
              assert_equals(document.elementFromPoint(svgRect.left + Math.round(svgRect.width/2),
                                                      svgRect.top + Math.round(svgRect.height/2)),
@@ -109,6 +110,7 @@
 
       test(function () {
               var svg = document.getElementById('svg-transform');
+              svg.scrollIntoView();
               var svgRect = svg.getBoundingClientRect();
               assert_equals(document.elementFromPoint(svgRect.left + Math.round(svgRect.width/2),
                                                       svgRect.top + Math.round(svgRect.height/2)),
@@ -116,6 +118,7 @@
                             "Should have returned SVG with Hello WPT! that has a transform");
 
               var pink = document.getElementById('pink');
+              pink.scrollIntoView();
               var pinkRect = pink.getBoundingClientRect();
               assert_equals(document.elementFromPoint(pinkRect.left + Math.round(pinkRect.width/2),
                                                       pinkRect.top + Math.round(pinkRect.height/2)),
@@ -126,11 +129,12 @@
 
       test(function () {
             var anotherteal = document.getElementById('anotherteal');
+            anotherteal.scrollIntoView();
             var anothertealRect = anotherteal.getBoundingClientRect();
             assert_equals(document.elementFromPoint(anothertealRect.left + Math.round(anothertealRect.width/2),
                                                     anothertealRect.top + Math.round(anothertealRect.height/2)),
                           document.body,
-                          "Should have returned the root");
+                          "Should have returned the root as it has pointer-events:none");
 
             var doc = frames[2].document;
             doc.removeChild(doc.documentElement);
@@ -145,7 +149,10 @@
       }, "No viewport available");
 
       test(function () {
+          // TODO: Is this behavior specified anywhere?  This passes in Chrome but not Firefox
+          // or Safari.
           var area = document.getElementById('rectG');
+          area.scrollIntoView();
           var areaRect = area.getBoundingClientRect();
           assert_equals(document.elementFromPoint(areaRect.left + Math.round(areaRect.width/2),
                                                   areaRect.top + Math.round(areaRect.height/2)),

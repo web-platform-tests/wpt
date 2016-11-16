@@ -26,13 +26,14 @@ dictionary EventInit {
 </pre>
 
 <pre id="generic-idl">
+[SecureContext]
 interface Sensor : EventTarget {
   readonly attribute SensorState state;
   readonly attribute SensorReading? reading;
   void start();
   void stop();
   attribute EventHandler onchange;
-  attribute EventHandler onstatechange;
+  attribute EventHandler onactivate;
   attribute EventHandler onerror;
 };
 
@@ -43,48 +44,39 @@ dictionary SensorOptions {
 enum SensorState {
   "idle",
   "activating",
-  "active",
+  "activated",
   "errored"
 };
 
+[SecureContext]
 interface SensorReading {
   readonly attribute DOMHighResTimeStamp timeStamp;
 };
 
-[Constructor(DOMString type, SensorReadingEventInit eventInitDict)]
-interface SensorReadingEvent : Event {
-  readonly attribute SensorReading reading;
-};
-
-dictionary SensorReadingEventInit : EventInit {
-  SensorReading reading;
-};
-
-[Constructor(DOMString type, SensorErrorEventInit errorEventInitDict)]
+[SecureContext, Constructor(DOMString type, SensorErrorEventInit errorEventInitDict)]
 interface SensorErrorEvent : Event {
   readonly attribute Error error;
 };
 
 dictionary SensorErrorEventInit : EventInit {
-  Error error;
+  required Error error;
 };
+
 </pre>
 
 <pre id="ambient-light-idl">
 [Constructor(optional SensorOptions sensorOptions)]
 interface AmbientLightSensor : Sensor {
-  readonly attribute AmbientLightSensorReading? reading;
 };
 
 [Constructor(AmbientLightSensorReadingInit ambientLightSensorReadingInit)]
 interface AmbientLightSensorReading : SensorReading {
     readonly attribute unrestricted double illuminance;
 };
-
+  
 dictionary AmbientLightSensorReadingInit {
-  unrestricted double illuminance;
+  required unrestricted double illuminance;
 };
-
 </pre>
 
 <script>
@@ -97,8 +89,7 @@ dictionary AmbientLightSensorReadingInit {
 
   idl_array.add_objects({
     AmbientLightSensor: ['new AmbientLightSensor();'],
-    AmbientLightSensorReading: ['new AmbientLightSensorReading({ illuminance: 750 });'],
-    SensorReadingEvent: ['new SensorReadingEvent("reading", { reading: new AmbientLightSensorReading({ illuminance: 750 }) });']
+    AmbientLightSensorReading: ['new AmbientLightSensorReading({ illuminance: 750 });']
   });
 
   idl_array.test();

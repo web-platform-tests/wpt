@@ -13,30 +13,20 @@
 </ol>
 <div id="log"></div>
 <script>
-let sensor1, sensor2;
+let sensor;
 setup(function() {
-  sensor1 = new AmbientLightSensor();
-  sensor2 = new AmbientLightSensor();
+  sensor = new AmbientLightSensor();
 });
 
 async_test(function(t) {
-  sensor1.onstatechange = t.step_func_done(function(event) {
-    if ( sensor1.state == "errored" ) {
-      assert_true(true);
-    }
-  });
-  sensor1.start();
-}, "Test that sensor state changes to 'errored' when sensor is not supported");
-
-async_test(function(t) {
-  sensor2.onchange = t.step_func_done(function(event) {
+  sensor.onactivate = t.step_func_done(function(event) {
     assert_unreached();
   });
-  sensor2.onerror = t.step_func_done(function(event) {
-    assert_equals(sensor2.state, 'errored');
+  sensor.onerror = t.step_func_done(function(event) {
+    assert_equals(sensor.state, 'errored');
     assert_equals(event.error.name, 'NotFoundError');
   });
-  sensor2.start();
-}, "Test that 'onerror' is send when sensor is not supported");
+  sensor.start();
+}, "Test that 'onerror' event is fired when sensor is not supported");
 
 </script>

@@ -13,16 +13,11 @@ let sensor, stop_return;
 setup(function() {
   sensor = new AmbientLightSensor();
   sensor.start();
+  stop_return = sensor.stop();
 });
 
-async_test(function(t) {
-  sensor.onstatechange = t.step_func_done(function(event) {
-    assert_equals(sensor.state, "idle");
-  });
-  sensor.onerror = t.step_func_done(function(event) {
-    assert_unreached(event.error.name + ":" + event.error.message);
-  });
-  stop_return = sensor.stop();
+test(function() {
+  assert_equals(sensor.state, "idle");
 }, "The sensor.state changes to 'idle' after sensor.stop()");
 
 test(function() {

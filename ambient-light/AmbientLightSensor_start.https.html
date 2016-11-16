@@ -22,28 +22,31 @@ test(function() {
   assert_equals(sensor.state, "idle");
 }, "The default sensor.state is 'idle'");
 
-async_test(function(t) {
-  sensor.onstatechange = t.step_func_done(function(event) {
-    assert_equals(sensor.state, "activating");
-  });
-  sensor.onerror = t.step_func_done(function(event) {
-    assert_unreached(event.error.name + ":" + event.error.message);
-  });
+test(function() {
   start_return = sensor.start();
+  assert_equals(sensor.state, "activating");
 }, "The sensor.state changes to 'activating' after sensor.start()");
+
+//TODO: The permission is not ready.
+async_test(function(t) {
+   sensor.onactivate = t.step_func_done(function(event) {
+     assert_equals(sensor.state, "activated");
+   });
+}, "The sensor.state changes to 'activated' when sensor reading is ready");
 
 test(function() {
   assert_equals(String(sensor.reading), "[object AmbientLightSensorReading]");
 }, "the sensor.reading is AmbientLightSensorReading after executing start() method");
 
 test(function() {
-  assert_throws("InvalidStateError", function() { sensor.start(); }, "start() twice");
-}, "throw an InvalidStateError exception when state is neither idle nor errored");
-
-//TODO: The permission is not ready.
-
-test(function() {
   assert_equals(start_return, undefined);
 }, "the sensor.start() return undefined");
+
+test(function() {
+  assert_throws("InvalidStateError", function() { sensor.start(); }, "start() twice");
+  sensor.stop();
+}, "throw an InvalidStateError exception when state is neither idle nor errored");
+
+
 
 </script>

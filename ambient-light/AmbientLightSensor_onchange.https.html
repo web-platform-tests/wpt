@@ -14,7 +14,7 @@ async_test(function(t) {
 
   sensor.onchange = t.step_func_done(function() {
     assert_greater_than_equal(sensor.reading.illuminance, 0);
-    assert_equals(sensor.state, "active");
+    assert_equals(sensor.state, "activated");
     sensor.stop();
   });
 

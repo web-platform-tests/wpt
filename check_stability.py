@@ -14,6 +14,7 @@ import zipfile
 from cStringIO import StringIO
 from collections import defaultdict
 from urlparse import urljoin
+from tools.manifest import manifest
 
 import requests
 
@@ -26,7 +27,6 @@ TbplFormatter = None
 reader = None
 wptcommandline = None
 wptrunner = None
-
 
 logger = logging.getLogger(os.path.splitext(__file__)[0])
 
@@ -217,7 +217,6 @@ class Firefox(Browser):
         assert latest_release != 0
         return "v%s.%s.%s" % tuple(str(item) for item in latest_release)
 
-
     def install_webdriver(self):
         version = self._latest_geckodriver_version()
         logger.debug("Latest geckodriver release %s" % version)
@@ -357,6 +356,7 @@ def get_sha1():
     git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
     return git("rev-parse", "HEAD").strip()
 
+
 def build_manifest():
     with pwd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests")):
         # TODO: Call the manifest code directly
@@ -382,6 +382,52 @@ def get_files_changed():
     assert files[-1] == "\0"
     return ["%s/w3c/web-platform-tests/%s" % (root, item)
             for item in files[:-1].split("\0")]
+
+
+def get_affected_testfiles(files_changed):
+    affected_testfiles = []
+    all_tests = set()
+    nontests_changed = set(files_changed)
+    repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    manifest_file = os.path.join(repo_root, "MANIFEST.json")
+    for test, _ in manifest.load(repo_root, manifest_file):
+        test_full_path = os.path.join(repo_root, test)
+        all_tests.add(test_full_path)
+        if test_full_path in nontests_changed:
+            # Reduce the set of changed files to only non-tests.
+            nontests_changed.remove(test_full_path)
+    for changedfile_pathname in nontests_changed:
+        changed_file_repo_path = os.path.join(os.path.sep, os.path.relpath(changedfile_pathname, repo_root))
+        os.path.normpath(changed_file_repo_path)
+        path_components = changed_file_repo_path.split(os.sep)[1:]
+        if len(path_components) < 2:
+            # This changed file is in the repo root, so skip it
+            # (because it's not part of any test).
+            continue
+        top_level_subdir = path_components[0]
+        if top_level_subdir in ["conformance-checkers", "docs"]:
+            continue
+        # OK, this changed file is the kind we care about: It's something
+        # other than a test (e.g., it's a .js or .json file), and it's
+        # somewhere down beneath one of the top-level "spec" directories.
+        # So now we try to find any tests that reference it.
+        for root, dirs, fnames in os.walk(os.path.join(repo_root, top_level_subdir)):
+            # Walk top_level_subdir looking for test files containing either the
+            # relative filepath or absolute filepatch to the changed file.
+            for fname in fnames:
+                testfile_full_path = os.path.join(root, fname)
+                # Skip any test file that's already in files_changed.
+                if testfile_full_path in files_changed:
+                    continue
+                # Skip any file that's not a test file.
+                if testfile_full_path not in all_tests:
+                    continue
+                with open(testfile_full_path, "r") as fh:
+                    file_contents = fh.read()
+                    changed_file_relpath = os.path.relpath(changedfile_pathname, root).replace(os.path.sep, "/")
+                    if changed_file_relpath in file_contents or changed_file_repo_path.replace(os.path.sep, "/") in file_contents:
+                        affected_testfiles.append(testfile_full_path)
+    return affected_testfiles
 
 
 def wptrunner_args(root, files_changed, iterations, browser):
@@ -473,7 +519,7 @@ def table(headings, data, log):
 def write_inconsistent(inconsistent, iterations):
     logger.error("## Unstable results ##\n")
     strings = [("`%s`" % markdown_adjust(test), ("`%s`" % markdown_adjust(subtest)) if subtest else "", err_string(results, iterations))
-                for test, subtest, results in inconsistent]
+               for test, subtest, results in inconsistent]
     table(["Test", "Subtest", "Results"], strings, logger.error)
 
 
@@ -569,6 +615,12 @@ def main():
         do_delayed_imports()
 
         logger.debug("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
+
+        affected_testfiles = get_affected_testfiles(files_changed)
+
+        logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in affected_testfiles))
+
+        files_changed.extend(affected_testfiles)
 
         browser = browser_cls(args.gh_token)
 

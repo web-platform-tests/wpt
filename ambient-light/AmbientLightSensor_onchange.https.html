@@ -8,17 +8,17 @@
 <div id="log"></div>
 <script>
 
-async_test(function(t) {
+async_test(t => {
   let sensor = new AmbientLightSensor();
   sensor.start();
 
-  sensor.onchange = t.step_func_done(function() {
+  sensor.onchange = t.step_func_done(() => {
     assert_greater_than_equal(sensor.reading.illuminance, 0);
     assert_equals(sensor.state, "activated");
     sensor.stop();
   });
 
-  sensor.onerror = t.step_func_done(function(event) {
+  sensor.onerror = t.step_func_done(event => {
     assert_unreached(event.error.name + ":" + event.error.message);
   });
 }, "event change fired");

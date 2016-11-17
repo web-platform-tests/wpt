@@ -73,14 +73,14 @@ interface AmbientLightSensor : Sensor {
 interface AmbientLightSensorReading : SensorReading {
     readonly attribute unrestricted double illuminance;
 };
-  
+
 dictionary AmbientLightSensorReadingInit {
   required unrestricted double illuminance;
 };
 </pre>
 
 <script>
-(function() {
+(() => {
   "use strict";
   var idl_array = new IdlArray();
   idl_array.add_untested_idls(document.getElementById('idl').textContent);

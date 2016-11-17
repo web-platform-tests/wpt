@@ -14,8 +14,8 @@
 <div id="log"></div>
 <script>
 
-test(function() {
-  assert_throws('SecurityError', function() {
+test(() => {
+  assert_throws('SecurityError', () => {
     let sensor = new AmbientLightSensor();
   });
 }, "throw a 'SecurityError' when construct AmbientLightSensor in an insecure context");

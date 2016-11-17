@@ -15,7 +15,7 @@ async_test(function(t) {
   var request = new XMLHttpRequest();
   request.open("GET", "interfaces.idl");
   request.send();
-  request.onload = function() {
+  request.onload = t.step_func(function() {
     var idlArray = new IdlArray();
     var idls = request.responseText;
 
@@ -53,6 +53,6 @@ async_test(function(t) {
 
     idlArray.test();
     t.done();
-  };
+  });
 });
 </script>

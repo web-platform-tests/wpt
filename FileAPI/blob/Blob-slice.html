@@ -35,7 +35,24 @@ test(function() {
     type: "content/type",
     desc: "blob2."
   });
+  
+  test_blob(function() {
+    return blob3 = new Blob().slice(0,0,null);
+  }, {
+    type: "null"
+  });
+  
+  test_blob(function() {
+    return blob4 = new Blob().slice(0,0,undefined);
+  }, {
+    type: ""
+  });
 
+  test_blob(function() {
+    return blob5 = new Blob().slice(0,0);
+  }, {
+    type: ""
+  });
   var arrayBuffer = new ArrayBuffer(16);
   var int8View = new Int8Array(arrayBuffer);
   for (var i = 0; i < 16; i++) {

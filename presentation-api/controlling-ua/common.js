@@ -7,10 +7,11 @@
   // on something that directly or indirectly maps to a resource on the W3C test
   // server.
   var castAppId = '915D2A2C';
-  var castUrl = 'https://google.com/cast#__castAppId__=' + castAppId;
+  var castClientId = String(new Date().getTime()) + String(Math.floor(Math.random() * 1e5));
+  var castUrl = 'https://google.com/cast#__castAppId__=' + castAppId + '/__castClientId__=' + castClientId;
 
   window.presentationUrls = [
-    'support/presentation.html',
-    castUrl
+    castUrl,
+    'support/presentation.html'
   ];
 })(window);

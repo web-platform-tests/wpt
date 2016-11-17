@@ -20,22 +20,24 @@
 
 <script>
   setup({explicit_timeout: true});
+
   var startPresentation = function () {
     document.getElementById('presentBtn').disabled = true;
-    async_test(function(t) {
+
+    promise_test(function(t) {
       var request = new PresentationRequest(presentationUrls);
-      request.start()
-        .then(function(connection) {
+
+      var check = function(connection) {
           assert_true(connection instanceof PresentationConnection, 'the connection is setup');
           connection.onclose = t.step_func_done(function(evt) {
             assert_equals(evt.type, "close");
             assert_equals(connection.state, "closed");
           });
           connection.close();
-      })
-      .catch(function(ex) {
-        assert_unreached(ex.name + ":" + ex.message);
-      });
+        };
+
+      return request.start().then(check);
     }, "the onclose is fired and the connection state is closed.");
-  }
+  };
+
 </script>

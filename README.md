@@ -21,9 +21,6 @@ The tests are designed to be run from your local computer. The test
 environment requires [Python 2.7+](http://www.python.org/downloads) (but not Python 3.x).
 Leave the default install settings so Python will be installed to the c:\python2x directory.
 
-Be sure to add that directory to your `%Path%`
-[Environment Variable](http://www.computerhope.com/issues/ch000549.htm).
-
 You will also need a copy of OpenSSL.
 Users on Windows should read the [Windows Notes](#windows-notes) section below.
 
@@ -103,6 +100,9 @@ copy `config.default.json` in the web-platform-tests root to `config.json`.
 Then edit the JSON so that the key `ssl/openssl/base_conf_path` has a
 value that is the path to the OpenSSL config file (typically this
 will be `C:\\OpenSSL-Win32\\bin\\openssl.cfg`).
+
+Be sure to add the Python directory (c:\python2x, by default) to your `%Path%`
+[Environment Variable](http://www.computerhope.com/issues/ch000549.htm).
 
 Test Runner
 ===========

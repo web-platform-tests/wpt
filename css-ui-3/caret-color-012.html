@@ -3,7 +3,7 @@
 <title>CSS Basic User Interface Test: caret-color: auto</title>
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#caret-color">
-<meta name="flags" content="interact">
+<meta name="flags" content="interact should">
 <meta name="assert" content="Test checks that caret-color:auto is inherited as auto and resolves to the value of the color property at used value time">
 <style>
   textarea {
@@ -21,7 +21,7 @@
   }
 </style>
 <body>
-  <p>Test passes if, when the textarea is focused for editing, the text insertion caret is green.</p>
+  <p>Test passes if, when the text area below is focused for editing, the text insertion caret is green.</p>
   <p>The shape of the caret, and whether it flashes, are not part of the test.</p>
   <div>
     <textarea autofocus></textarea>

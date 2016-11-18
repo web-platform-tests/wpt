@@ -17,9 +17,9 @@
   }
 </style>
 <body>
-  <p>Test passes if, when the div is focused for editing, the text insertion caret is green.</p>
+  <p>Test passes if, when when the editable element below is focused is focused for editing, the text insertion caret is green.</p>
   <p>The shape of the caret, and whether it flashes, are not part of the test.</p>
-  <div id="test" contenteditable></div>
+  <div id="test" contenteditable>Focus this editable element</div>
   <script>
     window.onload = function() {
       document.getElementById("test").focus();

@@ -1,29 +1,50 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>CSS Basic User Interface Test: caret-color: initial</title>
+<title>CSS Basic User Interface Test: caret-color dynamic changes</title>
 <link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#caret-color">
-<meta name="flags" content="interact">
-<meta name="assert" content="Test checks that caret-color:initial is inherited as initial and resolves to the value of the color property at used value time">
-<style>
-  textarea {
-    font-size: 3em;
-    font-weight: bold;
-    width: 10em;
-    padding: 10px;
-    background: black; /* the color of a thin object like the caret is easier to see on a black background. */
+<link rel="help" href="https://www.w3.org/TR/css3-color/#color0">
+<meta name="flags" content="dom">
+<meta name="assert" content="Test checks checks that carret-color can be correctly changed using the style attribute, and that the computed value is done correctly.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
-    color: lime;
+<div id="log"></div>
+<div id="wrapper">
+  <textarea id="textarea"></textarea>
+</div>
+
+<script>
+  function testStyleCaretColor(element, value) {
+    assert_equals(element.style.caretColor, value, "The style attribute's caret-color should be '" + value + "'");
   }
-  div {
-    caret-color: initial;
-    color: red;
+
+  function testComputedStyleCaretColor(element, value) {
+    assert_equals(getComputedStyle(element).getPropertyValue("caret-color"), value, "caret-color computed style should be '" + value + "'");
   }
-</style>
-<body>
-  <p>Test passes if, when the textarea is focused for editing, the text insertion caret is green.</p>
-  <p>The shape of the caret, and whether it flashes, are not part of the test.</p>
-  <div>
-    <textarea autofocus></textarea>
-  </div>
-</body>
+
+  function setAndCheckCaretColor(element, caretColor, styleValue, computedStyleValue, description) {
+    element.style.caretColor = caretColor;
+    test(function() {
+      testStyleCaretColor(element, styleValue);
+      testComputedStyleCaretColor(element, computedStyleValue);
+    }, description);
+  }
+
+  var textarea = document.getElementById("textarea");
+  setAndCheckCaretColor(textarea, "", "", "auto", "Test default caret-color");
+  setAndCheckCaretColor(textarea, "initial", "initial", "auto", "Test caret-color: initial");
+  setAndCheckCaretColor(textarea, "inherit", "inherit", "auto", "Test caret-color: inherit");
+  setAndCheckCaretColor(textarea, "auto", "auto", "auto", "Test caret-color: auto");
+  setAndCheckCaretColor(textarea, "currentcolor", "currentcolor", "currentcolor", "Test caret-color: currentcolor");
+  setAndCheckCaretColor(textarea, "lime", "lime", "rgb(0, 255, 0)", "Test caret-color: lime");
+  setAndCheckCaretColor(textarea, "initial", "initial", "auto", "Reset caret-color: initial");
+  setAndCheckCaretColor(textarea, "rgb(0, 100, 100)", "rgb(0, 100, 100)", "rgb(0, 100, 100)", "Test caret-color: rgb(0, 100, 100)");
+
+  var wrapper = document.getElementById("wrapper");
+  wrapper.style.caretColor = "green";
+
+  setAndCheckCaretColor(textarea, "initial", "initial", "auto", "Test caret-color: initial (inherited)");
+  setAndCheckCaretColor(textarea, "inherit", "inherit", "rgb(0, 128, 0)", "Test caret-color: inherit (inherited)");
+  setAndCheckCaretColor(textarea, "blue", "blue", "rgb(0, 0, 255)", "Test caret-color: blue (inherited)");
+</script>

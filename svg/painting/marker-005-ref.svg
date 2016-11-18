@@ -57,19 +57,19 @@
 
       <g id="subtest3" transform="scale(0.6) translate(300,0)">
         <path id="p7" class="testpaths" d="M 130 40 L 180 40 L 180 90"/>
-        <rect x="118" y="28" width="16" height="16" fill="purple" stroke="none"/>
-        <rect x="168" y="28" width="16" height="16" fill="purple" stroke="none"/>
-        <rect x="168" y="78" width="16" height="16" fill="purple" stroke="none"/>
+        <rect x="118" y="28" width="24" height="24" fill="purple" stroke="none"/>
+        <rect x="168" y="28" width="24" height="24" fill="purple" stroke="none"/>
+        <rect x="168" y="78" width="24" height="24" fill="purple" stroke="none"/>
 
         <path id="p8" class="testpaths" d="M 130 135 L 180 135 L 180 185"/>
-        <rect x="118" y="123" width="16" height="16" fill="purple" stroke="none"/>
-        <rect x="172" y="127" width="16" height="16" fill="green" stroke="none"/>
-        <path d="M180,185 h-8 l8,-16" fill="blue" stroke="none"/>
+        <rect x="118" y="123" width="24" height="24" fill="purple" stroke="none"/>
+        <circle cx="180" cy="135" r="16" fill="green" stroke="none"/>
+        <path d="M0,-16 L16,16 h-32 z" fill="blue" stroke="none" transform="translate(180,185)"/>
 
         <path id="p9" class="testpaths" d="M 130 230 L 180 230 L 180 280"/>
-        <path d="M0,0 h-8 l8,-16" fill="blue" stroke="none" transform="translate(130,230)"/>
-        <path d="M0,0 h-8 l8,-16" fill="blue" stroke="none" transform="translate(180,230), rotate(45)"/>
-        <path d="M0,0 h-8 l8,-16" fill="blue" stroke="none" transform="translate(180,280), rotate(90)"/>
+        <path d="M0,-16 L16,16 h-32 z" fill="blue" stroke="none" transform="translate(130,230)"/>
+        <path d="M0,-16 L16,16 h-32 z" fill="blue" stroke="none" transform="translate(180,230) rotate(45)"/>
+        <path d="M0,-16 L16,16 h-32 z" fill="blue" stroke="none" transform="translate(180,280) rotate(90)"/>
       </g>
 
       <g id="subtest4" transform="scale(0.6) translate(450,0)">

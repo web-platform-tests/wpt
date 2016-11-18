@@ -111,23 +111,43 @@ function queryIframe(url, callback, referrer_policy) {
   window.addEventListener("message", listener);
 }
 
-function queryImage(url, callback, referrer_policy) {
-  // For images, we'll test both images in a top-level document as well as
-  // images in a `srcdoc` frame to ensure that the latter has the same referrer
-  // as the former.
-  var i = document.createElement('iframe');
-  i.srcdoc = "Hello, world.";
-  i.onload = function () {
+function queryImage(url, callback, attributes, referrerPolicy) {
+  // For images, we'll test:
+  // - images in a `srcdoc` frame to ensure that it uses the referrer
+  //   policy of its parent,
+  // - images in a top-level document,
+  // - and images in a `srcdoc` frame with its own referrer policy to
+  //   override its parent.
+  var iframeWithoutOwnPolicy = document.createElement('iframe');
+  iframeWithoutOwnPolicy.srcdoc = "Hello, world.";
+
+  iframeWithoutOwnPolicy.onload = function () {
     loadImageInWindow(url, function (img) {
       var srcdocData = decodeImageData(extractImageData(img));
-      loadImageInWindow(url, function (img) {
-        var topLevelData = decodeImageData(extractImageData(img));
-        assert_equals(srcdocData.referrer, topLevelData.referrer, "Referrer inside 'srcdoc' should be the same as embedder's referrer.");
-        callback(wrapResult(url, topLevelData), url);
-      }, referrer_policy, window);
-    }, referrer_policy, i.contentWindow);
+      var iframeWithOwnPolicy = document.createElement('iframe');
+      // Give a srcdoc iframe a referrer policy different from the top-level page's policy.
+      var iframePolicy = (referrerPolicy === "no-referrer") ? "unsafe-url" : "no-referrer";
+      iframeWithOwnPolicy.srcdoc = "<meta name='referrer' content='" + iframePolicy + "'>Hello world.";
+
+      iframeWithOwnPolicy.onload = function () {
+        var nextUrl = url + "&cache_destroyer2=" + (new Date()).getTime();
+        loadImageInWindow(nextUrl, function (img) {
+          assert_equals((iframePolicy === "no-referrer" ? undefined : document.location.href), decodeImageData(extractImageData(img)).headers.referer, "Referrer inside 'srcdoc' should use the iframe's policy if it has one");
+
+          nextUrl = url + "&cache_destroyer3=" + (new Date()).getTime();
+          loadImageInWindow(nextUrl, function (img) {
+            var topLevelData = decodeImageData(extractImageData(img));
+            assert_equals(srcdocData.headers.referer, topLevelData.headers.referer, "Referrer inside 'srcdoc' without its own policy should be the same as embedder's referrer.");
+            callback(wrapResult(nextUrl, topLevelData), url);
+          }, attributes, window);
+        }, null, iframeWithOwnPolicy.contentWindow);
+      };
+
+      document.body.appendChild(iframeWithOwnPolicy);
+
+    }, attributes, iframeWithoutOwnPolicy.contentWindow);
   };
-  document.body.appendChild(i);
+  document.body.appendChild(iframeWithoutOwnPolicy);
 }
 
 function queryXhr(url, callback) {

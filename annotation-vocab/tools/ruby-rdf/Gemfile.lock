@@ -1,6 +1,17 @@
 GIT
+  remote: git://github.com/ruby-rdf/rdf-rdfxml.git
+  revision: 8a12a78aa28f3a0f58926ae77844d3e7af52ea4c
+  branch: develop
+  specs:
+    rdf-rdfxml (2.0.0)
+      htmlentities (~> 4.3)
+      rdf (~> 2.0)
+      rdf-rdfa (~> 2.0)
+      rdf-xsd (~> 2.0)
+
+GIT
   remote: git://github.com/ruby-rdf/rdf.git
-  revision: 2f54dd5cb62ac44f2df059f1cdd6aff2c8b713b4
+  revision: 4740b4a52bf358656d01d93adc5174d5fe07aec8
   branch: develop
   specs:
     rdf (2.1.0)
@@ -10,7 +21,8 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.4.0)
+    addressable (2.5.0)
+      public_suffix (~> 2.0, >= 2.0.2)
     bcp47 (0.3.3)
       i18n
     builder (3.2.2)
@@ -69,11 +81,10 @@ GEM
     mini_portile2 (2.1.0)
     multi_json (1.12.1)
     net-http-persistent (2.9.4)
-    nokogiri (1.6.8)
+    nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
-    oj (2.17.4)
-    pkg-config (1.1.7)
+    oj (2.17.5)
+    public_suffix (2.0.4)
     rake (11.3.0)
     rdf-aggregate-repo (2.0.0)
       rdf (~> 2.0)
@@ -93,11 +104,6 @@ GEM
       htmlentities (~> 4.3)
       rdf (~> 2.0)
       rdf-aggregate-repo (~> 2.0)
-      rdf-xsd (~> 2.0)
-    rdf-rdfxml (2.0.0)
-      htmlentities (~> 4.3)
-      rdf (~> 2.0)
-      rdf-rdfa (~> 2.0)
       rdf-xsd (~> 2.0)
     rdf-reasoner (0.4.0)
       rdf (~> 2.0)
@@ -176,6 +182,7 @@ DEPENDENCIES
   linkeddata
   rake
   rdf!
+  rdf-rdfxml!
   rspec
 
 RUBY VERSION

@@ -57,7 +57,6 @@ describe "Web Annotation Vocab" do
   context "The ontology documents can be parsed without errors by RDF Schema validators" do
     {
       jsonld: "application/ld+json",
-      rdfa: "text/html",
       rdfxml: "application/rdf+xml",
       ttl: "text/turtle",
     }.each do |format, content_type|
@@ -71,7 +70,6 @@ describe "Web Annotation Vocab" do
 
   context "The ontology documents are isomorphic to each other" do
     {
-      rdfa: "text/html",
       rdfxml: "application/rdf+xml",
       ttl: "text/turtle",
     }.each do |format, content_type|

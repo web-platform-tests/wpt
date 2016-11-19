@@ -35,7 +35,7 @@
     "SvgSelector":          "oa:SvgSelector",
     "RangeSelector":        "oa:RangeSelector",
     "TimeState":            "oa:TimeState",
-    "HttpState":            "oa:HttpRequestState",
+    "HttpRequestState":     "oa:HttpRequestState",
     "CssStylesheet":        "oa:CssStyle",
     "Choice":               "oa:Choice",
     "Composite":            "oa:Composite",

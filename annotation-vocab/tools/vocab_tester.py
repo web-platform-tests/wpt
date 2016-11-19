@@ -149,7 +149,8 @@ example = "https://raw.githubusercontent.com/w3c/web-annotation/gh-pages/model/w
 example_ttl = "https://raw.githubusercontent.com/w3c/web-annotation/gh-pages/vocab/wd/examples/correct/anno1.ttl"
 context = "http://www.w3.org/ns/anno.jsonld"
 frameURI = "https://raw.githubusercontent.com/w3c/web-annotation/gh-pages/jsonld/annotation_frame.jsonld"
-ontology = "https://www.w3.org/ns/oa.ttl"
+# ontology = "https://www.w3.org/ns/oa.ttl"
+ontology = "https://raw.githubusercontent.com/w3c/web-annotation/gh-pages/vocab/wd/ontology/oa.ttl"
 
 data = fetch(context)
 context_js = json.loads(data)

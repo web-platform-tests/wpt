@@ -4,10 +4,10 @@
   "type": "Annotation",
   "label": "no value for Fragment Selector",
   "body": "http://example.org/post1",
-  "target": { 
+  "target": {
     "type": "SpecificResource",
     "selector": {
-    	"type": "FragmentSelector"
+      "type": "FragmentSelector"
     }
-  }  	
+  }
 }

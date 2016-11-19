@@ -16,7 +16,7 @@ def fetch(url):
     fh = urllib.urlopen(url)
     data = fh.read()
     fh.close()
-    return data    
+    return data
 
 def load_document_and_cache(url):
     if docCache.has_key(url):
@@ -134,7 +134,7 @@ class Validator(object):
         #out = self._clean_bnode_ids(out)
         return out
 
-    def compact_and_clean(self, js):    
+    def compact_and_clean(self, js):
         newjs = compact(js, context_js)
         newjs['@context'] = context
         if newjs.has_key("@graph"):

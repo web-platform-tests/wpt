@@ -3,10 +3,10 @@
   "id": ["http://example.org/1", "http://example.org/2"],
   "type": "Annotation",
   "label": "body and bodyValue",
-  "body":   { 
-  	"type": "TextualBody",
-  	"format": "text/plain",
-  	"value": "body"
+  "body":   {
+    "type": "TextualBody",
+    "format": "text/plain",
+    "value": "body"
   },
   "bodyValue": "doppelganger",
   "target": "http://example.org/post1",

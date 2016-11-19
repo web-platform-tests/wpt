@@ -4,8 +4,8 @@
   "type": "Annotation",
   "label": "Too many composite types (choice? list?)",
   "body": {
-  	"type": ["Choice", "List"],
-  	"items": ["http://example.com/1", "http://example.com/2"]
+    "type": ["Choice", "List"],
+    "items": ["http://example.com/1", "http://example.com/2"]
   },
   "target": "http://example.org/post1",
 }

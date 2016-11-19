@@ -4,11 +4,11 @@
   "type": "Annotation",
   "label": "multiple values for Fragment Selector",
   "body": "http://example.org/post1",
-  "target": { 
+  "target": {
     "type": "SpecificResource",
     "selector": {
-    	"type": "FragmentSelector",
-    	"value": ["xxx", "yyy"]
+      "type": "FragmentSelector",
+      "value": ["xxx", "yyy"]
     }
-  }  	
+  }
 }

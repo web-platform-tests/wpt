@@ -3,9 +3,9 @@
   "id": ["http://example.org/1", "http://example.org/2"],
   "type": "Annotation",
   "label": "bad language",
-  "body":   { 
-  	"id": "http://example.com/1",
-  	"format": "text/plain",
-  	"langauage": 3 },
+  "body":   {
+    "id": "http://example.com/1",
+    "format": "text/plain",
+    "langauage": 3 },
   "target": "http://example.org/post1",
 }

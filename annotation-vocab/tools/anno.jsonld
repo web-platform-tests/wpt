@@ -46,7 +46,7 @@
     "Organization":         "foaf:Organization",
     "AnnotationCollection": "as:OrderedCollection",
     "AnnotationPage":       "as:OrderedCollectionPage",
-    "Audience":             "schema:Audience", 
+    "Audience":             "schema:Audience",
 
     "Motivation":    "oa:Motivation",
     "bookmarking":   "oa:bookmarking",

@@ -19,7 +19,7 @@
     startBtn.onclick = function () {
         startBtn.disabled = true;
         promise_test(function (t) {
-            var request = new PresentationRequest(presentationUrls[1]);
+            var request = new PresentationRequest(presentationUrls);
             var presentationId = null;
             return request.start().then(function (connection) {
                 presentationId = connection.id;

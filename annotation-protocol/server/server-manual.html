@@ -2,6 +2,14 @@
 <html>
 <head>
 <title>Annotation Protocol Must Tests</title>
+<link rel="stylesheet" href="/resources/testharness.css">
+<style>
+.validationError {
+  color: white;
+  background: red;
+  padding-left: 1em;
+}
+</style>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -168,7 +176,7 @@ function makePromiseTests( thennable, criteria ) {
   });
 }
 
-function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TARGET ) {
+function runTests( container_url, annotation_url, query_string, theAnnotation, theModifiedAnnotation ) {
 
   var fixURI = function(uri) {
     if (query_string && query_string !== "") {
@@ -199,7 +207,7 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
       { header: 'Allow', pat: /HEAD/, assertion: "Containers MUST support HEAD (check Allow on GET)" },
       { header: 'Allow', pat: /OPTIONS/, assertion: "Containers MUST support OPTIONS (check Allow on GET)" },
       { header: 'Content-Type', pat: MEDIA_TYPE_REGEX, assertion: 'Containers MUST have a Content-Type header with the application/ld+json media type'},
-      { header: 'Content-Type', pat: MEDIA_TYPE_REGEX, assertion: 'Containers MUST response with the JSON-LD representation (by default)'},
+      { header: 'Content-Type', pat: MEDIA_TYPE_REGEX, assertion: 'Containers MUST respond with the JSON-LD representation (by default)'},
       { test: function(res) { return ( 'type' in res.body && res.body.type.indexOf('BasicContainer') > -1 ); }, assertion: 'Containers MUST return a description of the container with BasicContainer' },
       { test: function(res) { return ( 'type' in res.body && res.body.type.indexOf('AnnotationCollection') > -1 ); }, assertion: 'Containers MUST return a description of the container with AnnotationCollection' },
       { header: 'Link', pat: /(.*)/, assertion: 'Containers MUST return a Link header (rfc5988) on all responses' },
@@ -302,26 +310,8 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
 
   // creation and deletion tests
 
-  var theAnnotation = {
-    "@context": "http://www.w3.org/ns/anno.jsonld",
-    "type": "Annotation",
-    "body": {
-      "type": "TextualBody",
-      "value": "I like this page!"
-    },
-    "target": TARGET
-  };
-
-  var theAnnotationCanonical = {
-    "@context": "http://www.w3.org/ns/anno.jsonld",
-    "type": "Annotation",
-    "body": {
-      "type": "TextualBody",
-      "value": "I like this page with canonical property!"
-    },
-    "target": TARGET,
-    "canonical": 'urn:uuid:' + token()
-  };
+  var theAnnotationCanonical = theAnnotation;
+  theAnnotationCanonical.canonical = 'urn:uuid:' + token();
 
   var theCreation = request("POST", container, [ [ 'Content-Type', MEDIA_TYPE ] ], theAnnotation);
 
@@ -349,9 +339,7 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
 
   promise_test(function() {
     return theCreation.then(function(res) {
-      var newAnnotation = res.body ;
-      newAnnotation.target = OTHER_TARGET ;
-      return request("PUT", fixURI(res.body.id), [['Content-Type', MEDIA_TYPE]], newAnnotation)
+      return request("PUT", fixURI(res.body.id), [['Content-Type', MEDIA_TYPE]], theModifiedAnnotation)
         .then(function(lres) {
           assert_equals(lres.body.target, newAnnotation.target, "Annotation did not update");
         })
@@ -385,7 +373,7 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
                                 // the annotation was created... clean it up
                                 request("DELETE", fixURI(res.body.id));
                               }
-                              return ( res.status === 201 ) ; }, assertion: "Annotation Server MUST respond with a 201 Created code if the creation is successful" },
+                              return ( res.status === 201 ) ; }, assertion: "Annotation Server MUST respond with a 201 Created code if the creation with a canonical URI is successful" },
       ]);
 
   // SHOULD tests
@@ -442,24 +430,54 @@ function runTests( container_url, annotation_url, query_string, TARGET, OTHER_TA
 // set up an event handler one the document is loaded that will run the tests once we
 // have a URI to run against
 on_event(document, "DOMContentLoaded", function() {
-    var serverURI = document.getElementById("uri") ;
-    var annotationURI = document.getElementById("annotation") ;
-    var queryString = document.getElementById("query") ;
-    var targetString = document.getElementById("target") ;
-    var otherTargetString = document.getElementById("other") ;
-    var runButton = document.getElementById("endpoint-submit-button") ;
-    on_event(runButton, "click", function() {
-        // user clicked
-        var URI = serverURI.value;
-        var ANN = annotationURI.value;
-        var QUERY = query.value;
-        runButton.disabled = true;
+  var serverURI = document.getElementById("uri") ;
+  var annotationURI = document.getElementById("annotation") ;
+  var queryString = document.getElementById("query") ;
+  var anno1 = document.getElementById("anno1") ;
+  var anno2 = document.getElementById("anno2") ;
+  var runButton = document.getElementById("endpoint-submit-button") ;
+  var msg = document.getElementById("message");
+  on_event(runButton, "click", function() {
+    msg.innerHTML = "";
+    // user clicked
+    var URI = serverURI.value;
+    var ANN = annotationURI.value;
+    var QUERY = query.value;
+    var errors = "";
+    var anno1val;
+    var anno2val;
 
-        // okay, they clicked.  run the tests with that URI
-        runTests(URI, ANN, QUERY, targetString.value, otherTargetString.value);
-        done();
-        });
-    });
+    if (URI === "") {
+      errors += "<p>Server URI is empty<\/p>";
+    }
+
+    if (ANN === "") {
+      errors += "<p>Annotation URI is empty<\/p>";
+    }
+
+    try {
+      anno1val = JSON.parse(anno1.value);
+    }
+    catch(err) {
+      errors += "<p class='validationError'>Creation Annotation JSON Parsing failed: " + err + "<\/p>";
+    }
+
+    try {
+      anno2val = JSON.parse(anno2.value);
+    }
+    catch(err) {
+      errors += "<p class='validationError'>Modification Annotation JSON Parsing failed: " + err + "<\/p>";
+    }
+
+    if (errors !== "") {
+      msg.innerHTML = "<div class='validationError'>" + errors + "<\/div>";
+    } else {
+      // okay, they clicked.  run the tests with that URI
+      runTests(URI, ANN, QUERY, anno1val, anno2val);
+      done();
+    }
+  });
+});
 </script>
 </head>
 <body>
@@ -476,14 +494,36 @@ Access-Control-Allow-Methods: GET,HEAD,OPTIONS,DELETE,PUT
 Access-Control-Allow-Origin: *
 Access-Control-Expose-Headers: ETag, Allow, Vary, Link, Content-Type, Location, Content-Location, Prefer
 </pre>
+<div id="log"></div>
 <p>Provide endpoint and annotation URIs and select "Go" to start testing.</p>
+<div id="message"></div>
 <form name="endpoint">
+  <p><strong>Required parameters:</strong></p>
   <p><label for="uri">Endpoint URI:</label> <input type="text" size="50" id="uri" name="uri"></p>
   <p><label for="annotation">Annotation URI:</label> <input type="text" size="50" id="annotation" name="annotation"></p>
+  <p><input type="button" id="endpoint-submit-button" value="Go"></p>
+  <p><strong>Tunable parameters (rarely required):</strong></p>
   <p><label for="query">Additional URI parameters:</label> <input type="text" size="50" id="query" name="query"></p>
-  <p><label for="target">Target for created annotation:</label> <input type="text" size="50" id="target" name="target" value="http://www.example.com/index.html"></p>
-  <p><label for="other">Target for modified annotation:</label> <input type="text" size="50" id="other" name="other" value="http://www.example.com/other.html"></p>
-  <input type="button" id="endpoint-submit-button" value="Go">
+  <p><label for="anno1">Annotation to submit for creation tests:</label></p>
+  <textarea name="anno1" id="anno1" rows="9" style="width: 90%">{
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "type": "Annotation",
+  "body": {
+    "type": "TextualBody",
+    "value": "I like this page!"
+  },
+  "target": "http://www.example.com/index.html"
+}</textarea>
+  <p><label for="anno2">Annotation to submit for modification tests:</label></p>
+  <textarea name="anno2" id="anno2" rows="9" style="width: 90%">{
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "type": "Annotation",
+  "body": {
+    "type": "TextualBody",
+    "value": "I like this page!"
+  },
+  "target": "http://www.example.com/other.html"
+}</textarea>
 </form>
 </body>
 </html>

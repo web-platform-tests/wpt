@@ -28,6 +28,10 @@ class WebDriverServer(object):
 
     def __init__(self, logger, binary, host="127.0.0.1", port=None,
                  base_path="", env=None):
+        if binary is None:
+            raise ValueError("WebDriver server binary must be given "
+                             "to --webdriver-binary argument")
+
         self.logger = logger
         self.binary = binary
         self.host = host

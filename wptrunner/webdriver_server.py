@@ -153,7 +153,7 @@ class EdgeDriverServer(WebDriverServer):
 
 
 class GeckoDriverServer(WebDriverServer):
-    def __init__(self, logger, marionette_port=2828, binary="wires",
+    def __init__(self, logger, marionette_port=2828, binary="geckodriver",
                  host="127.0.0.1", port=None):
         env = os.environ.copy()
         env["RUST_BACKTRACE"] = "1"

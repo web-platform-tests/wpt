@@ -23,6 +23,10 @@ matrix:
         - SCRIPT=ci_lint.sh
     - os: linux
       python: "2.7"
+      env:
+        - SCRIPT=ci_built_diff.sh
+    - os: linux
+      python: "2.7"
       addons:
         apt:
           packages:

@@ -235,3 +235,11 @@ function assert_response_in_array(actual, expected_array, description) {
         }
     }), description);
 }
+
+// Deletes all caches, returning a promise indicating success.
+function delete_all_caches() {
+  return self.caches.keys()
+    .then(function(keys) {
+      return Promise.all(keys.map(self.caches.delete.bind(self.caches)));
+    });
+}

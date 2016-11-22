@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+async_test(t => {
+    self.onmessage = t.step_func(e => {
+        assert_true(e.data.startsWith('Exception: '));
+        t.done();
+      });
+  }, 'Creating BroadcastChannel in opaque origin should fail.');
+</script>
+<iframe sandbox="allow-scripts" src="resources/sandboxed.html"></iframe>
+</body>

@@ -9001,12 +9001,15 @@
     var canvas2 = document.createElement('canvas');
     canvas2.width = 0;
     canvas2.height = 10;
+    ctx.drawImage(canvas2, 0, 0);
 
     canvas2.width = 10;
     canvas2.height = 0;
+    ctx.drawImage(canvas2, 0, 0);
 
     canvas2.width = 0;
     canvas2.height = 0;
+    ctx.drawImage(canvas2, 0, 0);
 
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green

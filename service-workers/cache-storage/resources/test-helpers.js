@@ -32,7 +32,7 @@
 function cache_test(test_function, description) {
   promise_test(function(test) {
       return create_temporary_cache(test)
-        .then(test_function);
+        .then(function(cache) { return test_function(cache, test); });
     }, description);
 }
 

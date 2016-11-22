@@ -1,6 +1,5 @@
 if (self.importScripts) {
     importScripts('/resources/testharness.js');
-    importScripts('../resources/testharness-helpers.js');
     importScripts('../resources/test-helpers.js');
 }
 
@@ -31,9 +30,10 @@ promise_test(function(t) {
   }, 'CacheStorage.open with an empty name');
 
 promise_test(function(t) {
-    return assert_promise_rejects(
-      self.caches.open(),
+    return promise_rejects(
+      t,
       new TypeError(),
+      self.caches.open(),
       'CacheStorage.open should throw TypeError if called with no arguments.');
   }, 'CacheStorage.open with no arguments');
 

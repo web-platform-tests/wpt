@@ -24,7 +24,7 @@
             var pointerdown_event;
             var detected_pointerEvents = new Array();
             var eventRcvd = false;
-            var isWaiting = false;
+            var waitState = 0;
 
 
             function run() {
@@ -39,8 +39,8 @@
                             check_PointerEvent(event);
 
                             // TA: 10.2
-                            assert_true(isWaiting, "gotpointercapture must be fired asynchronously");
-                            isWaiting = false;
+                            assert_equals(waitState, 3, "gotpointercapture must be fired after pointerover and pointerenter all asynchronously");
+                            waitState = 0;
 
                             // if any events have been received with same pointerId before gotpointercapture, then fail
                             var eventsRcvd_str = "";
@@ -57,10 +57,16 @@
                         }
                         else {
                             if (pointerdown_event.pointerId === event.pointerId) {
-                                assert_false(isWaiting, event.type + " must be fired after gotpointercapture");
-                                detected_pointerEvents.push(event.type);
-                                eventRcvd = true;
-                                test_pointerEvent.done(); // complete test
+                                if (event.type == 'pointerover' && waitState == 1) {
+                                  waitState = 2;
+                                } else if (event.type == 'pointerenter' && waitState == 2) {
+                                  waitState = 3;
+                                } else {
+                                  assert_equals(waitState, 0, "Only pointerover and pointerenter should precede gotpointercapture");
+                                  detected_pointerEvents.push(event.type);
+                                  eventRcvd = true;
+                                  test_pointerEvent.done(); // complete test
+                                }
                             }
                         }
                     });
@@ -71,7 +77,7 @@
                     detected_pointertypes[event.pointerType] = true;
                     pointerdown_event = event;
                     listener.setPointerCapture(event.pointerId);
-                    isWaiting = true;
+                    waitState = 1;
                 });
             }
         </script>

@@ -3,12 +3,7 @@
 <title>PerformanceObservers: resource</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="performanceobservers.js"></script>
-<h1>PerformanceObservers: resource</h1>
-<p>
-New resources will <a href="https://w3c.github.io/performance-timeline/#dfn-queue-a-performanceentry">queue a PerformanceEntry</a>.
-</p>
-<div id="log"></div>
+<script src="../performance-timeline/performanceobservers.js"></script>
 <script>
   async_test(function (t) {
     function path(pathname) {
@@ -16,7 +11,7 @@ New resources will <a href="https://w3c.github.io/performance-timeline/#dfn-queu
       return pathname.substring(0, pathname.length - filename.length);
     }
     var img_location = document.location.origin + path(document.location.pathname)
-       + "resources/square.png";
+       + "resources/1x1-blue.png";
     var observer = new PerformanceObserver(
         t.step_func(function (entryList, obs) {
           checkEntries(entryList.getEntriesByType("resource"),
@@ -26,11 +21,12 @@ New resources will <a href="https://w3c.github.io/performance-timeline/#dfn-queu
         })
       );
     observer.observe({entryTypes: ["resource"]});
-    var img = document.createElement("img");
-    img.src = img_location;
-    document.body.appendChild(img);
-    img = document.createElement("img");
-    img.src = img_location;
-    document.body.appendChild(img);
   }, "Only one resource entry per resource");
 </script>
+<h1>PerformanceObservers: resource</h1>
+<p>
+New resources will <a href="https://w3c.github.io/performance-timeline/#dfn-queue-a-performanceentry">queue a PerformanceEntry</a>.
+</p>
+<div id="log"></div>
+<img src='resources/1x1-blue.png' alt='First appareance of the image'>
+<img src='resources/1x1-blue.png' alt='Second appareance of the image'>

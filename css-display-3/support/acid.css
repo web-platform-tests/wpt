@@ -49,3 +49,7 @@ html, body {
 .c9 { color: grey; }
 .c10{ color: black; }
 .b { background: inherit; }
+
+/** This is the only difference between references and non-reference styles */
+.ref .c2 { background: transparent; }
+.ref .b { background:blue; }

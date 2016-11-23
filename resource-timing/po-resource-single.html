@@ -5,28 +5,33 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../performance-timeline/performanceobservers.js"></script>
 <script>
-  async_test(function (t) {
-    function path(pathname) {
+  var t = async_test("Only one resource entry per resource");
+
+  function path(pathname) {
       var filename = pathname.substring(pathname.lastIndexOf('/')+1);
       return pathname.substring(0, pathname.length - filename.length);
-    }
-    var img_location = document.location.origin + path(document.location.pathname)
+  }
+  var img_location = document.location.origin + path(document.location.pathname)
        + "resources/1x1-blue.png";
-    var observer = new PerformanceObserver(
-        t.step_func(function (entryList, obs) {
-          checkEntries(entryList.getEntriesByType("resource"),
-            [{ entryType: "resource", name: img_location}]);
-          observer.disconnect();
-          t.done();
-        })
-      );
-    observer.observe({entryTypes: ["resource"]});
-  }, "Only one resource entry per resource");
+  
+  var total_recall = 0;
+  function imgLoad() {
+      total_recall++;
+      if (total_recall > 1) {
+        var entries = performance.getEntriesByType("resource");
+        var total_img = 0;
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].name === img_location) total_img++;
+        }
+        assert_equals(total_img, 1);
+        t.done();
+      }
+  }
 </script>
 <h1>PerformanceObservers: resource</h1>
 <p>
 New resources will <a href="https://w3c.github.io/performance-timeline/#dfn-queue-a-performanceentry">queue a PerformanceEntry</a>.
 </p>
 <div id="log"></div>
-<img src='resources/1x1-blue.png' alt='First appareance of the image'>
-<img src='resources/1x1-blue.png' alt='Second appareance of the image'>
+<img src='resources/1x1-blue.png' alt='First appareance of the image' onload='imgLoad()'>
+<img src='resources/1x1-blue.png' alt='Second appareance of the image' onload='imgLoad()'>

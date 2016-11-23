@@ -4,6 +4,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
+  setup({ explicit_timeout: true });
+
   var t = async_test("Only one resource entry per resource");
 
   function path(pathname) {

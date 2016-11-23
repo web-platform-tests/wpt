@@ -1,9 +1,8 @@
 <!DOCTYPE HTML>
 <meta charset=utf-8>
-<title>PerformanceObservers: resource</title>
+<title>One resource when reusing data</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../performance-timeline/performanceobservers.js"></script>
 <script>
   var t = async_test("Only one resource entry per resource");
 
@@ -28,9 +27,9 @@
       }
   }
 </script>
-<h1>PerformanceObservers: resource</h1>
+<h1>One resource when reusing data</h1>
 <p>
-New resources will <a href="https://w3c.github.io/performance-timeline/#dfn-queue-a-performanceentry">queue a PerformanceEntry</a>.
+If the user agent is to reuse the data from another existing or completed fetch initiated from the current document, abort the remaining steps.
 </p>
 <div id="log"></div>
 <img src='resources/1x1-blue.png' alt='First appareance of the image' onload='imgLoad()'>

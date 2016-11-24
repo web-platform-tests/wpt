@@ -1,0 +1,68 @@
+<!doctype html>
+<!--
+This test does not require fake media devices.
+-->
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>RTCPeerConnection.setRemoteDescription exercises</title>
+</head>
+<body>
+  <div id="log"></div>
+  <h2>SetRemoteDescription error handling</h2>
+  <div id="stateinfo">
+  </div>
+
+  <!-- These files are in place when executing on W3C. -->
+  <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+      <script src="/common/vendor-prefix.js"
+          data-prefixed-objects=
+              '[{"ancestors":["window"], "name":"RTCPeerConnection"},
+                {"ancestors":["window"], "name":"RTCSessionDescription"},
+                {"ancestors":["window"], "name":"RTCIceCandidate"}]'>
+  </script>
+  <script type="text/javascript">
+  var gFirstConnection = new RTCPeerConnection(null);
+  // This function starts the test.
+  promise_test(function() {
+
+
+      // Bogus SDP
+      return gFirstConnection.setRemoteDescription({'type': 'offer',
+					     'sdp': 'bogus'})
+	  .then(function() {
+	      assert_unreached('Bogus SDP should not be accepted');
+	  })
+	  .catch(function(e) {
+	      assert_equals(e.name, "InvalidAccessError");
+	  });
+  }, 'Bogus SDP');
+  promise_test(function() {
+      // Bogus operation
+      return gFirstConnection.setRemoteDescription({'type': 'bogus',
+					     'sdp': 'bogus'})
+	  .then(function() {
+	      assert_unreached('Bogus operation types should not be accepted');
+	  })
+	  .catch(function(e) {
+	      assert_equals(e.name, "TypeError");
+	  });
+  }, 'Bogus Operation');
+  promise_test(function() {
+      // Bogus operation
+      return gFirstConnection.setRemoteDescription({'type': 'answer',
+					     'sdp': 'bogus'})
+	  .then(function() {
+	      assert_unreached('Answer in "new" state should not be accepted');
+	  })
+	  .catch(function(e) {
+	      assert_equals(e.name, "InvalidStateError");
+	  });
+  }, 'Bogus operation for state');
+
+</script>
+
+</body>
+</html>

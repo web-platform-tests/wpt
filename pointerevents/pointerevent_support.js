@@ -201,6 +201,7 @@ function rPointerCapture(e) {
 
 var globalPointerEventTest = null;
 var expectedPointerType = null;
+const ALL_POINTERS = ['mouse', 'touch', 'pen'];
 const HOVERABLE_POINTERS = ['mouse', 'pen'];
 const NOHOVER_POINTERS = ['touch'];
 

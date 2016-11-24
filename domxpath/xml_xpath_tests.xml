@@ -628,14 +628,14 @@
   </test>
   <test>
     <xpath>//zeta[starts-with(concat(@object,"-"),"this.nodeValue-")][@xml:lang="nb"][@xml:id="id1"]//pi[@xml:lang="en-US"][@xml:id="id2"][not(preceding-sibling::*)]/eta[@xml:lang="nb"][not(preceding-sibling::*)][not(following-sibling::*)][not(following-sibling::eta)]/rho[@xml:id="id3"][not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::pi[@desciption]/epsilon[@xml:id="id4"][not(preceding-sibling::*)][not(following-sibling::*)]/delta[@xml:lang="no-nb"][@xml:id="id5"][not(preceding-sibling::*)][not(child::node())][following-sibling::epsilon[@att="true"][following-sibling::psi[starts-with(@abort,"attribute")][@xml:id="id6"][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <zeta object="this.nodeValue" xml:lang="nb" xml:id="id1">
-        <pi xml:lang="en-US" xml:id="id2">
     <result>
       <namespace/>
       <localname>rho</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <zeta object="this.nodeValue" xml:lang="nb" xml:id="id1">
+        <pi xml:lang="en-US" xml:id="id2">
           <eta xml:lang="nb">
             <rho xml:id="id3"/>
             <pi desciption="attribute value">
@@ -1569,15 +1569,15 @@
   </test>
   <test>
     <xpath>//beta[@data][@xml:lang="en-US"][@xml:id="id1"]/lambda[starts-with(concat(@attr,"-"),"_blank-")][@xml:lang="en-US"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::*[position()=2]][following-sibling::iota[contains(concat(@or,"$"),"er attribute value$")][@xml:lang="en-GB"][@xml:id="id3"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::eta[contains(concat(@and,"$"),"e$")][@xml:lang="en-GB"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]//epsilon[@or="123456789"][@xml:id="id4"][following-sibling::*[position()=1]][following-sibling::epsilon[@attribute][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/zeta[@content][@xml:lang="nb"][@xml:id="id5"][not(following-sibling::*)]/*[@xml:id="id6"][not(preceding-sibling::*)][not(child::node())][following-sibling::gamma[contains(concat(@attrib,"$"),"ent$")][@xml:id="id7"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::eta[@xml:id="id8"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]][position() = 1]]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <beta data="attribute" xml:lang="en-US" xml:id="id1">
-        <lambda attr="_blank" xml:lang="en-US" xml:id="id2"/>
-        <iota or="another attribute value" xml:lang="en-GB" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>lambda</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <beta data="attribute" xml:lang="en-US" xml:id="id1">
+        <lambda attr="_blank" xml:lang="en-US" xml:id="id2"/>
+        <iota or="another attribute value" xml:lang="en-GB" xml:id="id3"/>
         <eta and="false" xml:lang="en-GB">
           <epsilon or="123456789" xml:id="id4"/>
           <epsilon attribute="this-is-att-value">
@@ -1622,14 +1622,14 @@
   </test>
   <test>
     <xpath>//*[starts-with(@string,"another attribute va")][@xml:lang="en"][@xml:id="id1"]/gamma[@xml:lang="en-GB"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::upsilon[starts-with(concat(@token,"-"),"content-")][@xml:id="id3"]/rho[@true="attribute-value"][not(preceding-sibling::*)]/pi[@insert="123456789"][@xml:lang="en-GB"][not(preceding-sibling::*)][not(following-sibling::*)][not(preceding-sibling::pi)]/chi[contains(concat(@delete,"$"),"content$")][@xml:lang="nb"][@xml:id="id4"][not(child::node())][following-sibling::eta[@xml:lang="en"]/kappa[@xml:id="id5"]/delta[starts-with(@number,"a")][@xml:lang="en-US"][@xml:id="id6"][not(preceding-sibling::*)][not(following-sibling::*)][not(following-sibling::delta)]/epsilon[@abort][@xml:lang="en-US"][not(preceding-sibling::*)][following-sibling::*[position()=4]][following-sibling::gamma[@xml:lang="en"][@xml:id="id7"][not(child::node())][following-sibling::delta[following-sibling::*[position()=2]][following-sibling::omega[starts-with(@or,"solid ")][@xml:id="id8"][preceding-sibling::*[position() = 3]][following-sibling::*[position()=1]][not(child::node())][following-sibling::theta[preceding-sibling::*[position() = 4]]/gamma[contains(@number,"e value")][@xml:lang="no"][@xml:id="id9"][not(child::node())][following-sibling::*[starts-with(@delete,"_")]/rho[@xml:lang="nb"][following-sibling::alpha[@xml:lang="en-GB"][preceding-sibling::*[position() = 1]][following-sibling::mu[@xml:id="id10"][preceding-sibling::*[position() = 2]]//*[@xml:lang="en-GB"][not(following-sibling::*)]//zeta[@abort][@xml:lang="en-US"][not(preceding-sibling::*)][not(following-sibling::*)]//eta[@attribute="123456789"][not(following-sibling::*)]//iota[@xml:lang="nb"][not(preceding-sibling::*)][not(following-sibling::*)]][position() = 1]][position() = 1]]][position() = 1]]]]]]</xpath>
-    <tree>
-      <any string="another attribute value" xml:lang="en" xml:id="id1">
-        <gamma xml:lang="en-GB" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>gamma</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <any string="another attribute value" xml:lang="en" xml:id="id1">
+        <gamma xml:lang="en-GB" xml:id="id2"/>
         <upsilon token="content" xml:id="id3">
           <rho true="attribute-value">
             <pi insert="123456789" xml:lang="en-GB">
@@ -2339,14 +2339,14 @@
   </test>
   <test>
     <xpath>//rho[@xml:lang="en"][@xml:id="id1"]/*[@xml:lang="en-US"][@xml:id="id2"][not(following-sibling::*)]/omega[@xml:lang="nb"][not(preceding-sibling::*)][not(following-sibling::*)]//tau[starts-with(@data,"thi")][not(preceding-sibling::*)][not(following-sibling::*)]//epsilon[@xml:lang="en-US"][not(preceding-sibling::*)][not(child::node())][following-sibling::eta[@false][following-sibling::*[position()=1]][not(preceding-sibling::eta)][following-sibling::theta[@xml:lang="no"][@xml:id="id3"][preceding-sibling::*[position() = 2]]/iota[not(preceding-sibling::*)]//epsilon[@xml:id="id4"][not(preceding-sibling::*)][not(following-sibling::*)][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <rho xml:lang="en" xml:id="id1">
-        <any xml:lang="en-US" xml:id="id2">
     <result>
       <namespace/>
       <localname>epsilon</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <rho xml:lang="en" xml:id="id1">
+        <any xml:lang="en-US" xml:id="id2">
           <omega xml:lang="nb">
             <tau data="this-is-att-value">
               <epsilon xml:lang="en-US"/>
@@ -2366,14 +2366,14 @@
   </test>
   <test>
     <xpath>//eta[contains(@token,"bla")][@xml:lang="no"][@xml:id="id1"]/tau[@attribute="another attribute value"][@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)][not(following-sibling::*)]//kappa[@abort="this-is-att-value"][@xml:lang="en-US"][not(child::node())][following-sibling::delta[starts-with(concat(@title,"-"),"this.nodeValue-")][@xml:lang="nb"][@xml:id="id3"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]//*[@token][@xml:lang="no-nb"][@xml:id="id4"][following-sibling::*[position()=4]][not(child::node())][following-sibling::theta[@xml:lang="en"][@xml:id="id5"][following-sibling::*[position()=3]][following-sibling::xi[@xml:lang="no"][@xml:id="id6"][following-sibling::beta[@xml:lang="no"][preceding-sibling::*[position() = 3]][not(child::node())][following-sibling::kappa[contains(concat(@desciption,"$"),"alse$")][@xml:id="id7"][not(following-sibling::*)]/kappa[not(following-sibling::*)]//theta[@xml:id="id8"][not(child::node())][following-sibling::omicron[@data][following-sibling::psi[@xml:lang="nb"][not(following-sibling::*)]//rho[contains(@token,"t")][@xml:lang="nb"][not(following-sibling::*)][not(preceding-sibling::rho)]//omega[@xml:lang="en-GB"][@xml:id="id9"][not(following-sibling::*)]/eta[starts-with(@false,"t")][@xml:lang="en-GB"]/eta[@xml:lang="en-US"][@xml:id="id10"][not(preceding-sibling::*)]//omicron[@xml:id="id11"][not(preceding-sibling::*)][not(following-sibling::*)]][position() = 1]]][position() = 1]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <eta token="_blank" xml:lang="no" xml:id="id1">
-        <tau attribute="another attribute value" xml:lang="no-nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>kappa</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <eta token="_blank" xml:lang="no" xml:id="id1">
+        <tau attribute="another attribute value" xml:lang="no-nb" xml:id="id2">
           <kappa abort="this-is-att-value" xml:lang="en-US"/>
           <delta title="this.nodeValue" xml:lang="nb" xml:id="id3">
             <any token="content" xml:lang="no-nb" xml:id="id4"/>
@@ -2427,16 +2427,16 @@
   </test>
   <test>
     <xpath>//lambda[@xml:lang="en-US"][@xml:id="id1"]//omega[@xml:lang="no"][@xml:id="id2"]//*[@xml:lang="en-GB"][@xml:id="id3"][not(following-sibling::*)]//sigma[@name][@xml:lang="en"][@xml:id="id4"][not(following-sibling::*)]/pi[starts-with(@token,"attribute-va")][@xml:lang="no-nb"][not(preceding-sibling::*)]/epsilon[@xml:lang="en"][not(preceding-sibling::*)][following-sibling::*[position()=3]][not(child::node())][following-sibling::sigma[@true][@xml:id="id5"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=2]][not(child::node())][following-sibling::theta[starts-with(@attr,"_bla")][@xml:lang="nb"][preceding-sibling::*[position() = 2]][following-sibling::theta[@xml:lang="en"][@xml:id="id6"]//eta[@name][@xml:lang="en"][@xml:id="id7"][not(preceding-sibling::*)][not(child::node())][following-sibling::lambda[@name][@xml:lang="nb"][following-sibling::*[position()=3]][following-sibling::eta[@title][@xml:lang="nb"][preceding-sibling::*[position() = 2]][following-sibling::*[position()=2]][following-sibling::lambda[@xml:id="id8"][preceding-sibling::*[position() = 3]][following-sibling::pi[@xml:id="id9"][preceding-sibling::*[position() = 4]][not(following-sibling::*)]/omicron[not(preceding-sibling::*)][not(following-sibling::*)]//psi[@xml:lang="no-nb"][following-sibling::delta[@xml:lang="no-nb"][@xml:id="id10"][not(child::node())][following-sibling::sigma[@xml:lang="en-GB"][preceding-sibling::*[position() = 2]][position() = 1]][position() = 1]]]]][position() = 1]]]]]</xpath>
-    <tree>
-      <lambda xml:lang="en-US" xml:id="id1">
-        <omega xml:lang="no" xml:id="id2">
-          <any xml:lang="en-GB" xml:id="id3">
-            <sigma name="attribute-value" xml:lang="en" xml:id="id4">
     <result>
       <namespace/>
       <localname>epsilon</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <lambda xml:lang="en-US" xml:id="id1">
+        <omega xml:lang="no" xml:id="id2">
+          <any xml:lang="en-GB" xml:id="id3">
+            <sigma name="attribute-value" xml:lang="en" xml:id="id4">
               <pi token="attribute-value" xml:lang="no-nb">
                 <epsilon xml:lang="en"/>
                 <sigma true="100%" xml:id="id5"/>
@@ -2496,14 +2496,14 @@
   </test>
   <test>
     <xpath>//beta[@xml:lang="no-nb"][@xml:id="id1"]//tau[@xml:lang="nb"][@xml:id="id2"][not(child::node())][following-sibling::psi[@xml:id="id3"][preceding-sibling::*[position() = 1]]//xi[contains(concat(@false,"$"),"alse$")][@xml:id="id4"][following-sibling::kappa[preceding-sibling::*[position() = 1]][not(following-sibling::*)]//lambda[not(preceding-sibling::*)]/alpha[@xml:id="id5"]/phi[@att][not(preceding-sibling::*)][not(child::node())][following-sibling::gamma[preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][following-sibling::upsilon[@and][@xml:id="id6"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]//omega[@xml:lang="no"][@xml:id="id7"][not(preceding-sibling::*)][position() = 1]][position() = 1]]]]</xpath>
-    <tree>
-      <beta xml:lang="no-nb" xml:id="id1">
-        <tau xml:lang="nb" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>tau</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <beta xml:lang="no-nb" xml:id="id1">
+        <tau xml:lang="nb" xml:id="id2"/>
         <psi xml:id="id3">
           <xi false="false" xml:id="id4"/>
           <kappa>
@@ -2998,14 +2998,14 @@
   </test>
   <test>
     <xpath>//omega[@data="100%"][@xml:lang="en"][@xml:id="id1"]/alpha[@xml:lang="no"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::*[position()=5]][not(preceding-sibling::alpha)][following-sibling::xi[starts-with(concat(@and,"-"),"attribute-")][@xml:id="id3"][following-sibling::*[position()=4]][not(child::node())][following-sibling::psi[@desciption][following-sibling::*[position()=3]][not(child::node())][following-sibling::xi[not(child::node())][following-sibling::*[contains(@desciption,"nten")][@xml:id="id4"][not(child::node())][following-sibling::pi[@xml:lang="en-US"][not(following-sibling::*)]/lambda[@xml:id="id5"][not(preceding-sibling::*)][not(following-sibling::*)]/pi[@and="this-is-att-value"][@xml:lang="en"][@xml:id="id6"][not(preceding-sibling::*)]//phi[@xml:lang="no"][not(child::node())][following-sibling::xi[contains(concat(@and,"$"),"nk$")][@xml:lang="en-US"][preceding-sibling::*[position() = 1]]][position() = 1]][position() = 1]]]][position() = 1]]</xpath>
-    <tree>
-      <omega data="100%" xml:lang="en" xml:id="id1">
-        <alpha xml:lang="no" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>alpha</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <omega data="100%" xml:lang="en" xml:id="id1">
+        <alpha xml:lang="no" xml:id="id2"/>
         <xi and="attribute" xml:id="id3"/>
         <psi desciption="100%"/>
         <xi/>
@@ -3202,14 +3202,14 @@
   </test>
   <test>
     <xpath>//psi[@xml:lang="no-nb"][@xml:id="id1"]/nu[@attribute][@xml:lang="no"][@xml:id="id2"]//eta[@xml:lang="no"][not(preceding-sibling::*)][not(following-sibling::*)]//omicron[contains(@class,"ntent")][@xml:lang="no-nb"][@xml:id="id3"][not(following-sibling::*)]//rho[starts-with(concat(@or,"-"),"false-")][following-sibling::kappa[@xml:lang="en"][@xml:id="id4"][preceding-sibling::*[position() = 1]][following-sibling::gamma[not(child::node())][following-sibling::xi[@object][not(child::node())][following-sibling::iota[@string][preceding-sibling::*[position() = 4]][not(preceding-sibling::iota)][following-sibling::upsilon[@desciption]//lambda[contains(concat(@string,"$")," value$")][not(preceding-sibling::*)][not(child::node())][following-sibling::pi[@attr][@xml:lang="en-GB"][@xml:id="id5"][position() = 1]]][position() = 1]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <psi xml:lang="no-nb" xml:id="id1">
-        <nu attribute="this.nodeValue" xml:lang="no" xml:id="id2">
     <result>
       <namespace/>
       <localname>rho</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <psi xml:lang="no-nb" xml:id="id1">
+        <nu attribute="this.nodeValue" xml:lang="no" xml:id="id2">
           <eta xml:lang="no">
             <omicron class="content" xml:lang="no-nb" xml:id="id3">
               <rho or="false"/>
@@ -3275,14 +3275,14 @@
   </test>
   <test>
     <xpath>//kappa[contains(concat(@attr,"$"),"e-value$")][@xml:lang="en-US"][@xml:id="id1"]/mu[@xml:lang="no-nb"][@xml:id="id2"][following-sibling::alpha[@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::nu[@xml:lang="nb"][not(following-sibling::*)]/alpha[starts-with(@desciption,"_")][@xml:lang="en"][following-sibling::*[position()=3]][not(child::node())][following-sibling::iota[@xml:lang="nb"][not(child::node())][following-sibling::tau[contains(@attrib,"fal")][@xml:lang="no-nb"][following-sibling::*[position()=1]][not(child::node())][following-sibling::*[@xml:lang="en-GB"][preceding-sibling::*[position() = 3]][not(following-sibling::*)][position() = 1]][position() = 1]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <kappa attr="attribute-value" xml:lang="en-US" xml:id="id1">
-        <mu xml:lang="no-nb" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>mu</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <kappa attr="attribute-value" xml:lang="en-US" xml:id="id1">
+        <mu xml:lang="no-nb" xml:id="id2"/>
         <alpha xml:lang="no-nb"/>
         <nu xml:lang="nb">
           <alpha desciption="_blank" xml:lang="en"/>
@@ -4190,14 +4190,14 @@
   </test>
   <test>
     <xpath>//iota[@xml:lang="en-US"][@xml:id="id1"]/omega[@xml:lang="en"][@xml:id="id2"][not(following-sibling::*)][not(preceding-sibling::omega)]//eta[starts-with(@number,"1234567")][@xml:lang="nb"][not(preceding-sibling::*)][following-sibling::kappa[@xml:lang="no"][not(child::node())][following-sibling::theta[starts-with(concat(@string,"-"),"solid 1px green-")][@xml:lang="en-US"][@xml:id="id3"]/nu[@object][@xml:lang="nb"][not(preceding-sibling::*)][following-sibling::nu[starts-with(concat(@src,"-"),"attribute-")][@xml:id="id4"]//kappa[@xml:lang="no"][@xml:id="id5"][not(child::node())][following-sibling::beta[starts-with(@name,"content")][@xml:lang="en"][@xml:id="id6"][preceding-sibling::*[position() = 1]]]]][position() = 1]]</xpath>
-    <tree>
-      <iota xml:lang="en-US" xml:id="id1">
-        <omega xml:lang="en" xml:id="id2">
     <result>
       <namespace/>
       <localname>eta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <iota xml:lang="en-US" xml:id="id1">
+        <omega xml:lang="en" xml:id="id2">
           <eta number="123456789" xml:lang="nb"/>
           <kappa xml:lang="no"/>
           <theta string="solid 1px green" xml:lang="en-US" xml:id="id3">
@@ -6949,14 +6949,14 @@
   </test>
   <test>
     <xpath>//zeta[starts-with(concat(@content,"-"),"true-")][@xml:lang="en-GB"][@xml:id="id1"]//theta[@xml:lang="en-US"][@xml:id="id2"][not(child::node())][following-sibling::iota[preceding-sibling::*[position() = 1]]//rho[@xml:lang="en"][@xml:id="id3"][following-sibling::upsilon[contains(@desciption,"is-is-att-valu")][preceding-sibling::*[position() = 1]]//rho[@name][@xml:lang="en-GB"][@xml:id="id4"][not(child::node())][following-sibling::pi[@string][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/omega[@xml:lang="nb"][following-sibling::epsilon[@xml:lang="en-US"]]][position() = 1]]]</xpath>
-    <tree>
-      <zeta content="true" xml:lang="en-GB" xml:id="id1">
-        <theta xml:lang="en-US" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>theta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <zeta content="true" xml:lang="en-GB" xml:id="id1">
+        <theta xml:lang="en-US" xml:id="id2"/>
         <iota>
           <rho xml:lang="en" xml:id="id3"/>
           <upsilon desciption="this-is-att-value">
@@ -7375,15 +7375,15 @@
   </test>
   <test>
     <xpath>//omicron[@xml:lang="en-GB"][@xml:id="id1"]//pi[contains(@att,"e")][@xml:lang="no"][@xml:id="id2"][not(following-sibling::pi)][following-sibling::eta[@attrib="false"][@xml:lang="no-nb"][@xml:id="id3"][following-sibling::eta[@xml:lang="no"][not(child::node())][following-sibling::theta[@xml:lang="no-nb"][@xml:id="id4"][preceding-sibling::*[position() = 3]][following-sibling::theta/gamma[@xml:id="id5"][not(preceding-sibling::*)][not(child::node())][following-sibling::omicron[@name][@xml:lang="en-GB"][preceding-sibling::*[position() = 1]][not(preceding-sibling::omicron or following-sibling::omicron)][following-sibling::kappa[@name][preceding-sibling::*[position() = 2]][not(following-sibling::*)]/delta[not(following-sibling::*)]/pi[@attribute="true"][@xml:lang="en"][@xml:id="id6"][not(preceding-sibling::*)]/beta[@xml:lang="en-GB"][@xml:id="id7"][not(following-sibling::*)]/lambda[@title="content"][@xml:id="id8"][following-sibling::epsilon[@abort="attribute value"][not(following-sibling::*)]//epsilon[@data="this.nodeValue"][@xml:id="id9"][not(preceding-sibling::*)][following-sibling::omicron[@xml:lang="en"][@xml:id="id10"][not(child::node())][following-sibling::omicron[@xml:id="id11"]/kappa[contains(@title,"lue")][@xml:id="id12"][not(preceding-sibling::*)][following-sibling::phi[@xml:lang="no-nb"][not(preceding-sibling::phi)][not(child::node())][following-sibling::beta[contains(concat(@string,"$"),"ue$")][@xml:id="id13"][following-sibling::*[position()=1]][following-sibling::zeta[starts-with(concat(@src,"-"),"attribute-")][@xml:lang="en-US"][@xml:id="id14"][preceding-sibling::*[position() = 3]][not(following-sibling::*)]][position() = 1]]]][position() = 1]]]][position() = 1]]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <omicron xml:lang="en-GB" xml:id="id1">
-        <pi att="true" xml:lang="no" xml:id="id2"/>
-        <eta attrib="false" xml:lang="no-nb" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>pi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <omicron xml:lang="en-GB" xml:id="id1">
+        <pi att="true" xml:lang="no" xml:id="id2"/>
+        <eta attrib="false" xml:lang="no-nb" xml:id="id3"/>
         <eta xml:lang="no"/>
         <theta xml:lang="no-nb" xml:id="id4"/>
         <theta>
@@ -8006,14 +8006,14 @@
   </test>
   <test>
     <xpath>//beta[starts-with(@and,"this-is-at")][@xml:lang="nb"][@xml:id="id1"]/psi[@token][@xml:lang="en-US"][@xml:id="id2"]/tau[@xml:lang="en-GB"][not(following-sibling::*)]/pi[@xml:lang="en-US"][following-sibling::alpha[contains(@content,"tr")][@xml:id="id3"][preceding-sibling::*[position() = 1]]//pi[@xml:lang="en-US"][@xml:id="id4"][not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::*[contains(concat(@true,"$"),"lue$")][@xml:lang="en-GB"][not(following-sibling::*)]/iota[contains(concat(@number,"$"),"e$")][@xml:lang="en-GB"][@xml:id="id5"][following-sibling::*[position()=1]][following-sibling::delta[@xml:lang="nb"][@xml:id="id6"]/beta[@xml:lang="no"][not(preceding-sibling::*)][not(following-sibling::*)]/sigma[@xml:lang="nb"][@xml:id="id7"][not(child::node())][following-sibling::epsilon[@content="123456789"][@xml:id="id8"][not(following-sibling::*)]/beta[contains(concat(@and,"$"),"e$")][@xml:lang="no"]/nu[@xml:id="id9"][not(following-sibling::*)]]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <beta and="this-is-att-value" xml:lang="nb" xml:id="id1">
-        <psi token="false" xml:lang="en-US" xml:id="id2">
     <result>
       <namespace/>
       <localname>pi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <beta and="this-is-att-value" xml:lang="nb" xml:id="id1">
+        <psi token="false" xml:lang="en-US" xml:id="id2">
           <tau xml:lang="en-GB">
             <pi xml:lang="en-US"/>
             <alpha content="attribute-value" xml:id="id3">
@@ -8680,14 +8680,14 @@
   </test>
   <test>
     <xpath>//tau[starts-with(@delete,"_blank")][@xml:lang="no-nb"][@xml:id="id1"]//*[contains(concat(@title,"$"),"tt-value$")][@xml:lang="en-GB"][@xml:id="id2"][not(preceding-sibling::*)]//nu/tau[@attribute][@xml:lang="en"][@xml:id="id3"][not(preceding-sibling::*)][following-sibling::iota[contains(@title,"e")][@xml:lang="nb"][preceding-sibling::*[position() = 1]]/epsilon[not(preceding-sibling::*)][not(following-sibling::*)]/zeta[contains(@attribute,"t")][@xml:lang="en-GB"][@xml:id="id4"][not(preceding-sibling::*)][following-sibling::theta[contains(concat(@att,"$"),"rue$")][@xml:id="id5"][not(child::node())][following-sibling::omega[starts-with(@attrib,"10")][@xml:lang="en-GB"][not(child::node())][following-sibling::*[not(child::node())][following-sibling::omicron[preceding-sibling::*[position() = 4]]/phi[contains(@false,"lid 1px")][following-sibling::mu[@class][@xml:lang="en"][preceding-sibling::*[position() = 1]][following-sibling::alpha[starts-with(concat(@and,"-"),"attribute-")][@xml:id="id6"][position() = 1]][position() = 1]]]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <tau delete="_blank" xml:lang="no-nb" xml:id="id1">
-        <any title="this-is-att-value" xml:lang="en-GB" xml:id="id2">
     <result>
       <namespace/>
       <localname>tau</localname>
       <nth>1</nth>
     </result>
+    <tree>
+      <tau delete="_blank" xml:lang="no-nb" xml:id="id1">
+        <any title="this-is-att-value" xml:lang="en-GB" xml:id="id2">
           <nu>
             <tau attribute="_blank" xml:lang="en" xml:id="id3"/>
             <iota title="false" xml:lang="nb">
@@ -8795,14 +8795,14 @@
   </test>
   <test>
     <xpath>//upsilon[contains(@insert,"alue")][@xml:lang="no"][@xml:id="id1"]/alpha[@token][@xml:lang="nb"][@xml:id="id2"]/*[@xml:lang="en-GB"][not(following-sibling::*)]/mu[@xml:lang="en-US"][@xml:id="id3"][not(preceding-sibling::*)]//pi[contains(concat(@object,"$"),"ribute-value$")][@xml:lang="no-nb"][@xml:id="id4"][not(following-sibling::*)]/mu[@or][@xml:lang="en-GB"][@xml:id="id5"][following-sibling::sigma[@token][preceding-sibling::*[position() = 1]]/beta[@xml:lang="no"]/delta[not(preceding-sibling::*)][following-sibling::*[position()=3]][not(child::node())][following-sibling::delta[starts-with(concat(@delete,"-"),"another attribute value-")][@xml:id="id6"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=2]][following-sibling::pi[following-sibling::*[position()=1]][following-sibling::epsilon[contains(concat(@string,"$"),"tribute$")][@xml:id="id7"][preceding-sibling::*[position() = 3]]//theta[contains(concat(@false,"$"),"een$")]//*[@name="_blank"][position() = 1]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <upsilon insert="this-is-att-value" xml:lang="no" xml:id="id1">
-        <alpha token="false" xml:lang="nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>mu</localname>
       <nth>1</nth>
     </result>
+    <tree>
+      <upsilon insert="this-is-att-value" xml:lang="no" xml:id="id1">
+        <alpha token="false" xml:lang="nb" xml:id="id2">
           <any xml:lang="en-GB">
             <mu xml:lang="en-US" xml:id="id3">
               <pi object="attribute-value" xml:lang="no-nb" xml:id="id4">
@@ -9569,14 +9569,14 @@
   </test>
   <test>
     <xpath>//gamma[@xml:lang="nb"][@xml:id="id1"]//epsilon[@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)]//nu[@and="false"][not(preceding-sibling::*)][following-sibling::chi[preceding-sibling::*[position() = 1]][not(following-sibling::*)]/nu[@attr][following-sibling::*[position()=2]][following-sibling::chi[@src="_blank"][not(child::node())][following-sibling::chi[@xml:lang="en-US"][preceding-sibling::*[position() = 2]]/chi[@insert="content"][@xml:lang="no"][@xml:id="id3"]]][position() = 1]]</xpath>
-    <tree>
-      <gamma xml:lang="nb" xml:id="id1">
-        <epsilon xml:lang="no-nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>nu</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <gamma xml:lang="nb" xml:id="id1">
+        <epsilon xml:lang="no-nb" xml:id="id2">
           <nu and="false"/>
           <chi>
             <nu attr="_blank"/>
@@ -9593,14 +9593,14 @@
   </test>
   <test>
     <xpath>//nu[@xml:lang="nb"][@xml:id="id1"]//beta[@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::sigma[@xml:lang="en-GB"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]//kappa[not(preceding-sibling::*)][not(child::node())][following-sibling::*[preceding-sibling::*[position() = 1]][following-sibling::*[position()=2]][not(child::node())][following-sibling::mu[@xml:lang="en"][not(child::node())][following-sibling::beta[@token][@xml:lang="no"][preceding-sibling::*[position() = 3]][not(following-sibling::*)]//delta[@xml:lang="en-GB"][not(preceding-sibling::*)][not(following-sibling::*)]/rho[contains(concat(@abort,"$"),"e$")][@xml:lang="nb"]/epsilon[@xml:lang="en-GB"][not(preceding-sibling::*)][not(child::node())][following-sibling::beta[@xml:id="id3"][preceding-sibling::*[position() = 1]][following-sibling::psi[starts-with(@desciption,"tr")][@xml:lang="en-GB"][@xml:id="id4"][preceding-sibling::*[position() = 2]][following-sibling::tau[starts-with(@object,"attribute")][@xml:id="id5"][preceding-sibling::*[position() = 3]]//omicron[@or][@xml:lang="no-nb"][not(preceding-sibling::*)][not(preceding-sibling::omicron)]]]]]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <nu xml:lang="nb" xml:id="id1">
-        <beta xml:lang="en" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>beta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <nu xml:lang="nb" xml:id="id1">
+        <beta xml:lang="en" xml:id="id2"/>
         <sigma xml:lang="en-GB">
           <kappa/>
           <any/>
@@ -9625,14 +9625,14 @@
   </test>
   <test>
     <xpath>//alpha[@xml:lang="no"][@xml:id="id1"]/pi[@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::*[position()=4]][following-sibling::tau[@insert][@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::eta[@abort="_blank"][@xml:lang="no"][not(child::node())][following-sibling::chi[@xml:lang="en-US"][@xml:id="id3"][preceding-sibling::*[position() = 3]][following-sibling::epsilon[contains(@true,"another attribute")][not(following-sibling::*)]//sigma[@xml:id="id4"][not(child::node())][following-sibling::lambda[preceding-sibling::*[position() = 1]]//rho[not(preceding-sibling::*)][following-sibling::phi[@xml:id="id5"][following-sibling::omicron[@xml:lang="en-US"][@xml:id="id6"]]]]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <alpha xml:lang="no" xml:id="id1">
-        <pi xml:lang="no-nb" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>pi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <alpha xml:lang="no" xml:id="id1">
+        <pi xml:lang="no-nb" xml:id="id2"/>
         <tau insert="123456789" xml:lang="no-nb"/>
         <eta abort="_blank" xml:lang="no"/>
         <chi xml:lang="en-US" xml:id="id3"/>
@@ -9983,14 +9983,14 @@
   </test>
   <test>
     <xpath>//epsilon[@xml:lang="no-nb"][@xml:id="id1"]//chi[@abort][@xml:lang="nb"][@xml:id="id2"][following-sibling::psi[@false][@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=3]][not(child::node())][following-sibling::theta[@attrib="attribute-value"][preceding-sibling::*[position() = 2]][following-sibling::upsilon[not(child::node())][following-sibling::upsilon[not(following-sibling::*)]/phi[@xml:id="id3"][not(preceding-sibling::*)][not(child::node())][following-sibling::delta[preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::*[@xml:lang="en"][preceding-sibling::*[position() = 2]][not(child::node())][following-sibling::epsilon[contains(concat(@abort,"$"),"e$")][not(following-sibling::*)]//delta[@xml:id="id4"][not(following-sibling::*)]//xi[@xml:lang="no-nb"][not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::theta[@xml:lang="no-nb"][@xml:id="id5"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]//omega[contains(@src,"-valu")][@xml:id="id6"][not(preceding-sibling::*)][following-sibling::*[position()=2]][following-sibling::*[@xml:lang="no-nb"][@xml:id="id7"][following-sibling::*[position()=1]][following-sibling::xi[@xml:lang="en-US"][@xml:id="id8"]/zeta[@attribute][@xml:id="id9"][not(preceding-sibling::*)][not(child::node())][following-sibling::chi[@attr="attribute-value"][@xml:id="id10"][not(following-sibling::*)]//alpha[@xml:lang="no"]/zeta[@xml:lang="no"][not(following-sibling::*)]/zeta[@xml:lang="no-nb"][@xml:id="id11"][not(preceding-sibling::*)]//tau[contains(concat(@true,"$"),"3456789$")][@xml:id="id12"][not(following-sibling::*)]/pi[@xml:lang="nb"][following-sibling::iota[@xml:id="id13"]][position() = 1]][position() = 1]]]][position() = 1]]][position() = 1]][position() = 1]][position() = 1]]]]</xpath>
-    <tree>
-      <epsilon xml:lang="no-nb" xml:id="id1">
-        <chi abort="false" xml:lang="nb" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>chi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <epsilon xml:lang="no-nb" xml:id="id1">
+        <chi abort="false" xml:lang="nb" xml:id="id2"/>
         <psi false="_blank" xml:lang="no-nb"/>
         <theta attrib="attribute-value"/>
         <upsilon/>
@@ -10114,14 +10114,14 @@
   </test>
   <test>
     <xpath>//theta[@number="content"][@xml:lang="en-GB"][@xml:id="id1"]//psi[@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)][not(following-sibling::*)]//rho[@attrib="true"][not(following-sibling::*)]//kappa[starts-with(@attrib,"content")][@xml:lang="en-US"][not(following-sibling::*)]//phi[starts-with(concat(@content,"-"),"attribute-")][not(preceding-sibling::*)][not(child::node())][following-sibling::delta[contains(@string,"ue")][@xml:id="id3"][preceding-sibling::*[position() = 1]]/upsilon[@xml:lang="en-US"]//chi[@xml:lang="en-US"][@xml:id="id4"][not(preceding-sibling::*)]]</xpath>
-    <tree>
-      <theta number="content" xml:lang="en-GB" xml:id="id1">
-        <psi xml:lang="no-nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>phi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <theta number="content" xml:lang="en-GB" xml:id="id1">
+        <psi xml:lang="no-nb" xml:id="id2">
           <rho attrib="true">
             <kappa attrib="content" xml:lang="en-US">
               <phi content="attribute"/>
@@ -10324,14 +10324,14 @@
   </test>
   <test>
     <xpath>//sigma[@true][@xml:lang="en-US"][@xml:id="id1"]/xi[@title][@xml:lang="en-US"][@xml:id="id2"][following-sibling::kappa[@xml:lang="en-US"][preceding-sibling::*[position() = 1]]//omicron[@xml:lang="en-GB"][following-sibling::kappa[not(child::node())][following-sibling::omicron[@xml:lang="no"][@xml:id="id3"][preceding-sibling::*[position() = 2]][following-sibling::omicron[starts-with(concat(@desciption,"-"),"content-")][@xml:lang="nb"][@xml:id="id4"][not(following-sibling::*)]//gamma[@xml:lang="nb"][not(preceding-sibling::*)]/lambda[@xml:id="id5"][not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::*[starts-with(concat(@string,"-"),"100%-")][not(following-sibling::*)]/tau[@and][not(preceding-sibling::*)]//psi[starts-with(concat(@string,"-"),"_blank-")][@xml:lang="en-US"][@xml:id="id6"][not(preceding-sibling::*)][not(child::node())][following-sibling::theta[not(child::node())][following-sibling::beta[contains(concat(@false,"$"),"ttribute value$")][@xml:id="id7"][preceding-sibling::*[position() = 2]]//rho[@xml:lang="en-GB"][following-sibling::omega[@class][not(following-sibling::*)]]][position() = 1]][position() = 1]][position() = 1]]][position() = 1]]]</xpath>
-    <tree>
-      <sigma true="123456789" xml:lang="en-US" xml:id="id1">
-        <xi title="attribute-value" xml:lang="en-US" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>xi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <sigma true="123456789" xml:lang="en-US" xml:id="id1">
+        <xi title="attribute-value" xml:lang="en-US" xml:id="id2"/>
         <kappa xml:lang="en-US">
           <omicron xml:lang="en-GB"/>
           <kappa/>
@@ -10407,15 +10407,15 @@
   </test>
   <test>
     <xpath>//alpha[@data="attribute"][@xml:lang="en-US"][@xml:id="id1"]/iota[starts-with(@att,"this-is-att-v")][@xml:lang="en-GB"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::xi[@xml:lang="en"][@xml:id="id3"]/eta[@xml:id="id4"][not(following-sibling::*)]/theta[starts-with(concat(@insert,"-"),"attribute-")][@xml:id="id5"][following-sibling::*[position()=4]][following-sibling::delta[@xml:lang="nb"][not(child::node())][following-sibling::beta[following-sibling::*[position()=2]][following-sibling::upsilon[contains(concat(@insert,"$"),"value$")][@xml:lang="en-US"][@xml:id="id6"][preceding-sibling::*[position() = 3]][not(child::node())][following-sibling::delta[starts-with(concat(@abort,"-"),"attribute-")][preceding-sibling::*[position() = 4]][not(following-sibling::*)]//mu[@xml:lang="en"][@xml:id="id7"][not(child::node())][following-sibling::alpha[@xml:id="id8"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/pi[@xml:lang="nb"][not(following-sibling::*)]/tau[@xml:lang="no"][@xml:id="id9"][not(preceding-sibling::*)][not(following-sibling::*)]//phi[contains(concat(@title,"$"),"ue$")]/phi[@string][@xml:id="id10"][not(preceding-sibling::*)][not(following-sibling::*)]]][position() = 1]]]][position() = 1]]</xpath>
-    <tree>
-      <alpha data="attribute" xml:lang="en-US" xml:id="id1">
-        <iota att="this-is-att-value" xml:lang="en-GB" xml:id="id2"/>
-        <xi xml:lang="en" xml:id="id3">
     <result>
       <namespace/>
       <localname>iota</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <alpha data="attribute" xml:lang="en-US" xml:id="id1">
+        <iota att="this-is-att-value" xml:lang="en-GB" xml:id="id2"/>
+        <xi xml:lang="en" xml:id="id3">
           <eta xml:id="id4">
             <theta insert="attribute" xml:id="id5"/>
             <delta xml:lang="nb"/>
@@ -10468,14 +10468,14 @@
   </test>
   <test>
     <xpath>//gamma[contains(concat(@class,"$"),"te$")][@xml:lang="en-US"][@xml:id="id1"]//theta[@xml:lang="en-GB"][@xml:id="id2"][not(preceding-sibling::*)]/lambda[@xml:lang="no"][following-sibling::*[position()=1]][not(child::node())][following-sibling::gamma[contains(concat(@content,"$"),"ibute-value$")][@xml:lang="en-GB"][@xml:id="id3"]/mu[@xml:lang="no-nb"][following-sibling::*[position()=1]][following-sibling::eta[@xml:lang="en-GB"][@xml:id="id4"][not(following-sibling::*)]//zeta[@xml:lang="en-GB"][@xml:id="id5"][not(preceding-sibling::*)][not(child::node())][following-sibling::epsilon[not(child::node())][following-sibling::chi[starts-with(@abort,"an")][@xml:lang="no"][@xml:id="id6"][not(child::node())][following-sibling::epsilon[@number="123456789"][@xml:lang="no-nb"][@xml:id="id7"][not(child::node())][following-sibling::iota[contains(concat(@and,"$"),"odeValue$")][@xml:lang="en-US"][following-sibling::mu[starts-with(@string,"this.")][@xml:id="id8"][preceding-sibling::*[position() = 5]][following-sibling::upsilon[contains(concat(@string,"$"),"lank$")][@xml:lang="en-GB"][@xml:id="id9"][preceding-sibling::*[position() = 6]]][position() = 1]]][position() = 1]]]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <gamma class="attribute" xml:lang="en-US" xml:id="id1">
-        <theta xml:lang="en-GB" xml:id="id2">
     <result>
       <namespace/>
       <localname>lambda</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <gamma class="attribute" xml:lang="en-US" xml:id="id1">
+        <theta xml:lang="en-GB" xml:id="id2">
           <lambda xml:lang="no"/>
           <gamma content="attribute-value" xml:lang="en-GB" xml:id="id3">
             <mu xml:lang="no-nb"/>
@@ -11067,16 +11067,16 @@
   </test>
   <test>
     <xpath>//mu[@xml:lang="en"][@xml:id="id1"]/eta[@insert][@xml:lang="en-US"][@xml:id="id2"][not(preceding-sibling::*)]/delta[@xml:lang="no"][@xml:id="id3"][not(child::node())][following-sibling::beta[starts-with(@attribute,"another attr")][@xml:lang="en"][@xml:id="id4"]/alpha[@xml:lang="en-US"][not(preceding-sibling::*)][following-sibling::zeta[contains(@delete,"78")][@xml:id="id5"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][not(child::node())][following-sibling::xi[@object][@xml:id="id6"]][position() = 1]]]</xpath>
-    <tree>
-      <mu xml:lang="en" xml:id="id1">
-        <eta insert="false" xml:lang="en-US" xml:id="id2">
-          <delta xml:lang="no" xml:id="id3"/>
-          <beta attribute="another attribute value" xml:lang="en" xml:id="id4">
     <result>
       <namespace/>
       <localname>delta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <mu xml:lang="en" xml:id="id1">
+        <eta insert="false" xml:lang="en-US" xml:id="id2">
+          <delta xml:lang="no" xml:id="id3"/>
+          <beta attribute="another attribute value" xml:lang="en" xml:id="id4">
             <alpha xml:lang="en-US"/>
             <zeta delete="123456789" xml:id="id5"/>
             <xi object="true" xml:id="id6">
@@ -11303,14 +11303,14 @@
   </test>
   <test>
     <xpath>//kappa[@class="another attribute value"][@xml:lang="en-GB"][@xml:id="id1"]//nu[contains(concat(@att,"$"),"green$")][@xml:lang="nb"][@xml:id="id2"][not(preceding-sibling::*)]//alpha[contains(@false,"100")][@xml:id="id3"][following-sibling::mu[@xml:lang="no"][@xml:id="id4"][preceding-sibling::*[position() = 1]][following-sibling::tau[starts-with(concat(@class,"-"),"this.nodeValue-")][@xml:lang="en-US"][@xml:id="id5"][preceding-sibling::*[position() = 2]][following-sibling::nu[starts-with(@desciption,"f")][@xml:lang="no"][not(following-sibling::*)]/alpha[contains(concat(@content,"$"),"ue$")][@xml:lang="nb"][not(preceding-sibling::*)][not(child::node())][following-sibling::tau[@xml:lang="no-nb"][@xml:id="id6"][following-sibling::*[position()=2]][following-sibling::eta[@token][@xml:lang="en-US"][@xml:id="id7"][preceding-sibling::*[position() = 2]][not(child::node())][following-sibling::delta[starts-with(concat(@class,"-"),"100%-")][preceding-sibling::*[position() = 3]][not(following-sibling::*)]/iota[starts-with(@true,"thi")][@xml:lang="no"][@xml:id="id8"][following-sibling::*[position()=1]][not(child::node())][following-sibling::phi[contains(concat(@attrib,"$"),"content$")][@xml:lang="no"][@xml:id="id9"][preceding-sibling::*[position() = 1]][not(following-sibling::*)][position() = 1]][position() = 1]]]]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <kappa class="another attribute value" xml:lang="en-GB" xml:id="id1">
-        <nu att="solid 1px green" xml:lang="nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>alpha</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <kappa class="another attribute value" xml:lang="en-GB" xml:id="id1">
+        <nu att="solid 1px green" xml:lang="nb" xml:id="id2">
           <alpha false="100%" xml:id="id3"/>
           <mu xml:lang="no" xml:id="id4"/>
           <tau class="this.nodeValue" xml:lang="en-US" xml:id="id5"/>
@@ -11517,14 +11517,14 @@
   </test>
   <test>
     <xpath>//tau[@name][@xml:lang="no"][@xml:id="id1"]/nu[@xml:lang="nb"][@xml:id="id2"][not(child::node())][following-sibling::pi[preceding-sibling::*[position() = 1]]//pi[@data="attribute"][@xml:lang="en-GB"][@xml:id="id3"][following-sibling::epsilon[starts-with(@src,"this.")][@xml:lang="nb"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::delta[contains(@token,"a")][@xml:id="id4"][following-sibling::theta[contains(concat(@class,"$"),"100%$")][@xml:lang="en-US"][@xml:id="id5"][preceding-sibling::*[position() = 3]][following-sibling::*[position()=3]][following-sibling::alpha[starts-with(@attrib,"at")][following-sibling::*[position()=2]][following-sibling::eta[@xml:lang="nb"][@xml:id="id6"][preceding-sibling::*[position() = 5]][following-sibling::*[position()=1]][not(child::node())][following-sibling::tau[preceding-sibling::*[position() = 6]][not(following-sibling::*)]//*[contains(concat(@att,"$"),"true$")][following-sibling::omicron[not(following-sibling::*)][not(preceding-sibling::omicron)]/gamma[@token="solid 1px green"][@xml:lang="no-nb"][not(following-sibling::*)]//xi[starts-with(@att,"attribute-va")][@xml:lang="en"][@xml:id="id7"][not(preceding-sibling::*)][following-sibling::*[position()=1]][not(child::node())][following-sibling::chi[starts-with(concat(@token,"-"),"123456789-")][@xml:id="id8"][preceding-sibling::*[position() = 1]][position() = 1]][position() = 1]]]]][position() = 1]]][position() = 1]]]</xpath>
-    <tree>
-      <tau name="content" xml:lang="no" xml:id="id1">
-        <nu xml:lang="nb" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>nu</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <tau name="content" xml:lang="no" xml:id="id1">
+        <nu xml:lang="nb" xml:id="id2"/>
         <pi>
           <pi data="attribute" xml:lang="en-GB" xml:id="id3"/>
           <epsilon src="this.nodeValue" xml:lang="nb"/>
@@ -11736,14 +11736,14 @@
   </test>
   <test>
     <xpath>//epsilon[starts-with(@and,"false")][@xml:lang="no"][@xml:id="id1"]/xi[@xml:lang="no"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::*[position()=1]][not(child::node())][following-sibling::mu[not(following-sibling::*)]/lambda[not(following-sibling::*)]/xi[@class="attribute-value"][@xml:id="id3"]/omicron[not(preceding-sibling::*)][following-sibling::omega[@xml:id="id4"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/*[@xml:lang="nb"][@xml:id="id5"][not(preceding-sibling::*)][following-sibling::delta[contains(concat(@true,"$"),"value$")][@xml:lang="en-US"][@xml:id="id6"][preceding-sibling::*[position() = 1]][following-sibling::xi[@desciption][@xml:id="id7"][position() = 1]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <epsilon and="false" xml:lang="no" xml:id="id1">
-        <xi xml:lang="no" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>xi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <epsilon and="false" xml:lang="no" xml:id="id1">
+        <xi xml:lang="no" xml:id="id2"/>
         <mu>
           <lambda>
             <xi class="attribute-value" xml:id="id3">
@@ -11844,14 +11844,14 @@
   </test>
   <test>
     <xpath>//nu[@xml:lang="no"][@xml:id="id1"]//delta[contains(concat(@att,"$"),"ribute-value$")][@xml:lang="no"][@xml:id="id2"][not(preceding-sibling::*)]//phi[@xml:id="id3"][not(preceding-sibling::*)][not(child::node())][following-sibling::epsilon[@xml:id="id4"][following-sibling::*[position()=2]][following-sibling::*[preceding-sibling::*[position() = 2]][following-sibling::*[position()=1]][following-sibling::eta[@xml:id="id5"]//eta[@xml:lang="no-nb"][not(preceding-sibling::*)][not(child::node())][following-sibling::upsilon[@desciption][@xml:lang="no"][not(following-sibling::*)]/chi[starts-with(@data,"attribut")][not(preceding-sibling::*)]/chi[following-sibling::omega[@xml:lang="nb"][@xml:id="id6"][not(child::node())][following-sibling::beta[@insert="another attribute value"][preceding-sibling::*[position() = 2]][following-sibling::*[position()=3]][following-sibling::rho[starts-with(@src,"true")][preceding-sibling::*[position() = 3]][following-sibling::pi[starts-with(@token,"1")][@xml:lang="en-GB"][@xml:id="id7"][following-sibling::iota[@xml:id="id8"][preceding-sibling::*[position() = 5]]//kappa[contains(@abort,"lue")][@xml:lang="no-nb"][not(preceding-sibling::*)][not(child::node())][following-sibling::eta[@token="false"][@xml:lang="no-nb"][@xml:id="id9"][not(following-sibling::*)][not(preceding-sibling::eta)]/mu[@insert="another attribute value"][@xml:id="id10"][not(child::node())][following-sibling::chi[@attrib][not(following-sibling::*)]/xi[@name][@xml:id="id11"][not(preceding-sibling::*)]/theta[contains(@title,"no")][not(preceding-sibling::*)][not(following-sibling::*)]]][position() = 1]]]]]]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <nu xml:lang="no" xml:id="id1">
-        <delta att="attribute-value" xml:lang="no" xml:id="id2">
     <result>
       <namespace/>
       <localname>phi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <nu xml:lang="no" xml:id="id1">
+        <delta att="attribute-value" xml:lang="no" xml:id="id2">
           <phi xml:id="id3"/>
           <epsilon xml:id="id4"/>
           <any/>
@@ -12398,16 +12398,16 @@
   </test>
   <test>
     <xpath>//eta[starts-with(@att,"tru")][@xml:lang="no-nb"][@xml:id="id1"]//*[@name="false"][@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::theta[@xml:lang="en-GB"][@xml:id="id3"][not(child::node())][following-sibling::psi[@xml:lang="nb"][@xml:id="id4"][preceding-sibling::*[position() = 2]][not(child::node())][following-sibling::zeta[not(child::node())][following-sibling::iota[@insert][preceding-sibling::*[position() = 4]][following-sibling::*[position()=1]][following-sibling::xi[@xml:id="id5"][not(following-sibling::*)]/theta[starts-with(concat(@attrib,"-"),"attribute-")][not(preceding-sibling::*)][not(following-sibling::*)]//lambda[@xml:id="id6"][not(preceding-sibling::*)]/kappa[starts-with(concat(@true,"-"),"solid 1px green-")][@xml:id="id7"][not(child::node())][following-sibling::iota[starts-with(concat(@name,"-"),"attribute value-")][not(child::node())][following-sibling::sigma[@xml:lang="en-GB"][@xml:id="id8"][preceding-sibling::*[position() = 2]][following-sibling::omicron[following-sibling::iota[starts-with(@title,"this-is-att-val")][@xml:lang="en-GB"][@xml:id="id9"]/xi[contains(@title,"attribut")][@xml:lang="no-nb"][not(preceding-sibling::*)][not(child::node())][following-sibling::phi[contains(concat(@att,"$"),"true$")]/*[@src][@xml:lang="en"][following-sibling::*[position()=4]][not(child::node())][following-sibling::kappa[@xml:lang="en-US"][@xml:id="id10"][not(child::node())][following-sibling::nu[@string][following-sibling::delta[starts-with(concat(@insert,"-"),"_blank-")][@xml:lang="en-US"][preceding-sibling::*[position() = 3]][following-sibling::*[position()=1]][not(child::node())][following-sibling::lambda[@xml:id="id11"][preceding-sibling::*[position() = 4]]//zeta[@att="100%"][@xml:lang="en-GB"][not(following-sibling::*)]//pi[@xml:id="id12"][following-sibling::lambda[@xml:id="id13"][preceding-sibling::*[position() = 1]][position() = 1]]][position() = 1]]][position() = 1]]][position() = 1]]][position() = 1]]][position() = 1]][position() = 1]]]][position() = 1]]</xpath>
-    <tree>
-      <eta att="true" xml:lang="no-nb" xml:id="id1">
-        <any name="false" xml:lang="en" xml:id="id2"/>
-        <theta xml:lang="en-GB" xml:id="id3"/>
-        <psi xml:lang="nb" xml:id="id4"/>
     <result>
       <namespace/>
       <localname>any</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <eta att="true" xml:lang="no-nb" xml:id="id1">
+        <any name="false" xml:lang="en" xml:id="id2"/>
+        <theta xml:lang="en-GB" xml:id="id3"/>
+        <psi xml:lang="nb" xml:id="id4"/>
         <zeta/>
         <iota insert="false"/>
         <xi xml:id="id5">
@@ -12466,14 +12466,14 @@
   </test>
   <test>
     <xpath>//zeta[contains(@delete,"alse")][@xml:lang="en"][@xml:id="id1"]//beta[@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::iota/zeta[@or="true"][@xml:lang="no"][not(preceding-sibling::*)][not(child::node())][following-sibling::tau[@xml:id="id3"]/tau[contains(@attribute,"ibu")][@xml:lang="en-US"]//pi[@attr][not(following-sibling::*)][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <zeta delete="false" xml:lang="en" xml:id="id1">
-        <beta xml:lang="no-nb" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>beta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <zeta delete="false" xml:lang="en" xml:id="id1">
+        <beta xml:lang="no-nb" xml:id="id2"/>
         <iota>
           <zeta or="true" xml:lang="no"/>
           <tau xml:id="id3">
@@ -12583,14 +12583,14 @@
   </test>
   <test>
     <xpath>//zeta[@class][@xml:lang="en"][@xml:id="id1"]/*[contains(concat(@insert,"$"),"attribute-value$")][@xml:lang="no"][@xml:id="id2"][not(preceding-sibling::*)]//chi[contains(@title,"tt-value")][@xml:lang="no"][not(preceding-sibling::*)][not(child::node())][following-sibling::xi[not(child::node())][following-sibling::rho[starts-with(@true,"at")][@xml:lang="en-GB"][preceding-sibling::*[position() = 2]][following-sibling::*[position()=2]][not(child::node())][following-sibling::epsilon[contains(concat(@and,"$"),"blank$")][@xml:id="id3"][following-sibling::*[position()=1]][not(child::node())][following-sibling::xi[@xml:lang="no"][@xml:id="id4"][not(following-sibling::*)]/eta[@xml:lang="no"][following-sibling::xi[@xml:lang="en-GB"]]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <zeta class="_blank" xml:lang="en" xml:id="id1">
-        <any insert="attribute-value" xml:lang="no" xml:id="id2">
     <result>
       <namespace/>
       <localname>chi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <zeta class="_blank" xml:lang="en" xml:id="id1">
+        <any insert="attribute-value" xml:lang="no" xml:id="id2">
           <chi title="this-is-att-value" xml:lang="no"/>
           <xi/>
           <rho true="attribute value" xml:lang="en-GB"/>
@@ -13300,15 +13300,15 @@
   </test>
   <test>
     <xpath>//beta[contains(concat(@abort,"$"),"%$")][@xml:lang="en"][@xml:id="id1"]//epsilon[@xml:lang="no"][@xml:id="id2"][not(following-sibling::*)]/pi[@xml:lang="en-GB"][@xml:id="id3"][not(preceding-sibling::*)][not(child::node())][following-sibling::kappa[starts-with(@data,"tru")][not(child::node())][following-sibling::phi[contains(@string,"e")][@xml:id="id4"][following-sibling::theta[@xml:lang="no-nb"][@xml:id="id5"][preceding-sibling::*[position() = 3]][following-sibling::xi[@xml:lang="no-nb"][@xml:id="id6"]/mu[@xml:lang="en-GB"][@xml:id="id7"][not(preceding-sibling::*)][not(child::node())][following-sibling::upsilon[@xml:lang="nb"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::beta[@xml:lang="no-nb"]//phi[starts-with(concat(@string,"-"),"attribute-")][not(child::node())][following-sibling::nu[@xml:lang="no-nb"][following-sibling::upsilon[@xml:id="id8"]//nu[@or][@xml:lang="no"][not(preceding-sibling::*)]//theta[contains(concat(@false,"$"),"bute value$")][@xml:lang="en-GB"][@xml:id="id9"][not(preceding-sibling::*)][following-sibling::omega[preceding-sibling::*[position() = 1]][following-sibling::tau[not(following-sibling::*)]/omicron[@xml:lang="en-US"][not(preceding-sibling::*)][following-sibling::*[position()=2]][following-sibling::iota[@attribute="true"][@xml:id="id10"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][not(child::node())][following-sibling::tau[@xml:lang="en-US"][@xml:id="id11"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]/nu[contains(concat(@desciption,"$"),"d 1px green$")][@xml:id="id12"][not(preceding-sibling::*)]/alpha[contains(concat(@attribute,"$"),"ontent$")][not(preceding-sibling::*)][not(following-sibling::*)][position() = 1]][position() = 1]]]][position() = 1]][position() = 1]]]][position() = 1]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <beta abort="100%" xml:lang="en" xml:id="id1">
-        <epsilon xml:lang="no" xml:id="id2">
-          <pi xml:lang="en-GB" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>pi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <beta abort="100%" xml:lang="en" xml:id="id1">
+        <epsilon xml:lang="no" xml:id="id2">
+          <pi xml:lang="en-GB" xml:id="id3"/>
           <kappa data="true"/>
           <phi string="attribute value" xml:id="id4"/>
           <theta xml:lang="no-nb" xml:id="id5"/>
@@ -13410,15 +13410,15 @@
   </test>
   <test>
     <xpath>//psi[@xml:lang="en-US"][@xml:id="id1"]//nu[starts-with(concat(@desciption,"-"),"this.nodeValue-")][@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)][not(following-sibling::*)]/gamma[contains(@false,"lue")][@xml:lang="nb"][@xml:id="id3"]/gamma[@src][@xml:lang="en-GB"][not(preceding-sibling::*)][following-sibling::eta[starts-with(@and,"another attribute val")]//psi[not(preceding-sibling::*)]/zeta[starts-with(@false,"attribute val")][not(child::node())][following-sibling::tau[preceding-sibling::*[position() = 1]][not(following-sibling::*)]/pi[@xml:lang="en"][@xml:id="id4"][not(preceding-sibling::*)][not(following-sibling::*)][not(following-sibling::pi)]//gamma[starts-with(@title,"another attribute valu")][@xml:id="id5"][not(preceding-sibling::*)][not(child::node())][following-sibling::rho[@xml:lang="no"][@xml:id="id6"][preceding-sibling::*[position() = 1]][not(following-sibling::rho)]/lambda[@xml:lang="no"][@xml:id="id7"][following-sibling::omicron[not(following-sibling::*)]]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <psi xml:lang="en-US" xml:id="id1">
-        <nu desciption="this.nodeValue" xml:lang="en" xml:id="id2">
-          <gamma false="attribute value" xml:lang="nb" xml:id="id3">
     <result>
       <namespace/>
       <localname>gamma</localname>
       <nth>1</nth>
     </result>
+    <tree>
+      <psi xml:lang="en-US" xml:id="id1">
+        <nu desciption="this.nodeValue" xml:lang="en" xml:id="id2">
+          <gamma false="attribute value" xml:lang="nb" xml:id="id3">
             <gamma src="solid 1px green" xml:lang="en-GB"/>
             <eta and="another attribute value">
               <psi>
@@ -15925,14 +15925,14 @@
   </test>
   <test>
     <xpath>//epsilon[@or][@xml:lang="en"][@xml:id="id1"]/rho[@xml:lang="en-US"][@xml:id="id2"][not(following-sibling::*)]/tau[@attrib][@xml:id="id3"]/xi[not(preceding-sibling::*)][not(child::node())][following-sibling::chi[contains(concat(@number,"$"),"true$")][@xml:lang="nb"][following-sibling::nu[contains(@name,"ue")][@xml:lang="en-US"]//lambda[@xml:lang="en"]//omicron[not(preceding-sibling::*)][not(child::node())][following-sibling::phi[@xml:lang="no-nb"][preceding-sibling::*[position() = 1]]//upsilon[@xml:lang="en-GB"][not(child::node())][following-sibling::chi[@xml:lang="no"][@xml:id="id4"][not(child::node())][following-sibling::kappa[preceding-sibling::*[position() = 2]][following-sibling::iota[@xml:id="id5"][not(following-sibling::*)]/omega[@xml:lang="nb"][not(preceding-sibling::*)]//alpha[@xml:id="id6"][not(following-sibling::*)]]]][position() = 1]]]]</xpath>
-    <tree>
-      <epsilon or="attribute value" xml:lang="en" xml:id="id1">
-        <rho xml:lang="en-US" xml:id="id2">
     <result>
       <namespace/>
       <localname>xi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <epsilon or="attribute value" xml:lang="en" xml:id="id1">
+        <rho xml:lang="en-US" xml:id="id2">
           <tau attrib="attribute" xml:id="id3">
             <xi/>
             <chi number="true" xml:lang="nb"/>
@@ -16142,14 +16142,14 @@
   </test>
   <test>
     <xpath>//gamma[starts-with(concat(@class,"-"),"attribute value-")][@xml:lang="no-nb"][@xml:id="id1"]//psi[@xml:lang="en-GB"][@xml:id="id2"]/xi[@number]//lambda[@xml:id="id3"][not(following-sibling::*)]//chi[@attr][@xml:lang="no-nb"][not(following-sibling::*)]//tau[starts-with(@att,"another")][@xml:lang="en-US"][@xml:id="id4"][not(preceding-sibling::*)][following-sibling::phi[@data="solid 1px green"][@xml:id="id5"][following-sibling::*[position()=1]][following-sibling::omicron[@title][@xml:lang="no-nb"][@xml:id="id6"]/beta[@desciption][not(preceding-sibling::*)][not(following-sibling::*)]/nu[@xml:id="id7"][not(following-sibling::*)]/phi[starts-with(@name,"t")][@xml:lang="no-nb"][not(preceding-sibling::*)][following-sibling::zeta[@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][following-sibling::upsilon[@xml:lang="en-GB"][@xml:id="id8"][preceding-sibling::*[position() = 2]]//alpha[@xml:id="id9"][not(preceding-sibling::*)]//zeta[@xml:lang="no-nb"][not(preceding-sibling::*)][not(following-sibling::*)]/kappa[@delete="_blank"][@xml:lang="nb"][@xml:id="id10"][not(preceding-sibling::*)][not(following-sibling::*)]/tau[@content][@xml:lang="en"][following-sibling::*[position()=2]][not(child::node())][following-sibling::alpha[@xml:id="id11"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::gamma[@att="attribute-value"][@xml:lang="nb"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]//upsilon[@xml:id="id12"][not(preceding-sibling::*)][following-sibling::*[position()=2]][following-sibling::rho[contains(concat(@string,"$"),"ank$")][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::omega[starts-with(@string,"this-is-at")][not(following-sibling::*)]/zeta[@xml:lang="en"][not(following-sibling::*)]]][position() = 1]][position() = 1]][position() = 1]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <gamma class="attribute value" xml:lang="no-nb" xml:id="id1">
-        <psi xml:lang="en-GB" xml:id="id2">
     <result>
       <namespace/>
       <localname>tau</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <gamma class="attribute value" xml:lang="no-nb" xml:id="id1">
+        <psi xml:lang="en-GB" xml:id="id2">
           <xi number="this-is-att-value">
             <lambda xml:id="id3">
               <chi attr="solid 1px green" xml:lang="no-nb">
@@ -16474,15 +16474,15 @@
   </test>
   <test>
     <xpath>//pi[contains(concat(@true,"$"),"value$")][@xml:lang="no"][@xml:id="id1"]//iota[@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::gamma[@xml:lang="en"][@xml:id="id3"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]//lambda[not(following-sibling::*)][not(parent::*/*[position()=2])]//rho[contains(concat(@token,"$"),"ontent$")][@xml:lang="no"][following-sibling::iota[@xml:lang="en"][preceding-sibling::*[position() = 1]][not(following-sibling::*)][not(following-sibling::iota)]//epsilon//beta[@xml:lang="no-nb"][not(preceding-sibling::*)][following-sibling::*[position()=1]][not(child::node())][following-sibling::epsilon[preceding-sibling::*[position() = 1]]/delta[@xml:id="id4"][not(following-sibling::*)]/psi[@content][@xml:lang="nb"][@xml:id="id5"][not(preceding-sibling::*)]//mu[@xml:id="id6"]/delta[not(following-sibling::*)][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <pi true="attribute value" xml:lang="no" xml:id="id1">
-        <iota xml:lang="no-nb" xml:id="id2"/>
-        <gamma xml:lang="en" xml:id="id3">
     <result>
       <namespace/>
       <localname>iota</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <pi true="attribute value" xml:lang="no" xml:id="id1">
+        <iota xml:lang="no-nb" xml:id="id2"/>
+        <gamma xml:lang="en" xml:id="id3">
           <lambda>
             <rho token="content" xml:lang="no"/>
             <iota xml:lang="en">
@@ -16611,14 +16611,14 @@
   </test>
   <test>
     <xpath>//sigma[@xml:lang="nb"][@xml:id="id1"]//beta[contains(concat(@true,"$"),"value$")][@xml:lang="en"][@xml:id="id2"][not(following-sibling::*)]/lambda[starts-with(concat(@delete,"-"),"attribute-")][@xml:id="id3"][following-sibling::*[position()=2]][following-sibling::eta[@content][preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][following-sibling::theta[not(following-sibling::*)]//kappa[not(child::node())][following-sibling::gamma[starts-with(@src,"_")][not(following-sibling::*)]//delta[contains(@or,"att-")][@xml:id="id4"][following-sibling::*[position()=2]][not(child::node())][following-sibling::zeta[@number][@xml:lang="nb"][@xml:id="id5"][following-sibling::*[position()=1]][not(child::node())][following-sibling::chi[not(following-sibling::*)]]][position() = 1]]]]</xpath>
-    <tree>
-      <sigma xml:lang="nb" xml:id="id1">
-        <beta true="this-is-att-value" xml:lang="en" xml:id="id2">
     <result>
       <namespace/>
       <localname>lambda</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <sigma xml:lang="nb" xml:id="id1">
+        <beta true="this-is-att-value" xml:lang="en" xml:id="id2">
           <lambda delete="attribute" xml:id="id3"/>
           <eta content="100%"/>
           <theta>
@@ -17467,14 +17467,14 @@
   </test>
   <test>
     <xpath>//chi[@name="attribute"][@xml:lang="en-US"][@xml:id="id1"]/xi[@name][@xml:lang="en"][@xml:id="id2"]//tau[following-sibling::*[position()=2]][following-sibling::kappa[@token="solid 1px green"][@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][following-sibling::sigma[@true][@xml:lang="en-US"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]//mu[contains(@title,"ibut")]//omega[starts-with(concat(@att,"-"),"attribute-")][@xml:id="id3"]/pi[@xml:id="id4"][not(preceding-sibling::*)]/kappa[@xml:lang="nb"][@xml:id="id5"][not(preceding-sibling::*)][not(child::node())][following-sibling::phi[@and][preceding-sibling::*[position() = 1]][following-sibling::omega[@xml:id="id6"][following-sibling::theta[@xml:lang="en-GB"][@xml:id="id7"][not(following-sibling::*)]//upsilon[@xml:id="id8"][not(child::node())][following-sibling::alpha[contains(@true,"tribute valu")][@xml:lang="nb"][not(following-sibling::*)]/delta[not(following-sibling::*)]/phi[@xml:id="id9"][not(child::node())][following-sibling::*[preceding-sibling::*[position() = 1]][not(following-sibling::*)]//phi[@xml:lang="en-US"]/nu[@xml:lang="en-US"][not(preceding-sibling::*)][following-sibling::zeta[starts-with(concat(@name,"-"),"false-")][@xml:lang="en-US"][preceding-sibling::*[position() = 1]]/omega//nu[contains(@object,"a")][@xml:lang="no-nb"][not(preceding-sibling::*)][following-sibling::*[position()=2]][not(child::node())][following-sibling::omicron[@attribute][@xml:id="id10"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::mu[starts-with(concat(@insert,"-"),"attribute value-")][not(following-sibling::*)]][position() = 1]][position() = 1]]][position() = 1]]]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <chi name="attribute" xml:lang="en-US" xml:id="id1">
-        <xi name="123456789" xml:lang="en" xml:id="id2">
     <result>
       <namespace/>
       <localname>tau</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <chi name="attribute" xml:lang="en-US" xml:id="id1">
+        <xi name="123456789" xml:lang="en" xml:id="id2">
           <tau/>
           <kappa token="solid 1px green" xml:lang="no-nb"/>
           <sigma true="true" xml:lang="en-US">
@@ -18214,15 +18214,15 @@
   </test>
   <test>
     <xpath>//alpha[@xml:lang="nb"][@xml:id="id1"]/zeta[@true][@xml:lang="en-GB"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::delta[@delete="this-is-att-value"][@xml:lang="en"][@xml:id="id3"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/epsilon[starts-with(concat(@class,"-"),"content-")][@xml:lang="en-GB"][not(following-sibling::*)]/chi[contains(@object,"tru")][@xml:id="id4"][following-sibling::beta[@xml:lang="en"][@xml:id="id5"]//nu[@xml:lang="en-GB"][@xml:id="id6"][not(preceding-sibling::*)][following-sibling::xi[@object="100%"][@xml:id="id7"]//upsilon/omicron[starts-with(concat(@content,"-"),"solid 1px green-")][@xml:lang="nb"][@xml:id="id8"][following-sibling::*[position()=1]][not(child::node())][following-sibling::chi[@desciption][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/beta[@xml:lang="nb"][@xml:id="id9"][not(preceding-sibling::*)][not(child::node())][following-sibling::upsilon[@xml:id="id10"]/lambda[starts-with(concat(@and,"-"),"this.nodeValue-")][@xml:lang="nb"][@xml:id="id11"][not(preceding-sibling::*)][following-sibling::*[position()=1]][not(child::node())][following-sibling::nu[@xml:lang="nb"][@xml:id="id12"][not(following-sibling::*)][position() = 1]][position() = 1]][position() = 1]]]][position() = 1]]</xpath>
-    <tree>
-      <alpha xml:lang="nb" xml:id="id1">
-        <zeta true="solid 1px green" xml:lang="en-GB" xml:id="id2"/>
-        <delta delete="this-is-att-value" xml:lang="en" xml:id="id3">
     <result>
       <namespace/>
       <localname>zeta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <alpha xml:lang="nb" xml:id="id1">
+        <zeta true="solid 1px green" xml:lang="en-GB" xml:id="id2"/>
+        <delta delete="this-is-att-value" xml:lang="en" xml:id="id3">
           <epsilon class="content" xml:lang="en-GB">
             <chi object="true" xml:id="id4"/>
             <beta xml:lang="en" xml:id="id5">
@@ -18449,14 +18449,14 @@
   </test>
   <test>
     <xpath>//epsilon[@xml:lang="en-GB"][@xml:id="id1"]/sigma[@string="solid 1px green"][@xml:lang="en-US"][@xml:id="id2"][following-sibling::pi[@xml:id="id3"][following-sibling::*[position()=2]][following-sibling::zeta[preceding-sibling::*[position() = 2]][following-sibling::alpha[@string]/kappa[contains(@content,"ank")][@xml:lang="no-nb"][@xml:id="id4"][not(preceding-sibling::*)]//omega[@xml:lang="no-nb"][@xml:id="id5"][not(preceding-sibling::*)][not(following-sibling::*)][not(preceding-sibling::omega)]/nu[@xml:lang="no"][not(preceding-sibling::*)]//epsilon[@or][@xml:lang="en-GB"][@xml:id="id6"]/lambda[not(preceding-sibling::*)][following-sibling::delta[@delete][preceding-sibling::*[position() = 1]][following-sibling::nu[@object][@xml:id="id7"][not(child::node())][following-sibling::zeta[preceding-sibling::*[position() = 3]]/omega[@xml:id="id8"][not(preceding-sibling::*)]//delta[@xml:lang="no-nb"][not(preceding-sibling::*)]//pi[not(preceding-sibling::*)][following-sibling::phi[@xml:id="id9"][preceding-sibling::*[position() = 1]][following-sibling::phi[preceding-sibling::*[position() = 2]][not(following-sibling::*)][position() = 1]][position() = 1]]]]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <epsilon xml:lang="en-GB" xml:id="id1">
-        <sigma string="solid 1px green" xml:lang="en-US" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>sigma</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <epsilon xml:lang="en-GB" xml:id="id1">
+        <sigma string="solid 1px green" xml:lang="en-US" xml:id="id2"/>
         <pi xml:id="id3"/>
         <zeta/>
         <alpha string="_blank">
@@ -19393,16 +19393,16 @@
   </test>
   <test>
     <xpath>//upsilon[@and="another attribute value"][@xml:lang="no"][@xml:id="id1"]/lambda[@src][@xml:lang="en-US"][@xml:id="id2"][not(following-sibling::*)]//xi[@string][@xml:lang="en-US"][@xml:id="id3"][not(preceding-sibling::*)][not(following-sibling::*)]/mu[contains(concat(@class,"$"),"olid 1px green$")][@xml:lang="en-GB"][@xml:id="id4"][not(preceding-sibling::*)][following-sibling::*[position()=5]][following-sibling::upsilon[@xml:id="id5"][preceding-sibling::*[position() = 1]][following-sibling::kappa[@xml:lang="en"][@xml:id="id6"][preceding-sibling::*[position() = 2]][not(child::node())][following-sibling::upsilon[@xml:lang="en"][@xml:id="id7"][following-sibling::*[position()=2]][not(child::node())][following-sibling::*[preceding-sibling::*[position() = 4]][following-sibling::*[position()=1]][not(child::node())][following-sibling::*[@xml:lang="no-nb"][preceding-sibling::*[position() = 5]][not(following-sibling::*)]//omega[contains(@attribute,"e")][@xml:lang="en-GB"]/upsilon[@xml:id="id8"][not(preceding-sibling::*)]/nu[starts-with(concat(@attrib,"-"),"solid 1px green-")][@xml:lang="no"][following-sibling::iota//sigma[@xml:id="id9"][following-sibling::nu[@xml:lang="en-GB"][@xml:id="id10"][preceding-sibling::*[position() = 1]][not(following-sibling::*)][position() = 1]]][position() = 1]][position() = 1]]]]]</xpath>
-    <tree>
-      <upsilon and="another attribute value" xml:lang="no" xml:id="id1">
-        <lambda src="attribute-value" xml:lang="en-US" xml:id="id2">
-          <xi string="100%" xml:lang="en-US" xml:id="id3">
-            <mu class="solid 1px green" xml:lang="en-GB" xml:id="id4"/>
     <result>
       <namespace/>
       <localname>mu</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <upsilon and="another attribute value" xml:lang="no" xml:id="id1">
+        <lambda src="attribute-value" xml:lang="en-US" xml:id="id2">
+          <xi string="100%" xml:lang="en-US" xml:id="id3">
+            <mu class="solid 1px green" xml:lang="en-GB" xml:id="id4"/>
             <upsilon xml:id="id5"/>
             <kappa xml:lang="en" xml:id="id6"/>
             <upsilon xml:lang="en" xml:id="id7"/>
@@ -19594,14 +19594,14 @@
   </test>
   <test>
     <xpath>//lambda[starts-with(concat(@att,"-"),"attribute-")][@xml:lang="en-US"][@xml:id="id1"]//rho[@xml:lang="nb"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::phi[contains(@abort,"e")][not(following-sibling::*)]//delta[starts-with(concat(@desciption,"-"),"this.nodeValue-")][not(preceding-sibling::*)]/phi[@token][@xml:lang="nb"][not(preceding-sibling::*)][following-sibling::alpha[contains(concat(@class,"$"),"789$")][@xml:id="id3"][not(child::node())][following-sibling::pi[contains(concat(@class,"$"),"e$")][@xml:lang="nb"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]/kappa[not(child::node())][following-sibling::eta[@xml:id="id4"][preceding-sibling::*[position() = 1]]/psi[@xml:id="id5"][not(preceding-sibling::*)][not(following-sibling::*)]//omega[contains(concat(@class,"$"),"e$")][@xml:lang="en-US"][not(preceding-sibling::*)][not(following-sibling::*)]/eta[not(preceding-sibling::*)][not(child::node())][following-sibling::nu[contains(concat(@attribute,"$"),"tribute-value$")][@xml:id="id6"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::phi[@xml:id="id7"]/gamma[contains(concat(@att,"$"),"6789$")][@xml:id="id8"][not(preceding-sibling::*)][not(following-sibling::*)]//eta[@true="100%"][@xml:lang="nb"][@xml:id="id9"][not(preceding-sibling::*)]/omicron[not(preceding-sibling::*)]/sigma[@desciption="attribute"][@xml:id="id10"][not(preceding-sibling::*)][following-sibling::sigma[@content="content"][@xml:id="id11"][not(child::node())][following-sibling::upsilon[preceding-sibling::*[position() = 2]][not(following-sibling::*)]//iota[@src][@xml:lang="en-GB"][not(child::node())][following-sibling::phi[preceding-sibling::*[position() = 1]][not(following-sibling::*)]/kappa[@true][@xml:id="id12"][not(following-sibling::*)]/delta[@name][@xml:lang="en-GB"][not(preceding-sibling::*)][not(following-sibling::*)][position() = 1]][position() = 1]]]]][position() = 1]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <lambda att="attribute" xml:lang="en-US" xml:id="id1">
-        <rho xml:lang="nb" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>rho</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <lambda att="attribute" xml:lang="en-US" xml:id="id1">
+        <rho xml:lang="nb" xml:id="id2"/>
         <phi abort="attribute">
           <delta desciption="this.nodeValue">
             <phi token="true" xml:lang="nb"/>
@@ -19798,14 +19798,14 @@
   </test>
   <test>
     <xpath>//gamma[@and][@xml:lang="en-US"][@xml:id="id1"]//delta[@xml:lang="en"][@xml:id="id2"][following-sibling::*[position()=1]][not(child::node())][following-sibling::kappa[@xml:lang="en"][not(following-sibling::*)]/delta[contains(@data,"is.no")][@xml:id="id3"][not(preceding-sibling::*)]/eta[starts-with(@name,"this.node")][@xml:id="id4"]//*[starts-with(concat(@content,"-"),"this.nodeValue-")][not(following-sibling::*)]/rho[@string="solid 1px green"][@xml:lang="en-US"][following-sibling::*[position()=1]][not(preceding-sibling::rho)][following-sibling::epsilon[contains(@token,"attribute")][@xml:lang="nb"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/lambda[@xml:lang="en-US"][not(preceding-sibling::*)]//sigma[@abort][not(following-sibling::*)]]]</xpath>
-    <tree>
-      <gamma and="this.nodeValue" xml:lang="en-US" xml:id="id1">
-        <delta xml:lang="en" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>delta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <gamma and="this.nodeValue" xml:lang="en-US" xml:id="id1">
+        <delta xml:lang="en" xml:id="id2"/>
         <kappa xml:lang="en">
           <delta data="this.nodeValue" xml:id="id3">
             <eta name="this.nodeValue" xml:id="id4">
@@ -21388,14 +21388,14 @@
   </test>
   <test>
     <xpath>//theta[@abort][@xml:lang="en-US"][@xml:id="id1"]//delta[@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::upsilon[@xml:lang="en"][following-sibling::*[position()=1]][following-sibling::epsilon[@title="true"][@xml:lang="nb"][@xml:id="id3"][not(following-sibling::*)]/lambda[@xml:id="id4"][not(preceding-sibling::*)][following-sibling::mu[@xml:lang="no"][@xml:id="id5"][following-sibling::epsilon[@xml:lang="no"][position() = 1]]]][position() = 1]]</xpath>
-    <tree>
-      <theta abort="_blank" xml:lang="en-US" xml:id="id1">
-        <delta xml:lang="no-nb" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>delta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <theta abort="_blank" xml:lang="en-US" xml:id="id1">
+        <delta xml:lang="no-nb" xml:id="id2"/>
         <upsilon xml:lang="en"/>
         <epsilon title="true" xml:lang="nb" xml:id="id3">
           <lambda xml:id="id4"/>
@@ -21588,15 +21588,15 @@
   </test>
   <test>
     <xpath>//tau[@att][@xml:lang="no-nb"][@xml:id="id1"]/omega[@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)]//eta[@xml:lang="en-GB"][@xml:id="id3"][not(preceding-sibling::*)]//delta[@number][@xml:lang="en-US"][following-sibling::beta[@string="_blank"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]//psi[contains(@object,"e")][@xml:lang="en-GB"][not(preceding-sibling::*)]/eta[contains(concat(@object,"$"),"attribute$")][@xml:lang="en-US"][not(preceding-sibling::*)][following-sibling::*[position()=1]][not(child::node())][following-sibling::chi[starts-with(concat(@number,"-"),"true-")][not(following-sibling::*)]//alpha[@xml:id="id4"][following-sibling::upsilon[@abort="false"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/xi[@xml:id="id5"][following-sibling::gamma[@title][@xml:id="id6"][following-sibling::sigma[contains(concat(@desciption,"$"),"e$")][@xml:lang="no"][preceding-sibling::*[position() = 2]]/epsilon[@xml:id="id7"][not(preceding-sibling::*)][not(child::node())][following-sibling::eta[not(following-sibling::*)]/gamma[not(preceding-sibling::*)][following-sibling::alpha[contains(@and,"%")][preceding-sibling::*[position() = 1]][not(following-sibling::*)][not(preceding-sibling::alpha)]/eta[not(preceding-sibling::*)]//theta[starts-with(concat(@number,"-"),"solid 1px green-")][@xml:lang="nb"][not(preceding-sibling::*)][not(following-sibling::*)][not(preceding-sibling::theta)]][position() = 1]]]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <tau att="123456789" xml:lang="no-nb" xml:id="id1">
-        <omega xml:lang="en" xml:id="id2">
-          <eta xml:lang="en-GB" xml:id="id3">
     <result>
       <namespace/>
       <localname>delta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <tau att="123456789" xml:lang="no-nb" xml:id="id1">
+        <omega xml:lang="en" xml:id="id2">
+          <eta xml:lang="en-GB" xml:id="id3">
             <delta number="100%" xml:lang="en-US"/>
             <beta string="_blank">
               <psi object="true" xml:lang="en-GB">
@@ -22528,14 +22528,14 @@
   </test>
   <test>
     <xpath>//lambda[contains(concat(@attr,"$"),"ontent$")][@xml:lang="no-nb"][@xml:id="id1"]/pi[@xml:lang="en-US"][@xml:id="id2"]//sigma[starts-with(concat(@true,"-"),"attribute-")][not(preceding-sibling::*)][not(following-sibling::*)]/delta[@xml:lang="en-GB"][@xml:id="id3"][not(preceding-sibling::*)][following-sibling::psi[starts-with(concat(@src,"-"),"_blank-")][@xml:lang="nb"][@xml:id="id4"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][not(child::node())][following-sibling::omicron[@xml:lang="no"][@xml:id="id5"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]//alpha[following-sibling::*[position()=1]][not(child::node())][following-sibling::theta[starts-with(@name,"_b")][not(following-sibling::*)]//theta[not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::chi[@attrib="attribute-value"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/zeta[contains(concat(@object,"$"),"rue$")][not(preceding-sibling::*)][not(child::node())][following-sibling::theta[starts-with(@false,"tru")][@xml:lang="en-US"][@xml:id="id6"][preceding-sibling::*[position() = 1]]/*[@xml:lang="no-nb"][not(preceding-sibling::*)]/epsilon[@xml:lang="no"][not(following-sibling::*)]/tau[@abort][@xml:lang="en"][@xml:id="id7"][not(preceding-sibling::*)][following-sibling::*[position()=2]][not(child::node())][following-sibling::beta[contains(concat(@insert,"$"),"is-att-value$")][@xml:id="id8"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::zeta[@attrib="false"][@xml:id="id9"][not(following-sibling::*)]/psi[@abort][@xml:lang="no-nb"][not(preceding-sibling::*)]]]]]]][position() = 1]]</xpath>
-    <tree>
-      <lambda attr="content" xml:lang="no-nb" xml:id="id1">
-        <pi xml:lang="en-US" xml:id="id2">
     <result>
       <namespace/>
       <localname>delta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <lambda attr="content" xml:lang="no-nb" xml:id="id1">
+        <pi xml:lang="en-US" xml:id="id2">
           <sigma true="attribute-value">
             <delta xml:lang="en-GB" xml:id="id3"/>
             <psi src="_blank" xml:lang="nb" xml:id="id4"/>
@@ -22952,14 +22952,14 @@
   </test>
   <test>
     <xpath>//delta[starts-with(concat(@title,"-"),"attribute-")][@xml:lang="nb"][@xml:id="id1"]//theta[@xml:lang="en"][@xml:id="id2"][following-sibling::lambda[starts-with(concat(@token,"-"),"true-")][following-sibling::*[position()=2]][following-sibling::upsilon[@xml:lang="en"][preceding-sibling::*[position() = 2]][following-sibling::delta[@true][not(following-sibling::*)]/*[not(preceding-sibling::*)][following-sibling::*[position()=2]][following-sibling::sigma[@xml:id="id3"][not(child::node())][following-sibling::delta[starts-with(@content,"anothe")][@xml:id="id4"][not(following-sibling::*)]//lambda[not(preceding-sibling::*)][not(child::node())][following-sibling::pi[@xml:lang="no"][@xml:id="id5"][preceding-sibling::*[position() = 1]]/rho[starts-with(@desciption,"this.nodeVa")][@xml:id="id6"][not(following-sibling::*)]][position() = 1]]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <delta title="attribute" xml:lang="nb" xml:id="id1">
-        <theta xml:lang="en" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>theta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <delta title="attribute" xml:lang="nb" xml:id="id1">
+        <theta xml:lang="en" xml:id="id2"/>
         <lambda token="true"/>
         <upsilon xml:lang="en"/>
         <delta true="123456789">
@@ -23054,14 +23054,14 @@
   </test>
   <test>
     <xpath>//theta[@xml:lang="no-nb"][@xml:id="id1"]/iota[@xml:lang="en-GB"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::mu[preceding-sibling::*[position() = 1]][following-sibling::pi[contains(concat(@desciption,"$"),"e$")][@xml:lang="en"][@xml:id="id3"][not(child::node())][following-sibling::upsilon[starts-with(concat(@att,"-"),"attribute value-")][@xml:lang="no-nb"][@xml:id="id4"][not(following-sibling::*)]//delta[@xml:lang="en"][not(preceding-sibling::*)][following-sibling::eta[following-sibling::nu[starts-with(concat(@insert,"-"),"this-")][preceding-sibling::*[position() = 2]][not(following-sibling::*)]/phi[@xml:lang="nb"][not(preceding-sibling::*)][not(following-sibling::*)][position() = 1]]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <theta xml:lang="no-nb" xml:id="id1">
-        <iota xml:lang="en-GB" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>iota</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <theta xml:lang="no-nb" xml:id="id1">
+        <iota xml:lang="en-GB" xml:id="id2"/>
         <mu/>
         <pi desciption="true" xml:lang="en" xml:id="id3"/>
         <upsilon att="attribute value" xml:lang="no-nb" xml:id="id4">
@@ -23233,14 +23233,14 @@
   </test>
   <test>
     <xpath>//alpha[@xml:lang="no-nb"][@xml:id="id1"]/delta[@false][@xml:lang="en-GB"][@xml:id="id2"][not(following-sibling::*)]//nu[contains(@number,"0")][@xml:id="id3"][not(preceding-sibling::*)][not(preceding-sibling::nu)]/upsilon[starts-with(@src,"ano")][@xml:lang="nb"][@xml:id="id4"][not(child::node())][following-sibling::theta[@xml:lang="en"][@xml:id="id5"][not(following-sibling::*)]//xi[contains(concat(@attrib,"$"),"se$")][@xml:lang="en"][@xml:id="id6"][not(preceding-sibling::*)][not(child::node())][following-sibling::nu[@xml:lang="no"][not(following-sibling::*)]//rho[@xml:id="id7"][not(preceding-sibling::*)][not(following-sibling::*)][not(preceding-sibling::rho)]//phi[@src][@xml:id="id8"][not(preceding-sibling::*)][not(following-sibling::*)]//kappa[starts-with(concat(@content,"-"),"attribute value-")][@xml:lang="nb"][not(following-sibling::*)]//psi[@attribute][@xml:lang="en"][not(preceding-sibling::*)]/upsilon[contains(@insert,"nother attri")]//delta[@number]/psi[@true="this-is-att-value"][@xml:lang="en"][not(preceding-sibling::*)][following-sibling::*[position()=3]][not(preceding-sibling::psi)][following-sibling::tau[@xml:lang="nb"][@xml:id="id9"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=2]][following-sibling::alpha[@content="false"][not(child::node())][following-sibling::beta[contains(concat(@content,"$"),"false$")][@xml:lang="nb"]//delta[@xml:lang="no-nb"][@xml:id="id10"]//iota[@xml:lang="no"][@xml:id="id11"][not(preceding-sibling::*)]//gamma[@src][@xml:id="id12"][not(preceding-sibling::*)][position() = 1]][position() = 1]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <alpha xml:lang="no-nb" xml:id="id1">
-        <delta false="attribute-value" xml:lang="en-GB" xml:id="id2">
     <result>
       <namespace/>
       <localname>upsilon</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <alpha xml:lang="no-nb" xml:id="id1">
+        <delta false="attribute-value" xml:lang="en-GB" xml:id="id2">
           <nu number="100%" xml:id="id3">
             <upsilon src="another attribute value" xml:lang="nb" xml:id="id4"/>
             <theta xml:lang="en" xml:id="id5">
@@ -23641,14 +23641,14 @@
   </test>
   <test>
     <xpath>//omicron[@xml:lang="no"][@xml:id="id1"]//omicron[@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::omicron or following-sibling::omicron)]//zeta[starts-with(concat(@src,"-"),"false-")][@xml:id="id3"][following-sibling::*[position()=1]][not(child::node())][following-sibling::eta[starts-with(concat(@abort,"-"),"123456789-")][not(following-sibling::*)]/iota[following-sibling::kappa[contains(concat(@or,"$"),"ttribute-value$")][@xml:id="id4"][preceding-sibling::*[position() = 1]]/gamma[@true][not(following-sibling::*)]//sigma[@xml:lang="en-US"][@xml:id="id5"][not(child::node())][following-sibling::rho[@xml:lang="en-US"]//nu[@xml:lang="en"][not(following-sibling::*)]//epsilon[@name][not(preceding-sibling::*)][not(following-sibling::*)]/upsilon[starts-with(concat(@data,"-"),"attribute-")][@xml:lang="en-GB"][@xml:id="id6"][not(preceding-sibling::*)]//xi[@xml:lang="nb"][not(preceding-sibling::*)][not(following-sibling::*)]//omega[@xml:id="id7"][not(preceding-sibling::*)][not(child::node())][following-sibling::chi[contains(@number,"00%")][@xml:lang="en-GB"][following-sibling::omicron[contains(@true,"d 1px ")][@xml:id="id8"]][position() = 1]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <omicron xml:lang="no" xml:id="id1">
-        <omicron xml:lang="en" xml:id="id2">
     <result>
       <namespace/>
       <localname>zeta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <omicron xml:lang="no" xml:id="id1">
+        <omicron xml:lang="en" xml:id="id2">
           <zeta src="false" xml:id="id3"/>
           <eta abort="123456789">
             <iota/>
@@ -23679,14 +23679,14 @@
   </test>
   <test>
     <xpath>//theta[@attr][@xml:lang="en-US"][@xml:id="id1"]//epsilon[@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::upsilon[@xml:lang="no"][preceding-sibling::*[position() = 1]][following-sibling::nu[contains(@attr,"-")][preceding-sibling::*[position() = 2]]/epsilon[not(preceding-sibling::*)]//nu[@xml:lang="no-nb"][@xml:id="id3"][following-sibling::*[position()=2]][not(child::node())][following-sibling::alpha[@abort][@xml:lang="no"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::alpha[@and][@xml:lang="no"]//alpha[starts-with(@desciption,"att")][@xml:lang="no-nb"][@xml:id="id4"][not(following-sibling::*)][position() = 1]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <theta attr="attribute" xml:lang="en-US" xml:id="id1">
-        <epsilon xml:lang="en" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>epsilon</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <theta attr="attribute" xml:lang="en-US" xml:id="id1">
+        <epsilon xml:lang="en" xml:id="id2"/>
         <upsilon xml:lang="no"/>
         <nu attr="attribute-value">
           <epsilon>
@@ -23750,14 +23750,14 @@
   </test>
   <test>
     <xpath>//lambda[@xml:lang="no"][@xml:id="id1"]//tau[contains(@delete,"5678")][@xml:lang="no-nb"][@xml:id="id2"][not(following-sibling::*)]//gamma[@xml:lang="en"][not(following-sibling::*)]//nu[@xml:id="id3"][following-sibling::*[position()=2]][following-sibling::sigma[@xml:lang="en-US"][@xml:id="id4"][following-sibling::alpha[@src="content"][@xml:id="id5"]/lambda[not(child::node())][following-sibling::mu[@xml:lang="no"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=4]][following-sibling::nu[starts-with(concat(@title,"-"),"another attribute value-")][@xml:id="id6"][preceding-sibling::*[position() = 2]][following-sibling::*[starts-with(@delete,"t")][not(child::node())][following-sibling::lambda[@xml:id="id7"][preceding-sibling::*[position() = 4]][following-sibling::*[position()=1]][following-sibling::xi[starts-with(@src,"_blank")][@xml:lang="en"][@xml:id="id8"][preceding-sibling::*[position() = 5]][not(following-sibling::*)]//upsilon[contains(concat(@delete,"$"),"ontent$")][@xml:lang="nb"][@xml:id="id9"][not(preceding-sibling::*)][not(child::node())][following-sibling::nu[@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][following-sibling::upsilon[contains(@content,"9")][@xml:id="id10"][preceding-sibling::*[position() = 2]]//xi[contains(@abort,"ue")][@xml:lang="no"][@xml:id="id11"][following-sibling::*[position()=4]][not(child::node())][following-sibling::psi[starts-with(concat(@content,"-"),"solid 1px green-")][@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][following-sibling::pi[contains(@delete,"green")][@xml:id="id12"][following-sibling::*[position()=2]][following-sibling::phi[@xml:id="id13"][preceding-sibling::*[position() = 3]][not(child::node())][following-sibling::pi[contains(@data,"_")]]]][position() = 1]]][position() = 1]]][position() = 1]]]]][position() = 1]]]</xpath>
-    <tree>
-      <lambda xml:lang="no" xml:id="id1">
-        <tau delete="123456789" xml:lang="no-nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>nu</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <lambda xml:lang="no" xml:id="id1">
+        <tau delete="123456789" xml:lang="no-nb" xml:id="id2">
           <gamma xml:lang="en">
             <nu xml:id="id3"/>
             <sigma xml:lang="en-US" xml:id="id4"/>
@@ -23915,6 +23915,11 @@
   </test>
   <test>
     <xpath>//beta[contains(concat(@desciption,"$"),"e$")][@xml:lang="en"][@xml:id="id1"]/theta[contains(concat(@desciption,"$"),"23456789$")][@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)]/psi[starts-with(@data,"fal")][@xml:lang="en-GB"][@xml:id="id3"]/iota[@xml:lang="en-GB"][@xml:id="id4"][not(child::node())][following-sibling::omicron[starts-with(@false,"attribut")][@xml:lang="no-nb"][@xml:id="id5"][preceding-sibling::*[position() = 1]]/xi[@token="attribute"][@xml:lang="en-GB"][@xml:id="id6"][not(following-sibling::*)][position() = 1]]</xpath>
+    <result>
+      <namespace/>
+      <localname>iota</localname>
+      <nth>0</nth>
+    </result>
     <tree>
       <beta desciption="true" xml:lang="en" xml:id="id1">
         <theta desciption="123456789" xml:lang="en" xml:id="id2">
@@ -23922,11 +23927,6 @@
             <iota xml:lang="en-GB" xml:id="id4"/>
             <omicron false="attribute" xml:lang="no-nb" xml:id="id5">
               <xi token="attribute" xml:lang="en-GB" xml:id="id6">
-    <result>
-      <namespace/>
-      <localname>iota</localname>
-      <nth>0</nth>
-    </result>
                 <green>This text must be green</green>
               </xi>
             </omicron>
@@ -25030,14 +25030,14 @@
   </test>
   <test>
     <xpath>//theta[@xml:lang="nb"][@xml:id="id1"]/epsilon[@xml:lang="en"][@xml:id="id2"][not(following-sibling::*)]/phi[@xml:lang="en"][not(preceding-sibling::*)][not(following-sibling::*)][not(preceding-sibling::phi)]/upsilon[@and="this.nodeValue"][@xml:lang="no-nb"][not(following-sibling::*)]//mu[starts-with(@object,"attri")][@xml:lang="no-nb"][@xml:id="id3"][following-sibling::psi[@xml:lang="no-nb"][not(following-sibling::*)]//phi[@string][not(following-sibling::*)]/alpha[starts-with(concat(@name,"-"),"content-")][not(following-sibling::*)]/delta[@title][@xml:lang="no"][following-sibling::*[@xml:lang="en-GB"][@xml:id="id4"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][not(child::node())][following-sibling::mu[@false][preceding-sibling::*[position() = 2]]/psi[@xml:lang="en-US"][@xml:id="id5"][not(preceding-sibling::*)][not(following-sibling::*)]//xi[@xml:lang="no"][not(preceding-sibling::*)][following-sibling::delta[starts-with(@attribute,"t")][@xml:id="id6"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]//mu[@xml:id="id7"][following-sibling::*[position()=1]][not(child::node())][following-sibling::beta[contains(concat(@abort,"$"),"this.nodeValue$")][@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][position() = 1]][position() = 1]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <theta xml:lang="nb" xml:id="id1">
-        <epsilon xml:lang="en" xml:id="id2">
     <result>
       <namespace/>
       <localname>mu</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <theta xml:lang="nb" xml:id="id1">
+        <epsilon xml:lang="en" xml:id="id2">
           <phi xml:lang="en">
             <upsilon and="this.nodeValue" xml:lang="no-nb">
               <mu object="attribute-value" xml:lang="no-nb" xml:id="id3"/>
@@ -25801,14 +25801,14 @@
   </test>
   <test>
     <xpath>//eta[@xml:lang="no-nb"][@xml:id="id1"]/*[starts-with(concat(@abort,"-"),"content-")][@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::omega[@xml:id="id3"][preceding-sibling::*[position() = 1]][not(following-sibling::*)][not(preceding-sibling::omega)]//iota[@xml:id="id4"][following-sibling::*[position()=4]][following-sibling::upsilon[@string][@xml:lang="en-GB"][@xml:id="id5"][preceding-sibling::*[position() = 1]][following-sibling::delta[following-sibling::*[position()=2]][not(child::node())][following-sibling::omega[starts-with(concat(@src,"-"),"solid 1px green-")][following-sibling::mu[@xml:lang="no-nb"][@xml:id="id6"][preceding-sibling::*[position() = 4]][not(following-sibling::*)]/nu[@xml:id="id7"][not(preceding-sibling::*)][not(following-sibling::*)]//delta[not(preceding-sibling::*)][following-sibling::theta[@xml:lang="en-US"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/theta[starts-with(concat(@attribute,"-"),"another attribute value-")][@xml:lang="en"][following-sibling::*[position()=1]][following-sibling::xi[@abort][@xml:lang="en"][preceding-sibling::*[position() = 1]]/sigma[@true][@xml:lang="nb"][not(preceding-sibling::*)][following-sibling::zeta[@title][@xml:lang="nb"][@xml:id="id8"][following-sibling::*[position()=1]][not(child::node())][following-sibling::beta[@xml:lang="nb"][@xml:id="id9"][not(following-sibling::*)]//alpha[contains(@attrib,"olid")][@xml:id="id10"][not(preceding-sibling::*)][not(preceding-sibling::alpha)][not(child::node())][following-sibling::tau[not(following-sibling::*)]/omicron[@content][@xml:lang="en-GB"]//phi[starts-with(@class,"_blan")][@xml:lang="no"][@xml:id="id11"][not(preceding-sibling::*)][not(following-sibling::*)]//upsilon[@string][not(following-sibling::*)][position() = 1]][position() = 1]][position() = 1]]][position() = 1]][position() = 1]][position() = 1]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <eta xml:lang="no-nb" xml:id="id1">
-        <any abort="content" xml:lang="en" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>any</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <eta xml:lang="no-nb" xml:id="id1">
+        <any abort="content" xml:lang="en" xml:id="id2"/>
         <omega xml:id="id3">
           <iota xml:id="id4"/>
           <upsilon string="another attribute value" xml:lang="en-GB" xml:id="id5"/>
@@ -26407,14 +26407,14 @@
   </test>
   <test>
     <xpath>//omega[@and][@xml:lang="en-GB"][@xml:id="id1"]/omega[contains(concat(@desciption,"$"),"ibute$")][@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)][not(following-sibling::*)]//theta[contains(concat(@object,"$"),"nother attribute value$")][@xml:id="id3"][not(preceding-sibling::*)]//epsilon[@and="123456789"][@xml:lang="en-US"][not(following-sibling::*)]//pi[contains(concat(@content,"$"),"reen$")][@xml:lang="en"][@xml:id="id4"][not(preceding-sibling::*)]//zeta[@xml:id="id5"][not(preceding-sibling::*)][following-sibling::*[position()=3]][following-sibling::zeta[following-sibling::alpha[@xml:lang="no-nb"][following-sibling::*[position()=1]][following-sibling::nu[@xml:id="id6"][preceding-sibling::*[position() = 3]][not(following-sibling::*)]//tau[not(child::node())][following-sibling::tau[not(following-sibling::*)]/chi[starts-with(concat(@true,"-"),"123456789-")][@xml:lang="no"][not(preceding-sibling::*)][position() = 1]][position() = 1]]]]</xpath>
-    <tree>
-      <omega and="_blank" xml:lang="en-GB" xml:id="id1">
-        <omega desciption="attribute" xml:lang="no-nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>zeta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <omega and="_blank" xml:lang="en-GB" xml:id="id1">
+        <omega desciption="attribute" xml:lang="no-nb" xml:id="id2">
           <theta object="another attribute value" xml:id="id3">
             <epsilon and="123456789" xml:lang="en-US">
               <pi content="solid 1px green" xml:lang="en" xml:id="id4">
@@ -28277,14 +28277,14 @@
   </test>
   <test>
     <xpath>//omega[@xml:lang="no-nb"][@xml:id="id1"]/chi[contains(@title,"b")][@xml:lang="en-US"][@xml:id="id2"][following-sibling::alpha[starts-with(concat(@token,"-"),"123456789-")][@xml:id="id3"]//eta[starts-with(concat(@abort,"-"),"solid 1px green-")][@xml:lang="en-GB"][@xml:id="id4"][not(preceding-sibling::*)][not(child::node())][following-sibling::*[@xml:lang="nb"][@xml:id="id5"]//*[@xml:lang="nb"][not(preceding-sibling::*)][not(following-sibling::*)]//iota[@object][@xml:lang="no-nb"][@xml:id="id6"]//nu[@xml:lang="en"][not(preceding-sibling::*)][not(child::node())][following-sibling::kappa[contains(concat(@false,"$"),"e value$")][preceding-sibling::*[position() = 1]][following-sibling::mu[@xml:lang="nb"][@xml:id="id7"][not(following-sibling::*)]//psi[starts-with(@desciption,"1")][following-sibling::pi[@data][@xml:lang="en-US"][@xml:id="id8"][following-sibling::beta[@xml:lang="en"][@xml:id="id9"][preceding-sibling::*[position() = 2]]//lambda[@content][@xml:lang="en-GB"][not(preceding-sibling::*)]/lambda[@xml:lang="no-nb"][not(preceding-sibling::*)]]]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <omega xml:lang="no-nb" xml:id="id1">
-        <chi title="attribute" xml:lang="en-US" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>chi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <omega xml:lang="no-nb" xml:id="id1">
+        <chi title="attribute" xml:lang="en-US" xml:id="id2"/>
         <alpha token="123456789" xml:id="id3">
           <eta abort="solid 1px green" xml:lang="en-GB" xml:id="id4"/>
           <any xml:lang="nb" xml:id="id5">
@@ -29173,15 +29173,15 @@
   </test>
   <test>
     <xpath>//kappa[@xml:lang="en-GB"][@xml:id="id1"]//psi[starts-with(@true,"a")][@xml:lang="nb"][@xml:id="id2"][not(preceding-sibling::*)][not(following-sibling::*)]/iota[@xml:lang="en-GB"][@xml:id="id3"][not(preceding-sibling::*)][not(child::node())][following-sibling::sigma[contains(@delete,"lue")][@xml:lang="en-US"][following-sibling::*[position()=1]][following-sibling::eta[contains(@insert,"ribute")][@xml:lang="en-US"]/kappa[contains(concat(@title,"$"),"te-value$")][@xml:lang="no-nb"][@xml:id="id4"][not(preceding-sibling::*)][following-sibling::sigma[@xml:lang="en"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::epsilon[@xml:lang="no-nb"][@xml:id="id5"][preceding-sibling::*[position() = 2]][following-sibling::tau[contains(@attribute,"ute v")][@xml:lang="en-US"][@xml:id="id6"][preceding-sibling::*[position() = 3]][not(preceding-sibling::tau)][not(child::node())][following-sibling::alpha[starts-with(@or,"attrib")][@xml:lang="en"][preceding-sibling::*[position() = 4]][following-sibling::sigma[@and][not(following-sibling::*)]][position() = 1]]]]]]]</xpath>
-    <tree>
-      <kappa xml:lang="en-GB" xml:id="id1">
-        <psi true="attribute-value" xml:lang="nb" xml:id="id2">
-          <iota xml:lang="en-GB" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>iota</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <kappa xml:lang="en-GB" xml:id="id1">
+        <psi true="attribute-value" xml:lang="nb" xml:id="id2">
+          <iota xml:lang="en-GB" xml:id="id3"/>
           <sigma delete="another attribute value" xml:lang="en-US"/>
           <eta insert="attribute value" xml:lang="en-US">
             <kappa title="attribute-value" xml:lang="no-nb" xml:id="id4"/>
@@ -29423,15 +29423,15 @@
   </test>
   <test>
     <xpath>//phi[contains(concat(@data,"$"),"tribute$")][@xml:lang="no-nb"][@xml:id="id1"]//kappa[@xml:lang="en-GB"][@xml:id="id2"][following-sibling::*[position()=3]][following-sibling::iota[@string][@xml:lang="no"][@xml:id="id3"][preceding-sibling::*[position() = 1]][following-sibling::upsilon[@xml:id="id4"][preceding-sibling::*[position() = 2]][following-sibling::*[position()=1]][not(child::node())][following-sibling::lambda[not(following-sibling::*)]//lambda[@false="content"][following-sibling::*[position()=2]][not(child::node())][following-sibling::phi[@xml:lang="en"][following-sibling::sigma[starts-with(@object,"this.nodeValu")][@xml:lang="no-nb"][preceding-sibling::*[position() = 2]]/sigma[@attribute][@xml:lang="en"][not(preceding-sibling::*)][not(following-sibling::*)]/upsilon[@xml:lang="no"][not(preceding-sibling::*)][not(child::node())][following-sibling::iota[@xml:lang="en-US"][@xml:id="id5"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/upsilon[starts-with(concat(@string,"-"),"this-")][@xml:lang="en-GB"][@xml:id="id6"][not(preceding-sibling::*)][not(child::node())][following-sibling::omicron[@xml:lang="no"][@xml:id="id7"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::kappa[@object][@xml:id="id8"][following-sibling::*[position()=2]][following-sibling::delta[starts-with(@insert,"this-is-a")][@xml:id="id9"][following-sibling::eta[@xml:id="id10"][preceding-sibling::*[position() = 4]][not(following-sibling::*)]//tau[starts-with(@true,"con")][@xml:lang="en-GB"][@xml:id="id11"][following-sibling::kappa[starts-with(@title,"fal")][@xml:lang="en-GB"][@xml:id="id12"][preceding-sibling::*[position() = 1]]/delta[@string][@xml:lang="no-nb"][following-sibling::*[position()=1]][not(child::node())][following-sibling::epsilon[@xml:lang="en-GB"][preceding-sibling::*[position() = 1]][not(following-sibling::*)][position() = 1]][position() = 1]]]]][position() = 1]][position() = 1]][position() = 1]]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <phi data="attribute" xml:lang="no-nb" xml:id="id1">
-        <kappa xml:lang="en-GB" xml:id="id2"/>
-        <iota string="content" xml:lang="no" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>kappa</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <phi data="attribute" xml:lang="no-nb" xml:id="id1">
+        <kappa xml:lang="en-GB" xml:id="id2"/>
+        <iota string="content" xml:lang="no" xml:id="id3"/>
         <upsilon xml:id="id4"/>
         <lambda>
           <lambda false="content"/>
@@ -29496,14 +29496,14 @@
   </test>
   <test>
     <xpath>//phi[@true][@xml:lang="en-GB"][@xml:id="id1"]/iota[@insert][@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)][following-sibling::zeta[not(following-sibling::*)]//xi[@xml:lang="no"][not(preceding-sibling::*)][not(following-sibling::*)]/iota[@xml:lang="no-nb"][not(child::node())][following-sibling::gamma[contains(concat(@attribute,"$"),"ue$")][@xml:id="id3"]/zeta[@xml:id="id4"][following-sibling::*[position()=1]][not(child::node())][following-sibling::theta[preceding-sibling::*[position() = 1]]/nu[@xml:lang="no"][@xml:id="id5"][not(preceding-sibling::*)][not(child::node())][following-sibling::gamma[starts-with(@attrib,"_blan")][preceding-sibling::*[position() = 1]][following-sibling::iota[contains(concat(@title,"$"),"e$")][@xml:lang="en-GB"][@xml:id="id6"][following-sibling::*[position()=2]][not(child::node())][following-sibling::mu[@xml:lang="en-US"][following-sibling::nu[preceding-sibling::*[position() = 4]]/theta[@xml:id="id7"][not(preceding-sibling::*)][following-sibling::*[position()=2]][not(child::node())][following-sibling::beta[@string="this.nodeValue"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::delta[@xml:lang="no-nb"][@xml:id="id8"]/gamma[@xml:lang="no-nb"][not(preceding-sibling::*)][not(child::node())][following-sibling::nu[starts-with(concat(@title,"-"),"this-")][@xml:id="id9"][preceding-sibling::*[position() = 1]][following-sibling::epsilon[@xml:lang="en-US"][not(following-sibling::*)]//kappa[following-sibling::theta[contains(@object,"ttribute-val")][preceding-sibling::*[position() = 1]][not(following-sibling::*)][position() = 1]]][position() = 1]][position() = 1]][position() = 1]]][position() = 1]]]][position() = 1]]]]</xpath>
-    <tree>
-      <phi true="attribute value" xml:lang="en-GB" xml:id="id1">
-        <iota insert="123456789" xml:lang="en" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>iota</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <phi true="attribute value" xml:lang="en-GB" xml:id="id1">
+        <iota insert="123456789" xml:lang="en" xml:id="id2"/>
         <zeta>
           <xi xml:lang="no">
             <iota xml:lang="no-nb"/>
@@ -29571,14 +29571,14 @@
   </test>
   <test>
     <xpath>//sigma[starts-with(concat(@desciption,"-"),"100%-")][@xml:lang="nb"][@xml:id="id1"]/epsilon[@xml:lang="no-nb"][@xml:id="id2"][not(preceding-sibling::*)]/pi[@xml:lang="no"]//epsilon[contains(concat(@number,"$"),"0%$")][@xml:lang="no"][not(following-sibling::*)]/mu[@xml:lang="no"][not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::omicron[@content="attribute-value"][@xml:lang="no-nb"]]</xpath>
-    <tree>
-      <sigma desciption="100%" xml:lang="nb" xml:id="id1">
-        <epsilon xml:lang="no-nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>mu</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <sigma desciption="100%" xml:lang="nb" xml:id="id1">
+        <epsilon xml:lang="no-nb" xml:id="id2">
           <pi xml:lang="no">
             <epsilon number="100%" xml:lang="no">
               <mu xml:lang="no"/>
@@ -30517,15 +30517,15 @@
   </test>
   <test>
     <xpath>//gamma[contains(@insert,"bla")][@xml:lang="en-GB"][@xml:id="id1"]//omega[@xml:lang="en-US"][@xml:id="id2"][not(child::node())][following-sibling::psi[@xml:lang="no"][@xml:id="id3"][preceding-sibling::*[position() = 1]][following-sibling::upsilon[@xml:id="id4"][preceding-sibling::*[position() = 2]]/beta[@delete][not(preceding-sibling::*)][not(following-sibling::*)]/kappa[@xml:lang="no-nb"][@xml:id="id5"][position() = 1]]]</xpath>
-    <tree>
-      <gamma insert="_blank" xml:lang="en-GB" xml:id="id1">
-        <omega xml:lang="en-US" xml:id="id2"/>
-        <psi xml:lang="no" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>omega</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <gamma insert="_blank" xml:lang="en-GB" xml:id="id1">
+        <omega xml:lang="en-US" xml:id="id2"/>
+        <psi xml:lang="no" xml:id="id3"/>
         <upsilon xml:id="id4">
           <beta delete="attribute value">
             <kappa xml:lang="no-nb" xml:id="id5">
@@ -31070,14 +31070,14 @@
   </test>
   <test>
     <xpath>//kappa[contains(concat(@insert,"$"),"00%$")][@xml:lang="en-GB"][@xml:id="id1"]//pi[@xml:lang="no"][@xml:id="id2"][not(following-sibling::*)]/zeta[@xml:lang="en-US"][not(preceding-sibling::*)]/tau[@xml:id="id3"][not(preceding-sibling::*)][following-sibling::delta[@token="this.nodeValue"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]//phi[not(preceding-sibling::*)][not(child::node())][following-sibling::alpha/pi[@xml:lang="no-nb"][not(preceding-sibling::*)][following-sibling::eta[@xml:lang="en"][@xml:id="id4"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][not(preceding-sibling::eta)][following-sibling::tau[@xml:lang="en-US"][@xml:id="id5"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]//mu[starts-with(concat(@desciption,"-"),"100%-")][not(preceding-sibling::*)][following-sibling::*[position()=1]][not(child::node())][following-sibling::*[@xml:lang="en-GB"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/chi[@string="attribute-value"][@xml:id="id6"][not(preceding-sibling::*)][not(following-sibling::*)]]][position() = 1]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <kappa insert="100%" xml:lang="en-GB" xml:id="id1">
-        <pi xml:lang="no" xml:id="id2">
     <result>
       <namespace/>
       <localname>tau</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <kappa insert="100%" xml:lang="en-GB" xml:id="id1">
+        <pi xml:lang="no" xml:id="id2">
           <zeta xml:lang="en-US">
             <tau xml:id="id3"/>
             <delta token="this.nodeValue">
@@ -31202,14 +31202,14 @@
   </test>
   <test>
     <xpath>//psi[contains(@name,"e")][@xml:lang="no"][@xml:id="id1"]//chi[@xml:lang="en"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::phi[@xml:id="id3"][not(following-sibling::*)]/alpha[not(preceding-sibling::*)]//nu[@xml:id="id4"]//kappa[contains(concat(@false,"$"),"nother attribute value$")][following-sibling::sigma[@xml:lang="en-US"][not(following-sibling::*)]/mu[@xml:id="id5"][not(preceding-sibling::*)][following-sibling::lambda[@xml:lang="no"][preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::nu[starts-with(@delete,"solid 1p")]/psi[@xml:lang="no-nb"][not(preceding-sibling::*)][following-sibling::*[position()=1]][not(child::node())][following-sibling::omega[not(following-sibling::*)]/chi[contains(@name,"%")][@xml:lang="no-nb"][@xml:id="id6"][following-sibling::phi[preceding-sibling::*[position() = 1]]//iota[@xml:lang="no-nb"][@xml:id="id7"][not(preceding-sibling::*)][not(child::node())][following-sibling::xi[preceding-sibling::*[position() = 1]][not(following-sibling::*)]//chi[@xml:lang="en"][@xml:id="id8"][not(preceding-sibling::*)]/chi[starts-with(concat(@delete,"-"),"true-")][@xml:lang="en-US"][position() = 1]]]][position() = 1]]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <psi name="another attribute value" xml:lang="no" xml:id="id1">
-        <chi xml:lang="en" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>chi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <psi name="another attribute value" xml:lang="no" xml:id="id1">
+        <chi xml:lang="en" xml:id="id2"/>
         <phi xml:id="id3">
           <alpha>
             <nu xml:id="id4">
@@ -31469,15 +31469,15 @@
   </test>
   <test>
     <xpath>//xi[contains(@object,"al")][@xml:lang="nb"][@xml:id="id1"]/omega[starts-with(@data,"12345678")][@xml:lang="en-GB"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::*[@xml:lang="en"][@xml:id="id3"][preceding-sibling::*[position() = 1]][following-sibling::alpha[@token][@xml:lang="en-US"][following-sibling::lambda[@xml:lang="nb"][@xml:id="id4"][not(following-sibling::*)]/omega[starts-with(concat(@data,"-"),"true-")][@xml:id="id5"][not(following-sibling::*)]]]]</xpath>
-    <tree>
-      <xi object="false" xml:lang="nb" xml:id="id1">
-        <omega data="123456789" xml:lang="en-GB" xml:id="id2"/>
-        <any xml:lang="en" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>omega</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <xi object="false" xml:lang="nb" xml:id="id1">
+        <omega data="123456789" xml:lang="en-GB" xml:id="id2"/>
+        <any xml:lang="en" xml:id="id3"/>
         <alpha token="false" xml:lang="en-US"/>
         <lambda xml:lang="nb" xml:id="id4">
           <omega data="true" xml:id="id5">
@@ -31643,14 +31643,14 @@
   </test>
   <test>
     <xpath>//omega[@delete][@xml:lang="no"][@xml:id="id1"]//psi[@xml:lang="en-GB"][@xml:id="id2"][not(child::node())][following-sibling::delta[@object][@xml:lang="no"]/phi[@xml:id="id3"]//nu[@xml:id="id4"][not(child::node())][following-sibling::theta[@desciption][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/epsilon[@xml:lang="no-nb"][not(child::node())][following-sibling::psi[@xml:id="id5"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]/zeta/phi[contains(@or,"te")][@xml:lang="no-nb"][not(following-sibling::*)]//alpha[@src][not(preceding-sibling::*)][not(child::node())][following-sibling::omega[@xml:lang="no"][not(child::node())][following-sibling::sigma[following-sibling::*[position()=1]][not(child::node())][following-sibling::alpha[starts-with(@or,"attribute ")][@xml:lang="nb"][@xml:id="id6"][not(following-sibling::*)]/alpha[contains(concat(@attr,"$"),"%$")][@xml:lang="en"][@xml:id="id7"][not(child::node())][following-sibling::epsilon[starts-with(concat(@content,"-"),"another attribute value-")][not(following-sibling::epsilon)]//gamma[@number="solid 1px green"][@xml:id="id8"][not(following-sibling::*)]//eta[contains(@object,"tru")][@xml:lang="en-GB"][@xml:id="id9"][not(preceding-sibling::*)][not(child::node())][following-sibling::psi[contains(concat(@attr,"$"),"-is-att-value$")][@xml:lang="en-GB"][preceding-sibling::*[position() = 1]][following-sibling::xi[@xml:lang="en-GB"][@xml:id="id10"][preceding-sibling::*[position() = 2]][following-sibling::theta[preceding-sibling::*[position() = 3]][not(following-sibling::*)][position() = 1]]]]]][position() = 1]]]]][position() = 1]]</xpath>
-    <tree>
-      <omega delete="content" xml:lang="no" xml:id="id1">
-        <psi xml:lang="en-GB" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>psi</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <omega delete="content" xml:lang="no" xml:id="id1">
+        <psi xml:lang="en-GB" xml:id="id2"/>
         <delta object="attribute" xml:lang="no">
           <phi xml:id="id3">
             <nu xml:id="id4"/>
@@ -31737,14 +31737,14 @@
   </test>
   <test>
     <xpath>//alpha[@xml:lang="en-US"][@xml:id="id1"]/rho[@xml:lang="en"][@xml:id="id2"][not(following-sibling::*)]/delta[@xml:id="id3"][following-sibling::*[@xml:lang="en-US"][@xml:id="id4"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][not(child::node())][following-sibling::chi[@xml:lang="nb"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]/tau//zeta[@xml:lang="en-US"][not(following-sibling::*)]][position() = 1]]</xpath>
-    <tree>
-      <alpha xml:lang="en-US" xml:id="id1">
-        <rho xml:lang="en" xml:id="id2">
     <result>
       <namespace/>
       <localname>delta</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <alpha xml:lang="en-US" xml:id="id1">
+        <rho xml:lang="en" xml:id="id2">
           <delta xml:id="id3"/>
           <any xml:lang="en-US" xml:id="id4"/>
           <chi xml:lang="nb">
@@ -32728,14 +32728,14 @@
   </test>
   <test>
     <xpath>//sigma[@xml:lang="en-GB"][@xml:id="id1"]//eta[contains(@object,"id 1px")][@xml:lang="en-US"][@xml:id="id2"][not(following-sibling::*)]//omega[@xml:id="id3"][not(preceding-sibling::*)][following-sibling::kappa[@false="this.nodeValue"][@xml:lang="en-US"][following-sibling::mu[@attribute][preceding-sibling::*[position() = 2]]/gamma[@class][@xml:lang="en-GB"][@xml:id="id4"][not(preceding-sibling::*)][following-sibling::sigma[contains(@class,"-is-att-v")][@xml:lang="no-nb"][preceding-sibling::*[position() = 1]][not(following-sibling::*)]//pi[contains(concat(@data,"$"),"ank$")][not(preceding-sibling::*)]//omega[starts-with(concat(@false,"-"),"this-")][@xml:id="id5"]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <sigma xml:lang="en-GB" xml:id="id1">
-        <eta object="solid 1px green" xml:lang="en-US" xml:id="id2">
     <result>
       <namespace/>
       <localname>omega</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <sigma xml:lang="en-GB" xml:id="id1">
+        <eta object="solid 1px green" xml:lang="en-US" xml:id="id2">
           <omega xml:id="id3"/>
           <kappa false="this.nodeValue" xml:lang="en-US"/>
           <mu attribute="attribute-value">
@@ -32949,15 +32949,15 @@
   </test>
   <test>
     <xpath>//kappa[@string][@xml:lang="nb"][@xml:id="id1"]//lambda[starts-with(@attribute,"fal")][@xml:lang="en-GB"][@xml:id="id2"][not(following-sibling::*)]/nu[@xml:lang="no-nb"][@xml:id="id3"][not(preceding-sibling::*)][following-sibling::theta[starts-with(@attribute,"con")][preceding-sibling::*[position() = 1]][following-sibling::*[position()=1]][following-sibling::xi[@xml:lang="en-GB"]/lambda[@xml:id="id4"][not(following-sibling::*)]/omega[starts-with(@token,"tru")][@xml:id="id5"]//tau[@xml:lang="no-nb"][not(preceding-sibling::*)][not(following-sibling::*)]/psi[@xml:id="id6"]/mu[@xml:lang="nb"][not(preceding-sibling::*)][not(child::node())][following-sibling::delta[@xml:lang="nb"][@xml:id="id7"][preceding-sibling::*[position() = 1]]//gamma[starts-with(@data,"thi")][not(preceding-sibling::*)]//theta[starts-with(concat(@desciption,"-"),"true-")][@xml:lang="en"][following-sibling::lambda[not(following-sibling::*)]//phi[@xml:lang="nb"][@xml:id="id8"][not(child::node())][following-sibling::*[preceding-sibling::*[position() = 1]][not(child::node())][following-sibling::tau[starts-with(concat(@content,"-"),"this.nodeValue-")][@xml:id="id9"]/epsilon[position() = 1]][position() = 1]][position() = 1]]][position() = 1]][position() = 1]]</xpath>
-    <tree>
-      <kappa string="solid 1px green" xml:lang="nb" xml:id="id1">
-        <lambda attribute="false" xml:lang="en-GB" xml:id="id2">
-          <nu xml:lang="no-nb" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>nu</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <kappa string="solid 1px green" xml:lang="nb" xml:id="id1">
+        <lambda attribute="false" xml:lang="en-GB" xml:id="id2">
+          <nu xml:lang="no-nb" xml:id="id3"/>
           <theta attribute="content"/>
           <xi xml:lang="en-GB">
             <lambda xml:id="id4">
@@ -33587,14 +33587,14 @@
   </test>
   <test>
     <xpath>//beta[@xml:lang="no-nb"][@xml:id="id1"]//beta[starts-with(concat(@true,"-"),"this-")][@xml:lang="en-US"][@xml:id="id2"][following-sibling::zeta[@xml:id="id3"][preceding-sibling::*[position() = 1]]//eta[@xml:lang="no"][not(preceding-sibling::*)][following-sibling::*[position()=1]][not(child::node())][following-sibling::tau[@attribute="true"][@xml:lang="en-GB"][@xml:id="id4"][preceding-sibling::*[position() = 1]]//alpha[@data][@xml:id="id5"][not(preceding-sibling::*)][following-sibling::tau[@xml:id="id6"][following-sibling::*[starts-with(concat(@insert,"-"),"this.nodeValue-")][not(child::node())][following-sibling::eta[starts-with(@desciption,"true")][@xml:id="id7"][following-sibling::*[position()=1]][not(child::node())][following-sibling::chi[starts-with(@false,"fa")][@xml:lang="en-US"][@xml:id="id8"][not(following-sibling::*)]/eta[@xml:lang="no"][@xml:id="id9"][not(following-sibling::*)]//pi[@string][@xml:lang="en"][following-sibling::*[position()=1]][not(child::node())][following-sibling::pi[@xml:lang="en-US"][@xml:id="id10"]/delta[@xml:lang="no-nb"]/phi[following-sibling::iota[starts-with(concat(@insert,"-"),"123456789-")][@xml:lang="en"][preceding-sibling::*[position() = 1]][following-sibling::*[position()=3]][following-sibling::pi[contains(@string,"lse")][@xml:lang="no"][not(child::node())][following-sibling::nu[contains(@string,"ribute-value")][preceding-sibling::*[position() = 3]][not(child::node())][following-sibling::upsilon[@true][@xml:id="id11"][preceding-sibling::*[position() = 4]][not(following-sibling::*)]//zeta[starts-with(concat(@string,"-"),"this.nodeValue-")][not(preceding-sibling::*)]]][position() = 1]]][position() = 1]]]][position() = 1]][position() = 1]]][position() = 1]]</xpath>
-    <tree>
-      <beta xml:lang="no-nb" xml:id="id1">
-        <beta true="this-is-att-value" xml:lang="en-US" xml:id="id2"/>
     <result>
       <namespace/>
       <localname>beta</localname>
       <nth>1</nth>
     </result>
+    <tree>
+      <beta xml:lang="no-nb" xml:id="id1">
+        <beta true="this-is-att-value" xml:lang="en-US" xml:id="id2"/>
         <zeta xml:id="id3">
           <eta xml:lang="no"/>
           <tau attribute="true" xml:lang="en-GB" xml:id="id4">
@@ -34203,14 +34203,14 @@
   </test>
   <test>
     <xpath>//theta[@xml:lang="nb"][@xml:id="id1"]/zeta[@xml:lang="no-nb"][@xml:id="id2"]/beta[@object][not(following-sibling::beta)]//phi[@desciption][@xml:lang="no-nb"][@xml:id="id3"][not(following-sibling::*)]//kappa[@xml:lang="en-US"][@xml:id="id4"][not(preceding-sibling::*)][not(child::node())][following-sibling::delta[@xml:id="id5"][following-sibling::*[position()=1]][not(child::node())][following-sibling::mu[@xml:lang="en"][preceding-sibling::*[position() = 2]][not(following-sibling::*)]/upsilon[@xml:lang="no-nb"][@xml:id="id6"][not(preceding-sibling::*)][following-sibling::*[position()=1]][following-sibling::sigma[contains(concat(@token,"$"),"olid 1px green$")][@xml:id="id7"]//omega[@content="this.nodeValue"][not(preceding-sibling::*)][not(following-sibling::*)]//omega[starts-with(@insert,"fa")][@xml:lang="no"][following-sibling::pi[contains(@src,"nk")][not(following-sibling::*)][position() = 1]][position() = 1]][position() = 1]]]</xpath>
-    <tree>
-      <theta xml:lang="nb" xml:id="id1">
-        <zeta xml:lang="no-nb" xml:id="id2">
     <result>
       <namespace/>
       <localname>kappa</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <theta xml:lang="nb" xml:id="id1">
+        <zeta xml:lang="no-nb" xml:id="id2">
           <beta object="123456789">
             <phi desciption="attribute" xml:lang="no-nb" xml:id="id3">
               <kappa xml:lang="en-US" xml:id="id4"/>
@@ -34565,15 +34565,15 @@
   </test>
   <test>
     <xpath>//zeta[@desciption][@xml:lang="no-nb"][@xml:id="id1"]/tau[@xml:lang="en-US"][@xml:id="id2"][not(preceding-sibling::*)][not(child::node())][following-sibling::eta[@xml:lang="no"][@xml:id="id3"][following-sibling::*[position()=1]][following-sibling::tau[contains(@data,"lank")]//upsilon[@xml:id="id4"][not(following-sibling::*)]/omega[@xml:lang="en"][@xml:id="id5"][not(preceding-sibling::*)][following-sibling::alpha[@xml:lang="en-US"][@xml:id="id6"][following-sibling::*[position()=2]][following-sibling::phi[@xml:id="id7"][preceding-sibling::*[position() = 2]][following-sibling::*[position()=1]][following-sibling::omega[contains(concat(@title,"$"),"3456789$")][@xml:lang="no"][@xml:id="id8"][preceding-sibling::*[position() = 3]][not(following-sibling::*)]/alpha[@xml:id="id9"][not(following-sibling::*)]/psi[@delete="this-is-att-value"][@xml:lang="no"][not(preceding-sibling::*)]//chi[@attrib="123456789"][not(child::node())][following-sibling::epsilon[@xml:lang="no-nb"][@xml:id="id10"][preceding-sibling::*[position() = 1]]//omicron[contains(@attr,"e")][not(preceding-sibling::*)][not(following-sibling::*)]//chi[contains(@token,"89")]/psi[@xml:lang="en-GB"][not(preceding-sibling::*)][following-sibling::delta[@xml:lang="en-GB"][@xml:id="id11"]//alpha[@attr]/epsilon[@attr][@xml:id="id12"][not(following-sibling::*)]//omega[starts-with(concat(@content,"-"),"123456789-")][@xml:id="id13"][following-sibling::*[position()=2]][following-sibling::gamma[@xml:lang="no"][not(child::node())][following-sibling::iota[@xml:lang="no-nb"][not(following-sibling::*)]/xi[@att="_blank"][@xml:lang="en-GB"][@xml:id="id14"][not(preceding-sibling::*)]][position() = 1]][position() = 1]]][position() = 1]]]][position() = 1]]]</xpath>
-    <tree>
-      <zeta desciption="solid 1px green" xml:lang="no-nb" xml:id="id1">
-        <tau xml:lang="en-US" xml:id="id2"/>
-        <eta xml:lang="no" xml:id="id3"/>
     <result>
       <namespace/>
       <localname>tau</localname>
       <nth>0</nth>
     </result>
+    <tree>
+      <zeta desciption="solid 1px green" xml:lang="no-nb" xml:id="id1">
+        <tau xml:lang="en-US" xml:id="id2"/>
+        <eta xml:lang="no" xml:id="id3"/>
         <tau data="_blank">
           <upsilon xml:id="id4">
             <omega xml:lang="en" xml:id="id5"/>

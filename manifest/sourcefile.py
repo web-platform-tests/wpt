@@ -64,6 +64,8 @@ class SourceFile(object):
 
         self.meta_flags = self.name.split(".")[1:]
 
+        self.items_cache = None
+
     def __getstate__(self):
         # Remove computed properties if we pickle this class
         rv = self.__dict__.copy()
@@ -410,10 +412,18 @@ class SourceFile(object):
         return bool(self.ext in {'.xht', '.html', '.xhtml', '.htm', '.xml', '.svg'} and
                     self.spec_links)
 
+    @property
+    def type(self):
+        rv, _ = self.manifest_items()
+        return rv
+
     def manifest_items(self):
         """List of manifest items corresponding to the file. There is typically one
         per test, but in the case of reftests a node may have corresponding manifest
         items without being a test itself."""
+
+        if self.items_cache:
+            return self.items_cache
 
         if self.name_is_non_test:
             rv = "support", [SupportFile(self)]
@@ -465,5 +475,7 @@ class SourceFile(object):
 
         else:
             rv = "support", [SupportFile(self)]
+
+        self.items_cache = rv
 
         return rv

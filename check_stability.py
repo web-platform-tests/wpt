@@ -167,7 +167,7 @@ class Firefox(Browser):
 
     def install(self):
         call("pip", "install", "-r", "w3c/wptrunner/requirements_firefox.txt")
-        resp = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-52.0a1.en-US.linux-x86_64.tar.bz2")
+        resp = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-53.0a1.en-US.linux-x86_64.tar.bz2")
         untar(resp.raw)
 
         if not os.path.exists("profiles"):

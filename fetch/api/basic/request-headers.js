@@ -6,7 +6,7 @@ if (this.document === undefined) {
 function checkContentType(contentType, body)
 {
     if (self.FormData && body instanceof self.FormData) {
-        assert_true(contentType.startsWith("multipart/form-data;boundary="), "Request should have header content-type starting with multipart/form-data;boundary=, but got " + contentType);
+        assert_true(contentType.startsWith("multipart/form-data; boundary="), "Request should have header content-type starting with multipart/form-data; boundary=, but got " + contentType);
         return;
     }
 

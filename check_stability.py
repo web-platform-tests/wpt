@@ -536,7 +536,7 @@ def main():
         logger.critical("Root directory %s does not exist" % args.root)
         return 1
 
-    # If the repo dir was not explicitly set (via Travis or the --repo-path) then see 
+    # If the repo dir was not explicitly set (via Travis or the --repo-path) then see
     # if the current directory is a Git repository or default to the old behaviour
     if None == args.repo_path:
         args.repo_path = os.path.curdir if os.path.exists(os.path.join(os.path.curdir, ".git")) else os.path.join(root, "w3c", "web-platform-tests")

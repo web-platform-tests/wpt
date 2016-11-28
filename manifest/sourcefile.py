@@ -16,7 +16,7 @@ from .utils import rel_path_to_url, ContextManagerBytesIO, cached_property
 
 wd_pattern = "*.py"
 
-reference_file_re = re.compile(r'-(not)?ref[0-9]*(-|$)')
+reference_file_re = re.compile(r'(^|[\-_])(not)?ref[0-9]*([\-_]|$)')
 
 def replace_end(s, old, new):
     """

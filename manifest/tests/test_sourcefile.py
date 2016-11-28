@@ -96,7 +96,10 @@ def test_name_is_visual(rel_path):
     "css21/css-e-notation-ref-1.html",
     "css21/floats/floats-placement-vertical-004-ref2.xht",
     "css21/box/rtl-linebreak-notref1.xht",
-    "css21/box/rtl-linebreak-notref2.xht"
+    "css21/box/rtl-linebreak-notref2.xht",
+    "2dcontext/drawing-images-to-the-canvas/drawimage_html_image_5_ref.html",
+    "2dcontext/line-styles/lineto_ref.html",
+    "html/rendering/non-replaced-elements/the-fieldset-element-0/ref.html"
 ])
 def test_name_is_reference(rel_path):
     s = create(rel_path)

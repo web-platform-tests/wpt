@@ -15,6 +15,7 @@ booleans.forEach(function(bubbles) {
       // Step 3.
       // Stop (immediate) propagation flag is tested later
       assert_equals(e.defaultPrevented, false, "defaultPrevented")
+      assert_equals(e.returnValue, true, "returnValue")
       // Step 4.
       assert_equals(e.isTrusted, false, "isTrusted")
       // Step 5.

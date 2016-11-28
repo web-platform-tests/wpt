@@ -55,6 +55,31 @@ test(function() {
   testPassiveValue({passive: 1}, false);
 }, "preventDefault should be ignored if-and-only-if the passive option is true");
 
+function testPassiveValueOnReturnValue(optionsValue, expectedDefaultPrevented) {
+  var defaultPrevented = undefined;
+  var handler = function handler(e) {
+    assert_false(e.defaultPrevented, "Event prematurely marked defaultPrevented");
+    e.returnValue = false;
+    defaultPrevented = e.defaultPrevented;
+  }
+  document.addEventListener('test', handler, optionsValue);
+  var uncanceled = document.body.dispatchEvent(new Event('test', {bubbles: true, cancelable: true}));
+
+  assert_equals(defaultPrevented, expectedDefaultPrevented, "Incorrect defaultPrevented for options: " + JSON.stringify(optionsValue));
+  assert_equals(uncanceled, !expectedDefaultPrevented, "Incorrect return value from dispatchEvent");
+
+  document.removeEventListener('test', handler, optionsValue);
+}
+
+test(function() {
+  testPassiveValueOnReturnValue(undefined, true);
+  testPassiveValueOnReturnValue({}, true);
+  testPassiveValueOnReturnValue({passive: false}, true);
+  testPassiveValueOnReturnValue({passive: true}, false);
+  testPassiveValueOnReturnValue({passive: 0}, true);
+  testPassiveValueOnReturnValue({passive: 1}, false);
+}, "returnValue should be ignored if-and-only-if the passive option is true");
+
 function testPassiveWithOtherHandlers(optionsValue, expectedDefaultPrevented) {
   var handlerInvoked1 = false;
   var dummyHandler1 = function() {
@@ -81,7 +106,7 @@ test(function() {
   testPassiveWithOtherHandlers({}, true);
   testPassiveWithOtherHandlers({passive: false}, true);
   testPassiveWithOtherHandlers({passive: true}, false);
-}, "passive behavior of one listener should be unaffeted by the presence of other listeners");
+}, "passive behavior of one listener should be unaffected by the presence of other listeners");
 
 function testOptionEquivalence(optionValue1, optionValue2, expectedEquality) {
   var invocationCount = 0;

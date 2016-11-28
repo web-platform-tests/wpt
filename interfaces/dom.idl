@@ -17,6 +17,7 @@ interface Event {
 
   readonly attribute boolean bubbles;
   readonly attribute boolean cancelable;
+           attribute boolean returnValue;
   void preventDefault();
   readonly attribute boolean defaultPrevented;
 

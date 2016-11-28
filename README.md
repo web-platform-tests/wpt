@@ -92,6 +92,10 @@ web-platform-tests root to `config.json`. Then edit the JSON so that
 the key `ssl/openssl/base_conf_path` has a value that is the path to
 the OpenSSL config file.
 
+Alternatively, you may also use
+[Bash on Ubuntu on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)
+in the Windows 10 Anniversary Update build, then access your windows
+partition from there to launch wptserve.
 
 Test Runner
 ===========

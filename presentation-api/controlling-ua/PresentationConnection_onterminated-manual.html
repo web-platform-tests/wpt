@@ -27,8 +27,8 @@
       request.start()
         .then(function(connection) {
           assert_true(connection instanceof PresentationConnection);
-          connection.onconnected = t.step_func(function(evt) {
-            assert_equals(evt.state, "connected");
+          connection.onconnect = t.step_func(function(evt) {
+            assert_equals(connection.state, "connected");
             connection.terminate();
           });
           connection.onterminate = t.step_func_done(function(evt) {

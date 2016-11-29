@@ -306,7 +306,7 @@ testText("<div style='width:0; overflow:hidden; text-overflow:ellipsis'>abc", "a
 testText("<svg>abc", undefined, "innerText not supported on SVG elements");
 testText("<math>abc", undefined, "innerText not supported on MathML elements");
 
-/**** Ruby ****/
+/**** Ruby <rp> ****/
 
 testText("<div><ruby>abc<rp>(</rp><rt>def</rt><rp>)</rp></ruby>", "abc(def)", "<rp> rendered");
 testText("<div><rp>abc</rp>", "abc", "Lone <rp> rendered");
@@ -316,6 +316,26 @@ testText("<div><rp style='display:block'>abc</rp>def", "abc\ndef", "display:bloc
 testText("<div><rp style='display:block'> abc </rp>def", " abc \ndef", "display:block <rp> induces line breaks but doesn't trim whitespace");
 // XXX this is not desirable but the spec currently requires it.
 testText("<div><select class='poke-rp'></select>", "abc", "<rp> in a replaced element still renders");
+
+/**** Ruby <rt> ****/
+
+testText("<div><ruby>abc<rt>def</rt></ruby>", "abc(def)", "<rt> without <rp> siblings");
+testText("<div><ruby><rp></rp>abc<rt>def</rt></ruby>", "abcdef", "<rt> with earlier <rp> sibling");
+testText("<div><ruby>abc<rt>def</rt><span>123</span><rp></rp></ruby>", "abcdef123", "<rt> with later <rp> sibling");
+testText("<div><rp></rp>abc<rt>def</rt></ruby>", "abcdef", "<rt> with earlier <rp> sibling in <div>");
+testText("<div>abc<rt>def</rt><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span><rp></rp></ruby>", "abcdef1234567890", "<rt> with (much) later <rp> sibling in <div>");
+testText("<div><span><rp>123</rp></span>abc<rt>def</rt></ruby>", "123abc(def)", "<rt> with earlier non-sibling <rp>");
+testText("<div>abc<rt>def</rt><span><rp>123</rp></span></ruby>", "abc(def)123", "<rt> with later non-sibling <rp>");
+testText("<div>abc<rt>def</rt><span>123</span><rp style='visibility:hidden'></rp></ruby>", "abcdef123", "<rt> with later visibility:hidden <rp>");
+testText("<div><rt>abc</rt>", "(abc)", "Lone <rt>");
+testText("<div><rt style='visibility:hidden'>abc</rt>", "", "visibility:hidden <rt> not rendered");
+testText("<div><rt style='display:none'>abc</rt>", "", "display:none <rt> not rendered");
+testText("<div><rt> abc </rt>", "( abc )", "Lone <rt> rendered without whitespace trimming");
+testText("<div><rt style='display:block'>abc</rt>def", "(abc)\ndef", "display:block <rt> includes line breaks");
+testText("<div><rt style='display:table-caption'>abc</rt>def", "(abc)\ndef", "display:table-caption <rt> includes line breaks");
+testText("<div><rt style='display:block'> abc </rt>def", "(abc)\ndef", "display:block <rt> includes line breaks and trims whitespace");
+testText("<div style='display:table-row'><rt style='display:table-cell'>abc</rt><rt style='display:table-cell'>def</rt>", "(abc)\t(def)", "display:table-cell <rt> includes tabs");
+testText("<div style='display:table'><rt style='display:table-row'>abc</rt><rt style='display:table-row'>def</rt>", "(abc)\n(def)", "display:table-row <rt> includes line breaks");
 
 /**** Shadow DOM ****/
 

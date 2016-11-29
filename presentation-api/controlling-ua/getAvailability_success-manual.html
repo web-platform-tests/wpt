@@ -87,7 +87,8 @@
                         // the Promise is rejected with NotSupportedError if the browser can find displays only when starting a connection
                         assert_equals(err.name, 'NotSupportedError', 'getAvailability() rejects a Promise with a NotSupportedError exception, if the user agent can find presentation displays only when starting a connection.')
                     }).then(function(disabled) {
-                        skipBtn.disabled = true;
+                        skipBtn    .disabled = true;
+                        continueBtn.disabled = true;
                         var request2 = new PresentationRequest(presentationUrls);
 
                         // If monitoring feature is unable (e.g., disabled by a user), abort all the remaining steps

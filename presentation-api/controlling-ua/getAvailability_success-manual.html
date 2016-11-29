@@ -89,14 +89,13 @@
                     }).then(function(disabled) {
                         skipBtn    .disabled = true;
                         continueBtn.disabled = true;
-                        var request2 = new PresentationRequest(presentationUrls);
 
                         // If monitoring feature is unable (e.g., disabled by a user), abort all the remaining steps
                         if(!disabled) {
-                            return request2.getAvailability()
+                            return request.getAvailability()
                                     .then(function (availability2) {
-                                        // the same PresentationAvailability object is obtained if the same presentation request URLs are given
-                                        assert_true(availability1 === availability2, 'getAvailability() resolves a Promise with the same PresentationAvailability object if the same presentation request URLs are given.');
+                                        // the same PresentationAvailability object is obtained for the same presentation request
+                                        assert_true(availability1 === availability2, 'getAvailability() resolves a Promise with the same PresentationAvailability object for the same presentation request.');
                                     });
                         }
                     });

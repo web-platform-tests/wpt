@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>window.performance.getEntriesByType("navigation") attributes</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/navigation-timing-2/#sec-PerformanceNavigationTiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+    <body>
+        <h1>Description</h1>
+        <p>This test validates that some of nav timing 2 instance's timing-related attributes' values are in certain order and some are of expected values.</p>
+
+        <div id="log"></div>
+
+        <script>
+        async_test(function (t) {
+            var observer = new PerformanceObserver(
+                t.step_func(function (entryList) {
+                    var entries = entryList.getEntries();
+                    assert_equals(entries[0].entryType, "navigation",
+                        "entryType expected to be: navigation");
+                    assert_equals(entries[0].name, "document",
+                        "name expected to be: document");
+                    assert_equals(entries[0].startTime, 0,
+                        "startTime expected to be: 0");
+                    assert_equals(entries[0].duration, entries[0].loadEventEnd,
+                        "expected duration to be equal to loadEventEnd");
+                    assert_true(entries[0].startTime <= entries[0].redirectStart,
+                        "expected startTime to be no greater than redirectStart");
+                    assert_true(entries[0].unloadEventStart <= entries[0].unloadEventEnd,
+                        "expected unloadEventStart to be no greater than unloadEventEnd");
+                    assert_true(entries[0].redirectStart <= entries[0].redirectEnd,
+                        "expected redirectStart to be no greater than redirectEnd");
+                    assert_true(entries[0].redirectEnd <= entries[0].fetchStart,
+                        "expected redirectEnd to be no greater than fetchStart");
+                    assert_true(entries[0].fetchStart <= entries[0].domainLookupStart,
+                        "expected fetchStart to be no greater than domainLookupStart");
+                    assert_true(entries[0].domainLookupStart <= entries[0].domainLookupEnd,
+                        "expected domainLookupStart to be no greater than domainLookupEnd");
+                    assert_true(entries[0].domainLookupEnd <= entries[0].connectStart,
+                        "expected domainLookupEnd to be no greater than connectStart");
+                    assert_true(entries[0].secureConnectionStart <= entries[0].connectEnd,
+                        "expected secureConnectionStart to be no greater than connectEnd");
+                    assert_true(entries[0].connectEnd <= entries[0].requestStart,
+                        "expected connectEnd to be no greater than requestStart");
+                    assert_true(entries[0].requestStart <= entries[0].responseStart,
+                        "expected requestStart to be no greater than responseStart");
+                    assert_true(entries[0].responseStart <= entries[0].responseEnd,
+                        "expected responseStart to be no greater than responseEnd");
+                    assert_true(entries[0].responseEnd <= entries[0].domInteractive,
+                        "expected responseEnd to be no greater than domInteractive");
+                    assert_true(entries[0].domInteractive <= entries[0].domContentLoadedEventStart,
+                        "expected domInteractive to be no greater than domContentLoadedEventStart");
+                    assert_true(entries[0].domContentLoadedEventStart <= entries[0].domContentLoadedEventEnd,
+                        "expected domContentLoadedEventStart to be no greater than domContentLoadedEventEnd");
+                    assert_true(entries[0].domContentLoadedEventEnd <= entries[0].domComplete,
+                        "expected domContentLoadedEventEnd to be no greater than domComplete");
+                    assert_true(entries[0].domComplete <= entries[0].loadEventStart,
+                        "expected domComplete to be no greater than loadEventStart");
+                    assert_true(entries[0].loadEventStart <= entries[0].loadEventEnd,
+                        "expected loadEventStart to be no greater than loadEventEnd");
+                    observer.disconnect();
+                    t.done();
+                })
+            );
+            observer.observe({entryTypes: ["navigation"]});
+
+        }, "Performance navigation timing instance's value is reasonable.");
+        </script>
+    </body>
+</html>

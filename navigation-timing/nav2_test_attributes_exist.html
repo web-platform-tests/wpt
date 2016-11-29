@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>window.performance.getEntriesByType("navigation") attributes</title>
+        <link rel="author" title="Google" href="http://www.google.com/" />
+        <link rel="help" href="http://www.w3.org/TR/navigation-timing-2/#sec-PerformanceNavigationTiming"/>
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+    </head>
+    <body>
+        <h1>Description</h1>
+        <p>This test validates that PerformanceObserver can observer nav timing 2 instance and that the expected attributes of nav timing 2 instance exist (but does not validate that their values are correct).</p>
+
+        <div id="log"></div>
+
+        <script>
+        async_test(function (t) {
+            var observer = new PerformanceObserver(
+                t.step_func(function (entryList) {
+                    var entries = entryList.getEntries();
+                    assert_equals(entries.length, 1,
+                        "there should be only one navigation timing instance");
+                    assert_true("connectEnd" in entries[0],
+                        "expected attribute: connectEnd");
+                    assert_true("connectStart" in entries[0],
+                        "expected attribute: connectStart");
+                    assert_true("decodedBodySize" in entries[0],
+                        "expected attribute: decodedBodySize");
+                    assert_true("domComplete" in entries[0],
+                        "expected attribute: domComplete");
+                    assert_true("domContentLoadedEventEnd" in entries[0],
+                        "expected attribute: domContentLoadedEventEnd");
+                    assert_true("domContentLoadedEventStart" in entries[0],
+                        "expected attribute: domContentLoadedEventStart");
+                    assert_true("domInteractive" in entries[0],
+                        "expected attribute: domInteractive");
+                    assert_true("domainLookupEnd" in entries[0],
+                        "expected attribute: domainLookupEnd");
+                    assert_true("domainLookupStart" in entries[0],
+                        "expected attribute: domainLookupStart");
+                    assert_true("duration" in entries[0],
+                        "expected attribute: duration");
+                    assert_true("encodedBodySize" in entries[0],
+                        "expected attribute: encodedBodySize");
+                    assert_true("entryType" in entries[0],
+                        "expected attribute: entryType");
+                    assert_true("fetchStart" in entries[0],
+                        "expected attribute: fetchStart");
+                    assert_true("initiatorType" in entries[0],
+                        "expected attribute: initiatorType");
+                    assert_true("loadEventEnd" in entries[0],
+                        "expected attribute: loadEventEnd");
+                    assert_true("loadEventStart" in entries[0],
+                        "expected attribute: loadEventStart");
+                    assert_true("name" in entries[0],
+                        "expected attribute: name");
+                    assert_true("redirectCount" in entries[0],
+                        "expected attribute: redirectCount");
+                    assert_true("redirectEnd" in entries[0],
+                        "expected attribute: redirectEnd");
+                    assert_true("redirectStart" in entries[0],
+                        "expected attribute: redirectStart");
+                    assert_true("requestStart" in entries[0],
+                        "expected attribute: requestStart");
+                    assert_true("responseEnd" in entries[0],
+                        "expected attribute: responseEnd");
+                    assert_true("responseStart" in entries[0],
+                        "expected attribute: responseStart");
+                    assert_true("secureConnectionStart" in entries[0],
+                        "expected attribute: secureConnectionStart");
+                    assert_true("startTime" in entries[0],
+                        "expected attribute: startTime");
+                    assert_true("transferSize" in entries[0],
+                        "expected attribute: transferSize");
+                    assert_true("type" in entries[0],
+                        "expected attribute: type");
+                    assert_true("unloadEventEnd" in entries[0],
+                        "expected attribute: unloadEventEnd");
+                    assert_true("unloadEventStart" in entries[0],
+                        "expected attribute: unloadEventStart");
+                    assert_true("workerStart" in entries[0],
+                        "expected attribute: workerStart");
+                    observer.disconnect();
+                    t.done();
+                })
+            );
+            observer.observe({entryTypes: ["navigation"]});
+
+        }, "Performance navigation timing entries are observable");
+        </script>
+    </body>
+</html>

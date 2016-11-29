@@ -1,0 +1,41 @@
+<meta charset=windows-1252>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  test(() => {
+    assert_equals(document.origin, "{{location[scheme]}}://{{location[host]}}")
+    var t = document.createElement("template")
+    assert_equals(t.content.ownerDocument.origin, "{{location[scheme]}}://{{location[host]}}")
+  }, "document.origin")
+
+  test(() => {
+    assert_equals(document.domain, "www.web-platform.test")
+    var t = document.createElement("template")
+    t.content.ownerDocument.domain = "web-platform.test"
+    assert_equals(t.content.ownerDocument.domain, "web-platform.test")
+  }, "document.domain")
+
+  test(() => {
+    var t = document.createElement("template")
+    assert_equals(t.content.ownerDocument.URL, "about:blank")
+  }, "document.URL")
+
+  test(() => {
+    var t = document.createElement("template")
+    assert_equals(t.content.ownerDocument.charset, "UTF-8")
+  }, "document.charset")
+
+  test(() => {
+    var t = document.createElement("template")
+    assert_equals(document.compatMode, "BackCompat")
+    assert_equals(t.content.ownerDocument.compatMode, "CSS1Compat")
+  }, "document.compatMode")
+
+  test(() => {
+    var t = document.createElement("template")
+    assert_throws("SecurityError", () => { t.content.ownerDocument.cookie = "test" })
+    document.cookie = "test2"
+    assert_equals(t.content.ownerDocument.cookie, "")
+  }, "document.cookie")
+</script>

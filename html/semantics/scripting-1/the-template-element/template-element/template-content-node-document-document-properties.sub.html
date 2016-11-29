@@ -32,7 +32,8 @@
     assert_equals(t.content.ownerDocument.compatMode, "CSS1Compat")
   }, "document.compatMode")
 
-  test(() => {
+  test((test) => {
+    test.add_cleanup(() => { document.cookie = "" })
     var t = document.createElement("template")
     assert_throws("SecurityError", () => { t.content.ownerDocument.cookie = "test" })
     document.cookie = "test2"

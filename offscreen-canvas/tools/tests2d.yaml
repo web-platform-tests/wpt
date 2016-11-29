@@ -9207,7 +9207,7 @@
         if exp is None:
             testing.append("size.error")
             code += "@assert offscreenCanvas.width === 300;\n@assert offscreenCanvas.height === 150;\n"
-            expected = None 
+            expected = None
         else:
             code += "@assert offscreenCanvas.width === %s;\n@assert offscreenCanvas.height === %s;\n" % (exp, exp)
             expected = None

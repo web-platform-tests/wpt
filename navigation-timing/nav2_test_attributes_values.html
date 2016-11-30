@@ -15,6 +15,25 @@
         <div id="log"></div>
 
         <script>
+        var navTimingEventOrder = [
+            'startTime',
+            'redirectStart',
+            'redirectEnd',
+            'fetchStart',
+            'domainLookupStart',
+            'domainLookupEnd',
+            'connectStart',
+            'connectEnd',
+            'requestStart',
+            'responseStart',
+            'responseEnd',
+            'domInteractive',
+            'domContentLoadedEventStart',
+            'domContentLoadedEventEnd',
+            'domComplete',
+            'loadEventStart',
+            'loadEventEnd'
+        ];
         async_test(function (t) {
             var observer = new PerformanceObserver(
                 t.step_func(function (entryList) {
@@ -27,40 +46,11 @@
                         "startTime expected to be: 0");
                     assert_equals(entries[0].duration, entries[0].loadEventEnd,
                         "expected duration to be equal to loadEventEnd");
-                    assert_true(entries[0].startTime <= entries[0].redirectStart,
-                        "expected startTime to be no greater than redirectStart");
-                    assert_true(entries[0].unloadEventStart <= entries[0].unloadEventEnd,
-                        "expected unloadEventStart to be no greater than unloadEventEnd");
-                    assert_true(entries[0].redirectStart <= entries[0].redirectEnd,
-                        "expected redirectStart to be no greater than redirectEnd");
-                    assert_true(entries[0].redirectEnd <= entries[0].fetchStart,
-                        "expected redirectEnd to be no greater than fetchStart");
-                    assert_true(entries[0].fetchStart <= entries[0].domainLookupStart,
-                        "expected fetchStart to be no greater than domainLookupStart");
-                    assert_true(entries[0].domainLookupStart <= entries[0].domainLookupEnd,
-                        "expected domainLookupStart to be no greater than domainLookupEnd");
-                    assert_true(entries[0].domainLookupEnd <= entries[0].connectStart,
-                        "expected domainLookupEnd to be no greater than connectStart");
-                    assert_true(entries[0].secureConnectionStart <= entries[0].connectEnd,
-                        "expected secureConnectionStart to be no greater than connectEnd");
-                    assert_true(entries[0].connectEnd <= entries[0].requestStart,
-                        "expected connectEnd to be no greater than requestStart");
-                    assert_true(entries[0].requestStart <= entries[0].responseStart,
-                        "expected requestStart to be no greater than responseStart");
-                    assert_true(entries[0].responseStart <= entries[0].responseEnd,
-                        "expected responseStart to be no greater than responseEnd");
-                    assert_true(entries[0].responseEnd <= entries[0].domInteractive,
-                        "expected responseEnd to be no greater than domInteractive");
-                    assert_true(entries[0].domInteractive <= entries[0].domContentLoadedEventStart,
-                        "expected domInteractive to be no greater than domContentLoadedEventStart");
-                    assert_true(entries[0].domContentLoadedEventStart <= entries[0].domContentLoadedEventEnd,
-                        "expected domContentLoadedEventStart to be no greater than domContentLoadedEventEnd");
-                    assert_true(entries[0].domContentLoadedEventEnd <= entries[0].domComplete,
-                        "expected domContentLoadedEventEnd to be no greater than domComplete");
-                    assert_true(entries[0].domComplete <= entries[0].loadEventStart,
-                        "expected domComplete to be no greater than loadEventStart");
-                    assert_true(entries[0].loadEventStart <= entries[0].loadEventEnd,
-                        "expected loadEventStart to be no greater than loadEventEnd");
+
+                    for (var i = 0; i < navTimingEventOrder.length - 1; i++) {
+                        assert_true(entries[0][navTimingEventOrder[i]] <= entries[0][navTimingEventOrder[i + 1]],
+                            "expected " + navTimingEventOrder[i] + " to be no greater than " + navTimingEventOrder[i + 1] + ".");
+                    }
                     observer.disconnect();
                     t.done();
                 })

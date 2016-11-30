@@ -10,9 +10,7 @@
     </head>
     <body>
         <h1>Description</h1>
-        <p>This test validates that PerformanceObserver can observer nav timing 2 instance and that the expected attributes of nav timing 2 instance exist (but does not validate that their values are correct).</p>
-
-        <div id="log"></div>
+        <p>This test validates that PerformanceObserver can observe nav timing 2 instance and that the expected attributes in nav timing 2 instance exist (but does not validate that the values are correct).</p>
 
         <script>
         var navTiming2Attributes = [
@@ -49,10 +47,10 @@
                 t.step_func(function (entryList) {
                     var entries = entryList.getEntries();
                     assert_equals(entries.length, 1,
-                        "there should be only one navigation timing instance");
+                        "There should be only one navigation timing instance.");
                     for (var i = 0; i < navTiming2Attributes.length; i++) {
                         assert_true(navTiming2Attributes[i] in entries[0],
-                            "expected attribute: " + navTiming2Attributes[i]);
+                            "Expected attribute: " + navTiming2Attributes[i] + ".");
                     }
                     observer.disconnect();
                     t.done();
@@ -60,7 +58,7 @@
             );
             observer.observe({entryTypes: ["navigation"]});
 
-        }, "Performance navigation timing entries are observable");
+        }, "Performance navigation timing entries are observable.");
         </script>
     </body>
 </html>

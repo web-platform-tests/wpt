@@ -10,12 +10,10 @@
     </head>
     <body>
         <h1>Description</h1>
-        <p>This test validates that some of nav timing 2 instance's timing-related attributes' values are in certain order and some are of expected values.</p>
-
-        <div id="log"></div>
+        <p>This test validates that the values of nav timing 2 instance's timing-related attributes are in certain order and the others are of expected values.</p>
 
         <script>
-        var navTimingEventOrder = [
+        var navTiming2EventOrder = [
             'startTime',
             'redirectStart',
             'redirectEnd',
@@ -39,17 +37,17 @@
                 t.step_func(function (entryList) {
                     var entries = entryList.getEntries();
                     assert_equals(entries[0].entryType, "navigation",
-                        "entryType expected to be: navigation");
+                        "Expected entryType to be: navigation.");
                     assert_equals(entries[0].name, "document",
-                        "name expected to be: document");
+                        "Expected name to be: document.");
                     assert_equals(entries[0].startTime, 0,
-                        "startTime expected to be: 0");
+                        "Expected startTime to be: 0.");
                     assert_equals(entries[0].duration, entries[0].loadEventEnd,
-                        "expected duration to be equal to loadEventEnd");
+                        "Expected duration to be equal to loadEventEnd.");
 
-                    for (var i = 0; i < navTimingEventOrder.length - 1; i++) {
-                        assert_true(entries[0][navTimingEventOrder[i]] <= entries[0][navTimingEventOrder[i + 1]],
-                            "expected " + navTimingEventOrder[i] + " to be no greater than " + navTimingEventOrder[i + 1] + ".");
+                    for (var i = 0; i < navTiming2EventOrder.length - 1; i++) {
+                        assert_true(entries[0][navTiming2EventOrder[i]] <= entries[0][navTiming2EventOrder[i + 1]],
+                            "Expected " + navTiming2EventOrder[i] + " to be no greater than " + navTiming2EventOrder[i + 1] + ".");
                     }
                     observer.disconnect();
                     t.done();

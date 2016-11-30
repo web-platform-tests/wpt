@@ -229,7 +229,16 @@ test(function() {
     var doc = document.implementation.createDocument(null, null);
     var copy = doc.cloneNode();
     check_copy(doc, copy, Document);
+    assert_equals(doc.charset, "UTF-8");
+    assert_equals(doc.charset, copy.charset);
+    assert_equals(doc.contentType, "application/xml");
     assert_equals(doc.contentType, copy.contentType);
+    assert_equals(doc.URL, "about:blank")
+    assert_equals(doc.URL, copy.URL);
+    assert_equals(doc.origin, "null")
+    assert_equals(doc.origin, copy.origin);
+    assert_equals(doc.compatMode, "CSS1Compat");
+    assert_equals(doc.compatMode, copy.compatMode);
 }, "implementation.createDocument");
 
 test(function() {

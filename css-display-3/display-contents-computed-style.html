@@ -7,7 +7,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-    .contents { display: contents }
+    html, .contents { display: contents }
 
     #t2 .contents { background-color: green }
     #t2 span { background-color: inherit }
@@ -66,4 +66,8 @@
         assert_equals(computed.marginLeft, "25%");
         assert_equals(computed.paddingTop, "10%");
     }, "Resolved value should be computed value, not used value, for display:contents");
+
+    test(function(){
+        assert_equals(getComputedStyle(document.documentElement).display, "block");
+    }, "Document element can't have display: contents");
 </script>

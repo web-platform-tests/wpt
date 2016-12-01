@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <title>Resource Timing connection reuse</title>
 <link rel="author" title="Google" href="http://www.google.com/" />
-<link rel="help" href="http://www.w3.org/TR/resource-timing/#dom-performanceresourcetiming-initiatortype"/>
+<link rel="help" href="https://www.w3.org/TR/resource-timing/#dom-performanceresourcetiming-initiatortype"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/webperftestharness.js"></script>
@@ -33,8 +33,10 @@ function onload_test() {
     var context = new PerformanceContext(iframe.contentWindow.performance);
     var entries = context.getEntriesByType('resource');
 
+    // when a persistent connection is used, follow-on resources should be included as PerformanceResourceTiming objects
     test_equals(entries.length, 2, 'There should be 2 PerformanceEntries');
 
+    // when a persistent connection is used, for the resource that reuses the socket, connectStart and connectEnd should have the same value as fetchStart
     var entry = entries[1];
     test_equals(entry.fetchStart, entry.connectStart, "connectStart and fetchStart should be the same");
 
@@ -48,7 +50,7 @@ window.setup_iframe = setup_iframe;
 </head>
 <body>
 <h1>Description</h1>
-<p>This test validates that connectStart and connectEnd are the same when a connection is reused (e.g. the resource is retrieved from relevant application caches).</p>
+<p>This test validates that connectStart and connectEnd are the same when a connection is reused (e.g. when a persistent connection is used).</p>
 <div id="log"></div>
 <iframe id="frameContext" src="resources/fake_responses.html"></iframe>
 </body>

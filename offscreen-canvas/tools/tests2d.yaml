@@ -8802,7 +8802,7 @@
     @assert throws TypeError ctx.createRadialGradient(0, 0, 1);
     @assert throws TypeError ctx.createRadialGradient(0, 0, 1, 0);
     @assert throws TypeError ctx.createRadialGradient(0, 0, 1, 0, 0);
-    @assert throws TypeError ctx.createPattern(canvas);
+    @assert throws TypeError ctx.createPattern(offscreenCanvas);
     @assert throws TypeError ctx.clearRect();
     @assert throws TypeError ctx.clearRect(0);
     @assert throws TypeError ctx.clearRect(0, 0);
@@ -8844,8 +8844,8 @@
     @assert throws TypeError ctx.arc(0, 0, 1);
     @assert throws TypeError ctx.arc(0, 0, 1, 0);
     @assert throws TypeError ctx.drawImage();
-    @assert throws TypeError ctx.drawImage(canvas);
-    @assert throws TypeError ctx.drawImage(canvas, 0);
+    @assert throws TypeError ctx.drawImage(offscreenCanvas);
+    @assert throws TypeError ctx.drawImage(offscreenCanvas, 0);
     // TODO: n >= 3 args on drawImage could be either a valid overload,
     // or too few for another overload, or too many for another
     // overload - what should happen?

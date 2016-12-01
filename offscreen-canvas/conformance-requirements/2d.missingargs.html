@@ -47,7 +47,7 @@ assert_throws(new TypeError(), function() { ctx.createRadialGradient(0, 0); });
 assert_throws(new TypeError(), function() { ctx.createRadialGradient(0, 0, 1); });
 assert_throws(new TypeError(), function() { ctx.createRadialGradient(0, 0, 1, 0); });
 assert_throws(new TypeError(), function() { ctx.createRadialGradient(0, 0, 1, 0, 0); });
-assert_throws(new TypeError(), function() { ctx.createPattern(canvas); });
+assert_throws(new TypeError(), function() { ctx.createPattern(offscreenCanvas); });
 assert_throws(new TypeError(), function() { ctx.clearRect(); });
 assert_throws(new TypeError(), function() { ctx.clearRect(0); });
 assert_throws(new TypeError(), function() { ctx.clearRect(0, 0); });
@@ -89,8 +89,8 @@ assert_throws(new TypeError(), function() { ctx.arc(0, 0); });
 assert_throws(new TypeError(), function() { ctx.arc(0, 0, 1); });
 assert_throws(new TypeError(), function() { ctx.arc(0, 0, 1, 0); });
 assert_throws(new TypeError(), function() { ctx.drawImage(); });
-assert_throws(new TypeError(), function() { ctx.drawImage(canvas); });
-assert_throws(new TypeError(), function() { ctx.drawImage(canvas, 0); });
+assert_throws(new TypeError(), function() { ctx.drawImage(offscreenCanvas); });
+assert_throws(new TypeError(), function() { ctx.drawImage(offscreenCanvas, 0); });
 // TODO: n >= 3 args on drawImage could be either a valid overload,
 // or too few for another overload, or too many for another
 // overload - what should happen?

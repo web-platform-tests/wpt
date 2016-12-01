@@ -491,8 +491,6 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
             f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, mapped_name), 'w', 'utf-8')
             f.write(templates['w3c'] % template_params)
             if ISOFFSCREENCANVAS:
-                f = codecs.open('%s/%s.worker.html' % (TESTOUTPUTDIR, mapped_name), 'w', 'utf-8')
-                f.write(templates['w3cmain'] % template_params)
                 f = codecs.open('%s/%s.worker.js' % (TESTOUTPUTDIR, mapped_name), 'w', 'utf-8')
                 f.write(templates['w3cworker'] % template_params)
         else:

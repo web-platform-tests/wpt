@@ -89,13 +89,14 @@ class TravisFold(object):
 
 
 class GitHub(object):
-    def __init__(self, org, repo, token):
+    def __init__(self, org, repo, token, browser):
         self.token = token
         self.headers = {"Accept": "application/vnd.github.v3+json"}
         self.auth = (self.token, "x-oauth-basic")
         self.org = org
         self.repo = repo
         self.base_url = "https://api.github.com/repos/%s/%s/" % (org, repo)
+        self.browser = browser
 
     def _headers(self, headers):
         if headers is None:
@@ -117,6 +118,19 @@ class GitHub(object):
         resp.raise_for_status()
         return resp
 
+    def patch(self, url, data, headers=None):
+        logger.debug("PATCH %s" % url)
+        if data is not None:
+            data = json.dumps(data)
+        resp = requests.patch(
+            url,
+            data=data,
+            headers=self._headers(headers),
+            auth=self.auth
+        )
+        resp.raise_for_status()
+        return resp
+
     def get(self, url, headers=None):
         logger.debug("GET %s" % url)
         resp = requests.get(
@@ -128,8 +142,19 @@ class GitHub(object):
         return resp
 
     def post_comment(self, issue_number, body):
-        url = urljoin(self.base_url, "issues/%s/comments" % issue_number)
-        return self.post(url, {"body": body})
+        user = self.get(urljoin(self.base_url, "/user")).json()
+        issue_comments_url = urljoin(self.base_url, "issues/%s/comments" % issue_number)
+        comments = self.get(issue_comments_url).json()
+        title_line = "# %s #" % self.browser.title()
+        data = {"body": body}
+        for comment in comments:
+            if (comment["user"]["login"] == user["login"] and
+                comment["body"].startswith(title_line)):
+                comment_url = urljoin(self.base_url, "issues/comments/%s" % comment["id"])
+                self.patch(comment_url, data)
+                break
+        else:
+            self.post(issue_comments_url, data)
 
     def releases(self):
         url = urljoin(self.base_url, "releases/latest")
@@ -244,7 +269,13 @@ def get(url):
 
 def call(*args):
     logger.debug("%s" % " ".join(args))
-    return subprocess.check_output(args)
+    try:
+        return subprocess.check_output(args)
+    except subprocess.CalledProcessError as e:
+        logger.critical("%s exited with return code %i" %
+                        (e.cmd, e.returncode))
+        logger.critical(e.output)
+        raise
 
 
 def get_git_cmd(repo_path):
@@ -288,7 +319,7 @@ def unzip(fileobj):
 def setup_github_logging(args):
     gh_handler = None
     if args.comment_pr:
-        github = GitHub("w3c", "web-platform-tests", args.gh_token)
+        github = GitHub("w3c", "web-platform-tests", args.gh_token, args.browser)
         try:
             pr_number = int(args.comment_pr)
         except ValueError:

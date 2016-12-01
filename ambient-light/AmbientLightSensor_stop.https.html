@@ -8,22 +8,27 @@
 <div id="log"></div>
 <script>
 
-var sensor, stop_return;
-setup(function() {
+let sensor, stop_return;
+
+setup(() => {
   sensor = new AmbientLightSensor();
   sensor.start();
   stop_return = sensor.stop();
 });
 
-test(function() {
-  assert_equals(String(sensor.reading), "null");
+test(() => {
+  assert_equals(sensor.state, "idle");
+}, "The sensor.state changes to 'idle' after sensor.stop()");
+
+test(() => {
+  assert_equals(sensor.reading, null);
 }, "the sensor.reading is null after executing stop() method");
 
-test(function() {
-  assert_throws("InvalidStateError", function() { sensor.stop(); }, "stop() twice");
+test(() => {
+  assert_throws("InvalidStateError", () => { sensor.stop(); }, "stop() twice");
 }, "throw an InvalidStateError exception when state is either idle or errored");
 
-test(function() {
+test(() => {
   assert_equals(stop_return, undefined);
 }, "the sensor.stop() returns undefined");
 

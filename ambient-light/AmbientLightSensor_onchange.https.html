@@ -5,30 +5,20 @@
 <link rel="help" href="https://www.w3.org/TR/ambient-light/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-
-<h2>Description</h2>
-<p>
-  This test validates that the "onchange" event can be invoked when changing the ambient light illuminance of the device.
-</p>
-
-<h2>Precondition</h2>
-<ol>
-  <li>
-    Change the ambient light illuminance of the device.
-  </li>
-</ol>
-
+<div id="log"></div>
 <script>
 
-async_test(function(t) {
+async_test(t => {
   let sensor = new AmbientLightSensor();
   sensor.start();
 
-  sensor.onchange = t.step_func_done(function(event) {
+  sensor.onchange = t.step_func_done(() => {
+    assert_greater_than_equal(sensor.reading.illuminance, 0);
+    assert_equals(sensor.state, "activated");
     sensor.stop();
   });
 
-  sensor.onerror = t.step_func_done(function(event) {
+  sensor.onerror = t.step_func_done(event => {
     assert_unreached(event.error.name + ":" + event.error.message);
   });
 }, "event change fired");

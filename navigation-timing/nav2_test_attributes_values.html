@@ -13,14 +13,17 @@
         <p>This test validates that the values of nav timing 2 instance's timing-related attributes are in certain order and the others are of expected values.</p>
 
         <script>
-        var navTiming2EventOrder = [
+        var navTiming2EventOrder1 = [
             'startTime',
             'redirectStart',
+            //'unloadEventStart',
             'redirectEnd',
+            //'unloadEventEnd',
             'fetchStart',
             'domainLookupStart',
             'domainLookupEnd',
             'connectStart',
+            //'secureConnectionStart',
             'connectEnd',
             'requestStart',
             'responseStart',
@@ -32,6 +35,28 @@
             'loadEventStart',
             'loadEventEnd'
         ];
+
+        var navTiming2EventOrder2 = [
+            'redirectStart',
+            'unloadEventStart',
+            'redirectEnd',
+            'unloadEventEnd',
+            'fetchStart'
+        ];
+
+        var navTiming2EventOrder3 = [
+            'connectStart',
+            'secureConnectionStart',
+            'connectEnd'
+        ];
+
+        function verifyTimingEventOrder(eventOrder, timingEntry) {
+            for (var i = 0; i < eventOrder.length - 1; i++) {
+                assert_true(timingEntry[eventOrder[i]] <= timingEntry[eventOrder[i + 1]],
+                    "Expected " + eventOrder[i] + " to be no greater than " + eventOrder[i + 1] + ".");
+            }
+        }
+
         async_test(function (t) {
             var observer = new PerformanceObserver(
                 t.step_func(function (entryList) {
@@ -44,10 +69,14 @@
                         "Expected startTime to be: 0.");
                     assert_equals(entries[0].duration, entries[0].loadEventEnd,
                         "Expected duration to be equal to loadEventEnd.");
-
-                    for (var i = 0; i < navTiming2EventOrder.length - 1; i++) {
-                        assert_true(entries[0][navTiming2EventOrder[i]] <= entries[0][navTiming2EventOrder[i + 1]],
-                            "Expected " + navTiming2EventOrder[i] + " to be no greater than " + navTiming2EventOrder[i + 1] + ".");
+                    verifyTimingEventOrder(entries[0], navTiming2EventOrder1);
+                    // When unloadEvent happens
+                    if (entries[0]["unloadEventStart"] != 0) {
+                        verifyTimingEventOrder(entries[0], navTiming2EventOrder2);
+                    }
+                    // When a secure transport is used
+                    if (entries[0]["secureConnectionStart"] != 0) {
+                        verifyTimingEventOrder(entries[0], navTiming2EventOrder2);
                     }
                     observer.disconnect();
                     t.done();

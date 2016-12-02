@@ -1,0 +1,1139 @@
+<!doctype html>
+<title>XMLSerializer - Element</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="xmlserializer-polyfill.js"></script>
+
+<div>Test mode: <span id="status"></span></div>
+<h6>(modes: <a href=#>Compare UA to Expected value</a> || <a href=#pf>Compare UA to Polyfill</a> || <a href=#validate>Compare Expected value to Polyfill</a>)</h6>
+<div id="log"></div>
+<div id="vals"></div>
+
+<script>
+  // Pass URL fragment #pf to enable comparing the UA test result to the polyfil code (rather than the static string)
+  var usePF = (location.hash == "#pf") ? true : false;
+  // Pass URL fragment #validate to enable test consistency verification (assures the polyfil and static strings agree)
+  var useValidate = (location.hash == "#validate") ? true : false;
+  
+  function eq(dom, string) {
+      if (useValidate)
+         assert_equals(serializer.serializeToStringPF(dom), string );
+      else if (usePF)
+         assert_equals(serializer.serializeToString(dom), serializer.serializeToStringPF(dom));
+      else
+         assert_equals(serializer.serializeToString(dom), string);
+  }
+  function thr(name, func, explainer) {
+      if (useValidate)
+         return;
+      else
+         assert_throws(name, func, explainer);
+  }
+  
+  document.querySelector('#status').innerHTML = usePF ? "UA vs. Polyfill" : useValidate ? "Expected value vs. Polyfill" : "UA vs. Expected value";
+  
+  // These are serializeToString tests for DOM Parsing and Serialization
+  
+  var XMLNSNS = "http://www.w3.org/2000/xmlns/";
+  var HTMLNS = "http://www.w3.org/1999/xhtml";
+  var XMLNS = "http://www.w3.org/XML/1998/namespace";
+  var CUSTNS = "testns";
+  // Helpers
+  function html(name) { return document.createElement(name); }
+  function xhtml(name) { return document.createElementNS(HTMLNS, name); }
+  function cust(name) { return document.createElementNS(CUSTNS, name); }
+  function nul(name) { return document.createElementNS(null, name); } // NOTE: cannot have a prefix in the qualified 'name', per DOM rules.
+  function xml(name) { return document.createElementNS(XMLNS, name); }
+  function xns(name) { return document.createElementNS(XMLNSNS, name); } // NOTE: if provided, prefix to qualified 'name' must be "xmlns"
+  function defaultNSDeclHTML(element) { element.setAttributeNS(XMLNSNS, "xmlns", HTMLNS); return element; }
+  function defaultNSDeclNUL(element) { element.setAttributeNS(XMLNSNS, "xmlns", ""); return element; }
+  function defaultNSDeclXML(element) { element.setAttributeNS(XMLNSNS, "xmlns", XMLNS); return element; }
+  function defaultNSDeclCUST(element) { element.setAttributeNS(XMLNSNS, "xmlns", CUSTNS); return element; }
+  function defaultNSDeclXNS(element) { element.setAttributeNS(XMLNSNS, "xmlns", XMLNSNS); return element; }
+  // These all use 'pre' as the prefix (except the xns one)
+  function nsPrefixDeclHTML(element) { element.setAttributeNS(XMLNSNS, "xmlns:pre", HTMLNS); return element; }
+  function nsPrefixDeclNUL(element) { element.setAttributeNS(XMLNSNS, "xmlns:pre", ""); return element; }
+  function nsPrefixDeclXML(element) { element.setAttributeNS(XMLNSNS, "xmlns:pre", XMLNS); return element; } // Note, can't be used to define the prefix 'xml' (error)
+  function nsPrefixDeclCUST(element) { element.setAttributeNS(XMLNSNS, "xmlns:pre", CUSTNS); return element; }
+  function nsPrefixDeclXNS(element) { element.setAttributeNS(XMLNSNS, "xmlns:xmlns", XMLNSNS); return element; } // Always throws
+  
+  var serializer = new XMLSerializer();
+  
+  // Single element "simple" serialization
+  // -----------------------------
+
+  test(function() {
+     var root = xhtml('div');
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"></div>");
+  }, 'Single element in HTML namespace');
+    
+  test(function() {
+     var root = nul('el');
+     // Note: this also tests the fall-through conditions when inherited ns matches ns (null in both cases)
+     eq(root, "<el/>");
+  }, 'Single element in no namespace');
+  
+  test(function() {
+     var root = xml('el');
+     eq(root, "<xml:el/>");
+  }, 'Single element in XML namespace');
+  
+  test(function() {
+     var root = cust('custom');
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"/>");
+  }, 'Single element in custom namespace');
+  
+  test(function() {
+    // Note: this is not valid XML--and will fail to serialize under strict serialization rules.
+     var root = xns('xmlns');
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"/>");
+  }, 'Single element in XMLNS namespace');
+  
+  // HTML self-closing tags tests
+  // -----------------------------
+  
+  var voidElements = [
+     "area",
+     "base",
+     "basefont",
+     "bgsound",
+     "br",
+     "col",
+     "embed",
+     "frame",
+     "hr",
+     "img",
+     "input",
+     "keygen",
+     "link",
+     "menuitem",
+     "meta",
+     "param",
+     "source",
+     "track",
+     "wbr"
+  ];
+
+  for (var i = 0, len = voidElements.length; i < len; i++) {
+     var voidEl = voidElements[i];
+     test(function() {
+        var root = html(voidEl);
+        eq(root, "<" + voidEl + " xmlns=\"" + HTMLNS + "\" />");
+     }, 'Single HTML void element (' + voidEl + ')');
+  }
+
+  // Wacky scenarios made possible by createElement not parsing names in QNames
+  // (for innerHTML this is expected to throw per spec)
+  // -----------------------------
+  
+  test(function() {
+     var root = html('pre:div');
+     eq(root, "<pre:div xmlns=\"" + HTMLNS + "\"></pre:div>");
+  }, 'Single HTML element doesn\'t fail on colon character [:] in localName');
+
+  // Test default namespace declaration attributes on elements whose declared namespace matches the element's namespace
+  // -----------------------------
+  
+  test(function() {
+     var root = defaultNSDeclHTML(xhtml('div'));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"></div>");
+  }, 'Single HTML element\'s default HTML namespace declaration attribute that is not serialized (omit redundant default namespace declaration when namespaces match)');
+  
+  test(function() {
+     var root = defaultNSDeclNUL(nul('el'));
+     eq(root, "<el/>");
+  }, 'Single element (in no namespace) has default null namespace declaration attribute that is not serialized (omit redundant default namespace declaration when namespaces match)');
+
+  test(function() {
+     var root = defaultNSDeclXML(xml('el'));
+     eq(root, "<xml:el/>");
+  }, 'Single XML element\'s default XML namespace declaration attribute is skipped (use xml prefix when possible, and avoid serializing the XMLNS default namespace declaration)');
+
+  test(function() {
+     // SPEC BUG: attribute serialization missed the case of a regular default NS declaration being serialized as-is (when not ignored). (FIX applied in polyfil)
+     var root = defaultNSDeclCUST(cust('custom'));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"/>");
+  }, 'Single custom element\'s default custom namespace declaration attribute is serialized');
+
+  test(function() {
+     var root = defaultNSDeclXNS(xns('xmlns'));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"/>");
+  }, 'Single element (in the XMLNS namespace) has default XMLNS namespace declaration attribute serialized');
+  
+  // Test default namespace declaration attributes on elements whose declared namespace does not match the element's namespace
+  // -----------------------------
+  
+  test(function() {
+     var root = defaultNSDeclNUL(xhtml('div'));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"></div>");
+  }, 'Single HTML element\'s default null namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclXML(xhtml('div'));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"></div>");
+  }, 'Single HTML element\'s default XML namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclCUST(xhtml('div'));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"></div>");
+  }, 'Single HTML element\'s default custom namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclXNS(xhtml('div'));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"></div>");
+  }, 'Single HTML element\'s default XMLNS namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclHTML(nul('el'));
+     eq(root, "<el/>");
+  }, 'Single element (in no namespace) has default HTML namespace declaration attribute that is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclCUST(nul('el'));
+     eq(root, "<el/>");
+  }, 'Single element (in no namespace) has default custom namespace declaration attribute that is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclXML(nul('el'));
+     eq(root, "<el/>");
+  }, 'Single element (in no namespace) has default XML namespace declaration attribute that is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclXNS(nul('el'));
+     eq(root, "<el/>");
+  }, 'Single element (in no namespace) has default XMLNS namespace declaration attribute that is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+  
+  test(function() {
+     var root = defaultNSDeclHTML(xml('el'));
+     eq(root, "<xml:el xmlns=\""+HTMLNS+"\"/>");
+  }, 'Single XML element\'s default HTML namespace declaration attribute is serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclNUL(xml('el'));
+     eq(root, "<xml:el xmlns=\"\"/>");
+  }, 'Single XML element\'s default null namespace declaration attribute is serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclCUST(xml('el'));
+     eq(root, "<xml:el xmlns=\""+CUSTNS+"\"/>");
+  }, 'Single XML element\'s default custom namespace declaration attribute is serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclXNS(xml('el'));
+     eq(root, "<xml:el xmlns=\""+XMLNSNS+"\"/>");
+  }, 'Single XML element\'s default XMLNS namespace declaration attribute is serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclHTML(cust('custom'));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"/>");
+  }, 'Single custom element\'s default HTML namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+  
+  test(function() {
+     var root = defaultNSDeclNUL(cust('custom'));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"/>");
+  }, 'Single custom element\'s default null namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+  
+  test(function() {
+     var root = defaultNSDeclXML(cust('custom'));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"/>");
+  }, 'Single custom element\'s default XML namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclXNS(cust('custom'));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"/>");
+  }, 'Single custom element\'s default XMLNS namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  test(function() {
+     var root = defaultNSDeclHTML(xns('xmlns'));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"/>");
+  }, 'Single XMLNS element\'s default HTML namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+  
+  test(function() {
+     var root = defaultNSDeclNUL(xns('xmlns'));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"/>");
+  }, 'Single XMLNS element\'s default null namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+  
+  test(function() {
+     var root = defaultNSDeclXML(xns('xmlns'));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"/>");
+  }, 'Single XMLNS element\'s default XML namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+  
+  test(function() {
+     var root = defaultNSDeclCUST(xns('xmlns'));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"/>");
+  }, 'Single XMLNS element\'s default custom namespace declaration attribute is not serialized (ensure an element\'s namespace isn\'t changed by serialization with default namespace declarations)');
+
+  // Test the default namespace declarations in namespace inheriting scenarios where the namespace definitions match...
+  // -----------------------------
+
+  test(function() {
+     var root = html('div');
+     root.appendChild(defaultNSDeclHTML(html('div')));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"><div></div></div>");
+  }, 'HTML Namespace inheriting: child Element\'s redundant default HTML namespace declaration attribute is not serialized');
+
+  test(function() {
+     var root = nul('el');
+     root.appendChild(defaultNSDeclNUL(nul('el')));
+     eq(root, "<el><el/></el>");
+  }, 'No-namespace inheriting: child Element\'s redundant default null namespace declaration attribute is not serialized');
+
+  test(function() {
+     var root = xml('el');
+     root.appendChild(defaultNSDeclXML(xml('el')));
+     eq(root, "<xml:el><xml:el/></xml:el>");
+  }, 'XML Namespace inheriting: child Element\'s redundant default XML namespace declaration attribute is not serialized');
+
+  test(function() {
+     var root = cust('custom');
+     root.appendChild(defaultNSDeclCUST(cust('custom')));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"><custom/></custom>");
+  }, 'Custom Namespace inheriting: child Element\'s redundant default custom namespace declaration attribute is not serialized');
+
+  test(function() {
+     var root = xns('xmlns');
+     root.appendChild(defaultNSDeclXNS(xns('xmlns')));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"><xmlns/></xmlns>");
+  }, 'Custom Namespace inheriting: child Element\'s redundant default XMLNS namespace declaration attribute is not serialized');
+
+  // Test the default namespace declarations in namespace inheriting scenarios where the namespace definitions don't match...
+  // -----------------------------
+  
+  test(function() {
+     var root = html('div');
+     root.appendChild(defaultNSDeclNUL(html('div')));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"><div></div></div>");
+  }, 'HTML Namespace inheriting: child Element\'s non-matching default null namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');
+
+  test(function() {
+     var root = html('div');
+     root.appendChild(defaultNSDeclXML(html('div')));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"><div></div></div>");
+  }, 'HTML Namespace inheriting: child Element\'s non-matching default XML namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');
+  
+  test(function() {
+     var root = html('div');
+     root.appendChild(defaultNSDeclCUST(html('div')));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"><div></div></div>");
+  }, 'HTML Namespace inheriting: child Element\'s non-matching default custom namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');
+
+  test(function() {
+     var root = html('div');
+     root.appendChild(defaultNSDeclXNS(html('div')));
+     eq(root, "<div xmlns=\"" + HTMLNS + "\"><div></div></div>");
+  }, 'HTML Namespace inheriting: child Element\'s non-matching default XMLNS namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');
+
+  test(function() {
+     var root = nul('el');
+     root.appendChild(defaultNSDeclHTML(nul('el')));
+     eq(root, "<el><el/></el>");
+  }, 'No namespace inheriting: child Element\'s non-matching default HTML namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = nul('el');
+     root.appendChild(defaultNSDeclXML(nul('el')));
+     eq(root, "<el><el/></el>");
+  }, 'No namespace inheriting: child Element\'s non-matching default XML namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = nul('el');
+     root.appendChild(defaultNSDeclCUST(nul('el')));
+     eq(root, "<el><el/></el>");
+  }, 'No namespace inheriting: child Element\'s non-matching default custom namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = nul('el');
+     root.appendChild(defaultNSDeclXNS(nul('el')));
+     eq(root, "<el><el/></el>");
+  }, 'No namespace inheriting: child Element\'s non-matching default XMLNS namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = xml('el');
+     root.appendChild(defaultNSDeclHTML(xml('el')));
+     eq(root, "<xml:el><xml:el xmlns=\""+HTMLNS+"\"/></xml:el>");
+  }, 'XML namespace inheriting: child Element\'s non-matching default HTML namespace declaration attribute isn\'t ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = xml('el');
+     root.appendChild(defaultNSDeclNUL(xml('el')));
+     eq(root, "<xml:el><xml:el xmlns=\"\"/></xml:el>");
+  }, 'XML namespace inheriting: child Element\'s non-matching default null namespace declaration attribute isn\'t ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = xml('el');
+     root.appendChild(defaultNSDeclCUST(xml('el')));
+     eq(root, "<xml:el><xml:el xmlns=\""+CUSTNS+"\"/></xml:el>");
+  }, 'XML namespace inheriting: child Element\'s non-matching default custom namespace declaration attribute isn\'t ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = xml('el');
+     root.appendChild(defaultNSDeclXNS(xml('el')));
+     eq(root, "<xml:el><xml:el xmlns=\""+XMLNSNS+"\"/></xml:el>");
+  }, 'XML namespace inheriting: child Element\'s non-matching default XMLNS namespace declaration attribute isn\'t ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = cust('custom');
+     root.appendChild(defaultNSDeclHTML(cust('custom')));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"><custom/></custom>");
+  }, 'Custom namespace inheriting: child Element\'s non-matching default HTML namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = cust('custom');
+     root.appendChild(defaultNSDeclNUL(cust('custom')));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"><custom/></custom>");
+  }, 'Custom namespace inheriting: child Element\'s non-matching default null namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = cust('custom');
+     root.appendChild(defaultNSDeclXML(cust('custom')));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"><custom/></custom>");
+  }, 'Custom namespace inheriting: child Element\'s non-matching default XML namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+  
+  test(function() {
+     var root = cust('custom');
+     root.appendChild(defaultNSDeclXNS(cust('custom')));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"><custom/></custom>");
+  }, 'Custom namespace inheriting: child Element\'s non-matching default XMLNS namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = xns('xmlns');
+     root.appendChild(defaultNSDeclHTML(xns('xmlns')));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"><xmlns/></xmlns>");
+  }, 'XMLNS namespace inheriting: child Element\'s non-matching default HTML namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = xns('xmlns');
+     root.appendChild(defaultNSDeclNUL(xns('xmlns')));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"><xmlns/></xmlns>");
+  }, 'XMLNS namespace inheriting: child Element\'s non-matching default null namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = xns('xmlns');
+     root.appendChild(defaultNSDeclXML(xns('xmlns')));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"><xmlns/></xmlns>");
+  }, 'XMLNS namespace inheriting: child Element\'s non-matching default XML namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+
+  test(function() {
+     var root = xns('xmlns');
+     root.appendChild(defaultNSDeclCUST(xns('xmlns')));
+     eq(root, "<xmlns xmlns=\"" + XMLNSNS + "\"><xmlns/></xmlns>");
+  }, 'XMLNS namespace inheriting: child Element\'s non-matching default custom namespace declaration attribute is ignored (doesn\'t change the child\'s original namespace)');  
+  
+  // Single element implicit prefix tests
+  // -----------------------------
+    
+  test(function() {
+     var root = xhtml('pre:div');
+     eq(root, "<pre:div xmlns:pre=\"" + HTMLNS + "\"></pre:div>");
+  }, 'Single HTML element with given prefix keeps prefix and defines it implicitly');
+
+  test(function() {
+     // Note: the nul namespace case with a qualified name including a prefix is dis-allowed by DOM creation APIs.
+    thr("NamespaceError", function () { nul('pre:el'); }, "Creating an element in the null namespace which includes a prefix in its qualified name throws")
+  }, 'Single element (in no namespace) with given prefix throws');
+
+  test(function() {
+     var root = xml('pre:el');
+     eq(root, "<xml:el/>");
+  }, 'Single XML element with given prefix replaces given prefix with preferred xml prefix instead');
+
+  test(function() {
+     var root = cust('pre:custom');
+     eq(root, "<pre:custom xmlns:pre=\"" + CUSTNS + "\"/>");
+  }, 'Single custom element with given prefix keeps prefix and defines it implicitly');
+
+  test(function() {
+     thr("NamespaceError", function () { xns('pre:xmlns'); }, "For XMLNS-namespaced elements, DOM forbigs not using xmlns as the entire qualified name, or xmlns in the prefix");
+  }, 'Single XMLNS element with given prefix throws per DOM');
+
+  test(function() {
+     var root = xns('xmlns:other');
+     eq(root, "<xmlns:other/>");
+  }, 'Single XMLNS element with XMLNS prefix keeps prefix and leaves the prefix undefined');
+  
+  // Single element explicit prefix tests (where the prefix def matches the element namespace)
+  // -----------------------------
+    
+  test(function() {
+     // Spec bug--the xmlns: prefix is not added in this case!!! Fixed in Polyfill.
+     var root = nsPrefixDeclHTML(xhtml('pre:div'));
+     eq(root, "<pre:div xmlns:pre=\"" + HTMLNS + "\"></pre:div>");
+  }, 'Single HTML element with explicit HTML namespace prefix specified');
+
+  test(function() {
+     var root = nsPrefixDeclXML(xml('pre:el'));
+     eq(root, "<xml:el/>");
+  }, 'Single XML element with explicit XML namespace prefix specified (prefix altered, namespace prefix definition dropped)');
+
+  test(function() {
+     var root = nsPrefixDeclCUST(cust('pre:custom'));
+     eq(root, "<pre:custom xmlns:pre=\"" + CUSTNS + "\"/>");
+  }, 'Single custom element with explicit custom namespace prefix specified');
+  
+  test(function() {
+     var root = xns('xmlns:other');
+     thr("NamespaceError", function () { nsPrefixDeclXNS(root); }, "Must throw when attempting to add a namespace prefix definition for the reserved \"xmlns\" prefix, per DOM");
+  }, 'Single XMLNS element with explicit XMLNS namespace prefix specified must throw');
+
+  // Nested elements of like namespace inherit prefix definitions which are implicity created
+  // -----------------------------
+  
+  test(function() {
+     var root = xhtml('pre:div');
+     root.appendChild(xhtml('pre:span'));
+     eq(root, "<pre:div xmlns:pre=\"" + HTMLNS + "\"><pre:span></pre:span></pre:div>");
+  }, 'HTML namespace inheriting: an HTML element with given prefix defines it implicitly and can be used for inheriting elements');
+
+  test(function() {
+     var root = xml('pre:el');
+     root.appendChild(xml('pre:el2'));
+     eq(root, "<xml:el><xml:el2/></xml:el>");
+  }, 'XML namespace inheriting: an XML element with given prefix prefers the xml prefix instead for itself and inheriting elements');
+
+  test(function() {
+     var root = cust('pre:custom');
+     root.appendChild(cust('pre:custom2'));
+     eq(root, "<pre:custom xmlns:pre=\"" + CUSTNS + "\"><pre:custom2/></pre:custom>");
+  }, 'Custom namespace inheriting: a custom element with given prefix defines it implicitly and can be used for inheriting elements');
+  
+  test(function() {
+     var root = xns('xmlns:other');
+     root.appendChild(xns('xmlns:other2'));
+     eq(root, "<xmlns:other><xmlns:other2/></xmlns:other>");
+  }, 'XMLNS namespace inheriting: an XMLNS element does not require an XMLNS prefix to pass its namespace down to inherited elements');
+
+  // Nested elements of like namespace inherit prefix definitions which are explicity defined
+  // -----------------------------
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xhtml('pre:div'));
+     root.appendChild(xhtml('pre:span'));
+     eq(root, "<pre:div xmlns:pre=\"" + HTMLNS + "\"><pre:span></pre:span></pre:div>");
+  }, 'HTML namespace inheriting: an HTML element with given prefix definition can be used for inheriting elements');
+
+  test(function() {
+     var root =  nsPrefixDeclXML(xml('pre:el'));
+     root.appendChild(xml('pre:el2'));
+     eq(root, "<xml:el><xml:el2/></xml:el>");
+  }, 'XML namespace inheriting: an XML element and all its children always use prefixes and drop other declarative forms');
+
+  test(function() {
+     var root = nsPrefixDeclCUST(cust('pre:custom'));
+     root.appendChild(cust('pre:custom2'));
+     eq(root, "<pre:custom xmlns:pre=\"" + CUSTNS + "\"><pre:custom2/></pre:custom>");
+  }, 'Custom namespace inheriting: a custom element with given prefix definition can be used for inheriting elements');
+  
+  // Prefix definitions in parents (explicitly defined) can be used by inheriting children of different namespaces
+  // -----------------------------
+  
+  test(function() {
+     var root = nsPrefixDeclXML(xhtml('html:div'));
+     root.appendChild(xml('pre:el'));
+     eq(root, "<html:div xmlns:html=\"" + HTMLNS + "\"><xml:el/></html:div>");
+  }, 'Cross-namespace inheriting: HTML parent element to XML child element with matching prefix definition in parent need not define its prefix');
+
+  test(function() {
+     // Note: this will fail validation on parsing. Check added in spec. (Can't have an 'undeclared' namespace prefix.)
+     var root = nsPrefixDeclNUL(xhtml('html:div'));
+     root.appendChild(nul('el'));
+     eq(root, "<html:div xmlns:html=\"" + HTMLNS + "\" xmlns:pre=\"\"><el/></html:div>");
+  }, 'Cross-namespace inheriting: HTML parent element to child element in no namespace (with syntactically invalid prefix definition in parent) needs no prefix');
+
+  test(function() {
+     var root = nsPrefixDeclCUST(xhtml('html:div'));
+     root.appendChild(cust('pre:custom'));
+     eq(root, "<html:div xmlns:html=\"" + HTMLNS + "\" xmlns:pre=\"" + CUSTNS + "\"><pre:custom/></html:div>");
+  }, 'Cross-namespace inheriting: HTML parent element to custom child element with matching prefix definition in parent need not define its prefix');
+
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('el'));
+     root.appendChild(xhtml('pre:div'));
+     eq(root, "<xml:el xmlns:pre=\"" + HTMLNS + "\"><pre:div></pre:div></xml:el>");
+  }, 'Cross-namespace inheriting: XML parent element to HTML child element with matching prefix definition in parent need not define its prefix');
+  
+  test(function() {
+     var root = nsPrefixDeclNUL(xml('el'));
+     root.appendChild(nul('el'));
+     eq(root, "<xml:el xmlns:pre=\"\"><el/></xml:el>");
+  }, 'Cross-namespace inheriting: XML parent element to child element in no namespace (with syntactically invalid prefix definition in parent) needs no prefix');
+  
+  test(function() {
+     var root = nsPrefixDeclCUST(xml('el'));
+     root.appendChild(cust('pre:custom'));
+     eq(root, "<xml:el xmlns:pre=\"" + CUSTNS + "\"><pre:custom/></xml:el>");
+  }, 'Cross-namespace inheriting: XML parent element to custom child element with matching prefix definition in parent need not define its prefix');
+
+  test(function() {
+     var root = nsPrefixDeclHTML(nul('el'));
+     root.appendChild(xhtml('pre:div'));
+     eq(root, "<el xmlns:pre=\"" + HTMLNS + "\"><pre:div></pre:div></el>");
+  }, 'Cross-namespace inheriting: Parent element in no namespace to HTML child element with matching prefix definition in parent need not define its prefix');
+
+  test(function() {
+     var root = nsPrefixDeclXML(nul('el'));
+     root.appendChild(xml('pre:el'));
+     eq(root, "<el><xml:el/></el>");
+  }, 'Cross-namespace inheriting: Parent element in no namespace to XML child element with matching prefix definition in parent need not define its prefix');
+
+  test(function() {
+     var root = nsPrefixDeclCUST(nul('el'));
+     root.appendChild(cust('pre:custom'));
+     eq(root, "<el xmlns:pre=\"" + CUSTNS + "\"><pre:custom/></el>");
+  }, 'Cross-namespace inheriting: Parent element in no namespace to custom child element with matching prefix definition in parent need not define its prefix');
+
+  test(function() {
+     var root = nsPrefixDeclHTML(cust('custom'));
+     root.appendChild(xhtml('pre:div'));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\" xmlns:pre=\"" + HTMLNS + "\"><pre:div></pre:div></custom>");
+  }, 'Cross-namespace inheriting: Custom element to HTML child element with matching prefix definition in parent need not define its prefix');
+
+  test(function() {
+     var root = nsPrefixDeclXML(cust('custom'));
+     root.appendChild(xml('pre:el'));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\"><xml:el/></custom>");
+  }, 'Cross-namespace inheriting: Custom element to XML child element with matching prefix definition in parent need not define its prefix');
+
+  test(function() {
+     var root = nsPrefixDeclNUL(cust('custom'));
+     root.appendChild(nul('el'));
+     eq(root, "<custom xmlns=\"" + CUSTNS + "\" xmlns:pre=\"\"><pre:el/></custom>");
+  }, 'Cross-namespace inheriting: Custom element to child element in no namespace (with syntactically invalid prefix definition in parent) need not define its prefix');
+
+  // Default definition in parent not already in that namespace can be used by inheriting children of matching namespaces
+  // -----------------------------
+  
+  test(function() {
+     var root = defaultNSDeclXML(xhtml('html:div'));
+     root.appendChild(xml('el'));
+     eq(root, "<html:div xmlns:html=\"" + HTMLNS + "\"><xml:el/></html:div>");
+  }, 'Cross-namespace inheriting: HTML parent element with default XML namespace to child element in XML namespace inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclNUL(xhtml('html:div'));
+     root.appendChild(nul('el'));
+     eq(root, "<html:div xmlns:html=\"" + HTMLNS + "\" xmlns=\"\"><el/></html:div>");
+  }, 'Cross-namespace inheriting: HTML parent element with default null/empty namespace to child element in no namespace inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclCUST(xhtml('html:div'));
+     root.appendChild(cust('custom'));
+     eq(root, "<html:div xmlns:html=\"" + HTMLNS + "\" xmlns=\"" + CUSTNS + "\"><custom/></html:div>");
+  }, 'Cross-namespace inheriting: HTML parent element with default custom namespace to child element in custom namespace inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclXNS(xhtml('html:div'));
+     root.appendChild(xns('xmlns'));
+     eq(root, "<html:div xmlns:html=\"" + HTMLNS + "\" xmlns=\"" + XMLNSNS + "\"><xmlns/></html:div>");
+  }, 'Cross-namespace inheriting: HTML parent element with default XMLNS namespace to child element in XMLNS namespace inherits default namespace');
+
+  test(function() {
+     var root = defaultNSDeclHTML(xml('pre:el'));
+     root.appendChild(html('div'));
+     eq(root, "<xml:el xmlns=\""+HTMLNS+"\"><div></div></xml:el>");
+  }, 'Cross-namespace inheriting: XML parent element with default HTML namespace to child HTML element inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclNUL(xml('pre:el'));
+     root.appendChild(nul('el'));
+     eq(root, "<xml:el xmlns=\"\"><el/></xml:el>");
+  }, 'Cross-namespace inheriting: XML parent element with default null/empty namespace to child element in no namespace inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclCUST(xml('pre:el'));
+     root.appendChild(cust('custom'));
+     eq(root, "<xml:el xmlns=\""+CUSTNS+"\"><custom/></xml:el>");
+  }, 'Cross-namespace inheriting: XML parent element with default custom namespace to child element in custom namespace inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclXNS(xml('pre:el'));
+     root.appendChild(xns('xmlns'));
+     eq(root, "<xml:el xmlns=\""+XMLNSNS+"\"><xmlns/></xml:el>");
+  }, 'Cross-namespace inheriting: XML parent element with default XMLNS namespace to child XMLNS element inherits default namespace');
+
+  test(function() {
+     var root = defaultNSDeclHTML(nul('el'));
+     root.appendChild(html('div'));
+     eq(root, "<el><div xmlns=\""+HTMLNS+"\"></div></el>");
+  }, 'Cross-namespace inheriting: Parent element in no namespace with default HTML namespace to child HTML element ignores default namespace (and creates it on the child)');
+
+  test(function() {
+     var root = defaultNSDeclXML(nul('el'));
+     root.appendChild(xml('el'));
+     eq(root, "<el><xml:el/></el>");
+  }, 'Cross-namespace inheriting: Parent element in no namespace with default XML namespace to child XML element ignores default namespace (and creates it on the child)');
+  
+  test(function() {
+     var root = defaultNSDeclCUST(nul('el'));
+     root.appendChild(cust('custom'));
+     eq(root, "<el><custom xmlns=\""+CUSTNS+"\"/></el>");
+  }, 'Cross-namespace inheriting: Parent element in no namespace with default custom namespace to child custom element ignores default namespace (and creates it on the child)');
+  
+  test(function() {
+     var root = defaultNSDeclXNS(nul('el'));
+     root.appendChild(xns('xmlns'));
+     eq(root, "<el><xmlns xmlns=\""+XMLNSNS+"\"/></el>");
+  }, 'Cross-namespace inheriting: Parent element in no namespace with default XMLNS namespace to child XMLNS element ignores default namespace (and creates it on the child)');
+
+  test(function() {
+     var root = defaultNSDeclHTML(cust('pre:custom'));
+     root.appendChild(html('div'));
+     eq(root, "<pre:custom xmlns:pre=\""+CUSTNS+"\" xmlns=\""+HTMLNS+"\"><div></div></pre:custom>");
+  }, 'Cross-namespace inheriting: Parent element in custom namespace with default HTML namespace to child HTML element inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclXML(cust('pre:custom'));
+     root.appendChild(xml('el'));
+     eq(root, "<pre:custom xmlns:pre=\""+CUSTNS+"\"><xml:el/></pre:custom>");
+  }, 'Cross-namespace inheriting: Parent element in custom namespace with default XML namespace to child XML element inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclNUL(cust('pre:custom'));
+     root.appendChild(nul('el'));
+     eq(root, "<pre:custom xmlns:pre=\""+CUSTNS+"\" xmlns=\"\"><el/></pre:custom>");
+  }, 'Cross-namespace inheriting: Parent element in custom namespace with default null/empty namespace to child element in no namespace inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclXNS(cust('pre:custom'));
+     root.appendChild(xns('xmlns'));
+     eq(root, "<pre:custom xmlns:pre=\""+CUSTNS+"\" xmlns=\""+XMLNSNS+"\"><xmlns/></pre:custom>");
+  }, 'Cross-namespace inheriting: Parent element in custom namespace with default XMLNS namespace to child element in XMLNS namespace inherits default namespace');
+
+  test(function() {
+     var root = defaultNSDeclHTML(xns('xmlns:el'));
+     root.appendChild(html('div'));
+     eq(root, "<xmlns:el xmlns=\""+HTMLNS+"\"><div></div></xmlns:el>");
+  }, 'Cross-namespace inheriting: Parent element in XMLNS namespace with default HTML namespace to child XMLNS element inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclXML(xns('xmlns:el'));
+     root.appendChild(xml('el'));
+     eq(root, "<xmlns:el><xml:el/></xmlns:el>");
+  }, 'Cross-namespace inheriting: Parent element in XMLNS namespace with default XML namespace to child XML element inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclNUL(xns('xmlns:el'));
+     root.appendChild(nul('el'));
+     eq(root, "<xmlns:el xmlns=\"\"><el/></xmlns:el>");
+  }, 'Cross-namespace inheriting: Parent element in XMLNS namespace with default null/empty namespace to child element in no namespace inherits default namespace');
+  
+  test(function() {
+     var root = defaultNSDeclCUST(xns('xmlns:el'));
+     root.appendChild(cust('custom'));
+     eq(root, "<xmlns:el xmlns=\""+CUSTNS+"\"><custom/></xmlns:el>");
+  }, 'Cross-namespace inheriting: Parent element in XMLNS namespace with default custom namespace to child custom element inherits default namespace');
+
+  // Single element namespace prefix conflicts
+  // -----------------------------
+
+  test(function() {
+     // xml prefix decls are not recorded and not serialized;
+     var root = nsPrefixDeclXML(xhtml('pre:div'));
+     eq(root, "<pre:div xmlns:pre=\""+HTMLNS+"\"></pre:div>");
+  }, 'Namespace prefix conflicts: Wrong prefix (XML) defined for HTML element');
+
+  test(function() {
+     var root = nsPrefixDeclNUL(xhtml('pre:div'));
+     eq(root, "<ns1:div xmlns:ns1=\""+HTMLNS+"\" xmlns:pre=\"\"></ns1:div>");
+  }, 'Namespace prefix conflicts: Wrong prefix (null/empty) defined for HTML element');
+
+  test(function() {
+     var root = nsPrefixDeclCUST(xhtml('pre:div'));
+     eq(root, "<ns1:div xmlns:ns1=\""+HTMLNS+"\" xmlns:pre=\""+CUSTNS+"\"></ns1:div>");
+  }, 'Namespace prefix conflicts: Wrong prefix (custom) defined for HTML element');
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('pre:el'));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"/>");
+  }, 'Namespace prefix conflicts: Wrong prefix (HTML) defined for XML element; prefix is re-written to avoid conflict');
+  
+  test(function() {
+     var root = nsPrefixDeclNUL(xml('pre:el'));
+     eq(root, "<xml:el xmlns:pre=\"\"/>");
+  }, 'Namespace prefix conflicts: Wrong null/empty prefix defined for XML element; prefix is re-written to avoid conflict');
+
+  test(function() {
+     var root = nsPrefixDeclCUST(xml('pre:el'));
+     eq(root, "<xml:el xmlns:pre=\""+CUSTNS+"\"/>");
+  }, 'Namespace prefix conflicts: Wrong prefix (custom) defined for XML element; prefix is re-written to avoid conflict');
+  
+  // Given null namespaced elements, this problem can't happen because DOM forbids creating a prefix with the element's name.
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(cust('pre:custom'));
+     eq(root, "<ns1:custom xmlns:ns1=\""+CUSTNS+"\" xmlns:pre=\""+HTMLNS+"\"/>");
+  }, 'Namespace prefix conflicts: Wrong prefix (HTML) defined for custom element; prefix is re-written to avoid conflict');
+  
+  test(function() {
+     var root = nsPrefixDeclXML(cust('pre:custom'));
+     eq(root, "<pre:custom xmlns:pre=\""+CUSTNS+"\"/>");
+  }, 'Namespace prefix conflicts: Wrong prefix (XML) defined for custom element; no conflict since XML prefix is ignored');
+  
+  test(function() {
+     var root = nsPrefixDeclNUL(cust('pre:custom'));
+     eq(root, "<ns1:custom xmlns:ns1=\""+CUSTNS+"\" xmlns:pre=\"\"/>");
+  }, 'Namespace prefix conflicts: Wrong null/empty prefix defined for custom element; prefix is re-written to avoid conflict');
+  
+  // inheriting elements namespace prefix conflicts (the conflicting namespace prefix is used in an inherited element)
+  // -----------------------------
+
+  test(function() {
+     // **bug the child xml namespaced element is not serialized with xml namespace! (Fixed in polyfil)
+     var root = nsPrefixDeclXML(xhtml('pre:div'));
+     root.appendChild(xml('el'));
+     eq(root, "<pre:div xmlns:pre=\""+HTMLNS+"\"><xml:el/></pre:div>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong prefix (XML) defined for HTML element; XML namespace prefix definition is ignored for child XML element');
+  
+  test(function() {
+     // **bug the child xml namespaced element is not serialized with xml namespace! (Fixed in polyfil)
+     var root = nsPrefixDeclXML(xhtml('pre:div'));
+     root.appendChild(xml('pre:el'));
+     eq(root, "<pre:div xmlns:pre=\""+HTMLNS+"\"><xml:el/></pre:div>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong prefix (XML) defined for HTML element; XML namespace prefix definition is ignored for child XML element (variation 2)');
+  
+  test(function() {
+     var root = nsPrefixDeclNUL(xhtml('pre:div'));
+     root.appendChild(nul('el'));
+     eq(root, "<ns1:div xmlns:ns1=\""+HTMLNS+"\" xmlns:pre=\"\"><el/></ns1:div>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong prefix (null/empty) defined for HTML element; null/empty namespace prefix definition is not needed');
+  
+  test(function() {
+     var root = nsPrefixDeclCUST(xhtml('pre:div'));
+     root.appendChild(cust('pre:custom'));
+     eq(root, "<ns1:div xmlns:ns1=\""+HTMLNS+"\" xmlns:pre=\""+CUSTNS+"\"><pre:custom/></ns1:div>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong prefix (custom) defined for HTML element; custom namespace prefix definition is inherited for child custom element with matching prefix');
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('pre:el'));
+     root.appendChild(xhtml('pre:div'));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"><pre:div></pre:div></xml:el>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong prefix (HTML) defined for XML element; prefix is re-written to avoid conflict; HTML namespace prefix definition is inherited for child HTML element with matching prefix');
+  
+  // Note: Firefox adds the prefix to the nested element -- this is a correct serialization, but is not technically needed.
+  test(function() {
+     var root = nsPrefixDeclNUL(xml('pre:el'));
+     root.appendChild(nul('el'));
+     eq(root, "<xml:el xmlns:pre=\"\"><el/></xml:el>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong null/empty prefix defined for XML element; prefix is overwritten with XML prefix to avoid conflict');
+
+  test(function() {
+     var root = nsPrefixDeclCUST(xml('pre:el'));
+     root.appendChild(cust('custom'));
+     eq(root, "<xml:el xmlns:pre=\""+CUSTNS+"\"><pre:custom/></xml:el>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong prefix (custom) defined for XML element; prefix is re-written to avoid conflict');
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(cust('pre:custom'));
+     root.appendChild(xhtml('pre:div'));
+     eq(root, "<ns1:custom xmlns:ns1=\""+CUSTNS+"\" xmlns:pre=\""+HTMLNS+"\"><pre:div></pre:div></ns1:custom>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong prefix (HTML) defined for custom element; prefix is re-written to avoid conflict');
+  
+  test(function() {
+     var root = nsPrefixDeclXML(cust('pre:custom'));
+     root.appendChild(xml('pre:el'));
+     eq(root, "<pre:custom xmlns:pre=\""+CUSTNS+"\"><xml:el/></pre:custom>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong prefix (XML) defined for custom element; no conflict since XML prefix is ignored');
+  
+  test(function() {
+     var root = nsPrefixDeclNUL(cust('pre:custom'));
+     root.appendChild(nul('el'));
+     eq(root, "<ns1:custom xmlns:ns1=\""+CUSTNS+"\" xmlns:pre=\"\"><el/></ns1:custom>");
+  }, 'Namespace prefix conflicts and inheritance: Wrong null/empty prefix defined for custom element; prefix is re-written to avoid conflict');
+  
+  // Default namespace inheriting, where the child in a different namespace may adopt a previously declared matching prefix 
+  // (when it has no prefix previously declared)
+  // -----------------------------
+  
+  test(function() {
+     var root = nsPrefixDeclXML(defaultNSDeclHTML(xhtml('div')));
+     root.appendChild(xml('el'));
+     eq(root, "<div xmlns=\""+HTMLNS+"\"><xml:el/></div>");
+  }, 'Previously declared prefix selection: Child in XML namespace (different than parent in HTML namespace) skips previously defined namespace prefix');
+
+  test(function() {
+     var root = nsPrefixDeclNUL(defaultNSDeclHTML(xhtml('div')));
+     root.appendChild(nul('el'));
+     eq(root, "<div xmlns=\""+HTMLNS+"\" xmlns:pre=\"\"><pre:el/></div>");
+  }, 'Previously declared prefix selection: Child in null/empty namespace (different than parent in HTML namespace) uses previously defined namespace prefix');
+
+  test(function() {
+     var root = nsPrefixDeclCUST(defaultNSDeclHTML(xhtml('div')));
+     root.appendChild(cust('custom'));
+     eq(root, "<div xmlns=\""+HTMLNS+"\" xmlns:pre=\""+CUSTNS+"\"><pre:custom/></div>");
+  }, 'Previously declared prefix selection: Child in custom namespace (different than parent in HTML namespace) uses previously defined namespace prefix');
+  
+  test(function() { 
+     var root = nsPrefixDeclHTML(defaultNSDeclXML(xml('el')));
+     root.appendChild(html('div'));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"><pre:div></pre:div></xml:el>");
+  }, 'Previously declared prefix selection: Child in HTML namespace (different than parent in XML namespace) uses previously defined namespace prefix');
+  
+  test(function() {
+     var root = nsPrefixDeclNUL(defaultNSDeclXML(xml('el')));
+     root.appendChild(nul('el'));
+     eq(root, "<xml:el xmlns:pre=\"\"><el/></xml:el>");
+  }, 'Previously declared prefix selection: Child in null/empty namespace (different than parent in XML namespace) uses previously defined namespace prefix'); 
+  
+  test(function() {
+     var root = nsPrefixDeclCUST(defaultNSDeclXML(xml('el')));
+     root.appendChild(cust('custom'));
+     eq(root, "<xml:el xmlns:pre=\""+CUSTNS+"\"><pre:custom/></xml:el>");
+  }, 'Previously declared prefix selection: Child in custom namespace (different than parent in XML namespace) uses previously defined namespace prefix'); 
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(defaultNSDeclNUL(nul('el')));
+     root.appendChild(html('div'));
+     eq(root, "<el xmlns:pre=\""+HTMLNS+"\"><pre:div></pre:div></el>");
+  }, 'Previously declared prefix selection: Child in HTML namespace (different than parent in null/empty namespace) uses previously defined namespace prefix'); 
+
+  test(function() {
+     var root = nsPrefixDeclXML(defaultNSDeclNUL(nul('el')));
+     root.appendChild(xml('el'));
+     eq(root, "<el><xml:el/></el>");
+  }, 'Previously declared prefix selection: Child in XML namespace (different than parent in null/empty namespace) uses previously defined namespace prefix'); 
+  
+  test(function() {
+     var root = nsPrefixDeclCUST(defaultNSDeclNUL(nul('el')));
+     root.appendChild(cust('custom'));
+     eq(root, "<el xmlns:pre=\""+CUSTNS+"\"><pre:custom/></el>");
+  }, 'Previously declared prefix selection: Child in custom namespace (different than parent in null/empty namespace) uses previously defined namespace prefix'); 
+
+  test(function() {
+     var root = nsPrefixDeclHTML(defaultNSDeclCUST(cust('custom')));
+     root.appendChild(html('div'));
+     eq(root, "<custom xmlns=\""+CUSTNS+"\" xmlns:pre=\""+HTMLNS+"\"><pre:div></pre:div></custom>");
+  }, 'Previously declared prefix selection: Child in HTML namespace (different than parent in custom namespace) uses previously defined namespace prefix'); 
+
+  test(function() {
+     var root = nsPrefixDeclXML(defaultNSDeclCUST(cust('custom')));
+     root.appendChild(xml('el'));
+     eq(root, "<custom xmlns=\""+CUSTNS+"\"><xml:el/></custom>");
+  }, 'Previously declared prefix selection: Child in XML namespace (different than parent in custom namespace) uses xml prefix regardless'); 
+
+  test(function() {
+     var root = nsPrefixDeclNUL(defaultNSDeclCUST(cust('custom')));
+     root.appendChild(nul('el'));
+     eq(root, "<custom xmlns=\""+CUSTNS+"\" xmlns:pre=\"\"><pre:el/></custom>");
+  }, 'Previously declared prefix selection: Child in null/empty namespace (different than parent in custom namespace) uses previously defined namespace prefix'); 
+
+  // Is the element's prefix correctly matched when multiple options are available?
+  // -----------------------------
+
+  test(function() {
+     // ** bug (fixed) ** need to try to match the prefix (if possible, to pass and match Firefox)
+     var root = xhtml('pre:div');
+     root.setAttributeNS(XMLNSNS, "xmlns:not", HTMLNS);
+     nsPrefixDeclHTML(root).setAttributeNS(XMLNSNS, "xmlns:unused", HTMLNS);
+     eq(root, "<pre:div xmlns:not=\""+HTMLNS+"\" xmlns:pre=\""+HTMLNS+"\" xmlns:unused=\""+HTMLNS+"\"></pre:div>");
+  }, 'Duplicate namespace prefix definitions: Select matching prefix (in the middle)');
+  
+  test(function() {
+     var root = xhtml('pre:div');
+     root.setAttributeNS(XMLNSNS, "xmlns:not", HTMLNS);
+     root.setAttributeNS(XMLNSNS, "xmlns:used", HTMLNS);
+     eq(root, "<used:div xmlns:not=\""+HTMLNS+"\" xmlns:used=\""+HTMLNS+"\"></used:div>");
+  }, 'Duplicate namespace prefix definitions: unmatched prefix; last prefix definition wins');
+  
+  // When the element has no prefix, but is supplied with a set of available matching namespace prefix declarations, is an applicable prefix selected?
+  // -----------------------------
+  
+  test(function() {
+     var root = xhtml('div');
+     root.setAttributeNS(XMLNSNS, "xmlns:not", HTMLNS);
+     root.setAttributeNS(XMLNSNS, "xmlns:used", HTMLNS);
+     eq(root, "<used:div xmlns:not=\""+HTMLNS+"\" xmlns:used=\""+HTMLNS+"\"></used:div>");
+  }, 'Duplicate namespace prefix definitions: no prefix, last prefix definition wins');
+  
+  test(function() {
+  // seems like a bug to be able to do this, not legit namespace...'xml' should be reserved...
+  // CONSIDER: Dropping ns prefix decls that try to define 'xml' as a prefix, since they'll never be honored in serialization
+     var root = xml('el');
+     root.setAttributeNS(XMLNSNS, "xmlns:xml", HTMLNS);
+     root.setAttributeNS(XMLNSNS, "xmlns:used", HTMLNS);
+     eq(root, "<xml:el xmlns:xml=\""+HTMLNS+"\" xmlns:used=\""+HTMLNS+"\"/>");
+  }, 'Duplicate namespace prefix definitions: no prefix; trying to re-define xml prefix; xml prefix always wins for xml nodes');
+
+  // Muliple applicable prefixes... (ADD VARIATIONS)
+  //----------------------------
+  
+  test(function() {
+     var root = nul('el');
+     root.setAttributeNS(XMLNSNS, "xmlns:a", CUSTNS);
+     root.setAttributeNS(XMLNSNS, "xmlns:b", CUSTNS);
+     root.appendChild(document.createElementNS(CUSTNS, "a:custom"));
+     root.appendChild(document.createElementNS(CUSTNS, "b:custom"));
+     eq(root, "<el xmlns:a=\""+CUSTNS+"\" xmlns:b=\""+CUSTNS+"\"><a:custom/><b:custom/></el>");
+  }, 'Multiple prefix selection');
+  
+  // Multiple prefixes for same namespace (inheritance)
+  // ---------------------------
+  // html->html (delete when done with the matrix)
+  
+  test(function() {
+     // ** BUG (fixed): This test shows that replacement of the prefix isn't sufficient to explain how existing implementations work. I need to keep track of all previous prefix definitions, and attempt to map them in the algorithm for optimal results.
+     var root = nsPrefixDeclHTML(html('div'));
+     var parent = html('div');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(xhtml("pre:div"));
+     eq(root, "<pre:div xmlns:pre=\""+HTMLNS+"\"><alt:div xmlns:alt=\""+HTMLNS+"\"><pre:div></pre:div></alt:div></pre:div>");
+  }, 'Multiple prefixes for the same HTML namespace, available on parent HTML namespaced elements. Child HTML namespaced element has matching prefix. Existing prefix is used.');
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(html('div'));
+     var parent = html('div');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(html("div"));
+     eq(root, "<pre:div xmlns:pre=\""+HTMLNS+"\"><alt:div xmlns:alt=\""+HTMLNS+"\"><alt:div></alt:div></alt:div></pre:div>");
+  }, "Multiple prefixes for the same HTML namespace, available on parent HTML namespaced elements. Child HTML namespaced element has no prefix. Previously declared prefix with matching namespace (most recently encountered) is added as the child's prefix.");
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(html('div'));
+     var parent = html('div');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(xhtml("not:div"));
+     eq(root, "<pre:div xmlns:pre=\""+HTMLNS+"\"><alt:div xmlns:alt=\""+HTMLNS+"\"><alt:div></alt:div></alt:div></pre:div>");
+  }, "Multiple prefixes for the same HTML namespace, available on parent HTML namespaced elements. Child HTML namespaced element has non-matching prefix. Previously declared prefix with matching namespace (most recently encountered) replaces the child's prefix.");
+ 
+  // Other variations: xml -> html (xml prefix is dropped so not relevant), nul -> html (only one test scenario that makes sense)
+ 
+ test(function() {
+     var root = nsPrefixDeclNUL(html('div'));
+     var parent = html('div');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", "");
+     root.appendChild(parent);
+     parent.appendChild(nul("el"));
+     eq(root, "<div xmlns=\""+HTMLNS+"\" xmlns:pre=\"\"><div xmlns:alt=\"\"><alt:el/></div></div>");
+  }, "Multiple prefixes for the same null/empty namespace, available on parent HTML namespaced elements. Child element in the null/empty namespace has no prefix. Previously declared prefix with matching namespace (most recently encountered) is added as the child's prefix..");
+  
+  // custom -> html  
+  
+  test(function() {
+     var root = nsPrefixDeclCUST(html('div'));
+     var parent = html('div');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", CUSTNS);
+     root.appendChild(parent);
+     parent.appendChild(cust("pre:custom"));
+     eq(root, "<div xmlns=\""+HTMLNS+"\" xmlns:pre=\""+CUSTNS+"\"><div xmlns:alt=\""+CUSTNS+"\"><pre:custom/></div></div>");
+  }, 'Multiple prefixes for the same custom namespace, available on parent HTML namespaced elements. Child custom namespaced element has matching prefix. Existing prefix is used.');
+  
+  test(function() {
+     var root = nsPrefixDeclCUST(html('div'));
+     var parent = html('div');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", CUSTNS);
+     root.appendChild(parent);
+     parent.appendChild(cust("custom"));
+     eq(root, "<div xmlns=\""+HTMLNS+"\" xmlns:pre=\""+CUSTNS+"\"><div xmlns:alt=\""+CUSTNS+"\"><alt:custom/></div></div>");
+  }, "Multiple prefixes for the same custom namespace, available on parent HTML namespaced elements. Child custom namespaced element has no prefix. Previously declared prefix with matching namespace (most recently encountered) is added as the child's prefix.");
+  
+  test(function() {
+     var root = nsPrefixDeclCUST(html('div'));
+     var parent = html('div');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", CUSTNS);
+     root.appendChild(parent);
+     parent.appendChild(cust("not:custom"));
+     eq(root, "<div xmlns=\""+HTMLNS+"\" xmlns:pre=\""+CUSTNS+"\"><div xmlns:alt=\""+CUSTNS+"\"><alt:custom/></div></div>");
+  }, "Multiple prefixes for the same custom namespace, available on parent HTML namespaced elements. Child custom namespaced element has non-matching prefix. Previously declared prefix with matching namespace (most recently encountered) replaces the child's prefix.");
+
+  // Other variations: html -> xml
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('el'));
+     var parent = xml('el');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(xhtml("pre:div"));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"><xml:el xmlns:alt=\""+HTMLNS+"\"><pre:div></pre:div></xml:el></xml:el>");
+  }, 'Multiple prefixes for the same HTML namespace, available on parent XML namespaced elements. Child HTML namespaced element has matching prefix. Existing prefix is used.');
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('el'));
+     var parent = xml('el');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(xhtml("div"));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"><xml:el xmlns:alt=\""+HTMLNS+"\"><alt:div></alt:div></xml:el></xml:el>");
+  }, "Multiple prefixes for the same HTML namespace, available on parent XML namespaced elements. Child HTML namespaced element has no prefix. Previously declared prefix with matching namespace (most recently encountered) is added as the child's prefix.");
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('el'));
+     var parent = xml('el');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(xhtml("not:div"));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"><xml:el xmlns:alt=\""+HTMLNS+"\"><alt:div></alt:div></xml:el></xml:el>");
+  }, "Multiple prefixes for the same HTML namespace, available on parent XML namespaced elements. Child HTML namespaced element has non-matching prefix. Previously declared prefix with matching namespace (most recently encountered) replaces the child's prefix.");
+  
+  // Other variations: nul -> xml (only one variation), cust -> xml (TODO)
+  
+  test(function() {
+     var root = nsPrefixDeclNUL(xml('el'));
+     var parent = xml('el');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", "");
+     root.appendChild(parent);
+     parent.appendChild(nul("el"));
+     eq(root, "<xml:el xmlns:pre=\"\"><xml:el xmlns:alt=\"\"><alt:el/></xml:el></xml:el>");
+  }, "Multiple prefixes for the same null/empty namespace, available on parent XML namespaced elements. Child null/empty namespaced element has no prefix. Previously declared prefix with matching namespace (most recently encountered) is not added to child because the child is in the default null/empty namespace already.");
+  
+  // Other variations: cust -> xml (TODO) YOU ARE HERE....BELOW IS INCOMPLETE.
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('el'));
+     var parent = xml('el');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(xhtml("pre:div"));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"><xml:el xmlns:alt=\""+HTMLNS+"\"><pre:div></pre:div></xml:el></xml:el>");
+  }, 'Multiple prefixes for the same HTML namespace, available on parent XML namespaced elements. Child HTML namespaced element has matching prefix. Existing prefix is used.');
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('el'));
+     var parent = xml('el');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(xhtml("div"));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"><xml:el xmlns:alt=\""+HTMLNS+"\"><alt:div></alt:div></xml:el></xml:el>");
+  }, "Multiple prefixes for the same HTML namespace, available on parent XML namespaced elements. Child HTML namespaced element has no prefix. Previously declared prefix with matching namespace (most recently encountered) is added as the child's prefix.");
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xml('el'));
+     var parent = xml('el');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", HTMLNS);
+     root.appendChild(parent);
+     parent.appendChild(xhtml("not:div"));
+     eq(root, "<xml:el xmlns:pre=\""+HTMLNS+"\"><xml:el xmlns:alt=\""+HTMLNS+"\"><alt:div></alt:div></xml:el></xml:el>");
+  }, "Multiple prefixes for the same HTML namespace, available on parent XML namespaced elements. Child HTML namespaced element has non-matching prefix. Previously declared prefix with matching namespace (most recently encountered) replaces the child's prefix.");
+  
+  
+  // Other variations: html -> nul, xml -> nul, nul -> nul, cust -> nul
+  
+  // Duplicate namespace prefix declarations are ignored and not serialized
+  // -------------------------------
+  
+  test(function() {
+     var root = nsPrefixDeclHTML(xhtml('pre:div'));
+     root.appendChild(nsPrefixDeclHTML(xhtml('pre:div')));
+     eq(root, "<pre:div xmlns:pre=\""+HTMLNS+"\"><pre:div></pre:div></pre:div>");
+  }, 'Multiple duplicate prefixes for the same HTML namespace on parent and child HTML namespaced elements. Duplicate declaration is dropped.');
+  
+  test(function() { // pre, alt, pre, not matching... (does the last pre encountered replace or append in the list?)
+     var root = nsPrefixDeclCUST(html('div'));
+     var parent = html('div');
+     parent.setAttributeNS(XMLNSNS, "xmlns:alt", CUSTNS);
+     root.appendChild(parent);
+     var child = nsPrefixDeclCUST(html('div'));
+     parent.appendChild(child);
+     child.appendChild(cust("not:custom"));
+     eq(root, "<div xmlns=\""+HTMLNS+"\" xmlns:pre=\""+CUSTNS+"\"><div xmlns:alt=\""+CUSTNS+"\"><div><alt:custom/></div></div></div>");
+  }, 'Multiple duplicate prefixes for the same custom namespace on parent HTML namespaced elements. Child custom namespaced element has non-matching prefix. Duplicate declaration is dropped and remaining previously declared prefix with matching custom namespace (most recently encountered) replaces the child's prefix.');
+
+  
+// Test same-named prefixes in parent and child with different namespace values do the right thing.
+// Test 3-level where the top sets up the default, the middle element has an odd namespace using a prefix, and the last gets the top's namespace through inheritance.
+// Test re-purposing existing prefixes with different namespaces when inheriting.
+// Test an attribute who's namespace is the XML namespace! Likely bug.     
+
+// TODO: Don't forget to test namespaces and prefixes that aren't in the XMLNSNS namespace (the pretend ones).
+  
+</script>

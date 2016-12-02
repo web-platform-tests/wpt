@@ -24,6 +24,7 @@
             }));
 
             document.getElementById('javascriptUri').click();
+            assert_false(javascriptUriScriptRan);
         }, "Script injected via `javascript:` URIs are not allowed with `strict-dynamic`.");
     </script>
 </body>

@@ -12,7 +12,7 @@ t.step(function() {
 var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
-var ctx2 = offscreenCanvas2.getContext('2d');
+var ctx2 = offscreenCanvas.getContext('2d');
 ctx.fillStyle = '#f00';
 ctx2.fillStyle = '#0f0';
 ctx.fillRect(0, 0, 100, 50);

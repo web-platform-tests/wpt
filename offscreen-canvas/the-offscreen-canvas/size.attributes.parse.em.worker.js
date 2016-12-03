@@ -12,6 +12,8 @@ t.step(function() {
 var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
+offscreenCanvas.width = '100em';
+offscreenCanvas.height = '100em';
 _assertSame(offscreenCanvas.width, 100, "offscreenCanvas.width", "100");
 _assertSame(offscreenCanvas.height, 100, "offscreenCanvas.height", "100");
 

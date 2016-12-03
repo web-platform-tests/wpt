@@ -14,7 +14,7 @@ var ctx = offscreenCanvas.getContext('2d');
 
 offscreenCanvas.width = 100;
 ctx.rect(0, 0, 100, 50);
-offscreenCanvas2.width = 100;
+offscreenCanvas.width = 100;
 ctx.fillStyle = '#f00';
 ctx.fill();
 _assertPixel(offscreenCanvas, 20,20, 0,0,0,0, "20,20", "0,0,0,0");

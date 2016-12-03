@@ -8916,9 +8916,10 @@
   testing:
     - 2d.canvas.attribute
   code: |
+    var offscreenCanvas2 = new OffscreenCanvas(100, 50);
     var d = ctx.canvas;
-    @assert offscreenCanvas !== d;
-    ctx.canvas = c;
+    @assert offscreenCanvas2 !== d;
+    ctx.canvas = offscreenCanvas2;
     @assert ctx.canvas === d;
 
 - name: 2d.getcontext.exists
@@ -8950,7 +8951,7 @@
   testing:
     - context.unique
   code: |
-    var ctx2 = offscreenCanvas2.getContext('2d');
+    var ctx2 = offscreenCanvas.getContext('2d');
     ctx.fillStyle = '#f00';
     ctx2.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -8962,7 +8963,7 @@
     - context.unrecognised
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-    @assert offscreenCanvas2.getContext("") === null;
+    @assert throws TypeError offscreenCanvas2.getContext("");
 
 - name: context.unrecognised.badname
   desc: getContext with unrecognised context name returns null
@@ -8970,7 +8971,7 @@
     - context.unrecognised
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-    @assert offscreenCanvas2.getContext('This is not an implemented context in any real browser') === null;
+    @assert throws TypeError offscreenCanvas2.getContext('This is not an implemented context in any real browser');
 
 - name: context.unrecognised.badsuffix
   desc: Context name "2d" plus a suffix is unrecognised
@@ -8978,7 +8979,7 @@
     - context.unrecognised
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-    @assert offscreenCanvas2.getContext("2d#") === null;
+    @assert throws TypeError offscreenCanvas2.getContext("2d#");
 
 - name: context.unrecognised.nullsuffix
   desc: Context name "2d" plus a "\0" suffix is unrecognised
@@ -8986,7 +8987,7 @@
     - context.unrecognised
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-    @assert offscreenCanvas2.getContext("2d\0") === null;
+    @assert throws TypeError offscreenCanvas2.getContext("2d\0");
 
 - name: context.unrecognised.unicode
   desc: Context name which kind of looks like "2d" is unrecognised
@@ -8994,7 +8995,7 @@
     - context.unrecognised
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-    @assert offscreenCanvas2.getContext("2\uFF44") === null; // Fullwidth Latin Small Letter D
+    @assert throws TypeError offscreenCanvas2.getContext("2\uFF44");
 
 - name: context.casesensitive
   desc: Context name "2D" is unrecognised; matching is case sensitive
@@ -9002,7 +9003,7 @@
     - context.unrecognised
   code: |
     var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-    @assert offscreenCanvas2.getContext('2D') === null;
+    @assert throws TypeError offscreenCanvas2.getContext('2D');
 
 - name: context.arguments.missing
   testing:
@@ -9016,10 +9017,6 @@
   desc: Initial state is transparent black
   testing:
     - initial.colour
-  notes: |
-    Output should be transparent black (not transparent anything-else), but manual
-    verification can only confirm that it's transparent - it's not possible to make
-    the actual blackness visible.
   code: |
     @assert pixel 20,20 == 0,0,0,0;
 
@@ -9053,7 +9050,7 @@
   code: |
     offscreenCanvas.width = 100;
     ctx.rect(0, 0, 100, 50);
-    offscreenCanvas2.width = 100;
+    offscreenCanvas.width = 100;
     ctx.fillStyle = '#f00';
     ctx.fill();
     @assert pixel 20,20 == 0,0,0,0;
@@ -9063,10 +9060,10 @@
   testing:
     - initial.reset
   code: |
-    offscreenCanvas2.width = 100;
+    offscreenCanvas.width = 100;
     ctx.rect(0, 0, 1, 1);
     ctx.clip();
-    offscreenCanvas2.width = 100;
+    offscreenCanvas.width = 100;
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 20,20 == 0,255,0,255;
@@ -9076,7 +9073,7 @@
   testing:
     - initial.reset
   code: |
-    offscreenCanvas2.width = 100;
+    offscreenCanvas.width = 100;
     ctx.scale(0.1, 0.1);
     offscreenCanvas.width = 100;
     ctx.fillStyle = '#0f0';
@@ -9088,11 +9085,11 @@
   testing:
     - initial.reset
   code: |
-    offscreenCanvas2.width = 50;
+    offscreenCanvas.width = 50;
     var g = ctx.createLinearGradient(0, 0, 100, 0);
     g.addColorStop(0, '#0f0');
     g.addColorStop(1, '#0f0');
-    offscreenCanvas2.width = 100;
+    offscreenCanvas.width = 100;
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
     ctx.fillStyle = g;
@@ -9142,10 +9139,6 @@
     offscreenCanvas.height = "0x96";
     @assert offscreenCanvas.width === 150;
     @assert offscreenCanvas.height === 150;
-    offscreenCanvas.width = 200 - Math.pow(2, 32);
-    offscreenCanvas.height = 200 - Math.pow(2, 32);
-    @assert offscreenCanvas.width === 200;
-    @assert offscreenCanvas.height === 200;
     offscreenCanvas.width = 301.999;
     offscreenCanvas.height = 301.001;
     @assert offscreenCanvas.width === 301;
@@ -9190,12 +9183,12 @@
         ("empty", "", None),
         ("onlyspace", "  ", None),
         ("space", "  100", 100),
-        ("whitespace", "\n\t\f100", 100),
+        ("whitespace", "\t\f100", 100),
         ("plus", "+100", 100),
         ("minus", "-100", None),
         ("octal", "0100", 100),
-        ("hex", "0x100", 0),
-        ("exp", "100e1", 100),
+        ("hex", "0x100", 0x100),
+        ("exp", "100e1", 100e1),
         ("decimal", "100.999", 100),
         ("percent", "100%", 100),
         ("em", "100em", 100),
@@ -9206,9 +9199,11 @@
         testing = ["size.nonnegativeinteger"]
         if exp is None:
             testing.append("size.error")
-            code += "@assert offscreenCanvas.width === 300;\n@assert offscreenCanvas.height === 150;\n"
+            code += "offscreenCanvas.width = '%s';\noffscreenCanvas.height = '%s';\n" % (string, string)
+            code += "@assert offscreenCanvas.width === 100;\n@assert offscreenCanvas.height === 50;\n"
             expected = None
         else:
+            code += "offscreenCanvas.width = '%s';\noffscreenCanvas.height = '%s';\n" % (string, string)
             code += "@assert offscreenCanvas.width === %s;\n@assert offscreenCanvas.height === %s;\n" % (exp, exp)
             expected = None
 

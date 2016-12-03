@@ -13,7 +13,7 @@ var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
 var offscreenCanvas2 = new OffscreenCanvas(100, 50);
-_assertSame(offscreenCanvas2.getContext('This is not an implemented context in any real browser'), null, "offscreenCanvas2.getContext('This is not an implemented context in any real browser')", "null");
+assert_throws(new TypeError(), function() { offscreenCanvas2.getContext('This is not an implemented context in any real browser'); });
 
 t.done();
 

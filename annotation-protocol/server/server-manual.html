@@ -318,6 +318,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
   // this will get populated when evaluating the creation
 
   var createdAnnotation = null;
+  var createdEtag = null;
 
   theCreation.then(function(res) {
     if (res && typeof res === "object" && res.body && typeof res.body === "object" && res.body.id && typeof res.body.id === "string") {
@@ -339,9 +340,10 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
 
   promise_test(function() {
     return theCreation.then(function(res) {
-      return request("PUT", fixURI(res.body.id), [['Content-Type', MEDIA_TYPE]], theModifiedAnnotation)
+      createdEtag = res.xhr.getResponseHeader("ETag") ;
+      return request("PUT", fixURI(res.body.id), [['Content-Type', MEDIA_TYPE], ['If-Match', createdEtag]], theModifiedAnnotation)
         .then(function(lres) {
-          assert_equals(lres.body.target, newAnnotation.target, "Annotation did not update");
+          assert_equals(lres.body.target, theModifiedAnnotation.target, "Annotation did not update");
         })
         .catch(function(err) {
           assert_true(false, "Update of annotation failed");
@@ -350,7 +352,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
   }, "Annotation update must be done with the PUT method");
 
   promise_test(function() {
-    var theDeletion = request("DELETE", fixURI(createdAnnotation));
+    var theDeletion = request("DELETE", fixURI(createdAnnotation), [['If-Match', createdEtag]] );
     return theDeletion.then(function(lres) {
       assert_equals(lres.status, 204, "DELETE of " + createdAnnotation + " did not return a 204 Status" );
     });
@@ -489,7 +491,7 @@ annotations within the container
 under test must permit access to the Allow, Content-Location, Content-Type, ETag, Link, Location, Prefer, and Vary headers.
 Correct CORS access can be achieved with headers like:</p>
 <pre>
-Access-Control-Allow-Headers: Content-Type, Prefer
+Access-Control-Allow-Headers: Content-Type, Prefer, If-Match
 Access-Control-Allow-Methods: GET,HEAD,OPTIONS,DELETE,PUT
 Access-Control-Allow-Origin: *
 Access-Control-Expose-Headers: ETag, Allow, Vary, Link, Content-Type, Location, Content-Location, Prefer

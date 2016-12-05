@@ -4,6 +4,8 @@
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#the-a-element:activation-behaviour">
 <link rel="help" href="https://github.com/whatwg/html/issues/2116">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 
 <a id="blob-url" download="foo.html">Click me</a>
 
@@ -17,4 +19,6 @@ const link = document.querySelector("#blob-url");
 link.href = URL.createObjectURL(blob);
 
 link.click();
+
+done();
 </script>

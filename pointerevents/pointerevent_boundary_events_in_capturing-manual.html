@@ -55,7 +55,6 @@
                         if (phase == PhaseEnum.WaitingForDown)
                           return;
                         eventsRecieved.push(event.type + '@listener');
-                        console.log(event.type);
                         if (eventName == 'pointermove') {
                           test(function () {
                               checkPointerEventType(event);

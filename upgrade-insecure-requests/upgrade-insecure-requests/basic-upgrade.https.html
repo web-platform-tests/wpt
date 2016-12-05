@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Upgrade Insecure Requests: Basics.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./resources/testharness-helper.js"></script>
+
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<script>
+// These tests rely on some unintuitive cleverness due to Blink's test setup:
+// 'Upgrade-Insecure-Requests' does not upgrade the port number, so we use URLs
+// in the form `http://[domain]:8443`. If the upgrade fails, the load will fail,
+// as we don't serve HTTP over port 8443.
+var tests = [
+  generateURL(Host.SAME_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE),
+  generateURL(Host.SAME_ORIGIN, Protocol.SECURE, ResourceType.IMAGE),
+  generateURL(Host.CROSS_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE),
+  generateURL(Host.CROSS_ORIGIN, Protocol.SECURE, ResourceType.IMAGE),
+  generateRedirect(Host.SAME_ORIGIN, Protocol.INSECURE, generateURL(Host.SAME_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.SAME_ORIGIN, Protocol.INSECURE, generateURL(Host.SAME_ORIGIN, Protocol.SECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.SAME_ORIGIN, Protocol.INSECURE, generateURL(Host.CROSS_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.SAME_ORIGIN, Protocol.INSECURE, generateURL(Host.CROSS_ORIGIN, Protocol.SECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.SAME_ORIGIN, Protocol.SECURE, generateURL(Host.SAME_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.SAME_ORIGIN, Protocol.SECURE, generateURL(Host.SAME_ORIGIN, Protocol.SECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.SAME_ORIGIN, Protocol.SECURE, generateURL(Host.CROSS_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.SAME_ORIGIN, Protocol.SECURE, generateURL(Host.CROSS_ORIGIN, Protocol.SECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.CROSS_ORIGIN, Protocol.INSECURE, generateURL(Host.SAME_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.CROSS_ORIGIN, Protocol.INSECURE, generateURL(Host.SAME_ORIGIN, Protocol.SECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.CROSS_ORIGIN, Protocol.INSECURE, generateURL(Host.CROSS_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.CROSS_ORIGIN, Protocol.INSECURE, generateURL(Host.CROSS_ORIGIN, Protocol.SECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.CROSS_ORIGIN, Protocol.SECURE, generateURL(Host.SAME_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.CROSS_ORIGIN, Protocol.SECURE, generateURL(Host.SAME_ORIGIN, Protocol.SECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.CROSS_ORIGIN, Protocol.SECURE, generateURL(Host.CROSS_ORIGIN, Protocol.INSECURE, ResourceType.IMAGE)),
+  generateRedirect(Host.CROSS_ORIGIN, Protocol.SECURE, generateURL(Host.CROSS_ORIGIN, Protocol.SECURE, ResourceType.IMAGE)),
+];
+
+tests.forEach(test => {
+  async_test(t => assert_image_loads(t, test.url, 103, 76), test.name);
+});
+</script>

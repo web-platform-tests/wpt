@@ -1,0 +1,416 @@
+<!doctype html>
+<title>Tokenlist tests</title>
+
+<div id=log></div>
+
+<script src="/resources/testharness.js"></script>
+<script src=/resources/testharnessreport.js></script>
+
+<script>
+const SVG_NS = "http://www.w3.org/2000/svg";
+const XHTML_NS = "http://www.w3.org/1999/xhtml"
+const MATHML_NS = "http://www.w3.org/1998/Math/MathML";
+
+function checkModification(e, prop, attr, funcName, args, expectedRes, before, after, expectedException) {
+  if (!Array.isArray(args)) {
+    args = [args];
+  }
+
+  var shouldThrow = typeof(expectedException) === "string";
+  if (shouldThrow) {
+    // If an exception is thrown, the attribute shouldn't change.
+    after = before;
+  }
+  if (before === null) {
+    e.removeAttribute(attr);
+  } else {
+    e.setAttribute(attr, before);
+  }
+
+  var contextMsg = "(checkModification: funcName=" + funcName + ",args=" +
+                   JSON.stringify(args) + ",expectedRes=" + expectedRes +
+                   ",before=" + before + ",after=" + after + ")";
+
+  var list = e[prop];
+  var res;
+  if (shouldThrow) {
+    assert_throws(expectedException, function() { list[funcName].apply(list, args) });
+  } else {
+    res = list[funcName].apply(list, args);
+  }
+  if (expectedRes !== null) {
+    assert_equals(res, expectedRes, "wrong return value from " + funcName +
+                  " " + contextMsg);
+  }
+
+  var expectedAfter = after;
+
+  assert_equals(e.getAttribute(attr), expectedAfter,
+                "wrong attribute value after modification " + contextMsg);
+}
+
+function assignToTokenListStrict(e, prop, attr) {
+  "use strict";
+  try {
+    e[prop] = "foo";
+    e.removeAttribute(attr);
+  } catch (e) { 
+    assert_unreached("assigning threw");
+  }
+}
+
+function assignToTokenList(e, prop, attr) {
+  try {
+    var expect = e[prop];
+    e[prop] = "foo";
+    assert_equals(e[prop], expect, "should be unchanged after assignment");
+    e.removeAttribute(attr);
+  } catch (e) {
+    assert_unreached("assigning threw");
+  }
+}
+
+/**
+ * e: Element with tokenlist property
+ * prop: Name of the property, e.g., "classList"
+ * attr: Name of DOM attribute, e.g., "class"
+ * desc: Description of inputs, e.g., "div.classList"
+ */
+function testTokenList(e, prop, attr, desc) {
+  // basic tests
+
+  test(function() {
+    assert_idl_attribute(e, prop);
+    assert_equals(typeof(e[prop].contains), "function", "no contains function");
+    assert_equals(typeof(e[prop].add), "function", "no add function");
+    assert_equals(typeof(e[prop].remove), "function", "no remove function");
+    assert_equals(typeof(e[prop].toggle), "function", "no toggle function");
+
+    assignToTokenListStrict(e, prop, attr);
+    assignToTokenList(e, prop, attr);
+  }, desc + ": Basic tests");
+
+  // length attribute
+
+  function checkLength(value, length) {
+    e.setAttribute(attr, value);
+    assert_equals(e[prop].length, length,
+                  "length value when setting \"" + value + "\"");
+  }
+
+  test(function() {
+    assert_idl_attribute(e, prop);
+
+    assert_equals(e[prop].length, 0, "initial length value");
+    checkLength("", 0);
+    checkLength("   \t  \f", 0);
+    checkLength("a", 1);
+    checkLength("a A", 2);
+    checkLength("\r\na\t\f", 1);
+    checkLength("a a", 1);
+    checkLength("a a a a a a", 1);
+    checkLength("a a b b", 2);
+    checkLength("a A B b", 4);
+    checkLength("a b c c b a a b c c", 3);
+    checkLength("   a  a b", 2);
+  }, desc + ": length");
+
+  // [Stringifies]
+
+  function checkStringifier(value, expected) {
+    if (value == null) {
+      e.removeAttribute(attr);
+    } else {
+      e.setAttribute(attr, value);
+    }
+    assert_equals(e[prop].toString(), expected,
+                  "toString() value when " +
+                  (value == null ? "removing attribute"
+                                 : "setting \"" + value + "\""));
+  }
+
+  test(function() {
+    assert_own_property(DOMTokenList.prototype, "toString",
+                        "Should have own toString on DOMTokenList")
+
+    checkStringifier(null, "");
+    checkStringifier("foo", "foo");
+    checkStringifier("   a  a b", "a b");
+  }, desc + ": stringifier");
+
+  // item() method
+
+  function checkItems(attributeValue, expectedValues) {
+    function checkItemFunction(index, expected) {
+      assert_equals(e[prop].item(index), expected,
+                    "item(" + index + ') result when setting "' +
+                    attributeValue + '"');
+    }
+
+    function checkItemArray(index, expected) {
+      assert_equals(e[prop][index], expected,
+                    prop + "[" + index + '] result when setting "'
+                    + attributeValue + '"');
+    }
+
+    e.setAttribute(attr, attributeValue);
+
+    checkItemFunction(-1, null);
+    checkItemArray(-1, undefined);
+
+    for (var i = 0; i < expectedValues.length; i++) {
+      checkItemFunction(i, expectedValues[i]);
+      checkItemArray(i, expectedValues[i]);
+    }
+
+    checkItemFunction(i, null);
+    checkItemArray(i, undefined);
+
+    checkItemFunction(0xffffffff, null);
+    checkItemArray(0xffffffff, undefined);
+
+    checkItemFunction(0xfffffffe, null);
+    checkItemArray(0xfffffffe, undefined);
+  }
+
+  test(function() {
+    checkItems("a", ["a"]);
+    checkItems("aa AA aa", ["aa", "AA"]);
+    checkItems("a b", ["a", "b"]);
+    checkItems("   a  a b", ["a", "b"]);
+  }, desc + ": indexing");
+
+  // contains() method
+
+  test(function() {
+    e.removeAttribute(attr);
+    assert_false(e[prop].contains("a"),
+                 "wrong contains() result when attribute does not exist");
+    assert_throws("SyntaxError", function() { e[prop].contains("") },
+                  'contains("")');
+    assert_throws("InvalidCharacterError",
+                  function() { e[prop].contains("  ") }, 'contains("  ")');
+    assert_throws("InvalidCharacterError",
+                  function() { e[prop].contains("aa ") }, 'contains("aa ")');
+
+    function checkContains(attributeValue, args, expectedRes) {
+      e.setAttribute(attr, attributeValue);
+      for (var i = 0; i < args.length; i++) {
+        assert_equals(e[prop].contains(args[i]), expectedRes[i],
+                      'contains("' + args[i] + '") return value');
+      }
+    }
+
+    checkContains("", ["a"], [false]);
+    checkContains("a", ["a", "aa", "b"], [true, false, false]);
+    checkContains("aa AA", ["aa", "AA", "aA"], [true, true, false]);
+    checkContains("a a a", ["a", "aa", "b"], [true, false, false]);
+    checkContains("a b c", ["a", "b"], [true, true]);
+
+    checkContains("null undefined", [null, undefined], [true, true]);
+  }, desc + ": contains()");
+
+  // add() method
+
+  function checkAdd(before, argument, after, expectedException) {
+    checkModification(e, prop, attr, "add", argument, null, before, after, expectedException);
+  }
+
+  test(function() {
+    checkAdd(null, "", null, "SyntaxError");
+    checkAdd(null, ["a", ""], null, "SyntaxError");
+    checkAdd(null, " ", null, "InvalidCharacterError");
+    checkAdd(null, ["a", " "], null, "InvalidCharacterError");
+    checkAdd(null, ["a", "aa "], null, "InvalidCharacterError");
+
+    checkAdd("a", "a", "a");
+    checkAdd("aa", "AA", "aa AA");
+    checkAdd("a b c", "a", "a b c");
+    checkAdd("a a a  b", "a", "a b");
+    checkAdd(null, "a", "a");
+    checkAdd("", "a", "a");
+    checkAdd(" ", "a", "a");
+    checkAdd("   \f", "a", "a");
+    checkAdd("a", "b", "a b");
+    checkAdd("a b c", "d", "a b c d");
+    checkAdd("a b c ", "d", "a b c d");
+    checkAdd("   a  a b", "c", "a b c");
+    checkAdd("   a  a b", "a", "a b");
+
+    // multiple add
+    checkAdd("a b c ", ["d", "e"], "a b c d e");
+    checkAdd("a b c ", ["a", "a"], "a b c");
+    checkAdd("a b c ", ["d", "d"], "a b c d");
+    checkAdd("a b c a ", [], "a b c");
+    checkAdd(null, ["a", "b"], "a b");
+    checkAdd("", ["a", "b"], "a b");
+
+    checkAdd(null, null, "null");
+    checkAdd(null, undefined, "undefined");
+  }, desc + ": add()");
+
+  // remove() method
+
+  function checkRemove(before, argument, after, expectedException) {
+    checkModification(e, prop, attr, "remove", argument, null, before, after, expectedException);
+  }
+
+  test(function() {
+    checkRemove(null, "", null, "SyntaxError");
+    checkRemove(null, " ", null, "InvalidCharacterError");
+    checkRemove(null, "aa ", null, "InvalidCharacterError");
+
+    checkRemove(null, "a", null);
+    checkRemove("", "a", "");
+    checkRemove("a b  c", "d", "a b c");
+    checkRemove("a b  c", "A", "a b c");
+    checkRemove(" a a a ", "a", "");
+    checkRemove("a  b", "a", "b");
+    checkRemove("a  b  ", "a", "b");
+    checkRemove("a a b", "a", "b");
+    checkRemove("aa aa bb", "aa", "bb");
+    checkRemove("a a b a a c a a", "a", "b c");
+
+    checkRemove("a  b  c", "b", "a c");
+    checkRemove("aaa  bbb  ccc", "bbb", "aaa ccc");
+    checkRemove(" a  b  c ", "b", "a c");
+    checkRemove("a b b b c", "b", "a c");
+
+    checkRemove("a  b  c", "c", "a b");
+    checkRemove(" a  b  c ", "c", "a b");
+    checkRemove("a b c c c", "c", "a b");
+
+    checkRemove("a b a c a d a", "a", "b c d");
+    checkRemove("AA BB aa CC AA dd aa", "AA", "BB aa CC dd");
+
+    checkRemove("\ra\na\ta\f", "a", "");
+
+    // multiple remove
+    checkRemove("a b c ", ["d", "e"], "a b c");
+    checkRemove("a b c ", ["a", "b"], "c");
+    checkRemove("a b c ", ["a", "c"], "b");
+    checkRemove("a b c ", ["a", "a"], "b c");
+    checkRemove("a b c ", ["d", "d"], "a b c");
+    checkRemove("a b c ", [], "a b c");
+    checkRemove(null, ["a", "b"], null);
+    checkRemove("", ["a", "b"], "");
+    checkRemove("a a", [], "a");
+
+    checkRemove("null", null, "");
+    checkRemove("undefined", undefined, "");
+  }, desc + ": remove()");
+
+  // toggle() method
+
+  function checkToggle(before, argument, expectedRes, after, expectedException) {
+    checkModification(e, prop, attr, "toggle", argument, expectedRes, before, after, expectedException);
+  }
+
+  test(function() {
+    checkToggle(null, "", null, null, "SyntaxError");
+    checkToggle(null, "aa ", null, null, "InvalidCharacterError");
+
+    checkToggle(null, "a", true, "a");
+    checkToggle("", "a", true, "a");
+    checkToggle(" ", "a", true, "a");
+    checkToggle("   \f", "a", true, "a");
+    checkToggle("a", "b", true, "a b");
+    checkToggle("a", "A", true, "a A");
+    checkToggle("a b c", "d", true, "a b c d");
+    checkToggle("   a  a b", "d", true, "a b d");
+
+    checkToggle("a", "a", false, "");
+    checkToggle(" a a a ", "a", false, "");
+    checkToggle(" A A A ", "a", true, "A a");
+    checkToggle(" a b c ", "b", false, "a c");
+    checkToggle(" a b c b b", "b", false, "a c");
+    checkToggle(" a b  c  ", "c", false, "a b");
+    checkToggle(" a b c ", "a", false, "b c");
+    checkToggle("   a  a b", "b", false, "a");
+
+    checkToggle("null", null, false, "");
+    checkToggle("", null, true, "null");
+    checkToggle("undefined", undefined, false, "");
+    checkToggle("", undefined, true, "undefined");
+  }, desc + ": toggle()");
+
+
+  // tests for the force argument handling
+  
+  function checkForceToggle(before, argument, force, expectedRes, after, expectedException) {
+    checkModification(e, prop, attr, "toggle", [argument, force], expectedRes, before, after, expectedException);
+  }
+
+  test(function() {
+    checkForceToggle("", "a", true, true, "a");
+    checkForceToggle("a", "a", true, true, "a");
+    checkForceToggle("a", "b", true, true, "a b");
+    checkForceToggle("a b", "b", true, true, "a b");
+    checkForceToggle("", "a", false, false, "");
+    checkForceToggle("a", "a", false, false, "");
+    checkForceToggle("a", "b", false, false, "a");
+    checkForceToggle("a b", "b", false, false, "a");
+  }, desc + ": force toggle()");
+}
+
+var div = document.createElement("div");
+document.body.appendChild(div);
+testTokenList(div, "classList", "class", "div.classList");
+testTokenList(div, "dropzone", "dropzone", "div.dropzone");
+
+var link = document.createElement("link");
+document.body.appendChild(link);
+testTokenList(link, "relList", "rel", "link.relList");
+testTokenList(link, "sizes", "sizes", "link.sizes");
+
+var a = document.createElement("a");
+document.body.appendChild(a);
+testTokenList(a, "ping", "ping", "a.ping");
+testTokenList(a, "relList", "rel", "a.relList");
+
+var iframe = document.createElement("iframe");
+document.body.appendChild(iframe);
+testTokenList(iframe, "sandbox", "sandbox", "iframe.sandbox");
+
+var area = document.createElement("area");
+document.body.appendChild(area);
+testTokenList(area, "ping", "ping", "area.ping");
+testTokenList(area, "relList", "rel", "area.relList");
+
+var td = document.createElement("td");
+document.body.appendChild(td);
+testTokenList(td, "headers", "headers", "td.headers");
+
+var th = document.createElement("th");
+document.body.appendChild(th);
+testTokenList(th, "headers", "headers", "th.headers");
+
+var output = document.createElement("output");
+document.body.appendChild(output);
+testTokenList(output, "htmlFor", "for", "output.htmlFor");
+
+var htmlElement = document.createElement("madeup");
+document.body.appendChild(div);
+testTokenList(htmlElement, "classList", "class", "Made-up HTML element classList");
+testTokenList(htmlElement, "dropzone", "dropzone",
+              "Made-up HTML element dropzone");
+
+var xhtmlNode = document.createElementNS(XHTML_NS, "div");
+document.body.appendChild(xhtmlNode);
+testTokenList(xhtmlNode, "classList", "class", "XHTML div.classList");
+testTokenList(xhtmlNode, "dropzone", "dropzone", "XHTML div.dropzone");
+
+var mathMLNode = document.createElementNS(MATHML_NS, "math");
+document.body.appendChild(mathMLNode);
+testTokenList(mathMLNode, "classList", "class", "MathML element classList");
+
+var xmlNode = document.createElementNS(null, "foo");
+document.body.appendChild(xmlNode);
+testTokenList(xmlNode, "classList", "class",
+              "Element with null namespace classList");
+
+var fooNode = document.createElementNS("http://example.org/foo", "foo");
+document.body.appendChild(fooNode);
+testTokenList(fooNode, "classList", "class",
+              "Element with made-up namespace classList");
+</script>

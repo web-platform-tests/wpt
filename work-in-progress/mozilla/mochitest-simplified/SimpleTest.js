@@ -206,7 +206,7 @@ SimpleTest.waitForExplicitFinish = function () {
  * working (or finish).
  */
 SimpleTest.executeSoon = function(aFunc) {
-    // FIXME: Should use http://dbaron.org/log/20100309-faster-timeouts
+    // FIXME: Should use https://dbaron.org/log/20100309-faster-timeouts
     setTimeout(aFunc, 0);
 }
 

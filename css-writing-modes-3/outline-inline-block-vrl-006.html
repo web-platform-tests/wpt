@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+<meta charset="utf-8">
 <title>CSS Writing Modes Test: outline layout and inline-block and vertical-rl writing-mode</title>
 <link rel="match" href="reference/outline-inline-block-vrl-006.html" />
 <link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com" />
+<link rel="reviewer" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" /> <!-- 2016-01-14 -->
 <link rel="help" title="7.1. Principles of Layout in Vertical Writing Modes" href="http://www.w3.org/TR/css-writing-modes-3/#vertical-layout" />
 <link rel="help" title="18.4 Dynamic outlines: the 'outline' property" href="http://www.w3.org/TR/2011/REC-CSS2-20110607/ui.html#dynamic-outlines" />
 <meta content="ahem" name="flags" />
@@ -18,7 +20,7 @@
   outline:blue solid 2px;
 }
 </style>
-<p>Test passes if inside of blue rectangles are orange.
+<p>Test passes if the inside of 3 blue rectangles is orange.
 <div class="container">
   <!--
     Additional div to ensure that the origin of the containing block of the

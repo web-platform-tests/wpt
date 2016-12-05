@@ -241,5 +241,9 @@ MultiPointerTypeTest.prototype.createNextTest = function() {
 
 
 function setup_pointerevent_test(testName, supportedPointerTypes) {
-   return globalPointerEventTest = new MultiPointerTypeTest(testName, supportedPointerTypes);
+    return globalPointerEventTest = new MultiPointerTypeTest(testName, supportedPointerTypes);
+}
+
+function checkPointerEventType(event) {
+    assert_equals(event.pointerType, expectedPointerType, "pointerType should be the same as the requested device.");
 }

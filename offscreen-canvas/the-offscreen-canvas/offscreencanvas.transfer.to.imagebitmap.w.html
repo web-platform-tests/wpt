@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-offscreencanvas-transfertoimagebitmap">
 
 <script id="myWorker" type="text/worker">
 
@@ -39,27 +39,12 @@ function isInvalidStateError(funcStr, offscreenCanvas)
     }
 }
 
-function test1()
+function testImageBitmapSize()
 {
     return testSize('2d') && testSize('webgl');
 }
 
-function test2()
-{
-    return testImageBitmapClr(false, true);
-}
-
-function test3()
-{
-    return testImageBitmapClr(true, true);
-}
-
-function test4()
-{
-    return testImageBitmapClr(true, false);
-}
-
-function test5()
+function testLineWidthNotAltered()
 {
     var offscreenCanvas = new OffscreenCanvas(100, 50);
     var ctx = offscreenCanvas.getContext('2d');
@@ -68,7 +53,7 @@ function test5()
     return ctx.lineWidth == 10;
 }
 
-function test6()
+function testTransformPreserved()
 {
     var offscreenCanvas = new OffscreenCanvas(100, 50);
     var ctx = offscreenCanvas.getContext('2d');
@@ -84,7 +69,7 @@ function test6()
     return image2;
 }
 
-function test8()
+function testException()
 {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     return isInvalidStateError("offscreenCanvas.transferToImageBitmap()", offscreenCanvas);
@@ -93,22 +78,22 @@ function test8()
 self.onmessage = function(e) {
     switch (e.data) {
         case 'test1':
-            self.postMessage(test1());
+            self.postMessage(testImageBitmapSize());
             break;
         case 'test2':
-            self.postMessage(test2());
+            self.postMessage(testImageBitmapClr(false, true));
             break;
         case 'test3':
-            self.postMessage(test3());
+            self.postMessage(testImageBitmapClr(true, true));
             break;
         case 'test4':
-            self.postMessage(test4());
+            self.postMessage(testImageBitmapClr(true, false));
             break;
         case 'test5':
-            self.postMessage(test5());
+            self.postMessage(testLineWidthNotAltered());
             break;
         case 'test6':
-            self.postMessage(test6());
+            self.postMessage(testTransformPreserved());
             break;
         case 'test7':
             var offscreenCanvas = new OffscreenCanvas(10, 10);
@@ -116,7 +101,7 @@ self.onmessage = function(e) {
             self.postMessage(isInvalidStateError("offscreenCanvas.transferToImageBitmap()", offscreenCanvas));
             break;
         case 'test8':
-            self.postMessage(test8());
+            self.postMessage(testException());
             break;
     }
 };

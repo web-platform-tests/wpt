@@ -2,11 +2,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-canvas-transfercontroltooffscreen">
 
 <script id="myWorker" type="text/worker">
 
-function test1(offscreenCanvas)
+function testSize(offscreenCanvas)
 {
     if (offscreenCanvas.width == 100 && offscreenCanvas.height == 50)
         return true;
@@ -16,7 +16,7 @@ function test1(offscreenCanvas)
 self.onmessage = function(e) {
     switch (e.data.msg) {
         case 'test1':
-            self.postMessage(test1(e.data.data));
+            self.postMessage(testSize(e.data.data));
             break;
         case 'test2':
             self.postMessage("");
@@ -58,7 +58,7 @@ async_test(function(t) {
         assert_throws("InvalidStateError", function() { placeholder.getContext('2d'); });
     }));
     worker.postMessage({msg: 'test2', data: offscreenCanvas}, [offscreenCanvas]);
-}, "Test that call getContext on a placeholder canvas that is transferred its control to an OffscreenCanvas throws an exception, when the OffscreenCanvas is transferred to a worker");
+}, "Test that calling getContext on a placeholder canvas that is transferred its control to an OffscreenCanvas throws an exception, when the OffscreenCanvas is transferred to a worker");
 
 async_test(function(t) {
     var placeholder = document.createElement('canvas');
@@ -70,7 +70,7 @@ async_test(function(t) {
         assert_throws("InvalidStateError", function() { placeholder.transferControlToOffscreen(); });
     }));
     worker.postMessage({msg: 'test3', data: offscreenCanvas}, [offscreenCanvas]);
-}, "Test that call transferControlToOffscreen twice throws an exception, when its associated OffscreenCanvas is transferred to a worker");
+}, "Test that calling transferControlToOffscreen twice throws an exception, when its associated OffscreenCanvas is transferred to a worker");
 
 </script>
 

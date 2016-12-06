@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#offscreencanvas">
 
 <script id="myWorker" type="text/worker">
 
@@ -17,35 +17,35 @@ function isInvalidStateError(funcStr, offscreenCanvas)
     }
 }
 
-function test2()
+function testExceptionWith2DContext()
 {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     var ctx = offscreenCanvas.getContext('2d');
     return isInvalidStateError("self.postMessage(offscreenCanvas, [offscreenCanvas])", offscreenCanvas);
 }
 
-function test3()
+function testExceptionWithWebGLContext()
 {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     var ctx = offscreenCanvas.getContext('webgl');
     return isInvalidStateError("self.postMessage(offscreenCanvas, [offscreenCanvas])", offscreenCanvas);
 }
 
-function test4()
+function testExceptionWithDetachedOffscreenCanvas1()
 {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     self.postMessage(offscreenCanvas, [offscreenCanvas]);
     return isInvalidStateError("self.postMessage(offscreenCanvas, [offscreenCanvas])", offscreenCanvas);
 }
 
-function test5()
+function testExceptionWithDetachedOffscreenCanvas2()
 {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     self.postMessage(offscreenCanvas, [offscreenCanvas]);
     return isInvalidStateError("offscreenCanvas.getContext('2d')", offscreenCanvas);
 }
 
-function test6()
+function testExceptionWithDetachedOffscreenCanvas3()
 {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     self.postMessage(offscreenCanvas, [offscreenCanvas]);
@@ -59,19 +59,19 @@ self.onmessage = function(e) {
             self.postMessage(offscreenCanvas, [offscreenCanvas]);
             break;
         case 'test2':
-            self.postMessage(test2());
+            self.postMessage(testExceptionWith2DContext());
             break;
         case 'test3':
-            self.postMessage(test3());
+            self.postMessage(testExceptionWithWebGLContext());
             break;
         case 'test4':
-            self.postMessage(test4());
+            self.postMessage(testExceptionWithDetachedOffscreenCanvas1());
             break;
         case 'test5':
-            self.postMessage(test5());
+            self.postMessage(testExceptionWithDetachedOffscreenCanvas2());
             break;
         case 'test6':
-            self.postMessage(test6());
+            self.postMessage(testExceptionWithDetachedOffscreenCanvas3());
             break;
     }
 };
@@ -92,7 +92,7 @@ async_test(function(t) {
         assert_equals(msg.data.height, 10);
     }));
     worker.postMessage('test1');
-}, "test that OffscreenCanvas's size is correct after being transferred from a worker.");
+}, "Test that OffscreenCanvas's size is correct after being transferred from a worker.");
 
 async_test(function(t) {
     var worker = makeWorker(document.getElementById("myWorker").textContent);
@@ -100,7 +100,7 @@ async_test(function(t) {
         assert_true(msg.data);
     }));
     worker.postMessage('test2');
-}, "test that transfer an OffscreenCanvas that has a 2d context throws exception in a worker.");
+}, "Test that transfer an OffscreenCanvas that has a 2d context throws exception in a worker.");
 
 async_test(function(t) {
     var worker = makeWorker(document.getElementById("myWorker").textContent);
@@ -108,7 +108,7 @@ async_test(function(t) {
         assert_true(msg.data);
     }));
     worker.postMessage('test3');
-}, "test that transfer an OffscreenCanvas that has a webgl context throws exception in a worker.");
+}, "Test that transfer an OffscreenCanvas that has a webgl context throws exception in a worker.");
 
 async_test(function(t) {
     var worker = makeWorker(document.getElementById("myWorker").textContent);
@@ -117,7 +117,7 @@ async_test(function(t) {
             assert_true(msg.data);
     }));
     worker.postMessage('test4');
-}, "test that transfer an OffscreenCanvas twice throws exception in a worker.");
+}, "Test that transfer an OffscreenCanvas twice throws exception in a worker.");
 
 async_test(function(t) {
     var worker = makeWorker(document.getElementById("myWorker").textContent);
@@ -126,7 +126,7 @@ async_test(function(t) {
             assert_true(msg.data);
     }));
     worker.postMessage('test5');
-}, "test that call getContext('2d') on a detached OffscreenCanvas throws exception in a worker.");
+}, "Test that calling getContext('2d') on a detached OffscreenCanvas throws exception in a worker.");
 
 async_test(function(t) {
     var worker = makeWorker(document.getElementById("myWorker").textContent);
@@ -135,7 +135,7 @@ async_test(function(t) {
             assert_true(msg.data);
     }));
     worker.postMessage('test6');
-}, "test that call getContext('webgl') on a detached OffscreenCanvas throws exception in a worker.");
+}, "Test that calling getContext('webgl') on a detached OffscreenCanvas throws exception in a worker.");
 
 </script>
 

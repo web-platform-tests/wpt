@@ -1,7 +1,9 @@
+// spec link: https://html.spec.whatwg.org/#dom-offscreencanvas
+
 importScripts("/resources/testharness.js");
 importScripts("/common/canvas-tests.js");
 
-var t1 = async_test("Test that OffscreenCanvas constructor behaves correctly in a worker.");
+var t1 = async_test("Test that calling OffscreenCanvas's constructor generates correct width and height.");
 t1.step(function() {
     var offscreenCanvas = new OffscreenCanvas(100, 50);
     assert_equals(offscreenCanvas.width, 100);

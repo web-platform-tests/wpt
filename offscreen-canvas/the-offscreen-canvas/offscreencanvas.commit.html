@@ -2,16 +2,16 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#offscreencontext2d-commit">
 <script>
 
-function examPlaceholder(placeholder)
+function verifyPlaceholder(placeholder, expectedR, expectedG, expectedB, expectedA, expectedClrStr)
 {
     var canvas = document.createElement('canvas');
     canvas.width = canvas.height = 10;
     var ctx = canvas.getContext('2d');
     ctx.drawImage(placeholder, 0, 0);
-    _assertPixel(canvas, 5,5, 0,255,0,255, "5,5", "0,255,0,255");
+    _assertPixel(canvas, 5,5, expectedR, expectedG, expectedB, expectedA, "5,5", expectedClrStr);
 }
 
 test(function() {
@@ -22,11 +22,14 @@ test(function() {
     ctx.fillStyle = "#0f0";
     ctx.fillRect(0, 0, 10, 10);
     ctx.commit();
+    // commit() propagation is taken care of by an async task, which means the
+    // place holder contents should still be transparent black at this moment.
+    verifyPlaceholder(placeholder, 0,0,0,0, "0,0,0,0");
     // Set timeout acts as a sync barrier to allow commit to propagate
     setTimeout(function() {
-        examPlaceholder(placeholder);
+        verifyPlaceholder(placeholder, 0,255,0,255, "0,255,0,255");
     }, 0);
-}, "Test that commit behaves correctly.");
+}, "Test that calling OffscreenCanvas's commit pushes its contents to its placeholder.");
 
 test(function() {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
@@ -34,7 +37,7 @@ test(function() {
     ctx.fillStyle = "#0f0";
     ctx.fillRect(0, 0, 10, 10);
     assert_throws("InvalidStateError", function() { ctx.commit(); });
-}, "Test that call commit on an OffscreenCanvas that is not transferred from a HTMLCanvasElement throws exception.");
+}, "Test that calling commit on an OffscreenCanvas that is not transferred from a HTMLCanvasElement throws an exception.");
 
 </script>
 

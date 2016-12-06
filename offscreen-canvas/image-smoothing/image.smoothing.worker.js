@@ -1,3 +1,5 @@
+// spec link: https://html.spec.whatwg.org/#the-offscreen-2d-rendering-context
+
 importScripts("/resources/testharness.js");
 
 function createTestImage() {
@@ -32,7 +34,7 @@ test(function() {
   var pixels = ctx.getImageData(9, 9, 1, 1).data;
   assert_not_equals(pixels[0], 0);
   assert_not_equals(pixels[1], 255);
-}, "Test that image smoothing is actually on by default and just the attribute value.");
+}, "Test that image smoothing is actually on by default.");
 
 test(function() {
   var offscreenCanvas = new OffscreenCanvas(100, 50);

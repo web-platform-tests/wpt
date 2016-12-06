@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-offscreencanvas-converttoblob">
 <script id="myWorker" type="text/worker">
 function drawCanvas(ctx)
 {
@@ -35,7 +35,7 @@ function testConvertToBlob(typeVal, qualityVal) {
     });
 }
 
-function test13()
+function testConvertToBlobException1()
 {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     self.postMessage({offscreenCanvas}, [offscreenCanvas]);
@@ -49,7 +49,7 @@ function test13()
     });
 }
 
-function test14()
+function testConvertToBlobException2()
 {
     var offscreenCanvas = new OffscreenCanvas(0, 0);
     offscreenCanvas.convertToBlob().then(function() {
@@ -101,10 +101,10 @@ self.onmessage = function(e) {
             testConvertToBlob("image/webp", 0.2);
             break;
         case 'test13':
-            self.postMessage(test13());
+            self.postMessage(testConvertToBlobException1());
             break;
         case 'test14':
-            self.postMessage(test14());
+            self.postMessage(testConvertToBlobException2());
             break;
     }
 };

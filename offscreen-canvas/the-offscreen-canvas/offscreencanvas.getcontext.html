@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-offscreencanvas-getcontext">
 <script>
 
 test(function() {
@@ -34,7 +34,7 @@ test(function() {
     var ctx3 = offscreenCanvas2.getContext('webgl');
     var ctx4 = offscreenCanvas2.getContext('2d');
     assert_equals(ctx4, null);
-}, "Test that getContext twice with different context type returns null at the second time");
+}, "Test that getContext twice with different context type returns null the second time");
 
 test(function() {
     var offscreenCanvas = new OffscreenCanvas(1, 2);

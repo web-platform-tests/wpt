@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-offscreencanvas">
 <script>
 
 test(function() {
@@ -14,7 +14,7 @@ test(function() {
     offscreenCanvas.height = 100;
     assert_equals(offscreenCanvas.width, 50);
     assert_equals(offscreenCanvas.height, 100);
-}, "Test that OffscreenCanvas constructor behaves correctly.");
+}, "Test that calling OffscreenCanvas's constructor generates correct width and height.");
 
 test(function() {
     var offscreenCanvas1 = new OffscreenCanvas(1, 1);

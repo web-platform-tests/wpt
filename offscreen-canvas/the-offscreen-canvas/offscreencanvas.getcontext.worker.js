@@ -1,3 +1,5 @@
+// spec link: https://html.spec.whatwg.org/#dom-offscreencanvas-getcontext
+
 importScripts("/resources/testharness.js");
 importScripts("/common/canvas-tests.js");
 
@@ -30,7 +32,7 @@ test(function() {
     var ctx3 = offscreenCanvas2.getContext('webgl');
     var ctx4 = offscreenCanvas2.getContext('2d');
     assert_equals(ctx4, null);
-}, "Test that getContext twice with different context type returns null at the second time");
+}, "Test that getContext twice with different context type returns null the second time");
 
 test(function() {
     var offscreenCanvas = new OffscreenCanvas(1, 2);

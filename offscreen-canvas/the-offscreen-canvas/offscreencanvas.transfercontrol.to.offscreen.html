@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#dom-canvas-transfercontroltooffscreen">
 <script>
 
 test(function() {
@@ -20,7 +20,7 @@ test(function() {
     placeholder.height = 50;
     var offscreenCanvas = placeholder.transferControlToOffscreen();
     assert_throws("InvalidStateError", function() { placeholder.getContext('2d'); });
-}, "Test that call getContext on a placeholder canvas that is already transferred its control throws an exception");
+}, "Test that calling getContext on a placeholder canvas that has already transferred its control throws an exception");
 
 test(function() {
     var placeholder = document.createElement('canvas');
@@ -28,7 +28,7 @@ test(function() {
     placeholder.height = 50;
     var offscreenCanvas = placeholder.transferControlToOffscreen();
     assert_throws("InvalidStateError", function() { placeholder.transferControlToOffscreen(); });
-}, "Test that call transferControlToOffscreen twice throws an exception");
+}, "Test that calling transferControlToOffscreen twice throws an exception");
 
 async_test(function(t) {
     var placeholder = document.createElement('canvas');

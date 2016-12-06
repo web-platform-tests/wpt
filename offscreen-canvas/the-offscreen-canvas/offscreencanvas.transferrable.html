@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/canvas-tests.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#the-offscreen-2d-rendering-context">
+<link rel="help" href="https://html.spec.whatwg.org/#offscreencanvas">
 
 <script id="myWorker" type="text/worker">
 
@@ -68,7 +68,7 @@ test(function() {
     assert_throws("InvalidStateError", function() {
         offscreenCanvas.getContext('2d');
     });
-}, "Test that call getContext('2d') on a detached OffscreenCanvas throws exception");
+}, "Test that calling getContext('2d') on a detached OffscreenCanvas throws exception.");
 
 test(function() {
     var worker = makeWorker(document.getElementById("myWorker").textContent);
@@ -77,7 +77,7 @@ test(function() {
     assert_throws("InvalidStateError", function() {
         offscreenCanvas.getContext('webgl');
     });
-}, "Test that call getContext('webgl') on a detached OffscreenCanvas throws exception");
+}, "Test that calling getContext('webgl') on a detached OffscreenCanvas throws exception.");
 
 </script>
 

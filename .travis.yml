@@ -1,5 +1,6 @@
 dist: trusty
 language: python
+sudo: required
 addons:
   hosts:
     - web-platform.test

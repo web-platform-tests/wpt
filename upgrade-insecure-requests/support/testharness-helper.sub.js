@@ -11,6 +11,7 @@ const Protocol = {
 const ResourceType = {
   IMAGE: "image",
   FRAME: "frame",
+  WEBSOCKET: "websocket",
 };
 
 // These tests rely on some unintuitive cleverness due to WPT's test setup:
@@ -21,10 +22,16 @@ function generateURL(host, protocol, resourceType) {
   var url = new URL("http://{{host}}:{{ports[https][0]}}/upgrade-insecure-requests/support/");
   url.protocol = protocol == Protocol.INSECURE ? "http" : "https";
   url.hostname = host == Host.SAME_ORIGIN ? "{{host}}" : "{{domains[天気の良い日]}}";
-  if (resourceType == ResourceType.IMAGE)
+
+  if (resourceType == ResourceType.IMAGE) {
     url.pathname += "pass.png";
-  else if (resourceType == ResourceType.FRAME)
+  } else if (resourceType == ResourceType.FRAME) {
     url.pathname += "post-origin-to-parent.html";
+  } else if (resourceType == ResourceType.WEBSOCKET) {
+    url.port = {{ports[wss][0]}};
+    url.protocol = protocol == Protocol.INSECURE ? "ws" : "wss";
+    url.pathname = "echo";
+  }
   return {
     name: protocol + "/" + host + " "  + resourceType,
     url: url.toString()
@@ -96,4 +103,13 @@ function assert_frame_loads(test, url) {
 
   i.src = url;
   document.body.appendChild(i);
+}
+
+function assert_websocket_loads(test, url) {
+  var w = new WebSocket(url, "echo");
+  w.onopen = test.step_func(_ => {
+    w.onclose = test.step_func_done();
+    w.close();
+  });
+  w.onclose = test.unreached_func("WebSocket should not close before open is called.");
 }

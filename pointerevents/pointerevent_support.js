@@ -21,7 +21,7 @@ function check_PointerEvent(event, testNamePrefix) {
 
     if (expectedPointerType != null) {
         test(function () {
-            assert_equals(event.pointerType, expectedPointerType, "pointerType should be the same as the requested device.");
+            assert_equals(event.pointerType, expectedPointerType, "pointerType should be the one specified in the test page.");
         }, pointerTestName + " event pointerType is correct.");
     }
 

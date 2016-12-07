@@ -20,12 +20,18 @@ async_test(t => {
     iframe.onload = t.step_func_done(() => {
       const result = iframe.contentWindow.document.body.textContent;
 
-      // trim() since there are unrelated bugs in Chrome (which does not append \r\n when doing
-      // text/plain serialization)
-      assert_equals(result.trim(), `input1\uFFFD=input1\uFFFD
-input2\uFFFD=input2\uFFFD
-input3\uFFFD=input3\uFFFD
-input4\uFFFD=input4\uFFFD`);
+      assert_equals(result,
+        "69 6e 70 75 74 31 ef bf bd 3d 69 6e 70 75 74 31 ef bf bd " + // input1\uFFFD=input1\uFFFD
+        "0d 0a "                                                    + // \r\n
+        "69 6e 70 75 74 32 ef bf bd 3d 69 6e 70 75 74 32 ef bf bd " + // input2\uFFFD=input2\uFFFD
+        "0d 0a "                                                    + // \r\n
+        "69 6e 70 75 74 33 ef bf bd 3d 69 6e 70 75 74 33 ef bf bd " + // input3\uFFFD=input3\uFFFD
+        "0d 0a "                                                    + // \r\n
+        "69 6e 70 75 74 34 ef bf bd 3d 69 6e 70 75 74 34 ef bf bd " + // input4\uFFFD=input4\uFFFD
+        "0d 0a"                                                       // \r\n
+      );
+
+      // ef bf bd is the UTF-8 encoding of U+FFFD
     });
 
     form.submit();

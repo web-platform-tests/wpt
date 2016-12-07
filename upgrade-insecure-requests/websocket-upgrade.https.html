@@ -18,7 +18,7 @@ var tests = [
 ];
 
 tests.forEach(test => {
-  async_test(t => assert_websocket_loads(t, test.url, 64, 168), test.name);
+  async_test(t => assert_websocket_loads(t, test.url), test.name);
 });
 </script>
 </body>

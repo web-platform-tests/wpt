@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Body Element</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body id="body_here">
+
+    <h1>Description</h1>
+    <p>This test validates fundamentals of the body element - prototype and existence of spec'ed attributes.</p>
+
+    <div id="log"></div>
+
+    <script>
+        "use strict";
+
+
+	var testAttributes = ["onblur", "onfocus", "onload", "onscroll", "onerror", "onafterprint", "onbeforeprint", "onbeforeunload", 
+                              "onhashchange", "onmessage", "onoffline", "ononline", "onpagehide", 
+                              "onpageshow", "onpopstate", "onresize", "onstorage", "onunload"]; 
+
+        // check that the document.body IDL attribute provides scripts with access to the body element
+        test(function () {
+            assert_equals(document.body, document.getElementById("body_here"), "document.body accesses the body element");
+        }, "document.body accesses the body element");
+
+        // check that the body element's prototype is HTMLBodyElement
+        test(function () {
+            assert_equals(Object.getPrototypeOf(document.body), HTMLBodyElement.prototype, "HTMLBodyElement.prototype should be used for body element");
+        }, "The prototype for body is HTMLBodyElement.prototype");
+
+	// check that each expected 'own' attribute is present
+	// (however, given that "a number of" the attributes are shared with the window object, I am not sure this is the correct approach)
+	for (var i = 0; i < testAttributes.length; i++) {
+	
+		test(function () {
+        		assert_own_property(document.body, testAttributes[i], "Document.body has 'own' property " + testAttributes[i]);
+		}, "Document.body has 'own' property " + testAttributes[i]);
+
+	}
+
+    </script>
+	
+</body>
+</html>

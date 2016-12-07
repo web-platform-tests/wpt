@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Body Element</title>
+    <link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+    <link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#event-handlers-on-elements,-document-objects,-and-window-objects">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+</head>
+<body onblur = "foobar = 0;"
+     onfocus = "foobar = 1;"
+     onload = "foobar = 2;"
+     onscroll = "foobar = 3;"
+     onerror = "foobar = 4;"
+     onafterprint = "foobar = 5;"
+     onbeforeprint = "foobar = 6;"
+     onbeforeunload = "foobar = 7;""
+     onhashchange = "foobar = 8;"
+     onmessage = "foobar = 9;"
+     onoffline = "foobar = 10;"
+     ononline = "foobar = 11;"
+     onpagehide = "foobar = 12;"
+     onpageshow = "foobar = 13;"
+     onpopstate = "foobar = 14;"
+     onresize = "foobar = 15;"
+     onstorage = "foobar = 16;"
+     onunload = "foobar = 17;">
+
+    <h1>Description</h1>
+    <p>This test checks body element's attributes vis-a-vis content markup, IDL methods, and mirroring by the window object.</p>
+
+    <div id="log"></div>
+
+    <script>
+        "use strict";
+
+        // 5.0 Spec lists 18 content attributes for body element and says 
+        //  "The body element expose as event handler content attributes a number of the event handlers of the Window object. 
+        //   It also mirrors their event handler IDL attributes."  
+        // All 18 content attributes are listed in the third section of
+	//   http://www.w3.org/html/wg/drafts/html/CR/single-page.html#event-handlers-on-elements,-document-objects,-and-window-objects,  
+	//   confirming that "a number of" means all eighteen.  
+
+        function makeRegEx(strAttr, strArgs, strCode) {
+		
+	// Spec does not specify if function needs to be named or not, so this test accomodates both		
+            var regEx = /abc/,
+                strFuncName = "(anonymous|" + strAttr + ")";
+
+            regEx = new RegExp("^function\\s*" + strFuncName + "\\s*\\(" + strArgs + "\\)\\s*\\{\\s*" + strCode + "?\\s*\\}\\s*$", "m");
+
+            return regEx;
+        }
+
+        // note:  index of attributes here must match return values of actual markup placeholder functions
+        var testAttributes = ["onblur", "onfocus", "onload", "onscroll", "onerror", "onafterprint", 
+                              "onbeforeprint", "onbeforeunload", "onhashchange", "onmessage", "onoffline", 
+                              "ononline", "onpagehide", "onpageshow", "onpopstate", "onresize", "onstorage", "onunload"];
+
+        var numAttr = 0,  
+            strAttr = "",
+            strCode = "",
+            strArgs = "",
+            strArgsRegEx = "",
+            regEx = /abc/,
+            funcExpected = {},
+            strCheck = "",
+	    foobar = "";
+
+
+        for (numAttr = 0; numAttr < testAttributes.length; numAttr++) {
+
+            strAttr = testAttributes[numAttr]; // name of current attribute to check
+            strCode = "foobar = " + numAttr + ";"; // expected content of content attribute
+            // prepare strings needed to create correct event handler (onerror has more arguments than the others)
+            if (strAttr !== "onerror") {
+
+                strArgs = strArgsRegEx = "event"; 
+
+            } else { // is onerror.  Spec defines exactly four parameters for onerror event, so capturing that in this test.
+
+                strArgs = "event, source, lineno, column";
+                strArgsRegEx = "((event|source|lineno|column),?\\s*){4}"; // for regExp
+            }
+
+            // check that content attribute via markup was correctly read into attributes array
+            test(function () {
+                assert_equals(document.body.attributes[strAttr].value, strCode, "Content attribute " + strAttr + ":");
+            }, strAttr + ": document.body.attributes[" + strAttr + "] populated with content markup for " + strAttr + " attribute");
+
+            // check that body IDL attribute (document.body[strAttr]) mirrors content attribute
+ 	    test(function () {
+            	// (As the functions being compared are not the same object, even though the two objects should have the same code, 
+            	//  we use assert_regexp_match to compare two different function bodies to make sure they are actually the same.)
+
+	    	funcExpected = new Function(strArgs, strCode); 
+            	regEx = makeRegEx(strAttr, strArgsRegEx, strCode);
+
+            	if ((typeof document.body[strAttr] === "function") && (document.body[strAttr] !== undefined) 
+			&& (strCheck = document.body[strAttr].toString(), regEx.test(strCheck))) {
+
+                    assert_regexp_match(strCheck, regEx, "document.body." + strAttr + ":");
+
+            	} else {
+                    assert_equals(document.body[strAttr], funcExpected, "document.body." + strAttr + ":");
+            	}
+	    }, strAttr + ": document.body." + strAttr  + " populated by content markup for " + strAttr + " attribute");
+
+            // check that relevant window event handler (window[strAttr]) mirrors content attribute
+	    test(function() {
+            	// (As the functions being compared are not the same object, even though the two objects should have the same code,  
+            	//  we use assert_regexp_match to compare two different function bodies to make sure they are actually the same.)
+
+	    	funcExpected = new Function(strArgs, strCode); 
+            	regEx = makeRegEx(strAttr, strArgsRegEx, strCode);
+
+            	if ((typeof window[strAttr] === "function") && (window[strAttr] !== undefined) 
+                     	&& (strCheck = window[strAttr].toString(), regEx.test(strCheck))) {
+
+                     assert_regexp_match(strCheck, regEx, "window." + strAttr + ":");
+				
+            	} else {
+                     assert_equals(window[strAttr], funcExpected, "window." + strAttr + ":");
+
+                }
+            }, strAttr + ": window." + strAttr  + " populated by content markup for " + strAttr + " attribute");
+
+
+            // check that document.body[strAttr] updates itself		
+            test(function() {
+		// update expectations
+            	strCode = "foobar = " + numAttr + "-" + numAttr + ";";  
+            	funcExpected = new Function(strArgs, strCode);
+            	regEx  = makeRegEx(strAttr, strArgsRegEx, strCode); 
+
+            	// update document.body
+            	document.body[strAttr] = new Function(strArgs, strCode); 
+
+		// use the regexp to check two functions' equivalency-despite-being-different-objects
+            	if ((typeof document.body[strAttr] === "function") && (document.body[strAttr] !== undefined) 
+                    	&& (strCheck = document.body[strAttr].toString(), regEx.test(strCheck))) {
+
+                    assert_regexp_match(strCheck, regEx, "document.body." + strAttr + ":");
+           
+            	} else {
+
+                    assert_equals(document.body[strAttr], funcExpected, "document.body." + strAttr + ":");
+		}
+
+             }, strAttr + ": changing document.body." + strAttr + " updates document.body." + strAttr);
+
+            // check that document.body[strAttr] updated window.body[strAttr]	
+            test(function() {
+                    assert_equals(window[strAttr], document.body[strAttr], "window." + strAttr + ":");
+            },  strAttr + ": changing document.body." + strAttr + " updates window." + strAttr);	
+
+
+            // check that window[strAttr] updates itself 
+	    // (probably duplicates other tests, but the last test in file relies on window working, so double-checking)	
+            test(function() {
+		// update expectations
+            	strCode = "foobar = " + numAttr + "-" + numAttr + "-" + numAttr + ";";  
+            	funcExpected = new Function(strArgs, strCode);
+            	regEx  = makeRegEx(strAttr, strArgsRegEx, strCode); 
+
+            	// update window
+            	window[strAttr] = new Function(strArgs, strCode); 
+
+		// use the regexp to check two functions' equivalency-despite-white-space
+            	if ((typeof window[strAttr] === "function") && (window[strAttr] !== undefined) 
+                    	&& (strCheck = window[strAttr].toString(), regEx.test(strCheck))) {
+
+                    assert_regexp_match(strCheck, regEx, "window." + strAttr + ":");
+           
+            	} else {
+
+                    assert_equals(document.body[strAttr], funcExpected, "window." + strAttr + ":");
+		}
+
+             }, strAttr + ": changing window." + strAttr + " updates window." + strAttr);
+
+
+            // check that window[strAttr] updated document.body[strAttr].  
+            test(function() { 
+                assert_equals(document.body[strAttr], window[strAttr], "window." + strAttr + ":");
+            }, strAttr + ": changing window." + strAttr + " updates document.body." + strAttr);	
+
+        }
+
+
+        </script>
+	
+</body>
+</html>

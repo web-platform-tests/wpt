@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Body Element</title>
+	<link rel="author" title="dzenana" href="mailto:dzenana.trenutak@gmail.com">
+	<link rel="help" href="http://www.w3.org/html/wg/drafts/html/CR/single-page.html#the-body-element">
+	<meta name="flags" content="popups">
+	<script src="/resources/testharness.js"></script>
+	<script src="/resources/testharnessreport.js"></script>
+</head>
+<body onload="myReaction.push('load-content')"
+      onblur="myReaction.push('blur-content')" 
+      onfocus="myReaction.push('focus-content')" 
+      onmessage="myReaction.push('message-content')"  
+      onstorage="myReaction.push('storage-content')">
+
+
+	<h1>Description</h1>
+	<p>This test validates that all automatable body element IDL event handlers react to relevant events.</p>
+	<p>Please be patient - there is an 11 second delay between events being fired and the tests being run.</p>
+	<p>For this round of tests, a new HTML window is created and the events created relatively physically, </p>
+	<p>rather than relying on the DOM createEvent and dispatchEvent methods.</p>
+	<p>PLEASE NOTE:  YOU NEED TO ALLOW POP-UPS FOR THESE PARTICULAR TESTS TO RUN.</p>
+
+	<div id="log"></div>
+
+	<script>
+		"use strict";
+
+		var myReaction = [];
+		
+		function runTests () {
+
+			var i = 0, strEvent = "", myEvents = ["blur", "load", "pageshow", "scroll",  
+				"hashchange", "popstate", "message", "storage", "error",
+				"beforeunload", "pagehide", "unload", "focus"];
+
+			for (i = 0; i < myEvents.length; i++) {
+
+				strEvent = myEvents[i];
+
+				test(function() {				
+                    			// check that window's content attribute event handler fired
+                    			assert_in_array(strEvent + "-content", myReaction, "on" + strEvent + " content attribute: ");            	
+                		}, "Body's on" + strEvent + " content attribute responds to event.");
+
+			}
+			done();
+		}
+
+		setup(function() {
+ 
+            		// open another window upon which to run the events
+			window.open("sections-body-events-auto-content-RESOURCE.html");
+
+         	}, {explicit_done: true, explicit_timeout: true } );
+
+		setTimeout(runTests, 11000);
+			
+	</script>
+
+</body>
+

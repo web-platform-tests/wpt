@@ -1,37 +1,37 @@
-<svg id="svg-root" width="100%" height="100%"
-  viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink">
-    <text x="170" y="30" font-size="14">Basic Markers</text>
-    <path fill="none" stroke="black" stroke-width="8" d="M 130 40 L 180 40 L 180 90"/>
-    <g transform="translate(130,40) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <rect width="10" height="10" fill="purple" stroke="none"/>
-    </g>
-    <g transform="translate(180,40) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <rect width="10" height="10" fill="purple" stroke="none"/>
-    </g>
-    <g transform="translate(180,90) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <rect width="10" height="10" fill="purple" stroke="none"/>
-    </g>
-    <text x="145" y="125" font-size="14">Start, Middle and End</text>
-    <path fill="none" stroke="black" stroke-width="8" d="M 130 135 L 180 135 L 180 185"/>
-    <g transform="translate(130,135) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <rect width="10" height="10" fill="purple" stroke="none"/>
-    </g>
-    <g transform="translate(180,135) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <circle cx="5" cy="5" r="5" fill="green" stroke="none"/>
-    </g>
-    <g transform="translate(180,185) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <path d="M 5 0 L 10 10 L 0 10 Z" fill="blue" stroke="none"/>
-    </g>
-    <text x="145" y="220" font-size="14">Automatic Orientation</text>
-    <path fill="none" stroke="black" stroke-width="8" d="M 130 230 L 180 230 L 180 280"/>
-    <g transform="translate(130,230) rotate(0) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <path d="M 5 0 L 10 10 L 0 10 Z" fill="blue" stroke="none"/>
-    </g>
-    <g transform="translate(180,230) rotate(45) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <path d="M 5 0 L 10 10 L 0 10 Z" fill="blue" stroke="none"/>
-    </g>
-    <g transform="translate(180,280) rotate(90) scale(8) scale(0.2, 0.2) translate(-5, -5)" fill="none" stroke="black" stroke-width="8">
-        <path d="M 5 0 L 10 10 L 0 10 Z" fill="blue" stroke="none"/>
-    </g>
+<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+  <text x="10" y="30" font-size="14">Basic Markers</text>
+  <path fill="none" stroke="black" stroke-width="16" d="M 130 40 L 180 40 L 180 90"/>
+  <g transform="translate(114,24)">
+    <rect width="32" height="32" fill="purple" stroke="none"/>
+  </g>
+  <g transform="translate(164,24)">
+    <rect width="32" height="32" fill="purple" stroke="none"/>
+  </g>
+  <g transform="translate(164,74)">
+    <rect width="32" height="32" fill="purple" stroke="none"/>
+  </g>
+
+  <text x="10" y="115" font-size="14">Start, Middle and End</text>
+  <path fill="none" stroke="black" stroke-width="16" d="M 130 135 L 180 135 L 180 185"/>
+  <g transform="translate(114,119)">
+    <rect width="32" height="32" fill="purple" stroke="none"/>
+  </g>
+  <g transform="translate(180,135)">
+    <circle r="16" fill="green" stroke="none"/>
+  </g>
+  <g transform="translate(164,169)">
+    <path d="M 16 0 L 32 32 L 0 32 Z" fill="blue" stroke="none"/>
+  </g>
+
+  <text x="10" y="210" font-size="14">Automatic Orientation</text>
+  <path fill="none" stroke="black" stroke-width="16" d="M 130 230 L 180 230 L 180 280"/>
+  <g transform="translate(130,230) rotate(0)">
+    <path d="M 0 -16 L 16 16 L -16 16 Z" fill="blue" stroke="none"/>
+  </g>
+  <g transform="translate(180,230) rotate(45)">
+    <path d="M 0 -16 L 16 16 L -16 16 Z" fill="blue" stroke="none"/>
+  </g>
+  <g transform="translate(180,280) rotate(90)">
+    <path d="M 0 -16 L 16 16 L -16 16 Z" fill="blue" stroke="none"/>
+  </g>
 </svg>

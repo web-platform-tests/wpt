@@ -1,8 +1,8 @@
-<svg width="100%" height="100%" viewBox="0 0 480 360"
+<svg width="500" height="300"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
     <!--
-    'Marker-start', 'marker-mid', and 'marker-end' only render markers at the
+    Test 'Marker-start', 'marker-mid', and 'marker-end' apply markers at the
     appropriate vertices when applied to 'line', 'path', 'polygon' and 'polyline'
     elements.
     Note: 'marker-mid' has no effect on the 'line' element.

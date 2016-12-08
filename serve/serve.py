@@ -601,7 +601,11 @@ def main():
 
     setup_logger(config["log_level"])
 
-    with stash.StashServer((config["host"], get_port()), authkey=str(uuid.uuid4())):
+    stash_address = None
+    if config["bind_hostname"]:
+        stash_address = (config["host"], get_port())
+
+    with stash.StashServer(stash_address, authkey=str(uuid.uuid4())):
         with get_ssl_environment(config) as ssl_env:
             config_, servers = start(config, ssl_env, build_routes(config["aliases"]), **kwargs)
 

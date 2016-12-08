@@ -63,6 +63,19 @@ def check_path_length(repo_root, path):
     return []
 
 
+def check_worker_collision(repo_root, path):
+    endings = [(".any.html", ".any.js"),
+               (".any.worker.html", ".any.js"),
+               (".worker.html", ".worker.js")]
+    for path_ending, generated in endings:
+        if path.endswith(path_ending):
+            return [("WORKER COLLISION",
+                     "path ends with %s which collides with generated tests from %s files" % (path_ending, generated),
+                     path,
+                     None)]
+    return []
+
+
 def parse_whitelist(f):
     """
     Parse the whitelist file given by `f`, and return the parsed structure.
@@ -441,7 +454,7 @@ def lint(repo_root, paths, output_json):
             print(ERROR_MSG % (last[0], last[1], last[0], last[1]))
     return sum(itervalues(error_count))
 
-path_lints = [check_path_length]
+path_lints = [check_path_length, check_worker_collision]
 file_lints = [check_regexp_line, check_parsed, check_python_ast]
 
 if __name__ == "__main__":

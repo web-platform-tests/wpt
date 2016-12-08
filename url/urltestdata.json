@@ -1292,7 +1292,7 @@
   {
     "input": "#β",
     "base": "http://example.org/foo/bar",
-    "href": "http://example.org/foo/bar#β",
+    "href": "http://example.org/foo/bar#%CE%B2",
     "origin": "http://example.org",
     "protocol": "http:",
     "username": "",
@@ -1302,7 +1302,7 @@
     "port": "",
     "pathname": "/foo/bar",
     "search": "",
-    "hash": "#β"
+    "hash": "#%CE%B2"
   },
   {
     "input": "data:text/html,test#test",
@@ -2161,7 +2161,7 @@
   {
     "input": "http://www.google.com/foo?bar=baz# »",
     "base": "about:blank",
-    "href": "http://www.google.com/foo?bar=baz# »",
+    "href": "http://www.google.com/foo?bar=baz# %C2%BB",
     "origin": "http://www.google.com",
     "protocol": "http:",
     "username": "",
@@ -2171,12 +2171,12 @@
     "port": "",
     "pathname": "/foo",
     "search": "?bar=baz",
-    "hash": "# »"
+    "hash": "# %C2%BB"
   },
   {
     "input": "data:test# »",
     "base": "about:blank",
-    "href": "data:test# »",
+    "href": "data:test# %C2%BB",
     "origin": "null",
     "protocol": "data:",
     "username": "",
@@ -2186,7 +2186,7 @@
     "port": "",
     "pathname": "test",
     "search": "",
-    "hash": "# »"
+    "hash": "# %C2%BB"
   },
   {
     "input": "http://[www.google.com]/",

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Element ready check for containing iframe, element's document is not the active document</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../trusted-click.js"></script>
+<div id="log"></div>
+<iframe allowfullscreen></iframe>
+<script>
+async_test((t) => {
+  onload = () => {
+    var iframes = document.getElementsByTagName("iframe");
+    trusted_request(iframes[0].contentDocument.body, document.body);
+    window[0].location.href = '/common/blank.html';
+    iframes[0].contentDocument.onfullscreenchange = t.unreached_func("fullscreenchange event");
+    iframes[0].contentDocument.onfullscreenerror = t.step_func_done();
+  };
+});
+</script>

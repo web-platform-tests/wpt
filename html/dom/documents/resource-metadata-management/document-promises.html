@@ -87,9 +87,9 @@ test(() => {
   });
 }, "Setup code");
 
-promise_test(() => parsedAssertions, "document.parsed");
-promise_test(() => contentLoadedAssertions, "document.contentLoaded");
-promise_test(() => loadedAssertions, "document.loaded");
+promise_test(() => parsedAssertions || assert_unreached(), "document.parsed");
+promise_test(() => contentLoadedAssertions || assert_unreached(), "document.contentLoaded");
+promise_test(() => loadedAssertions || assert_unreached(), "document.loaded");
 
 // Historical names must not be supported
 test(() => {

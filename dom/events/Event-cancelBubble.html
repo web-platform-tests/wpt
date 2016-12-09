@@ -67,14 +67,14 @@ test(function () {
   assert_true(one.cancelBubble, "cancelBubble must still be true after attempting to set it to false.");
 }, "Event.cancelBubble=false must have no effect.");
 
-test(function () {
+test(function (t) {
   var outer = document.getElementById('outer');
   var middle = document.getElementById('middle');
   var inner = document.getElementById('inner');
 
-  outer.addEventListener('barbaz', function () {
+  outer.addEventListener('barbaz', t.step_func(function () {
     assert_unreached("Setting Event.cancelBubble=false after setting Event.cancelBubble=true should have no effect.");
-  }, false/*useCapture*/);
+  }), false/*useCapture*/);
 
   middle.addEventListener('barbaz', function (e) {
     e.cancelBubble = true;// Stop propagation.
@@ -98,7 +98,7 @@ test(function () {
   assert_false(e.cancelBubble, "cancelBubble must be false after an event has been dispatched.");
 }, "cancelBubble must be false after an event has been dispatched.");
 
-test(function () {
+test(function (t) {
   var outer = document.getElementById('outer');
   var middle = document.getElementById('middle');
   var inner = document.getElementById('inner');
@@ -109,9 +109,9 @@ test(function () {
 
   // Bubble phase
   middle.addEventListener('bar', propagationStopper, false/*useCapture*/);
-  outer.addEventListener('bar', function listenerOne() {
+  outer.addEventListener('bar', t.step_func(function listenerOne() {
     assert_unreached("Setting cancelBubble=true should stop the event from bubbling further.");
-  }, false/*useCapture*/);
+  }), false/*useCapture*/);
 
   var barEvent = document.createEvent('Event');
   barEvent.initEvent('bar', true/*bubbles*/, false/*cancelable*/);
@@ -119,9 +119,9 @@ test(function () {
 
   // Capture phase
   outer.addEventListener('qux', propagationStopper, true/*useCapture*/);
-  middle.addEventListener('qux', function listenerTwo() {
+  middle.addEventListener('qux', t.step_func(function listenerTwo() {
     assert_unreached("Setting cancelBubble=true should stop the event from propagating further, including during the Capture Phase.");
-  }, true/*useCapture*/);
+  }), true/*useCapture*/);
 
   var quxEvent = document.createEvent('Event');
   quxEvent.initEvent('qux', false/*bubbles*/, false/*cancelable*/);

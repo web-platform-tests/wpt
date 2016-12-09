@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="./support/testharness-helper.sub.js"></script>
+</head>
+<body>
+    <script>
+      var embedding_src = '../support/echo-embedding-csp.py';
+      var policy_src = '../support/echo-policy.py?policy=';
+      var redirect_url = '/common/redirect.py?location=';
+      var support = 'http://{{host}}:{{ports[http][0]}}/content-security-policy/support/';
+      function generateRedirect(target) { 
+        return redirect_url + support + target; 
+      }
+
+      async_test(t => {
+        var i = document.createElement('iframe');
+        i.src = embedding_src;
+
+        window.addEventListener('message', t.step_func(e => {
+          if (e.source != i.contentWindow)
+              return;
+          assert_equals(e.data['embedding_csp'], null);
+          t.done();
+        }));
+
+        document.body.appendChild(i);
+      }, "Embedding-CSP is not sent if csp attribute is not set on <iframe>.");
+
+      async_test(t => {
+        var i = document.createElement('iframe');
+        i.csp = "script-src 'unsafe-inline'";
+        i.src = embedding_src;
+
+        window.addEventListener('message', t.step_func(e => {
+          if (e.source != i.contentWindow)
+              return;
+          assert_equals("script-src 'unsafe-inline'", e.data['embedding_csp']);
+          t.done();
+        }));
+
+        document.body.appendChild(i);
+      }, "Send Embedding-CSP when csp attribute of <iframe> is not empty.");
+
+      async_test(t => {
+        var i = document.createElement('iframe');
+        i.csp = "script-src 'unsafe-inline'";
+        i.src = policy_src;
+        document.body.appendChild(i);
+
+        i.contentWindow.location = embedding_src;
+        window.addEventListener('message', t.step_func(e => {
+          if (e.source != i.contentWindow || !('embedding_csp' in e.data))
+              return;
+          assert_equals("script-src 'unsafe-inline'", e.data['embedding_csp']);
+          t.done();
+        }));
+      }, "Send Embedding-CSP Header on change of window's location.");
+
+      async_test(t => {
+        var i = document.createElement('iframe');
+        i.csp = "script-src 'unsafe-inline'";
+        i.src = policy_src;
+        document.body.appendChild(i);
+
+        i.csp = "default-src 'unsafe-inline'";
+        i.src = embedding_src;
+        window.addEventListener('message', t.step_func(e => {
+          if (e.source != i.contentWindow || !('embedding_csp' in e.data))
+              return;
+          assert_equals("default-src 'unsafe-inline'", e.data['embedding_csp']);
+          t.done();
+        }));
+      }, "Send Embedding-CSP Header on change of `src` attribute on iframe.");
+
+      async_test(t => {
+        var i = document.createElement('iframe');
+        i.csp = "script-src 'unsafe-inline'";
+        i.src = generateRedirect(embedding_src);
+        document.body.appendChild(i);
+
+        window.addEventListener('message', t.step_func(e => {
+          if (e.source != i.contentWindow || !('embedding_csp' in e.data))
+            return;
+          assert_equals("script-src 'unsafe-inline'", e.data['embedding_csp']);
+          t.done();
+        }));
+      }, "Set Embedding-CSP Header on redirect.");
+
+      async_test(t => {
+        var i = document.createElement('iframe');
+        i.csp = "script-src 'unsafe-inline'";
+        i.src = generateRedirect(policy_src);
+        document.body.appendChild(i);
+
+        i.csp = "default-src 'unsafe-inline'";
+        i.src = generateRedirect(embedding_src);
+        window.addEventListener('message', t.step_func(e => {
+          if (e.source != i.contentWindow || !('embedding_csp' in e.data))
+              return;
+          assert_equals("default-src 'unsafe-inline'", e.data['embedding_csp']);
+          t.done();
+        }));
+      }, "Send Embedding-CSP Header on change of `csp` attribute and redirect.");
+    </script>
+</body>
+</html>

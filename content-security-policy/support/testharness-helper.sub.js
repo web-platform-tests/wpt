@@ -41,6 +41,13 @@ function generateUrlWithPolicies(host, policy) {
     return url + "?policy=" + encodeURIComponent(policy);
 }
 
+function generateUrlWithAllowCSPFrom(host, allowCspFrom) {
+  var url = generateURL(host, PolicyHeader.ALLOW_CSP_FROM);
+  if (allowCspFrom == null)
+    return url + "?";
+  return url + "?allow_csp_from=" + encodeURIComponent(allowCspFrom);
+}
+
 function assert_embedding_csp(t, url, csp, expected) {
   var i = document.createElement('iframe');
   if(csp)
@@ -95,6 +102,7 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
       t.done();
     }));
   } else {
+    // Assert iframe loads.
     i.onload = t.step_func(function () {
       // Delay the check until after the postMessage has a chance to execute.
       setTimeout(t.step_func_done(function () {

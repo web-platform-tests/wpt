@@ -90,4 +90,9 @@ test(() => {
 promise_test(() => parsedAssertions, "document.parsed");
 promise_test(() => contentLoadedAssertions, "document.contentLoaded");
 promise_test(() => loadedAssertions, "document.loaded");
+
+// Historical names must not be supported
+test(() => {
+  assert_false('interactive' in document);
+}, 'document.interactive must not be supported')
 </script>

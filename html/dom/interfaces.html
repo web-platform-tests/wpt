@@ -923,7 +923,7 @@ partial interface Document {
   attribute USVString cookie;
   readonly attribute DOMString lastModified;
   readonly attribute DocumentReadyState readyState;
-  [Unscopable] readonly attribute Promise<void> interactive;
+  [Unscopable] readonly attribute Promise<void> parsed;
   [Unscopable] readonly attribute Promise<void> contentLoaded;
   [Unscopable] readonly attribute Promise<void> loaded;
 

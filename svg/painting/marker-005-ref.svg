@@ -1,7 +1,7 @@
 <svg width="500" height="500"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:html="http://www.w3.org/1999/xhtml">
-    <!-- 
+    <!--
         Verify result of overflow using explicit clip boxes.
         Dimensions of shapes in markers are different than in the test so that
         the ref will be different to the test when neither overflow nor
@@ -170,7 +170,7 @@
         <path id="p4" class="testpaths" d="M 130 40 L 180 40 L 180 90"/>
         <path id="p5" class="testpaths" d="M 130 135 L 180 135 L 180 185"/>
         <path id="p6" class="testpaths" d="M 130 230 L 180 230 L 180 280"/>
-      </g> 
+      </g>
       <g id="subtest3" transform="scale(0.6) translate(300,0)">
         <path id="p7" class="testpaths" d="M 130 40 L 180 40 L 180 90"/>
         <path id="p8" class="testpaths" d="M 130 135 L 180 135 L 180 185"/>

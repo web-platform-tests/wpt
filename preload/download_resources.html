@@ -19,9 +19,6 @@
 <script>
     window.addEventListener("load", t.step_func(function() {
         var entries = performance.getEntriesByType("resource");
-        for (var i = 0; i < entries.length; ++i) {
-            console.log(entries[i].name);
-        }
         assert_equals(performance.getEntriesByType("resource").length, 11);
         t.done();
     }));

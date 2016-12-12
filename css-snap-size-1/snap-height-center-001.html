@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>CSS Snap Size: snap-height center</title>
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-snap-size/#snap-height">
+<link rel="match" href="reference/snap-height-center-001.html">
+<meta name="assert" content="This test asserts the snap-height property rounds up line box height.">
+<meta name="flags" content="ahem">
+<style>
+div {
+  font-family: Ahem;
+  font-size: 40px;
+}
+.test, .ref {
+  display: inline-block;
+  vertical-align: top;
+  width: 5em;
+}
+.test {
+  line-height: 40px;
+  snap-height: 60px;
+}
+.ref {
+  line-height: 60px;
+}
+</style>
+<p class="instructions">Test passes if left and right are the same.
+<div class="ref">
+  <div>XXXXX</div>
+  <div>XXXXX XXXXX XXXXX</div>
+  <div><br>X<br>X</div>
+</div>
+<div class="test">
+  <div>XXXXX</div>
+  <div>XXXXX XXXXX XXXXX</div>
+  <div><br>X<br>X</div>
+</div>

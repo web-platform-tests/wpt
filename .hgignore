@@ -12,3 +12,5 @@ tools/cache
 *~
 *.orig
 *Thumbs.db
+_certs
+config.json

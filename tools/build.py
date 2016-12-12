@@ -10,6 +10,7 @@ import os
 import json
 import optparse
 import shutil
+from collections import defaultdict
 from apiclient import apiclient
 from w3ctestlib import Sources, Utils, Suite, Indexer
 from mercurial import ui
@@ -73,16 +74,21 @@ class Builder(object):
             if ('children' in anchor):
                 self._addAnchors(anchor['children'], specName)
 
+    def _normalizeScheme(self, url):
+        if (url and url.startswith('http:')):
+            return 'https:' + url[5:]
+        return url
+
     def getSpecName(self, url):
         if (not self.specNames):
             for specName in self.specificationData:
                 specData = self.specificationData[specName]
-                officialURL = specData.get('base_uri')
+                officialURL = self._normalizeScheme(specData.get('base_uri'))
                 if (officialURL):
                     if (officialURL.endswith('/')):
                         officialURL = officialURL[:-1]
                     self.specNames[officialURL.lower()] = specName
-                draftURL = specData.get('draft_uri')
+                draftURL = self._normalizeScheme(specData.get('draft_uri'))
                 if (draftURL):
                     if (draftURL.endswith('/')):
                         draftURL = draftURL[:-1]
@@ -93,7 +99,7 @@ class Builder(object):
                 if ('draft_anchors' in specData):
                     self._addAnchors(specData['draft_anchors'], specName)
 
-        url = url.lower()
+        url = self._normalizeScheme(url.lower())
         for specURL in self.specNames:
             if (url.startswith(specURL) and
                 ((url == specURL) or
@@ -114,41 +120,47 @@ class Builder(object):
             return
 
         self.ui.note("Scanning directory: ", dir, "\n")
-        suiteFileNames = {}
+        suiteFileNames = defaultdict(set)
         for fileName in Utils.listfiles(dir):
             filePath = os.path.join(dir, fileName)
-            if (self.sourceTree.isTestCase(filePath)):
-                source = self.sourceCache.generateSource(filePath, fileName)
-                if (source.isTest()):
-                    metaData = source.getMetadata(True)
-                    if (metaData):
-                        for specURL in metaData['links']:
-                            specName, anchorURL = self.getSpecName(specURL)
-                            if (specName):
-                                if (specName in self.buildSpecNames):
-                                    if (anchorURL):
-                                        for testSuiteName in self.buildSpecNames[specName]:
-                                            formats = self.testSuiteData[testSuiteName].get('formats')
-                                            if (formats):
-                                                for formatName in formats:
-                                                    if (((formatName) in self.formatData) and
-                                                        (self.formatData[formatName].get('mime_type') == source.mimetype)):
-                                                        if (testSuiteName not in suiteFileNames):
-                                                            suiteFileNames[testSuiteName] = set()
-                                                        suiteFileNames[testSuiteName].add(fileName)
-                                                        break
-                                                else:
-                                                    self.ui.note("Test not in acceptable format: ", source.mimetype, "\n for: ", filePath, "\n")
-                                    else:
-                                        self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
-                            else:
-                                self.ui.note("Unknown specification URL: ", specURL, "\n  in: ", filePath, "\n")
-                    else:
-                        if (source.errors):
-                            self.ui.warn("Error parsing '", filePath, "': ", ' '.join(source.errors), "\n")
-                        else:
-                            self.ui.warn("No metadata available for '", filePath, "'\n")
+            if not self.sourceTree.isTestCase(filePath):
+                continue
 
+            source = self.sourceCache.generateSource(filePath, fileName)
+            if not source.isTest():
+                continue
+
+            metaData = source.getMetadata(True)
+            if not metaData:
+                if (source.errors):
+                    self.ui.warn("Error parsing '", filePath, "': ", ' '.join(source.errors), "\n")
+                else:
+                    self.ui.warn("No metadata available for '", filePath, "'\n")
+                continue
+
+            for specURL in metaData['links']:
+                specName, anchorURL = self.getSpecName(specURL)
+                if not specName:
+                    self.ui.note("Unknown specification URL: ", specURL, "\n  in: ", filePath, "\n")
+                    continue
+
+                if not specName in self.buildSpecNames:
+                    continue
+
+                if not anchorURL:
+                    self.ui.warn("Test links to unknown specification anchor: ", specURL, "\n  in: ", filePath, "\n")
+                    continue
+
+                for testSuiteName in self.buildSpecNames[specName]:
+                    formats = self.testSuiteData[testSuiteName].get('formats')
+                    if (formats):
+                        for formatName in formats:
+                            if (((formatName) in self.formatData) and
+                                (self.formatData[formatName].get('mime_type') == source.mimetype)):
+                                suiteFileNames[testSuiteName].add(fileName)
+                                break
+                        else:
+                            self.ui.note("Test not in acceptable format: ", source.mimetype, "\n for: ", filePath, "\n")
 
         for testSuiteName in suiteFileNames:
             if (dirName in self.rawDirs):
@@ -240,7 +252,7 @@ class Builder(object):
         else:
             self.buildSuiteNames = [testSuiteName for testSuiteName in self.testSuiteData if self.testSuiteData[testSuiteName].get('build')]
 
-        self.buildSpecNames = {}
+        self.buildSpecNames = defaultdict(list)
         if (self.buildSuiteNames):
             self.specificationData = self._loadShepherdData('specifications', 'specification', anchors = True, draft = True)
             if (not self.specificationData):
@@ -251,10 +263,7 @@ class Builder(object):
                 if (specNames):
                     for specName in specNames:
                         if (specName in self.specificationData):
-                            if (specName in self.buildSpecNames):
-                                self.buildSpecNames[specName].append(testSuiteName)
-                            else:
-                                self.buildSpecNames[specName] = [testSuiteName]
+                            self.buildSpecNames[specName].append(testSuiteName)
                         else:
                             self.ui.warn("WARNING: Test suite '", testSuiteName, "' references unknown specification: '", specName, "'.\n")
                 else:
@@ -385,6 +394,3 @@ if __name__ == "__main__":      # called from the command line
     builder = Builder(ui, options.output, options.backup, options.ignore, options.cache)
     result = builder.build(args)
     quit(result)
-
-
-

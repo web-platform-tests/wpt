@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>CSS Snap Size: snap-height dynamic change</title>
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-snap-size/#snap-height">
+<meta name="assert" content="This test asserts changing the snap-height property takes effects.">
+<meta name="flags" content="dom">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+div {
+  font-size: 20px;
+  line-height: 1;
+}
+</style>
+<div id="log"></div>
+<div id="target">X</div>
+<div id="next">X</div>
+<script>
+var before = next.offsetTop;
+target.style.snapHeight = "40px";
+var after = next.offsetTop;
+forceRelayout(document.documentElement);
+var afterRelayout = next.offsetTop;
+
+test(function () {
+  assert_not_equals(after, before, "Height must change when snap-height changes");
+  assert_equals(after, afterRelayout, "Height must not change after relayout");
+});
+
+function forceRelayout(element) {
+  var saved = element.style.display;
+  element.style.display = "none";
+  element.offsetTop;
+  element.style.display = saved;
+  element.offsetTop;
+}
+</script>

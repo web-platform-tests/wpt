@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>CSS Snap Size: parsing snap-height</title>
+<link rel="author" title="Koji Ishii" href="mailto:kojiishi@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-snap-size/#snap-height">
+<meta name="assert" content="This test asserts the parsing and getComputedStyle works correctly for the snap-height property.">
+<meta name="flags" content="dom">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div data-expected="0px" title="initial value"></div>
+
+<div style="snap-height: 20px 60" data-expected="20px 60">
+  <div data-expected="20px 60" title="snap-height should inherit"></div>
+  <div style="snap-height: initial" data-expected="0px"></div>
+  <div style="snap-height: initial; snap-height: inherit" data-expected="20px 60"></div>
+
+  <div style="snap-height: 40px" data-expected="40px"></div>
+
+  <div style="snap-height: 0" data-expected="0px"></div>
+
+  <div style="snap-height: 1" data-expected="20px 60"></div>
+
+  <div style="snap-height: -1px" data-expected="20px 60"></div>
+  <div style="snap-height: 40px -1" data-expected="20px 60"></div>
+  <div style="snap-height: 40px 0" data-expected="20px 60"></div>
+  <div style="snap-height: 40px 101" data-expected="20px 60"></div>
+</div>
+
+<div id="pt" style="snap-height: 40pt"></div>
+
+<script>
+Array.prototype.forEach.call(document.querySelectorAll("[data-expected]"), function (element) {
+  test(function () {
+    var actual = getComputedStyle(element).snapHeight;
+    assert_equals(actual, element.dataset.expected);
+  }, element.title || element.getAttribute("style"));
+});
+
+test(function () {
+  assert_equals(getComputedStyle(document.getElementById("pt")).snapHeight.slice(-2), "px");
+}, "Computed value must be the absolute length");
+</script>

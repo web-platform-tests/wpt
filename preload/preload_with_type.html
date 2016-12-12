@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/media.js"></script>
+<script>
+    var t = async_test('Makes sure that preloaded resources with a type attribute trigger the onload event');
+    var scriptLoaded = false;
+    var styleLoaded = false;
+    var imageLoaded = false;
+    var fontLoaded = false;
+    var videoLoaded = false;
+    var audioLoaded = false;
+    var trackLoaded = false;
+    var gibberishLoaded = 0;
+    var getExtension = function(url) {
+        var dot = url.lastIndexOf('.');
+        if (dot != -1)
+            return url.substring(dot + 1);
+        return null;
+    };
+    videoURL = getVideoURI("/media/white");
+    audioURL = getVideoURI("/media/sound_5");
+    videoExt = getExtension(videoURL);
+    audioExt = getExtension(audioURL);
+</script>
+<link rel=preload href="resources/dummy.js" as=script type="text/javascript" onload="scriptLoaded = true;">
+<link rel=preload href="resources/dummy.css" as=style type="text/css" onload="styleLoaded = true;">
+<link rel=preload href="resources/square.png" as=image type="image/png" onload="imageLoaded = true;">
+<link rel=preload href="/fonts/CanvasTest.ttf" as=font type="font/ttf" crossorigin onload="fontLoaded = true;">
+<script>
+    document.write('<link rel=preload href="' + videoURL + '" as=media type="video/' + videoExt + '" onload="videoLoaded = true;">');
+    document.write('<link rel=preload href="' + audioURL + '" as=media type="audio/' + audioExt + '" onload="audioLoaded = true;">');
+</script>
+<link rel=preload href="/media/foo.vtt" as=media type="text/vtt" onload="trackLoaded = true;">
+<link rel=preload href="resources/dummy.js" as=script type="application/foobar" onload="gibberishLoaded++;">
+<link rel=preload href="resources/dummy.css" as=style type="text/foobar" onload="gibberishLoaded++;">
+<link rel=preload href="resources/square.png" as=image type="image/foobar" onload="gibberishLoaded++;">
+<link rel=preload href="/fonts/CanvasTest.ttf" as=font type="font/foobar" crossorigin onload="gibberishLoaded++;">
+<script>
+    document.write('<link rel=preload href="' + videoURL + '" as=media type="video/foobar" onload="gibberishLoaded++;">');
+    document.write('<link rel=preload href="' + audioURL + '" as=media type="audio/foobar" onload="gibberishLoaded++;">');
+</script>
+<link rel=preload href="/media/foo.vtt" as=media type="text/foobar" onload="gibberishLoaded++;">
+<body>
+<script src="resources/dummy.js?pipe=trickle(d0.5)"></script>
+<script>
+    window.onload = t.step(function(){
+        assert_true(styleLoaded, "style triggered load event");
+        assert_true(scriptLoaded, "script triggered load event");
+        assert_true(imageLoaded, "image triggered load event");
+        assert_true(fontLoaded, "font triggered load event");
+        assert_true(videoLoaded, "video triggered load event");
+        assert_true(audioLoaded, "audio triggered load event");
+        assert_true(trackLoaded, "track triggered load event");
+        assert_equals(gibberishLoaded, 0, "resources with gibberish type should not be loaded");
+        t.done();
+    });
+</script>
+</body>
+</html>

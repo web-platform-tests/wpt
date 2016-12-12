@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/test_utils.js"></script>
+
+    <script>
+      setup({ "explicit_done": true });
+
+      // Test all combinations of datatypes. Every test writes data,
+      // deletes it, and tests whether the deletion had been successful.
+      // The tests must be run sequentially as they work with the same
+      // data backends.
+      function testCombinationWithIndex(index) {
+        if (index == TestUtils.COMBINATIONS.length) {
+          done();
+          return;
+        }
+
+        var combination = TestUtils.COMBINATIONS[index];
+        var test = async_test(
+            "Clear datatypes on navigation: " +
+            combination.map(function(e) { return e.name; }).join(", "));
+
+        test.step(function() {
+          // Make sure all datatypes are nonempty.
+          for (var i = 0; i < TestUtils.DATATYPES.length; i++) {
+            TestUtils.DATATYPES[i].add();
+            assert_false(
+                TestUtils.DATATYPES[i].isEmpty(),
+                TestUtils.DATATYPES[i].name +
+                    " has to be nonempty before the test starts.");
+          }
+
+          // Navigate to a resource with a Clear-Site-Data header in an iframe.
+          // Verify that the correct types have been deleted.
+          var iframe = document.createElement("iframe");
+          document.body.appendChild(iframe);
+
+          iframe.addEventListener("load", test.step_func(function() {
+            for (var i = 0; i < TestUtils.DATATYPES.length; i++) {
+              if (combination.indexOf(TestUtils.DATATYPES[i]) != -1) {
+                assert_true(
+                    TestUtils.DATATYPES[i].isEmpty(),
+                    TestUtils.DATATYPES[i].name +
+                        " should have been cleared.");
+              } else {
+                assert_false(
+                    TestUtils.DATATYPES[i].isEmpty(),
+                    TestUtils.DATATYPES[i].name +
+                        " should NOT have been cleared.");
+              }
+            }
+            test.done();
+          }));
+
+          // Run the next test. This is not part of step_func() above, so that
+          // it can run regardless of whether the current test succeeded.
+          iframe.addEventListener("load", function() {
+            testCombinationWithIndex(index + 1);
+          });
+
+          iframe.src = TestUtils.getClearSiteDataUrl(
+              TestUtils.COMBINATIONS[index]);
+        });
+      }
+
+      // Run the test for the first combination. The rest will be executed
+      // recursively.
+      window.onload = function() { testCombinationWithIndex(0); }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

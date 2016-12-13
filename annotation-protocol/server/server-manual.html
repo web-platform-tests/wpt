@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Annotation Protocol Must Tests</title>
+<title>Annotation Protocol Tests</title>
 <link rel="stylesheet" href="/resources/testharness.css">
 <style>
 .validationError {
@@ -195,6 +195,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
 
   // Section 4 has a requirement that the URL end in a slash, so...
   // ensure the url has a length
+  // TEST 1
   test(function() {
     assert_regexp_match(container_url, /\/$/, 'Container URL did not end in a "/" character');
   }, 'Container MUST end in a "/" character');
@@ -202,6 +203,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
   // Container tests
   var theContainer = request("GET", container);
 
+  // TESTS 2-13
   makePromiseTests( theContainer, [
       { header: 'Allow', pat: /GET/, assertion: "Containers MUST support GET (check Allow on GET)" },
       { header: 'Allow', pat: /HEAD/, assertion: "Containers MUST support HEAD (check Allow on GET)" },
@@ -222,12 +224,14 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
   ] );
 
 
+  // TEST 14
   promise_test(function() {
       return request("HEAD", container).then(function(res) {
           assert_equals(res.status, 200, "HEAD request returned " + res.status);
           });
       }, "Containers MUST support HEAD method");
 
+  // TEST 15
   promise_test(function() {
       return request("OPTIONS", container).then(function(res) {
           assert_equals(res.status, 200, "OPTIONS request returned " + res.status);
@@ -237,11 +241,13 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
   // Container representation tests
 
 
+  // TESTS 16-17
   makePromiseTests( theContainer, [
       { header: 'Content-Location', pat: /(.*)/, assertion: "Containers MUST include a Content-Location header with the IRI as its value" },
       { header: 'Content-Location', test: function(res) { if (res.xhr.getResponseHeader('content-location') === res.body.id ) { return true; } else { return false;} }, assertion: "Container's Content-Location and `id` MUST match" }
       ]);
 
+  // TEST 18
   promise_test(function() {
     return theContainer.then(function(res) {
       var f = res.body.first;
@@ -258,6 +264,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
     });
   }, "Annotation Pages must have a link to the container they are part of, using the partOf property");
 
+  // TEST 19
   promise_test(function() {
     return theContainer.then(function(res) {
       var l = res.body.last;
@@ -270,6 +277,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
     });
   }, "Annotation Pages MUST have a link to the previous page in the sequence, using the prev property (if not the first page)");
 
+  // TEST 20
   promise_test(function() {
     return theContainer.then(function(res) {
       var f = res.body.first;
@@ -285,6 +293,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
   // Annotation Tests
   var theRequest = request("GET", annotation);
 
+  // TESTS 21-27
   makePromiseTests( theRequest, [
       { header: 'Allow', pat: /GET/, assertion: "Annotations MUST support GET (check Allow on GET)" },
       { header: 'Allow', pat: /HEAD/, assertion: "Annotations MUST support HEAD (check Allow on GET)" },
@@ -295,12 +304,14 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
       { header: 'Vary', pat: /Accept/, assertion: 'Annotations MUST have a Vary header with Accept in the value'},
       ] );
 
+  // TEST 28
   promise_test(function() {
     return request("HEAD", annotation).then(function(res) {
       assert_equals(res.status, 200, "HEAD request returned " + res.status);
       });
     }, "Annotations MUST support HEAD method");
 
+  // TEST 29
   promise_test(function() {
     return request("OPTIONS", annotation).then(function(res) {
         assert_equals(res.status, 200, "OPTIONS request returned " + res.status);
@@ -326,6 +337,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
     }
   });
 
+  // TESTS 30-33
   makePromiseTests( theCreation, [
       { test: function(res) { return ('id' in res.body); }, assertion: "Created Annotation MUST have an id property" },
       { test: function(res) { return (('id' in res.body) && (res.body.id.search(container_url) > -1));}, assertion: "Created Annotation MUST have an id that starts with the Container IRI" },
@@ -338,6 +350,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
         } , assertion: "Location header SHOULD match the id of the new Annotation" },
       ]);
 
+  // TEST 34
   promise_test(function() {
     return theCreation.then(function(res) {
       createdEtag = res.xhr.getResponseHeader("ETag") ;
@@ -351,6 +364,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
     });
   }, "Annotation update must be done with the PUT method");
 
+  // TEST 35
   promise_test(function() {
     var theDeletion = request("DELETE", fixURI(createdAnnotation), [['If-Match', createdEtag]] );
     return theDeletion.then(function(lres) {
@@ -368,6 +382,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
     }
   });
 
+  // TESTS 36-37
   makePromiseTests( theCreationCanonical, [
       { test: function(res) { return ( 'canonical' in res.body && res.body.canonical === theAnnotationCanonical.canonical ); }, assertion: "Created Annotation MUST preserve any canonical IRI" },
       { test: function(res) {
@@ -380,6 +395,8 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
 
   // SHOULD tests
 
+
+  // TEST 38
   test(function() {
     assert_equals("https", container_url.toLowerCase().substr(0,5), "Server is not using HTTPS");
     }, "Annotation server SHOULD use HTTPS rather than HTTP");
@@ -387,6 +404,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
   var thePrefRequest = request("GET", container,
       [['Prefer', 'return=representation;include="http://www.w3.org/ns/ldp#PreferMinimalContainer"']]);
 
+  // TEST 39
   promise_test(function() {
     return thePrefRequest
       .then(function(res) {
@@ -410,6 +428,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
       }, "SHOULD return the full annotation descriptions");
   });
 
+  // TESTS 40-45
   makePromiseTests( thePrefRequest, [
       { test: function(res) { return ('total' in res.body); }, assertion: "SHOULD include the total property with the total number of annotations in the container" },
       { test: function(res) { return ('first' in res.body); }, assertion: "SHOULD have a link to the first page of its contents using `first`" },
@@ -419,6 +438,7 @@ function runTests( container_url, annotation_url, query_string, theAnnotation, t
       { header: 'Vary', pat: /Prefer/, assertion: "SHOULD include Prefer in the Vary header" }
     ]);
 
+  // TEST 46
   promise_test(function() {
     return thePrefRequest
       .then(function(res) {

@@ -527,12 +527,14 @@ policies and contribution forms [3].
             tests.promise_tests = Promise.resolve();
         }
         tests.promise_tests = tests.promise_tests.then(function() {
+            var donePromise = new Promise(function(resolve) {
+                test.add_cleanup(resolve);
+            });
             var promise = test.step(func, test, test);
             test.step(function() {
                 assert_not_equals(promise, undefined);
             });
-            return Promise.resolve(promise)
-                .then(
+            Promise.resolve(promise).then(
                     function() {
                         test.done();
                     })
@@ -544,6 +546,7 @@ policies and contribution forms [3].
                         assert(false, "promise_test", null,
                                "Unhandled rejection with value: ${value}", {value:value});
                     }));
+            return donePromise;
         });
     }
 

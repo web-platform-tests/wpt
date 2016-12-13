@@ -8,12 +8,12 @@
 <link rel=preload href="resources/square.png" as=image>
 <script>
     window.addEventListener("load", t.step_func(function() {
-        setTimeout(t.step_func(function() {
+        t.step_timeout(function() {
             document.getElementById("result").innerHTML = "<image src='resources/square.png'>";
-            setTimeout(t.step_func(function() {
+            t.step_timeout(function() {
                 assert_equals(performance.getEntriesByType("resource").length, 3);
                 t.done();
-            }), 400);
-        }), 400);
+            }, 1000);
+        }, 1000);
     }));
 </script>

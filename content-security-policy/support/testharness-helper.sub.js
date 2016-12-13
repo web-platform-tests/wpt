@@ -6,6 +6,7 @@ const Host = {
 const PolicyHeader = {
   CSP: "echo-policy.py?policy=",
   EMBEDDING_CSP: "echo-embedding-csp.py",
+  CSP_MULTIPLE: "echo-policy-multiple.py",
 } 
 
 function generateURL(host, path) {
@@ -22,6 +23,11 @@ function generateRedirect(host, target) {
   url.hostname = host == Host.SAME_ORIGIN ? "{{host}}" : "{{domains[天気の良い日]}}";
 
   return url.toString();
+}
+
+function generateUrlWithPolicies(host, policy) {
+    var url = generateURL(host, PolicyHeader.CSP_MULTIPLE);
+    return url + "?policy=" + policy;
 }
 
 function assert_embedding_csp(t, url, csp, expected) {

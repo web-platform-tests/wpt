@@ -6,13 +6,15 @@
 </script>
 <link rel=preload href="resources/dummy.js?pipe=trickle(d1)" as=script>
 <link rel=preload href="resources/square.png?pipe=trickle(d1)" as=image>
+<body>
 <script>
     window.addEventListener("load", t.step_func(function() {
         assert_equals(performance.getEntriesByType("resource").length, 4);
         t.done();
     }));
-    document.write('<sc' + 'ript src="resources/dummy.js?pipe=trickle(d1)"></sc' + 'ript>');
-    document.write("<!--");
+    var script = document.createElement("script");
+    script.src = "resources/dummy.js?pipe=trickle(d1)";
+    document.body.appendChild(script);
     var img = new Image();
     img.src = "resources/square.png?pipe=trickle(d1)";
 </script>

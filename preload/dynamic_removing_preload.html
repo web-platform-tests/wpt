@@ -9,13 +9,15 @@
     var link = document.createElement("link");
     link.as = "script";
     link.rel = "preload";
-    link.href = "resources/dummy.js";
+    var url = "resources/dummy.js?pipe=trickle(d0.3)";
+    link.href = url;
     document.body.appendChild(link);
     document.body.removeChild(link);
     window.addEventListener("load", t.step_func(function() {
-        assert_equals(performance.getEntriesByType("resource").length, 3);
+        var entries = performance.getEntriesByName(new URL(url, location.href).href);
+        assert_equals(entries.length, 0);
         t.done();
     }));
 </script>
-<script src="resources/dummy.js?pipe=trickle(d0.2)"></script>
+<script src="resources/dummy.js?pipe=trickle(d0.5)"></script>
 </body>

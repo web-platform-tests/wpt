@@ -11,7 +11,12 @@ environment:
 # we have a __init__.py at the top level).
 clone_folder: 'C:\projects\wpttools'
 
+init:
+  - 'git config --global core.autocrlf true'
+
 install:
+  - 'rm .git\index'
+  - 'git reset --hard'
   - 'SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%'
   - 'git submodule update --init --recursive'
   - 'python.exe -m pip install tox codecov'

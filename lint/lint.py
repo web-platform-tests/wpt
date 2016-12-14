@@ -117,7 +117,7 @@ def filter_whitelist_errors(data, path, errors):
     normpath = os.path.normcase(path)
 
     for file_match, whitelist_errors in iteritems(data):
-        if fnmatch.fnmatchcase(path, file_match):
+        if fnmatch.fnmatchcase(normpath, file_match):
             for i, (error_type, msg, path, line) in enumerate(errors):
                 if error_type in whitelist_errors:
                     allowed_lines = whitelist_errors[error_type]

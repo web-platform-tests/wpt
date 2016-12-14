@@ -3,36 +3,30 @@
 <title>One resource when reusing data</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../performance-timeline/performanceobservers.js"></script>
 <script>
-  setup({ explicit_done: true });
-
-  var t = async_test("Only one resource entry per resource");
-
-  function path(pathname) {
+  async_test(function (t) {
+    function path(pathname) {
       var filename = pathname.substring(pathname.lastIndexOf('/')+1);
       return pathname.substring(0, pathname.length - filename.length);
-  }
-  var img_location = document.location.origin + path(document.location.pathname)
-       + "resources/1x1-blue.png";
-  
-  var total_recall = 0;
-  function imgLoad() {
-      total_recall++;
-      if (total_recall > 1) {
-        var entries = performance.getEntriesByType("resource");
-        var total_img = 0;
-        for (var i = 0; i < entries.length; i++) {
-          if (entries[i].name === img_location) total_img++;
-        }
-        assert_equals(total_img, 1);
-        t.done();
-      }
-  }
+    }
+    var img_location = document.location.origin + path(document.location.pathname)
+       + "resources/blue.png";
+    var observer = new PerformanceObserver(
+        t.step_func(function (entryList, obs) {
+          checkEntries(entryList.getEntriesByType("resource"),
+            [{ entryType: "resource", name: img_location}]);
+          observer.disconnect();
+          t.done();
+        })
+      );
+    observer.observe({entryTypes: ["resource"]});
+  }, "Only one resource entry per resource");
 </script>
 <h1>One resource when reusing data</h1>
 <p>
 If the user agent is to reuse the data from another existing or completed fetch initiated from the current document, abort the remaining steps.
 </p>
 <div id="log"></div>
-<img src='resources/1x1-blue.png' alt='First appareance of the image' onload='imgLoad()'>
-<img src='resources/1x1-blue.png' alt='Second appareance of the image' onload='imgLoad()'>
+<img src='resources/blue.png' alt='First appareance of the image'>
+<img src='resources/blue.png' alt='Second appareance of the image'>

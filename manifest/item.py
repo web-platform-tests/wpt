@@ -195,6 +195,10 @@ class ConformanceCheckerTest(URLManifestItem):
     item_type = "conformancechecker"
 
 
+class VisualTest(URLManifestItem):
+    item_type = "visual"
+
+
 class Stub(URLManifestItem):
     item_type = "stub"
 

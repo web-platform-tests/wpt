@@ -214,6 +214,12 @@ def check_parsed(repo_root, path, f):
     if source_file.root is None:
         return [("PARSE-FAILED", "Unable to parse file", path, None)]
 
+    if source_file.type == "manual" and not source_file.name_is_manual:
+        return [("CONTENT-MANUAL", "Manual test whose filename doesn't end in '-manual'", path, None)]
+
+    if source_file.type == "visual" and not source_file.name_is_visual:
+        return [("CONTENT-VISUAL", "Visual test whose filename doesn't end in '-visual'", path, None)]
+
     if len(source_file.timeout_nodes) > 1:
         errors.append(("MULTIPLE-TIMEOUT", "More than one meta name='timeout'", path, None))
 

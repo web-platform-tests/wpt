@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Getting the presentation displays availability information.</title>
+<link rel="author" title="Marius Wessel" href="http://www.fokus.fraunhofer.de">
+<link rel="author" title="Tomoyuki Shimizu" href="https://github.com/tomoyukilabs">
+<link rel="help" href="http://w3c.github.io/presentation-api/#dfn-presentation-display-availability">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
+
+<p>The test passes if a "PASS" result appears.</p>
+
+<script>
+
+    // ---------------------------------
+    // Screen Availability Tests - begin
+    // ---------------------------------
+
+    promise_test(function(t) {
+        var promise;
+
+        // instance of PresentationRequest
+        var request = new PresentationRequest(presentationUrls);
+        assert_true(request instanceof PresentationRequest, 'The request is an instance of PresentationRequest.');
+
+        return promise = request.getAvailability()
+                .then(function (availability) {
+                    // instance of PresentationAvailability
+                    assert_true(availability instanceof PresentationAvailability, 'The promise is resolved with an instance of PresentationAvailability.');
+                    // PresentationAvailability.value is set as boolean
+                    assert_true(typeof availability.value == 'boolean', 'The availability has an boolean value.');
+                    // PresentationAvailability.value is set to true when any presentation display is available
+                    assert_true(availability.value, 'The availability value is true when any presentation display is available.');
+                    // if the PresentationRequest object already has a PresentationAvailability object, getAvailability returns the same object.
+                    assert_equals(promise, request.getAvailability(), 'If the presentation availability promise for presentationRequest is not null, getAvailability() returns the same promise.');
+                }, function(err) {
+                    // the Promise is rejected with NotSupportedError if the browser can find displays only when starting a connection
+                    assert_equals(err.name, 'NotSupportedError', 'getAvailability() rejects a Promise with a NotSupportedError exception, if the user agent can find presentation displays only when starting a connection.')
+                });
+    });
+
+</script>

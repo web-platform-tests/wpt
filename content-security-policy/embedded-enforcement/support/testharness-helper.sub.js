@@ -20,6 +20,20 @@ function getOrigin() {
   return url.toString();
 }
 
+function getCrossOrigin() {
+  var url = new URL("http://{{domains[天気の良い日]}}:{{ports[http][0]}}/");
+  return url.toString();
+}
+
+function getSecureCrossOrigin() {
+  // Since wptserve spins up servers on non-default port, 'self' matches
+  // http://[host]:[specified-port] and https://[host]:[specified-port], but not
+  // https://[host]:[https-port]. So, we use the http port for this https origin
+  // in order to verify that a secure variant of a non-secure URL matches 'self'.
+  var url = new URL("https://{{domains[天気の良い日]}}:{{ports[http][0]}}");
+  return url.toString();
+}
+
 function generateURL(host, path) {
   var url = new URL("http://{{host}}:{{ports[http][0]}}/content-security-policy/embedded-enforcement/support/");
   url.hostname = host == Host.SAME_ORIGIN ? "{{host}}" : "{{domains[天気の良い日]}}";

@@ -27,19 +27,29 @@ var TestUtils = (function() {
     {
       "name": "cookies",
       "add": function() {
-        document.cookie = randomString() + "=" + randomString();
+        return new Promise(function(resolve, reject) {
+          document.cookie = randomString() + "=" + randomString();
+          resolve();
+        });
       },
       "isEmpty": function() {
-        return !document.cookie;
+        return new Promise(function(resolve, reject) {
+          resolve(!document.cookie);
+        });
       }
     },
     {
       "name": "storage",
       "add": function() {
-        localStorage.setItem(randomString(), randomString());
+        return new Promise(function(resolve, reject) {
+          localStorage.setItem(randomString(), randomString());
+          resolve();
+        });
       },
       "isEmpty": function() {
-        return !localStorage.length;
+        return new Promise(function(resolve, reject) {
+          resolve(!localStorage.length);
+        });
       }
     }
   ];
@@ -71,8 +81,8 @@ var TestUtils = (function() {
    * @return string The URL to be queried.
    */
   TestUtils.getClearSiteDataUrl = function(datatypes) {
-    names = datatypes.map(function(e) { return e.name + "=True"; });
-    return "support/server.py?" + names.join("&");
+    names = datatypes.map(function(e) { return e.name });
+    return "support/echo-clear-site-data.py?" + names.join("&");
   }
 
   return TestUtils;

@@ -3,6 +3,7 @@
 <title>CSS Display: Computed style for display:contents</title>
 <link rel="author" title="Rune Lillesveen" href="mailto:rune@opera.com">
 <link rel="help" href="https://drafts.csswg.org/css-display-3/#valdef-display-contents">
+<link rel="help" href="https://drafts.csswg.org/css-display-3/#transformations">
 <link rel="help" href="https://drafts.csswg.org/cssom-1/#resolved-values">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -69,5 +70,5 @@
 
     test(function(){
         assert_equals(getComputedStyle(document.documentElement).display, "block");
-    }, "Document element can't have display: contents");
+    }, "display:contents is blockified for root elements");
 </script>

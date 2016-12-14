@@ -11,7 +11,6 @@
 <style>
   textarea {
     color: magenta;
-    caret-color: red;
   }
 </style>
 <body>
@@ -22,8 +21,6 @@
     test(
       function(){
         var textarea = document.getElementById("textarea");
-        assert_equals(getComputedStyle(textarea).caretColor, 'rgb(255, 0, 0)');
-
         var keyframes = [
           { caretColor: 'currentcolor' },
           { caretColor: 'lime' }

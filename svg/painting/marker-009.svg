@@ -11,13 +11,13 @@
         </marker>
         <marker id="m3" markerUnits="userSpaceOnUse" overflow="visible">
             <circle cx="0" cy="0" r="15" fill="maroon" opacity="0.85"/>
-        </marker>    
+        </marker>
     </defs>
 
     <path d="M50,50 h100 v100 z m150,0 h100 v100 z m150,0 h100 v100 z"
     fill="none" stroke="black" stroke-width="10"
-    marker-start="url(#m1)"  
+    marker-start="url(#m1)"
     marker-mid="url(#m2)"
-    marker-end="url(#m3)"  
+    marker-end="url(#m3)"
     />
 </svg>

@@ -11,7 +11,7 @@ def main(request, response):
 <!DOCTYPE html>
 <html>
 <head>
-    <title>his page sets given CSP upon itself.</title>
+    <title>This page sets given CSP upon itself.</title>
 </head>
 <body>
     <script nonce="abc"> 

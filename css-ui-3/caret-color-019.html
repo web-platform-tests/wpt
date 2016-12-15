@@ -32,11 +32,7 @@
 
         var player = textarea.animate(keyframes, options);
         player.pause();
-        player.currentTime = 0;
-        assert_equals(getComputedStyle(textarea).caretColor, 'rgb(255, 0, 255)');
         player.currentTime = 5;
-        assert_equals(getComputedStyle(textarea).caretColor, 'rgb(0, 255, 0)');
-        player.currentTime = 10;
         assert_equals(getComputedStyle(textarea).caretColor, 'rgb(0, 255, 0)');
       }, "caret-color: auto is not interpolatible");
 </script>

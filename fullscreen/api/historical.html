@@ -4,12 +4,32 @@
 <script src=/resources/testharnessreport.js></script>
 <script>
 [
-  "webkitRequestFullScreen",
   "onwebkitfullscreenchange",
   "onwebkitfullscreenerror",
+  "webkitCurrentFullScreenElement",
+  "webkitFullscreenElement",
+  "webkitFullscreenEnabled",
+  "webkitIsFullScreen",
+  "webkitRequestFullScreen",
+  "webkitRequestFullscreen",
+  "webkitDisplayingFullscreen",
+  "webkitEnterFullScreen",
+  "webkitEnterFullscreen",
+  "webkitExitFullScreen",
+  "webkitExitFullscreen",
+  "webkitSupportsFullscreen",
 ].forEach(function(member) {
-  test(function() {
-    assert_false(member in document.createElement('div'));
-  }, 'Element member must be nuked: ' + member);
+  ["webkit", "moz", "ms"].forEach(function(prefix) {
+    var alias = member.replace("webkit", prefix);
+    var clarifyTestName = (alias.indexOf('FullScreen') != -1 ? ' (uppercase S)' : '');
+
+    test(function() {
+      assert_false(alias in document.createElement('video'));
+    }, '<video> member must be nuked: ' + alias + clarifyTestName);
+
+    test(function() {
+      assert_false(alias in document);
+    }, 'Document member must be nuked: ' + alias + clarifyTestName);
+  });
 });
 </script>

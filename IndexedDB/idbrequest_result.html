@@ -6,13 +6,13 @@
 <script src=support.js></script>
 
 <script>
-async_test(function(t) {
+async_test(t => {
   var open = createdb(t);
-  open.onupgradeneeded = t.step_func(function(e) {
+  open.onupgradeneeded = t.step_func(e => {
     var db = e.target.result;
     db.createObjectStore('store');
   });
-  open.onsuccess = t.step_func(function(e) {
+  open.onsuccess = t.step_func(e => {
     var db = e.target.result;
     var request = db.transaction("store").objectStore("store").get(0);
 

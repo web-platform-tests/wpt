@@ -5,8 +5,20 @@ const Host = {
 
 const PolicyHeader = {
   CSP: "echo-policy.py?policy=",
+  CSP_MULTIPLE: "echo-policy-multiple.py",
   EMBEDDING_CSP: "echo-embedding-csp.py",
-} 
+  ALLOW_CSP_FROM: "echo-allow-csp-from.py",
+};
+
+const IframeLoad = {
+  EXPECT_BLOCK: true,
+  EXPECT_LOAD: false,
+};
+
+function getOrigin() {
+  var url = new URL("http://{{host}}:{{ports[http][0]}}/");
+  return url.toString();
+}
 
 function generateURL(host, path) {
   var url = new URL("http://{{host}}:{{ports[http][0]}}/content-security-policy/support/");
@@ -24,6 +36,11 @@ function generateRedirect(host, target) {
   return url.toString();
 }
 
+function generateUrlWithPolicies(host, policy) {
+    var url = generateURL(host, PolicyHeader.CSP_MULTIPLE);
+    return url + "?policy=" + encodeURIComponent(policy);
+}
+
 function assert_embedding_csp(t, url, csp, expected) {
   var i = document.createElement('iframe');
   if(csp)
@@ -37,5 +54,53 @@ function assert_embedding_csp(t, url, csp, expected) {
     t.done();
   }));
 
+  document.body.appendChild(i);
+}
+
+function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
+  var i = document.createElement('iframe');
+  i.src = url + "&id=" + urlId;
+  i.csp = csp;
+
+  var loaded = {};
+  window.addEventListener("message", function (e) {
+    if (e.source != i.contentWindow)
+        return;
+    if (e.data["loaded"])
+        loaded[e.data["id"]] = true;
+  });
+
+  if (shouldBlock) {
+    // Assert iframe does not load and is inaccessible.
+    window.onmessage = function (e) {
+      if (e.source != i.contentWindow)
+          return;
+      t.unreached_func('No message should be sent from the frame.');
+    }
+    i.onload = t.step_func(function () {
+      // Delay the check until after the postMessage has a chance to execute.
+      setTimeout(t.step_func_done(function () {
+        assert_equals(loaded[urlId], undefined);
+      }), 1);
+      assert_throws("SecurityError", () => {
+        var x = i.contentWindow.location.href;
+      });
+    });
+  } else if (blockedURI) {
+    // Assert iframe loads with an expected violation.
+    window.addEventListener('message', t.step_func(e => {
+      if (e.source != i.contentWindow)
+        return;
+      assert_equals(e.data["blockedURI"], blockedURI);
+      t.done();
+    }));
+  } else {
+    i.onload = t.step_func(function () {
+      // Delay the check until after the postMessage has a chance to execute.
+      setTimeout(t.step_func_done(function () {
+        assert_true(loaded[urlId]);
+      }), 1);
+    });
+  }
   document.body.appendChild(i);
 }

@@ -348,10 +348,9 @@ class pwd(object):
         os.chdir(self.old_dir)
         self.old_dir = None
 
-def fetch_wpt_master(repo_path):
-    git = get_git_cmd(repo_path)
-    # TODO: Do not hardcode W3C repo
-    git("fetch", "https://github.com/w3c/web-platform-tests.git", "master:master")
+def fetch_wpt_master(local_repo, remote_repo):
+    git = get_git_cmd(local_repo)
+    git("fetch", remote_repo, "master:ci_stability/master")
 
 def get_sha1(repo_path):
     git = get_git_cmd(repo_path)
@@ -372,7 +371,7 @@ def install_wptrunner():
 
 def get_files_changed(repo_path):
     git = get_git_cmd(repo_path)
-    branch_point = git("merge-base", "HEAD", "master").strip()
+    branch_point = git("merge-base", "HEAD", "ci_stability/master").strip()
     logger.debug("Branch point from master: %s" % branch_point)
     logger.debug(git("log", "--oneline", "%s.." % branch_point))
     files = git("diff", "--name-only", "-z", "%s.." % branch_point)
@@ -508,6 +507,10 @@ def get_parser():
                         action="store",
                         default=os.environ.get("TRAVIS_BUILD_DIR"),
                         help="web-platform-test repository dir")
+    parser.add_argument("--remote-repo",
+                        action="store",
+                        default="https://github.com/w3c/web-platform-tests.git",
+                        help="web-platform-test repository dir")
     parser.add_argument("--iterations",
                         action="store",
                         default=10,
@@ -564,7 +567,7 @@ def main():
             logger.critical("Unrecognised browser %s" % args.browser)
             return 1
 
-        fetch_wpt_master(args.repo_path)
+        fetch_wpt_master(args.repo_path, args.remote_repo)
 
         head_sha1 = get_sha1(args.repo_path)
         logger.info("Testing revision %s" % head_sha1)

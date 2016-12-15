@@ -52,9 +52,6 @@
               assert_unreached("Wrong, the onclose shouldn't be triggered!");
           };
 
-      })
-      .catch(function (ex) {
-        assert_unreached(ex.name + ":" + ex.message);
       });
 
     }, "the onterminate is fired and the connection state is terminated");

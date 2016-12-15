@@ -42,9 +42,6 @@
             connection.terminate();
           };
 
-      })
-      .catch(function (ex) {
-        assert_unreached(ex.name + ":" + ex.message);
       });
 
     }, "the onconnect is fired and the connection state is connected");

@@ -45,9 +45,6 @@
 
           connection.close();
 
-      })
-      .catch(function (ex) {
-        assert_unreached(ex.name + ":" + ex.message);
       });
 
     }, "the onclose is fired and the connection state is closed.");

@@ -1,0 +1,16 @@
+<!doctype html>
+<title>Historical Fullscreen features</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body>
+<script>
+[
+  "webkitRequestFullScreen",
+  "onwebkitfullscreenchange",
+  "onwebkitfullscreenerror",
+].forEach(function(member) {
+  test(function() {
+    assert_false(member in document.createElement('div'));
+  }, 'Element member must be nuked: ' + member);
+});
+</script>

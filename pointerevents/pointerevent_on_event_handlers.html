@@ -31,12 +31,6 @@
             var on_event = "on" + event;
 
             test(function() {
-                for (const location of [window, HTMLElement.prototype, SVGElement.prototype, Document.prototype]) {
-                  assert_true(location.hasOwnProperty(on_event),
-                    `${location.constructor.name} has an own property named `+ on_event);
-                }
-            }, on_event + " is on the appropriate locations for GlobalEventHandlers");
-            test(function() {
               const htmlElement = document.createElement("span");
               const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
               for (const location of [window, htmlElement, svgElement, document]) {

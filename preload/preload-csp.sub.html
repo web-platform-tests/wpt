@@ -21,7 +21,7 @@
         var entries = performance.getEntriesByName(new URL(url, location.href).href);
         assert_equals(entries.length, 0);
     };
-    window.onload = t.step(function(){
+    window.onload = t.step_func(function() {
         assertRequestTerminated("{{host}}:{{ports[http][1]}}/preload/resources/dummy.js");
         assertRequestTerminated("resources/dummy.css");
         assertRequestTerminated("resources/square.png");

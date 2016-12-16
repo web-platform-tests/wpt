@@ -7,7 +7,7 @@
 <body>
 <script>
     t.step(function() {
-    var link = document.createElement("link");
+        var link = document.createElement("link");
         assert_true(link.relList && link.relList.supports && link.relList.supports("preload"), "relList is not defined or browser doesn't support preload.");
         link.as = "script";
         link.rel = "preload";

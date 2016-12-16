@@ -27,7 +27,7 @@
 <link rel=preload href="non-existent/dummy.xml" onerror="noTypeFailed = true;">
 <script src="resources/dummy.js?pipe=trickle(d5)"></script>
 <script>
-    window.onload = t.step(function(){
+    window.onload = t.step_func(function() {
         assert_true(styleFailed, "style triggered error event");
         assert_true(scriptFailed, "script triggered error event");
         assert_true(imageFailed, "image triggered error event");

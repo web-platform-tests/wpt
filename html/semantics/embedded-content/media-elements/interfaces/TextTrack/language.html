@@ -21,9 +21,9 @@ test(function(){
     assert_equals(t2.language, '');
 });
 test(function(){
-    track.srclang = '\u0000a';
-    assert_equals(t2.language, '\u0000a', 'IDL attribute');
-    track.setAttribute('srclang', '\u0000b');
-    assert_equals(t2.language, '\u0000b', 'content attribute');
-}, document.title+', \\u0000');
+    track.srclang = 'zh-Hant-CN-x-private1-private2';
+    assert_equals(t2.language, 'zh-Hant-CN-x-private1-private2', 'IDL attribute');
+    track.setAttribute('srclang', 'i-klingon');
+    assert_equals(t2.language, 'i-klingon', 'content attribute');
+}, document.title+', BCP47 language tag');
 </script>

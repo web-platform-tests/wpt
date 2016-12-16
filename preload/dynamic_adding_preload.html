@@ -9,7 +9,6 @@
     var link = document.createElement("link");
     if(!link.relList || !link.relList.supports || !link.relList.supports("preload")) {
         assert_unreached("relList is not defined or browser doesn't support preload.");
-        t.done();
     }
     link.as = "script";
     link.rel = "preload";

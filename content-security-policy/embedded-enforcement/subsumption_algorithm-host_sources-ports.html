@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Embedded Enforcement: Subsumption Algorithm - Basic implementation.</title>
+<title>Embedded Enforcement: Subsumption Algorithm - Port parts in host source expressions.</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="../support/testharness-helper.sub.js"></script>
@@ -9,41 +9,6 @@
 <body>
   <script>
     var tests = [
-      // Protocols.
-      { "name": "`https` is more restrictive than `http`.", 
-        "required_csp": "img-src http://c.com:* https://b.com", 
-        "returned_csp": "img-src http://b.com",
-        "expected": IframeLoad.EXPECT_BLOCK },
-      { "name": "The reverse allows iframe be to be loaded.", 
-        "required_csp": "img-src http://c.com:* http://b.com", 
-        "returned_csp": "img-src https://b.com",
-        "expected": IframeLoad.EXPECT_LOAD },
-      { "name": "Matching `https` protocols.", 
-        "required_csp": "img-src http://c.com:* https://b.com", 
-        "returned_csp": "img-src https://b.com", 
-        "expected": IframeLoad.EXPECT_LOAD },
-      // Hosts.
-      { "name": "Host must match.", 
-        "required_csp": "img-src http://c.com", 
-        "returned_csp": "img-src http://b.com",
-        "expected": IframeLoad.EXPECT_BLOCK },
-      { "name": "Hosts without wildcards must match.", 
-        "required_csp": "img-src http://c.com:* http://inner.b.com", 
-        "returned_csp": "img-src http://b.com",
-        "expected": IframeLoad.EXPECT_BLOCK },
-      { "name": "More specific subdomain should not match.", 
-        "required_csp": "img-src http://c.com:* http://b.com", 
-        "returned_csp": "img-src http://inner.b.com",
-        "expected": IframeLoad.EXPECT_BLOCK },
-      { "name": "Specified host should not match a wildcard host.", 
-        "required_csp": "img-src http://c.com:* http://inner.b.com", 
-        "returned_csp": "img-src http://*.b.com",
-        "expected": IframeLoad.EXPECT_BLOCK },
-      { "name": "A wildcard host should match a more specific host.", 
-        "required_csp": "img-src http://c.com:* http://*.b.com", 
-        "returned_csp": "img-src https://inner.b.com",
-        "expected": IframeLoad.EXPECT_LOAD },
-      // Ports.
       { "name": "Specified ports must match.", 
         "required_csp": "img-src http://c.com:* http://b.com:80", 
         "returned_csp": "img-src http://b.com:36", 
@@ -103,43 +68,6 @@
       { "name": "Wildcard port should not be subsumed by a spcified port.", 
         "required_csp": "img-src http://c.com:* ws://b.com:80", 
         "returned_csp": "img-src ws://b.com:*", 
-        "expected": IframeLoad.EXPECT_BLOCK },
-      // Paths.
-      { "name": "Returned CSP must specify a path.", 
-        "required_csp": "img-src http://c.com:* http://b.com/example.html", 
-        "returned_csp": "img-src http://b.com", 
-        "expected": IframeLoad.EXPECT_BLOCK },
-      { "name": "Returned CSP has a more specific path.", 
-        "required_csp": "img-src http://c.com:* http://b.com", 
-        "returned_csp": "img-src http://b.com/example.html", 
-        "expected": IframeLoad.EXPECT_LOAD },
-      { "name": "Matching paths.", 
-        "required_csp": "img-src http://c.com:* http://b.com/example.html",
-        "returned_csp": "img-src http://b.com/example.html",
-        "expected": IframeLoad.EXPECT_LOAD },
-      { "name": "Empty path is not subsumed by specified paths.", 
-        "required_csp": "img-src http://b.com/page1.html http://b.com/page2.html http://b.com/page3.html",
-        "returned_csp": "img-src http://b.com/",
-        "expected": IframeLoad.EXPECT_BLOCK },
-      { "name": "All specific paths match except the order.", 
-        "required_csp": "img-src http://b.com/page1.html http://b.com/page2.html http://b.com/page3.html", 
-        "returned_csp": "img-src http://b.com/page2.html http://b.com/page3.html http://b.com/page1.html", 
-        "expected": IframeLoad.EXPECT_LOAD },
-      { "name": "Returned CSP allows only one path.", 
-        "required_csp": "img-src http://b.com/page1.html http://b.com/page2.html http://b.com/page3.html", 
-        "returned_csp": "img-src http://b.com/page2.html", 
-        "expected": IframeLoad.EXPECT_LOAD },
-      { "name": "`/` path should be subsumed by an empty path.", 
-        "required_csp": "img-src http://b.com", 
-        "returned_csp": "img-src http://b.com/", 
-        "expected": IframeLoad.EXPECT_LOAD },
-      { "name": "Unspecified path should be subsumed by `/`.", 
-        "required_csp": "img-src http://b.com/", 
-        "returned_csp": "img-src http://b.com", 
-        "expected": IframeLoad.EXPECT_LOAD },
-      { "name": "That should not be true when required csp specifies a specific page.", 
-        "required_csp": "img-src http://b.com/path.html", 
-        "returned_csp": "img-src http://b.com", 
         "expected": IframeLoad.EXPECT_BLOCK },
     ];
 

@@ -7,9 +7,9 @@
 <body>
 <script>
     var link = document.createElement("link");
-    if(!link.relList || !link.relList.supports || !link.relList.supports("preload")) {
-        assert_unreached("relList is not defined or browser doesn't support preload.");
-    }
+    t.step(function() {
+        assert_true(link.relList && link.relList.supports && link.relList.supports("preload"), "relList is not defined or browser doesn't support preload.");
+    });
     link.as = "script";
     link.rel = "preload";
     link.href = "resources/dummy.js";

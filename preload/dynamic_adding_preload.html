@@ -7,7 +7,7 @@
 <body>
 <script>
     var link = document.createElement("link");
-    if(!link.rellist || !link.rellist.supports("preload")) {
+    if(!link.rellist || !link.rellist.supports || !link.rellist.supports("preload")) {
         assert_unreached("rellist is not defined or browser doesn't support preload.");
         t.done();
     }

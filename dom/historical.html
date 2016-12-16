@@ -141,4 +141,29 @@ var windowNuked = [
   "attachEvent"
 ]
 windowNuked.forEach(isNukedFromWindow)
+
+function isRemovedFromEvent(name) {
+  test(() => {
+    assert_equals(Event[name], undefined)
+  }, "Event should not have this constant: " + name)
+}
+var EventRemoved = [
+  "MOUSEDOWN",
+  "MOUSEUP",
+  "MOUSEOVER",
+  "MOUSEOUT",
+  "MOUSEMOVE",
+  "MOUSEDRAG",
+  "CLICK",
+  "DBLCLICK",
+  "KEYDOWN",
+  "KEYUP",
+  "KEYPRESS",
+  "DRAGDROP",
+  "FOCUS",
+  "BLUR",
+  "SELECT",
+  "CHANGE"
+]
+EventRemoved.forEach(isRemovedFromEvent)
 </script>

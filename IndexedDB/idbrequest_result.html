@@ -17,8 +17,7 @@ async_test(t => {
     var request = db.transaction('store').objectStore('store').get(0);
 
     assert_equals(request.readyState, 'pending');
-    assert_throws('InvalidStateError',
-                  function() { request.result; },
+    assert_throws('InvalidStateError', () => request.result,
                   'IDBRequest.result should throw if request is pending');
     t.done();
   });

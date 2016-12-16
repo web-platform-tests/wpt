@@ -21,7 +21,7 @@ function getOrigin() {
 }
 
 function generateURL(host, path) {
-  var url = new URL("http://{{host}}:{{ports[http][0]}}/content-security-policy/support/");
+  var url = new URL("http://{{host}}:{{ports[http][0]}}/content-security-policy/embedded-enforcement/support/");
   url.hostname = host == Host.SAME_ORIGIN ? "{{host}}" : "{{domains[天気の良い日]}}";
   url.pathname += path;
 

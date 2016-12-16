@@ -12,24 +12,29 @@
     var audioLoaded = false;
     var trackLoaded = false;
     var gibberishLoaded = 0;
-    var getExtension = function(url) {
+    var getFormat = function(url) {
         var dot = url.lastIndexOf('.');
-        if (dot != -1)
-            return url.substring(dot + 1);
+        if (dot != -1) {
+            var extension = url.substring(dot + 1);
+            if (extension.startsWith("og"))
+                return "ogg";
+            return extension;
+        }
         return null;
     };
-    videoURL = getVideoURI("/media/white");
-    audioURL = getVideoURI("/media/sound_5");
-    videoExt = getExtension(videoURL);
-    audioExt = getExtension(audioURL);
+    var videoURL = getVideoURI("/media/A4");
+    var audioURL = getAudioURI("/media/sound_5");
+    var videoFormat = getFormat(videoURL);
+    var audioFormat = getFormat(audioURL);
 </script>
 <link rel=preload href="resources/dummy.js" as=script type="text/javascript" onload="scriptLoaded = true;">
 <link rel=preload href="resources/dummy.css" as=style type="text/css" onload="styleLoaded = true;">
 <link rel=preload href="resources/square.png" as=image type="image/png" onload="imageLoaded = true;">
 <link rel=preload href="/fonts/CanvasTest.ttf" as=font type="font/ttf" crossorigin onload="fontLoaded = true;">
 <script>
-    document.write('<link rel=preload href="' + videoURL + '" as=media type="video/' + videoExt + '" onload="videoLoaded = true;">');
-    document.write('<link rel=preload href="' + audioURL + '" as=media type="audio/' + audioExt + '" onload="audioLoaded = true;">');
+console.log(videoURL + " " + videoFormat);
+    document.write('<link rel=preload href="' + videoURL + '" as=media type="video/' + videoFormat + '" onload="videoLoaded = true;">');
+    document.write('<link rel=preload href="' + audioURL + '" as=media type="audio/' + audioFormat + '" onload="audioLoaded = true;">');
 </script>
 <link rel=preload href="/media/foo.vtt" as=media type="text/vtt" onload="trackLoaded = true;">
 <link rel=preload href="resources/dummy.js" as=script type="application/foobar" onload="gibberishLoaded++;">

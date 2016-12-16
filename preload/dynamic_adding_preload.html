@@ -7,17 +7,19 @@
 <body>
 <script>
     var link = document.createElement("link");
-    if(!link.rellist || !link.rellist.supports || !link.rellist.supports("preload")) {
-        assert_unreached("rellist is not defined or browser doesn't support preload.");
+    if(!link.relList || !link.relList.supports || !link.relList.supports("preload")) {
+        assert_unreached("relList is not defined or browser doesn't support preload.");
         t.done();
     }
     link.as = "script";
     link.rel = "preload";
     link.href = "resources/dummy.js";
-    link.onload = t.step_timeout(function() {
-        assert_equals(performance.getEntriesByType("resource").length, 3);
-        t.done();
-    }, 0);
+    link.onload = t.step_func(function() {
+        t.step_timeout(function() {
+            assert_equals(performance.getEntriesByType("resource").length, 3);
+            t.done();
+        }, 0);
+    });
     document.body.appendChild(link);
 </script>
 </body>

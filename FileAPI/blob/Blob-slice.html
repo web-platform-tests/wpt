@@ -35,13 +35,13 @@ test(function() {
     type: "content/type",
     desc: "blob2."
   });
-  
+
   test_blob(function() {
-    return blob3 = new Blob().slice(0,0,null);
+    return new Blob().slice(0,0,null);
   }, {
     type: "null"
   });
-  
+
   test_blob(function() {
     return blob4 = new Blob().slice(0,0,undefined);
   }, {

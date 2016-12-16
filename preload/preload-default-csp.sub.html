@@ -15,7 +15,7 @@
 <link rel=preload href="resources/dummy.xml?foo=bar" as=foobarxmlthing>
 <link rel=preload href="resources/dummy.xml">
 <body>
-<script src="resources/dummy.js?pipe=trickle(d0.2)"></script>
+<script src="resources/dummy.js?pipe=trickle(d5)"></script>
 <script>
     var assertRequestTerminated = function(url) {
         var entries = performance.getEntriesByName(new URL(url, location.href).href);

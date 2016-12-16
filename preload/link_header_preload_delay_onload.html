@@ -5,7 +5,6 @@
     var t = async_test('Makes sure that Link headers preload resources and block window.onload after resource discovery');
 </script>
 <body>
-<script src="resources/dummy.js?pipe=trickle(d0.2)"></script>
 <style>
     #background {
         width: 200px;
@@ -29,7 +28,7 @@
             }
         }
         assert_true(found_background_first);
-        assert_equals(entries.length, 7);
+        assert_equals(entries.length, 6);
         t.done();
     }));
 </script>

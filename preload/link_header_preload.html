@@ -5,7 +5,7 @@
     var t = async_test('Makes sure that Link headers preload resources');
 </script>
 <body>
-<script src="resources/dummy.js?pipe=trickle(d0.2)"></script>
+<script src="resources/dummy.js?pipe=trickle(d5)"></script>
 <script>
     window.addEventListener("load", t.step_func(function() {
         var entries = performance.getEntriesByType("resource");

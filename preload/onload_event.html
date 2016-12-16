@@ -24,7 +24,7 @@
 <link rel=preload href="resources/dummy.xml?foo=bar" as=foobarxmlthing onload="gibberishLoaded = true;" onerror="gibberishErrored = true;">
 <link rel=preload href="resources/dummy.xml" onload="noTypeLoaded = true;">
 <body>
-<script src="resources/dummy.js?pipe=trickle(d0.5)"></script>
+<script src="resources/dummy.js?pipe=trickle(d5)"></script>
 <script>
     window.onload = t.step(function(){
         assert_true(styleLoaded, "style triggered load event");

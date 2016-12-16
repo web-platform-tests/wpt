@@ -25,7 +25,11 @@ function generateURL(host, path) {
   url.hostname = host == Host.SAME_ORIGIN ? "{{host}}" : "{{domains[天気の良い日]}}";
   url.pathname += path;
 
-  return url.toString();
+  return url;
+}
+
+function generateURLString(host, path) {
+  return generateURL(host, path).toString();
 }
 
 function generateRedirect(host, target) {
@@ -37,8 +41,17 @@ function generateRedirect(host, target) {
 }
 
 function generateUrlWithPolicies(host, policy) {
-    var url = generateURL(host, PolicyHeader.CSP_MULTIPLE);
-    return url + "?policy=" + encodeURIComponent(policy);
+  var url = generateURL(host, PolicyHeader.CSP_MULTIPLE);
+  if (policy != null)
+    url.searchParams.append("policy", policy);
+  return url;
+}
+
+function generateUrlWithAllowCSPFrom(host, allowCspFrom) {
+  var url = generateURL(host, PolicyHeader.ALLOW_CSP_FROM);
+  if (allowCspFrom != null)
+    url.searchParams.append("allow_csp_from", allowCspFrom);
+  return url;
 }
 
 function assert_embedding_csp(t, url, csp, expected) {
@@ -59,8 +72,10 @@ function assert_embedding_csp(t, url, csp, expected) {
 
 function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
   var i = document.createElement('iframe');
-  i.src = url + "&id=" + urlId;
-  i.csp = csp;
+  url.searchParams.append("id", urlId);
+  i.src = url.toString();
+  if (csp != null)
+    i.csp = csp;
 
   var loaded = {};
   window.addEventListener("message", function (e) {
@@ -95,6 +110,7 @@ function assert_iframe_with_csp(t, url, csp, shouldBlock, urlId, blockedURI) {
       t.done();
     }));
   } else {
+    // Assert iframe loads.
     i.onload = t.step_func(function () {
       // Delay the check until after the postMessage has a chance to execute.
       setTimeout(t.step_func_done(function () {

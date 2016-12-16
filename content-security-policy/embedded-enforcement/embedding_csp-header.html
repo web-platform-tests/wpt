@@ -25,24 +25,24 @@
 
     tests.forEach(test => {
       async_test(t =>  {
-        var url = generateURL(Host.SAME_ORIGIN, PolicyHeader.EMBEDDING_CSP);
+        var url = generateURLString(Host.SAME_ORIGIN, PolicyHeader.EMBEDDING_CSP);
         assert_embedding_csp(t, url, test.csp, test.expected);
       }, "Test same origin: " + test.name);
 
       async_test(t => {
-        var url = generateURL(Host.SAME_ORIGIN, PolicyHeader.EMBEDDING_CSP);
+        var url = generateURLString(Host.SAME_ORIGIN, PolicyHeader.EMBEDDING_CSP);
         var redirect_url = generateRedirect(Host.SAME_ORIGIN, url);
         assert_embedding_csp(t, redirect_url, test.csp, test.expected);
       }, "Test same origin redirect: " + test.name);
 
       async_test(t => {
-        var url = generateURL(Host.SAME_ORIGIN, PolicyHeader.EMBEDDING_CSP);
+        var url = generateURLString(Host.SAME_ORIGIN, PolicyHeader.EMBEDDING_CSP);
         var redirect_url = generateRedirect(Host.CROSS_ORIGIN, url);
         assert_embedding_csp(t, redirect_url, test.csp, test.expected);
       }, "Test cross origin redirect: " + test.name);
 
       async_test(t => {
-        var url = generateURL(Host.CROSS_ORIGIN, PolicyHeader.EMBEDDING_CSP);
+        var url = generateURLString(Host.CROSS_ORIGIN, PolicyHeader.EMBEDDING_CSP);
         var redirect_url = generateRedirect(Host.CROSS_ORIGIN, url);
         assert_embedding_csp(t, redirect_url, test.csp, test.expected);
       }, "Test cross origin redirect of cross origin iframe: " + test.name);
@@ -51,7 +51,7 @@
         var i = document.createElement('iframe');
         if (test.csp)
           i.csp = test.csp;
-        i.src = generateURL(Host.SAME_ORIGIN, PolicyHeader.EMBEDDING_CSP);
+        i.src = generateURLString(Host.SAME_ORIGIN, PolicyHeader.EMBEDDING_CSP);
         var loaded = false;
 
         window.addEventListener('message', t.step_func(e => {
@@ -61,7 +61,7 @@
             assert_equals(test.expected, e.data['embedding_csp']);
             loaded = true;
             i.csp = "default-src 'unsafe-inline'";
-            i.src = generateURL(Host.CROSS_ORIGIN, PolicyHeader.EMBEDDING_CSP);
+            i.src = generateURLString(Host.CROSS_ORIGIN, PolicyHeader.EMBEDDING_CSP);
           } else {
             // Once iframe has loaded, check that on change of `src` attribute
             // Embedding-CSP value is based on latest `csp` attribute value.

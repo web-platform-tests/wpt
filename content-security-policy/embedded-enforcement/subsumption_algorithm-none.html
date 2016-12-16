@@ -104,7 +104,7 @@
       async_test(t =>  {
         var url = generateUrlWithPolicies(Host.CROSS_ORIGIN, test.returned_csp_1);
         if (test.returned_csp_2)
-          url += "&policy2=" + encodeURIComponent(test.returned_csp_2);
+          url.searchParams.append("policy2", test.returned_csp_2);
         assert_iframe_with_csp(t, url, test.required_csp, test.expected, test.name, null);
       }, test.name);
     });

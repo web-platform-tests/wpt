@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>window.performance.getEntriesByType("navigation") attributes</title>
+        <title>Navigation Timing 2 WPT</title>
         <link rel="author" title="Google" href="http://www.google.com/" />
         <link rel="help" href="http://www.w3.org/TR/navigation-timing-2/#sec-PerformanceNavigationTiming"/>
         <script src="/resources/testharness.js"></script>
@@ -69,6 +69,8 @@
                         "Expected startTime to be: 0.");
                     assert_equals(entries[0].duration, entries[0].loadEventEnd,
                         "Expected duration to be equal to loadEventEnd.");
+                    assert_equals(entries[0].initiatorType, "",
+                        "Expected initiatorType to be an empty string");
                     verifyTimingEventOrder(entries[0], navTiming2EventOrder1);
                     // When unloadEvent happens
                     if (entries[0]["unloadEventStart"] != 0) {

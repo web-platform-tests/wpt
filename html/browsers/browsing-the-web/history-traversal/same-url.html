@@ -6,7 +6,7 @@
 <script>
 async_test((t) => {
   let state = "begin"
-  self[0].frameElement.onload = () => {
+  self[0].frameElement.onload = t.step_func(() => {
     if(state === "b first") {
       assert_equals(history.length, 2)
 
@@ -26,13 +26,13 @@ async_test((t) => {
       assert_equals(history.length, 3)
       t.done()
     }
-  }
-  onload = () => {
+  })
+  onload = t.step_func(() => {
     assert_equals(state, "begin")
     assert_equals(history.length, 1)
 
     state = "b first"
     self[0].location = "resources/b.html"
-  }
+  })
 })
 </script>

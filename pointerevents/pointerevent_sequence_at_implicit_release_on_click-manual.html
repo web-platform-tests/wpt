@@ -1,60 +1,36 @@
 <!doctype html>
 <html>
   <head>
-    <title>Pointer Event: Event sequence at implicit release</title>
+    <title>Pointer Event: Event sequence at implicit release on click</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
     <link rel="author" title="Google" href="http://www.google.com "/>
-    <meta name="assert" content="When a captured pointer is implicitly released, the boundary events should follow the lostpointercapture event."/>
+    <meta name="assert" content="When a captured pointer is implicitly released after a click, the boundary events should follow the lostpointercapture event."/>
     <link rel="stylesheet" type="text/css" href="pointerevent_styles.css">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script type="text/javascript" src="pointerevent_support.js"></script>
     <script type="text/javascript">
-      var test_pointerEvent_0 = async_test("Event sequence at implicit release after click");
-      var test_pointerEvent_1 = async_test("Event sequence at implicit release after drag");
-
-      add_completion_callback(end_of_test);
-
       var detected_pointertypes = {};
-
-      var test_num = 0;
       var event_log = [];
       var start_logging = false;
-      var seen_pointercancel = false;
 
-      function end_of_test() {
-        showLoggedEvents();
-        showPointerTypes();
-      }
-
-      function end_of_current_test() {
-        if (test_num == 0) {
-          var expected_events = "pointerup, lostpointercapture, pointerout, pointerleave";
-          test(function () {
-            assert_equals(event_log.join(", "), expected_events);
-          }, "Event log after click");
-
-          test_pointerEvent_0.done();
-          test_num++;
-          event_log = [];
-          start_logging = false;
-          seen_pointercancel = false;
-
-        } else {
-          var expected_events = seen_pointercancel ?
-            "pointercancel, lostpointercapture, pointerout, pointerleave" :
-            "pointerup, lostpointercapture, pointerout, pointerleave";
-          test(function () {
-            assert_equals(event_log.join(", "), expected_events);
-          }, "Event log after drag");
-
-          test_pointerEvent_1.done();
-          test_num++;
-        }
+      function resetTestState() {
+        detected_eventTypes = {};
+        event_log = [];
+        start_logging = false;
       }
 
       function run() {
-        on_event(document.getElementById("done"), "click", end_of_current_test);
+        var test_pointer_event = setup_pointerevent_test("Event sequence at implicit release on click", ALL_POINTERS);
+
+        on_event(document.getElementById("done"), "click", function() {
+          var expected_events = "pointerup, lostpointercapture, pointerout, pointerleave";
+          test(function () {
+            assert_equals(event_log.join(", "), expected_events);
+          }, expectedPointerType + " Event log");
+
+          test_pointer_event.done();
+        });
 
         var target = document.getElementById("target");
 
@@ -70,8 +46,6 @@
 
             } else if (event.type != "pointermove" && start_logging) {
               event_log.push(event.type);
-              if (event.type == "pointercancel")
-                seen_pointercancel = true;
             }
           });
         });
@@ -81,7 +55,6 @@
       #target {
         margin: 20px;
         background-color: black;
-        touch-action: auto;
       }
 
       #done {
@@ -91,15 +64,14 @@
     </style>
   </head>
   <body onload="run()">
-    <h1>Pointer Event: Event sequence at implicit release<h1>
+    <h1>Pointer Event: Event sequence at implicit release on click<h1>
+    <h2 id="pointerTypeDescription"></h2>
     <h4>
-      When a captured pointer is implicitly released, the boundary events should follow the lostpointercapture event.
+      When a captured pointer is implicitly released after a click, the boundary events should follow the lostpointercapture event.
     </h4>
     <ol>
-      <li> Click or tap on Black.</li>
-      <li> Click or tap on Green.</li>
-      <li> Drag quickly drag down starting on Black.</li>
-      <li> Click or tap on Green.</li>
+      <li>Click or tap on Black.</li>
+      <li>Click or tap on Green.</li>
     </ol>
     <div id="target"></div>
     <div id="done"></div>

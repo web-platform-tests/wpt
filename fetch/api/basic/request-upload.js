@@ -31,10 +31,10 @@ testUpload("Fetch with POST with Float32Array body", url, "POST", new Float32Arr
 testUpload("Fetch with POST with Float64Array body", url, "POST", new Float64Array(1), "\0\0\0\0\0\0\0\0");
 testUpload("Fetch with POST with DataView body", url, "POST", new DataView(new ArrayBuffer(8), 0, 4), "\0\0\0\0");
 testUpload("Fetch with POST with Blob body with mime type", url, "POST", new Blob(["Test"], { type: "text/maybe" }), "Test");
-testUpload("Fetch with POST with ReadableStream", url, "POST", new ReadableStream(controller => {
-    controller.enqueue("Te");
-    controller.enqueue("st");
+testUpload("Fetch with POST with ReadableStream", url, "POST", new ReadableStream({start: controller => {
+    const encoder = new TextEncoder();
+    controller.enqueue(encoder.encode("Test"));
     controller.close();
-  }), "Test");
+  }}), "Test");
 
 done();

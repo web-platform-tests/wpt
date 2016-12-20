@@ -24,11 +24,10 @@
         var test_pointer_event = setup_pointerevent_test("Event sequence at implicit release on click", ALL_POINTERS);
 
         on_event(document.getElementById("done"), "click", function() {
-          var expected_events = "pointerup, lostpointercapture, pointerout, pointerleave";
-          test(function () {
+          test_pointer_event.currentTest.step(function () {
+            var expected_events = "pointerup, lostpointercapture, pointerout, pointerleave";
             assert_equals(event_log.join(", "), expected_events);
-          }, expectedPointerType + " Event log");
-
+          });
           test_pointer_event.done();
         });
 

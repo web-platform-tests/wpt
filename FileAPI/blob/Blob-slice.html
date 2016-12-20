@@ -45,7 +45,7 @@ test(function() {
   });
 
   test_blob(function() {
-    return blob4 = new Blob().slice(0,0,undefined);
+    return new Blob().slice(0,0,undefined);
   }, {
     expected: "",
     type: "",
@@ -53,7 +53,7 @@ test(function() {
   });
 
   test_blob(function() {
-    return blob5 = new Blob().slice(0,0);
+    return new Blob().slice(0,0);
   }, {
     expected: "",
     type: "",

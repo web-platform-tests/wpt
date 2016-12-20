@@ -226,6 +226,10 @@ MultiPointerTypeTest.prototype.done = function() {
         prevTest.done();
 }
 
+MultiPointerTypeTest.prototype.step = function(stepFunction) {
+    this.currentTest.step(stepFunction);
+}
+
 MultiPointerTypeTest.prototype.createNextTest = function() {
     if (this.currentTypeIndex < this.types.length) {
         var pointerTypeDescription = document.getElementById('pointerTypeDescription');

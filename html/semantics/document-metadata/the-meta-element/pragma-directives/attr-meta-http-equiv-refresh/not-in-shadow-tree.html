@@ -5,12 +5,13 @@
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#pragma-directives">
 
-<iframe src="support/ufoo"></iframe>
-
+<div id="log"></div>
 <script>
 "use strict";
 
-const iframe = document.querySelector("iframe");
+const iframe = document.createElement("iframe");
+iframe.src = "support/ufoo";
+
 let loadCount = 0;
 
 iframe.onload = () => {
@@ -19,6 +20,7 @@ iframe.onload = () => {
 
   if (loadCount === 1) {
     const div = iDocument.createElement("div");
+    assert_true('attachShadow' in div, 'attachShadow support');
     const shadowRoot = div.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = `<meta http-equiv="refresh" content="1; url=foo">`;
     iDocument.body.appendChild(div);
@@ -29,4 +31,6 @@ iframe.onload = () => {
     assert_unreached("Got more than 1 load event");
   }
 };
+
+document.body.appendChild(iframe);
 </script>

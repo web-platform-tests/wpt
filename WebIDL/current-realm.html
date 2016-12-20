@@ -134,6 +134,9 @@
    test(function() {
      var c = new self[0].FontFace("test", "about:blank"),
          obj = c.load()
+     obj.catch(function(reason) {
+       // Ignore exception when it fails to load because the URL is invalid.
+     });
      assert_global(obj)
 
      obj = FontFace.prototype.load.call(c)

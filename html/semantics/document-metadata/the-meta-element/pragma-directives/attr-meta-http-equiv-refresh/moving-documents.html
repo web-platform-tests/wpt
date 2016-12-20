@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>When moving between documents, must refresh the original document</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh">
+
+<iframe id="source" src="support/refresh.sub.html?input=1%3B%20url%3Dfoo"></iframe>
+<iframe id="dest" src="support/ufoo"></iframe>
+
+<script>
+"use strict";
+
+const sourceIFrame = document.querySelector("#source");
+const destIFrame = document.querySelector("#dest");
+let sourceLoadCount = 0;
+let destLoadCount = 0;
+
+sourceIFrame.onload = () => {
+  ++sourceLoadCount;
+
+  if (sourceLoadCount === 2) {
+    assert_equals(sourceIFrame.contentDocument.body.textContent.trim(), "foo");
+    done();
+  }
+};
+
+destIFrame.onload = () => {
+  ++destLoadCount;
+
+  if (destLoadCount === 2) {
+    assert_unreached("The iframe into which the meta was moved must not refresh");
+  }
+};
+
+window.onload = () => {
+  const meta = sourceIFrame.contentDocument.querySelector("meta");
+  destIFrame.contentDocument.body.appendChild(meta);
+};
+</script>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Meta refresh is blocked by the allow-scripts sandbox flag at its creation time, not when refresh comes due</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh">
+
+<iframe id="source" src="support/refresh.sub.html?input=1%3B%20url%3Dfoo" sandbox="allow-same-origin"></iframe>
+<iframe id="dest" src="support/ufoo"></iframe>
+
+<script>
+"use strict";
+
+const sourceIFrame = document.querySelector("#source");
+const destIFrame = document.querySelector("#dest");
+let sourceLoadCount = 0;
+let destLoadCount = 0;
+
+sourceIFrame.onload = () => {
+  ++sourceLoadCount;
+
+  if (sourceLoadCount === 2) {
+    assert_unreached("The iframe from which the meta came from must not refresh");
+  }
+};
+
+destIFrame.onload = () => {
+  ++destLoadCount;
+
+  if (destLoadCount === 2) {
+    assert_unreached("The iframe into which the meta was moved must not refresh");
+  }
+};
+
+window.onload = () => {
+  // Test that no refreshes occur within 3 seconds
+  step_timeout(done, 3000);
+
+  const meta = sourceIFrame.contentDocument.querySelector("meta");
+  destIFrame.contentDocument.body.appendChild(meta);
+};
+</script>

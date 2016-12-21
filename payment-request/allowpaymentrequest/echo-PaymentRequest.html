@@ -8,10 +8,10 @@ window.onmessage = (e) => {
       new PaymentRequest(...paymentArgs);
       e.source.postMessage({message: 'Success'}, '*');
     } catch(ex) {
-      e.source.postMessage({message: 'Got an exception', details: [ex instanceof DOMException, ex.code, ex.name]}, '*');
+      e.source.postMessage({message: 'Exception', details: [ex instanceof DOMException, ex.code, ex.name]}, '*');
     }
   } else {
-    e.source.postMessage('Incorrect message', '*');
+    e.source.postMessage({message: 'Incorrect message'}, '*');
   }
 }
 </script>

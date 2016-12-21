@@ -27,7 +27,7 @@ async_test((t) => {
       // Navigate the iframe. This will fire a second 'load' event on the iframe.
       iframe.contentWindow.location.href = iframe.src + '?2';
     } else {
-      assert_equals(e.data.message, 'Got an exception', 'after navigation');
+      assert_equals(e.data.message, 'Exception', 'after navigation');
       assert_array_equals(e.data.details, [true /* ex instanceof DOMException*/, 18 /* ex.code */, 'SecurityError' /* ex.name */], 'after navigation');
       t.done();
     }

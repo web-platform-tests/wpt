@@ -3,11 +3,12 @@
 <title>CSS Display: Computed style for display:contents</title>
 <link rel="author" title="Rune Lillesveen" href="mailto:rune@opera.com">
 <link rel="help" href="https://drafts.csswg.org/css-display-3/#valdef-display-contents">
+<link rel="help" href="https://drafts.csswg.org/css-display-3/#transformations">
 <link rel="help" href="https://drafts.csswg.org/cssom-1/#resolved-values">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-    .contents { display: contents }
+    html, .contents { display: contents }
 
     #t2 .contents { background-color: green }
     #t2 span { background-color: inherit }
@@ -66,4 +67,8 @@
         assert_equals(computed.marginLeft, "25%");
         assert_equals(computed.paddingTop, "10%");
     }, "Resolved value should be computed value, not used value, for display:contents");
+
+    test(function(){
+        assert_equals(getComputedStyle(document.documentElement).display, "block");
+    }, "display:contents is blockified for root elements");
 </script>

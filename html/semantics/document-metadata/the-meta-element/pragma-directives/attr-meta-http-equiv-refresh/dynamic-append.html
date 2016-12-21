@@ -5,12 +5,12 @@
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#pragma-directives">
 
-<iframe src="support/ufoo"></iframe>
+<div id="log"></div>
 
 <script>
 "use strict";
 
-const iframe = document.querySelector("iframe");
+const iframe = document.createElement("iframe");
 let loadCount = 0;
 
 iframe.onload = () => {
@@ -24,4 +24,7 @@ iframe.onload = () => {
     done();
   }
 };
+
+iframe.src = "support/ufoo";
+document.body.appendChild(iframe);
 </script>

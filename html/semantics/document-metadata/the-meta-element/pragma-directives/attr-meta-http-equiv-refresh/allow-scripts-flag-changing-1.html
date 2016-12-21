@@ -5,14 +5,16 @@
 <script src="/resources/testharnessreport.js"></script>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#attr-meta-http-equiv-refresh">
 
-<iframe id="source" src="support/refresh.sub.html?input=1%3B%20url%3Dfoo" sandbox="allow-same-origin"></iframe>
-<iframe id="dest" src="support/ufoo"></iframe>
+<div id="log"></div>
 
 <script>
 "use strict";
 
-const sourceIFrame = document.querySelector("#source");
-const destIFrame = document.querySelector("#dest");
+const sourceIFrame = document.createElement("iframe");
+sourceIFrame.setAttribute("sandbox", "allow-same-origin");
+
+const destIFrame = document.createElement("iframe");
+
 let sourceLoadCount = 0;
 let destLoadCount = 0;
 
@@ -22,6 +24,8 @@ sourceIFrame.onload = () => {
   if (sourceLoadCount === 2) {
     assert_unreached("The iframe from which the meta came from must not refresh");
   }
+
+  maybeStartTest();
 };
 
 destIFrame.onload = () => {
@@ -30,13 +34,23 @@ destIFrame.onload = () => {
   if (destLoadCount === 2) {
     assert_unreached("The iframe into which the meta was moved must not refresh");
   }
+
+  maybeStartTest();
 };
 
-window.onload = () => {
-  // Test that no refreshes occur within 3 seconds
-  step_timeout(done, 3000);
+function maybeStartTest() {
+  if (sourceLoadCount === 1 && destLoadCount === 1) {
+    // Test that no refreshes occur within 3 seconds
+    step_timeout(done, 3000);
 
-  const meta = sourceIFrame.contentDocument.querySelector("meta");
-  destIFrame.contentDocument.body.appendChild(meta);
-};
+    const meta = sourceIFrame.contentDocument.querySelector("meta");
+    destIFrame.contentDocument.body.appendChild(meta);
+  }
+}
+
+sourceIFrame.src = "support/refresh.sub.html?input=" + encodeURIComponent("1; url=foo");
+destIFrame.src = "support/ufoo";
+
+document.body.appendChild(sourceIFrame);
+document.body.appendChild(destIFrame);
 </script>

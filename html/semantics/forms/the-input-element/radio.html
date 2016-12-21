@@ -9,6 +9,9 @@
 <input type=radio name=group1 id=radio1>
 <input type=radio name=group1 id=radio2>
 
+<input type=radio name=groüp2 id=radio3>
+<input type=radio name=groüp2 id=radio4>
+
 <input type=radio id=radio5>
 <input type=radio id=radio6 disabled>
 
@@ -23,6 +26,8 @@
 <script>
   var radio1 = document.getElementById('radio1'),
       radio2 = document.getElementById('radio2'),
+      radio3 = document.getElementById('radio3'),
+      radio4 = document.getElementById('radio4'),
       radio5 = document.getElementById('radio5'),
       radio6 = document.getElementById('radio6'),
       radio71 = document.getElementById('radio71'),
@@ -48,6 +53,17 @@
     assert_false(radio1.checked);
     assert_true(radio2.checked);
   }, "only one control of a radio button group can have its checkedness set to true");
+
+  test(function(){
+    assert_false(radio3.checked);
+    assert_false(radio4.checked);
+    radio3.checked = true;
+    assert_true(radio3.checked);
+    assert_false(radio4.checked);
+    radio4.checked = true;
+    assert_false(radio3.checked);
+    assert_true(radio4.checked);
+  }, "radio inputs with non-ASCII name attributes belong to the same radio button group");
 
   test(function(){
     assert_true(radio8.checked);

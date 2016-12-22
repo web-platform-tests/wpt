@@ -125,42 +125,6 @@ CONSOLE: work-in-progress/mozilla/mochitest-simplified/packed.js
 CONSOLE: work-in-progress/ttwf_sf/divya/index-002.html
 CONSOLE: work-in-progress/ttwf_tokyo/hiromitsuuuuu/test_font_face_parser.html
 
-CR AT EOL: css-round-display/polar-anchor-center-001.html
-CR AT EOL: css-round-display/polar-anchor-center-002.html
-CR AT EOL: css-round-display/polar-anchor-center-003.html
-CR AT EOL: css-round-display/polar-anchor-left-top-001.html
-CR AT EOL: css-round-display/polar-anchor-top-001.html
-CR AT EOL: css-round-display/polar-origin-and-anchor-001.html
-CR AT EOL: css-round-display/polar-origin-and-anchor-002.html
-CR AT EOL: css-round-display/polar-origin-and-anchor-003.html
-CR AT EOL: css-round-display/polar-origin-and-anchor-004.html
-CR AT EOL: css-round-display/polar-origin-and-anchor-005.html
-CR AT EOL: css-round-display/polar-origin-auto-001.html
-CR AT EOL: css-round-display/polar-origin-auto-002.html
-CR AT EOL: css-round-display/polar-origin-center-001.html
-CR AT EOL: css-round-display/polar-origin-left-001.html
-CR AT EOL: css-round-display/polar-origin-left-bottom-001.html
-CR AT EOL: css-syntax-3/ident-three-code-points.html
-CR AT EOL: css-ui-3/caret-color-004.html
-CR AT EOL: css-ui-3/caret-color-005.html
-CR AT EOL: css-ui-3/caret-color-006.html
-CR AT EOL: css-ui-3/caret-color-007.html
-CR AT EOL: css-ui-3/caret-color-008.html
-CR AT EOL: css-ui-3/caret-color-009.html
-CR AT EOL: css-writing-modes-3/ortho-htb-alongside-vrl-floats-002.xht
-CR AT EOL: css-writing-modes-3/ortho-htb-alongside-vrl-floats-006.xht
-CR AT EOL: css-writing-modes-3/ortho-htb-alongside-vrl-floats-010.xht
-CR AT EOL: css-writing-modes-3/ortho-htb-alongside-vrl-floats-014.xht
-CR AT EOL: css21/floats-clear/float-non-replaced-width-013.xht
-CR AT EOL: css21/lists/list-style-position-018-ref.xht
-CR AT EOL: css21/lists/list-style-position-018.xht
-CR AT EOL: css21/normal-flow/inline-block-non-replaced-width-005.xht
-CR AT EOL: css21/positioning/absolute-non-replaced-width-028.xht
-CR AT EOL: css21/ui/outline-color-176.xht
-CR AT EOL: vendor-imports/mozilla/mozilla-central-reftests/text-decor-3/text-emphasis-style-property-003-ref.html
-CR AT EOL: vendor-imports/mozilla/mozilla-central-reftests/text-decor-3/text-emphasis-style-property-004-ref.html
-CR AT EOL: vendor-imports/mozilla/mozilla-central-reftests/text-decor-3/text-emphasis-style-property-004.html
-
 TRAILING WHITESPACE: css21/generated-content/before-after-positioned-002.html
 TRAILING WHITESPACE: css21/generated-content/before-after-positioned-003.html
 TRAILING WHITESPACE: css21/generated-content/before-after-positioned-004.html

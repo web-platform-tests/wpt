@@ -5,17 +5,20 @@
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#caret-color">
 <link rel="help" href="https://drafts.csswg.org/css-color-4/#currentcolor-color">
 <meta name="flags" content="dom">
-<meta name="assert" content="Test checks that auto and currentcolor compute to themselves for caret-color and that initial computes to auto">
+<meta name="assert" content="Test checks that the resolved value of auto, currentcolor and initial for caret-color property, is the used value.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
 #d1 {
+	color: lime;
 	caret-color: auto;
 }
 #d2 {
+	color: cyan;
 	caret-color: currentcolor;
 }
 #d3 {
+	color: magenta;
 	caret-color: initial;
 }
 </style>
@@ -29,18 +32,18 @@
 test(
   function(){
    var d1 = document.getElementById("d1");
-   assert_equals(window.getComputedStyle(d1)["caret-color"], "auto");
-  }, "The computed value of auto should be auto");
+   assert_equals(window.getComputedStyle(d1)["caret-color"], "rgb(0, 255, 0)");
+  }, "Check the resolved value of 'auto'");
 test(
   function(){
    var d2 = document.getElementById("d2");
-   assert_equals(window.getComputedStyle(d2)["caret-color"], "currentcolor");
-  }, "The computed value of currentcolor should be currentcolor");
+   assert_equals(window.getComputedStyle(d2)["caret-color"], "rgb(0, 255, 255)");
+  }, "Check the resolved value of 'currentcolor'");
 test(
   function(){
    var d3 = document.getElementById("d3");
-   assert_equals(window.getComputedStyle(d3)["caret-color"], "auto");
-  }, "The computed value of initial should be auto");
+   assert_equals(window.getComputedStyle(d3)["caret-color"], "rgb(255, 0, 255)");
+  }, "Check the resolved value of 'initial'");
 </script>
 </body>
 </html>

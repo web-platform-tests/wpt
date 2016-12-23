@@ -21,7 +21,7 @@ test(function() {
   ev.initEvent("foo", true, false);
   assert_true(ev.bubbles, "bubbles");
   assert_false(ev.cancelable, "cancelable");
-  assert_true(ev.returnValue "returnValue");
+  assert_true(ev.returnValue, "returnValue");
 }, "initEvent should work correctly (not cancelable).");
 test(function() {
   var ev = document.createEvent("Event");

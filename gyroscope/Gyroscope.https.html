@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Gyroscope Test</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://www.w3.org/TR/gyroscope/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/generic-sensor-tests.js"></script>
+<div id="log"></div>
+<iframe src="support-iframe.html" id="frame" style="display:none" sandbox="allow-scripts">
+</iframe>
+<script>
+
+function verify_sensor_reading(reading) {
+  return typeof(reading.x) == "number" &&
+         typeof(reading.y) == "number" &&
+         typeof(reading.z) == "number";
+}
+
+runSensorFrequency(Gyroscope);
+runGenericSensorTests(Gyroscope, GyroscopeReading, verify_sensor_reading);
+
+</script>

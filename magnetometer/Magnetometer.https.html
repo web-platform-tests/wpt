@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Magnetometer Test</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://www.w3.org/TR/magnetometer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/generic-sensor-tests.js"></script>
+<div id="log"></div>
+<iframe src="support-iframe.html" id="frame" style="display:none" sandbox="allow-scripts">
+</iframe>
+<script>
+
+function verify_sensor_reading(reading) {
+  return reading.x != 0 ||
+         reading.y != 0 ||
+         reading.z != 0;
+}
+
+runSensorFrequency(Magnetometer);
+runGenericSensorTests(Magnetometer, MagnetometerReading, verify_sensor_reading);
+
+</script>

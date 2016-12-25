@@ -35,6 +35,7 @@
 
 # mask-clip test cases
 == mask-clip-1.html mask-clip-1-ref.html
+== mask-clip-2.html mask-clip-2-ref.html
 
 # mask-position test cases
 == mask-position-1a.html mask-position-1-ref.html
@@ -60,6 +61,7 @@
 # mask-origin test cases
 == mask-origin-1.html mask-origin-1-ref.html
 == mask-origin-2.html mask-origin-2-ref.html
+== mask-origin-3.html mask-origin-3-ref.html
 
 # mask-size test cases
 == mask-size-auto.html mask-size-auto-ref.html

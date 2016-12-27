@@ -34,7 +34,7 @@ async_test(function(t) {
     if (event.data.hasOwnProperty('scrollTo')) {
       document.scrollingElement.scrollTop = event.data.scrollTo;
       waitForNotification(function() { iframe.contentWindow.postMessage("", "*"); },
-			  "document.scrollingElement.scrollTop = " + event.data.scrollTo);
+                          "document.scrollingElement.scrollTop = " + event.data.scrollTo);
     } else if (event.data.hasOwnProperty('actual')) {
       checkJsonEntries(event.data.actual, event.data.expected, event.data.description);
     } else if (event.data.hasOwnProperty('DONE')) {

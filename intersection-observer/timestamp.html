@@ -52,7 +52,7 @@ async_test(function(t) {
       // Callback created here, observer created in iframe.  Timestamps should be
       // from iframe window.
       observer = targetIframe.contentDocument.createObserver(function(newEntries) {
-	iframeWindowEntries = iframeWindowEntries.concat(newEntries);
+        iframeWindowEntries = iframeWindowEntries.concat(newEntries);
       });
       observer.observe(target);
       runTestCycle(step1, "First rAF after iframe is loaded.");
@@ -79,7 +79,7 @@ function step2() {
   // Test results are only significant if there's a gap between
   // top window time and iframe window time.
   assert_greater_than(topWindowTimeBeforeNotification, iframeWindowTimeAfterNotification,
-		      "Time ranges for top and iframe windows are disjoint.");
+                      "Time ranges for top and iframe windows are disjoint.");
 
   assert_equals(topWindowEntries.length, 1, "Top window observer has one notification.");
   assert_between_inclusive(

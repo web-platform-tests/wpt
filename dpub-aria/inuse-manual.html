@@ -64,6 +64,8 @@ function runTests(content) {
   // check the content - if it has a body element, strip up to it and after the
   // close
 
+  content = content.replace(/\n/g, " ");
+
   if (content.search(/<body/i) !== -1) {
     // there is an opening body tag
     content = content.replace(/^.*<body[^>]*>/i, '');
@@ -126,7 +128,8 @@ on_event(document, "DOMContentLoaded", function() {
 </script>
 </head>
 <body>
-<p>Fill the textarea below with HTML markup from that reflects your usage of
+  <p>Fill the textarea below with the contents of a <code>body</code> element
+  from HTML markup from that reflects your usage of
 DPub-ARIA roles.  Then select "Run Test" to evaluate the content.</p>
 <form name="dpub" id="dpub">
     <textarea name="dpub-input" id="dpub-input" style="width: 90%; height: 10em" ></textarea>

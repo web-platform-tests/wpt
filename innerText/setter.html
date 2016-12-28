@@ -13,6 +13,18 @@ function setupTest(context, plain) {
   e.innerText = plain;
   return e;
 }
+
+function testTextPrecreatedContext(context, plain, expectedText, msg) {
+  test(function(){
+    context.innerText = plain;
+
+    assert_not_equals(context.firstChild, null, "Should have a child");
+    assert_equals(context.firstChild.nodeType, Node.TEXT_NODE, "Child should be a text node");
+    assert_equals(context.firstChild.nextSibling, null, "Should have only one child");
+    assert_equals(context.firstChild.data, expectedText);
+  }, msg);
+}
+
 function testText(context, plain, expectedText, msg) {
   test(function(){
     var e = setupTest(context, plain);

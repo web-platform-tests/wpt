@@ -1718,26 +1718,6 @@ interface HTMLTextAreaElement : HTMLElement {
   void setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
 };
 
-interface HTMLKeygenElement : HTMLElement {
-           attribute boolean autofocus;
-           attribute DOMString challenge;
-           attribute boolean disabled;
-  readonly attribute HTMLFormElement? form;
-           attribute DOMString keytype;
-           attribute DOMString name;
-
-  readonly attribute DOMString type;
-
-  readonly attribute boolean willValidate;
-  readonly attribute ValidityState validity;
-  readonly attribute DOMString validationMessage;
-  boolean checkValidity();
-  boolean reportValidity();
-  void setCustomValidity(DOMString error);
-
-  readonly attribute NodeList labels;
-};
-
 interface HTMLOutputElement : HTMLElement {
   [PutForwards=value] readonly attribute DOMTokenList htmlFor;
   readonly attribute HTMLFormElement? form;
@@ -3301,7 +3281,6 @@ window.onload = function() {
     HTMLOptGroupElement: ['document.createElement("optgroup")'],
     HTMLOptionElement: ['document.createElement("option")', 'new Option()'],
     HTMLTextAreaElement: ['document.createElement("textarea")'],
-    HTMLKeygenElement: ['document.createElement("keygen")'],
     HTMLOutputElement: ['document.createElement("output")'],
     HTMLProgressElement: ['document.createElement("progress")'],
     HTMLMeterElement: ['document.createElement("meter")'],

@@ -4176,7 +4176,7 @@
     "search": "",
     "hash": ""
   },
-  "# unknown schemes and non-ASCII domains",
+  "# unknown schemes and their hosts",
   {
     "input": "sc://ñ.test/",
     "base": "about:blank",
@@ -4236,6 +4236,21 @@
     "pathname": "/",
     "search": "",
     "hash": "#x"
+  },
+  {
+    "input": "sc://!\"$%&'()*+,-.;<=>^_`{|}~",
+    "base": "about:blank",
+    "href": "sc://!\"$%&'()*+,-.;<=>^_`{|}~",
+    "origin": "null",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "!\"$%&'()*+,-.;<=>^_`{|}~",
+    "hostname": "!\"$%&'()*+,-.;<=>^_`{|}~",
+    "port": "",
+    "pathname": "",
+    "search": "",
+    "hash": ""
   },
   {
     "input": "x",

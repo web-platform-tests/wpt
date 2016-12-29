@@ -1020,6 +1020,26 @@
     "hash": ""
   },
   {
+    "input": "file://example:1/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "file://example:test/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "file://example%/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "file://[example]/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
     "input": "ftps:/example.com/",
     "base": "http://example.org/foo/bar",
     "href": "ftps:/example.com/",

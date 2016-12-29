@@ -536,14 +536,19 @@ def write_results(results, iterations, comment_pr):
             except ValueError:
                 pass
         if pr_number:
-            logger.info("### [%s](%s/%s%s) ###" % (test, baseurl, pr_number, test))
+            logger.info("<details>\n")
+            logger.info('<summary><a href="%s/%s%s">%s</a></summary>\n\n' %
+                        (baseurl, pr_number, test, test))
         else:
             logger.info("### %s ###" % test)
         parent = test_results.pop(None)
         strings = [("", err_string(parent, iterations))]
-        strings.extend(((("`%s`" % markdown_adjust(subtest)) if subtest else "", err_string(results, iterations))
+        strings.extend(((("`%s`" % markdown_adjust(subtest)) if subtest
+                         else "", err_string(results, iterations))
                         for subtest, results in test_results.iteritems()))
         table(["Subtest", "Results"], strings, logger.info)
+        if pr_number:
+            logger.info("</details>\n")
 
 
 def get_parser():

@@ -1,7 +1,7 @@
 import json
 import os
 import urlparse
-from uuid import uuid4
+import re
 
 import webdriver
 
@@ -145,82 +145,40 @@ def url(server_config):
         return rv
     return inner
 
-def switch_to_inactive(session):
-    """Create a new browsing context, switch to that new context, and then
-    delete the context."""
-    def switch_to_inactive():
-        initial = session.send_session_command("GET", "window/handles")
-
-        session.send_session_command("POST",
-                                     "execute/sync",
-                                     dict(script="window.open();", args=[]))
-        with_new = session.send_session_command("GET", "window/handles")
-
-        assert len(initial) == len(with_new) - 1
-
-        new_handle = (set(with_new) - set(initial)).pop()
-
-        session.send_session_command("POST",
-                                     "window",
-                                     dict(handle=new_handle))
-
-        session.send_session_command("DELETE", "window")
-
-    return switch_to_inactive
-
 def create_dialog(session):
     """Create a dialog (one of "alert", "prompt", or "confirm") and provide a
     function to validate that the dialog has been "handled" (either accepted or
     dismissed) by returning some value."""
 
-    def create_dialog(dialog_type):
-        dialog_id = str(uuid4())
-        dialog_text = "text " + dialog_id
-
+    def create_dialog(dialog_type, text=None, result_var=None):
         assert dialog_type in ("alert", "confirm", "prompt"), (
                "Invalid dialog type: '%s'" % dialog_type)
+
+        if text == None:
+            text = ""
+
+        assert isinstance(text, basestring), "`text` parameter must be a string"
+
+        if result_var == None:
+            result_var = "__WEBDRIVER"
+
+        assert re.search(r"^[_$a-z$][_$a-z0-9]*$", result_var, re.IGNORECASE)
 
         # Script completion and modal summoning are scheduled on two separate
         # turns of the event loop to ensure that both occur regardless of how
         # the user agent manages script execution.
         spawn = """
             var done = arguments[0];
-            window.__WEBDRIVER = "initial value {0}";
             setTimeout(function() {{
                 done();
             }}, 0);
             setTimeout(function() {{
-                window.__WEBDRIVER = window.{1}("{2}");
+                window.{0} = window.{1}("{2}");
             }}, 0);
-        """.format(dialog_id, dialog_type, dialog_text)
+        """.format(result_var, dialog_type, text)
 
         session.send_session_command("POST",
                                      "execute/async",
                                      dict(script=spawn, args=[]))
-
-        def assert_dialog_handled(expected_value):
-            result = session.transport.send("GET",
-                                            "session/%s/alert/text" % session.session_id)
-
-            # If there were any existing dialogs prior to the creation of this
-            # fixture's dialog, then the "Get Alert Text" command will return
-            # successfully. In that case, the text must be different than that
-            # of this fixture's dialog.
-            try:
-                assert_error(result, "no such alert")
-            except:
-                assert (result.status == 200 and
-                        result.body["value"] != dialog_text), (
-                       "%s dialog was not handled." % dialog_type)
-
-            probe = "return window.__WEBDRIVER;"
-            result = session.send_session_command("POST",
-                                                  "execute/sync",
-                                                  dict(script=probe, args=[]))
-
-            assert result == expected_value, (
-                   "%s dialog was not handled with expected value" % s)
-
-        return assert_dialog_handled
 
     return create_dialog

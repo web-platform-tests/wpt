@@ -1,18 +1,19 @@
 import pytest
 import time
 
-from support.asserts import assert_error, assert_success
+from support.asserts import assert_error, assert_success, assert_dialog_handled
+from support.fixtures import create_dialog
 from support.inline import inline
 
-@pytest.fixture
-def get_title(session):
-    return session.execute_script("return document.title")
+def read_global(session, name):
+    return session.execute_script("return %s;" % name)
 
 # 1. If the current top-level browsing context is no longer open, return error
 #    with error code no such window.
-def test_title_from_closed_context(session, switch_to_inactive):
-    session.start()
-    switch_to_inactive()
+def test_title_from_closed_context(session, create_window):
+    new_window = create_window()
+    session.window_handle = new_window
+    session.close()
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
@@ -32,34 +33,39 @@ def test_title_from_closed_context(session, switch_to_inactive):
 #    [...]
 #
 # 3. Return success.
-def test_title_handle_prompt_dismiss(session, get_title, create_dialog):
-    document = inline("<title>WD doc title</title>")
-    session.required_capabilites = {"unhandledPromptBehavior": "dismiss"}
-    session.start()
-    session.url = document
-    assert_alert_handled = create_dialog("alert")
+def test_title_handle_prompt_dismiss(create_session):
+    session = create_session({"alwaysMatch": {"unhandledPromptBehavior": "dismiss"}})
+    session.url = inline("<title>WD doc title</title>")
+
+    expected_title = read_global(session, "document.title")
+    create_dialog(session)("alert", text="dismiss #1", result_var="dismiss1")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, get_title())
-    assert_alert_handled(None)
+    assert_success(result, expected_title)
+    assert_dialog_handled(session, "dismiss #1")
+    assert read_global(session, "dismiss1") == None
 
-    assert_confirm_handled = create_dialog("confirm")
-
-    result = session.transport.send("GET",
-                                    "session/%s/title" % session.session_id)
-
-    assert_success(result, "WD doc title")
-    assert_confirm_handled(False)
-
-    assert_prompt_handled = create_dialog("prompt")
+    expected_title = read_global(session, "document.title")
+    create_dialog(session)("confirm", text="dismiss #2", result_var="dismiss2")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "WD doc title")
-    assert_prompt_handled(None)
+    assert_success(result, expected_title)
+    assert_dialog_handled(session, "dismiss #2")
+    assert read_global(session, "dismiss2") == None
+
+    expected_title = read_global(session, "document.title")
+    create_dialog(session)("prompt", text="dismiss #3", result_var="dismiss3")
+
+    result = session.transport.send("GET",
+                                    "session/%s/title" % session.session_id)
+
+    assert_success(result, expected_title)
+    assert_dialog_handled(session, "dismiss #3")
+    assert read_global(session, "dismiss3") == None
 
 # [...]
 # 2. Handle any user prompts and return its value if it is an error.
@@ -74,34 +80,38 @@ def test_title_handle_prompt_dismiss(session, get_title, create_dialog):
 #    [...]
 #
 # 3. Return success.
-def test_title_handle_prompt_accept(session, create_dialog):
-    document = inline("<title>WD doc title</title>")
-    session.required_capabilites = {"unhandledPromptBehavior": "accept"}
-    session.start()
-    session.url = document
-    assert_alert_handled = create_dialog("alert")
+def test_title_handle_prompt_accept(create_session):
+    session = create_session({"alwaysMatch": {"unhandledPromptBehavior": "accept"}})
+    session.url = inline("<title>WD doc title</title>")
+    create_dialog(session)("alert", text="accept #1", result_var="accept1")
+
+    expected_title = read_global(session, "document.title")
+    result = session.transport.send("GET",
+                                    "session/%s/title" % session.session_id)
+
+    assert_success(result, expected_title)
+    assert_dialog_handled(session, "accept #1")
+    assert read_global(session, "accept1") == None
+
+    expected_title = read_global(session, "document.title")
+    create_dialog(session)("confirm", text="accept #2", result_var="accept2")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "WD doc title")
-    assert_alert_handled(None)
+    assert_success(result, expected_title)
+    assert_dialog_handled(session, "accept #2")
+    assert read_global(session, "accept2"), True
 
-    assert_confirm_handled = create_dialog("confirm")
-
-    result = session.transport.send("GET",
-                                    "session/%s/title" % session.session_id)
-
-    assert_success(result, "WD doc title")
-    assert_confirm_handled(True)
-
-    assert_prompt_handled = create_dialog("prompt")
+    expected_title = read_global(session, "document.title")
+    create_dialog(session)("prompt", text="accept #3", result_var="accept3")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "WD doc title")
-    assert_prompt_handled("")
+    assert_success(result, expected_title)
+    assert_dialog_handled(session, "accept #3")
+    assert read_global(session, "accept3") == ""
 
 # [...]
 # 2. Handle any user prompts and return its value if it is an error.
@@ -116,32 +126,33 @@ def test_title_handle_prompt_accept(session, create_dialog):
 #      1. Dismiss the current user prompt.
 #      2. Return error with error code unexpected alert open.
 def test_title_handle_prompt_missing_value(session, create_dialog):
-    document = inline("<title>WD doc title</title>")
-    session.start()
-    session.send_session_command("POST", "url", dict(url=document))
-    assert_alert_handled = create_dialog("alert")
+    session.url = inline("<title>WD doc title</title>")
+    create_dialog("alert", text="dismiss #1", result_var="dismiss1")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
     assert_error(result, "unexpected alert open")
-    assert_alert_handled(None)
+    assert_dialog_handled(session, "dismiss #1")
+    assert read_global(session, "accept1") == None
 
-    assert_confirm_handled = create_dialog("confirm")
-
-    result = session.transport.send("GET",
-                                    "session/%s/title" % session.session_id)
-
-    assert_error(result, "unexpected alert open")
-    assert_confirm_handled(False)
-
-    assert_prompt_handled = create_dialog("prompt")
+    create_dialog("confirm", text="dismiss #2", result_var="dismiss2")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
     assert_error(result, "unexpected alert open")
-    assert_prompt_handled(None)
+    assert_dialog_handled(session, "dismiss #2")
+    assert read_global(session, "dismiss2") == False
+
+    create_dialog("prompt", text="dismiss #3", result_var="dismiss3")
+
+    result = session.transport.send("GET",
+                                    "session/%s/title" % session.session_id)
+
+    assert_error(result, "unexpected alert open")
+    assert_dialog_handled(session, "dismiss #3")
+    assert read_global(session, "dismiss3") == None
 
 # The behavior of the `window.print` function is platform-dependent and may not
 # trigger the creation of a dialog at all. Therefore, this test should only be
@@ -180,7 +191,7 @@ def test_title_from_top_context(session):
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
-    assert_success(result, "Foobar")
+    assert_success(result, read_global(session, "document.title"))
 
 # [...]
 # 3. Let title be the initial value of the title IDL attribute of the current
@@ -197,12 +208,12 @@ def test_title_from_top_context(session):
 # [...]
 # 4. Return value.
 def test_title_with_duplicate_element(session):
-    session.url = inline("<title>First title</title><title>Second title</title>")
+    session.url = inline("<title>First</title><title>Second</title>")
 
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "First title")
+    assert_success(result, read_global(session, "document.title"))
 
 # [...]
 # 3. Let title be the initial value of the title IDL attribute of the current
@@ -221,7 +232,7 @@ def test_title_without_element(session):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "")
+    assert_success(result, read_global(session, "document.title"))
 
 # [...]
 # 3. Let title be the initial value of the title IDL attribute of the current
@@ -234,7 +245,7 @@ def test_title_after_modification(session):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "updated")
+    assert_success(result, read_global(session, "document.title"))
 
 # [...]
 # 3. Let title be the initial value of the title IDL attribute of the current
@@ -253,7 +264,7 @@ def test_title_strip_and_collapse(session):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "a b c d e")
+    assert_success(result, read_global(session, "document.title"))
 
 # [...]
 # 3. Let title be the initial value of the title IDL attribute of the current
@@ -268,4 +279,4 @@ def test_title_from_frame(session, create_frame):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "Parent")
+    assert_success(result, read_global(session, "document.title"))

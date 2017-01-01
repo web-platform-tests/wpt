@@ -4,6 +4,10 @@ import time
 from support.asserts import assert_error, assert_success
 from support.inline import inline
 
+@pytest.fixture
+def get_title(session):
+    return session.execute_script("return document.title")
+
 # 1. If the current top-level browsing context is no longer open, return error
 #    with error code no such window.
 def test_title_from_closed_context(session, switch_to_inactive):
@@ -28,7 +32,7 @@ def test_title_from_closed_context(session, switch_to_inactive):
 #    [...]
 #
 # 3. Return success.
-def test_title_handle_prompt_dismiss(session, create_dialog):
+def test_title_handle_prompt_dismiss(session, get_title, create_dialog):
     document = inline("<title>WD doc title</title>")
     session.required_capabilites = {"unhandledPromptBehavior": "dismiss"}
     session.start()
@@ -38,7 +42,7 @@ def test_title_handle_prompt_dismiss(session, create_dialog):
     result = session.transport.send("GET",
                                     "session/%s/title" % session.session_id)
 
-    assert_success(result, "WD doc title")
+    assert_success(result, get_title())
     assert_alert_handled(None)
 
     assert_confirm_handled = create_dialog("confirm")

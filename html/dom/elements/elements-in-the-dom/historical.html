@@ -17,8 +17,8 @@
   "inert",
 ].forEach(function(member) {
   test(function() {
-  assert_false(member in document.body);
-  assert_false(member in document.createElement('div'));
+    assert_false(member in document.body);
+    assert_false(member in document.createElement('div'));
   }, 'HTMLElement member must be nuked: ' + member);
 });
 </script>

@@ -164,7 +164,7 @@
             "href": "nonsense:///test",
             "new_value": "https",
             "expected": {
-                "href": "nonsense:///",
+                "href": "nonsense:///test",
                 "protocol": "nonsense:"
             }
         },

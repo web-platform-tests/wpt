@@ -3,6 +3,34 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id=log></div>
+<iframe src="data:text/html,<script>
+onmessage = (e) => {
+  let results = [];
+  e.data.forEach((val) => {
+    try {
+      location.protocol = val;
+      results.push('failure')
+    } catch(e) {
+      results.push(e.name)
+    }
+  });
+  parent.postMessage(results, '*')
+}
+</script>"></iframe>
+<iframe srcdoc="<script>
+onmessage = (e) => {
+  let results = [];
+  e.data.forEach((val) => {
+    try {
+      location.protocol = val;
+      results.push('failure')
+    } catch(e) {
+      results.push(e.name)
+    }
+  });
+  parent.postMessage(results, '*')
+}
+</script>"></iframe>
 <script>
   let broken = [
     'x\x20',
@@ -21,4 +49,18 @@
       assert_throws(new TypeError, () => { location.protocol = val })
     }, encodeURI(val) + " (percent-encoded) is not a scheme")
   })
+  let c = 0
+  async_test((t) => {
+    self.onload = t.step_func(() => {
+      self.onmessage = t.step_func((e) => {
+        assert_array_equals(e.data, ('TypeError '.repeat(9) + 'TypeError').split(' '))
+        c++
+        if(c === 2) {
+          t.done()
+        }
+      })
+      self[0].postMessage(broken, "*")
+      self[1].postMessage(broken, "*")
+    })
+  }, "Equivalent tests for data URL and srcdoc <iframe>s")
 </script>

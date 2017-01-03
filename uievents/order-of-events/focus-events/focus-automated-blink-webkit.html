@@ -85,11 +85,6 @@
 
         a.addEventListener('focusin', function() { b.focus(); }, false);
         b.addEventListener('focusin', function() {
-            console.log(events['normal']);
-            console.log(targets['normal']);
-            console.log(relatedTargets['normal']);
-            console.log(focusedElements['normal']);
-
             async_test_normal.step( function() {
                 assert_array_equals(
                   events['normal'],
@@ -125,11 +120,6 @@
 
         c.addEventListener('focusin', function() {d.focus();});
         d.addEventListener('focusin', function() {
-            console.log(events['iframe']);
-            console.log(targets['iframe']);
-            console.log(relatedTargets['iframe']);
-            console.log(focusedElements['iframe']);
-
             async_test_iframe_static.step(function() {
                 assert_array_equals(
                   events['iframe'],

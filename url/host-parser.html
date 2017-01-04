@@ -1,0 +1,48 @@
+<!doctype html>
+<title>Testing the host parser</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+for(let i = 0; i < 0x7F; i++) {
+  let str = String.fromCharCode(i)
+  let shouldPass = true
+  let onlySetters = false
+  if(str.match(/[a-z0-9]/i)) {
+    // Skip things we know will work
+    continue
+  }
+  if(str.match(/\x09|\x0A|\x0D|\?|\/|\\|:|@|#/)) {
+    shouldPass = false
+    onlySetters = true
+  }
+  if(str.match(/\x00|\x20|%|\[|\]/)) {
+    shouldPass = false
+  }
+
+  if(!onlySetters) {
+    test(() => {
+      if(shouldPass) {
+        const url = new URL("https://" + str + "x")
+        assert_equals(url.pathname, "/")
+        assert_equals(url.host, str + "x")
+        assert_equals(url.hostname, str + "x")
+      } else {
+        assert_throws(new TypeError, () => new URL("https://" + str + "x"))
+      }
+    }, encodeURI(str))
+  }
+
+  test(() => {
+    const url = new URL("https://x")
+    ;["host", "hostname"].forEach((val) => {
+      url[val] = str
+      if(shouldPass) {
+        assert_equals(url[val], str)
+      } else {
+        assert_equals(url[val], "x")
+      }
+    })
+  }, "host/hostname setter for " + encodeURI(str))
+}
+</script>

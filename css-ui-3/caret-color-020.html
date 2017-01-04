@@ -5,7 +5,7 @@
 <link rel="help" href="http://www.w3.org/TR/css3-ui/#caret-color">
 <link rel="help" href="https://www.w3.org/TR/web-animations-1/#dom-animatable-animate">
 <link rel="help" href="https://www.w3.org/TR/css3-color/#color0">
-<meta name="assert" content="Test checks that 'currentcolor' value for caret-color property is interpolatible.">
+<meta name="assert" content="Test checks that 'currentcolor' value for caret-color property is interpolable.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -34,6 +34,6 @@
         player.pause();
         player.currentTime = 5;
         assert_equals(getComputedStyle(textarea).caretColor, 'rgb(128, 128, 128)');
-      }, "caret-color: currentcolor is interpolatible");
+      }, "caret-color: currentcolor is interpolable");
 </script>
 </body>

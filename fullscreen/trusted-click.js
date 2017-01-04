@@ -19,6 +19,6 @@ function trusted_click(callback, container)
 // Invokes element.requestFullscreen() from a trusted click.
 function trusted_request(element, container)
 {
-    var request = element.requestFullscreen.bind(element);
+    var request = () => element.requestFullscreen();
     trusted_click(request, container || element.parentNode);
 }

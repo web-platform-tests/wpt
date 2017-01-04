@@ -12,10 +12,10 @@ t.step(function() {
 var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
-offscreenCanvas2.width = 100;
+offscreenCanvas.width = 100;
 ctx.rect(0, 0, 1, 1);
 ctx.clip();
-offscreenCanvas2.width = 100;
+offscreenCanvas.width = 100;
 ctx.fillStyle = '#0f0';
 ctx.fillRect(0, 0, 100, 50);
 _assertPixel(offscreenCanvas, 20,20, 0,255,0,255, "20,20", "0,255,0,255");

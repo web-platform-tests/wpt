@@ -18,7 +18,7 @@ self.onload = () => {
     async_test((t) => {
       // HTTP URL <iframe>
       const frame = document.createElement("iframe")
-      frame.src = "resources/dummy.html"
+      frame.src = "/common/blank.html"
       frame.onload = t.step_func(() => {
         frame.contentWindow.location.protocol = val
         t.step_timeout(() => {

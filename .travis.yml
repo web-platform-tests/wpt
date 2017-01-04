@@ -49,6 +49,9 @@ matrix:
         - PRODUCT=chrome
 script:
   - bash $SCRIPT
+cache:
+  directories:
+    - $HOME/.cache/pip
 notifications:
   email:
     on_success: never

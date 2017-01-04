@@ -33,16 +33,56 @@ onmessage = (e) => {
 </script>"></iframe>
 <script>
   let broken = [
-    'x\x20',
-    'x\x00',
     '\x00',
+    '\x01',
+    '\x0A',
+    '\x20',
+    '\x21',
+    '\x7F',
+    '\x80',
+    '\xFF',
     ':',
     '†',
-    'a†',
+    '\x00x',
+    '\x01x',
+    '\x0Ax',
+    '\x20x',
+    '\x21x',
+    '\x7Fx',
+    '\x80x',
+    '\xFFx',
+    ':x',
+    '†x',
+    '\x00X',
+    '\x01X',
+    '\x0AX',
+    '\x20X',
+    '\x21X',
+    '\x7FX',
+    '\x80X',
+    '\xFFX',
+    ':X',
+    '†X',
+    'x\x00',
+    'x\x01',
+    'x\x0A',
+    'x\x20',
+    'x\x21',
+    'x\x7F',
+    'x\x80',
+    'x\xFF',
+    'x†',
+    'X\x00',
+    'X\x01',
+    'X\x0A',
+    'X\x20',
+    'X\x21',
+    'X\x7F',
+    'X\x80',
+    'X\xFF',
+    'X†',
     'a\x0A',
-    'a+-.\x0A',
-    '\x7F',
-    '\xFF'
+    'a+-.\x0A'
   ]
   ;broken.forEach((val) => {
     test(() => {
@@ -53,7 +93,7 @@ onmessage = (e) => {
   async_test((t) => {
     self.onload = t.step_func(() => {
       self.onmessage = t.step_func((e) => {
-        assert_array_equals(e.data, ('TypeError '.repeat(9) + 'TypeError').split(' '))
+        assert_array_equals(e.data, ('TypeError '.repeat(49) + 'TypeError').split(' '))
         c++
         if(c === 2) {
           t.done()

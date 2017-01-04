@@ -20,17 +20,13 @@ self.onload = () => {
       const frame = document.createElement("iframe")
       frame.src = "resources/dummy.html"
       frame.onload = t.step_func(() => {
-        try {
-          frame.contentWindow.location.protocol = val
-          t.step_timeout(() => {
-            assert_equals(frame.contentWindow.location.protocol, location.protocol)
-            assert_equals(frame.contentWindow.location.host, location.host)
-            assert_equals(frame.contentWindow.location.port, location.port)
-            t.done()
-          }, 500)
-        } catch(e) {
-          assert_unreached(e)
-        }
+        frame.contentWindow.location.protocol = val
+        t.step_timeout(() => {
+          assert_equals(frame.contentWindow.location.protocol, location.protocol)
+          assert_equals(frame.contentWindow.location.host, location.host)
+          assert_equals(frame.contentWindow.location.port, location.port)
+          t.done()
+        }, 500)
       })
       document.body.appendChild(frame)
     }, "Set HTTP URL frame location.protocol to " + val)

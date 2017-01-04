@@ -51,10 +51,40 @@ This test uses data only, and thus does not require fake media devices.
     return null;
   }
 
+  var onIceConnectionStateChange = test.step_func(function(event) {
+    // Wait until connection is established.
+    // Note - not all browsers reach 'completed' state, so we're
+    // checking for 'connected' state instead.
+    if (gFirstConnection.iceConnectionState != 'connected') {
+      return;
+    }
+    gFirstConnection.getStats()
+    .then(function(report) {
+      // Show the retrieved stats info
+      var showStats = document.getElementById('stats');
+      let reportDictionary = {};
+      for (let stats of report.values()) {
+        reportDictionary[stats.id] = stats;
+      }
+      showStats.innerHTML = JSON.stringify(reportDictionary, null, 2);
+      // Check the stats properties.
+      assert_not_equals(report, null);
+      let sessionStat = getStatsRecordByType(report, 'peer-connection');
+      assert_not_equals(sessionStat, null, 'Did not find peer-connection stats');
+      assert_exists(sessionStat, 'dataChannelsOpened');
+      assert_equals(sessionStat.dataChannelsOpened, 1);
+      test.done();
+    })
+    .catch(test.step_func(function(e) {
+      assert_unreached(e.name + ': ' + e.message + ': ');
+    }));
+  });
+
   // This function starts the test.
   test.step(function() {
     gFirstConnection = new RTCPeerConnection(null);
     gFirstConnection.onicecandidate = onIceCandidateToFirst;
+    gFirstConnection.oniceconnectionstatechange = onIceConnectionStateChange;
 
     gSecondConnection = new RTCPeerConnection(null);
     gSecondConnection.onicecandidate = onIceCandidateToSecond;
@@ -88,26 +118,6 @@ This test uses data only, and thus does not require fake media devices.
       atStep = 'Set remote description at first';
       return gFirstConnection.setRemoteDescription(
           gSecondConnection.localDescription);
-    })
-    .then(function() {
-      atStep = 'Calling getStats';
-      return gFirstConnection.getStats();
-    })
-    .then(function(report) {
-      atStep = 'Analyzing stats';
-      // Show the retrieved stats info
-      var showStats = document.getElementById('stats');
-      let reportDictionary = {};
-      for (let stats of report.values()) {
-        reportDictionary[stats.id] = stats;
-      }
-      showStats.innerHTML = JSON.stringify(reportDictionary, null, 2);
-      // Check the stats properties.
-      assert_not_equals(report, null);
-      let sessionStat = getStatsRecordByType(report, 'peer-connection');
-      assert_not_equals(sessionStat, null, 'Did not find peerconnection stats');
-      assert_exists(sessionStat, 'dataChannelsOpened');
-      test.done();
     })
     .catch(test.step_func(function(e) {
       assert_unreached('Error ' + e.name + ': ' + e.message +

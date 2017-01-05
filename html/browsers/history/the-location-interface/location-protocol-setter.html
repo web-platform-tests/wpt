@@ -86,14 +86,14 @@ onmessage = (e) => {
   ]
   ;broken.forEach((val) => {
     test(() => {
-      assert_throws(new TypeError, () => { location.protocol = val })
+      assert_throws("SyntaxError", () => { location.protocol = val })
     }, encodeURI(val) + " (percent-encoded) is not a scheme")
   })
   let c = 0
   async_test((t) => {
     self.onload = t.step_func(() => {
       self.onmessage = t.step_func((e) => {
-        assert_array_equals(e.data, ('TypeError '.repeat(49) + 'TypeError').split(' '))
+        assert_array_equals(e.data, ("SyntaxError ".repeat(49) + "SyntaxError").split(" "))
         c++
         if(c === 2) {
           t.done()

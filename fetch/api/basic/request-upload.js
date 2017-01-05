@@ -18,6 +18,20 @@ function testUpload(desc, url, method, body, expectedBody) {
   }, desc);
 }
 
+function testUploadFailure(desc, url, method, body) {
+  const requestInit = {"method": method};
+  promise_test(test => {
+    if (typeof body === "function")
+      body = body();
+    if (body)
+      requestInit["body"] = body;
+    return fetch(url, requestInit).then(() => {
+      assert_unreached("fetch should not succeeed");
+    }, () => {
+    });
+  }, desc);
+}
+
 var url = RESOURCES_DIR + "echo-content.py"
 
 testUpload("Fetch with PUT with body", url, "PUT", "Request's body", "Request's body");
@@ -36,5 +50,17 @@ testUpload("Fetch with POST with ReadableStream", url, "POST", new ReadableStrea
     controller.enqueue(encoder.encode("Test"));
     controller.close();
   }}), "Test");
+testUploadFailure("Fetch with POST with ReadableStream containing String", url, "POST", new ReadableStream({start: controller => {
+    controller.enqueue("Test");
+    controller.close();
+  }}));
+testUploadFailure("Fetch with POST with ReadableStream containing null", url, "POST", new ReadableStream({start: controller => {
+    controller.enqueue(null);
+    controller.close();
+  }}));
+testUploadFailure("Fetch with POST with ReadableStream containing number", url, "POST", new ReadableStream({start: controller => {
+    controller.enqueue(99);
+    controller.close();
+  }}));
 
 done();

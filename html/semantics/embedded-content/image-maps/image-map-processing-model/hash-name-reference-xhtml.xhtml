@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta charset="utf-8"/>
+  <title>parsing a hash-name reference for img and object</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+ </head>
+ <body>
+
+<div id="log"></div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="no-hash-name"/>
+ <object data="/images/threecolors.png" usemap="no-hash-name"></object>
+ <map name="no-hash-name">
+  <area shape="default" href="#area-no-hash-name"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="no-hash-id"/>
+ <object data="/images/threecolors.png" usemap="no-hash-id"></object>
+ <map id="no-hash-id">
+  <area shape="default" href="#area-no-hash-id"/>
+ </map>
+</div>
+
+<div data-expect="area-hash-name">
+ <img src="/images/threecolors.png" usemap="#hash-name"/>
+ <object data="/images/threecolors.png" usemap="#hash-name"></object>
+ <map name="hash-name">
+  <area shape="default" href="#area-hash-name"/>
+ </map>
+</div>
+
+<div data-expect="area-hash-id">
+ <img src="/images/threecolors.png" usemap="#hash-id"/>
+ <object data="/images/threecolors.png" usemap="#hash-id"></object>
+ <map id="hash-id">
+  <area shape="default" href="#area-hash-id"/>
+ </map>
+</div>
+
+<div data-expect="area-non-map-with-this-name">
+ <img src="/images/threecolors.png" usemap="#non-map-with-this-name" name="non-map-with-this-name"/>
+ <object data="/images/threecolors.png" usemap="#non-map-with-this-name"></object>
+ <map name="non-map-with-this-name">
+  <area shape="default" href="#area-non-map-with-this-name"/>
+ </map>
+</div>
+
+<div data-expect="area-non-map-with-this-id">
+ <img src="/images/threecolors.png" usemap="#non-map-with-this-id" id="non-map-with-this-id"/>
+ <object data="/images/threecolors.png" usemap="#non-map-with-this-id"></object>
+ <map id="non-map-with-this-name">
+  <area shape="default" href="#area-non-map-with-this-id"/>
+ </map>
+</div>
+
+<div data-expect="area-two-maps-with-this-name-1">
+ <img src="/images/threecolors.png" usemap="#two-maps-with-this-name"/>
+ <object data="/images/threecolors.png" usemap="#two-maps-with-this-name"></object>
+ <map name="two-maps-with-this-name">
+  <area shape="default" href="#area-two-maps-with-this-name-1"/>
+ </map>
+ <map name="two-maps-with-this-name">
+  <area shape="default" href="#area-two-maps-with-this-name-2"/>
+ </map>
+</div>
+
+<div data-expect="area-two-maps-with-this-id-1">
+ <img src="/images/threecolors.png" usemap="#two-maps-with-this-id"/>
+ <object data="/images/threecolors.png" usemap="#two-maps-with-this-id"></object>
+ <map id="two-maps-with-this-id">
+  <area shape="default" href="#area-two-maps-with-this-id-1"/>
+ </map>
+ <map id="two-maps-with-this-name">
+  <area shape="default" href="#area-two-maps-with-this-id-2"/>
+ </map>
+</div>
+
+<div data-expect="area-two-maps-with-this-name-or-id-1">
+ <img src="/images/threecolors.png" usemap="#two-maps-with-this-name-or-id"/>
+ <object data="/images/threecolors.png" usemap="#two-maps-with-this-name-or-id"></object>
+ <map name="two-maps-with-this-name-or-id">
+  <area shape="default" href="#area-two-maps-with-this-name-or-id-1"/>
+ </map>
+ <map id="two-maps-with-this-name-or-id">
+  <area shape="default" href="#area-two-maps-with-this-name-or-id-2"/>
+ </map>
+</div>
+
+<div data-expect="area-two-maps-with-this-id-or-name-1">
+ <img src="/images/threecolors.png" usemap="#two-maps-with-this-id-or-name"/>
+ <object data="/images/threecolors.png" usemap="#two-maps-with-this-id-or-name"></object>
+ <map name="two-maps-with-this-id-or-name">
+  <area shape="default" href="#area-two-maps-with-this-id-or-name-1"/>
+ </map>
+ <map id="two-maps-with-this-id-or-name">
+  <area shape="default" href="#area-two-maps-with-this-id-or-name-2"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="hash-last#"/>
+ <object data="/images/threecolors.png" usemap="hash-last#"></object>
+ <map name="hash-last" id="hash-last">
+  <area shape="default" href="#area-hash-last-no-hash-in-map-name-and-id"/>
+ </map>
+ <map name="hash-last#" id="hash-last#">
+  <area shape="default" href="#area-hash-last-with-hash-in-map-name-and-id"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap=""/>
+ <object data="/images/threecolors.png" usemap=""></object>
+ <map name="" id="">
+  <area shape="default" href="#area-empty-usemap-empty-map-name-and-id"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="#"/>
+ <object data="/images/threecolors.png" usemap="#"></object>
+ <map name="" id="">
+  <area shape="default" href="#area-hash-usemap-empty-name-and-id"/>
+ </map>
+</div>
+
+<div data-expect="area-hash-space-usemap-space-map-name">
+ <img src="/images/threecolors.png" usemap="# "/>
+ <object data="/images/threecolors.png" usemap="# "></object>
+ <map name=" ">
+  <area shape="default" href="#area-hash-space-usemap-space-map-name"/>
+ </map>
+</div>
+
+<div data-expect="area-hash-space-space-usemap-space-map-id">
+ <img src="/images/threecolors.png" usemap="#&#x0A;"/>
+ <object data="/images/threecolors.png" usemap="#&#x0A;"></object>
+ <map id="&#x0A;">
+  <area shape="default" href="#area-hash-LF-usemap-LF-map-id"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="#percent-escape-name-%41"/>
+ <object data="/images/threecolors.png" usemap="#percent-escape-name-%41"></object>
+ <map name="percent-escape-name-A">
+  <area shape="default" href="#area-percent-escape-name-A"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="#percent-escape-id-%41"/>
+ <object data="/images/threecolors.png" usemap="#percent-escape-id-%41"></object>
+ <map id="percent-escape-id-A">
+  <area shape="default" href="#area-percent-escape-id-A"/>
+ </map>
+</div>
+
+<div data-expect="area-percent-escape-name-B">
+ <img src="/images/threecolors.png" usemap="#percent-escape-name-%42"/>
+ <object data="/images/threecolors.png" usemap="#percent-escape-name-%42"></object>
+ <map name="percent-escape-name-%42">
+  <area shape="default" href="#area-percent-escape-name-B"/>
+ </map>
+</div>
+
+<div data-expect="area-percent-escape-id-B">
+ <img src="/images/threecolors.png" usemap="#percent-escape-id-%42"/>
+ <object data="/images/threecolors.png" usemap="#percent-escape-id-%42"></object>
+ <map id="percent-escape-id-%42">
+  <area shape="default" href="#area-percent-escape-id-B"/>
+ </map>
+</div>
+
+<div data-expect="area-garbage-before-hash-name">
+ <img src="/images/threecolors.png" usemap="http://example.org/#garbage-before-hash-name"/>
+ <object data="/images/threecolors.png" usemap="http://example.org/#garbage-before-hash-name"></object>
+ <map name="garbage-before-hash-name">
+  <area shape="default" href="#area-garbage-before-hash-name"/>
+ </map>
+</div>
+
+<div data-expect="area-garbage-before-hash-id">
+ <img src="/images/threecolors.png" usemap="http://example.org/#garbage-before-hash-id"/>
+ <object data="/images/threecolors.png" usemap="http://example.org/#garbage-before-hash-id"></object>
+ <map id="garbage-before-hash-id">
+  <area shape="default" href="#area-garbage-before-hash-id"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="#no-such-map"/>
+ <object data="/images/threecolors.png" usemap="#no-such-map"></object>
+ <map>
+  <area shape="default" href="#area-no-such-map"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="#different-CASE-name"/>
+ <object data="/images/threecolors.png" usemap="#different-CASE-name"></object>
+ <map name="different-case-name">
+  <area shape="default" href="#area-different-case-name"/>
+ </map>
+</div>
+
+<div data-expect="no match">
+ <img src="/images/threecolors.png" usemap="#different-CASE-id"/>
+ <object data="/images/threecolors.png" usemap="#different-CASE-id"></object>
+ <map id="different-case-id">
+  <area shape="default" href="#area-different-case-id"/>
+ </map>
+</div>
+
+<script>
+//<![CDATA[
+ setup({explicit_done: true});
+
+ onload = function() {
+   var divs = document.querySelectorAll('div[data-expect]');
+   var div, img, object;
+   for (var i = 0; i < divs.length; ++i) {
+     div = divs[i];
+     img = div.querySelector('img');
+     object = div.querySelector('object');
+     [img, object].forEach(function(elm) {
+       test(function(t) {
+         var expected = div.getAttribute('data-expect');
+         // Avoid using characters in data-expect="" that would need CSS escaping
+         var expected_elm = expected === 'no match' ? elm : div.querySelector('area[href="#' + expected + '"]');
+         var got_elm = document.elementFromPoint(elm.offsetLeft + 1, elm.offsetTop + 1);
+         assert_equals(got_elm, expected_elm);
+       }, elm.tagName + ' usemap=' + format_value(elm.useMap));
+     });
+   }
+   done();
+ };
+//]]>
+</script>
+
+ </body>
+</html>

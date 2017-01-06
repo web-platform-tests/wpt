@@ -2249,11 +2249,6 @@
     "hash": "# %C2%BB"
   },
   {
-    "input": "http://[www.google.com]/",
-    "base": "about:blank",
-    "failure": true
-  },
-  {
     "input": "http://www.google.com",
     "base": "about:blank",
     "href": "http://www.google.com/",
@@ -3690,7 +3685,32 @@
   },
   "Broken IPv6",
   {
+    "input": "http://[www.google.com]/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
     "input": "http://[google.com]",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://[::1.2.3.4x]",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://[::1.2.3.]",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://[::1.2.]",
+    "base": "http://other.com/",
+    "failure": true
+  },
+  {
+    "input": "http://[::1.]",
     "base": "http://other.com/",
     "failure": true
   },

@@ -25,10 +25,7 @@ function testUploadFailure(desc, url, method, body) {
       body = body();
     if (body)
       requestInit["body"] = body;
-    return fetch(url, requestInit).then(() => {
-      assert_unreached("fetch should not succeeed");
-    }, () => {
-    });
+    return promise_rejects(new TypeError(), fetch(url, requestInit));
   }, desc);
 }
 
@@ -60,6 +57,14 @@ testUploadFailure("Fetch with POST with ReadableStream containing null", url, "P
   }}));
 testUploadFailure("Fetch with POST with ReadableStream containing number", url, "POST", new ReadableStream({start: controller => {
     controller.enqueue(99);
+    controller.close();
+  }}));
+testUploadFailure("Fetch with POST with ReadableStream containing ArrayBuffer", url, "POST", new ReadableStream({start: controller => {
+    controller.enqueue(new ArrayBuffer());
+    controller.close();
+  }}));
+testUploadFailure("Fetch with POST with ReadableStream containing Blob", url, "POST", new ReadableStream({start: controller => {
+    controller.enqueue(new Blob());
     controller.close();
   }}));
 

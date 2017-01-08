@@ -50,6 +50,29 @@
 
   p#sentence-after
     {
+      padding-bottom: calc(600px - 100px + 16px - 52px - 3px - 15ch - 3px - 52px + 16px);
+      /*
+      600px
+   -
+      100px
+   +
+       16px : margin collapsing of p#sentence-before's margin-top with body's margin-top
+   -
+       52px
+   -
+        3px
+   -
+       15ch
+   -
+        3px
+   -
+       52px
+   +
+       16px : margin collapsing of p#sentence-after's margin-bottom with body's margin-bottom
+  ============
+   approx. 270px
+      */
+
       top: calc(136px + 3px + 15ch + 3px);
       /*
       15ch means 15 ch unit where each ch is equal to
@@ -58,7 +81,6 @@
       5.1.1. Font-relative lengths: the em, ex, ch, rem units
       https://www.w3.org/TR/css3-values/#ch
       */
-      padding-bottom: 100px;
     }
   ]]></style>
  </head>

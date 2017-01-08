@@ -8,10 +8,10 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="https://www.w3.org/TR/css-writing-modes-3/#auto-multicol" title="7.3.2. Auto-sizing Block Containers in Orthogonal Flows" />
-  <link rel="match" href="sizing-orthog-vlr-in-htb-006-ref.xht" />
+  <link rel="match" href="sizing-orthog-vlr-in-htb-012-ref.xht" />
 
   <meta name="DC.date.created" content="2016-10-04T09:54:03+11:00" scheme="W3CDTF" />
-  <meta name="DC.date.modified" content="2017-01-03T09:54:03+11:00" scheme="W3CDTF" />
+  <meta name="DC.date.modified" content="2017-01-08T09:54:03+11:00" scheme="W3CDTF" />
 
   <meta name="flags" content="" />
   <meta name="assert" content="In this test, the inline size of the orthogonal block is 'auto' and its containing block's block size is '400px'. Since the height of the containing block is definite in this test, then constrain is the height of such containing block which is, in this test, 400px. This test presumes that the initial containing block's height is greater than 400px. In this test, the max-content will be smaller than the height of the initial containing block. Therefore the inline size of div#ortho-block-vlr will be its max-content." />
@@ -66,7 +66,6 @@
       line-height: 1.25; /* therefore, each line box is 20px tall */
       margin-bottom: 100px;
       margin-top: 100px;
-      /* Nota bene: margin-top of p#sentence-before will collapse with body's margin-top */
     }
 
   div#sized-400px-htb-containing-block

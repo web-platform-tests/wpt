@@ -16,7 +16,8 @@
   <style type="text/css"><![CDATA[
   html
     {
-      padding: 100px 0px;
+      padding: 92px 0px;
+      height: 416px;
       writing-mode: vertical-lr;
     }
 
@@ -26,50 +27,17 @@
       line-height: 1.25; /* therefore, each line box is 20px tall */
     }
 
-  p
-    {
-      left: 8px;
-      position: absolute;
-      writing-mode: horizontal-tb;
-    }
-
-  p#sentence-before
-    {
-      margin-top: 0px;
-      top: 100px;
-    }
-
   div
     {
       border: blue solid 3px;
-      height: auto;
-      left: 8px;
-      position: absolute;
-      top: 136px;
-    }
-
-  p#sentence-after
-    {
-      top: calc(136px + 3px + 15ch + 3px);
-      /*
-      15ch means 15 ch unit where each ch is equal to
-      the used advance measure of the "0" (ZERO, U+0030) glyph found
-      in the font used to render it.
-      5.1.1. Font-relative lengths: the em, ex, ch, rem units
-      https://www.w3.org/TR/css3-values/#ch
-      */
-      padding-bottom: 100px;
+      display: inline-block;
     }
   ]]></style>
  </head>
 
  <body>
 
-  <p id="sentence-before">Sentence before.</p>
-
   <div>123456789012345</div>
-
-  <p id="sentence-after">Sentence after.</p>
 
  </body>
 </html>

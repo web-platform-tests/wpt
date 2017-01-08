@@ -463,7 +463,7 @@ IdlArray.prototype.assert_type_is = function(value, type)
     }
 
     if (type.generic === "Promise") {
-        assert_own_property(value, "then", "Attribute with a Promise type has a then property");
+        assert_true("then" in value, "Attribute with a Promise type has a then property");
         // TODO: Ideally, we would check on project fulfillment
         // that we get the right type
         // but that would require making the type check async

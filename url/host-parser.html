@@ -64,6 +64,9 @@ function runHostTests(source, hostTests) {
               assert_throws(new TypeError, () => makeURL("url", hostTest.input))
             } else {
               const url = makeURL(type, hostTest.input)
+              assert_equals(url.host, "")
+              assert_equals(url.hostname, "")
+              assert_equals(url.pathname, "")
               assert_equals(url.href, "https://" + hostTest.input + "/x")
             }
           }

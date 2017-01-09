@@ -226,6 +226,56 @@
     "output": null
   },
   {
+    "input": "0",
+    "onlySetters": false,
+    "output": "0.0.0.0"
+  },
+  {
+    "input": "1",
+    "onlySetters": false,
+    "output": "0.0.0.1"
+  },
+  {
+    "input": "2",
+    "onlySetters": false,
+    "output": "0.0.0.2"
+  },
+  {
+    "input": "3",
+    "onlySetters": false,
+    "output": "0.0.0.3"
+  },
+  {
+    "input": "4",
+    "onlySetters": false,
+    "output": "0.0.0.4"
+  },
+  {
+    "input": "5",
+    "onlySetters": false,
+    "output": "0.0.0.5"
+  },
+  {
+    "input": "6",
+    "onlySetters": false,
+    "output": "0.0.0.6"
+  },
+  {
+    "input": "7",
+    "onlySetters": false,
+    "output": "0.0.0.7"
+  },
+  {
+    "input": "8",
+    "onlySetters": false,
+    "output": "0.0.0.8"
+  },
+  {
+    "input": "9",
+    "onlySetters": false,
+    "output": "0.0.0.9"
+  },
+  {
     "input": ":",
     "onlySetters": true,
     "output": null
@@ -259,6 +309,136 @@
     "input": "@",
     "onlySetters": true,
     "output": null
+  },
+  {
+    "input": "A",
+    "onlySetters": false,
+    "output": "a"
+  },
+  {
+    "input": "B",
+    "onlySetters": false,
+    "output": "b"
+  },
+  {
+    "input": "C",
+    "onlySetters": false,
+    "output": "c"
+  },
+  {
+    "input": "D",
+    "onlySetters": false,
+    "output": "d"
+  },
+  {
+    "input": "E",
+    "onlySetters": false,
+    "output": "e"
+  },
+  {
+    "input": "F",
+    "onlySetters": false,
+    "output": "f"
+  },
+  {
+    "input": "G",
+    "onlySetters": false,
+    "output": "g"
+  },
+  {
+    "input": "H",
+    "onlySetters": false,
+    "output": "h"
+  },
+  {
+    "input": "I",
+    "onlySetters": false,
+    "output": "i"
+  },
+  {
+    "input": "J",
+    "onlySetters": false,
+    "output": "j"
+  },
+  {
+    "input": "K",
+    "onlySetters": false,
+    "output": "k"
+  },
+  {
+    "input": "L",
+    "onlySetters": false,
+    "output": "l"
+  },
+  {
+    "input": "M",
+    "onlySetters": false,
+    "output": "m"
+  },
+  {
+    "input": "N",
+    "onlySetters": false,
+    "output": "n"
+  },
+  {
+    "input": "O",
+    "onlySetters": false,
+    "output": "o"
+  },
+  {
+    "input": "P",
+    "onlySetters": false,
+    "output": "p"
+  },
+  {
+    "input": "Q",
+    "onlySetters": false,
+    "output": "q"
+  },
+  {
+    "input": "R",
+    "onlySetters": false,
+    "output": "r"
+  },
+  {
+    "input": "S",
+    "onlySetters": false,
+    "output": "s"
+  },
+  {
+    "input": "T",
+    "onlySetters": false,
+    "output": "t"
+  },
+  {
+    "input": "U",
+    "onlySetters": false,
+    "output": "u"
+  },
+  {
+    "input": "V",
+    "onlySetters": false,
+    "output": "v"
+  },
+  {
+    "input": "W",
+    "onlySetters": false,
+    "output": "w"
+  },
+  {
+    "input": "X",
+    "onlySetters": false,
+    "output": "x"
+  },
+  {
+    "input": "Y",
+    "onlySetters": false,
+    "output": "y"
+  },
+  {
+    "input": "Z",
+    "onlySetters": false,
+    "output": "z"
   },
   {
     "input": "[",

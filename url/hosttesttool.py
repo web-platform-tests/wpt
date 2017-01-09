@@ -9,8 +9,14 @@ for cp in xrange(0, 0x7F):
     if string in ("\x09", "\x0A", "\x0D"):
         continue
 
-    if re.match("[a-z]|[A-Z]|[0-9]", string):
+    if re.match("[a-z]", string):
         continue
+
+    if re.match("[A-Z]", string):
+        host["output"] = string.lower()
+
+    if re.match("[0-9]", string):
+        host["output"] = "0.0.0." + string
 
     if string in ("?", "/", "\\", ":", "@", "#"):
         host["output"] = None

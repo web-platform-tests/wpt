@@ -14,6 +14,17 @@ setup.step(() => {
   request.onload = setup.step_func_done(() => runHostTests(request.response) )
 })
 
+function makeURL(type, input) {
+  input = "https://" + input + "/x"
+  if(type === "url") {
+    return new URL(input)
+  } else {
+    const url = document.createElement(type)
+    url.href = input
+    return url
+  }
+}
+
 function runHostTests(hostTests) {
   for(var i = 0, l = hostTests.length; i < l; i++) {
     let hostTest = hostTests[i]
@@ -21,32 +32,39 @@ function runHostTests(hostTests) {
       continue // skip comments
     }
 
-    if(!hostTest.onlySetters) {
-      test(() => {
-        if(hostTest.output !== null) {
-          const url = new URL("https://" + hostTest.input + "/x")
-          assert_equals(url.pathname, "/x")
-          assert_equals(url.host, hostTest.output)
-          assert_equals(url.hostname, hostTest.output)
-        } else {
-          assert_throws(new TypeError, () => new URL("https://" + hostTest.input + "/x"))
-        }
-      }, encodeURI(hostTest.input))
-    }
+    const typeName = { "url": "URL", "a": "<a>", "area": "<area>" }
+    ;["url", "a", "area"].forEach((type) => {
+      if(!hostTest.onlySetters) {
+        test(() => {
+          if(hostTest.output !== null) {
+            const url = makeURL("url", hostTest.input)
+            assert_equals(url.host, hostTest.output)
+            assert_equals(url.hostname, hostTest.output)
+            assert_equals(url.pathname, "/x")
+            assert_equals(url.href, "https://" + hostTest.output + "/x")
+          } else {
+            if(type === "url") {
+              assert_throws(new TypeError, () => makeURL("url", hostTest.input))
+            } else {
+              const url = makeURL(type, hostTest.input)
+              assert_equals(url.href, "https://" + hostTest.input + "/x")
+            }
+          }
+        }, "Parse host using " + typeName[type] + ": " + encodeURI(hostTest.input))
+      }
 
-    test(() => {
-      const url = new URL("https://x")
       ;["host", "hostname"].forEach((val) => {
-        url[val] = hostTest.input
-        if(hostTest.output !== null) {
-          assert_equals(url[val], hostTest.output)
-        } else {
-          assert_equals(url[val], "x")
-        }
+        test(() => {
+          const url = makeURL(type, "x")
+          url[val] = hostTest.input
+          if(hostTest.output !== null) {
+            assert_equals(url[val], hostTest.output)
+          } else {
+            assert_equals(url[val], "x")
+          }
+        }, "Parse host using " + typeName[type] + "." + val + ": " + encodeURI(hostTest.input))
       })
-    }, "host/hostname setter for " + encodeURI(hostTest.input))
-
-    // TODO: also test <a> and <area>
+    })
   }
 }
 </script>

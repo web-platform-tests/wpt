@@ -5,10 +5,14 @@ for cp in xrange(0, 0x7F):
     string = chr(cp)
     host = { "input": string, "output": string, "onlySetters": False }
 
+    # Always stripped from input by the parser so better tested elsewhere
+    if string in ("\x09", "\x0A", "\x0D"):
+        continue
+
     if re.match("[a-z]|[A-Z]|[0-9]", string):
         continue
 
-    if string in ("\x09", "\x0A", "\x0D", "?", "/", "\\", ":", "@", "#"):
+    if string in ("?", "/", "\\", ":", "@", "#"):
         host["output"] = None
         host["onlySetters"] = True
 

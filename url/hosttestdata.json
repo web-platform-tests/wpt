@@ -46,16 +46,6 @@
     "output": "\b"
   },
   {
-    "input": "\t",
-    "onlySetters": true,
-    "output": null
-  },
-  {
-    "input": "\n",
-    "onlySetters": true,
-    "output": null
-  },
-  {
     "input": "\u000b",
     "onlySetters": false,
     "output": "\u000b"
@@ -64,11 +54,6 @@
     "input": "\f",
     "onlySetters": false,
     "output": "\f"
-  },
-  {
-    "input": "\r",
-    "onlySetters": true,
-    "output": null
   },
   {
     "input": "\u000e",

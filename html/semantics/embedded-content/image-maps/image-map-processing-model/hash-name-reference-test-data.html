@@ -1,14 +1,15 @@
-<!DOCTYPE html>
+<!DOCTYPE {{GET[doctype]}}>
+<!-- This file should be polyglot -->
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <meta charset="utf-8"/>
-  <title>parsing a hash-name reference for img and object</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
+  <title>Test data for hash name reference</title>
+  <style>
+   body { margin: 0 }
+   img, object { height: 1px; display:block }
+  </style>
  </head>
  <body>
-
-<div id="log"></div>
 
 <div data-expect="no match">
  <img src="/images/threecolors.png" usemap="no-hash-name"/>
@@ -137,7 +138,7 @@
  </map>
 </div>
 
-<div data-expect="area-hash-space-space-usemap-space-map-id">
+<div data-expect="area-hash-LF-usemap-LF-map-id">
  <img src="/images/threecolors.png" usemap="#&#x0A;"/>
  <object data="/images/threecolors.png" usemap="#&#x0A;"></object>
  <map id="&#x0A;">
@@ -216,32 +217,6 @@
   <area shape="rect" coords="0,0,99,50" href="#area-different-case-id"/>
  </map>
 </div>
-
-<script>
-//<![CDATA[
- setup({explicit_done: true});
-
- onload = function() {
-   var divs = document.querySelectorAll('div[data-expect]');
-   var div, img, object;
-   for (var i = 0; i < divs.length; ++i) {
-     div = divs[i];
-     img = div.querySelector('img');
-     object = div.querySelector('object');
-     [img, object].forEach(function(elm) {
-       test(function(t) {
-         var expected = div.getAttribute('data-expect');
-         // Avoid using characters in data-expect="" that would need CSS escaping
-         var expected_elm = expected === 'no match' ? elm : div.querySelector('area[href="#' + expected + '"]');
-         var got_elm = document.elementFromPoint(elm.offsetLeft + 3, elm.offsetTop + 3);
-         assert_equals(got_elm, expected_elm);
-       }, elm.tagName + ' usemap=' + format_value(elm.useMap));
-     });
-   }
-   done();
- };
-//]]>
-</script>
 
  </body>
 </html>

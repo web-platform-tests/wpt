@@ -27,6 +27,6 @@ for cp in xrange(0, 0x7F):
 
     hosts.append(host)
 
-handle = open("hosttestdata.json", "w")
+handle = open("asciihost.json", "w")
 handle.write(json.dumps(hosts, sort_keys=True, indent=2, separators=(',', ': ')))
 handle.write("\n")

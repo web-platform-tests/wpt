@@ -8,7 +8,7 @@
 let setup = async_test("Loading data…")
 setup.step(() => {
   let request = new XMLHttpRequest()
-  request.open("GET", "hosttestdata.json")
+  request.open("GET", "asciihost.json")
   request.send()
   request.responseType = "json"
   request.onload = setup.step_func_done(() => runHostTests(request.response) )

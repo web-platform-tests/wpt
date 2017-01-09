@@ -10,29 +10,34 @@
     <script src="/resources/testharnessreport.js"></script>
     <script type="text/javascript" src="../pointerevent_support.js"></script>
     <script type="text/javascript">
-      var detected_pointertypes = {};
       var event_log = [];
       var active_pointers = 0;
 
       function resetTestState() {
-        detected_eventTypes = {};
         event_log = [];
         active_pointers = 0;
       }
 
       function run() {
-        var test_pointer_event = setup_pointerevent_test("touch-action test for two-finger interaction", ["touch"]);
+        var test_pointer_events = [
+          setup_pointerevent_test("two-finger pan on 'touch-action: pan-x pan-y'", ["touch"]),
+          setup_pointerevent_test("two-finger pan on 'touch-action: pinch-zoom'", ["touch"])
+        ];
+        var expected_events = [
+          "pointerdown@black, pointerdown@black, pointercancel@black, pointercancel@black",
+          "pointerdown@grey, pointerdown@grey, pointerup@grey, pointerup@grey"
+        ];
+        var current_test_index = 0;
 
         on_event(document.getElementById("done"), "click", function() {
-          test_pointer_event.step(function () {
-            assert_equals(active_pointers, 0);
+          assert_equals(active_pointers, 0);
 
-            var expected_events =
-              "pointerdown@black, pointerdown@black, pointercancel@black, pointercancel@black, " +
-              "pointerdown@grey, pointerdown@grey, pointerup@grey, pointerup@grey";
-            assert_equals(event_log.join(", "), expected_events);
+          test_pointer_events[current_test_index].step(function () {
+            assert_equals(event_log.join(", "), expected_events[current_test_index]);
           });
-          test_pointer_event.done();
+          event_log = [];
+
+          test_pointer_events[current_test_index++].done();
         });
 
         var targets = [document.getElementById("black"), document.getElementById("grey")];
@@ -40,12 +45,11 @@
         ["pointerdown", "pointerup", "pointercancel"].forEach(function(eventName) {
           targets.forEach(function(target){
             on_event(target, eventName, function (event) {
-              detected_pointertypes[event.pointerType] = true;
               event_log.push(event.type + "@" + event.target.id);
 
               if (event.type == "pointerdown") {
                 active_pointers++;
-                event.target.setPointerCapture(event.pointerId);
+
               } else {
                 active_pointers--;
               }
@@ -73,7 +77,8 @@
       }
 
       #done {
-        background-color: green;
+        float: left;
+        padding: 20px;
       }
     </style>
   </head>
@@ -85,16 +90,13 @@
     </h4>
     <ol>
       <li>Touch on Black with two fingers and drag both fingers down at same speed.</li>
+      <li>Tap on Done.</li>
       <li>Touch on Grey with two fingers and drag both fingers down at same speed.</li>
-      <li>Tap on Green.</li>
+      <li>Tap on Done.</li>
     </ol>
     <div class="box" id="black"></div>
+    <input type="button" id="done" value="Done"></div>
     <div class="box" id="grey"></div>
-    <div class="box" id="done"></div>
-    <div id="complete-notice">
-      <p>The following pointer types were detected: <span id="pointertype-log"></span>.</p>
-      <p>The following events were logged: <span id="event-log"></span>.</p>
-    </div>
     <div id="log"></div>
   </body>
 </html>

@@ -7,11 +7,24 @@
 <script>
 let setup = async_test("Loading data…")
 setup.step(() => {
-  let request = new XMLHttpRequest()
-  request.open("GET", "asciihost.json")
-  request.send()
-  request.responseType = "json"
-  request.onload = setup.step_func_done(() => runHostTests(request.response) )
+  const tests = { "asciihost": null, "IdnaTest": null }
+  let testNumber = Object.keys(tests).length
+  Object.keys(tests).forEach((val) => {
+    let request = new XMLHttpRequest()
+    request.open("GET", val + ".json")
+    request.send()
+    request.responseType = "json"
+    request.onload = setup.step_func(() => {
+      tests[val] = request.response
+      testNumber--
+      if(testNumber === 0) {
+        Object.keys(tests).forEach((val) => {
+          runHostTests(val, tests[val])
+        })
+        setup.done()
+      }
+    })
+  })
 })
 
 function makeURL(type, input) {
@@ -25,11 +38,15 @@ function makeURL(type, input) {
   }
 }
 
-function runHostTests(hostTests) {
+function runHostTests(source, hostTests) {
   for(var i = 0, l = hostTests.length; i < l; i++) {
     let hostTest = hostTests[i]
     if (typeof hostTest === "string") {
       continue // skip comments
+    }
+    let outputInput = hostTest.input
+    if(hostTest.input.length < 4) {
+      outputInput = encodeURI(hostTest.input)
     }
 
     const typeName = { "url": "URL", "a": "<a>", "area": "<area>" }
@@ -50,7 +67,7 @@ function runHostTests(hostTests) {
               assert_equals(url.href, "https://" + hostTest.input + "/x")
             }
           }
-        }, "Parse host using " + typeName[type] + ": " + encodeURI(hostTest.input))
+        }, "Parse host using " + typeName[type] + ": " + outputInput + " (from: " + source + ")")
       }
 
       ;["host", "hostname"].forEach((val) => {
@@ -62,7 +79,7 @@ function runHostTests(hostTests) {
           } else {
             assert_equals(url[val], "x")
           }
-        }, "Parse host using " + typeName[type] + "." + val + ": " + encodeURI(hostTest.input))
+        }, "Parse host using " + typeName[type] + "." + val + ": " + outputInput + " (from: " + source + ")")
       })
     })
   }

@@ -2,162 +2,130 @@
   "# This resource is generated. Please don't edit.",
   {
     "input": "\u0000",
-    "onlySetters": false,
     "output": null
   },
   {
     "input": "\u0001",
-    "onlySetters": false,
     "output": "\u0001"
   },
   {
     "input": "\u0002",
-    "onlySetters": false,
     "output": "\u0002"
   },
   {
     "input": "\u0003",
-    "onlySetters": false,
     "output": "\u0003"
   },
   {
     "input": "\u0004",
-    "onlySetters": false,
     "output": "\u0004"
   },
   {
     "input": "\u0005",
-    "onlySetters": false,
     "output": "\u0005"
   },
   {
     "input": "\u0006",
-    "onlySetters": false,
     "output": "\u0006"
   },
   {
     "input": "\u0007",
-    "onlySetters": false,
     "output": "\u0007"
   },
   {
     "input": "\b",
-    "onlySetters": false,
     "output": "\b"
   },
   {
     "input": "\u000b",
-    "onlySetters": false,
     "output": "\u000b"
   },
   {
     "input": "\f",
-    "onlySetters": false,
     "output": "\f"
   },
   {
     "input": "\u000e",
-    "onlySetters": false,
     "output": "\u000e"
   },
   {
     "input": "\u000f",
-    "onlySetters": false,
     "output": "\u000f"
   },
   {
     "input": "\u0010",
-    "onlySetters": false,
     "output": "\u0010"
   },
   {
     "input": "\u0011",
-    "onlySetters": false,
     "output": "\u0011"
   },
   {
     "input": "\u0012",
-    "onlySetters": false,
     "output": "\u0012"
   },
   {
     "input": "\u0013",
-    "onlySetters": false,
     "output": "\u0013"
   },
   {
     "input": "\u0014",
-    "onlySetters": false,
     "output": "\u0014"
   },
   {
     "input": "\u0015",
-    "onlySetters": false,
     "output": "\u0015"
   },
   {
     "input": "\u0016",
-    "onlySetters": false,
     "output": "\u0016"
   },
   {
     "input": "\u0017",
-    "onlySetters": false,
     "output": "\u0017"
   },
   {
     "input": "\u0018",
-    "onlySetters": false,
     "output": "\u0018"
   },
   {
     "input": "\u0019",
-    "onlySetters": false,
     "output": "\u0019"
   },
   {
     "input": "\u001a",
-    "onlySetters": false,
     "output": "\u001a"
   },
   {
     "input": "\u001b",
-    "onlySetters": false,
     "output": "\u001b"
   },
   {
     "input": "\u001c",
-    "onlySetters": false,
     "output": "\u001c"
   },
   {
     "input": "\u001d",
-    "onlySetters": false,
     "output": "\u001d"
   },
   {
     "input": "\u001e",
-    "onlySetters": false,
     "output": "\u001e"
   },
   {
     "input": "\u001f",
-    "onlySetters": false,
     "output": "\u001f"
   },
   {
     "input": " ",
-    "onlySetters": false,
     "output": null
   },
   {
     "input": "!",
-    "onlySetters": false,
     "output": "!"
   },
   {
     "input": "\"",
-    "onlySetters": false,
     "output": "\""
   },
   {
@@ -167,57 +135,46 @@
   },
   {
     "input": "$",
-    "onlySetters": false,
     "output": "$"
   },
   {
     "input": "%",
-    "onlySetters": false,
     "output": null
   },
   {
     "input": "&",
-    "onlySetters": false,
     "output": "&"
   },
   {
     "input": "'",
-    "onlySetters": false,
     "output": "'"
   },
   {
     "input": "(",
-    "onlySetters": false,
     "output": "("
   },
   {
     "input": ")",
-    "onlySetters": false,
     "output": ")"
   },
   {
     "input": "*",
-    "onlySetters": false,
     "output": "*"
   },
   {
     "input": "+",
-    "onlySetters": false,
     "output": "+"
   },
   {
     "input": ",",
-    "onlySetters": false,
     "output": ","
   },
   {
     "input": "-",
-    "onlySetters": false,
     "output": "-"
   },
   {
     "input": ".",
-    "onlySetters": false,
     "output": "."
   },
   {
@@ -227,52 +184,42 @@
   },
   {
     "input": "0",
-    "onlySetters": false,
     "output": "0.0.0.0"
   },
   {
     "input": "1",
-    "onlySetters": false,
     "output": "0.0.0.1"
   },
   {
     "input": "2",
-    "onlySetters": false,
     "output": "0.0.0.2"
   },
   {
     "input": "3",
-    "onlySetters": false,
     "output": "0.0.0.3"
   },
   {
     "input": "4",
-    "onlySetters": false,
     "output": "0.0.0.4"
   },
   {
     "input": "5",
-    "onlySetters": false,
     "output": "0.0.0.5"
   },
   {
     "input": "6",
-    "onlySetters": false,
     "output": "0.0.0.6"
   },
   {
     "input": "7",
-    "onlySetters": false,
     "output": "0.0.0.7"
   },
   {
     "input": "8",
-    "onlySetters": false,
     "output": "0.0.0.8"
   },
   {
     "input": "9",
-    "onlySetters": false,
     "output": "0.0.0.9"
   },
   {
@@ -282,22 +229,18 @@
   },
   {
     "input": ";",
-    "onlySetters": false,
     "output": ";"
   },
   {
     "input": "<",
-    "onlySetters": false,
     "output": "<"
   },
   {
     "input": "=",
-    "onlySetters": false,
     "output": "="
   },
   {
     "input": ">",
-    "onlySetters": false,
     "output": ">"
   },
   {
@@ -312,137 +255,110 @@
   },
   {
     "input": "A",
-    "onlySetters": false,
     "output": "a"
   },
   {
     "input": "B",
-    "onlySetters": false,
     "output": "b"
   },
   {
     "input": "C",
-    "onlySetters": false,
     "output": "c"
   },
   {
     "input": "D",
-    "onlySetters": false,
     "output": "d"
   },
   {
     "input": "E",
-    "onlySetters": false,
     "output": "e"
   },
   {
     "input": "F",
-    "onlySetters": false,
     "output": "f"
   },
   {
     "input": "G",
-    "onlySetters": false,
     "output": "g"
   },
   {
     "input": "H",
-    "onlySetters": false,
     "output": "h"
   },
   {
     "input": "I",
-    "onlySetters": false,
     "output": "i"
   },
   {
     "input": "J",
-    "onlySetters": false,
     "output": "j"
   },
   {
     "input": "K",
-    "onlySetters": false,
     "output": "k"
   },
   {
     "input": "L",
-    "onlySetters": false,
     "output": "l"
   },
   {
     "input": "M",
-    "onlySetters": false,
     "output": "m"
   },
   {
     "input": "N",
-    "onlySetters": false,
     "output": "n"
   },
   {
     "input": "O",
-    "onlySetters": false,
     "output": "o"
   },
   {
     "input": "P",
-    "onlySetters": false,
     "output": "p"
   },
   {
     "input": "Q",
-    "onlySetters": false,
     "output": "q"
   },
   {
     "input": "R",
-    "onlySetters": false,
     "output": "r"
   },
   {
     "input": "S",
-    "onlySetters": false,
     "output": "s"
   },
   {
     "input": "T",
-    "onlySetters": false,
     "output": "t"
   },
   {
     "input": "U",
-    "onlySetters": false,
     "output": "u"
   },
   {
     "input": "V",
-    "onlySetters": false,
     "output": "v"
   },
   {
     "input": "W",
-    "onlySetters": false,
     "output": "w"
   },
   {
     "input": "X",
-    "onlySetters": false,
     "output": "x"
   },
   {
     "input": "Y",
-    "onlySetters": false,
     "output": "y"
   },
   {
     "input": "Z",
-    "onlySetters": false,
     "output": "z"
   },
   {
     "input": "[",
-    "onlySetters": false,
     "output": null
   },
   {
@@ -452,42 +368,34 @@
   },
   {
     "input": "]",
-    "onlySetters": false,
     "output": null
   },
   {
     "input": "^",
-    "onlySetters": false,
     "output": "^"
   },
   {
     "input": "_",
-    "onlySetters": false,
     "output": "_"
   },
   {
     "input": "`",
-    "onlySetters": false,
     "output": "`"
   },
   {
     "input": "{",
-    "onlySetters": false,
     "output": "{"
   },
   {
     "input": "|",
-    "onlySetters": false,
     "output": "|"
   },
   {
     "input": "}",
-    "onlySetters": false,
     "output": "}"
   },
   {
     "input": "~",
-    "onlySetters": false,
     "output": "~"
   }
 ]

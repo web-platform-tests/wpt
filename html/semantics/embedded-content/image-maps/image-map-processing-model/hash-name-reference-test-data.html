@@ -178,6 +178,38 @@
  </map>
 </div>
 
+<div data-expect="area-hash-space-name">
+ <img src="/images/threecolors.png" usemap="# hash-space-name"/>
+ <object data="/images/threecolors.png" usemap="# hash-space-name"></object>
+ <map name=" hash-space-name">
+  <area shape="rect" coords="0,0,99,50" href="#area-hash-space-name"/>
+ </map>
+</div>
+
+<div data-expect="area-hash-space-id">
+ <img src="/images/threecolors.png" usemap="# hash-space-id"/>
+ <object data="/images/threecolors.png" usemap="# hash-space-id"></object>
+ <map id=" hash-space-id">
+  <area shape="rect" coords="0,0,99,50" href="#area-hash-space-id"/>
+ </map>
+</div>
+
+<div data-expect="area-space-before-hash-name">
+ <img src="/images/threecolors.png" usemap=" #space-before-hash-name"/>
+ <object data="/images/threecolors.png" usemap=" #space-before-hash-name"></object>
+ <map name="space-before-hash-name">
+  <area shape="rect" coords="0,0,99,50" href="#area-space-before-hash-name"/>
+ </map>
+</div>
+
+<div data-expect="area-space-before-hash-id">
+ <img src="/images/threecolors.png" usemap=" #space-before-hash-id"/>
+ <object data="/images/threecolors.png" usemap=" #space-before-hash-id"></object>
+ <map id="space-before-hash-id">
+  <area shape="rect" coords="0,0,99,50" href="#area-space-before-hash-id"/>
+ </map>
+</div>
+
 <div data-expect="area-garbage-before-hash-name">
  <img src="/images/threecolors.png" usemap="http://example.org/#garbage-before-hash-name"/>
  <object data="/images/threecolors.png" usemap="http://example.org/#garbage-before-hash-name"></object>

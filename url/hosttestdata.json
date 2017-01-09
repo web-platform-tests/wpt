@@ -1,0 +1,328 @@
+[
+  "# This resource is generated. Please don't edit.",
+  {
+    "input": "\u0000",
+    "onlySetters": false,
+    "output": null
+  },
+  {
+    "input": "\u0001",
+    "onlySetters": false,
+    "output": "\u0001"
+  },
+  {
+    "input": "\u0002",
+    "onlySetters": false,
+    "output": "\u0002"
+  },
+  {
+    "input": "\u0003",
+    "onlySetters": false,
+    "output": "\u0003"
+  },
+  {
+    "input": "\u0004",
+    "onlySetters": false,
+    "output": "\u0004"
+  },
+  {
+    "input": "\u0005",
+    "onlySetters": false,
+    "output": "\u0005"
+  },
+  {
+    "input": "\u0006",
+    "onlySetters": false,
+    "output": "\u0006"
+  },
+  {
+    "input": "\u0007",
+    "onlySetters": false,
+    "output": "\u0007"
+  },
+  {
+    "input": "\b",
+    "onlySetters": false,
+    "output": "\b"
+  },
+  {
+    "input": "\t",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": "\n",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": "\u000b",
+    "onlySetters": false,
+    "output": "\u000b"
+  },
+  {
+    "input": "\f",
+    "onlySetters": false,
+    "output": "\f"
+  },
+  {
+    "input": "\r",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": "\u000e",
+    "onlySetters": false,
+    "output": "\u000e"
+  },
+  {
+    "input": "\u000f",
+    "onlySetters": false,
+    "output": "\u000f"
+  },
+  {
+    "input": "\u0010",
+    "onlySetters": false,
+    "output": "\u0010"
+  },
+  {
+    "input": "\u0011",
+    "onlySetters": false,
+    "output": "\u0011"
+  },
+  {
+    "input": "\u0012",
+    "onlySetters": false,
+    "output": "\u0012"
+  },
+  {
+    "input": "\u0013",
+    "onlySetters": false,
+    "output": "\u0013"
+  },
+  {
+    "input": "\u0014",
+    "onlySetters": false,
+    "output": "\u0014"
+  },
+  {
+    "input": "\u0015",
+    "onlySetters": false,
+    "output": "\u0015"
+  },
+  {
+    "input": "\u0016",
+    "onlySetters": false,
+    "output": "\u0016"
+  },
+  {
+    "input": "\u0017",
+    "onlySetters": false,
+    "output": "\u0017"
+  },
+  {
+    "input": "\u0018",
+    "onlySetters": false,
+    "output": "\u0018"
+  },
+  {
+    "input": "\u0019",
+    "onlySetters": false,
+    "output": "\u0019"
+  },
+  {
+    "input": "\u001a",
+    "onlySetters": false,
+    "output": "\u001a"
+  },
+  {
+    "input": "\u001b",
+    "onlySetters": false,
+    "output": "\u001b"
+  },
+  {
+    "input": "\u001c",
+    "onlySetters": false,
+    "output": "\u001c"
+  },
+  {
+    "input": "\u001d",
+    "onlySetters": false,
+    "output": "\u001d"
+  },
+  {
+    "input": "\u001e",
+    "onlySetters": false,
+    "output": "\u001e"
+  },
+  {
+    "input": "\u001f",
+    "onlySetters": false,
+    "output": "\u001f"
+  },
+  {
+    "input": " ",
+    "onlySetters": false,
+    "output": null
+  },
+  {
+    "input": "!",
+    "onlySetters": false,
+    "output": "!"
+  },
+  {
+    "input": "\"",
+    "onlySetters": false,
+    "output": "\""
+  },
+  {
+    "input": "#",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": "$",
+    "onlySetters": false,
+    "output": "$"
+  },
+  {
+    "input": "%",
+    "onlySetters": false,
+    "output": null
+  },
+  {
+    "input": "&",
+    "onlySetters": false,
+    "output": "&"
+  },
+  {
+    "input": "'",
+    "onlySetters": false,
+    "output": "'"
+  },
+  {
+    "input": "(",
+    "onlySetters": false,
+    "output": "("
+  },
+  {
+    "input": ")",
+    "onlySetters": false,
+    "output": ")"
+  },
+  {
+    "input": "*",
+    "onlySetters": false,
+    "output": "*"
+  },
+  {
+    "input": "+",
+    "onlySetters": false,
+    "output": "+"
+  },
+  {
+    "input": ",",
+    "onlySetters": false,
+    "output": ","
+  },
+  {
+    "input": "-",
+    "onlySetters": false,
+    "output": "-"
+  },
+  {
+    "input": ".",
+    "onlySetters": false,
+    "output": "."
+  },
+  {
+    "input": "/",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": ":",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": ";",
+    "onlySetters": false,
+    "output": ";"
+  },
+  {
+    "input": "<",
+    "onlySetters": false,
+    "output": "<"
+  },
+  {
+    "input": "=",
+    "onlySetters": false,
+    "output": "="
+  },
+  {
+    "input": ">",
+    "onlySetters": false,
+    "output": ">"
+  },
+  {
+    "input": "?",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": "@",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": "[",
+    "onlySetters": false,
+    "output": null
+  },
+  {
+    "input": "\\",
+    "onlySetters": true,
+    "output": null
+  },
+  {
+    "input": "]",
+    "onlySetters": false,
+    "output": null
+  },
+  {
+    "input": "^",
+    "onlySetters": false,
+    "output": "^"
+  },
+  {
+    "input": "_",
+    "onlySetters": false,
+    "output": "_"
+  },
+  {
+    "input": "`",
+    "onlySetters": false,
+    "output": "`"
+  },
+  {
+    "input": "{",
+    "onlySetters": false,
+    "output": "{"
+  },
+  {
+    "input": "|",
+    "onlySetters": false,
+    "output": "|"
+  },
+  {
+    "input": "}",
+    "onlySetters": false,
+    "output": "}"
+  },
+  {
+    "input": "~",
+    "onlySetters": false,
+    "output": "~"
+  }
+]

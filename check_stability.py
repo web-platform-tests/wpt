@@ -381,11 +381,10 @@ def get_files_changed(repo_path):
             for item in files[:-1].split("\0")]
 
 
-def get_affected_testfiles(files_changed):
+def get_affected_testfiles(files_changed, repo_root):
     affected_testfiles = []
     all_tests = set()
     nontests_changed = set(files_changed)
-    repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
     manifest_file = os.path.join(repo_root, "MANIFEST.json")
     for test, _ in manifest.load(repo_root, manifest_file):
         test_full_path = os.path.join(repo_root, test)
@@ -636,7 +635,7 @@ def main():
 
         logger.debug("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
 
-        affected_testfiles = get_affected_testfiles(files_changed)
+        affected_testfiles = get_affected_testfiles(files_changed, args.repo_path)
 
         logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in affected_testfiles))
 

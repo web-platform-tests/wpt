@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>application/x-www-form-urlencoded parser test</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+[
+  { "input": "test", "output": [["test", ""]] },
+  { "input": "\uFEFFtest=\uFEFF", "output": [["\uFEFFtest", "\uFEFF"]] },
+  { "input": "%EF%BB%BFtest=%EF%BB%BF", "output": [["\uFEFFtest", "\uFEFF"]] },
+  { "input": "†&†=x", "output": [["†", ""], ["†", "x"]] },
+  { "input": "%C2", "output": [["\uFFFD", ""]] },
+  { "input": "%C2x", "output": [["\uFFFDx", ""]] }
+].forEach((val) => {
+  test(() => {
+    let sp = new URLSearchParams(val.input),
+        i = 0
+    for (let item of sp) {
+       assert_array_equals(item, val.output[i])
+       i++
+    }
+  }, "URLSearchParams constructed with: " + val.input)
+
+  promise_test(() => {
+    let init = new Request("about:blank", { body: val.input, method: "LADIDA", headers: {"Content-Type": "application/x-www-form-urlencoded;charset=windows-1252"} }).formData()
+    return init.then((fd) => {
+      let i = 0
+      for (let item of fd) {
+         assert_array_equals(item, val.output[i])
+         i++
+      }
+    })
+  }, "request.formData() with input: " + val.input)
+})
+</script>

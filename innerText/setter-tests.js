@@ -25,34 +25,3 @@ testHTML("<div><br>", "abc", "abc", "Existing <br> deleted");
 testHTML("<div>", "", "", "Assigning the empty string");
 testHTML("<div>", null, "", "Assigning null");
 testHTML("<div>", undefined, "undefined", "Assigning undefined");
-
-[
-  "area",
-  "base",
-  "basefont",
-  "bgsound",
-  "br",
-  "col",
-  "embed",
-  "frame",
-  "hr",
-  "img",
-  "input",
-  "keygen",
-  "link",
-  "meta",
-  "param",
-  "source",
-  "track",
-  "wbr"
-].forEach(name => {
-  const el = document.createElement(name);
-  testTextPrecreatedContext(el, "abc", "abc", `Assigning to an <${name}> element should work (even though it's void)`);
-});
-
-testText(`<menuitem>`, "abc", "abc",
-  `Assigning to an <${name}> element should work (even though Chrome historically didn't allow it for some reason)`);
-
-const image = document.createElement("image");
-testTextPrecreatedContext(image, "abc", "abc",
-  `Assigning to an <image> element should work (even though Chrome historically didn't allow it for some reason)`);

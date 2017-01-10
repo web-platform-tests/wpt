@@ -27,9 +27,9 @@ testHTML("<div>", null, "", "Assigning null");
 testHTML("<div>", undefined, "undefined", "Assigning undefined");
 
 // Setting innerText on these should not throw
-["area", "base", "basefont", "br", "col", "embed", "frame", "hr", "image",
-"img", "input", "keygen", "link", "menuitem", "meta", "param", "source",
-"track", "wbr", "colgroup", "frameset", "head", "html", "table", "tbody",
-"tfoot", "thead", "tr"].forEach(function(tag) {
+["area", "base", "basefont", "bgsound", "br", "col", "embed", "frame", "hr",
+"image", "img", "input", "keygen", "link", "menuitem", "meta", "param",
+"source", "track", "wbr", "colgroup", "frameset", "head", "html", "table",
+"tbody", "tfoot", "thead", "tr"].forEach(function(tag) {
   testText(document.createElement(tag), "abc", "abc", "innerText on <" + tag + "> element");
 });

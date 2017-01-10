@@ -82,13 +82,13 @@ promise_test(() => {
   });
 }, `Service worker does not intercept fetch/cache requests within service worker`);
 
-promise_test(t => {
-  return registerSwAndOpenFrame().then(iframe => {
-    if (Notification.permission != "granted") {
-      Notification.requestPermission();
-      t.set_status(this.NOTRUN, 'You must allow notifications for this origin before running this test.');
+promise_test(() => {
+  return Notification.requestPermission().then(permission => {
+    if (permission != "granted") {
       throw Error('You must allow notifications for this origin before running this test.');
     }
+    return registerSwAndOpenFrame();
+  }).then(iframe => {
     return Promise.race([
       new Promise(resolve => {
         const bc = new BroadcastChannel('icon-request');

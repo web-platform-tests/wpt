@@ -25,3 +25,11 @@ testHTML("<div><br>", "abc", "abc", "Existing <br> deleted");
 testHTML("<div>", "", "", "Assigning the empty string");
 testHTML("<div>", null, "", "Assigning null");
 testHTML("<div>", undefined, "undefined", "Assigning undefined");
+
+// Setting innerText on these should not throw
+["area", "base", "basefont", "bgsound", "br", "col", "embed", "frame", "hr",
+"image", "img", "input", "keygen", "link", "menuitem", "meta", "param",
+"source", "track", "wbr", "colgroup", "frameset", "head", "html", "table",
+"tbody", "tfoot", "thead", "tr"].forEach(function(tag) {
+  testText(document.createElement(tag), "abc", "abc", "innerText on <" + tag + "> element");
+});

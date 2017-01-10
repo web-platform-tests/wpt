@@ -5,7 +5,13 @@
 <div id="container"></div>
 <script>
 function setupTest(context, plain) {
-  container.innerHTML = context;
+  // context is either a string or an element node
+  if (typeof context === "string") {
+    container.innerHTML = context;
+  } else {
+    container.innerHTML = "";
+    container.appendChild(context);
+  }
   var e = container.firstChild;
   while (e && e.nodeType != Node.ELEMENT_NODE) {
     e = e.nextSibling;

@@ -1,0 +1,163 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Logical Properties: margin-block{-start,end}</title>
+<link rel="author" title="Xu Xing" href="mailto:openxu@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-logical-props-1/#logical-prop">
+<link rel="help" href="https://drafts.csswg.org/css-writing-modes-3/#logical-to-physical">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/style-check.js"></script>
+
+<style>
+div {
+  border: 1px solid #000;
+}
+
+/*Horizontal-tb mode*/
+#div_htb {
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+}
+#ref_div_htb {
+  margin-top: 100px;
+  margin-bottom: 80px;
+}
+
+#div_htb_override {
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+  margin-top: 110px;
+  margin-bottom: 90px;
+}
+#ref_div_htb_override {
+  margin-top: 110px;
+  margin-bottom: 90px;
+}
+
+#div_htb_override2 {
+  margin-top: 110px;
+  margin-bottom: 90px;
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+}
+#ref_div_htb_override2 {
+  margin-top: 100px;
+  margin-bottom: 80px;
+}
+
+/*Vertical-lr mode.*/
+#div_vlr {
+  writing-mode: vertical-lr;
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+}
+#ref_div_vlr {
+  writing-mode: vertical-lr;
+  margin-left: 100px;
+  margin-right: 80px;
+}
+
+#div_vlr_override {
+  writing-mode: vertical-lr;
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+  margin-left: 110px;
+  margin-right: 90px;
+}
+#ref_div_vlr_override {
+  writing-mode: vertical-lr;
+  margin-left: 110px;
+  margin-right: 90px;
+}
+
+#div_vlr_override2 {
+  writing-mode: vertical-lr;
+  margin-left: 110px;
+  margin-right: 90px;
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+}
+#ref_div_vlr_override2 {
+  writing-mode: vertical-lr;
+  margin-left: 100px;
+  margin-right: 80px;
+}
+
+/*Vertical-rl mode.*/
+#div_vrl {
+  writing-mode: vertical-rl;
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+}
+#ref_div_vrl {
+  writing-mode: vertical-rl;
+  margin-right: 100px;
+  margin-left: 80px;
+}
+
+#div_vrl_override {
+  writing-mode: vertical-rl;
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+  margin-right: 110px;
+  margin-left: 90px;
+
+}
+#ref_div_vrl_override {
+  writing-mode: vertical-rl;
+  margin-right: 110px;
+  margin-left: 90px;
+}
+
+#div_vrl_override2 {
+  writing-mode: vertical-rl;
+  margin-right: 110px;
+  margin-left: 90px;
+  margin-block-start: 100px;
+  margin-block-end: 80px;
+}
+#ref_div_vrl_override2 {
+  writing-mode: vertical-rl;
+  margin-right: 100px;
+  margin-left: 80px;
+}
+</style>
+
+<div id="div_htb"></div>
+<div id="ref_div_htb"></div>
+<div id="div_htb_override"></div>
+<div id="ref_div_htb_override"></div>
+<div id="div_htb_override2"></div>
+<div id="ref_div_htb_override2"></div>
+
+<div id="div_vlr"></div>
+<div id="ref_div_vlr"></div>
+<div id="div_vlr_override"></div>
+<div id="ref_div_vlr_override"></div>
+<div id="div_vlr_override2"></div>
+<div id="ref_div_vlr_override2"></div>
+
+<div id="div_vrl"></div>
+<div id="ref_div_vrl"></div>
+<div id="div_vrl_override"></div>
+<div id="ref_div_vrl_override"></div>
+<div id="div_vrl_override2"></div>
+<div id="ref_div_vrl_override2"></div>
+
+<script>
+test(function () {
+  assert_true(compareBlockMargin_htb("div_htb", "ref_div_htb"));
+  assert_true(compareBlockMargin_htb("div_htb_override", "ref_div_htb_override"));
+  assert_true(compareBlockMargin_htb("div_htb_override2", "ref_div_htb_override2"));
+
+  assert_true(compareBlockMargin_vertical("div_vlr", "ref_div_vlr"));
+  assert_true(compareBlockMargin_vertical("div_vlr_override", "ref_div_vlr_override"));
+  assert_true(compareBlockMargin_vertical("div_vlr_override2", "ref_div_vlr_override2"));
+
+  assert_true(compareBlockMargin_vertical("div_vrl", "ref_div_vrl"));
+  assert_true(compareBlockMargin_vertical("div_vrl_override", "ref_div_vrl_override"));
+  assert_true(compareBlockMargin_vertical("div_vrl_override2", "ref_div_vrl_override2"));
+}, "Check that margin-block{-start,end} in different writing mode");
+
+
+</script>

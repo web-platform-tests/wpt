@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<title>[NamedConstructor]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4.2 Named constructors
+//
+// Interfaces with [NamedConstructor] have a function on the global that
+// can be called or constructed.  The returned object must implement the
+// interface.  There must also be a "length" property on the interface object.
+// And they have a "prototype" property pointing to the interface prototype
+// object.
+
+test(function() {
+}, "Image named constructor exists with the right attributes");
+
+test(function() {
+  assert_true(new Image() instanceof HTMLImageElement, "new Image() instanceof HTMLImageElement");
+}, "Image named constructor returns an object that is instanceof HTMLImageElement");
+
+test(function() {
+  assert_true(Image() instanceof HTMLImageElement, "Image() instanceof HTMLImageElement");
+}, "Image named constructor called as a function returns an object that is instanceof HTMLImageElement");
+
+test(function() {
+  assert_true(new Audio() instanceof HTMLAudioElement, "new Audio() instanceof HTMLAudioElement");
+}, "Audio named constructor returns an object that is instanceof HTMLAudioElement");
+
+test(function() {
+  assert_true(Audio() instanceof HTMLAudioElement, "Audio() instanceof HTMLAudioElement");
+}, "Audio named constructor called as a function returns an object that is instanceof HTMLAudioElement");
+
+var lengthProperties = [
+  "Image", 0, "HTMLImageElement",
+  "Audio", 0, "HTMLAudioElement"
+];
+
+for (var i = 0; i < lengthProperties.length; i += 3) {
+  var named = lengthProperties[i];
+  var val = lengthProperties[i + 1];
+  var intf = lengthProperties[i + 2];
+
+  test(function() {
+    assert_property(window, named, { writable: true, enumerable: false, configurable: true }, "window." + named);
+  }, named + " named constructor exists");
+  test(function() {
+    assert_property(window[named], "length", { writable: false, enumerable: false, configurable: false, value: val }, named + ".length");
+  }, named + " has correct length property");
+  test(function() {
+    assert_property(window[named], "prototype", { writable: false, enumerable: false, configurable: false, value: window[intf].prototype }, named + ".prototype");
+  }, named + " has correct prototype property");
+}
+</script>

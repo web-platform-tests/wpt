@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<title>Function objects have correct [[Class]], [[Prototype]], typeof</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4. ECMAScript binding
+//
+// Objects that are defined to be "function objects" have [[Class]] = "Function"
+// (unless otherwise specified), [[Prototype]] = Function.prototype and are
+// typeof "function".
+
+var objects = [
+
+  // named constructor object
+  namedConstructorObject("Image"), "Image named constructor object",
+  namedConstructorObject("Audio"), "Audio named constructor object",
+
+  // attribute getter
+  getter("Document", "title"), "Document.title attribute getter",
+  getter("HTMLSelectElement", "length"), "HTMLSelectElement.length attribute getter",
+
+  // read only attribute getter
+  getter("Node", "parentNode"), "Node.parentNode attribute getter",
+  getter("HTMLFormElement", "length"), "HTMLFormElement.length attribute getter",
+
+  // attribute setter
+  setter("Document", "title"), "Document.title attribute setter",
+  setter("HTMLSelectElement", "length"), "HTMLSelectElement.length attribute setter",
+
+  // operation function
+  operation("HTMLElement", "click"), "HTMLElement.click function",
+  operation("Node", "appendChild"), "Node.appendChild function",
+
+  // stringifier function
+  stringifier("DOMTokenList"), "DOMTokenList stringifier function",
+
+  // exception interface object
+  interfaceObject("DOMException"), "DOMException exception interface object",
+
+  // exception field getter
+  getter("DOMException", "code"), "DOMException.code exception field getter",
+];
+
+for (var i = 0; i < objects.length; i += 2) {
+  test(function() {
+    var object = objects[i]();
+    assert_true(Object.prototype.toString.call(object) == "[object Function]", "[[Class]] is \"Function\"");
+    assert_true(Object.getPrototypeOf(object) == Function.prototype, "[[Prototype]] is Function.prototype");
+    assert_true(typeof object == "function", "typeof is \"function\"");
+  }, objects[i + 1] + " is a function object");
+}
+</script>

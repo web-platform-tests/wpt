@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>[ArrayClass]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4.3 Interface prototype object
+//
+// [ArrayClass] on an interface means that its [[Prototype]] is Array.prototype.
+
+test(function() {
+  assert_true(NodeList.prototype == Array.prototype, "NodeList.prototype == Array.prototype");
+}, "NodeList being [ArrayClass] implies NodeList.prototype == Array.prototype");
+
+test(function() {
+  var a = document.childNodes.concat();
+  assert_true(Object.getPrototypeOf(a) == Array.prototype, "nodeList.concat() returns an Array");
+  assert_array_equals(document.childNodes, a);
+}, "nodeList.concat() works");
+</script>

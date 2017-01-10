@@ -1,0 +1,578 @@
+Some rough notes on features to use as the basis of Web IDL tests.
+
+
+Features
+--------
+
+interface
+  DOMImplementation - http://dom.spec.whatwg.org/#interface-domimplementation
+  HTMLCollection - http://dom.spec.whatwg.org/#interface-htmlcollection
+
+interface inheritance
+  Element - http://dom.spec.whatwg.org/#interface-element
+  UIEvent - http://dev.w3.org/2006/webapi/DOM-Level-3-Events/html/DOM3-Events.html#events-UIEvent
+
+callback interface
+  EventListener - http://dom.spec.whatwg.org/#eventlistener (single operation)
+  NodeFilter - http://dom.spec.whatwg.org/#nodefilter (single operation, plus consts)
+  (any multiple operation callback interfaces?)
+
+partial interface
+  Document deprecated things - http://www.whatwg.org/specs/web-apps/current-work/#Document-partial
+  HTMLAnchorElement deprecated things - http://www.whatwg.org/specs/web-apps/current-work/#HTMLAnchorElement-partial
+
+constant on a normal interface
+  HTMLMediaElement.NETWORK_IDLE - http://www.whatwg.org/specs/web-apps/current-work/#htmlmediaelement
+  SVGLength.SVG_LENGTHTYPE_NUMBER - https://svgwg.org/svg2-draft/types.html#InterfaceSVGLength
+
+constant on a callback interface
+  NodeFilter.SHOW_ALL - http://dom.spec.whatwg.org/#nodefilter
+  ??
+
+constant on an exception
+  DOMException.INVALID_STATE_ERR - http://dom.spec.whatwg.org/#domexception
+  ??
+
+attribute
+  Document.title - http://www.whatwg.org/specs/web-apps/current-work/#document
+  HTMLSelectElement.length - http://www.whatwg.org/specs/web-apps/current-work/#htmlselectelement
+
+read only attribute
+  Node.parentNode - http://dom.spec.whatwg.org/#node
+  HTMLFormElement.length - http://www.whatwg.org/specs/web-apps/current-work/#htmlformelement
+
+attribute that inherits its getter
+  ??
+
+stringifier on DOMString attribute
+  URLUtils.href - http://url.spec.whatwg.org/#urlutils
+  ??
+
+regular operation
+  HTMLElement.click - http://www.whatwg.org/specs/web-apps/current-work/#htmlelement
+  Node.appendChild - http://dom.spec.whatwg.org/#node
+
+static operation
+  ??
+
+variadic operation
+  Document.write - http://www.whatwg.org/specs/web-apps/current-work/#document
+  ParentNode.append - http://dom.spec.whatwg.org/#parentnode  (too new?)
+
+optional argument
+  Window.postMessage - http://www.whatwg.org/specs/web-apps/current-work/#window
+  DOMImplementation.createHTMLDocument - http://dom.spec.whatwg.org/#domimplementation
+
+optional argument default value
+  Node.cloneNode - http://dom.spec.whatwg.org/#node
+  HTMLSelectElement.add - http://www.whatwg.org/specs/web-apps/current-work/#htmlselectelement
+
+indexed getter on operation
+  NodeList.item - http://dom.spec.whatwg.org/#nodelist
+  HTMLSelectElement.item - http://www.whatwg.org/specs/web-apps/current-work/#htmlselectelement
+
+indexed getter not on an operation
+  HTMLFormElement getter - http://www.whatwg.org/specs/web-apps/current-work/#htmlformelement
+  AudioTrackList getter - http://www.whatwg.org/specs/web-apps/current-work/#audiotracklist
+
+indexed setter on an operation
+  ??
+
+indexed setter not on an operation
+  HTMLSelectElement setter - http://www.whatwg.org/specs/web-apps/current-work/#htmlselectelement
+  HTMLOptionsCollection setter - http://www.whatwg.org/specs/web-apps/current-work/#htmloptionscollection
+
+indexed creator on an operation
+  ??
+
+indexed creator not an operation
+  HTMLSelectElement creator - http://www.whatwg.org/specs/web-apps/current-work/#htmlselectelement
+  HTMLOptionsCollection creator - http://www.whatwg.org/specs/web-apps/current-work/#htmloptionscollection
+
+indexed deleter on an operation
+  --
+
+indexed deleter not on an operation
+  --
+
+named getter on operation
+  Storage.getItem - http://www.whatwg.org/specs/web-apps/current-work/#storage-0
+  HTMLCollection.namedItem - http://dom.spec.whatwg.org/#htmlcollection
+
+named getter not on an operation
+  DOMStringMap getter - http://www.whatwg.org/specs/web-apps/current-work/#domstringmap
+  HTMLFormElement getter - http://www.whatwg.org/specs/web-apps/current-work/#htmlformelement
+
+named setter on an operation
+  Storage.setItem - http://www.whatwg.org/specs/web-apps/current-work/#storage-0
+  ??
+
+named setter not on an operation
+  DOMStringMap setter - http://www.whatwg.org/specs/web-apps/current-work/#domstringmap
+  DOMElementMap setter - http://www.whatwg.org/specs/web-apps/current-work/#domelementmap  (too new?)
+
+named creator on an operation
+  Storage.setItem - http://www.whatwg.org/specs/web-apps/current-work/#storage-0
+  ??
+
+named creator not an operation
+  DOMStringMap creator - http://www.whatwg.org/specs/web-apps/current-work/#domstringmap
+  DOMElementMap creator - http://www.whatwg.org/specs/web-apps/current-work/#domelementmap  (too new?)
+
+named deleter on an operation
+  Storage.removeItem - http://www.whatwg.org/specs/web-apps/current-work/#storage-0
+  ??
+
+named deleter not on an operation
+  DOMStringMap deleter - http://www.whatwg.org/specs/web-apps/current-work/#domstringmap
+  DOMElementMap deleter - http://www.whatwg.org/specs/web-apps/current-work/#domelementmap  (too new?)
+
+legacy caller on an operation
+  HTMLAllCollection.namedItem - http://www.whatwg.org/specs/web-apps/current-work/#htmlallcollection
+  HTMLFormControlsCollection.namedItem - http://www.whatwg.org/specs/web-apps/current-work/#htmlformcontrolscollection 
+
+legacy caller not on an operation
+  HTMLObjectElement legacycaller - http://www.whatwg.org/specs/web-apps/current-work/#htmlobjectelement
+  ??
+
+stringifier on an operation
+  ??
+
+stringifier not on an operation
+  DOMTokenList stringifier - http://dom.spec.whatwg.org/#domtokenlist
+  ??
+
+overloaded operations
+  CanvasRenderingContext2D.drawImage - http://www.whatwg.org/specs/web-apps/current-work/#canvasrenderingcontext2d
+  FormData.append - http://xhr.spec.whatwg.org/#formdata
+
+dictionary
+  EventInit - http://dom.spec.whatwg.org/#event
+  IDBObjectStoreParameters - https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#options-object-concept
+
+dictionary inheritance
+  MessageEventInit - http://www.whatwg.org/specs/web-apps/current-work/#messageeventinit
+  CustomEventInit - http://dom.spec.whatwg.org/#customevent
+
+dictionary member default value
+  IDBObjectStoreParameters - https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#options-object-concept
+  CustomEventInit - http://dom.spec.whatwg.org/#customevent
+
+partial dictionary
+  partial MouseEventInit - http://www.whatwg.org/specs/web-apps/current-work/  (too new?)
+  ??
+
+exception
+  DOMException - http://dom.spec.whatwg.org/#exception-domexception
+  ??
+
+exception field
+  DOMException.code - http://dom.spec.whatwg.org/#exception-domexception
+  ??
+
+exception inheritance
+  ??
+
+exception name
+  HierarchyRequestError - http://dom.spec.whatwg.org/#error-names-table
+  VersionError - https://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#exceptions0
+
+exception message
+  (hard to test?)
+
+enumeration
+  DocumentReadyState - http://www.whatwg.org/specs/web-apps/current-work/#documentreadystate
+  XMLHttpRequestResponseType - http://xhr.spec.whatwg.org/#xmlhttprequestresponsetype
+
+callback function
+  EventHandlerNonNull - http://www.whatwg.org/specs/web-apps/current-work/#eventhandlernonnull
+  PortCollectionCallback - http://www.whatwg.org/specs/web-apps/current-work/#portcollectioncallback
+
+typedef
+  not really necessary
+
+implements
+  Document implements GlobalEventHandlers - http://www.whatwg.org/specs/web-apps/current-work/#document
+  Document implements ParentNode - http://dom.spec.whatwg.org/#parentnode
+
+implements with an interface on the rhs that inherits from another interface
+  ??
+
+interface extended attributes:
+  [ArrayClass]
+    NodeList - http://dom.spec.whatwg.org/#nodelist
+    ??
+
+  [Constructor]
+    Event - http://dom.spec.whatwg.org/#event
+    XMLHttpRequest - http://xhr.spec.whatwg.org/#xmlhttprequest
+
+  [ImplicitThis]
+    ??
+
+  [NamedConstructor]
+    Image - http://www.whatwg.org/specs/web-apps/current-work/#htmlimageelement
+    Audio - http://www.whatwg.org/specs/web-apps/current-work/#htmlaudioelement
+
+  [NamedPropertiesObject]
+    Window - http://www.whatwg.org/specs/web-apps/current-work/#window
+
+  [NoInterfaceObject]
+    WindowTimers - http://www.whatwg.org/specs/web-apps/current-work/#windowtimers
+    NavigatorID - http://www.whatwg.org/specs/web-apps/current-work/#navigatorid
+
+  [OverrideBuiltins]
+    HTMLFormElement - http://www.whatwg.org/specs/web-apps/current-work/#htmlformelement
+    ??
+
+partial interface extended attributes:
+  [NamedPropertiesObject]
+    ??
+
+  [OverrideBuiltins]
+    partial interface Document - http://www.whatwg.org/specs/web-apps/current-work/#document
+
+constant extended attributes: none
+
+attribute extended attributes:
+  [Clamp]
+    ??
+
+  [EnforceRange]
+    ??
+
+  [LenientThis]
+    Document.onreadystatechange - http://www.whatwg.org/specs/web-apps/current-work/#document
+    GlobalEventHandlers.onmouseenter - http://www.whatwg.org/specs/web-apps/current-work/#globaleventhandlers
+
+  [PutForwards]
+    Document.location - http://www.whatwg.org/specs/web-apps/current-work/#document
+    HTMLElement.style - http://www.whatwg.org/specs/web-apps/current-work/#htmlelement
+
+  [Replaceable]
+    Window.self - http://www.whatwg.org/specs/web-apps/current-work/#window
+    Window.length - http://www.whatwg.org/specs/web-apps/current-work/#window
+
+  [TreatNullAs]
+    HTMLFrameElement.marginHeight - http://www.whatwg.org/specs/web-apps/current-work/#dom-frame-marginheight
+    CharacterData.data - http://dom.spec.whatwg.org/#characterdata
+
+  [TreatUndefinedAs]
+    ??
+
+  [Unforgeable]
+    Window.document - http://www.whatwg.org/specs/web-apps/current-work/#window
+    Event.isTrusted - http://dom.spec.whatwg.org/#event  (too new?)
+
+operation extended attributes:
+  [TreatNullAs]
+    ??
+
+  [TreatUndefinedAs]
+    ??
+
+operation argument extended attributes:
+  [Clamp]
+    WebSocket.close - http://www.whatwg.org/specs/web-apps/current-work/#websocket  (hard to test?)
+    Uint8ClampedArray.set - http://www.khronos.org/registry/typedarray/specs/latest/#7.1
+
+  [EnforceRange]
+    ??
+
+  [TreatNullAs]
+    DOMImplementation.createDocument - http://dom.spec.whatwg.org/#domimplementation
+    ??
+
+  [TreatUndefinedAs]
+    ??
+
+dictionary extended attributes: none
+
+dictionary member extended attributes:
+  [Clamp]
+    ??
+
+  [EnforceRange]
+    ??
+
+exception extended attributes:
+  [NoInterfaceObject]
+    ??
+
+exception field extended attributes: none
+
+enumeration extended attributes: none
+
+callback function extended attributes:
+  [TreatNonCallableAsNull]
+    EventHandlerNonNull - http://www.whatwg.org/specs/web-apps/current-work/#eventhandlernonnull
+    OnErrorEventHandlerNonNull - http://www.whatwg.org/specs/web-apps/current-work/#onerroreventhandlernonnull
+
+typedef extended attributes: none
+implements statement extended attributes: none
+
+
+
+Binding
+-------
+
+4. ECMAScript binding
+
+* objects are [[Extensible]] = true by default  (all objects actually)
+* objects have [[Prototype]] = Object.prototype by default
+* function objects have [[Class]] = "Function", [[Prototype]] = Function.prototype
+
+  DONE
+
+4.1 ECMAScript environment
+
+* each environment has unique set of initial objects
+* [[Prototype]]s are the same in a given environment
+* Object.prototype.toString must be [[Writable]] = true, [[Enumerable]] = false, [[Configurable]] = true,
+  and stringifies objects to "[object <class string>]".
+
+  DONE
+
+4.2 ECMAScript type mapping
+
+* any, void, boolean, byte, octet, short, unsigned short, long, unsigned long, long long, unsigned long long, float, unrestricted float, double, unrestricted double, DOMString, object, interface type, dictionary type (order of member evaluation), enumeration type, callback function type, nullable, sequence, array, union, Date, 
+
+  TBD
+
+4.2.24.1 Platform array object [[GetOwnProperty]] method
+
+* "length"
+* valid array index
+* invalid array index
+* other properties
+
+  TBD
+
+4.2.24.2 Platform array object [[DefineOwnProperty]] method
+
+* "length"
+* valid array index
+* invalid array index
+* other properties
+
+  TBD
+
+4.2.24.3 Platform array object [[Delete]] method
+
+...
+
+  TBD
+
+4.3 [ArrayClass]
+4.3.2 [Clamp]
+4.3.3 [Constructor]
+4.3.4 [EnforceRange]
+4.3.5 [ImplicitThis]
+4.3.6 [LenientThis]
+4.3.7 [NamedConstructor]
+4.3.8 [NoInterfaceObject]
+4.3.9 [OverrideBuiltins]
+4.3.10 [PutForwards]
+4.3.11 [Replaceable]
+4.3.12 [NamedPropertiesObject]
+4.3.13 [TreatNonCallableAsNull]
+4.3.14 [TreatNullAs=EmptyString]
+4.3.15 [TreatUndefinedAs={EmptyString,Null}]
+4.3.16 [Unforgeable]
+
+4.4 Interfaces
+
+* interface object property exists for callback interfaces with constants and non-callback interfaces that aren't [NoInterfaceObject]
+* is [[Writable]] = true, [[Enumerable]] = false, [[Configurable]] = true
+* if [NamedConstructor], there is another property with the same attributes
+
+4.4.1 Interface object
+
+* is a function object
+* .prototype is the interface prototype object
+* interface object for a callback interface is not a function object, does not have .prototype.  its [[Prototype]] is Object.prototype
+
+4.4.1.1 [[Call]]
+
+* overload resolution algorithm
+* interface object [[Call]]
+* must return an object that implements the interface (and is associated with the same environment), or throw
+* if [Constructor], .length is [[Writable]] = false, [[Enumerable]] = false, [[Configurable]] = false, Number.
+* .length is 0 if not [Constructor]   ** how can this be?
+
+4.4.1.2 Interface object [[HasInstance]] method
+
+4.4.2 Named constructors
+
+* same .length as for [[Call]]
+* also has .prototype [[Writable]] = false, [[Enumerable]] = false, [[Configurable]] = false, pointing to the interface prototype object
+
+4.4.3 Interface prototype object
+
+* if not [NoInterfaceObject], has .constructor [[Writable]] = true, [[Enumerable]] = false, [[Configurable]] = true, pointing to interface object
+* [[Prototype]] can point to named properties object, if [NamedPropertiesObject], or the interface prototype object of the inherited interface, or Array.prototype if [ArrayClass], or Object.prototype
+* class string "BlahPrototype"
+
+4.4.4 Named properties object
+
+* function object
+* [[Prototype]] points to interface prototype object of inherited interface, or Array.prototype if [ArrayClass], or Object.prototype
+* class string "BlahProperties"
+
+4.4.4.1 Named properties object [[GetOwnProperty]] method
+
+* returns [[Writable]] = false, [[Enumerable]] = true, [[Configurable]] = true for named properties
+
+4.4.5 Constants
+
+* property exists on interface object and interface prototype object
+* [[Writable]] = false, [[Enumerable]] = true, [[Configurable]] = false
+
+4.4.6 Attributes
+
+* if [Unforgeable], on an instance. otherwise, on interface prototype object.
+* accessor, [[Enumerable]] = true, [[Configurable]] = !!unforgeable
+* attribute getter is function object; [LenientThis] => return undefined on wrong object
+* attribute getter .length = 0
+* attribute setter is udnefined if readonly and not [PutForwards] and not [Replaceable].
+* setter throws if no arguments passed; > 1 arguments ignored
+* if invalid this object and not [LenientThis], throw TypeError
+* if [Replaceable], invokes [[DefineOwnProperty]] to replace it, [[Writable]] = true, [[Enumerable]] = true, [[Configurable]] = true
+* if invalid this object and [LenientThis], returns
+* if [PutForwards], ...
+* assigning invalid enumeration types is ignored
+* .length = 1
+
+4.4.7 Operations
+
+* property exists on the interface prototype object (if regular) or interface object (if static)
+* [[Writable]] = true, [[Enumerable]] = true, [[Configurable]] = true
+* value is a function object
+* [ImplicitThis] can turn null/undefined this value into the global
+* throw TypeError if wrong this object
+* .length is shortest valid argument count
+* stringifiers => .toString, [[Writable]] = true, [[Enumerable]] = true, [[Configurable]] = true, function object
+* stringifier on attribute calls [[Get]] with the attribute's property name
+* stringifier on an operation gets the function with [[Get]] and calls it
+
+4.5 Implements statement
+
+4.6 Platform objects implementing interfaces
+
+* primary interface determines class string
+* global environment can be changed
+
+4.6.1 Indexed and named properties
+
+* when [NamedPropertiesObject], named properties are exposed on that object and not on the instance
+* Object.{freeze,seal,preventExtensions} throw TypeError on objects supporting indexed or named properties
+* named property visibility algorithm, looks at [Unforgeable], supported property name, [OverrideBuiltins], ...
+
+4.6.2 Platform object [[GetOwnProperty]] method
+4.6.2 Platform object [[DefineOwnProperty]] method
+4.6.3 Platform object [[Delete]] method
+
+* ... indexed, named properties ...
+
+4.6.5 Platform object [[Call]] method
+
+* legacy caller
+
+4.6.6 Property enumeration
+
+* indexed properties first, numerical order
+* then named properties, spec defined order
+* remaining properties, no defined order
+
+4.7 User object implementing callback interfaces
+
+* single operation interface, any object apart from native Date and native RegExp can implement it
+* if the object is callable, its [[Call]] is the implementation
+* if the object is not callable, get the function with [[Get]]
+* multiple operation interface, any object not a platform object and not a native Date or RegExp implements it
+* how to invoke callback interface operation
+* callback this value, null by default
+* how to get/set callback interface attribute
+
+4.8 Invoking callback functions
+
+4.9 Exceptions
+
+* if not [NoInterfaceObject], property exists on global
+* [[Writable]] = true, [[Enumerable]] = true, [[Configurable]] = true
+
+4.9.1 Exception interface object
+
+* function object
+* .prototype is [[Writable]] = false, [[Enumerable]] = false, [[Configurable]] = false
+
+4.9.1.1 Exception interface object [[Call]] method
+
+* construct an object with [[Prototype]] set to the exception interface object, class string = the exception identifier
+* if arg_0 is not undefined, sets .message to it with [[Writable]] = true, [[Enumerable]] = false, [[Configurable]] = true;
+  this shadows .message from Error.prototype
+
+4.9.2 Exception interface prototype object
+
+* [[Prototype]] is the inherited exception interface prototype object, or Error.prototype
+* class string is "BlahPrototype"
+* .name with [[Writable]] = true, [[Enumerable]] = false, [[Configurable]] = true
+* if not [NoInterfaceObject], .constructor is [[Writable]] = true, [[Enumerable]] = false, [[Configurable]] = true; points to exception interface object
+
+4.9.3 Constants
+
+* property on exception interface prototype object and exception interface object
+* [[Writable]] = false, [[Enumerable] = true, [[Configurable]] = false
+
+4.9.4 Exception fields
+
+* on exception interface prototype object
+* [[Get]], [[Enumerable]] = true, [[Configurable]] = true
+* exception field getter is a function object
+* throws a TypeError with bad this
+* .length is 0
+
+4.10 Exception objects
+
+* if created through new, associated with that exception interface object's global environment
+* [[Prototype]] is the exception interface prototype object
+* [[Class]] is "Error"
+* class string is the identifier of the exception
+
+4.11 Throwing exeptions
+
+* defines "current global environment", which is topmost Function for an attribute, operation, indexed property, named property, constructor, named constructor, stringifier, excpetion constructor or exception field getter.
+* throwing an exception with optional name N, optional message M, follows some steps
+
+4.12 Handling exceptions
+
+* nothing
+
+5.1 DOMTimeStamp
+
+5.2 Function
+
+5.3 VoidFunction
+
+
+
+Objects
+-------
+
+interface object
+interface object for an inherited interface
+interface prototype object
+interface prototype object for an inherited interface
+named constructor object
+attribute getter
+attribute setter
+operation Function
+stringifier Function
+exception interface object
+exception interface prototype object
+exception field getter
+platform object implementing an interface
+platform object implementing an inherited interface
+platform object representing an exception
+platform array object
+named properties object

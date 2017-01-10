@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<title>[NamedPropertiesObject] property lookup</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<div id="hidden" style="visibility: hidden; position: absolute; width: 0; height: 0; overflow: hidden">
+  <iframe id="f1" name="f1"></iframe>
+  <iframe id="f2" name="f2"></iframe>
+</div>
+
+<script>
+// 4.4.4.1 Named properties object [[GetOwnProperty]] method
+//
+// Named properties are exposed as data properties through [[GetOwnProperty]].
+// [[GetOwnProperty]] also exposes other (expando) properties on the named
+// properties object.
+
+var hidden = document.getElementById("hidden");
+var iframe1 = document.getElementById("f1");
+var iframe2 = document.getElementById("f2");
+
+test(function() {
+  assert_equals(window.f1, iframe1.contentWindow);
+}, "properties from the named properties object can be looked up on window");
+
+test(function() {
+  assert_equals(Window.prototype.f1, iframe1.contentWindow);
+}, "properties from the named properties object can be looked up on Window.prototype");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+  assert_equals(namedPropertiesObject.f1, iframe1.contentWindow);
+}, "named properties can be looked up on the named properties object");
+
+test(function() {
+  var object = window;
+  var desc;
+  while (object && !desc) {
+    desc = Object.getOwnPropertyDescriptor(object, "f1");
+    object = Object.getPrototypeOf(object);
+  }
+  assert_true(!!desc, "named property exposed through [[GetOwnProperty]]");
+  assert_descriptor(desc, { writable: false, enumerable: true, configurable: true, value: iframe1.contentWindow }, "f1");
+}, "named properties are exposed correctly through [[GetOwnProperty]]");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+  namedPropertiesObject.expando1 = 1;
+  assert_equals(window.expando1, 1);
+}, "expando properties on the named properties object are exposed through window");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  // Ensure there's already a named property "f2".
+  assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: true, configurable: true, value: iframe2.contentWindow }, "#1 namedPropertiesObject.f2");
+
+  // Define a property with the same name.
+  Object.defineProperty(namedPropertiesObject, "f2", { writable: false, enumerable: false, configurable: true, value: "hello" });
+
+  // Although the property definition should work, the named property should still shadow it.
+  assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: true, configurable: true, value: iframe2.contentWindow }, "#2 namedPropertiesObject.f2");
+
+  // Remove the named property.
+  iframe2.parentNode.removeChild(iframe2);
+
+  // The expand should now be exposed.
+  assert_property(namedPropertiesObject, "f2", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#3 namedPropertiesObject.f2");
+}, "expando properties with the same as named properties can be set, but named properties will shadow it");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  // Define an expando property.
+  Object.defineProperty(namedPropertiesObject, "f3", { writable: false, enumerable: false, configurable: true, value: "hello" });
+
+  // Check that it's there.
+  assert_property(namedPropertiesObject, "f3", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#1 namedPropertiesObject.f3");
+
+  // Cause a named property with the same name to start existing.
+  var e = document.createElement("iframe");
+  e.name = "f3";
+  hidden.appendChild(e);
+
+  // The named property should shadow the expando.
+  assert_property(namedPropertiesObject, "f3", { writable: false, enumerable: true, configurable: true, value: e.contentWindow }, "#2 namedPropertiesObject.f3");
+
+  // Remove the named property.
+  hidden.removeChild(e);
+
+  // The expando should be revealed.
+  assert_property(namedPropertiesObject, "f3", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#3 namedPropertiesObject.f3");
+}, "pre-existing expando properties are shadowed by named properties that start existing");
+
+test(function() {
+  var namedPropertiesObject = Object.getPrototypeOf(Window.prototype);
+
+  // Define an expando property.
+  Object.defineProperty(namedPropertiesObject, "f4", { writable: false, enumerable: false, configurable: true, value: "hello" });
+
+  // Check that it's there.
+  assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: false, configurable: true, value: "hello" }, "#1 namedPropertiesObject.f4");
+
+  // Cause a named property with the same name to start existing.
+  var e = document.createElement("iframe");
+  e.name = "f4";
+  hidden.appendChild(e);
+
+  // The named property should shadow the expando.
+  assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: true, configurable: true, value: e.contentWindow }, "#2 namedPropertiesObject.f4");
+
+  // Remove the expando.
+  assert_true(delete namedPropertiesObject.f4, "delete namedPropertiesObject.f4");
+
+  // The named property should still be there.
+  assert_property(namedPropertiesObject, "f4", { writable: false, enumerable: true, configurable: true, value: e.contentWindow }, "#3 namedPropertiesObject.f4");
+
+  // Remove the named property.
+  hidden.removeChild(e);
+
+  // There shouldn't be anything there now.
+  assert_true(!Object.getOwnPropertyDescriptor(namedPropertiesObject, "f4"), "existence of namedPropertiesObject.f4");
+}, "expando properties should be able to be removed while shadowed by a named property");
+
+// XXX We probably shouldn't allow non-configurable properties to be defined
+// on the named properties object: https://www.w3.org/Bugs/Public/show_bug.cgi?id=21929
+// Once that bug is resolved, we should test this.
+</script>

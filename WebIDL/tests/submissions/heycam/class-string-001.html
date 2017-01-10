@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<title>Object.prototype.toString looks at class strings</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.1 ECMAScript environment
+//
+// Object.prototype.toString is replaced with a function that looks at
+// class strings.
+
+var objects = [
+
+  // interface object
+  interfaceObject("DOMImplementation"), "Function", "DOMImplementation interface object",
+  interfaceObject("HTMLCollection"), "Function", "HTMLCollection interface object",
+
+  // interface object for inherited interface
+  interfaceObject("Element"), "Function", "Element interface object",
+  interfaceObject("UIEvent"), "Function", "UIEvent interface object",
+
+  // interface prototype object
+  interfacePrototypeObject("DOMImplementation"), "DOMImplementationPrototype", "DOMImplementation interface prototype object",
+  interfacePrototypeObject("HTMLCollection"), "HTMLCollectionPrototype", "HTMLCollection interface prototype object",
+
+  // interface prototype object for inherited interface
+  interfacePrototypeObject("Element"), "ElementPrototype", "Element interface prototype object",
+  interfacePrototypeObject("UIEvent"), "UIEventPrototype", "UIEvent interface prototype object",
+
+  // named constructor object
+  namedConstructorObject("Image"), "Function", "Image named constructor object",
+  namedConstructorObject("Audio"), "Function", "Audio named constructor object",
+
+  // attribute getter
+  getter("Document", "title"), "Function", "Document.title attribute getter",
+  getter("HTMLSelectElement", "length"), "Function", "HTMLSelectElement.length attribute getter",
+
+  // read only attribute getter
+  getter("Node", "parentNode"), "Function", "Node.parentNode attribute getter",
+  getter("HTMLFormElement", "length"), "Function", "HTMLFormElement.length attribute getter",
+
+  // attribute setter
+  setter("Document", "title"), "Function", "Document.title attribute setter",
+  setter("HTMLSelectElement", "length"), "Function", "HTMLSelectElement.length attribute setter",
+
+  // operation function
+  operation("HTMLElement", "click"), "Function", "HTMLElement.click function",
+  operation("Node", "appendChild"), "Function", "Node.appendChild function",
+
+  // stringifier function
+  stringifier("DOMTokenList"), "Function", "DOMTokenList stringifier function",
+
+  // exception interface object
+  interfaceObject("DOMException"), "Function", "DOMException exception interface object",
+
+  // exception interface prototype object
+  interfacePrototypeObject("DOMException"), "DOMException", "DOMException exception interface prototype object",
+
+  // exception field getter
+  getter("DOMException", "code"), "Function", "DOMException.code exception field getter",
+
+  // platform object implementing an interface
+  function() { return document.implementation; }, "DOMImplementation", "a platform object implementing DOMImplementation",
+  function() { return document.getElementsByTagName("div"); }, "HTMLCollection", "a platform object implementing HTMLCollection",
+
+  // platform object implementing an inherited interface
+  function() { return document.createElement("div"); }, "HTMLDivElement", "a platform object implementing Element",
+  function() { return document.createEvent("UIEvent"); }, "UIEvent", "a platform object implementing UIEvent",
+
+  // platform object representing an exception
+  function() {
+    try {
+      document.appendChild(document);
+    } catch (e) {
+      return e;
+    }
+  }, "DOMException", "a platform object representing a DOMException",
+
+  // platform array object
+  // XXX
+
+  // named properties object
+  function() { return Object.getPrototypeOf(Window.prototype); }, "WindowProperties", "named properties object"
+];
+
+var desc = Object.getOwnPropertyDescriptor(Object.prototype, "toString");
+test(function() { assert_true(desc.writable); }, "Object.prototype.toString is [[Writable]]");
+test(function() { assert_true(!desc.enumerable); }, "Object.prototype.toString is not [[Enumerable]]");
+test(function() { assert_true(desc.configurable); }, "Object.prototype.toString is [[Configurable]]");
+
+for (var i = 0; i < objects.length; i += 3) {
+  test(function() {
+    var object = objects[i]();
+    var classString = objects[i + 1];
+    assert_equals(Object.prototype.toString.call(object), "[object " + classString + "]");
+  }, objects[i + 2] + " responds correctly to Object.prototype.toString");
+}
+</script>

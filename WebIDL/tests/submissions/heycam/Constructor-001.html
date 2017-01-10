@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<title>[Constructor]</title>
+<script src="http://w3c-test.org/resources/testharness.js"></script>
+<script src="http://w3c-test.org/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<div id="log"></div>
+
+<script>
+// 4.4.1.1 Interface object [[Call]] method
+//
+// Interfaces with [Constructor] have a [[Call]] method that invokes the
+// constructor behavior.  If it didn't have [Constructor], a TypeError is
+// thrown.  The returned object must implement the interface.  There must
+// also be a "length" property on the interface object.
+
+test(function() {
+  assert_throws({ name: "TypeError" }, function() { new Element(); }, "new Element()");
+}, "Calling new on an interface object whose interface does not have [Constructor]")
+
+test(function() {
+  assert_true(new Event("test") instanceof Event, "new Event(...) instanceof Event");
+}, "Event constructor returns an object that is instanceof Event");
+
+test(function() {
+  assert_true(Event("test") instanceof Event, "Event(...) instanceof Event");
+}, "Event constructor called as a function returns an object that is instanceof Event");
+
+test(function() {
+  assert_true(new XMLHttpRequest() instanceof XMLHttpRequest, "new XMLHttpRequest() instanceof XMLHttpRequest");
+}, "XMLHttpRequest constructor returns an object that is instanceof XMLHttpRequest");
+
+test(function() {
+  assert_true(XMLHttpRequest() instanceof XMLHttpRequest, "XMLHttpRequest() instanceof XMLHttpRequest");
+}, "XMLHttpRequest constructor called as a function returns an object that is instanceof XMLHttpRequest");
+
+var lengthProperties = [
+  "Event", 1,
+  "XMLHttpRequest", 0
+];
+
+for (var i = 0; i < lengthProperties.length; i += 2) {
+  var intf = lengthProperties[i];
+  var val = lengthProperties[i + 1];
+
+  test(function() {
+    assert_property(window[intf], "length", { writable: false, enumerable: false, configurable: false, value: val }, intf + ".length");
+  }, intf + " has correct length property");
+}
+</script>

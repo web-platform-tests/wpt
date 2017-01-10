@@ -57,7 +57,7 @@ promise_test(() => {
     return Promise.all([
       iframe.contentWindow.fetch('dummy.txt').then(r => r.text()),
       iframe.contentWindow.caches.open('test')
-        .then(cache => 
+        .then(cache =>
           cache.add('dummy.txt').then(() => cache.match('dummy.txt'))
         ).then(response => {
           if (!response) return 'cache match failed';

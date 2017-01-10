@@ -16,7 +16,7 @@ addEventListener('fetch', event => {
 
     if (url.pathname.endsWith('/dummy.txt-inner-cache')) {
       event.respondWith(
-        caches.open('test-inner-cache').then(cache => 
+        caches.open('test-inner-cache').then(cache =>
           cache.add('dummy.txt').then(() => cache.match('dummy.txt'))
         )
       );

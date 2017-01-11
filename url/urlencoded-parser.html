@@ -11,7 +11,8 @@
   { "input": "%EF%BB%BFtest=%EF%BB%BF", "output": [["\uFEFFtest", "\uFEFF"]] },
   { "input": "†&†=x", "output": [["†", ""], ["†", "x"]] },
   { "input": "%C2", "output": [["\uFFFD", ""]] },
-  { "input": "%C2x", "output": [["\uFFFDx", ""]] }
+  { "input": "%C2x", "output": [["\uFFFDx", ""]] },
+  { "input": "_charset_=windows-1252&test=%C2x", "output": [["_charset_", "windows-1252"], ["test", "\uFFFDx"]] }
 ].forEach((val) => {
   test(() => {
     let sp = new URLSearchParams(val.input),

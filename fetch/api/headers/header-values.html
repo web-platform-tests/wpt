@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset=utf8>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+for(let i = 0; i < 0x100; i++) {
+  let val = String.fromCharCode(i)
+  async_test((t) => {
+    let xhr = new XMLHttpRequest()
+    xhr.open("POST", "../resources/inspect-headers.py?headers=value-test")
+    console.log(val)
+    xhr.setRequestHeader("value-test", val)
+    xhr.onload = t.step_func_done(() => {
+      assert_equals(xhr.getResponseHeader("x-request-value-test"), val)
+    })
+    xhr.send()
+  }, "XMLHttpRequest with value " + encodeURI(val))
+
+  promise_test(() => {
+    return fetch("../resources/inspect-headers.py?headers=value-test", { headers: {"value-test": val} }).then((res) => {
+      assert_equals(res.headers.get("x-request-value-test"), val)
+    })
+  }, "fetch() with value " + encodeURI(val))
+}
+</script>

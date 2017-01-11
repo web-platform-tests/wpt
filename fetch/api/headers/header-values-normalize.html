@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset=utf8>
+<title>Header value normalizing test</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+for(let i = 1; i < 0x21; i++) {
+  let strip = false
+  if(i === 0x09 || i === 0x0A || i === 0x0D || i === 0x20) {
+    strip = true
+  }
+
+  let val = String.fromCharCode(i),
+      expectedVal = strip ? "" : val
+  for(let y = 0; y < 3; y++) {
+    let useVal = val,
+        useExpectedVal = expectedVal
+    if(y === 0) {
+      useVal = "x" + val
+      useExpectedVal = "x" + expectedVal
+    } else if(y === 2) {
+      useVal = val + "x"
+      useExpectedVal = expectedVal + "x"
+    }
+
+    async_test((t) => {
+      let xhr = new XMLHttpRequest()
+      xhr.open("POST", "../resources/inspect-headers.py?headers=value-test")
+      xhr.setRequestHeader("value-test", useVal)
+      xhr.onload = t.step_func_done(() => {
+        assert_equals(xhr.getResponseHeader("x-request-value-test"), useExpectedVal)
+      })
+      xhr.send()
+    }, "XMLHttpRequest with value " + encodeURI(useVal))
+
+    promise_test((t) => {
+      return fetch("../resources/inspect-headers.py?headers=value-test", { headers: {"value-test": useVal} }).then((res) => {
+        assert_equals(res.headers.get("x-request-value-test"), useExpectedVal)
+      })
+    }, "fetch() with value " + encodeURI(useVal))
+  }
+}
+</script>

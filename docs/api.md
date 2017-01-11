@@ -474,9 +474,9 @@ the following methods:
   `add_result_callback(callback)` - callback called with a test argument
 
   `add_completion_callback(callback)` - callback called with an array of tests
-                                        and an status object
+                                        and a status object
 
-tests have the following properties:
+Tests have the following properties:
 
   * `status` - A status code. This can be compared to the `PASS`, `FAIL`,
                `TIMEOUT` and `NOTRUN` properties on the test object
@@ -515,7 +515,7 @@ different origins can collect the results.
 This API follows similar conventions as those described above only slightly
 modified to accommodate message event API. Each message is sent by the harness
 is passed a single vanilla object, available as the `data` property of the event
-object. These objects are structures as follows:
+object. These objects are structured as follows:
 
  * start - `{ type: "start" }`
  * test\_state - `{ type: "test_state", test: Test }`

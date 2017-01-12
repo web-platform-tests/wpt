@@ -10,9 +10,15 @@ for(let i = 0; i < 0x21; i++) {
   let fail = false,
       strip = false
 
+  // REMOVE 0x0B/0x0C exception once https://github.com/w3c/wptserve/issues/111 is fixed
+  if(i === 0x0B || i === 0x0C)
+    continue
+
   if(i === 0) {
     fail = true
-  } else if(i === 0x09 || i === 0x0A || i === 0x0D || i === 0x20) {
+  }
+
+  if(i === 0x09 || i === 0x0A || i === 0x0D || i === 0x20) {
     strip = true
   }
 

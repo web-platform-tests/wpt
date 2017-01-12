@@ -5,5 +5,5 @@ def main(req, res):
 
   if qs_cookie_val:
     res.set_cookie('notification', qs_cookie_val[0])
-    
+
   return 'not really an icon'

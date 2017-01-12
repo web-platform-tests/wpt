@@ -133,7 +133,7 @@ The master branch is automatically synced to http://w3c-test.org/.
 
 Pull requests are automatically mirrored to
 http://w3c-test.org/submissions/ a few minutes after someone with merge
-access has added a comment with "LGTM" (or "w3c-test:mirror" to indicate
+access has added a comment with "LGTM" (or "w3c-test:mirror") to indicate
 the PR has been checked.
 
 Finding Things

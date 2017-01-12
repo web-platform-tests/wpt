@@ -35,7 +35,7 @@ test(() => {
 
 test(() => {
     params = new URLSearchParams({});
-    assert_equals(params + '', '%5Bobject+Object%5D=');
+    assert_equals(params + '', "");
 }, 'URLSearchParams constructor, {} as argument');
 
 test(function() {
@@ -157,7 +157,7 @@ test(() => {
   }
   let params2 = new URLSearchParams(params)
   assert_equals(params2.get("a"), "b")
-}, "Evil constructor test")
+}, "Custom [Symbol.iterator]")
 </script>
 </head>
 </html>

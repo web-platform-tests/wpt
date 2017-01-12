@@ -17,7 +17,7 @@ for(let i = 0; i < 0x100; i++) {
     let xhr = new XMLHttpRequest()
     xhr.open("POST", "../resources/inspect-headers.py?headers=value-test")
     if(fail) {
-      assert_throws(new TypeError), () => xhr.setRequestHeader("value-test", val)
+      assert_throws("SyntaxError", () => xhr.setRequestHeader("value-test", val))
       t.done()
     } else {
       xhr.setRequestHeader("value-test", val)

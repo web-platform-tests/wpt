@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pointer Events: MouseEvent.fromElement and MouseEvent.toElement</title>
+  <meta name="flags" content="interact dom">
+  <link rel="author" title="Chris Rebert" href="http://chrisrebert.com">
+  <!-- If these do get spec'd, they would presumably belong in one of: -->
+  <link rel="help" href="https://w3c.github.io/uievents/#events-mouseevents">
+  <link rel="help" href="https://w3c.github.io/pointerevents/#pointer-events-and-interfaces">
+  <!-- Documentation (since there's not yet a spec): -->
+  <link rel="help" href="https://msdn.microsoft.com/en-us/library/ms533773(v=vs.85).aspx">
+  <link rel="help" href="https://msdn.microsoft.com/en-us/library/ms534684(v=vs.85).aspx">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <style>
+#outer {
+  width: 200px;
+  height: 200px;
+  background-color: fuchsia;
+}
+#inner {
+  position: relative;
+  top: 50px;
+  left: 50px;
+  width: 100px;
+  height: 100px;
+  background-color: teal;
+}
+  </style>
+</head>
+<body>
+  <div id="outer">
+    <div id="inner"></div>
+  </div>
+  <button type="button" onclick="done()">Done</button>
+  <ol>
+    <li>If the User-Agent lacks a pointing mechanism, then <strong>skip</strong> this test.</li>
+    <li>Move the pointer into the fuchsia area.</li>
+    <li>Move the pointer into the teal area.</li>
+    <li>Move the pointer into the fuchsia area.</li>
+    <li>Move the pointer outside of both the fuchsia area and the teal area, without moving the pointer through the teal area.</li>
+    <li>Click the "Done" button.</li>
+    <li>If a "PASS" result has appeared, then the test passes; otherwise, it fails.</li>
+  </ol>
+  <script>
+setup({explicit_timeout: true});
+
+function one(type, listener) {
+  var wrapper = function (e) {
+    try {
+      listener(e);
+    } catch (err) {
+      document.removeEventListener(type, wrapper);
+      throw err;
+    }
+    document.removeEventListener(type, wrapper);
+  };
+
+  document.addEventListener(type, wrapper);
+}
+
+window.addEventListener('load', function () {
+  var outer = document.getElementById('outer');
+  var inner = document.getElementById('inner');
+
+  var one = function (type, listener) {
+    var wrapper = function (e) {
+      try {
+        listener(e);
+      } catch (err) {
+        outer.removeEventListener(type, wrapper);
+        throw err;
+      }
+      outer.removeEventListener(type, wrapper);
+    };
+
+    outer.addEventListener(type, wrapper);
+  };
+
+  // These do bubble
+  async_test(function (t) {
+    // Pointer moves onto #outer
+    one('pointerover', t.step_func(function (firstOver) {
+      assert_equals(firstOver.fromElement, null, 'For 1st pointerover, .fromElement should equal null');
+      assert_equals(firstOver.toElement, null, 'For 1st pointerover, .toElement should equal null');
+
+      // Pointer moves onto #inner
+      one('pointerout', t.step_func(function (firstOut) {
+        assert_equals(firstOut.fromElement, null, 'For 1st pointerout, .fromElement should equal null');
+        assert_equals(firstOut.toElement, null, 'For 1st pointerout, .toElement should equal null');
+
+        one('pointerover', t.step_func(function (secondOver) {
+          assert_equals(secondOver.fromElement, null, 'For 2nd pointerover, .fromElement should equal null');
+          assert_equals(secondOver.toElement, null, 'For 2nd pointerover, .toElement should equal null');
+
+          // Pointer moves back onto #outer
+          one('pointerout', t.step_func(function (secondOut) {
+            assert_equals(secondOut.fromElement, null, 'For 2nd pointerout, .fromElement should equal null');
+            assert_equals(secondOut.toElement, null, 'For 2nd pointerout, .toElement should equal null');
+
+            one('pointerover', t.step_func(function (thirdOver) {
+              assert_equals(thirdOver.fromElement, null, 'For 3rd pointerover, .fromElement should equal null');
+              assert_equals(thirdOver.toElement, null, 'For 3rd pointerover, .toElement should equal null');
+
+              // Pointer moves off of #outer
+              one('pointerout', t.step_func(function (thirdOut) {
+                assert_equals(thirdOut.fromElement, null, 'For 3rd pointerout, .fromElement should equal null');
+                assert_equals(thirdOut.toElement, null, 'For 3rd pointerout, .toElement should equal null');
+
+                t.done();
+              }));
+            }));
+          }));
+        }));
+      }));
+    }));
+  }, 'pointerover and pointerout');
+
+  // These don't bubble
+  async_test(function (t) {
+    outer.addEventListener('pointerenter', t.step_func_done(function (e) {
+      assert_equals(e.fromElement, null, 'For pointerenter, .fromElement should equal null');
+      assert_equals(e.toElement, null, 'For pointerenter, .toElement should equal null');
+    }));
+  }, 'pointerenter #outer');
+  async_test(function (t) {
+    outer.addEventListener('pointerleave', t.step_func_done(function (e) {
+      assert_equals(e.fromElement, null, 'For pointerleave, .fromElement should equal null');
+      assert_equals(e.toElement, null, 'For pointerleave, .toElement should equal null');
+    }));
+  }, 'pointerleave #outer');
+  async_test(function (t) {
+    inner.addEventListener('pointerenter', t.step_func_done(function (e) {
+      assert_equals(e.fromElement, null, 'For pointerenter, .fromElement should equal null');
+      assert_equals(e.toElement, null, 'For pointerenter, .toElement should equal null');
+    }));
+  }, 'pointerenter #inner');
+  async_test(function (t) {
+    inner.addEventListener('pointerleave', t.step_func_done(function (e) {
+      assert_equals(e.fromElement, null, 'For pointerleave, .fromElement should equal null');
+      assert_equals(e.toElement, null, 'For pointerleave, .toElement should equal null');
+    }));
+  }, 'pointerleave #inner');
+});
+  </script>
+</body>
+</html>

@@ -25,6 +25,7 @@ addEventListener('fetch', event => {
   }
 
   if (url.pathname.endsWith('/show-notification')) {
+    // Copy the currect search string onto the icon url
     const iconURL = new URL('notification_icon.py', location);
     iconURL.search = url.search;
 

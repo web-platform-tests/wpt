@@ -119,6 +119,11 @@ promise_test(() => {
     return registerSwAndOpenFrame();
   }).then(iframe => {
     return Promise.resolve().then(() => {
+      // In this test, the service worker will ping the 'icon-request' channel
+      // if it intercepts a request for 'notification_icon.py'. If the request
+      // reaches the server it sets the 'notification' cookie to the value given
+      // in the URL. "raceBroadcastAndCookie" monitors both and returns which
+      // happens first.
       const race = raceBroadcastAndCookie('icon-request', 'notification');
       const notification = new iframe.contentWindow.Notification('test', {
         icon: `notification_icon.py?set-cookie-notification=${Math.random()}`
@@ -129,6 +134,8 @@ promise_test(() => {
         assert_true(winner == 'broadcast', 'The service worker intercepted the from-window notification icon request');
       });
     }).then(() => {
+      // Similar race to above, but this time the service worker requests the
+      // notification.
       const race = raceBroadcastAndCookie('icon-request', 'notification');
       iframe.contentWindow.fetch(`show-notification?set-cookie-notification=${Math.random()}`);
 

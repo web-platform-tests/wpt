@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+[
+  {
+    "input": "z=b&a=b&z=a&a=a",
+    "output": [["a", "b"], ["a", "a"], ["z", "b"], ["z", "a"]]
+  },
+  {
+    "input": "\uFFFD=x&\uFFFC&\uFFFD=a",
+    "output": [["\uFFFC", ""], ["\uFFFD", "x"], ["\uFFFD", "a"]]
+  }
+].forEach((val) => {
+  test(() => {
+    let params = new URLSearchParams(val.input),
+        i = 0
+    params.sort()
+    for(let param of params) {
+      assert_array_equals(param, val.output[i])
+      i++
+    }
+  }, "Parse and sort: " + val.input)
+})
+</script>

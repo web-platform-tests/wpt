@@ -25,15 +25,14 @@
           setup_pointerevent_test("two-finger pan on 'touch-action: pinch-zoom'", ["touch"])
         ];
         var expected_events = [
-          "pointerdown@black, pointerdown@black, pointercancel@black, pointercancel@black",
-          "pointerdown@grey, pointerdown@grey, pointerup@grey, pointerup@grey"
+          "pointerdown@black, pointerdown@black, pointerup@black, pointerup@black",
+          "pointerdown@grey, pointerdown@grey, pointercancel@grey, pointercancel@grey"
         ];
         var current_test_index = 0;
 
         on_event(document.getElementById("done"), "click", function() {
-          assert_equals(active_pointers, 0);
-
           test_pointer_events[current_test_index].step(function () {
+            assert_equals(active_pointers, 0);
             assert_equals(event_log.join(", "), expected_events[current_test_index]);
           });
           event_log = [];
@@ -61,7 +60,7 @@
     </script>
     <style>
       .box {
-        width: 200px;
+        width: 250px;
         height: 150px;
         float: left;
         margin: 10px;
@@ -84,7 +83,7 @@
     </style>
   </head>
   <body onload="run()">
-    <h1>Pointer Event: touch-action test for two-finger interaction<h1>
+    <h1>Pointer Event: touch-action test for two-finger interaction</h1>
     <h2 id="pointerTypeDescription"></h2>
     <h4>
       Tests that a two-finger pan gesture is cancelled in 'touch-action: pan-x pan-y' but is allowed in 'touch-action: pinch-zoom'
@@ -96,7 +95,7 @@
       <li>Tap on Done.</li>
     </ol>
     <div class="box" id="black"></div>
-    <input type="button" id="done" value="Done"></div>
+    <input type="button" id="done" value="Done" />
     <div class="box" id="grey"></div>
     <div id="log"></div>
   </body>

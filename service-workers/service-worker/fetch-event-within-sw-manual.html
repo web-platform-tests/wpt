@@ -42,14 +42,43 @@ function regReady(reg) {
   });
 }
 
-function closeAllNotifications() {
-
+function getCookies() {
+  return new Map(
+    document.cookie
+      .split(/;/g)
+      .map(c => c.trim().split('=').map(s => s.trim()))
+  );
 }
 
 function registerSwAndOpenFrame() {
   return reset().then(() => navigator.serviceWorker.register(worker, {scope: 'resources/'}))
     .then(reg => regReady(reg))
     .then(() => with_iframe('resources/simple.html'));
+}
+
+function raceBroadcastAndCookie(channel, cookie) {
+  const initialCookie = getCookies().get(cookie);
+  let done = false;
+
+  return Promise.race([
+    new Promise(resolve => {
+      const bc = new BroadcastChannel(channel);
+      bc.onmessage = () => {
+        bc.close();
+        resolve('broadcast');
+      };
+    }),
+    (function checkCookie() {
+      // Stop polling if the broadcast channel won
+      if (done == true) return;
+      if (getCookies().get(cookie) != initialCookie) return 'cookie';
+
+      return wait(200).then(checkCookie);
+    }())
+  ]).then(val => {
+    done = true;
+    return val;
+  });
 }
 
 promise_test(() => {
@@ -89,32 +118,24 @@ promise_test(() => {
     }
     return registerSwAndOpenFrame();
   }).then(iframe => {
-    return Promise.race([
-      new Promise(resolve => {
-        const bc = new BroadcastChannel('icon-request');
-        bc.onmessage = () => {
-          bc.close();
-          resolve();
-        };
+    return Promise.resolve().then(() => {
+      const race = raceBroadcastAndCookie('icon-request', 'notification');
+      const notification = new iframe.contentWindow.Notification('test', {
+        icon: `notification_icon.py?set-cookie-notification=${Math.random()}`
+      });
+      notification.close();
 
-        const notification = new iframe.contentWindow.Notification('test', {
-          icon: 'notification-icon.png'
-        });
-        notification.close();
-      }),
-      wait(1000).then(() => { throw Error(`Did not capture icon request for notification created from page`); })
-    ]).then(() => Promise.race([
-      new Promise(resolve => {
-        const bc = new BroadcastChannel('icon-request');
-        bc.onmessage = () => {
-          bc.close();
-          resolve();
-        };
+      return race.then(winner => {
+        assert_true(winner == 'broadcast', 'The service worker intercepted the from-window notification icon request');
+      });
+    }).then(() => {
+      const race = raceBroadcastAndCookie('icon-request', 'notification');
+      iframe.contentWindow.fetch(`show-notification?set-cookie-notification=${Math.random()}`);
 
-        iframe.contentWindow.fetch('show-notification');
-      }),
-      wait(1000).then(() => { throw Error(`Did not capture icon request for notification created within SW`); })
-    ]));
+      return race.then(winner => {
+        assert_true(winner == 'broadcast', 'The service worker intercepted the from-service-worker notification icon request');
+      });
+    })
   });
 }, `Notification requests intercepted both from window and SW`);
 

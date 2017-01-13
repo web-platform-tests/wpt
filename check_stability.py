@@ -36,6 +36,7 @@ logger = logging.getLogger(os.path.splitext(__file__)[0])
 
 
 def do_delayed_imports():
+    """Import and set up modules only needed if execution gets to this point."""
     global BaseHandler
     global LogLevelFilter
     global StreamHandler
@@ -52,6 +53,7 @@ def do_delayed_imports():
 
 
 def setup_logging():
+    """Set up basic debug logger."""
     handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(logging.BASIC_FORMAT, None)
     handler.setFormatter(formatter)
@@ -62,38 +64,57 @@ setup_logging()
 
 
 def setup_action_filter():
+    """Create global LogActionFilter class as part of deferred module load."""
     global LogActionFilter
 
     class LogActionFilter(BaseHandler):
-        """Handler that filters out messages with action of log and a level
-        lower than some specified level.
+
+        """Handler that filters out messages not of a given set of actions.
+
+        Subclasses BaseHandler.
 
         :param inner: Handler to use for messages that pass this filter
-        :param level: Minimum log level to process
+        :param actions: List of actions for which to fire the handler
         """
+
         def __init__(self, inner, actions):
+            """Extend BaseHandler and set inner and actions props on self."""
             BaseHandler.__init__(self, inner)
             self.inner = inner
             self.actions = actions
 
         def __call__(self, item):
+            """Invoke handler if action is in list passed as constructor param."""
             if item["action"] in self.actions:
                 return self.inner(item)
 
 
 class TravisFold(object):
+
+    """Context for TravisCI folding mechanism. Subclasses object.
+
+    See: https://blog.travis-ci.com/2013-05-22-improving-build-visibility-log-folds/
+    """
+
     def __init__(self, name):
+        """Register TravisCI folding section name."""
         self.name = name
 
     def __enter__(self):
+        """Emit fold start syntax."""
         print("travis_fold:start:%s" % self.name, file=sys.stderr)
 
     def __exit__(self, type, value, traceback):
+        """Emit fold end syntax."""
         print("travis_fold:end:%s" % self.name, file=sys.stderr)
 
 
 class GitHub(object):
+
+    """Interface for the GitHub API."""
+
     def __init__(self, org, repo, token, product):
+        """Set properties required for communicating with GH API on self."""
         self.token = token
         self.headers = {"Accept": "application/vnd.github.v3+json"}
         self.auth = (self.token, "x-oauth-basic")
@@ -103,6 +124,7 @@ class GitHub(object):
         self.product = product
 
     def _headers(self, headers):
+        """Extend existing HTTP headers and return new value."""
         if headers is None:
             headers = {}
         rv = self.headers.copy()
@@ -110,6 +132,7 @@ class GitHub(object):
         return rv
 
     def post(self, url, data, headers=None):
+        """Serialize and POST data to given URL."""
         logger.debug("POST %s" % url)
         if data is not None:
             data = json.dumps(data)
@@ -123,6 +146,7 @@ class GitHub(object):
         return resp
 
     def patch(self, url, data, headers=None):
+        """Serialize and PATCH data to given URL."""
         logger.debug("PATCH %s" % url)
         if data is not None:
             data = json.dumps(data)
@@ -136,6 +160,7 @@ class GitHub(object):
         return resp
 
     def get(self, url, headers=None):
+        """Execute GET request for given URL."""
         logger.debug("GET %s" % url)
         resp = requests.get(
             url,
@@ -146,6 +171,7 @@ class GitHub(object):
         return resp
 
     def post_comment(self, issue_number, body):
+        """Create or update comment in appropriate GitHub pull request comments."""
         user = self.get(urljoin(self.base_url, "/user")).json()
         issue_comments_url = urljoin(self.base_url, "issues/%s/comments" % issue_number)
         comments = self.get(issue_comments_url).json()
@@ -162,13 +188,21 @@ class GitHub(object):
 
 
 class GitHubCommentHandler(logging.Handler):
+
+    """GitHub pull request comment handler.
+
+    Subclasses logging.Handler to add ability to post comments to GitHub.
+    """
+
     def __init__(self, github, pull_number):
+        """Extend logging.Handler and set required properties on self."""
         logging.Handler.__init__(self)
         self.github = github
         self.pull_number = pull_number
         self.log_data = []
 
     def emit(self, record):
+        """Format record and add to log"""
         try:
             msg = self.format(record)
             self.log_data.append(msg)
@@ -176,24 +210,36 @@ class GitHubCommentHandler(logging.Handler):
             self.handleError(record)
 
     def send(self):
+        """Post log to GitHub and flush log."""
         self.github.post_comment(self.pull_number, "\n".join(self.log_data))
         self.log_data = []
 
 
 class Browser(object):
+
+    """Base browser class that sets a reference to a GitHub token."""
+
     product = None
     binary = None
 
     def __init__(self, github_token):
+        """Set GitHub token property on self."""
         self.github_token = github_token
 
 
 class Firefox(Browser):
+
+    """Firefox-specific interface.
+
+    Includes installation, webdriver installation, and wptrunner setup methods.
+    """
+
     product = "firefox"
     binary = "%s/firefox/firefox"
     platform_ini = "%s/firefox/platform.ini"
 
     def install(self):
+        """Install Firefox."""
         call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_firefox.txt"))
         resp = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-53.0a1.en-US.linux-x86_64.tar.bz2")
         untar(resp.raw)
@@ -206,6 +252,7 @@ class Firefox(Browser):
         call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_firefox.txt"))
 
     def _latest_geckodriver_version(self):
+        """Get and return latest version number for geckodriver."""
         # This is used rather than an API call to avoid rate limits
         tags = call("git", "ls-remote", "--tags", "--refs",
                     "https://github.com/mozilla/geckodriver.git")
@@ -221,6 +268,7 @@ class Firefox(Browser):
         return "v%s.%s.%s" % tuple(str(item) for item in latest_release)
 
     def install_webdriver(self):
+        """Install latest Geckodriver."""
         version = self._latest_geckodriver_version()
         logger.debug("Latest geckodriver release %s" % version)
         url = "https://github.com/mozilla/geckodriver/releases/download/%s/geckodriver-%s-linux64.tar.gz" % (version, version)
@@ -237,6 +285,7 @@ class Firefox(Browser):
                 platform_info.get("Build", "SourceStamp"))
 
     def wptrunner_args(self, root):
+        """Return Firefox-specific wpt-runner arguments."""
         return {
             "product": "firefox",
             "binary": self.binary % root,
@@ -247,16 +296,24 @@ class Firefox(Browser):
 
 
 class Chrome(Browser):
+    """Chrome-specific interface.
+
+    Includes installation, webdriver installation, and wptrunner setup methods.
+    """
+
     product = "chrome"
     binary = "/usr/bin/google-chrome"
 
     def install(self):
+        """Install Chrome."""
+
         # Installing the Google Chrome browser requires administrative
         # privileges, so that installation is handled by the invoking script.
 
         call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_chrome.txt"))
 
     def install_webdriver(self):
+        """Install latest Webdriver."""
         latest = get("http://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
         url = "http://chromedriver.storage.googleapis.com/%s/chromedriver_linux64.zip" % latest
         unzip(get(url).raw)
@@ -269,6 +326,7 @@ class Chrome(Browser):
         return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
 
     def wptrunner_args(self, root):
+        """Return Chrome-specific wpt-runner arguments."""
         return {
             "product": "chrome",
             "binary": self.binary,
@@ -278,6 +336,7 @@ class Chrome(Browser):
 
 
 def get(url):
+    """Issue GET request to a given URL and return the response."""
     logger.debug("GET %s" % url)
     resp = requests.get(url, stream=True)
     resp.raise_for_status()
@@ -285,6 +344,10 @@ def get(url):
 
 
 def call(*args):
+    """Log terminal command, invoke it as a subprocess.
+
+    Returns a bytestring of the subprocess output if no error.
+    """
     logger.debug("%s" % " ".join(args))
     try:
         return subprocess.check_output(args)
@@ -296,6 +359,7 @@ def call(*args):
 
 
 def get_git_cmd(repo_path):
+    """Create a function for invoking git commands as a subprocess."""
     def git(cmd, *args):
         full_cmd = ["git", cmd] + list(args)
         try:
@@ -308,6 +372,7 @@ def get_git_cmd(repo_path):
 
 
 def seekable(fileobj):
+    """Attempt to use file.seek on given file, with fallbacks."""
     try:
         fileobj.seek(fileobj.tell())
     except Exception:
@@ -317,6 +382,7 @@ def seekable(fileobj):
 
 
 def untar(fileobj):
+    """Extract tar archive."""
     logger.debug("untar")
     fileobj = seekable(fileobj)
     with tarfile.open(fileobj=fileobj) as tar_data:
@@ -324,6 +390,7 @@ def untar(fileobj):
 
 
 def unzip(fileobj):
+    """Extract zip archive."""
     logger.debug("unzip")
     fileobj = seekable(fileobj)
     with zipfile.ZipFile(fileobj) as zip_data:
@@ -334,6 +401,10 @@ def unzip(fileobj):
 
 
 def setup_github_logging(args):
+    """Set up and return GitHub comment handler.
+
+    :param args: the parsed arguments passed to the script
+    """
     gh_handler = None
     if args.comment_pr:
         github = GitHub(args.user, "web-platform-tests", args.gh_token, args.product)
@@ -352,6 +423,7 @@ def setup_github_logging(args):
 
 
 class pwd(object):
+    """Create context for temporarily changing present working directory."""
     def __init__(self, dir):
         self.dir = dir
         self.old_dir = None
@@ -366,22 +438,26 @@ class pwd(object):
 
 
 def fetch_wpt_master(user):
+    """Fetch the master branch via git."""
     git = get_git_cmd(wpt_root)
     git("fetch", "https://github.com/%s/web-platform-tests.git" % user, "master:master")
 
 
 def get_sha1():
+    """ Get and return sha1 of current git branch HEAD commit."""
     git = get_git_cmd(wpt_root)
     return git("rev-parse", "HEAD").strip()
 
 
 def build_manifest():
+    """Build manifest of all files in web-platform-tests"""
     with pwd(wpt_root):
         # TODO: Call the manifest code directly
         call("python", "manifest")
 
 
 def install_wptrunner():
+    """Clone and install wptrunner."""
     call("git", "clone", "--depth=1", "https://github.com/w3c/wptrunner.git", wptrunner_root)
     git = get_git_cmd(wptrunner_root)
     git("submodule", "update", "--init", "--recursive")
@@ -389,6 +465,7 @@ def install_wptrunner():
 
 
 def get_files_changed():
+    """Get and return files changed since current branch diverged from master."""
     root = os.path.abspath(os.curdir)
     git = get_git_cmd(wpt_root)
     branch_point = git("merge-base", "HEAD", "master").strip()
@@ -402,6 +479,7 @@ def get_files_changed():
 
 
 def get_affected_testfiles(files_changed):
+    """Determine and return list of test files that reference changed files."""
     affected_testfiles = set()
     nontests_changed = set(files_changed)
     manifest_file = os.path.join(wpt_root, "MANIFEST.json")
@@ -457,6 +535,7 @@ def get_affected_testfiles(files_changed):
 
 
 def wptrunner_args(root, files_changed, iterations, browser):
+    """Derive and return arguments for wpt-runner."""
     parser = wptcommandline.create_parser([browser.product])
     args = vars(parser.parse_args([]))
     args.update(browser.wptrunner_args(root))
@@ -474,9 +553,15 @@ def wptrunner_args(root, files_changed, iterations, browser):
 
 
 def setup_log_handler():
+    """Set up LogHandler class as part of deferred module load."""
     global LogHandler
 
     class LogHandler(reader.LogHandler):
+
+        """Handle updating test and subtest status in log.
+
+        Subclasses reader.LogHandler.
+        """
         def __init__(self):
             self.results = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
@@ -488,10 +573,12 @@ def setup_log_handler():
 
 
 def is_inconsistent(results_dict, iterations):
+    """Return whether or not a single test is inconsistent."""
     return len(results_dict) > 1 or sum(results_dict.values()) != iterations
 
 
 def err_string(results_dict, iterations):
+    """Create and return string with errors from test run."""
     rv = []
     total_results = sum(results_dict.values())
     for key, value in sorted(results_dict.items()):
@@ -506,6 +593,7 @@ def err_string(results_dict, iterations):
 
 
 def process_results(log, iterations):
+    """Process test log and return overall results and list of inconsistent tests."""
     inconsistent = []
     handler = LogHandler()
     reader.handle_log(reader.read(log), handler)
@@ -533,6 +621,7 @@ def format_comment_title(product):
 
 
 def markdown_adjust(s):
+    """Escape problematic markdown sequences."""
     s = s.replace('\t', u'\\t')
     s = s.replace('\n', u'\\n')
     s = s.replace('\r', u'\\r')
@@ -541,6 +630,7 @@ def markdown_adjust(s):
 
 
 def table(headings, data, log):
+    """Create and log data to specified logger in tabular format."""
     cols = range(len(headings))
     assert all(len(item) == len(cols) for item in data)
     max_widths = reduce(lambda prev, cur: [(len(cur[i]) + 2)
@@ -557,6 +647,7 @@ def table(headings, data, log):
 
 
 def write_inconsistent(inconsistent, iterations):
+    """Output inconsistent tests to logger.error."""
     logger.error("## Unstable results ##\n")
     strings = [("`%s`" % markdown_adjust(test), ("`%s`" % markdown_adjust(subtest)) if subtest else "", err_string(results, iterations))
                for test, subtest, results in inconsistent]
@@ -564,6 +655,7 @@ def write_inconsistent(inconsistent, iterations):
 
 
 def write_results(results, iterations, comment_pr):
+    """Output all test results to logger.info."""
     logger.info("## All results ##\n")
     for test, test_results in results.iteritems():
         baseurl = "http://w3c-test.org/submissions"
@@ -592,6 +684,7 @@ def write_results(results, iterations, comment_pr):
 
 
 def get_parser():
+    """Create and return script-specific argument parser."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--root",
                         action="store",
@@ -623,6 +716,7 @@ def get_parser():
 
 
 def main():
+    """Perform check_stability functionality and return exit code."""
     global wpt_root
     global wptrunner_root
 

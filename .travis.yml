@@ -45,7 +45,29 @@ matrix:
             - fonts-liberation
       env:
         - SCRIPT=ci_stability.sh
-        - PRODUCT=chrome
+        - PRODUCT=chrome:stable
+    - os: linux
+      sudo: required
+      python: "2.7"
+      addons:
+        apt:
+          packages:
+            - libappindicator1
+            - fonts-liberation
+      env:
+        - SCRIPT=ci_stability.sh
+        - PRODUCT=chrome:beta
+    - os: linux
+      sudo: required
+      python: "2.7"
+      addons:
+        apt:
+          packages:
+            - libappindicator1
+            - fonts-liberation
+      env:
+        - SCRIPT=ci_stability.sh
+        - PRODUCT=chrome:unstable
 script:
   - bash $SCRIPT
 cache:

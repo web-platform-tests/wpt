@@ -21,7 +21,8 @@ hosts_fixup() {
 }
 
 install_chrome() {
-    deb_archive=google-chrome-stable_current_amd64.deb
+    channel=$1
+    deb_archive=google-chrome-${channel}_current_amd64.deb
     wget https://dl.google.com/linux/direct/$deb_archive
 
     # Installation will fail in cases where the package has unmet dependencies.
@@ -39,8 +40,8 @@ test_stability() {
 
 main() {
     hosts_fixup
-    if [ "$PRODUCT" == "chrome" ]; then
-        install_chrome
+    if [ $(echo $PRODUCT | grep '^chrome:') ]; then
+       install_chrome $(echo $PRODUCT | grep --only-matching '\w\+$')
     fi
     test_stability
 }

@@ -32,6 +32,7 @@ promise_test(() => {
       navigator.serviceWorker.onmessage = event => {
         if (event.data && event.data.type == 'notification-data') {
           resolve(event.data);
+          navigator.serviceWorker.onmessage = null;
         }
       };
 

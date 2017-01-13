@@ -1,4 +1,5 @@
 dist: trusty
+sudo: required
 language: python
 addons:
   hosts:

@@ -318,7 +318,7 @@ def unzip(fileobj):
 def setup_github_logging(args):
     gh_handler = None
     if args.comment_pr:
-        github = GitHub("w3c", "web-platform-tests", args.gh_token, args.browser)
+        github = GitHub("jugglinmike", "web-platform-tests", args.gh_token, args.browser)
         try:
             pr_number = int(args.comment_pr)
         except ValueError:
@@ -348,17 +348,17 @@ class pwd(object):
 
 
 def fetch_wpt_master():
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "jugglinmike", "web-platform-tests"))
     git("fetch", "https://github.com/w3c/web-platform-tests.git", "master:master")
 
 
 def get_sha1():
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "jugglinmike", "web-platform-tests"))
     return git("rev-parse", "HEAD").strip()
 
 
 def build_manifest():
-    with pwd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests")):
+    with pwd(os.path.join(os.path.abspath(os.curdir), "jugglinmike", "web-platform-tests")):
         # TODO: Call the manifest code directly
         call("python", "manifest")
 
@@ -372,7 +372,7 @@ def install_wptrunner():
 
 def get_files_changed():
     root = os.path.abspath(os.curdir)
-    git = get_git_cmd("%s/w3c/web-platform-tests" % root)
+    git = get_git_cmd("%s/jugglinmike/web-platform-tests" % root)
     branch_point = git("merge-base", "HEAD", "master").strip()
     logger.debug("Branch point from master: %s" % branch_point)
     logger.debug(git("log", "--oneline", "%s.." % branch_point))
@@ -380,7 +380,7 @@ def get_files_changed():
     if not files:
         return []
     assert files[-1] == "\0"
-    return ["%s/w3c/web-platform-tests/%s" % (root, item)
+    return ["%s/jugglinmike/web-platform-tests/%s" % (root, item)
             for item in files[:-1].split("\0")]
 
 
@@ -388,7 +388,7 @@ def get_affected_testfiles(files_changed):
     affected_testfiles = []
     all_tests = set()
     nontests_changed = set(files_changed)
-    repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), "jugglinmike", "web-platform-tests"))
     manifest_file = os.path.join(repo_root, "MANIFEST.json")
     for test, _ in manifest.load(repo_root, manifest_file):
         test_full_path = os.path.join(repo_root, test)
@@ -433,7 +433,7 @@ def get_affected_testfiles(files_changed):
 def wptrunner_args(root, files_changed, iterations, browser):
     parser = wptcommandline.create_parser([browser.product])
     args = vars(parser.parse_args([]))
-    wpt_root = os.path.join(root, "w3c", "web-platform-tests")
+    wpt_root = os.path.join(root, "jugglinmike", "web-platform-tests")
     args.update(browser.wptrunner_args(root))
     args.update({
         "tests_root": wpt_root,

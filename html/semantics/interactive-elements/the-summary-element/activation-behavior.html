@@ -70,13 +70,13 @@ testSummary(
 );
 
 testSummary(
-  "details-not-being-rendered", false, false,
-  "Should stay closed if the details is not being rendered (and thus the summary is not)"
+  "details-not-being-rendered", false, true,
+  "Should open a closed details even if the details is not being rendered"
 );
 
 testSummary(
-  "summary-not-being-rendered", false, false,
-  "Should stay closed if the summary is not being rendered"
+  "summary-not-being-rendered", false, true,
+  "Should open a closed details even if the summary is not being rendered"
 );
 
 testSummary(

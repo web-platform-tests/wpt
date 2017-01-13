@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const worker = 'resources/shownotification-sw.js';
+
+function reset() {
+  return navigator.serviceWorker.getRegistrations().then(registrations => {
+    return Promise.all(registrations.map(r => r.unregister()));
+  });
+}
+
+function getNewestWorker(reg) {
+  return reg.installing || reg.waiting || reg.active;
+}
+
+function registerSwAndGetWorker() {
+  return reset()
+    .then(() => navigator.serviceWorker.register(worker))
+    .then(getNewestWorker);
+}
+
+promise_test(() => {
+  return Notification.requestPermission().then(permission => {
+    if (permission != "granted") {
+      throw Error('You must allow notifications for this origin before running this test.');
+    }
+    return registerSwAndGetWorker();
+  }).then(worker => {
+    return new Promise(resolve => {
+      navigator.serviceWorker.onmessage = event => {
+        if (event.data && event.data.type == 'notification-data') {
+          resolve(event.data);
+        }
+      };
+
+      worker.postMessage('test-shownotification');
+    })
+  }).then(result => {
+    assert_true(result.notificationReturned, `Notification appeared in getNotifications`);
+    assert_greater_than(result.resolveDuration, 1900, `showNotification appeared to wait for icon load`);
+  });
+}, 'showNotification resolves after icon fetch');
+
+</script>
+</body>

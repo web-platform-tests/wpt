@@ -237,10 +237,9 @@ class Chrome(Browser):
     product = "chrome"
 
     def install(self):
-        latest = get("https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2FLAST_CHANGE?alt=media").text.strip()
-        url = "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%%2F%s%%2Fchrome-linux.zip?alt=media" % latest
-        unzip(get(url).raw)
-        logger.debug(call("ls", "-lhrt", "chrome-linux"))
+        # Installing the Google Chrome browser requires administrative
+        # privileges, so that installation is handled by the invoking script.
+
         call("pip", "install", "-r", os.path.join("w3c", "wptrunner", "requirements_chrome.txt"))
 
     def install_webdriver(self):
@@ -253,7 +252,13 @@ class Chrome(Browser):
     def wptrunner_args(self, root):
         return {
             "product": "chrome",
-            "binary": "%s/chrome-linux/chrome" % root,
+            "binary": "/usr/bin/google-chrome",
+            # Chrome's "sandbox" security feature must be disabled in order to
+            # run the browser in OpenVZ environments such as the one provided
+            # by TravisCI.
+            #
+            # Reference: https://github.com/travis-ci/travis-ci/issues/938
+            "binary_arg": "--no-sandbox",
             "webdriver_binary": "%s/chromedriver" % root,
             "test_types": ["testharness", "reftest"]
         }

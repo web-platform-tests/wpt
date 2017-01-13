@@ -12,6 +12,14 @@
   {
     "input": "\uFFFD=x&\uFFFC&\uFFFD=a",
     "output": [["\uFFFC", ""], ["\uFFFD", "x"], ["\uFFFD", "a"]]
+  },
+  {
+    "input": "ﬃ&🌈", // 🌈 > code point, but < code unit because two code units
+    "output": [["🌈", ""], ["ﬃ", ""]]
+  },
+  {
+    "input": "é&e\uFFFD&e\u0301",
+    "output": [["e\u0301", ""], ["e\uFFFD", ""], ["é", ""]]
   }
 ].forEach((val) => {
   test(() => {
@@ -23,5 +31,16 @@
       i++
     }
   }, "Parse and sort: " + val.input)
+
+  test(() => {
+    let url = new URL("?" + val.input, "https://example/")
+    url.searchParams.sort()
+    let params = new URLSearchParams(url.search),
+        i = 0
+    for(let param of params) {
+      assert_array_equals(param, val.output[i])
+      i++
+    }
+  }, "URL parse and sort: " + val.input)
 })
 </script>

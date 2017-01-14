@@ -367,7 +367,14 @@ def install_wptrunner():
     call("git", "clone", "--depth=1", "https://github.com/w3c/wptrunner.git", "w3c/wptrunner")
     git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "wptrunner"))
     git("submodule", "update", "--init", "--recursive")
-    call("pip", "install", os.path.join("w3c", "wptrunner"))
+    try:
+        call("sed", "-i", "/include_package_data=True/d", os.path.join("w3c", "wptrunner", "setup.py"))
+    except subprocess.CalledProcessError as e:
+        logger.error(e.output)
+    try:
+        call("pip", "install", os.path.join("w3c", "wptrunner"))
+    except subprocess.CalledProcessError as e:
+        logger.error(e.output)
 
 
 def get_files_changed():

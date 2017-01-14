@@ -53,6 +53,8 @@ include ruby/reftest.list
 include selectors4/reftest.list
 
 # Shapes Level 1
+
+# on Win7 debug.
 include shapes1/reftest.list
 
 # Text Level 3

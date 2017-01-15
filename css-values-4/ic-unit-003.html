@@ -9,31 +9,31 @@
 <meta name="assert" content="In vertical mixed, the ic unit is equal to the used vertical advance measure of the 水 (CJK water ideograph, U+6C34) glyph found in the font used to render it.">
 <style>
 span {
-	background: green;
-	color: green;
-	left: 0; right: 0;
-	position: absolute;
+    background: green;
+    color: green;
+    left: 0; right: 0;
+    position: absolute;
 }
 div {
-	background: red;
-	color: red;
-	position: relative;
-	height: 5ic;
-	width: 10ic;
-	writing-mode: vertical-rl;
-	text-orientation: mixed;
+    background: red;
+    color: red;
+    position: relative;
+    height: 5ic;
+    width: 10ic;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
 }
 
 div + div {
-	height: auto;
+    height: auto;
 }
 
 div + div span {
-	height: 5ic;
+    height: 5ic;
 }
 </style>
 <body>
-  <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
-  <div><span>水水水水水</span></div>
-  <div><span></span>水水水水水</div>
+    <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
+    <div><span>水水水水水</span></div>
+    <div><span></span>水水水水水</div>
 </body>

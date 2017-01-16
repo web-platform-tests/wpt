@@ -63,7 +63,7 @@ def fetch_submodules():
 def update_dist():
     if not os.path.exists(built_dir) or not vcs.is_git_root(built_dir):
         git = vcs.git
-        git("clone", remote_built, built_dir)
+        git("clone", "--depth", "1", remote_built, built_dir)
     else:
         git = vcs.bind_to_repo(vcs.git, built_dir)
         git("fetch")

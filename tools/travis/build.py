@@ -95,6 +95,16 @@ def setup_virtualenv():
 def update_to_changeset(changeset):
     git = vcs.bind_to_repo(vcs.git, source_dir)
     git("checkout", changeset)
+    apply_build_system_fixes()
+
+def apply_build_system_fixes():
+    fixes = [
+        "c017547f65e07bdd889736524d47824d032ba2e8",
+        "cb4a737a88aa7e2f4e54383c57ffa2dfae093dcf"
+    ]
+    git = vcs.bind_to_repo(vcs.git, source_dir)
+    for fix in fixes:
+        git("cherry-pick", "--keep-redundant-commits", fix)
 
 def build_tests():
     subprocess.check_call(["python", os.path.join(source_dir, "tools", "build.py")],

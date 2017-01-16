@@ -25,6 +25,13 @@ test(() => {
   assert_array_equals(n.s1.assignedNodes(), []);
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.f1]);
 }, 'Slots fallback: Basic.');
+
+test(() => {
+  let n = createTestTree(test1);
+
+  assert_array_equals(n.s1.assignedElements(), []);
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.f1]);
+}, 'Slots fallback: Basic, elements only.');
 </script>
 
 <div id="test2">
@@ -52,6 +59,16 @@ test(() => {
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.f1]);
   assert_array_equals(n.s2.assignedNodes({ flatten: true }), [n.f1]);
 }, 'Slots fallback: Slots in Slots.');
+
+test(() => {
+  let n = createTestTree(test2);
+
+  assert_array_equals(n.s1.assignedElements(), []);
+  assert_array_equals(n.s2.assignedElements(), []);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.f1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.f1]);
+}, 'Slots fallback: Slots in Slots, elements only.');
 </script>
 
 <div id="test3">
@@ -81,6 +98,16 @@ test(() => {
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.c1]);
   assert_array_equals(n.s2.assignedNodes({ flatten: true }), [n.f1]);
 }, 'Slots fallback: Fallback contents should not be used if a node is assigned.');
+
+test(() => {
+  let n = createTestTree(test3);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_array_equals(n.s2.assignedElements(), []);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.f1]);
+}, 'Slots fallback: Fallback contents should not be used if a node is assigned, elements only.');
 </script>
 
 <div id="test4">
@@ -109,7 +136,17 @@ test(() => {
 
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.c1]);
   assert_array_equals(n.s2.assignedNodes({ flatten: true }), [n.c1]);
-}, 'Slots fallback: Slots in Slots: Assinged nodes should be used as fallback contents of another slot');
+}, 'Slots fallback: Slots in Slots: Assigned nodes should be used as fallback contents of another slot');
+
+test(() => {
+  let n = createTestTree(test4);
+
+  assert_array_equals(n.s1.assignedElements(), []);
+  assert_array_equals(n.s2.assignedElements(), [n.c1]);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c1]);
+}, 'Slots fallback: Slots in Slots: Assigned nodes should be used as fallback contents of another slot');
 </script>
 
 <div id="test5">
@@ -154,6 +191,20 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test5);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_array_equals(n.s2.assignedElements(), []);
+  assert_array_equals(n.s3.assignedElements(), [n.s2]);
+  assert_array_equals(n.s4.assignedElements(), []);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c1, n.f2]);
+  assert_array_equals(n.s3.assignedElements({ flatten: true }), [n.c1, n.f2]);
+  assert_array_equals(n.s4.assignedElements({ flatten: true }), [n.c1, n.f2, n.f4]);
+}, 'Slots fallback: Complex case, elements only.');
+
+test(() => {
+  let n = createTestTree(test5);
   removeWhiteSpaceOnlyTextNodes(n.test5);
 
   let d1 = document.createElement('div');
@@ -167,6 +218,20 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test5);
+
+  let d1 = document.createElement('div');
+  let t1 = document.createTextNode('test');
+  n.s2.appendChild(d1);
+  n.s2.appendChild(t1);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c1, n.f2, d1]);
+  assert_array_equals(n.s3.assignedElements({ flatten: true }), [n.c1, n.f2, d1]);
+  assert_array_equals(n.s4.assignedElements({ flatten: true }), [n.c1, n.f2, d1, n.f4]);
+}, 'Slots fallback: Mutation. Append fallback contents, elements only.');
+
+test(() => {
+  let n = createTestTree(test5);
   removeWhiteSpaceOnlyTextNodes(n.test5);
 
   n.f2.remove();
@@ -176,6 +241,17 @@ test(() => {
   assert_array_equals(n.s3.assignedNodes({ flatten: true }), [n.c1]);
   assert_array_equals(n.s4.assignedNodes({ flatten: true }), [n.c1, n.f4]);
 }, 'Slots fallback: Mutation. Remove fallback contents.');
+
+test(() => {
+  let n = createTestTree(test5);
+
+  n.f2.remove();
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s3.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s4.assignedElements({ flatten: true }), [n.c1, n.f4]);
+}, 'Slots fallback: Mutation. Remove fallback contents, elements only.');
 
 test(() => {
   let n = createTestTree(test5);
@@ -193,6 +269,19 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test5);
+
+  let d2 = document.createElement('div');
+  d2.setAttribute('slot', 'slot2');
+  n.host1.appendChild(d2);
+
+  assert_array_equals(n.s2.assignedElements(), [d2]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [d2]);
+  assert_array_equals(n.s3.assignedElements({ flatten: true }), [d2]);
+  assert_array_equals(n.s4.assignedElements({ flatten: true }), [d2, n.f4]);
+}, 'Slots fallback: Mutation. Assign a node to a slot so that fallback contens are no longer used, elements only.');
+
+test(() => {
+  let n = createTestTree(test5);
   removeWhiteSpaceOnlyTextNodes(n.test5);
 
   n.c1.remove();
@@ -207,6 +296,20 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test5);
+
+  n.c1.remove();
+
+  assert_array_equals(n.s1.assignedElements(), []);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.f1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.f1, n.f2]);
+  assert_array_equals(n.s3.assignedElements({ flatten: true }), [n.f1, n.f2]);
+  assert_array_equals(n.s4.assignedElements({ flatten: true }), [n.f1, n.f2, n.f4]);
+}, 'Slots fallback: Mutation. Remove an assigned node from a slot so that fallback contens will be used. Elements only.');
+
+
+test(() => {
+  let n = createTestTree(test5);
   removeWhiteSpaceOnlyTextNodes(n.test5);
 
   n.s1.remove();
@@ -218,4 +321,17 @@ test(() => {
   assert_array_equals(n.s3.assignedNodes({ flatten: true }), [n.f2]);
   assert_array_equals(n.s4.assignedNodes({ flatten: true }), [n.f2, n.f4]);
 }, 'Slots fallback: Mutation.  Remove a slot which is a fallback content of another slot.');
+
+test(() => {
+  let n = createTestTree(test5);
+
+  n.s1.remove();
+
+  assert_array_equals(n.s1.assignedElements(), []);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.f1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.f2]);
+  assert_array_equals(n.s3.assignedElements({ flatten: true }), [n.f2]);
+  assert_array_equals(n.s4.assignedElements({ flatten: true }), [n.f2, n.f4]);
+}, 'Slots fallback: Mutation.  Remove a slot which is a fallback content of another slot, elements only.');
 </script>

@@ -22,6 +22,12 @@ test(() => {
   assert_equals(n.c1.assignedSlot, n.s1);
   assert_array_equals(n.s1.assignedNodes(), [n.c1]);
 }, 'Slots: Basic.');
+
+test(() => {
+  let n = createTestTree(test_basic);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+}, 'Slots: Basic, elements only.');
 </script>
 
 <div id="test_basic_closed">
@@ -41,6 +47,12 @@ test(() => {
   assert_equals(n.c1.assignedSlot, null);
   assert_array_equals(n.s1.assignedNodes(), [n.c1]);
 }, 'Slots: Slots in closed.');
+
+test(() => {
+  let n = createTestTree(test_basic_closed);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+}, 'Slots: Slots in closed, elements only.');
 </script>
 
 <div id="test_slot_not_in_shadow">
@@ -54,6 +66,12 @@ test(() => {
 
   assert_array_equals(n.s1.assignedNodes(), []);
 }, 'Slots: Slots not in a shadow tree.');
+
+test(() => {
+  let n = createTestTree(test_slot_not_in_shadow);
+
+  assert_array_equals(n.s1.assignedElements(), []);
+}, 'Slots: Slots not in a shadow tree, elements only.');
 </script>
 
 <div id="test_slot_not_in_shadow_2">
@@ -86,7 +104,19 @@ test(() => {
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.c1]);
   assert_array_equals(n.s2.assignedNodes({ flatten: true }), [n.c2, n.c3_1, n.c3_2]);
   assert_array_equals(n.s3.assignedNodes({ flatten: true }), [n.c3_1, n.c3_2]);
-}, 'Slots: Distributed nooes for Slots not in a shadow tree.');
+}, 'Slots: Distributed nodes for Slots not in a shadow tree.');
+
+test(() => {
+  let n = createTestTree(test_slot_not_in_shadow_2);
+
+  assert_array_equals(n.s1.assignedElements(), []);
+  assert_array_equals(n.s2.assignedElements(), []);
+  assert_array_equals(n.s3.assignedElements(), []);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c2, n.c3_1, n.c3_2]);
+  assert_array_equals(n.s3.assignedElements({ flatten: true }), [n.c3_1, n.c3_2]);
+}, 'Slots: Distributed elements for Slots not in a shadow tree.');
 </script>
 
 <div id="test_slot_name_matching">
@@ -138,6 +168,12 @@ test(() => {
 
   assert_array_equals(n.s1.assignedNodes(), [n.c1, n.c2]);
 }, 'Slots: No direct host child.');
+
+test(() => {
+  let n = createTestTree(test_no_direct_host_child);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1, n.c2]);
+}, 'Slots: No direct host child, elements only.');
 </script>
 
 <div id="test_default_slot">
@@ -214,6 +250,16 @@ test(() => {
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.c1]);
   assert_array_equals(n.s2.assignedNodes({ flatten: true }), [n.c1]);
 }, 'Slots: Slot is assigned to another slot');
+
+test(() => {
+  let n = createTestTree(test_slot_is_assigned_to_slot);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_array_equals(n.s2.assignedElements(), [n.s1]);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c1]);
+}, 'Slots: Slot is assigned to another slot, elements only');
 </script>
 
 <div id="test_open_closed">
@@ -245,6 +291,16 @@ test(() => {
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.c1]);
   assert_array_equals(n.s2.assignedNodes({ flatten: true }), [n.c1]);
 }, 'Slots: Open > Closed.');
+
+test(() => {
+  let n = createTestTree(test_open_closed);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_array_equals(n.s2.assignedElements(), [n.s1]);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c1]);
+}, 'Slots: Open > Closed, elements only.');
 </script>
 
 <div id="test_closed_closed">
@@ -277,6 +333,16 @@ test(() => {
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.c1]);
   assert_array_equals(n.s2.assignedNodes({ flatten: true }), [n.c1]);
 }, 'Slots: Closed > Closed.');
+
+test(() => {
+  let n = createTestTree(test_closed_closed);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_array_equals(n.s2.assignedElements(), [n.s1]);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c1]);
+}, 'Slots: Closed > Closed, elements only.');
 </script>
 
 <div id="test_closed_open">
@@ -308,6 +374,16 @@ test(() => {
   assert_array_equals(n.s1.assignedNodes({ flatten: true }), [n.c1]);
   assert_array_equals(n.s2.assignedNodes({ flatten: true }), [n.c1]);
 }, 'Slots: Closed > Open.');
+
+test(() => {
+  let n = createTestTree(test_closed_open);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_array_equals(n.s2.assignedElements(), [n.s1]);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c1]);
+}, 'Slots: Closed > Open, elements only.');
 </script>
 
 <div id="test_complex">
@@ -378,6 +454,28 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test_complex);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+  assert_array_equals(n.s2.assignedElements(), [n.c2]);
+  assert_array_equals(n.s3.assignedElements(), [n.c3]);
+  assert_array_equals(n.s4.assignedElements(), []);
+  assert_array_equals(n.s5.assignedElements(), [n.s1, n.c5]);
+  assert_array_equals(n.s6.assignedElements(), [n.s2, n.c6]);
+  assert_array_equals(n.s7.assignedElements(), [n.s3, n.c7]);
+  assert_array_equals(n.s8.assignedElements(), []);
+
+  assert_array_equals(n.s1.assignedElements({ flatten: true }), [n.c1]);
+  assert_array_equals(n.s2.assignedElements({ flatten: true }), [n.c2]);
+  assert_array_equals(n.s3.assignedElements({ flatten: true }), [n.c3]);
+  assert_array_equals(n.s4.assignedElements({ flatten: true }), []);
+  assert_array_equals(n.s5.assignedElements({ flatten: true }), [n.c1, n.c5]);
+  assert_array_equals(n.s6.assignedElements({ flatten: true }), [n.c2, n.c6]);
+  assert_array_equals(n.s7.assignedElements({ flatten: true }), [n.c3, n.c7]);
+  assert_array_equals(n.s8.assignedElements({ flatten: true }), []);
+}, 'Slots: Complex case: Basic line, elements only.');
+
+test(() => {
+  let n = createTestTree(test_complex);
   removeWhiteSpaceOnlyTextNodes(n.test_complex);
 
   let d1 = document.createElement('div');
@@ -392,6 +490,20 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test_complex);
+
+  let d1 = document.createElement('div');
+  let t1 = document.createTextNode('test');
+  d1.setAttribute('slot', 'slot1');
+  n.host1.appendChild(d1);
+  n.host1.appendChild(t1);
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1, d1]);
+
+  assert_array_equals(n.s5.assignedElements({ flatten: true }), [n.c1, d1, n.c5]);
+}, 'Slots: Mutation: appendChild, elements only.');
+
+test(() => {
+  let n = createTestTree(test_complex);
   removeWhiteSpaceOnlyTextNodes(n.test_complex);
 
   n.c1.setAttribute('slot', 'slot-none');
@@ -401,6 +513,16 @@ test(() => {
 
   assert_array_equals(n.s5.assignedNodes({ flatten: true }), [n.c5]);
 }, 'Slots: Mutation: Change slot= attribute 1.');
+
+test(() => {
+  let n = createTestTree(test_complex);
+
+  n.c1.setAttribute('slot', 'slot-none');
+
+  assert_array_equals(n.s1.assignedElements(), []);
+
+  assert_array_equals(n.s5.assignedElements({ flatten: true }), [n.c5]);
+}, 'Slots: Mutation: Change slot= attribute 1, elements only.');
 
 test(() => {
   let n = createTestTree(test_complex);
@@ -418,6 +540,18 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test_complex);
+
+  n.c1.setAttribute('slot', 'slot2');
+
+  assert_array_equals(n.s1.assignedElements(), []);
+  assert_array_equals(n.s2.assignedElements(), [n.c1, n.c2]);
+
+  assert_array_equals(n.s5.assignedElements({ flatten: true }), [n.c5]);
+  assert_array_equals(n.s6.assignedElements({ flatten: true }), [n.c1, n.c2, n.c6]);
+}, 'Slots: Mutation: Change slot= attribute 2, elements only.');
+
+test(() => {
+  let n = createTestTree(test_complex);
   removeWhiteSpaceOnlyTextNodes(n.test_complex);
 
   n.c4.setAttribute('slot', 'slot1');
@@ -427,6 +561,16 @@ test(() => {
 
   assert_array_equals(n.s5.assignedNodes({ flatten: true }), [n.c1, n.c4, n.c5]);
 }, 'Slots: Mutation: Change slot= attribute 3.');
+
+test(() => {
+  let n = createTestTree(test_complex);
+
+  n.c4.setAttribute('slot', 'slot1');
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1, n.c4]);
+
+  assert_array_equals(n.s5.assignedElements({ flatten: true }), [n.c1, n.c4, n.c5]);
+}, 'Slots: Mutation: Change slot= attribute 3, elements only.');
 
 test(() => {
   let n = createTestTree(test_complex);
@@ -442,6 +586,16 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test_complex);
+
+  n.c1.remove();
+
+  assert_array_equals(n.s1.assignedElements(), []);
+
+  assert_array_equals(n.s5.assignedElements({ flatten: true }), [n.c5]);
+}, 'Slots: Mutation: Remove a child, elements only.');
+
+test(() => {
+  let n = createTestTree(test_complex);
   removeWhiteSpaceOnlyTextNodes(n.test_complex);
 
   let slot = document.createElement('slot');
@@ -450,6 +604,16 @@ test(() => {
 
   assert_array_equals(slot.assignedNodes(), []);
 }, 'Slots: Mutation: Add a slot: after.');
+
+test(() => {
+  let n = createTestTree(test_complex);
+
+  let slot = document.createElement('slot');
+  slot.setAttribute('name', 'slot1');
+  n.host2.appendChild(slot);
+
+  assert_array_equals(slot.assignedElements(), []);
+}, 'Slots: Mutation: Add a slot: after, elements only.');
 
 test(() => {
   let n = createTestTree(test_complex);
@@ -468,6 +632,19 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test_complex);
+
+  let slot = document.createElement('slot');
+  slot.setAttribute('name', 'slot1');
+  n.host2.insertBefore(slot, n.s1);
+
+  assert_array_equals(slot.assignedElements(), [n.c1]);
+
+  assert_array_equals(n.s7.assignedElements(), [slot, n.s3, n.c7]);
+  assert_array_equals(n.s7.assignedElements({ flatten: true }), [n.c1, n.c3, n.c7]);
+}, 'Slots: Mutation: Add a slot: before, elements only.');
+
+test(() => {
+  let n = createTestTree(test_complex);
   removeWhiteSpaceOnlyTextNodes(n.test_complex);
 
   n.s1.remove();
@@ -478,6 +655,17 @@ test(() => {
   assert_array_equals(n.s5.assignedNodes(), [n.c5]);
   assert_array_equals(n.s5.assignedNodes({ flatten: true }), [n.c5]);
 }, 'Slots: Mutation: Remove a slot.');
+
+test(() => {
+  let n = createTestTree(test_complex);
+
+  n.s1.remove();
+
+  assert_array_equals(n.s1.assignedElements(), []);
+
+  assert_array_equals(n.s5.assignedElements(), [n.c5]);
+  assert_array_equals(n.s5.assignedElements({ flatten: true }), [n.c5]);
+}, 'Slots: Mutation: Remove a slot, elements only.');
 
 test(() => {
   let n = createTestTree(test_complex);
@@ -495,6 +683,17 @@ test(() => {
 
 test(() => {
   let n = createTestTree(test_complex);
+
+  n.s1.setAttribute('name', 'slot2');
+
+  assert_array_equals(n.s1.assignedElements(), [n.c2]);
+
+  assert_array_equals(n.s5.assignedElements(), [n.s1, n.c5]);
+  assert_array_equals(n.s5.assignedElements({ flatten: true }), [n.c2, n.c5]);
+}, 'Slots: Mutation: Change slot name= attribute, elements only.');
+
+test(() => {
+  let n = createTestTree(test_complex);
   removeWhiteSpaceOnlyTextNodes(n.test_complex);
 
   n.s1.setAttribute('slot', 'slot6');
@@ -505,4 +704,16 @@ test(() => {
   assert_array_equals(n.s6.assignedNodes(), [n.s1, n.s2, n.c6]);
   assert_array_equals(n.s6.assignedNodes({ flatten: true }), [n.c1, n.c2, n.c6]);
 }, 'Slots: Mutation: Change slot slot= attribute.');
+
+test(() => {
+  let n = createTestTree(test_complex);
+
+  n.s1.setAttribute('slot', 'slot6');
+
+  assert_array_equals(n.s1.assignedElements(), [n.c1]);
+
+  assert_array_equals(n.s5.assignedElements(), [n.c5]);
+  assert_array_equals(n.s6.assignedElements(), [n.s1, n.s2, n.c6]);
+  assert_array_equals(n.s6.assignedElements({ flatten: true }), [n.c1, n.c2, n.c6]);
+}, 'Slots: Mutation: Change slot slot= attribute, elements only.');
 </script>

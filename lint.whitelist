@@ -62,6 +62,8 @@ OPEN-NO-MODE: *
 PARSE-FAILED: *
 PRINT STATEMENT: *
 W3C-TEST.ORG: *
+CONTENT-VISUAL: *
+CONTENT-MANUAL: *
 
 
 ## Whitespace rules that we can't enforce yet

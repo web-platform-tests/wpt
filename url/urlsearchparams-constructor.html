@@ -135,7 +135,17 @@ test(function() {
     assert_equals(params.get('a\uD83D\uDCA9b'), 'c');
 }, 'Parse %f0%9f%92%a9');  // Unicode Character 'PILE OF POO' (U+1F4A9)
 
-;[
+test(function() {
+    var params = new URLSearchParams([]);
+    assert_true(params != null, 'constructor returned non-null value.');
+    params = new URLSearchParams([['a', 'b'], ['c', 'd']]);
+    assert_equals(params.get("a"), "b");
+    assert_equals(params.get("c"), "d");
+    assert_throws(new TypeError(), function() { new URLSearchParams([[1]]); });
+    assert_throws(new TypeError(), function() { new URLSearchParams([[1,2,3]]); });
+}, "Constructor with sequence of sequences of strings");
+
+[
   { "input": {"+": "%C2"}, "output": [[" ", "\uFFFD"]], "name": "object with +" },
   { "input": {c: "x", a: "?"}, "output": [["c", "x"], ["a", "?"]], "name": "object with two keys" },
   { "input": [["c", "x"], ["a", "?"]], "output": [["c", "x"], ["a", "?"]], "name": "array with two keys" }

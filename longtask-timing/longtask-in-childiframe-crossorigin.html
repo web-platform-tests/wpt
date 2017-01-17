@@ -20,7 +20,7 @@
             assert_equals(longtask.name, "cross-origin-descendant");
             assert_greater_than(longtask.duration, 50);
             assert_equals(longtask.startTime, Math.floor(longtask.startTime),
-                "startTime expected to have 1 miillisecond granularity");
+                "startTime expected to have 1 millisecond granularity");
 
             // Assert the TaskAttributionTiming entry in attribution.
             assert_equals(longtask.attribution.length, 1,
@@ -32,7 +32,7 @@
             assert_equals(attribution.startTime, 0);
             assert_equals(attribution.frameId, "child-iframe-id");
             assert_equals(attribution.frameName, "child-iframe-name");
-            assert_equals(attribution.frameSrc, "https://wicg.github.io/longtasks/randomslow.html");
+            assert_equals(attribution.frameSrc, "http://www1.web-platform.test:8000/longtask-timing/resources/subframe-with-longtask.html");
             observer.disconnect();
             t.done();
         })
@@ -43,6 +43,6 @@
 </script>
 
 <!--TODO(panicker): simulate cross-origin instead -->
-<iframe src="https://wicg.github.io/longtasks/randomslow.html" id="child-iframe-id" name="child-iframe-name"></iframe>
+<iframe src="http://www1.web-platform.test:8000/longtask-timing/resources/subframe-with-longtask.html" id="child-iframe-id" name="child-iframe-name"></iframe>
 
 </body>

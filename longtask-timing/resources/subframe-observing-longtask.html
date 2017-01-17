@@ -8,7 +8,7 @@
     var observer = new PerformanceObserver(function(entryList) {
       for (i = 0; i < entryList.getEntries().length; i++) {
       	var longtask = entryList.getEntries()[i];
-      	 // ignore long task generated within here, as part of making this iframe.
+      	 // Ignore long task generated within here, as part of making this iframe.
       	if (longtask.name == "same-origin-self")
       	  return;
       	// TODO(panicker): include frameId etc.

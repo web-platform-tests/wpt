@@ -156,10 +156,6 @@ class GitHub(object):
         else:
             self.post(issue_comments_url, data)
 
-    def releases(self):
-        url = urljoin(self.base_url, "releases/latest")
-        return self.get(url)
-
 
 class GitHubCommentHandler(logging.Handler):
     def __init__(self, github, pull_number):

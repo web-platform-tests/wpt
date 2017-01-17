@@ -318,6 +318,7 @@ def unzip(fileobj):
 def setup_github_logging(args):
     gh_handler = None
     if args.comment_pr:
+        # TODO do not explicitly reference W3C repo
         github = GitHub("w3c", "web-platform-tests", args.gh_token, args.browser)
         try:
             pr_number = int(args.comment_pr)
@@ -346,19 +347,16 @@ class pwd(object):
         os.chdir(self.old_dir)
         self.old_dir = None
 
+def fetch_wpt_master(local_repo, remote_repo):
+    git = get_git_cmd(local_repo)
+    git("fetch", remote_repo, "master:ci_stability/master")
 
-def fetch_wpt_master():
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
-    git("fetch", "https://github.com/w3c/web-platform-tests.git", "master:master")
-
-
-def get_sha1():
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+def get_sha1(repo_path):
+    git = get_git_cmd(repo_path)
     return git("rev-parse", "HEAD").strip()
 
-
-def build_manifest():
-    with pwd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests")):
+def build_manifest(repo_path):
+    with pwd(repo_path):
         # TODO: Call the manifest code directly
         call("python", "manifest")
 
@@ -370,25 +368,23 @@ def install_wptrunner():
     call("pip", "install", os.path.join("w3c", "wptrunner"))
 
 
-def get_files_changed():
-    root = os.path.abspath(os.curdir)
-    git = get_git_cmd("%s/w3c/web-platform-tests" % root)
-    branch_point = git("merge-base", "HEAD", "master").strip()
+def get_files_changed(repo_path):
+    git = get_git_cmd(repo_path)
+    branch_point = git("merge-base", "HEAD", "ci_stability/master").strip()
     logger.debug("Branch point from master: %s" % branch_point)
     logger.debug(git("log", "--oneline", "%s.." % branch_point))
     files = git("diff", "--name-only", "-z", "%s.." % branch_point)
     if not files:
         return []
     assert files[-1] == "\0"
-    return ["%s/w3c/web-platform-tests/%s" % (root, item)
+    return [os.path.join(repo_path, item)
             for item in files[:-1].split("\0")]
 
 
-def get_affected_testfiles(files_changed):
+def get_affected_testfiles(files_changed, repo_root):
     affected_testfiles = []
     all_tests = set()
     nontests_changed = set(files_changed)
-    repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
     manifest_file = os.path.join(repo_root, "MANIFEST.json")
     for test, _ in manifest.load(repo_root, manifest_file):
         test_full_path = os.path.join(repo_root, test)
@@ -430,16 +426,15 @@ def get_affected_testfiles(files_changed):
     return affected_testfiles
 
 
-def wptrunner_args(root, files_changed, iterations, browser):
+def wptrunner_args(root, wpt_root, files_changed, iterations, browser):
     parser = wptcommandline.create_parser([browser.product])
     args = vars(parser.parse_args([]))
-    wpt_root = os.path.join(root, "w3c", "web-platform-tests")
     args.update(browser.wptrunner_args(root))
     args.update({
         "tests_root": wpt_root,
         "metadata_root": wpt_root,
         "repeat": iterations,
-        "config": "%s/w3c/wptrunner/wptrunner.default.ini" % root,
+        "config": os.path.join(root, "w3c", "wptrunner", "wptrunner.default.ini"),
         "test_list": files_changed,
         "restart_on_unexpected": False,
         "pause_after_test": False
@@ -557,6 +552,14 @@ def get_parser():
                         action="store",
                         default=os.path.join(os.path.expanduser("~"), "build"),
                         help="Root path")
+    parser.add_argument("--repo-path",
+                        action="store",
+                        default=os.environ.get("TRAVIS_BUILD_DIR"),
+                        help="web-platform-test repository dir")
+    parser.add_argument("--remote-repo",
+                        action="store",
+                        default="https://github.com/w3c/web-platform-tests.git",
+                        help="web-platform-test repository dir")
     parser.add_argument("--iterations",
                         action="store",
                         default=10,
@@ -585,6 +588,17 @@ def main():
         logger.critical("Root directory %s does not exist" % args.root)
         return 1
 
+    # If the repo dir was not explicitly set (via Travis or the --repo-path) then see
+    # if the current directory is a Git repository or default to the old behaviour
+    if None == args.repo_path:
+        args.repo_path = os.path.curdir if os.path.exists(os.path.join(os.path.curdir, ".git")) else os.path.join(root, "w3c", "web-platform-tests")
+
+    if not os.path.exists(args.repo_path):
+        logger.critical("Repository directory %s does not exist" % args.repo_path)
+        return 1
+
+    args.repo_path = os.path.abspath(args.repo_path)
+
     os.chdir(args.root)
 
     if args.gh_token:
@@ -602,26 +616,26 @@ def main():
             logger.critical("Unrecognised browser %s" % args.browser)
             return 1
 
-        fetch_wpt_master()
+        fetch_wpt_master(args.repo_path, args.remote_repo)
 
-        head_sha1 = get_sha1()
+        head_sha1 = get_sha1(args.repo_path)
         logger.info("Testing revision %s" % head_sha1)
 
         # For now just pass the whole list of changed files to wptrunner and
         # assume that it will run everything that's actually a test
-        files_changed = get_files_changed()
+        files_changed = get_files_changed(args.repo_path)
 
         if not files_changed:
             logger.info("No files changed")
             return 0
 
-        build_manifest()
+        build_manifest(args.repo_path)
         install_wptrunner()
         do_delayed_imports()
 
         logger.debug("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
 
-        affected_testfiles = get_affected_testfiles(files_changed)
+        affected_testfiles = get_affected_testfiles(files_changed, args.repo_path)
 
         logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in affected_testfiles))
 
@@ -633,6 +647,7 @@ def main():
         browser.install_webdriver()
 
         kwargs = wptrunner_args(args.root,
+                                args.repo_path,
                                 files_changed,
                                 args.iterations,
                                 browser)

@@ -178,6 +178,16 @@ class GeckoDriverServer(WebDriverServer):
                 "--port", str(self.port)] + self._args
 
 
+class SafariDriverServer(WebDriverServer):
+    def __init__(self, logger, binary="/usr/bin/safaridriver", port=None):
+        WebDriverServer.__init__(
+            self, logger, binary, port=port)
+
+    def make_command(self):
+        return [self.binary,
+                cmd_arg("port", str(self.port))]
+
+
 class ServoDriverServer(WebDriverServer):
     def __init__(self, logger, binary="servo", binary_args=None, host="127.0.0.1",
                  port=None, args=None):

@@ -113,6 +113,13 @@ function testAddRange(exception, range, endpoints, qualifier, testName) {
 // Do only n evals, not n^2
 var testRangesEvaled = testRanges.map(eval);
 
+// Run a subset of all of addRange tests.
+// Huge number of tests in a single file causes problems. Each of
+// addRange-NN.html runs a part of them.
+//
+// startIndex - Start index in testRanges array
+// optionalEndIndex - End index in testRanges array + 1. If this argument is
+//     omitted, testRanges.length is applied.
 function testAddRangeSubSet(startIndex, optionalEndIndex) {
     var endIndex = optionalEndIndex === undefined ? testRanges.length : optionalEndIndex;
     if (startIndex < 0 || startIndex >= testRanges.length)

@@ -1,11 +1,3 @@
-<!doctype html>
-<title>Selection.addRange() tests</title>
-<div id=log></div>
-<meta name="timeout" content="long">
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=common.js></script>
-<script>
 "use strict";
 
 function testAddRange(exception, range, endpoints, qualifier, testName) {
@@ -121,58 +113,71 @@ function testAddRange(exception, range, endpoints, qualifier, testName) {
 // Do only n evals, not n^2
 var testRangesEvaled = testRanges.map(eval);
 
-for (var i = 0; i < testRanges.length; i++) {
-    for (var j = 0; j < testRanges.length; j++) {
-        var testName = "Range " + i + " " + testRanges[i]
-            + " followed by Range " + j + " " + testRanges[j];
+// Run a subset of all of addRange tests.
+// Huge number of tests in a single file causes problems. Each of
+// addRange-NN.html runs a part of them.
+//
+// startIndex - Start index in testRanges array
+// optionalEndIndex - End index in testRanges array + 1. If this argument is
+//     omitted, testRanges.length is applied.
+function testAddRangeSubSet(startIndex, optionalEndIndex) {
+    var endIndex = optionalEndIndex === undefined ? testRanges.length : optionalEndIndex;
+    if (startIndex < 0 || startIndex >= testRanges.length)
+        throw "Sanity check: Specified index is invalid.";
+    if (endIndex < 0 || endIndex > testRanges.length)
+        throw "Sanity check: Specified index is invalid.";
 
-        var exception = null;
-        try {
-            selection.removeAllRanges();
+    for (var i = startIndex; i < endIndex; i++) {
+        for (var j = 0; j < testRanges.length; j++) {
+            var testName = "Range " + i + " " + testRanges[i]
+                + " followed by Range " + j + " " + testRanges[j];
 
-            var endpoints1 = testRangesEvaled[i];
-            var range1 = ownerDocument(endpoints1[0]).createRange();
-            range1.setStart(endpoints1[0], endpoints1[1]);
-            range1.setEnd(endpoints1[2], endpoints1[3]);
+            var exception = null;
+            try {
+                selection.removeAllRanges();
 
-            if (range1.startContainer !== endpoints1[0]) {
-                throw "Sanity check: the first Range we created must have the desired startContainer";
-            }
-            if (range1.startOffset !== endpoints1[1]) {
-                throw "Sanity check: the first Range we created must have the desired startOffset";
-            }
-            if (range1.endContainer !== endpoints1[2]) {
-                throw "Sanity check: the first Range we created must have the desired endContainer";
-            }
-            if (range1.endOffset !== endpoints1[3]) {
-                throw "Sanity check: the first Range we created must have the desired endOffset";
+                var endpoints1 = testRangesEvaled[i];
+                var range1 = ownerDocument(endpoints1[0]).createRange();
+                range1.setStart(endpoints1[0], endpoints1[1]);
+                range1.setEnd(endpoints1[2], endpoints1[3]);
+
+                if (range1.startContainer !== endpoints1[0]) {
+                    throw "Sanity check: the first Range we created must have the desired startContainer";
+                }
+                if (range1.startOffset !== endpoints1[1]) {
+                    throw "Sanity check: the first Range we created must have the desired startOffset";
+                }
+                if (range1.endContainer !== endpoints1[2]) {
+                    throw "Sanity check: the first Range we created must have the desired endContainer";
+                }
+                if (range1.endOffset !== endpoints1[3]) {
+                    throw "Sanity check: the first Range we created must have the desired endOffset";
+                }
+
+                var endpoints2 = testRangesEvaled[j];
+                var range2 = ownerDocument(endpoints2[0]).createRange();
+                range2.setStart(endpoints2[0], endpoints2[1]);
+                range2.setEnd(endpoints2[2], endpoints2[3]);
+
+                if (range2.startContainer !== endpoints2[0]) {
+                    throw "Sanity check: the second Range we created must have the desired startContainer";
+                }
+                if (range2.startOffset !== endpoints2[1]) {
+                    throw "Sanity check: the second Range we created must have the desired startOffset";
+                }
+                if (range2.endContainer !== endpoints2[2]) {
+                    throw "Sanity check: the second Range we created must have the desired endContainer";
+                }
+                if (range2.endOffset !== endpoints2[3]) {
+                    throw "Sanity check: the second Range we created must have the desired endOffset";
+                }
+            } catch (e) {
+                exception = e;
             }
 
-            var endpoints2 = testRangesEvaled[j];
-            var range2 = ownerDocument(endpoints2[0]).createRange();
-            range2.setStart(endpoints2[0], endpoints2[1]);
-            range2.setEnd(endpoints2[2], endpoints2[3]);
-
-            if (range2.startContainer !== endpoints2[0]) {
-                throw "Sanity check: the second Range we created must have the desired startContainer";
-            }
-            if (range2.startOffset !== endpoints2[1]) {
-                throw "Sanity check: the second Range we created must have the desired startOffset";
-            }
-            if (range2.endContainer !== endpoints2[2]) {
-                throw "Sanity check: the second Range we created must have the desired endContainer";
-            }
-            if (range2.endOffset !== endpoints2[3]) {
-                throw "Sanity check: the second Range we created must have the desired endOffset";
-            }
-        } catch (e) {
-            exception = e;
+            testAddRange(exception, range1, endpoints1, "first", testName);
+            testAddRange(exception, range2, endpoints2, "second", testName);
         }
-
-        testAddRange(exception, range1, endpoints1, "first", testName);
-        testAddRange(exception, range2, endpoints2, "second", testName);
     }
 }
 
-testDiv.style.display = "none";
-</script>

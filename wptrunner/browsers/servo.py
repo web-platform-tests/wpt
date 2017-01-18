@@ -10,17 +10,20 @@ from ..executors.executorservo import ServoTestharnessExecutor, ServoRefTestExec
 
 here = os.path.join(os.path.split(__file__)[0])
 
-__wptrunner__ = {"product": "servo",
-                 "check_args": "check_args",
-                 "browser": "ServoBrowser",
-                 "executor": {"testharness": "ServoTestharnessExecutor",
-                              "reftest": "ServoRefTestExecutor",
-                              "wdspec": "ServoWdspecExecutor"},
-                 "browser_kwargs": "browser_kwargs",
-                 "executor_kwargs": "executor_kwargs",
-                 "env_options": "env_options",
-                 "run_info_extras": "run_info_extras",
-                 "update_properties": "update_properties"}
+__wptrunner__ = {
+    "product": "servo",
+    "check_args": "check_args",
+    "browser": "ServoBrowser",
+    "executor": {
+        "testharness": "ServoTestharnessExecutor",
+        "reftest": "ServoRefTestExecutor",
+        "wdspec": "ServoWdspecExecutor",
+    },
+    "browser_kwargs": "browser_kwargs",
+    "executor_kwargs": "executor_kwargs",
+    "env_options": "env_options",
+    "update_properties": "update_properties",
+}
 
 
 def check_args(**kwargs):

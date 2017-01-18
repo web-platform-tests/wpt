@@ -53,6 +53,8 @@ promise_test(t => {
 }, 'Errors must be propagated forward: starts errored; preventAbort = false; rejected abort promise');
 
 for (const falsy of [undefined, null, false, +0, -0, NaN, '']) {
+  const stringVersion = Object.is(falsy, -0) ? '-0' : String(falsy);
+
   promise_test(t => {
 
     const rs = recordingReadableStream({
@@ -69,7 +71,8 @@ for (const falsy of [undefined, null, false, +0, -0, NaN, '']) {
         assert_array_equals(ws.events, ['abort', error1]);
       });
 
-  }, `Errors must be propagated forward: starts errored; preventAbort = ${falsy} (falsy); fulfilled abort promise`);
+  }, `Errors must be propagated forward: starts errored; preventAbort = ${stringVersion} (falsy); fulfilled abort ` +
+     `promise`);
 }
 
 for (const truthy of [true, 'a', 1, Symbol(), { }]) {

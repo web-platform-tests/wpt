@@ -38,5 +38,5 @@ next = t.step_func(function() {steps[step++]()});
 
 f.onload=next;
 
-onload = setTimeout(next, 0);
+onload = function() { setTimeout(next, 0); };
 </script>

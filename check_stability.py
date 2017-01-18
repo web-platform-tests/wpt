@@ -89,14 +89,14 @@ class TravisFold(object):
 
 
 class GitHub(object):
-    def __init__(self, org, repo, token, browser):
+    def __init__(self, org, repo, token, product):
         self.token = token
         self.headers = {"Accept": "application/vnd.github.v3+json"}
         self.auth = (self.token, "x-oauth-basic")
         self.org = org
         self.repo = repo
         self.base_url = "https://api.github.com/repos/%s/%s/" % (org, repo)
-        self.browser = browser
+        self.product = product
 
     def _headers(self, headers):
         if headers is None:
@@ -145,7 +145,7 @@ class GitHub(object):
         user = self.get(urljoin(self.base_url, "/user")).json()
         issue_comments_url = urljoin(self.base_url, "issues/%s/comments" % issue_number)
         comments = self.get(issue_comments_url).json()
-        title_line = "# %s #" % self.browser.title()
+        title_line = format_comment_title(self.product)
         data = {"body": body}
         for comment in comments:
             if (comment["user"]["login"] == user["login"] and
@@ -237,10 +237,9 @@ class Chrome(Browser):
     product = "chrome"
 
     def install(self):
-        latest = get("https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2FLAST_CHANGE?alt=media").text.strip()
-        url = "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%%2F%s%%2Fchrome-linux.zip?alt=media" % latest
-        unzip(get(url).raw)
-        logger.debug(call("ls", "-lhrt", "chrome-linux"))
+        # Installing the Google Chrome browser requires administrative
+        # privileges, so that installation is handled by the invoking script.
+
         call("pip", "install", "-r", os.path.join("w3c", "wptrunner", "requirements_chrome.txt"))
 
     def install_webdriver(self):
@@ -253,7 +252,8 @@ class Chrome(Browser):
     def wptrunner_args(self, root):
         return {
             "product": "chrome",
-            "binary": "%s/chrome-linux/chrome" % root,
+            "binary": "/usr/bin/google-chrome",
+            "binary_arg": "--no-sandbox",
             "webdriver_binary": "%s/chromedriver" % root,
             "test_types": ["testharness", "reftest"]
         }
@@ -318,7 +318,7 @@ def unzip(fileobj):
 def setup_github_logging(args):
     gh_handler = None
     if args.comment_pr:
-        github = GitHub("w3c", "web-platform-tests", args.gh_token, args.browser)
+        github = GitHub("jugglinmike", "web-platform-tests", args.gh_token, args.product)
         try:
             pr_number = int(args.comment_pr)
         except ValueError:
@@ -348,17 +348,17 @@ class pwd(object):
 
 
 def fetch_wpt_master():
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "jugglinmike", "web-platform-tests"))
     git("fetch", "https://github.com/w3c/web-platform-tests.git", "master:master")
 
 
 def get_sha1():
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), "jugglinmike", "web-platform-tests"))
     return git("rev-parse", "HEAD").strip()
 
 
 def build_manifest():
-    with pwd(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests")):
+    with pwd(os.path.join(os.path.abspath(os.curdir), "jugglinmike", "web-platform-tests")):
         # TODO: Call the manifest code directly
         call("python", "manifest")
 
@@ -372,7 +372,7 @@ def install_wptrunner():
 
 def get_files_changed():
     root = os.path.abspath(os.curdir)
-    git = get_git_cmd("%s/w3c/web-platform-tests" % root)
+    git = get_git_cmd("%s/jugglinmike/web-platform-tests" % root)
     branch_point = git("merge-base", "HEAD", "master").strip()
     logger.debug("Branch point from master: %s" % branch_point)
     logger.debug(git("log", "--oneline", "%s.." % branch_point))
@@ -380,7 +380,7 @@ def get_files_changed():
     if not files:
         return []
     assert files[-1] == "\0"
-    return ["%s/w3c/web-platform-tests/%s" % (root, item)
+    return ["%s/jugglinmike/web-platform-tests/%s" % (root, item)
             for item in files[:-1].split("\0")]
 
 
@@ -388,7 +388,7 @@ def get_affected_testfiles(files_changed):
     affected_testfiles = []
     all_tests = set()
     nontests_changed = set(files_changed)
-    repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
+    repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), "jugglinmike", "web-platform-tests"))
     manifest_file = os.path.join(repo_root, "MANIFEST.json")
     for test, _ in manifest.load(repo_root, manifest_file):
         test_full_path = os.path.join(repo_root, test)
@@ -433,7 +433,7 @@ def get_affected_testfiles(files_changed):
 def wptrunner_args(root, files_changed, iterations, browser):
     parser = wptcommandline.create_parser([browser.product])
     args = vars(parser.parse_args([]))
-    wpt_root = os.path.join(root, "w3c", "web-platform-tests")
+    wpt_root = os.path.join(root, "jugglinmike", "web-platform-tests")
     args.update(browser.wptrunner_args(root))
     args.update({
         "tests_root": wpt_root,
@@ -490,6 +490,16 @@ def process_results(log, iterations):
             if is_inconsistent(result, iterations):
                 inconsistent.append((test, subtest, result))
     return results, inconsistent
+
+
+def format_comment_title(product):
+    parts = product.split(":")
+    title = parts[0].title()
+
+    if len(parts) > 1:
+       title += " (%s channel)" % parts[1]
+
+    return "# %s #" % title
 
 
 def markdown_adjust(s):
@@ -570,9 +580,9 @@ def get_parser():
                         action="store",
                         default=os.environ.get("TRAVIS_PULL_REQUEST"),
                         help="PR to comment on with stability results")
-    parser.add_argument("browser",
+    parser.add_argument("product",
                         action="store",
-                        help="Browser to run against")
+                        help="Product to run against (`browser-name` or 'browser-name:channel')")
     return parser
 
 
@@ -593,13 +603,15 @@ def main():
         logger.warning("Can't log to GitHub")
         gh_handler = None
 
+    browser_name = args.product.split(":")[0]
+
     with TravisFold("browser_setup"):
-        logger.info("# %s #" % args.browser.title())
+        logger.info("# %s #" % format_comment_title(args.product))
 
         browser_cls = {"firefox": Firefox,
-                       "chrome": Chrome}.get(args.browser)
+                       "chrome": Chrome}.get(browser_name)
         if browser_cls is None:
-            logger.critical("Unrecognised browser %s" % args.browser)
+            logger.critical("Unrecognised browser %s" % browser_name)
             return 1
 
         fetch_wpt_master()

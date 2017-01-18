@@ -89,6 +89,8 @@ promise_test(t => {
    'cancel promise');
 
 for (const falsy of [undefined, null, false, +0, -0, NaN, '']) {
+  const stringVersion = Object.is(falsy, -0) ? '-0' : String(falsy);
+
   promise_test(t => {
 
     const rs = recordingReadableStream();
@@ -114,8 +116,8 @@ for (const falsy of [undefined, null, false, +0, -0, NaN, '']) {
           });
       });
 
-  }, `Errors must be propagated backward: becomes errored before piping due to write; preventCancel = ${falsy} ` +
-     `(falsy); fulfilled cancel promise`);
+  }, `Errors must be propagated backward: becomes errored before piping due to write; preventCancel = ` +
+     `${stringVersion} (falsy); fulfilled cancel promise`);
 }
 
 for (const truthy of [true, 'a', 1, Symbol(), { }]) {

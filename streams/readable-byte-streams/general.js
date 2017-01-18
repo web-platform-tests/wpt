@@ -904,7 +904,7 @@ promise_test(() => {
     assert_equals(result, undefined);
     assert_equals(cancelCount, 1);
   });
-}, 'ReadableStream with byte source: enqueue(), getReader(), then cancel()');
+}, 'ReadableStream with byte source: enqueue(), getReader(), then cancel() (mode = not BYOB)');
 
 promise_test(() => {
   let cancelCount = 0;
@@ -936,7 +936,7 @@ promise_test(() => {
     assert_equals(result, undefined);
     assert_equals(cancelCount, 1);
   });
-}, 'ReadableStream with byte source: enqueue(), getReader(), then cancel()');
+}, 'ReadableStream with byte source: enqueue(), getReader(), then cancel() (mode = BYOB)');
 
 promise_test(() => {
   let cancelCount = 0;

@@ -65,6 +65,8 @@ promise_test(t => {
 }, 'Closing must be propagated backward: starts closed; preventCancel omitted; rejected cancel promise');
 
 for (const falsy of [undefined, null, false, +0, -0, NaN, '']) {
+  const stringVersion = Object.is(falsy, -0) ? '-0' : String(falsy);
+
   promise_test(() => {
 
     const rs = recordingReadableStream();
@@ -89,7 +91,8 @@ for (const falsy of [undefined, null, false, +0, -0, NaN, '']) {
       }
     );
 
-  }, `Closing must be propagated backward: starts closed; preventCancel = ${falsy} (falsy); fulfilled cancel promise`);
+  }, `Closing must be propagated backward: starts closed; preventCancel = ${stringVersion} (falsy); fulfilled cancel ` +
+     `promise`);
 }
 
 for (const truthy of [true, 'a', 1, Symbol(), { }]) {

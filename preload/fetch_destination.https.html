@@ -21,7 +21,6 @@ async_test(function(t) {
           return with_iframe(scope);
         }))
       .then(t.step_func(function(frame) {
-              console.log(frame);
           var link = frame.contentWindow.document.createElement("link");
           link.as = "fetch";
           link.href = "resources/dummy.xml";

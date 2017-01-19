@@ -3,7 +3,11 @@
 if (self.importScripts) {
   self.importScripts('/resources/testharness.js');
   self.importScripts('../resources/rs-utils.js');
+  self.importScripts('../resources/test-utils.js');
 }
+
+const error1 = new Error('error1!');
+error1.name = 'error1';
 
 function duckTypedPassThroughTransform() {
   let enqueueInReadable;
@@ -35,5 +39,56 @@ promise_test(() => {
   return readableStreamToArray(readableEnd).then(chunks =>
     assert_array_equals(chunks, [1, 2, 3, 4, 5]), 'chunks should match');
 }, 'Piping through a duck-typed pass-through transform stream should work');
+
+promise_test(t => {
+  const transform = {
+    writable: new WritableStream({
+      start(c) {
+        c.error(error1);
+      }
+    }),
+    readable: new ReadableStream()
+  };
+
+  sequentialReadableStream(5).pipeThrough(transform);
+
+  // The test harness should complain about unhandled rejections by then.
+  return flushAsyncEvents();
+
+}, 'Piping through a transform errored on the writable end does not cause an unhandled promise rejection');
+
+test(() => {
+  let calledWithArgs;
+  const dummy = {
+    pipeTo(...args) {
+      calledWithArgs = args;
+
+      // Does not return anything, testing the spec's guard against trying to mark [[PromiseIsHandled]] on undefined.
+    }
+  };
+
+  const fakeWritable = { fake: 'writable' };
+  const fakeReadable = { fake: 'readable' };
+  const arg2 = { arg: 'arg2' };
+  const arg3 = { arg: 'arg3' };
+  ReadableStream.prototype.pipeThrough.call(dummy, { writable: fakeWritable, readable: fakeReadable }, arg2, arg3);
+
+  assert_array_equals(calledWithArgs, [fakeWritable, arg2],
+    'The this value\'s pipeTo method should be called with the appropriate arguments');
+
+}, 'pipeThrough generically calls pipeTo with the appropriate args');
+
+test(() => {
+  const dummy = {
+    pipeTo(args) {
+      return { not: 'a promise' };
+    }
+  };
+
+  ReadableStream.prototype.pipeThrough.call(dummy, { });
+
+  // Test passes if this doesn't throw or crash.
+
+}, 'pipeThrough can handle calling a pipeTo that returns a non-promise object');
 
 done();

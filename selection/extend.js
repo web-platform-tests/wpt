@@ -1,47 +1,50 @@
-<!doctype html>
-<title>Selection extend() tests</title>
-<meta charset=utf-8>
-<meta name=timeout content=long>
-<body>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=common.js></script>
-<div id=log></div>
-<script>
 "use strict";
 
 // Also test a selection with no ranges
 testRanges.unshift("[]");
 
-/**
- * We test Selections that go both forwards and backwards here.  In the latter
- * case we need to use extend() to force it to go backwards, which is fair
- * enough, since that's what we're testing.  We test collapsed selections only
- * once.
- */
-for (var i = 0; i < testRanges.length; i++) {
-    var endpoints = eval(testRanges[i]);
-    for (var j = 0; j < testPoints.length; j++) {
-        if (endpoints[0] == endpoints[2]
-        && endpoints[1] == endpoints[3]) {
-            // Test collapsed selections only once
-            test(function() {
-                setSelectionForwards(endpoints);
-                testExtend(endpoints, eval(testPoints[j]));
-            }, "extend() with range " + i + " " + testRanges[i]
-            + " and point " + j + " " + testPoints[j]);
-        } else {
-            test(function() {
-                setSelectionForwards(endpoints);
-                testExtend(endpoints, eval(testPoints[j]));
-            }, "extend() forwards with range " + i + " " + testRanges[i]
-            + " and point " + j + " " + testPoints[j]);
+// Run a subset of all of extend tests.
+// Huge number of tests in a single file causes problems. Each of
+// extend-NN.html runs a part of them.
+//
+// startIndex - Start index in testRanges array
+// optionalEndIndex - End index in testRanges array + 1. If this argument is
+//     omitted, testRanges.length is applied.
+function testExtendSubSet(startIndex, optionalEndIndex) {
+    var endIndex = optionalEndIndex === undefined ? testRanges.length : optionalEndIndex;
+    if (startIndex < 0 || startIndex >= testRanges.length)
+        throw "Sanity check: Specified index is invalid.";
+    if (endIndex < 0 || endIndex > testRanges.length)
+        throw "Sanity check: Specified index is invalid.";
 
-            test(function() {
-                setSelectionBackwards(endpoints);
-                testExtend(endpoints, eval(testPoints[j]));
-            }, "extend() backwards with range " + i + " " + testRanges[i]
-            + " and point " + j + " " + testPoints[j]);
+    // We test Selections that go both forwards and backwards here.  In the
+    // latter case we need to use extend() to force it to go backwards, which is
+    // fair enough, since that's what we're testing.  We test collapsed
+    // selections only once.
+    for (var i = startIndex; i < endIndex; i++) {
+        var endpoints = eval(testRanges[i]);
+        for (var j = 0; j < testPoints.length; j++) {
+            if (endpoints[0] == endpoints[2]
+            && endpoints[1] == endpoints[3]) {
+                // Test collapsed selections only once
+                test(function() {
+                    setSelectionForwards(endpoints);
+                    testExtend(endpoints, eval(testPoints[j]));
+                }, "extend() with range " + i + " " + testRanges[i]
+                + " and point " + j + " " + testPoints[j]);
+            } else {
+                test(function() {
+                    setSelectionForwards(endpoints);
+                    testExtend(endpoints, eval(testPoints[j]));
+                }, "extend() forwards with range " + i + " " + testRanges[i]
+                + " and point " + j + " " + testPoints[j]);
+
+                test(function() {
+                    setSelectionBackwards(endpoints);
+                    testExtend(endpoints, eval(testPoints[j]));
+                }, "extend() backwards with range " + i + " " + testRanges[i]
+                + " and point " + j + " " + testPoints[j]);
+            }
         }
     }
 }
@@ -144,6 +147,3 @@ function testExtend(endpoints, target) {
     assert_not_equals(getSelection().getRangeAt(0), originalRange,
         "extend() must replace any existing range with a new one, not mutate the existing one");
 }
-
-testDiv.style.display = "none";
-</script>

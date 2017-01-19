@@ -1,11 +1,3 @@
-<!doctype html>
-<title>Selection.collapse() tests</title>
-<meta name=timeout content=long>
-<div id=log></div>
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=common.js></script>
-<script>
 "use strict";
 
 function testCollapse(range, point) {
@@ -63,26 +55,39 @@ for (var i = 0; i < testPoints.length; i++) {
     testPointsCached.push(eval(testPoints[i]));
 }
 
-var tests = [];
-for (var i = 0; i < testRanges.length; i++) {
-    var endpoints = eval(testRanges[i]);
-    var range;
-    test(function() {
-        if (endpoints.length) {
-            range = ownerDocument(endpoints[0]).createRange();
-            range.setStart(endpoints[0], endpoints[1]);
-            range.setEnd(endpoints[2], endpoints[3]);
-        } else {
-            // Empty selection
-            range = null;
+// Run a subset of all of collapse tests.
+// Huge number of tests in a single file causes problems. Each of
+// collapse-NN.html runs a part of them.
+//
+// startIndex - Start index in testRanges array
+// optionalEndIndex - End index in testRanges array + 1. If this argument is
+//     omitted, testRanges.length is applied.
+function testCollapseSubSet(startIndex, optionalEndIndex) {
+    var endIndex = optionalEndIndex === undefined ? testRanges.length : optionalEndIndex;
+    if (startIndex < 0 || startIndex >= testRanges.length)
+        throw "Sanity check: Specified index is invalid.";
+    if (endIndex < 0 || endIndex > testRanges.length)
+        throw "Sanity check: Specified index is invalid.";
+
+    var tests = [];
+    for (var i = startIndex; i < endIndex; i++) {
+        var endpoints = eval(testRanges[i]);
+        var range;
+        test(function() {
+            if (endpoints.length) {
+                range = ownerDocument(endpoints[0]).createRange();
+                range.setStart(endpoints[0], endpoints[1]);
+                range.setEnd(endpoints[2], endpoints[3]);
+            } else {
+                // Empty selection
+                range = null;
+            }
+        }, "Set up range " + i + " " + testRanges[i]);
+        for (var j = 0; j < testPoints.length; j++) {
+            tests.push(["Range " + i + " " + testRanges[i] + ", point " + j + " " + testPoints[j], range, testPointsCached[j]]);
         }
-    }, "Set up range " + i + " " + testRanges[i]);
-    for (var j = 0; j < testPoints.length; j++) {
-        tests.push(["Range " + i + " " + testRanges[i] + ", point " + j + " " + testPoints[j], range, testPointsCached[j]]);
     }
+
+    generate_tests(testCollapse, tests);
 }
 
-generate_tests(testCollapse, tests);
-
-testDiv.style.display = "none";
-</script>

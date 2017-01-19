@@ -5,7 +5,7 @@
 <script>
 async_test(function(t) {
     var worker_url = 'resources/fetch-destination-worker.js';
-    var scope = 'resources/dummy.xml';
+    var scope = 'resources/empty.html';
     var registration;
 
     function done(registration) {
@@ -21,12 +21,16 @@ async_test(function(t) {
           return with_iframe(scope);
         }))
       .then(t.step_func(function(frame) {
+              console.log(frame);
           var link = frame.contentWindow.document.createElement("link");
           link.as = "fetch";
-          link.href = scope;
+          link.href = "resources/dummy.xml";
           link.rel = "preload";
           link.addEventListener("load", t.step_func(function() { done(registration); }));
-          link.addEventListener("error", t.step_func(function() { assert_unreached("Fetch destination preload errored"); done(registration); }));
+          link.addEventListener("error", t.step_func_done(function() {
+              registration.unregister();
+              assert_unreached("Fetch destination preload errored");
+          }));
           frame.contentWindow.document.body.appendChild(link);
         }))
       .catch(unreached_rejection(t));

@@ -1,11 +1,9 @@
 self.addEventListener('fetch', function(event) {
     if (event.request.url.indexOf('dummy.xml') != -1) {
-        var response = new Response();
-        if (event.request.destination == "")
-            response.status = 200;
+        if (!event.request.destination || event.request.destination == "")
+            event.respondWith(new Response());
         else
-            response.status = 500;
-        event.respondWith(response);
+            event.respondWith(Response.error());
     }
 });
 

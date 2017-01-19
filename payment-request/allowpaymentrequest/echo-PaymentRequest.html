@@ -1,0 +1,18 @@
+<!doctype html>
+<script>
+window.onmessage = (e) => {
+  const paymentArgs = [[{supportedMethods: ['foo']}], {total: {label: 'label', amount: {currency: 'USD', value: '5.00'}}}];
+
+  if (e.data === 'What is the result of new PaymentRequest(...)?') {
+    try {
+      new PaymentRequest(...paymentArgs);
+      e.source.postMessage({message: 'Success'}, '*');
+    } catch(ex) {
+      e.source.postMessage({message: 'Exception', details: [ex instanceof DOMException, ex.code, ex.name]}, '*');
+    }
+  } else {
+    e.source.postMessage({message: 'Incorrect message'}, '*');
+  }
+}
+</script>
+<p>This page echos the result of new PaymentRequest(...).</p>

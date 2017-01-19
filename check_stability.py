@@ -13,6 +13,8 @@ import traceback
 import zipfile
 from cStringIO import StringIO
 from collections import defaultdict
+from ConfigParser import RawConfigParser
+from io import BytesIO
 from urlparse import urljoin
 from tools.manifest import manifest
 
@@ -178,6 +180,7 @@ class GitHubCommentHandler(logging.Handler):
 
 class Browser(object):
     product = None
+    binary = None
 
     def __init__(self, github_token):
         self.github_token = github_token
@@ -185,6 +188,8 @@ class Browser(object):
 
 class Firefox(Browser):
     product = "firefox"
+    binary = "%s/firefox/firefox"
+    platform_ini = "%s/firefox/platform.ini"
 
     def install(self):
         call("pip", "install", "-r", "w3c/wptrunner/requirements_firefox.txt")
@@ -219,10 +224,20 @@ class Firefox(Browser):
         url = "https://github.com/mozilla/geckodriver/releases/download/%s/geckodriver-%s-linux64.tar.gz" % (version, version)
         untar(get(url).raw)
 
+    def version(self, root):
+        """Retrieve the release version of the installed browser."""
+        platform_info = RawConfigParser()
+
+        with open(self.platform_ini % root, "r") as fp:
+            platform_info.readfp(BytesIO(fp.read()))
+            return "BuildID %s; SourceStamp %s" % (
+                platform_info.get("Build", "BuildID"),
+                platform_info.get("Build", "SourceStamp"))
+
     def wptrunner_args(self, root):
         return {
             "product": "firefox",
-            "binary": "%s/firefox/firefox" % root,
+            "binary": self.binary % root,
             "certutil_binary": "certutil",
             "webdriver_binary": "%s/geckodriver" % root,
             "prefs_root": "%s/profiles" % root,
@@ -231,6 +246,7 @@ class Firefox(Browser):
 
 class Chrome(Browser):
     product = "chrome"
+    binary = "/usr/bin/google-chrome"
 
     def install(self):
         # Installing the Google Chrome browser requires administrative
@@ -245,10 +261,15 @@ class Chrome(Browser):
         st = os.stat('chromedriver')
         os.chmod('chromedriver', st.st_mode | stat.S_IEXEC)
 
+    def version(self, root):
+        """Retrieve the release version of the installed browser."""
+        output = call(self.binary, "--version")
+        return re.search(r"[0-9a-z\.]+$", output.strip()).group(0)
+
     def wptrunner_args(self, root):
         return {
             "product": "chrome",
-            "binary": "/usr/bin/google-chrome",
+            "binary": self.binary,
             # Chrome's "sandbox" security feature must be disabled in order to
             # run the browser in OpenVZ environments such as the one provided
             # by TravisCI.
@@ -623,7 +644,7 @@ def main():
         fetch_wpt_master()
 
         head_sha1 = get_sha1()
-        logger.info("Testing revision %s" % head_sha1)
+        logger.info("Testing web-platform-tests at revision %s" % head_sha1)
 
         # For now just pass the whole list of changed files to wptrunner and
         # assume that it will run everything that's actually a test
@@ -637,6 +658,16 @@ def main():
         install_wptrunner()
         do_delayed_imports()
 
+        browser = browser_cls(args.gh_token)
+        browser.install()
+        browser.install_webdriver()
+
+        try:
+            version = browser.version(args.root)
+        except Exception, e:
+            version = "unknown (error: %s)" % e
+        logger.info("Using browser at version %s", version)
+
         logger.debug("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
 
         affected_testfiles = get_affected_testfiles(files_changed)
@@ -644,11 +675,6 @@ def main():
         logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in affected_testfiles))
 
         files_changed.extend(affected_testfiles)
-
-        browser = browser_cls(args.gh_token)
-
-        browser.install()
-        browser.install_webdriver()
 
         kwargs = wptrunner_args(args.root,
                                 files_changed,

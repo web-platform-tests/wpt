@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Pointer Events properties tests</title>
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" type="text/css" href="../pointerevent_styles.css">
+        <script src="/resources/testharness.js"></script>
+        <script src="/resources/testharnessreport.js"></script>
+        <!-- Additional helper script for common checks across event types -->
+        <script type="text/javascript" src="../pointerevent_support.js"></script>
+        <style>
+          body {
+            touch-action: none;
+            user-select: none;
+          }
+          #box1 {
+            top: 330px;
+            left: 150px;
+            background: black;
+          }
+          #box2 {
+            top: 370px;
+            left: 350px;
+            background: red;
+          }
+          #square2 {
+            visibility: block;
+          }
+        </style>
+        <script>
+            var expectedPointerId = NaN;
+            var startSummation = false;
+            var sumX = 0;
+            var sumY = 0;
+            var innerSumX = 0;
+            var innerSumY = 0;
+
+            function resetTestState() {
+                startSummation = false;
+                sumX = 0;
+                sumY = 0;
+                innerSumX = 0;
+                innerSumY = 0;
+            }
+
+            function run() {
+                var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", ['mouse', 'touch']);
+
+                on_event(document, 'pointermove', function (event) {
+                    if (startSummation) {
+                      sumX += event.movementX;
+                      sumY += event.movementY;
+                    }
+                });
+                on_event(document.getElementById('innerFrame').contentDocument, 'pointermove', function (event) {
+                    if (startSummation) {
+                      innerSumX += event.movementX;
+                      innerSumY += event.movementY;
+                      test_pointerEvent.step(function() {
+                        assert_less_than(event.movementX, 10, 'event.movementX was too large. Move your pointer slowly.');
+                        assert_less_than(event.movementY, 10, 'event.movementY was too large. Move your pointer slowly.');
+                      });
+                    }
+                });
+                on_event(document.querySelector('#box1'), 'pointerdown', function(event) {
+                  event.target.releasePointerCapture(event.pointerId);
+                  test_pointerEvent.step(function() {
+                      assert_equals(event.pointerType, expectedPointerType, "Use the instructed pointer type.");
+                  });
+                  startSummation = true;
+                });
+                on_event(document.querySelector('#box2'), 'pointerup', function(event) {
+                  startSummation = false;
+                  test_pointerEvent.step(function() {
+                    assert_between_inclusive(sumX, 80, 120, 'Sum to all movementX events in the main frame should be equal to the movement X of the pointer exluding the iframe with');
+                    assert_between_inclusive(innerSumX, 95, 105, 'Sum to all movementX events in the inner frame should be equal to the width of the frame.');
+                    assert_between_inclusive(sumY + innerSumY, 20, 60, 'Sum to all movementY events in the main frame and the inner frame should be equal to the movement Y of the pointer');
+                  });
+                  test_pointerEvent.done();
+                });
+            }
+        </script>
+    </head>
+    <body onload="run()">
+        <h1>Pointer Events movementX/Y attribute test</h1>
+        <h2 id="pointerTypeDescription"></h2>
+        <h4>
+            Test Description: This test checks the properties of pointer events that do not support hover.
+            <ol>
+                 <li>Press down on the black square.</li>
+                 <li>Move your pointer  slowly along a straight line to the red square.</li>
+                 <li>Release the pointer when you are over the red square.</li>
+            </ol>
+
+            Test passes if the proper behavior of the events is observed.
+        </h4>
+        <div id="box1" class="square"></div>
+        <div id="box2" class="square"></div>
+        <iframe id="innerFrame" src="resources/pointerevent_movementxy-iframe.html"></iframe>
+        <div class="spacer"></div>
+    </body>
+</html>
+

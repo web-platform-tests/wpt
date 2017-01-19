@@ -213,6 +213,10 @@ function MultiPointerTypeTest(testName, types) {
     this.createNextTest();
 }
 
+MultiPointerTypeTest.prototype.step = function(op) {
+    this.currentTest.step(op);
+}
+
 MultiPointerTypeTest.prototype.skip = function() {
     var prevTest = this.currentTest;
     this.createNextTest();

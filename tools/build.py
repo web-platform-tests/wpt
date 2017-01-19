@@ -268,6 +268,7 @@ class Builder(object):
                             self.ui.warn("WARNING: Test suite '", testSuiteName, "' references unknown specification: '", specName, "'.\n")
                 else:
                     self.ui.warn("ERROR: Test suite '", testSuiteName, "' does not have target specifications.\n")
+                    return -6
         else:
             self.ui.status("No test suites identified\n")
             return 0

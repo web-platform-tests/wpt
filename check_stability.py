@@ -27,7 +27,8 @@ TbplFormatter = None
 reader = None
 wptcommandline = None
 wptrunner = None
-user = None
+wpt_root = None
+wptrunner_root = None
 
 logger = logging.getLogger(os.path.splitext(__file__)[0])
 
@@ -188,7 +189,7 @@ class Firefox(Browser):
     product = "firefox"
 
     def install(self):
-        call("pip", "install", "-r", "%s/wptrunner/requirements_firefox.txt" % (user))
+        call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_firefox.txt"))
         resp = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-53.0a1.en-US.linux-x86_64.tar.bz2")
         untar(resp.raw)
 
@@ -197,7 +198,7 @@ class Firefox(Browser):
         with open(os.path.join("profiles", "prefs_general.js"), "wb") as f:
             resp = get("https://hg.mozilla.org/mozilla-central/raw-file/tip/testing/profiles/prefs_general.js")
             f.write(resp.content)
-        call("pip", "install", "-r", os.path.join(user, "wptrunner", "requirements_firefox.txt"))
+        call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_firefox.txt"))
 
     def _latest_geckodriver_version(self):
         # This is used rather than an API call to avoid rate limits
@@ -237,7 +238,7 @@ class Chrome(Browser):
         # Installing the Google Chrome browser requires administrative
         # privileges, so that installation is handled by the invoking script.
 
-        call("pip", "install", "-r", os.path.join(user, "wptrunner", "requirements_chrome.txt"))
+        call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_chrome.txt"))
 
     def install_webdriver(self):
         latest = get("http://chromedriver.storage.googleapis.com/LATEST_RELEASE").text.strip()
@@ -320,7 +321,7 @@ def unzip(fileobj):
 def setup_github_logging(args):
     gh_handler = None
     if args.comment_pr:
-        github = GitHub(user, "web-platform-tests", args.gh_token, args.product)
+        github = GitHub(args.user, "web-platform-tests", args.gh_token, args.product)
         try:
             pr_number = int(args.comment_pr)
         except ValueError:
@@ -349,32 +350,32 @@ class pwd(object):
         self.old_dir = None
 
 
-def fetch_wpt_master():
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), user, "web-platform-tests"))
+def fetch_wpt_master(user):
+    git = get_git_cmd(wpt_root)
     git("fetch", "https://github.com/%s/web-platform-tests.git" % user, "master:master")
 
 
 def get_sha1():
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), user, "web-platform-tests"))
+    git = get_git_cmd(wpt_root)
     return git("rev-parse", "HEAD").strip()
 
 
 def build_manifest():
-    with pwd(os.path.join(os.path.abspath(os.curdir), user, "web-platform-tests")):
+    with pwd(wpt_root):
         # TODO: Call the manifest code directly
         call("python", "manifest")
 
 
 def install_wptrunner():
-    call("git", "clone", "--depth=1", "https://github.com/w3c/wptrunner.git", "%s/wptrunner" % user)
-    git = get_git_cmd(os.path.join(os.path.abspath(os.curdir), user, "wptrunner"))
+    call("git", "clone", "--depth=1", "https://github.com/w3c/wptrunner.git", wptrunner_root)
+    git = get_git_cmd(wptrunner_root)
     git("submodule", "update", "--init", "--recursive")
-    call("pip", "install", os.path.join(user, "wptrunner"))
+    call("pip", "install", wptrunner_root)
 
 
 def get_files_changed():
     root = os.path.abspath(os.curdir)
-    git = get_git_cmd("%s/%s/web-platform-tests" % (root, user))
+    git = get_git_cmd(wpt_root)
     branch_point = git("merge-base", "HEAD", "master").strip()
     logger.debug("Branch point from master: %s" % branch_point)
     logger.debug(git("log", "--oneline", "%s.." % branch_point))
@@ -382,7 +383,7 @@ def get_files_changed():
     if not files:
         return []
     assert files[-1] == "\0"
-    return ["%s/%s/web-platform-tests/%s" % (root, user, item)
+    return ["%s/%s" % (wpt_root, item)
             for item in files[:-1].split("\0")]
 
 
@@ -390,16 +391,15 @@ def get_affected_testfiles(files_changed):
     affected_testfiles = []
     all_tests = set()
     nontests_changed = set(files_changed)
-    repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), user, "web-platform-tests"))
-    manifest_file = os.path.join(repo_root, "MANIFEST.json")
-    for _, test, _ in manifest.load(repo_root, manifest_file):
-        test_full_path = os.path.join(repo_root, test)
+    manifest_file = os.path.join(wpt_root, "MANIFEST.json")
+    for _, test, _ in manifest.load(wpt_root, manifest_file):
+        test_full_path = os.path.join(wpt_root, test)
         all_tests.add(test_full_path)
         if test_full_path in nontests_changed:
             # Reduce the set of changed files to only non-tests.
             nontests_changed.remove(test_full_path)
     for changedfile_pathname in nontests_changed:
-        changed_file_repo_path = os.path.join(os.path.sep, os.path.relpath(changedfile_pathname, repo_root))
+        changed_file_repo_path = os.path.join(os.path.sep, os.path.relpath(changedfile_pathname, wpt_root))
         os.path.normpath(changed_file_repo_path)
         path_components = changed_file_repo_path.split(os.sep)[1:]
         if len(path_components) < 2:
@@ -413,7 +413,7 @@ def get_affected_testfiles(files_changed):
         # other than a test (e.g., it's a .js or .json file), and it's
         # somewhere down beneath one of the top-level "spec" directories.
         # So now we try to find any tests that reference it.
-        for root, dirs, fnames in os.walk(os.path.join(repo_root, top_level_subdir)):
+        for root, dirs, fnames in os.walk(os.path.join(wpt_root, top_level_subdir)):
             # Walk top_level_subdir looking for test files containing either the
             # relative filepath or absolute filepatch to the changed file.
             for fname in fnames:
@@ -435,13 +435,12 @@ def get_affected_testfiles(files_changed):
 def wptrunner_args(root, files_changed, iterations, browser):
     parser = wptcommandline.create_parser([browser.product])
     args = vars(parser.parse_args([]))
-    wpt_root = os.path.join(root, user, "web-platform-tests")
     args.update(browser.wptrunner_args(root))
     args.update({
         "tests_root": wpt_root,
         "metadata_root": wpt_root,
         "repeat": iterations,
-        "config": "%s/%s/wptrunner/wptrunner.default.ini" % (root, user),
+        "config": "%s//wptrunner.default.ini" % (wptrunner_root),
         "test_list": files_changed,
         "restart_on_unexpected": False,
         "pause_after_test": False
@@ -600,13 +599,15 @@ def get_parser():
 
 
 def main():
-    global user
+    global wpt_root
+    global wptrunner_root
 
     retcode = 0
     parser = get_parser()
     args = parser.parse_args()
 
-    user = args.user
+    wpt_root = os.path.abspath(os.curdir)
+    wptrunner_root = os.path.normpath(os.path.join(wpt_root, "..", "wptrunner"))
 
     if not os.path.exists(args.root):
         logger.critical("Root directory %s does not exist" % args.root)
@@ -631,7 +632,7 @@ def main():
             logger.critical("Unrecognised browser %s" % browser_name)
             return 1
 
-        fetch_wpt_master()
+        fetch_wpt_master(args.user)
 
         head_sha1 = get_sha1()
         logger.info("Testing revision %s" % head_sha1)

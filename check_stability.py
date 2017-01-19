@@ -272,12 +272,6 @@ class Chrome(Browser):
         return {
             "product": "chrome",
             "binary": self.binary,
-            # Chrome's "sandbox" security feature must be disabled in order to
-            # run the browser in OpenVZ environments such as the one provided
-            # by TravisCI.
-            #
-            # Reference: https://github.com/travis-ci/travis-ci/issues/938
-            "binary_arg": "--no-sandbox",
             "webdriver_binary": "%s/chromedriver" % root,
             "test_types": ["testharness", "reftest"]
         }

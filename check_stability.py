@@ -391,7 +391,7 @@ def get_affected_testfiles(files_changed):
     nontests_changed = set(files_changed)
     repo_root = os.path.abspath(os.path.join(os.path.abspath(os.curdir), "w3c", "web-platform-tests"))
     manifest_file = os.path.join(repo_root, "MANIFEST.json")
-    for test, _ in manifest.load(repo_root, manifest_file):
+    for _, test, _ in manifest.load(repo_root, manifest_file):
         test_full_path = os.path.join(repo_root, test)
         all_tests.add(test_full_path)
         if test_full_path in nontests_changed:

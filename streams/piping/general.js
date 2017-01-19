@@ -154,4 +154,37 @@ promise_test(() => {
 
 }, 'Piping from a ReadableStream for which a chunk becomes asynchronously readable after the pipeTo');
 
+for (const preventAbort of [true, false]) {
+  promise_test(t => {
+
+    const rs = new ReadableStream({
+      pull() {
+        return Promise.reject(undefined);
+      }
+    }, { preventAbort });
+
+    return promise_rejects(t, null, rs.pipeTo(new WritableStream()), 'promise should be rejected');
+  }, `an undefined rejection from pull should cause pipeTo() to reject when preventAbort is ${preventAbort}`);
+}
+
+for (const preventCancel of [true, false]) {
+  promise_test(t => {
+
+    const rs = new ReadableStream({
+      pull(controller) {
+        controller.enqueue(0);
+      }
+    }, { preventCancel });
+
+    const ws = new WritableStream({
+      write() {
+        return Promise.reject(undefined);
+      }
+    });
+
+    return promise_rejects(t, null, rs.pipeTo(ws), 'promise should be rejected');
+
+  }, `an undefined rejection from write should cause pipeTo() to reject when preventCancel is ${preventCancel}`);
+}
+
 done();

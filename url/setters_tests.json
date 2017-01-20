@@ -44,7 +44,7 @@
             "href": "a://example.net",
             "new_value": "B",
             "expected": {
-                "href": "b://example.net",
+                "href": "b://example.net/",
                 "protocol": "b:"
             }
         },
@@ -140,9 +140,8 @@
             "href": "ssh://me@example.net",
             "new_value": "http",
             "expected": {
-                "href": "ssh://me@example.net",
-                "protocol": "ssh:",
-                "pathname": ""
+                "href": "ssh://me@example.net/",
+                "protocol": "ssh:"
             }
         },
         {

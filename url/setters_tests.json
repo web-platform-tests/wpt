@@ -654,8 +654,8 @@
             "new_value": "example.com\\stuff",
             "expected": {
                 "href": "view-source+http://example.com\\stuff/path",
-                "host": "example.net",
-                "hostname": "example.net",
+                "host": "example.com\\stuff",
+                "hostname": "example.com\\stuff",
                 "port": ""
             }
         },
@@ -993,8 +993,8 @@
             "new_value": "example.com\\stuff",
             "expected": {
                 "href": "view-source+http://example.com\\stuff/path",
-                "host": "example.net",
-                "hostname": "example.net",
+                "host": "example.com\\stuff",
+                "hostname": "example.com\\stuff",
                 "port": ""
             }
         },

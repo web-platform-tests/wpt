@@ -165,7 +165,7 @@ promise_test(t => {
 }, 'when sink\'s write throws an error, the stream should become errored and the promise should reject');
 
 promise_test(() => {
-  const numberOfWrites = 10000;
+  const numberOfWrites = 1000;
 
   let resolveFirstWritePromise;
   let writeCount = 0;

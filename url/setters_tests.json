@@ -27,18 +27,16 @@
             "href": "a://example.net",
             "new_value": "",
             "expected": {
-                "href": "a://example.net",
-                "protocol": "a:",
-                "pathname": ""
+                "href": "a://example.net/",
+                "protocol": "a:"
             }
         },
         {
             "href": "a://example.net",
             "new_value": "b",
             "expected": {
-                "href": "b://example.net",
-                "protocol": "b:",
-                "pathname": ""
+                "href": "b://example.net/",
+                "protocol": "b:"
             }
         },
         {
@@ -47,8 +45,7 @@
             "new_value": "B",
             "expected": {
                 "href": "b://example.net",
-                "protocol": "b:",
-                "pathname": ""
+                "protocol": "b:"
             }
         },
         {
@@ -56,9 +53,8 @@
             "href": "a://example.net",
             "new_value": "é",
             "expected": {
-                "href": "a://example.net",
-                "protocol": "a:",
-                "pathname": ""
+                "href": "a://example.net/",
+                "protocol": "a:"
             }
         },
         {
@@ -66,9 +62,8 @@
             "href": "a://example.net",
             "new_value": "0b",
             "expected": {
-                "href": "a://example.net",
-                "protocol": "a:",
-                "pathname": ""
+                "href": "a://example.net/",
+                "protocol": "a:"
             }
         },
         {
@@ -76,18 +71,16 @@
             "href": "a://example.net",
             "new_value": "+b",
             "expected": {
-                "href": "a://example.net",
-                "protocol": "a:",
-                "pathname": ""
+                "href": "a://example.net/",
+                "protocol": "a:"
             }
         },
         {
             "href": "a://example.net",
             "new_value": "bC0+-.",
             "expected": {
-                "href": "bc0+-.://example.net",
-                "protocol": "bc0+-.:",
-                "pathname": ""
+                "href": "bc0+-.://example.net/",
+                "protocol": "bc0+-.:"
             }
         },
         {
@@ -95,9 +88,8 @@
             "href": "a://example.net",
             "new_value": "b,c",
             "expected": {
-                "href": "a://example.net",
-                "protocol": "a:",
-                "pathname": ""
+                "href": "a://example.net/",
+                "protocol": "a:"
             }
         },
         {
@@ -105,9 +97,8 @@
             "href": "a://example.net",
             "new_value": "bé",
             "expected": {
-                "href": "a://example.net",
-                "protocol": "a:",
-                "pathname": ""
+                "href": "a://example.net/",
+                "protocol": "a:"
             }
         },
         {
@@ -358,82 +349,82 @@
     "host": [
         {
             "comment": "Non-special scheme",
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "\u0000",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "\u0009",
             "expected": {
-                "href": "sc://",
+                "href": "sc:///",
                 "host": "",
                 "hostname": ""
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "\u000A",
             "expected": {
-                "href": "sc://",
+                "href": "sc:///",
                 "host": "",
                 "hostname": ""
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "\u000D",
             "expected": {
-                "href": "sc://",
+                "href": "sc:///",
                 "host": "",
                 "hostname": ""
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": " ",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "#",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "/",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "?",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "@",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
@@ -774,82 +765,82 @@
     "hostname": [
         {
             "comment": "Non-special scheme",
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "\u0000",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "\u0009",
             "expected": {
-                "href": "sc://",
+                "href": "sc:///",
                 "host": "",
                 "hostname": ""
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "\u000A",
             "expected": {
-                "href": "sc://",
+                "href": "sc:///",
                 "host": "",
                 "hostname": ""
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "\u000D",
             "expected": {
-                "href": "sc://",
+                "href": "sc:///",
                 "host": "",
                 "hostname": ""
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": " ",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "#",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "/",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "?",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }
         },
         {
-            "href": "sc://x",
+            "href": "sc://x/",
             "new_value": "@",
             "expected": {
-                "href": "sc://x",
+                "href": "sc://x/",
                 "host": "x",
                 "hostname": "x"
             }

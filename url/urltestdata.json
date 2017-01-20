@@ -553,7 +553,7 @@
   {
     "input": "foo://",
     "base": "http://example.org/foo/bar",
-    "href": "foo:///",
+    "href": "foo://",
     "origin": "null",
     "protocol": "foo:",
     "username": "",
@@ -561,7 +561,7 @@
     "host": "",
     "hostname": "",
     "port": "",
-    "pathname": "/",
+    "pathname": "",
     "search": "",
     "hash": ""
   },

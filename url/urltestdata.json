@@ -5000,5 +5000,47 @@
     "pathname": "",
     "search": "",
     "hash": ""
+  },
+  {
+    "input": "///",
+    "base": "sc://x/",
+    "href": "sc:///",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "////",
+    "base": "sc://x/",
+    "href": "sc:////",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "////x/",
+    "base": "sc://x/",
+    "href": "sc:////x/",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "//x/",
+    "search": "",
+    "hash": ""
   }
 ]

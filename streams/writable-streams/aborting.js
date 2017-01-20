@@ -32,7 +32,7 @@ promise_test(t => {
     promise_rejects(t, new TypeError(), readyPromise, 'the ready promise should reject with a TypeError'),
     promise_rejects(t, new TypeError(), writePromise, 'the write() promise should reject with a TypeError')
   ]);
-}, 'Aborting a WritableStream should cause the writer\'s unsettled ready promise to reject');
+}, 'Aborting a WritableStream before it starts should cause the writer\'s unsettled ready promise to reject');
 
 promise_test(t => {
   const ws = new WritableStream();
@@ -184,12 +184,23 @@ promise_test(t => {
 
   writer.abort(error1);
 
+  const events = [];
+  writer.ready.catch(() => {
+    events.push('ready');
+  });
+  writer.closed.catch(() => {
+    events.push('closed');
+  });
+
   return Promise.all([
     promise_rejects(t, new TypeError(), writer.write(), 'writing should reject with a TypeError'),
     promise_rejects(t, new TypeError(), writer.close(), 'closing should reject with a TypeError'),
     promise_rejects(t, new TypeError(), writer.abort(), 'aborting should reject with a TypeError'),
+    promise_rejects(t, new TypeError(), writer.ready, 'ready should reject with a TypeError'),
     promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError')
-  ]);
+  ]).then(() => {
+    assert_array_equals(['ready', 'closed'], events, 'ready should reject before closed');
+  });
 }, 'Aborting a WritableStream puts it in an errored state, with a TypeError as the stored error');
 
 promise_test(t => {
@@ -231,10 +242,11 @@ promise_test(t => {
   const closePromise = writer.close();
 
   return delay(0).then(() => {
-    writer.abort(error1);
+    const abortPromise = writer.abort(error1);
     resolveClose();
     return Promise.all([
       promise_rejects(t, new TypeError(), writer.closed, 'closed should reject with a TypeError'),
+      abortPromise,
       closePromise
     ]);
   });
@@ -527,6 +539,276 @@ promise_test(t => {
     return promise_rejects(t, error1, writer.ready, 'writer.ready should reject');
   });
 }, 'writer.ready should reject on controller error without waiting for underlying write');
+
+promise_test(t => {
+  let rejectWrite;
+  const ws = new WritableStream({
+    write() {
+      return new Promise((resolve, reject) => {
+        rejectWrite = reject;
+      });
+    }
+  });
+
+  let writePromise;
+  let abortPromise;
+
+  const events = [];
+
+  const writer = ws.getWriter();
+
+  writer.closed.catch(() => {
+    events.push('closed');
+  });
+
+  // Wait for ws to start
+  return flushAsyncEvents().then(() => {
+    writePromise = writer.write('a');
+    writePromise.catch(() => {
+      events.push('writePromise');
+    });
+
+    abortPromise = writer.abort(error1);
+    abortPromise.catch(() => {
+      events.push('abortPromise');
+    });
+
+    const writePromise2 = writer.write('a');
+
+    return Promise.all([
+      promise_rejects(t, new TypeError(), writePromise2, 'writePromise2 must reject with an error indicating abort'),
+      promise_rejects(t, new TypeError(), writer.ready, 'writer.ready must reject with an error indicating abort'),
+      flushAsyncEvents()
+    ]);
+  }).then(() => {
+    assert_array_equals(events, [], 'writePromise, abortPromise and writer.closed must not be rejected yet');
+
+    rejectWrite(error2);
+
+    return Promise.all([
+      promise_rejects(t, error2, writePromise,
+                      'writePromise must reject with the error returned from the sink\'s write method'),
+      promise_rejects(t, error2, abortPromise,
+                      'abortPromise must reject with the error returned from the sink\'s write method'),
+      promise_rejects(t, error2, writer.closed,
+                      'writer.closed must reject with the error returned from the sink\'s write method'),
+      flushAsyncEvents()
+    ]);
+  }).then(() => {
+    assert_array_equals(events, ['writePromise', 'abortPromise', 'closed'],
+                        'writePromise, abortPromise and writer.closed must reject');
+
+    const writePromise3 = writer.write('a');
+
+    return Promise.all([
+      promise_rejects(t, new TypeError(), writePromise3,
+                      'writePromise3 must reject with an error indicating the stream has already been errored'),
+      promise_rejects(t, new TypeError(), writer.ready,
+                      'writer.ready must be still rejected with the error indicating abort')
+    ]);
+  }).then(() => {
+    writer.releaseLock();
+
+    return Promise.all([
+      promise_rejects(t, new TypeError(), writer.ready,
+                      'writer.ready must be rejected with an error indicating release'),
+      promise_rejects(t, new TypeError(), writer.closed,
+                      'writer.closed must be rejected with an error indicating release')
+    ]);
+  });
+}, 'writer.abort() while there is a pending write, and then finish the write with rejection');
+
+promise_test(t => {
+  let resolveWrite;
+  let controller;
+  const ws = new WritableStream({
+    write(chunk, c) {
+      controller = c;
+      return new Promise(resolve => {
+        resolveWrite = resolve;
+      });
+    }
+  });
+
+  let writePromise;
+  let abortPromise;
+
+  const events = [];
+
+  const writer = ws.getWriter();
+
+  writer.closed.catch(() => {
+    events.push('closed');
+  });
+
+  // Wait for ws to start
+  return flushAsyncEvents().then(() => {
+    writePromise = writer.write('a');
+    writePromise.then(() => {
+      events.push('writePromise');
+    });
+
+    abortPromise = writer.abort(error1);
+    abortPromise.catch(() => {
+      events.push('abortPromise');
+    });
+
+    const writePromise2 = writer.write('a');
+
+    return Promise.all([
+      promise_rejects(t, new TypeError(), writePromise2, 'writePromise2 must reject with an error indicating abort'),
+      promise_rejects(t, new TypeError(), writer.ready, 'writer.ready must reject with an error indicating abort'),
+      flushAsyncEvents()
+    ]);
+  }).then(() => {
+    assert_array_equals(events, [], 'writePromise, abortPromise and writer.closed must not be fulfilled/rejected yet');
+
+    controller.error(error2);
+
+    const writePromise3 = writer.write('a');
+
+    return Promise.all([
+      promise_rejects(t, new TypeError(), writePromise3,
+                      'writePromise3 must reject with an error indicating the stream has already been errored'),
+      promise_rejects(t, new TypeError(), writer.ready,
+                      'writer.ready must be still rejected with the error indicating abort'),
+      flushAsyncEvents()
+    ]);
+  }).then(() => {
+    assert_array_equals(
+        events, [],
+        'writePromise, abortPromise and writer.closed must not be fulfilled/rejected yet even after '
+            + 'controller.error() call');
+
+    resolveWrite();
+
+    return Promise.all([
+      writePromise,
+      promise_rejects(t, error2, abortPromise,
+                      'abortPromise must reject with the error passed to the controller\'s error method'),
+      promise_rejects(t, error2, writer.closed,
+                      'writer.closed must reject with the error passed to the controller\'s error method'),
+      flushAsyncEvents()
+    ]);
+  }).then(() => {
+    assert_array_equals(events, ['writePromise', 'abortPromise', 'closed'],
+                        'writePromise, abortPromise and writer.closed must reject');
+
+    const writePromise4 = writer.write('a');
+
+    return Promise.all([
+      writePromise,
+      promise_rejects(t, new TypeError(), writePromise4,
+                      'writePromise4 must reject with an error indicating that the stream has already been errored'),
+      promise_rejects(t, new TypeError(), writer.ready,
+                      'writer.ready must be still rejected with the error indicating abort')
+    ]);
+  }).then(() => {
+    writer.releaseLock();
+
+    return Promise.all([
+      promise_rejects(t, new TypeError(), writer.ready,
+                      'writer.ready must be rejected with an error indicating release'),
+      promise_rejects(t, new TypeError(), writer.closed,
+                      'writer.closed must be rejected with an error indicating release')
+    ]);
+  });
+}, 'writer.abort(), controller.error() while there is a pending write, and then finish the write');
+
+promise_test(t => {
+  let resolveWrite;
+  let controller;
+  const ws = new WritableStream({
+    write(chunk, c) {
+      controller = c;
+      return new Promise(resolve => {
+        resolveWrite = resolve;
+      });
+    }
+  });
+
+  let writePromise;
+  let abortPromise;
+
+  const events = [];
+
+  const writer = ws.getWriter();
+
+  writer.closed.catch(() => {
+    events.push('closed');
+  });
+
+  // Wait for ws to start
+  return flushAsyncEvents().then(() => {
+    writePromise = writer.write('a');
+    writePromise.then(() => {
+      events.push('writePromise');
+    });
+
+    controller.error(error2);
+
+    const writePromise2 = writer.write('a');
+
+    return Promise.all([
+      promise_rejects(t, new TypeError(), writePromise2,
+                      'writePromise2 must reject with an error indicating the stream has already been errored'),
+      promise_rejects(t, error2, writer.ready,
+                      'writer.ready must reject with the error passed to the controller\'s error method'),
+      flushAsyncEvents()
+    ]);
+  }).then(() => {
+    assert_array_equals(events, [], 'writePromise and writer.closed must not be fulfilled/rejected yet');
+
+    abortPromise = writer.abort(error1);
+    abortPromise.catch(() => {
+      events.push('abortPromise');
+    });
+
+    const writePromise3 = writer.write('a');
+
+    return Promise.all([
+      promise_rejects(t, error2, abortPromise,
+                      'abortPromise must reject with the error passed to the controller\'s error method'),
+      promise_rejects(t, new TypeError(), writePromise3,
+                      'writePromise3 must reject with an error indicating the stream has already been errored'),
+      flushAsyncEvents()
+    ]);
+  }).then(() => {
+    assert_array_equals(
+        events, ['abortPromise'],
+        'writePromise and writer.closed must not be fulfilled/rejected yet even after writer.abort()');
+
+    resolveWrite();
+
+    return Promise.all([
+      promise_rejects(t, error2, writer.closed,
+                      'writer.closed must reject with the error passed to the controller\'s error method'),
+      flushAsyncEvents()
+    ]);
+  }).then(() => {
+    assert_array_equals(events, ['abortPromise', 'writePromise', 'closed'],
+                        'writePromise, abortPromise and writer.closed must fulfill/reject');
+
+    const writePromise4 = writer.write('a');
+
+    return Promise.all([
+      writePromise,
+      promise_rejects(t, new TypeError(), writePromise4,
+                      'writePromise4 must reject with an error indicating that the stream has already been errored'),
+      promise_rejects(t, error2, writer.ready,
+                      'writer.ready must be still rejected with the error passed to the controller\'s error method')
+    ]);
+  }).then(() => {
+    writer.releaseLock();
+
+    return Promise.all([
+      promise_rejects(t, new TypeError(), writer.ready,
+                      'writer.ready must be rejected with an error indicating release'),
+      promise_rejects(t, new TypeError(), writer.closed,
+                      'writer.closed must be rejected with an error indicating release')
+    ]);
+  });
+}, 'controller.error(), writer.abort() while there is a pending write, and then finish the write');
 
 promise_test(t => {
   let resolveWrite;

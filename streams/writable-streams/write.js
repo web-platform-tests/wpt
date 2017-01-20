@@ -6,6 +6,12 @@ if (self.importScripts) {
   self.importScripts('../resources/recording-streams.js');
 }
 
+const error1 = new Error('error1');
+error1.name = 'error1';
+
+const error2 = new Error('error2');
+error2.name = 'error2';
+
 function writeArrayToStream(array, writableStreamWriter) {
   array.forEach(chunk => writableStreamWriter.write(chunk));
   return writableStreamWriter.close();
@@ -130,20 +136,21 @@ promise_test(t => {
 
     assert_equals(writer.desiredSize, -1, 'desiredSize should still be -1');
 
-    const passedError = new Error('horrible things');
-
     return Promise.all([
-      promise_rejects(t, passedError, closedPromise, 'closedPromise should reject with passedError')
+      promise_rejects(t, error1, closedPromise,
+                      'closedPromise should reject with the error returned from the sink\'s write method')
           .then(() => assert_equals(sinkWritePromiseRejectors.length, 0,
                                     'sinkWritePromise should reject before closedPromise')),
-      promise_rejects(t, passedError, writePromise, 'writePromise should reject with passedError')
+      promise_rejects(t, error1, writePromise,
+                      'writePromise should reject with the error returned from the sink\'s write method')
           .then(() => assert_equals(sinkWritePromiseRejectors.length, 0,
                                     'sinkWritePromise should reject before writePromise')),
-      promise_rejects(t, passedError, writePromise2, 'writePromise2 should reject with passedError')
+      promise_rejects(t, error1, writePromise2,
+                      'writePromise2 should reject with the error returned from the sink\'s write method')
           .then(() => assert_equals(sinkWritePromiseRejectors.length, 0,
                                     'sinkWritePromise should reject before writePromise2')),
       flushAsyncEvents().then(() => {
-        sinkWritePromiseRejectors[0](passedError);
+        sinkWritePromiseRejectors[0](error1);
         sinkWritePromiseRejectors = [];
       })
     ]);
@@ -151,18 +158,41 @@ promise_test(t => {
 }, 'when write returns a rejected promise, queued writes and close should be cleared');
 
 promise_test(t => {
-  const thrownError = new Error('throw me');
   const ws = new WritableStream({
     write() {
-      throw thrownError;
+      throw error1;
     }
   });
 
   const writer = ws.getWriter();
 
-  return promise_rejects(t, thrownError, writer.write('a'), 'write() should reject with thrownError')
+  return promise_rejects(t, error1, writer.write('a'),
+                         'write() should reject with the error returned from the sink\'s write method')
       .then(() => promise_rejects(t, new TypeError(), writer.close(), 'close() should be rejected'));
 }, 'when sink\'s write throws an error, the stream should become errored and the promise should reject');
+
+promise_test(t => {
+  const ws = new WritableStream({
+    write(chunk, controller) {
+      controller.error(error1);
+      throw error2;
+    }
+  });
+
+  const writer = ws.getWriter();
+
+  return promise_rejects(t, error2, writer.write('a'),
+                         'write() should reject with the error returned from the sink\'s write method ')
+  .then(() => {
+    return Promise.all([
+      promise_rejects(t, error1, writer.ready,
+                      'writer.ready must reject with the error passed to the controller'),
+      promise_rejects(t, error1, writer.closed,
+                      'writer.closed must reject with the error passed to the controller')
+    ]);
+  });
+}, 'writer.write(), ready and closed reject with the error passed to controller.error() made before sink.write'
+    + ' rejection');
 
 promise_test(() => {
   const numberOfWrites = 1000;

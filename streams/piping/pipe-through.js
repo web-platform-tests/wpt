@@ -6,9 +6,6 @@ if (self.importScripts) {
   self.importScripts('../resources/test-utils.js');
 }
 
-const error1 = new Error('error1!');
-error1.name = 'error1';
-
 function duckTypedPassThroughTransform() {
   let enqueueInReadable;
   let closeReadable;
@@ -44,7 +41,7 @@ promise_test(t => {
   const transform = {
     writable: new WritableStream({
       start(c) {
-        c.error(error1);
+        c.error(new Error('this rejection should not be reported as unhandled'));
       }
     }),
     readable: new ReadableStream()
@@ -90,5 +87,21 @@ test(() => {
   // Test passes if this doesn't throw or crash.
 
 }, 'pipeThrough can handle calling a pipeTo that returns a non-promise object');
+
+test(() => {
+  const dummy = {
+    pipeTo(args) {
+      return {
+        then() {},
+        this: 'is not a real promise'
+      };
+    }
+  };
+
+  ReadableStream.prototype.pipeThrough.call(dummy, { });
+
+  // Test passes if this doesn't throw or crash.
+
+}, 'pipeThrough can handle calling a pipeTo that returns a non-promise thenable object');
 
 done();

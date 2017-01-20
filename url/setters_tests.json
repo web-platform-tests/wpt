@@ -396,27 +396,27 @@
             "href": "sc://x/",
             "new_value": "#",
             "expected": {
-                "href": "sc://x/",
-                "host": "x",
-                "hostname": "x"
+                "href": "sc:///",
+                "host": "",
+                "hostname": ""
             }
         },
         {
             "href": "sc://x/",
             "new_value": "/",
             "expected": {
-                "href": "sc://x/",
-                "host": "x",
-                "hostname": "x"
+                "href": "sc:///",
+                "host": "",
+                "hostname": ""
             }
         },
         {
             "href": "sc://x/",
             "new_value": "?",
             "expected": {
-                "href": "sc://x/",
-                "host": "x",
-                "hostname": "x"
+                "href": "sc:///",
+                "host": "",
+                "hostname": ""
             }
         },
         {
@@ -649,11 +649,11 @@
             }
         },
         {
-            "comment": "\\ is not a delimiter for non-special schemes, and it’s invalid in a domain",
+            "comment": "\\ is not a delimiter for non-special schemes",
             "href": "view-source+http://example.net/path",
             "new_value": "example.com\\stuff",
             "expected": {
-                "href": "view-source+http://example.net/path",
+                "href": "view-source+http://example.com\\stuff/path",
                 "host": "example.net",
                 "hostname": "example.net",
                 "port": ""
@@ -812,27 +812,27 @@
             "href": "sc://x/",
             "new_value": "#",
             "expected": {
-                "href": "sc://x/",
-                "host": "x",
-                "hostname": "x"
+                "href": "sc:///",
+                "host": "",
+                "hostname": ""
             }
         },
         {
             "href": "sc://x/",
             "new_value": "/",
             "expected": {
-                "href": "sc://x/",
-                "host": "x",
-                "hostname": "x"
+                "href": "sc:///",
+                "host": "",
+                "hostname": ""
             }
         },
         {
             "href": "sc://x/",
             "new_value": "?",
             "expected": {
-                "href": "sc://x/",
-                "host": "x",
-                "hostname": "x"
+                "href": "sc:///",
+                "host": "",
+                "hostname": ""
             }
         },
         {
@@ -988,11 +988,11 @@
             }
         },
         {
-            "comment": "\\ is not a delimiter for non-special schemes, and it’s invalid in a domain",
+            "comment": "\\ is not a delimiter for non-special schemes",
             "href": "view-source+http://example.net/path",
             "new_value": "example.com\\stuff",
             "expected": {
-                "href": "view-source+http://example.net/path",
+                "href": "view-source+http://example.com\\stuff/path",
                 "host": "example.net",
                 "hostname": "example.net",
                 "port": ""

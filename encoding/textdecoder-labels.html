@@ -4,6 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/encodings.js"></script>
 <script>
+var whitespace = [' ', '\t', '\n', '\f', '\r'];
 encodings_table.forEach(function(section) {
   section.encodings.filter(function(encoding) {
     return encoding.name !== 'replacement';
@@ -16,7 +17,6 @@ encodings_table.forEach(function(section) {
         assert_equals(
           new TextDecoder(label.toUpperCase()).encoding, encoding.name,
           'label matching should be case-insensitive');
-        var whitespace = [' ', '\t', '\n', '\f', '\r'];
         whitespace.forEach(function(ws) {
           assert_equals(
             new TextDecoder(ws + label).encoding, encoding.name,
@@ -28,7 +28,7 @@ encodings_table.forEach(function(section) {
             new TextDecoder(ws + label + ws).encoding, encoding.name,
             'label for encoding with surrounding whitespace should match');
         });
-      }, label + " => " + encoding.name);
+      }, label + ' => ' + encoding.name);
     });
   });
 });

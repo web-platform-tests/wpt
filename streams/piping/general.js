@@ -163,7 +163,10 @@ for (const preventAbort of [true, false]) {
       }
     }, { preventAbort });
 
-    return promise_rejects(t, null, rs.pipeTo(new WritableStream()), 'promise should be rejected');
+    return rs.pipeTo(new WritableStream()).then(
+        () => assert_unreached('pipeTo promise should be rejected'),
+        value => assert_equals(value, undefined, 'rejection value should be undefined'));
+
   }, `an undefined rejection from pull should cause pipeTo() to reject when preventAbort is ${preventAbort}`);
 }
 
@@ -182,7 +185,9 @@ for (const preventCancel of [true, false]) {
       }
     });
 
-    return promise_rejects(t, null, rs.pipeTo(ws), 'promise should be rejected');
+    return rs.pipeTo(ws).then(
+         () => assert_unreached('pipeTo promise should be rejected'),
+        value => assert_equals(value, undefined, 'rejection value should be undefined'));
 
   }, `an undefined rejection from write should cause pipeTo() to reject when preventCancel is ${preventCancel}`);
 }

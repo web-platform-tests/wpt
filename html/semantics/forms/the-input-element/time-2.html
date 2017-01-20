@@ -23,9 +23,9 @@
     {value: "00:60:00.000", expected: "", testname: "Invalid value: minute > 59. Value should be empty"},
     {value: "00:00:60.000", expected: "", testname: "Invalid value: second > 59. Value should be empty"},
     {value: "12:00:00.001", attributes: { min: "12:00:00.000" }, expected: "12:00:00.001", testname: "Value >= min attribute"},
-    {value: "12:00:00.000", attributes: { min: "12:00:00.001" }, expected: "12:00:00.001", testname: "Value < min attribute"},
+    {value: "12:00:00.000", attributes: { min: "12:00:00.001" }, expected: "12:00:00.000", testname: "Value < min attribute"},
     {value: "12:00:00.000", attributes: { max: "12:00:00.001" }, expected: "12:00:00.000", testname: "Value <= max attribute"},
-    {value: "12:00:00.001", attributes: { max: "12:00:00.000" }, expected: "12:00:00.000", testname: "Value > max attribute"}
+    {value: "12:00:00.001", attributes: { max: "12:00:00.000" }, expected: "12:00:00.001", testname: "Value > max attribute"}
   ];
   for (var i = 0; i < times.length; i++) {
     var w = times[i];

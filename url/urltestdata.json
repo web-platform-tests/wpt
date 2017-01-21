@@ -4795,7 +4795,7 @@
     "host": "",
     "hostname": "",
     "port": "",
-    "pathname": "/",
+    "pathname": "//",
     "search": "",
     "hash": ""
   },

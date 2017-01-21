@@ -29,8 +29,8 @@
 
       test(function() {
         assert_equals(document.getElementById("valid").value, "2011-11-01");
-        assert_equals(document.getElementById("too_small_value").value, "2011-01-01");
-        assert_equals(document.getElementById("too_large_value").value, "2011-12-31");
+        assert_equals(document.getElementById("too_small_value").value, "1999-01-31");
+        assert_equals(document.getElementById("too_large_value").value, "2099-01-31");
       }, "The value attribute, if specified and not empty, must have a value that is a valid date string.");
 
       test(function() {

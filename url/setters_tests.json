@@ -1278,6 +1278,33 @@
                 "href": "http://example.net/%3F",
                 "pathname": "/%3F"
             }
+        },
+        {
+            "comment": "# needs to be encoded",
+            "href": "http://example.net",
+            "new_value": "#",
+            "expected": {
+                "href": "http://example.net/%23",
+                "pathname": "/%23"
+            }
+        },
+        {
+            "comment": "? needs to be encoded, non-special scheme",
+            "href": "sc://example.net",
+            "new_value": "?",
+            "expected": {
+                "href": "sc://example.net/%3F",
+                "pathname": "/%3F"
+            }
+        },
+        {
+            "comment": "# needs to be encoded, non-special scheme",
+            "href": "sc://example.net",
+            "new_value": "#",
+            "expected": {
+                "href": "sc://example.net/%23",
+                "pathname": "/%23"
+            }
         }
     ],
     "search": [

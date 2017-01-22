@@ -154,34 +154,34 @@ test(function(){
 
 test(function(){
   _StepTest.max = "15:00";
+  this.add_cleanup(function() { _StepTest.max = ""; });
   _StepTest.value = "15:00";
   _StepTest.stepUp();
   assert_equals(_StepTest.value, "15:00");
-  _StepTest.max = "";
 } , "stepUp stop because it exceeds the maximum value");
 test(function(){
   _StepTest.min = "13:00";
+  this.add_cleanup(function() { _StepTest.min = ""; });
   _StepTest.value = "13:00";
   _StepTest.stepDown();
   assert_equals(_StepTest.value, "13:00");
-  _StepTest.min="";
 } , "stepDown Stop so lower than the minimum value");
 
 test(function(){
   _StepTest.max = "15:01";
+  this.add_cleanup(function() { _StepTest.max = ""; });
   _StepTest.value = "15:00";
   _StepTest.step = "120";
   _StepTest.stepUp();
   assert_equals(_StepTest.value, "15:01");
-  _StepTest.max = "";
 } , "stop at border on stepUp");
 test(function(){
   _StepTest.min = "12:59";
+  this.add_cleanup(function() { _StepTest.min = ""; });
   _StepTest.value = "13:00";
   _StepTest.step = "120";
   _StepTest.stepDown();
   assert_equals(_StepTest.value, "12:59");
-  _StepTest.min="";
 } , "stop at border on stepDown");
 
 test(function(){

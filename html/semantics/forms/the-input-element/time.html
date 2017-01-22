@@ -131,13 +131,13 @@ test(function(){
   _StepTest.step = "0.001";
   _StepTest.stepUp();
   assert_equals(_StepTest.value, "12:00:00.001");
-} , "stepUp on step value miri second ");
+} , "stepUp on step value with fractional seconds");
 test(function(){
   _StepTest.value = "12:00";
   _StepTest.step = "0.001";
   _StepTest.stepDown();
   assert_equals(_StepTest.value, "11:59:59.999");
-} , "stepDown on step value miri second ");
+} , "stepDown on step value with fractional seconds");
 
 test(function(){
   _StepTest.value = "13:00:00";

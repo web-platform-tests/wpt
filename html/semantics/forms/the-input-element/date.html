@@ -39,10 +39,10 @@
       }, "The min attribute must be reflected verbatim by the min property.");
 
       test(function() {
-        assert_equals(document.getElementById("valid").max, "2011-12-31"),
-        assert_equals(document.getElementById("min_larger_than_max").max, "2099-01-01"),
-        assert_equals(document.getElementById("invalid_max").max, "")
-      },"The max attribute, if specified, must have a value that is a valid date string.");
+        assert_equals(document.getElementById("valid").max, "2011-12-31");
+        assert_equals(document.getElementById("min_larger_than_max").max, "2011-12-31");
+        assert_equals(document.getElementById("invalid_max").max, "2011-13-162-777");
+      }, "The max attribute must be reflected verbatim by the max property.");
 
       test(function() {
         assert_equals(document.getElementById("invalid_value").value, "");

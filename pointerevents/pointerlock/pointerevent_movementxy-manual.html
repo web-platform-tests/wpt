@@ -30,37 +30,39 @@
         <script>
             var expectedPointerId = NaN;
             var startSummation = false;
-            var sumX = 0;
-            var sumY = 0;
-            var innerSumX = 0;
-            var innerSumY = 0;
+            var isFirstMove = true;
+            var lastClientX = 0;
+            var lastClientY = 0;
 
             function resetTestState() {
                 startSummation = false;
-                sumX = 0;
-                sumY = 0;
-                innerSumX = 0;
-                innerSumY = 0;
+                isFirstMove = true;
+                lastClientX = 0;
+                lastClientY = 0;
             }
 
             function run() {
                 var test_pointerEvent = setup_pointerevent_test("pointerevent attributes", ['mouse', 'touch']);
 
-                on_event(document, 'pointermove', function (event) {
+                [document, document.getElementById('innerFrame').contentDocument].forEach(function(element) {
+                  on_event(element, 'pointermove', function (event) {
                     if (startSummation) {
-                      sumX += event.movementX;
-                      sumY += event.movementY;
+                      if (!isFirstMove) {
+                          test_pointerEvent.step(function() {
+                            assert_equals(event.movementX, event.clientX - lastClientX, "movementX should be the delta between current event's and last event's clientX");
+                            assert_equals(event.movementY, event.clientY - lastClientY, "movementY should be the delta between current event's and last event's clientY");
+                          });
+                      }
+                      isFirstMove = false;
+                      lastClientX = event.clientX;
+                      lastClientY = event.clientY;
                     }
+                  });
                 });
-                on_event(document.getElementById('innerFrame').contentDocument, 'pointermove', function (event) {
-                    if (startSummation) {
-                      innerSumX += event.movementX;
-                      innerSumY += event.movementY;
-                      test_pointerEvent.step(function() {
-                        assert_less_than(event.movementX, 10, 'event.movementX was too large. Move your pointer slowly.');
-                        assert_less_than(event.movementY, 10, 'event.movementY was too large. Move your pointer slowly.');
-                      });
-                    }
+                ['pointerenter', 'pointerleave'].forEach(function(eventName) {
+                  on_event(document.getElementById('innerFrame').contentDocument, eventName, function (event) {
+                    isFirstMove = true;
+                  });
                 });
                 on_event(document.querySelector('#box1'), 'pointerdown', function(event) {
                   event.target.releasePointerCapture(event.pointerId);
@@ -68,14 +70,12 @@
                       assert_equals(event.pointerType, expectedPointerType, "Use the instructed pointer type.");
                   });
                   startSummation = true;
+                  isFirstMove = false;
+                  lastClientX = event.clientX;
+                  lastClientY = event.clientY;
                 });
                 on_event(document.querySelector('#box2'), 'pointerup', function(event) {
                   startSummation = false;
-                  test_pointerEvent.step(function() {
-                    assert_between_inclusive(sumX, 80, 120, 'Sum to all movementX events in the main frame should be equal to the movement X of the pointer exluding the iframe with');
-                    assert_between_inclusive(innerSumX, 95, 105, 'Sum to all movementX events in the inner frame should be equal to the width of the frame.');
-                    assert_between_inclusive(sumY + innerSumY, 20, 60, 'Sum to all movementY events in the main frame and the inner frame should be equal to the movement Y of the pointer');
-                  });
                   test_pointerEvent.done();
                 });
             }

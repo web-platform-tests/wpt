@@ -224,10 +224,12 @@ MultiPointerTypeTest.prototype.skip = function() {
 }
 
 MultiPointerTypeTest.prototype.done = function() {
-    var prevTest = this.currentTest;
-    this.createNextTest();
-    if (prevTest != null)
-        prevTest.done();
+    if (this.currentTest.status != 1) {
+        var prevTest = this.currentTest;
+        this.createNextTest();
+        if (prevTest != null)
+            prevTest.done();
+    }
 }
 
 MultiPointerTypeTest.prototype.createNextTest = function() {
@@ -242,7 +244,6 @@ MultiPointerTypeTest.prototype.createNextTest = function() {
     }
     resetTestState();
 }
-
 
 function setup_pointerevent_test(testName, supportedPointerTypes) {
     return globalPointerEventTest = new MultiPointerTypeTest(testName, supportedPointerTypes);

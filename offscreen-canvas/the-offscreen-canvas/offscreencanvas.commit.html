@@ -14,30 +14,43 @@ function verifyPlaceholder(placeholder, expectedR, expectedG, expectedB, expecte
     _assertPixel(canvas, 5,5, expectedR, expectedG, expectedB, expectedA, "5,5", expectedClrStr);
 }
 
-test(function() {
+promise_test(function() {
     var placeholder = document.createElement('canvas');
     placeholder.width = placeholder.height = 10;
     var offscreenCanvas = placeholder.transferControlToOffscreen();
     var ctx = offscreenCanvas.getContext('2d');
     ctx.fillStyle = "#0f0";
     ctx.fillRect(0, 0, 10, 10);
-    ctx.commit();
+    var promise = ctx.commit();
     // commit() propagation is taken care of by an async task, which means the
     // place holder contents should still be transparent black at this moment.
     verifyPlaceholder(placeholder, 0,0,0,0, "0,0,0,0");
-    // Set timeout acts as a sync barrier to allow commit to propagate
-    setTimeout(function() {
+    // The frame is refreshed once the promise returned by commit() is resolved.
+    return promise.then(function() {
         verifyPlaceholder(placeholder, 0,255,0,255, "0,255,0,255");
-    }, 0);
+    });
 }, "Test that calling OffscreenCanvas's commit pushes its contents to its placeholder.");
 
-test(function() {
+promise_test(function() {
+    var placeholder = document.createElement('canvas');
+    placeholder.width = placeholder.height = 10;
+    var offscreenCanvas = placeholder.transferControlToOffscreen();
+    var ctx = offscreenCanvas.getContext('2d');
+    ctx.fillStyle = "#0f0";
+    ctx.fillRect(0, 0, 10, 10);
+    return ctx.commit().then(function() {
+      _assertPixel(offscreenCanvas, 5,5, 0,255,0,255, "0,255,0,255");
+    });
+}, "Verify that commit() preserves the contents of an OffscreenCanvas with a 2d context.");
+
+promise_test(function() {
     var offscreenCanvas = new OffscreenCanvas(10, 10);
     var ctx = offscreenCanvas.getContext('2d');
     ctx.fillStyle = "#0f0";
     ctx.fillRect(0, 0, 10, 10);
-    assert_throws("InvalidStateError", function() { ctx.commit(); });
-}, "Test that calling commit on an OffscreenCanvas that is not transferred from a HTMLCanvasElement throws an exception.");
+    var p = ctx.commit();
+    return promise_rejects(this, new DOMException("", "InvalidStateError"), p, "Should reject");
+}, "Test that calling commit on an OffscreenCanvas that is not transferred from a HTMLCanvasElement returns a rejected promise with an exception.");
 
 </script>
 

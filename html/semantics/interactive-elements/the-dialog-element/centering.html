@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>dialog element: centered alignment</title>
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<link rel=help href="https://html.spec.whatwg.org/multipage/#centered-alignment">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+
+<script>
+"use strict";
+
+// Be sure to sync with centering-iframe.html
+const DIALOG_WIDTH = 10;
+const DIALOG_HEIGHT = 10;
+
+testDialogCentering("horizontal-tb", "", "tall viewport", 20, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("horizontal-tb", "", "wide viewport", 100, 20, "top", 20 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("horizontal-tb", "", "square viewport", 100, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("horizontal-tb", "", "dialog and viewport match", DIALOG_WIDTH, DIALOG_HEIGHT, "top", 0);
+testDialogCentering("horizontal-tb", "", "dialog bigger than viewport", 100, DIALOG_HEIGHT / 2, "top", 0);
+
+testDialogCentering("vertical-rl", "", "tall viewport", 20, 100, "right", 20 / 2 - DIALOG_WIDTH / 2);
+testDialogCentering("vertical-lr", "", "tall viewport", 20, 100, "left", 20 / 2 - DIALOG_WIDTH / 2);
+testDialogCentering("vertical-lr", "", "dialog bigger than viewport", DIALOG_WIDTH / 2, 100, "right", 0); // TODO check
+
+testDialogCentering("horizontal-tb", "vertical-rl", "tall viewport", 20, 100, "top", 0); // TODO figure out
+testDialogCentering("vertical-rl", "horizontal-tb", "tall viewport", 20, 100, "right", 0); // TODO figure out
+
+function testDialogCentering(writingMode, dialogWritingMode, label, iframeWidth, iframeHeight, property, numericValue) {
+  async_test(t => {
+    const iframe = document.createElement("iframe");
+    iframe.src = `centering-iframe.sub.html?html-writing-mode=${writingMode}&dialog-writing-mode=${dialogWritingMode}`;
+    iframe.width = iframeWidth;
+    iframe.height = iframeHeight;
+    iframe.onload = t.step_func_done(() => {
+      const dialog = iframe.contentDocument.querySelector("dialog");
+      assert_equals(window.getComputedStyle(dialog)[property], numericValue + "px");
+    });
+    document.body.appendChild(iframe);
+  }, writingMode + (dialogWritingMode ? ` (dialog/dialog container ${dialogWritingMode})` : "") + `: ${label}`);
+}
+</script>

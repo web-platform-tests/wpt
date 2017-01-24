@@ -41,10 +41,29 @@
 
       test(function() {
         var bodyRequest = new Request("", initValuesDict);
+        const originalBody = bodyRequest.body;
         assert_false(bodyRequest.bodyUsed , "bodyUsed is false when request is not disturbed");
         var requestFromRequest = new Request(bodyRequest);
         assert_true(bodyRequest.bodyUsed , "bodyUsed is true when request is disturbed");
+        assert_equals(bodyRequest.body, originalBody, "body should not change");
+        assert_not_equals(originalBody, undefined, "body should not be undefined");
+        assert_not_equals(originalBody, null, "body should not be null");
       }, "Input request used for creating new request became disturbed");
+
+      promise_test(() => {
+        const bodyRequest = new Request("", initValuesDict);
+        const originalBody = bodyRequest.body;
+        assert_false(bodyRequest.bodyUsed , "bodyUsed is false when request is not disturbed");
+        const requestFromRequest = new Request(bodyRequest, { body : "init body" });
+        assert_true(bodyRequest.bodyUsed , "bodyUsed is true when request is disturbed");
+        assert_equals(bodyRequest.body, originalBody, "body should not change");
+        assert_not_equals(originalBody, undefined, "body should not be undefined");
+        assert_not_equals(originalBody, null, "body should not be null");
+
+        return requestFromRequest.text(text => {
+          assert_equals(text, "init body");
+        });
+      }, "Input request used for creating new request became disturbed even if body is not used");
 
       promise_test(function(test) {
         assert_true(bodyConsumed.bodyUsed , "bodyUsed is true when request is disturbed");

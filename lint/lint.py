@@ -205,6 +205,12 @@ def check_parsed(repo_root, path, f, css_mode):
 
     errors = []
 
+    if css_mode or path.startswith("css/"):
+        if (source_file.type == "support" and
+            not source_file.name_is_non_test and
+            not source_file.name_is_reference):
+            return [("SUPPORT-WRONG-DIR", "Support file not in support directory", path, None)]
+
     if source_file.name_is_non_test or source_file.name_is_manual:
         return []
 

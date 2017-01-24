@@ -390,3 +390,26 @@ def test_open_mode():
             ("OPEN-NO-MODE", message, "test.py", 3),
             ("OPEN-NO-MODE", message, "test.py", 12),
         ]
+
+
+@pytest.mark.parametrize(
+    "filename,css_mode,expect_error",
+    [
+        ("foo/bar.html", False, False),
+        ("foo/bar.html", True, True),
+        ("css/bar.html", False, True),
+        ("css/bar.html", True, True),
+    ])
+def test_css_support_file(filename, css_mode, expect_error):
+    errors = check_file_contents("", filename, six.BytesIO(b""), css_mode)
+    check_errors(errors)
+
+    if expect_error:
+        assert errors == [
+            ('SUPPORT-WRONG-DIR',
+             'Support file not in support directory',
+             filename,
+             None),
+        ]
+    else:
+        assert errors == []

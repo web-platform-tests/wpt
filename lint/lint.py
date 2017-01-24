@@ -57,13 +57,13 @@ def all_paths(repo_root, ignore_local):
     for item in fn(repo_root):
         yield item
 
-def check_path_length(repo_root, path):
+def check_path_length(repo_root, path, css_mode):
     if len(path) + 1 > 150:
         return [("PATH LENGTH", "/%s longer than maximum path length (%d > 150)" % (path, len(path) + 1), path, None)]
     return []
 
 
-def check_worker_collision(repo_root, path):
+def check_worker_collision(repo_root, path, css_mode):
     endings = [(".any.html", ".any.js"),
                (".any.worker.html", ".any.js"),
                (".worker.html", ".worker.js")]
@@ -188,7 +188,7 @@ regexps = [item() for item in
             ConsoleRegexp,
             PrintRegexp]]
 
-def check_regexp_line(repo_root, path, f):
+def check_regexp_line(repo_root, path, f, css_mode):
     errors = []
 
     applicable_regexps = [regexp for regexp in regexps if regexp.applies(path)]
@@ -200,7 +200,7 @@ def check_regexp_line(repo_root, path, f):
 
     return errors
 
-def check_parsed(repo_root, path, f):
+def check_parsed(repo_root, path, f, css_mode):
     source_file = SourceFile(repo_root, path, "/", contents=f.read())
 
     errors = []
@@ -319,7 +319,7 @@ class OpenModeCheck(ASTCheck):
 
 ast_checkers = [item() for item in [OpenModeCheck]]
 
-def check_python_ast(repo_root, path, f):
+def check_python_ast(repo_root, path, f, css_mode):
     if not path.endswith(".py"):
         return []
 
@@ -335,34 +335,36 @@ def check_python_ast(repo_root, path, f):
     return errors
 
 
-def check_path(repo_root, path):
+def check_path(repo_root, path, css_mode):
     """
     Runs lints that check the file path.
 
     :param repo_root: the repository root
     :param path: the path of the file within the repository
+    :param css_mode: whether we're in CSS testsuite mode
     :returns: a list of errors found in ``path``
     """
 
     errors = []
     for path_fn in path_lints:
-        errors.extend(path_fn(repo_root, path))
+        errors.extend(path_fn(repo_root, path, css_mode))
     return errors
 
 
-def check_file_contents(repo_root, path, f):
+def check_file_contents(repo_root, path, f, css_mode):
     """
     Runs lints that check the file contents.
 
     :param repo_root: the repository root
     :param path: the path of the file within the repository
     :param f: a file-like object with the file contents
+    :param css_mode: whether we're in CSS testsuite mode
     :returns: a list of errors found in ``f``
     """
 
     errors = []
     for file_fn in file_lints:
-        errors.extend(file_fn(repo_root, path, f))
+        errors.extend(file_fn(repo_root, path, f, css_mode))
         f.seek(0)
     return errors
 
@@ -398,14 +400,16 @@ def parse_args():
                         help="Output machine-readable JSON format")
     parser.add_argument("--ignore-local", action="store_true",
                         help="Ignore locally added files in the working directory (requires git).")
+    parser.add_argument("--css-mode", action="store_true",
+                        help="Run CSS testsuite specific lints")
     return parser.parse_args()
 
-def main():
+def main(force_css_mode=False):
     args = parse_args()
     paths = args.paths if args.paths else all_paths(repo_root, args.ignore_local)
-    return lint(repo_root, paths, args.json)
+    return lint(repo_root, paths, args.json, force_css_mode or args.css_mode)
 
-def lint(repo_root, paths, output_json):
+def lint(repo_root, paths, output_json, css_mode):
     error_count = defaultdict(int)
     last = None
 
@@ -446,12 +450,12 @@ def lint(repo_root, paths, output_json):
         if any(fnmatch.fnmatch(path, file_match) for file_match in ignored_files):
             continue
 
-        errors = check_path(repo_root, path)
+        errors = check_path(repo_root, path, css_mode)
         last = process_errors(path, errors) or last
 
         if not os.path.isdir(abs_path):
             with open(abs_path, 'rb') as f:
-                errors = check_file_contents(repo_root, path, f)
+                errors = check_file_contents(repo_root, path, f, css_mode)
                 last = process_errors(path, errors) or last
 
     if not output_json:

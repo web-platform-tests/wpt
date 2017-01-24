@@ -26,7 +26,7 @@ INTERESTING_FILE_NAMES = {
 
 def check_with_files(input_bytes):
     return {
-        filename: (check_file_contents("", filename, six.BytesIO(input_bytes)), kind)
+        filename: (check_file_contents("", filename, six.BytesIO(input_bytes), False), kind)
         for (filename, kind) in
         (
             (os.path.join("html", filename), kind)
@@ -380,7 +380,7 @@ def fifth():
 def test_open_mode():
     for method in ["open", "file"]:
         code = open_mode_code.format(method).encode("utf-8")
-        errors = check_file_contents("", "test.py", six.BytesIO(code))
+        errors = check_file_contents("", "test.py", six.BytesIO(code), False)
         check_errors(errors)
 
         message = ("File opened without providing an explicit mode (note: " +

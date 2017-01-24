@@ -375,3 +375,19 @@ def test_xhtml_with_entity(ext):
     assert s.root is not None
 
     assert items(s) == []
+
+
+def test_no_parse():
+    s = create("foo/bar.xml", u"\uFFFF".encode("utf-8"))
+
+    assert not s.name_is_non_test
+    assert not s.name_is_manual
+    assert not s.name_is_visual
+    assert not s.name_is_multi_global
+    assert not s.name_is_worker
+    assert not s.name_is_reference
+    assert not s.content_is_testharness
+    assert not s.content_is_ref_node
+    assert not s.content_is_css_visual
+
+    assert items(s) == []

@@ -649,13 +649,13 @@
             }
         },
         {
-            "comment": "\\ is not a delimiter for non-special schemes",
+            "comment": "\\ is not a delimiter for non-special schemes, but still forbidden in hosts",
             "href": "view-source+http://example.net/path",
             "new_value": "example.com\\stuff",
             "expected": {
-                "href": "view-source+http://example.com\\stuff/path",
-                "host": "example.com\\stuff",
-                "hostname": "example.com\\stuff",
+                "href": "view-source+http://example.net/path",
+                "host": "example.net",
+                "hostname": "example.net",
                 "port": ""
             }
         },
@@ -988,13 +988,13 @@
             }
         },
         {
-            "comment": "\\ is not a delimiter for non-special schemes",
+            "comment": "\\ is not a delimiter for non-special schemes, but still forbidden in hosts",
             "href": "view-source+http://example.net/path",
             "new_value": "example.com\\stuff",
             "expected": {
-                "href": "view-source+http://example.com\\stuff/path",
-                "host": "example.com\\stuff",
-                "hostname": "example.com\\stuff",
+                "href": "view-source+http://example.net/path",
+                "host": "example.net",
+                "hostname": "example.net",
                 "port": ""
             }
         },

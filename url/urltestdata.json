@@ -4273,9 +4273,9 @@
     "hash": ""
   },
   {
-    "input": "sc://\u001F!\"$%&'()*+,-.;<=>^_`{|}~/",
+    "input": "sc://\u001F!\"$&'()*+,-.;<=>^_`{|}~/",
     "base": "about:blank",
-    "href": "sc://%1F!\"$%&'()*+,-.;<=>^_`{|}~/",
+    "href": "sc://%1F!\"$&'()*+,-.;<=>^_`{|}~/",
     "origin": "null",
     "protocol": "sc:",
     "username": "",
@@ -4298,6 +4298,11 @@
     "failure": true
   },
   {
+    "input": "sc://%/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
     "input": "sc://@/",
     "base": "about:blank",
     "failure": true
@@ -4314,6 +4319,21 @@
   },
   {
     "input": "sc://:12/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://[/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://\\/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://]/",
     "base": "about:blank",
     "failure": true
   },

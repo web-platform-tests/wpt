@@ -4384,6 +4384,57 @@
     "search": "",
     "hash": ""
   },
+  "# Hosts and percent-encoding",
+  {
+    "input": "ftp://example.com%80/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "ftp://example.com%A0/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "https://example.com%80/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "https://example.com%A0/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "ftp://%e2%98%83",
+    "base": "about:blank",
+    "href": "ftp://xn--n3h/",
+    "origin": "ftp://☃",
+    "protocol": "ftp:",
+    "username": "",
+    "password": "",
+    "host": "xn--n3h",
+    "hostname": "xn--n3h",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "https://%e2%98%83",
+    "base": "about:blank",
+    "href": "https://xn--n3h/",
+    "origin": "https://☃",
+    "protocol": "https:",
+    "username": "",
+    "password": "",
+    "host": "xn--n3h",
+    "hostname": "xn--n3h",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
   "# tests from jsdom/whatwg-url designed for code coverage",
   {
     "input": "http://127.0.0.1:10100/relative_import.html",

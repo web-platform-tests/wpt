@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import argparse
-import json
 import logging
 import os
 import re
@@ -9,13 +8,11 @@ import stat
 import subprocess
 import sys
 import tarfile
-import traceback
 import zipfile
 from cStringIO import StringIO
 from collections import defaultdict
 from ConfigParser import RawConfigParser
 from io import BytesIO
-from urlparse import urljoin
 from tools.manifest import manifest
 
 import requests
@@ -109,126 +106,8 @@ class TravisFold(object):
         print("travis_fold:end:%s" % self.name, file=sys.stderr)
 
 
-class GitHub(object):
 
-    """Interface for the GitHub API."""
-
-    def __init__(self, org, repo, token, product):
-        """Set properties required for communicating with GH API on self."""
-        self.token = token
-        self.headers = {"Accept": "application/vnd.github.v3+json"}
-        self.auth = (self.token, "x-oauth-basic")
-        self.org = org
-        self.repo = repo
-        self.base_url = "https://api.github.com/repos/%s/%s/" % (org, repo)
-        self.product = product
-
-    def _headers(self, headers):
-        """Extend existing HTTP headers and return new value."""
-        if headers is None:
-            headers = {}
-        rv = self.headers.copy()
-        rv.update(headers)
-        return rv
-
-    def post(self, url, data, headers=None):
-        """Serialize and POST data to given URL."""
-        logger.debug("POST %s" % url)
-        if data is not None:
-            data = json.dumps(data)
-        resp = requests.post(
-            url,
-            data=data,
-            headers=self._headers(headers),
-            auth=self.auth
-        )
-        resp.raise_for_status()
-        return resp
-
-    def patch(self, url, data, headers=None):
-        """Serialize and PATCH data to given URL."""
-        logger.debug("PATCH %s" % url)
-        if data is not None:
-            data = json.dumps(data)
-        resp = requests.patch(
-            url,
-            data=data,
-            headers=self._headers(headers),
-            auth=self.auth
-        )
-        resp.raise_for_status()
-        return resp
-
-    def get(self, url, headers=None):
-        """Execute GET request for given URL."""
-        logger.debug("GET %s" % url)
-        resp = requests.get(
-            url,
-            headers=self._headers(headers),
-            auth=self.auth
-        )
-        resp.raise_for_status()
-        return resp
-
-    def post_comment(self, issue_number, body):
-        """Create or update comment in appropriate GitHub pull request comments."""
-        user = self.get(urljoin(self.base_url, "/user")).json()
-        issue_comments_url = urljoin(self.base_url, "issues/%s/comments" % issue_number)
-        comments = self.get(issue_comments_url).json()
-        title_line = format_comment_title(self.product)
-        data = {"body": body}
-        for comment in comments:
-            if (comment["user"]["login"] == user["login"] and
-                comment["body"].startswith(title_line)):
-                comment_url = urljoin(self.base_url, "issues/comments/%s" % comment["id"])
-                self.patch(comment_url, data)
-                break
-        else:
-            self.post(issue_comments_url, data)
-
-
-class GitHubCommentHandler(logging.Handler):
-
-    """GitHub pull request comment handler.
-
-    Subclasses logging.Handler to add ability to post comments to GitHub.
-    """
-
-    def __init__(self, github, pull_number):
-        """Extend logging.Handler and set required properties on self."""
-        logging.Handler.__init__(self)
-        self.github = github
-        self.pull_number = pull_number
-        self.log_data = []
-
-    def emit(self, record):
-        """Format record and add to log"""
-        try:
-            msg = self.format(record)
-            self.log_data.append(msg)
-        except Exception:
-            self.handleError(record)
-
-    def send(self):
-        """Post log to GitHub and flush log."""
-        self.github.post_comment(self.pull_number, "\n".join(self.log_data))
-        self.log_data = []
-
-
-class Browser(object):
-
-    """Base browser class that sets a reference to a GitHub token."""
-
-    product = None
-    binary = None
-
-    def __init__(self, github_token):
-        """Set GitHub token property on self."""
-        self.github_token = github_token
-
-
-class Firefox(Browser):
-
+class Firefox(object):
     """Firefox-specific interface.
 
     Includes installation, webdriver installation, and wptrunner setup methods.
@@ -295,7 +174,7 @@ class Firefox(Browser):
         }
 
 
-class Chrome(Browser):
+class Chrome(object):
     """Chrome-specific interface.
 
     Includes installation, webdriver installation, and wptrunner setup methods.
@@ -398,28 +277,6 @@ def unzip(fileobj):
             zip_data.extract(info)
             perm = info.external_attr >> 16 & 0x1FF
             os.chmod(info.filename, perm)
-
-
-def setup_github_logging(args):
-    """Set up and return GitHub comment handler.
-
-    :param args: the parsed arguments passed to the script
-    """
-    gh_handler = None
-    if args.comment_pr:
-        github = GitHub(args.user, "web-platform-tests", args.gh_token, args.product)
-        try:
-            pr_number = int(args.comment_pr)
-        except ValueError:
-            pass
-        else:
-            gh_handler = GitHubCommentHandler(github, pr_number)
-            gh_handler.setLevel(logging.INFO)
-            logger.debug("Setting up GitHub logging")
-            logger.addHandler(gh_handler)
-    else:
-        logger.warning("No PR number found; not posting to GitHub")
-    return gh_handler
 
 
 class pwd(object):
@@ -695,10 +552,6 @@ def get_parser():
                         default=10,
                         type=int,
                         help="Number of times to run tests")
-    parser.add_argument("--gh-token",
-                        action="store",
-                        default=os.environ.get("GH_TOKEN"),
-                        help="OAuth token to use for accessing GitHub api")
     parser.add_argument("--comment-pr",
                         action="store",
                         default=os.environ.get("TRAVIS_PULL_REQUEST"),
@@ -733,12 +586,6 @@ def main():
 
     os.chdir(args.root)
 
-    if args.gh_token:
-        gh_handler = setup_github_logging(args)
-    else:
-        logger.warning("Can't log to GitHub")
-        gh_handler = None
-
     browser_name = args.product.split(":")[0]
 
     with TravisFold("browser_setup"):
@@ -767,7 +614,7 @@ def main():
         install_wptrunner()
         do_delayed_imports()
 
-        browser = browser_cls(args.gh_token)
+        browser = browser_cls()
         browser.install()
         browser.install_webdriver()
 
@@ -823,11 +670,6 @@ def main():
     else:
         logger.info("No tests run.")
 
-    try:
-        if gh_handler:
-            gh_handler.send()
-    except Exception:
-        logger.error(traceback.format_exc())
     return retcode
 
 

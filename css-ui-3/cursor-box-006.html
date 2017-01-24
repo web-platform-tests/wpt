@@ -15,10 +15,14 @@
   border-image: linear-gradient(blue, blue);
   border-image-outset: 50px;
   border-image-width: 50px;
+  border-style: solid;
+  border-width: 5px;
+  border-color: white;
   cursor: url("support/cursors/fail.png"), help;
 }
 </style>
 <body>
-  <p>The test passes if, when moved over the blue box, the cursor looks like a crosshair (e.g. short line segments resembling a "+" sign).</p>
+  <p>The test passes if, when moved over the blue boxes, the cursor looks like a crosshair (e.g. short line segments resembling a "+" sign).
+  The shape of the cursor when it is over white areas is not part of this test.</p>
   <div id=container><div id=test></div></div>
 </body>

@@ -26,12 +26,18 @@
   }
 </style>
 <body>
-  <p>Before running this test, the link below must have been visited. It will have yellow text if this is not the case. If it its text is yellow, you need to navigate to this link first.
+  <p>Before running this test, this <a href="./">link</a> must have been visited. It will have yellow text if this is not the case. If it its text is yellow, you need to navigate to this link first.
   <p>Test passes if, when the link below is focused for editing, the text insertion caret is green.</p>
   <p>The shape of the caret, and whether it flashes, are not part of the test.</p>
-  <a id="link" contenteditable href="caret-color-015.html">link</a>
+  <a id="link" contenteditable href="./">link</a>
   <script>
     window.onload = function() {
+      /* Convenience helper to get the link into the browsing history.
+         Using a relative path because some browsers only allow replaceState within the same domain. */
+      current_url = window.location.href;
+      history.replaceState({},"","./");
+      history.replaceState({},"",current_url);
+
       document.getElementById("link").focus();
     }
   </script>

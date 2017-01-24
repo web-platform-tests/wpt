@@ -30,11 +30,20 @@
   }
 </style>
 <body>
-  <p>Before running this test, the link below must have been visited. It will have yellow text if this is not the case. If it its text is yellow, you need to navigate to this link first.
-  <p><a id="link" contenteditable href="caret-color-016.html">link</a></p>
+  <p>Before running this test, this <a href="./">link</a> must have been visited. It will have yellow text if this is not the case. If it its text is yellow, you need to navigate to this link first.
+  <p><a id="link" contenteditable href="./">link</a></p>
   <div id=log></div>
 
   <script>
+    setup(
+      function(){
+        /* Helper to get the link into the browsing history.
+           Using a relative path because some browsers only allow replaceState within the same domain. */
+        current_url = window.location.href;
+        history.replaceState({},"","./");
+        history.replaceState({},"",current_url);
+      });
+
     test(
       function(){
         var link = document.getElementById("link");

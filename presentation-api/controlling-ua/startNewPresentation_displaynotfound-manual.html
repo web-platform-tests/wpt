@@ -34,7 +34,7 @@
             t.add_cleanup(function() {
                 if(connection)
                     connection.terminate();
-            })
+            });
 
             return promise_rejects(t, 'NotFoundError', request.start().then(function(c) { connection = c; }));
         });

@@ -31,7 +31,7 @@ function generateWrapper(jsFilename) {
     const noExtension = path.basename(jsFilename, '.js');
 
     const outputs = {
-        https: `<!DOCTYPE html>
+        '.html': `<!DOCTYPE html>
 <meta charset="utf-8">
 <title>${basename} browser context wrapper file</title>
 
@@ -42,7 +42,7 @@ ${importedScriptTags}
 
 <script src="${basename}"></script>
 `,
-        dedicatedworker: `<!DOCTYPE html>
+        '.dedicatedworker.html': `<!DOCTYPE html>
 <meta charset="utf-8">
 <title>${basename} dedicated worker wrapper file</title>
 
@@ -54,7 +54,7 @@ ${importedScriptTags}
 fetch_tests_from_worker(new Worker('${basename}'));
 </script>
 `,
-        sharedworker: `<!DOCTYPE html>
+        '.sharedworker.html': `<!DOCTYPE html>
 <meta charset="utf-8">
 <title>${basename} shared worker wrapper file</title>
 
@@ -66,7 +66,7 @@ fetch_tests_from_worker(new Worker('${basename}'));
 fetch_tests_from_worker(new SharedWorker('${basename}'));
 </script>
 `,
-        serviceworker: `<!DOCTYPE html>
+        '.serviceworker.https.html': `<!DOCTYPE html>
 <meta charset="utf-8">
 <title>${basename} service worker wrapper file</title>
 
@@ -82,7 +82,7 @@ service_worker_test('${basename}', 'Service worker test setup');
     };
 
     for (const [key, value] of Object.entries(outputs)) {
-        const destFilename = path.resolve(path.dirname(jsFilename), `${noExtension}.${key}.html`);
+        const destFilename = path.resolve(path.dirname(jsFilename), `${noExtension}${key}`);
         fs.writeFileSync(destFilename, value, { encoding: 'utf-8' });
     }
 }

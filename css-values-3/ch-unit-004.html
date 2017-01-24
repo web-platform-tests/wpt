@@ -5,29 +5,30 @@
 <link rel="help" href="https://drafts.csswg.org/css-values-3/#font-relative-lengths">
 <meta name="flags" content="">
 <link rel="match" href="reference/ch-unit-001-ref.html">
-<meta name="assert" content="The ch unit is equal to the used advance measure of the 0 (ZERO, U+0030) glyph found in the font used to render it.">
+<meta name="assert" content="In vertical sideways, The ch unit is equal to the used horizontal advance measure of the 0 (ZERO, U+0030) glyph found in the font used to render it.">
 <style>
 span {
     background: green;
     color: green;
-    top: 0; bottom: 0;
+    left: 0; right: 0;
     position: absolute;
 }
 div {
     background: red;
     color: red;
     position: relative;
-    height: 10ch;
-    width: 5ch;
-    float: left;
+    height: 5ch;
+    width: 10ch;
+    writing-mode: vertical-rl;
+    text-orientation: sideways;
 }
 
 div + div {
-    width: auto;
+    height: auto;
 }
 
 div + div span {
-    width: 5ch;
+    height: 5ch;
 }
 </style>
 <body>

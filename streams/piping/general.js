@@ -161,9 +161,9 @@ for (const preventAbort of [true, false]) {
       pull() {
         return Promise.reject(undefined);
       }
-    }, { preventAbort });
+    });
 
-    return rs.pipeTo(new WritableStream()).then(
+    return rs.pipeTo(new WritableStream(), { preventAbort }).then(
         () => assert_unreached('pipeTo promise should be rejected'),
         value => assert_equals(value, undefined, 'rejection value should be undefined'));
 
@@ -177,7 +177,7 @@ for (const preventCancel of [true, false]) {
       pull(controller) {
         controller.enqueue(0);
       }
-    }, { preventCancel });
+    });
 
     const ws = new WritableStream({
       write() {
@@ -185,7 +185,7 @@ for (const preventCancel of [true, false]) {
       }
     });
 
-    return rs.pipeTo(ws).then(
+    return rs.pipeTo(ws, { preventCancel }).then(
          () => assert_unreached('pipeTo promise should be rejected'),
         value => assert_equals(value, undefined, 'rejection value should be undefined'));
 

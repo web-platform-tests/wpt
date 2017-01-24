@@ -59,6 +59,25 @@ function with_iframe(url) {
     });
 }
 
+function with_sandboxed_iframe(url, sandbox) {
+  return new Promise(function(resolve) {
+      var frame = document.createElement('iframe');
+      frame.sandbox = sandbox;
+      frame.src = url;
+      frame.onload = function() { resolve(frame); };
+      document.body.appendChild(frame);
+    });
+}
+
+function with_srcdoc_iframe(srcdoc) {
+  return new Promise(function(resolve) {
+      var frame = document.createElement('iframe');
+      frame.srcdoc = srcdoc;
+      frame.onload = function() { resolve(frame); };
+      document.body.appendChild(frame);
+    });
+}
+
 function normalizeURL(url) {
   return new URL(url, self.location).toString().replace(/#.*$/, '');
 }

@@ -35,7 +35,7 @@ function testDialogCentering(writingMode, dialogWritingMode, label, iframeWidth,
     iframe.height = iframeHeight;
     iframe.onload = t.step_func_done(() => {
       const dialog = iframe.contentDocument.querySelector("dialog");
-      assert_equals(window.getComputedStyle(dialog)[property], numericValue + "px");
+      assert_equals(iframe.contentWindow.getComputedStyle(dialog)[property], numericValue + "px");
     });
     document.body.appendChild(iframe);
   }, writingMode + (dialogWritingMode ? ` (dialog/dialog container ${dialogWritingMode})` : "") + `: ${label}`);

@@ -6,7 +6,7 @@
     writing-mode: {{GET[html-writing-mode]}}
   }
 
-  dialog, body {
+  #container {
     writing-mode: {{GET[dialog-writing-mode]}}
   }
 
@@ -17,7 +17,9 @@
   }
 </style>
 
-<dialog style="width: 10px; height: 10px;">X</dialog> <!-- sync width and height with centering.html -->
+<div id="container">
+  <dialog style="width: 10px; height: 10px;">X</dialog> <!-- sync width and height with centering.html -->
+</div>
 
 <script>
 "use strict";

@@ -4256,19 +4256,99 @@
     "search": "",
     "hash": ""
   },
-  "# unknown schemes and non-ASCII domains",
+  "# unknown schemes and their hosts",
   {
     "input": "sc://ñ.test/",
     "base": "about:blank",
-    "href": "sc://xn--ida.test/",
+    "href": "sc://%C3%B1.test/",
     "origin": "null",
     "protocol": "sc:",
     "username": "",
     "password": "",
-    "host": "xn--ida.test",
-    "hostname": "xn--ida.test",
+    "host": "%C3%B1.test",
+    "hostname": "%C3%B1.test",
     "port": "",
     "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "sc://\u001F!\"$&'()*+,-.;<=>^_`{|}~/",
+    "base": "about:blank",
+    "href": "sc://%1F!\"$&'()*+,-.;<=>^_`{|}~/",
+    "origin": "null",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "%1F!\"$&'()*+,-.;<=>^_`{|}~",
+    "hostname": "%1F!\"$&'()*+,-.;<=>^_`{|}~",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "sc://\u0000/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc:// /",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://%/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://@/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://te@s:t@/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://:/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://:12/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://[/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://\\/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "sc://]/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "x",
+    "base": "sc://ñ",
+    "href": "sc://%C3%B1/x",
+    "origin": "null",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "%C3%B1",
+    "hostname": "%C3%B1",
+    "port": "",
+    "pathname": "/x",
     "search": "",
     "hash": ""
   },
@@ -4754,5 +4834,16 @@
     "pathname": "/",
     "search": "",
     "hash": ""
+  },
+  "# Empty host",
+  {
+    "input": "http://?",
+    "base": "about:blank",
+    "failure": "true"
+  },
+  {
+    "input": "http://#",
+    "base": "about:blank",
+    "failure": "true"
   }
 ]

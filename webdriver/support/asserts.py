@@ -75,3 +75,18 @@ def assert_success(response, value):
 
     assert response.status == 200
     assert response.body["value"] == value
+
+def assert_dialog_handled(session, expected_text):
+    result = session.transport.send("GET",
+                                    "session/%s/alert/text" % session.session_id)
+
+    # If there were any existing dialogs prior to the creation of this
+    # fixture's dialog, then the "Get Alert Text" command will return
+    # successfully. In that case, the text must be different than that
+    # of this fixture's dialog.
+    try:
+        assert_error(result, "no such alert")
+    except:
+        assert (result.status == 200 and
+                result.body["value"] != expected_text), (
+               "Dialog with text '%s' was not handled." % expected_text)

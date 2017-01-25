@@ -3,14 +3,14 @@
 // const setAllowPaymentRequest = bool;
 // const testCrossOrigin = bool;
 
-const paymentArgs = [[{supportedMethods: ['foo']}], {total: {label: 'label', amount: {currency: 'USD', value: '5.00'}}}];
 const tests = {};
 
 window.onmessage = (e) => {
   const result = e.data;
-  const t = tests[result.urlQuery];
+  const tagName = result.urlQuery;
+  const t = tests[tagName];
   t.step(() => {
-    if (expectSuccess[result.urlQuery]) {
+    if (expectSuccess[tagName]) {
       assert_equals(result.message, 'Success');
     } else {
       assert_equals(result.message, 'Exception');

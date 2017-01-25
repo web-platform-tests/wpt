@@ -1575,73 +1575,49 @@ policies and contribution forms [3].
     }
 
     /*
-     * A RemoteWorker listens for test events from a worker. These events are
-     * then used to construct and maintain RemoteTest objects that mirror the
-     * tests running on the remote worker.
+     * A RemoteContext listens for test events from a remote test context, such
+     * as another window or a worker. These events are then used to construct
+     * and maintain RemoteTest objects that mirror the tests running in the
+     * remote context.
      */
-    function RemoteWorker(worker) {
+    function RemoteContext(remote, message_target) {
         this.running = true;
         this.tests = new Array();
 
         var this_obj = this;
-        worker.onerror = function(error) { this_obj.worker_error(error); };
+        remote.onerror = function(error) { this_obj.remote_error(error); };
 
-        var message_port;
-
-        if (is_service_worker(worker)) {
-            if (window.MessageChannel) {
-                // The ServiceWorker's implicit MessagePort is currently not
-                // reliably accessible from the ServiceWorkerGlobalScope due to
-                // Blink setting MessageEvent.source to null for messages sent
-                // via ServiceWorker.postMessage(). Until that's resolved,
-                // create an explicit MessageChannel and pass one end to the
-                // worker.
-                var message_channel = new MessageChannel();
-                message_port = message_channel.port1;
-                message_port.start();
-                worker.postMessage({type: "connect"}, [message_channel.port2]);
-            } else {
-                // If MessageChannel is not available, then try the
-                // ServiceWorker.postMessage() approach using MessageEvent.source
-                // on the other end.
-                message_port = navigator.serviceWorker;
-                worker.postMessage({type: "connect"});
+        // Keeping a reference to the remote object and the message handler until
+        // remote_done() is seen prevents the remote object and its message channel
+        // from going away before all the messages are dispatched.
+        this.remote = remote;
+        this.message_target = message_target;
+        this.message_handler = function(message) {
+            if (this_obj.running && message.data && message.source === this_obj.remote &&
+                (message.data.type in this_obj.message_handlers)) {
+                this_obj.message_handlers[message.data.type].call(this_obj, message.data);
             }
-        } else if (is_shared_worker(worker)) {
-            message_port = worker.port;
-        } else {
-            message_port = worker;
-        }
+        };
 
-        // Keeping a reference to the worker until worker_done() is seen
-        // prevents the Worker object and its MessageChannel from going away
-        // before all the messages are dispatched.
-        this.worker = worker;
-
-        message_port.onmessage =
-            function(message) {
-                if (this_obj.running && (message.data.type in this_obj.message_handlers)) {
-                    this_obj.message_handlers[message.data.type].call(this_obj, message.data);
-                }
-            };
+        this.message_target.addEventListener("message", this.message_handler);
     }
 
-    RemoteWorker.prototype.worker_error = function(error) {
+    RemoteContext.prototype.remote_error = function(error) {
         var message = error.message || String(error);
         var filename = (error.filename ? " " + error.filename: "");
-        // FIXME: Display worker error states separately from main document
+        // FIXME: Display remote error states separately from main document
         // error state.
-        this.worker_done({
+        this.remote_done({
             status: {
                 status: tests.status.ERROR,
-                message: "Error in worker" + filename + ": " + message,
+                message: "Error in remote" + filename + ": " + message,
                 stack: error.stack
             }
         });
         error.preventDefault();
     };
 
-    RemoteWorker.prototype.test_state = function(data) {
+    RemoteContext.prototype.test_state = function(data) {
         var remote_test = this.tests[data.test.index];
         if (!remote_test) {
             remote_test = new RemoteTest(data.test);
@@ -1651,31 +1627,33 @@ policies and contribution forms [3].
         tests.notify_test_state(remote_test);
     };
 
-    RemoteWorker.prototype.test_done = function(data) {
+    RemoteContext.prototype.test_done = function(data) {
         var remote_test = this.tests[data.test.index];
         remote_test.update_state_from(data.test);
         remote_test.done();
         tests.result(remote_test);
     };
 
-    RemoteWorker.prototype.worker_done = function(data) {
+    RemoteContext.prototype.remote_done = function(data) {
         if (tests.status.status === null &&
             data.status.status !== data.status.OK) {
             tests.status.status = data.status.status;
             tests.status.message = data.status.message;
             tests.status.stack = data.status.stack;
         }
+        this.message_target.removeEventListener("message", this.message_handler);
         this.running = false;
-        this.worker = null;
+        this.remote = null;
+        this.message_target = null;
         if (tests.all_done()) {
             tests.complete();
         }
     };
 
-    RemoteWorker.prototype.message_handlers = {
-        test_state: RemoteWorker.prototype.test_state,
-        result: RemoteWorker.prototype.test_done,
-        complete: RemoteWorker.prototype.worker_done
+    RemoteContext.prototype.message_handlers = {
+        test_state: RemoteContext.prototype.test_state,
+        result: RemoteContext.prototype.test_done,
+        complete: RemoteContext.prototype.remote_done
     };
 
     /*
@@ -1743,7 +1721,7 @@ policies and contribution forms [3].
         this.test_done_callbacks = [];
         this.all_done_callbacks = [];
 
-        this.pending_workers = [];
+        this.pending_remotes = [];
 
         this.status = new TestsStatus();
 
@@ -1858,7 +1836,7 @@ policies and contribution forms [3].
         return (this.tests.length > 0 && test_environment.all_loaded &&
                 this.num_pending === 0 && !this.wait_for_finish &&
                 !this.processing_callbacks &&
-                !this.pending_workers.some(function(w) { return w.running; }));
+                !this.pending_remotes.some(function(w) { return w.running; }));
     };
 
     Tests.prototype.start = function() {
@@ -1967,18 +1945,74 @@ policies and contribution forms [3].
                  });
     };
 
+    /*
+     * Constructs a RemoteContext that tracks tests from a specific worker.
+     */
+    Tests.prototype.create_remote_worker = function(worker) {
+        var message_port;
+
+        if (is_service_worker(worker)) {
+            // Microsoft Edge's implementation of ServiceWorker's doesn't support MessagePort yet.
+            const isMicrosoftEdgeBrowser = navigator.userAgent.includes("Edge");
+            if (window.MessageChannel && !isMicrosoftEdgeBrowser) {
+                // The ServiceWorker's implicit MessagePort is currently not
+                // reliably accessible from the ServiceWorkerGlobalScope due to
+                // Blink setting MessageEvent.source to null for messages sent
+                // via ServiceWorker.postMessage(). Until that's resolved,
+                // create an explicit MessageChannel and pass one end to the
+                // worker.
+                var message_channel = new MessageChannel();
+                message_port = message_channel.port1;
+                message_port.start();
+                worker.postMessage({type: "connect"}, [message_channel.port2]);
+            } else {
+                // If MessageChannel is not available, then try the
+                // ServiceWorker.postMessage() approach using MessageEvent.source
+                // on the other end.
+                message_port = navigator.serviceWorker;
+                worker.postMessage({type: "connect"});
+            }
+        } else if (is_shared_worker(worker)) {
+            message_port = worker.port;
+        } else {
+            message_port = worker;
+        }
+
+        return new RemoteContext(worker, message_port);
+    };
+
+    /*
+     * Constructs a RemoteContext that tracks tests from a specific window.
+     */
+    Tests.prototype.create_remote_window = function(remote) {
+        return new RemoteContext(remote, window);
+    };
+
     Tests.prototype.fetch_tests_from_worker = function(worker) {
         if (this.phase >= this.phases.COMPLETE) {
             return;
         }
 
-        this.pending_workers.push(new RemoteWorker(worker));
+        this.pending_remotes.push(this.create_remote_worker(worker));
     };
 
     function fetch_tests_from_worker(port) {
         tests.fetch_tests_from_worker(port);
     }
     expose(fetch_tests_from_worker, 'fetch_tests_from_worker');
+
+    Tests.prototype.fetch_tests_from_window = function(remote) {
+        if (this.phase >= this.phases.COMPLETE) {
+            return;
+        }
+
+        this.pending_remotes.push(this.create_remote_window(remote));
+    };
+
+    function fetch_tests_from_window(window) {
+        tests.fetch_tests_from_window(window);
+    }
+    expose(fetch_tests_from_window, 'fetch_tests_from_window');
 
     function timeout() {
         if (tests.timeout_length === null) {

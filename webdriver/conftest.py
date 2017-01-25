@@ -3,7 +3,8 @@ import os
 import pytest
 import webdriver
 
-from util import cleanup
+import util.wd_assert as wd_assert
+from util.fixtures import session, create_window, create_frame
 from util.http_request import HTTPRequest
 
 default_host = "http://127.0.0.1"
@@ -25,15 +26,11 @@ def _session(request):
     return session
 
 @pytest.fixture(scope="function")
-def session(_session, request):
-    # finalisers are popped off a stack,
-    # making their ordering reverse
-    request.addfinalizer(lambda: cleanup.switch_to_top_level_browsing_context(_session))
-    request.addfinalizer(lambda: cleanup.restore_windows(_session))
-    request.addfinalizer(lambda: cleanup.dismiss_user_prompts(_session))
-
-    return _session
-
-@pytest.fixture(scope="function")
 def http(session):
     return HTTPRequest(session.transport.host, session.transport.port)
+
+pytest.fixture(scope="function")(session)
+
+pytest.fixture()(create_window)
+
+pytest.fixture()(create_frame)

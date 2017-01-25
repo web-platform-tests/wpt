@@ -9,8 +9,8 @@
 <div id="test" contenteditable=true>This test passes if there is no visual marker indicating the <span id=child>spellinnnnnggg</span> mistake in this sentence, and fails otherwise.</div>
 
 <script>
-  var t = document.getElementById("test");
-  t.focus(); t.blur(); // Alternative to forceSpellCheck(), due to general lack of support
-  var c = document.getElementById("child");
-  c.setAttribute("contenteditable", false);
+  var test = document.getElementById("test");
+  test.focus(); test.blur(); // Alternative to forceSpellCheck(), due to general lack of support
+  var child = document.getElementById("child");
+  child.setAttribute("contenteditable", false);
 </script>

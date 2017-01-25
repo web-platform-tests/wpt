@@ -4,14 +4,19 @@ window.onmessage = (e) => {
   const paymentArgs = [[{supportedMethods: ['foo']}], {total: {label: 'label', amount: {currency: 'USD', value: '5.00'}}}];
 
   if (e.data === 'What is the result of new PaymentRequest(...)?') {
+    const result = {urlQuery: location.search.substring(1)}; // Used to distinguish subtests
     try {
       new PaymentRequest(...paymentArgs);
-      e.source.postMessage({message: 'Success'}, '*');
+      result.message = 'Success';
+      e.source.postMessage(result, '*');
     } catch(ex) {
-      e.source.postMessage({message: 'Exception', details: [ex instanceof DOMException, ex.code, ex.name]}, '*');
+      result.message = 'Exception';
+      result.details = [ex instanceof DOMException, ex.code, ex.name];
+      e.source.postMessage(result, '*');
     }
   } else {
-    e.source.postMessage({message: 'Incorrect message'}, '*');
+    result.message = 'Incorrect message';
+    e.source.postMessage(result, '*');
   }
 }
 </script>

@@ -8,4 +8,4 @@ except ImportError:
           '"git submodule update --init --recursive"?')
     sys.exit(2)
 
-sys.exit(0 if lint.main() == 0 else 1)
+sys.exit(0 if lint.main(force_css_mode=True) == 0 else 1)

@@ -57,6 +57,11 @@ CONSOLE: css-writing-modes-3/tools/generators/unicode-data.js
 *: work-in-progress/*
 
 
+## Test plans and implementation reports
+*: */reports/*
+*: */test-plan/*
+
+
 ## Things we don't have enabled yet
 OPEN-NO-MODE: *
 PARSE-FAILED: *
@@ -64,6 +69,42 @@ PRINT STATEMENT: *
 W3C-TEST.ORG: *
 CONTENT-VISUAL: *
 CONTENT-MANUAL: *
+
+
+## Support files not in /support/ or similar
+SUPPORT-WRONG-DIR: */reftest.list
+SUPPORT-WRONG-DIR: *.headers
+SUPPORT-WRONG-DIR: */README
+SUPPORT-WRONG-DIR: */README.md
+SUPPORT-WRONG-DIR: *-README
+SUPPORT-WRONG-DIR: */LICENSE
+SUPPORT-WRONG-DIR: */LICENSE-*
+SUPPORT-WRONG-DIR: */COPYING
+SUPPORT-WRONG-DIR: */Makefile
+
+# The selectors-3 testsuite has a weird build system
+SUPPORT-WRONG-DIR: selectors-3/*
+
+# Things we should fix
+SUPPORT-WRONG-DIR: css-animations-1/animationevent-interface.js
+SUPPORT-WRONG-DIR: css-backgrounds-3/justfortest.html
+SUPPORT-WRONG-DIR: css-backgrounds-3/background-clip/list.txt
+SUPPORT-WRONG-DIR: css-backgrounds-3/background-origin/list.txt
+SUPPORT-WRONG-DIR: css-color-3/htaccess
+SUPPORT-WRONG-DIR: css-fonts-3/font-variant-debug.html
+SUPPORT-WRONG-DIR: css-masking-1/clip-path/svg-clipPath.svg
+SUPPORT-WRONG-DIR: css21/section-index.xht
+SUPPORT-WRONG-DIR: css21/other-formats/xml/background-18.css
+SUPPORT-WRONG-DIR: css21/other-formats/xml/background-19-alt.xml
+SUPPORT-WRONG-DIR: css21/other-formats/xml/background-19.css
+SUPPORT-WRONG-DIR: filters-1/filter-external-002-filter.svg
+SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/check-for-references.sh
+SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/sync-tests-filter
+SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/sync-tests.sh
+SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/masking/blank.html
+SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/transforms/green.html
+SUPPORT-WRONG-DIR: WOFF2-UserAgent/manifest.txt
+SUPPORT-WRONG-DIR: WOFF2-UserAgent/Tests/xhtml1/testcaseindex.xht
 
 
 ## Whitespace rules that we can't enforce yet

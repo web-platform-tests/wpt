@@ -1528,10 +1528,10 @@ promise_test(() => {
 
     for (let i = 0; i < 4; ++i) {
       assert_equals(viewInfos[i].constructor, Uint8Array, 'view.constructor should be Uint8Array');
-      assert_equals(viewInfos[i].bufferByteLength, 4, 'view.buffer.byteLength should be 16');
+      assert_equals(viewInfos[i].bufferByteLength, 4, 'view.buffer.byteLength should be 4');
 
-      assert_equals(viewInfos[i].byteOffset, i, 'view.byteOffset should be 0');
-      assert_equals(viewInfos[i].byteLength, 4 - i, 'view.byteLength should be 16');
+      assert_equals(viewInfos[i].byteOffset, i, 'view.byteOffset should be i');
+      assert_equals(viewInfos[i].byteLength, 4 - i, 'view.byteLength should be 4 - i');
     }
   });
 }, 'ReadableStream with byte source: read(view) with Uint32Array, then fill it by multiple respond() calls');

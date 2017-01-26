@@ -280,6 +280,7 @@ promise_test(() => {
 
   const reader = stream.getReader();
   const readPromise = reader.read();
+  const ignoredReadPromise = reader.read();
 
   assert_equals(pullCount, 0, 'No pull() as start() just finished and is not yet reflected to the state of the stream');
 

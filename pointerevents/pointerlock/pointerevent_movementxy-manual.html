@@ -9,19 +9,24 @@
         <!-- Additional helper script for common checks across event types -->
         <script type="text/javascript" src="../pointerevent_support.js"></script>
         <style>
-          body {
+          #testContainer {
             touch-action: none;
             user-select: none;
+            position: relative;
           }
           #box1 {
-            top: 330px;
-            left: 150px;
+            top: 30px;
+            left: 50px;
             background: black;
           }
           #box2 {
-            top: 370px;
-            left: 350px;
+            top: 70px;
+            left: 250px;
             background: red;
+          }
+          #innerFrame {
+            top: 10px;
+            left: 100px;
           }
           #square2 {
             visibility: block;
@@ -83,9 +88,11 @@
 
             Test passes if the proper behavior of the events is observed.
         </h4>
-        <div id="box1" class="square"></div>
-        <div id="box2" class="square"></div>
-        <iframe id="innerFrame" src="resources/pointerevent_movementxy-iframe.html"></iframe>
+        <div id="testContainer">
+            <div id="box1" class="square"></div>
+            <div id="box2" class="square"></div>
+            <iframe id="innerFrame" src="resources/pointerevent_movementxy-iframe.html"></iframe>
+        </div>
         <div class="spacer"></div>
     </body>
 </html>

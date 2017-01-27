@@ -89,19 +89,15 @@ promise_test(() => {
 
 }, 'ReadableStream with byte source: No automatic pull call if start doesn\'t finish');
 
-promise_test(() => {
-  let pullCalled = false;
+promise_test(t => {
   new ReadableStream({
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   }, {
     highWaterMark: 0
   });
 
-  return Promise.resolve()
-      .then(() => assert_false(pullCalled, 'pull should not be called'));
+  return Promise.resolve();
 }, 'ReadableStream with byte source: Construct with highWaterMark of 0');
 
 promise_test(t => {
@@ -126,15 +122,12 @@ promise_test(t => {
   return promise_rejects(t, new TypeError(), reader.closed, 'closed must reject');
 }, 'ReadableStream with byte source: getReader() with mode set to byob, then releaseLock()');
 
-promise_test(() => {
-  let pullCalled = false;
+promise_test(t => {
   const stream = new ReadableStream({
     start(c) {
       c.close();
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -142,19 +135,15 @@ promise_test(() => {
 
   return reader.closed.then(() => {
     assert_throws(new TypeError(), () => stream.getReader(), 'getReader() must throw');
-    assert_false(pullCalled, 'pull should not be called');
   });
 }, 'ReadableStream with byte source: Test that closing a stream does not release a reader automatically');
 
-promise_test(() => {
-  let pullCalled = false;
+promise_test(t => {
   const stream = new ReadableStream({
     start(c) {
       c.close();
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -162,19 +151,15 @@ promise_test(() => {
 
   return reader.closed.then(() => {
     assert_throws(new TypeError(), () => stream.getReader({ mode: 'byob' }), 'getReader() must throw');
-    assert_false(pullCalled, 'pull should not be called');
   });
 }, 'ReadableStream with byte source: Test that closing a stream does not release a BYOB reader automatically');
 
 promise_test(t => {
-  let pullCalled = false;
   const stream = new ReadableStream({
     start(c) {
       c.error(error1);
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -182,19 +167,15 @@ promise_test(t => {
 
   return promise_rejects(t, error1, reader.closed, 'closed must reject').then(() => {
     assert_throws(new TypeError(), () => stream.getReader(), 'getReader() must throw');
-    assert_false(pullCalled, 'pull should not be called');
   });
 }, 'ReadableStream with byte source: Test that erroring a stream does not release a reader automatically');
 
 promise_test(t => {
-  let pullCalled = false;
   const stream = new ReadableStream({
     start(c) {
       c.error(error1);
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -202,7 +183,6 @@ promise_test(t => {
 
   return promise_rejects(t, error1, reader.closed, 'closed must reject').then(() => {
     assert_throws(new TypeError(), () => stream.getReader({ mode: 'byob' }), 'getReader() must throw');
-    assert_false(pullCalled, 'pull should not be called');
   });
 }, 'ReadableStream with byte source: Test that erroring a stream does not release a BYOB reader automatically');
 
@@ -535,8 +515,7 @@ promise_test(() => {
   });
 }, 'ReadableStream with byte source: enqueue() with Uint16Array, getReader(), then read()');
 
-promise_test(() => {
-  let pullCalled = false;
+promise_test(t => {
   const stream = new ReadableStream({
     start(c) {
       const view = new Uint8Array(16);
@@ -544,9 +523,7 @@ promise_test(() => {
       view[8] = 0x02;
       c.enqueue(view);
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -576,21 +553,17 @@ promise_test(() => {
     assert_equals(view.byteOffset, 8, 'value.byteOffset');
     assert_equals(view.byteLength, 8, 'value.byteLength');
     assert_equals(view[0], 0x02);
-    assert_false(pullCalled, 'pull should not be called');
   });
 }, 'ReadableStream with byte source: enqueue(), read(view) partially, then read()');
 
-promise_test(() => {
+promise_test(t => {
   let controller;
-  let pullCalled = false;
 
   const stream = new ReadableStream({
     start(c) {
       controller = c;
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -610,20 +583,16 @@ promise_test(() => {
   }).then(result => {
     assert_equals(result.done, true, 'done');
     assert_equals(result.value, undefined, 'value');
-    assert_false(pullCalled, 'pull should not be called');
   });
 }, 'ReadableStream with byte source: getReader(), enqueue(), close(), then read()');
 
-promise_test(() => {
-  let pullCalled = false;
+promise_test(t => {
   const stream = new ReadableStream({
     start(c) {
       c.enqueue(new Uint8Array(16));
       c.close();
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -640,7 +609,6 @@ promise_test(() => {
   }).then(result => {
     assert_equals(result.done, true, 'done');
     assert_equals(result.value, undefined, 'value');
-    assert_false(pullCalled, 'pull should not be called');
   });
 }, 'ReadableStream with byte source: enqueue(), close(), getReader(), then read()');
 
@@ -891,18 +859,14 @@ promise_test(() => {
 }, 'ReadableStream with byte source: respond(3) to read(view) with 2 element Uint16Array enqueues the 1 byte ' +
    'remainder');
 
-promise_test(() => {
-  let pullCalled = false;
-
+promise_test(t => {
   const stream = new ReadableStream({
     start(controller) {
       const view = new Uint8Array(16);
       view[15] = 0x01;
       controller.enqueue(view);
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -915,13 +879,10 @@ promise_test(() => {
     assert_equals(view.byteOffset, 0);
     assert_equals(view.byteLength, 16);
     assert_equals(view[15], 0x01);
-
-    assert_false(pullCalled, 'pull() should not be called');
   });
 }, 'ReadableStream with byte source: enqueue(), getReader(), then read(view)');
 
-promise_test(() => {
-  let pullCalled = false;
+promise_test(t => {
   let cancelCount = 0;
   let reason;
 
@@ -931,9 +892,7 @@ promise_test(() => {
     start(c) {
       c.enqueue(new Uint8Array(16));
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     cancel(r) {
       if (cancelCount === 0) {
         reason = r;
@@ -950,13 +909,10 @@ promise_test(() => {
     assert_equals(result, undefined);
     assert_equals(cancelCount, 1);
     assert_equals(reason, passedReason, 'reason should equal the passed reason');
-
-    assert_false(pullCalled, 'pull() should not be called');
   });
 }, 'ReadableStream with byte source: enqueue(), getReader(), then cancel() (mode = not BYOB)');
 
-promise_test(() => {
-  let pullCalled = false;
+promise_test(t => {
   let cancelCount = 0;
   let reason;
 
@@ -966,9 +922,7 @@ promise_test(() => {
     start(c) {
       c.enqueue(new Uint8Array(16));
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     cancel(r) {
       if (cancelCount === 0) {
         reason = r;
@@ -985,12 +939,10 @@ promise_test(() => {
     assert_equals(result, undefined);
     assert_equals(cancelCount, 1);
     assert_equals(reason, passedReason, 'reason should equal the passed reason');
-    assert_false(pullCalled, 'pull() should not be called');
   });
 }, 'ReadableStream with byte source: enqueue(), getReader(), then cancel() (mode = BYOB)');
 
-promise_test(() => {
-  let pullCalled = false;
+promise_test(t => {
   let cancelCount = 0;
   let reason;
 
@@ -1002,9 +954,7 @@ promise_test(() => {
     start(c) {
       controller = c;
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     cancel(r) {
       if (cancelCount === 0) {
         reason = r;
@@ -1028,7 +978,6 @@ promise_test(() => {
     assert_equals(result, undefined);
     assert_equals(cancelCount, 1);
     assert_equals(reason, passedReason, 'reason should equal the passed reason');
-    assert_false(pullCalled, 'pull() should not be called');
   });
 
   return Promise.all([readPromise, cancelPromise]);
@@ -1347,7 +1296,6 @@ promise_test(() => {
 }, 'ReadableStream with byte source: enqueue() 3 byte, getReader(), then read(view) with 2-element Uint16Array');
 
 promise_test(t => {
-  let pullCalled = false;
   const stream = new ReadableStream({
     start(c) {
       const view = new Uint8Array(1);
@@ -1355,9 +1303,7 @@ promise_test(t => {
       c.enqueue(view);
       c.close();
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -1365,14 +1311,11 @@ promise_test(t => {
 
 
   return promise_rejects(t, new TypeError(), reader.read(new Uint16Array(1)), 'read(view) must fail')
-      .then(() => promise_rejects(t, new TypeError(), reader.closed, 'reader.closed should reject'))
-      .then(() => assert_false(pullCalled, 'pull() should not be called'));
+      .then(() => promise_rejects(t, new TypeError(), reader.closed, 'reader.closed should reject'));
 }, 'ReadableStream with byte source: read(view) with Uint16Array on close()-d stream with 1 byte enqueue()-d must ' +
    'fail');
 
 promise_test(t => {
-  let pullCalled = false;
-
   let controller;
 
   const stream = new ReadableStream({
@@ -1383,9 +1326,7 @@ promise_test(t => {
 
       controller = c;
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -1396,8 +1337,7 @@ promise_test(t => {
   assert_throws(new TypeError(), () => controller.close(), 'controller.close() must throw');
 
   return promise_rejects(t, new TypeError(), readPromise, 'read(view) must fail')
-      .then(() => promise_rejects(t, new TypeError(), reader.closed, 'reader.closed must reject'))
-      .then(() => assert_false(pullCalled, 'pull() should not be called'));
+      .then(() => promise_rejects(t, new TypeError(), reader.closed, 'reader.closed must reject'));
 }, 'ReadableStream with byte source: A stream must be errored if close()-d before fulfilling read(view) with ' +
    'Uint16Array');
 
@@ -1598,18 +1538,14 @@ promise_test(() => {
   return Promise.all([p0, p1]);
 }, 'ReadableStream with byte source: read() twice, then enqueue() twice');
 
-promise_test(() => {
-  let pullCalled = false;
-
+promise_test(t => {
   let controller;
 
   const stream = new ReadableStream({
     start(c) {
       controller = c;
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -1631,8 +1567,6 @@ promise_test(() => {
     assert_equals(view.buffer.byteLength, 32, '2nd read: buffer.byteLength');
     assert_equals(view.byteOffset, 0, '2nd read: byteOffset');
     assert_equals(view.byteLength, 0, '2nd read: byteLength');
-
-    assert_false(pullCalled, 'pull() should not be called');
   });
 
   controller.close();
@@ -1641,17 +1575,14 @@ promise_test(() => {
   return Promise.all([p0, p1]);
 }, 'ReadableStream with byte source: Multiple read(view), close() and respond()');
 
-promise_test(() => {
+promise_test(t => {
   let controller;
-  let pullCalled = false;
 
   const stream = new ReadableStream({
     start(c) {
       controller = c;
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -1673,8 +1604,6 @@ promise_test(() => {
     assert_equals(view.buffer.byteLength, 16, '2nd read: buffer.byteLength');
     assert_equals(view.byteOffset, 0, '2nd read: byteOffset');
     assert_equals(view.byteLength, 8, '2nd read: byteLength');
-
-    assert_false(pullCalled, 'pull() should not be called');
   });
 
   controller.enqueue(new Uint8Array(24));
@@ -1682,17 +1611,14 @@ promise_test(() => {
   return Promise.all([p0, p1]);
 }, 'ReadableStream with byte source: Multiple read(view), big enqueue()');
 
-promise_test(() => {
+promise_test(t => {
   let controller;
-  let pullCalled = false;
 
   const stream = new ReadableStream({
     start(c) {
       controller = c;
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
@@ -1704,7 +1630,6 @@ promise_test(() => {
     return reader.read(new Uint8Array(7)).then(result => {
       if (result.done) {
         assert_equals(bytesRead, 1024);
-        assert_false(pullCalled, 'pull() should not be called');
         return undefined;
       }
 
@@ -1775,21 +1700,17 @@ promise_test(t => {
 }, 'ReadableStream with byte source: Even read(view) with passing ArrayBufferView like object as view must fail');
 
 promise_test(t => {
-  let pullCalled = false;
   const stream = new ReadableStream({
     start(c) {
       c.error(error1);
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
   const reader = stream.getReader();
 
-  return promise_rejects(t, error1, reader.read(), 'read() must fail')
-      .then(() => assert_false(pullCalled, 'pull() should not be called'));
+  return promise_rejects(t, error1, reader.read(), 'read() must fail');
 }, 'ReadableStream with byte source: read() on an errored stream');
 
 promise_test(t => {
@@ -1812,21 +1733,17 @@ promise_test(t => {
 }, 'ReadableStream with byte source: read(), then error()');
 
 promise_test(t => {
-  let pullCalled = false;
   const stream = new ReadableStream({
     start(c) {
       c.error(error1);
     },
-    pull() {
-      pullCalled = true;
-    },
+    pull: t.unreached_func('pull() should not be called'),
     type: 'bytes'
   });
 
   const reader = stream.getReader({ mode: 'byob' });
 
-  return promise_rejects(t, error1, reader.read(new Uint8Array(1)), 'read() must fail')
-      .then(() => assert_false(pullCalled, 'pull() should not be called'));
+  return promise_rejects(t, error1, reader.read(new Uint8Array(1)), 'read() must fail');
 }, 'ReadableStream with byte source: read(view) on an errored stream');
 
 promise_test(t => {

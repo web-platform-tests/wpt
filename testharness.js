@@ -1956,6 +1956,8 @@ policies and contribution forms [3].
 
         if (is_service_worker(worker)) {
             // Microsoft Edge's implementation of ServiceWorker's doesn't support MessagePort yet.
+            // Feature detection isn't a straightforward option here; it's only possible in the
+            // worker's script context.
             const isMicrosoftEdgeBrowser = navigator.userAgent.includes("Edge");
             if (window.MessageChannel && !isMicrosoftEdgeBrowser) {
                 // The ServiceWorker's implicit MessagePort is currently not

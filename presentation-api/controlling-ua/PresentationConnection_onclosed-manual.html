@@ -38,12 +38,15 @@
 
           assert_true(connection instanceof PresentationConnection, 'the connection is setup');
 
-          connection.onclose = function (evt) {
+          const watcher = new EventWatcher(t, connection, 'close');
+
+          watcher.wait_for('close').then(function () {
+            connection.close();
+            return watcher.wait_for('close');
+          }).then(function (evt) {
             assert_equals(evt.type, "close");
             assert_equals(connection.state, "closed");
-          };
-
-          connection.close();
+          });
 
       });
 

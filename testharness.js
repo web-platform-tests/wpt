@@ -1614,7 +1614,10 @@ policies and contribution forms [3].
                 stack: error.stack
             }
         });
-        error.preventDefault();
+
+        if (error.preventDefault) {
+            error.preventDefault();
+        }
     };
 
     RemoteContext.prototype.test_state = function(data) {

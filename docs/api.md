@@ -522,6 +522,19 @@ object. These objects are structured as follows:
  * result - `{ type: "result", test: Test }`
  * complete - `{ type: "complete", tests: [Test, ...], status: TestsStatus }`
 
+## Consolidating tests from other documents ##
+
+If it is desirable to coalesce multiple test suites running in separate
+documents into one primary test document, that is possible through
+`fetch_tests_from_window`. The argument to `fetch_tests_from_window` is any [`Window`](https://html.spec.whatwg.org/multipage/browsers.html#the-window-object)
+capable of accessing the browsing context as either an ancestor or opener.
+
+This can be used, for example, to pull in tests from a child that was created
+with `window.open`, or in a frame, such that all tests are ultimately reported
+in the same document. The current test suite will not report completion until
+all fetched tests are complete, and errors in the child contexts will result in
+failures for the suite in the current context.
+
 ## Web Workers ##
 
 The `testharness.js` script can be used from within [dedicated workers, shared

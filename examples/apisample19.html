@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Example with iframe that consolidates errors via fetch_tests_from_window</title>
+<title>Example with iframe that consolidates tests via fetch_tests_from_window</title>
 <script src="../testharness.js"></script>
 <script src="../testharnessreport.js"></script>
 <script>
@@ -12,12 +12,12 @@ var parent_test = async_test("Test executing in parent context");
 <h1>Fetching Tests From a Child Context</h1>
 <p>This test demonstrates the use of <tt>fetch_tests_from_window</tt> to pull
 tests from an <tt>iframe</tt> into the primary document.</p>
-<p>The test suite is expected to fail due to an unhandled exception in the
-child context.</p>
+<p>The test suite will not complete until tests in the child context have finished
+executing</p>
 <div id="log"></div>
 
-<iframe id="childContext" src="apisample4.htm" style="display:none"></iframe>
-<!-- apisample4 is a failing suite due to an unhandled Error. -->
+<iframe id="childContext" src="apisample10.html" style="display:none"></iframe>
+<!-- apisample10 has async tests with promises -->
 
 <script>
 	var childContext = document.getElementById("childContext");

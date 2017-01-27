@@ -3548,6 +3548,17 @@
     "base": "http://other.com/",
     "failure": true
   },
+  "U+FFFD is disallowed",
+  {
+    "input": "https://\ufffd",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "https://%EF%BF%BD",
+    "base": "about:blank",
+    "failure": true
+  },
   "Test name prepping, fullwidth input should be converted to ASCII and NOT IDN-ized. This is 'Go' in fullwidth UTF-8/UTF-16.",
   {
     "input": "http://Ｇｏ.com",

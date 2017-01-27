@@ -11,6 +11,9 @@ matrix:
   allow_failures:
     - env: SCRIPT=tools/travis/build.py
 
+before_install:
+  git fetch --unshallow
+
 script:
   - python $SCRIPT
 

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<title>Location toJSON</title>
+<title>Location has no toJSON</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id=log></div>
 <script>
 test(() => {
   assert_equals(location.toJSON, undefined)
-  const prop = Object.getOwnPropertyDescriptor(location, "toJSON")
-  assert_false(prop.enumerable)
-  assert_false(prop.writable)
-  assert_false(prop.configurable)
+  assert_equals(Object.getOwnPropertyDescriptor(location, "toJSON"), undefined)
+  assert_false(location.hasOwnProperty("toJSON"))
 })
 </script>
+<!-- See https://github.com/whatwg/html/pull/2294 for context. (And the HTML Standard of course.) -->

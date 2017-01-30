@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Custom element's type is immutable.</title>
+<meta name="author" title="Bon-Yong Lee" href="mailto:bylee78@gmail.com">
+<meta name="assert" content="After a custom element is instantiated, changing the value of the is attribute must not affect this element's custom element type.">
+<link rel="help" href="http://www.w3.org/TR/custom-elements/#instantiating-custom-elements">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../testcommon.js"></script>
+<link rel="stylesheet" href="/resources/testharness.css">
+</head>
+<body>
+<div id="log"></div>
+<script type="text/javascript">
+test(function() {
+	var CustomButton = document.registerElement( 'custom-button', {
+		prototype: Object.create( HTMLButtonElement.prototype ),
+		extends: 'button'
+	} );
+	var customButton = document.createElement( 'button', 'custom-button' );
+
+	assert_true( customButton instanceof CustomButton, 'A custom element is of custom element type after the instantiation' );
+	customButton.setAttribute( 'is', 'dirty' );
+	assert_equals( 'dirty', customButton.getAttribute( 'is' ), 'An attribute must be changed by method "setAttribute"' );
+
+	assert_true( customButton instanceof CustomButton, 'A custom element is of origin custom elemen type regardless of changing \'is\' attribute' );
+
+}, 'After a custom element is instantiated, changing the value of the is attribute must not affect this element\'s custom element type.');
+</script>
+</body>
+</html>

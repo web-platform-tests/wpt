@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from ..sourcefile import SourceFile
@@ -391,3 +393,13 @@ def test_no_parse():
     assert not s.content_is_css_visual
 
     assert items(s) == []
+
+
+@pytest.mark.parametrize("input,expected", [
+    ("aA", "aA"),
+    ("a/b", "a/b" if os.name != "nt" else "a\\b"),
+    ("a\\b", "a\\b")
+])
+def test_relpath_normalized(input, expected):
+    s = create(input, b"")
+    assert s.rel_path == expected

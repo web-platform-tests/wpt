@@ -399,7 +399,6 @@ def get_files_changed():
     git = get_git_cmd(wpt_root)
     branch_point = git("merge-base", "HEAD", "master").strip()
     logger.debug("Branch point from master: %s" % branch_point)
-    logger.debug(git("log", "--oneline", "%s.." % branch_point))
     files = git("diff", "--name-only", "-z", "%s.." % branch_point)
     if not files:
         return []

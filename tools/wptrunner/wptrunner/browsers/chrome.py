@@ -72,7 +72,7 @@ class ChromeBrowser(Browser):
                                          binary=webdriver_binary,
                                          args=webdriver_args)
 
-    def start(self):
+    def start(self, **kwargs):
         self.server.start(block=False)
 
     def stop(self, force=False):

@@ -29,7 +29,7 @@ async_test(function(t) {
     a.currentTime = a.duration;
     await_seeked(a, t.step_func(function(events) {
       assert_equals(a.currentTime, 0);
-      assert_array_equals(events, ['seeking', 'seeking', 'timeupdate', 'seeked']);
+      assert_array_equals(events, ['seeking', 'timeupdate', 'seeked']);
       t.done();
     }));
   });
@@ -48,7 +48,7 @@ async_test(function(t) {
       while (events[0] == 'timeupdate') {
         events.shift();
       }
-      assert_array_equals(events, ['seeking', 'seeking', 'timeupdate', 'seeked']);
+      assert_array_equals(events, ['seeking', 'timeupdate', 'seeked']);
       // Wait for extra events in case the first seek wasn't aborted.
       t.step_timeout(t.step_func_done(), 0);
     }));

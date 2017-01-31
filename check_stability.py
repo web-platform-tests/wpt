@@ -33,6 +33,7 @@ wpt_root = None
 wptrunner_root = None
 
 logger = logging.getLogger(os.path.splitext(__file__)[0])
+MAX_TABLE_ROWS = 256 if "CONTINUOUS_INTEGRATION" in os.environ else float("inf")
 
 
 def do_delayed_imports():
@@ -629,8 +630,9 @@ def markdown_adjust(s):
     return s
 
 
-def table(headings, data, log):
-    """Create and log data to specified logger in tabular format."""
+def table(headings, data, log, max_rows=None):
+    """Create and log data to specified logger in tabular format, optionally
+    truncated to a maximum number of rows."""
     cols = range(len(headings))
     assert all(len(item) == len(cols) for item in data)
     max_widths = reduce(lambda prev, cur: [(len(cur[i]) + 2)
@@ -641,17 +643,28 @@ def table(headings, data, log):
                         [len(item) + 2 for item in headings])
     log("|%s|" % "|".join(item.center(max_widths[i]) for i, item in enumerate(headings)))
     log("|%s|" % "|".join("-" * max_widths[i] for i in cols))
-    for row in data:
+    for idx, row in enumerate(data):
+        if idx > max_rows:
+            log("|%s|" % "|".join([" ... "] * len(cols)))
+            break
         log("|%s|" % "|".join(" %s" % row[i].ljust(max_widths[i] - 1) for i in cols))
     log("")
 
+def truncation_notice(count, maximum, log):
+    """Write a notice to the provided logger when the given count exceeds some
+    maxmium. This limits the overall size of the output which is desirable in
+    contexts where external factors discourage excessive logging (e.g.
+    continuous integration environments and code review comment threads)."""
+    if count > maximum:
+        log("*%s total results. Table truncated to %s rows.*" % (count, maximum))
 
 def write_inconsistent(inconsistent, iterations):
     """Output inconsistent tests to logger.error."""
     logger.error("## Unstable results ##\n")
     strings = [("`%s`" % markdown_adjust(test), ("`%s`" % markdown_adjust(subtest)) if subtest else "", err_string(results, iterations))
                for test, subtest, results in inconsistent]
-    table(["Test", "Subtest", "Results"], strings, logger.error)
+    table(["Test", "Subtest", "Results"], strings, logger.error, MAX_TABLE_ROWS)
+    truncation_notice(len(strings), MAX_TABLE_ROWS, logger.error)
 
 
 def write_results(results, iterations, comment_pr):
@@ -678,7 +691,8 @@ def write_results(results, iterations, comment_pr):
         strings.extend(((("`%s`" % markdown_adjust(subtest)) if subtest
                          else "", err_string(results, iterations))
                         for subtest, results in test_results.iteritems()))
-        table(["Subtest", "Results"], strings, logger.info)
+        table(["Subtest", "Results"], strings, logger.info, MAX_TABLE_ROWS)
+        truncation_notice(len(strings), MAX_TABLE_ROWS, logger.info)
         if pr_number:
             logger.info("</details>\n")
 

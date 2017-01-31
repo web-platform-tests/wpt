@@ -266,7 +266,7 @@ class Chrome(Browser):
     def version(self, root):
         """Retrieve the release version of the installed browser."""
         output = call(self.binary, "--version")
-        return re.search(r"[0-9a-z\.]+$", output.strip()).group(0)
+        return re.search(r"[0-9\.]+( [a-z]+)?$", output.strip()).group(0)
 
     def wptrunner_args(self, root):
         return {

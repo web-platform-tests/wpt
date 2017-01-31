@@ -25,7 +25,7 @@ install_chrome() {
     deb_archive=google-chrome-${channel}_current_amd64.deb
     wget https://dl.google.com/linux/direct/$deb_archive
 
-    # If the environments provides an installation of Google Chrome, the
+    # If the environment provides an installation of Google Chrome, the
     # existing binary may take precedence over the one introduced in this
     # script. Remove any previously-existing "alternatives" prior to
     # installation in order to ensure that the new binary is installed as

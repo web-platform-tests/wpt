@@ -18,6 +18,8 @@
     }
     #myDiv {
         font: 50px/1 Ahem;
+        justify-content: start;
+        align-content: start;
     }
   </style>
 </head>
@@ -108,7 +110,7 @@
       'grid-template': {
         initial: '150px / 50px 50px 50px',
         'none': ['', '150px / 50px 50px 50px'],
-        '<grid-template-columns> / <grid-template-rows>': ['200px 200px / 100px 100px', '200px 200px / 100px 100px'],
+        '<grid-template-rows> / <grid-template-columns>': ['100px 100px / 200px 200px', '100px 100px / 200px 200px'],
         '<line-names>': ['[a] auto [b] auto [c] / [d] auto [e] auto [f]', '[a] auto [b] auto [c] / [d] auto [e] auto [f]'],
         '<string>+': ['"a b" "a b"', '"a b" "a b"'],
         '<string><track-size>+': ['100px / "a b" 50px', '100px / "a b" 50px'],

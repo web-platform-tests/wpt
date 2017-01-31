@@ -128,3 +128,5 @@ function indexeddb_test(upgrade_func, open_func, description, options) {
     });
   }, description);
 }
+
+// modification to support.js

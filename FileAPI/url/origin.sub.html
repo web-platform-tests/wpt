@@ -4,17 +4,17 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
-<iframe src="{{location[scheme]}}://{{domains[天気の良い日]}}:{{location[port]}}/FileAPI/support/url-origin.html"></iframe>
 <script>
 test(t => {
   const blob = new Blob(["Test Blob"]);
   const url = URL.createObjectURL(blob);
   assert_equals(new URL(url).origin, location.origin);
   assert_true(url.includes(location.origin));
+  assert_true(url.startsWith('blob:{{location[scheme]}}://'));
 }, 'Verify origin of Blob URI matches our origin');
 
 async_test(t => {
-  const frame = document.querySelector('iframe');
+  const frame = document.createElement('iframe');
   self.addEventListener('message', t.step_func(e => {
       if (e.source != frame.contentWindow) return;
       const url = e.data.url;
@@ -25,8 +25,7 @@ async_test(t => {
       assert_true(url.startsWith('blob:{{location[scheme]}}://xn--'));
       t.done();
     }));
-  frame.addEventListener('load', t.step_func(() => {
-      frame.contentWindow.postMessage('ready', '*');
-    }));
+  frame.src = '{{location[scheme]}}://{{domains[天気の良い日]}}:{{location[port]}}/FileAPI/support/url-origin.html';
+  document.body.appendChild(frame);
 }, 'Verify serialization of non-ascii origin in Blob URLs');
 </script>

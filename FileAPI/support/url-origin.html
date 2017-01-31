@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <script>
-onmessage = e => {
-  const blob = new Blob(["Test Blob"]);
-  const url = URL.createObjectURL(blob);
-  e.source.postMessage({url: url}, '*');
-};
+const blob = new Blob(["Test Blob"]);
+const url = URL.createObjectURL(blob);
+window.parent.postMessage({url: url}, '*');
 </script>

@@ -14,23 +14,30 @@
 const DIALOG_WIDTH = 20;
 const DIALOG_HEIGHT = 10;
 
-testDialogCentering("horizontal-tb", "", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
-testDialogCentering("horizontal-tb", "", "wide viewport", 100, 40, "top", 40 / 2 - DIALOG_HEIGHT / 2);
-testDialogCentering("horizontal-tb", "", "square viewport", 100, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
-testDialogCentering("horizontal-tb", "", "dialog and viewport match", DIALOG_WIDTH, DIALOG_HEIGHT, "top", 0);
-testDialogCentering("horizontal-tb", "", "dialog bigger than viewport", 100, DIALOG_HEIGHT / 2, "top", 0);
+testDialogCentering("horizontal-tb", "", "", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("horizontal-tb", "", "", "wide viewport", 100, 40, "top", 40 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("horizontal-tb", "", "", "square viewport", 100, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+testDialogCentering("horizontal-tb", "", "", "dialog and viewport match", DIALOG_WIDTH, DIALOG_HEIGHT, "top", 0);
+testDialogCentering("horizontal-tb", "", "", "dialog bigger than viewport", 100, DIALOG_HEIGHT / 2, "top", 0);
 
-testDialogCentering("vertical-rl", "", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
-testDialogCentering("vertical-lr", "", "tall viewport", 40, 100, "left", 40 / 2 - DIALOG_WIDTH / 2);
-testDialogCentering("vertical-lr", "", "dialog bigger than viewport", DIALOG_WIDTH / 2, 100, "right", 0); // TODO check
+testDialogCentering("vertical-rl", "", "", "tall viewport", 40, 100, "left", 40 / 2 - DIALOG_WIDTH / 2);
+testDialogCentering("vertical-lr", "", "", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
+testDialogCentering("vertical-lr", "", "", "dialog bigger than viewport", DIALOG_WIDTH / 2, 100, "right", 0);
 
-testDialogCentering("horizontal-tb", "vertical-rl", "tall viewport", 40, 100, "top", 0); // TODO figure out
-testDialogCentering("vertical-rl", "horizontal-tb", "tall viewport", 40, 100, "right", 0); // TODO figure out
+testDialogCentering("vertical-rl", "", "horizontal-tb", "tall viewport", 40, 100, "left", 40 / 2 - DIALOG_WIDTH / 2);
+testDialogCentering("vertical-lr", "", "horizontal-tb", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
+testDialogCentering("vertical-lr", "", "horizontal-tb", "dialog bigger than viewport", DIALOG_WIDTH / 2, 100, "right", 0);
 
-function testDialogCentering(writingMode, dialogWritingMode, label, iframeWidth, iframeHeight, property, numericValue) {
+testDialogCentering("horizontal-tb", "vertical-rl", "", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
+testDialogCentering("vertical-rl", "horizontal-tb", "", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+
+testDialogCentering("horizontal-tb", "vertical-rl", "horizontal-tb", "tall viewport", 40, 100, "right", 40 / 2 - DIALOG_WIDTH / 2);
+testDialogCentering("vertical-rl", "horizontal-tb", "vertical-rl", "tall viewport", 40, 100, "top", 100 / 2 - DIALOG_HEIGHT / 2);
+
+function testDialogCentering(writingMode, containerWritingMode, dialogWritingMode, label, iframeWidth, iframeHeight, property, numericValue) {
   async_test(t => {
     const iframe = document.createElement("iframe");
-    iframe.src = `centering-iframe.sub.html?html-writing-mode=${writingMode}&dialog-writing-mode=${dialogWritingMode}`;
+    iframe.src = `centering-iframe.sub.html?html-writing-mode=${writingMode}&container-writing-mode=${containerWritingMode}&dialog-writing-mode=${dialogWritingMode}`;
     iframe.width = iframeWidth;
     iframe.height = iframeHeight;
     iframe.onload = t.step_func_done(() => {
@@ -38,6 +45,7 @@ function testDialogCentering(writingMode, dialogWritingMode, label, iframeWidth,
       assert_equals(iframe.contentWindow.getComputedStyle(dialog)[property], numericValue + "px");
     });
     document.body.appendChild(iframe);
-  }, writingMode + (dialogWritingMode ? ` (dialog/dialog container ${dialogWritingMode})` : "") + `: ${label}`);
+  }, writingMode + (containerWritingMode ? ` (container ${containerWritingMode})` : "") +
+     (dialogWritingMode ? ` (dialog ${dialogWritingMode})` : "") + `: ${label}`);
 }
 </script>

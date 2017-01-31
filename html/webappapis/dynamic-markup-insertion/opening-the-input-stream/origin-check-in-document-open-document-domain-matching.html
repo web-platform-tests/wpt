@@ -1,0 +1,19 @@
+<!doctype html>
+<title>Origin check in document.open() - Matching document.domain</title>
+<link rel="author" title="Jochen Eisinger" href="mailto:jochen@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#opening-the-input-stream">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/resources/common.js"></script>
+<body>
+<script>
+testInIFrame("resources/set-document-domain.html", (ctx) => {
+  try {
+    document.domain = document.domain;
+    ctx.iframes[0].contentDocument.open();
+  } catch (e) {
+    assert_unreached("Opening a same origin document that has its document.domain set throws");
+  }
+}, "It should be possible to open same origin documents when setting document.domain.");
+</script>
+</body>

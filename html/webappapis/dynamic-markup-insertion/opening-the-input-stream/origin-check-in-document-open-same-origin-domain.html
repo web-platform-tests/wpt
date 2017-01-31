@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Origin check in document.open()</title>
+<title>Origin check in document.open() - same origin-domain documents</title>
 <link rel="author" title="Jochen Eisinger" href="mailto:jochen@chromium.org">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/#opening-the-input-stream">
 <script src="/resources/testharness.js"></script>
@@ -7,23 +7,6 @@
 <script src="/html/resources/common.js"></script>
 <body>
 <script>
-testInIFrame(undefined, (ctx) => {
-  try {
-    ctx.iframes[0].contentDocument.open();
-  } catch (e) {
-    assert_unreached("Opening a same origin document throws");
-  }
-}, "It should be possible to open same origin documents.");
-
-testInIFrame("resources/set-document-domain.html", (ctx) => {
-  try {
-    document.domain = document.domain;
-    ctx.iframes[0].contentDocument.open();
-  } catch (e) {
-    assert_unreached("Opening a same origin document that has its document.domain set throws");
-  }
-}, "It should be possible to open same origin documents when setting document.domain.");
-
 testInIFrame("http://{{host}}:{{ports[http][1]}}/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/resources/set-document-domain.svg", (ctx) => {
   document.domain = document.domain;
   // getSVGDocument() only checks same origin-domain.

@@ -18,4 +18,16 @@
     assert_false(name in doc);
   }, "Historical Document member: " + name);
 });
+
+[
+  "cascadedStyle",
+  "defaultStyle",
+  "rawComputedStyle",
+  "usedStyle",
+].forEach(function(name) {
+  test(function() {
+    assert_false(name in document.body);
+    assert_false(name in document.createElement("test"));
+  }, "Historical Element member: " + name);
+});
 </script>

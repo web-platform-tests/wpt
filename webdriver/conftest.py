@@ -3,7 +3,7 @@ import os
 import pytest
 import webdriver
 
-import util.cleanup as cleanup
+from util import cleanup
 from util.http_request import HTTPRequest
 
 default_host = "http://127.0.0.1"
@@ -17,7 +17,7 @@ def _session(request):
     session = webdriver.Session(host, port)
 
     def destroy():
-        if session.session_id:
+        if session.session_id is not None:
             session.end()
 
     request.addfinalizer(destroy)

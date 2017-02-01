@@ -114,6 +114,8 @@ class GitHub(object):
 
     """Interface for the GitHub API."""
 
+    max_comment_length = 65536
+
     def __init__(self, org, repo, token, product):
         """Set properties required for communicating with GH API on self."""
         self.token = token
@@ -171,12 +173,25 @@ class GitHub(object):
         resp.raise_for_status()
         return resp
 
-    def post_comment(self, issue_number, body):
+    def post_comment(self, issue_number, body, full_log_url=None):
         """Create or update comment in appropriate GitHub pull request comments."""
         user = self.get(urljoin(self.base_url, "/user")).json()
         issue_comments_url = urljoin(self.base_url, "issues/%s/comments" % issue_number)
         comments = self.get(issue_comments_url).json()
         title_line = format_comment_title(self.product)
+
+        if len(body) > self.max_comment_length:
+            link = ""
+
+            if full_log_url is not None:
+                link = " [The complete log is available here.](%s)" % full_log_url
+
+            truncation_msg = "\n\n*Report truncated because total content " + \
+                "exceeds GitHub.com's limit for comments).%s*" % link
+
+            body = body[0:self.max_comment_length - len(truncation_msg)] + \
+                truncation_msg
+
         data = {"body": body}
         for comment in comments:
             if (comment["user"]["login"] == user["login"] and
@@ -212,7 +227,15 @@ class GitHubCommentHandler(logging.Handler):
 
     def send(self):
         """Post log to GitHub and flush log."""
-        self.github.post_comment(self.pull_number, "\n".join(self.log_data))
+        full_log_url = None
+        travis_job_id = os.environ.get("TRAVIS_JOB_ID")
+
+        if travis_job_id is not None:
+            full_log_url = \
+                "https://travis-ci.org/w3c/web-platform-tests/jobs/%s" % travis_job_id
+
+        self.github.post_comment(self.pull_number, "\n".join(self.log_data),
+                                 full_log_url=full_log_url)
         self.log_data = []
 
 

@@ -975,14 +975,13 @@ IdlInterface.prototype.test_self = function()
         // following steps:
         // "If A is declared with the [Global] or [PrimaryGlobal] extended
         // attribute, and A supports named properties, then return the named
-        // properties object for A, as defined in section 4.5.5 below.
+        // properties object for A, as defined in §3.6.4 Named properties
+        // object.
         // "Otherwise, if A is declared to inherit from another interface, then
         // return the interface prototype object for the inherited interface.
-        // "Otherwise, if A is declared with the [ArrayClass] extended
-        // attribute, then return %ArrayPrototype% ([ECMA-262], section
-        // 6.1.7.4).
-        // "Otherwise, return %ObjectPrototype% ([ECMA-262], section 6.1.7.4).
-        // ([ECMA-262], section 15.2.4).
+        // "Otherwise, if A is declared with the [LegacyArrayClass] extended
+        // attribute, then return %ArrayPrototype%.
+        // "Otherwise, return %ObjectPrototype%.
         if (this.name === "Window") {
             assert_class_string(Object.getPrototypeOf(self[this.name].prototype),
                                 'WindowProperties',
@@ -996,7 +995,7 @@ IdlInterface.prototype.test_self = function()
                     !this.array
                          .members[inherit_interface]
                          .has_extended_attribute("NoInterfaceObject");
-            } else if (this.has_extended_attribute('ArrayClass')) {
+            } else if (this.has_extended_attribute('LegacyArrayClass')) {
                 inherit_interface = 'Array';
                 inherit_interface_has_interface_object = true;
             } else {

@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: styling the ellipsis</title>
+<link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
+<link rel="help" href="https://www.w3.org/TR/css-ui-3/#ellipsing-details">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<meta name="flags" content="ahem">
+<meta name="assert" content="The ellipsis is styled according to the block. ">
+<style>
+div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 2em;
+  margin-left: -1em;
+  white-space:pre;
+  line-height: 1;
+  font-size: 100px;
+  font-family: ahem;
+  color: green;
+  background: linear-gradient(to right, red, red) top left 1em / 1em 1em no-repeat;
+}
+span {
+	font-family: serif;
+	color: red;
+}
+</style>
+
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div> <span>                    </span></div>

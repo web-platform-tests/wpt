@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test: text-overflow applied at edge of block container</title>
+<link rel="author" title="Florian Rivoal" href="http://florian.rivoal.net/">
+<link rel="help" href="http://www.w3.org/TR/css3-ui/#text-overflow">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<meta name="flags" content="ahem">
+<meta name="assert" content="Checks that the elipsis is applied at the edge of the block container, not the end of the line box, when these are different.">
+<style>
+div {
+  white-space: pre;
+  font-family: ahem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 8em;
+  font-size: 20px;
+  line-height: 1;
+  color: green;
+  margin-left: -3em;
+}
+span {
+  width: 5em;
+  height: 5em;
+  float: right;
+  background: green;
+  text-align: right;
+  color: red;
+}
+</style>
+
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div><span>X</span>               </div>

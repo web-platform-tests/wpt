@@ -5,6 +5,7 @@ from __future__ import print_function
 import argparse
 import json
 import os
+import re
 import socket
 import sys
 import threading
@@ -18,9 +19,11 @@ from multiprocessing import Process, Event
 from ..localpaths import repo_root
 
 import sslutils
+from manifest.sourcefile import read_script_metadata
 from wptserve import server as wptserve, handlers
 from wptserve import stash
 from wptserve.logger import set_logger
+from wptserve.handlers import filesystem_path
 from mod_pywebsocket import standalone as pywebsocket
 
 def replace_end(s, old, new):
@@ -33,7 +36,9 @@ def replace_end(s, old, new):
 
 
 class WorkersHandler(object):
-    def __init__(self):
+    def __init__(self, base_path=None, url_base="/"):
+        self.base_path = base_path
+        self.url_base = url_base
         self.handler = handlers.handler(self.handle_request)
 
     def __call__(self, request, response):
@@ -41,19 +46,33 @@ class WorkersHandler(object):
 
     def handle_request(self, request, response):
         worker_path = replace_end(request.url_parts.path, ".worker.html", ".worker.js")
+        meta = "\n".join(self._get_meta(request))
         return """<!doctype html>
 <meta charset=utf-8>
+%(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-fetch_tests_from_worker(new Worker("%s"));
+fetch_tests_from_worker(new Worker("%(worker_path)s"));
 </script>
-""" % (worker_path,)
+""" % {"meta": meta, "worker_path": worker_path}
+
+    def _get_meta(self, request):
+        path = filesystem_path(self.base_path, request, self.url_base)
+        path = path.replace(".any.worker.html", ".any.js")
+        path = path.replace(".worker.html", ".worker.js")
+        with open(path, "rb") as f:
+            for key, value in read_script_metadata(f):
+                if key == b"timeout":
+                    if value == b"long":
+                        yield '<meta name="timeout" content="long">'
 
 
 class AnyHtmlHandler(object):
-    def __init__(self):
+    def __init__(self, base_path=None, url_base="/"):
+        self.base_path = base_path
+        self.url_base = url_base
         self.handler = handlers.handler(self.handle_request)
 
     def __call__(self, request, response):
@@ -61,9 +80,11 @@ class AnyHtmlHandler(object):
 
     def handle_request(self, request, response):
         test_path = replace_end(request.url_parts.path, ".any.html", ".any.js")
+        meta = "\n".join(self._get_meta(request))
         return """\
 <!doctype html>
 <meta charset=utf-8>
+%(meta)s
 <script>
 self.GLOBAL = {
   isWindow: function() { return true; },
@@ -73,8 +94,17 @@ self.GLOBAL = {
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
-<script src="%s"></script>
-""" % (test_path,)
+<script src="%(test_path)s"></script>
+""" % {"meta": meta, "test_path": test_path}
+
+    def _get_meta(self, request):
+        path = filesystem_path(self.base_path, request, self.url_base)
+        path = path.replace(".any.html", ".any.js")
+        with open(path, "rb") as f:
+            for key, value in read_script_metadata(f):
+                if key == b"timeout":
+                    if value == b"long":
+                        yield '<meta name="timeout" content="long">'
 
 
 class AnyWorkerHandler(object):

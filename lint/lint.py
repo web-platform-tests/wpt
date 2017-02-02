@@ -15,8 +15,8 @@ from . import fnmatch
 from ..localpaths import repo_root
 from ..gitignore.gitignore import PathFilter
 
-from manifest.sourcefile import SourceFile
-from six import iteritems, itervalues
+from manifest.sourcefile import SourceFile, meta_re
+from six import binary_type, iteritems, itervalues
 from six.moves import range
 
 here = os.path.abspath(os.path.split(__file__)[0])
@@ -341,6 +341,38 @@ def check_python_ast(repo_root, path, f, css_mode):
     return errors
 
 
+broken_metadata = re.compile(b"//\s*META:")
+def check_script_metadata(repo_root, path, f, css_mode):
+    if not path.endswith((".worker.js", ".any.js")):
+        return []
+
+    done = False
+    errors = []
+    for idx, line in enumerate(f):
+        assert isinstance(line, binary_type), line
+
+        m = meta_re.match(line)
+        if m:
+            key, value = m.groups()
+            if key == b"timeout":
+                if value != b"long":
+                    errors.append(("UNKNOWN-TIMEOUT-METADATA", "Unexpected value for timeout metadata", path, idx + 1))
+            else:
+                errors.append(("UNKNOWN-METADATA", "Unexpected kind of metadata", path, idx + 1))
+        else:
+            done = True
+
+        if done:
+            if meta_re.match(line):
+                errors.append(("STRAY-METADATA", "Metadata comments should start the file", path, idx + 1))
+            elif meta_re.search(line):
+                errors.append(("INDENTED-METADATA", "Metadata comments should start the line", path, idx + 1))
+            elif broken_metadata.search(line):
+                errors.append(("BROKEN-METADATA", "Metadata comment is not formatted correctly", path, idx + 1))
+
+    return errors
+
+
 def check_path(repo_root, path, css_mode):
     """
     Runs lints that check the file path.
@@ -471,7 +503,7 @@ def lint(repo_root, paths, output_json, css_mode):
     return sum(itervalues(error_count))
 
 path_lints = [check_path_length, check_worker_collision]
-file_lints = [check_regexp_line, check_parsed, check_python_ast]
+file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 
 if __name__ == "__main__":
     error_count = main()

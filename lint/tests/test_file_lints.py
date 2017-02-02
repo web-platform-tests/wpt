@@ -413,3 +413,44 @@ def test_css_support_file(filename, css_mode, expect_error):
         ]
     else:
         assert errors == []
+
+
+@pytest.mark.parametrize("filename", [
+    "foo.worker.js",
+    "foo.any.js",
+])
+@pytest.mark.parametrize("input,error", [
+    (b"""//META: timeout=long\n""", None),
+    (b"""// META: timeout=long\n""", None),
+    (b"""//  META: timeout=long\n""", None),
+    (b"""\n// META: timeout=long\n""", (2, "STRAY-METADATA")),
+    (b""" // META: timeout=long\n""", (1, "INDENTED-METADATA")),
+    (b"""// META: timeout=long\n// META: timeout=long\n""", None),
+    (b"""// META: timeout=long\n\n// META: timeout=long\n""", (3, "STRAY-METADATA")),
+    (b"""// META: timeout=long\n// Start of the test\n// META: timeout=long\n""", (3, "STRAY-METADATA")),
+    (b"""// META:\n""", (1, "BROKEN-METADATA")),
+    (b"""// META: foobar\n""", (1, "BROKEN-METADATA")),
+    (b"""// META: foo=bar\n""", (1, "UNKNOWN-METADATA")),
+    (b"""// META: timeout=bar\n""", (1, "UNKNOWN-TIMEOUT-METADATA")),
+])
+def test_script_metadata(filename, input, error):
+    errors = check_file_contents("", filename, six.BytesIO(input), False)
+    check_errors(errors)
+
+    if error is not None:
+        line, kind = error
+        messages = {
+            "STRAY-METADATA": "Metadata comments should start the file",
+            "INDENTED-METADATA": "Metadata comments should start the line",
+            "BROKEN-METADATA": "Metadata comment is not formatted correctly",
+            "UNKNOWN-TIMEOUT-METADATA": "Unexpected value for timeout metadata",
+            "UNKNOWN-METADATA": "Unexpected kind of metadata",
+        }
+        assert errors == [
+            (kind,
+             messages[kind],
+             filename,
+             line),
+        ]
+    else:
+        assert errors == []

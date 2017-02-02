@@ -262,12 +262,14 @@ class SourceFile(object):
         """The timeout of a test or reference file. "long" if the file has an extended timeout
         or None otherwise"""
         if self.root is None:
-            return
+            return None
 
         if self.timeout_nodes:
             timeout_str = self.timeout_nodes[0].attrib.get("content", None)
             if timeout_str and timeout_str.lower() == "long":
-                return timeout_str
+                return "long"
+
+        return None
 
     @cached_property
     def viewport_nodes(self):

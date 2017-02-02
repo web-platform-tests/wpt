@@ -12,8 +12,8 @@ testInIFrame("resources/set-document-domain.html", (ctx) => {
     document.domain = document.domain;
     ctx.iframes[0].contentDocument.open();
   } catch (e) {
-    assert_unreached("Opening a same origin document that has its document.domain set throws");
+    assert_unreached("Opening a same origin-domain document that has its document.domain set throws");
   }
-}, "It should be possible to open same origin documents when setting document.domain.");
+}, "It should be possible to open same origin-domain documents when setting document.domain.");
 </script>
 </body>

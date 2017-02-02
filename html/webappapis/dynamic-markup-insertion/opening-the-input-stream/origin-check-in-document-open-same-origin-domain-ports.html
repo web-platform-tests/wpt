@@ -12,8 +12,8 @@ testInIFrame("http://{{host}}:{{ports[http][1]}}/html/webappapis/dynamic-markup-
   try {
     ctx.iframes[0].contentDocument.open();
   } catch (e) {
-    assert_unreached("Opening a same origin document throws");
+    assert_unreached("Opening a same origin-domain document throws");
   }
-}, "It should be possible to open same origin documents (with non-matching ports).");
+}, "It should be possible to open same origin-domain documents (with non-matching ports).");
 </script>
 </body>

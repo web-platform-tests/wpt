@@ -105,10 +105,15 @@ self.GLOBAL = {
                 if key == b"timeout":
                     if value == b"long":
                         yield '<meta name="timeout" content="long">'
+                elif key == b"script":
+                    attribute = value.decode('utf-8').replace('"', "&quot;").replace(">", "&gt;")
+                    yield '<script src="%s"></script>' % attribute
 
 
 class AnyWorkerHandler(object):
-    def __init__(self):
+    def __init__(self, base_path=None, url_base="/"):
+        self.base_path = base_path
+        self.url_base = url_base
         self.handler = handlers.handler(self.handle_request)
 
     def __call__(self, request, response):
@@ -116,15 +121,28 @@ class AnyWorkerHandler(object):
 
     def handle_request(self, request, response):
         test_path = replace_end(request.url_parts.path, ".any.worker.js", ".any.js")
+        meta = "\n".join(self._get_meta(request))
         return """\
+%(meta)s
 self.GLOBAL = {
   isWindow: function() { return false; },
   isWorker: function() { return true; },
 };
 importScripts("/resources/testharness.js");
-importScripts("%s");
+importScripts("%(test_path)s");
 done();
-""" % (test_path,)
+""" % {"meta": meta, "test_path": test_path}
+
+    def _get_meta(self, request):
+        path = filesystem_path(self.base_path, request, self.url_base)
+        path = path.replace(".any.worker.js", ".any.js")
+        with open(path, "rb") as f:
+            for key, value in read_script_metadata(f):
+                if key == b"timeout":
+                    pass
+                elif key == b"script":
+                    attribute = value.decode('utf-8').replace("\\", "\\\\").replace('"', '\\"')
+                    yield 'importScripts("%s")' % attribute
 
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]

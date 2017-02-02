@@ -4767,6 +4767,35 @@
     "search": "",
     "hash": ""
   },
+  "# file URLs containing percent-encoded Windows drive letters (shouldn't work)",
+  {
+    "input": "file:///C%3A/",
+    "base": "about:blank",
+    "href": "file:///C%3A/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C%3A/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:///C%7C/",
+    "base": "about:blank",
+    "href": "file:///C%7C/",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/C%7C/",
+    "search": "",
+    "hash": ""
+  },
   "# file URLs relative to other file URLs (via https://github.com/jsdom/whatwg-url/pull/60)",
   {
     "input": "pix/submit.gif",

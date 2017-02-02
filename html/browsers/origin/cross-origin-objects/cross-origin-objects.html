@@ -162,7 +162,7 @@ addTest(function(exception_t) {
 addTest(function(exception_t) {
   test_throws(exception_t, new TypeError, function() { Object.preventExtensions(C) },
                 "preventExtensions on cross-origin Window should throw");
-  test_throws(exception_t, "SecurityError", function() { Object.preventExtensions(C.location) },
+  test_throws(exception_t, new TypeError, function() { Object.preventExtensions(C.location) },
                 "preventExtensions on cross-origin Location should throw");
 }, "[[PreventExtensions]] should throw for cross-origin objects");
 

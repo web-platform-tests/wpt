@@ -7,6 +7,6 @@
 <script>
 test(() => {
   const a = new URL("https://example.com/")
-  assert_equals(JSON.stringify(a), a.href)
+  assert_equals(JSON.stringify(a), "\"" + a.href + "\"")
 })
 </script>

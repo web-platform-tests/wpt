@@ -408,7 +408,7 @@ class Session(object):
     @property
     @command
     def window_handle(self):
-        return self.send_command("GET", "window_handle", key="value")
+        return self.send_command("GET", "window", key="value")
 
     @window_handle.setter
     @command
@@ -431,12 +431,12 @@ class Session(object):
 
     @command
     def close(self):
-        return self.send_command("DELETE", "window_handle")
+        return self.send_command("DELETE", "window")
 
     @property
     @command
     def handles(self):
-        return self.send_command("GET", "window_handles", key="value")
+        return self.send_command("GET", "window/handles", key="value")
 
     @property
     @command

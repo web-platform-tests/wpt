@@ -66,6 +66,7 @@ policies and contribution forms [3].
         this.all_loaded = false;
         var this_obj = this;
         this.message_events = [];
+        this.dispatched_messages = [];
 
         this.message_functions = {
             start: [add_start_callback, remove_start_callback,
@@ -102,9 +103,23 @@ policies and contribution forms [3].
         on_event(window, 'load', function() {
             this_obj.all_loaded = true;
         });
+
+        on_event(window, 'message', function(event) {
+            if (event.data && event.data.type === "getmessages" && event.source) {
+                // A window can post "getmessages" to receive a duplicate of every
+                // message posted by this environment so far. This allows subscribers
+                // from fetch_tests_from_window to 'catch up' to the current state of
+                // this environment.
+                for (var i = 0; i < this_obj.dispatched_messages.length; ++i)
+                {
+                    event.source.postMessage(this_obj.dispatched_messages[i], "*");
+                }
+            }
+        });
     }
 
     WindowTestEnvironment.prototype._dispatch = function(selector, callback_args, message_arg) {
+        this.dispatched_messages.push(message_arg);
         this._forEach_windows(
                 function(w, same_origin) {
                     if (same_origin) {
@@ -1579,8 +1594,11 @@ policies and contribution forms [3].
      * as another window or a worker. These events are then used to construct
      * and maintain RemoteTest objects that mirror the tests running in the
      * remote context.
+     * 
+     * An optional third parameter can be used as a predicate to filter incoming
+     * MessageEvents.
      */
-    function RemoteContext(remote, message_target) {
+    function RemoteContext(remote, message_target, message_filter) {
         this.running = true;
         this.tests = new Array();
 
@@ -1593,7 +1611,8 @@ policies and contribution forms [3].
         this.remote = remote;
         this.message_target = message_target;
         this.message_handler = function(message) {
-            if (this_obj.running && message.data && message.source === this_obj.remote &&
+            var passesFilter = !message_filter || message_filter(message);
+            if (this_obj.running && message.data && passesFilter &&
                 (message.data.type in this_obj.message_handlers)) {
                 this_obj.message_handlers[message.data.type].call(this_obj, message.data);
             }
@@ -1990,7 +2009,14 @@ policies and contribution forms [3].
      * Constructs a RemoteContext that tracks tests from a specific window.
      */
     Tests.prototype.create_remote_window = function(remote) {
-        return new RemoteContext(remote, window);
+        remote.postMessage({type: "getmessages"}, "*");
+        return new RemoteContext(
+            remote,
+            window,
+            function(msg) {
+                return msg.source === remote;
+            }
+        );
     };
 
     Tests.prototype.fetch_tests_from_worker = function(worker) {

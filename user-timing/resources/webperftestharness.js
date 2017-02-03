@@ -32,6 +32,7 @@ var timingAttributes = [
     'requestStart',
     'responseEnd',
     'responseStart',
+    'secureConnectionStart',
     'unloadEventEnd',
     'unloadEventStart'
 ];

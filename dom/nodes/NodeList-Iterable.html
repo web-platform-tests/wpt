@@ -42,15 +42,15 @@
     }, 'NodeList responds to Object.keys correctly');
 
     test(function() {
-        const container = document.getElementById('live');
-        const nodeList = container.childNodes;
+        var container = document.getElementById('live');
+        var nodeList = container.childNodes;
 
-        let ids = [];
-        for (const el of nodeList) {
+        var ids = [];
+        for (var el of nodeList) {
             ids.push(el.id);
             assert_equals(el.localName, 'b');
             if (ids.length < 3) {
-                const newEl = document.createElement('b');
+                var newEl = document.createElement('b');
                 newEl.id = 'after' + el.id;
                 container.appendChild(newEl);
             }

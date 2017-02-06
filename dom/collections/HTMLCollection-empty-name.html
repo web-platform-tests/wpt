@@ -15,6 +15,7 @@ test(function() {
   assert_false("" in c, "Empty string should not be in the collection.");
   assert_equals(c[""], undefined, "Named getter should return undefined for empty string.");
   assert_equals(c.namedItem(""), null, "namedItem should return null for empty string.");
+  assert_equals(1, 1)
 }, "Empty string as a name for Document.getElementsByTagName");
 
 test(function() {

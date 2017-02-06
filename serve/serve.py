@@ -164,11 +164,7 @@ class RoutesBuilder(object):
                           ("*", "{spec}/tools/*", handlers.ErrorHandler(404)),
                           ("*", "/serve.py", handlers.ErrorHandler(404))]
 
-        self.static = [
-            ("GET", "*.worker.html", WorkersHandler()),
-            ("GET", "*.any.html", AnyHtmlHandler()),
-            ("GET", "*.any.worker.js", AnyWorkerHandler()),
-        ]
+        self.static = []
 
         self.mountpoint_routes = OrderedDict()
 
@@ -192,9 +188,14 @@ class RoutesBuilder(object):
 
         self.mountpoint_routes[url_base] = []
 
-        routes = [("GET", "*.asis", handlers.AsIsHandler),
-                  ("*", "*.py", handlers.PythonScriptHandler),
-                  ("GET", "*", handlers.FileHandler)]
+        routes = [
+            ("GET", "*.worker.html", WorkersHandler),
+            ("GET", "*.any.html", AnyHtmlHandler),
+            ("GET", "*.any.worker.js", AnyWorkerHandler),
+            ("GET", "*.asis", handlers.AsIsHandler),
+            ("*", "*.py", handlers.PythonScriptHandler),
+            ("GET", "*", handlers.FileHandler)
+        ]
 
         for (method, suffix, handler_cls) in routes:
             self.mountpoint_routes[url_base].append(

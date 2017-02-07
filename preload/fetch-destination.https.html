@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
 <script src="../service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script>
 async_test(function(t) {
     var worker_url = 'resources/fetch-destination-worker.js';
     var scope = 'resources/empty.html';
     var registration;
+    verifyPreloadAndRTSupport();
 
     service_worker_unregister_and_register(t, worker_url, scope)
       .then(t.step_func(function(r) {

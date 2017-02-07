@@ -2,8 +2,6 @@ import json
 import pytest
 import types
 
-import webdriver
-
 from util.inline import inline
 from util import wd_assert
 

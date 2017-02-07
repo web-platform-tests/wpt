@@ -162,7 +162,6 @@ class GeckoDriverServer(WebDriverServer):
 
     def make_command(self):
         return [self.binary,
-                "--connect-existing",
                 "--marionette-port", str(self.marionette_port),
                 "--host", self.host,
                 "--port", str(self.port)]

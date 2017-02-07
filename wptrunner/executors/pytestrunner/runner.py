@@ -13,6 +13,7 @@ Usage::
 """
 
 import errno
+import os
 import shutil
 import tempfile
 
@@ -32,7 +33,8 @@ def run(path, session, timeout=0):
     is exposed as a fixture available in the scope of the test functions.
 
     :param path: Path to the test file.
-    :param session: WebDriver session to expose.
+    :param session: wdclient instance containing HTTP connection parameters to
+        a running WebDriver remote end.
     :param timeout: Duration before interrupting potentially hanging
         tests.  If 0, there is no timeout.
 
@@ -44,9 +46,11 @@ def run(path, session, timeout=0):
         do_delayed_imports()
 
     recorder = SubtestResultRecorder()
-    plugins = [recorder,
-               fixtures,
-               fixtures.Session(session)]
+
+    os.environ["WD_HOST"] = session.transport.host
+    os.environ["WD_PORT"] = str(session.transport.port)
+
+    plugins = [recorder]
 
     # TODO(ato): Deal with timeouts
 

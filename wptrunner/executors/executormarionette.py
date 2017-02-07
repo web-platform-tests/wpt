@@ -272,14 +272,13 @@ class RemoteMarionetteProtocol(Protocol):
         Protocol.__init__(self, executor, browser)
         self.session = None
         self.webdriver_binary = executor.webdriver_binary
-        self.marionette_port = browser.marionette_port
         self.server = None
 
     def setup(self, runner):
         """Connect to browser via the Marionette HTTP server."""
         try:
             self.server = GeckoDriverServer(
-                self.logger, self.marionette_port, binary=self.webdriver_binary)
+                self.logger, binary=self.webdriver_binary)
             self.server.start(block=False)
             self.logger.info(
                 "WebDriver HTTP server listening at %s" % self.server.url)

@@ -172,26 +172,26 @@ class Window(object):
     @property
     @command
     def size(self):
-        resp = self.session.send_command("GET", "window/size")
+        resp = self.session.send_command("GET", "window/rect")
         return (resp["width"], resp["height"])
 
     @size.setter
     @command
     def size(self, (width, height)):
         body = {"width": width, "height": height}
-        self.session.send_command("POST", "window/size", body)
+        self.session.send_command("POST", "window/rect", body)
 
     @property
     @command
     def position(self):
-        resp = self.session.send_command("GET", "window/position")
+        resp = self.session.send_command("GET", "window/rect")
         return (resp["x"], resp["y"])
 
     @position.setter
     @command
     def position(self, (x, y)):
         body = {"x": x, "y": y}
-        self.session.send_command("POST", "window/position", body)
+        self.session.send_command("POST", "window/rect", body)
 
     @property
     @command

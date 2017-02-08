@@ -26,7 +26,7 @@
   }, 'Promise rejection event should be muted for cross-origin non-CORS script');
 
   var scriptEl = document.createElement('script');
-  scriptEl.src = CROSSDOMAIN + '/support/promise-access-control.py?allow=false';
+  scriptEl.src = CROSSDOMAIN + 'support/promise-access-control.py?allow=false';
   scriptEl.onload = resolveLoaded;
   document.body.appendChild(scriptEl);
 }());

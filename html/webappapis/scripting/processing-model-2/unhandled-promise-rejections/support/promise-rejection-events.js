@@ -4,6 +4,10 @@ if (self.importScripts) {
   importScripts('/resources/testharness.js');
 }
 
+setup({
+  allow_uncaught_exception: true
+});
+
 //
 // Straightforward unhandledrejection tests
 //

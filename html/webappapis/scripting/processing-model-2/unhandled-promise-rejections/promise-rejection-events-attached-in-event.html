@@ -5,6 +5,9 @@
 <link rel="help" href="https://html.spec.whatwg.org/#unhandled-promise-rejections">
 <script>
 'use strict';
+setup({
+  allow_uncaught_exception: true
+});
 async_test(function(t) {
   var e = new Error('e');
   var p = Promise.reject(e);
@@ -19,7 +22,7 @@ async_test(function(t) {
       t.step(function() {
         assert_equals(reason, e);
       });
-      setTimeout(function() { t.done(); }, 10);
+      t.step_timeout(function() { t.done(); }, 10);
     });
   };
 

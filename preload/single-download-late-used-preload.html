@@ -8,11 +8,11 @@
     var link = document.getElementsByTagName("link")[0]
     assert_equals(link.as, "image");
     link.addEventListener("load", () => {
+        verifyPreloadAndRTSupport();
         verifyNumberOfDownloads("resources/square.png?pipe=trickle(d1)", 1);
         var img = document.createElement("img");
         img.src = "resources/square.png?pipe=trickle(d1)";
         img.onload = () => {
-            verifyPreloadAndRTSupport();
             verifyNumberOfDownloads("resources/square.png?pipe=trickle(d1)", 1);
             done();
         };

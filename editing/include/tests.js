@@ -5582,7 +5582,7 @@ function runConformanceTest(browserTest) {
 
             assert_equals(document.execCommand(browserTest[1][i][0], false, browserTest[1][i][1]),
                 expectedExecCommandReturnValues[i]);
-        }, testName + ": execCommand(" + format_value(browserTest[1][i][0]) + ", false, " + format_value(browserTest[1][i][1]) + ") return value");
+        }, testName + ": command #" + (i+1) + " execCommand(" + format_value(browserTest[1][i][0]) + ", false, " + format_value(browserTest[1][i][1]) + ") return value");
     }
 
     if (exception === null) {

@@ -52,7 +52,7 @@ test(function() {
 
 test(function() {
   assert_in_array(window.getComputedStyle(document.querySelector("div.c")).backgroundColor,
-                ["rgba(0, 0, 0, 0)", "transparent"]);
+                  ["rgba(0, 0, 0, 0)", "transparent"]);
 }, "(pre-req for comparison tests) initial CSS value supported");
 
 test(function() {
@@ -62,11 +62,11 @@ test(function() {
   var a_styles = window.getComputedStyle(a);
   var b_styles = window.getComputedStyle(b);
 
-  assert_equals(a_styles.length, b_styles.length, "Same properties on both #a and #b");
+  assert_equals(a_styles.length, b_styles.length, "Same properties on both div.a and div.b");
 
   for (var i = 0; i < a_styles.length; i++) {
     var property = a_styles[i];
-    assert_equals(property, b_styles[i], "Same property on #a and #b");
+    assert_equals(property, b_styles[i], "Same property on div.a and div.b");
     assert_equals(a_styles[property], b_styles[property], "Different value for " + property);
   }
 }, "Compare CSS div definitions (only valid if pre-reqs pass)");
@@ -78,11 +78,11 @@ test(function() {
   var a_styles = window.getComputedStyle(a);
   var b_styles = window.getComputedStyle(b);
 
-  assert_equals(a_styles.length, b_styles.length, "Same properties on both #a and #b");
+  assert_equals(a_styles.length, b_styles.length, "Same properties on both span.a and span.b");
 
   for (var i = 0; i < a_styles.length; i++) {
     var property = a_styles[i];
-    assert_equals(property, b_styles[i], "Same property on #a and #b");
+    assert_equals(property, b_styles[i], "Same property on span.a and span.b");
     assert_equals(a_styles[property], b_styles[property], "Different value for " + property);
   }
 }, "Compare CSS span definitions (only valid if pre-reqs pass)");
@@ -97,13 +97,13 @@ test(function() {
   var ul_li = document.querySelector("ul > li");
   var styles = window.getComputedStyle(ul_li);
   assert_equals(styles["display"], "list-item");
-}, "ul > li is display: block");
+}, "ul > li is display: list-item");
 
 test(function() {
   var ol_li = document.querySelector("ol > li");
   var styles = window.getComputedStyle(ol_li);
   assert_equals(styles["display"], "list-item");
-}, "ol > li is display: block");
+}, "ol > li is display: list-item");
 
 test(function() {
   var table = document.getElementsByTagName("table")[0];

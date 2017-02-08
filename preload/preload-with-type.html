@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
 <script src="/common/media.js"></script>
 <script>
     var t = async_test('Makes sure that preloaded resources with a type attribute trigger the onload event');
@@ -49,6 +50,7 @@
 <script src="resources/dummy.js?pipe=trickle(d5)"></script>
 <script>
     window.onload = t.step_func(function() {
+        verifyPreloadAndRTSupport();
         assert_true(styleLoaded, "style triggered load event");
         assert_true(scriptLoaded, "script triggered load event");
         assert_true(imageLoaded, "image triggered load event");

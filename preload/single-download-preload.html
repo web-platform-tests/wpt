@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
 <script>
     var t = async_test('Makes sure that preloaded resources are not downloaded again when used');
 </script>
@@ -42,9 +43,19 @@
     xhr.send();
 
     window.addEventListener("load", t.step_func(function() {
-        // Audio and video show 2 extra requests as the main request is followed by a range request
-        assert_equals(performance.getEntriesByType("resource").length, 14);
-        t.done();
+        verifyPreloadAndRTSupport();
+        setTimeout(t.step_func(function() {
+            verifyNumberOfDownloads("resources/dummy.js", 1);
+            verifyNumberOfDownloads("resources/dummy.css", 1);
+            verifyNumberOfDownloads("resources/square.png", 1);
+            verifyNumberOfDownloads("resources/square.png?background", 1);
+            verifyNumberOfDownloads("/fonts/CanvasTest.ttf", 1);
+            verifyNumberOfDownloads("resources/dummy.xml?foobar", 0);
+            verifyNumberOfDownloads("/media/foo.vtt", 1);
+            verifyNumberOfDownloads("resources/dummy.xml", 1);
+            // FIXME: We should verify for video and audio as well, but they seem to (flakily?) trigger multiple partial requests.
+            t.done();
+        }), 0);
     }));
 </script>
 <span>PASS - this text is here just so that the browser will download the font.</span>

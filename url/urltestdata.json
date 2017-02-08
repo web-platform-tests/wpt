@@ -4311,7 +4311,16 @@
   {
     "input": "sc://%/",
     "base": "about:blank",
-    "failure": true
+    "href": "sc://%/",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "%",
+    "hostname": "%",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
   },
   {
     "input": "sc://@/",
@@ -5303,6 +5312,35 @@
     "hostname": "",
     "port": "",
     "pathname": "joe@example.org,2001:foo/bar",
+    "search": "",
+    "hash": ""
+  },
+  "# percent encoded hosts in non-special-URLs",
+  {
+    "input": "non-special://%E2%80%A0/",
+    "base": "about:blank",
+    "href": "non-special://%E2%80%A0/",
+    "protocol": "non-special:",
+    "username": "",
+    "password": "",
+    "host": "%E2%80%A0",
+    "hostname": "%E2%80%A0",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "non-special://H%4fSt/path",
+    "base": "about:blank",
+    "href": "non-special://H%4fSt/path",
+    "protocol": "non-special:",
+    "username": "",
+    "password": "",
+    "host": "H%4fSt",
+    "hostname": "H%4fSt",
+    "port": "",
+    "pathname": "/path",
     "search": "",
     "hash": ""
   }

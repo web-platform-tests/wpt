@@ -5411,5 +5411,62 @@
     "input": "non-special://[:80/",
     "base": "about:blank",
     "failure": true
+  },
+  "# file URLs with repeated slsashes by Daijirō Wachi",
+  {
+    "input": "file:////////",
+    "base": "about:blank",
+    "href": "file:///",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:\\\\\\\\",
+    "base": "about:blank",
+    "href": "file:///",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:////\\\\",
+    "base": "about:blank",
+    "href": "file:///",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "file:////////foo/bar",
+    "base": "about:blank",
+    "href": "file:///foo/bar",
+    "protocol": "file:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "/foo/bar",
+    "search": "",
+    "hash": ""
   }
 ]

@@ -4331,7 +4331,16 @@
   {
     "input": "sc://%/",
     "base": "about:blank",
-    "failure": true
+    "href": "sc://%/",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "%",
+    "hostname": "%",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
   },
   {
     "input": "sc://@/",
@@ -5325,5 +5334,82 @@
     "pathname": "joe@example.org,2001:foo/bar",
     "search": "",
     "hash": ""
+  },
+  "# percent encoded hosts in non-special-URLs",
+  {
+    "input": "non-special://%E2%80%A0/",
+    "base": "about:blank",
+    "href": "non-special://%E2%80%A0/",
+    "protocol": "non-special:",
+    "username": "",
+    "password": "",
+    "host": "%E2%80%A0",
+    "hostname": "%E2%80%A0",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "non-special://H%4fSt/path",
+    "base": "about:blank",
+    "href": "non-special://H%4fSt/path",
+    "protocol": "non-special:",
+    "username": "",
+    "password": "",
+    "host": "H%4fSt",
+    "hostname": "H%4fSt",
+    "port": "",
+    "pathname": "/path",
+    "search": "",
+    "hash": ""
+  },
+  "# IPv6 in non-special-URLs",
+  {
+    "input": "non-special://[1:2:0:0:5:0:0:0]/",
+    "base": "about:blank",
+    "href": "non-special://[1:2:0:0:5::]/",
+    "protocol": "non-special:",
+    "username": "",
+    "password": "",
+    "host": "[1:2:0:0:5::]",
+    "hostname": "[1:2:0:0:5::]",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "non-special://[1:2:0:0:0:0:0:3]/",
+    "base": "about:blank",
+    "href": "non-special://[1:2::3]/",
+    "protocol": "non-special:",
+    "username": "",
+    "password": "",
+    "host": "[1:2::3]",
+    "hostname": "[1:2::3]",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "non-special://[1:2::3]:80/",
+    "base": "about:blank",
+    "href": "non-special://[1:2::3]:80/",
+    "protocol": "non-special:",
+    "username": "",
+    "password": "",
+    "host": "[1:2::3]:80",
+    "hostname": "[1:2::3]",
+    "port": "80",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "non-special://[:80/",
+    "base": "about:blank",
+    "failure": true
   }
 ]

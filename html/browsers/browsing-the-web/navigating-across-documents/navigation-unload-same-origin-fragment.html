@@ -12,12 +12,12 @@
 
 <script>
 var test = async_test('Tests that a fragment navigation in the unload handler will not block the initial navigation');
-window.onload = function() {
+window.onload = test.step_func(function() {
     var i = document.querySelector('#i');
 
-    i.contentWindow.onunload = function() {
+    i.contentWindow.onunload = test.step_func(function() {
         i.contentWindow.location.hash = '#fragment';
-    };
+    });
 
     window.finishedLoading = test.step_func_done(function () {
         assert_equals(i.contentWindow.location.pathname.split('/').pop(), 'navigation-unload-same-origin-fragment-2.html');
@@ -25,5 +25,5 @@ window.onload = function() {
     });
 
     i.contentWindow.location.href = 'navigation-unload-same-origin-fragment-2.html';
-};
+});
 </script>

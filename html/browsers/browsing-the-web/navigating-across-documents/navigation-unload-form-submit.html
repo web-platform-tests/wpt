@@ -11,7 +11,7 @@
 
 <script>
 var test = async_test('Tests that navigation during an unload caused by a form submit does nothing');
-window.onload = function() {
+window.onload = test.step_func(function() {
     var i = document.querySelector('#i');
 
     window.finishedLoading = test.step_func_done(function () {
@@ -20,5 +20,5 @@ window.onload = function() {
     });
 
     i.contentWindow.document.querySelector('input[type="submit"]').click();
-};
+});
 </script>

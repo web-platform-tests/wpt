@@ -26,7 +26,10 @@ promise_test(t => {
         return frames[0].testRegister();
     }).then(r => {
         registration = r;
-        return fetch('test.txt');
+        const newestWorker = r.installing || r.waiting || r.active;
+        return wait_for_state(t, newestWorker, 'activated');
+    }).then(() => {
+        return fetch('relevant/test.txt');
     })
     .then(response => response.text())
     .then(text => {

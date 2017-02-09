@@ -5,6 +5,7 @@
   <title>Historical features</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
  </head>
  <body>
   <div id="log"></div>
@@ -48,6 +49,10 @@
         assert_false('isClosed' in b, 'isClosed in b');
         assert_false('isClosed' in Blob.prototype, 'isClosed in Blob.prototype');
     }, 'Blob.close() should not be supported');
+
+    // Only add service worker test if service workers are actually supported.
+    if (navigator.serviceWorker)
+      service_worker_test('support/historical-serviceworker.js', 'Service worker test setup');
   </script>
  </body>
 </html>

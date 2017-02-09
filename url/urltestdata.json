@@ -3662,6 +3662,35 @@
     "search": "",
     "hash": ""
   },
+  {
+    "input": "https://faß.ExAmPlE/",
+    "base": "about:blank",
+    "href": "https://xn--fa-hia.example/",
+    "origin": "https://faß.example",
+    "protocol": "https:",
+    "username": "",
+    "password": "",
+    "host": "xn--fa-hia.example",
+    "hostname": "xn--fa-hia.example",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "sc://faß.ExAmPlE/",
+    "base": "about:blank",
+    "href": "sc://fa%C3%9F.ExAmPlE/",
+    "protocol": "sc:",
+    "username": "",
+    "password": "",
+    "host": "fa%C3%9F.ExAmPlE",
+    "hostname": "fa%C3%9F.ExAmPlE",
+    "port": "",
+    "pathname": "/",
+    "search": "",
+    "hash": ""
+  },
   "Invalid escaped characters should fail and the percents should be escaped. https://www.w3.org/Bugs/Public/show_bug.cgi?id=24191",
   {
     "input": "http://%zz%66%a.com",

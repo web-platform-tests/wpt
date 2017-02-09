@@ -461,6 +461,25 @@
             }
         },
         {
+            "href": "sc://x/",
+            "new_value": "ß",
+            "expected": {
+                "href": "sc://%C3%9F/",
+                "host": "%C3%9F",
+                "hostname": "%C3%9F"
+            }
+        },
+        {
+            "comment": "IDNA Nontransitional_Processing",
+            "href": "https://x/",
+            "new_value": "ß",
+            "expected": {
+                "href": "https://xn--zca/",
+                "host": "xn--zca",
+                "hostname": "xn--zca"
+            }
+        },
+        {
             "comment": "Cannot-be-a-base means no host",
             "href": "mailto:me@example.net",
             "new_value": "example.com",

@@ -6,7 +6,6 @@ interface Blob {
 
   readonly attribute unsigned long long size;
   readonly attribute DOMString type;
-  readonly attribute boolean isClosed;
 
   //slice Blob into byte-ranged chunks
 

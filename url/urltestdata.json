@@ -4622,7 +4622,7 @@
     "port": "",
     "pathname": "/baz",
     "search": "?qux",
-    "searchParams": "",
+    "searchParams": "qux=",
     "hash": "#foo%08bar"
   },
   "# IPv4 parsing (via https://github.com/nodejs/node/pull/10317)",

@@ -321,6 +321,23 @@ test(function(t) {
   ]);
 }, 'Only properties defined directly on property indexed keyframes are considered');
 
+// Test that property names with dashes are not supported
+
+test(function(t) {
+  var div = createDiv(t);
+  div.style.fontSize = '100px';
+  assert_equals(getComputedStyle(div).fontSize, '100px',
+                'Inline style should appear in getComputedStyle');
+
+  div.animate({'font-size': '200px'}, {fill: 'forwards'});
+  assert_equals(getComputedStyle(div).fontSize, '100px',
+                'Hyphenated property name should not have an effect on style');
+
+  div.animate({fontSize: '300px'}, {fill: 'forwards'});
+  assert_equals(getComputedStyle(div).fontSize, '300px',
+                'Camel cased property should have an effect on style');
+}, 'Hyphenated CSS property names are ignored in keyframes');
+
 // FIXME: Test that properties are accessed in ascending order by Unicode
 //        codepoint
 //        (There is an existing test for this in

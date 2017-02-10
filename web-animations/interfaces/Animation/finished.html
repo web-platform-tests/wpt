@@ -389,7 +389,7 @@ promise_test(function(t) {
 
   animation.finish();
   return Promise.race([timeout, testSuccess]);
-}, 'Test finished promise is resolved after the ready promise is resolved');
+}, 'Finished promise should be resolved after the ready promise is resolved');
 
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
@@ -414,7 +414,7 @@ promise_test(function(t) {
 
   animation.cancel();
   return Promise.race([timeout, testSuccess]);
-}, 'Test finished promise is rejected after the ready promise is rejected');
+}, 'Finished promise should be rejected after the ready promise is rejected');
 
 </script>
 </body>

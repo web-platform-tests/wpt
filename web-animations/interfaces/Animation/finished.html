@@ -369,17 +369,19 @@ promise_test(function(t) {
 promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var ready = false;
-  animation.ready.then(function() {
-    t.step(function() {
+  animation.ready.then(
+    t.step_func(function() {
       ready = true;
-    });
-  }, t.unreached_func('Ready promise must not be rejected'));
+    }),
+    t.unreached_func('Ready promise must not be rejected')
+  );
 
-  var testSuccess = animation.finished.then(function() {
-    t.step(function() {
+  var testSuccess = animation.finished.then(
+    t.step_func(function() {
       assert_true(ready, 'Ready promise has resolved');
-    });
-  }, t.unreached_func('Finished promise must not be rejected'));
+    }),
+    t.unreached_func('Finished promise must not be rejected')
+  );
 
   var timeout = waitForAnimationFrames(3).then(function() {
     return Promise.reject('Finished promise did not arrive in time');
@@ -393,20 +395,18 @@ promise_test(function(t) {
   var animation = createDiv(t).animate(null, 100 * MS_PER_SEC);
   var caught = false;
   animation.ready.then(
-      t.unreached_func('Ready promise must not be resolved'),
-      function() {
-        t.step(function() {
-          caught = true;
-        });
-      });
+    t.unreached_func('Ready promise must not be resolved'),
+    t.step_func(function() {
+      caught = true;
+    })
+  );
 
   var testSuccess = animation.finished.then(
-      t.unreached_func('Finished promise must not be resolved'),
-      function() {
-        t.step(function() {
-          assert_true(caught, 'Ready promise has been rejected');
-        });
-      });
+    t.unreached_func('Finished promise must not be resolved'),
+    t.step_func(function() {
+      assert_true(caught, 'Ready promise has been rejected');
+    })
+  );
 
   var timeout = waitForAnimationFrames(3).then(function() {
     return Promise.reject('Finished promise was not rejected in time');

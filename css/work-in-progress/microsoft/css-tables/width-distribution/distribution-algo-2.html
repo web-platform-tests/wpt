@@ -8,26 +8,26 @@
 <link rel="help" href="https://drafts.csswg.org/css-tables-3/#width-distribution" />
 
 <style>
-    x-td {
-        background: blue;
-    }
-
     x-table span {
         display: inline-block;
         background: green;
-        height: 50px;
+        height: 100px;
     }
 </style>
 <main>
     <h1>Width Distribution</h1>
-    <h4>"Distribution Algorithm - min-content-specified guess"</h4>
-    <p>Tests that the size of the column as the spec states that if the cell is constrained then the 
-         <a href="https://drafts.csswg.org/css-tables-3/#width-distribution-algorithm">Spec Text</a>
+    <h4>"Distribution Algorithm"</h4>
+    <p>Tests the first step that all cells get their min content guess which is that 
+        of their min content
+         <a href="https://drafts.csswg.org/css-tables-3/#width-distribution">Spec Text</a>
     </p>
-    <x-table style="width: 50px; border: 1px solid black;">
+    <x-table id="one">
         <x-tr>
-            <x-td id="one" style="width: 50%;">
-                <span style="width: 75px;">Cell 2</span>
+            <x-td id="two">
+                <span style="width: 100px;"></span>
+            </x-td>
+            <x-td id="three">
+                <span style="width: 200px"></span>
             </x-td>
         </x-tr>
     </x-table>
@@ -43,9 +43,19 @@
     var i = 1;
 	generate_tests(assert_equals, [
         [
-            'The box should be 75px due to its min-content size.',
+            'The box should be 300px since that is the size of the content',
             document.getElementById('one').offsetWidth,
-            75
+            300
+        ],
+        [
+            'The first cell is 100px wide due to its content\'s size',
+            document.getElementById('two').offsetWidth,
+            100
+        ],
+        [
+            'The first cell is 200px wide due to its content\'s size',
+            document.getElementById('three').offsetWidth,
+            200
         ]
     ]);
 </script>

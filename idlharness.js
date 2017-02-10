@@ -1382,12 +1382,17 @@ IdlInterface.prototype.do_member_operation_asserts = function(memberHolderObject
 IdlInterface.prototype.add_iterable_members = function(member)
 //@{
 {
-    this.members.push({type: "operation", name: "entries", idlType: "iterator", arguments: []});
-    this.members.push({type: "operation", name: "keys", idlType: "iterator", arguments: []});
-    this.members.push({type: "operation", name: "values", idlType: "iterator", arguments: []});
-    this.members.push({type: "operation", name: "forEach", idlType: "void", arguments:
-        [{ name: "callback", idlType: {idlType: "function"}},
-        { name: "thisValue", idlType: {idlType: "any"}, optional: true}]});
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "entries", idlType: "iterator", arguments: []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "keys", idlType: "iterator", arguments: []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "values", idlType: "iterator", arguments: []}));
+    this.members.push(new IdlInterfaceMember(
+        { type: "operation", name: "forEach", idlType: "void",
+          arguments:
+          [{ name: "callback", idlType: {idlType: "function"}},
+           { name: "thisValue", idlType: {idlType: "any"}, optional: true}]}));
 };
 
 //@}

@@ -61,7 +61,9 @@ promise_test(t => {
     })
     .then(gottenRegistration => {
         assert_not_equals(registration, null, 'the registration should not be null');
-        assert_equals(gottenRegistration, registration, 'the retrieved registration should be equal to the original');
+        assert_not_equals(gottenRegistration, null, 'the registration from the other frame should not be null');
+        assert_equals(gottenRegistration.scope, registration.scope,
+            'the retrieved registration\'s scope should be equal to the original\'s scope');
 
         return registration.unregister();
     });

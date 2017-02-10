@@ -39,6 +39,28 @@
             <td colspan="2" style="width: 51px;"></td>
         </tr>
     </table>
+
+    <table cellspacing="0" cellpadding="0">
+        <colgroup style="width: 51px;">
+            <col style="width: 10px;"></col>
+            <col style="width: 20px;"></col>
+        </colgroup>
+        <tr>
+            <td id="three" style="width: 1px;"></td>
+            <td style="width: 2px;"></td>
+        </tr>
+    </table>
+
+    <table cellspacing="0" cellpadding="0">
+        <colgroup style="width: 51px;">
+            <col style="width: 20px;"></col>
+            <col style="width: auto;"></col>
+        </colgroup>
+        <tr>
+            <td style="width: 10px;"></td>
+            <td id="four" style="width: 20px;"></td>
+        </tr>
+    </table>
 </main>
 
 <script>
@@ -53,6 +75,16 @@
             "Checking intermediate min-content width for span 2 (2)",
             document.getElementById('two').offsetWidth,
             10
+        ],
+        [
+            "Checking intermediate min-content width for span 2 (3)",
+            document.getElementById('three').offsetWidth,
+            10
+        ],
+        [
+            "Checking intermediate min-content width for span 2 (4)",
+            document.getElementById('four').offsetWidth,
+            51
         ]
     ]);
 </script>

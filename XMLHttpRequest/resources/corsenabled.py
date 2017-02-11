@@ -4,7 +4,7 @@ def main(request, response):
     headers = [("Access-Control-Allow-Origin", "*"),
                ("Access-Control-Allow-Credentials", "true"),
                ("Access-Control-Allow-Methods", "GET, POST, PUT, FOO"),
-               ("Access-Control-Allow-Headers", "x-test, x-foo"),
+               ("Access-Control-Allow-Headers", "x-test, x-foo, content-type"),
                ("Access-Control-Expose-Headers", "x-request-method, x-request-content-type, x-request-query, x-request-content-length, x-request-data")]
 
     if "delay" in request.GET:

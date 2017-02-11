@@ -35,7 +35,7 @@ dictionary EventInit {
 [SecureContext]
 interface Sensor : EventTarget {
   readonly attribute SensorState state;
-  readonly attribute SensorReading? reading;
+  readonly attribute DOMHighResTimeStamp? timestamp;
   void start();
   void stop();
   attribute EventHandler onchange;
@@ -48,15 +48,11 @@ dictionary SensorOptions {
 };
 
 enum SensorState {
-  "idle",
+  "unconnected",
   "activating",
   "activated",
+  "idle",
   "errored"
-};
-
-[SecureContext]
-interface SensorReading {
-  readonly attribute DOMHighResTimeStamp timeStamp;
 };
 
 [SecureContext, Constructor(DOMString type, SensorErrorEventInit errorEventInitDict)]
@@ -73,20 +69,9 @@ dictionary SensorErrorEventInit : EventInit {
 <pre id="gyroscope-idl">
 [Constructor(optional SensorOptions sensorOptions)]
 interface Gyroscope : Sensor {
-  readonly attribute GyroscopeReading? reading;
-};
-
-[Constructor(GyroscopeReadingInit GyroscopeReadingInit)]
-interface GyroscopeReading : SensorReading {
-    readonly attribute unrestricted double x;
-    readonly attribute unrestricted double y;
-    readonly attribute unrestricted double z;
-};
-
-dictionary GyroscopeReadingInit {
-    unrestricted double x = 0;
-    unrestricted double y = 0;
-    unrestricted double z = 0;
+  readonly attribute unrestricted double? x;
+  readonly attribute unrestricted double? y;
+  readonly attribute unrestricted double? z;
 };
 </pre>
 
@@ -99,8 +84,7 @@ dictionary GyroscopeReadingInit {
   idl_array.add_idls(document.getElementById('gyroscope-idl').textContent);
 
   idl_array.add_objects({
-    Gyroscope: ['new Gyroscope();'],
-    GyroscopeReading: ['new GyroscopeReading({x: 0.5, y: 0.5, z: 0.5});']
+    Gyroscope: ['new Gyroscope();']
   });
 
   idl_array.test();

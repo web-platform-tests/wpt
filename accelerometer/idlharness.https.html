@@ -35,7 +35,7 @@ dictionary EventInit {
 [SecureContext]
 interface Sensor : EventTarget {
   readonly attribute SensorState state;
-  readonly attribute SensorReading? reading;
+  readonly attribute DOMHighResTimeStamp? timestamp;
   void start();
   void stop();
   attribute EventHandler onchange;
@@ -48,15 +48,11 @@ dictionary SensorOptions {
 };
 
 enum SensorState {
-  "idle",
+  "unconnected",
   "activating",
   "activated",
+  "idle",
   "errored"
-};
-
-[SecureContext]
-interface SensorReading {
-  readonly attribute DOMHighResTimeStamp timeStamp;
 };
 
 [SecureContext, Constructor(DOMString type, SensorErrorEventInit errorEventInitDict)]
@@ -73,25 +69,14 @@ dictionary SensorErrorEventInit : EventInit {
 <pre id="accelerometer-idl">
 [Constructor(optional AccelerometerOptions accelerometerOptions)]
 interface Accelerometer : Sensor {
-  readonly attribute AccelerometerReading? reading;
+  readonly attribute unrestricted double? x;
+  readonly attribute unrestricted double? y;
+  readonly attribute unrestricted double? z;
   readonly attribute boolean includesGravity;
 };
 
 dictionary AccelerometerOptions :  SensorOptions  {
   boolean includeGravity = true;
-};
-
-[Constructor(AccelerometerReadingInit AccelerometerReadingInit)]
-interface AccelerometerReading : SensorReading {
-    readonly attribute double x;
-    readonly attribute double y;
-    readonly attribute double z;
-};
-
-dictionary AccelerometerReadingInit {
-    double x = 0;
-    double y = 0;
-    double z = 0;
 };
 </pre>
 
@@ -104,8 +89,7 @@ dictionary AccelerometerReadingInit {
   idl_array.add_idls(document.getElementById('accelerometer-idl').textContent);
 
   idl_array.add_objects({
-    Accelerometer: ['new Accelerometer();'],
-    AccelerometerReading: ['new AccelerometerReading({x: 0.5, y: 0.5, z: 0.5});']
+    Accelerometer: ['new Accelerometer();']
   });
 
   idl_array.test();

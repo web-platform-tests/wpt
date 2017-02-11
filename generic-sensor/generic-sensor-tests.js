@@ -1,8 +1,8 @@
-function runGenericSensorTests(sensorType, readingType, verifyReading) {
+function runGenericSensorTests(sensorType, verifyReading) {
   async_test(t => {
     let sensor = new sensorType();
     sensor.onchange = t.step_func_done(() => {
-      assert_true(verifyReading(sensor.reading));
+      assert_true(verifyReading(sensor));
       assert_equals(sensor.state, "activated");
       sensor.stop();
     });
@@ -16,20 +16,17 @@ function runGenericSensorTests(sensorType, readingType, verifyReading) {
     let sensor1 = new sensorType();
     let sensor2 = new sensorType();
     sensor1.onactivate = t.step_func_done(() => {
-      let cachedReading1 = sensor1.reading;
-      let cached1 = cachedReading1;
-      let cachedReading2 = sensor2.reading;
-      //both sensors share the same reading instance
-      assert_equals(cachedReading1, cachedReading2);
-      //after first sensor stops its reading is null, second sensor remains
+      // Reading values are correct for both sensors.
+      assert_true(verifyReading(sensor1));
+      assert_true(verifyReading(sensor2));
+
+      //After first sensor stops its reading values are null,
+      //reading values for the second sensor remains
       sensor1.stop();
-      assert_equals(sensor1.reading, null);
-      assert_true(sensor2.reading instanceof readingType);
+      assert_true(verifyReading(sensor1, true /*should be null*/));
+      assert_true(verifyReading(sensor2));
       sensor2.stop();
-      assert_equals(sensor2.reading, null);
-      //sensor reading must be immutable
-      let cached2 = cachedReading1;
-      assert_equals(cachedReading1, cachedReading2);
+      assert_true(verifyReading(sensor2, true /*should be null*/));
     });
     sensor1.onerror = t.step_func_done(event => {
       assert_unreached(event.error.name + ":" + event.error.message);
@@ -43,11 +40,9 @@ function runGenericSensorTests(sensorType, readingType, verifyReading) {
 
   async_test(t => {
     let sensor = new sensorType();
-    let cachedReading1;
     let cachedTimeStamp1;
     sensor.onactivate = () => {
-      cachedReading1 = sensor.reading;
-      cachedTimeStamp1 = sensor.reading.timeStamp;
+      cachedTimeStamp1 = sensor.timestamp;
     };
     sensor.onerror = t.step_func_done(event => {
       assert_unreached(event.error.name + ":" + event.error.message);
@@ -55,16 +50,14 @@ function runGenericSensorTests(sensorType, readingType, verifyReading) {
     sensor.start();
     t.step_timeout(() => {
       sensor.onchange = t.step_func_done(() => {
-        let cachedReading2 = sensor.reading;
-        assert_not_equals(cachedReading1, cachedReading2);
-        //sensor.reading.timeStamp need change.
-        let cachedTimeStamp2 = sensor.reading.timeStamp;
+        //sensor.timestamp changes.
+        let cachedTimeStamp2 = sensor.timestamp;
         assert_greater_than(cachedTimeStamp2, cachedTimeStamp1);
         sensor.stop();
         t.done();
       });
     }, 1000);
-  }, "the sensor reading is updated when time passes");
+  }, "timestamp is updated when time passes");
 
   test(() => {
     let sensor, start_return;
@@ -72,18 +65,14 @@ function runGenericSensorTests(sensorType, readingType, verifyReading) {
     sensor.onerror = () => {
       assert_unreached(event.error.name + ":" + event.error.message);
     };
-    //The default sensor.reading is 'null'
-    assert_equals(sensor.reading, null);
-    //The default sensor.state is 'idle'
-    assert_equals(sensor.state, "idle");
+    //The default sensor.state is 'unconnected'
+    assert_equals(sensor.state, "unconnected");
     start_return = sensor.start();
     //The sensor.state changes to 'activating' after sensor.start()
     assert_equals(sensor.state, "activating");
     //TODO: The permission is not ready.
     //the sensor.start() return undefined
     assert_equals(start_return, undefined);
-    //throw an InvalidStateError exception when state is neither idle nor errored
-    assert_throws("InvalidStateError", () => { sensor.start(); }, "start() twice");
     sensor.stop();
   }, "sensor.start() is correct");
 
@@ -97,10 +86,6 @@ function runGenericSensorTests(sensorType, readingType, verifyReading) {
     stop_return = sensor.stop();
     //The sensor.state changes to 'idle' after sensor.stop()
     assert_equals(sensor.state, "idle");
-    //the sensor.reading is null after executing stop() method
-    assert_equals(sensor.reading, null);
-    //throw an InvalidStateError exception when state is either idle or errored
-    assert_throws("InvalidStateError", () => { sensor.stop(); }, "stop() twice");
     //the sensor.stop() returns undefined
     assert_equals(stop_return, undefined);
   }, "sensor.stop() is correct");
@@ -115,10 +100,10 @@ function runGenericSensorTests(sensorType, readingType, verifyReading) {
   async_test(t => {
     let sensor = new sensorType();
     sensor.onactivate = t.step_func_done(() => {
-      assert_not_equals(sensor.reading, null);
-      let cachedReading = sensor.reading;
+      assert_true(verifyReading(sensor));
+      let cachedSensor = sensor;
       let win = window.open('', '_blank');
-      assert_equals(sensor.reading, cachedReading);
+      assert_equals(sensor, cachedSensor);
       win.close();
       sensor.stop();
     });
@@ -142,9 +127,8 @@ function runGenericSensorOnerror(sensorType) {
     let sensor = new sensorType();
     sensor.onactivate = t.step_func_done(assert_unreached);
     sensor.onerror = t.step_func_done(event => {
-      assert_equals(sensor.reading, null);
       assert_equals(sensor.state, 'errored');
-      assert_equals(event.error.name, 'NotFoundError');
+      assert_equals(event.error.name, 'NotReadableError');
     });
     sensor.start();
   }, "'onerror' event is fired when sensor is not supported");

@@ -11,13 +11,20 @@
 </iframe>
 <script>
 
-function verify_sensor_reading(reading) {
-  return typeof(reading.x) == "number" &&
-         typeof(reading.y) == "number" &&
-         typeof(reading.z) == "number";
+function verify_sensor_reading(sensor, should_be_bull) {
+  if (should_be_bull) {
+    return sensor.x == null &&
+           sensor.y == null &&
+           sensor.z == null &&
+           sensor.timestamp == null;
+  }
+  return sensor.x != null &&
+         sensor.y != null &&
+         sensor.z != null &&
+         sensor.timestamp != null;
 }
 
 runSensorFrequency(Gyroscope);
-runGenericSensorTests(Gyroscope, GyroscopeReading, verify_sensor_reading);
+runGenericSensorTests(Gyroscope, verify_sensor_reading);
 
 </script>

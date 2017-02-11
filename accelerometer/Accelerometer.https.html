@@ -11,17 +11,31 @@
 </iframe>
 <script>
 
-function verify_sensor_reading(reading) {
-  return reading.x != 0 ||
-         reading.y != 0 ||
-         reading.z != 0;
+function verify_sensor_reading(sensor, should_be_bull) {
+  if (should_be_bull) {
+    return sensor.x == null &&
+           sensor.y == null &&
+           sensor.z == null &&
+           sensor.timestamp == null;
+  }
+  return sensor.x != null &&
+         sensor.y != null &&
+         sensor.z != null &&
+         sensor.timestamp != null;
+}
+
+function verify_both_sensor_reading(sensor1, sensor2) {
+  return sensor1.x == sensor2.x ||
+         sensor1.y == sensor2.y ||
+         sensor1.z == sensor2.z ||
+         sensor1.timestamp == sensor2.timestamp;
 }
 
 async_test(t => {
   let sensor1 = new Accelerometer({includeGravity: false});
   let sensor2 = new Accelerometer();
   sensor1.onactivate = t.step_func_done(() => {
-    assert_not_equals(sensor1.reading, sensor2.reading);
+    assert_false(verify_both_sensor_reading(sensor1, sensor2));
     sensor1.stop();
     sensor2.stop();
   });
@@ -36,6 +50,6 @@ async_test(t => {
 }, "when construct Accelerometer with includeGravity that is set to false, the reading is different from the default one");
 
 runSensorFrequency(Accelerometer);
-runGenericSensorTests(Accelerometer, AccelerometerReading, verify_sensor_reading);
+runGenericSensorTests(Accelerometer, verify_sensor_reading);
 
 </script>

@@ -119,7 +119,7 @@ scheme host and port.""")
                               type=abs_path, help="Binary to run tests against")
     config_group.add_argument('--binary-arg',
                               default=[], action="append", dest="binary_args",
-                              help="Extra argument for the binary (servo)")
+                              help="Extra argument for the binary")
     config_group.add_argument("--webdriver-binary", action="store", metavar="BINARY",
                               type=abs_path, help="WebDriver server binary to use")
 

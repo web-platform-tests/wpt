@@ -18,7 +18,6 @@ from ..wpttest import WdspecResult, WdspecSubtestResult
 errors = None
 marionette = None
 pytestrunner = None
-webdriver = None
 
 here = os.path.join(os.path.split(__file__)[0])
 
@@ -270,9 +269,9 @@ class RemoteMarionetteProtocol(Protocol):
     def __init__(self, executor, browser):
         do_delayed_imports()
         Protocol.__init__(self, executor, browser)
-        self.session = None
         self.webdriver_binary = executor.webdriver_binary
-        self.server = None
+        self.capabilities = self.executor.capabilities
+        self.session_config = None
 
     def setup(self, runner):
         """Connect to browser via the Marionette HTTP server."""
@@ -282,11 +281,9 @@ class RemoteMarionetteProtocol(Protocol):
             self.server.start(block=False)
             self.logger.info(
                 "WebDriver HTTP server listening at %s" % self.server.url)
-
-            self.logger.info(
-                "Establishing new WebDriver session with %s" % self.server.url)
-            self.session = webdriver.Session(
-                self.server.host, self.server.port, self.server.base_path)
+            self.session_config = {"host": self.server.host,
+                                   "port": self.server.port,
+                                   "capabilities": self.capabilities}
         except Exception:
             self.logger.error(traceback.format_exc())
             self.executor.runner.send_message("init_failed")
@@ -294,11 +291,6 @@ class RemoteMarionetteProtocol(Protocol):
             self.executor.runner.send_message("init_succeeded")
 
     def teardown(self):
-        try:
-            if self.session.session_id is not None:
-                self.session.end()
-        except Exception:
-            pass
         if self.server is not None and self.server.is_alive:
             self.server.stop()
 
@@ -559,12 +551,14 @@ class WdspecRun(object):
 
 class MarionetteWdspecExecutor(WdspecExecutor):
     def __init__(self, browser, server_config, webdriver_binary,
-                 timeout_multiplier=1, close_after_done=True, debug_info=None):
+                 timeout_multiplier=1, close_after_done=True, debug_info=None,
+                 capabilities=None):
         self.do_delayed_imports()
         WdspecExecutor.__init__(self, browser, server_config,
                                 timeout_multiplier=timeout_multiplier,
                                 debug_info=debug_info)
         self.webdriver_binary = webdriver_binary
+        self.capabilities = capabilities
         self.protocol = RemoteMarionetteProtocol(self, browser)
 
     def is_alive(self):
@@ -577,7 +571,7 @@ class MarionetteWdspecExecutor(WdspecExecutor):
         timeout = test.timeout * self.timeout_multiplier + extra_timeout
 
         success, data = WdspecRun(self.do_wdspec,
-                                  self.protocol.session,
+                                  self.protocol.session_config,
                                   test.abs_path,
                                   timeout).run()
 
@@ -586,12 +580,11 @@ class MarionetteWdspecExecutor(WdspecExecutor):
 
         return (test.result_cls(*data), [])
 
-    def do_wdspec(self, session, path, timeout):
+    def do_wdspec(self, session_config, path, timeout):
         harness_result = ("OK", None)
-        subtest_results = pytestrunner.run(path, session, timeout=timeout)
+        subtest_results = pytestrunner.run(path, session_config, timeout=timeout)
         return (harness_result, subtest_results)
 
     def do_delayed_imports(self):
-        global pytestrunner, webdriver
+        global pytestrunner
         from . import pytestrunner
-        import webdriver

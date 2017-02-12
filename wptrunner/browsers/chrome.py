@@ -43,8 +43,9 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
             }
         }
     }
-    if kwargs["binary"] is not None:
-        capabilities["chromeOptions"]["binary"] = kwargs["binary"]
+    for (kwarg, capability) in [("binary", "binary"), ("binary_args", "args")]:
+        if kwargs[kwarg] is not None:
+            capabilities["chromeOptions"][capability] = kwargs[kwarg]
     executor_kwargs["capabilities"] = capabilities
     return executor_kwargs
 

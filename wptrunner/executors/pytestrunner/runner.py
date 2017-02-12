@@ -13,6 +13,7 @@ Usage::
 """
 
 import errno
+import json
 import os
 import shutil
 import tempfile
@@ -28,13 +29,13 @@ def do_delayed_imports():
     import pytest
 
 
-def run(path, session, timeout=0):
+def run(path, session_config, timeout=0):
     """Run Python test at ``path`` in pytest.  The provided ``session``
     is exposed as a fixture available in the scope of the test functions.
 
     :param path: Path to the test file.
-    :param session: wdclient instance containing HTTP connection parameters to
-        a running WebDriver remote end.
+    :param session_config: dictionary of host, port,capabilities parameters
+    to pass through to the webdriver session
     :param timeout: Duration before interrupting potentially hanging
         tests.  If 0, there is no timeout.
 
@@ -47,8 +48,9 @@ def run(path, session, timeout=0):
 
     recorder = SubtestResultRecorder()
 
-    os.environ["WD_HOST"] = session.transport.host
-    os.environ["WD_PORT"] = str(session.transport.port)
+    os.environ["WD_HOST"] = session_config["host"]
+    os.environ["WD_PORT"] = str(session_config["port"])
+    os.environ["WD_CAPABILITIES"] = json.dumps(session_config["capabilities"])
 
     plugins = [recorder]
 

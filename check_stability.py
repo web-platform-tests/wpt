@@ -622,7 +622,7 @@ def get_parser():
                         action="store",
                         # Travis docs say do not depend on USER env variable.
                         # This is a workaround to get what should be the same value
-                        default=os.environ.get("TRAVIS_REPO_SLUG").split('/')[0],
+                        default=os.environ.get("TRAVIS_REPO_SLUG", "w3c").split('/')[0],
                         help="Travis user name")
     parser.add_argument("--output-bytes",
                         action="store",

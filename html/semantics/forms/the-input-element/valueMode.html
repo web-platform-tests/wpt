@@ -11,14 +11,14 @@ test(function () {
   var input = document.createElement("input");
   input.type = "hidden";
   input.value = "foo";
-  assert_equals(input.value, "");
+  assert_equals(input.value, "foo");
 }, "value IDL attribute of input type hidden without value attribute");
 test(function() {
   var input = document.createElement("input");
   input.type = "hidden";
   input.setAttribute("value", "bar");
   input.value = "foo";
-  assert_equals(input.value, "bar");
+  assert_equals(input.value, "foo");
 }, "value IDL attribute of input type hidden with value attribute");
 
 test(function () {

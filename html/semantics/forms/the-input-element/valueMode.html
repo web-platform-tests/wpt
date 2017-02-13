@@ -67,14 +67,14 @@ test(function () {
   var input = document.createElement("input");
   input.type = "button";
   input.value = "foo";
-  assert_equals(input.value, "");
+  assert_equals(input.value, "foo");
 }, "value IDL attribute of input type button without value attribute");
 test(function() {
   var input = document.createElement("input");
   input.type = "button";
   input.setAttribute("value", "bar");
   input.value = "foo";
-  assert_equals(input.value, "bar");
+  assert_equals(input.value, "foo");
 }, "value IDL attribute of input type button with value attribute");
 
 // MODE DEFAULT/ON

@@ -273,7 +273,8 @@ class Chrome(Browser):
             "product": "chrome",
             "binary": self.binary,
             "webdriver_binary": "%s/chromedriver" % root,
-            "test_types": ["testharness", "reftest"]
+            "test_types": ["testharness", "reftest"],
+            "binary_args": ["enable-experimental-web-platform-features"]
         }
 
 

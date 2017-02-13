@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Key Generator behavior with explicit keys generator overflow</title>
+<link rel=help href="https://w3c.github.io/IndexedDB/#key-generator-construct">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support.js"></script>
+<script>
+
+function big_key_test(key, description) {
+  indexeddb_test(
+    (t, db) => {
+      assert_equals(indexedDB.cmp(key, key), 0, 'Key is valid');
+
+      db.createObjectStore('store', {autoIncrement: true});
+    },
+    (t, db) => {
+      const tx = db.transaction('store', 'readwrite');
+      const store = tx.objectStore('store');
+      const value = 0;
+
+      store.put(value).onsuccess = t.step_func(e => {
+        assert_equals(e.target.result, 1,
+                      'Key generator should initially be 1');
+      });
+
+      store.put(value).onsuccess = t.step_func(e => {
+        assert_equals(e.target.result, 2,
+                      'Key generator should increment');
+      });
+
+      store.put(value, 1000).onsuccess = t.step_func(e => {
+        assert_equals(e.target.result, 1000,
+                      'Explicit key should be used');
+      });
+
+      store.put(value).onsuccess = t.step_func(e => {
+        assert_equals(e.target.result, 1001,
+                      'Key generator should have updated');
+      });
+
+      store.put(value, key).onsuccess = t.step_func(e => {
+        assert_equals(e.target.result, key,
+                      'Explicit key should be used');
+      });
+
+      store.put(value).onsuccess = t.step_func(e => {
+        assert_equals(e.target.result, 1002,
+                      'Key generator should have ignored');
+      });
+
+      store.put(value).onsuccess = t.step_func(e => {
+        assert_equals(e.target.result, 1003,
+                      'Key generator should continue incrementing');
+      });
+
+      tx.onabort = t.step_func(() => {
+        assert_unreached(`Transaction aborted: ${tx.error.message}`);
+      });
+      tx.oncomplete = t.step_func(() => { t.done(); });
+    },
+    description);
+}
+
+[
+  {
+    key: Math.pow(2, 60),
+    description: 'greater than 53 bits, less than 64 bits'
+  },
+  {
+    key: -Math.pow(2, 60),
+    description: 'greater than 53 bits, less than 64 bits (negative)'
+  },
+  {
+    key: Math.pow(2, 70),
+    description: 'greater than 64 bits, but still finite'
+  },
+  {
+    key: -Math.pow(2, 70),
+    description: 'greater than 64 bits, but still finite (negative)'
+  },
+  {
+    key: Infinity,
+    description: 'equal to Infinity'
+  },
+  {
+    key: -Infinity,
+    description: 'equal to -Infinity'
+  }
+].forEach(function(testCase) {
+  big_key_test(testCase.key,
+               `Key generator vs. explicit key ${testCase.description}`);
+});
+
+
+
+</script>

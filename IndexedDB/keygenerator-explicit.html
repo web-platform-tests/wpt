@@ -72,6 +72,22 @@ function big_key_test(key, description) {
     description: 'greater than 53 bits, less than 64 bits (negative)'
   },
   {
+    key: Math.pow(2, 63),
+    description: '63 bits'
+  },
+  {
+    key: -Math.pow(2, 63),
+    description: '63 bits (negative)'
+  },
+  {
+    key: Math.pow(2, 64),
+    description: '64 bits'
+  },
+  {
+    key: -Math.pow(2, 64),
+    description: '64 bits (negative)'
+  },
+  {
     key: Math.pow(2, 70),
     description: 'greater than 64 bits, but still finite'
   },

@@ -16,7 +16,7 @@ promise_test(() => {
       }),
       res.trailer.then(trailers => {
         assert_equals(trailers.get("X-Test-Me"), "Trailer header value")
-        assert_throws(new TypeError, trailers.append("Immutable-My-Ass", "Hi!"))
+        assert_throws(new TypeError, () => trailers.append("Immutable-My-Ass", "Hi!"))
       })
     ])
   })

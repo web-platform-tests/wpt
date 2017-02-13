@@ -3,7 +3,6 @@ import os
 import pytest
 import webdriver
 
-import util.wd_assert as wd_assert
 from util.fixtures import session, create_window, create_frame
 from util.http_request import HTTPRequest
 

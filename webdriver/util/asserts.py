@@ -51,12 +51,27 @@ errors = {
 # >         stacktrace
 # >
 # > 5. Send a response with status and data as arguments.
-def error(result, name):
-    assert result.status == errors[name]
-    assert result.body["value"]["error"] == name
-    assert isinstance(result.body["value"]["message"], basestring)
-    assert isinstance(result.body["value"]["stacktrace"], basestring)
+def assert_error(response, error_code):
+    """Verify that the provided wdclient.Response instance described a valid
+    error response as defined by `dfn-send-an-error` and the provided error
+    code.
 
-def success(result, value):
-    assert result.status == 200
-    assert result.body["value"] == value
+    :param response: wdclient.Response instance
+    :param error_code: string value of the expected "error code"
+    """
+    assert response.status == errors[error_code]
+    assert "value" in response.body
+    assert response.body["value"]["error"] == error_code
+    assert isinstance(response.body["value"]["message"], basestring)
+    assert isinstance(response.body["value"]["stacktrace"], basestring)
+
+def assert_success(response, value):
+    """Verify that the provided wdclient.Response instance described a valid
+    error response as defined by `dfn-send-an-error` and the provided error
+    code.
+    :param response: wdclient.Response instance
+    :param value: expected value of the response body
+    """
+
+    assert response.status == 200
+    assert response.body["value"] == value

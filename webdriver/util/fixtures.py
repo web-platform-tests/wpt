@@ -71,7 +71,7 @@ def create_frame(session):
         """
         response = session.send_command("POST",
                                         "execute/sync",
-                                        dict(script=append, args=[]))
+                                        dict(script=append, args=()))
         return response["value"]
 
     return create_frame

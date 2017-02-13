@@ -3,7 +3,7 @@ import pytest
 import types
 
 from util.inline import inline
-from util import wd_assert
+from util.asserts import assert_error, assert_success
 
 alert_doc = inline("<script>window.alert()</script>")
 frame_doc = inline("<p>frame")
@@ -21,7 +21,7 @@ def test_get_current_url_no_browsing_context(session, create_window):
 
     result = session.send_raw_command("GET", "url")
 
-    wd_assert.error(result, "no such window")
+    assert_error(result, "no such window")
 
 
 def test_get_current_url_alert_prompt(session):
@@ -30,7 +30,7 @@ def test_get_current_url_alert_prompt(session):
 
     result = session.send_raw_command("GET", "url")
 
-    wd_assert.success(result, alert_doc)
+    assert_error(result, "unexpected alert open")
 
 def test_get_current_url_matches_location(session):
     # 7.2 step 3
@@ -51,7 +51,7 @@ def test_get_current_url_special_pages(session):
 
     result = session.send_raw_command("GET", "url")
 
-    wd_assert.success(result, "about:blank")
+    assert_success(result, "about:blank")
 
 # TODO(ato): This test requires modification to pass on Windows
 def test_get_current_url_file_protocol(session):
@@ -61,7 +61,7 @@ def test_get_current_url_file_protocol(session):
 
     result = session.send_raw_command("GET", "url")
 
-    wd_assert.success(result, "file:///")
+    assert_success(result, "file:///")
 
 # TODO(ato): Test for http:// and https:// protocols.
 # We need to expose a fixture for accessing
@@ -72,16 +72,16 @@ def test_get_current_url_after_modified_location(session):
 
     result = session.send_raw_command("GET", "url")
 
-    wd_assert.success(result, "about:blank#wd_test_modification")
+    assert_success(result, "about:blank#wd_test_modification")
 
 def test_get_current_url_nested_browsing_context(session, create_frame):
     session.url = "about:blank#wd_from_within_frame"
 
-    session.send_command("POST", "frame", dict(id=create_frame()))
+    session.send_command("POST", "frame", {"id": create_frame()})
 
     result = session.send_raw_command("GET", "url")
 
-    wd_assert.success(result, "about:blank#wd_from_within_frame")
+    assert_success(result, "about:blank#wd_from_within_frame")
 
 def test_get_current_url_nested_browsing_contexts(session):
     session.url = two_frames_doc

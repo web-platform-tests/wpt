@@ -20,25 +20,14 @@ const loadPromise = new Promise(resolve => {
 });
 
 promise_test(t => {
-    let registration;
-
     return loadPromise.then(() => {
         return frames[0].testRegister();
-    }).then(r => {
-        registration = r;
-        const newestWorker = r.installing || r.waiting || r.active;
-        return wait_for_state(t, newestWorker, 'activated');
-    }).then(() => {
-        return fetch('relevant/test.txt');
-    })
-    .then(response => response.text())
-    .then(text => {
-        assert_equals(text, 'relevant',
-            'the service worker found at relevant/test-sw.js must have been the one to intercept the fetch');
+    }).then(registration => {
+        assert_equals(registration.scope, normalizeURL('relevant/'), 'the scope URL should be relevant/');
 
         return registration.unregister();
     });
-}, 'register should use the relevant global of the object it was called on to resolve the script URL');
+}, 'register should use the relevant global of the object it was called on to resolve the script URL and the default scope URL');
 
 promise_test(t => {
     return loadPromise.then(() => {
@@ -48,7 +37,7 @@ promise_test(t => {
 
         return registration.unregister();
     });
-}, 'register should use the relevant global of the object it was called on to resolve the scope URL');
+}, 'register should use the relevant global of the object it was called on to resolve the script URL and the given scope URL');
 
 promise_test(t => {
     let registration;

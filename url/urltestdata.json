@@ -166,6 +166,20 @@
     "hash": "# e"
   },
   {
+    "input": "lolscheme:x x#x x",
+    "base": "about:blank",
+    "href": "lolscheme:x x#x x",
+    "protocol": "lolscheme:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "x x",
+    "search": "",
+    "hash": "#x x"
+  },
+  {
     "input": "http://f:/c",
     "base": "http://example.org/foo/bar",
     "href": "http://f/c",
@@ -3686,13 +3700,13 @@
     "base": "http://other.com/",
     "failure": true
   },
-  "Invalid escaping should trigger the regular host error handling",
+  "Invalid escaping in hosts causes failure",
   {
     "input": "http://%3g%78%63%30%2e%30%32%35%30%2E.01",
     "base": "http://other.com/",
     "failure": true
   },
-  "Something that isn't exactly an IP should get treated as a host and spaces escaped",
+  "A space in a host causes failure",
   {
     "input": "http://192.168.0.1 hello",
     "base": "http://other.com/",

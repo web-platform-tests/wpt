@@ -16,8 +16,7 @@ promise_test(() => {
     'desiredSize must be calculated using floating-point arithmetic (after writing two chunks)');
 
   return Promise.all(writePromises).then(() => {
-    assert_equals(writer.desiredSize, 0 - 2 - Number.MAX_SAFE_INTEGER + 2 + Number.MAX_SAFE_INTEGER,
-      'desiredSize must be calculated using floating-point arithmetic (after the two chunks have finished writing)');
+    assert_equals(writer.desiredSize, 0, '[[queueTotalSize]] must clamp to 0 if it becomes negative');
   });
 }, 'Floating point arithmetic must manifest near NUMBER.MAX_SAFE_INTEGER (total ends up positive)');
 
@@ -33,8 +32,7 @@ promise_test(() => {
     'desiredSize must be calculated using floating-point arithmetic (after writing two chunks)');
 
   return Promise.all(writePromises).then(() => {
-    assert_equals(writer.desiredSize, 0 - 1e-16 - 1 + 1e-16 + 1,
-      'desiredSize must be calculated using floating-point arithmetic (after the two chunks have finished writing)');
+    assert_equals(writer.desiredSize, 0, '[[queueTotalSize]] must clamp to 0 if it becomes negative');
   });
 }, 'Floating point arithmetic must manifest near 0 (total ends up positive)');
 

@@ -20,8 +20,7 @@ promise_test(() => {
 
     return reader.read();
   }).then(() => {
-    assert_equals(controller.desiredSize, 0 - Number.MAX_SAFE_INTEGER - 2 + 2 + Number.MAX_SAFE_INTEGER,
-      'desiredSize must be calculated using floating-point arithmetic (subtracting a second chunk)');
+    assert_equals(controller.desiredSize, 0, '[[queueTotalSize]] must clamp to 0 if it becomes negative');
   });
 }, 'Floating point arithmetic must manifest near NUMBER.MAX_SAFE_INTEGER (total ends up positive)');
 
@@ -41,8 +40,7 @@ promise_test(() => {
 
     return reader.read();
   }).then(() => {
-    assert_equals(controller.desiredSize, 0 - 1e-16 - 1 + 1e-16 + 1,
-      'desiredSize must be calculated using floating-point arithmetic (subtracting a second chunk)');
+    assert_equals(controller.desiredSize, 0, '[[queueTotalSize]] must clamp to 0 if it becomes negative');
   });
 }, 'Floating point arithmetic must manifest near 0 (total ends up positive)');
 

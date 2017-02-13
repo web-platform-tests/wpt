@@ -492,7 +492,7 @@ class Session(object):
             "script": script,
             "args": args
         }
-        return self.send_command("POST", "execute", body, key="value")
+        return self.send_command("POST", "execute/sync", body, key="value")
 
     @command
     def execute_async_script(self, script, args=None):
@@ -503,7 +503,7 @@ class Session(object):
             "script": script,
             "args": args
         }
-        return self.send_command("POST", "execute_async", body, key="value")
+        return self.send_command("POST", "execute/async", body, key="value")
 
     #[...]
 

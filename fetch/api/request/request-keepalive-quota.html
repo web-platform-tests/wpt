@@ -20,12 +20,12 @@
             var trickleURL = "../resources/trickle.py?count=1&ms=";
             var standardDelay = 1000;
 
-            // We should expect 64KB of rolling quota for any type of keep-alive request sent.
+            // We should expect 64KiB of rolling quota for any type of keep-alive request sent.
             var expectedQuota = 65536;
 
             function CreateKeepAliveRequest(delay, bodySize) {
                 // Create a body of the specified size that's filled with *'s
-                var requestBody = Array(bodySize).fill('*').join("");
+                var requestBody = "*".repeat(bodySize);
                 return new Request(trickleURL+delay, {keepalive: true, body: requestBody, method: "POST"});
             }
 

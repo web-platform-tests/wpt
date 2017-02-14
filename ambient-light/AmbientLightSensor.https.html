@@ -11,15 +11,6 @@
 </iframe>
 <script>
 
-function verify_sensor_reading(sensor, should_be_null) {
-  if (should_be_null) {
-    return sensor.illuminance == null &&
-           sensor.timestamp == null;
-  }
-  return sensor.illuminance != null &&
-         sensor.timestamp != null;
-}
-
-runGenericSensorTests(AmbientLightSensor, verify_sensor_reading);
+runGenericSensorTests(AmbientLightSensor);
 
 </script>

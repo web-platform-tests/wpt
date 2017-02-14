@@ -11,20 +11,7 @@
 </iframe>
 <script>
 
-function verify_sensor_reading(sensor, should_be_bull) {
-  if (should_be_bull) {
-    return sensor.x == null &&
-           sensor.y == null &&
-           sensor.z == null &&
-           sensor.timestamp == null;
-  }
-  return sensor.x != null &&
-         sensor.y != null &&
-         sensor.z != null &&
-         sensor.timestamp != null;
-}
-
 runSensorFrequency(Magnetometer);
-runGenericSensorTests(Magnetometer, verify_sensor_reading);
+runGenericSensorTests(Magnetometer);
 
 </script>

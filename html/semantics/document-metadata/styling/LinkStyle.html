@@ -29,14 +29,46 @@
     <div id="test" style="display:none">STYLING TEST</div>
 
     <script>
-      test(function() {
-        var style = null,
-            i;
-        for (i = 1; i < 5; i++) {
-          style = document.getElementById("style" + i);
-          assert_equals(style.sheet, null, "The sheet attribute of style" + i + " should be null.");
-          assert_false(style.disabled, "The disabled attribute of style" + i + " should be false.");
+      function waitForLinks(done) {
+        function poll() {
+          if (getComputedStyle(target).textDecoration === "underline") {
+            setTimeout(done, 0);
+            document.body.removeChild(beacon);
+          } else {
+            setTimeout(poll, 50);
+          }
         }
+
+        var beacon = document.createElement("link");
+        var target = document.getElementById("test");
+        beacon.setAttribute("rel", "stylesheet");
+        beacon.setAttribute("href", "./support/beacon.css");
+
+        document.body.appendChild(beacon);
+        poll();
+      }
+
+      /**
+       * Browsers may incorrectly issue requests for these resources and defer
+       * definition of the `sheet` attribute until after loading is complete.
+       * In such cases, synchronous assertions regarding the absence of
+       * attributes will spuriously pass.
+       *
+       * In order to account for this incorrect behavior (exhibited at the time
+       * of this writing most notably by the Chromium browser), defer the
+       * assertions until a later-specified stylesheet has been loaded.
+       */
+      async_test(function(t) {
+        waitForLinks(t.step_func(function() {
+          var style = null,
+              i;
+          for (i = 1; i < 5; i++) {
+            style = document.getElementById("style" + i);
+            assert_equals(style.sheet, null, "The sheet attribute of style" + i + " should be null.");
+            assert_false(style.disabled, "The disabled attribute of style" + i + " should be false.");
+          }
+          t.done();
+        }));
       }, "The LinkStyle interface's sheet attribute must return null; the disabled attribute must be false");
 
       test(function() {

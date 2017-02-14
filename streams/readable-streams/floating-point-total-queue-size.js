@@ -77,7 +77,7 @@ promise_test(() => {
     assert_equals(controller.desiredSize, 0 - 1e-16 - 1 - 2e-16 + 1e-16 + 1 + 2e-16,
       'desiredSize must be calculated using double-precision floating-point arithmetic (subtracting a third chunk)');
   });
-}, 'Floating point arithmetic must manifest near 0 (total ends up positive, but not clamped)');
+}, 'Floating point arithmetic must manifest near 0 (total ends up positive, and not clamped)');
 
 promise_test(() => {
   const { reader, controller } = setupTestStream();

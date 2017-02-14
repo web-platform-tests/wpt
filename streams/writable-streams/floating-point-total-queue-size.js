@@ -57,7 +57,7 @@ promise_test(() => {
     assert_equals(writer.desiredSize, 0 - 1e-16 - 1 - 2e-16 + 1e-16 + 1 + 2e-16,
       'desiredSize must be calculated using floating-point arithmetic (after the three chunks have finished writing)');
   });
-}, 'Floating point arithmetic must manifest near 0 (total ends up positive, but clamped)');
+}, 'Floating point arithmetic must manifest near 0 (total ends up positive, and not clamped)');
 
 promise_test(() => {
   const writer = setupTestStream();

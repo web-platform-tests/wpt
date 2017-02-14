@@ -22,7 +22,11 @@ def main():
     after = get_manifest("HEAD")
 
     call("git", "fetch", "origin", "master:master")
-    merge_base = call("git", "merge-base", "master", "HEAD").strip()
+    commit_range = os.environ.get("TRAVIS_COMMIT_RANGE")
+    if commit_range:
+        merge_base = commit_range.split(".", 1)[0]
+    else:
+        merge_base = call("git", "merge-base", "master", "HEAD").strip()
     before = get_manifest(merge_base)
 
     diff = difflib.unified_diff(before, after,

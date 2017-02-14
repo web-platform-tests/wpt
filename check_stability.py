@@ -575,17 +575,23 @@ def write_inconsistent(inconsistent, iterations):
 
 def write_results(results, iterations, comment_pr):
     """Output all test results to logger.info."""
+    pr_number = None
+    if comment_pr:
+        try:
+            pr_number = int(comment_pr)
+        except ValueError:
+            pass
     logger.info("## All results ##\n")
+    if pr_number:
+        logger.info("<details>\n")
+        logger.info("<summary>%i %s ran</summary>\n\n" % (len(results),
+                                                          "tests" if len(results) > 1
+                                                          else "test"))
+
     for test, test_results in results.iteritems():
         baseurl = "http://w3c-test.org/submissions"
         if "https" in os.path.splitext(test)[0].split(".")[1:]:
             baseurl = "https://w3c-test.org/submissions"
-        pr_number = None
-        if comment_pr:
-            try:
-                pr_number = int(comment_pr)
-            except ValueError:
-                pass
         if pr_number:
             logger.info("<details>\n")
             logger.info('<summary><a href="%s/%s%s">%s</a></summary>\n\n' %
@@ -600,6 +606,9 @@ def write_results(results, iterations, comment_pr):
         table(["Subtest", "Results"], strings, logger.info)
         if pr_number:
             logger.info("</details>\n")
+
+    if pr_number:
+        logger.info("</details>\n")
 
 
 def get_parser():

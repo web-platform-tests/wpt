@@ -52,32 +52,30 @@ promise_test(() => {
 promise_test(() => {
   const { reader, controller } = setupTestStream();
 
-  controller.enqueue(2e-16);
-  assert_equals(controller.desiredSize, 0 - 2e-16, 'desiredSize must be -2e16 after enqueueing such a chunk');
+  controller.enqueue(1e-16);
+  assert_equals(controller.desiredSize, 0 - 1e-16, 'desiredSize must be -2e16 after enqueueing such a chunk');
 
   controller.enqueue(1);
-  assert_equals(controller.desiredSize, 0 - 2e-16 - 1,
+  assert_equals(controller.desiredSize, 0 - 1e-16 - 1,
     'desiredSize must be calculated using double-precision floating-point arithmetic (adding a second chunk)');
 
-  controller.enqueue(1e-16);
-  assert_equals(controller.desiredSize, 0 - 2e-16 - 1 - 1e-16,
+  controller.enqueue(2e-16);
+  assert_equals(controller.desiredSize, 0 - 1e-16 - 1 - 2e-16,
     'desiredSize must be calculated using double-precision floating-point arithmetic (adding a third chunk)');
 
   return reader.read().then(() => {
-    assert_equals(controller.desiredSize, 0 - 2e-16 - 1 - 1e-16 + 2e-16,
+    assert_equals(controller.desiredSize, 0 - 1e-16 - 1 - 2e-16 + 1e-16,
       'desiredSize must be calculated using double-precision floating-point arithmetic (subtracting a chunk)');
 
     return reader.read();
   }).then(() => {
-    assert_equals(controller.desiredSize, 0 - 2e-16 - 1 - 1e-16 + 2e-16 + 1,
+    assert_equals(controller.desiredSize, 0 - 1e-16 - 1 - 2e-16 + 1e-16 + 1,
       'desiredSize must be calculated using double-precision floating-point arithmetic (subtracting a second chunk)');
 
     return reader.read();
   }).then(() => {
-    assert_equals(controller.desiredSize, 0 - 2e-16 - 1 - 1e-16 + 2e-16 + 1 + 1e-16,
+    assert_equals(controller.desiredSize, 0 - 1e-16 - 1 - 2e-16 + 1e-16 + 1 + 2e-16,
       'desiredSize must be calculated using double-precision floating-point arithmetic (subtracting a third chunk)');
-
-    return reader.read();
   });
 }, 'Floating point arithmetic must manifest near 0 (total ends up positive, but not clamped)');
 

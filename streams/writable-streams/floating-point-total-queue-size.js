@@ -45,6 +45,24 @@ promise_test(() => {
   const writer = setupTestStream();
 
   const writePromises = [
+    writer.write(1e-16),
+    writer.write(1),
+    writer.write(2e-16)
+  ];
+
+  assert_equals(writer.desiredSize, 0 - 1e-16 - 1 - 2e-16,
+    'desiredSize must be calculated using double-precision floating-point arithmetic (after writing three chunks)');
+
+  return Promise.all(writePromises).then(() => {
+    assert_equals(writer.desiredSize, 0 - 1e-16 - 1 - 2e-16 + 1e-16 + 1 + 2e-16,
+      'desiredSize must be calculated using floating-point arithmetic (after the three chunks have finished writing)');
+  });
+}, 'Floating point arithmetic must manifest near 0 (total ends up positive, but clamped)');
+
+promise_test(() => {
+  const writer = setupTestStream();
+
+  const writePromises = [
     writer.write(2e-16),
     writer.write(1)
   ];

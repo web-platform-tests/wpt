@@ -82,28 +82,28 @@ test(function () {
   var input = document.createElement("input");
   input.type = "checkbox";
   input.value = "foo";
-  assert_equals(input.value, "on");
+  assert_equals(input.value, "foo");
 }, "value IDL attribute of input type checkbox without value attribute");
 test(function() {
   var input = document.createElement("input");
   input.type = "checkbox";
   input.setAttribute("value", "bar");
   input.value = "foo";
-  assert_equals(input.value, "bar");
+  assert_equals(input.value, "foo");
 }, "value IDL attribute of input type checkbox with value attribute");
 
 test(function () {
   var input = document.createElement("input");
   input.type = "radio";
   input.value = "foo";
-  assert_equals(input.value, "on");
+  assert_equals(input.value, "foo");
 }, "value IDL attribute of input type radio without value attribute");
 test(function() {
   var input = document.createElement("input");
   input.type = "radio";
   input.setAttribute("value", "bar");
   input.value = "foo";
-  assert_equals(input.value, "bar");
+  assert_equals(input.value, "foo");
 }, "value IDL attribute of input type radio with value attribute");
 
 // MODE VALUE

@@ -37,6 +37,8 @@ promise_test(t => {
     .then(f => {
         const child_controller
             = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller, null,
+                          'Child\'s controller should not be null.');
         assert_equals(child_controller.scriptURL, parent_controller.scriptURL,
                       'about:blank Document should inherit parent\'s SW.');
       });
@@ -55,6 +57,8 @@ promise_test(t => {
     .then(f => {
         const child_controller
             = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller, null,
+                          'Child\'s controller should not be null.');
         assert_equals(child_controller.scriptURL, parent_controller.scriptURL,
                       'Sandboxed iframe with allow-same-origin should ' +
                       'inherit parent\'s SW.');
@@ -68,6 +72,8 @@ promise_test(t => {
     .then(f => {
         const child_controller
             = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller, null,
+                          'Child\'s controller should not be null.');
         assert_equals(child_controller.scriptURL, parent_controller.scriptURL,
                       'iframe srcdoc should inherit parent\'s SW.');
         return with_iframe('', {srcdoc: '<p>Some HTML</p>',
@@ -84,6 +90,8 @@ promise_test(t => {
     .then(f => {
         const child_controller
             = f.contentWindow.navigator.serviceWorker.controller;
+        assert_not_equals(child_controller, null,
+                          'Child\'s controller should not be null.');
         assert_equals(child_controller.scriptURL, parent_controller.scriptURL,
                       'Sandboxed iframe srcdoc with allow-same-origin should ' +
                       'inherit parent\'s SW.');

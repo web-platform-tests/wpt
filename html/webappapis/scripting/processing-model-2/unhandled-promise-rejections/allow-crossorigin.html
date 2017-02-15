@@ -9,6 +9,10 @@
 <body>
 <script>
 'use strict';
+setup({
+  allow_uncaught_exception: true
+});
+
 async_test(function(t) {
   addEventListener('unhandledrejection', t.step_func(function(e) {
     assert_equals(e.reason, 42, 'reason should be the one given by the script');
@@ -19,6 +23,7 @@ async_test(function(t) {
 (function() {
   var scriptEl = document.createElement('script');
   scriptEl.src = CROSSDOMAIN + 'support/promise-access-control.py?allow=true';
+  scriptEl.crossOrigin = 'anonymous';
   document.body.appendChild(scriptEl);
 }());
 </script>

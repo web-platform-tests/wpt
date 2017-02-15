@@ -116,6 +116,23 @@ promise_test(t => {
   let writer;
   const strategy = {
     size() {
+      writer.abort('nice');
+      return 1;
+    }
+  };
+
+  const ws = recordingWritableStream({}, strategy);
+  writer = ws.getWriter();
+  return promise_rejects(t, new TypeError(), writer.write('a'), 'write() promise should reject')
+      .then(() => {
+        assert_array_equals(ws.events, ['abort', 'nice'], 'sink.write() should not be called');
+      });
+}, 'abort() should work when called from within strategy.size()');
+
+promise_test(t => {
+  let writer;
+  const strategy = {
+    size() {
       writer.releaseLock();
       return 1;
     }

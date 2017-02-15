@@ -9,11 +9,8 @@
 <script>
 testInIFrame("http://{{host}}:{{ports[http][1]}}/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/resources/set-document-domain.html", (ctx) => {
   document.domain = document.domain;
-  try {
-    ctx.iframes[0].contentDocument.open();
-  } catch (e) {
-    assert_unreached("Opening a same origin-domain document throws");
-  }
+  assert_throws("SecurityError", ctx.iframes[0].contentDocument.open(),
+      "Opening a same origin-domain (but not same origin) document doesn't throw.");
 }, "It should be possible to open same origin-domain documents (with non-matching ports).");
 </script>
 </body>

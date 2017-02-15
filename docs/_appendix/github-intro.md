@@ -364,9 +364,6 @@ This is how to import the Pull Request's branch
 into your existing local checkout of the repository.
 If you don't have one, go [fork](#fork), [clone](#clone), and [configure](#configure-remote--upstream) it.
 
-If you would rather keep the PR separate from your usual working copy,
-have a look at [The Easy Way](#the-easy-way).
-
 1. Move into your local clone: `cd wherever-you-put-your-repo`
 2. Add a remote for the PR author's repo: `git remote add <author-id> git://github.com/<author-id>/<repo-name>.git`
 3. Fetch the PR: `git fetch <author-id> <name-of-the-PR-branch>`

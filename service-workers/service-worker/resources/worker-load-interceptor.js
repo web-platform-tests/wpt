@@ -1,4 +1,4 @@
-importScripts('/common/get-host-info.sub.js');
+importScripts('get-host-info.sub.js');
 
 var response_text = "This load was successfully intercepted.";
 var response_script = "postMessage(\"This load was successfully intercepted.\");";

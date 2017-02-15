@@ -4,7 +4,6 @@
 <script src='/resources/testharnessreport.js'></script>
 <script src='/resources/WebIDLParser.js'></script>
 <script src='/resources/idlharness.js'></script>
-<link rel='stylesheet' href='/resources/testharness.css'>
 <script type='text/plain'>
 [Constructor] interface XPathEvaluator {
   [NewObject] XPathExpression createExpression(DOMString expression,
@@ -12,14 +11,14 @@
   Node createNSResolver(Node nodeResolver);
   XPathResult evaluate(DOMString expression, Node contextNode,
                        optional XPathNSResolver? resolver,
-		       optional unsigned short type,
+                       optional unsigned short type,
                        optional object? result);
 };
 
 interface XPathExpression {
   XPathResult evaluate(Node contextNode,
                        optional unsigned short type,
-		       optional object? result);
+                       optional object? result);
 };
 
 callback interface XPathNSResolver {

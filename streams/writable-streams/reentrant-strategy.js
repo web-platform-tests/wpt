@@ -1,8 +1,7 @@
 'use strict';
 
 // These tests exercise the pathological case of calling WritableStream* methods from within the strategy.size()
-// callback. This is not something any real code should ever do. Implementations are not expected to exhibit sane
-// behaviour in this case, but they should have the same behaviour. Failures here indicate subtle deviations from the
+// callback. This is not something any real code should ever do. Failures here indicate subtle deviations from the
 // standard that may affect real, non-pathological code.
 
 if (self.importScripts) {

@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Appendicies
+title: Appendices
 order: -1
 ---
 

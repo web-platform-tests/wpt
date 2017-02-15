@@ -306,7 +306,10 @@ class OpenSSLEnvironment(object):
             # Not sure if this works in other locales
             end_date = datetime.strptime(end_date_str, "%b %d %H:%M:%S %Y %Z")
             # Should have some buffer here e.g. 1 hr
-            if end_date < datetime.now():
+            # Because `strptime` does not account for time zone offsets, it is
+            # always in terms of UTC, so the current time should be calculated
+            # accordingly.
+            if end_date < datetime.utcnow():
                 return False
 
         #TODO: check the key actually signed the cert.

@@ -1,3 +1,8 @@
+---
+layout: page
+title: Lint Tool
+order: 9
+---
 We have a lint tool for catching common mistakes in test files. You can run
 it manually by starting the `lint` executable from the root of your local
 web-platform-tests working directory like this:
@@ -9,15 +14,16 @@ web-platform-tests working directory like this:
 The lint tool is also run automatically for every submitted pull request,
 and reviewers will not merge branches with tests that have lint errors, so
 you must either [fix all lint errors](#fixing-lint-errors), or you must
-[white-list test files] (#updating-the-whitelist) to suppress the errors.
+[whitelist test files](#updating-the-whitelist) to suppress the errors.
 
 ## Fixing lint errors
 
 You must fix any errors the lint tool reports, unless an error is for
-something essential to a certain test or that for some other exceptional
-reason shouldn't prevent the test from being merged. In those cases you can
-[white-list test files](#updating-the-whiteslist) to suppress the errors.
-Otherwise, use the details in this section to fix all errors reported.
+something essential to a certain test or that for some other
+exceptional reason shouldn't prevent the test from being merged; in
+those cases you can [whitelist test files](#updating-the-whiteslist)
+to suppress the errors. In all other cases, follow the instructions
+below to fix all errors reported.
 
 * **CONSOLE**: Test-file line has a `console.*(...)` call; **fix**: remove
   the `console.*(...)` call (and in some cases, consider adding an
@@ -102,7 +108,7 @@ ERROR TYPE:file/name/pattern
 
 For example, to whitelist the file `example/file.html` such that all
 `TRAILING WHITESPACE` errors the lint tool would report for it are
-suppressed, add the following line to the `lint.whitelist` file.
+suppressed, add the following line to the `lint.whitelist` file:
 
 ```
 TRAILING WHITESPACE:example/file.html
@@ -111,15 +117,16 @@ TRAILING WHITESPACE:example/file.html
 To whitelist an entire directory rather than just one file, use the `*`
 wildcard. For example, to whitelist the `example` directory such that all
 `TRAILING WHITESPACE` errors the lint tool would report for any files in it
-are suppressed, add the following line to the `lint.whitelist` file.
+are suppressed, add the following line to the `lint.whitelist` file:
 
 ```
 TRAILING WHITESPACE:example/*
 ```
 
-If needed, you can also use the `*` wildcard to express other filename
-patterns or directory-name patterns (just as you would when, e.g.,
-executing shell commands from the command line).
+Similarly, you can also
+use
+[shell-style wildcards](https://docs.python.org/2/library/fnmatch.html) to
+express other filename patterns or directory-name patterns.
 
 Finally, to whitelist just one line in a file, use the following format:
 
@@ -129,7 +136,7 @@ ERROR TYPE:file/name/pattern:line_number
 
 For example, to whitelist just line 128 of the file `example/file.html`
 such that any `TRAILING WHITESPACE` error the lint tool would report for
-that line is suppressed, add the following to the `lint.whitelist` file.
+that line is suppressed, add the following to the `lint.whitelist` file:
 
 ```
 TRAILING WHITESPACE:example/file.html:128

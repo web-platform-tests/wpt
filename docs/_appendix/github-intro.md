@@ -48,7 +48,7 @@ If you are a first-time GitHub user, read on for more details of the workflow.
 The test repository that you contribute to will depend on the specification
 that you are testing.  Currently there are two test repositories, one for CSS
 specification tests and the main W3C repository that contains tests for all
-other specificatons:
+other specifications:
 
 **Main W3C test repository**: [github.com/w3c/web-platform-tests][main-repo]
 

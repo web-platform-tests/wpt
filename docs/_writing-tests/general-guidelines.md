@@ -81,7 +81,7 @@ headers.
 
 Tests should be as short as possible. For reftests in particular
 scrollbars at 800&#xD7;600px window size must be avoided unless scrolling
-behaviour is specifically being tested. For all tests extraneous
+behavior is specifically being tested. For all tests extraneous
 elements on the page should be avoided so it is clear what is part of
 the test (for a typical testharness test, the only content on the page
 will be rendered by the harness itself).
@@ -89,7 +89,7 @@ will be rendered by the harness itself).
 
 ### Be Minimal
 
-Tests should generally avoid depending on edge case behaviour of
+Tests should generally avoid depending on edge case behavior of
 features that they don't explicitly intend on testing. For example,
 except where testing parsing, tests should contain
 no [parse errors](https://validator.nu).

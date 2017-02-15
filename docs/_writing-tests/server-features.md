@@ -45,7 +45,7 @@ respective subdomains.
 
 Ports are also available on a per-protocol basis. For example, `{% raw
 %}{{ports[ws][0]}}{% endraw %}` is replaced with the first (and only)
-WebSockets port, whilst `{% raw %}{{ports[http][1]}}{% endraw %}` is
+WebSockets port, while `{% raw %}{{ports[http][1]}}{% endraw %}` is
 replaced with the second HTTP port.
 
 The request URL itself can be used as part of the substitution using

@@ -66,7 +66,7 @@ element relation), and in this case for the test to pass the test must
 render identically (assuming a `match` relation) to the reference, and
 the reference must render identically to its reference (again,
 assuming a `match` relation). Note that this can continue indefinitely
-to require tests to match an abitrary number of references; also that
+to require tests to match an arbitrary number of references; also that
 `match` is used here purely for explanatory reasons: both `match` and
 `mismatch` can be used (and mixed on one sequence of references). This
 can be thought of as an AND operator!

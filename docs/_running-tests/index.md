@@ -14,7 +14,7 @@ located at `/tools/runner/index.html`.
 
 This allows all the tests, or those matching a specific prefix
 (e.g. all tests under `/dom/`) to be run. For testharness.js tests,
-the results will be automatically collected, whilst the runner
+the results will be automatically collected, while the runner
 provides a simple UI for manually comparing reftest rendering and
 running manual tests.
 
@@ -44,17 +44,17 @@ Most test runners have two stages: finding all tests, followed by
 executing them (or a subset thereof).
 
 To find all tests in the repository, it is **strongly** recommended to
-use the included `manifest` tool: the required behaviours are more
+use the included `manifest` tool: the required behaviors are more
 complex than what are documented (especially when it comes to
-presendence of the various possibilities and some undocumented legacy
-ways to define test types), and hence its behaviour should be
+precedence of the various possibilities and some undocumented legacy
+ways to define test types), and hence its behavior should be
 considered the canonical definition of how to enumerate tests and find
 their type in the repository.
 
 For test execution, please read the documentation for the various test types
 very carefully and then check your understanding on
 the [mailing list][public-test-infra] or [IRC][] ([webclient][web irc], join
-channel `#testing`). It's possible edge-case behaviour isn't properly
+channel `#testing`). It's possible edge-case behavior isn't properly
 documented!
 
 

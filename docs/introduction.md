@@ -13,7 +13,7 @@ lives in [WebGL][WebGL]).
 That said, csswg-test follows a superset of the policies of
 web-platform-tests, so the documentation provided here should
 similarly apply to it. Where extra policies apply, they are provided
-in separate documents and linked from the appropiate section.
+in separate documents and linked from the appropriate section.
 
 ## Help!
 
@@ -84,7 +84,7 @@ GitHub is used both for issue tracking and test submissions; we
 provide [a limited introduction][github-intro] to both git and
 GitHub.
 
-Pull Requests are automatically labelled based on the directory the
+Pull Requests are automatically labeled based on the directory the
 files they change are in; there are also comments added automatically
 to notify a number of people: this list of people comes from OWNERS
 files in those same directories and their parents (i.e., they work

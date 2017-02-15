@@ -154,7 +154,7 @@ The test uses the most specific asserts possible (e.g. doesn't use
 
 <label>
 <input type="checkbox">
-The test uses `idlharness.js` if it is testing basic IDL-defined behaviour.
+The test uses `idlharness.js` if it is testing basic IDL-defined behavior.
 </label>
 
 <label>

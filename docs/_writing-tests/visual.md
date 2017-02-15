@@ -23,7 +23,7 @@ especially noting the requirement to be self-describing (i.e., they
 must give a clear pass condition in their rendering).
 
 Similarly, they should consider the [rendering test guidelines][rendering],
-especially those about colour, to ensure those running the test don't
+especially those about color, to ensure those running the test don't
 incorrectly judge its result.
 
 

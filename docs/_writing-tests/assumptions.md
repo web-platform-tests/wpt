@@ -31,7 +31,7 @@ tests can freely rely on these assumptions being true:
    opportunity, but only near the end of a line unless a line break is
    forced.
 
-Tests for printing behaviour make some further assumptions:
+Tests for printing behavior make some further assumptions:
 
  * The UA is set to print background colors and, if it supports
    graphics, background images.

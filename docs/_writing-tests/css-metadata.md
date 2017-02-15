@@ -1,3 +1,8 @@
+---
+layout: page
+title: CSS Metadata
+order: 14
+---
 CSS tests have some additional requirements for metadata.
 
 ### Specification Links
@@ -27,19 +32,19 @@ Example 1:
 
 ``` html
 <link rel="help"
-href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
+href="https://www.w3.org/TR/CSS21/text.html#alignment-prop" />
 ```
 
 Example 2:
 
 ``` html
 <link rel="help"
-href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
-<link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#q7" />
+href="https://www.w3.org/TR/CSS21/text.html#alignment-prop" />
+<link rel="help" href="https://www.w3.org/TR/CSS21/visudet.html#q7" />
 <link rel="help"
-href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
+href="https://www.w3.org/TR/CSS21/visudet.html#line-height" />
 <link rel="help"
-href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
+href="https://www.w3.org/TR/CSS21/colors.html#background-properties" />
 ```
 
 ### Requirement Flags
@@ -50,12 +55,6 @@ href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
   <th>Description</th>
 </tr>
 <tr>
-  <td>ahem</td>
-  <td>Test requires
-  <a href="http://www.w3.org/Style/CSS/Test/Fonts/Ahem">Ahem font</a>
-  </td>
-</tr>
-<tr>
   <td>animated</td>
   <td>Test is animated in final state. (Cannot be verified using
     reftests/screenshots.)</td>
@@ -64,17 +63,6 @@ href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
   <td>asis</td>
   <td>The test has particular markup formatting requirements and
     cannot be re-serialized.</td>
-</tr>
-<tr>
-  <td>combo</td>
-  <td>Test, which must have an unsuffixed filename number, is
-     strictly the union of all the suffixed tests with the same name
-     and number. (See File name format, below.)</td>
-</tr>
-<tr>
-  <td>dom</td>
-  <td>Requires support for JavaScript and the Document Object Model (
-    DOM)</td>
 </tr>
 <tr>
   <td>font</td>
@@ -91,15 +79,6 @@ href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
   <td>Test case is only valid for HTML</td>
 </tr>
 <tr>
-  <td>http</td>
-  <td>Requires HTTP headers</td>
-</tr>
-<tr>
-  <td>image</td>
-  <td>Requires support for bitmap graphics and the graphic to load
-  </td>
-</tr>
-<tr>
   <td>interact</td>
   <td>Requires human interaction (such as for testing scrolling
     behavior)</td>
@@ -112,11 +91,7 @@ href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
 <tr>
   <td>may</td>
   <td>Behavior tested is preferred but OPTIONAL.
-  <a href="http://www.ietf.org/rfc/rfc2119.txt">[RFC2119]</a></td>
-</tr>
-<tr>
-  <td>namespace</td>
-  <td>Requires support for XML Namespaces</td>
+  <a href="https://www.ietf.org/rfc/rfc2119.txt">[RFC2119]</a></td>
 </tr>
 <tr>
   <td>nonHTML</td>
@@ -134,7 +109,7 @@ href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
 <tr>
   <td>should</td>
   <td>Behavior tested is RECOMMENDED, but not REQUIRED. <a
-    href="http://www.ietf.org/rfc/rfc2119.txt">[RFC2119]</a></td>
+    href="https://www.ietf.org/rfc/rfc2119.txt">[RFC2119]</a></td>
 </tr>
 <tr>
   <td>speech</td>
@@ -142,26 +117,14 @@ href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
     installed</td>
 </tr>
 <tr>
-  <td>svg</td>
-  <td>Requires support for vector graphics (SVG)</td>
-</tr>
-<tr>
   <td>userstyle</td>
   <td>Requires a user style sheet to be set</td>
-</tr>
-<tr>
-  <td>32bit</td>
-  <td>Assumes a 32-bit integer as the minimum (-2147483648) or
-    maximum (2147483647) value</td>
-</tr>
-<tr>
-  <td>96dpi</td>
-  <td>Assumes 96dpi display</td>
 </tr>
 </table>
 
 
 Example 1 (one token applies):
+
 ``` html
 <meta name="flags" content="invalid" />
 ```
@@ -197,7 +160,8 @@ The assertion should not be:
 * A line or reference from the CSS specification unless that line is
   a complete assertion when taken out of context.
 
-The test assertion is **optional**. It helps the reviewer understand
+The test assertion is **optional**, but is is highly recommended to include one.
+It helps the reviewer understand
 the goal of the test so that he or she can make sure it is being
 tested correctly. Also, in case a problem is found with the test
 later, the testing method (e.g. using `color` to determine pass/fail)

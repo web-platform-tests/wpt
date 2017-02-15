@@ -1,4 +1,9 @@
-Test submission is via the typical GitHub workflow.
+---
+layout: page
+title: Submitting Tests
+order: 16
+---
+Test submission is via the typical [GitHub workflow][github flow]:
 
 * Fork the [GitHub repository][repo] (and make sure you're still relatively in
 sync with it if you forked a while ago)
@@ -23,20 +28,22 @@ on, e.g. `git checkout -b topic-name`
 * Using the GitHub UI create a Pull Request for your branch.
 
 * When you get review comments, make more commits to your branch to
-  address the comments (**note**: Do *not* rewrite existing commits using
-  e.g. `git commit --amend` or `git rebase -i`. The review system
-  depends on the full branch history).
+  address the comments.
 
 * Once everything is reviewed and all issues are addressed, your pull
   request will be automatically merged.
 
 For detailed guidelines on setup and each of these steps, please refer to the
-[Github Test Submission][github101] documentation.
+[Github Test Submission][github-intro] documentation.
 
-Hop on to [irc or the mailing list][discuss] if you have an
-issue. There is no need to announce your review request, as soon as
-you make a Pull Request GitHub will inform interested parties.
+Hop on to the [mailing list][public-test-infra] or [IRC][]
+([webclient][web irc], join channel `#testing`) if you have an issue.  There is
+no need to announce your review request, as soon as you make a Pull Request
+GitHub will inform interested parties.
 
 [repo]: https://github.com/w3c/web-platform-tests/
-[github101]: ./github-101.html
-[discuss]: /discuss.html
+[github-intro]: {{ site.baseurl }}{% link _appendix/github-intro.md %}
+[github flow]: https://guides.github.com/introduction/flow/
+[public-test-infra]: https://lists.w3.org/Archives/Public/public-test-infra/
+[IRC]: irc://irc.w3.org:6667/testing
+[web irc]: http://irc.w3.org

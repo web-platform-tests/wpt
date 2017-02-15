@@ -1,21 +1,24 @@
+---
+layout: page
+title: Introduction to GitHub
+order: 1
+---
 All the basics that you need to know are documented on this page, but for the
 full GitHub documentation, visit [help.github.com][help].
 
-If you are already an experienced Git/GitHub user, all you need to
-know is that we use the normal GitHub Pull Request workflow for test
-submissions. The only unusual thing is that, to help with code review,
-we ask that you do not amend or otherwise squash your submission as
-you go along, but keep pushing updates as new commits.
+If you are already an experienced Git/GitHub user, all you need to know is that
+we use the [normal GitHub Pull Request workflow][github flow] for test
+submissions.
 
 If you are a first-time GitHub user, read on for more details of the workflow.
 
 ## Setup
 
 1.  Create a GitHub account if you do not already have one on
-    [github.com][github]
+    [github.com][github].
 
 2.  Download and install the latest version of Git:
-    [http://git-scm.com/downloads][git]. Please refer to the instruction there
+    [https://git-scm.com/downloads][git]; please refer to the instructions there
     for different platforms.
 
 3.  Configure your settings so your commits are properly labeled:
@@ -35,13 +38,6 @@ If you are a first-time GitHub user, read on for more details of the workflow.
         $ git config --global user.email "your_email@address.com"
 
     _This should be the email address you used to create the account in Step 1._
-
-    Next, type:
-
-        $ git config --global push.default upstream
-
-    This ensures that git push will never unintentionally create or update
-    a remote branch.
 
 4.  (Optional) If you don't want to enter your username and password every
     time you talk to the remote server, you'll need to set up password caching.
@@ -240,40 +236,36 @@ them back up to the server:
 GitHub UI.  Below is one method and others can be found on
 [GitHub.com][github-createpr]
 
-    a. Click the ![pull request link][pullrequestlink] link on the right side
+    1. Click the ![pull request link][pullrequestlink] link on the right side
     of the UI, then click the ![new pull request][pullrequestbtn] button.
 
-    b.  On the left, you should see the base repo is the
-    w3c/web-platform-tests. On the right, you should see your fork of that
-    repo. In the branch menu of your forked repo, switch to
-    `topic`
-    **Note:** If you see _'There isn't anything to compare'_, click the
-    ![edit][editbtn] button and make sure your fork and your
-    `topic` branch is selected on the right side.
+    2.  On the left, you should see the base repo is the
+        w3c/web-platform-tests. On the right, you should see your fork of that
+        repo. In the branch menu of your forked repo, switch to `topic`
 
-    c. Select the ![create pull request][createprlink] link at the top.
+        **Note:** If you see _'There isn't anything to compare'_, click
+        the ![edit][editbtn] button and make sure your fork and your `topic`
+        branch is selected on the right side.
 
-    d. Scroll down and review the diff
+    3. Select the ![create pull request][createprlink] link at the top.
 
-    e. Scroll back up and in the Title field, enter a brief description for
-    your submission.
+    4. Scroll down and review the diff
 
-    Example: "Tests for CSS Transforms skew() function."
+    5. Scroll back up and in the Title field, enter a brief description for
+       your submission.
 
-    f.  If you'd like to add more detailed comments, use the comment field
+       Example: "Tests for CSS Transforms skew() function."
+
+    6.  If you'd like to add more detailed comments, use the comment field
     below.
 
-    g.  Click ![the send pull request button][sendpullrequest]
+    7.  Click ![the send pull request button][sendpullrequest]
 
 
 4. Wait for feedback on your pull request and once your pull request is
-accepted, delete your branch (see '
-[When Pull Request is Accepted][cleanup]').
+accepted, delete your branch (see '[When Pull Request is Accepted][cleanup]').
 
-That's it! If you're currently at a Test the Web Forward event, find an
-expert nearby and ask for a review. If you're doing this on your own
-(AWESOME!), your pull request will go into a queue and will be reviewed
-soon.
+That's it! Your pull request will go into a queue and will be reviewed soon.
 
 ## Modify
 
@@ -295,10 +287,7 @@ changes, follow these steps:
 
         $ git push origin topic
 
-4.  The pull request will automatically be updated with the new commit. Note
-    for advanced users: it is generally discouraged to rebase your pull request
-    before review is complete. Tests typically have few conflicts so this
-    should not be a problem in the common case.
+4.  The pull request will automatically be updated with the new commit.
 
 Sometimes it takes multiple iterations through a review before the changes are
 finally accepted. Don't worry about this; it's totally normal. The goal of test
@@ -336,13 +325,94 @@ come from a new branch.)
 You need to be able to set up remote upstream, etc. Please refer to [Pro Git
 Book][git-book] and enjoy reading.
 
+## Working with Pull Requests as a reviewer
+
+In order to do a thorough review,
+it is sometimes desirable to have a local copy of the tests one wishes to review.
+
+Reviewing tests also often results in wanting a few things to be changed.
+Generally, the reviewer should ask the author to make the desired changes.
+However, sometimes the original author does not respond to the requests,
+or the changes are so trivial (e.g. fixing a typo)
+that bothering the original author seems like a waste of time.
+
+Here is how to do all that.
+
+### Trivial cases
+
+If it is possible to review the tests without a local copy,
+but the reviewer still wants to make some simple tweaks to the tests before merging,
+it is possible to do so via the Github web UI.
+
+1. Open the pull request. E.g. https://github.com/w3c/csswg-test/pull/1234
+2. Go to the ![Files changed][files-changed] view (e.g. https://github.com/w3c/csswg-test/pull/1234/files)
+3. Locate the files you wish to change, and click the ![pencil][pencil-icon] icon in the upper right corner
+4. Make the desired change
+5. Write a commit message (including a good title) at the bottom
+6. Make sure the ![Commit directly to the [name-of-the-PR-branch] branch.][commit-directly] radio button is selected.
+
+   _Note: If the PR predates the introduction of this feature by Github,
+   or if the author of the PR has disabled write-access by reviewers to the PR branch,
+   this may not be available,
+   and your only option would be to commit to a new branch, creating a new PR._
+7. Click the ![Commit Changes][commitbtn] button.
+
+
+### The Normal Way
+
+This is how to import the Pull Request's branch
+into your existing local checkout of the repository.
+If you don't have one, go [fork](#fork), [clone](#clone), and [configure](#configure-remote--upstream) it.
+
+If you would rather keep the PR separate from your usual working copy,
+have a look at [The Easy Way](#the-easy-way).
+
+1. Move into your local clone: `cd wherever-you-put-your-repo`
+2. Add a remote for the PR author's repo: `git remote add <author-id> git://github.com/<author-id>/<repo-name>.git`
+3. Fetch the PR: `git fetch <author-id> <name-of-the-PR-branch>`
+4. Checkout that branch: `git checkout <name-of-the-PR-branch>`
+
+   _The relevant `<author-id>`, `<repo-name>`, and `<name-of-the-PR-branch>` can be found by looking for this sentence in on the Github page of the PR:
+   ![Add more commits by pushing to the name-of-the-PR-branch branch on author-id/repo-name.][more-commits]_
+
+If all you meant to do was reviewing files locally, you're all set.
+If you wish to make changes to the PR branch:
+
+1. Make changes and [commit](#commit) normally
+2. Push your changes upstream: `git push <author-id> <name-of-the-PR-branch>`
+
+   _Note: If the PR predates the introduction of this feature by Github,
+   or if the author of the PR has disabled write-access by reviewers to the PR branch,
+   this will not work, and you will need to use the alternative described below._
+
+If, instead of modifying the existing PR, you wish to make a new one based on it:
+
+1. Set up a new branch that contains the existing PR by doing one of the following:
+   1. Create a new branch from the tip of the PR:
+   `git branch <your-new-branch> <name-of-the-PR-branch> && git checkout <your-new-branch>`
+   2. Create a new branch from `master` and merge the PR into it:
+   `git branch <your-new-branch> master && git checkout <your-new-branch> && git merge <name-of-the-PR-branch>`
+2. Make changes and [commit](#commit) normally
+3. Push your changes to **your** repo: `git push origin <your-new-branch>`
+4. Go to the Github Web UI to [submit a new Pull Request](#submit).
+
+   _Note: You should also close the original pull request._
+
+When you're done reviewing or making changes,
+you can delete the branch: `git branch -d <name-of-the-PR-branch>`
+(use `-D` instead of `-d` to delete a branch that has not been merged into master yet).
+
+If you do not expect work with more PRs from the same author,
+you may also discard your connection to their repo:
+`git remote remove <author-id>`
+
 [branch]: #branch
 [commit]: #commit
 [clone]: #clone
 [css-repo]: https://github.com/w3c/csswg-test
-[forkbtn]: /assets/forkbtn.png
-[git]: http://git-scm.com/downloads
-[git-book]: http://git-scm.com/book
+[forkbtn]: {{ site.baseurl }}{% link /assets/forkbtn.png %}
+[git]: https://git-scm.com/downloads
+[git-book]: https://git-scm.com/book
 [github]: https://github.com/
 [github-w3c]: https://github.com/w3c
 [github-fork-docs]: https://help.github.com/articles/fork-a-repo
@@ -350,12 +420,18 @@ Book][git-book] and enjoy reading.
 [help]: https://help.github.com/
 [main-repo]: https://github.com/w3c/web-platform-tests
 [password-caching]: https://help.github.com/articles/caching-your-github-password-in-git
-[pullrequestlink]: /assets/pullrequestlink.png
-[pullrequestbtn]: /assets/pullrequestbtn.png
-[editbtn]: /assets/editbtn.png
-[createprlink]: /assets/createprlink.png
-[sendpullrequest]: /assets/sendpullrequest.png
-[praccepteddelete]: /assets/praccepteddelete.png
+[pullrequestlink]: {{ site.baseurl }}{% link /assets/pullrequestlink.png %}
+[pullrequestbtn]: {{ site.baseurl }}{% link /assets/pullrequestbtn.png %}
+[editbtn]: {{ site.baseurl }}{% link /assets/editbtn.png %}
+[createprlink]: {{ site.baseurl }}{% link /assets/createprlink.png %}
+[sendpullrequest]: {{ site.baseurl }}{% link /assets/sendpullrequest.png %}
+[praccepteddelete]: {{ site.baseurl }}{% link /assets/praccepteddelete.png %}
 [submit]: #submit
 [remote-upstream]: #configure-remote-upstream
 [cleanup]: #cleanup
+[pencil-icon]: {{ site.baseurl }}{% link /assets/pencil-icon.png %}
+[commitbtn]: {{ site.baseurl }}{% link /assets/commitbtn.png %}
+[commit-directly]: {{ site.baseurl }}{% link /assets/commit-directly.png %}
+[files-changed]: {{ site.baseurl }}{% link /assets/files-changed.png %}
+[more-commits]: {{ site.baseurl }}{% link /assets/more-commits.png %}
+[github flow]: https://guides.github.com/introduction/flow/

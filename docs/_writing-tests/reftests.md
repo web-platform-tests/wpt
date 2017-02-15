@@ -84,7 +84,7 @@ pass conditions with boolean logic. For example, consider when:
 href=c.html>`,
  * `b.html` has `<link rel=match href=b1.html>`, and
  * `c.html` has `<link rel=mismatch href=c1.html>`.
- 
+
 Or, graphically:
 
 <img src="{{ site.baseurl }}{% link assets/reftest_graph_example.svg %}"

@@ -142,7 +142,7 @@ new tests. Any of these rules may be broken if the test demands it:
  * Use spaces rather than tabs for indentation
 
  * Use UNIX-style line endings (i.e. no CR characters at EOL).
- 
+
 We have a lint tool for catching these and other common mistakes. You
 can run it manually by starting the `lint` executable from the root of
 your local web-platform-tests working directory like this:

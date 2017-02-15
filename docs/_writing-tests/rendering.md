@@ -19,7 +19,7 @@ two ways:
    "This text should be green". A variant of this is using the
    background instead, with a pass condition of, "This should have a
    green background".
-   
+
  * **The green square**: applicable to many block layout tests, the test
    renders a green square when it passes; these can mostly be written to
    match [this][ref-filled-green-100px-square] reference. This green square is
@@ -68,10 +68,10 @@ Aside from green and red, other colors are generally used in specific
 ways:
 
  * Black is typically used for descriptive text,
- 
+
  * Blue is frequently used as an obvious color for tests with complex
    pass conditions,
- 
+
  * Fuchsia, yellow, teal, and orange are typically used when multiple
    colors are needed,
 

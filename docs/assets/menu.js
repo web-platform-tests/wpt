@@ -14,7 +14,7 @@
 
   site_nav.addEventListener("focus", show, false);
   site_nav.addEventListener("blur", hide_if_relatedTarget_elsewhere, true);
-  
+
   site_nav.addEventListener("mouseenter", show, false);
   site_nav.addEventListener("mouseleave", hide_if_relatedTarget_elsewhere, false);
 })();

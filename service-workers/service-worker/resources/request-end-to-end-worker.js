@@ -4,6 +4,8 @@ onmessage = function(e) {
   var message = e.data;
   if (typeof message === 'object' && 'port' in message) {
     port = message.port;
+
+    port.postMessage('received port');
   }
 };
 

@@ -813,6 +813,16 @@
             }
         },
         {
+            "href": "file://hi/x",
+            "new_value": "",
+            "expected": {
+                "href": "file:///x",
+                "host": "",
+                "hostname": "",
+                "port": ""
+            }
+        },
+        {
             "href": "sc://test@test/",
             "new_value": "",
             "expected": {
@@ -1131,6 +1141,16 @@
             "new_value": "loc%41lhost",
             "expected": {
                 "href": "file:///",
+                "host": "",
+                "hostname": "",
+                "port": ""
+            }
+        },
+        {
+            "href": "file://hi/x",
+            "new_value": "",
+            "expected": {
+                "href": "file:///x",
                 "host": "",
                 "hostname": "",
                 "port": ""

@@ -3727,6 +3727,11 @@
     "base": "http://other.com/",
     "failure": true
   },
+  {
+    "input": "https://x x:12",
+    "base": "about:blank",
+    "failure": true
+  },
   "Fullwidth and escaped UTF-8 fullwidth should still be treated as IP",
   {
     "input": "http://０Ｘｃ０．０２５０．０１",
@@ -4453,6 +4458,37 @@
     "search": "",
     "hash": ""
   },
+  "# unknown scheme with bogus percent-encoding",
+  {
+    "input": "wow:%NBD",
+    "base": "about:blank",
+    "href": "wow:%NBD",
+    "origin": "null",
+    "protocol": "wow:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "%NBD",
+    "search": "",
+    "hash": ""
+  },
+  {
+    "input": "wow:%1G",
+    "base": "about:blank",
+    "href": "wow:%1G",
+    "origin": "null",
+    "protocol": "wow:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "%1G",
+    "search": "",
+    "hash": ""
+  },
   "# Hosts and percent-encoding",
   {
     "input": "ftp://example.com%80/",
@@ -5063,7 +5099,7 @@
     "failure": true
   },
   {
-    "input": "https://[0:1:2:3:4:5:6.0.0.0.1]",
+    "input": "https://[0:1:2:3:4:5:6:7.0.0.0.1]",
     "base": "about:blank",
     "failure": true
   },

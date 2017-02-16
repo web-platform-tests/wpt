@@ -48,3 +48,5 @@ function run_test() {
         }
     }, "Null arrays")
 }
+
+run_test()

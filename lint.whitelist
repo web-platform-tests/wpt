@@ -163,7 +163,6 @@ CONSOLE: css-writing-modes-3/orthogonal-parent-shrink-to-fit-001*.html
 CONSOLE: css-writing-modes-3/tools/generators/gulpfile.js
 CONSOLE: css-writing-modes-3/tools/generators/text-orientation-generator.js
 CONSOLE: cssom-1/index-002.html
-CONSOLE: server.js
 CONSOLE: work-in-progress/mozilla/mochitest-simplified/packed.js
 CONSOLE: work-in-progress/ttwf_sf/divya/index-002.html
 CONSOLE: work-in-progress/ttwf_tokyo/hiromitsuuuuu/test_font_face_parser.html
@@ -198,7 +197,6 @@ TRAILING WHITESPACE: css-transforms-1/css3-transform-rotateY.html
 TRAILING WHITESPACE: css-variables-1/reference/vars-font-shorthand-001-ref.html
 TRAILING WHITESPACE: css-variables-1/vars-font-shorthand-001.html
 TRAILING WHITESPACE: geometry-1/DOMMatrix-001.html
-TRAILING WHITESPACE: server.js
 TRAILING WHITESPACE: vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-7.html
 TRAILING WHITESPACE: vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-7-ref.html
 TRAILING WHITESPACE: vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-8.html

@@ -10,6 +10,5 @@ tools/cache
 *~
 *.orig
 *Thumbs.db
-node_modules
 _certs
 config.json

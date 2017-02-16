@@ -1,4 +1,8 @@
 var port = undefined;
+// Create a then-able object that is never resolved.
+function createPending() {
+  return { then: createPending };
+}
 
 onmessage = function(e) {
   var message = e.data;
@@ -6,6 +10,11 @@ onmessage = function(e) {
     port = message.port;
 
     port.postMessage('received port');
+    // The ServiceWorker which handles the "message" event must persist long
+    // enough to handle the subsequent "fetch" event. To promote test
+    // simplicity, the worker prevents its own termination indefinitely via a
+    // then-able that is never resolved.
+    e.waitUntil(createPending());
   }
 };
 

@@ -259,7 +259,8 @@ class ServerProc(object):
               ssl_config, **kwargs):
         self.proc = Process(target=self.create_daemon,
                             args=(init_func, host, port, paths, routes, bind_hostname,
-                                  external_config, ssl_config))
+                                  external_config, ssl_config),
+                            kwargs=kwargs)
         self.proc.daemon = True
         self.proc.start()
 

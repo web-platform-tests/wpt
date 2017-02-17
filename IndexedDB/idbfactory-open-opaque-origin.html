@@ -17,11 +17,13 @@ function load_iframe(src, sandbox) {
   });
 }
 
-function wait_for_message() {
+function wait_for_message(iframe) {
   return new Promise(resolve => {
     self.addEventListener('message', function listener(e) {
-      resolve(e.data);
-      self.removeEventListener('message', listener);
+      if (e.source === iframe.contentWindow) {
+        resolve(e.data);
+        self.removeEventListener('message', listener);
+      }
     });
   });
 }
@@ -30,6 +32,7 @@ const script =
   '<script>' +
   '  window.onmessage = () => {' +
   '    try {' +
+  '      indexedDB.deleteDatabase("opaque-origin-test");' +
   '      const r = indexedDB.open("opaque-origin-test");' +
   '      r.onupgradeneeded = () => { r.transaction.abort(); };' +
   '      window.parent.postMessage({result: "no exception"}, "*");' +
@@ -43,7 +46,7 @@ promise_test(t => {
   return load_iframe(script)
     .then(iframe => {
       iframe.contentWindow.postMessage({}, '*');
-      return wait_for_message();
+      return wait_for_message(iframe);
     })
     .then(message => {
       assert_equals(message.result, 'no exception',
@@ -55,7 +58,7 @@ promise_test(t => {
   return load_iframe(script, 'allow-scripts')
     .then(iframe => {
       iframe.contentWindow.postMessage({}, '*');
-      return wait_for_message();
+      return wait_for_message(iframe);
     })
     .then(message => {
       assert_equals(message.result, 'SecurityError',

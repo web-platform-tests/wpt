@@ -26,7 +26,6 @@ promise_test(() => {
   const ws = recordingWritableStream({}, strategy);
   writer = ws.getWriter();
   return writer.write(2)
-      .then(() => Promise.resolve()) // See next test for why this is needed.
       .then(() => {
         assert_array_equals(ws.events, ['write', 0, 'write', 1, 'write', 2], 'writes should appear in order');
       });

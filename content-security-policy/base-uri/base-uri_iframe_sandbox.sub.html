@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>base-uri works correctly inside a sandboxed iframe.</title>
+    <script src='/resources/testharness.js' nonce='dummy'></script>
+    <script src='/resources/testharnessreport.js' nonce='dummy'></script>
+
+    <!-- CSP served: base-uri 'self' -->
+</head>
+
+<body>
+    <h1>base-uri works correctly inside a sandboxed iframe.</h1>
+    <div id='log'></div>
+
+    <script>
+        window.addEventListener('securitypolicyviolation', function(e) {
+            assert_unreached('No CSP violation report has fired.');
+        });
+
+        async_test(function(t) {
+            window.addEventListener('message', t.step_func(function(e) {
+                assert_equals(e.data, location.origin + '/');
+                t.done();
+            }));
+            var e = document.createElement('iframe');
+            e.sandbox = 'allow-scripts';
+            e.style.display = 'none';
+            e.srcdoc = `
+            <script>
+              window.addEventListener('securitypolicyviolation', function() {
+                top.postMessage('FAIL', '*');
+              });
+            </sc`+`ript>
+            <base href="{{location[scheme]}}://{{domains[]}}:{{ports[http][0]}}/">
+            <script>
+              top.postMessage(document.baseURI, '*');
+            </sc`+`ript>`;
+            document.body.appendChild(e);
+        }, 'base-uri \'self\' works with sandboxed iframes.');
+    </script>
+
+</body>
+
+</html>

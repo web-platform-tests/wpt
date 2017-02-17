@@ -40,6 +40,14 @@
             }
         },
         {
+            "href": "javascript:alert(1)",
+            "new_value": "defuse",
+            "expected": {
+                "href": "defuse:alert(1)",
+                "protocol": "defuse:"
+            }
+        },
+        {
             "comment": "Upper-case ASCII is lower-cased",
             "href": "a://example.net",
             "new_value": "B",
@@ -216,6 +224,14 @@
             }
         },
         {
+            "href": "javascript:alert(1)",
+            "new_value": "wario",
+            "expected": {
+                "href": "javascript:alert(1)",
+                "username": ""
+            }
+        },
+        {
             "href": "http://example.net",
             "new_value": "me",
             "expected": {
@@ -271,6 +287,14 @@
             "expected": {
                 "href": "sc:///",
                 "username": ""
+            }
+        },
+        {
+            "href": "javascript://x/",
+            "new_value": "wario",
+            "expected": {
+                "href": "javascript://wario@x/",
+                "username": "wario"
             }
         },
         {
@@ -366,6 +390,14 @@
             "expected": {
                 "href": "sc:///",
                 "password": ""
+            }
+        },
+        {
+            "href": "javascript://x/",
+            "new_value": "bowser",
+            "expected": {
+                "href": "javascript://:bowser@x/",
+                "password": "bowser"
             }
         },
         {
@@ -1389,6 +1421,14 @@
                 "href": "sc://x:12/",
                 "port": "12"
             }
+        },
+        {
+            "href": "javascript://x/",
+            "new_value": "12",
+            "expected": {
+                "href": "javascript://x:12/",
+                "port": "12"
+            }
         }
     ],
     "pathname": [
@@ -1647,6 +1687,14 @@
             "expected": {
                 "href": "http://example.net/#%c3%89t%C3%A9",
                 "hash": "#%c3%89t%C3%A9"
+            }
+        },
+        {
+            "href": "javascript:alert(1)",
+            "new_value": "castle",
+            "expected": {
+                "href": "javascript:alert(1)#castle",
+                "hash": "#castle"
             }
         }
     ]

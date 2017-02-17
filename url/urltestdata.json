@@ -5206,12 +5206,12 @@
   {
     "input": "http://?",
     "base": "about:blank",
-    "failure": "true"
+    "failure": true
   },
   {
     "input": "http://#",
     "base": "about:blank",
-    "failure": "true"
+    "failure": true
   },
   "# Non-special-URL path tests",
   {

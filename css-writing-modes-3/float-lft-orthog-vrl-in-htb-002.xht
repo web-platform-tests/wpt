@@ -4,12 +4,10 @@
 
  <head>
 
-  <title>CSS Writing Modes Test: floated left in vertical-rl orthogonal context</title>
+  <title>CSS Writing Modes Test: orthogonal floated left in horizontal-tb context</title>
 
-  <meta name="DC.date.created" content="2016-11-08T09:54:03+11:00" scheme=
-  "W3CDTF" />
-  <meta name="DC.date.modified" content="2017-02-04T09:54:03+11:00" scheme=
-  "W3CDTF" />
+  <meta name="DC.date.created" content="2016-11-08T09:54:03+11:00" scheme="W3CDTF" />
+  <meta name="DC.date.modified" content="2017-02-17T09:54:03+11:00" scheme="W3CDTF" />
 
   <!--
   Inspired by the test in
@@ -18,17 +16,17 @@
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="https://drafts.csswg.org/css-writing-modes-3/#auto-multicol" title="7.3.2 Auto-sizing Block Containers in Orthogonal Flows" />
-  <link rel="match" href="float-lft-orthog-vrl-002-ref.xht" />
+  <link rel="match" href="float-lft-orthog-vrl-in-htb-002-ref.xht" />
 
   <meta content="" name="flags" />
-  <meta content="This test checks that the vertical placement of an orthogonal floated left block box inside an horizontal-tb parent. The orthogonal floated left block box should be located as high as possible inside the horizontal-tb line box." name="assert" />
+  <meta content="This test checks the vertical position of an orthogonal floated left block box inside an horizontal-tb parent. The orthogonal floated left block box must be put as high as possible inside the horizontal-tb line box." name="assert" />
 
   <style type="text/css"><![CDATA[
   div#horiz-parent
     {
-      border: orange solid 3px;
-      font-size: 16px;
-      line-height: 1.25;
+      border: orange solid 8px;
+      font-size: 32px;
+      line-height: 1.25; /* computes to 40px */
     }
 
   div#orthog-vrl-float-left
@@ -44,8 +42,8 @@
 
  <body>
 
-  <div id="horiz-parent">horizontal-tb parent
-    <div id="orthog-vrl-float-left">vertical-rl floated left</div>
+  <div id="horiz-parent">HTB parent
+    <div id="orthog-vrl-float-left">VRL floated left</div>
   </div>
 
  </body>

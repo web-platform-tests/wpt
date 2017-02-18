@@ -6,10 +6,8 @@
 
   <title>CSS Reftest Reference</title>
 
-  <meta name="DC.date.created" content="2016-12-14T09:54:03+11:00" scheme=
-  "W3CDTF" />
-  <meta name="DC.date.modified" content="2017-02-04T09:54:03+11:00" scheme=
-  "W3CDTF" />
+  <meta name="DC.date.created" content="2016-12-14T09:54:03+11:00" scheme="W3CDTF" />
+  <meta name="DC.date.modified" content="2017-02-17T09:54:03+11:00" scheme="W3CDTF" />
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
 
@@ -18,16 +16,16 @@
   <style type="text/css"><![CDATA[
   div#horiz-parent
     {
-      border: orange solid 3px;
-      font-size: 16px;
-      line-height: 1.25;
+      border: orange solid 8px;
+      font-size: 32px;
+      line-height: 1.25; /* computes to 40px */
     }
 
   div#orthog-vert
     {
       background-color: blue;
       color: white;
-      right: 11px;
+      right: 16px;
       position: absolute;
       writing-mode: vertical-rl;
     }
@@ -38,8 +36,8 @@
  <body>
 
   <div id="horiz-parent">
-    <div id="orthog-vert">vertical-rl floated right</div>
-    horizontal-tb parent
+    <div id="orthog-vert">VRL floated right</div>
+    HTB parent
   </div>
 
  </body>

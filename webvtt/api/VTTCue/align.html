@@ -1,5 +1,6 @@
 <!doctype html>
 <title>VTTCue.align</title>
+<link rel="help" href="https://w3c.github.io/webvtt/#dom-vttcue-align">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <div id=log></div>
@@ -7,22 +8,32 @@
 test(function(){
     var video = document.createElement('video');
     document.body.appendChild(video);
-    var c1 = new VTTCue(0, 1, 'text1');
-    assert_equals(c1.align, 'center');
+
+    var cue = new VTTCue(0, 1, 'text');
+    assert_equals(cue.align, 'center');
+
     var track = document.createElement('track');
     var t = track.track;
-    t.addCue(c1);
-    assert_equals(c1.align, 'center');
+    t.addCue(cue);
+
+    assert_equals(cue.align, 'center');
+
     video.appendChild(track);
-    assert_equals(c1.align, 'center');
+    assert_equals(cue.align, 'center');
+
     t.mode = 'showing';
-    assert_equals(c1.align, 'center');
-    c1.align = 'start';
-    assert_equals(c1.align, 'start');
-    c1.align = 'end';
-    assert_equals(c1.align, 'end');
-    c1.align = 'start\u0000';
-    assert_equals(c1.align, 'end');
+    assert_equals(cue.align, 'center');
+
+    cue.align = 'start';
+    assert_equals(cue.align, 'start');
+
+    cue.align = 'end';
+    assert_equals(cue.align, 'end');
+
+    ['start\u0000', 'centre', 'middle'].forEach(function(invalid) {
+        cue.align = invalid;
+        assert_equals(cue.align, 'end');
+    });
 }, document.title+', script-created cue');
 
 var t_parsed = async_test(document.title+', parsed cue');

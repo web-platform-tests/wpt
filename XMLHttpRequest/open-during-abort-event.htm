@@ -1,16 +1,9 @@
 <!doctype html>
-<html>
-  <head>
-    <title>XMLHttpRequest: open() during abort event - abort() called from upload.onloadstart</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#the-open()-method" data-tested-assertations="following::ol/li[15] following::ol/li[15]/ol/li[1] following::ol/li[15]/ol/li[2]" />
-    <link rel="help" href="http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#dom-xmlhttprequest-abort" data-tested-assertations="following::ol/li[2]/ol/li[3]" />
-    <!-- TODO: no suitable assertation in spec yet for the main point of this test - see https://www.w3.org/Bugs/Public/show_bug.cgi?id=27033#c5 -->
-  </head>
-  <body>
-    <div id="log"></div>
-    <script>
+<title>XMLHttpRequest: open() during abort event - abort() called from upload.onloadstart</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
       var test = async_test()
       var client = new XMLHttpRequest(), log = [], lastTest = false
       var expected = [
@@ -53,7 +46,6 @@
       client.onloadend = test.step_func(function () {
         log.push('client.onloadend ' + client.readyState)
         if(lastTest){
-          console.log(log)
           assert_array_equals(log, expected)
           test.done()
         }
@@ -66,5 +58,3 @@
       client.open("POST", "resources/content.py")
       client.send(document)
     </script>
-  </body>
-</html>

@@ -15,7 +15,7 @@ test(function(){
 
     cue.positionAlign = 'center';
     ['auto\u0000', 'centre', 'middle'].forEach(function(invalid) {
-        cue.positionAlign = invalid
+        cue.positionAlign = invalid;
         assert_equals(cue.positionAlign, 'center');
     });
 }, document.title+', script-created cue');

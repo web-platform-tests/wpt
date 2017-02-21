@@ -1,20 +1,22 @@
 from __future__ import unicode_literals
 
 import os
+import sys
 
 import mock
 import pytest
 import six
 
+from ...localpaths import repo_root
 from .. import lint as lint_mod
 from ..lint import filter_whitelist_errors, parse_whitelist, lint
 
 _dummy_repo = os.path.join(os.path.dirname(__file__), "dummy")
 
 
-def _mock_lint(name):
+def _mock_lint(name, **kwargs):
     wrapped = getattr(lint_mod, name)
-    return mock.patch(lint_mod.__name__ + "." + name, wraps=wrapped)
+    return mock.patch(lint_mod.__name__ + "." + name, wraps=wrapped, **kwargs)
 
 
 def test_filter_whitelist_errors():
@@ -165,3 +167,43 @@ def test_lint_passing_and_failing(capsys):
     assert "broken.html 1 " in out
     assert "okay.html" not in out
     assert err == ""
+
+
+def test_all_filesystem_paths():
+    with mock.patch(
+            'os.walk',
+            return_value=[('.',
+                           ['dir_a', 'dir_b'],
+                           ['file_a', 'file_b']),
+                          (os.path.join('.', 'dir_a'),
+                           [],
+                           ['file_c', 'file_d'])]
+    ) as m:
+        got = list(lint_mod.all_filesystem_paths('.'))
+        assert got == ['file_a',
+                       'file_b',
+                       os.path.join('dir_a', 'file_c'),
+                       os.path.join('dir_a', 'file_d')]
+
+
+def test_main_with_args():
+    orig_argv = sys.argv
+    try:
+        sys.argv = ['./lint', 'a', 'b', 'c']
+        with _mock_lint("lint") as m:
+            lint_mod.main()
+            m.assert_called_once_with(repo_root, ['a', 'b', 'c'], False, False)
+    finally:
+        sys.argv = orig_argv
+
+
+def test_main_no_args():
+    orig_argv = sys.argv
+    try:
+        sys.argv = ['./lint']
+        with _mock_lint('lint') as m:
+            with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']) as m2:
+                lint_mod.main()
+                m.assert_called_once_with(repo_root, ['foo', 'bar'], False, False)
+    finally:
+        sys.argv = orig_argv

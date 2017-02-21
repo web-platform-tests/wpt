@@ -34,12 +34,6 @@ you could add the following line to the lint.whitelist file.
 
 %s:%s"""
 
-def all_git_paths(repo_root):
-    command_line = ["git", "ls-tree", "-r", "--name-only", "HEAD"]
-    output = subprocess.check_output(command_line, cwd=repo_root)
-    for item in output.split("\n"):
-        yield item
-
 def all_filesystem_paths(repo_root):
     path_filter = PathFilter(repo_root, extras=[".git/*"])
     for dirpath, dirnames, filenames in os.walk(repo_root):
@@ -50,12 +44,6 @@ def all_filesystem_paths(repo_root):
         dirnames[:] = [item for item in dirnames if
                        path_filter(os.path.relpath(os.path.join(dirpath, item) + "/",
                                                    repo_root))]
-
-
-def all_paths(repo_root, ignore_local):
-    fn = all_git_paths if ignore_local else all_filesystem_paths
-    for item in fn(repo_root):
-        yield item
 
 def check_path_length(repo_root, path, css_mode):
     if len(path) + 1 > 150:
@@ -438,15 +426,13 @@ def parse_args():
                         help="List of paths to lint")
     parser.add_argument("--json", action="store_true",
                         help="Output machine-readable JSON format")
-    parser.add_argument("--ignore-local", action="store_true",
-                        help="Ignore locally added files in the working directory (requires git).")
     parser.add_argument("--css-mode", action="store_true",
                         help="Run CSS testsuite specific lints")
     return parser.parse_args()
 
 def main(force_css_mode=False):
     args = parse_args()
-    paths = args.paths if args.paths else all_paths(repo_root, args.ignore_local)
+    paths = args.paths if args.paths else all_filesystem_paths(repo_root)
     return lint(repo_root, paths, args.json, force_css_mode or args.css_mode)
 
 def lint(repo_root, paths, output_json, css_mode):

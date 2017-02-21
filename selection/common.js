@@ -977,3 +977,14 @@ function assertSelectionNoChange(func) {
          "The operation should not replace a registered Range");
 }
 
+/**
+ * Check if the specified node can be selectable with window.getSelection()
+ * methods.
+ */
+function isSelectableNode(node) {
+    if (!node)
+        return false;
+    if (node.nodeType == Node.DOCUMENT_TYPE_NODE)
+        return false;
+    return document.contains(node);
+}

@@ -4900,9 +4900,14 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue,
 function normalizeTest(command, test, styleWithCss) {
 //@{
     // Our standard format for test processing is:
-    //   [input HTML, [command1, value1], [command2, value2], ...]
-    // But this is verbose, so we actually use three different formats in the
-    // tests and multiTests arrays:
+    //   [input HTML,
+    //     [command1, value1, optional_name_mod],
+    //     [command2, value2, optional_name_mod], ...]
+    // Where `optional_name_mod` is an optionally-specified string used when
+    // generating test names (necessary to ensure uniqueness for command
+    // sequences that use the same command multiple times). This format is
+    // verbose, so we actually use three different formats in the tests and
+    // multiTests arrays:
     //
     // 1) Plain string giving the input HTML.  The command is implicit from the
     // key of the tests array.  If the command takes values, the value is given

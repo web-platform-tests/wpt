@@ -48,7 +48,8 @@ t.step(function() {
         // The only purpose of the iframe created here is to generate an HTTP
         // request, so the element may be removed as soon as the frame has
         // completed loading.
-        with_iframe(scope).then(function(f) { f.remove(); });
+        with_iframe(scope).then(function(f) { f.remove(); })
+          .catch(unreached_rejection(t));
     }
 
     function onResult(event) {

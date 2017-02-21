@@ -190,7 +190,7 @@ def test_main_with_args():
     orig_argv = sys.argv
     try:
         sys.argv = ['./lint', 'a', 'b', 'c']
-        with _mock_lint("lint") as m:
+        with _mock_lint('lint', return_value=True) as m:
             lint_mod.main()
             m.assert_called_once_with(repo_root, ['a', 'b', 'c'], False, False)
     finally:
@@ -201,7 +201,7 @@ def test_main_no_args():
     orig_argv = sys.argv
     try:
         sys.argv = ['./lint']
-        with _mock_lint('lint') as m:
+        with _mock_lint('lint', return_value=True) as m:
             with _mock_lint('all_filesystem_paths', return_value=['foo', 'bar']) as m2:
                 lint_mod.main()
                 m.assert_called_once_with(repo_root, ['foo', 'bar'], False, False)

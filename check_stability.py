@@ -183,7 +183,11 @@ class Firefox(Browser):
     def install(self):
         """Install Firefox."""
         call("pip", "install", "-r", os.path.join(wptrunner_root, "requirements_firefox.txt"))
-        resp = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-53.0a1.en-US.linux-x86_64.tar.bz2")
+        index = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/")
+        latest = re.compile("<a[^>]*>(firefox-\d+\.\d(?:\w\d)?.en-US.linux-x86_64\.tar\.bz2)</a>")
+        filename = latest.search(index.text).group(1)
+        resp = get("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/%s" %
+                   filename)
         untar(resp.raw)
 
         if not os.path.exists("profiles"):

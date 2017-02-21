@@ -100,7 +100,8 @@ def update_to_changeset(changeset):
 def apply_build_system_fixes():
     fixes = [
         "c017547f65e07bdd889736524d47824d032ba2e8",
-        "cb4a737a88aa7e2f4e54383c57ffa2dfae093dcf"
+        "cb4a737a88aa7e2f4e54383c57ffa2dfae093dcf",
+        "ec540343a3e729644c8178dbcf6d063dca20d49f",
     ]
     git = vcs.bind_to_repo(vcs.git, source_dir)
     for fix in fixes:

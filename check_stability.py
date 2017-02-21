@@ -574,6 +574,7 @@ def write_inconsistent(inconsistent, iterations):
     logger.error("## Unstable results ##\n")
     strings = [("`%s`" % markdown_adjust(test), ("`%s`" % markdown_adjust(subtest)) if subtest else "", err_string(results, iterations))
                for test, subtest, results in inconsistent]
+    strings.sort()
     table(["Test", "Subtest", "Results"], strings, logger.error)
 
 
@@ -603,10 +604,11 @@ def write_results(results, iterations, comment_pr):
         else:
             logger.info("### %s ###" % test)
         parent = test_results.pop(None)
-        strings = [("", err_string(parent, iterations))]
-        strings.extend(((("`%s`" % markdown_adjust(subtest)) if subtest
-                         else "", err_string(results, iterations))
-                        for subtest, results in test_results.iteritems()))
+        strings = [(("`%s`" % markdown_adjust(subtest)) if subtest
+                        else "", err_string(results, iterations))
+                        for subtest, results in test_results.iteritems()]
+        strings.sort()
+        strings.insert(0, ("", err_string(parent, iterations)))
         table(["Subtest", "Results"], strings, logger.info)
         if pr_number:
             logger.info("</details>\n")

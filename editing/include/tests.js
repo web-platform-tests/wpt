@@ -5579,10 +5579,10 @@ function runConformanceTest(browserTest) {
 
     for (var i = 0; i < browserTest[1].length; i++) {
         subtestName = testName + ": execCommand(" +
-			format_value(browserTest[1][i][0]) + ", false, " +
-			format_value(browserTest[1][i][1]) + ") " +
-			(browserTest[1][i][2] ? browserTest[1][i][2] + " " : "") +
-			"return value"
+            format_value(browserTest[1][i][0]) + ", false, " +
+            format_value(browserTest[1][i][1]) + ") " +
+            (browserTest[1][i][2] ? browserTest[1][i][2] + " " : "") +
+            "return value"
         test(function() {
             assert_equals(exception, null, "Setup must not throw an exception");
 

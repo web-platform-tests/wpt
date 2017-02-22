@@ -496,7 +496,7 @@ def setup_log_handler():
             test = {
                 "name": data["test"],
                 "subtests": [],
-                "status": {"OK": 0, "FAIL": 0}
+                "status": {"OK": 0, "FAIL": 0, "TIMEOUT": 0}
             }
             self.results.append(test)
             return test
@@ -510,7 +510,7 @@ def setup_log_handler():
 
             subtest = {
                 "name": data["subtest"],
-                "status": {"PASS": 0, "FAIL": 0},
+                "status": {"PASS": 0, "FAIL": 0, "TIMEOUT": 0},
                 "messages": set()
             }
             test["subtests"].append(subtest)

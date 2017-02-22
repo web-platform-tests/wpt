@@ -19,6 +19,7 @@
 // A header used to correlate requests and responses
 var state_header = "content-language"
 
+/* Make a request; call ready(client) when done */
 function req(url, id, t, ready) {
   console.log('starting request ' + id)
   var client = new XMLHttpRequest()
@@ -38,6 +39,10 @@ function req(url, id, t, ready) {
   return client
 }
 
+/*
+ * Make two requests to test cache behaviour.
+ * The second is made after the first is done and a delay, to make sure it gets into cache.
+ */
 function two_reqs(id1, id2, should_have_same_body, t, done) {
   var rand = Date.now()
   var url = CROSSDOMAIN + 'resources/304.py?id=' + id1 + '&r=%s' + rand

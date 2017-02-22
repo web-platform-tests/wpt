@@ -145,6 +145,12 @@ class CRRegexp(Regexp):
     error = "CR AT EOL"
     description = "CR character in line separator"
 
+class SetTimeoutRegexp(Regexp):
+    pattern = b"setTimeout\s*\("
+    error = "SET TIMEOUT"
+    file_extensions = [".html", ".htm", ".js", ".xht", ".xhtml", ".svg"]
+    description = "setTimeout used; step_timeout should typically be used instead"
+
 class W3CTestOrgRegexp(Regexp):
     pattern = b"w3c\-test\.org"
     error = "W3C-TEST.ORG"
@@ -171,6 +177,7 @@ regexps = [item() for item in
            [TrailingWhitespaceRegexp,
             TabsRegexp,
             CRRegexp,
+            SetTimeoutRegexp,
             W3CTestOrgRegexp,
             Webidl2Regexp,
             ConsoleRegexp,

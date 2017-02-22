@@ -13,10 +13,24 @@ test(function() {
         assert_equals(region.lines, i);
     }
 
-    [0, -1, 101, 4294967296, 18446744073709552000,
-     10000000000000000000000000000000000].forEach(function (valid) {
-        region.lines = valid;
-        assert_equals(region.lines, valid);
+    // https://heycam.github.io/webidl/#abstract-opdef-converttoint
+    [[0, 0],
+     [-0, 0],
+     [101, 101],
+     [2147483647, 2147483647],
+     [NaN, 0],
+     [Infinity, 0],
+     [-Infinity, 0]].forEach(function (pair) {
+        var input = pair[0];
+        var expected = pair[1];
+        region.lines = input;
+        assert_equals(region.lines, expected);
+    });
+
+    [-1, -100, -2147483648, 2147483648 /* wraps to -2147483648 */].forEach(function (invalid) {
+        assert_throws('IndexSizeError', function() {
+          region.lines = invalid;
+        }, invalid);
     });
 }, document.title + ' script-created region');
 </script>

@@ -41,6 +41,7 @@ function make_script(snippet) {
          '            window.parent.postMessage({result: error.name}, "*");' +
          '          });' +
          '    } catch (ex) {' +
+         // Report if not implemented/exposed, rather than time out.
          '      window.parent.postMessage({result: ex.message}, "*");' +
          '    }' +
          '  };' +
@@ -70,9 +71,9 @@ function make_script(snippet) {
         return wait_for_message(iframe);
       })
       .then(message => {
-        assert_equals(message.result, 'SecurityError',
-                      `${snippet} should reject with SecurityError`);
+        assert_equals(message.result, 'TypeError',
+                      `${snippet} should reject with TypeError`);
       });
-  }, `${snippet} in sandboxed iframe should reject with SecurityError`);
+  }, `${snippet} in sandboxed iframe should reject with TypeError`);
 });
 </script>

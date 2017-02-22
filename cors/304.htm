@@ -76,7 +76,6 @@ function two_reqs(id1, id2, should_have_same_body, t, done) {
 
 async_test(function(t) {
   two_reqs('1', '2', true, t, function(client1, client2) {
-    assert_equals(client1.response, client2.response, "responses were different;")
     assert_equals(client1.getResponseHeader("A"), null, "'A' header exposed without permission;")
   })
 }, "A 304 response with no CORS headers inherits from the stored response")

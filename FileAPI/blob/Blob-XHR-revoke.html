@@ -23,7 +23,7 @@ async_test(function(t) {
     xhr.onerror = t.step_func(function() {
         assert_unreached("Got unexpected error event");
     })
-});
+}, "Revoke blob URL after open(), will fetch");
 
 async_test(t => {
   const blob = new Blob(["test"]),
@@ -34,5 +34,5 @@ async_test(t => {
   client.onload = t.step_func(() => assert_unreached("Got unexpected load event"))
   client.onerror = t.step_func_done()
   client.send()
-})
+}, "Revoke blob URL before open(), network error (after send())")
 </script>

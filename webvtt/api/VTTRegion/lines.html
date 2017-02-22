@@ -1,0 +1,22 @@
+<!doctype html>
+<title>VTTRegion.lines</title>
+<link rel="help" href="https://w3c.github.io/webvtt/#dom-vttregion-lines">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
+<script>
+test(function() {
+    var region = new VTTRegion();
+
+    for (var i = 1; i <= 100; i++) {
+        region.lines = i;
+        assert_equals(region.lines, i);
+    }
+
+    [0, -1, 101, 4294967296, 18446744073709552000,
+     10000000000000000000000000000000000].forEach(function (valid) {
+        region.lines = valid;
+        assert_equals(region.lines, valid);
+    });
+}, document.title + ' script-created region');
+</script>

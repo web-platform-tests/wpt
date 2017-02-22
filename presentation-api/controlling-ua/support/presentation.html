@@ -22,7 +22,6 @@
           }
           // default value of connection.binaryType is "arraybuffer"
           else if(event.data instanceof ArrayBuffer) {
-            document.body.innerHTML += event.data.toText() + '<br>';
             result.push({ type: 'binary', data: event.data});
             if (event.data.equals(message5)) {
               clearTimeout(timeout);

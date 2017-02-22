@@ -2,4 +2,16 @@
 <meta charset="utf-8">
 <title>This will be in an iframe</title>
 
-<button onclick="return window.open('foo.html');">This will be clicked</button>
+<!-- window.open() uses the entry settings object to determine how the URL will be parsed -->
+<button onclick="var w = window.open('foo.html'); w.onload = () => { parent.onWindowLoaded(w.document.URL); };">This will be clicked</button>
+
+<script>
+"use strict";
+window.onbeforeunload = () => {
+  return {
+    // postMessage uses the incumbent settings object to determine the `source`
+    // property of the resulting `MessageEvent`.
+    toString: parent.postMessage.bind(parent, "PASS", "*")
+  };
+};
+</script>

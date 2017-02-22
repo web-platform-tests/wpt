@@ -52,7 +52,7 @@ function two_reqs(id1, id2, should_have_same_body, t, done) {
       assert_equals(client1.getResponseHeader(state_header), id1, "1st response didn't come from server;")
     })
 
-    setTimeout(function() {
+    t.step_timeout(function() {
       req(url, id2, t, function(client2) {
         t.step(function() {
           if (should_have_same_body) {

@@ -1,3 +1,5 @@
+// Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang).
+
 // Extract & return the resolution string from a filename, if any.
 function resolutionFromFilename(filename)
 {
@@ -22,7 +24,7 @@ function mediaSourceConfigChangeTest(directory, idA, idB, description)
     mediasource_test(function(test, mediaElement, mediaSource)
     {
         mediaElement.pause();
-        test.failOnEvent(mediaElement, 'error');
+        mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
         var expectResizeEvents = resolutionFromFilename(manifestFilenameA) != resolutionFromFilename(manifestFilenameB);
         var expectedResizeEventCount = 0;
 
@@ -64,18 +66,28 @@ function mediaSourceConfigChangeTest(directory, idA, idB, description)
                 test.waitForExpectedEvents(function()
                 {
                     assert_false(sourceBuffer.updating, "updating");
-                    assert_greater_than(mediaSource.duration, 2, "duration");
 
                     // Truncate the presentation to a duration of 2 seconds.
-                    mediaSource.duration = 2;
+                    sourceBuffer.remove(2, Infinity);
 
                     assert_true(sourceBuffer.updating, "updating");
                     test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
                     test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
                     test.expectEvent(sourceBuffer, 'updateend', 'sourceBuffer');
-		});
+                });
 
-		test.waitForExpectedEvents(function()
+                test.waitForExpectedEvents(function()
+                {
+                    assert_false(sourceBuffer.updating, "updating");
+                    assert_greater_than(mediaSource.duration, 2, "duration");
+
+                    // Truncate the presentation to a duration of 2 seconds.
+                    mediaSource.duration = 2;
+
+                    test.expectEvent(mediaElement, "durationchange");
+                });
+
+                test.waitForExpectedEvents(function()
                 {
                     assert_false(sourceBuffer.updating, "updating");
 
@@ -97,5 +109,5 @@ function mediaSourceConfigChangeTest(directory, idA, idB, description)
                 });
             });
         });
-    }, description, { timeout: 10000 } );
+    }, description);
 };

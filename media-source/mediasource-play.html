@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
 <html>
     <head>
         <title>Simple MediaSource playback test case.</title>
@@ -11,8 +12,8 @@
         <script>
           mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {
-              test.failOnEvent(mediaElement, 'error');
-              test.endOnEvent(mediaElement, 'ended');
+              mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
+              mediaElement.addEventListener('ended', test.step_func_done());
 
               test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
               test.expectEvent(sourceBuffer, 'update', 'sourceBuffer');
@@ -23,9 +24,8 @@
               test.waitForExpectedEvents(function()
               {
                   assert_false(sourceBuffer.updating, "updating");
-                  assert_greater_than(mediaSource.duration, 1, "duration");
 
-                  mediaSource.duration = 1;
+                  sourceBuffer.remove(1, Infinity);
 
                   assert_true(sourceBuffer.updating, "updating");
                   test.expectEvent(sourceBuffer, 'updatestart', 'sourceBuffer');
@@ -35,10 +35,20 @@
 
               test.waitForExpectedEvents(function()
               {
+                  assert_false(sourceBuffer.updating, "updating");
+                  assert_greater_than(mediaSource.duration, 1, "duration");
+
+                  mediaSource.duration = 1;
+
+                  test.expectEvent(mediaElement, "durationchange");
+              });
+
+              test.waitForExpectedEvents(function()
+              {
                   mediaSource.endOfStream();
                   mediaElement.play();
               });
-          }, "Test normal playback case with MediaSource API", {timeout: 5000});
+          }, "Test normal playback case with MediaSource API");
         </script>
     </body>
 </html>

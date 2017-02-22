@@ -36,13 +36,7 @@
         function onload_test()
         {
             // test for existance of User Timing and Performance Timeline interface
-            if (window.performance.mark == undefined ||
-                window.performance.clearMarks == undefined ||
-                window.performance.measure == undefined ||
-                window.performance.clearMeasures == undefined ||
-                window.performance.getEntriesByName == undefined ||
-                window.performance.getEntriesByType == undefined ||
-                window.performance.getEntries == undefined)
+            if (!has_required_interfaces())
             {
                 test_true(false,
                           "The User Timing and Performance Timeline interfaces, which are required for this test, " +
@@ -183,7 +177,7 @@
             // test startTime, allow for an acceptable threshold in the difference between the startTime and the
             // expected value for the startTime (loadEventStart + markTestDelay)
             test_true(Math.abs(markEntry.startTime - expectedStartTime) <= testThreshold,
-                      markEntryCommand + ".startTime ~== " + expectedStartTime + " (up to " + testThreshold +
+                      markEntryCommand + ".startTime is approximately correct (up to " + testThreshold +
                       "ms difference allowed)");
 
             // verify entryType

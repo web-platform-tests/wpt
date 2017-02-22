@@ -15,7 +15,7 @@
     { type: "url", sanitizedValue: "foobar" },
     { type: "email", sanitizedValue: "foobar" },
     { type: "password", sanitizedValue: "  foobar  " },
-    { type: "datetime", sanitizedValue: "" },
+    { type: "datetime-local", sanitizedValue: "" },
     { type: "date", sanitizedValue: "" },
     { type: "month", sanitizedValue: "" },
     { type: "week", sanitizedValue: "" },
@@ -41,6 +41,10 @@
             assert_throws("INVALID_STATE_ERR", function() {
               input.value = "  foo\rbar  ";
             });
+            assert_equals(input.value, "");
+          } else if (types[j].type === "file") {
+            input.value = "  foo\rbar  ";
+            input.type = types[j].type;  // change state
             assert_equals(input.value, "");
           } else {
             input.value = "  foo\rbar  ";

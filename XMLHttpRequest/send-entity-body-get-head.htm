@@ -22,6 +22,7 @@
           client.upload.addEventListener('progress', logEvt)
           client.upload.addEventListener('loadend', logEvt)
           client.upload.addEventListener('loadstart', logEvt)
+
           assert_equals(client.getResponseHeader("x-request-content-length"), "NO")
           assert_equals(client.getResponseHeader("x-request-method"), method)
           assert_equals(client.responseText, "")

@@ -38,11 +38,16 @@
     }, 'BlobBuilder should not be supported.');
 
     test(function() {
-        var reader = new FileReader();
-        assert_false('readAsBinaryString' in reader, 'should not be in reader');
-        assert_equals(reader.readAsBinaryString, undefined,
-                      'should be undefined on getting')
-    }, 'FileReader should not support readAsBinaryString');
+        assert_false('createFor' in URL);
+    }, 'createFor method should not be supported');
+
+    test(function() {
+        var b = new Blob();
+        assert_false('close' in b, 'close in b');
+        assert_false('close' in Blob.prototype, 'close in Blob.prototype');
+        assert_false('isClosed' in b, 'isClosed in b');
+        assert_false('isClosed' in Blob.prototype, 'isClosed in Blob.prototype');
+    }, 'Blob.close() should not be supported');
   </script>
  </body>
 </html>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Copyright © 2016 Chromium authors and World Wide Web Consortium, (Massachusetts Institute of Technology, ERCIM, Keio University, Beihang). -->
 <html>
     <head>
         <title>Invalid MediaSource.endOfStream() parameter test cases.</title>
@@ -11,7 +12,7 @@
         <script>
           mediasource_test(function(test, mediaElement, mediaSource)
           {
-              test.failOnEvent(mediaElement, 'error');
+              mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
               assert_equals(mediaSource.readyState, 'open');
 
               assert_throws(new TypeError(),
@@ -24,7 +25,7 @@
 
           mediasource_test(function(test, mediaElement, mediaSource)
           {
-              test.failOnEvent(mediaElement, 'error');
+              mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
               assert_equals(mediaSource.readyState, 'open');
 
               assert_throws(new TypeError(),
@@ -37,7 +38,7 @@
 
           mediasource_test(function(test, mediaElement, mediaSource)
           {
-              test.failOnEvent(mediaElement, 'error');
+              mediaElement.addEventListener('error', test.unreached_func("Unexpected event 'error'"));
               assert_equals(mediaSource.readyState, 'open');
 
               assert_throws(new TypeError(),

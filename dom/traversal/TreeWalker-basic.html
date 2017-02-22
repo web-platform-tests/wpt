@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 <!--
-Test adapted from https://mxr.mozilla.org/chromium/source/src/third_party/WebKit/LayoutTests/fast/dom/TreeWalker/TreeWalker-basic.html
+Test adapted from https://dxr.mozilla.org/chromium/source/src/third_party/WebKit/LayoutTests/fast/dom/TreeWalker/TreeWalker-basic.html
 -->
 <head>
 <title>TreeWalker: Basic test</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="traversal-support.js"></script>
-<link rel="stylesheet" href="/resources/testharness.css">
 <div id=log></div>
 </head>
 <body>
@@ -70,13 +69,15 @@ function createSampleDOM()
     return div;
 }
 
-function check_walker(walker, root)
+function check_walker(walker, root, whatToShowValue)
 {
-    assert_equals(walker.toString(), '[object TreeWalker]');
-    assert_equals(walker.root, root);
-    assert_equals(walker.whatToShow, 0xFFFFFFFF);
-    assert_equals(walker.filter, null);
-    assert_equals(walker.currentNode, root);
+    whatToShowValue = whatToShowValue === undefined ? 0xFFFFFFFF : whatToShowValue;
+
+    assert_equals(walker.toString(), '[object TreeWalker]', 'toString');
+    assert_equals(walker.root, root, 'root');
+    assert_equals(walker.whatToShow, whatToShowValue, 'whatToShow');
+    assert_equals(walker.filter, null, 'filter');
+    assert_equals(walker.currentNode, root, 'currentNode');
     assert_readonly(walker, 'root');
     assert_readonly(walker, 'whatToShow');
     assert_readonly(walker, 'filter');
@@ -88,6 +89,13 @@ test(function ()
     var walker = document.createTreeWalker(root);
     check_walker(walker, root);
 }, 'Construct a TreeWalker by document.createTreeWalker(root).');
+
+test(function ()
+{
+    var root = createSampleDOM();
+    var walker = document.createTreeWalker(root, null, null);
+    check_walker(walker, root, 0);
+}, 'Construct a TreeWalker by document.createTreeWalker(root, null, null).');
 
 test(function ()
 {

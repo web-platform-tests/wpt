@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 <!--
-Test adapted from https://mxr.mozilla.org/chromium/source/src/third_party/WebKit/LayoutTests/fast/dom/TreeWalker/resources/TreeWalker-currentNode.js
+Test adapted from https://dxr.mozilla.org/chromium/source/src/third_party/WebKit/LayoutTests/fast/dom/TreeWalker/resources/TreeWalker-currentNode.js
 -->
 <head>
 <title>TreeWalker: currentNode</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="traversal-support.js"></script>
-<link rel="stylesheet" href="/resources/testharness.css">
 <div id=log></div>
 </head>
 <body>
@@ -26,7 +25,7 @@ var all = function(node) { return true; }
 
 test(function()
 {
-    var w = document.createTreeWalker(subTree, /*NodeFilter.*/SHOW_ELEMENT, all);
+    var w = document.createTreeWalker(subTree, NodeFilter.SHOW_ELEMENT, all);
     assert_node(w.currentNode, { type: Element, id: 'subTree' });
     assert_equals(w.parentNode(), null);
     assert_node(w.currentNode, { type: Element, id: 'subTree' });
@@ -35,8 +34,8 @@ test(function()
 test(function()
 {
     var w = document.createTreeWalker(subTree,
-                                      /*NodeFilter.*/SHOW_ELEMENT
-                                      | /*NodeFilter.*/SHOW_COMMENT,
+                                      NodeFilter.SHOW_ELEMENT
+                                      | NodeFilter.SHOW_COMMENT,
                                       all);
     w.currentNode = document.documentElement;
     assert_equals(w.parentNode(), null);
@@ -63,7 +62,7 @@ test(function()
 
 test(function()
 {
-    var w = document.createTreeWalker(subTree, /*NodeFilter.*/SHOW_ELEMENT, all);
+    var w = document.createTreeWalker(subTree, NodeFilter.SHOW_ELEMENT, all);
     w.currentNode = subTree.previousSibling;
     assert_equals(w.nextNode(), subTree);
     w.currentNode = document.getElementById("parent");

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 <!--
-Test adapted from https://mxr.mozilla.org/chromium/source/src/third_party/WebKit/LayoutTests/fast/dom/TreeWalker/script-tests/traversal-skip-most.js
+Test adapted from https://dxr.mozilla.org/chromium/source/src/third_party/WebKit/LayoutTests/fast/dom/TreeWalker/script-tests/traversal-skip-most.js
 -->
 <head>
 <title>TreeWalker: traversal-skip-most</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="traversal-support.js"></script>
-<link rel="stylesheet" href="/resources/testharness.css">
 <div id=log></div>
 </head>
 <body>
@@ -42,22 +41,22 @@ setup(function() {
 var filter = {
   acceptNode: function(node) {
     if (node.className == 'keep')
-      return /*NodeFilter.*/FILTER_ACCEPT;
+      return NodeFilter.FILTER_ACCEPT;
 
-    return /*NodeFilter.*/FILTER_SKIP;
+    return NodeFilter.FILTER_SKIP;
   }
 }
 
 test(function()
 {
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, filter);
+    var walker = document.createTreeWalker(testElement, NodeFilter.SHOW_ELEMENT, filter);
     assert_node(walker.firstChild(), { type: Element, id: 'B1' });
     assert_node(walker.nextSibling(), { type: Element, id: 'B3' });
 }, 'Testing nextSibling');
 
 test(function()
 {
-    var walker = document.createTreeWalker(testElement, /*NodeFilter.*/SHOW_ELEMENT, filter);
+    var walker = document.createTreeWalker(testElement, NodeFilter.SHOW_ELEMENT, filter);
     walker.currentNode = testElement.querySelectorAll('#B3')[0];
     assert_node(walker.previousSibling(), { type: Element, id: 'B1' });
 }, 'Testing previousSibling');

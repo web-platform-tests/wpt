@@ -3,7 +3,7 @@ if (this.document === undefined) {
   importScripts("../resources/utils.js");
 }
 
-var referrerOrigin = "http://{{host}}:{{ports[http][0]}}/";
+var referrerOrigin = (new URL("/", location.href)).href;
 var fetchedUrl = RESOURCES_DIR + "inspect-headers.py?headers=referer";
 
 promise_test(function(test) {

@@ -21,14 +21,14 @@ var state_header = "content-language"
 
 /* Make a request; call ready(client) when done */
 function req(url, id, t, ready) {
-  console.log('starting request ' + id)
+//  console.log('starting request ' + id)
   var client = new XMLHttpRequest()
   client.open('GET', url, true)
   client.setRequestHeader(state_header, id)
   client.send()
   client.onreadystatechange = function() {
     if (client.readyState == client.DONE) {
-      console.log('finished request ' + id)
+//      console.log('finished request ' + id)
       t.step(function() {
         assert_true(client.status != 299, "req " + id + " server says: " + client.responseText)
       })
@@ -64,7 +64,6 @@ function two_reqs(id1, id2, should_have_same_body, t, done) {
           }
           done(client1, client2)
         })
-        console.log('finished checking ' + id1)
         t.done()
       })
     }, 5000)

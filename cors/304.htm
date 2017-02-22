@@ -23,7 +23,6 @@ var state_header = "content-language"
 function req(url, id, t, ready) {
   console.log('starting request ' + id)
   var client = new XMLHttpRequest()
-  client.error_caught = false
   client.open('GET', url, true)
   client.setRequestHeader(state_header, id)
   client.send()
@@ -95,9 +94,7 @@ async_test(function(t) {
 
 async_test(function(t) {
   two_reqs('7', '8', false, t, function(client1, client2) {
-    if (! client2.error_caught) {
-      assert_not_equals(client1.response, client2.response, "Access granted even though 304 updated it to disallow;")
-    }
+    assert_not_equals(client1.response, client2.response, "Access granted even though 304 updated it to disallow;")
   })
 }, "A 304 can change Access-Control-Allow-Origin")
 

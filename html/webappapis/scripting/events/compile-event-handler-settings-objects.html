@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Entry and incumbent settings objects when compiling an inline event handler</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="log"></div>
+
+<script>
+"use strict";
+
+async_test(t => {
+  const iframe = document.createElement("iframe");
+  iframe.src = "resources/compiled-event-handler-settings-objects-support.html";
+  iframe.onload = t.step_func(() => {
+    const button = iframe.contentDocument.querySelector("button");
+    const compiled = button.onclick;
+
+    assert_equals(compiled.constructor, iframe.contentWindow.Function, "The constructor must be from the iframe");
+    assert_not_equals(compiled.constructor, Function, "The constructor must not be from this page");
+
+    t.done();
+  });
+
+  document.body.appendChild(iframe);
+
+}, "The Function instance must be created in the Realm of the node document");
+
+async_test(t => {
+  const iframe = document.createElement("iframe");
+  iframe.src = "resources/compiled-event-handler-settings-objects-support.html";
+  iframe.onload = t.step_func(() => {
+    const button = iframe.contentDocument.querySelector("button");
+    const compiled = button.onclick;
+
+    const openedWindow = compiled();
+    openedWindow.onload = t.step_func(() => {
+      const pathname = new URL(openedWindow.document.URL).pathname;
+      assert_equals(pathname, "/html/webappapis/scripting/events/foo.html"); // NOT: .../resources/foo.html
+
+      t.done();
+    });
+  });
+
+  document.body.appendChild(iframe);
+
+}, "The entry settings object while executing the compiled callback must be the entry settings object at compilation time");
+</script>

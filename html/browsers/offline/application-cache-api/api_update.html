@@ -15,12 +15,7 @@
         var next = t.step_func(function() {
           cache.onnoupdate = cache.oncached = null;
 
-          try {
-            cache.update()
-            assert_true(true, "update method test")
-          } catch (e) {
-            assert_unreached("update method failed.");
-          }
+          cache.update()
 
           t.done();
         });

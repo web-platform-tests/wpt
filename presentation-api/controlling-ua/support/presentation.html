@@ -3,22 +3,66 @@
 <meta charset="utf-8">
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="He Yue" href="mailto:yue.he@intel.com">
+<link rel="author" title="Tomoyuki Shimizu" href="https://github.com/tomoyukilabs/">
 <link rel="help" href="http://w3c.github.io/presentation-api/#interface-presentationconnectionlist">
+<script src="stash.js"></script>
 <script>
-  var addConnection = function(connection) {
-    connection.onconnected = function () {
-      this.onmessage = function (evt) {
-        this.send(evt.data);
+  const addConnection = connection => {
+    connection.onconnect = function() {
+      let result = [], timeout, testCase;
+
+      this.onmessage = event => {
+        // PresentationConnection_send-manual.html
+        if (testCase === 'send') {
+          if (typeof event.data === 'string') {
+            result.push({ type: 'text', data: event.data });
+            timeout = setTimeout(() => {
+              window.uploadStash(JSON.stringify(result));
+            }, 5000);
+          }
+          // default value of connection.binaryType is "arraybuffer"
+          else if(event.data instanceof ArrayBuffer) {
+            document.body.innerHTML += event.data.toText() + '<br>';
+            result.push({ type: 'binary', data: event.data});
+            if (event.data.equals(message5)) {
+              clearTimeout(timeout);
+              window.uploadStash(JSON.stringify(result));
+            }
+          }
+          else {
+            result.push({ type: 'error' });
+          }
+        }
       };
+
+      waitForStash().then(data => {
+        testCase = data;
+
+        // PresentationConnection_send-manual.html
+        if (testCase === 'send') {
+          uploadStash('ok');
+        }
+        // PresentationConnection_onmessage-manual.html
+        else if (testCase === 'onmessage') {
+          connection.send(message1);              // string
+          connection.send(message2);              // string
+          connection.send(new Blob([message3]));  // Blob
+          connection.send(message4.buffer);       // ArrayBuffer
+          connection.send(message5);              // ArrayBufferView
+          waitForStash().then(data => {
+            connection.send(message5);
+          });
+        }
+      });
     };
   };
 
   navigator.presentation.receiver.connectionList
-    .then(function(list) {
-      list.onconnectionavailable = function(evt) {
+    .then(list => {
+      list.onconnectionavailable = evt => {
         addConnection(evt.connection);
       };
-      list.connections.map(function(connection) {
+      list.connections.map(connection => {
         addConnection(connection);
       });
     });

@@ -137,8 +137,8 @@ def replace_streams(capacity, warning_msg):
         count[0] += length
 
         if count[0] > capacity:
-            sys.stdout.disable()
-            sys.stderr.disable()
+            wrapped_stdout.disable()
+            wrapped_stderr.disable()
             handle.write(msg[0:capacity - count[0]])
             handle.flush()
             stderr.write("\n%s\n" % warning_msg)
@@ -146,8 +146,10 @@ def replace_streams(capacity, warning_msg):
 
         return True
 
-    sys.stdout = FilteredIO(sys.stdout, on_write)
-    sys.stderr = FilteredIO(sys.stderr, on_write)
+    # Store local references to the replaced streams to guard against the case
+    # where other code replace the global references.
+    sys.stdout = wrapped_stdout = FilteredIO(sys.stdout, on_write)
+    sys.stderr = wrapped_stderr = FilteredIO(sys.stderr, on_write)
 
 
 class Browser(object):

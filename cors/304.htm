@@ -23,13 +23,9 @@ function req(url, id, t, ready) {
   console.log('starting request ' + id)
   var client = new XMLHttpRequest()
   client.error_caught = false
-  try {
-    client.open('GET', url, true)
-    client.setRequestHeader(state_header, id)
-    client.send()
-  } catch (e) {
-    client.error_caught = e
-  }
+  client.open('GET', url, true)
+  client.setRequestHeader(state_header, id)
+  client.send()
   client.onreadystatechange = function() {
     if (client.readyState == client.DONE) {
       console.log('finished request ' + id)

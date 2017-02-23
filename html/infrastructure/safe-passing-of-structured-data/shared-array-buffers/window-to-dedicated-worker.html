@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Structured cloning of SharedArrayBuffers</title>
+<link rel="help" href="https://html.spec.whatwg.org/#structuredclone">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+"use strict";
+
+async_test(t => {
+  const sab = new SharedArrayBuffer(4);
+  const view = new Int32Array(sab);
+  view[0] = 1;
+
+  const worker = new Worker("resources/incrementer.js");
+
+  worker.onmessage = t.step_func(({ data }) => {
+    switch (data.message) {
+      case "initial payload received": {
+        assert_equals(data.value, 1, "The worker must see the same value in the SharedArrayBuffer");
+        break;
+      }
+
+      case "changed to 2": {
+        assert_equals(view[0], 2, "The window must see changes made in the worker");
+
+        view[0] = 3;
+        worker.postMessage({ message: "changed to 3" });
+
+        break;
+      }
+
+      case "changed to 3 received": {
+        assert_equals(data.value, 3, "The worker must see changes made in the window");
+        t.done();
+        break;
+      }
+    }
+  });
+
+  worker.postMessage({ message: "initial payload", sab });
+}, "postMessaging to a dedicated worker allows them to see each others' modifications");
+</script>

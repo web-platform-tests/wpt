@@ -2833,8 +2833,6 @@
 - name: 2d.pattern.image.incomplete.immediate
   testing:
     - 2d.pattern.incomplete.image
-  images:
-    - red.png
   code: |
     var img = new Image();
     img.src = '../images/red.png';
@@ -8913,13 +8911,11 @@
 - name: 2d.drawImage.incomplete.immediate
   testing:
     - 2d.drawImage.incomplete.image
-  images:
-    - red.png
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
     // This triggers the "update the image data" algorithm.
     // The image will not go to the "completely available" state
     // until a fetch task in the networking task source is processed,
@@ -8932,18 +8928,15 @@
   testing:
     - 2d.drawImage.incomplete.image
   images:
-    - yellow.png
-    - red.png
+    - green.png
   code: |
-    ctx.fillStyle = '#0f0';
+    ctx.fillStyle = '#ff0';
     ctx.fillRect(0, 0, 100, 50);
-    var img = document.getElementById('yellow.png');
-    img.src = '../images/red.png';
+    var img = document.getElementById('green.png');
+    img.src = '/images/red.png';
     // This triggers the "update the image data" algorithm,
-    // and resets the image to the "unavailable" state.
-    // The image will not go to the "completely available" state
-    // until a fetch task in the networking task source is processed,
-    // so the image must not be fully decodable yet:
+    // but the fetch task will happen in stable state,
+    // so the image is still the original one:
     ctx.drawImage(img, 0, 0);
     @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
   expected: green
@@ -8952,13 +8945,16 @@
   testing:
     - 2d.drawImage.incomplete.image
   images:
-    - red.png
+    - green.png
   mozilla: { throws }
   code: |
-    ctx.fillStyle = '#0f0';
+    ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    var img = document.getElementById('red.png');
+    var img = document.getElementById('green.png');
     img.src = "";
+    // This triggers the "update the image data" algorithm,
+    // but the source selection will happen in stable state,
+    // so the image is still the original one:
     ctx.drawImage(img, 0, 0);
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
@@ -8967,13 +8963,16 @@
   testing:
     - 2d.drawImage.incomplete.image
   images:
-    - red.png
+    - green.png
   mozilla: { throws }
   code: |
-    ctx.fillStyle = '#0f0';
+    ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    var img = document.getElementById('red.png');
+    var img = document.getElementById('green.png');
     img.removeAttribute('src');
+    // This triggers the "update the image data" algorithm,
+    // but the source selection will happen in stable state,
+    // so the image is still the original one:
     ctx.drawImage(img, 0, 0);
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
@@ -8989,6 +8988,25 @@
     var img = document.getElementById('broken.png');
     ctx.drawImage(img, 0, 0);
     @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
+  expected: green
+
+- name: 2d.drawImage.cached
+  testing:
+    - 2d.drawImage.cached
+  images:
+    - yellow.png
+    - green.png
+  mozilla: { throws }
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('yellow.png');
+    img.src = "/images/green.png";
+    // This triggers the "update the image data" algorithm,
+    // The image will go to the "completely available" state
+    // since "list of available images" contains the requested image.
+    ctx.drawImage(img, 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.drawImage.zerocanvas

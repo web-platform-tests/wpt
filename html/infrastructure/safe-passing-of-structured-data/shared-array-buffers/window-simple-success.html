@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Structured cloning of SharedArrayBuffers</title>
+<link rel="help" href="https://html.spec.whatwg.org/#structuredclone">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-incrementer.js"></script>
+
+<div id="log"></div>
+
+<script>
+"use strict";
+
+promise_test(t => {
+  const worker = new Worker("resources/incrementer-worker.js");
+
+  return testSharingViaIncrementerScript(t, worker, worker, "worker");
+}, "postMessaging to a dedicated worker allows them to see each others' modifications");
+
+promise_test(t => {
+  return new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    iframe.onload = t.step_func(() => {
+      resolve(testSharingViaIncrementerScript(t, window, iframe.contentWindow, "iframe", "*"));
+    });
+    iframe.src = "resources/incrementer-iframe.html";
+    document.body.appendChild(iframe);
+  });
+}, "postMessaging to a same-origin iframe allows them to see each others' modifications");
+</script>

@@ -29,6 +29,20 @@ promise_test(t => {
   });
 }, "postMessaging to a same-origin iframe allows them to see each others' modifications");
 
+promise_test(t => {
+  return new Promise(resolve => {
+    const iframe = document.createElement("iframe");
+    iframe.onload = t.step_func(() => {
+      const level1 = iframe.contentWindow;
+      const level2 = level1.frames[0];
+      const level3 = level2.frames[0];
+      const targetWindow = level3.frames[0];
+      resolve(testSharingViaIncrementerScript(t, window, "window", targetWindow, "nested iframe", "*"));
+    });
+    iframe.src = "resources/nested-iframe-1.html";
+    document.body.appendChild(iframe);
+  });
+}, "postMessaging to a same-origin deeply-nested iframe allows them to see each others' modifications");
 
 promise_test(t => {
   return new Promise(resolve => {

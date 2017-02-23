@@ -151,7 +151,7 @@ def test_lint_failing(capsys):
             assert mocked_check_file_contents.call_count == 1
     out, err = capsys.readouterr()
     assert "TRAILING WHITESPACE" in out
-    assert "broken.html 1 " in out
+    assert "broken.html:1" in out
     assert err == ""
 
 
@@ -164,7 +164,7 @@ def test_lint_passing_and_failing(capsys):
             assert mocked_check_file_contents.call_count == 2
     out, err = capsys.readouterr()
     assert "TRAILING WHITESPACE" in out
-    assert "broken.html 1 " in out
+    assert "broken.html:1" in out
     assert "okay.html" not in out
     assert err == ""
 

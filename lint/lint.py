@@ -408,8 +408,8 @@ def output_errors_text(errors):
     for error_type, description, path, line_number in errors:
         pos_string = path
         if line_number:
-            pos_string += " %s" % line_number
-        print("%s: %s %s" % (error_type, pos_string, description))
+            pos_string += ":%s" % line_number
+        print("%s: %s (%s)" % (pos_string, description, error_type))
 
 def output_errors_json(errors):
     for error_type, error, path, line_number in errors:

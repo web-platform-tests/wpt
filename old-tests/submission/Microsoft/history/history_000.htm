@@ -21,6 +21,14 @@
         var testframe1 = document.getElementById("testframe1");
         var testframe2 = document.getElementById("testframe2");
         
+        if (!window.opener) {
+            window.open(location);
+        } else {
+            setup = window.opener.setup;
+            add_result_callback = window.opener.add_result_callback;
+            test = window.opener.test;
+            async_test = window.opener.async_test;
+            done = window.opener.done;
         setup(function()
         {
             testCollection = [
@@ -314,6 +322,9 @@
             } else {
                 //when the last test has run, explicitly end test suite
                 done();
+                if (window.opener) {
+                    window.close();
+                }
             }
         }
         function queue(func) {
@@ -324,6 +335,7 @@
         add_result_callback(testFinished);
         //start the first test manually
         queue(testCollection[testIndex]);
+     }
      </script>
 </body>
 </html>

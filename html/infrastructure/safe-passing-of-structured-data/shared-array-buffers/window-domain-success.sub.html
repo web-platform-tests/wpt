@@ -17,7 +17,7 @@ promise_test(t => {
   return new Promise(resolve => {
     const iframe = document.createElement("iframe");
     iframe.onload = t.step_func(() => {
-      resolve(testSharingViaIncrementerScript(t, window, iframe.contentWindow, "iframe", "*"));
+      resolve(testSharingViaIncrementerScript(t, window, "window", iframe.contentWindow, "iframe", "*"));
     });
     iframe.src = "//{{domains[www1]}}:{{location[port]}}/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/resources/incrementer-iframe-domain.sub.html";
     document.body.appendChild(iframe);

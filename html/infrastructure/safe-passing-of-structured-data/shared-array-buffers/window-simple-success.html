@@ -15,14 +15,14 @@
 promise_test(t => {
   const worker = new Worker("resources/incrementer-worker.js");
 
-  return testSharingViaIncrementerScript(t, worker, worker, "worker");
+  return testSharingViaIncrementerScript(t, worker, "window", worker, "worker");
 }, "postMessaging to a dedicated worker allows them to see each others' modifications");
 
 promise_test(t => {
   return new Promise(resolve => {
     const iframe = document.createElement("iframe");
     iframe.onload = t.step_func(() => {
-      resolve(testSharingViaIncrementerScript(t, window, iframe.contentWindow, "iframe", "*"));
+      resolve(testSharingViaIncrementerScript(t, window, "window", iframe.contentWindow, "iframe", "*"));
     });
     iframe.src = "resources/incrementer-iframe.html";
     document.body.appendChild(iframe);
@@ -34,7 +34,7 @@ promise_test(t => {
   return new Promise(resolve => {
     const w = window.open("resources/incrementer-popup.html");
     w.onload = t.step_func(() => {
-      resolve(testSharingViaIncrementerScript(t, window, w, "popup window", "*").then(() => {
+      resolve(testSharingViaIncrementerScript(t, window, "window", w, "popup window", "*").then(() => {
         w.close();
       }));
     });

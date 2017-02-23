@@ -64,7 +64,6 @@
           else
             setTimeout(polling, interval);
         });
-        xhr.send(null);
       };
       setTimeout(polling, interval);
     });

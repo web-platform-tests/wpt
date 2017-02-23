@@ -118,6 +118,7 @@ dictionary GetRootNodeOptions {
 
 <script type=text/plain id=tested>
 enum AutoKeyword { "auto" };
+typedef (double or AutoKeyword) LineAndPositionSetting;
 enum DirectionSetting { "" /* horizontal */, "rl", "lr" };
 enum LineAlignSetting { "start", "center", "end" };
 enum PositionAlignSetting { "line-left", "center", "line-right", "auto" };
@@ -127,9 +128,9 @@ interface VTTCue : TextTrackCue {
   attribute VTTRegion? region;
   attribute DirectionSetting vertical;
   attribute boolean snapToLines;
-  attribute (double or AutoKeyword) line;
+  attribute LineAndPositionSetting line;
   attribute LineAlignSetting lineAlign;
-  attribute (double or AutoKeyword) position;
+  attribute LineAndPositionSetting position;
   attribute PositionAlignSetting positionAlign;
   attribute double size;
   attribute AlignSetting align;

@@ -31,43 +31,49 @@ def command(func):
 
 
 class Timeouts(object):
+
     def __init__(self, session):
         self.session = session
-        self._script = 30
-        self._load = 0
-        self._implicit_wait = 0
 
-    def _set_timeouts(self, name, value):
-        body = {"type": name,
-                "ms": value * 1000}
-        return self.session.send_command("POST", "timeouts", body)
+    def _get(self, key=None):
+        timeouts = self.session.send_command("GET", "timeouts")
+        if key is not None:
+            return timeouts[key]
+        return timeouts
+
+    def _set(self, key, secs):
+        body = {key: secs * 1000}
+        timeouts = self.session.send_command("POST", "timeouts", body)
+        return timeouts[key]
 
     @property
     def script(self):
-        return self._script
+        return self._get("script")
 
     @script.setter
-    def script(self, value):
-        self._set_timeouts("script", value)
-        self._script = value
+    def script(self, secs):
+        return self._set("script", secs)
 
     @property
-    def load(self):
-        return self._load
+    def page_load(self):
+        return self._get("pageLoad")
 
-    @load.setter
-    def set_load(self, value):
-        self._set_timeouts("page load", value)
-        self._script = value
+    @page_load.setter
+    def page_load(self, secs):
+        return self._set("pageLoad", secs)
 
     @property
-    def implicit_wait(self):
-        return self._implicit_wait
+    def implicit(self):
+        return self._get("implicit")
 
-    @implicit_wait.setter
-    def implicit_wait(self, value):
-        self._set_timeouts("implicit wait", value)
-        self._implicit_wait = value
+    @implicit.setter
+    def implicit(self, secs):
+        return self._set("implicit", secs)
+
+    def __str__(self):
+        name = "%s.%s" % (self.__module__, self.__class__.__name__)
+        return "<%s script=%d, load=%d, implicit=%d>" % \
+            (name, self.script, self.page_load, self.implicit)
 
 
 class ActionSequence(object):

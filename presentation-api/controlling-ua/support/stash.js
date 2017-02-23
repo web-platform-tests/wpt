@@ -54,18 +54,19 @@
   // wait until a test result is uploaded to a stash on wptserve
   window.waitForStash = () => {
     return new Promise((resolve, reject) => {
+      let intervalId;
       const interval = 500; // msec
       const polling = () => {
         return fetch(stashPath + stashId).then(response => {
           return response.text();
         }).then(text => {
-          if(text)
+          if(text) {
             resolve(text);
-          else
-            setTimeout(polling, interval);
+            clearInterval(intervalId);
+          }
         });
       };
-      setTimeout(polling, interval);
+      intervalId = setInterval(polling, interval);
     });
   };
 

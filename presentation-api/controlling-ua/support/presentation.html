@@ -16,9 +16,6 @@
         if (testCase === 'send') {
           if (typeof event.data === 'string') {
             result.push({ type: 'text', data: event.data });
-            timeout = setTimeout(() => {
-              window.uploadStash(JSON.stringify(result));
-            }, 5000);
           }
           // default value of connection.binaryType is "arraybuffer"
           else if(event.data instanceof ArrayBuffer) {

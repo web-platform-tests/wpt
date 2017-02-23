@@ -9,6 +9,7 @@ test(function(){
     var video = document.createElement('video');
     document.body.appendChild(video);
     var c1 = new VTTCue(0, 1, 'text1');
+    assert_true('line' in c1, 'line is not supported');
     assert_equals(c1.line, "auto");
     var track = document.createElement('track');
     var t = track.track;

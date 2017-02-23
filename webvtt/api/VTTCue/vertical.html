@@ -14,6 +14,7 @@ test(function(){
     var video = document.createElement('video');
     document.body.appendChild(video);
     var c1 = new VTTCue(0, 1, 'text1');
+    assert_true('vertical' in c1, 'vertical is not supported');
     assert_equals(c1.vertical, '');
     var track = document.createElement('track');
     var t = track.track;

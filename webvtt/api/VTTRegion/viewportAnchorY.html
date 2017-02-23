@@ -7,6 +7,7 @@
 <script>
 test(function() {
     var region = new VTTRegion();
+    assert_true('viewportAnchorY' in region, 'viewportAnchorY is not supported');
 
     for (var i = 0; i <= 100; i++) {
         region.viewportAnchorY = i;

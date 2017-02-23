@@ -7,6 +7,7 @@
 <script>
 test(function(){
     var cue = new VTTCue(0, 1, 'text');
+    assert_true('size' in cue, 'size is not supported');
 
     for (i = 0; i <= 100; i++) {
         cue.size = i;

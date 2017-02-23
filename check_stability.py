@@ -11,7 +11,7 @@ import tarfile
 import zipfile
 from abc import ABCMeta, abstractmethod
 from cStringIO import StringIO as CStringIO
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from ConfigParser import RawConfigParser
 from io import BytesIO, StringIO
 
@@ -487,13 +487,44 @@ def setup_log_handler():
         Subclasses reader.LogHandler.
         """
         def __init__(self):
-            self.results = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+            self.results = OrderedDict()
+
+        def find_or_create_test(self, data):
+            test_name = data["test"]
+            if self.results.get(test_name):
+                return self.results[test_name]
+
+            test = {
+                "subtests": OrderedDict(),
+                "status": defaultdict(int)
+            }
+            self.results[test_name] = test
+            return test
+
+        def find_or_create_subtest(self, data):
+            test = self.find_or_create_test(data)
+            subtest_name = data["subtest"]
+
+            if test["subtests"].get(subtest_name):
+                return test["subtests"][subtest_name]
+
+            subtest = {
+                "status": defaultdict(int),
+                "messages": set()
+            }
+            test["subtests"][subtest_name] = subtest
+
+            return subtest
 
         def test_status(self, data):
-            self.results[data["test"]][data.get("subtest")][data["status"]] += 1
+            subtest = self.find_or_create_subtest(data)
+            subtest["status"][data["status"]] += 1
+            if data.get("message"):
+                subtest["messages"].add(data["message"])
 
         def test_end(self, data):
-            self.results[data["test"]][None][data["status"]] += 1
+            test = self.find_or_create_test(data)
+            test["status"][data["status"]] += 1
 
 
 def is_inconsistent(results_dict, iterations):
@@ -511,7 +542,7 @@ def err_string(results_dict, iterations):
     rv = ", ".join(rv)
     if total_results < iterations:
         rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
-    if len(results_dict) > 1 or total_results != iterations:
+    if is_inconsistent(results_dict, iterations):
         rv = "**%s**" % rv
     return rv
 
@@ -522,10 +553,12 @@ def process_results(log, iterations):
     handler = LogHandler()
     reader.handle_log(reader.read(log), handler)
     results = handler.results
-    for test, test_results in results.iteritems():
-        for subtest, result in test_results.iteritems():
-            if is_inconsistent(result, iterations):
-                inconsistent.append((test, subtest, result))
+    for test_name, test in results.iteritems():
+        if is_inconsistent(test["status"], iterations):
+            inconsistent.append((test_name, None, test["status"], None))
+        for subtest_name, subtest in test["subtests"].iteritems():
+            if is_inconsistent(subtest["status"], iterations):
+                inconsistent.append((test_name, subtest_name, subtest["status"], subtest["messages"]))
     return results, inconsistent
 
 
@@ -572,9 +605,14 @@ def table(headings, data, log):
 def write_inconsistent(inconsistent, iterations):
     """Output inconsistent tests to logger.error."""
     logger.error("## Unstable results ##\n")
-    strings = [("`%s`" % markdown_adjust(test), ("`%s`" % markdown_adjust(subtest)) if subtest else "", err_string(results, iterations))
-               for test, subtest, results in inconsistent]
-    table(["Test", "Subtest", "Results"], strings, logger.error)
+    strings = [(
+        "`%s`" % markdown_adjust(test),
+        ("`%s`" % markdown_adjust(subtest)) if subtest else "",
+        err_string(results, iterations),
+        ("`%s`" % markdown_adjust(";".join(messages))) if len(messages) else ""
+    )
+               for test, subtest, results, messages in inconsistent]
+    table(["Test", "Subtest", "Results", "Messages"], strings, logger.error)
 
 
 def write_results(results, iterations, comment_pr):
@@ -592,22 +630,24 @@ def write_results(results, iterations, comment_pr):
                                                           "tests" if len(results) > 1
                                                           else "test"))
 
-    for test, test_results in results.iteritems():
+    for test_name, test in results.iteritems():
         baseurl = "http://w3c-test.org/submissions"
-        if "https" in os.path.splitext(test)[0].split(".")[1:]:
+        if "https" in os.path.splitext(test_name)[0].split(".")[1:]:
             baseurl = "https://w3c-test.org/submissions"
         if pr_number:
             logger.info("<details>\n")
             logger.info('<summary><a href="%s/%s%s">%s</a></summary>\n\n' %
-                        (baseurl, pr_number, test, test))
+                        (baseurl, pr_number, test_name, test_name))
         else:
-            logger.info("### %s ###" % test)
-        parent = test_results.pop(None)
-        strings = [("", err_string(parent, iterations))]
-        strings.extend(((("`%s`" % markdown_adjust(subtest)) if subtest
-                         else "", err_string(results, iterations))
-                        for subtest, results in test_results.iteritems()))
-        table(["Subtest", "Results"], strings, logger.info)
+            logger.info("### %s ###" % test_name)
+        strings = [("", err_string(test["status"], iterations), "")]
+
+        strings.extend(((
+            ("`%s`" % markdown_adjust(subtest_name)) if subtest else "",
+            err_string(subtest["status"], iterations),
+            ("`%s`" % markdown_adjust(';'.join(subtest["messages"]))) if len(subtest["messages"]) else ""
+        ) for subtest_name, subtest in test["subtests"].items()))
+        table(["Subtest", "Results", "Messages"], strings, logger.info)
         if pr_number:
             logger.info("</details>\n")
 

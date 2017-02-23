@@ -11,6 +11,7 @@ import tarfile
 import zipfile
 from abc import ABCMeta, abstractmethod
 from cStringIO import StringIO as CStringIO
+from collections import defaultdict
 from ConfigParser import RawConfigParser
 from io import BytesIO, StringIO
 
@@ -486,43 +487,18 @@ def setup_log_handler():
         Subclasses reader.LogHandler.
         """
         def __init__(self):
-            self.results = []
-
-        def find_or_create_test(self, data):
-            for test in self.results:
-                if test["name"] == data["test"]:
-                    return test
-
-            test = {"name": data["test"], "subtests": [], "status": {"OK": 0, "FAIL": 0}}
-            self.results.append(test)
-            return test
-
-        def find_or_create_subtest(self, data):
-            test = self.find_or_create_test(data)
-
-            for subtest in test["subtests"]:
-                if subtest["name"] == data["subtest"]:
-                    return subtest
-
-            subtest = {"name": data["subtest"], "status": { "PASS": 0, "FAIL": 0 }}
-            test["subtests"].append(subtest)
-
-            return subtest
+            self.results = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
         def test_status(self, data):
-            subtest = self.find_or_create_subtest(data)
-            subtest["status"][data["status"]] += 1
+            self.results[data["test"]][data.get("subtest")][data["status"]] += 1
 
         def test_end(self, data):
-            test = self.find_or_create_test(data)
-            test["status"][data["status"]] += 1
+            self.results[data["test"]][None][data["status"]] += 1
 
 
 def is_inconsistent(results_dict, iterations):
     """Return whether or not a single test is inconsistent."""
-    values = results_dict.values()
-    nonzero_results = filter(lambda count: count > 0, values)
-    return len(nonzero_results) > 1 or sum(values) != iterations
+    return len(results_dict) > 1 or sum(results_dict.values()) != iterations
 
 
 def err_string(results_dict, iterations):
@@ -530,15 +506,12 @@ def err_string(results_dict, iterations):
     rv = []
     total_results = sum(results_dict.values())
     for key, value in sorted(results_dict.items()):
-        if value == 0:
-            continue
-
         rv.append("%s%s" %
                   (key, ": %s/%s" % (value, iterations) if value != iterations else ""))
     rv = ", ".join(rv)
     if total_results < iterations:
         rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
-    if is_inconsistent(results_dict, iterations):
+    if len(results_dict) > 1 or total_results != iterations:
         rv = "**%s**" % rv
     return rv
 
@@ -549,10 +522,10 @@ def process_results(log, iterations):
     handler = LogHandler()
     reader.handle_log(reader.read(log), handler)
     results = handler.results
-    for test in results:
-        for subtest in test["subtests"]:
-            if is_inconsistent(subtest["status"], iterations):
-                inconsistent.append((test["name"], subtest["name"], subtest["status"]))
+    for test, test_results in results.iteritems():
+        for subtest, result in test_results.iteritems():
+            if is_inconsistent(result, iterations):
+                inconsistent.append((test, subtest, result))
     return results, inconsistent
 
 
@@ -619,21 +592,21 @@ def write_results(results, iterations, comment_pr):
                                                           "tests" if len(results) > 1
                                                           else "test"))
 
-    for test in results:
+    for test, test_results in results.iteritems():
         baseurl = "http://w3c-test.org/submissions"
-        name = test["name"]
-        if "https" in os.path.splitext(name)[0].split(".")[1:]:
+        if "https" in os.path.splitext(test)[0].split(".")[1:]:
             baseurl = "https://w3c-test.org/submissions"
         if pr_number:
             logger.info("<details>\n")
             logger.info('<summary><a href="%s/%s%s">%s</a></summary>\n\n' %
-                        (baseurl, pr_number, name, name))
+                        (baseurl, pr_number, test, test))
         else:
-            logger.info("### %s ###" % name)
-        strings = [("", err_string(test["status"], iterations))]
-        strings.extend(((("`%s`" % markdown_adjust(subtest["name"])) if subtest
-                         else "", err_string(subtest["status"], iterations))
-                        for subtest in test["subtests"]))
+            logger.info("### %s ###" % test)
+        parent = test_results.pop(None)
+        strings = [("", err_string(parent, iterations))]
+        strings.extend(((("`%s`" % markdown_adjust(subtest)) if subtest
+                         else "", err_string(results, iterations))
+                        for subtest, results in test_results.iteritems()))
         table(["Subtest", "Results"], strings, logger.info)
         if pr_number:
             logger.info("</details>\n")

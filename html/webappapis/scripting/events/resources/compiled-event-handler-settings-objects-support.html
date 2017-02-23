@@ -2,6 +2,10 @@
 <meta charset="utf-8">
 <title>This will be in an iframe</title>
 
+<script>
+window.name = "iframe";
+</script>
+
 <body onbeforeunload="return { toString: parent.postMessage.bind(parent, 'PASS', '*') };">
 
 <!-- window.open() uses the entry settings object to determine how the URL will be parsed -->

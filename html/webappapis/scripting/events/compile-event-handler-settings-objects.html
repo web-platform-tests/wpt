@@ -8,6 +8,7 @@
 
 <script>
 "use strict";
+window.name = "parent frame";
 
 async_test(t => {
   const iframe = document.createElement("iframe");
@@ -53,6 +54,8 @@ async_test(t => {
   iframe.src = "resources/compiled-event-handler-settings-objects-support.html";
   iframe.onload = t.step_func(() => {
     window.onmessage = t.step_func_done(event => {
+      assert_equals(event.data, "PASS");
+      assert_equals(event.source.name, "iframe");
       assert_equals(event.source, iframe.contentWindow, "The source must be the iframe");
     });
 

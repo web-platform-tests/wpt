@@ -28,4 +28,16 @@ promise_test(t => {
     document.body.appendChild(iframe);
   });
 }, "postMessaging to a same-origin iframe allows them to see each others' modifications");
+
+
+promise_test(t => {
+  return new Promise(resolve => {
+    const w = window.open("resources/incrementer-popup.html");
+    w.onload = t.step_func(() => {
+      resolve(testSharingViaIncrementerScript(t, window, w, "popup window", "*").then(() => {
+        w.close();
+      }));
+    });
+  });
+}, "postMessaging to a same-origin opened window allows them to see each others' modifications");
 </script>

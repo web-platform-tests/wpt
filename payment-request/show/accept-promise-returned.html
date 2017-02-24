@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<meta charset='utf-8'>
+<title>PaymentRequest: when calling show() the acceptPromise should get created and returned.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+async_test((t) => {
+  onload = t.step_func_done(() => {
+    let pr = new PaymentRequest([{
+      supportedMethods: ['non-supported-payment-method']
+    }], {
+      total: {label: 'label', amount: {currency: 'USD', value: '5.00'}}
+    });
+    let p = pr.show();
+    assert_true(p instanceof Promise);
+  });
+});
+</script>

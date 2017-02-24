@@ -1,10 +1,8 @@
 <!DOCTYPE HTML>
 <meta charset='utf-8'>
-<title>PaymentRequest: when calling show() the acceptPromise should get created and returned.</title>
+<title>PaymentRequest: use id passed in details as payment request id.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-
-<p></p>
 
 <script>
 async_test((t) => {
@@ -12,10 +10,10 @@ async_test((t) => {
     let pr = new PaymentRequest([{
       supportedMethods: ['non-supported-payment-method']
     }], {
+      id: 'foobar',
       total: {label: 'label', amount: {currency: 'USD', value: '5.00'}}
     });
-    let p = pr.show();
-    assert_true(p instanceof Promise);
+    assert_true(pr.id == 'foobar');
   });
 });
 </script>

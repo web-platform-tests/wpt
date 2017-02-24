@@ -25,7 +25,6 @@
       let result = [], testCase;
 
       this.onmessage = event => {
-        document.body.innerHTML += event.data + '<br>';
         // PresentationConnection_send-manual.html
         if (testCase === 'send') {
           if (typeof event.data === 'string') {

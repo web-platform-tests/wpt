@@ -1,4 +1,4 @@
 "use strict";
 importScripts("./test-incrementer.js");
 
-setupDestinationIncrementer(self);
+setupDestinationIncrementer(self, self);

@@ -34,9 +34,9 @@ self.testSharingViaIncrementerScript = (t, whereToListen, whereToListenLabel, wh
   });
 };
 
-self.setupDestinationIncrementer = (whereToSendBackTo, origin) => {
+self.setupDestinationIncrementer = (whereToListen, whereToSendBackTo, origin) => {
   let view;
-  self.onmessage = ({ data }) => {
+  whereToListen.onmessage = ({ data }) => {
     switch (data.message) {
       case "initial payload": {
         view = new Int32Array(data.sab);

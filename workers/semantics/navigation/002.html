@@ -23,7 +23,7 @@ var start_test = t.step_func(function() {
 });
 var after_load = t.step_func(function() {
   newDate = new Date();
-  setTimeout(this.step_func(function() {
+  step_timeout(this.step_func(function() {
     assert_less_than(Number(date), Number(newDate));
     assert_equals(window[0].document.title, 'foo');
     this.done();

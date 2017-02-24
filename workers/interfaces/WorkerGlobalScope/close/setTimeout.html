@@ -21,7 +21,7 @@ worker.onmessage = function(e) {
 worker.onerror = function(e) {
   assert_unreached("Got error");
 };
-setTimeout(done, 2000);
+step_timeout(done, 2000);
 </script>
 <!--
 */

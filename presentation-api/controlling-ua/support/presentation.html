@@ -7,11 +7,25 @@
 <link rel="help" href="http://w3c.github.io/presentation-api/#interface-presentationconnectionlist">
 <script src="stash.js"></script>
 <script>
+  const message1 = '1st';
+  const message2 = '2nd';
+  const message3 = new Uint8Array([51, 114, 100]);      // "3rd"
+  const message4 = new Uint8Array([52, 116, 104]);      // "4th"
+  const message5 = new Uint8Array([108, 97, 115, 116]); // "last"
+
+  // compare two ArrayBuffer or Uint8Array
+  const compare = (a, b) => {
+    const p = toUint8Array(a);
+    const q = toUint8Array(b);
+    return !!p && !!q && p.every((item, index) => { return item === q[index]; });
+  };
+
   const addConnection = connection => {
     connection.onconnect = function() {
-      let result = [], timeout, testCase;
+      let result = [], testCase;
 
       this.onmessage = event => {
+        document.body.innerHTML += event.data + '<br>';
         // PresentationConnection_send-manual.html
         if (testCase === 'send') {
           if (typeof event.data === 'string') {
@@ -20,8 +34,7 @@
           // default value of connection.binaryType is "arraybuffer"
           else if(event.data instanceof ArrayBuffer) {
             result.push({ type: 'binary', data: event.data});
-            if (event.data.equals(message5)) {
-              clearTimeout(timeout);
+            if (compare(event.data, message5)) {
               window.uploadStash(JSON.stringify(result));
             }
           }

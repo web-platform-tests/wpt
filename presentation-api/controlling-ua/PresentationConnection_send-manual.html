@@ -19,11 +19,29 @@
 
     const presentBtn = document.getElementById('presentBtn');
 
+    const message1 = '1st';
+    const message2 = '2nd';
+    const message3 = new Uint8Array([51, 114, 100]);      // "3rd"
+    const message4 = new Uint8Array([52, 116, 104]);      // "4th"
+    const message5 = new Uint8Array([108, 97, 115, 116]); // "last"
+
+    const toUint8Array = buf => {
+        return buf instanceof ArrayBuffer ? new Uint8Array(buf) : buf;
+    }
+
+    // convert ArrayBuffer or Uint8Array into string
+    const toText = buf => {
+        const arr = toUint8Array(buf);
+        return !buf ? null : arr.reduce((result, item) => {
+            return result + String.fromCharCode(item);
+        }, '');
+    }
+
     presentBtn.onclick = () => {
         presentBtn.disabled = true;
 
         promise_test(t => {
-            let connection, watcher, timeout, wait;
+            let connection, watcher;
             const request = new PresentationRequest(presentationUrls);
 
             t.add_cleanup(() => {
@@ -41,13 +59,6 @@
                 stopWaitingStash();
             });
 
-            const setStepTimeout = delay => {
-                timeout = t.step_timeout(() => {
-                    t.force_timeout();
-                    t.done();
-                }, delay);
-            };
-
             return request.start().then(c => {
                 return initStash().then(() => {
                     return uploadStash('send');
@@ -64,7 +75,10 @@
                 }, 'an InvalidStateError is thrown if the state is "connecting"');
 
                 // enable timeout again, cause no user action is needed from here.
-                setStepTimeout(10000);
+                t.step_timeout(() => {
+                    t.force_timeout();
+                    t.done();
+                }, 10000);
 
                 watcher = new EventWatcher(t, connection, ['connect', 'close']);
                 return watcher.wait_for('connect');
@@ -85,9 +99,9 @@
                 const results = JSON.parse(stash);
                 assert_true(!!results[0] && results[0].type === 'text'   && results[0].data === message1,          'send a string correctly');
                 assert_true(!!results[1] && results[1].type === 'text'   && results[1].data === message2,          'send a string correctly');
-                assert_true(!!results[2] && results[2].type === 'binary' && results[2].data === message3.toText(), 'send a Blob correctly');
-                assert_true(!!results[3] && results[3].type === 'binary' && results[3].data === message4.toText(), 'send a ArrayBuffer correctly');
-                assert_true(!!results[4] && results[4].type === 'binary' && results[4].data === message5.toText(), 'send a ArrayBufferView correctly');
+                assert_true(!!results[2] && results[2].type === 'binary' && results[2].data === toText(message3), 'send a Blob correctly');
+                assert_true(!!results[3] && results[3].type === 'binary' && results[3].data === toText(message4), 'send a ArrayBuffer correctly');
+                assert_true(!!results[4] && results[4].type === 'binary' && results[4].data === toText(message5), 'send a ArrayBufferView correctly');
 
                 // send data in "closed" state (throws an exception)
                 connection.close();

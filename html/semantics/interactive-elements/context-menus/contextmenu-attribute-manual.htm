@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <title>HTML contextmenu attribute</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style></style>
+  </head>
+  <body>
+    <div id="log"></div>
+
+
+    <div id='contextmenutarget'>Trigger context menu here</div>
+
+    <script type="text/javascript">
+
+var t = async_test('contextmenu event generated from user action "click"');
+document.querySelector("#contextmenutarget").addEventListener('contextmenu', t.step_func(function (e) {
+    assert_equals(e.constructor, window.MouseEvent);
+    t.done();
+}));
+
+    </script>
+
+  </body>
+</html>

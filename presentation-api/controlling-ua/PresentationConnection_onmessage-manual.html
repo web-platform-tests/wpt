@@ -38,6 +38,7 @@
 
     presentBtn.onclick = () => {
         presentBtn.disabled = true;
+        const stash = new Stash('9bf08fea-a71a-42f9-b3c4-fa19499e4d12', 'f1fdfd10-b606-4748-a644-0a8e9df3bdd6');
 
         promise_test(t => {
             let connection, watcher, eventWatcher;
@@ -52,7 +53,12 @@
 
             t.add_cleanup(() => {
                 if (connection) {
-                    if (connection.state === 'connected')
+                    if (connection.state === 'connecting') {
+                        connection.onconnect = event => {
+                            connection.terminate();
+                        };
+                    }
+                    else if (connection.state === 'connected')
                         connection.terminate();
                     else if (connection.state === 'closed') {
                         request.reconnect(connection.id).then(c => {
@@ -62,7 +68,7 @@
                 }
                 const notice = document.getElementById('notice');
                 notice.parentNode.removeChild(notice);
-                stopWaitingStash();
+                stash.stop();
             });
 
             return request.start().then(c => {
@@ -76,12 +82,15 @@
                     t.done();
                 }, 5000);
 
-                return initStash();
+                watcher = new EventWatcher(t, connection, 'connect');
+                return watcher.wait_for('connect');
+            }).then(() => {
+                return stash.init();
             }).then(() => {
                 eventWatcher = new EventWatcher(t, connection, 'message');
                 // Tell receiving page to start sending messages, and wait for first message
                 return Promise.all([
-                    uploadStash('onmessage'),
+                    stash.send('onmessage'),
                     eventWatcher.wait_for('message')
                 ]).then(results => results[1]);
             }).then(event => {
@@ -108,8 +117,8 @@
                 assert_true(compare(event.data, message5), 'receive an ArrayBuffer correctly (originally an ArrayBufferView at a receiving user agent)');
 
                 connection.binaryType = 'blob';
-                return new Promise([
-                    uploadStash('blob'),
+                return Promise.all([
+                    stash.send('blob'),
                     eventWatcher.wait_for('message')
                 ]).then(results => results[1]);
             }).then(event => {

@@ -81,6 +81,7 @@ SUPPORT-WRONG-DIR: */LICENSE
 SUPPORT-WRONG-DIR: */LICENSE-*
 SUPPORT-WRONG-DIR: */COPYING
 SUPPORT-WRONG-DIR: */Makefile
+SUPPORT-WRONG-DIR: */OWNERS
 
 # The selectors-3 testsuite has a weird build system
 SUPPORT-WRONG-DIR: selectors-3/*

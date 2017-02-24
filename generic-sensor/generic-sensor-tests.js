@@ -199,9 +199,3 @@ function runGenericSensorOnerror(sensorType) {
     sensor.start();
   }, "'onerror' event is fired when sensor is not supported");
 }
-
-function runSensorFrequency(sensorType) {
-  test(() => {
-    assert_throws(new RangeError(), () => new sensorType({frequency: -60}));
-  }, "negative frequency causes exception from constructor");
-}

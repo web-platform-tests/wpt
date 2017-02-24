@@ -219,7 +219,7 @@ class Find(object):
         body = {"using": strategy,
                 "value": selector}
 
-        data = self.session.send_command("POST", route, body, key="value")
+        data = self.session.send_command("POST", route, body)
 
         if all:
             rv = [self.session._element(item) for item in data]
@@ -234,7 +234,7 @@ class Cookies(object):
         self.session = session
 
     def __getitem__(self, name):
-        self.session.send_command("GET", "cookie/%s" % name, {}, key="value")
+        self.session.send_command("GET", "cookie/%s" % name, {})
 
     def __setitem__(self, name, value):
         cookie = {"name": name,
@@ -244,7 +244,7 @@ class Cookies(object):
             cookie["value"] = value
         elif hasattr(value, "value"):
             cookie["value"] = value.value
-        self.session.send_command("POST", "cookie/%s" % name, {}, key="value")
+        self.session.send_command("POST", "cookie/%s" % name, {})
 
 
 class UserPrompt(object):
@@ -262,7 +262,7 @@ class UserPrompt(object):
     @property
     @command
     def text(self):
-        return self.session.send_command("GET", "alert/text", key="value")
+        return self.session.send_command("GET", "alert/text")
 
     @text.setter
     @command
@@ -317,7 +317,8 @@ class Session(object):
         #body["capabilities"] = caps
         body = caps
 
-        response = self.transport.send("POST", "session", body=body)
+        response = self.send_raw_command("POST", "session", body=body)
+
         self.session_id = response.body["value"]["sessionId"]
 
         if self.extension_cls:
@@ -330,7 +331,7 @@ class Session(object):
             return
 
         url = "session/%s" % self.session_id
-        self.transport.send("DELETE", url)
+        self.send_raw_command("DELETE", url)
 
         self.session_id = None
         self.timeouts = None
@@ -349,10 +350,14 @@ class Session(object):
         :return: an instance of wdclient.Response describing the HTTP response
             received from the remote end
         """
-        url = urlparse.urljoin("session/%s/" % self.session_id, url)
-        return self.transport.send(method, url, body, headers)
+        response = self.transport.send(method, url, body, headers)
+        if response.status != 200:
+            value = response.body["value"]
+            cls = error.get(value.get("error"))
+            raise cls(value.get("message"))
+        return response
 
-    def send_command(self, method, url, body=None, key=None):
+    def send_command(self, method, url, body=None):
         """Send a command to the remote end and validate its success.
 
         :param method: HTTP method to use in request
@@ -368,23 +373,20 @@ class Session(object):
         if self.session_id is None:
             raise error.SessionNotCreatedException()
 
+        url = urlparse.urljoin("session/%s/" % self.session_id, url)
+
         response = self.send_raw_command(method, url, body)
 
-        if response.status != 200:
-            cls = error.get(response.body["value"].get("error"))
-            raise cls(response.body["value"].get("message"))
+        rv = response.body["value"]
+        if not rv:
+            rv = None
 
-        if key is not None:
-            response.body = response.body[key]
-        if not response.body:
-            response.body = None
-
-        return response.body
+        return rv
 
     @property
     @command
     def url(self):
-        return self.send_command("GET", "url", key="value")
+        return self.send_command("GET", "url")
 
     @url.setter
     @command
@@ -409,12 +411,12 @@ class Session(object):
     @property
     @command
     def title(self):
-        return self.send_command("GET", "title", key="value")
+        return self.send_command("GET", "title")
 
     @property
     @command
     def window_handle(self):
-        return self.send_command("GET", "window", key="value")
+        return self.send_command("GET", "window")
 
     @window_handle.setter
     @command
@@ -442,12 +444,12 @@ class Session(object):
     @property
     @command
     def handles(self):
-        return self.send_command("GET", "window/handles", key="value")
+        return self.send_command("GET", "window/handles")
 
     @property
     @command
     def active_element(self):
-        data = self.send_command("GET", "element/active", key="value")
+        data = self.send_command("GET", "element/active")
         if data is not None:
             return self._element(data)
 
@@ -464,7 +466,7 @@ class Session(object):
             url = "cookie"
         else:
             url = "cookie/%s" % name
-        return self.send_command("GET", url, {}, key="value")
+        return self.send_command("GET", url, {})
 
     @command
     def set_cookie(self, name, value, path=None, domain=None, secure=None, expiry=None):
@@ -485,7 +487,7 @@ class Session(object):
             url = "cookie"
         else:
             url = "cookie/%s" % name
-        self.send_command("DELETE", url, {}, key="value")
+        self.send_command("DELETE", url, {})
 
     #[...]
 
@@ -498,7 +500,7 @@ class Session(object):
             "script": script,
             "args": args
         }
-        return self.send_command("POST", "execute/sync", body, key="value")
+        return self.send_command("POST", "execute/sync", body)
 
     @command
     def execute_async_script(self, script, args=None):
@@ -509,13 +511,13 @@ class Session(object):
             "script": script,
             "args": args
         }
-        return self.send_command("POST", "execute/async", body, key="value")
+        return self.send_command("POST", "execute/async", body)
 
     #[...]
 
     @command
     def screenshot(self):
-        return self.send_command("GET", "screenshot", key="value")
+        return self.send_command("GET", "screenshot")
 
 
 class Element(object):
@@ -540,7 +542,7 @@ class Element(object):
         body = {"using": strategy,
                 "value": selector}
 
-        elem = self.session.send_command("POST", self.url("element"), body, key="value")
+        elem = self.session.send_command("POST", self.url("element"), body)
         return self.session.element(elem)
 
     @command
@@ -567,16 +569,16 @@ class Element(object):
     @property
     @command
     def text(self):
-        return self.session.send_command("GET", self.url("text"), key="value")
+        return self.session.send_command("GET", self.url("text"))
 
     @property
     @command
     def name(self):
-        return self.session.send_command("GET", self.url("name"), key="value")
+        return self.session.send_command("GET", self.url("name"))
 
     @command
     def style(self, property_name):
-        return self.session.send_command("GET", self.url("css/%s" % property_name), key="value")
+        return self.session.send_command("GET", self.url("css/%s" % property_name))
 
     @property
     @command
@@ -585,8 +587,8 @@ class Element(object):
 
     @command
     def property(self, name):
-        return self.session.send_command("GET", self.url("property/%s" % name), key="value")
+        return self.session.send_command("GET", self.url("property/%s" % name))
 
     @command
     def attribute(self, name):
-        return self.session.send_command("GET", self.url("attribute/%s" % name), key="value")
+        return self.session.send_command("GET", self.url("attribute/%s" % name))

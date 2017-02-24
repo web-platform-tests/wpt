@@ -15,7 +15,7 @@ from . import fnmatch
 from ..localpaths import repo_root
 from ..gitignore.gitignore import PathFilter
 
-from manifest.sourcefile import SourceFile, meta_re
+from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re
 from six import binary_type, iteritems, itervalues
 from six.moves import range
 
@@ -338,7 +338,11 @@ def check_python_ast(repo_root, path, f, css_mode):
 
 broken_metadata = re.compile(b"//\s*META:")
 def check_script_metadata(repo_root, path, f, css_mode):
-    if not path.endswith((".worker.js", ".any.js")):
+    if path.endswith((".worker.js", ".any.js")):
+        meta_re = js_meta_re
+    elif path.endswith(".py"):
+        meta_re = python_meta_re
+    else:
         return []
 
     done = False

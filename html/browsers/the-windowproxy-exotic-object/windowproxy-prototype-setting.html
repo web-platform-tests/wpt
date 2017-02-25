@@ -1,43 +1,46 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>[[SetPrototypeOf]] on a location object should not allow changing its value</title>
-<link rel="help" href="http://html.spec.whatwg.org/multipage/#location-setprototypeof">
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>[[SetPrototypeOf]] on a WindowProxy object should not allow changing its value</title>
+<link rel="help" href="http://html.spec.whatwg.org/multipage/#windowproxy-setprototypeof">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
 <script>
 "use strict";
 
-const origProto = Object.getPrototypeOf(location);
+const origProto = Object.getPrototypeOf(window);
 
 test(() => {
   assert_throws(new TypeError, () => {
-    Object.setPrototypeOf(location, {});
+    Object.setPrototypeOf(window, {});
   });
 }, "Setting the prototype via Object.setPrototypeOf should throw a TypeError");
 
 test(() => {
   assert_throws(new TypeError, function() {
-    location.__proto__ = {};
+    window.__proto__ = {};
   });
 }, "Setting the prototype via __proto__ should throw a TypeError");
 
 test(() => {
-  assert_false(Reflect.setPrototypeOf(location, {}));
+  assert_false(Reflect.setPrototypeOf(window, {}));
 }, "Setting the prototype via Reflect.setPrototypeOf should return false");
 
 test(() => {
-  assert_equals(Object.getPrototypeOf(location), origProto);
+  assert_equals(Object.getPrototypeOf(window), origProto);
 }, "The prototype must still be its original value");
 
 test(() => {
-  Object.setPrototypeOf(location, origProto);
+  Object.setPrototypeOf(window, origProto);
 }, "Setting the prototype to its current value via Object.setPrototypeOf should not throw");
 
 test(() => {
-  location.__proto__ = origProto;
+  window.__proto__ = origProto;
 }, "Setting the prototype to its current value via __proto__ should not throw");
 
 test(() => {
-  assert_true(Reflect.setPrototypeOf(location, origProto));
+  assert_true(Reflect.setPrototypeOf(window, origProto));
 }, "Setting the prototype to its current value via Reflect.setPrototypeOf should return true");
 </script>

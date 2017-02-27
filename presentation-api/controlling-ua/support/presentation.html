@@ -32,7 +32,7 @@
     return !!p && !!q && p.every((item, index) => { return item === q[index]; });
   };
 
-  const stash = new Stash('f1fdfd10-b606-4748-a644-0a8e9df3bdd6', '9bf08fea-a71a-42f9-b3c4-fa19499e4d12');
+  const stash = new Stash(stashIds.toReceiver, stashIds.toController);
 
   const addConnection = connection => {
     connection.onconnect = function() {

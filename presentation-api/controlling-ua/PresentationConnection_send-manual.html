@@ -39,7 +39,7 @@
 
     presentBtn.onclick = () => {
         presentBtn.disabled = true;
-        const stash = new Stash('9bf08fea-a71a-42f9-b3c4-fa19499e4d12', 'f1fdfd10-b606-4748-a644-0a8e9df3bdd6');
+        const stash = new Stash(stashIds.toController, stashIds.toReceiver);
 
         promise_test(t => {
             let connection, watcher;

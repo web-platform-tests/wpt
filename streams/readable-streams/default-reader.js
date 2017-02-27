@@ -5,29 +5,29 @@ if (self.importScripts) {
   self.importScripts('/resources/testharness.js');
 }
 
-let ReadableStreamReader;
+let ReadableStreamDefaultReader;
 
 test(() => {
 
   // It's not exposed globally, but we test a few of its properties here.
-  ReadableStreamReader = (new ReadableStream()).getReader().constructor;
+  ReadableStreamDefaultReader = (new ReadableStream()).getReader().constructor;
 
-}, 'Can get the ReadableStreamReader constructor indirectly');
+}, 'Can get the ReadableStreamDefaultReader constructor indirectly');
 
 test(() => {
 
-  assert_throws(new TypeError(), () => new ReadableStreamReader('potato'));
-  assert_throws(new TypeError(), () => new ReadableStreamReader({}));
-  assert_throws(new TypeError(), () => new ReadableStreamReader());
+  assert_throws(new TypeError(), () => new ReadableStreamDefaultReader('potato'));
+  assert_throws(new TypeError(), () => new ReadableStreamDefaultReader({}));
+  assert_throws(new TypeError(), () => new ReadableStreamDefaultReader());
 
-}, 'ReadableStreamReader constructor should get a ReadableStream object as argument');
+}, 'ReadableStreamDefaultReader constructor should get a ReadableStream object as argument');
 
 test(() => {
 
   const methods = ['cancel', 'constructor', 'read', 'releaseLock'];
   const properties = methods.concat(['closed']).sort();
 
-  const rsReader = new ReadableStreamReader(new ReadableStream());
+  const rsReader = new ReadableStreamDefaultReader(new ReadableStream());
   const proto = Object.getPrototypeOf(rsReader);
 
   assert_array_equals(Object.getOwnPropertyNames(proto).sort(), properties);
@@ -56,41 +56,41 @@ test(() => {
   assert_equals(typeof rsReader.releaseLock, 'function', 'has a releaseLock method');
   assert_equals(rsReader.releaseLock.length, 0, 'releaseLock has no parameters');
 
-}, 'ReadableStreamReader instances should have the correct list of properties');
+}, 'ReadableStreamDefaultReader instances should have the correct list of properties');
 
 test(() => {
 
-  const rsReader = new ReadableStreamReader(new ReadableStream());
+  const rsReader = new ReadableStreamDefaultReader(new ReadableStream());
   assert_equals(rsReader.closed, rsReader.closed, 'closed should return the same promise');
 
-}, 'ReadableStreamReader closed should always return the same promise object');
+}, 'ReadableStreamDefaultReader closed should always return the same promise object');
 
 test(() => {
 
   const rs = new ReadableStream();
-  new ReadableStreamReader(rs); // Constructing directly the first time should be fine.
-  assert_throws(new TypeError(), () => new ReadableStreamReader(rs),
+  new ReadableStreamDefaultReader(rs); // Constructing directly the first time should be fine.
+  assert_throws(new TypeError(), () => new ReadableStreamDefaultReader(rs),
                 'constructing directly the second time should fail');
 
-}, 'Constructing a ReadableStreamReader directly should fail if the stream is already locked (via direct ' +
+}, 'Constructing a ReadableStreamDefaultReader directly should fail if the stream is already locked (via direct ' +
    'construction)');
 
 test(() => {
 
   const rs = new ReadableStream();
-  new ReadableStreamReader(rs); // Constructing directly should be fine.
+  new ReadableStreamDefaultReader(rs); // Constructing directly should be fine.
   assert_throws(new TypeError(), () => rs.getReader(), 'getReader() should fail');
 
-}, 'Getting a ReadableStreamReader via getReader should fail if the stream is already locked (via direct ' +
+}, 'Getting a ReadableStreamDefaultReader via getReader should fail if the stream is already locked (via direct ' +
    'construction)');
 
 test(() => {
 
   const rs = new ReadableStream();
   rs.getReader(); // getReader() should be fine.
-  assert_throws(new TypeError(), () => new ReadableStreamReader(rs), 'constructing directly should fail');
+  assert_throws(new TypeError(), () => new ReadableStreamDefaultReader(rs), 'constructing directly should fail');
 
-}, 'Constructing a ReadableStreamReader directly should fail if the stream is already locked (via getReader)');
+}, 'Constructing a ReadableStreamDefaultReader directly should fail if the stream is already locked (via getReader)');
 
 test(() => {
 
@@ -98,7 +98,7 @@ test(() => {
   rs.getReader(); // getReader() should be fine.
   assert_throws(new TypeError(), () => rs.getReader(), 'getReader() should fail');
 
-}, 'Getting a ReadableStreamReader via getReader should fail if the stream is already locked (via getReader)');
+}, 'Getting a ReadableStreamDefaultReader via getReader should fail if the stream is already locked (via getReader)');
 
 test(() => {
 
@@ -108,9 +108,9 @@ test(() => {
     }
   });
 
-  new ReadableStreamReader(rs); // Constructing directly should not throw.
+  new ReadableStreamDefaultReader(rs); // Constructing directly should not throw.
 
-}, 'Constructing a ReadableStreamReader directly should be OK if the stream is closed');
+}, 'Constructing a ReadableStreamDefaultReader directly should be OK if the stream is closed');
 
 test(() => {
 
@@ -121,9 +121,9 @@ test(() => {
     }
   });
 
-  new ReadableStreamReader(rs); // Constructing directly should not throw.
+  new ReadableStreamDefaultReader(rs); // Constructing directly should not throw.
 
-}, 'Constructing a ReadableStreamReader directly should be OK if the stream is errored');
+}, 'Constructing a ReadableStreamDefaultReader directly should be OK if the stream is errored');
 
 promise_test(() => {
 
@@ -332,7 +332,7 @@ promise_test(t => {
   controller.error();
   return promise;
 
-}, 'ReadableStreamReader closed promise should be rejected with undefined if that is the error');
+}, 'ReadableStreamDefaultReader closed promise should be rejected with undefined if that is the error');
 
 
 promise_test(t => {
@@ -350,7 +350,8 @@ promise_test(t => {
     }
   );
 
-}, 'ReadableStreamReader: if start rejects with no parameter, it should error the stream with an undefined error');
+}, 'ReadableStreamDefaultReader: if start rejects with no parameter, it should error the stream with an undefined '
+    + 'error');
 
 promise_test(t => {
 
@@ -367,7 +368,7 @@ promise_test(t => {
   controller.error(theError);
   return promise;
 
-}, 'Erroring a ReadableStream after checking closed should reject ReadableStreamReader closed promise');
+}, 'Erroring a ReadableStream after checking closed should reject ReadableStreamDefaultReader closed promise');
 
 promise_test(t => {
 
@@ -386,7 +387,7 @@ promise_test(t => {
 
   return promise_rejects(t, theError, rs.getReader().closed);
 
-}, 'Erroring a ReadableStream before checking closed should reject ReadableStreamReader closed promise');
+}, 'Erroring a ReadableStream before checking closed should reject ReadableStreamDefaultReader closed promise');
 
 promise_test(() => {
 

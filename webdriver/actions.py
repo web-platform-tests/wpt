@@ -1,3 +1,5 @@
+# META: timeout=long
+
 import pytest
 
 from support.keys import Keys
@@ -47,8 +49,8 @@ def key_reporter(session, test_keys_page, request):
 
 
 @pytest.fixture
-def test_keys_page(session, server):
-    session.url = server.where_is("test_keys_wdspec.html")
+def test_keys_page(session, url):
+    session.url = url("/webdriver/support/test_keys_wdspec.html")
 
 
 @pytest.fixture

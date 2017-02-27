@@ -15,7 +15,10 @@ setup({ explicit_done: true });
 
 window.onload = () => {
   const targetLocation = frames[0].location;
-  const origProto = Object.getPrototypeOf(targetLocation);
+
+  test(() => {
+    assert_equals(Object.getPrototypeOf(targetLocation), null);
+  }, "The prototype is null");
 
   test(() => {
     assert_throws(new TypeError, () => {
@@ -34,20 +37,20 @@ window.onload = () => {
   }, "Setting the prototype via Reflect.setPrototypeOf should return false");
 
   test(() => {
-    assert_equals(Object.getPrototypeOf(targetLocation), origProto);
-  }, "The prototype must still be its original value");
+    assert_equals(Object.getPrototypeOf(targetLocation), null);
+  }, "The prototype must still be null");
 
   test(() => {
-    Object.setPrototypeOf(targetLocation, origProto);
-  }, "Setting the prototype to its current value via Object.setPrototypeOf should not throw");
+    Object.setPrototypeOf(targetLocation, null);
+  }, "Setting the prototype to null via Object.setPrototypeOf should not throw");
 
   test(() => {
-    targetLocation.__proto__ = origProto;
-  }, "Setting the prototype to its current value via __proto__ should not throw");
+    targetLocation.__proto__ = null;
+  }, "Setting the prototype to null via __proto__ should not throw");
 
   test(() => {
-    assert_true(Reflect.setPrototypeOf(targetLocation, origProto));
-  }, "Setting the prototype to its current value via Reflect.setPrototypeOf should return true");
+    assert_true(Reflect.setPrototypeOf(targetLocation, null));
+  }, "Setting the prototype to null via Reflect.setPrototypeOf should return true");
 
   done();
 };

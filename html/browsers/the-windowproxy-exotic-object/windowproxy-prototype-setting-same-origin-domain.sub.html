@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>[[SetPrototypeOf]] on a WindowProxy object should not allow changing its value: cross-origin, but same-origin-domain, WindowProxy</title>
+<link rel="help" href="http://html.spec.whatwg.org/multipage/#windowproxy-setprototypeof">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe src="//{{domains[www]}}:{{ports[http][1]}}/common/domain-setter.sub.html"></iframe>
+
+<script>
+"use strict";
+document.domain = "{{host}}";
+setup({ explicit_done: true });
+
+window.onload = () => {
+  const targetWindow = frames[0];
+  const origProto = Object.getPrototypeOf(targetWindow);
+
+  test(() => {
+    assert_not_equals(origProto, null);
+  }, "Prerequisite check for the other tests to make sense: the original prototype is accessible");
+
+  test(() => {
+    assert_throws(new TypeError, () => {
+      Object.setPrototypeOf(targetWindow, {});
+    });
+  }, "Setting the prototype via Object.setPrototypeOf should throw a TypeError");
+
+  test(() => {
+    assert_throws(new TypeError, function() {
+      targetWindow.__proto__ = {};
+    });
+  }, "Setting the prototype via __proto__ should throw a TypeError");
+
+  test(() => {
+    assert_false(Reflect.setPrototypeOf(targetWindow, {}));
+  }, "Setting the prototype via Reflect.setPrototypeOf should return false");
+
+  test(() => {
+    assert_equals(Object.getPrototypeOf(targetWindow), origProto);
+  }, "The prototype must still be its original value");
+
+  test(() => {
+    Object.setPrototypeOf(targetWindow, origProto);
+  }, "Setting the prototype to its current value via Object.setPrototypeOf should not throw");
+
+  test(() => {
+    targetWindow.__proto__ = origProto;
+  }, "Setting the prototype to its current value via __proto__ should not throw");
+
+  test(() => {
+    assert_true(Reflect.setPrototypeOf(targetWindow, origProto));
+  }, "Setting the prototype to its current value via Reflect.setPrototypeOf should return true");
+
+  done();
+};
+</script>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>[[SetPrototypeOf]] on a WindowProxy object should not allow changing its value: cross-origin and cross-origin-domain WindowProxy</title>
+<link rel="help" href="http://html.spec.whatwg.org/multipage/#windowproxy-setprototypeof">
+<link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe src="//{{domains[www]}}:{{ports[http][1]}}/common/blank.html"></iframe>
+
+<script>
+"use strict";
+setup({ explicit_done: true });
+
+window.onload = () => {
+  const targetWindow = frames[0];
+
+  test(() => {
+    assert_equals(Object.getPrototypeOf(targetWindow), null);
+  }, "The prototype is null");
+
+  test(() => {
+    assert_throws(new TypeError, () => {
+      Object.setPrototypeOf(targetWindow, {});
+    });
+  }, "Setting the prototype via Object.setPrototypeOf should throw a TypeError");
+
+  test(() => {
+    assert_throws(new TypeError, function() {
+      targetWindow.__proto__ = {};
+    });
+  }, "Setting the prototype via __proto__ should throw a TypeError");
+
+  test(() => {
+    assert_false(Reflect.setPrototypeOf(targetWindow, {}));
+  }, "Setting the prototype via Reflect.setPrototypeOf should return false");
+
+  test(() => {
+    assert_equals(Object.getPrototypeOf(targetWindow), null);
+  }, "The prototype must still be null");
+
+  test(() => {
+    Object.setPrototypeOf(targetWindow, null);
+  }, "Setting the prototype to null via Object.setPrototypeOf should not throw");
+
+  test(() => {
+    targetWindow.__proto__ = null;
+  }, "Setting the prototype to null via __proto__ should not throw");
+
+  test(() => {
+    assert_true(Reflect.setPrototypeOf(targetWindow, null));
+  }, "Setting the prototype to null via Reflect.setPrototypeOf should return true");
+
+  done();
+};
+</script>

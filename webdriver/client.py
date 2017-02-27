@@ -383,7 +383,7 @@ class Session(object):
         if self.session_id is None:
             raise error.SessionNotCreatedException()
 
-        url = urlparse.urljoin("session/%s/" % self.session_id, url)
+        url = urlparse.urljoin("session/%s/" % self.session_id, uri)
         response = self.send_raw_command(method, url, body)
 
         rv = response.body["value"]

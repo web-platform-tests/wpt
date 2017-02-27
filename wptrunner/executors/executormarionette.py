@@ -272,6 +272,7 @@ class RemoteMarionetteProtocol(Protocol):
         self.webdriver_binary = executor.webdriver_binary
         self.capabilities = self.executor.capabilities
         self.session_config = None
+        self.server = None
 
     def setup(self, runner):
         """Connect to browser via the Marionette HTTP server."""
@@ -582,7 +583,10 @@ class MarionetteWdspecExecutor(WdspecExecutor):
 
     def do_wdspec(self, session_config, path, timeout):
         harness_result = ("OK", None)
-        subtest_results = pytestrunner.run(path, session_config, timeout=timeout)
+        subtest_results = pytestrunner.run(path,
+                                           self.server_config,
+                                           session_config,
+                                           timeout=timeout)
         return (harness_result, subtest_results)
 
     def do_delayed_imports(self):

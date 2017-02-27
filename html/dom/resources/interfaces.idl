@@ -136,7 +136,6 @@ interface HTMLElement : Element {
   [CEReactions] attribute DOMString accessKey;
   readonly attribute DOMString accessKeyLabel;
   [CEReactions] attribute boolean draggable;
-  [CEReactions, SameObject, PutForwards=value] readonly attribute DOMTokenList dropzone;
   [CEReactions] attribute HTMLMenuElement? contextMenu;
   [CEReactions] attribute boolean spellcheck;
   void forceSpellCheck();

@@ -8,50 +8,85 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <iframe src="//{{domains[www]}}:{{ports[http][1]}}/common/blank.html"></iframe>
+<iframe src="//{{domains[www]}}:{{ports[http][1]}}/common/domain-setter.sub.html"></iframe>
 
 <script>
 "use strict";
+document.domain = "{{host}}";
 setup({ explicit_done: true });
 
 window.onload = () => {
-  const targetLocation = frames[0].location;
+  {
+    const targetLocation = frames[0].location;
 
-  test(() => {
-    assert_equals(Object.getPrototypeOf(targetLocation), null);
-  }, "The prototype is null");
+    test(() => {
+      assert_equals(Object.getPrototypeOf(targetLocation), null);
+    }, "Cross-origin: the prototype is null");
 
-  test(() => {
-    assert_throws(new TypeError, () => {
-      Object.setPrototypeOf(targetLocation, {});
-    });
-  }, "Setting the prototype via Object.setPrototypeOf should throw a TypeError");
+    testSettingFails("Cross-origin", targetLocation);
 
-  test(() => {
-    assert_throws(new TypeError, function() {
-      targetLocation.__proto__ = {};
-    });
-  }, "Setting the prototype via __proto__ should throw a TypeError");
+    test(() => {
+      assert_equals(Object.getPrototypeOf(targetLocation), null);
+    }, "Cross-origin: the prototype must still be null");
 
-  test(() => {
-    assert_false(Reflect.setPrototypeOf(targetLocation, {}));
-  }, "Setting the prototype via Reflect.setPrototypeOf should return false");
+    test(() => {
+      Object.setPrototypeOf(targetLocation, null);
+    }, "Cross-origin: setting the prototype to null via Object.setPrototypeOf should not throw");
 
-  test(() => {
-    assert_equals(Object.getPrototypeOf(targetLocation), null);
-  }, "The prototype must still be null");
+    test(() => {
+      targetLocation.__proto__ = null;
+    }, "Cross-origin: setting the prototype to null via __proto__ should not throw");
 
-  test(() => {
-    Object.setPrototypeOf(targetLocation, null);
-  }, "Setting the prototype to null via Object.setPrototypeOf should not throw");
+    test(() => {
+      assert_true(Reflect.setPrototypeOf(targetLocation, null));
+    }, "Cross-origin: setting the prototype to null via Reflect.setPrototypeOf should return true");
+  }
 
-  test(() => {
-    targetLocation.__proto__ = null;
-  }, "Setting the prototype to null via __proto__ should not throw");
+  {
+    const targetLocation = frames[1].location;
+    const origProto = Object.getPrototypeOf(targetLocation);
 
-  test(() => {
-    assert_true(Reflect.setPrototypeOf(targetLocation, null));
-  }, "Setting the prototype to null via Reflect.setPrototypeOf should return true");
+    test(() => {
+      assert_not_equals(origProto, null);
+    }, "Same-origin-domain prerequisite check: the original prototype is accessible");
+
+    testSettingFails("Same-origin-domain", targetLocation);
+
+    test(() => {
+      assert_equals(Object.getPrototypeOf(targetLocation), origProto);
+    }, "Same-origin-domain: the prototype must still be its original value");
+
+    test(() => {
+      Object.setPrototypeOf(targetLocation, origProto);
+    }, "Same-origin-domain: setting the prototype to its current value via Object.setPrototypeOf should not throw");
+
+    test(() => {
+      targetLocation.__proto__ = origProto;
+    }, "Same-origin-domain: setting the prototype to its current value via __proto__ should not throw");
+
+    test(() => {
+      assert_true(Reflect.setPrototypeOf(targetLocation, origProto));
+    }, "Same-origin-domain: setting the prototype to its current value via Reflect.setPrototypeOf should return true");
+  }
 
   done();
 };
+
+function testSettingFails(prefix, target) {
+  test(() => {
+    assert_throws(new TypeError, () => {
+      Object.setPrototypeOf(target, {});
+    });
+  }, prefix + ": setting the prototype via Object.setPrototypeOf should throw a TypeError");
+
+  test(() => {
+    assert_throws(new TypeError, function() {
+      target.__proto__ = {};
+    });
+  }, prefix + ": setting the prototype via __proto__ should throw a TypeError");
+
+  test(() => {
+    assert_false(Reflect.setPrototypeOf(target, {}));
+  }, prefix + ": setting the prototype via Reflect.setPrototypeOf should return false");
+}
 </script>

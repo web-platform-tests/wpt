@@ -340,15 +340,21 @@ class Session(object):
         self.extension = None
 
     def send_raw_command(self, method, url, body=None, headers=None):
-        """Send a command to the remote end.
+        """
+        Send a raw unchecked and unaltered command to the remote end,
+        even when there is no active session.
 
-        :param method: HTTP method to use in request
-        :param url: "command part" of the requests URL path
-        :param body: body of the HTTP request
-        :param headers: Additional headers to include in the HTTP request
+        :param method: HTTP method to use in request.
+        :param url: Full request URL.
+        :param body: Optional body of the HTTP request.
+        :param headers: Optional additional headers to include in the
+            HTTP request.
 
-        :return: an instance of wdclient.Response describing the HTTP response
-            received from the remote end
+        :return: Instance of ``transport.Response`` describing the HTTP
+            response received from the remote end.
+
+        :raises error.WebDriverException: If the remote end returns
+            an error.
         """
         response = self.transport.send(method, url, body, headers)
         if response.status != 200:
@@ -357,24 +363,27 @@ class Session(object):
             raise cls(value.get("message"))
         return response
 
-    def send_command(self, method, url, body=None):
-        """Send a command to the remote end and validate its success.
-
-        :param method: HTTP method to use in request
-        :param url: "command part" of the requests URL path
-        :param body: body of the HTTP request
-        :param key: (deprecated) when specified, this string value will be used
-            to de-reference the HTTP response body following JSON parsing
-
-        :return: None if the HTTP response body was empty, otherwise the
-            result of parsing the HTTP response body as JSON
+    def send_command(self, method, uri, body=None):
         """
+        Send a command to the remote end and validate its success.
 
+        :param method: HTTP method to use in request.
+        :param uri: "Command part" of the HTTP request URL,
+            e.g. `window/rect`.
+        :param body: Optional body of the HTTP request.
+
+        :return: `None` if the HTTP response body was empty, otherwise
+            the result of parsing the body as JSON.
+
+        :raises error.SessionNotCreatedException: If there is no active
+            session.
+        :raises error.WebDriverException: If the remote end returns
+            an error.
+        """
         if self.session_id is None:
             raise error.SessionNotCreatedException()
 
         url = urlparse.urljoin("session/%s/" % self.session_id, url)
-
         response = self.send_raw_command(method, url, body)
 
         rv = response.body["value"]

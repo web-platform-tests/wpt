@@ -1,0 +1,71 @@
+WEBVTT
+
+NOTE valid
+
+00:00:00.000 --> 00:00:01.000 position:1%
+text1
+
+00:00:00.000 --> 00:00:01.000 position:100%
+text2
+
+00:00:00.000 --> 00:00:01.000 position:1% position:x
+text3
+
+00:00:00.000 --> 00:00:01.000 position:1.5%
+text4
+
+00:00:00.000 --> 00:00:01.000 position:1%,line-left
+text5
+
+00:00:00.000 --> 00:00:01.000 position:1%,center
+text6
+
+00:00:00.000 --> 00:00:01.000 position:1%,line-right
+text7
+
+00:00:00.000 --> 00:00:01.000 position:1%,middle
+text8
+
+00:00:00.000 --> 00:00:01.000 position:1% ,center
+text9
+
+00:00:00.000 --> 00:00:01.000 position:1%, center
+text10
+
+NOTE invalid
+
+00:00:00.000 --> 00:00:01.000 position:-1%
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:1
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:1x
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:1%x
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:
+invalid
+
+00:00:00.000 --> 00:00:01.000 position: 1%
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:101%
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:65536%
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:4294967296%
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:101%,line-left
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:101%,center
+invalid
+
+00:00:00.000 --> 00:00:01.000 position:101%,line-right
+invalid

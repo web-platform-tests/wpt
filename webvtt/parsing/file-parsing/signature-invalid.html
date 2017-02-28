@@ -1,19 +1,26 @@
 <!doctype html>
 <title>WebVTT parser test: invalid signatures</title>
-<link rel="help" href="https://w3c.github.io/webvtt/#file-parsing">
+<link rel="help" href="https://w3c.github.io/webvtt/#webvtt-parser-algorithm">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
 [
-    ['signature, invalid', 'support/signature-invalid.vtt'],
-    ['signature, invalid whitespace', 'support/signature-invalid-whitespace.vtt'],
-    ['signature, missing whitespace', 'support/signature-missing-whitespace.vtt'],
-    ['signature, partial', 'support/signature-partial.vtt'],
-    ['signature, empty', 'support/empty.vtt'],
+    // Alphabetical order, by file
+    ['empty',              'empty.vtt'],
+    ['formfeed',           'signature-formfeed.vtt'],
+    ['invalid whitespace', 'signature-invalid-whitespace.vtt'],
+    ['invalid',            'signature-invalid.vtt'],
+    ['lowercase',          'signature-lowercase.vtt'],
+    ['missing whitespace', 'signature-missing-whitespace.vtt'],
+    ['missing',            'signature-missing.vtt'],
+    ['null',               'signature-null.vtt'],
+    ['partial',            'signature-partial.vtt'],
+    ['two boms',           'signature-two-boms.vtt'],
+    ['websrt',             'signature-websrt.vtt'],
 ].forEach(function(test_data) {
-    var test_name = test_data[0];
-    var test_file = test_data[1];
+    var test_name = 'signature, ' + test_data[0];
+    var test_file = 'support/' + test_data[1];
 
     var test = async_test(test_name);
     test.step(function() {

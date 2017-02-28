@@ -1,0 +1,46 @@
+stylesheets, rules
+<link rel="help" href="https://w3c.github.io/webvtt/#collect-a-webvtt-block">
+
+assert_equals(document.styleSheets.length, 1);
+
+var styleSheet = document.styleSheets[0];
+assert_equals(styleSheet.cssRules.length, 2);
+
+var rule1 = styleSheet.cssRules[0];
+assert_equals(rule1.type, CSSRule.STYLE_RULE);
+assert_equals(rule1.selectorText, '::cue(#foo)');
+
+var rule2 = styleSheet.cssRules[1];
+assert_equals(rule2.type, CSSRule.STYLE_RULE);
+assert_equals(rule2.selectorText, '.foo');
+
+===
+WEBVTT
+
+STYLE
+::cue(#foo) {
+    width: 20px;
+} /*
+NOTE hello
+00:00:00.000 -- > 00:00:01.000
+*/
+.foo {
+    width: 19px;
+}
+
+.bar {
+    width: 18px;
+}
+
+foo
+00:00:00.000 --> 00:00:01.000
+text
+
+STYLE
+::cue(::bar) {
+    width: 18px;
+}
+
+bar
+00:00:00.000 --> 00:00:01.000
+text

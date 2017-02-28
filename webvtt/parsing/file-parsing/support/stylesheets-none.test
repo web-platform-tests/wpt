@@ -1,0 +1,7 @@
+stylesheets
+<link rel="help" href="https://w3c.github.io/webvtt/#collect-a-webvtt-block">
+
+assert_equals(document.styleSheets.length, 0);
+
+===
+WEBVTT

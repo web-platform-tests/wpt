@@ -362,12 +362,17 @@ def check_python_ast(repo_root, path, f, css_mode):
     return errors
 
 
-broken_metadata = re.compile(b"//\s*META:")
+broken_js_metadata = re.compile(b"//\s*META:")
+broken_python_metadata = re.compile(b"#\s*META:")
+
+
 def check_script_metadata(repo_root, path, f, css_mode):
     if path.endswith((".worker.js", ".any.js")):
         meta_re = js_meta_re
+        broken_metadata = broken_js_metadata
     elif path.endswith(".py"):
         meta_re = python_meta_re
+        broken_metadata = broken_python_metadata
     else:
         return []
 

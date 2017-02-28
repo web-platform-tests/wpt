@@ -2,11 +2,14 @@
 <meta charset="utf-8">
 <title>Presentation API IDL tests for Receiving User Agent</title>
 <link rel="author" title="Louay Bassbouss" href="http://www.fokus.fraunhofer.de">
+<link rel="author" title="Tomoyuki Shimizu" href="https://github.com/tomoyukilabs">
 <link rel="help" href="http://w3c.github.io/presentation-api/#dfn-receiving-user-agent">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
 <script src="/resources/idlharness.js"></script>
+<script src="../common.js"></script>
+<script src="stash.js"></script>
 
 <script id="untested_idl" type="text/plain">
 interface Navigator {
@@ -24,14 +27,13 @@ dictionary EventInit {
 <script id='idl' type="text/plain">
 partial interface Navigator {
     [SameObject]
-    readonly attribute Presentation? presentation;
+    readonly attribute Presentation presentation;
 };
 
 interface Presentation {
 };
 
 partial interface Presentation {
-    [SameObject]
     readonly attribute PresentationReceiver? receiver;
 };
 
@@ -58,7 +60,8 @@ enum BinaryType {
 };
 
 interface PresentationConnection : EventTarget {
-    readonly attribute DOMString?                  id;
+    readonly attribute USVString?                  id;
+    readonly attribute USVString?                  url;
     readonly attribute PresentationConnectionState state;
     void close();
     void terminate();
@@ -93,7 +96,6 @@ dictionary PresentationConnectionCloseEventInit : EventInit {
 };
 
 interface PresentationReceiver {
-    [SameObject]
     readonly attribute Promise<PresentationConnectionList> connectionList;
 };
 
@@ -104,17 +106,21 @@ interface PresentationConnectionList : EventTarget {
 </script>
 
 <script>
-    (function() {
-        "use strict";
-        var idl_array = new IdlArray();
-        var idls = document.getElementById('idl').textContent;
+    (() => {
+        'use strict';
+        const idl_array = new IdlArray();
+        const idls = document.getElementById('idl').textContent;
         idl_array.add_untested_idls(document.getElementById('untested_idl').textContent);
         idl_array.add_idls(idls);
         idl_array.add_objects({
             Presentation: ['navigator.presentation'],
             PresentationReceiver: ['navigator.presentation.receiver']
         });
+        add_completion_callback((tests, status) => {
+            const stash = new Stash(stashIds.toReceiver, stashIds.toController);
+            const log = document.getElementById('log');
+            stash.send(JSON.stringify({ tests: tests, status: status, log: log.innerHTML }));
+        });
         idl_array.test();
     })();
 </script>
-

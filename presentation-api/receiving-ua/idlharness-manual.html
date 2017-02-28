@@ -34,7 +34,18 @@
             log.innerHTML = json.log;
             document.body.appendChild(log);
 
-            connection.terminate();
+            if (connection.state === 'connecting') {
+                connection.onconnect = () => {
+                    connection.terminate();
+                }
+            }
+            else if (connection.state === 'closed') {
+                request.reconnect(connection.id).then(c => {
+                    c.terminate();
+                });
+            }
+            else
+                connection.terminate();
         });
     };
 </script>

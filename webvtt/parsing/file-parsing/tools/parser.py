@@ -7,6 +7,7 @@ import re
 import string
 
 SPACE_CHARACTERS = ['\u0020', '\u0009', '\u000A', '\u000C', '\u000D']
+SPACE_SPLIT_PATTERN = r"[{}]*".format(''.join(SPACE_CHARACTERS))
 DIGITS = string.digits
 
 class DictInit:
@@ -267,7 +268,7 @@ class VTTParser(W3CParser):
 
         # 14.
         elif region is not None:
-            self.collect_region_settings(self, region, buffer)
+            self.collect_region_settings(region, buffer)
             return region
 
         # 15.
@@ -277,7 +278,7 @@ class VTTParser(W3CParser):
         'collect WebVTT region settings'
 
         # 1.
-        settings = input.split(" ")
+        settings = re.split(SPACE_SPLIT_PATTERN, input)
 
         # 2.
         for setting in settings:
@@ -433,7 +434,8 @@ class VTTCueParser(W3CParser):
         'parse the WebVTT cue settings'
 
         # 1.
-        settings = input.split(' ')
+
+        settings = re.split(SPACE_SPLIT_PATTERN, input)
 
         # 2.
         for setting in settings:
@@ -676,3 +678,25 @@ class VTTCueParser(W3CParser):
 
         # 19.
         return result
+
+
+def main(argv):
+    files = [open(path, 'r') for path in argv[1:]]
+
+    try:
+        for file in files:
+            parser = VTTParser(file.read())
+            parser.parse()
+
+            print("Results: {}".format(file))
+            print("  Cues: {}".format(parser.text_tracks))
+            print("  StyleSheets: {}".format(parser.stylesheets))
+            print("  Regions: {}".format(parser.regions))
+            print("  Errors: {}".format(parser.errors))
+    finally:
+        for file in files:
+            file.close()
+
+if __name__ == '__main__':
+    import sys
+    main(sys.argv);

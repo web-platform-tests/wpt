@@ -108,7 +108,6 @@ SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/masking/blank
 SUPPORT-WRONG-DIR: vendor-imports/mozilla/mozilla-central-reftests/transforms/green.html
 SUPPORT-WRONG-DIR: WOFF2-UserAgent/manifest.txt
 SUPPORT-WRONG-DIR: WOFF2-UserAgent/Tests/xhtml1/testcaseindex.xht
-NON-EXISTENT-REF: css-grid-1/grid-items/grid-items-sizing-alignment-001.html
 NON-EXISTENT-REF: css-masking-1/clip-path-svg-content/clip-path-clip-rule-008.svg
 NON-EXISTENT-REF: css-masking-1/clip-path-svg-content/clip-path-precision-001.svg
 NON-EXISTENT-REF: css-shapes-1/spec-examples/shape-outside-012.html

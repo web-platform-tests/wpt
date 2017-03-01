@@ -221,6 +221,32 @@ def test_ref_absolute_url(capsys):
     assert err == ""
 
 
+def test_ref_same_file_empty(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["ref/same_file_empty.html"], False, False)
+            assert rv == 1
+            assert mocked_check_path.call_count == 1
+            assert mocked_check_file_contents.call_count == 1
+    out, err = capsys.readouterr()
+    assert "SAME-FILE-REF" in out
+    assert "same_file_empty.html" in out
+    assert err == ""
+
+
+def test_ref_same_file_path(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["ref/same_file_path.html"], False, False)
+            assert rv == 1
+            assert mocked_check_path.call_count == 1
+            assert mocked_check_file_contents.call_count == 1
+    out, err = capsys.readouterr()
+    assert "SAME-FILE-REF" in out
+    assert "same_file_path.html" in out
+    assert err == ""
+
+
 def test_lint_passing_and_failing(capsys):
     with _mock_lint("check_path") as mocked_check_path:
         with _mock_lint("check_file_contents") as mocked_check_file_contents:

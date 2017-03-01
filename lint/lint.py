@@ -18,7 +18,7 @@ from ..gitignore.gitignore import PathFilter
 from manifest.sourcefile import SourceFile, js_meta_re, python_meta_re
 from six import binary_type, iteritems, itervalues
 from six.moves import range
-from six.moves.urllib.parse import urlsplit
+from six.moves.urllib.parse import urlsplit, urljoin
 
 here = os.path.abspath(os.path.split(__file__)[0])
 
@@ -225,22 +225,24 @@ def check_parsed(repo_root, path, f, css_mode):
     for reftest_node in source_file.reftest_nodes:
         href = reftest_node.attrib.get("href", "")
         parts = urlsplit(href)
-        if len(parts.netloc) is not 0 or len(parts.scheme) is not 0:
+        if parts.scheme or parts.netloc:
             errors.append(("ABSOLUTE-URL-REF",
                      "Reference test with a reference file specified via an absolute URL: '%s'" % href, path, None))
             continue
 
-        ref_path = parts.path
+        ref_url = urljoin(source_file.url, href)
+        ref_parts = urlsplit(ref_url)
 
-        if ref_path[0] == "/":
-            # Remove the leading "forward-slash" character in root-relative
-            # URLs so that the `os.path.join` method does not interpret the
-            # value as an absolute path.
-            ref_path = ref_path[1:]
-        else:
-            ref_path = source_file.dir_path + "/" + ref_path
+        if source_file.url == ref_url:
+            errors.append(("SAME-FILE-REF",
+                           "Reference test which points at itself as a reference",
+                           path,
+                           None))
+            continue
 
-        reference_file = os.path.join(repo_root, ref_path)
+        assert ref_parts.path != ""
+
+        reference_file = os.path.join(repo_root, ref_parts.path[1:])
         reference_rel = reftest_node.attrib.get("rel", "")
 
         if not os.path.isfile(reference_file):

@@ -16,17 +16,21 @@ assert_equals(cues[3].id, "lfcr");
 assert_equals(cues[3].text, "text4");
 
 ===
-WEBVTT
-
+WEBVTT\r\
+\r\
 cr\r\
 00:00:00.000 --> 00:00:01.000\r\
-text1\r\
+text1\n\
+\n\
 lf\n\
 00:00:00.000 --> 00:00:01.000\n\
-text2\n\
+text2\r\n\
+\r\n\
 crlf\r\n\
 00:00:00.000 --> 00:00:01.000\r\n\
-text3\r\n\
-lfcr\n\r\
-00:00:00.000 --> 00:00:01.000\n\r\
-text4\n\r\
+text3\n\
+\r\
+lfcr\r\
+00:00:00.000 --> 00:00:01.000\n\
+text4\n\
+\r

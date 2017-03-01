@@ -6,7 +6,7 @@ See https://w3c.github.io/webvtt/#file-parsing for documentation
 import re
 import string
 
-SPACE_CHARACTERS = ['\u0020', '\u0009', '\u000A', '\u000C', '\u000D']
+SPACE_CHARACTERS = [' ', '\t', '\n', '\f', '\r']
 SPACE_SPLIT_PATTERN = r"[{}]*".format(''.join(SPACE_CHARACTERS))
 DIGITS = string.digits
 

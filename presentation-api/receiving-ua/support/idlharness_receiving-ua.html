@@ -26,10 +26,12 @@ dictionary EventInit {
 
 <script id='idl' type="text/plain">
 partial interface Navigator {
-    [SameObject]
+    [SecureContext,
+     SameObject]
     readonly attribute Presentation presentation;
 };
 
+[SecureContext]
 interface Presentation {
 };
 
@@ -37,7 +39,8 @@ partial interface Presentation {
     readonly attribute PresentationReceiver? receiver;
 };
 
-[Constructor(DOMString type, PresentationConnectionAvailableEventInit eventInitDict)]
+[SecureContext,
+ Constructor(DOMString type, PresentationConnectionAvailableEventInit eventInitDict)]
 interface PresentationConnectionAvailableEvent : Event {
     [SameObject]
     readonly attribute PresentationConnection connection;
@@ -59,46 +62,50 @@ enum BinaryType {
     "arraybuffer"
 };
 
+[SecureContext]
 interface PresentationConnection : EventTarget {
-    readonly attribute USVString?                  id;
-    readonly attribute USVString?                  url;
+    readonly attribute USVString                   id;
+    readonly attribute USVString                   url;
     readonly attribute PresentationConnectionState state;
     void close();
     void terminate();
-    attribute EventHandler                onconnect;
-    attribute EventHandler                onclose;
-    attribute EventHandler                onterminate;
+             attribute EventHandler                onconnect;
+             attribute EventHandler                onclose;
+             attribute EventHandler                onterminate;
 
     // Communication
-    attribute BinaryType                  binaryType;
-    attribute EventHandler                onmessage;
+             attribute BinaryType                  binaryType;
+             attribute EventHandler                onmessage;
     void send(DOMString message);
     void send(Blob data);
     void send(ArrayBuffer data);
     void send(ArrayBufferView data);
 };
 
-enum PresentationConnectionClosedReason {
+enum PresentationConnectionCloseReason {
     "error",
     "closed",
     "wentaway"
 };
 
-[Constructor(DOMString type, PresentationConnectionCloseEventInit eventInitDict)]
+[SecureContext,
+ Constructor(DOMString type, PresentationConnectionCloseEventInit eventInitDict)]
 interface PresentationConnectionCloseEvent : Event {
-    readonly attribute PresentationConnectionClosedReason reason;
-    readonly attribute DOMString                          message;
+    readonly attribute PresentationConnectionCloseReason reason;
+    readonly attribute DOMString                         message;
 };
 
 dictionary PresentationConnectionCloseEventInit : EventInit {
-    required PresentationConnectionClosedReason reason;
-    		 DOMString                          message = "";
+    required PresentationConnectionCloseReason reason;
+             DOMString                         message = "";
 };
 
+[SecureContext]
 interface PresentationReceiver {
     readonly attribute Promise<PresentationConnectionList> connectionList;
 };
 
+[SecureContext]
 interface PresentationConnectionList : EventTarget {
     readonly attribute FrozenArray<PresentationConnection> connections;
              attribute EventHandler                        onconnectionavailable;

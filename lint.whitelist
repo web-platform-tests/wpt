@@ -54,7 +54,9 @@ CONSOLE: css-writing-modes-3/tools/generators/unicode-data.js
 
 
 ## Give up on work-in-progress for now
-*: work-in-progress/*
+TRAILING WHITESPACE: work-in-progress/*
+INDENT TABS: work-in-progress/*
+CR AT EOL: work-in-progress/*
 
 
 ## Test plans and implementation reports

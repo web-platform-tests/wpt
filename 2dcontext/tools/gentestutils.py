@@ -36,6 +36,8 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
+from __future__ import print_function
+
 import re
 import codecs
 import time
@@ -334,10 +336,10 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         test = tests[i]
 
         name = test['name']
-        print "\r(%s)" % name, " "*32, "\t",
+        print("\r(%s)" % name, " "*32, "\t")
 
         if name in used_tests:
-            print "Test %s is defined twice" % name
+            print("Test %s is defined twice" % name)
         used_tests[name] = 1
 
         mapped_name = None
@@ -346,7 +348,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                 mapped_name = "%s/%s" % (name_mapping[mn], name)
                 break
         if not mapped_name:
-            print "LIKELY ERROR: %s has no defined target directory mapping" % name
+            print("LIKELY ERROR: %s has no defined target directory mapping" % name)
             if ISOFFSCREENCANVAS:
                 continue
             else:
@@ -363,14 +365,14 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
 
         for ref in test.get('testing', []):
             if ref not in spec_ids:
-                print "Test %s uses nonexistent spec point %s" % (name, ref)
+                print("Test %s uses nonexistent spec point %s" % (name, ref))
             spec_refs.setdefault(ref, []).append(name)
         #if not (len(test.get('testing', [])) or 'mozilla' in test):
         if not test.get('testing', []):
-            print "Test %s doesn't refer to any spec points" % name
+            print("Test %s doesn't refer to any spec points" % name)
 
         if test.get('expected', '') == 'green' and re.search(r'@assert pixel .* 0,0,0,0;', test['code']):
-            print "Probable incorrect pixel test in %s" % name
+            print("Probable incorrect pixel test in %s" % name)
 
         code = expand_test_code(test['code'])
 
@@ -402,7 +404,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                     mochi_setup += templates['mochitest.%s' % f]
         else:
             if not W3CMODE:
-                print "Skipping mochitest for %s" % name
+                print("Skipping mochitest for %s" % name)
             mochi_name = ''
             mochi_desc = ''
             mochi_code = ''
@@ -420,7 +422,8 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                 expected_img = make_flat_image('clear-100x50.png', 100, 50, 0,0,0,0)
                 if W3CMODE: expected_img = "/images/" + expected_img
             else:
-                if ';' in expected: print "Found semicolon in %s" % name
+                if ';' in expected:
+                    print("Found semicolon in %s" % name)
                 expected = re.sub(r'^size (\d+) (\d+)',
                     r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)\ncr = cairo.Context(surface)',
                                   expected)
@@ -533,7 +536,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
             shutil.copyfile("../../images/%s" % i, "%s/mochitests/image_%s" % (MISCOUTPUTDIR, i))
         write_mochitest_makefile()
 
-    print
+    print()
 
     def write_index():
         f = open('%s/index.html' % TESTOUTPUTDIR, 'w')
@@ -575,7 +578,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         f.write(templates['results'])
 
         if not os.path.exists('results.yaml'):
-            print "Can't find results.yaml"
+            print("Can't find results.yaml")
         else:
             for resultset in yaml.load(open('results.yaml', "r").read()):
                 #title = "%s (%s)" % (resultset['ua'], resultset['time'])
@@ -588,7 +591,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                     assert uastrings[title] == resultset['ua']
                 for r in resultset['results']:
                     if r['id'] not in results:
-                        print 'Skipping results for removed test %s' % r['id']
+                        print('Skipping results for removed test %s' % r['id'])
                         continue
                     results[r['id']][title] = (
                             r['status'].lower(),
@@ -687,7 +690,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         for a in spec_assertions:
             # Warn about problems
             if a['id'] not in spec_refs:
-                print "Unused spec statement %s" % a['id']
+                print("Unused spec statement %s" % a['id'])
 
             pattern_text = a['text']
 
@@ -752,11 +755,11 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
                             continue # discard this match
 
                     if id in matched_assertions:
-                        print "Spec statement %s matches multiple places" % id
+                        print("Spec statement %s matches multiple places" % id)
                     matched_assertions[id] = True
 
                     if m.lastindex != 1:
-                        print "Spec statement %s has incorrect number of match groups" % id
+                        print("Spec statement %s has incorrect number of match groups" % id)
 
                     end = m.end(1)
                     end_node = None
@@ -797,7 +800,7 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
 
         for s in spec_assertions:
             if s['id'] not in matched_assertions:
-                print "Annotation incomplete: Unmatched spec statement %s" % s['id']
+                print("Annotation incomplete: Unmatched spec statement %s" % s['id'])
 
         # Convert from XHTML back to HTML
         doc.documentElement.removeAttribute('xmlns')

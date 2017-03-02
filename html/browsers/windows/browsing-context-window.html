@@ -15,17 +15,12 @@
      * Test for creating a new browsing context, [Browsing Contexts](#windows).
      * This test is separate from the rest of the browsing-content-creation tests
      * because the `iframe` has a src and thus its document won't be `about:blank`.
-     *
-     * Call the JavaScript InitializeHostDefinedRealm() abstract operation with
-     * the following customizations:
-     *   - For the global object, create a new Window object window.
-     *   - For the global this value, use browsingContext's WindowProxy object.
      */
     var doc, iframe;
 
     setup(function () {
       iframe = document.createElement("iframe");
-      iframe.src = get_host_info().HTTP_REMOTE_ORIGIN + "/html/browsers/windows/support-browsing-context-created--window.html";
+      iframe.src = get_host_info().HTTP_REMOTE_ORIGIN + "/html/browsers/windows/resources/browsing-context-window.html";
       document.body.appendChild(iframe);
       doc = iframe.contentDocument;
     });

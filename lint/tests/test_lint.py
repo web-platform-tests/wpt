@@ -44,12 +44,12 @@ def test_filter_whitelist_errors():
     filtered = filter_whitelist_errors(whitelist, filteredfile, [['CONSOLE', '', filteredfile, 11]])
     assert filtered == [['CONSOLE', '', filteredfile, 11]]
     # Tests for filtering on just file
-    filtered = filter_whitelist_errors(whitelist, filteredfile, [['INDENT TABS', filteredfile, '', 12]])
+    filtered = filter_whitelist_errors(whitelist, filteredfile, [['INDENT TABS', '', filteredfile, 12]])
     assert filtered == []
-    filtered = filter_whitelist_errors(whitelist, filteredfile, [['INDENT TABS', filteredfile, '', 11]])
+    filtered = filter_whitelist_errors(whitelist, filteredfile, [['INDENT TABS', '', filteredfile, 11]])
     assert filtered == []
-    filtered = filter_whitelist_errors(whitelist, unfilteredfile, [['INDENT TABS', unfilteredfile, '', 11]])
-    assert filtered == [['INDENT TABS', unfilteredfile, '', 11]]
+    filtered = filter_whitelist_errors(whitelist, unfilteredfile, [['INDENT TABS', '', unfilteredfile, 11]])
+    assert filtered == [['INDENT TABS', '', unfilteredfile, 11]]
 
 
 def test_parse_whitelist():

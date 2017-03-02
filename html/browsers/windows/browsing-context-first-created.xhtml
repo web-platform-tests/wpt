@@ -11,42 +11,85 @@
     <script>
     <![CDATA[
 
+    /**
+     * Tests for creating a new browsing context, [Browsing Contexts](#windows)
+     */
     var doc, iframe;
 
     setup(function () {
+      /**
+       * Create new browsing context by creating and appending an empty iframe
+       * This browsing context will see the current browsing context
+       * as its creator browsing context
+       */
       iframe = document.createElement("iframe");
       document.body.appendChild(iframe);
       doc = iframe.contentDocument;
     });
 
+    /**
+     * For a new browsing context:
+     * > 4. Let document be a new Document, marked as an HTML document in quirks
+     * > mode, whose content type is "text/html", and which is both ready for
+     * > post-load tasks and completely loaded immediately.
+     *
+     */
     test(function () {
-      assert_equals(iframe.contentWindow.history.length, 1, "The history.length should be 1.");
-    }, "Check the history.length of the first created browsing context");
-
-    test(function () {
+      // Quirks mode
+      assert_equals(doc.compatMode, "BackCompat", "The compatMode of a document without a document type declaration should be 'BackCompat'.");
+      // Content type
+      assert_equals(doc.contentType, "text/html", "The document should be an HTML document.");
+      // Completely loaded immediately/ready for post-load tasks
+      assert_equals(doc.readyState, "complete", "The readyState attribute should be 'complete'.");
+      // Orthogonal: document metadata for newly-created doc
       assert_equals(doc.documentURI, "about:blank", "The document's address should be 'about:blank'.");
       assert_equals(doc.URL, "about:blank", "The document's address should be 'about:blank'.");
-      assert_equals(doc.contentType, "text/html", "The document should be an HTML document.");
       assert_equals(doc.doctype, null, "The docType of a document without a document type declaration should be null.");
-      assert_equals(doc.compatMode, "BackCompat", "The compatMode of a document without a document type declaration should be 'BackCompat'.");
       assert_equals(doc.characterSet, "UTF-8", "The document's encoding should be 'UTF-8'.");
-      assert_equals(iframe.contentWindow.parent.document, document);
-      assert_equals(doc.referrer, document.URL, "The document's referrer should be its creator document's address.");
-    }, "Check the document's meta data");
+    }, "Check that browsing context has new, ready HTML document");
 
+    /**
+     * > 5. Ensure that document has a single child html node, which itself
+     * > has two empty child nodes: a head element, and a body element.
+     * Also tests indirectly:
+     * > 6. Set window's associated Document to document.
+     */
     test(function () {
-      assert_equals(doc.readyState, "complete", "The readyState attribute should be 'complete'.");
-    }, "Check the document's status");
-
-    test(function () {
+      // Single, HTML child element
       assert_equals(doc.childNodes.length, 1, "The document must have only one child.");
       assert_equals(doc.documentElement.tagName, "HTML");
+
+      // HTML -> 2 child nodes; head and body, each empty
       assert_equals(doc.documentElement.childNodes.length, 2, "The HTML element should have 2 children.");
       assert_equals(doc.documentElement.childNodes[0].tagName, "HEAD", "The first child of HTML element should be a HEAD element.");
       assert_false(doc.documentElement.childNodes[0].hasChildNodes(), "The HEAD element should not have children.");
       assert_equals(doc.documentElement.childNodes[1].tagName, "BODY", "The second child of HTML element should be a BODY element.");
       assert_false(doc.documentElement.childNodes[1].hasChildNodes(), "The BODY element should not have children.");
-    }, "Check the document's content");
+    }, "Check that new document nodes extant, empty");
+
+    /**
+     * > 8. Set the origin of document:
+     * >   If browsingContext has a creator browsing context, then the origin of document is the creator origin.
+     * >   Otherwise, the origin of document is a unique opaque origin.
+     * > 9. If browsingContext has a creator browsing context, then set
+     *      document's referrer to the serialization of creator URL.
+     */
+    test(function () {
+      // If browsingContext has a creator browsing context, then the origin of document is the creator origin.
+      assert_equals(doc.origin, document.origin, "The document's origin should be its creator document's origin");
+      // If browsingContext has a creator browsing context, then set document's referrer to the serialization of creator URL.
+      assert_equals(doc.referrer, document.URL, "The document's referrer should be its creator document's address.");
+      // The current browsing context is the creator browsing context and a parent
+      // to the created browsing context
+      assert_equals(iframe.contentWindow.parent.document, document);
+    }, "Check the document properties corresponding to the creator browsing context");
+
+    /**
+     * > 14. Add document to browsingContext's session history.
+     */
+    test(function () {
+      assert_equals(iframe.contentWindow.history.length, 1, "The history.length should be 1.");
+    }, "Check the history.length of the created browsing context");
 
     ]]>
     </script>

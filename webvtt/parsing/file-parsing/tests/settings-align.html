@@ -44,13 +44,11 @@ assert_equals(cues.length, 13);
     assert_equals(cues[index].align, valid, 'Failed with cue ' + index);
 });
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

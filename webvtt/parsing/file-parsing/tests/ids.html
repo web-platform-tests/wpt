@@ -31,13 +31,11 @@ assert_equals(cues[2].id, "-- >");
 assert_equals(cues[3].id, "->");
 assert_equals(cues[4].id, " ");
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

@@ -38,13 +38,11 @@ assert_equals(region1.lines, 3);
 var region4 = cues[3].region;
 assert_equals(region1.lines, 4);
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

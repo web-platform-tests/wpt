@@ -83,13 +83,11 @@ assert_equals(cues[index + 6].line, 100);
 assert_false(cues[index + 6].snapToLines);
 assert_equals(cues[index + 6].lineAlign, 'start');
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

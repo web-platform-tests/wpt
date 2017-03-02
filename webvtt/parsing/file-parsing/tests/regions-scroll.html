@@ -41,13 +41,11 @@ var valid_lines = [
     assert_equals(regions[index].scroll, valid, 'Failed with region ' + index);
 });
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

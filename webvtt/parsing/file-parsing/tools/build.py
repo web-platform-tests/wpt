@@ -41,7 +41,6 @@ function trackLoaded(event) {
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>
 """
@@ -69,7 +68,7 @@ def generate_test(test_path, output_dir):
         test_headers = splits[1]
 
     # Split body into js + vtt
-    splits = test_body.split('===\n', 1)
+    splits = test_body.split('\n===\n', 1)
     if len(splits) != 2:
         raise ValueError("Use === to separate the js and vtt parts")
 

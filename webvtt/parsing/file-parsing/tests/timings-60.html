@@ -34,13 +34,11 @@ assert_equals(cues[1].text, 'text2');
 assert_equals(cues[1].startTime, 216000);
 assert_equals(cues[1].endTime, 216001);
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

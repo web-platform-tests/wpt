@@ -32,13 +32,11 @@ Array.from(cues).forEach(function(cue, index) {
     assert_equals(cue.endTime, 1, 'Failed with cue ' + index);
 });
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

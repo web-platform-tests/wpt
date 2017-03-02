@@ -1,11 +1,11 @@
 <!doctype html>
-<title>WebVTT parser test: signature, bom</title>
+<title>WebVTT parser test: signature, no newline</title>
 <link rel="help" href="https://w3c.github.io/webvtt/#webvtt-parser-algorithm">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-var t = async_test('signature, bom');
+var t = async_test('signature, no newline');
 t.step(function(){
     var video = document.createElement('video');
     var track = document.createElement('track');
@@ -26,13 +26,11 @@ function trackLoaded(event) {
     {
 assert_equals(cues.length, 0);
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

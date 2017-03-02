@@ -35,13 +35,11 @@ assert_equals(cues[1].text, 'text2');
 assert_equals(cues[2].id, 'form feed');
 assert_equals(cues[2].text, 'text3');
 
-
     }
     this.done();
 }
 
 function trackError(e) {
     assert_unreached('got unexpected error event: ' + JSON.stringify(e));
-    this.done();
 }
 </script>

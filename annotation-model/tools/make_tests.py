@@ -66,7 +66,7 @@ for curdir, subdirList, fileList in os.walk(TESTTREE, topdown=True):
     try:
       testJSON = json.load(open(theFile, "r"))
     except ValueError as e:
-      print "parse of " + theFile + " failed: " + e[0]
+      print("parse of " + theFile + " failed: " + e[0])
     else:
       try:
         testType = testJSON['testType']

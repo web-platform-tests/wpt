@@ -161,7 +161,7 @@ def assert_valid_spec_json(spec_json):
 def main():
     spec_json = load_spec_json();
     assert_valid_spec_json(spec_json)
-    print "Spec JSON is valid."
+    print("Spec JSON is valid.")
 
 
 if __name__ == '__main__':

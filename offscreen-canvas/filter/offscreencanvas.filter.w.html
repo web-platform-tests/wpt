@@ -1,81 +1,104 @@
-<!DOCTYPE html>
-<link rel=match href=offscreencanvas.filter-ref.html>
-<canvas id='output0' width='100' height='100'></canvas>
-<canvas id='output1' width='100' height='100'></canvas>
-<canvas id='output2' width='100' height='100'></canvas>
-<canvas id='output3' width='100' height='100'></canvas>
-<canvas id='output4' width='100' height='100'></canvas>
-<canvas id='output5' width='100' height='100'></canvas>
-<canvas id='output6' width='100' height='100'></canvas>
-<canvas id='output7' width='100' height='100'></canvas>
-<canvas id='output8' width='100' height='100'></canvas>
-<canvas id='output9' width='100' height='100'></canvas>
-<canvas id='output10' width='100' height='100'></canvas>
-<canvas id='output11' width='100' height='100'></canvas>
-
+<script src="../../resources/testharness.js"></script>
+<script src="offscreencanvas.filter.js"></script>
 <script id='myWorker' type='text/worker'>
 self.onmessage = function(e) {
-
-  var paint = function(filter) {
-    var aCanvas = new OffscreenCanvas(100, 100);
-    var ctx = aCanvas.getContext('2d');
-    ctx.filter = filter;
-    ctx.drawImage(e.data, 5, 5);
-    ctx.drawImage(e.data, 35, 35);
-    ctx.drawImage(e.data, 65, 65);
-    return aCanvas;
+  var getOffscreenCanvasForFilter = function(filter, pattern) {
+    var oc = new OffscreenCanvas(80, 80);
+    var offCtx = oc.getContext('2d');
+    offCtx.filter = filter;
+    offCtx.drawImage(pattern, 5, 5);
+    offCtx.drawImage(pattern, 25, 25);
+    offCtx.drawImage(pattern, 45, 45);
+    return oc;
   };
 
-  var canvas = [];
+  var oc = getOffscreenCanvasForFilter(e.data.filter, e.data.patternImage);
+  var imageBitmap = oc.transferToImageBitmap();
 
-
-  canvas[0] = paint("none");
-  canvas[1] = paint("blur(10px)");
-  canvas[2] = paint("brightness(40%)");
-  canvas[3] = paint("contrast(20%)");
-  canvas[4] = paint("drop-shadow(0 0 5px green)");
-  canvas[5] = paint("grayscale(100%)");
-  canvas[6] = paint("invert(100%)");
-  canvas[7] = paint("opacity(50%)");
-  canvas[8] = paint("saturate(20%)");
-  canvas[9] = paint("sepia(100%)");
-  canvas[10] = paint("sepia(1) hue-rotate(200deg)");
-  canvas[11] = paint("url(#url)");
-
-  var ret = [];
-  for (var i = 0; i < canvas.length; ++i) {
-    var img = canvas[i].transferToImageBitmap();
-    ret.push(img);
-  }
-
-  self.postMessage(ret, ret);
+  self.postMessage({ filter: e.data.filter,
+                     imageBitmap: imageBitmap },
+                   [ imageBitmap ]);
 };
 </script>
 
 <script>
 var patternCanvas = document.createElement('canvas');
-patternCanvas.width = 30;
-patternCanvas.height = 30;
+patternCanvas.width = 20;
+patternCanvas.height = 20;
 var patternCtx = patternCanvas.getContext('2d');
 patternCtx.fillStyle = '#A00';
-patternCtx.fillRect(0, 0, 15, 15);
+patternCtx.fillRect(0, 0, 10, 10);
 patternCtx.fillStyle = '#0A0';
-patternCtx.fillRect(15, 0, 15, 15);
+patternCtx.fillRect(10, 0, 10, 10);
 patternCtx.fillStyle = '#00A';
-patternCtx.fillRect(0, 15, 15, 15);
+patternCtx.fillRect(0, 10, 10, 10);
 patternCtx.fillStyle = "#AA0";
-patternCtx.fillRect(15, 15, 15, 15);
-createImageBitmap(patternCanvas).then(consumeImageBitmap);
+patternCtx.fillRect(10, 10, 10, 10);
 
-function consumeImageBitmap(patternImage) {
-  var blob = new Blob([document.getElementById('myWorker').textContent]);
-  var worker = new Worker(URL.createObjectURL(blob));
-  worker.addEventListener('message', msg => {
-    for (var i = 0; i < msg.data.length; ++i) {
-      var outputCtx = document.getElementById('output' + i).getContext('bitmaprenderer');
-      outputCtx.transferFromImageBitmap(msg.data[i]);
-    }
-  });
-  worker.postMessage(patternImage, [patternImage]);
+var blob = new Blob([document.getElementById('myWorker').textContent]);
+var worker = new Worker(URL.createObjectURL(blob));
+var filters =    [ "none",       //    ];//            ,        
+      "blur(10px)"                 ,  
+      "brightness(40%)"            , 
+      "contrast(20%)"              ,  
+      "drop-shadow(0 0 5px green)" ,
+      "grayscale(100%)"            ,
+      "invert(100%)"               ,  
+      "opacity(50%)"               ,    
+      "saturate(20%)"              ,     
+      "sepia(100%)"                , 
+      "sepia(1) hue-rotate(200deg)",  
+      "url(#url)"                  ];
+
+var dictCanvasImageData = [];
+
+
+for (var j = 0; j < filters.length; j++) {
+    var ctx = getRegularContextForFilter(filters[j], patternCanvas);
+    var ctxImageData = ctx.getImageData(0, 0, 80, 80).data;
+    dictCanvasImageData[filters[j]] = ctxImageData;
 }
+
+var i = 0;
+for (var k = 0; k < filters.length; k++) {
+    createImageBitmap(patternCanvas).then(
+          function(img) {
+            console.log(i);
+            console.log(filters[i]);
+            consumeImageBitmap(filters[i], img);
+            i++;
+          }
+    );
+}
+
+function compare_approx_imagedata_equals(ctxImageData, offImageData, epsilon, description) {
+  assert_true(ctxImageData.length === offImageData.length);
+  for (var i = 0; i < offImageData.length; i++) {
+    assert_approx_equals(offImageData[i], ctxImageData[i], epsilon, description);
+  }
+}
+
+function consumeImageBitmap(filter, patternImage) {
+//    async_test(function(t) {
+      worker.addEventListener('message', msg => {
+        if (msg.data.filter == filter) {
+          var temp1Canvas = document.createElement("canvas");
+          temp1Canvas.getContext("bitmaprenderer").transferFromImageBitmap(msg.data.imageBitmap);
+          var tempCanvas = document.createElement("canvas");
+          tempCanvas.width = tempCanvas.height = 80;
+          tempCanvas.getContext("2d").drawImage(temp1Canvas, 0, 0, 80, 80);
+          document.body.appendChild(tempCanvas);
+          var tempImageData = tempCanvas.getContext("2d").getImageData(0, 0, 80, 80).data;
+          //compare_approx_imagedata_equals(tempImageData, dictCanvasImageData[filter], 100, "image data array for " + filter);
+//          t.done();
+        }
+      });
+
+      worker.postMessage({ patternImage: patternImage,
+                           filter: filter },
+                         [patternImage]);
+//    });
+}
+
 </script>
+<body></body>

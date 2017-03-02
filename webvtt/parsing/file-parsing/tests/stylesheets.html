@@ -1,16 +1,16 @@
 <!doctype html>
-<title>WebVTT parser test: stylesheets</title>
+<title>WebVTT parser test: stylesheets, rules</title>
 <link rel="help" href="https://w3c.github.io/webvtt/#collect-a-webvtt-block">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id=log></div>
 <script>
-var t = async_test('stylesheets');
+var t = async_test('stylesheets, rules');
 t.step(function(){
     var video = document.createElement('video');
     var track = document.createElement('track');
     assert_true('src' in track, 'track element not supported');
-    track.src = 'support/stylesheets-none.vtt';
+    track.src = 'support/stylesheets.vtt';
     track['default'] = true;
     track.kind = 'subtitles';
     track.onload = this.step_func(trackLoaded);
@@ -24,6 +24,7 @@ function trackLoaded(event) {
     var video = track.parentNode;
     var cues = video.textTracks[0].cues;
     {
+// There's no way to test the actual style from js
 assert_equals(document.styleSheets.length, 0);
 
     }

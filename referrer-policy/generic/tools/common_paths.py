@@ -41,7 +41,7 @@ def load_spec_json():
     with open(spec_filename, "r") as f:
         try:
           spec_json = json.load(f)
-        except ValueError, ex:
+        except ValueError as ex:
           print(ex.message)
           match = re_error_location.search(ex.message)
           if match:

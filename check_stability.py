@@ -749,7 +749,7 @@ def main():
 
         try:
             version = browser.version(args.root)
-        except Exception, e:
+        except Exception as e:
             version = "unknown (error: %s)" % e
         logger.info("Using browser at version %s", version)
 

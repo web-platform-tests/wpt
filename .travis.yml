@@ -25,7 +25,7 @@ matrix:
     - os: linux
       python: "3.6"
       env:
-        - SCRIPT=ci_lint.sh
+        - SCRIPT=ci_lint_3.sh
     - os: linux
       python: "2.7"
       env:

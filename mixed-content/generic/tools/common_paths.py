@@ -51,7 +51,7 @@ def load_spec_json(path_to_spec = None):
     with open(path_to_spec, "r") as f:
         try:
           return json.load(f)
-        except ValueError, ex:
+        except ValueError as ex:
           print(ex.message)
           match = re_error_location.search(ex.message)
           if match:

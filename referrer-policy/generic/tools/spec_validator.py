@@ -152,7 +152,7 @@ def assert_valid_spec_json(spec_json):
     error_details = {}
     try:
         validate(spec_json, error_details)
-    except AssertionError, err:
+    except AssertionError as err:
         print('ERROR:', err.message)
         print(json.dumps(error_details, indent=4))
         sys.exit(1)

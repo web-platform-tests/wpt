@@ -263,6 +263,138 @@ def test_lint_passing_and_failing(capsys):
     assert err == ""
 
 
+def test_check_css_globally_unique_identical_test(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/match/a.html", "css-unique/a.html"], False, True)
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == ""
+
+
+def test_check_css_globally_unique_different_test(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/not-match/a.html", "css-unique/a.html"], False, True)
+            assert rv == 2
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert "CSS-COLLIDING-TEST-NAME" in out
+    assert err == ""
+
+
+def test_check_css_globally_unique_different_spec_test(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/selectors/a.html", "css-unique/a.html"], False, True)
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == ""
+
+
+def test_check_css_globally_unique_support_ignored(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/support/a.html", "css-unique/support/tools/a.html"], False, True)
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == ""
+
+
+def test_check_css_globally_unique_support_identical(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/support/a.html", "css-unique/match/support/a.html"], False, True)
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == ""
+
+
+def test_check_css_globally_unique_support_different(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/not-match/support/a.html", "css-unique/support/a.html"], False, True)
+            assert rv == 2
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert "CSS-COLLIDING-SUPPORT-NAME" in out
+    assert err == ""
+
+
+def test_check_css_globally_unique_test_support(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/support/a.html", "css-unique/a.html"], False, True)
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == ""
+
+
+def test_check_css_globally_unique_ref_identical(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/a-ref.html", "css-unique/match/a-ref.html"], False, True)
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == ""
+
+
+def test_check_css_globally_unique_ref_different(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/not-match/a-ref.html", "css-unique/a-ref.html"], False, True)
+            assert rv == 2
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert "CSS-COLLIDING-REF-NAME" in out
+    assert err == ""
+
+
+def test_check_css_globally_unique_test_ref(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/a-ref.html", "css-unique/a.html"], False, True)
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == ""
+
+
+def test_check_css_globally_unique_ignored(capsys):
+    with _mock_lint("check_path") as mocked_check_path:
+        with _mock_lint("check_file_contents") as mocked_check_file_contents:
+            rv = lint(_dummy_repo, ["css-unique/tools/a.html", "css-unique/not-match/tools/a.html"], False, True)
+            assert rv == 0
+            assert mocked_check_path.call_count == 2
+            assert mocked_check_file_contents.call_count == 2
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert err == ""
+
+
 def test_all_filesystem_paths():
     with mock.patch(
             'os.walk',

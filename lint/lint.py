@@ -3,6 +3,7 @@ from __future__ import print_function, unicode_literals
 import abc
 import argparse
 import ast
+import itertools
 import json
 import os
 import re
@@ -46,6 +47,45 @@ def all_filesystem_paths(repo_root):
                        path_filter(os.path.relpath(os.path.join(dirpath, item) + "/",
                                                    repo_root))]
 
+
+def _all_files_equal(paths):
+    """
+    Checks all the paths are files that are byte-for-byte identical
+
+    :param paths: the list of paths to compare
+    :returns: True if they are all identical
+    """
+    paths = list(paths)
+    if len(paths) < 2:
+        return True
+
+    first = paths.pop()
+    size = os.path.getsize(first)
+    if any(os.path.getsize(path) != size for path in paths):
+        return False
+
+    # Chunk this to avoid eating up memory and file descriptors
+    bufsize = 4096*4  # 16KB, a "reasonable" number of disk sectors
+    groupsize = 8  # Hypothesised to be large enough in the common case that everything fits in one group
+    with open(first, "rb") as first_f:
+        for start in range(0, len(paths), groupsize):
+            path_group = paths[start:start+groupsize]
+            first_f.seek(0)
+            try:
+                files = [open(x, "rb") for x in path_group]
+                for _ in range(0, size, bufsize):
+                    a = first_f.read(bufsize)
+                    for f in files:
+                        b = f.read(bufsize)
+                        if a != b:
+                            return False
+            finally:
+                for f in files:
+                    f.close()
+
+    return True
+
+
 def check_path_length(repo_root, path, css_mode):
     if len(path) + 1 > 150:
         return [("PATH LENGTH", "/%s longer than maximum path length (%d > 150)" % (path, len(path) + 1), path, None)]
@@ -63,6 +103,114 @@ def check_worker_collision(repo_root, path, css_mode):
                      path,
                      None)]
     return []
+
+
+drafts_csswg_re = re.compile(r"https?\:\/\/drafts\.csswg\.org\/([^/?#]+)")
+w3c_tr_re = re.compile(r"https?\:\/\/www\.w3c?\.org\/TR\/([^/?#]+)")
+w3c_dev_re = re.compile(r"https?\:\/\/dev\.w3c?\.org\/[^/?#]+\/([^/?#]+)")
+
+
+def check_css_globally_unique(repo_root, paths, css_mode):
+    """
+    Checks that CSS filenames are sufficiently unique
+
+    This groups files by path classifying them as "test", "reference", or
+    "support".
+
+    "test" files must have a unique name across files that share links to the
+    same spec.
+
+    "reference" and "support" files, on the other hand, must have globally
+    unique names.
+
+    :param repo_root: the repository root
+    :param paths: list of all paths
+    :param css_mode: whether we're in CSS testsuite mode
+    :returns: a list of errors found in ``paths``
+
+    """
+    test_files = defaultdict(set)
+    ref_files = defaultdict(set)
+    support_files = defaultdict(set)
+
+    for path in paths:
+        if os.name == "nt":
+            path = path.replace("\\", "/")
+
+        if not css_mode:
+            if not path.startswith("css/"):
+                continue
+
+        # we're within css or in css_mode after all that
+        source_file = SourceFile(repo_root, path, "/")
+        if source_file.name_is_non_test:
+            # If we're name_is_non_test for a reason apart from support, ignore it.
+            # We care about support because of the requirement all support files in css/ to be in
+            # a support directory; see the start of check_parsed.
+            offset = path.find("/support/")
+            if offset == -1:
+                continue
+
+            parts = source_file.dir_path.split(os.path.sep)
+            if parts[0] in source_file.root_dir_non_test:
+                continue
+            elif any(item in source_file.dir_non_test - {"support"} for item in parts):
+                continue
+            else:
+                for non_test_path in source_file.dir_path_non_test:
+                    if parts[:len(path)] == list(non_test_path):
+                        continue
+
+            name = path[offset+1:]
+            support_files[name].add(path)
+        elif source_file.name_is_reference:
+            ref_files[source_file.name].add(path)
+        else:
+            test_files[source_file.name].add(path)
+
+    errors = []
+
+    for name, colliding in iteritems(test_files):
+        if len(colliding) > 1:
+            if not _all_files_equal([os.path.join(repo_root, x) for x in colliding]):
+                # Only compute by_spec if there are prima-facie collisions because of cost
+                by_spec = defaultdict(set)
+                for path in colliding:
+                    source_file = SourceFile(repo_root, path, "/")
+                    for link in source_file.spec_links:
+                        for r in (drafts_csswg_re, w3c_tr_re, w3c_dev_re):
+                            m = r.match(link)
+                            if m:
+                                spec = m.group(1)
+                                break
+                        else:
+                            continue
+                        by_spec[spec].add(path)
+
+                for spec, paths in iteritems(by_spec):
+                    if not _all_files_equal([os.path.join(repo_root, x) for x in paths]):
+                        for x in paths:
+                            errors.append(("CSS-COLLIDING-TEST-NAME",
+                                           "The filename %s in the %s testsuite is shared by: %s"
+                                           % (name,
+                                              spec,
+                                              ", ".join(sorted(paths))),
+                                           x,
+                                           None))
+
+    for error_name, d in [("CSS-COLLIDING-REF-NAME", ref_files),
+                          ("CSS-COLLIDING-SUPPORT-NAME", support_files)]:
+        for name, colliding in iteritems(d):
+            if len(colliding) > 1:
+                if not _all_files_equal([os.path.join(repo_root, x) for x in colliding]):
+                    for x in colliding:
+                        errors.append((error_name,
+                                       "The filename %s is shared by: %s" % (name,
+                                                                             ", ".join(sorted(colliding))),
+                                       x,
+                                       None))
+
+    return errors
 
 
 def parse_whitelist(f):
@@ -423,6 +571,22 @@ def check_path(repo_root, path, css_mode):
     return errors
 
 
+def check_all_paths(repo_root, paths, css_mode):
+    """
+    Runs lints that check all paths globally.
+
+    :param repo_root: the repository root
+    :param paths: a list of all the paths within the repository
+    :param css_mode: whether we're in CSS testsuite mode
+    :returns: a list of errors found in ``f``
+    """
+
+    errors = []
+    for paths_fn in all_paths_lints:
+        errors.extend(paths_fn(repo_root, paths, css_mode))
+    return errors
+
+
 def check_file_contents(repo_root, path, f, css_mode):
     """
     Runs lints that check the file contents.
@@ -476,7 +640,7 @@ def parse_args():
 
 def main(force_css_mode=False):
     args = parse_args()
-    paths = args.paths if args.paths else all_filesystem_paths(repo_root)
+    paths = list(args.paths if args.paths else all_filesystem_paths(repo_root))
     return lint(repo_root, paths, args.json, force_css_mode or args.css_mode)
 
 def lint(repo_root, paths, output_json, css_mode):
@@ -529,6 +693,9 @@ def lint(repo_root, paths, output_json, css_mode):
                 errors = check_file_contents(repo_root, path, f, css_mode)
                 last = process_errors(errors) or last
 
+    errors = check_all_paths(repo_root, paths, css_mode)
+    last = process_errors(errors) or last
+
     if not output_json:
         output_error_count(error_count)
         if error_count:
@@ -536,6 +703,7 @@ def lint(repo_root, paths, output_json, css_mode):
     return sum(itervalues(error_count))
 
 path_lints = [check_path_length, check_worker_collision]
+all_paths_lints = [check_css_globally_unique]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata]
 
 if __name__ == "__main__":

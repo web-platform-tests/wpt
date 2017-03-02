@@ -27,10 +27,10 @@ function trackLoaded(event) {
 assert_equals(cues.length, 9);
 
 var fooRegion = cues[0].region;
-assert_true(!!fooRegion, 'Cue 1 has invalid region');
+assert_true(!!fooRegion, 'Cue 0 has invalid region');
 
 var barRegion = cues[1].region;
-assert_true(!!barRegion, 'Cue 2 has invalid region');
+assert_true(!!barRegion, 'Cue 1 has invalid region');
 
 assert_not_equals(fooRegion, barRegion);
 

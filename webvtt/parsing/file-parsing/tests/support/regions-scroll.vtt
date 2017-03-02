@@ -1,31 +1,34 @@
 WEBVTT
 
 REGION
-id:1
+id:0
 
 REGION
-id:2
+id:1
 scroll:up
 
 REGION
-id:3
+id:2
 scroll:up scroll:up scroll:up scroll:up scroll:up scroll:up scroll:up scroll:up
 scroll:up scroll:up scroll:up scroll:up scroll:up scroll:up scroll:up scroll:up
 
 REGION
-id:4
+id:3
 scroll:down
 scroll:left
 scroll:right
 
 REGION
-id:5
+id:4
 scroll: up
 scroll :up
 
 REGION
-id:6
+id:5
 scroll:up scroll:
+
+00:00:00.000 --> 00:00:01.000 region:0
+text
 
 00:00:00.000 --> 00:00:01.000 region:1
 text
@@ -40,7 +43,4 @@ text
 text
 
 00:00:00.000 --> 00:00:01.000 region:5
-text
-
-00:00:00.000 --> 00:00:01.000 region:6
 text

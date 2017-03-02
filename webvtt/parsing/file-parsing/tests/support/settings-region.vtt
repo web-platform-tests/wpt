@@ -13,29 +13,28 @@ REGION
 width:10%
 
 00:00:00.000 --> 00:00:01.000 region:foo
-text1
+text0
 
 00:00:00.000 --> 00:00:01.000 region:bar
-text2
+text1
 
 00:00:00.000 --> 00:00:01.000 region:foo region:bar
-text3
+text2
 
 00:00:00.000 --> 00:00:01.000 region:invalid
-text4
+text3
 
 00:00:00.000 --> 00:00:01.000 region:invalid region:foo
-text5
+text4
 
 00:00:00.000 --> 00:00:01.000 region:
-invalid
+invalid5
 
 00:00:00.000 --> 00:00:01.000 region: 
-invalid
+invalid6
 
 00:00:00.000 --> 00:00:01.000 region: foo
-invalid
+invalid7
 
 00:00:00.000 --> 00:00:01.000 region :foo
-invalid
-
+invalid8

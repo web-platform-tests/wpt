@@ -3,69 +3,69 @@ WEBVTT
 NOTE valid
 
 00:00:00.000 --> 00:00:01.000 position:1%
-text1
+text0
 
 00:00:00.000 --> 00:00:01.000 position:100%
-text2
+text1
 
 00:00:00.000 --> 00:00:01.000 position:1% position:x
-text3
+text2
 
 00:00:00.000 --> 00:00:01.000 position:1.5%
-text4
+text3
 
 00:00:00.000 --> 00:00:01.000 position:1%,line-left
-text5
+text4
 
 00:00:00.000 --> 00:00:01.000 position:1%,center
-text6
+text5
 
 00:00:00.000 --> 00:00:01.000 position:1%,line-right
-text7
+text6
 
 00:00:00.000 --> 00:00:01.000 position:1%,middle
-text8
+text7
 
 00:00:00.000 --> 00:00:01.000 position:1% ,center
-text9
+text8
 
 00:00:00.000 --> 00:00:01.000 position:1%, center
-text10
+text9
 
 NOTE invalid
 
 00:00:00.000 --> 00:00:01.000 position:-1%
-invalid
+invalid10
 
 00:00:00.000 --> 00:00:01.000 position:1
-invalid
+invalid11
 
 00:00:00.000 --> 00:00:01.000 position:1x
-invalid
+invalid12
 
 00:00:00.000 --> 00:00:01.000 position:1%x
-invalid
+invalid13
 
 00:00:00.000 --> 00:00:01.000 position:
-invalid
+invalid14
 
 00:00:00.000 --> 00:00:01.000 position: 1%
-invalid
+invalid15
 
 00:00:00.000 --> 00:00:01.000 position:101%
-invalid
+invalid16
 
 00:00:00.000 --> 00:00:01.000 position:65536%
-invalid
+invalid17
 
 00:00:00.000 --> 00:00:01.000 position:4294967296%
-invalid
+invalid18
 
 00:00:00.000 --> 00:00:01.000 position:101%,line-left
-invalid
+invalid19
 
 00:00:00.000 --> 00:00:01.000 position:101%,center
-invalid
+invalid20
 
 00:00:00.000 --> 00:00:01.000 position:101%,line-right
-invalid
+invalid21

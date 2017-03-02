@@ -66,113 +66,113 @@ WEBVTT
 NOTE valid
 
 00:00:00.000 --> 00:00:01.000 line:-1
-valid
+valid0
 
 00:00:00.000 --> 00:00:01.000 line:0
-valid
+valid1
 
 00:00:00.000 --> 00:00:01.000 line:-0
-valid
+valid2
 
 00:00:00.000 --> 00:00:01.000 line:1
-valid
+valid3
 
 00:00:00.000 --> 00:00:01.000 line:100
-valid
+valid4
 
 00:00:00.000 --> 00:00:01.000 line:101
-valid
+valid5
 
 00:00:00.000 --> 00:00:01.000 line:65536
-valid
+valid6
 
 00:00:00.000 --> 00:00:01.000 line:4294967296
-valid
+valid7
 
 00:00:00.000 --> 00:00:01.000 line:18446744073709552000
-valid
+valid8
 
 00:00:00.000 --> 00:00:01.000 line:10000000000000000000000000000000000
-valid
+valid9
 
 00:00:00.000 --> 00:00:01.000 line:1.5
-valid
+valid10
 
 NOTE invalid
 
 00:00:00.000 --> 00:00:01.000 line:65536%
-invalid
+invalid11
 
 00:00:00.000 --> 00:00:01.000 line:4294967296%
-invalid
+invalid12
 
 00:00:00.000 --> 00:00:01.000 line:18446744073709552000%
-invalid
+invalid13
 
 00:00:00.000 --> 00:00:01.000 line:10000000000000000000000000000000000%
-invalid
+invalid14
 
 00:00:00.000 --> 00:00:01.000 line:-0%
-invalid
+invalid15
 
 00:00:00.000 --> 00:00:01.000 line:101%
-invalid
+invalid16
 
 00:00:00.000 --> 00:00:01.000 line:1%-
-invalid
+invalid17
 
 00:00:00.000 --> 00:00:01.000 line:1-
-invalid
+invalid18
 
 00:00:00.000 --> 00:00:01.000 line:%1
-invalid
+invalid19
 
 00:00:00.000 --> 00:00:01.000 line:1%%
-invalid
+invalid20
 
 00:00:00.000 --> 00:00:01.000 line:0%0
-invalid
+invalid21
 
 00:00:00.000 --> 00:00:01.000 line: 0%
-invalid
+invalid22
 
 00:00:00.000 --> 00:00:01.000 line:0%x
-invalid
+invalid23
 
 00:00:00.000 --> 00:00:01.000 line:-
-invalid
+invalid24
 
 00:00:00.000 --> 00:00:01.000 line:%
-invalid
+invalid25
 
 00:00:00.000 --> 00:00:01.000 line:1..5
-invalid
+invalid26
 
 00:00:00.000 --> 00:00:01.000 line:.5
-invalid
+invalid27
 
 00:00:00.000 --> 00:00:01.000 line:5.
-invalid
+invalid28
 
 NOTE extra
 
 00:00:00.000 --> 00:00:01.000 line:0%
-text1
+text29
 
 00:00:00.000 --> 00:00:01.000 line:00%
-text2
+text30
 
 00:00:00.000 --> 00:00:01.000 line:100%
-text3
+text31
 
 00:00:00.000 --> 00:00:01.000 line:100%,start
-text4
+text32
 
 00:00:00.000 --> 00:00:01.000 line:100%,center
-text5
+text33
 
 00:00:00.000 --> 00:00:01.000 line:100%,end
-text6
+text34
 
 00:00:00.000 --> 00:00:01.000 line:100%,middle
-text7
+text35

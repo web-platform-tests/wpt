@@ -3,26 +3,26 @@ WEBVTT
 NOTE valid
 
 REGION
-id:1
+id:0
 
 REGION
-id:2
+id:1
 viewportanchor:0%,0%
 
 REGION
-id:3
+id:2
 viewportanchor:1%,1%
 
 REGION
-id:4
+id:3
 viewportanchor:100%,0%
 
 REGION
-id:5
+id:4
 viewportanchor:0%,100%
 
 REGION
-id:6
+id:5
 viewportanchor:100%,100%
 
 NOTE invalid
@@ -32,61 +32,64 @@ id:6
 viewportanchor:0,0
 
 REGION
-id:6
+id:7
 viewportanchor:0%,0
 
 REGION
-id:6
+id:8
 viewportanchor:0,0%
 
 REGION
-id:6
+id:9
 viewportanchor:1%
 
 REGION
-id:6
+id:10
 viewportanchor:,1%
 
 REGION
-id:6
+id:11
 viewportanchor:101%,1%
 
 REGION
-id:6
+id:12
 viewportanchor:1%,101%
 
 REGION
-id:6
+id:13
 viewportanchor:-0%,0%
 
 REGION
-id:6
+id:14
 viewportanchor:0%,-0%
 
 REGION
-id:6
+id:15
 viewportanchor:65536%,65536%
 
 REGION
-id:6
+id:16
 viewportanchor:4294967296%,4294967296%
 
 REGION
-id:6
+id:17
 viewportanchor:18446744073709552000%,18446744073709552000%
 
 REGION
-id:6
+id:18
 viewportanchor:10000000000000000000000000000000000%,10000000000000000000000000000000000%
 
 REGION
-id:6
+id:19
 viewportanchor: 100%,100%
 viewportanchor :100%,100%
 viewportanchor:100% ,100%
 viewportanchor:100%, 100%
 viewportanchor:100 %,100%
 viewportanchor:100%,100 %
+
+00:00:00.000 --> 00:00:01.000 region:0
+text
 
 00:00:00.000 --> 00:00:01.000 region:1
 text
@@ -143,7 +146,4 @@ text
 text
 
 00:00:00.000 --> 00:00:01.000 region:19
-text
-
-00:00:00.000 --> 00:00:01.000 region:20
 text

@@ -3,11 +3,11 @@ timings, too long
 
 assert_equals(cues.length, 2);
 
-assert_equals(cues[0].text, 'text1');
+assert_equals(cues[0].text, 'text0');
 assert_equals(cues[0].startTime, 0);
 assert_equals(cues[0].endTime, 1);
 
-assert_equals(cues[1].text, 'text2');
+assert_equals(cues[1].text, 'text1');
 assert_equals(cues[1].startTime, 0);
 assert_equals(cues[1].endTime, 1);
 
@@ -15,7 +15,7 @@ assert_equals(cues[1].endTime, 1);
 WEBVTT
 
 000:00:00.000 --> 00:00:01.000
-text1
+text0
 
 00::00:00.000 --> 00:00:01.000
 invalid
@@ -57,4 +57,4 @@ invalid
 invalid
 
 00:00:00.000 --> 000:00:01.000
-text2
+text1

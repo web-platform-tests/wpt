@@ -9,6 +9,9 @@ TEST_OUTPUT_PATH = "tests"
 
 TEMPLATE = """\
 <!doctype html>
+<!-- DO NOT EDIT! This file and %vtt_file_rel_path are generated. -->
+<!-- See /webvtt/parsing/file-parsing/README.md -->
+<meta charset=utf-8>
 <title>WebVTT parser test: %test_name</title>
 %test_headers
 <script src="/resources/testharness.js"></script>

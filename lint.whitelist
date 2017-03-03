@@ -107,6 +107,7 @@ PRINT STATEMENT:encrypted-media/polyfill/make-polyfill-tests.py
 W3C-TEST.ORG:subresource-integrity/refresh-header.js.headers
 
 # semi-legitimate use of console.*
+CONSOLE:console/*
 CONSOLE:streams/resources/test-utils.js
 CONSOLE:service-workers/service-worker/resources/navigation-redirect-other-origin.html
 CONSOLE:service-workers/service-worker/navigation-redirect.https.html

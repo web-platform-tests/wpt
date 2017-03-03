@@ -33,16 +33,16 @@ var createPatternCanvas = function() {
 };
 
 var filters =    [ "none"          ,
-      "blur(10px)"                 ,  
-      "brightness(40%)"            , 
-      "contrast(20%)"              ,  
+      "blur(10px)"                 ,
+      "brightness(40%)"            ,
+      "contrast(20%)"              ,
       "drop-shadow(0 0 5px green)" ,
       "grayscale(100%)"            ,
-      "invert(100%)"               ,  
-      "opacity(50%)"               ,    
-      "saturate(20%)"              ,     
-      "sepia(100%)"                , 
-      "sepia(1) hue-rotate(200deg)",  
+      "invert(100%)"               ,
+      "opacity(50%)"               ,
+      "saturate(20%)"              ,
+      "sepia(100%)"                ,
+      "sepia(1) hue-rotate(200deg)",
       "url(#url)"                  ];
 
 

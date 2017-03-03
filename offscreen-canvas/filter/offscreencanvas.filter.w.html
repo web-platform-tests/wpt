@@ -1,4 +1,5 @@
-<script src="../../resources/testharness.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script src="offscreencanvas.filter.js"></script>
 <script id='myWorker' type='text/worker'>
 self.onmessage = function(e) {
@@ -12,93 +13,42 @@ self.onmessage = function(e) {
     return oc;
   };
 
-  var oc = getOffscreenCanvasForFilter(e.data.filter, e.data.patternImage);
-  var imageBitmap = oc.transferToImageBitmap();
-
-  self.postMessage({ filter: e.data.filter,
-                     imageBitmap: imageBitmap },
-                   [ imageBitmap ]);
+  var filters = e.data.filters;
+  var pattern = e.data.pattern;
+  var ret = [];
+  for (var i = 0; i < filters.length; i++) {
+     var oc = getOffscreenCanvasForFilter(filters[i], pattern);
+     var imageBitmap = oc.transferToImageBitmap();
+     ret.push(imageBitmap);
+  }
+  self.postMessage(ret, ret);
 };
 </script>
-
 <script>
-var patternCanvas = document.createElement('canvas');
-patternCanvas.width = 20;
-patternCanvas.height = 20;
-var patternCtx = patternCanvas.getContext('2d');
-patternCtx.fillStyle = '#A00';
-patternCtx.fillRect(0, 0, 10, 10);
-patternCtx.fillStyle = '#0A0';
-patternCtx.fillRect(10, 0, 10, 10);
-patternCtx.fillStyle = '#00A';
-patternCtx.fillRect(0, 10, 10, 10);
-patternCtx.fillStyle = "#AA0";
-patternCtx.fillRect(10, 10, 10, 10);
+var patternCanvas = createPatternCanvas();
 
-var blob = new Blob([document.getElementById('myWorker').textContent]);
-var worker = new Worker(URL.createObjectURL(blob));
-var filters =    [ "none",       //    ];//            ,        
-      "blur(10px)"                 ,  
-      "brightness(40%)"            , 
-      "contrast(20%)"              ,  
-      "drop-shadow(0 0 5px green)" ,
-      "grayscale(100%)"            ,
-      "invert(100%)"               ,  
-      "opacity(50%)"               ,    
-      "saturate(20%)"              ,     
-      "sepia(100%)"                , 
-      "sepia(1) hue-rotate(200deg)",  
-      "url(#url)"                  ];
-
-var dictCanvasImageData = [];
-
-
+// Build a list of image data on regular canvas with different filters
+var listCanvasImageData = [];
 for (var j = 0; j < filters.length; j++) {
-    var ctx = getRegularContextForFilter(filters[j], patternCanvas);
-    var ctxImageData = ctx.getImageData(0, 0, 80, 80).data;
-    dictCanvasImageData[filters[j]] = ctxImageData;
+  var ctx = getRegularContextForFilter(filters[j], patternCanvas);
+  listCanvasImageData.push(ctx.getImageData(0, 0, 80, 80).data);
 }
 
-var i = 0;
-for (var k = 0; k < filters.length; k++) {
-    createImageBitmap(patternCanvas).then(
-          function(img) {
-            console.log(i);
-            console.log(filters[i]);
-            consumeImageBitmap(filters[i], img);
-            i++;
-          }
-    );
+function consumeImageBitmap(patternImage) {
+  async_test(t => {
+    var blob = new Blob([document.getElementById('myWorker').textContent]);
+    var worker = new Worker(URL.createObjectURL(blob));
+    worker.addEventListener('message', msg => {
+      for (var i = 0; i < msg.data.length; ++i) {
+        var outputCtx = document.createElement("canvas").getContext('2d');
+        outputCtx.drawImage(msg.data[i], 0, 0, 80, 80);
+        matchImageDataResults(outputCtx.getImageData(0, 0, 80, 80).data, listCanvasImageData[i], filters[i]);
+      }
+      t.done();
+    });
+  worker.postMessage({filters: filters, pattern: patternImage}, [patternImage]);
+  });
 }
 
-function compare_approx_imagedata_equals(ctxImageData, offImageData, epsilon, description) {
-  assert_true(ctxImageData.length === offImageData.length);
-  for (var i = 0; i < offImageData.length; i++) {
-    assert_approx_equals(offImageData[i], ctxImageData[i], epsilon, description);
-  }
-}
-
-function consumeImageBitmap(filter, patternImage) {
-//    async_test(function(t) {
-      worker.addEventListener('message', msg => {
-        if (msg.data.filter == filter) {
-          var temp1Canvas = document.createElement("canvas");
-          temp1Canvas.getContext("bitmaprenderer").transferFromImageBitmap(msg.data.imageBitmap);
-          var tempCanvas = document.createElement("canvas");
-          tempCanvas.width = tempCanvas.height = 80;
-          tempCanvas.getContext("2d").drawImage(temp1Canvas, 0, 0, 80, 80);
-          document.body.appendChild(tempCanvas);
-          var tempImageData = tempCanvas.getContext("2d").getImageData(0, 0, 80, 80).data;
-          //compare_approx_imagedata_equals(tempImageData, dictCanvasImageData[filter], 100, "image data array for " + filter);
-//          t.done();
-        }
-      });
-
-      worker.postMessage({ patternImage: patternImage,
-                           filter: filter },
-                         [patternImage]);
-//    });
-}
-
+createImageBitmap(patternCanvas).then(consumeImageBitmap);
 </script>
-<body></body>

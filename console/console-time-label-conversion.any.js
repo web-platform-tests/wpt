@@ -26,7 +26,7 @@ test(() => {
 }, "console.timeEnd()'s label gets converted to string via label.toString() when label is an object");
 
 test(() => {
-  assert_throws(null, () => {
+  assert_throws({name: "Error"}, () => {
     console.time({
       toString() {
         throw new Error("conversion error");

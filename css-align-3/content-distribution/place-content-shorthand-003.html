@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>CSS Boc Alignment: place-content shorthand - initial value</title>
+      <link rel="author" title="Igalia" href="http://www.igalia.com" />
+      <link rel="help" href="http://www.w3.org/TR/css3-align/#place-content-property" />
+      <meta name="assert" content="Check that place-content's initial value expands to 'align-content' and 'justify-content'." />
+      <script src="../../resources/testharness.js"></script>
+      <script src="../../resources/testharnessreport.js"></script>
+      <style>
+          #test {
+             align-content: start;
+             justify-content: end;
+          }
+      </style>
+  </head>
+  <body>
+      <div id="log"></div>
+      <div id="test"></div>
+
+      <script>
+          var div = document.getElementById("test");
+          div.setAttribute("style", "place-content: initial")
+          var cs = getComputedStyle(div, null);
+
+          test(function() {
+              assert_equals(cs.getPropertyValue("place-content"),
+                  "normal normal", "place-content computed value");
+          }, "place-content_initial_computed_value");
+
+          test(function() {
+              assert_equals(cs.getPropertyValue("align-content"),
+                  "normal", "place-content specified value for align-content");
+          }, "place-content_initial_align-content");
+
+          test(function() {
+              assert_equals(cs.getPropertyValue("justify-content"),
+                  "normal", "place-content specified value for justify-content");
+          }, "place-content_initial_justify-content");
+    </script>
+  </body>
+</html>

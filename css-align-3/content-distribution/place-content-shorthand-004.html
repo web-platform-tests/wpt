@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>CSS Box Alignment: place-content shorthand - Invalid values</title>
+      <link rel="author" title="Igalia" href="http://www.igalia.com" />
+      <link rel="help" href="http://www.w3.org/TR/css3-align/#place-content-property" />
+      <meta name="flags" content="invalid" />
+      <meta name="assert" content="Check that place-content's invalid values are properly detected at parsing time." />
+      <script src="../../resources/testharness.js"></script>
+      <script src="../../resources/testharnessreport.js"></script>
+      <style>
+          #test {
+             align-content: start;
+             justify-content: end;
+          }
+      </style>
+  </head>
+  <body>
+      <div id="log"></div>
+      <div id="test"></div>
+      <script>
+          function checkInvalidValues(value) {
+              var div = document.getElementById("test");
+              div.setAttribute("style", "place-content: " + value)
+              var cs = getComputedStyle(div, null);
+              assert_equals(cs.getPropertyValue("align-content"),
+                  "start", "align-content computed value");
+              assert_equals(cs.getPropertyValue("justify-content"),
+                  "end", "justify-content computed value");
+          }
+
+          test(function() {
+               checkInvalidValues("center safe")
+          }, "place-content_overflow-keyword_invalid");
+
+          test(function() {
+              checkInvalidValues("center space-between start")
+          }, "place-content_fallback-value_invalid");
+
+          test(function() {
+              checkInvalidValues("10px left")
+          }, "place-content-numeric-invalid");
+
+          test(function() {
+              checkInvalidValues("auto right")
+          }, "place-content-auto-invalid");
+
+          test(function() {
+              checkInvalidValues("")
+          }, "place-content-empty-invalid");
+      </script>
+  </body>
+</html>

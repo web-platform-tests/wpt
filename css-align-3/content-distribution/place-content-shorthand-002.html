@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS Boc Alignment: place-content shorthand - multiple values specified</title>
+    <link rel="author" title="Igalia" href="http://www.igalia.com" />
+    <link rel="help" href="http://www.w3.org/TR/css3-align/#place-content-property" />
+    <meta name="assert" content="Check that setting two values to place-content sets the first one to 'align-content' and the second one to 'justify-content'." />
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/alignment-parsing-utils.js"></script>
+  </head>
+  <body>
+      <div id="log"></div>
+      <script>
+          var values1 = ["normal"].concat(position.slice(1,4), distribution.slice(1,3), baseline.slice(1,2));
+          var values2 = position.slice(4).concat(distribution.slice(3), baseline.slice(2));
+          for (var i = 0; i < values1.length; i++) {
+              for (var j = 0; j < values2.length; j++) {
+                  test(function() { checkPlaceContent(values1[i], values2[j]) },
+                       "place-content: " + values1[i] + " " + values2[j]);
+              };
+          };
+      </script>
+  </body>
+</html>

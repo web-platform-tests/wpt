@@ -1,19 +1,19 @@
-var position = [ "start", "end", "left", "right", "center", "flex-start", "flex-end"];
+var position = [ "start", "end", "self-start", "self-end", "left", "right", "center", "flex-start", "flex-end"];
 var distribution = [ "stretch", "space-around", "space-between", "space-evenly"];
 var baseline = [ "baseline", "last-baseline"];
 
-function checkPlaceContent(alignVal, justifyVal)
+function checkPlaceContent(alignValue, justifyValue)
 {
     var div = document.createElement("div");
-    div.setAttribute("style", "place-content: " + alignVal + " " + justifyVal)
+    div.setAttribute("style", "place-content: " + alignValue + " " + justifyValue)
     document.body.appendChild(div);
-    if (justifyVal.length == 0)
-        justifyVal = alignVal;
-    var cs = getComputedStyle(div, null);
-    assert_equals(cs.getPropertyValue("place-content"),
-                  alignVal + " " + justifyVal, "place-content computed value");
-    assert_equals(cs.getPropertyValue("align-content"),
-                  alignVal, "align-content computed value");
-    assert_equals(cs.getPropertyValue("justify-content"),
-                  justifyVal, "justify-content computed value");
+    if (justifyValue.length == 0)
+        justifyValue = alignValue;
+    var style = getComputedStyle(div);
+    assert_equals(style.getPropertyValue("place-content"),
+                  alignValue + " " + justifyValue, "place-content resolved value");
+    assert_equals(style.getPropertyValue("align-content"),
+                  alignValue, "align-content resolved value");
+    assert_equals(style.getPropertyValue("justify-content"),
+                  justifyValue, "justify-content resolved value");
 }

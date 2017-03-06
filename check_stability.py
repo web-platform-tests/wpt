@@ -541,9 +541,9 @@ def err_string(results_dict, iterations):
     for key, value in sorted(results_dict.items()):
         rv.append("%s%s" %
                   (key, ": %s/%s" % (value, iterations) if value != iterations else ""))
-    rv = ", ".join(rv)
     if total_results < iterations:
         rv.append("MISSING: %s/%s" % (iterations - total_results, iterations))
+    rv = ", ".join(rv)
     if is_inconsistent(results_dict, iterations):
         rv = "**%s**" % rv
     return rv

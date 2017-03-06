@@ -23,13 +23,11 @@ var tests = {
 function messageListener(e) {
   var data = e.data;
   var id = data.id;
-  test(function() {
-    var t = tests[id].test;
-    t.step(function() {
-      assert_equals(data.protocol, tests[id].result, "Protocol should match");
-    })
-    t.done();
-  }, "Message listener: " + id);
+  var t = tests[id].test;
+  t.step(function() {
+    assert_equals(data.protocol, tests[id].result, "Protocol should match");
+  })
+  t.done();
 }
 
 addEventListener("load", wrapper_test.step_func_done(function() {

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+<title>Feature-Policy Payment Disabled</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<script>
+  test(function() {
+    var supportedInstruments = [ { supportedMethods: [ 'visa' ] } ];
+    var details = {
+      total: { label: 'Test', amount: { currency: 'USD', value: '5.00' } }
+    };
+    try {
+      new PaymentRequest(supportedInstruments, details);
+    } catch (e) {
+      assert_unreached('PaymentRequest should be enabled by Feature Policy');
+    }
+  }, 'Any iframe may construct PaymentRequest when enabled by feature policy.');
+</script>

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<head>
+<title>Feature-Policy Vibrate Disabled</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<script>
+  test(function() {
+    assert_false(navigator.vibrate(200));
+  }, 'No iframe may call navigator.vibrate when enabled by feature policy.');
+</script>

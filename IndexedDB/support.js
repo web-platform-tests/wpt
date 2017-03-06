@@ -143,3 +143,21 @@ function expect(t, expected) {
     }
   };
 }
+
+// Checks to see if the passed transaction is active (by making
+// requests against the named store).
+function is_transaction_active(tx, store_name) {
+  try {
+    const request = tx.objectStore(store_name).get(0);
+    request.onerror = e => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    return true;
+  } catch (ex) {
+    assert_equals(ex.name, 'TransactionInactiveError',
+                  'Active check should either not throw anything, or throw ' +
+                  'TransactionInactiveError');
+    return false;
+  }
+}

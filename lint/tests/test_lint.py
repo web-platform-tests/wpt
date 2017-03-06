@@ -21,34 +21,37 @@ def _mock_lint(name, **kwargs):
 
 def test_filter_whitelist_errors():
     whitelist = {
-        'svg/*': {
-            'CONSOLE': {12},
-            'INDENT TABS': {None}
+        'CONSOLE': {
+            'svg/*': {12}
+        },
+        'INDENT TABS': {
+            'svg/*': {None}
         }
     }
     # parse_whitelist normalises the case/path of the match string so need to do the same
-    whitelist = {os.path.normcase(p): e for p, e in whitelist.items()}
+    whitelist = {e: {os.path.normcase(k): v for k, v in p.items()}
+                 for e, p in whitelist.items()}
     # paths passed into filter_whitelist_errors are always Unix style
     filteredfile = 'svg/test.html'
     unfilteredfile = 'html/test.html'
     # Tests for passing no errors
-    filtered = filter_whitelist_errors(whitelist, filteredfile, [])
+    filtered = filter_whitelist_errors(whitelist, [])
     assert filtered == []
-    filtered = filter_whitelist_errors(whitelist, unfilteredfile, [])
+    filtered = filter_whitelist_errors(whitelist, [])
     assert filtered == []
     # Tests for filtering on file and line number
-    filtered = filter_whitelist_errors(whitelist, filteredfile, [['CONSOLE', '', filteredfile, 12]])
+    filtered = filter_whitelist_errors(whitelist, [['CONSOLE', '', filteredfile, 12]])
     assert filtered == []
-    filtered = filter_whitelist_errors(whitelist, unfilteredfile, [['CONSOLE', '', unfilteredfile, 12]])
+    filtered = filter_whitelist_errors(whitelist, [['CONSOLE', '', unfilteredfile, 12]])
     assert filtered == [['CONSOLE', '', unfilteredfile, 12]]
-    filtered = filter_whitelist_errors(whitelist, filteredfile, [['CONSOLE', '', filteredfile, 11]])
+    filtered = filter_whitelist_errors(whitelist, [['CONSOLE', '', filteredfile, 11]])
     assert filtered == [['CONSOLE', '', filteredfile, 11]]
     # Tests for filtering on just file
-    filtered = filter_whitelist_errors(whitelist, filteredfile, [['INDENT TABS', '', filteredfile, 12]])
+    filtered = filter_whitelist_errors(whitelist, [['INDENT TABS', '', filteredfile, 12]])
     assert filtered == []
-    filtered = filter_whitelist_errors(whitelist, filteredfile, [['INDENT TABS', '', filteredfile, 11]])
+    filtered = filter_whitelist_errors(whitelist, [['INDENT TABS', '', filteredfile, 11]])
     assert filtered == []
-    filtered = filter_whitelist_errors(whitelist, unfilteredfile, [['INDENT TABS', '', unfilteredfile, 11]])
+    filtered = filter_whitelist_errors(whitelist, [['INDENT TABS', '', unfilteredfile, 11]])
     assert filtered == [['INDENT TABS', '', unfilteredfile, 11]]
 
 
@@ -71,25 +74,24 @@ CONSOLE:streams/resources/test-utils.js: 12
 """)
 
     expected_data = {
-        '.gitmodules': {
-            'INDENT TABS': {None},
+        'INDENT TABS': {
+            '.gitmodules': {None},
+            'app-uri/*': {None},
+            'svg/*': {None},
         },
-        'app-uri/*': {
-            'TRAILING WHITESPACE': {None},
-            'INDENT TABS': {None},
+        'TRAILING WHITESPACE': {
+            'app-uri/*': {None},
         },
-        'streams/resources/test-utils.js': {
-            'CONSOLE': {12},
-            'CR AT EOL': {None},
+        'CONSOLE': {
+            'streams/resources/test-utils.js': {12},
         },
-        'svg/*': {
-            'INDENT TABS': {None},
-        },
-        'svg/import/*': {
-            'CR AT EOL': {None},
+        'CR AT EOL': {
+            'streams/resources/test-utils.js': {None},
+            'svg/import/*': {None},
         },
     }
-    expected_data = {os.path.normcase(p): e for p, e in expected_data.items()}
+    expected_data = {e: {os.path.normcase(k): v for k, v in p.items()}
+                     for e, p in expected_data.items()}
     expected_ignored = {os.path.normcase(x) for x in {"*.pdf", "resources/*"}}
     data, ignored = parse_whitelist(input_buffer)
     assert data == expected_data

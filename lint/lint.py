@@ -89,12 +89,12 @@ def parse_whitelist(f):
         if error_type == "*":
             ignored_files.add(file_match)
         else:
-            data[file_match][error_type].add(line_number)
+            data[error_type][file_match].add(line_number)
 
     return data, ignored_files
 
 
-def filter_whitelist_errors(data, path, errors):
+def filter_whitelist_errors(data, errors):
     """
     Filter out those errors that are whitelisted in `data`.
     """
@@ -103,14 +103,14 @@ def filter_whitelist_errors(data, path, errors):
         return []
 
     whitelisted = [False for item in range(len(errors))]
-    normpath = os.path.normcase(path)
 
-    for file_match, whitelist_errors in iteritems(data):
-        if fnmatch.fnmatchcase(normpath, file_match):
-            for i, (error_type, msg, path, line) in enumerate(errors):
-                if error_type in whitelist_errors:
-                    allowed_lines = whitelist_errors[error_type]
-                    if None in allowed_lines or line in allowed_lines:
+    for i, (error_type, msg, path, line) in enumerate(errors):
+        normpath = os.path.normcase(path)
+        if error_type in data:
+            wl_files = data[error_type]
+            for file_match, allowed_lines in iteritems(wl_files):
+                if None in allowed_lines or line in allowed_lines:
+                    if fnmatch.fnmatchcase(normpath, file_match):
                         whitelisted[i] = True
 
     return [item for i, item in enumerate(errors) if not whitelisted[i]]
@@ -491,17 +491,16 @@ def lint(repo_root, paths, output_json, css_mode):
     else:
         output_errors = output_errors_text
 
-    def process_errors(path, errors):
+    def process_errors(errors):
         """
         Filters and prints the errors, and updates the ``error_count`` object.
 
-        :param path: the path of the file that contains the errors
         :param errors: a list of error tuples (error type, message, path, line number)
         :returns: ``None`` if there were no errors, or
                   a tuple of the error type and the path otherwise
         """
 
-        errors = filter_whitelist_errors(whitelist, path, errors)
+        errors = filter_whitelist_errors(whitelist, errors)
 
         if not errors:
             return None
@@ -512,21 +511,23 @@ def lint(repo_root, paths, output_json, css_mode):
 
         return (errors[-1][0], path)
 
-    for path in paths:
+    for path in paths[:]:
         abs_path = os.path.join(repo_root, path)
         if not os.path.exists(abs_path):
+            paths.remove(path)
             continue
 
         if any(fnmatch.fnmatch(path, file_match) for file_match in ignored_files):
+            paths.remove(path)
             continue
 
         errors = check_path(repo_root, path, css_mode)
-        last = process_errors(path, errors) or last
+        last = process_errors(errors) or last
 
         if not os.path.isdir(abs_path):
             with open(abs_path, 'rb') as f:
                 errors = check_file_contents(repo_root, path, f, css_mode)
-                last = process_errors(path, errors) or last
+                last = process_errors(errors) or last
 
     if not output_json:
         output_error_count(error_count)

@@ -6,7 +6,7 @@ if (this.document === undefined) {
 const url = "http://{{host}}:{{ports[http][1]}}" + dirname(location.pathname) + RESOURCES_DIR + "top.txt",
       sharedHeaders = "?pipe=header(Access-Control-Expose-Headers,*)|header(Test,X)|header(Set-Cookie,X)|"
 
-promise_test(t => {
+promise_test(() => {
   const headers = "header(Access-Control-Allow-Origin,*)"
   return fetch(url + sharedHeaders + headers).then(resp => {
     assert_equals(resp.status, 200)
@@ -16,7 +16,7 @@ promise_test(t => {
   })
 }, "Basic Access-Control-Expose-Headers: * support")
 
-promise_test(t => {
+promise_test(() => {
   const origin = location.origin, // assuming an ASCII origin
         headers = "header(Access-Control-Allow-Origin," + origin + ")|header(Access-Control-Allow-Credentials,true)"
   return fetch(url + sharedHeaders + headers, { credentials:"include" }).then(resp => {

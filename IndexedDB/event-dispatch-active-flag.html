@@ -14,8 +14,6 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store');
-    let tx_completed = false;
-    tx.oncomplete = () => { tx_completed = true; };
     const release_tx = keep_alive(tx, 'store');
 
     assert_true(is_transaction_active(tx, 'store'),
@@ -38,7 +36,6 @@ indexeddb_test(
         assert_true(saw_handler_promise);
         assert_false(is_transaction_active(tx, 'store'),
                      'Transaction should be inactive in next task');
-        assert_false(tx_completed);
         release_tx();
         t.done();
       }), 0);
@@ -52,8 +49,6 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store');
-    let tx_completed = false;
-    tx.oncomplete = () => { tx_completed = true; };
     const release_tx = keep_alive(tx, 'store');
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
@@ -75,7 +70,6 @@ indexeddb_test(
         assert_true(saw_listener_promise);
         assert_false(is_transaction_active(tx, 'store'),
                      'Transaction should be inactive in next task');
-        assert_false(tx_completed);
         release_tx();
         t.done();
       }), 0);
@@ -89,8 +83,6 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store', 'readwrite');
-    let tx_completed = false;
-    tx.oncomplete = () => { tx_completed = true; };
     const release_tx = keep_alive(tx, 'store');
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
@@ -115,7 +107,6 @@ indexeddb_test(
         assert_true(saw_handler_promise);
         assert_false(is_transaction_active(tx, 'store'),
                      'Transaction should be inactive in next task');
-        assert_false(tx_completed);
         release_tx();
         t.done();
       }), 0);
@@ -129,8 +120,6 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store', 'readwrite');
-    let tx_completed = false;
-    tx.oncomplete = () => { tx_completed = true; };
     const release_tx = keep_alive(tx, 'store');
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
@@ -155,7 +144,6 @@ indexeddb_test(
         assert_true(saw_listener_promise);
         assert_false(is_transaction_active(tx, 'store'),
                      'Transaction should be inactive in next task');
-        assert_false(tx_completed);
         release_tx();
         t.done();
       }), 0);

@@ -42,13 +42,13 @@ document.onmsfullscreenchange = function() {
 
 function fullscreen() {
   var element = document.querySelector('div');
-  if (element.requestFullscreen) {
+  if (typeof element.requestFullscreen !== 'undefined') {
     element.requestFullscreen();
-  } else if (element.webkitRequestFullscreen) {
+  } else if (typeof element.webkitRequestFullscreen !== 'undefined') {
     element.webkitRequestFullscreen();
-  } else if (element.mozRequestFullscreen) {
+  } else if (typeof element.mozRequestFullscreen !== 'undefined') {
     element.mozRequestFullscreen();
-  } else if (element.msRequestFullscreen) {
+  } else if (typeof element.msRequestFullscreen !== 'undefined') {
     element.msRequestFullscreen();
   }
 }

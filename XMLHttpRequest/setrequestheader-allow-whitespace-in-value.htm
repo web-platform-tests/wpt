@@ -15,7 +15,7 @@
           client.open("POST", "resources/inspect-headers.py?filter_name=X-Empty", false)
           client.setRequestHeader('X-Empty', value)
           client.send(null)
-          assert_equals(client.responseText, 'X-Empty: ' + String(value.trim()) + '\n' )
+          assert_equals(client.responseText, 'X-Empty: ' + value.trim() + '\n' )
         }, document.title + " (" + value + ")")
       }
       request(" ")

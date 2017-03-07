@@ -1,19 +1,24 @@
-self.testSettingImmutablePrototype = (prefix, target, originalValue) => {
+self.testSettingImmutablePrototypeToNewValueOnly = (prefix, target, newValue, newValueString) => {
   test(() => {
     assert_throws(new TypeError, () => {
-      Object.setPrototypeOf(target, {});
+      Object.setPrototypeOf(target, newValue);
     });
-  }, `${prefix}: setting the prototype via Object.setPrototypeOf should throw a TypeError`);
+  }, `${prefix}: setting the prototype to ${newValueString} via Object.setPrototypeOf should throw a TypeError`);
 
   test(() => {
     assert_throws(new TypeError, function() {
-      target.__proto__ = {};
+      target.__proto__ = newValue;
     });
-  }, `${prefix}: setting the prototype via __proto__ should throw a TypeError`);
+  }, `${prefix}: setting the prototype to ${newValueString} via __proto__ should throw a TypeError`);
 
   test(() => {
-    assert_false(Reflect.setPrototypeOf(target, {}));
-  }, `${prefix}: setting the prototype via Reflect.setPrototypeOf should return false`);
+    assert_false(Reflect.setPrototypeOf(target, newValue));
+  }, `${prefix}: setting the prototype to ${newValueString} via Reflect.setPrototypeOf should return false`);
+};
+
+self.testSettingImmutablePrototype =
+  (prefix, target, originalValue, newValue = {}, newValueString = "an empty object") => {
+  testSettingImmutablePrototypeToNewValueOnly(prefix, target, newValue, newValueString);
 
   const originalValueString = originalValue === null ? "null" : "its original value";
 

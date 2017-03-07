@@ -16,9 +16,10 @@ setup({ explicit_done: true });
 
 window.onload = () => {
   const targetLocation = frames[0].location;
+  const origProto = Object.getPrototypeOf(targetLocation);
 
   test(() => {
-    assert_not_equals(Object.getPrototypeOf(targetLocation), null);
+    assert_not_equals(origProto, null);
   }, "Same-origin (for now): the prototype is accessible");
 
   document.domain = "{{host}}";
@@ -28,6 +29,10 @@ window.onload = () => {
   }, "Became cross-origin via document.domain: the prototype is now null");
 
   testSettingImmutablePrototype("Became cross-origin via document.domain", targetLocation, null);
+
+  testSettingImmutablePrototypeToNewValueOnly(
+    "Became cross-origin via document.domain", targetLocation, origProto,
+    "the original value from before going cross-origin");
 
   done();
 };

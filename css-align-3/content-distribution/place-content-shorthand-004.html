@@ -17,11 +17,11 @@
 <script>
     function checkInvalidValues(value) {
         var div = document.getElementById("test");
-        div.setAttribute("style", "place-content: " + value)
-        var cs = getComputedStyle(div, null);
-        assert_equals(cs.getPropertyValue("align-content"),
+        div.setAttribute("style", "place-content: " + value);
+        var style = getComputedStyle(div);
+        assert_equals(style.getPropertyValue("align-content"),
             "start", "align-content computed value");
-        assert_equals(cs.getPropertyValue("justify-content"),
+        assert_equals(style.getPropertyValue("justify-content"),
             "end", "justify-content computed value");
     }
 

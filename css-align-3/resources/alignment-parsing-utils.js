@@ -1,13 +1,13 @@
-var position = [ "start", "end", "self-start", "self-end", "left", "right", "center", "flex-start", "flex-end"];
-var distribution = [ "stretch", "space-around", "space-between", "space-evenly"];
-var baseline = [ "baseline", "last-baseline"];
+var contentPositionValues = [ "start", "end", "left", "right", "center", "flex-start", "flex-end"];
+var distributionValues = [ "stretch", "space-around", "space-between", "space-evenly"];
+var baselineValues = [ "baseline", "first baseline", "last baseline"];
 
-function checkPlaceContent(alignValue, justifyValue)
+function checkPlaceContent(alignValue, justifyValue = "")
 {
     var div = document.createElement("div");
-    div.setAttribute("style", "place-content: " + alignValue + " " + justifyValue)
+    div.setAttribute("style", "place-content: " + alignValue + " " + justifyValue);
     document.body.appendChild(div);
-    if (justifyValue.length == 0)
+    if (justifyValue === "")
         justifyValue = alignValue;
     var style = getComputedStyle(div);
     assert_equals(style.getPropertyValue("place-content"),

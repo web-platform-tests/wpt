@@ -2835,7 +2835,7 @@
     - 2d.pattern.incomplete.image
   code: |
     var img = new Image();
-    img.src = '../images/red.png';
+    img.src = '/images/red.png';
     // This triggers the "update the image data" algorithm.
     // The image will not go to the "completely available" state
     // until a fetch task in the networking task source is processed,
@@ -2846,39 +2846,72 @@
   testing:
     - 2d.pattern.incomplete.image
   images:
-    - yellow.png
-    - red.png
+    - green.png
   code: |
-    var img = document.getElementById('yellow.png');
-    img.src = '../images/red.png';
+    ctx.fillStyle = '#ff0';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('green.png');
+    img.src = '/images/red.png';
     // This triggers the "update the image data" algorithm,
-    // and resets the image to the "unavailable" state.
-    // The image will not go to the "completely available" state
-    // until a fetch task in the networking task source is processed,
-    // so the image must not be fully decodable yet:
-    @assert ctx.createPattern(img, 'repeat') === null; @moz-todo
+    // but the fetch task will happen in stable state,
+    // so the image is still the original one:
+    var pattern = ctx.createPattern(img, 'repeat');
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, 200, 50);
+
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+  expected: green
 
 - name: 2d.pattern.image.incomplete.emptysrc
   testing:
     - 2d.pattern.incomplete.image
   images:
-    - red.png
+    - green.png
   mozilla: { throws }
   code: |
-    var img = document.getElementById('red.png');
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('green.png');
     img.src = "";
-    @assert ctx.createPattern(img, 'repeat') === null;
+    // This triggers the "update the image data" algorithm,
+    // but the source selection will happen in stable state,
+    // so the image is still the original one:
+    var pattern = ctx.createPattern(img, 'repeat');
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, 200, 50);
+
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+  expected: green
 
 - name: 2d.pattern.image.incomplete.removedsrc
   testing:
     - 2d.pattern.incomplete.image
   images:
-    - red.png
+    - green.png
   mozilla: { throws }
   code: |
-    var img = document.getElementById('red.png');
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('green.png');
     img.removeAttribute('src');
-    @assert ctx.createPattern(img, 'repeat') === null;
+    // This triggers the "update the image data" algorithm,
+    // but the source selection will happen in stable state,
+    // so the image is still the original one:
+    var pattern = ctx.createPattern(img, 'repeat');
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, 200, 50);
+
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+  expected: green
 
 - name: 2d.pattern.image.broken
   testing:
@@ -2888,6 +2921,31 @@
   code: |
     var img = document.getElementById('broken.png');
     @assert throws INVALID_STATE_ERR ctx.createPattern(img, 'repeat');
+
+- name: 2d.pattern.image.cached
+  testing:
+    - 2d.pattern.image
+  images:
+    - yellow.png
+    - green.png
+  mozilla: { throws }
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('yellow.png');
+    img.src = "/images/green.png";
+    // This triggers the "update the image data" algorithm,
+    // The image will go to the "completely available" state
+    // since "list of available images" contains the requested image.
+    var pattern = ctx.createPattern(img, 'repeat');
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, 200, 50);
+
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+  expected: green
 
 - name: 2d.pattern.repeat.empty
   testing:

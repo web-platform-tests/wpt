@@ -7,61 +7,54 @@
  <script>
 
  // Historically mouseover was special in the spec, but now it is not. See https://github.com/whatwg/html/pull/2398.
- async_test(function(t) {
+ test(function(t) {
      var ev = new Event('mouseover', {cancelable: true});
      document.getElementById("foo").onmouseover = t.step_func(function() { return false });
      document.getElementById("foo").dispatchEvent(ev);
      assert_equals(ev.defaultPrevented, true)
-     t.done();
  }, "mouseover listener returning false cancels event (using Event)");
 
- async_test(function(t) {
+ test(function(t) {
      var ev = new MouseEvent('mouseover', {cancelable: true});
      document.getElementById("foo").onmouseover = t.step_func(function() { return false });
      document.getElementById("foo").dispatchEvent(ev);
      assert_equals(ev.defaultPrevented, true)
-     t.done();
  }, "mouseover listener returning false cancels event (using MouseEvent)");
 
- async_test(function(t) {
+ test(function(t) {
      var ev = new Event('mouseover', {cancelable: true});
      document.getElementById("foo").onmouseover = t.step_func(function() { return true });
      document.getElementById("foo").dispatchEvent(ev);
      assert_equals(ev.defaultPrevented, false)
-     t.done();
  }, "mouseover listener returning true doesn't cancel event (using Event)");
 
- async_test(function(t) {
+ test(function(t) {
      var ev = new MouseEvent('mouseover', {cancelable: true});
      document.getElementById("foo").onmouseover = t.step_func(function() { return true });
      document.getElementById("foo").dispatchEvent(ev);
      assert_equals(ev.defaultPrevented, false)
-     t.done();
  }, "mouseover listener returning true doesn't cancel event (using MouseEvent)");
 
  // beforeunload is tested in html/browsers/browsing-the-web/unloading-documents/beforeunload-canceling.html
 
- async_test(function(t) {
+ test(function(t) {
      var ev = new Event("click", {cancelable: true});
      document.getElementById("foo").onclick = t.step_func(function() { return false; });
      document.getElementById("foo").dispatchEvent(ev);
      assert_equals(ev.defaultPrevented, true);
-     t.done();
  }, "click listener returning false cancels event");
 
- async_test(function(t) {
+ test(function(t) {
      var ev = new Event("blur", {cancelable: true});
      document.getElementById("foo").onblur = t.step_func(function() { return false; });
      document.getElementById("foo").dispatchEvent(ev);
      assert_equals(ev.defaultPrevented, true);
-     t.done();
  }, "blur listener returning false cancels event");
 
- async_test(function(t) {
+ test(function(t) {
      var ev = new Event("dblclick", {cancelable: true});
      document.getElementById("foo").ondblclick = t.step_func(function() { return false; });
      document.getElementById("foo").dispatchEvent(ev);
      assert_equals(ev.defaultPrevented, true);
-     t.done();
  }, "dblclick listener returning false cancels event");
 </script>

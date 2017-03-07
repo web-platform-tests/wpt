@@ -10,6 +10,7 @@ test(function(){
     document.body.appendChild(video);
 
     var cue = new VTTCue(0, 1, 'text');
+    assert_true('align' in cue, 'align is not supported');
     assert_equals(cue.align, 'center');
 
     var track = document.createElement('track');

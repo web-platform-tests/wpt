@@ -10,6 +10,7 @@ test(function(){
     document.body.appendChild(video);
 
     var cue = new VTTCue(0, 1, 'text');
+    assert_true('region' in cue, 'region is not supported');
     assert_equals(cue.region, null);
 
     var track = document.createElement('track');

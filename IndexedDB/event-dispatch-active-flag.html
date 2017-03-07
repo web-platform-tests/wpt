@@ -14,7 +14,10 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store');
-    const finish = keep_alive(tx, 'store');
+    let tx_completed = false;
+    tx.oncomplete = () => { tx_completed = true; };
+    const release_tx = keep_alive(tx, 'store');
+
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
 
@@ -28,14 +31,15 @@ indexeddb_test(
       Promise.resolve().then(t.step_func(() => {
         saw_handler_promise = true;
         assert_true(is_transaction_active(tx, 'store'),
-                    'Transaction should be active in handlers microtasks');
+                    'Transaction should be active in handler\'s microtasks');
       }));
 
       setTimeout(t.step_func(() => {
         assert_true(saw_handler_promise);
         assert_false(is_transaction_active(tx, 'store'),
                      'Transaction should be inactive in next task');
-        finish();
+        assert_false(tx_completed);
+        release_tx();
         t.done();
       }), 0);
     };
@@ -48,7 +52,9 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store');
-    const finish = keep_alive(tx, 'store');
+    let tx_completed = false;
+    tx.oncomplete = () => { tx_completed = true; };
+    const release_tx = keep_alive(tx, 'store');
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
 
@@ -62,14 +68,15 @@ indexeddb_test(
       Promise.resolve().then(t.step_func(() => {
         saw_listener_promise = true;
         assert_true(is_transaction_active(tx, 'store'),
-                    'Transaction should be active in listeners microtasks');
+                    'Transaction should be active in listener\'s microtasks');
       }));
 
       setTimeout(t.step_func(() => {
         assert_true(saw_listener_promise);
         assert_false(is_transaction_active(tx, 'store'),
                      'Transaction should be inactive in next task');
-        finish();
+        assert_false(tx_completed);
+        release_tx();
         t.done();
       }), 0);
     });
@@ -82,7 +89,9 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store', 'readwrite');
-    const finish = keep_alive(tx, 'store');
+    let tx_completed = false;
+    tx.oncomplete = () => { tx_completed = true; };
+    const release_tx = keep_alive(tx, 'store');
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
 
@@ -99,14 +108,15 @@ indexeddb_test(
       Promise.resolve().then(t.step_func(() => {
         saw_handler_promise = true;
         assert_true(is_transaction_active(tx, 'store'),
-                    'Transaction should be active in handlers microtasks');
+                    'Transaction should be active in handler\'s microtasks');
       }));
 
       setTimeout(t.step_func(() => {
         assert_true(saw_handler_promise);
         assert_false(is_transaction_active(tx, 'store'),
                      'Transaction should be inactive in next task');
-        finish();
+        assert_false(tx_completed);
+        release_tx();
         t.done();
       }), 0);
     };
@@ -119,7 +129,9 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store', 'readwrite');
-    const finish = keep_alive(tx, 'store');
+    let tx_completed = false;
+    tx.oncomplete = () => { tx_completed = true; };
+    const release_tx = keep_alive(tx, 'store');
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
 
@@ -136,14 +148,15 @@ indexeddb_test(
       Promise.resolve().then(t.step_func(() => {
         saw_listener_promise = true;
         assert_true(is_transaction_active(tx, 'store'),
-                    'Transaction should be active in listeners microtasks');
+                    'Transaction should be active in listener\'s microtasks');
       }));
 
       setTimeout(t.step_func(() => {
         assert_true(saw_listener_promise);
         assert_false(is_transaction_active(tx, 'store'),
                      'Transaction should be inactive in next task');
-        finish();
+        assert_false(tx_completed);
+        release_tx();
         t.done();
       }), 0);
     });

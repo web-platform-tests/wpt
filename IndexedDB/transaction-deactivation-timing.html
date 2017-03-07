@@ -123,7 +123,6 @@ indexeddb_test(
 
       Promise.resolve().then(t.step_func(() => {
         microtasks_ran = true;
-        new_tx = db.transaction('store');
         assert_true(is_transaction_active(new_tx, 'store'),
                     'New transaction is still active in microtask checkpoint');
       }));

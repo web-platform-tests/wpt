@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Transaction active flag is set during event dispatch</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=support.js></script>
+<script>
+
+// Keep the passed transaction alive indefinitely (by making
+// requests against the named store). Returns a function to
+// to let the transaction finish.
+function keep_alive(tx, store_name) {
+  let pin = true;
+  function spin() {
+    if (!pin)
+      return;
+    tx.objectStore(store_name).get(0).onsuccess = spin;
+  }
+  spin();
+
+  return () => { pin = false; }
+}
+
+indexeddb_test(
+  (t, db, tx) => {
+    db.createObjectStore('store');
+  },
+  (t, db) => {
+    const tx = db.transaction('store');
+    const finish = keep_alive(tx, 'store');
+    assert_true(is_transaction_active(tx, 'store'),
+                'Transaction should be active after creation');
+
+    const request = tx.objectStore('store').get(0);
+    request.onerror = t.unreached_func('request should succeed');
+    request.onsuccess = () => {
+      assert_true(is_transaction_active(tx, 'store'),
+                  'Transaction should be active during success handler');
+
+      let saw_handler_promise = false;
+      Promise.resolve().then(t.step_func(() => {
+        saw_handler_promise = true;
+        assert_true(is_transaction_active(tx, 'store'),
+                    'Transaction should be active in handlers microtasks');
+      }));
+
+      setTimeout(t.step_func(() => {
+        assert_true(saw_handler_promise);
+        assert_false(is_transaction_active(tx, 'store'),
+                     'Transaction should be inactive in next task');
+        finish();
+        t.done();
+      }), 0);
+    };
+  },
+  'Transactions are active during success handlers');
+
+indexeddb_test(
+  (t, db, tx) => {
+    db.createObjectStore('store');
+  },
+  (t, db) => {
+    const tx = db.transaction('store');
+    const finish = keep_alive(tx, 'store');
+    assert_true(is_transaction_active(tx, 'store'),
+                'Transaction should be active after creation');
+
+    const request = tx.objectStore('store').get(0);
+    request.onerror = t.unreached_func('request should succeed');
+    request.addEventListener('success', () => {
+      assert_true(is_transaction_active(tx, 'store'),
+                  'Transaction should be active during success listener');
+
+      let saw_listener_promise = false;
+      Promise.resolve().then(t.step_func(() => {
+        saw_listener_promise = true;
+        assert_true(is_transaction_active(tx, 'store'),
+                    'Transaction should be active in listeners microtasks');
+      }));
+
+      setTimeout(t.step_func(() => {
+        assert_true(saw_listener_promise);
+        assert_false(is_transaction_active(tx, 'store'),
+                     'Transaction should be inactive in next task');
+        finish();
+        t.done();
+      }), 0);
+    });
+  },
+  'Transactions are active during success listeners');
+
+indexeddb_test(
+  (t, db, tx) => {
+    db.createObjectStore('store');
+  },
+  (t, db) => {
+    const tx = db.transaction('store', 'readwrite');
+    const finish = keep_alive(tx, 'store');
+    assert_true(is_transaction_active(tx, 'store'),
+                'Transaction should be active after creation');
+
+    tx.objectStore('store').put(0, 0);
+    const request = tx.objectStore('store').add(0, 0);
+    request.onsuccess = t.unreached_func('request should fail');
+    request.onerror = e => {
+      e.preventDefault();
+
+      assert_true(is_transaction_active(tx, 'store'),
+                  'Transaction should be active during error handler');
+
+      let saw_handler_promise = false;
+      Promise.resolve().then(t.step_func(() => {
+        saw_handler_promise = true;
+        assert_true(is_transaction_active(tx, 'store'),
+                    'Transaction should be active in handlers microtasks');
+      }));
+
+      setTimeout(t.step_func(() => {
+        assert_true(saw_handler_promise);
+        assert_false(is_transaction_active(tx, 'store'),
+                     'Transaction should be inactive in next task');
+        finish();
+        t.done();
+      }), 0);
+    };
+  },
+  'Transactions are active during error handlers');
+
+indexeddb_test(
+  (t, db, tx) => {
+    db.createObjectStore('store');
+  },
+  (t, db) => {
+    const tx = db.transaction('store', 'readwrite');
+    const finish = keep_alive(tx, 'store');
+    assert_true(is_transaction_active(tx, 'store'),
+                'Transaction should be active after creation');
+
+    tx.objectStore('store').put(0, 0);
+    const request = tx.objectStore('store').add(0, 0);
+    request.onsuccess = t.unreached_func('request should fail');
+    request.addEventListener('error', e => {
+      e.preventDefault();
+
+      assert_true(is_transaction_active(tx, 'store'),
+                  'Transaction should be active during error listener');
+
+      let saw_listener_promise = false;
+      Promise.resolve().then(t.step_func(() => {
+        saw_listener_promise = true;
+        assert_true(is_transaction_active(tx, 'store'),
+                    'Transaction should be active in listeners microtasks');
+      }));
+
+      setTimeout(t.step_func(() => {
+        assert_true(saw_listener_promise);
+        assert_false(is_transaction_active(tx, 'store'),
+                     'Transaction should be inactive in next task');
+        finish();
+        t.done();
+      }), 0);
+    });
+  },
+  'Transactions are active during error listeners');
+
+</script>

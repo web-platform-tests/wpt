@@ -50,7 +50,7 @@ function createdb_for_multiple_tests(dbname, version) {
     function auto_fail(evt, current_test) {
         /* Fail handlers, if we haven't set on/whatever/, don't
          * expect to get event whatever. */
-        rq_open.manually_handled = {}
+        rq_open.manually_handled = {};
 
         rq_open.addEventListener(evt, function(e) {
             if (current_test !== test) {
@@ -71,15 +71,15 @@ function createdb_for_multiple_tests(dbname, version) {
                   this.db.onversionchange =
                       fail(test, 'unexpected db.versionchange');
                 }
-            })
-        })
+            });
+        });
         rq_open.__defineSetter__("on" + evt, function(h) {
             rq_open.manually_handled[evt] = true;
             if (!h)
                 rq_open.addEventListener(evt, function() {});
             else
                 rq_open.addEventListener(evt, test.step_func(h));
-        })
+        });
     }
 
     // add a .setTest method to the IDBOpenDBRequest object
@@ -123,6 +123,10 @@ function indexeddb_test(upgrade_func, open_func, description, options) {
     });
     open.onsuccess = t.step_func(function() {
       var db = open.result;
+      t.add_cleanup(function() {
+        db.close();
+        indexedDB.deleteDatabase(db.name);
+      });
       if (open_func)
         open_func(t, db);
     });

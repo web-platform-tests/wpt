@@ -13,14 +13,14 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store');
-    const finish = keep_alive(tx, 'store');
+    const release_tx = keep_alive(tx, 'store');
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
 
     setTimeout(t.step_func(() => {
       assert_false(is_transaction_active(tx, 'store'),
                    'Transaction should be inactive in next task');
-      finish();
+      release_tx();
       t.done();
     }), 0);
   },
@@ -32,14 +32,14 @@ indexeddb_test(
   },
   (t, db) => {
     const tx = db.transaction('store');
-    const finish = keep_alive(tx, 'store');
+    const release_tx = keep_alive(tx, 'store');
     assert_true(is_transaction_active(tx, 'store'),
                 'Transaction should be active after creation');
 
     Promise.resolve().then(t.step_func(() => {
       assert_true(is_transaction_active(tx, 'store'),
                   'Transaction should be active in microtask checkpoint');
-      finish();
+      release_tx();
       t.done();
     }));
   },
@@ -50,11 +50,11 @@ indexeddb_test(
     db.createObjectStore('store');
   },
   (t, db) => {
-    let tx, finish;
+    let tx, release_tx;
 
     Promise.resolve().then(t.step_func(() => {
       tx = db.transaction('store');
-      finish = keep_alive(tx, 'store');
+      release_tx = keep_alive(tx, 'store');
       assert_true(is_transaction_active(tx, 'store'),
                   'Transaction should be active after creation');
     }));
@@ -62,7 +62,7 @@ indexeddb_test(
     setTimeout(t.step_func(() => {
       assert_false(is_transaction_active(tx, 'store'),
                    'Transaction should be inactive in next task');
-      finish();
+      release_tx();
       t.done();
     }), 0);
   },
@@ -73,11 +73,11 @@ indexeddb_test(
     db.createObjectStore('store');
   },
   (t, db) => {
-    let tx, finish;
+    let tx, release_tx;
 
     Promise.resolve().then(t.step_func(() => {
       tx = db.transaction('store');
-      finish = keep_alive(tx, 'store');
+      release_tx = keep_alive(tx, 'store');
       assert_true(is_transaction_active(tx, 'store'),
                   'Transaction should be active after creation');
     }));
@@ -85,7 +85,7 @@ indexeddb_test(
     Promise.resolve().then(t.step_func(() => {
       assert_true(is_transaction_active(tx, 'store'),
                   'Transaction should be active in microtask checkpoint');
-      finish();
+      release_tx();
       t.done();
     }));
   },

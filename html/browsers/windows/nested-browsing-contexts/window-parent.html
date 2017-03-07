@@ -1,0 +1,59 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>window.parent</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+ test(function() {
+   assert_equals(window, parent)
+ }, '`window.parent` for top-level browsing context');
+
+var t1 = async_test('`window.parent` on single nested browsing context');
+t1.step(function () {
+  var iframe = document.createElement('iframe');
+  iframe.onload  = t1.step_func(function () {
+    var iWindow = iframe.contentWindow;
+    assert_equals(iWindow.parent, window);
+    t1.done();
+  });
+  document.body.appendChild(iframe);
+});
+
+var t2 = async_test('`window.parent` for multiple nested browsing contexts');
+t2.step(function () {
+  var iframe = document.createElement('iframe');
+  var iframe2;
+
+  var testFunc = t2.step_func(function () {
+    var frameWindow = iframe.contentWindow;
+    var frame2Window = iframe2.contentWindow;
+    assert_equals(frameWindow.parent, window);
+    assert_equals(frame2Window.parent, frameWindow);
+    assert_false(frame2Window.parent === window);
+  });
+
+  var nestFrame = function () {
+    iframe2 = iframe.contentDocument.createElement('iframe');
+    iframe2.addEventListener('load', testFunc);
+    iframe.contentDocument.body.appendChild(iframe2);
+    t2.done();
+  };
+
+  iframe.addEventListener('load', nestFrame);
+  document.body.appendChild(iframe);
+});
+
+var t3 = async_test('`window.parent` for new, top-level browsing context');
+t3.step(function () {
+  var a    = document.body.appendChild(document.createElement('a'));
+  a.href   = 'resources/post-to-opener.html';
+  a.target = '_blank';
+  a.click();
+  window.onmessage = t3.step_func(function (e) {
+    assert_equals(e.data.parent_isTop, true);
+    e.source.close();
+    t3.done();
+  });
+});
+</script>

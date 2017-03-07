@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>window.top: `null`</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+
+var t1 = async_test('`window.top` is null when browsing context container element removed');
+t1.step(function () {
+  var iframe = document.createElement('iframe');
+  iframe.onload  = t1.step_func(function () {
+    var iWindow = iframe.contentWindow;
+    /**
+     * `top` should return the top-level browsing context but will return
+     * `null` if none exists, such as when any of the BC's ancestor browsing
+     *  context container's document elements are disconnected/removed.
+     */
+    assert_equals(iWindow.top, window);
+    document.body.removeChild(iframe);
+    assert_equals(iWindow.top, null);
+    t1.done();
+  });
+
+  document.body.appendChild(iframe);
+});
+
+var t2 = async_test('`window.top`null when any ancestor browsing context container removed');
+t2.step(function () {
+  var iframe = document.createElement('iframe');
+  var iframe2, removedEl;
+
+  var testFunc = t2.step_func(function () {
+    var frameWindow = iframe.contentWindow;
+    var frame2Window = iframe2.contentWindow;
+
+    assert_equals(frameWindow.top, window);
+    assert_equals(frame2Window.top, window);
+
+    iframe.removeEventListener('load', nestFrame);
+    iframe2.removeEventListener('load', testFunc);
+
+    removedEl = document.body.removeChild(iframe);
+    
+    assert_equals(frameWindow.top, null);
+    assert_equals(frame2Window.top, null);
+
+    removedEl.addEventListener('load', t2.step_func(function () {
+      // reattached iframe's browsing context will report window.top
+      assert_equals(removedEl.contentWindow.top, window);
+      // removed/re-added iframes will have new browsing context / window
+      assert_equals(frameWindow.top, null);
+      assert_equals(frame2Window.top, null);
+      t2.done();
+    }));
+
+    document.body.appendChild(removedEl);
+  });
+
+  var nestFrame = function () {
+    iframe2 = iframe.contentDocument.createElement('iframe');
+    iframe2.addEventListener('load', testFunc);
+    iframe.contentDocument.body.appendChild(iframe2);
+    t2.done();
+  };
+
+  iframe.addEventListener('load', nestFrame);
+  document.body.appendChild(iframe);
+});
+</script>

@@ -19,16 +19,27 @@
             on_event(target0, "pointermove", this.step_func(function(event) {
                 generate_tests(assert_equals, [
                     ["getCoalescedEvents().length", event.getCoalescedEvents().length, 2],
+                    ["event.target", event.target, target0],
+                    ["event.currentTarget", event.currentTarget, target0],
+                    ["event.eventPhase", event.eventPhase, Event.AT_TARGET],
                     ["event.clientX", event.clientX, 310],
-                    ["getCoalescedEvents()[0].pointerId", event.getCoalescedEvents()[0].pointerId, event.pointerId],
-                    ["getCoalescedEvents()[0].pointerType", event.getCoalescedEvents()[0].pointerType, event.pointerType],
                     ["getCoalescedEvents()[0].clientX", event.getCoalescedEvents()[0].clientX, 300],
-                    ["getCoalescedEvents()[0].getCoalescedEvents().length", event.getCoalescedEvents()[0].getCoalescedEvents().length, 0],
-                    ["getCoalescedEvents()[1].pointerId", event.getCoalescedEvents()[1].pointerId, event.pointerId],
-                    ["getCoalescedEvents()[1].pointerType", event.getCoalescedEvents()[1].pointerType, event.pointerType],
                     ["getCoalescedEvents()[1].clientX", event.getCoalescedEvents()[1].clientX, 310],
-                    ["getCoalescedEvents()[1].getCoalescedEvents().length", event.getCoalescedEvents()[1].getCoalescedEvents().length, 0],
                 ]);
+                for (var i=0; i<event.getCoalescedEvents().length; i++) {
+                    var coalescedEvent = event.getCoalescedEvents()[i];
+                    generate_tests(assert_equals, [
+                        ["getCoalescedEvents()[" + i + "].pointerId", coalescedEvent.pointerId, event.pointerId],
+                        ["getCoalescedEvents()[" + i + "].pointerType", coalescedEvent.pointerType, event.pointerType],
+                        ["getCoalescedEvents()[" + i + "].isPrimary", coalescedEvent.isPrimary, event.isPrimary],
+                        ["getCoalescedEvents()[" + i + "].getCoalescedEvents().length", coalescedEvent.getCoalescedEvents().length, 0],
+                        ["getCoalescedEvents()[" + i + "].target", coalescedEvent.target, null],
+                        ["getCoalescedEvents()[" + i + "].currentTarget", coalescedEvent.target, null],
+                        ["getCoalescedEvents()[" + i + "].eventPhase", coalescedEvent.eventPhase, Event.NONE],
+                        ["getCoalescedEvents()[" + i + "].cancelable", coalescedEvent.cancelable, false],
+                        ["getCoalescedEvents()[" + i + "].bubbles", coalescedEvent.bubbles, false],
+                    ]);
+                }
             }));
             on_event(target0, "pointerout", this.step_func(function(event) {
                 generate_tests(assert_equals, [
@@ -43,6 +54,7 @@
                 {
                   pointerId: 42,
                   pointerType: "pen",
+                  isPrimary: true,
                   clientX: 300,
                 };
                 

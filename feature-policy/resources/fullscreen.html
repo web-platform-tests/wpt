@@ -2,6 +2,7 @@
 <title>Feature Policy Fullscreen (manual click triggers fullscreen request)</title>
 <script src="/resources/testharness.js"></script>
 <script>
+setup({explicit_timeout: true})
 document.onfullscreenerror = function() {
   parent.postMessage({ type: 'error', enabled: document.fullscreenEnabled }, '*');
 };

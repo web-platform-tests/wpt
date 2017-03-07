@@ -19,4 +19,30 @@ promise_test(t => {
   return promise;
 }, "error event is weird (return true cancels; many args) on WorkerGlobalScope, with a synthetic ErrorEvent");
 
+promise_test(t => {
+  const theError = { the: "error object" };
+
+  self.onerror = t.step_func((message, filename, lineno, colno, error) => {
+    assert_equals(message, "message");
+    assert_equals(filename, "filename");
+    assert_equals(lineno, 1);
+    assert_equals(colno, 2);
+    assert_equals(error, theError);
+    return true;
+  });
+
+  const eventWatcher = new EventWatcher(t, self, "error");
+  const promise = eventWatcher.wait_for("error");
+
+  self.dispatchEvent(new ErrorEvent("error", {
+    message: "message",
+    filename: "filename",
+    lineno: 1,
+    colno: 2,
+    error: theError
+  }));
+
+  return promise;
+}, "error event has the right 5 args on WorkerGlobalScope, with a synthetic ErrorEvent");
+
 done();

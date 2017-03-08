@@ -60,7 +60,7 @@ promise_test(t => {
   return writer.close().then(() => promise_rejects(t, passedError, writer.closed, 'closed should stay rejected'));
 }, 'when sink calls error synchronously while closing, the stream should become errored');
 
-promise_test(t => {
+promise_test(() => {
   const ws = new WritableStream({
     write(chunk, controller) {
       controller.error(error1);
@@ -76,7 +76,7 @@ promise_test(t => {
   });
 }, 'releaseLock on a stream with a pending write in which the stream has been errored');
 
-promise_test(t => {
+promise_test(() => {
   const ws = new WritableStream({
     close(controller) {
       controller.error(error1);

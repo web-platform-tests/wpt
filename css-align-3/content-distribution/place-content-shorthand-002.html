@@ -8,10 +8,9 @@
 <script src="../resources/alignment-parsing-utils.js"></script>
 <div id="log"></div>
 <script>
-    var values1 = ["normal"].concat(contentPositionValues, distributionValues, baselineValues);
-    var values2 = contentPositionValues.concat(distributionValues, baselineValues);
-    values1.forEach(function(alignValue) {
-        values2.forEach(function(justifyValue) {
+    var values = ["normal"].concat(contentPositionValues, distributionValues, baselineValues);
+    values.forEach(function(alignValue) {
+        values.forEach(function(justifyValue) {
             test(function() { checkPlaceContent(alignValue, justifyValue) },
                  "place-content: " + alignValue + " " + justifyValue);
         });

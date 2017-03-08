@@ -7,7 +7,6 @@ if (this.document === undefined) {
 const url = get_host_info().HTTP_REMOTE_ORIGIN + dirname(location.pathname) + RESOURCES_DIR + "preflight.py",
       origin = location.origin // assuming an ASCII origin
 
-
 function preflightTest(succeeds, withCredentials, allowMethod, allowHeader, useMethod, useHeader) {
   return promise_test(t => {
     let testURL = url + "?",

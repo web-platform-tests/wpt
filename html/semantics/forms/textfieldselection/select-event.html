@@ -76,7 +76,7 @@ for (const el of els) {
         t.step_timeout(() => {
           el.onselect = null;
           resolve();
-        }, 100);
+        }, 200);
       });
     }, `${elLabel}: ${action.label} a second time (must not fire select)`);
   }

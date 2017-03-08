@@ -195,7 +195,9 @@ promise_test(() => {
   const theError = new Error('rejected!');
   const rs = new ReadableStream({
     start() {
-      return delay(1).then(() => { throw theError; });
+      return delay(1).then(() => {
+        throw theError;
+      });
     }
   });
 
@@ -733,7 +735,7 @@ promise_test(() => {
 }, 'ReadableStream: should call underlying source methods as methods');
 
 test(() => {
-  const rs = new ReadableStream({
+  new ReadableStream({
     start(c) {
       assert_equals(c.desiredSize, 10, 'desiredSize must start at highWaterMark');
       c.close();
@@ -745,7 +747,7 @@ test(() => {
 }, 'ReadableStream: desiredSize when closed');
 
 test(() => {
-  const rs = new ReadableStream({
+  new ReadableStream({
     start(c) {
       assert_equals(c.desiredSize, 10, 'desiredSize must start at highWaterMark');
       c.error();

@@ -677,8 +677,8 @@ promise_test(t => {
   }).then(() => {
     assert_array_equals(
         events, [],
-        'writePromise, abortPromise and writer.closed must not be fulfilled/rejected yet even after '
-            + 'controller.error() call');
+        'writePromise, abortPromise and writer.closed must not be fulfilled/rejected yet even after ' +
+            'controller.error() call');
 
     resolveWrite();
 

@@ -112,11 +112,13 @@
             const getClientUrls = () => {
                 return new Promise(resolve => {
                     navigator.serviceWorker.getRegistration().then(reg => {
-                        const channel = new MessageChannel();
-                        channel.port1.onmessage = event => {
-                            resolve(event.data);
-                        };
-                        reg.active.postMessage('', [channel.port2]);
+                        if (reg) {
+                            const channel = new MessageChannel();
+                            channel.port1.onmessage = event => {
+                                resolve(event.data);
+                            };
+                            reg.active.postMessage('', [channel.port2]);
+                        }
                     });
                 });
             };
@@ -214,20 +216,36 @@
             const disableTimeout = () => {
                 clearTimeout(timeout);
             };
+            const cancelWait = () => {
+                connection.removeEventListener('close', onTerminate);
+                connection.removeEventListener('terminate', onTerminate);
+            };
+            const onTerminate = (reject, event) => {
+                cancelWait();
+                reject('A receiving user agent unexpectedly ' + event.type + 'd a presentation. ');
+            };
+            const waitForTerminate = () => {
+                return new Promise((resolve, reject) => {
+                    connection.addEventListener('close', onTerminate.bind(this, reject));
+                    connection.addEventListener('terminate', onTerminate.bind(this, reject));
+                });
+            };
 
             // Start a presentation for receiving user agent tests
             return request.start().then(c => {
                 connection = c;
                 enableTimeout();
-                return openIndexedDB()
+                // This Promise.race will be rejected if a receiving side terminates/closes the connection when window.close() is invoked
+                return Promise.race([
+                    openIndexedDB()
                         .then(registerServiceWorker)
-                        .then(openCaches);
-            }).then(() => {
-                return stash.init();
-            }).then(() => {
-                return stash.receive();
+                        .then(openCaches)
+                        .then(() => { return stash.init(); })
+                        .then(() => { return stash.receive(); }),
+                    waitForTerminate()]);
             }).then(result => {
                 // terminate and connect again if the result is PASS
+                cancelWait();
                 const json = JSON.parse(result);
                 if (json.test.status !== 0)
                     return json;

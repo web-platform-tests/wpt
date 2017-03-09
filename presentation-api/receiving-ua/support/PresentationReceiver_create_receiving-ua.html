@@ -10,19 +10,20 @@
 <script src="stash.js"></script>
 <style>
 a { visibility: hidden; }
+iframe { width: 100%; }
 </style>
 
 <iframe id="child" src="PresentationReceiver_create_receiving-ua_child.html"></iframe>
+<p id="notice">Checking <code id="modal"></code>: if you see this message, please wait for test to time out.</p>
 <a href="PresentationReceiver_unreached_receiving-ua.html">do not navigate</a>
 <script>
 let finished = false;
 
-const sendResult = (test, status, childLog) => {
+const sendResult = (test, status) => {
     if(!finished) {
         finished = true;
         const stash = new Stash(stashIds.toReceiver, stashIds.toController);
-        const log = childLog || document.getElementById('log').innerHTML;
-        stash.send(JSON.stringify({ test: test, status: status, log: log }));
+        stash.send(JSON.stringify({ test: test, status: status }));
     }
 };
 
@@ -33,6 +34,9 @@ add_completion_callback((tests, status) => {
 
 const child = document.getElementById('child');
 child.addEventListener('load', () => {
+    const notice = document.getElementById('notice');
+    const modal = document.getElementById('modal');
+
     promise_test(t => {
         t.add_cleanup(() => {
             document.cookie = cookieName + '=False;Expires=' + new Date().toUTCString();
@@ -63,16 +67,24 @@ child.addEventListener('load', () => {
         // The Sandboxed auxiliary navigation browsing context flag
         assert_equals(window.open('PresentationReceiver_unreached_receiving-ua.html'), null, 'Sandboxed auxiliary navigation browsing context flag is set.');
 
-        // The sandboxed top-level navigation browsing context flag (the following codes are expected to be ignored)
+        // The sandboxed top-level navigation browsing context flag (codes below are expected to be ignored)
         window.close();
         document.querySelector('a').click();
         location.href = 'PresentationReceiver_unreached_receiving-ua.html';
 
-        // The sandboxed modals flag (codes below are expected to be ignored)
-        alert();
-        confirm();
+        // The sandboxed modals flag (codes below are expected to be ignored):
+        // If user agent prompts user, a timeout will occur and the test will eventually fail
+        let message = 'If you see this prompt, do not dismiss it and wait for test to time out.';
+        notice.style.display = 'block';
+        modal.textContent = 'alert()';
+        alert(message);
+        modal.textContent = 'confirm()';
+        confirm(message);
+        modal.textContent = 'print()';
         print();
-        prompt();
+        modal.textContent = 'prompt()';
+        prompt(message);
+        notice.style.display = 'none';
 
         // Permissions
         const checkPermission = query => {
@@ -200,7 +212,7 @@ child.addEventListener('load', () => {
                         if (result.test.status === 0)
                             resolve();
                         else {
-                            sendResult(result.test, result.status, result.log);
+                            sendResult(result.test, result.status);
                             assert_unreached('A test for a nested browsing context failed.');
                         }
                     }
@@ -222,7 +234,7 @@ child.addEventListener('load', () => {
                 result[t[0]] = t[1];
                 return result;
             }, {});
-            let message = 'A cookie store is shared by top-level and nested browsing contexts.'
+            message = 'A cookie store is shared by top-level and nested browsing contexts.'
             assert_equals(Object.keys(cookies).length, 2, message);
             assert_equals(cookies[cookieName], cookieValue, message);
             assert_equals(cookies[cookieNameChild], cookieValueChild, message);
@@ -243,7 +255,7 @@ child.addEventListener('load', () => {
             if ('indexedDB' in window) {
                 let req = indexedDB.open(dbName, 1), store;
                 let eventWatcher = new EventWatcher(t, req, 'success');
-                const message = 'Indexed Database is shared by top-level and nested browsing contexts.';
+                message = 'Indexed Database is shared by top-level and nested browsing contexts.';
                 const checkItem = event => {
                     assert_true(event.target.result instanceof IDBCursorWithValue, message);
                     const cursor = event.target.result;
@@ -276,7 +288,7 @@ child.addEventListener('load', () => {
         // Service Workers
         const checkUpdatedServiceWorkers = () => {
             return 'serviceWorker' in window ? navigator.serviceWorker.getRegistrations().then(registrations => {
-                const message = 'List of registered service worker registrations is shared by top-level and nested browsing contexts.';
+                message = 'List of registered service worker registrations is shared by top-level and nested browsing contexts.';
                 assert_equals(registrations.length, 2, message);
                 const scriptURLs = registrations.map(reg => { return reg.active.scriptURL; }).sort();
                 assert_equals(scriptURLs[0], new Request('../serviceworker.js').url, message);
@@ -285,7 +297,7 @@ child.addEventListener('load', () => {
         };
         const cacheNameChild = 'nested-browsing-context';
         const checkUpdatedCaches = () => {
-            const message = 'Cache storage is shared by top-level and nested browsing contexts.';
+            message = 'Cache storage is shared by top-level and nested browsing contexts.';
             return 'caches' in window ? caches.keys().then(keys => {
                 assert_equals(keys.length, 2, message);
                 const cacheKeys = keys.sort();

@@ -48,11 +48,14 @@ async_test(t => {
       assert_equals(removedEl.contentDocument.querySelector('iframe'), null);
       assert_equals(removedEl.contentDocument.querySelector('hr'), null);
     }));
+    document.body.appendChild(removedEl);
   });
 
   var nestFrame = function () {
     iframe.contentDocument.body.appendChild(document.createElement('hr'));
     iframe2 = iframe.contentDocument.createElement('iframe');
+    // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1229707
+    iframe2.src = '/common/blank.html';
     iframe2.addEventListener('load', testFunc);
     iframe.contentDocument.body.appendChild(iframe2);
   };

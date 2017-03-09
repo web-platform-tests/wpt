@@ -54,6 +54,8 @@ async_test(t => {
 
   var nestFrame = function () {
     iframe2 = iframe.contentDocument.createElement('iframe');
+    // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1229707
+    iframe2.src = '/common/blank.html';
     iframe2.addEventListener('load', testFunc);
     iframe.contentDocument.body.appendChild(iframe2);
   };

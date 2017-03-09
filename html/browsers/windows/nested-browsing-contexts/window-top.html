@@ -43,6 +43,8 @@ t2.step(function() {
       var doc = iframe.contentDocument;
       iframe2 = document.createElement("iframe");
       //iframe2.src = "data:text/html,"
+      // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1229707
+      iframe2.src = '/common/blank.html';
 
       iframe2.onload = t2.step_func(
         function() {

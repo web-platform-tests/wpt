@@ -48,33 +48,37 @@ window.addEventListener('message', event => {
             // Indexed Database
             let db;
             const checkIndexedDB = () => {
-                const message = 'Indexed Database is shared by top-level and nested browsing contexts.';
-                let req = indexedDB.open('db-presentation-api', 1), store;
-                let eventWatcher = new EventWatcher(t, req, 'success');
-                return eventWatcher.wait_for('success').then(() => {
-                    db = req.result;
-                    const transaction = db.transaction('store-controlling-ua', 'readwrite');
-                    store = transaction.objectStore('store-controlling-ua');
-                    req = store.openCursor();
-                    eventWatcher = new EventWatcher(t, req, 'success');
-                    return eventWatcher.wait_for('success');
-                }).then(() => {
-                    assert_true(req.result instanceof IDBCursorWithValue, message);
-                    const cursor = req.result;
-                    const item = cursor.value;
-                    assert_equals(item.id, 'parent', message);
-                    assert_equals(item.data, 'receiving user agent', message);
-                    cursor.continue();
-                    return eventWatcher.wait_for('success');
-                }).then(() => {
-                    assert_equals(req.result, null, message);
-                    req = store.put({ id: 'child', data: 'nested browsing context' });
-                    eventWatcher = new EventWatcher(t, req, 'success');
-                    return eventWatcher.wait_for('success');
-                }).then(() => {
-                    db.close();
-                    db = null;
-                });
+                if ('indexedDB' in window) {
+                    const message = 'Indexed Database is shared by top-level and nested browsing contexts.';
+                    let req = indexedDB.open('db-presentation-api', 1), store;
+                    let eventWatcher = new EventWatcher(t, req, 'success');
+                    return eventWatcher.wait_for('success').then(() => {
+                        db = req.result;
+                        const transaction = db.transaction('store-controlling-ua', 'readwrite');
+                        store = transaction.objectStore('store-controlling-ua');
+                        req = store.openCursor();
+                        eventWatcher = new EventWatcher(t, req, 'success');
+                        return eventWatcher.wait_for('success');
+                    }).then(() => {
+                        assert_true(req.result instanceof IDBCursorWithValue, message);
+                        const cursor = req.result;
+                        const item = cursor.value;
+                        assert_equals(item.id, 'parent', message);
+                        assert_equals(item.data, 'receiving user agent', message);
+                        cursor.continue();
+                        return eventWatcher.wait_for('success');
+                    }).then(() => {
+                        assert_equals(req.result, null, message);
+                        req = store.put({ id: 'child', data: 'nested browsing context' });
+                        eventWatcher = new EventWatcher(t, req, 'success');
+                        return eventWatcher.wait_for('success');
+                    }).then(() => {
+                        db.close();
+                        db = null;
+                    });
+                }
+                else
+                    return Promise.resolve();
             };
 
             // Web Storage
@@ -127,7 +131,8 @@ window.addEventListener('message', event => {
             };
 
             const openCaches = () => {
-                return 'caches' in window ? caches.open('nested-browsing-context').then(cache => cache.add('../cache.txt')) : Promise.resolve();
+                return 'caches' in window
+                    ? caches.open('nested-browsing-context').then(cache => cache.add('../cache.txt')) : Promise.resolve();
             };
 
             // Asynchronous tests

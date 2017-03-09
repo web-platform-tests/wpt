@@ -32,7 +32,8 @@ async_test(t => {
     client.send(null)
   })
 
-  client.onabort = t.step_func(() => { // happens immediately after all of upload.onabort, so readyState is 1
+  client.onabort = t.step_func(() => {
+    // happens immediately after all of upload.onabort, so readyState is 1
     log.push('client.onabort ' + client.readyState)
   })
 

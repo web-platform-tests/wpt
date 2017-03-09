@@ -429,7 +429,7 @@ policies and contribution forms [3].
         var this_obj = this;
         self.addEventListener("message",
                 function(event) {
-                    if (event.data.type && event.data.type === "connect") {
+                    if (event.data && event.data.type && event.data.type === "connect") {
                         if (event.ports && event.ports[0]) {
                             // If a MessageChannel was passed, then use it to
                             // send results back to the main window.  This

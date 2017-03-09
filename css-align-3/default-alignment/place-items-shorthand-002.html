@@ -5,14 +5,15 @@
 <meta name="assert" content="Check that setting two values to place-items sets the first one to 'align-items' and the second one to 'justify-items'." />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../resources/alignment-parsing-utils.js"></script>
+<script src="/css-align-3/resources/alignment-parsing-utils.js"></script>
 <div id="log"></div>
 <script>
-    var values = ["normal"].concat(selfPositionValues, baselineValues);
+    var values = ["normal", "stretch"].concat(selfPositionValues, baselineValues);
     values.forEach(function(alignValue) {
-        values.forEach(function(justifyValue) {
-            test(function() { checkPlaceItems(alignValue, justifyValue) },
-                 "place-items: " + alignValue + " " + justifyValue);
+       ["auto"].concat(values).forEach(function(justifyValue) {
+           test(function() {
+               checkPlaceShorhandLonghands("place-items", "align-items", "justify-items", alignValue, justifyValue);
+           }, "Checking place-items: " + alignValue + " " + justifyValue);
         });
     });
 </script>

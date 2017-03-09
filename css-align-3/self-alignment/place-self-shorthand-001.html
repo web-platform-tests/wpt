@@ -2,14 +2,16 @@
 <title>CSS Box Alignment: place-self shorthand - single values specified</title>
 <link rel="author" title="Javier Fernandez" href="mailto:jfernandez@igalia.com" />
 <link rel="help" href="http://www.w3.org/TR/css3-align/#place-self-property" />
-<meta name="assert" content="Check that setting a single value to place-self expands to such value set in both 'align-self' and  'justify-self'." />
+<meta name="assert" content="Check that setting a single value to place-self expands to such value set in both 'align-self' and 'justify-self'." />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css-align-3/resources/alignment-parsing-utils.js"></script>
 <div id="log"></div>
 <script>
-    var values = ["normal", "stretch"].concat(selfPositionValues, baselineValues);
+    var values = ["auto", "normal", "stretch"].concat(selfPositionValues, baselineValues);
     values.forEach(function(value) {
-        test(function() { checkPlaceSelf(value, "") }, "Checking place-self: " + value);
+        test(function() {
+            checkPlaceShorhandLonghands("place-self", "align-self", "justify-self", value);
+        }, "Checking place-self: " + value);
     });
 </script>

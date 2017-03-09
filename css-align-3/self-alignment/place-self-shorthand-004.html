@@ -5,25 +5,29 @@
 <meta name="assert" content="Check that place-self's invalid values are properly detected at parsing time." />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../resources/alignment-parsing-utils.js"></script>
+<script src="/css-align-3/resources/alignment-parsing-utils.js"></script>
 <div id="log"></div>
-<div id="test"></div>
 <script>
+    function checkInvalidValues(value)
+    {
+        checkPlaceShorthandInvalidValues("place-self", "align-self", "justify-self", value);
+    }
+
     test(function() {
-        checkPlaceSelfInvalidValues("center safe")
-        checkPlaceSelfInvalidValues("true center")
+        checkInvalidValues("center safe")
+        checkInvalidValues("true center")
     }, "Verify overflow keywords are invalid");
 
     test(function() {
-        checkPlaceSelfInvalidValues("center space-between start")
+        checkInvalidValues("center space-between start")
     }, "Verify fallback values are invalid");
 
     test(function() {
-        checkPlaceSelfInvalidValues("10px left")
-        checkPlaceSelfInvalidValues("right 10%")
+        checkInvalidValues("10px left")
+        checkInvalidValues("right 10%")
     }, "Verify numeric values are invalid");
 
     test(function() {
-        checkPlaceSelfInvalidValues("")
+        checkInvalidValues("")
     }, "Verify empty declaration is invalid");
 </script>

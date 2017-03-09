@@ -5,31 +5,21 @@
 <meta name="assert" content="Check that place-items's 'initial' value expands to 'align-items' and 'justify-items'." />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
-    #test {
-        align-items: start;
-        justify-items: end;
-    }
-</style>
 <div id="log"></div>
-<div id="test"></div>
 <script>
-    var div = document.getElementById("test");
+    var div = document.createElement("div");
+    document.body.appendChild(div);
+    div.style["align-items"] = "start";
+    div.style["justify-items"] = "end";
     div.setAttribute("style", "place-items: initial");
-    var style = getComputedStyle(div);
 
     test(function() {
-        assert_equals(style.getPropertyValue("place-items"),
-            "normal normal", "place-items resolved value");
-    }, "Check place-items: initial - resolved value");
+        assert_equals(div.style["align-items"],
+            "initial", "place-items expanded value for align-items");
+    }, "Check place-items: initial - align-items expanded value");
 
     test(function() {
-        assert_equals(style.getPropertyValue("align-items"),
-            "normal", "place-items specified value for align-items");
-    }, "Check place-items: initial - align-items resolved value");
-
-    test(function() {
-        assert_equals(style.getPropertyValue("justify-items"),
-            "normal", "place-items specified value for justify-items");
-    }, "Check place-items: initial - justify-items resolved value");
+        assert_equals(div.style["justify-items"],
+            "initial", "place-items expanded value for justify-items");
+    }, "Check place-items: initial - justify-items expanded value");
 </script>

@@ -5,31 +5,21 @@
 <meta name="assert" content="Check that place-self's 'initial' value expands to 'align-self' and 'justify-self'." />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style>
-    #test {
-        align-self: start;
-        justify-self: end;
-    }
-</style>
 <div id="log"></div>
-<div id="test"></div>
 <script>
-    var div = document.getElementById("test");
+    var div = document.createElement("div");
+    document.body.appendChild(div);
+    div.style["align-self"] = "start";
+    div.style["justify-self"] = "end";
     div.setAttribute("style", "place-self: initial");
-    var style = getComputedStyle(div);
 
     test(function() {
-        assert_equals(style.getPropertyValue("place-self"),
-            "normal normal", "place-self resolved value");
-    }, "Check place-self: initial - resolved value");
+        assert_equals(div.style["align-self"],
+            "initial", "place-self specified value for align-self");
+    }, "Check place-self: initial - align-self expanded value");
 
     test(function() {
-        assert_equals(style.getPropertyValue("align-self"),
-            "normal", "place-self specified value for align-self");
-    }, "Check place-self: initial - align-self resolved value");
-
-    test(function() {
-        assert_equals(style.getPropertyValue("justify-self"),
-            "normal", "place-self specified value for justify-self");
-    }, "Check place-self: initial - justify-self resolved value");
+        assert_equals(div.style["justify-self"],
+            "initial", "place-self specified value for justify-self");
+    }, "Check place-self: initial - justify-self expanded value");
 </script>

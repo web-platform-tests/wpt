@@ -11,14 +11,15 @@
       function extractBody(body) {
         if (body === null) {
           return { body: "", type: "NO" };
-        } else if (typeof body == "string") {
+        }
+        if (typeof body == "string") {
           return { body: body, type: "text/plain;charset=UTF-8" };
-        } else if (body instanceof Uint8Array) {
+        }
+        if (body instanceof Uint8Array) {
           var arr = Array.prototype.slice.call(body);
           return { body: String.fromCharCode.apply(null, arr), type: "NO" }
-        } else {
-          return { body: "EXTRACT NOT IMPLEMENTED", type: "EXTRACT NOT IMPLEMENTED" }
         }
+        return { body: "EXTRACT NOT IMPLEMENTED", type: "EXTRACT NOT IMPLEMENTED" }
       }
 
       function redirect(code, name = code, method = "GET", body = null, setExplicitType = false) {
@@ -26,7 +27,7 @@
           var client = new XMLHttpRequest()
           client.onreadystatechange = t.step_func(() => {
             if (client.readyState == 4) {
-              if(!setExplicitType) {
+              if (!setExplicitType) {
                 assert_equals(client.status, 200);
                 assert_equals(client.getResponseHeader("x-request-method"), method);
                 var { body: expectedBody, type: expectedType } = extractBody(body);

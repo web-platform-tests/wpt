@@ -35,6 +35,7 @@ def items(s):
     "foo/tools/test.html",
     "foo/resources/test.html",
     "foo/support/test.html",
+    "foo/test-support.html"
 ])
 def test_name_is_non_test(rel_path):
     s = create(rel_path)

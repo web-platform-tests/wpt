@@ -171,6 +171,7 @@ class SourceFile(object):
         return (self.is_dir() or
                 self.name_prefix("MANIFEST") or
                 self.filename.startswith(".") or
+                self.type_flag == "support" or
                 self.in_non_test_dir())
 
     @property

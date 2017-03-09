@@ -370,7 +370,7 @@ promise_test(t => {
   return writer.ready.then(() => {
     const settlementOrder = [];
     return Promise.all([
-      promise_rejects(t, error1, writer.write('1'), 'pending write should be rejected')
+      promise_rejects(t, error1, writer.write('1'), 'in-flight write should be rejected')
           .then(() => settlementOrder.push(1)),
       promise_rejects(t, error1, writer.write('2'), 'first queued write should be rejected')
           .then(() => settlementOrder.push(2)),
@@ -416,7 +416,7 @@ promise_test(() => {
     writer.write('a');
     const abortPromise = writer.abort();
     return flushAsyncEvents().then(() => {
-      assert_false(abortCalled, 'abort should not be called while write is pending');
+      assert_false(abortCalled, 'abort should not be called while write is in-flight');
       resolveWrite();
       return abortPromise.then(() => assert_true(abortCalled, 'abort should be called'));
     });
@@ -442,7 +442,7 @@ promise_test(() => {
     writer.close();
     const abortPromise = writer.abort();
     return flushAsyncEvents().then(() => {
-      assert_false(abortCalled, 'underlying abort should not be called while close is pending');
+      assert_false(abortCalled, 'underlying abort should not be called while close is in-flight');
       resolveClose();
       return abortPromise.then(() => {
         assert_false(abortCalled, 'underlying abort should not be called after close completes');
@@ -470,7 +470,7 @@ promise_test(t => {
     const closePromise = writer.close();
     const abortPromise = writer.abort();
     return flushAsyncEvents().then(() => {
-      assert_false(abortCalled, 'underlying abort should not be called while close is pending');
+      assert_false(abortCalled, 'underlying abort should not be called while close is in-flight');
       rejectClose(error1);
       return promise_rejects(t, error1, abortPromise, 'abort should reject with the same reason').then(() => {
         return promise_rejects(t, error1, closePromise, 'close should reject with the same reason');
@@ -502,7 +502,7 @@ promise_test(t => {
     const closePromise = writer.close();
     const abortPromise = writer.abort();
     return flushAsyncEvents().then(() => {
-      assert_false(abortCalled, 'abort should not be called while write is pending');
+      assert_false(abortCalled, 'abort should not be called while write is in-flight');
       resolveWrite();
       return abortPromise.then(() => {
         assert_true(abortCalled, 'abort should be called after write completes');
@@ -511,6 +511,24 @@ promise_test(t => {
     });
   });
 }, 'underlying abort() should be called while closing if underlying close() has not started yet');
+
+promise_test(t => {
+  const ws = new WritableStream({
+    write() {
+      return new Promise(() => {});
+    }
+  });
+
+  const writer = ws.getWriter();
+  return writer.ready.then(() => {
+    writer.write('a');
+    writer.abort();
+    writer.releaseLock();
+    const writer2 = ws.getWriter();
+    return promise_rejects(t, new TypeError(), writer2.ready,
+                           'ready of the second writer should be rejected with a TypeError');
+  });
+}, 'if a writer is created for a stream with a pending abort, its ready should be rejected with a TypeError');
 
 promise_test(() => {
   const ws = new WritableStream();
@@ -616,7 +634,7 @@ promise_test(t => {
                       'writer.closed must be rejected with an error indicating release')
     ]);
   });
-}, 'writer.abort() while there is a pending write, and then finish the write with rejection');
+}, 'writer.abort() while there is an in-flight write, and then finish the write with rejection');
 
 promise_test(t => {
   let resolveWrite;
@@ -713,7 +731,7 @@ promise_test(t => {
                       'writer.closed must be rejected with an error indicating release')
     ]);
   });
-}, 'writer.abort(), controller.error() while there is a pending write, and then finish the write');
+}, 'writer.abort(), controller.error() while there is an in-flight write, and then finish the write');
 
 promise_test(t => {
   let resolveWrite;
@@ -808,7 +826,7 @@ promise_test(t => {
                       'writer.closed must be rejected with an error indicating release')
     ]);
   });
-}, 'controller.error(), writer.abort() while there is a pending write, and then finish the write');
+}, 'controller.error(), writer.abort() while there is an in-flight write, and then finish the write');
 
 promise_test(t => {
   let resolveWrite;

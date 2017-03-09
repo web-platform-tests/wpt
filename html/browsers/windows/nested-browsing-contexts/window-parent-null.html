@@ -5,27 +5,23 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-
-var t1 = async_test('`window.parent` is null when browsing context container element removed');
-t1.step(function () {
+async_test(t => {
   var iframe = document.createElement('iframe');
-  iframe.onload  = t1.step_func(function () {
+  iframe.onload  = t.step_func_done(() => {
     var iWindow = iframe.contentWindow;
     assert_equals(iWindow.parent, window);
     document.body.removeChild(iframe);
     assert_equals(iWindow.parent, null);
-    t1.done();
   });
 
   document.body.appendChild(iframe);
-});
+}, '`window.parent` is null when browsing context container element removed');
 
-var t2 = async_test('`window.parent` null when parent browsing context container removed');
-t2.step(function () {
+async_test(t => {
   var iframe = document.createElement('iframe');
   var iframe2, removedEl;
 
-  var testFunc = t2.step_func(function () {
+  var testFunc = t.step_func(() => {
     var frameWindow = iframe.contentWindow;
     var frame2Window = iframe2.contentWindow;
 
@@ -39,7 +35,7 @@ t2.step(function () {
     assert_equals(frameWindow.parent, null);
     assert_equals(frame2Window.parent, null);
 
-    removedEl.addEventListener('load', t2.step_func(function () {
+    removedEl.addEventListener('load', t.step_func_done(() => {
       // reattached iframe's browsing context will report window.parent again
       assert_equals(removedEl.contentWindow.parent, window);
       // The following window s are no longer referenced by active browsing contexts
@@ -51,10 +47,7 @@ t2.step(function () {
       // previously added to iframe.contentDocument will be gone
       assert_equals(removedEl.contentDocument.querySelector('iframe'), null);
       assert_equals(removedEl.contentDocument.querySelector('hr'), null);
-      t2.done();
     }));
-
-    document.body.appendChild(removedEl);
   });
 
   var nestFrame = function () {
@@ -62,10 +55,9 @@ t2.step(function () {
     iframe2 = iframe.contentDocument.createElement('iframe');
     iframe2.addEventListener('load', testFunc);
     iframe.contentDocument.body.appendChild(iframe2);
-    t2.done();
   };
 
   iframe.addEventListener('load', nestFrame);
   document.body.appendChild(iframe);
-});
+}, '`window.parent` null when parent browsing context container removed');
 </script>

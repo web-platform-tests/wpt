@@ -5,11 +5,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-
-var t1 = async_test('`window.top` is null when browsing context container element removed');
-t1.step(function () {
+async_test(function (t) {
   var iframe = document.createElement('iframe');
-  iframe.onload  = t1.step_func(function () {
+  iframe.onload  = t.step_func_done(() => {
     var iWindow = iframe.contentWindow;
     /**
      * `top` should return the top-level browsing context but will return
@@ -19,18 +17,16 @@ t1.step(function () {
     assert_equals(iWindow.top, window);
     document.body.removeChild(iframe);
     assert_equals(iWindow.top, null);
-    t1.done();
   });
 
   document.body.appendChild(iframe);
-});
+}, '`window.top` is null when browsing context container element removed');
 
-var t2 = async_test('`window.top`null when any ancestor browsing context container removed');
-t2.step(function () {
+async_test(t => {
   var iframe = document.createElement('iframe');
   var iframe2, removedEl;
 
-  var testFunc = t2.step_func(function () {
+  var testFunc = t.step_func(() => {
     var frameWindow = iframe.contentWindow;
     var frame2Window = iframe2.contentWindow;
 
@@ -45,13 +41,12 @@ t2.step(function () {
     assert_equals(frameWindow.top, null);
     assert_equals(frame2Window.top, null);
 
-    removedEl.addEventListener('load', t2.step_func(function () {
+    removedEl.addEventListener('load', t.step_func_done(() => {
       // reattached iframe's browsing context will report window.top
       assert_equals(removedEl.contentWindow.top, window);
       // removed/re-added iframes will have new browsing context / window
       assert_equals(frameWindow.top, null);
       assert_equals(frame2Window.top, null);
-      t2.done();
     }));
 
     document.body.appendChild(removedEl);
@@ -61,10 +56,9 @@ t2.step(function () {
     iframe2 = iframe.contentDocument.createElement('iframe');
     iframe2.addEventListener('load', testFunc);
     iframe.contentDocument.body.appendChild(iframe2);
-    t2.done();
   };
 
   iframe.addEventListener('load', nestFrame);
   document.body.appendChild(iframe);
-});
+}, '`window.top`null when any ancestor browsing context container removed');
 </script>

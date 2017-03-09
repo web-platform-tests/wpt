@@ -17,7 +17,7 @@ async_test(t => {
     tx.abort();
   });
   open.onerror = t.step_func(e => {
-    assert_equals(e.target, open, 'event target was request');
+    assert_equals(e.target, open, 'event target should be request');
     assert_equals(e.type, 'error', 'Event type should be error');
     assert_true(e.bubbles, 'Event should bubble');
     assert_true(e.cancelable, 'Event should be cancelable');

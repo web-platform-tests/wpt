@@ -30,7 +30,7 @@ indexeddb_test(
       assert_equals(request.error.name, 'AbortError',
                     'Request\'s error should be AbortError');
 
-      assert_equals(e.target, request, 'event target was request');
+      assert_equals(e.target, request, 'event target should be request');
       assert_equals(e.type, 'error', 'Event type should be error');
       assert_true(e.bubbles, 'Event should bubble');
       assert_true(e.cancelable, 'Event should cancelable');
@@ -46,7 +46,7 @@ indexeddb_test(
 
     db.addEventListener('error', t.step_func(e => {
       connection_saw_error = true;
-      assert_equals(e.target, request, 'event target was request');
+      assert_equals(e.target, request, 'event target should be request');
       assert_equals(e.type, 'error', 'Event type should be error');
       assert_true(e.bubbles, 'Event should bubble');
       assert_true(e.cancelable, 'Event should cancelable');
@@ -54,7 +54,7 @@ indexeddb_test(
 
     tx.addEventListener('error', t.step_func(e => {
       transaction_saw_error = true;
-      assert_equals(e.target, request, 'event target was request');
+      assert_equals(e.target, request, 'event target should be request');
       assert_equals(e.type, 'error', 'Event type should be error');
       assert_true(e.bubbles, 'Event should bubble');
       assert_true(e.cancelable, 'Event should cancelable');

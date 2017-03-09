@@ -41,7 +41,7 @@ t2.step(function () {
     iframe2.removeEventListener('load', testFunc);
 
     removedEl = document.body.removeChild(iframe);
-    
+
     assert_equals(frameWindow.top, null);
     assert_equals(frame2Window.top, null);
 

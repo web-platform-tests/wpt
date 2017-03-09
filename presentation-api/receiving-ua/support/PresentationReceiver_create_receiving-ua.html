@@ -17,16 +17,19 @@ a { visibility: hidden; }
 <script>
 let finished = false;
 
-const sendResult = (tests, status, childLog) => {
+const sendResult = (test, status, childLog) => {
     if(!finished) {
         finished = true;
         const stash = new Stash(stashIds.toReceiver, stashIds.toController);
         const log = childLog || document.getElementById('log').innerHTML;
-        stash.send(JSON.stringify({ tests: tests, status: status, log: log }));
+        stash.send(JSON.stringify({ test: test, status: status, log: log }));
     }
 };
 
-add_completion_callback(sendResult);
+add_completion_callback((tests, status) => {
+    // note: a single test result is supposed to appear here.
+    sendResult(tests[0], status);
+});
 
 const child = document.getElementById('child');
 child.addEventListener('load', () => {
@@ -190,11 +193,12 @@ child.addEventListener('load', () => {
                     const result = event.data;
                     if (result.type === 'presentation-api') {
                         // if the test in iframe failed, report the result and abort the test
-                        if (!result.tests.every(test => { return test.status === 0; })) {
-                            sendResult(result.tests, result.status, result.log);
+                        if (result.test.status === 0)
+                            resolve();
+                        else {
+                            sendResult(result.test, result.status, result.log);
                             assert_unreached('A test for a nested browsing context failed.');
                         }
-                        resolve();
                     }
                 }));
                 child.contentWindow.postMessage('start', location.origin);

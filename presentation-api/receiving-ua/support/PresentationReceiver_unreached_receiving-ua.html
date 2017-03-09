@@ -12,7 +12,7 @@
 add_completion_callback((tests, status) => {
     const stash = new Stash(stashIds.toReceiver, stashIds.toController);
     const log = document.getElementById('log');
-    stash.send(JSON.stringify({ tests: tests, status: status, log: log.innerHTML }));
+    stash.send(JSON.stringify({ test: tests[0], status: status, log: log.innerHTML }));
 });
 
 test(() => {

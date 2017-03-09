@@ -22,7 +22,8 @@ promise_test(t => {
 promise_test(t => {
   const theError = { the: "error object" };
 
-  self.onerror = t.step_func((message, filename, lineno, colno, error) => {
+  self.onerror = t.step_func(function (message, filename, lineno, colno, error) {
+    assert_equals(arguments.length, 5, "There must be exactly 5 arguments");
     assert_equals(message, "message");
     assert_equals(filename, "filename");
     assert_equals(lineno, 1);

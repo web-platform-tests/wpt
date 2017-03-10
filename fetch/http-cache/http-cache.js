@@ -102,7 +102,7 @@ function make_test(raw_requests) {
             init.mode = config["credentials"];
           }
           if ("cache" in config) {
-            init.mode = config["cache"];
+            init.cache = config["cache"];
           }
           return fetch(url, init)
             .then(function(response) {

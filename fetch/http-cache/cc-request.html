@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTTP Cache - Cache-Control Request Directives</title>
+    <meta name="help" href="https://fetch.spec.whatwg.org/#request">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/utils.js"></script>
+    <script src="/common/get-host-info.sub.js"></script>
+    <script src="http-cache.js"></script>
+  </head>
+  <body>
+    <script>
+    var tests = [
+      {
+        name: 'HTTP cache honors Cache-Control: max-age=0 in requests.',
+        requests: [
+          {
+            template: "fresh",
+            pause_after: true
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "max-age=0"]
+            ],
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: max-age=1 in requests.',
+        requests: [
+          {
+            template: "fresh",
+            pause_after: true
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "max-age=1"]
+            ],
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: max-age in requests for responses that are pre-aged.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=3600"],
+              ["Age", "1800"]
+            ]
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "max-age=600"]
+            ],
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: max-stale in requests for responses.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=1"]
+            ],
+            pause_after: true
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "max-stale=1000"]
+            ],
+            expected_type: "cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: max-stale in requests for responses that are pre-aged.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=1500"],
+              ["Age", "2000"]
+            ]
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "max-stale=1000"]
+            ],
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: min-fresh in requests for responses.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=1500"]
+            ]
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "min-fresh=2000"]
+            ],
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: min-fresh in requests for responses that are pre-aged.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=1500"],
+              ["Age", "1000"]
+            ]
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "min-fresh=1000"]
+            ],
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: no-cache in requests.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=1500"]
+            ]
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "no-cache"]
+            ],
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: no-store in requests.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=1500"]
+            ]
+          },
+          {
+            request_headers: [
+              ["Cache-Control", "no-store"]
+            ],
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honors Cache-Control: only-if-cached in requests.',
+        requests: [
+          {
+            request_headers: [
+              ["Cache-Control", "only-if-cached"]
+            ],
+            expected_status: 504
+          }
+        ]
+      }
+    ];
+    run_tests(tests);
+    </script>
+  </body>
+</html>

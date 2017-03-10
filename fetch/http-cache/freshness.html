@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTTP Cache - Freshness</title>
+    <meta name="help" href="https://fetch.spec.whatwg.org/#request">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/utils.js"></script>
+    <script src="/common/get-host-info.sub.js"></script>
+    <script src="http-cache.js"></script>
+  </head>
+  <body>
+    <script>
+    var tests = [
+      // response directives
+      {
+        name: 'HTTP cache stores a response with Cache-Control: max-age in the response, and uses it for a subsequent request.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=60"]
+            ]
+          },
+          {
+            expected_type: "cached",
+          }
+        ]
+      },
+      {
+        name: 'HTTP cache honours the Age header with Cache-Control: max-age in the response.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "max-age=60"],
+              ["Age", "120"]
+            ]
+          },
+          {
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      {
+        name: 'RequestCache does not store a response with Cache-Control: no-store.',
+        requests: [
+          {
+            response_headers: [
+              ["Cache-Control", "no-store"]
+            ]
+          },
+          {
+            expected_type: "not_cached",
+          }
+        ]
+      },
+      // must-revalidate
+      // s-maxage
+    ];
+    run_tests(tests);
+    </script>
+  </body>
+</html>

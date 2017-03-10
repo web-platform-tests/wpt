@@ -1,4 +1,4 @@
-<script src="../resources/get-host-info.sub.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="test-helpers.sub.js"></script>
 <script>
 function check_referer(url, expected_referer) {
@@ -25,7 +25,7 @@ window.addEventListener('message', function(evt) {
           return check_referer(
               'request-headers.py',
               host_info['HTTPS_ORIGIN'] +
-              base_path() + 'fetch-rewrite-worker.js');
+              base_path() + 'referer-iframe.html');
         })
       .then(function() {
           return check_referer(

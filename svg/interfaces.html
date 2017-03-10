@@ -14,6 +14,9 @@ interface Element : Node {};
 interface HTMLElement : Element {};
 [PrimaryGlobal] interface Window {};
 
+// Just need to know that DOMStringMap exists; its details are tested elsewhere.
+interface DOMStringMap { };
+
 [TreatNonObjectAsNull]
 callback EventHandlerNonNull = any (Event event);
 typedef EventHandlerNonNull? EventHandler;
@@ -358,6 +361,7 @@ dictionary DOMMatrixInit {
 interface SVGElement : Element {
 
   [SameObject] readonly attribute SVGAnimatedString className;
+  [SameObject] readonly attribute DOMStringMap dataset;
 
   readonly attribute SVGSVGElement? ownerSVGElement;
   readonly attribute SVGElement? viewportElement;
@@ -387,8 +391,12 @@ interface SVGGraphicsElement : SVGElement {
 SVGGraphicsElement implements SVGTests;
 
 interface SVGGeometryElement : SVGGraphicsElement {
+  [SameObject] readonly attribute SVGAnimatedNumber pathLength;
+
   boolean isPointInFill(DOMPoint point);
   boolean isPointInStroke(DOMPoint point);
+  float getTotalLength();
+  DOMPoint getPointAtLength(float distance);
 };
 
 interface SVGNumber {
@@ -532,7 +540,6 @@ interface SVGStringList {
   setter void (unsigned long index, DOMString newItem);
 };
 
-[NoInterfaceObject]
 interface SVGUnitTypes {
   // Unit Types
   const unsigned short SVG_UNIT_TYPE_UNKNOWN = 0;
@@ -569,7 +576,7 @@ interface SVGURIReference {
 };
 
 partial interface Document {
-  readonly attribute SVGSVGElement rootElement;
+  readonly attribute SVGSVGElement? rootElement;
 };
 
 interface SVGSVGElement : SVGGraphicsElement {
@@ -735,11 +742,6 @@ interface SVGAnimatedPreserveAspectRatio {
 };
 
 interface SVGPathElement : SVGGeometryElement {
-
-  [SameObject] readonly attribute SVGAnimatedNumber pathLength;
-
-  float getTotalLength();
-  DOMPoint getPointAtLength(float distance);
 };
 
 interface SVGRectElement : SVGGeometryElement {
@@ -918,7 +920,6 @@ interface SVGGradientElement : SVGElement {
 };
 
 SVGGradientElement implements SVGURIReference;
-SVGGradientElement implements SVGUnitTypes;
 
 interface SVGLinearGradientElement : SVGGradientElement {
   [SameObject] readonly attribute SVGAnimatedLength x1;
@@ -961,7 +962,6 @@ interface SVGPatternElement : SVGElement {
 
 SVGPatternElement implements SVGFitToViewBox;
 SVGPatternElement implements SVGURIReference;
-SVGPatternElement implements SVGUnitTypes;
 
 interface SVGHatchElement : SVGElement {
 };
@@ -1012,7 +1012,6 @@ interface SVGFilterElement : SVGElement {
 };
 
 SVGFilterElement implements SVGURIReference;
-SVGFilterElement implements SVGUnitTypes;
 
 [NoInterfaceObject]
 interface SVGFilterPrimitiveStandardAttributes {

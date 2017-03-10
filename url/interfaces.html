@@ -12,9 +12,6 @@
 [Constructor(USVString url, optional USVString base),
  Exposed=(Window,Worker)]
 interface URL {
-  static USVString domainToASCII(USVString domain);
-  static USVString domainToUnicode(USVString domain);
-
   stringifier attribute USVString href;
   readonly attribute USVString origin;
            attribute USVString protocol;
@@ -27,6 +24,8 @@ interface URL {
            attribute USVString search;
   readonly attribute URLSearchParams searchParams;
            attribute USVString hash;
+
+  USVString toJSON();
 };
 
 [Constructor(optional (USVString or URLSearchParams) init = ""),

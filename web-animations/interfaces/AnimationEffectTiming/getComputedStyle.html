@@ -104,12 +104,8 @@ test(function(t) {
                 'set currentTime before endTime');
 
   anim.currentTime = 5000;
-  assert_equals(getComputedStyle(div).opacity, '0',
+  assert_equals(getComputedStyle(div).opacity, '0.5',
                 'set currentTime same as endTime');
-
-  anim.currentTime = 9999;
-  assert_equals(getComputedStyle(div).opacity, '0',
-                'set currentTime during duration');
 
   anim.currentTime = 10000;
   assert_equals(getComputedStyle(div).opacity, '0',
@@ -170,7 +166,7 @@ test(function(t) {
   assert_equals(getComputedStyle(div).opacity, '1',
                 'change direction from "normal" to "reverse" ' +
                 'at the starting point');
-}, 'change direction from "normal" to "reverse"');
+}, 'change direction from "normal" to "reverse" when currentTime is 0');
 
 </script>
 </body>

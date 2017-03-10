@@ -5,7 +5,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
-<link rel="stylesheet" href="/resources/testharness.css">
 <body>
 <div id="log"></div>
 <script>
@@ -72,7 +71,7 @@ promise_test(function(t) {
   animation.cancel();
 
   return retPromise;
-}, 'ready promise is rejected when a pause-pending animation is cancelled by'
+}, 'ready promise is rejected when a play-pending animation is cancelled by'
    + ' calling cancel()');
 
 promise_test(function(t) {
